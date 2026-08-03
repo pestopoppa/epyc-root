@@ -176,12 +176,46 @@ Consequence already handled: `_assert_instance_invariants` gained a device-aware
 `184-191` is all SMT siblings and reads as ZERO physical cores under the `-t == physical` rule —
 the correct placement would otherwise have been rejected at import as infinite oversubscription.
 
-- [ ] **Q3 — is VRAM a contention resource or a launch precondition?** STILL OPEN. `vram_fit` is
-      implemented and exported but deliberately not wired into `admit_set`/`seam_admit`: it is a
-      set-wide capacity, undecidable per-pair. VRAM grows on first EXECUTION, not at load, which
-      argues for admission-time.
-- [ ] **Q4 — does the interference model need E5 (NUMA×batch) first?** STILL OPEN. Artifacts 1 and 2
-      need neither and are done/scoped.
+- [x] **Q3 — is VRAM a contention resource or a launch precondition?** ✅ 2026-08-03 — **RESOLVED:
+      launch precondition.** `vram_fit` stays out of `admit_set`/`seam_admit`, and that is now a
+      decision rather than a deferral.
+
+      Two reasons, the second measured this session.
+
+      **Structural.** `admit_set`/`seam_admit` decide PAIRWISE; VRAM is a SET-WIDE capacity. "Do A
+      and B interfere?" and "does {A,B,C,D} fit in 64 GiB?" are different questions, and the second
+      has no per-pair answer — no pair is individually at fault when a fourth model overflows the
+      device. Wiring a set-wide constraint into a pairwise seam would either reject legal pairs or
+      pass illegal sets. This is a type mismatch, not a tuning choice.
+
+      **Empirical — and it overturns this question's own premise.** The rider argued "VRAM grows on
+      first EXECUTION, not at load, which argues for admission-time." For the llama-server roles
+      that is wrong: **KV is reserved AT LAUNCH** (`-c` is preallocated across `-np` slots), so a
+      role's footprint is fixed the moment it binds. Measured 2026-08-03 with four resident
+      processes: 36.10 + 22.47 + 2.77 + 2.31 = **63.67 GiB of 63.98**, steady, while the fleet
+      served real traffic all session.
+
+      The execution-time growth the rider observed is real but small and bounded — the four-model
+      set moved 61.66 → 62.59 GiB (~0.93 GiB) after each model executed once. That is compute
+      buffers, not KV, and it is **exactly what the 2.0 GiB headroom already covers** (~2x margin,
+      recorded in the implementation note above). A per-request admission check would re-verify a
+      quantity that cannot change between requests.
+
+      **Consequence, and the one caveat worth carrying:** the speech services DO allocate
+      per-request (whisper on long audio especially), and they are the only GPU tenants that do.
+      They are also the smallest (2.31 / 2.77 GiB). If a future GPU tenant has a large
+      execution-time footprint, this answer should be revisited — the reasoning is "launch-time
+      reservation dominates", not "VRAM never grows".
+- [ ] **Q4 — does the interference model need E5 (NUMA×batch) first?** STILL OPEN, but the premise
+      was STALE and is corrected here (2026-08-03). E5 is **not** "designed and unrun": a 31-cell
+      Stage-B sweep and a 69-cell W0 scout both RAN (2026-07-29/30) and were then **SUSPENDED
+      2026-07-30 pending re-measurement** — they swept placement shapes through wiring that the
+      canonical bench recipe beats, so every absolute throughput value in them is withdrawn. See
+      the suspension notice at the head of [`batched-decode-measurement.md`](batched-decode-measurement.md).
+      So the real question is not "run E5 first?" but "does the interference model need E5's
+      RE-measurement first?", and the answer inherits E5's own queue position (it runs LAST,
+      after inference-batch-loop and architect-model-selection-bench). Artifacts 1 and 2 need
+      neither and are done/scoped.
 
 ### Implementation note recorded 2026-08-01
 
@@ -255,9 +289,15 @@ judgement over measured values and is the one restated constant in the artifact.
       bare, so a failing PII check was discarded by a passing drift check. Reproduced: AWS key
       staged, `BLOCKED` printed, commit landed. Fixed + tracked installer, since the wrapper was
       untracked in all three repos and every fix died on a fresh clone.
-- [ ] **Per-worktree venv (or editable reinstall) for full non-pytest isolation.** The `.pth` shim
-      handles `python script.py` from a worktree, but the venv still carries the main checkout on
-      `sys.path` unconditionally. Venv configuration, not source; not attempted.
+- [x] **Full non-pytest worktree isolation** ✅ 2026-08-03 — orchestrator `60637f77`. Closed WITHOUT
+      a per-worktree venv, which would have cost **803 MB per worktree** to fix a path-resolution
+      problem. The residual gap was `python /path/to/worktree/scripts/foo.py` run from outside that
+      worktree: CWD cannot see that invocation, and it is the ordinary shape of running a script by
+      absolute path. The shim now tries `sys.argv[0]`'s directory FIRST, then CWD — the entry script
+      states which checkout you mean regardless of where you are standing, while CWD still covers
+      `python -m pkg` and a bare REPL. Verified: script-in-worktree/cwd-elsewhere now resolves to
+      the worktree; main checkout unchanged; a script outside any checkout does not hijack; an
+      unrelated repo with `src/` + `orchestration/` but a different project name is not adopted.
 - [x] **Decide the durable-evidence form under the wiki-only ruling.** ✅ 2026-08-03 — RESOLVED: a durable citation is a reference to distilled knowledge in the wiki, where literature references are documented. Both bundles untracked (research `a752ca21`), kept locally with SHA256SUMS; `wiki/benchmark-methodology.md` gained a Reference section naming path, contents, verification and reproduction; the registry citation repoints at the wiki. `check_evidence_durability.py`: 0 errors. Superseded detail: Operator ruling 2026-08-03:
       research reaches GitHub only as distilled knowledge and REFERENCES in the wiki, never as raw
       material at any size. Two evidence bundles were committed to
