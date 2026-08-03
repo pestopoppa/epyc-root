@@ -146,6 +146,29 @@ is_benchmark_prompt_hash_line() {
   return 1
 }
 
+is_autokernel_record_id_line() {
+  # AutoKernel record identifiers are `<prefix>-<digits>[-<hex>]` with a closed
+  # set of prefixes enforced by scripts/kernel_rnd/autokernel/schemas.py
+  # (campaign ak-, proposal akp-, candidate akc-, evaluation ake-, journal akj-,
+  # device-claim akd-, release akr-, seed aks-). Test fixtures pad the numeric
+  # part, producing tokens like `akd-0000000000000000` that trip the bare
+  # 12-19-digit account-number heuristic.
+  #
+  # Scoped to that closed prefix vocabulary ON PURPOSE rather than to a path or
+  # to "any identifier-looking token": a genuine account number written as
+  # `acct-123456789012` or `iban-...` must still block, and it does — only the
+  # eight AutoKernel prefixes are disambiguated. Every match must be part of
+  # such a token; a line mixing one AutoKernel id with a bare long digit run
+  # still trips on the bare run.
+  local line="$1"
+  local stripped
+  # Remove every well-formed AutoKernel id, then re-test what is left.
+  stripped="$(echo "$line" | command sed -E 's/\bak[pcejdrs]?-[0-9]{6,}(-[0-9a-f]+)?//g')"
+  if echo "$stripped" | command grep -qE '\b[0-9]{12,19}\b'; then
+    return 1   # something else on the line is still a long digit run
+  fi
+  return 0
+}
 is_benchmark_per_question_line() {
   # Per-question eval records embed the benchmark's own problem text verbatim.
   # Coding suites (LiveCodeBench, SWE-bench) routinely carry 12-19 digit integer
@@ -257,6 +280,9 @@ scan_blob() {
         continue
       fi
       if is_benchmark_per_question_line "$path" "$fullline"; then
+        continue
+      fi
+      if is_autokernel_record_id_line "$fullline"; then
         continue
       fi
       if is_perf_report_counter_line "$path" "$fullline"; then
