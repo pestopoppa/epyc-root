@@ -150,7 +150,23 @@ failure caught in amber.
         post-reseed rows with real outcomes and untruncated objectives — suggest **≥2,000** (≈10
         batches at the default 20/batch over a meaningfully diverse pool) before the first run.
         The pre-distillation checkpoint in `_action_distill_skillbank` protects rollback either way.
-  - [ ] M-11a2 — **`work`-payload capture is NOT wired** (measured 2026-07-28: **0 of 58,655** rows
+  - [x] M-11a2a — **`model_id` capture WIRED** ✅ 2026-08-03 (orchestrator `c05bc415`). It was NULL
+        on all 59,337 rows: `store()` always accepted the argument, no caller ever passed it, so
+        warm-start and per-model analysis over the corpus were impossible. Wired at the three
+        q_scorer `store()` sites, DERIVED from compiled priors rather than a role->model table
+        (which would have drifted twice in the past week: architect_general 122B->27B,
+        coder_escalation 35B->27B). Unknown action -> None, so NULL keeps meaning "unknown".
+        The two SIBLING columns are deliberately left NULL and that is the fix, not an omission:
+        `assigned_role` is the Trinity tri-role axis whose readers already normalise NULL->WORKER
+        (TR-1.5) and whose classifier is shadow-mode/off; `sub_decision` NULL correctly means "not
+        a sub-decision". Writing a SERVING role into either is a wrong value where NULL is right.
+  - [x] **Live trace emission wired** ✅ 2026-08-03 (orchestrator `5acd7214`). Separate store,
+        same class of gap: `data/trace/events.sqlite` held 10,488 events carrying
+        role/trial/category/detail and EVERY ONE was ingested from a log file after the fact.
+        Trial 1460 wrote 9 episodic rows and **0 trace events**. Emission now hooks
+        `Journal.record()` — the one chokepoint every path crosses, including skips and the
+        AUTOPILOT_KILLED placeholder — under a new `EventSource.AUTOPILOT_LIVE`. Fails open.
+  - [ ] M-11a2b — **`work`-payload capture still NOT wired** (measured 2026-07-28: **0 of 58,655** rows
         carry `work`). The live write sites (`q_scorer.py:1194,1291,1402`) pass only
         objective/metrics — nothing passes `answer`/`tool_calls`/`repl_steps`/`reasoning`, so the
         contract's work-storage capability sits unused and future distillation stays

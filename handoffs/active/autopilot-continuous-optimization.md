@@ -1537,3 +1537,33 @@ _Via `/research-intake` Stage-4 (intake-930 ReasoningBank v2, intake-888 CORE, i
 - [ ] **AP-29b — Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-aware reward in chapter 08 by DETERMINISTIC REPLAY over already-persisted autopilot trials.** No new inference: rescore saved outcomes and rebaseline only the objective axis that changed — exactly what `agents/shared/MEASUREMENT_POLICY.md` → *Deterministic replay before regeneration* prescribes. Journal shards (`autopilot_journal.jsonl` + `autopilot_journal_1.jsonl`) already carry the per-trial outcomes this needs.
 - [x] **AP-29b preflight — journal-only replay data-contract audit. ✅ 2026-07-29** The two shards contain 1,338 trial rows with aggregate quality/speed/cost/reliability, but not the per-answer role, actual elapsed, expected elapsed, or quality-base fields required by Chapter 08's `quality_base - lambda * max(0, cost_ratio - 1.0)`. The stored `cost` is instead the EvalTower's average normalized **cost tier** (source: `scripts/autopilot/eval_tower.py:3474-3476`), so it cannot be substituted for `cost_ratio`. Keep AP-29b open; first link an immutable per-question outcome ledger to each trial and record the contemporary role-TPS baseline/config hash. This audit makes no baseline, Pareto, or deployment decision.
 - [ ] **AP-29c — Name the prompt-optimizer of record as GEPA-class, and adopt compile-on-small-model / deploy-to-large as the CPU-first strategy.** GEPA's cross-model transfer: prompts optimized on **Qwen3-8B** scored **+9.00 aggregate on GPT-4.1-Mini**, beating every optimizer tuned directly on it — which is what makes compiling on a cheap local model economically viable here. Mark **BootstrapFewShot\*** superseded for 2026-era instruct models (**MIPROv2** buys only **+2.6** on Qwen3-8B and **REGRESSES** on AIME/LiveBench). Cost line for any compile is tracked in [`harness-selection-and-integration.md`](harness-selection-and-integration.md) HS-11 (5k-25k LM calls ⇒ region-locked campaign). Sequencing: this is downstream of **AP-19a/AP-19b** — do not re-argue the GEPA pin (AP-42) before the repaired path has run live once.
+
+
+### AutoPilot end-to-end smoke test — 2026-08-03
+
+First full smoke run of the trial loop. Four defects, three silent.
+
+- [x] **Real-mode inference 503'd for EVERY role** ✅ 2026-08-03 (orchestrator `bc1da61f`). The
+      Pydantic->dataclass bridge used `getattr(settings.server_urls, name, f.default)` and
+      `f.default` is `dataclasses.MISSING` for any `default_factory` field — all of them. A field
+      on the dataclass but not the settings model was passed MISSING explicitly, defeating its own
+      factory. `architect_critic` (added W1, 2026-08-01) was that field, and since backend init
+      `.split(",")`s every URL, init raised for every role. AutoPilot INFRA_SKIP'd all 17 seeding
+      calls against a healthy stack. The 9 long-standing ServerURLsConfig test failures were this
+      bug's alarm, dismissed as "pre-existing" three times.
+- [x] **`--max-trials N` was a no-op** ✅ 2026-08-03 — compared the CUMULATIVE counter, so
+      `--max-trials 1` at counter 1459 exited having run nothing. Now a relative budget.
+- [x] **AutoPilot was left `paused: True`** ✅ 2026-08-03 — a fresh daemon start passed every gate
+      then spun in a pause-wait loop at 1 log line/second. Resumed.
+- [x] **Bounded trial completed clean** ✅ 2026-08-03 — `ran 1 of 1 (trial 1460 -> 1461)`,
+      structural_lab, tier 1, quality 1.8293, T1 65/65, **0 INFRA_SKIPs** (was 17).
+- [ ] **SEQ-3b: re-baseline under E8** (~49 trials, ~12.7 eval-hours). The
+      `EVAL-INSTRUMENT RE-BASELINE HOLD` fires correctly — resident baseline era
+      `E7-eval-instrument` != active `E8` — and blocks all promotion. Operator ruling 2026-08-03:
+      past eras are logging-only and must never be compared against, which makes SEQ-3b the ONLY
+      correct path; SEQ-3a (declaring the eras comparable) is wrong by definition. NOT started at
+      operator instruction pending the episodic/trace work above, which is now done.
+- [ ] **Decide the lineup status of `worker_fast` (8102), `eval_batch_frontdoor` (18070) and the
+      embedder `extra_recipes` (8096-8098).** They are declared in the launch manifest and so are
+      painted as expected services, but none are running. Hidden from the regions-lock panel as a
+      display fix; whether they should remain declared is a stack-config decision.

@@ -1298,3 +1298,59 @@ directions**; and prove the property directly rather than by proxy — probed co
 the main checkout went **17/17 → 0**.
 
 _Sources: epyc-orchestrator `5c061f58`, `93e7f5a2`, `cd76de50`; `progress/2026-08/2026-08-02.md`._
+
+## A capability can be fully built, fully accepted, and never invoked (2026-08-03)
+
+The first end-to-end smoke test of AutoPilot's trial loop found four defects. Three were silent,
+and the pattern underneath them is worth naming: **a function that accepts an argument nobody
+passes, a store that has a writer nobody calls, a bound that compares the wrong quantity.** None of
+these fail. They produce a clean run that does less than it appears to.
+
+**Real-mode inference 503'd for every role.** A Pydantic→dataclass bridge read
+`getattr(settings, name, f.default)` — and `f.default` is `dataclasses.MISSING` for any field
+declared with `default_factory`. So a field present on the dataclass but absent from the settings
+model was passed `MISSING` **explicitly**, defeating its own factory. One field
+(`architect_critic`, added a week earlier and never mirrored) poisoned initialisation for *every*
+role, because the initialiser `.split(",")`s the whole URL map. AutoPilot's seeder INFRA_SKIP'd all
+17 calls against a stack whose servers were individually healthy.
+
+**The alarm had been ringing for days.** Nine `ServerURLsConfig` tests were failing and were
+checked against a clean baseline three separate times, each time correctly concluding
+"pre-existing, not mine" — and each time answering the wrong question. *"Is this failure mine?"* is
+triage; *"what is this failure about?"* is diagnosis. A pre-existing failure is not an exonerated
+one.
+
+**The trace store was ingest-only.** 10,488 events carrying role/trial/category/detail, every one
+scraped from a log file after the fact. No live path from the trial loop existed, so a trial's
+trace existed only if someone later remembered to run ingest — measured: one trial produced 9
+episodic rows and **0** trace events. The schema had landed, the ingest path had landed, the
+emission path had not, and nothing distinguished "built" from "wired".
+
+**`model_id` was NULL on all 59,337 episodic rows.** `store()` had always accepted the argument;
+no caller ever passed it. Warm-start, the feature the column exists for, was impossible on every
+row ever written.
+
+### The generalisable checks
+
+- **Grep the call sites, not the signature.** A parameter with a default is indistinguishable from
+  a parameter nobody uses. `store(model_id=None)` looks complete in isolation.
+- **Ask what a *failing* test is about, not only whose it is.** Attribution is not diagnosis.
+- **Distinguish "the schema landed" from "a writer calls it".** Count rows, not columns: a column
+  that is 100% NULL across 59k rows is a capability that does not exist.
+- **Hook the chokepoint, not the call sites.** Live emission was attached to `Journal.record()`
+  because every path crosses it — completed trials, skips, and the crash placeholder alike.
+- **Leave NULL where NULL is correct.** Two sibling columns were deliberately not filled:
+  `assigned_role` is a tri-role axis whose readers already normalise NULL to a default, and
+  `sub_decision` NULL *means* "not a sub-decision". Filling them would have looked like more work
+  and made the data worse.
+
+### And a bound that measures the wrong quantity
+
+`--max-trials N` compared the **cumulative** trial counter, not a relative budget. At counter 1459,
+`--max-trials 1` exited immediately having run nothing — so every bounded smoke run silently did
+nothing, and the only way to get one trial was to pass 1460 and already know the count. A
+too-small bound should be conservative, never a no-op.
+
+_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`;
+`handoffs/active/episodic-memory-integrity.md`; epyc-orchestrator `bc1da61f`, `5acd7214`,
+`c05bc415`._
