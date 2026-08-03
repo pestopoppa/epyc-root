@@ -385,3 +385,28 @@ _Via `/research-intake` Stage-4 (intake-888 CORE, intake-930 ReasoningBank, inta
 - [ ] Track B Phase 0b: rent/allocate GPU (or MI210 smoke) and run frozen-vs-cotrained proxy on SmolLM-1.7B (~$50-150)
 - [ ] Track B Phase 0b: build canonicalizer, train both configs on 5-20B tokens, compute >=30% recovery-ratio gate
 - [ ] If gate B0 passes: file engram-retrofit-qwen36-spike.md and proceed to Phase 1-4 Qwen3.6 surgery
+
+## 2026-08-03 — intake Stage-2/2b: the memory cluster, and where its value actually is
+
+_Via `/research-intake` on intake-938 (MemHarness, **dive-overturned**) and its Stage-2b expansion
+intake-988/989/990. The headline result is that the arm we were about to port is the weakest effect in
+its own paper, and a stronger one sits in a cited work that the citing paper never reports._
+
+**intake-938's reconstruct-before-inject arm is KEPT BUT DEMOTED.** It targets a **+2.2 pp** effect at
+**z ≈ 1.94** on one seed with no CI — not significant. Its stronger effects (training +6.68 pp z=5.20,
+negative transfer +6.25 pp z=4.39) do survive sampling noise, but neither is protected against **seed**
+variance, which is unmeasured. Two further corrections carried on the entry: the `n=140/250` we recorded
+is **stated nowhere in the paper** (minimum consistent denominators are 455/304/400/336/360/190, so the
+cells cannot be single-pass success rates), and its `EvolveR (reproduced) 70.1` baseline **reproduces
+nothing published** — EvolveR never evaluates on ALFWorld or WebShop at all.
+
+### The three items worth acting on, all zero-training
+
+- [ ] **EvolveR's gradient-free arm — the highest-value lead in the cluster, and it is on our side of the training line.** Its Table 4 shows principle distillation + retrieval with **RL DISABLED scoring 0.357, beating RL-only at 0.325**, and reaching **93.5% of the full system's 0.382** (Qwen2.5-3B). The citing paper presents EvolveR as the exhibit for "memory + RL is harmful"; EvolveR's own ablation shows its memory machinery *without gradients* outperforming pure RL. Same shape as our adopted ReasoningBank baseline (intake-988)
+- [ ] **RRR — pure log post-processing, computable RETROACTIVELY over traces we already have.** `SequenceMatcher >= 0.85` over stored reflections, no inference cost, no new capture. Measured 0.64 → 0.10 under the fix below (intake-989)
+- [ ] **Programmatic feedback extraction** — parse tool output for concrete failure facts instead of asking the model to self-diagnose. Measured object-mention 0/121 → 134/156 (86%). **Rates do not transfer** — largely a weak-model artifact at n=2 environments — but the mechanism and the metric do (intake-989)
+
+### One threat assessed and dismissed, with its mechanism, so it is not re-raised
+
+- [x] **"Dark Room" reward collapse does NOT threaten this line** ✅ 2026-08-03 (intake-990). The mechanism requires a **dense policy-dependent potential-difference shaping term with persistent within-group variance**; MemHarness has sparse +10/0 plus a **saturating** 0.1× format bonus plus SFT format cold-start, which is Dark Room's own **Proposition-2 SAFE class**. Decisively: **Dark Room's own non-collapsing baseline IS MemHarness's reward shape**, on the same verl-agent framework. What it *does* destabilise is measurement — 32-episode binomial noise floor ≈ **8.8 points**, its own cross-arm comparisons declared "DESCRIPTIVE", and an unexplained 8B (32.8) below 4B (49.5)
+- [x] **Independent corroboration located, and scoped precisely** ✅ 2026-08-03 (intake-989). "Honest Lying" independently shows memory injection **can** drive below a no-memory control, via a controlled memory-**wipe** ablation, with no citation in either direction. That is corroboration for **claim A only** — it is **not** corroboration for the state-mismatch *mechanism*, which is write-side (confabulated self-diagnosis under binary feedback) versus read-side. A **fourth distinct mechanism**, not the same one

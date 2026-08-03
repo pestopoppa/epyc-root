@@ -539,3 +539,54 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch); the bench a
 - [ ] **Collect and bench Jackrong/Qwopus3.6-27B-Coder MTP-Q8_0** (29.0 GB, apache-2.0, 63k downloads). It carries the lineage's ONLY full-denominator SWE-bench Verified run — 335/500 = 67.0% measured **thinking-off**, matching our stack — at ThinkingCap-class onboarding cost with zero merge work. **CAVEAT THAT MUST TRAVEL WITH THIS NUMBER WHEREVER IT IS QUOTED: 67.0% is SWE-bench Verified, vendor self-reported, n=1, full-500 denominator, and is NOT commensurable with our sealed SWE-oracle-40 (A3 `23/40`).** Different instrument, different denominator, different scaffold — it may not be set beside any authority row in this handoff. Preconditions: (a) **verify the JSON tool-call parser first** — this family emits JSON inside `<tool_call>`, NOT Qwen's XML `<function=…><parameter=…>` form, and the chat template differs between v2 (6,994 B) and Coder (4,718 B), so verify **per model, not per family** (a cross-arm parse-failure gap reads as a quality gap — see R1's parse-artifact rule above; tracked as 2b-agentic-1 in [`scoring-infra-standardization.md`](scoring-infra-standardization.md)); (b) hold MTP constant across arms.
 - [ ] **Zero-inference weight-delta geometry probe.** Stream the local Q8 GGUFs (stock Qwen3.6-27B / ThinkingCap / Fable-Fusion / MTP control), dequantize per tensor, and per layer L compute r(L)=‖Δ_FF‖/‖Δ_TC‖, c(L)=cos(Δ_TC,Δ_FF), p(L)=⟨Δ_FF,Δ_TC⟩/‖Δ_TC‖² against the shared base. **Free exact ground truth:** our own spec-dec work established at byte level that ThinkingCap = stock + exactly 256 LoRA modules (r=64, α=128), so Δ_TC is EXACTLY ZERO on ~600 non-LoRA tensors — those measure nothing but the Q8 dequant noise floor, the quantity that decides whether GGUF delta-geometry is trustworthy at all. Second payoff: TC and FF are independent siblings off stock, so the lineage detector p(L) should sit near 0 and flat; if it drifts to 1.0 anyway, the "Coder descends from V2" inference is an artifact. Minutes of CPU, no GPU lane, no download.
   - [x] **E5-safe instrument and input preflight** ✅ 2026-07-29 — committed `epyc-inference-research` `4c1a3ac3` (`scripts/benchmark/weight_delta_geometry.py` plus three synthetic tests). The instrument streams Q8_0 blocks only after explicit `--execute`; default `--plan` touches no model payload and production execution remains deferred while E5 Stage-B exclusively owns CPU. Verified local stock/ThinkingCap/Fable Q8 inputs exist; no inference, GPU work, or real-model dequantization occurred.
+
+## 2026-08-03 — intake Stage-2/2b: the code-runtime-efficiency axis, and two model-candidate verdicts
+
+_Via `/research-intake` on intake-938…990. The compendium had **deep coverage of speedup-rewarded GPU
+kernel generation and zero coverage of code-runtime efficiency as an evaluation axis** — six instruments
+are now indexed. Nothing below is comparative authority until it runs under the sealed same-era protocol
+above._
+
+### The design space is FOUR instruments, not eight
+
+Mercury (intake-972) → EffiBench / EffiBench-X (intake-952) → SWE-Perf (intake-951) is **one connected
+component of four papers**, hubbed on a shared author. So the apparent field-wide consensus that
+"efficiency scores must be normalized against a reference distribution" is **half one lineage**. The
+genuinely independent instruments diverge sharply: ENAMEL normalizes against **one expert solution with
+censoring**; EvalPerf against a **clustered ladder using instruction counts**; GSO against a **single
+human commit in the same container**; COFFE against **the best ground truth, binary**.
+
+**Ladder shape — operator-selected 2026-08-03:** *one ranking key, three columns*. Rank on the fused,
+instance-gated, expert-normalized, clipped score; report **correctness** beside it; and report a
+**derived conditional** only above ≥30 solved instances. A conditional efficiency number computed over a
+handful of solves is a ratio with a denominator small enough to be noise.
+
+**Aggregation — operator-selected 2026-08-03:** `harmonic_mean({s_i : i correct})`, reported beside
+`correctness_rate`. **Forbidden:** harmonic mean over any set containing failure-clamped sentinels — that
+is how SWE-fficiency's headline moved **2.8× on byte-identical outcomes** from one clamp constant. This
+also retires the geometric mean, which GSO demonstrated agents *game* (`[0.1, 1000]` → geomean 10 while
+regressing a test). Constitutional form: `artifacts/operator/measurement-decision-packages-20260803.md`
+DP-2 — **not yet ratified**, so the rule above is the bench's working convention, not a protocol.
+
+### Instrument selection
+
+- [ ] **Adopt EffiBench-X as the efficiency instrument, Python-only, restricted to the 308 DATED problems.** Apache-2.0, and its local-endpoint support **works unpatched** (`OpenAI()` with no args after `load_dotenv()`). Three blockers must be patched onto **upstream**, not taken from the `effibench-enhanced` re-upload (intake-986, zero lineage, created-and-pushed six minutes apart): the deprecated `openjdk:21` image, a `time.sleep` `AttributeError`, and a **fail-open-to-0.0 metric**
+- [ ] **Run a canonical-solutions acceptance gate FIRST, before any model arm.** The fail-open-to-0.0 path is our own named defect class sitting on the exact metric we would adopt, and it is unfixed in both upstream and the re-upload. If canonical solutions do not score as canonical, the instrument is not measuring what its name says
+- [ ] **Pull GSO's two `abetlen/llama-cpp-python` optimization tasks (~21 GB) and run them against the coder and architect roles.** MIT, expert-commit performance targets, and **the only thing in this literature that lands on our own serving stack**. Import its equivalence contract; do NOT import its timing discipline — `timeit.timeit(..., number=1)` is a single timed run per test, and its `check_equivalence` compares a reduced digest (`shape` plus `first_entries[:5]`) that an optimization wrong outside the digest passes
+- [ ] **Run EvalPerf against our local endpoint** — lowest friction in the cluster: Apache-2.0, native `--backend openai --base-url`, ~15 min/model, ~100 MB. Its measurand is retired instructions via hardware counters, max CV 0.4% across four test beds. **Valid for generated-code scoring only** — instruction counting is explicitly invalid for our bandwidth-bound inference kernels, and was falsified in-session where a tiled traversal executing +1.9% instructions ran **2.83× faster**
+- [ ] **Add the Slow/CRR conditional diagnostic** (intake-974): among a model's **correct** outputs, what fraction is no faster than baseline. It separates correctness inflation from genuine efficiency gain, and it is the one number that makes the derived conditional column above interpretable
+- [ ] **Ingest arXiv `2607.01211` BEFORE finalising the instrument choice** — it directly meta-evaluates this entire cluster and may pre-empt the decision
+
+### Declines, named so they are not re-derived
+
+- **Decline SWE-Perf as a harness.** Its code carries **no licence at all**, unanswered for nine months. Its statistical gate is kept.
+- **Decline SWE-fficiency's images** — 1.03 TB. **Adopt its `cpu_assignment.py`** (196 lines, Apache-2.0), which produced correct NUMA-and-SMT-aware cpusets on our EPYC on the first run.
+- **Decline Mercury** (intake-972) — the repo has no licence file at all, so the code is all-rights-reserved. Peer review was not the differentiator it appeared to be: EvalPerf is also peer-reviewed and beats it on licence, maintenance, measurement design and local-endpoint support. Ingest as lineage evidence only.
+- **Decline an efficiency axis over SWE40 / LCB.** Original correctness tests clear the duration-spread gate for **≤3.8%** of problems, and an independent audit (intake-976: 4 benchmarks, 1,538 tasks, 30 reps each) finds only **6.11%** of purportedly performant reference implementations significantly faster on original tests. **Our sealed tasks physically cannot carry a timing signal** — this is a property of the workload, not of our harness.
+- **Decline PerfCodeBench** (intake-975) for ~60 days — no licence, anonymous review-only link, nvcc-bound, and CUDA is 5.2% of its test split. Reopen on a licensed public release or any ROCm/HIP path.
+
+### Model-candidate verdicts — answering the standing search for a faster `worker_general` / `architect_critic`
+
+- [x] **Inkling — NO on both roles** ✅ 2026-08-03 (intake-941/942/955). Three independent reasons, any one sufficient: (a) **12B active parameters vs gemma4-26B-A4B's ~4B** on a bandwidth-bound decode path projects **2–4× slower**, which is the opposite of the requirement; (b) the upstream llama.cpp PR is **rejected in its current form and strips MTP**, and `src/llama-arch.h` in frozen v8 carries 138 `LLM_ARCH_*` entries ending at `DFLASH` with **no `LLM_ARCH_INKLING`** — so there is no serving path today; (c) for `architect_critic` it would *close* the 122B's measured GPU-resident IQ2 path (43.7 tok/s single / 148.7 aggregate @B32, PPL 5.02). No download, no bench — the verdict is decided from architecture and kernel support.
+- [x] **Escha — NO to the artifact, YES to the experiment it motivates** ✅ 2026-08-03 (intake-945/946/956). The `eschamoe` 2-bit format is closed CUDA sm_80-120 with no ROCm path, so the published build is unusable here. But it points at a model worth testing on its own merits — see the task below. The third-party codebook reverse-engineering probe (intake-956) stays `stage1-unverified` and **deferred with a named trigger**: its author is blocked, 2–4 weeks.
+- [ ] **Bench `Qwen3.6-35B-A3B` at `UD-IQ3_XXS` as a `worker_general` candidate.** ~3B active (leaner than gemma4-26B-A4B's ~4B on the bandwidth-bound path), **already supported by the frozen kernel**, and at **13.2 GB it fits `worker_general`'s existing 16 GB budget** in `stack_templates/default.yaml` with no lineup change. **Use `UD-IQ3_XXS`, NOT the size-matched `UD-Q2_K_XL`** — `ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp:73-74` carries `static_assert(!iqk_typeA_supported(GGML_TYPE_Q2_K))` and the same for `Q3_K`, so a Q2_K build forfeits iqk acceleration entirely. Quant-axis detail lives in [`tq3-quantization-evaluation.md`](tq3-quantization-evaluation.md); hold MTP constant across arms, and pair speed with a correctness check.

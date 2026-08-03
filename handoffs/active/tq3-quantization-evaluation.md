@@ -225,3 +225,34 @@ Unlike KT this needs **none** of the hard parts: `IQ2_XXS=16`, `IQ3_XXS=18`, `IQ
 Both the IQ-quant un-stub and the KT/trellis sequencing now live in **[iqk-iquant-enablement.md](iqk-iquant-enablement.md)** (tasks B1-B5 and T1-T3 respectively), so there is one owner and one ordering. The analysis above stands; the executable tasks moved.
 
 Two corrections to the section above, from the tensor-header parse: the whitelist covers **five** native types (IQ2_XXS, IQ2_XS, IQ2_S, IQ3_XXS, IQ3_S), not three — matching exactly what `iqk_gemm_iquants.cpp` implements in both its kernel and converter switches. And the change benefits **all four** IQ-quant registry models, not GLM-5.2 alone; **Qwen3-Next-80B i1-IQ2_M gains the largest share (433 of 807 tensors, 54%)**.
+
+## 2026-08-03 — intake Stage-2: the Escha 2-bit assessment, and a quant-choice trap it exposes
+
+_Via `/research-intake` Stage-2 on intake-945/946/956 (`EschaLabs/Qwen3.6-35B-A3B-Escha-W2`). Ingested as
+part of the standing search for a faster `worker_general`; see
+[`architect-model-selection-bench.md`](architect-model-selection-bench.md) for the role-level verdict._
+
+**The `eschamoe` format itself is unusable here.** It is closed CUDA sm_80-120 with no ROCm path — the
+same wall as the rest of the quantization×kernel co-design school (ZipServ, EXL3, Sakana are all
+ROCm-excluded). That closure is now recorded across the corpus so it is not re-derived source by source.
+
+**But the model underneath is worth a look, and the quant choice is not the obvious one.** If
+`Qwen3.6-35B-A3B` is benched as a `worker_general` candidate, the size-matched option to the Escha build
+is `UD-Q2_K_XL` — and taking it would be a mistake:
+
+```
+ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp:73-74   (frozen production-consolidated-v8, read-only)
+    static_assert(!iqk_typeA_supported(GGML_TYPE_Q2_K));
+    static_assert(!iqk_typeA_supported(GGML_TYPE_Q3_K));
+```
+
+Q2_K and Q3_K are **statically asserted out of the iqk path**, so a Q2_K build forfeits iqk acceleration
+entirely — on a workload where iqk is worth +33–43% prefill. `UD-IQ3_XXS` is on the five-type native
+whitelist above, is **13.2 GB** (inside `worker_general`'s existing 16 GB budget), and keeps the
+acceleration. **Choose IQ3_XXS over the size-matched Q2_K_XL**; the ~1 GB size difference is not worth
+the dispatch loss.
+
+- [x] Assess the `eschamoe` W2 format for our stack — NO, closed CUDA sm_80-120, no ROCm path ✅ 2026-08-03
+- [x] Record the Q2_K/Q3_K iqk `static_assert` as a standing quant-selection constraint, verified read-only against the frozen tree ✅ 2026-08-03
+- [ ] If `Qwen3.6-35B-A3B` is benched, use `UD-IQ3_XXS` (13.2 GB, iqk-native), never the size-matched `UD-Q2_K_XL`
+- [ ] **Deferred with a named trigger** — the third-party codebook reverse-engineering probe (intake-956) stays `stage1-unverified`; its author is blocked, 2–4 weeks. Reopen only if that probe publishes a decoder, and only then to ask whether the format is reimplementable rather than portable

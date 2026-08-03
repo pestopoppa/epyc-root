@@ -53,6 +53,20 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 - Pairs with the **code-review 8-gate bug filter + P0–P3 + finding schema** upgrade to our existing code-review skill (harvest Part 3E) — adopt both together so they share the finding schema.
 - Cross-refs: `eval-tower-verification.md` (two-pass = verifier), code-review skill, [`privacy-hygiene-precommit-hooks.md`](../completed/privacy-hygiene-precommit-hooks.md) (secret scanning overlap), `feedback_observe_before_diagnosing`.
 
+## 2026-08-03 — intake Stage-2: CodeCrucible + benchmrk (intake-943, intake-948)
+
+_Via `/research-intake`. intake-943 lands at **`adopt_component`**: CodeCrucible runs on local GGUF
+unpatched, and its per-phase provider split **is** the cost-aware-routing ablation we had scoped as
+future work — already built, by someone else, on the same shape._
+
+Three mechanisms to lift, in dependency order. The **ordering is the finding** in two of the three:
+
+- [ ] **GATE-0 production-reachability, ordered BEFORE exploitability.** CodeCrucible short-circuits on whether the code path is reachable in production *before* it reasons about whether the finding is exploitable. That ordering is what keeps the expensive exploitability reasoning off unreachable code, and it is the opposite of our current two-pass order
+- [ ] **Mandatory pre-CONFIRM refutation.** No finding reaches CONFIRMED without an explicit attempt to refute it. Pairs with the existing two-pass verifier rather than replacing it
+- [ ] **A dedup stage ordered before Pass 2 — ordering from CodeCrucible, KEY from benchmrk's matcher.** CodeCrucible's own dedup key is `startLine` equality, which is too weak: two findings on the same line with different classes collapse, and one finding whose line moves under a reformat survives twice. Take its *placement* in the pipeline and benchmrk's *matcher* for the key
+- [ ] **Adopt benchmrk's annotation envelope as the dual-gold schema.** Its `status:"invalid"` decoys are exactly the false-positive axis intake-845 records us as lacking — we have no negative-control findings anywhere in the corpus today
+- [ ] **Add a gold-sanity gate for any machine-generated test or annotation** (intake-983): inject into the real project test file, apply the **gold** solution, run the project's **native** runner; if it fails on gold, discard and retry at higher temperature. **Only then** consult the self-consistency judge. Order is load-bearing — the judge reasons about generated test code that may not itself run, and in the source study it endorsed **all six** named invalid cases. Measured per-augmentation defect rate **61.9% (n=105)**; carry that figure, not the 28.5% iterative one
+
 ## Progress checklist
 
 - [x] v1 skill scaffold landed 2026-06-13 ✅
