@@ -24,6 +24,47 @@ ALLOW_PATTERNS=(
   '^scripts/hooks/pii_precommit\.sh$'   # this hook itself contains regex patterns
 )
 
+# ─── Vendor-published documentation placeholders (NOT credentials) ────────────
+# Exact literals that vendors publish specifically so docs and tests can show the
+# shape of a credential without being one. They are matched EXACTLY — a prefix
+# rule would let a real key hide behind a known-example stem.
+#
+# WHY THIS EXISTS. A redaction test has to contain a credential-SHAPED string to
+# prove the redactor fires on it; that is the whole point of the test. Blocking it
+# creates pressure to weaken the test instead — splitting the literal, or moving
+# the fixture — which passes the scanner by hiding what it inspects rather than by
+# being safe. That is strictly worse than a narrow, documented exception.
+#
+# Adding to this list is a security decision: only add strings the vendor
+# publishes as a non-credential example, with the source noted.
+KNOWN_PLACEHOLDERS=(
+  'AKIAIOSFODNN7EXAMPLE'                      # AWS docs canonical example access key ID
+  'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'  # AWS docs canonical example secret key
+  'ASIAIOSFODNN7EXAMPLE'                      # AWS docs canonical example temporary key ID
+)
+
+is_known_placeholder() {
+  local candidate="$1" known
+  for known in "${KNOWN_PLACEHOLDERS[@]}"; do
+    [[ "$candidate" == "$known" ]] && return 0
+  done
+  return 1
+}
+
+# True only when EVERY credential-shaped match on the line is a known placeholder.
+# The scan greps whole LINES (no -o), so the credential must be re-extracted here.
+# A line carrying both a placeholder and a real key must still block, which is why
+# this is an all-must-pass test and not "contains a placeholder".
+line_is_only_known_placeholders() {
+  local line="$1" regex="$2" hit any=0
+  while IFS= read -r hit; do
+    [[ -z "$hit" ]] && continue
+    any=1
+    is_known_placeholder "$hit" || return 1
+  done < <(printf '%s\n' "$line" | command grep -oE -e "$regex" 2>/dev/null || true)
+  [[ $any -eq 1 ]]
+}
+
 # ─── Secret regexes (high-precision, low-false-positive) ─────────────────────
 # Each entry: regex<TAB>label<TAB>description.
 # Tab separator (not pipe) because alternation `(A|B|C)` inside regexes contains pipes.
@@ -248,6 +289,11 @@ scan_blob() {
     IFS=$'\t' read -r regex label desc <<<"$entry"
     while IFS=: read -r lineno match; do
       [[ -z "$lineno" ]] && continue
+      # A vendor's published non-credential example is not a leak. Exact match only,
+      # and only when every match on the line is one.
+      if line_is_only_known_placeholders "$match" "$regex"; then
+        continue
+      fi
       printf 'BLOCKED: %s:%s: [%s] %s — matched: %s\n' "$path" "$lineno" "$label" "$desc" "$(echo "$match" | head -c 80)" >&2
       found=1
       EXIT_CODE=1
