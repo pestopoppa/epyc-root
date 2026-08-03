@@ -796,14 +796,32 @@ If the actor declares it, the actor controls its own release scope. Therefore:
 
 Declared, read-only reference implementations the loop may study and port from:
 
-| Oracle | Path | Use |
+Each row declares a **harvest class**, because the two are legally and practically different:
+`code_portable` means source may be brought across under a compatible licence with attribution;
+`design_oracle` means the *algorithm* may be studied and reimplemented but the code may not be copied.
+Confusing them is a licensing incident, not a style choice.
+
+| Oracle | Class | Why it is worth reading |
 |---|---|---|
-| `ik_llama.cpp` | `/mnt/raid0/llm/ik_llama.cpp` | deprecated as a serving path, retained as a reference/measurement instrument; source of the iqk lineage |
-| upstream `llama.cpp` | remote | upstream fixes and optimizations the fork has not taken |
-| vLLM and similar | read-only | design oracle for algorithms; never for unsupported instructions |
+| `ik_llama.cpp` (on disk) | `code_portable` (MIT) | source of the iqk lineage; the single largest banked gain this project has |
+| upstream `llama.cpp` / `ggml` | `code_portable` (MIT) | fixes and optimizations the fork has not taken; the fork diverges continuously |
+| AMD **composable_kernel** / hipBLASLt / rocBLAS | `code_portable` (MIT/BSD) | **the most directly relevant unexploited source for gfx90a** — CDNA2 GEMM/attention tiling written by the vendor for this exact architecture |
+| AMD **AITER** and ROCm kernel repos | `code_portable` (MIT) | AMD's own inference kernel work, same target hardware |
+| **FlashAttention / FlashInfer** | `code_portable` (BSD/Apache-2) | attention tiling, KV layout, paged-attention kernels |
+| **CUTLASS** | `design_oracle` (BSD-3, CUDA-targeted) | tiling, pipelining and epilogue *design*; instructions do not port to gfx90a |
+| **vLLM / SGLang / TensorRT-LLM** | `design_oracle` | scheduling, paged KV, continuous batching as design oracles; TensorRT-LLM in particular is read-only |
+| **Marlin / EXL2 / AWQ / GPTQ kernels** | `code_portable` (Apache-2/MIT, check per repo) | low-bit GEMV and dequant layouts — directly adjacent to the G2/G3 seed families |
+| **Triton / MLC / TVM kernel corpora** | `design_oracle` | autotuning and layout search strategies |
+
+This list is a starting set, not a closed one. New oracles enter through the project's existing
+`research-intake` pipeline rather than by an agent adding a row: intake verifies the licence, whether
+gfx90a is actually supported, whether the claimed result was measured on comparable hardware, and
+assigns the harvest class. An oracle whose class cannot be established does not enter.
 
 Rules: never build or measure a production claim from an oracle tree; a port is a normal candidate and
-pays T0–T3 identically; every port records the oracle commit and a license/attribution check. The
+pays T0–T3 identically; every port records the oracle commit, the harvest class relied on, and a
+licence/attribution check. Porting *from* a `design_oracle` records the algorithm's source and states
+that the implementation is independent. The
 project's largest recent kernel gain came from porting and enabling iqk (`iqk-port`,
 `iqk/enable-iquants-v7-20260721`; +33–43% prefill era), so this is a first-class campaign kind, not a
 footnote.
@@ -1120,11 +1138,36 @@ it is never banked, never enters the champion, and never carries a correctness c
 about a deep idea at a fraction of the cost of building it, and a refuted spike is a first-class
 result that closes a direction with a receipt. Its output is a mechanism verdict, never a speed rank.
 
-**Budget reservation.** Ranking by expected information gain first is right for search efficiency and,
-left alone, mathematically starves high-variance work: a cheap discriminator always outranks a
-speculative rewrite. Each campaign therefore reserves a declared fraction of its budget for
-architectural proposals, which compete only with each other. Without the reservation the loop converges
-on incrementalism by construction — not by policy, but by arithmetic.
+**Harvest and explore are phases, not a fixed ratio (operator, 2026-08-03).** A static budget
+fraction was the first formulation and it is wrong: it spends explore budget while a freshly opened
+region is still yielding, and it caps exploration exactly when the region is dead. The correct policy
+is **phase-switched on marginal yield**.
+
+- **HARVEST.** Entered whenever a deep lever lands, or the anchor moves. A large change typically
+  unlocks a *cluster* of adjacent incremental wins — a new layout brings its tile sizes, dispatch
+  thresholds and prefetch distances with it — and those are cheap, high-probability, and perishable
+  (they rebase away at the next freeze). Incremental proposals take priority and the cheap tiers
+  dominate: many T1, few T2. The goal is to strip the region efficiently before anything else.
+- **EXPLORE.** Entered when marginal yield in the current region decays below a **derived** floor over
+  a trailing window. Architectural proposals and spikes take priority; incremental work continues only
+  where it is nearly free.
+
+The switch signal is banked gain per unit of budget over a trailing window, compared against the same
+measure earlier in the same harvest. Like every other threshold, the decay floor and window are
+**derived by the campaign calibration procedure, never supplied** — a supplied number here would decide
+the explore/exploit tradeoff by guess.
+
+Two failure modes the switch must not have. It must not confuse a dead region with a broken planner:
+falling yield with rising `PROPOSAL_SKIPPED` or repeated fingerprints is `PLANNER_DEGRADED` (§8.10), not
+EXPLORE. And it must not oscillate: a phase change requires the signal to hold across the full window,
+and each phase declares a minimum dwell so the loop cannot thrash between them.
+
+**Spikes are cheap by construction, and must stay that way.** A spike produces a *mechanism verdict*,
+not a rate claim, so it does not owe what a rate claim owes: no anchor gate, no paired blocks, no
+e-process, no confirmation sample. It still holds a resource claim and passes preflight, because it
+runs on shared hardware and contaminates its neighbours otherwise. Institutional cost is spent
+confirming gains, not discovering them — if a spike ever costs what a T1 costs, this mechanism has
+failed and the loop will stop using it.
 
 **What does NOT relax.** Everything that decides whether a change is *admissible* stays exactly as it
 is: source-integrity gates (§8.5.1), correctness precedence, no-fallback proof, determinism class,
@@ -2278,6 +2321,9 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 | AK-D22 | Anchor identity is re-verified at **every campaign boundary**, not only at freeze; `ANCHOR_MOVED` supersedes comparisons while preserving source and correctness results | A hot-fix or rollback between freezes otherwise leaves every ratio in the journal with a denominator that no longer exists, undetected |
 | AK-D23 | `serving_runtime` releases through the three-gate stack-change path (§11.6) on `stack_change_guard.py`, measured in `task_rate` under variable arrival | Pipeline-green, starts, and live-equals-config are distinct and none implies the next; tokens/s is not substitutable for task_rate in scheduler scope |
 | AK-D24 | Speech is its own phase (AK9), not an AK8 bullet | `measurement/protocols/` contains nothing for STT or TTS — two protocol families must be authored from scratch, comparable in size to Annex K |
+| AK-D32 | Harvest/explore are **phases switched on marginal yield**, not a fixed budget fraction; the decay floor and window are derived, with a minimum dwell and a `PLANNER_DEGRADED` disambiguation | A fixed ratio spends explore budget while a fresh region still yields and caps exploration once it is dead; a freshly opened region's adjacent wins are cheap, high-probability and perishable, so they should be stripped first |
+| AK-D33 | Spikes owe no anchor gate, paired blocks, e-process or confirmation sample — they emit a mechanism verdict, not a rate claim — but still hold a claim and pass preflight | Institutional cost is spent confirming gains, not discovering them; a spike that costs what a T1 costs will not be used |
+| AK-D34 | The oracle registry declares a **harvest class** per row (`code_portable` vs `design_oracle`) and new oracles enter via `research-intake`, not by an agent adding a row | Copying from a design oracle is a licensing incident; and gfx90a support, licence and comparable-hardware provenance all need verifying before a port is proposed |
 | AK-D31 | Architectural campaigns replace three §8.4 rejection conditions rather than waiving them: predicted post-change profile for the wall-share ceiling, prospective shapes, and per-step conceptual-change scope; plus spikes and a reserved budget fraction | Those three are correct for incremental work and would block the deep kernel rethinking the loop exists to find; EIG-first ranking starves high-variance work by arithmetic unless budget is reserved |
 | AK-D29 | Source-integrity gates run **before** behavioural gates: symbol/registration preservation, clean build from snapshot, semantic diff conformance, repair from clean parent | AutoPilot's one autonomous source mutation destroyed a module with a syntactically valid edit; none of its four Python defenses transfer to compiled C++, where "it compiles" is far weaker than "it imports" |
 | AK-D30 | `core_header` is its own change class and risk tier, not a size band | A small textual diff to shared ggml core reaches every op in both the CPU and GPU builds |
