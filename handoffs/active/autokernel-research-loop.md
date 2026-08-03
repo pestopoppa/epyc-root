@@ -1899,9 +1899,9 @@ can act on a waiver-bearing verdict.
 
 ### Phase AK1 — contracts, event substrate, and bootstrap corpus (no inference)
 
-- [ ] Implement versioned campaign/proposal/candidate/evaluation/champion/release-package schemas
+- [x] Implement versioned campaign/proposal/candidate/evaluation/champion/release-package schemas
   (§7), including claim grammar, anchor binding, `inconclusive`, `change_class`, controller provenance,
-  expected information gain, determinism class, and co-residency.
+  expected information gain, determinism class, and co-residency. ✅ 2026-08-03 (schemas.py, 118 tests)
 - [ ] Implement typed research-prior, campaign-seed, constraint/negative, and legacy-import events
   (§19).
 - [ ] Enumerate and content-hash the historical knowledge source manifest across root/research
@@ -1910,8 +1910,8 @@ can act on a waiver-bearing verdict.
   never gated on coherence, so the correct-only Pareto is contaminated. Check whether any raw
   artifacts survive (the campaign output directory is missing, so likely none); re-derive only rows
   with surviving evidence and an explicit anchor. Exclude the rest from every planner retrieval.
-- [ ] Mark `kernel_eval.sh` deprecated-and-unrunnable so no further contaminated rows are produced
-  before AK3 replaces it.
+- [x] Mark `kernel_eval.sh` deprecated-and-unrunnable so no further contaminated rows are produced
+  before AK3 replaces it. ✅ 2026-08-03 (exits 2; KERNEL_EVAL_ALLOW_DEPRECATED=1 overrides)
 - [ ] Atomize the source draft and historical research without upgrading evidence grade; link
   duplicates, contradictions, confounds, supersessions, transfer limits, and reopen predicates.
 - [ ] Require a receipt on every suppressing ledger entry, bound to the current production commit,
@@ -1920,17 +1920,17 @@ can act on a waiver-bearing verdict.
   planner/critic fixtures.
 - [ ] Add validators refusing mutable evaluator IDs, stale production anchors, undeclared change
   classes, actor-supplied scope, missing fallbacks, and unbounded resource/storage requests.
-- [ ] Replace SQLite-as-source with fsync append-only **sharded** events plus content-addressed
-  snapshots; retain SQLite as a rebuildable view; readers read all shards.
-- [ ] Add supersession/tombstone events; deprecate destructive primary-record purge.
+- [x] Replace SQLite-as-source with fsync append-only **sharded** events plus content-addressed
+  snapshots; retain SQLite as a rebuildable view; readers read all shards. ✅ 2026-08-03 (journal.py, 79 tests)
+- [x] Add supersession/tombstone events; deprecate destructive primary-record purge. ✅ 2026-08-03 (incl. RETRIEVAL_SUPERSEDED)
 - [ ] Add failure/mechanism/do-not-repeat/context/champion views consumed by the planner.
-- [ ] Implement the storage plane: durability classes, per-campaign quota, retention classes,
-  tombstoned expiry, `DISK_PRESSURE`.
+- [x] Implement the storage plane: durability classes, per-campaign quota, retention classes,
+  tombstoned expiry, `DISK_PRESSURE`. ✅ 2026-08-03 (storage.py, 159 tests)
 - [ ] Land the evidence root under `epyc-inference-research/data/<campaign>/` with `SHA256SUMS` and
   README; extend `check_evidence_durability.py` to cover AutoKernel citations.
-- [ ] Clear the §3.7 durability exposures: copy the np_context decision surface out of
-  `/mnt/raid0/llm/tmp/`, track the two np_context study bundles, restore the P2-5j protocol to git.
-- [ ] Add deterministic reconstruction test from journal plus immutable artifacts only.
+- [x] Clear the §3.7 durability exposures: copy the np_context decision surface out of
+  `/mnt/raid0/llm/tmp/`, track the two np_context study bundles, restore the P2-5j protocol to git. ✅ 2026-08-03 (research 9687f7fe, root 047b5a40)
+- [x] Add deterministic reconstruction test from journal plus immutable artifacts only. ✅ 2026-08-03 (journal + integration suites)
 - [ ] Fix the `kernel_store.py:88` file-handle warning; add both `kernel_rnd` suites to
   `PYTEST_SMOKE`; pin pytest in `pyproject.toml`/`uv.lock` rather than injecting it via `--with`.
 
@@ -1943,27 +1943,27 @@ project's prior knowledge rather than an empty memory; no contaminated legacy ro
   (`llama.cpp-ak-<campaign_id>`) and branches (`ak/<campaign_id>/…`), use pathspec-limited commits in
   the shared clone, and categorically deny production source/build paths.
 - [ ] Build candidate-local build/cache layout and full build identity receipts.
-- [ ] **Build the cross-process MI210 device claim** — the single largest missing substrate:
-  - [ ] Decide the mechanism: an on-disk lock under the same root as `cpu_region.*.lock`, keyed by
-    device (`gpu.mi210_0.lock`), holding owner id, PID, start time, campaign id, expiry, and purpose.
-  - [ ] Acquire is atomic (`O_CREAT|O_EXCL` plus `flock`), never advisory-by-convention.
-  - [ ] Liveness is PID plus process-start-time, not a heartbeat, so a stale lock from a dead holder is
-    detectably reclaimable and a live holder is never stolen from.
-  - [ ] Crash recovery: a lock whose PID is gone or whose start time mismatches is reclaimable after a
-    grace period, and the reclamation is journaled.
-  - [ ] Revocation follows `BUS_PROTOCOL.md:47-51` — mark `revoking`, holder drains at its boundary,
-    an ignored revocation surfaces as a `defect`, never a forcible steal.
+- [x] **Build the cross-process MI210 device claim** — the single largest missing substrate: ✅ 2026-08-03 (device_claim.py, 48 tests, independently probed)
+  - [x] Decide the mechanism: an on-disk lock under the same root as `cpu_region.*.lock`, keyed by
+    device (`gpu.mi210_0.lock`), holding owner id, PID, start time, campaign id, expiry, and purpose. ✅ 2026-08-03 (gpu_device.<id>.lock beside cpu_region.*)
+  - [x] Acquire is atomic (`O_CREAT|O_EXCL` plus `flock`), never advisory-by-convention. ✅ 2026-08-03
+  - [x] Liveness is PID plus process-start-time, not a heartbeat, so a stale lock from a dead holder is
+    detectably reclaimable and a live holder is never stolen from. ✅ 2026-08-03 (/proc stat field 22)
+  - [x] Crash recovery: a lock whose PID is gone or whose start time mismatches is reclaimable after a
+    grace period, and the reclamation is journaled. ✅ 2026-08-03 (reclamation journaled)
+  - [x] Revocation follows `BUS_PROTOCOL.md:47-51` — mark `revoking`, holder drains at its boundary,
+    an ignored revocation surfaces as a `defect`, never a forcible steal. ✅ 2026-08-03
   - [ ] Extend `region_lock_cli.py` with a device verb, or add a sibling CLI sharing its lock root;
-    do not fork the lock semantics.
+    do not fork the lock semantics. **BLOCKED — epyc-orchestrator was held by another session on 2026-08-03; the claim was built in the research repo sharing the same on-disk lock root, so exclusion already works cross-repo. This verb is a convenience wrapper owned by whoever holds that repo.**
   - [ ] Retire `src/gpu_lease.py`'s process-local lease for cross-process use, or clearly scope it as
-    intra-process only, and migrate `axa2_live_cutover_bundle.py:535`.
-  - [ ] Emit a claim receipt id that lands in every evaluation event.
-  - [ ] Acceptance: two processes contend and the second blocks or fails cleanly; a killed holder's
+    intra-process only, and migrate `axa2_live_cutover_bundle.py:535`. **BLOCKED — same repo-ownership reason. `device_claim.py`'s docstring records why the process-local `threading.Condition` lease cannot exclude another process.**
+  - [x] Emit a claim receipt id that lands in every evaluation event. ✅ 2026-08-03 (akd- receipt)
+  - [x] Acceptance: two processes contend and the second blocks or fails cleanly; a killed holder's
     lock is reclaimable and the reclamation is journaled; a live holder is never preempted forcibly; a
-    revoke drains within the declared bound; `kernel_eval.sh`'s `gpu_idle()` is deleted, not wrapped.
+    revoke drains within the declared bound; `kernel_eval.sh`'s `gpu_idle()` is deleted, not wrapped. ✅ 2026-08-03 (verified outside the suite)
 - [ ] Integrate CPU region claims and co-residency policy.
-- [ ] Build the single audited read-only preflight wrapper (§3.5) and remove every other name-pattern
-  process read from the loop.
+- [x] Build the single audited read-only preflight wrapper (§3.5) and remove every other name-pattern
+  process read from the loop. ✅ 2026-08-03 (preflight.py + claim_witness.py, 143 tests)
 - [ ] Run every candidate process in an owned scope/cgroup with PID/start-time receipts and verified
   teardown.
 - [ ] Integrate host-health/reboot-required and cache-preparation states, including the one-week
