@@ -112,6 +112,46 @@
       "verbatim": "\"ThunderKittens (CUDA parent; HipKittens is the relevant branch)\" - lookign forward to seeing what we can harves from HipKittens.",
       "disposition": "planned",
       "plan_ref": "2b-B: a DEDICATED deep harvest of HipKittens beyond the paper - read the actual kernel source and extract every arch-independent technique portable to hand-written gfx90a MFMA paths. Reverses my decline; ThunderKittens also re-included as the CUDA parent since the NVIDIA-vs-AMD delta is now the operator's stated frame."
+    },
+    {
+      "seq": 10,
+      "stage": "2b",
+      "ts": "2026-08-03",
+      "verbatim": "if anything, make sure you're persisting insights as you go along so that nothing is accidentally forgotten",
+      "disposition": "planned",
+      "plan_ref": "DONE IN-FLIGHT (durability, not a scope change): dive evidence was being written to a GITIGNORED scratch path (tmp/*). Moved to research/deep-dives/2026-08-03-intake-938-956-dive-evidence/ and committed at 5f420f7a alongside the index updates. Rationale is our own feedback_verify_evidence_in_git_not_filesystem: untracked looks identical to committed. Remaining Stage-2b dives are copied there and committed as they land, not at the end."
+    },
+    {
+      "seq": 11,
+      "stage": "2b",
+      "ts": "2026-08-03",
+      "verbatim": "\"so these dives feed it and write nothing into its handoffs.\" - why would we not? The handoff is a living artifact, I can have the parallel agent keep implementing new tasks as they are added",
+      "disposition": "planned",
+      "plan_ref": "SCOPE EXPANDED: my self-imposed boundary against writing into the parallel session's autokernel handoffs is REMOVED. Stage 4 may append task lines to autokernel-research-loop.md, rocm-verify-profile-backend.md, mi210-kernel-rnd-loop-proposal.md and the MI210/ROCm handoffs. NOT a waiver of the Stage-3 plan gate: per the skill's load-bearing rule and the 2026-07-25 incident, an operator comment granting SCOPE is not authorization to write before plan approval. The Stage-3 plan will name every autokernel handoff as a write target with verbatim task lines for review."
+    },
+    {
+      "seq": 12,
+      "stage": "2b",
+      "ts": "2026-08-03",
+      "verbatim": "\" The one real branch, rocm-flash-attn, is genuine tested code with honest defect annotations - but it's an adaptation layer with zero kernel code\" - if it's usable to improve performance, it matters.",
+      "disposition": "planned",
+      "plan_ref": "CORRECTION TO MY FRAMING: I dismissed rocm-flash-attn as 'zero kernel code'. Wrong axis - a layer that ENABLES a faster path IS a performance improvement. Re-assess: (a) does routing llama.cpp/vLLM to a generic ROCm flash-attn beat the AITER-less default on gfx90a, (b) is the cu_seqlens_k threading pattern reusable, (c) what does the BF16 numerical-divergence-vs-tree-attention defect cost. Goes in the Stage-3 plan as an autokernel-adjacent item."
+    },
+    {
+      "seq": 13,
+      "stage": "2b",
+      "ts": "2026-08-03",
+      "verbatim": "\"it's that the commit log records rejected experiments: \\\"reject LDS-B experiment (inconsistent across shapes)\\\", \\\"reject (CU contention)\\\". That's a working accept/reject discipline in the wild, methodologically close to our own measurement constitution.\" - very interesting.",
+      "disposition": "planned",
+      "plan_ref": "PURSUE: mine QuixiCore-ROCm's full commit log as a worked example of a kernel accept/reject ledger in production. Extract the rejection taxonomy and the evidence each rejection carries. Feeds the P-AK-SEARCH-1 rejection-ledger amendment already surfaced by DIVE-I, and the operator has flagged it as of interest."
+    },
+    {
+      "seq": 14,
+      "stage": "2b",
+      "ts": "2026-08-03",
+      "verbatim": "\"A third independent confirmation of CDNA2 abandonment... The agent's read: gfx90a optimization is unavoidably in-house, and that belongs in the autokernel go/no-go - weighed against acquiring CDNA3 silicon before funding a long CDNA2 program.\" - if by 'acquiring CDNA3 silicon' you mean purchasing new/different hardware, that's not happening anytime soon. Investing resources into improving our usage of the MI210 is paramount. We need to leverage the 1.7 TB/s bandwidth and the FLOPs it provides to make models run as fast as possible. If NVIDIA cards can get up to 80% BW utilization, there's no reason why an equivalent AMD kernel cannot achieve the same.",
+      "disposition": "planned",
+      "plan_ref": "STRATEGIC DIRECTION - SUPERSEDES THE AGENT RECOMMENDATION I RELAYED. Hardware acquisition is OFF THE TABLE. The autokernel go/no-go is DECIDED: GO, on the MI210. The target is explicit and quantitative: BANDWIDTH UTILIZATION APPROACHING ~80%, the level NVIDIA kernels reach. Our measured rungs are Q4_K 34% / Q8_0 50% / fp16 62.5% (ceiling soft, measured on stock Qwen3-8B not our 27B), so the Q4_K gap to 80% is ~2.35x. Every autokernel actionable is now ranked by expected BW-attainment gain. 2b-C must quantify the NVIDIA-side 80% figure and attribute our shortfall. CDNA2-abandonment findings are reframed: they establish that nobody will do this FOR us, NOT that it should not be done."
     }
   ],
   "notes": "9-URL batch (10 submitted, 2607.25970 duplicated). Dedup sweep run UNBOUNDED over 937 entries (937 arxiv_id fields, 937 url fields) plus a whole-file mention check: ZERO collisions for all 9, and zero collisions for all 10 expansion candidates. 10 expansion entries intake-947..956 (cap used in full). PARENT-VERIFIED: all three arXiv IDs independently title-checked against arxiv.org/abs, so the sub-agent scratchpad filename collision (two agents wrote a generically-named scratchpad/paper.txt) caused no cross-contamination. STORAGE CORRECTION: an agent claimed 'storage is a non-issue' from TOTAL capacity; df -h /mnt/raid0 shows 159G AVAIL of 3.7T (96% used), so Inkling UD-Q4_K_M 162.54GB does NOT fit. SCHEMA DEFECT (mine): the compact expansion schema omitted the verdict/credibility enums, so agents returned verdict 'dive'/'decline-with-watch'/'adopt-methodology', novelty 'novel', and credibility 7/8/9 against a 0-6 rubric. All normalized per rubric and RECORDED in each entry's notes. SECOND session with this failure class (intake-936, 2026-07-29) - fix belongs in the skill dispatch contract. VALIDATOR FIX: 5 entries cited 'architect-bench-runbook.md' as a handoff; it is docs/reference/, not a handoff. Corrected to architect-model-selection-bench.md at source and a pre-flight cross-reference resolution check added before append. Append done as TEXT per entry; pre-existing 937 entries verified byte-identical. Validator exit 0 / 956 entries.",
