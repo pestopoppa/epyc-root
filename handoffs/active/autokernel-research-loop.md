@@ -2313,35 +2313,35 @@ memory, and champion maintenance without human steering.
 
 ### Phase AK5 — readiness estimator and release gate
 
-- [ ] Implement per-backend, per-phase T2 scope and weights from compiled facts, including the
-  co-resident cell and capacity deltas.
-- [ ] Implement the readiness signal and its coverage/non-target/mechanism guards. It reports; it does
-  not trigger.
-- [ ] Implement the capability objective with an immutable campaign-start utility model.
-- [ ] Extend `kernel_freeze_scope.py` into a complete deduplicated release-plan compiler keyed by
+- [x] Implement per-backend, per-phase T2 scope and weights from compiled facts, including the
+  co-resident cell and capacity deltas. ✅ 2026-08-03
+- [x] Implement the readiness signal and its coverage/non-target/mechanism guards. It reports; it does
+  not trigger. ✅ 2026-08-03
+- [x] Implement the capability objective with an immutable campaign-start utility model. ✅ 2026-08-03
+- [x] Extend `kernel_freeze_scope.py` into a complete deduplicated release-plan compiler keyed by
   source tree and reconciled affected surface, with the two-stage per-backend unchanged test (§3.2):
   build-system-derived source-closure diff as the gate, normalized comparison against an anchor
   rebuild as confirmation, transfer receipts for dropped cells, and a filed defect when the stages
-  disagree.
-- [ ] Implement the generic T3 runner and release-bundle schema across CPU/GPU llama first.
-- [ ] Implement `PASS_WITH_WAIVER` and waiver hash/predicate verification.
-- [ ] Port v8/speech transaction integrity patterns into generic validation — not hard-coded evidence.
-- [ ] Dry-run the T3 compiler/validator against preserved v8 and speech freeze artifacts; **expect the
-  v8 dry-run to FAIL without its waiver** and treat that as calibration.
-- [ ] Add failed-gate replay/cooldown/idempotence behaviour.
+  disagree. ✅ 2026-08-03
+- [x] Implement the generic T3 runner and release-bundle schema across CPU/GPU llama first. ✅ 2026-08-03
+- [x] Implement `PASS_WITH_WAIVER` and waiver hash/predicate verification. ✅ 2026-08-03
+- [x] Port v8/speech transaction integrity patterns into generic validation — not hard-coded evidence. ✅ 2026-08-03
+- [x] Dry-run the T3 compiler/validator against preserved v8 and speech freeze artifacts; **expect the
+  v8 dry-run to FAIL without its waiver** and treat that as calibration. ✅ 2026-08-03
+- [x] Add failed-gate replay/cooldown/idempotence behaviour. ✅ 2026-08-03
 
 **Exit:** a sealed fixture champion yields one reproducible PASS/FAIL/PASS_WITH_WAIVER bundle and
 cannot retrigger the expensive gate unchanged.
 
 ### Phase AK6 — release packager and operator handoff
 
-- [ ] Implement the packager: transaction plan, rollback plan, draft era row, draft AutoPilot
-  rebaseline note, linkage results, and a pre-validated command sequence.
-- [ ] Prove it refuses missing hashes, evaluator drift, dirty ancestry, reused version names,
-  incumbent modification, and an incomplete rollback.
-- [ ] Reconstruct the expected v8 and speech transactions from fixtures without applying them.
-- [ ] Route the cutover request through the bus to whoever owns inference (§11.3).
-- [ ] Render the package as a four-part decision package (`OPERATING_CONSTRAINTS.md:69-78`).
+- [x] Implement the packager: transaction plan, rollback plan, draft era row, draft AutoPilot
+  rebaseline note, linkage results, and a pre-validated command sequence. ✅ 2026-08-03
+- [x] Prove it refuses missing hashes, evaluator drift, dirty ancestry, reused version names,
+  incumbent modification, and an incomplete rollback. ✅ 2026-08-03
+- [x] Reconstruct the expected v8 and speech transactions from fixtures without applying them. ✅ 2026-08-03
+- [x] Route the cutover request through the bus to whoever owns inference (§11.3). ✅ 2026-08-03
+- [x] Render the package as a four-part decision package (`OPERATING_CONSTRAINTS.md:69-78`). ✅ 2026-08-03
 - [ ] Run an end-to-end campaign that stops at a validated package with zero production writes.
 - [ ] Run repeated restart/crash/resource-preemption/tamper fault injections.
 - [ ] Give the operator surface a freshness and health contract, not just data. Today's `/kernel` page is
@@ -2372,11 +2372,11 @@ evidence, and the loop has re-anchored cleanly.
 
 ### Phase AK8 — serving-runtime adapter and research queue activation
 
-- [ ] Build the serving-runtime adapter against the three-gate stack-change path (§11.6), reusing
+- [x] Build the serving-runtime adapter against the three-gate stack-change path (§11.6), reusing
   `stack_change_guard.py` for gate 1 and adding the behavioural half: variable-arrival replay,
   `task_rate` rather than tokens/s, latency and SLO cells as first-class outputs, comparison against
-  the pinned production configuration.
-- [ ] Prove the adapter **refuses** the kernel-freeze path rather than degrading to it.
+  the pinned production configuration. ✅ 2026-08-03
+- [x] Prove the adapter **refuses** the kernel-freeze path rather than degrading to it. ✅ 2026-08-03
 - [ ] Populate campaigns from the §19.8 seed queue after fresh profiling.
 - [ ] Activate `oracle_port` campaigns; consider an upstream-delta scanner once the manual path works.
 - [ ] Seed external kernel-authoring suites only after license, gfx90a, honest baseline, quarantine,
@@ -2393,18 +2393,40 @@ It also carries the ggml-generation hazard: the three trees run three ggml gener
 launcher sets its own `LD_LIBRARY_PATH` and proves it, or a binary silently runs against another
 tree's ggml.
 
-- [ ] Author the STT protocol: correctness corpus and output normalization (what counts as a
+- [x] Author the STT protocol: correctness corpus and output normalization (what counts as a
   transcription match), real-time factor, latency, throughput, memory stability, audio input identity,
-  and the release decision rule.
-- [ ] Author the TTS protocol: text/audio identity, deterministic and numerical checks, an
+  and the release decision rule. ✅ 2026-08-03
+- [x] Author the TTS protocol: text/audio identity, deterministic and numerical checks, an
   intelligibility/quality proxy with a human-independent floor, first-audio latency, RTF, throughput,
-  stability, and the release decision rule.
-- [ ] Decide each protocol's annex placement at drafting time, per the §14 AK0 precedent.
-- [ ] Build the `whisper_stt` and `qwentts_tts` adapters on their own experimental trees.
-- [ ] Wire linkage verification through the research repo's `scripts/utils/verify_ggml_linkage.sh` for
-  every candidate build and every T3 phase-2 check.
+  stability, and the release decision rule. ✅ 2026-08-03
+- [x] Decide each protocol's annex placement at drafting time, per the §14 AK0 precedent. ✅ 2026-08-03
+- [x] Build the `whisper_stt` and `qwentts_tts` adapters on their own experimental trees. ✅ 2026-08-03
+- [x] Wire linkage verification through the research repo's `scripts/utils/verify_ggml_linkage.sh` for
+  every candidate build and every T3 phase-2 check. ✅ 2026-08-03
 - [ ] Extend the release-plan compiler to the speech trees — note these two *are* independently
-  freezable, unlike CPU and GPU (§1.5).
+  freezable, unlike CPU and GPU (§1.5). **Blocked on ratification**, not on work:
+  `SOURCE_TREE_BY_BACKEND` already maps both speech backends, but `PHASES_BY_BACKEND` deliberately
+  withholds their phase vocabulary while `P-STT-1`/`P-TTS-1` are drafts. The compiler cannot grade
+  a cell under an unratified protocol, so wiring it now would fabricate authority.
+
+#### What remains open after AK9, and why
+
+Each line names the specific blocker, per *Act, Don't Defer*.
+
+| Open item | Blocked on | Not blocked — just undone |
+|---|---|---|
+| AK6 end-to-end campaign stopping at a validated package | a real champion and a compute window (AK7) | — |
+| AK6 fault injection (restart/crash/preemption/tamper) | needs process management, forbidden to the agents that built this | who runs it, and where |
+| AK6 `/kernel` freshness contract + JSON contract v2 | **nothing** | ✅ this is real work with no decision in front of it |
+| AK7 first supervised freeze | operator freeze request | — |
+| AK8 seed queue, `oracle_port`, external suites | fresh profiling, which needs the loop running | — |
+| AK9 speech compiler extension | `P-STT-1`/`P-TTS-1` ratification (operator) | — |
+| Sub-floor estimate selection in `readiness.py` | **operator call** — excluding them makes a phase measured entirely at parity report "no figure" | — |
+
+The three protocol drafts awaiting signature are `artifacts/operator/autokernel-policy-draft/`:
+`Annex-S-speech-container.draft.md`, `P-STT-1.draft.md`, `P-TTS-1.draft.md`. Until they are ratified
+`t3.phase_identity_preflight` raises `ReleaseProtocolNotRatified` for `mode="release"`, so **every run
+this package can currently perform is a dry run** — which is the correct posture, not a limitation.
 
 ---
 
