@@ -1174,3 +1174,84 @@ confounds two axes.
 - [`agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesis.md) — plan-executor divergence halt as a present-but-uninstructed mechanism; TaleSuite/Jericho as a public long-horizon eval
 - [`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) — protocol-gap diagnosis stands; artifact choice conditional on an authorized A/B
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the corrected capability-over-architecture decomposition; staged-files-ride-along attribution hazard
+
+## A correct guard whose answer is discarded: composition, not the check, is the defect (2026-08-03)
+
+Three guards were found sound and non-functional on the same day, in three repos, for the same
+reason. Each check was correct. Each *composition around it* threw the answer away.
+
+1. **Secret scanning was advisory-only.** `.git/hooks/pre-commit` called its hooks bare:
+   ```bash
+   "…/pii_precommit.sh" "$@"
+   "…/hermes_drift_precommit.sh" "$@"
+   ```
+   A bash script exits with its **last** command's status, so a failing PII hook was discarded by a
+   passing drift hook. Reproduced in a throwaway repo: an AWS access key + secret staged, the hook
+   printed `BLOCKED: [secret] AWS secret access key`, and **the commit landed**.
+2. **A trust-boundary guard compared paths with a quoted right-hand side** — literal equality, not
+   pattern matching. Literal entries matched, so it looked healthy; the one wildcard entry matched
+   nothing, leaving three annexes agent-writable while the guard reported success.
+3. **An attestation check consulted a mode-scoped map.** The expectation was compiled in one NUMA
+   mode and the fleet ran another, so `slots_by_port` missed every half-instance port and the check
+   fell back to a role-level number, reporting drift on four **correctly-launched** servers.
+
+**The generalisable screen.** This project already runs *"can I pass this check by deleting the
+thing it inspects?"* — which catches a gutted guard. It catches none of these. The complement is:
+
+> **Does the thing that RUNS this check propagate its answer?**
+
+Ask it of every guard's caller, not the guard. In all three cases the guard had its own tests and
+they all passed; nothing tested the composition, and the composition was the defect.
+
+**Corollary — a false alarm is a defect, not noise.** Case 3 was "non-functional" only in the sense
+that launches were correct; its real cost is that a warning channel crying wolf on correct servers
+teaches readers to ignore it, so the next *true* warning is lost. The function's own docstring said
+so, and it had started doing exactly what it was written to prevent.
+
+**Corollary — an untracked guard is an unguarded repo.** `.git/hooks/pre-commit` existed in **no
+tracked code** in any of the three repos, despite each announcing "Auto-installed by epyc-root".
+A fresh clone therefore had no hook at all, silently, and every fix reached one checkout. The same
+shape appeared twice more the same day: `check_evidence_durability.py` — the enforcer
+MEASUREMENT.md §5 names **by path** — was untracked, and three superseded SWE-eval JSONs sat
+untracked in a repo root where they read as authoritative. **The artifact that proves a rule is
+the one most likely to be missing from version control**, because it is written in the moment of
+proving and never treated as deliverable.
+
+_Sources: `handoffs/active/contention-model-device-and-load-axes-rider.md`;
+`progress/2026-08/2026-08-02.md`; epyc-root `scripts/hooks/install_git_hooks.sh` +
+`scripts/hooks/tests/test_precommit_wrapper.sh`; epyc-orchestrator `9e14c069`, `93e7f5a2`,
+`cd76de50`._
+
+## `Path(__file__)` cannot fix a leak in packaging (2026-08-03)
+
+62 modules hard-coded an absolute checkout path, so a test run in a git worktree read the **main**
+checkout's registry and priors — which is why a "clean baseline" run could not be trusted for
+failure attribution. Converting them to `Path(__file__).resolve().parents[N]` fixed 53 of them and
+**could not fix the rest**, for two reasons worth separating:
+
+- **The root cause was a function, not a literal.** `_get_default_project_root()` *returned* the
+  path, and ~14 modules resolved through `get_config().paths`. One line fixed all of them; grepping
+  for the literal would never have ranked it above the other 61.
+- **The last one was in packaging.** `pip install -e .` bakes the origin checkout's absolute path
+  into the venv `.pth`. Every module's `Path(__file__)` is *correct* and still resolves into the
+  wrong tree — because the wrong tree is what got imported. Source anchoring cannot reach one level
+  below itself.
+
+**pytest masked it**: rootdir is inserted at `sys.path[0]` and wins, so the suite was green
+throughout and "the tests pass" was never evidence for this class.
+
+Two traps for anyone repeating the sweep:
+- **Quoting style is not a defect boundary.** A second leak in the same file used single quotes and
+  matched neither grep pattern.
+- **Check the tests themselves.** 12 test files ran `sys.path.insert(0, "<literal>")`, so a test in
+  a worktree imported main-checkout `src/`. Those tests could not have measured their own tree even
+  in principle — and two more asserted against the literal and would have newly *broken* once the
+  config fix landed, passing only because the code under test leaked the same way they did.
+
+Verification that made the sweep safe, and generalises: import every changed module pre- and
+post-change and diff its path-valued constants (**172 identical, 0 divergent**); take the baseline
+by checking `HEAD` into a throwaway worktree and requiring **byte-identical failure sets in both
+directions**; and prove the property directly rather than by proxy — probed constants leaking to
+the main checkout went **17/17 → 0**.
+
+_Sources: epyc-orchestrator `5c061f58`, `93e7f5a2`, `cd76de50`; `progress/2026-08/2026-08-02.md`._

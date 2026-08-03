@@ -233,3 +233,35 @@ judgement over measured values and is the one restated constant in the artifact.
       alias inherited its host's declared map. The lazy import mirrors
       `_launch_runtime_record`'s existing pattern, so the circular-import risk
       was already solved in this module.
+
+### Worktree isolation + guard composition — closed 2026-08-03
+
+- [x] **Close the worktree-isolation leak at its root** ✅ 2026-08-03 — orchestrator `93e7f5a2`
+      + `cd76de50`. `_get_default_project_root()` RETURNED the literal, so ~14 modules leaked
+      through one function. 62 no-slash hits → 9; 18 → 14. Two classes grep could not find: a leak
+      in the same file using single quotes, and 12 test files doing
+      `sys.path.insert(0, "<literal>")` — a test in a worktree imported the MAIN checkout's `src/`
+      and could not have measured its own tree. Verified: 172 path constants identical / 0
+      divergent; HEAD-in-a-worktree baseline gave byte-identical failure sets both directions;
+      isolation went 17/17 leaking → 0.
+- [x] **Fix the packaging-level leak `Path(__file__)` cannot reach** ✅ 2026-08-03 — `pip install -e .`
+      bakes the checkout path into the venv `.pth`, so a plain `python script.py` from a worktree
+      imported main-checkout `src/` while every module's own anchor was correct. pytest masks it
+      (rootdir wins), so a green suite was never evidence. Tracked resolver + idempotent installer.
+- [x] **Make the unit suite reproducible** ✅ 2026-08-03 — `orchestration/runtime_flags.json` is
+      untracked live state the API rewrites; it changed MID-RUN during an attribution pass.
+      17 of 18 apparent regressions in a clean-worktree diff were this file, not code.
+- [x] **Secret scanning was advisory-only** ✅ 2026-08-03 — `.git/hooks/pre-commit` called its hooks
+      bare, so a failing PII check was discarded by a passing drift check. Reproduced: AWS key
+      staged, `BLOCKED` printed, commit landed. Fixed + tracked installer, since the wrapper was
+      untracked in all three repos and every fix died on a fresh clone.
+- [ ] **Per-worktree venv (or editable reinstall) for full non-pytest isolation.** The `.pth` shim
+      handles `python script.py` from a worktree, but the venv still carries the main checkout on
+      `sys.path` unconditionally. Venv configuration, not source; not attempted.
+- [ ] **Decide the durable-evidence form under the wiki-only ruling.** Operator ruling 2026-08-03:
+      research reaches GitHub only as distilled knowledge and REFERENCES in the wiki, never as raw
+      material at any size. Two evidence bundles were committed to
+      `epyc-inference-research/data/` earlier the same day (`judge_suite_headtohead_20260802` 1.5 MB,
+      `swe_verified_preliminary_20260724` 72 KB) and are already pushed. They predate the ruling and
+      conflict with it; MEASUREMENT.md §5 requires a durable citation, so the question is what form
+      that citation takes — a wiki reference to a local path, or a committed bundle. Operator call.
