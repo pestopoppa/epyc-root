@@ -1557,13 +1557,153 @@ First full smoke run of the trial loop. Four defects, three silent.
       then spun in a pause-wait loop at 1 log line/second. Resumed.
 - [x] **Bounded trial completed clean** ✅ 2026-08-03 — `ran 1 of 1 (trial 1460 -> 1461)`,
       structural_lab, tier 1, quality 1.8293, T1 65/65, **0 INFRA_SKIPs** (was 17).
-- [ ] **SEQ-3b: re-baseline under E8** (~49 trials, ~12.7 eval-hours). The
-      `EVAL-INSTRUMENT RE-BASELINE HOLD` fires correctly — resident baseline era
-      `E7-eval-instrument` != active `E8` — and blocks all promotion. Operator ruling 2026-08-03:
-      past eras are logging-only and must never be compared against, which makes SEQ-3b the ONLY
-      correct path; SEQ-3a (declaring the eras comparable) is wrong by definition. NOT started at
-      operator instruction pending the episodic/trace work above, which is now done.
+- [x] **CORRECTION: SEQ-3b is NOT the mechanism that clears the E8 hold** ✅ 2026-08-03 — this entry
+      previously called SEQ-3b "the ONLY correct path" to lift the re-baseline hold. That conflated two
+      different things. SEQ-3b is a **sequential-allocation candidate re-run** (`70902e4b665474e7`,
+      ~49 trials) which is itself *gated by* the hold — see
+      [`autopilot-sequential-allocation.md`](autopilot-sequential-allocation.md), which states this
+      correctly ("Also gated on the E8 quality-baseline reseed completing and being operator-ratified").
+      The hold is cleared by a different instrument entirely:
+      `scripts/benchmark/run_e8_quality_baseline_reseed.py --prepare|--execute` followed by the
+      human apply transaction `artifacts/operator/apply_e8_quality_baseline_state.py`, which is the
+      only writer of `e8_quality_rebaseline.status`.
+- [ ] **E8 quality-baseline reseed — blocked on an operator source amendment pending since 2026-07-27.**
+      The reseed preflight (`--prepare --t2-n 500`) returns `decision_grade: false` with five blockers,
+      three of which are stack-shape (`24 unique selected ports`, `exactly five live frontdoors`,
+      `both-mode endpoints healthy 6/6`) and two of which are the same missing operator receipt
+      (`ratify_e8_quality_baseline_protocol_context_repair_20260727.json`). That receipt cannot be minted
+      until the source vector is amended, because **51 fixed-vector rows do not fit the 32,768-token
+      frontdoor** (3 in T1, 48 in T2; `required_tokens` ranges 33,052 → 4,328,998) and two more rows
+      (`real_suite_v1_0043`, `needle_039`) declare a zero-capture-group `exact_match` pattern `\d+`.
+      `artifacts/operator/e8_context_feasibility_amendment_decision_20260727.md` lays out Options A–D,
+      recommends A (capacity-qualified replacement map), and defaults to **D — defer**. Nobody chose, so
+      it defaulted, and five `--execute` attempts across 2026-07-26→29 all left `.staging-` bundles the
+      runner forbids reusing. **This is the true critical path to quality promotion.**
+- [ ] **Operational alternative to the ratification-grade reseed — needs an operator go/no-go.**
+      `autopilot.py calibrate-baseline --tier 1` produces fresh same-era T1 quality, per-suite scores and
+      per-suite counts in ~100 questions. It is *not* sufficient on its own: `_apply_calibrated_baseline_result`
+      (`autopilot.py:9546`) writes `baselines_by_tier` / `per_suite_quality_by_tier` /
+      `per_suite_counts_by_tier` but **never touches `eval_quality_era`**, so the hold survives. The gap is
+      a circular dependency — `update_baseline()` refuses quality promotion while the baseline era differs
+      from the active era, and the era only updates inside a successful promotion. Breaking it requires
+      writing a fresh baseline already stamped `E8`, which is the human-amendment boundary
+      (`required_next_action: "human-only E8 baseline value reseed"`). Trade-off: an operational baseline
+      for config search, not a ratified publication-grade number.
+- [ ] **Run the canonical 79-question judge suite on Qwen3.6-27B-MTP-Q8_0.** Inherited from the three
+      `accepted_gaps.yaml` waivers removed 2026-08-03: the gap they waived (missing overall quality prior)
+      is closed because quality now compiles per-axis with recorded basis, but their stated closing action
+      was never done. The 27B's prior currently resolves 0.8597 via public `mmlu_pro`, not the canonical
+      instrument.
 - [ ] **Decide the lineup status of `worker_fast` (8102), `eval_batch_frontdoor` (18070) and the
       embedder `extra_recipes` (8096-8098).** They are declared in the launch manifest and so are
       painted as expected services, but none are running. Hidden from the regions-lock panel as a
       display fix; whether they should remain declared is a stack-config decision.
+
+## AutoPilot launch unblocked ✅ 2026-08-03
+
+- [x] **`preflight_audit.py` 9/11 -> 11/11 — safe to launch** ✅ 2026-08-03 (commit `8b79026e`).
+- [x] **Stack-change promotion gate: 52 errors -> 0** ✅ 2026-08-03 — derived stack priors had drifted
+      from the launch manifest (`frontdoor` declared `[8070]` vs manifest `[8080, 8180]`, same for six
+      other roles) and three `source_artifacts` hashes were pinned against commits that had since
+      landed (`04af7b95`, `cba55d49`, `93569b69`). Fixed via `stack_change_pipeline.py update`.
+- [x] **Three stale `accepted_gaps.yaml` waivers removed** ✅ 2026-08-03 — the gap they waived no
+      longer fires; the file's own rule makes a declaration matching no current gap an ERROR.
+- [x] **Two poisoned-source blacklist entries removed** ✅ 2026-08-03 —
+      `chat.try_cheap_first_quality_threshold` (trial 1194, `fe64fc37`) and
+      `chat.review_low_q_threshold` (trial 1448, `external-gpu-loads-20260726`) were banned on
+      evidence the system itself later invalidated. 72 entries remain. Did NOT run
+      `blacklist_purge_plan.py` — its broader era-fenced purge is a separate operator decision.
+- [x] **AutoPilot launched under the Fable authority supervisor** ✅ 2026-08-03 — budget 1461 -> 4461;
+      trial 1462 dispatched `structural_experiment {architect_delegation: true}`, planner critique
+      `approve confidence=0.98`.
+- [x] **REL-1: a 0.0 t/s sample on a reliability-blocked trial is ABSENT, not slow** ✅ 2026-08-03
+      (commit `7fd2dde5`) — trial 1459 carried a fabricated `Throughput floor: 0.0 t/s < 10.2 t/s`
+      into `failure_analysis`, which is planner-visible evidence, from a run that generated nothing.
+- [x] **`worker_summarize.candidate_roles` derived-vs-restated defect fixed at source** ✅ 2026-08-03 —
+      led with `coder`, so the per-axis resolver scored a summarization alias on `livecodebench_v6`
+      (0.804). The 2026-08-02 fix had been written into the GENERATED lean registry and was reverted
+      by the next compile, one day later. Now resolves reasoning/`mmlu_pro` 0.852.
+
+## Backlog sweep 2026-08-03 — 21 agents, adversarially verified (8 PARTIAL, 1 CONFIRMED)
+
+A parallel sweep fixed part of the audited backlog. Independent verifiers then tried to refute each
+claim, and several claims did not survive. **The defect class the sweep was sent to fix reproduced
+itself inside the sweep.** Everything below is verified-open, not speculative.
+
+### Reported fixed, but the fix cannot run
+
+- [ ] **Speed-era stamp is unreachable — the throughput floor is now permanently demoted.**
+      `update_baseline()` returns early on `quality_rebaseline_required` (`safety_gate.py:2144-2156`);
+      the new speed-era stamp sits at `:2324-2328`, ~170 lines later. In production's current state
+      the early return always fires, so the stamp never executes and the hold can never close in
+      code. Net live effect: a cross-era throughput violation is demoted to a warning **indefinitely
+      with no in-code path to re-arm it**. The claim "a reseed closes the hold naturally" is false as
+      delivered. No test constructs a gate with BOTH eras active and calls `update_baseline`.
+- [ ] **`assigned_role` still 0 / 59,337 — production takes the branch that drops it.**
+      `orchestrator_stack.py:2117` sets `ORCHESTRATOR_Q_TD_WRITE=1`, so production runs the
+      find-or-update branch at `q_scorer.py:1388-1406`, which calls `update_q_value` and returns
+      before ever reaching `store()`. That branch fires ~11x more often than create
+      (`SUM(update_count)=668,070` vs 59,337 rows). The new tests only cover the legacy create path,
+      because `Q_TD_WRITE` is read at import time and is 0 under pytest.
+- [ ] **`work` payload: 0 rows carry a top-level `work` key.** Same update-branch hole, plus two
+      more: the sanitize policy runs twice (pipeline + `build_memory_record`) and is **not**
+      idempotent despite its docstring, so the row's size/elision provenance actively lies; and
+      `chat_pipeline/stages.py:288` feeds the **process-global, never-cleared**
+      `tool_registry.get_invocation_log()` into the durable record, so one request persists another
+      request's tool calls. `clear_invocation_log` has zero callers in `src/`.
+- [ ] **Vision panel reported `fixed` with zero panel changes.** `grep -ci image
+      src/api/routes/dashboard.html` -> **0**. Capture works and the snapshot carries it; the
+      renderer discards it. Also a capture hole: `vision_stage.py:76` treats `request.files` as
+      vision input but records nothing for that form.
+- [ ] **Evidence-durability symlink guard covers the form that barely occurs.**
+      `check_evidence_durability.py:306` — `inside_repo = (not absolute) or ...` is unconditionally
+      True for relative paths, so `_is_scratch()` is never consulted for them. **416 of 421** registry
+      citations are relative, and the remediation playbook tells remediators to use relative paths.
+      Also: the new pre-commit wiring exists only as `.git/hooks/pre-commit.extras` on this host —
+      unversioned, so no clone gets it.
+
+### New instances of the same class, found by the critic, previously unowned
+
+- [ ] **`memories.sub_decision` is 0 / 59,337 with no producer anywhere.** Column + index
+      (`episodic_store.py:330,335`), dataclass field (`:173`), `store()` parameter (`:379`), INSERT
+      binding (`:527,557`), and a passing `test_episodic_store_sub_decision.py`. `grep "sub_decision="`
+      across `src/ scripts/ orchestration/` excluding the store and backfill script -> **zero hits**.
+      `scripts/memory/backfill_sub_decision.py` exists and has never been run. Exact twin of
+      `model_id` and `assigned_role`. Three agents ran its test and none noticed the column is empty.
+- [ ] **`binding_router` is a parameter nobody passes, gating a whole feature.** `src/api/state.py:97`
+      declares `binding_router: Any | None = None`, never assigned anywhere;
+      `chat_routing.py:230`'s `if binding_router is not None:` guards the entire override block;
+      `_classify_and_route_proactive` has zero callers. Flipping `features().binding_routing` does
+      nothing because the `BindingRouter` is never constructed.
+- [ ] **Ten fully-built, fully-tested, zero-production-importer modules** (1-3 test importers, 0
+      production importers), incl. `src/mutation_ledger.py`, whose docstring asserts "the autopilot
+      accept-path consults the ledger" — it does not.
+- [ ] **`contention_nway_restricted_count` stops one layer short of the operator.** Reaches
+      `metrics_snapshot()` (`contention_gate.py:453`) but appears 0 times in `dashboard.html`.
+
+### Never attempted
+
+- [ ] `config/stack_templates/default.yaml` is 10 validation errors stale — `start --stack-profile
+      default` returns 1 today.
+- [ ] Registry declares port **8083 twice**: `coder_escalation` keeps its own row (slots 1) while also
+      appearing in `architect_general.shared_with` (slots 8). Blocks the WP-12 fleet layer.
+- [ ] `onnxruntime` is used at runtime by `src/retrieval/cross_encoder.py`, declared nowhere in
+      `[project]` dependencies, and is not installed — **cross-encoder reranking is silently off in
+      production**.
+- [ ] The ~77-test retired-topology failure bucket.
+- [ ] `MEASUREMENT.md:148-158` still states the durability checker "fails on any citation resolving
+      outside the repository" — now false after the retarget. Human-amendment-only; no owner assigned.
+
+### Operational hazards found this session
+
+- [ ] **`autopilot pause` has no interlock against an in-flight config-apply.** `structural_experiment`
+      trials restart the API to apply flag changes; pausing between the stop and the start leaves the
+      stack with **no API**, and AutoPilot then retries `Connection refused` forever rather than
+      failing loudly. Caused a live outage 2026-08-03. Nothing in the preflight or the gate detects it.
+- [ ] **An eval scores an unreachable API as WRONG, not as infra-failed.** A T1 calibration ran
+      70/100 questions at `0% correct` purely because the API was down; only `--dry-run` prevented a
+      0.000 baseline reaching production state. Reliability should have collapsed the run long before
+      70 questions.
+- [ ] **`runtime_flags` drift checker grades declared-vs-live but never wired-vs-unwired.** It reports
+      `semantic_classifiers` as blocking drift; that flag has **zero consumer modules** outside
+      `features.py`. The tool embodies the defect class it was built to detect.
