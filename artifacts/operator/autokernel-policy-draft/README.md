@@ -2,7 +2,27 @@
 
 **Status:** DRAFTS ONLY. Nothing here is ratified, and nothing here is in force.
 **Owning handoff:** [`handoffs/active/autokernel-research-loop.md`](../../../handoffs/active/autokernel-research-loop.md) §3, §14 AK0.
-**Created:** 2026-08-02
+**Created:** 2026-08-02 · **Revised 2026-08-03** after adversarial review.
+
+> ## → START HERE: [`RATIFICATION_PACKAGE.md`](RATIFICATION_PACKAGE.md)
+>
+> That document is the single thing the operator reads and acts on: summary, the numbered strikeable
+> item list with strike consequences, the ratification ledger, exact changed-words-only core-file
+> deltas, the command sequence, and verification. The drafts in this directory are its **sources**,
+> not its substitutes.
+>
+> - Apply script: `apply_ratification.sh` — **dry-run by default**; `--apply` to mutate, `--only <n>`
+>   to skip struck items, `--verify` to check a landed apply.
+> - Apply-time record: [`RATIFICATION_LEDGER.md`](RATIFICATION_LEDGER.md) — preimage hashes, per-item
+>   disposition, receipt path and digest. Completed at apply time, not before.
+>
+> **The attestation split, revised.** The owning handoff defines attestation 1 as presented *after
+> AK3*, with validation evidence *"AK1–AK3 deliverables plus the four calibrated controls"* (`:1771`).
+> AK1/AK2/AK3 are 0/17, 0/12 and 0/14 checkboxes. Attestation 1 is therefore split: **1a** carries the
+> constitutional scaffolding whose referents all exist today and which grants no operable authority
+> (presented now); **1b** carries every binding naming an AK1–AK3 deliverable (after AK3); **2** is
+> unchanged (release authorization, after AK5). The tables below are superseded by
+> `RATIFICATION_PACKAGE.md` §B and §D; they are retained as the original routing rationale.
 
 ## Why this directory exists
 
@@ -32,11 +52,12 @@ Unblocks autonomous research. Every item's referent exists once AK1–AK3 land.
 
 | Item | Draft | Blocking |
 |---|---|---|
-| **Annex K creation** plus the core-file layout and registry deltas — operator-approved 2026-08-02 | [`Annex-K-kernel-research-and-release.draft.md`](Annex-K-kernel-research-and-release.draft.md) §1–2 | container for `P-AK-SEARCH-1` |
-| `P-AK-SEARCH-1` — search authority, tier scope, e-process construction, pre-committed stopping rule, per-tier reps, anchor gate, selection/confirmation split, four controls, record grammar, void conditions | [`Annex-K-kernel-research-and-release.draft.md`](Annex-K-kernel-research-and-release.draft.md) §3 | AK3 exit ("T1 may legally guide search") |
-| `pgrep` substitute — claim-holder witness plus owned-cgroup enumeration as an equivalent P-BENCH-1 / P-GPU-1 precondition (amends B and G in place; **not** an Annex K protocol) | *not yet drafted* | every protocol-conformant measurement |
-| Evidence-retention rule — expirable classes and tombstoned expiry, since `MEASUREMENT.md:223-229` puts reclamation under operator authority (a core-file §5 amendment, where durability is stated) | *not yet drafted* | AK1 storage plane |
-| `human_only_paths.yaml` additions (evaluator bundle, objective/threshold policy) plus the `.sha256` rewrite. Note the existing `measurement/protocols/*.md` entry is a **glob** and already covers the new annex file — verify, do not amend | *not yet drafted* | AK2/AK3 evaluator immutability |
+| **Annex K creation** plus the core-file layout and registry deltas — operator-approved 2026-08-02 | [`Annex-K-container.draft.md`](Annex-K-container.draft.md) | container for `P-AK-SEARCH-1` |
+| `P-AK-SEARCH-1` — search authority, tier scope, e-process construction, pre-committed stopping rule, per-tier reps, anchor gate, selection/confirmation split, controls, record grammar, void conditions | [`P-AK-SEARCH-1.draft.md`](P-AK-SEARCH-1.draft.md) | AK3 exit ("T1 may legally guide search") |
+| **Annex G cross-reference** — one sentence recording that `P-AK-SEARCH-1` narrows the consumption clause. *Added 2026-08-03: without it, a K-filed protocol changes a G clause's meaning while G's text stays untouched, which `MEASUREMENT.md:116-118` forbids by name.* | [`Annex-K-container.draft.md`](Annex-K-container.draft.md) §4d | rides with `P-AK-SEARCH-1` |
+| `pgrep` substitute — claim witness plus own-scope enumeration plus residual-load witness, as an equivalent P-BENCH-1 precondition (**amends Annex B only**; not an Annex K protocol). *Corrected 2026-08-03: Annex G mandates no name pattern — `gpu-cross-device.md:28-30` requires PID checks, and `pgrep` appears exactly once in the whole annex corpus, at `bench-cpu.md:15`. The Annex G half is deferred (package §D, D2).* | [`preflight-substitute.draft.md`](preflight-substitute.draft.md) | every protocol-conformant measurement |
+| Evidence-retention rule — expirable classes and tombstoned expiry (a core-file §5 amendment, where durability is stated). *Corrected 2026-08-03: `MEASUREMENT.md:223-229` does **not** put reclamation under general operator authority — it is the 2026-06 explicit dump list, whose rule is that everything not enumerated **is kept**, and whose sole operator call is ~1.2 GB of embedding blobs under `repl_memory/sessions/`. The correct anchor for evidence survival is the 2026-08-02 durability clause at `:146-156`, and the retention clause is a fresh bounded grant rather than a slice of `:223-229`.* | [`evidence-retention.draft.md`](evidence-retention.draft.md) | AK1 storage plane |
+| `human_only_paths.yaml` additions plus the `.sha256` rewrite. **Split 2026-08-03**: the two `paths:` entries (evaluator bundle, threshold policy) are **deferred to 1b** because neither directory exists; two `conceptual:` entries land now. And the "existing `measurement/protocols/*.md` glob already covers the new annex — verify, do not amend" note is **true as data and false as enforcement**: the hook's matcher quotes its RHS, so no `glob:` entry matches anything and B/Q/G are agent-writable today (package §A, §G.2) | [`human-only-paths-delta.draft.md`](human-only-paths-delta.draft.md) | AK2/AK3 evaluator immutability |
 
 ### Attestation 2 — "release authorization" (presented before the first freeze, after AK5)
 
@@ -44,8 +65,8 @@ Unblocks a freeze. Every item's referent exists only after the sealer and T3 run
 
 | Item | Draft | Blocking |
 |---|---|---|
-| P-GPU-1 sealed-candidate amendment | [`P-GPU-1-sealed-candidate-amendment.draft.md`](P-GPU-1-sealed-candidate-amendment.draft.md) | AK7 first supervised freeze, GPU scope only |
-| `epyc.autokernel.operator_waiver.v1` | *not yet drafted* | AK5 T3 verdict states; the draft schema suffices for the AK5 dry-run |
+| P-GPU-1 sealed-candidate amendment — `[BLOCKED-ON AKn]` markers converted to contracts 2026-08-03 | [`P-GPU-1-sealed-candidate-amendment.draft.md`](P-GPU-1-sealed-candidate-amendment.draft.md) | AK7 first supervised freeze, GPU scope only |
+| `epyc.autokernel.operator_waiver.v1` (schema, schema plane) + the `K-WAIVER` normative clause (Annex K) | [`operator-waiver-schema.draft.md`](operator-waiver-schema.draft.md) | AK5 T3 verdict states; the draft schema suffices for the AK5 dry-run |
 
 **Why the split is safe.** The GPU protocol carries two separate prohibitions
 (`gpu-cross-device.md:16-21`). The **consumption** clause — experimental measurements *"MUST NOT be

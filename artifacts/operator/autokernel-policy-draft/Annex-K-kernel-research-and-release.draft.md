@@ -4,11 +4,20 @@
      and registry deltas in §2 of this document.
      Annex creation approved by operator 2026-08-02. Author: AutoKernel design pass. -->
 
-# DRAFT — Annex K (kernel research and release)
+# PROVENANCE ONLY — NOT PRESENTED — Annex K (kernel research and release)
 
-**Status:** SKELETON. Structure and authority language are drafted; every binding marked
-**[BLOCKED-ON AKn]** references an artifact that does not yet exist and MUST be filled before
-ratification.
+> **SUPERSEDED IN WHOLE, 2026-08-03. This document is NOT presented to the operator and its
+> checklist does NOT govern any apply.** Its §1, §2, §5 (ratification checklist) and §6 are
+> superseded by [`Annex-K-container.draft.md`](Annex-K-container.draft.md); its §3 and §4 are
+> superseded by [`P-AK-SEARCH-1.draft.md`](P-AK-SEARCH-1.draft.md). Both siblings state that
+> identical map. It is retained solely as authoring provenance, so that a reader who finds a
+> `[BLOCKED-ON AKn]` marker below knows it belongs to a retired draft rather than to the presented
+> package. The presented package is
+> [`RATIFICATION_PACKAGE.md`](RATIFICATION_PACKAGE.md).
+
+**Status:** SKELETON — RETIRED. Structure and authority language are drafted; every binding marked
+**[BLOCKED-ON AKn]** references an artifact that does not yet exist. Those markers were resolved into
+contracts and procedures in the superseding drafts; they are left here unaltered as provenance.
 **Creates:** a fourth annex, `measurement/protocols/kernel-research`.
 **Presented in:** attestation 1 ("search authorization"), after AK3.
 **Owning handoff:** `handoffs/active/autokernel-research-loop.md` §3.0–§3.1, §9.2, §14 AK0.
