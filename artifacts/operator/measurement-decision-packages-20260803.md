@@ -244,6 +244,37 @@ No change. The divergence remains recorded in the intake index only, where nothi
 
 ---
 
+## PACKAGED 2026-08-03 — DP-2…DP-6 are ready to execute
+
+```bash
+bash artifacts/operator/ratify_measurement_dp2_dp6_20260803.sh --dry-run          # verify, writes nothing
+bash artifacts/operator/ratify_measurement_dp2_dp6_20260803.sh --only DP-3,DP-5   # any subset
+bash artifacts/operator/ratify_measurement_dp2_dp6_20260803.sh                    # all five
+```
+
+**Batched with strikeable items**, per `MEASUREMENT_POLICY.md:77-78` — one attestation rather than a
+per-decision ratification cycle, but `--only` takes any subset in any order and each item is
+independently idempotent. DP-2/3/4/6 append to `MEASUREMENT.md`; **DP-5 appends to Annex K**
+(`measurement/protocols/kernel-research.md`) as a narrowing of `P-AK-SEARCH-1`.
+
+**Two audit findings changed the amendment text before packaging**, and both are recorded in the
+amendments themselves rather than only here:
+
+- **DP-2 is PROSPECTIVE, not corrective.** The package said "retire geometric mean where we use it".
+  An audit found **zero** sites applying a geometric mean to speedups — the `geomean` hits in the
+  orchestrator are all `completion_probabilities_geomean` for *confidence calibration*, a different
+  quantity. The amendment now scopes itself explicitly so a future sweep cannot "retire geomean" by
+  grepping the token and break calibration.
+- **DP-3's scope limit is sharper than stated.** The affine drift correction that handles our dominant
+  hazard **is not implemented anywhere**. So the amendment permits paired CIs for arms interleaved in
+  one environment window and **forbids** using them to rank close variants across windows until that
+  half exists.
+
+The script's own precondition went through the same correction: a first version flagged file-level
+co-occurrence of `geomean` and `speedup` and fired on 8 false positives. It now tests **proximity**,
+prints every file it inspected, and excludes bytecode. *A crude proxy that blocks wrongly today will
+pass wrongly tomorrow.*
+
 ## Provenance
 
 | Package | Primary source | Verification |
