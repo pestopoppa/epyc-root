@@ -1,6 +1,6 @@
 {
   "session_started": "2026-08-03",
-  "stage": "2b",
+  "stage": "4-complete",
   "stage1_completed": "2026-08-03",
   "processed_urls": [
     "https://arxiv.org/pdf/2607.28568",
@@ -37,7 +37,7 @@
     "intake-955",
     "intake-956"
   ],
-  "next_intake_id": 957,
+  "next_intake_id": 991,
   "expansion_count": 10,
   "expansion_cap": 10,
   "steering_ledger": [
@@ -47,7 +47,8 @@
       "ts": "2026-08-03",
       "verbatim": "\"  The structural finding: the compendium had deep coverage of speedup-rewarded GPU kernel generation and zero coverage of code-runtime-efficiency as a model capability or evaluation axis. Afterburner, SWE-fficiency, SWE-Perf, PIE, EffiBench-X and COFFE\n  were all absent from 937 entries. That hole is now filled with six instruments.\" - looking forward to seeing how these tie in after the deep dives.",
       "disposition": "planned",
-      "plan_ref": "STAGE3-TIE-IN: the Stage-3 plan must contain an explicit synthesis item showing how the six code-efficiency instruments tie together and into our evaluation ladder + autokernel loop, not just per-entry rows."
+      "plan_ref": "STAGE3-TIE-IN: the Stage-3 plan must contain an explicit synthesis item showing how the six code-efficiency instruments tie together and into our evaluation ladder + autokernel loop, not just per-entry rows.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 2,
@@ -55,7 +56,8 @@
       "ts": "2026-08-03",
       "verbatim": "\"944 QuixiCore \u2014 its own agent says dive HipKittens instead; 92KB umbrella exhausts fast.\" - this could still be relevant to see how others are thinking about experimental kernel work to close the gap between AMD and NVIDIA GPUs. It could be relevant for our inference research and th eupcoming autokernel program.",
       "disposition": "planned",
-      "plan_ref": "DIVE-I: OVERTURNS my decline. QuixiCore dived, scoped to 'how others approach experimental kernel work to close the AMD/NVIDIA gap', with intake-947 HipKittens folded in as the same subject matter. Feeds the upcoming autokernel program."
+      "plan_ref": "DIVE-I: OVERTURNS my decline. QuixiCore dived, scoped to 'how others approach experimental kernel work to close the AMD/NVIDIA gap', with intake-947 HipKittens folded in as the same subject matter. Feeds the upcoming autokernel program.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 3,
@@ -63,7 +65,8 @@
       "ts": "2026-08-03",
       "verbatim": "\"952 EffiBench-X \u2014 better to run than dive.\" - I don't know what this is yes, but if it's better to 'run' it must be worthwhiel diving.",
       "disposition": "planned",
-      "plan_ref": "DIVE-D: OVERTURNS my decline. EffiBench-X dived alongside SWE-Perf and SWE-fficiency. Operator's reasoning accepted: runnability is a reason to dive, not a substitute for it."
+      "plan_ref": "DIVE-D: OVERTURNS my decline. EffiBench-X dived alongside SWE-Perf and SWE-fficiency. Operator's reasoning accepted: runnability is a reason to dive, not a substitute for it.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 4,
@@ -71,7 +74,8 @@
       "ts": "2026-08-03",
       "verbatim": "The models whose links I shared (Inkling and Eschalabs) are part of my ongoing search for faster worker_general and architect_critic model candidates (to replace gemma4-26b-a4b). We don't necessarily have to download/test/bench them, but a deep dive could be worthwhile within the context just mentioned to see if they may be worthwhile to.",
       "disposition": "planned",
-      "plan_ref": "DIVE-A and DIVE-B: reframes both model dives as ROLE-CANDIDATE ASSESSMENTS against the incumbent gemma4-26B-A4B for worker_general and architect_critic. No download/bench required; the deliverable is a reasoned worthwhile-or-not verdict."
+      "plan_ref": "DIVE-A and DIVE-B: reframes both model dives as ROLE-CANDIDATE ASSESSMENTS against the incumbent gemma4-26B-A4B for worker_general and architect_critic. No download/bench required; the deliverable is a reasoned worthwhile-or-not verdict.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 5,
@@ -79,7 +83,8 @@
       "ts": "2026-08-03",
       "verbatim": "Deep dive ALL original links and the literature expansion you recommended.",
       "disposition": "planned",
-      "plan_ref": "Dive set = all 9 originals (938-946) + recommended expansion (948,950,951,953,954,955) + operator-added 952 + 947 folded into DIVE-I. Still declined and NOT dived: 949 (Afterburner), 956 (eschamoe probe) - both named explicitly in the report."
+      "plan_ref": "Dive set = all 9 originals (938-946) + recommended expansion (948,950,951,953,954,955) + operator-added 952 + 947 folded into DIVE-I. Still declined and NOT dived: 949 (Afterburner), 956 (eschamoe probe) - both named explicitly in the report.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 6,
@@ -87,7 +92,8 @@
       "ts": "2026-08-03",
       "verbatim": "\"Cap is 5 (separate budget from the Stage-1 expansion, which used its own 10).\" - what?!? There shoudl be no cap here, everything that is viable/usable/worthwhile MUST be harvested! If needed go back and collect more insights. What's the point of spending time deeply reviewing source material if then we ignore most of it?!???",
       "disposition": "planned",
-      "plan_ref": "STAGE-2b-UNCAPPED: the skill's 5-entry Stage-2b cap is OVERRIDDEN. All viable dive-surfaced sources are dived, and agents are authorised to collect ADDITIONAL sources beyond the surfaced list where they bear on an actionable question."
+      "plan_ref": "STAGE-2b-UNCAPPED: the skill's 5-entry Stage-2b cap is OVERRIDDEN. All viable dive-surfaced sources are dived, and agents are authorised to collect ADDITIONAL sources beyond the surfaced list where they bear on an actionable question.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 7,
@@ -95,7 +101,8 @@
       "ts": "2026-08-03",
       "verbatim": "\"5 QuixiAI/llama.cpp fork + QuixiFlow | DIVE-I flagged rather than dismissed it. Our production kernel is llama.cpp; a fork by the same org warrants a look before this thread closes\" - of course it warrants a look. Our kernel's efficiency still sorely lags cuda kernel performances on comparable hardware. See public throughput reports of our stack models running on DGX sparks (250 GB/s bandwidth vs our CPU+RAM's ~460 GB/s) and RTX 6000 Pro (1.7TB/s bandwidth just like our MI210 gpu). See also the performance difference between llama.cpp vs vLLM also. A parallel agent session is currently building out the autokernel stack. It needs to be as informed as possible if we plan to close the kernel gap vs comparable nvidia hardwre solutions.",
       "disposition": "planned",
-      "plan_ref": "2b-A + 2b-C: THE KERNEL-GAP AXIS IS NOW THE PRIORITY FRAME. Dive the QuixiAI llama.cpp fork AND QuixiFlow (vLLM fork), and open a NEW investigation into the llama.cpp-vs-vLLM and AMD-vs-NVIDIA throughput gap at matched memory bandwidth (DGX Spark 250 GB/s, our CPU+RAM ~460 GB/s, RTX 6000 Pro 1.7 TB/s ~= MI210). Deliverable must be usable by the PARALLEL SESSION building the autokernel stack. NOTE: that session owns autokernel scope - this intake FEEDS it, and must not write into its handoffs."
+      "plan_ref": "2b-A + 2b-C: THE KERNEL-GAP AXIS IS NOW THE PRIORITY FRAME. Dive the QuixiAI llama.cpp fork AND QuixiFlow (vLLM fork), and open a NEW investigation into the llama.cpp-vs-vLLM and AMD-vs-NVIDIA throughput gap at matched memory bandwidth (DGX Spark 250 GB/s, our CPU+RAM ~460 GB/s, RTX 6000 Pro 1.7 TB/s ~= MI210). Deliverable must be usable by the PARALLEL SESSION building the autokernel stack. NOTE: that session owns autokernel scope - this intake FEEDS it, and must not write into its handoffs.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 8,
@@ -103,7 +110,8 @@
       "ts": "2026-08-03",
       "verbatim": "\"Defensible swaps if you'd rather: 2408.06450 EvalPerf ... Mercury ... 2511.09904 CTRL-ALT-DECEIT ... 2607.21273 ... effibench-enhanced\" - why swap? You can deep dive new literature as needed. Don't feel so constrained. What ultimately matters are the insights that can be made actionable for our project's purpose.",
       "disposition": "planned",
-      "plan_ref": "STAGE-2b-UNCAPPED: no swaps. ALL listed alternatives are dived alongside the primaries. Selection criterion is ACTIONABILITY FOR THE PROJECT, not budget."
+      "plan_ref": "STAGE-2b-UNCAPPED: no swaps. ALL listed alternatives are dived alongside the primaries. Selection criterion is ACTIONABILITY FOR THE PROJECT, not budget.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 9,
@@ -111,7 +119,8 @@
       "ts": "2026-08-03",
       "verbatim": "\"ThunderKittens (CUDA parent; HipKittens is the relevant branch)\" - lookign forward to seeing what we can harves from HipKittens.",
       "disposition": "planned",
-      "plan_ref": "2b-B: a DEDICATED deep harvest of HipKittens beyond the paper - read the actual kernel source and extract every arch-independent technique portable to hand-written gfx90a MFMA paths. Reverses my decline; ThunderKittens also re-included as the CUDA parent since the NVIDIA-vs-AMD delta is now the operator's stated frame."
+      "plan_ref": "2b-B: a DEDICATED deep harvest of HipKittens beyond the paper - read the actual kernel source and extract every arch-independent technique portable to hand-written gfx90a MFMA paths. Reverses my decline; ThunderKittens also re-included as the CUDA parent since the NVIDIA-vs-AMD delta is now the operator's stated frame.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 10,
@@ -119,7 +128,8 @@
       "ts": "2026-08-03",
       "verbatim": "if anything, make sure you're persisting insights as you go along so that nothing is accidentally forgotten",
       "disposition": "planned",
-      "plan_ref": "DONE IN-FLIGHT (durability, not a scope change): dive evidence was being written to a GITIGNORED scratch path (tmp/*). Moved to research/deep-dives/2026-08-03-intake-938-956-dive-evidence/ and committed at 5f420f7a alongside the index updates. Rationale is our own feedback_verify_evidence_in_git_not_filesystem: untracked looks identical to committed. Remaining Stage-2b dives are copied there and committed as they land, not at the end."
+      "plan_ref": "DONE IN-FLIGHT (durability, not a scope change): dive evidence was being written to a GITIGNORED scratch path (tmp/*). Moved to research/deep-dives/2026-08-03-intake-938-956-dive-evidence/ and committed at 5f420f7a alongside the index updates. Rationale is our own feedback_verify_evidence_in_git_not_filesystem: untracked looks identical to committed. Remaining Stage-2b dives are copied there and committed as they land, not at the end.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 11,
@@ -127,7 +137,8 @@
       "ts": "2026-08-03",
       "verbatim": "\"so these dives feed it and write nothing into its handoffs.\" - why would we not? The handoff is a living artifact, I can have the parallel agent keep implementing new tasks as they are added",
       "disposition": "planned",
-      "plan_ref": "SCOPE EXPANDED: my self-imposed boundary against writing into the parallel session's autokernel handoffs is REMOVED. Stage 4 may append task lines to autokernel-research-loop.md, rocm-verify-profile-backend.md, mi210-kernel-rnd-loop-proposal.md and the MI210/ROCm handoffs. NOT a waiver of the Stage-3 plan gate: per the skill's load-bearing rule and the 2026-07-25 incident, an operator comment granting SCOPE is not authorization to write before plan approval. The Stage-3 plan will name every autokernel handoff as a write target with verbatim task lines for review."
+      "plan_ref": "SCOPE EXPANDED: my self-imposed boundary against writing into the parallel session's autokernel handoffs is REMOVED. Stage 4 may append task lines to autokernel-research-loop.md, rocm-verify-profile-backend.md, mi210-kernel-rnd-loop-proposal.md and the MI210/ROCm handoffs. NOT a waiver of the Stage-3 plan gate: per the skill's load-bearing rule and the 2026-07-25 incident, an operator comment granting SCOPE is not authorization to write before plan approval. The Stage-3 plan will name every autokernel handoff as a write target with verbatim task lines for review.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 12,
@@ -135,7 +146,8 @@
       "ts": "2026-08-03",
       "verbatim": "\" The one real branch, rocm-flash-attn, is genuine tested code with honest defect annotations - but it's an adaptation layer with zero kernel code\" - if it's usable to improve performance, it matters.",
       "disposition": "planned",
-      "plan_ref": "CORRECTION TO MY FRAMING: I dismissed rocm-flash-attn as 'zero kernel code'. Wrong axis - a layer that ENABLES a faster path IS a performance improvement. Re-assess: (a) does routing llama.cpp/vLLM to a generic ROCm flash-attn beat the AITER-less default on gfx90a, (b) is the cu_seqlens_k threading pattern reusable, (c) what does the BF16 numerical-divergence-vs-tree-attention defect cost. Goes in the Stage-3 plan as an autokernel-adjacent item."
+      "plan_ref": "CORRECTION TO MY FRAMING: I dismissed rocm-flash-attn as 'zero kernel code'. Wrong axis - a layer that ENABLES a faster path IS a performance improvement. Re-assess: (a) does routing llama.cpp/vLLM to a generic ROCm flash-attn beat the AITER-less default on gfx90a, (b) is the cu_seqlens_k threading pattern reusable, (c) what does the BF16 numerical-divergence-vs-tree-attention defect cost. Goes in the Stage-3 plan as an autokernel-adjacent item.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 13,
@@ -143,7 +155,8 @@
       "ts": "2026-08-03",
       "verbatim": "\"it's that the commit log records rejected experiments: \\\"reject LDS-B experiment (inconsistent across shapes)\\\", \\\"reject (CU contention)\\\". That's a working accept/reject discipline in the wild, methodologically close to our own measurement constitution.\" - very interesting.",
       "disposition": "planned",
-      "plan_ref": "PURSUE: mine QuixiCore-ROCm's full commit log as a worked example of a kernel accept/reject ledger in production. Extract the rejection taxonomy and the evidence each rejection carries. Feeds the P-AK-SEARCH-1 rejection-ledger amendment already surfaced by DIVE-I, and the operator has flagged it as of interest."
+      "plan_ref": "PURSUE: mine QuixiCore-ROCm's full commit log as a worked example of a kernel accept/reject ledger in production. Extract the rejection taxonomy and the evidence each rejection carries. Feeds the P-AK-SEARCH-1 rejection-ledger amendment already surfaced by DIVE-I, and the operator has flagged it as of interest.",
+      "stage4_disposition": "landed"
     },
     {
       "seq": 14,
@@ -151,7 +164,8 @@
       "ts": "2026-08-03",
       "verbatim": "\"A third independent confirmation of CDNA2 abandonment... The agent's read: gfx90a optimization is unavoidably in-house, and that belongs in the autokernel go/no-go - weighed against acquiring CDNA3 silicon before funding a long CDNA2 program.\" - if by 'acquiring CDNA3 silicon' you mean purchasing new/different hardware, that's not happening anytime soon. Investing resources into improving our usage of the MI210 is paramount. We need to leverage the 1.7 TB/s bandwidth and the FLOPs it provides to make models run as fast as possible. If NVIDIA cards can get up to 80% BW utilization, there's no reason why an equivalent AMD kernel cannot achieve the same.",
       "disposition": "planned",
-      "plan_ref": "STRATEGIC DIRECTION - SUPERSEDES THE AGENT RECOMMENDATION I RELAYED. Hardware acquisition is OFF THE TABLE. The autokernel go/no-go is DECIDED: GO, on the MI210. The target is explicit and quantitative: BANDWIDTH UTILIZATION APPROACHING ~80%, the level NVIDIA kernels reach. Our measured rungs are Q4_K 34% / Q8_0 50% / fp16 62.5% (ceiling soft, measured on stock Qwen3-8B not our 27B), so the Q4_K gap to 80% is ~2.35x. Every autokernel actionable is now ranked by expected BW-attainment gain. 2b-C must quantify the NVIDIA-side 80% figure and attribute our shortfall. CDNA2-abandonment findings are reframed: they establish that nobody will do this FOR us, NOT that it should not be done."
+      "plan_ref": "STRATEGIC DIRECTION - SUPERSEDES THE AGENT RECOMMENDATION I RELAYED. Hardware acquisition is OFF THE TABLE. The autokernel go/no-go is DECIDED: GO, on the MI210. The target is explicit and quantitative: BANDWIDTH UTILIZATION APPROACHING ~80%, the level NVIDIA kernels reach. Our measured rungs are Q4_K 34% / Q8_0 50% / fp16 62.5% (ceiling soft, measured on stock Qwen3-8B not our 27B), so the Q4_K gap to 80% is ~2.35x. Every autokernel actionable is now ranked by expected BW-attainment gain. 2b-C must quantify the NVIDIA-side 80% figure and attribute our shortfall. CDNA2-abandonment findings are reframed: they establish that nobody will do this FOR us, NOT that it should not be done.",
+      "stage4_disposition": "landed"
     }
   ],
   "notes": "9-URL batch (10 submitted, 2607.25970 duplicated). Dedup sweep run UNBOUNDED over 937 entries (937 arxiv_id fields, 937 url fields) plus a whole-file mention check: ZERO collisions for all 9, and zero collisions for all 10 expansion candidates. 10 expansion entries intake-947..956 (cap used in full). PARENT-VERIFIED: all three arXiv IDs independently title-checked against arxiv.org/abs, so the sub-agent scratchpad filename collision (two agents wrote a generically-named scratchpad/paper.txt) caused no cross-contamination. STORAGE CORRECTION: an agent claimed 'storage is a non-issue' from TOTAL capacity; df -h /mnt/raid0 shows 159G AVAIL of 3.7T (96% used), so Inkling UD-Q4_K_M 162.54GB does NOT fit. SCHEMA DEFECT (mine): the compact expansion schema omitted the verdict/credibility enums, so agents returned verdict 'dive'/'decline-with-watch'/'adopt-methodology', novelty 'novel', and credibility 7/8/9 against a 0-6 rubric. All normalized per rubric and RECORDED in each entry's notes. SECOND session with this failure class (intake-936, 2026-07-29) - fix belongs in the skill dispatch contract. VALIDATOR FIX: 5 entries cited 'architect-bench-runbook.md' as a handoff; it is docs/reference/, not a handoff. Corrected to architect-model-selection-bench.md at source and a pre-flight cross-reference resolution check added before append. Append done as TEXT per entry; pre-existing 937 entries verified byte-identical. Validator exit 0 / 956 entries.",
@@ -269,5 +283,39 @@
     "intake-949 (Afterburner) - confound already caught and quantified at Stage 1; operator did not add it",
     "intake-956 (eschamoe codebook probe) - author blocked on compute, unblocking needs sm_80+ hardware we lack; re-check in 2-4 weeks"
   ],
-  "stage2b_cap": "REMOVED BY OPERATOR \u2014 harvest everything viable/usable/worthwhile; collect more sources if needed"
+  "stage2b_cap": "REMOVED BY OPERATOR \u2014 harvest everything viable/usable/worthwhile; collect more sources if needed",
+  "stage2b_entries": {
+    "range": "intake-957..990",
+    "count": 34,
+    "cap": "REMOVED BY OPERATOR"
+  },
+  "stage4_completed": "2026-08-03",
+  "stage4_summary": {
+    "commits": [
+      "95168bab autokernel slice",
+      "33497494 Stage-2b entries + deferred field changes",
+      "7b1eac15 recommended_actions attribution",
+      "d0d43d06 efficiency/reviewer/memory/model candidates",
+      "f7b985c7 handoffs_updated backfill"
+    ],
+    "handoffs_written": [
+      "autokernel-research-loop.md",
+      "agentic-rocm-kernel-authoring.md",
+      "mi210-mfma-compute-bound-paths.md",
+      "mi210-q8-dequant-gemv-roofline.md",
+      "rocm-verify-profile-backend.md",
+      "gpu-acceleration-path.md",
+      "architect-model-selection-bench.md",
+      "tq3-quantization-evaluation.md",
+      "security-review-skill.md",
+      "reviewer-typed-artifacts.md",
+      "engram-conditional-memory.md"
+    ],
+    "decision_packages": "artifacts/operator/measurement-decision-packages-20260803.md (DP-1..DP-4, NOT applied)",
+    "wiki_updates": [
+      "wiki/hardware-optimization.md",
+      "wiki/benchmark-methodology.md"
+    ],
+    "index_entries": 990
+  }
 }

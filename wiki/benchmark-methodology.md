@@ -2,8 +2,104 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-07-31 (adds three methodology results from the vision-role evaluation: a saturated suite can order arms WRONGLY not just fail to separate them; an output-length cap silently penalises reasoning models; a model with no draft path running unaccelerated is at its OPTIMUM, never a BASELINE — the concrete case the OPTIMUM/BASELINE/CANDIDATE grammar was ratified to prevent; earlier 2026-07-30 note: MEASUREMENT v2 ratified: core + annex constitution, explicit metric scoping, P-BENCH-PLACEMENT-1 registered, P-BENCH-3 conformed, retracted April exemplar replaced; prior E8/E5 status update retained)
+**Last compiled**: 2026-08-03 (adds the aggregation-as-attack-surface result — geometric mean is demonstrably gamed and harmonic mean over a failure-clamped set moved one headline 2.8× on identical outcomes; right-censoring as a scoring primitive and eff@k's undocumented saturation at 2×; the mandatory small-K correction for paired CIs; a citation chain that inverted its own source; counting a literature by its author graph before calling it consensus; two anti-patterns found in released code; and the quantum rule for leaderboard margins; earlier 2026-07-31 note: adds three methodology results from the vision-role evaluation: a saturated suite can order arms WRONGLY not just fail to separate them; an output-length cap silently penalises reasoning models; a model with no draft path running unaccelerated is at its OPTIMUM, never a BASELINE — the concrete case the OPTIMUM/BASELINE/CANDIDATE grammar was ratified to prevent; earlier 2026-07-30 note: MEASUREMENT v2 ratified: core + annex constitution, explicit metric scoping, P-BENCH-PLACEMENT-1 registered, P-BENCH-3 conformed, retracted April exemplar replaced; prior E8/E5 status update retained)
 **Sources**: 100+ documents
+
+## Compiled Update — 2026-08-03: aggregation choices are attack surfaces, a citation chain that inverted its own source, and how to count an apparently-independent literature
+
+**Confidence: verified for the citation-trail and lineage findings (checked against primary sources);
+inferred for the aggregation guidance until the corresponding constitutional amendment is ratified.**
+
+### Aggregating speedups is an adversarial choice, not a stylistic one
+
+Two independent findings converge on the same rule.
+
+- **Geometric mean is gameable, demonstrably.** GSO shows agents *do* perform the exploit: speedups of
+  `[0.1, 1000]` across two tests yield a geometric mean of **10** while one test regresses. Its authors
+  chose harmonic mean explicitly for its **asymmetric sensitivity** — "large wins on minor tests
+  shouldn't hurt, only significant regressions matter."
+- **Harmonic mean over a failure-clamped set is worse than either.** SWE-fficiency's headline moved
+  **2.8× on byte-identical outcomes** purely from the choice of clamp constant. A single number whose
+  value is set by a convention rather than by the data.
+
+**The rule that survives both: `harmonic_mean({s_i : i correct})`, reported beside `correctness_rate`.**
+Failures are counted, never clamped into the aggregate. The correct-subset qualifier is load-bearing —
+"harmonic mean" without it lands on exactly the configuration that produced the 2.8× swing.
+
+### Right-censoring: make the score stop depending on the measurement when the measurement stops meaning anything
+
+For any wall-clock-capped bench, the transferable primitive is to **score 0 at the cap and never impute
+the censored value** — once the observed time reaches the cap the clamp makes the score 0 "regardless of
+the exact value". The unknowable magnitude is *discharged* rather than guessed. A caveat not stated in
+the source and derived from its own equation: **`eff@k` saturates** — on the hardest level the ceiling is
+α/(α−1) = 2 at α=2, so **a 2× and a 1000× score identically**. Adopt the censoring rule; do not adopt
+`eff@k` where magnitude matters.
+
+Adjacent drop-in with no constitutional implication: the **Hodges–Lehmann** estimator (median of pairwise
+means) for aggregating R repeated timings.
+
+### Paired confidence intervals — and the correction that is not optional
+
+We compute no variance at all on paired comparisons. A closed-form paired-CI recipe exists and the
+resampling machinery is unnecessary (the empirical-variance z, the bootstrap and the sign test are
+*proven* equivalent). **The small-K correction is mandatory**: without it relative error is ~**70% even
+at N=2000**, because a 1/(K−1) per-question bias does not average away as N grows — and at typical K=3–5
+it makes the estimate worthless. **Scope limit:** the method models two noise sources (data, prediction);
+our dominant hazard is a **third**, environment/machine drift, which pairing does not remove unless arms
+are interleaved in one environment window.
+
+### A citation chain that inverted its own source
+
+A claim we had queued as a possible reason to amend the measurement constitution — *"normalized or
+percentage-based speedup metrics inherently reduce variability"* — resolves through its bibliography not
+to the paper we assumed but to a different one, **which argues the opposite**: it introduces its own
+metric *because* relative speedup is variable across tasks, and its stability comes from **hardware
+performance counters** and from selecting large computations, not from normalization. The paper we
+assumed was cited **is never cited at all** (`grep -ci` returns 0 across three terms), and its own
+variance reduction comes from repeats plus a robust estimator, not normalization either.
+
+**Two durable lessons.** First: *resolve a citation through the bibliography before treating it as
+support* — the ambiguity here was three different first authors sharing a surname and a year. Second:
+**version-pinned quotes are not optional in this literature.** A separate check this session found a
+figure that exists only in a paper's results table, so a text search for the model name hits only the
+bibliography and reads as absent.
+
+### Count a literature by its author graph before counting it as consensus
+
+Four instruments that appeared to form an independent field-wide consensus — that efficiency scores must
+be normalized against a reference distribution — turn out to be **one connected component hubbed on a
+shared author**. The genuinely independent instruments **diverge sharply**: one normalizes against a
+single expert solution with censoring, one against a clustered ladder using instruction counts, one
+against a single human commit in the same container, one against the best ground truth as a binary
+threshold. **The design space is four, not eight.** Apparent convergence across papers is evidence only
+after the author graph is checked; the same test disqualified a same-lab methodology paper from counting
+as a corroborating leg for the entry that cites it.
+
+### Two measurement anti-patterns found in released code, both worth grepping for
+
+- **Undocumented tolerances.** One paper's equation defines a hard threshold; its released code applies a
+  silent `rbr_tolerance = 0.02`. The authors observed the hazard at the threshold, patched it with a 2%
+  fudge, and did not report it — while their *headline* metric is a continuous function of exactly those
+  sub-2% differences. **Grep released code for undocumented tolerances before trusting any threshold
+  metric.**
+- **Stored denominator, fresh numerator.** Two independent groups shipped reward functions comparing a
+  freshly-timed candidate against a **disk-cached** baseline with no drift correction. Convergence here is
+  evidence about the field's habits, not about the design being sound.
+
+### Instruction counting is not a substitute for wall clock on bandwidth-bound work
+
+Retired-instruction counting via hardware counters is genuinely stable (max CV 0.4% across four test
+beds) and is the right measurand for *generated-code* scoring. It is **explicitly invalid for our
+inference kernels**, and this was falsified in-session rather than assumed: a tiled traversal executing
+**+1.9% instructions ran 2.83× faster**.
+
+### A benchmark can be quantized below the margins people report on it
+
+A widely-cited agent leaderboard's headline split is 22 tasks × 3 seeds = **66 task-runs**, so every
+published score is an integer medal count in disguise and the reported ±1.52 is **exactly one medal
+outcome**. Three different agents sit at the same value. **No margin under ~3 medal outcomes (4.5 pp) is
+a difference.** The general rule: before comparing two scores, compute the metric's **quantum** from its
+denominator — if the margin is smaller than one countable outcome, there is nothing to compare.
 
 ## Compiled Update — 2026-07-31: a saturated suite can rank arms wrongly, an output cap can silently fail reasoning models, and "no draft path" is an OPTIMUM not a BASELINE
 

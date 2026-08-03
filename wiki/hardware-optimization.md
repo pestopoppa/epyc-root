@@ -2,8 +2,86 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-07-31 (adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Last compiled**: 2026-08-03 (adds the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 93+ documents
+
+## Compiled Update — 2026-08-03 (the AMD deficit is a QUANT deficit, not a device deficit; and the compute roofline, finally computed)
+
+**Confidence: mixed and stated per claim — the attainment ladder is `observation` (our own measured
+throughput, recomputed on one consistent basis, against a *spec* denominator); the compute-roofline
+constants are `[D] derived` from vendor spec, not measured.**
+
+### The finding that reframes the whole GPU program
+
+We had been reading a large llama.cpp-on-AMD-vs-NVIDIA gap as an AMD problem. Recomputing our own
+numbers on one consistent basis says otherwise:
+
+| Rung on our MI210 | Bandwidth attainment |
+|---|---|
+| fp16 | **62.6%** |
+| fp16, vLLM-ROCm, same device | **69.2%** |
+| Q8_0 | 50.2% |
+| Q4_K | 35.1% |
+| MoE-Q8 (frontdoor) | 21.3% |
+| **MoE-IQ2 (architect)** | **10.3%** |
+
+**62–69% is already reached on this silicon, so the memory system is not the limiter.** The collapse is
+entirely down the quant ladder, inside `mul_mat_vec_q`, which is **77.8% of decode time**. For
+calibration, DGX Spark GB10 reaches **77–80% at Q4_K_M dense across five models on the same engine** —
+NVIDIA's quant sag is 5–10 pp; ours is 27 pp. The gap is in the low-bit path, and it is ours to close.
+
+**Every percentage above is against SPEC bandwidth, not achievable.** No measured MI210
+STREAM/BabelStream figure exists anywhere in this project. If real achievable is ~1.3–1.4 TB/s (typical
+HBM2e), every MI210 figure rises **17–26%** and the NVIDIA gap narrows correspondingly. That is a
+one-hour measurement that calibrates the denominator of every roofline claim we have ever made, and it
+has not been run.
+
+### The compute roofline, which nobody had computed
+
+`[D]` derived from AMD spec; all four rates reproduce published figures exactly:
+
+**181.0 TFLOPS fp16/bf16 = 181.0 TOPS int8** — **CDNA2 does not double int8**, and there is **no FP8, no
+FP4, no TF32**. fp32 matrix 45.3 / vector 22.6. **Ridge point 110.5 FLOP/byte** (vs 281 for an RTX PRO
+6000, so **the MI210 is the more bandwidth-balanced part** — a bandwidth-directed program is the
+arithmetically correct one here).
+
+Two consequences that convert standing puzzles into closed questions:
+
+1. **`MfmaUtil ≈ 0%` at batch-1 is correct behaviour, not a defect.** Batch-1 arithmetic intensity is
+   1.0–5.2 FLOP/byte, **31–113× below the knee**; the matrix units cannot exceed ~1.7–3.2% busy *at any
+   bandwidth*. Authoring MFMA decode kernels returns **zero, with certainty**.
+2. **The batch knee is predictable**: `B* = 110.5 × bytes_per_weight / 2` → Q4_K 31, Q8_0 59, bf16 110 —
+   which **retro-predicts the bf16 knee we had already measured at B≈96–128**. Above `B*`, bandwidth
+   attainment stops being the right ceiling.
+
+**Do not import AMD's own ridge figure.** Their GEAK `cdna2_mi200/memory.md` computes 226 FLOP/byte
+per-GCD from a TFLOPS number its own `arch.md` labels per-OAM — **off by 2×**. Use ~110–113. A vendor
+knowledge base is useful and is not authoritative.
+
+### Closing the vLLM gap is not a kernel goal
+
+At batch-1, llama.cpp is **0.1–5.8% faster** on an RTX 4090 and comparable on an H200; vLLM leads by
+**+11% on our MI210**, and *that 11% is the kernel delta*. The headline 24–44× arrives only at **16–64
+concurrent users** and is continuous batching, PagedAttention and the scheduler — a serving-runtime
+property, not a kernel one. Caveat worth carrying: every public batch-1 head-to-head is at **16-bit**,
+i.e. exactly where our gap is not; **the quantized-vs-quantized comparison has never been run anywhere.**
+
+### gfx90a is commercially abandoned, not technically incapable — and the distinction is the whole plan
+
+Corrected, with mechanism: gfx90a **does** have direct global→LDS (LLVM `FeatureVMemToLDSLoad` sits
+inside `FeatureGFX9`; AMD's own CDNA2 doc says so; and our tree already calls the intrinsic). What it
+genuinely lacks is the **async DMA engine** and the **SMEM-operand matrix instruction** — different
+limitations with different consequences. Meanwhile AITER's supported-hardware table lists **no
+MI210/MI250/gfx90a, not even experimental** (consumer RDNA parts rank ahead of our datacenter card),
+TileLang is CDNA3-limited, and the quantization×kernel co-design school is ROCm-excluded across the
+board. **Nobody will port anything to this card for us**, which is the premise the autokernel program
+exists to answer — not a reason to stop.
+
+Free transferable science, arch-independent, applicable today: **do not wave-specialize** (AMD statically
+partitions registers across waves — 4 producers 893 TFLOPs vs 0 producers **1610**); prefer **8-wave
+ping-pong** over 4-wave interleave (~90% of the performance at ¼ the code); **swizzle HBM-side, not
+LDS-side**; HIPCC **will not feed AGPRs to MFMA** even though the hardware allows it; and grid-swizzle
+WGM must be **swept, not set** (+9.6% at 8, **−13.9% at 32**).
 
 ## Compiled Update — 2026-07-31 (gfx90a ARGSORT defect: a green test suite hid an invalid kernel launch)
 
