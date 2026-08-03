@@ -258,3 +258,29 @@ confers no authority beyond its own enumeration.
   protocol-scoped rule at `measurement/protocols/bench-cpu.md:216-220`; `bench-cpu.md:91-92`
   narrowed so non-production-recipe cells record but do not block. Origin: repeated wasted
   measurement runs from conflating a spec-off BASELINE with a no-draft-path OPTIMUM.
+
+## MI210-SUBSTRATE-CONSTANTS-1 — measured substrate constants (RATIFIED 2026-08-03)
+
+Every roofline denominator this project uses is measured, not assumed. Each traces to a
+committed receipt under `epyc-inference-research/data/`.
+
+| Constant | Measured `[M]` | Derived `[D]` | Receipt |
+|---|---|---|---|
+| Peak fp16/bf16 matrix | **172.2 TFLOPS** | 181.0 | `data/mi210-mfma-peak/20260803T143200Z/` |
+| Achievable HBM bandwidth | **1433.3 GB/s** | 1638 (datasheet) | `data/mi210-achievable-bandwidth/20260803T124401Z/` |
+| PCIe H2D / D2H | **28.89 / 28.20 GB/s** | 31.5 (Gen4 x16) | `data/mi210-h2d-d2h/20260803T131500Z/` |
+| Ridge, measured basis | **120.1 FLOP/byte** | — | derived from the two above |
+| Ridge, spec basis | — | 110.5 FLOP/byte | retained for cross-vendor comparison |
+
+`B*` on the measured basis: Q4_K 34 · Q8_0 64 · bf16 120.
+
+**Usage rule (binding).** Use the **measured** basis for headroom and campaign sizing; use the
+**spec** basis for cross-vendor comparison; **never mix them, and always state which was used.**
+A utilisation quoted without its denominator is not a number. Two failure modes this rule exists
+to prevent, both observed in 2026-08: converting our own figures to a measured basis while a
+competitor's remain on spec, which makes a gap look smaller without it being smaller; and
+dividing a per-OAM FLOPS figure by a per-GCD bandwidth, which is how a vendor knowledge base
+published a ridge point off by 2×.
+
+**Grade.** These are substrate constants at OBSERVATION grade. They describe the machine, not a
+candidate: they license no promotion, no era row, and no release claim.

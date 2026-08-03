@@ -902,3 +902,4 @@
 - Ratified `P-BENCH-4` for prospective FG-4b single-instance server-native speculative decode; it pins the reviewed runner contract and preserves prior FG-4b observations as non-decision-grade.
 
 - Ratified the P-BENCH-4 FG-4b affinity-witness superseding amendment; it binds stable all-thread request-boundary snapshots to the hardened runner and retains the prior receipt as superseded provenance.
+- 2026-08-03: MI210-SUBSTRATE-CONSTANTS-1 ratified — peak FLOPS, achievable HBM bandwidth and PCIe H2D/D2H measured; ridge stated on both bases with a binding no-mixing rule.
