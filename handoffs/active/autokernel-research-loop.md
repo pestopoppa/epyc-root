@@ -2069,16 +2069,22 @@ can act on a waiver-bearing verdict.
 - [x] Add deterministic reconstruction test from journal plus immutable artifacts only. ✅ 2026-08-03 (journal + integration suites)
 - [ ] Fix the `kernel_store.py:88` file-handle warning; add both `kernel_rnd` suites to
   `PYTEST_SMOKE`; pin pytest in `pyproject.toml`/`uv.lock` rather than injecting it via `--with`.
-- [ ] **Measure achievable MI210 bandwidth (STREAM/BabelStream-class) — §8.3.1's second denominator does
-  not exist yet.** Every roofline percentage in this project, and every one quoted at us from outside, is
-  against **spec**, not achievable; no measured MI210 STREAM figure exists anywhere in the repo. If real
-  achievable is ~1.3–1.4 TB/s (typical HBM2e), **every MI210 attainment figure rises 17–26%** and the
-  AMD-vs-NVIDIA gap narrows correspondingly — which changes how several campaigns should be sized. A
-  one-hour run that calibrates the denominator of every roofline claim we have ever made. This is the one
-  GPU-touching item in AK1: it needs an operator-approved window and a device claim, but it is a bandwidth
-  probe, not inference. Record **both** denominators per §8.3.1 and put them in the P0.1 profile manifest.
-  *(`rocm-bandwidth-test` is not installed — see the profiler-tooling blocker in
-  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md).)*
+- [x] **Measure achievable MI210 bandwidth (STREAM/BabelStream-class) — §8.3.1's second denominator now
+  EXISTS** ✅ 2026-08-03. **1433.3 GB/s achievable = 87.5% of the 1638 GB/s datasheet peak**; triad 1371.1;
+  p20–p80 within ~1.2%; correctness PASS. Instrument `epyc-inference-research`
+  `scripts/benchmark/mi210_achievable_bandwidth.sh`, receipt
+  `data/mi210-achievable-bandwidth/20260803T124401Z/receipt.json`
+  (SHA-256 `0aab9c7e135929e72fd3a5c2498eb807dc16d0f80b773f063e1df3524df7b4d3`), committed `328b768d`.
+  Co-residency recorded: three servers resident and **idle**, autopilot paused, 0 busy slots, 0% GPU use.
+  **Correction factor 1.143×** — the prior ~1.3–1.4 TB/s estimate was low. **Both denominators must now be
+  carried per §8.3.1, and a cross-vendor comparison must stay spec-to-spec**: converting our numbers to an
+  achievable basis while leaving a competitor's on a spec basis makes the gap look smaller without it
+  being smaller.
+- [ ] Put both denominators into the P0.1 profile manifest as substrate constants, with the basis of each
+  attainment figure recorded alongside it rather than inferred.
+- [ ] Measure **H2D/D2H** on the Gen4 x16 link — still unmeasured, and now unblocked:
+  `rocm-bandwidth-test` is available (see the profiler tooling note in
+  [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md)). Needs an operator-approved window.
 - [ ] Import the **derived** MI210 compute-roofline constants as substrate facts, marked `[D]` and never
   upgraded by import (§19.0 rule 4): 181.0 TFLOPS fp16/bf16, 181.0 TOPS int8 (**CDNA2 does not double
   int8**; no FP8/FP4/TF32), fp32 matrix 45.3 / vector 22.6, **ridge 110.5 FLOP/byte**, and

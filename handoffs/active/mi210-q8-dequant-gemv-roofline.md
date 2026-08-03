@@ -66,11 +66,39 @@ already produced one wrong verdict. They are filed separately in the checklist b
 grid entry expanding to 8 values. The 4+4 ratio holds across every SIMD path including our production iqk
 (`iqk_gemm_iquants.cpp:176-181`, signs `:86-90`), AVX2, and CUDA.
 
-**Calibration caveat that bounds every percentage on this page.** All attainment figures — ours and
-everyone's — are against **spec** bandwidth, not achievable. No measured MI210 STREAM/BabelStream figure
-exists anywhere in the repo. If real achievable is ~1.3–1.4 TB/s (typical for HBM2e), **every MI210
-percentage above rises 17–26%** and the NVIDIA gap narrows correspondingly. The measurement is seeded in
-`autokernel-research-loop.md` §14 AK1 and is a one-hour run.
+**Calibration — MEASURED 2026-08-03, and the correction is smaller than estimated.**
+`epyc-inference-research` `328b768d`, receipt
+`data/mi210-achievable-bandwidth/20260803T124401Z/receipt.json`
+(SHA-256 `0aab9c7e135929e72fd3a5c2498eb807dc16d0f80b773f063e1df3524df7b4d3`).
+
+**Achievable = 1433.3 GB/s, i.e. 87.5% of the 1638 GB/s datasheet peak** — high for HBM2e. Triad 1371.1;
+per-kernel medians copy 1412.5 / mul 1413.9 / add 1362.3 / triad 1362.1, p20–p80 within ~1.2%; 10 warmup,
+50 timed, correctness PASS (max abs err 0.0). **Correction factor 1.143×, not the 1.17–1.26× estimated
+here before the run — the prior ~1.3–1.4 TB/s guess was low.**
+
+| Rung | % of spec (1638) | % of **achievable** (1433.3) |
+|---|---|---|
+| fp16 | 62.6 | **71.5** |
+| fp16, vLLM-ROCm | 69.2 | **79.1** |
+| Q8_0 | 50.2 | 57.4 |
+| Q4_K | 35.1 | 40.1 |
+| MoE-bf16 | 34.4 | 39.3 |
+| MoE-Q8 (frontdoor) | 21.3 | 24.3 |
+| **MoE-IQ2 (architect)** | **10.3** | **11.8** |
+| Qwen3-Next-80B i1-IQ2 | 3.3 | 3.8 |
+
+**⚠ THE BASIS WARNING, and it is the most important line on this page.** Converting *our* numbers to an
+achievable basis while leaving *someone else's* on a spec basis makes the gap look smaller without it
+being smaller. **The AMD-vs-NVIDIA comparison must stay spec-to-spec** — our fp16 62.6 against DGX Spark
+GB10's 77–80, both against datasheet — **until somebody measures GB10's achievable bandwidth.** Our
+71.5%-of-achievable set beside their 77–80%-of-spec is a mixed-basis comparison and is not a reading.
+This measurement makes our own numbers physically meaningful; **it does not narrow the NVIDIA gap at all.**
+That is precisely the error found this session in AMD's own KB, where a per-OAM TFLOPS figure was divided
+by a per-GCD bandwidth to give a ridge point off by 2×.
+
+Use the **achievable** column for headroom and campaign sizing (it is the real roof); use the **spec**
+column for any cross-vendor comparison, and say which one you used — a utilisation quoted without its
+denominator is not a number.
 
 **Free incidental finding in our own CPU tree, filed here because it is the same IQ2 sign path:**
 `iqk_gemm_iquants.cpp` contains an AVX512-VPOPCNTDQ routine deriving IQ2 signs arithmetically with **zero

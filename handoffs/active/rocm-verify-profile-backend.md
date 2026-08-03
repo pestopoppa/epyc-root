@@ -62,12 +62,44 @@ The C4 row above is scored HIGH risk for "CDNA2 counter taxonomy unproven". That
 chronology rather than as an inconsistency is the point: the earlier runs are still valid evidence, and
 the fix is a host action (reinstall/re-pin), not a re-litigation of which file is right.
 
-- [ ] Restore `rocprofv2` (and evaluate `rocprofv3`) on the host; establish which of the 2026-07-04 →
-  2026-07-20 changes removed them, so it does not recur mid-campaign
-- [ ] Install `rocm-bandwidth-test` — it is also the instrument for the achievable-bandwidth denominator
-  §8.3.1 requires (`autokernel-research-loop.md` §14 AK1)
-- [ ] Re-score the C4 risk row once tooling exists: "no usable gfx90a signal" and "no profiler installed"
-  are different findings and must not be allowed to alias
+### CLOSED 2026-08-03 — tooling side-loaded, and the CDNA2 counter taxonomy is PROVEN
+
+- [x] **`rocprofv2`, `rocprof` (v1) and `rocm-bandwidth-test` are available** ✅ 2026-08-03. Version-matched
+  to ROCm **6.2.0-66** exactly — a mismatched profiler against a 6.2 runtime is a defect generator, so the
+  match is load-bearing, not incidental. Activate with:
+  `source /mnt/raid0/llm/tools/rocm-profilers-6.2/env.sh`
+- [x] **`SQ/TA/TCC` counter taxonomy for gfx90a is no longer unproven** ✅ 2026-08-03: **465 distinct
+  counters across 12 blocks**, enumerated on our own card. All seven counters our MI210 work already cites
+  are present — `SQ_INSTS_VALU`, `SQ_BUSY_CYCLES`, `SQ_VALU_MFMA_BUSY_CYCLES`, `GRBM_GUI_ACTIVE`,
+  `TCC_HIT_sum`, `TCC_MISS_sum`, `TCC_EA_RDREQ_sum`. Full listing:
+  `/mnt/raid0/llm/tools/rocm-profilers-6.2/evidence/gfx90a-counters-20260803.txt`
+- [x] **Per-block simultaneous-collection limits captured** ✅ 2026-08-03 — the constraint a C4 pass must
+  schedule around, and the reason a naive collect-everything run silently drops counters:
+  `SQ 8 · SPI 6 · TCA 4 · TCC 4 · TCP 4 · CPC 2 · CPF 2 · GRBM 2 · TA 2 · TD 2`
+
+**Installed by EXTRACTION, not by `apt install`, and the distinction is deliberate.** `/opt/rocm` is a
+bind mount of the host's `/opt/rocm-6.2.0`, shared by four live GPU servers and three FROZEN kernel trees
+running three different ggml generations. An apt install would write into that shared tree and could pull
+dependency upgrades of ROCm runtime libraries underneath a production server — the exact silent-breakage
+mode the `LD_LIBRARY_PATH` discipline exists to prevent. The packages were `dpkg -x`-extracted to
+`/mnt/raid0/llm/tools/rocm-profilers-6.2` (19 MB); **nothing outside that directory was modified** and
+reversal is `rm -rf`.
+
+Two incidental findings worth keeping: `libpciaccess.so.0` was **absent from this container entirely**
+(our own handoff had recorded "add `/usr/lib/x86_64-linux-gnu` to `LD_LIBRARY_PATH`" as the fix — but the
+library was not there to find), and `rocprofv2` derives its ROCm root from its own `argv[0]` rather than
+from `$ROCM_PATH`, so the prefix needs a mirrored `.info/version`. Both are handled in `env.sh`.
+
+- [ ] **Re-score the C4 risk row from HIGH.** "No usable gfx90a signal" and "no profiler installed" were
+  aliasing; the second is now resolved and the first is newly testable. The taxonomy exists and is rich —
+  what remains unproven is whether an LLM can read it usefully, which is the actual C4 question
+- [ ] `omniperf` extracted but **not runnable** — needs a Python venv (`astunparse`, `colorlover`, …).
+  Deferred deliberately: our chosen C4 path is GEAK-v2's LLM-reads-raw-`rocprof`, so omniperf is a
+  fallback, not the critical path. Reopen if the raw-counter path fails
+- [ ] **Standing caveat unchanged by any of this**: `rocprof` v1's SQ/TA counters read ZERO on this box and
+  it aborts at init on graph-enabled builds. Use `rocprofv2`
+- [ ] Having the tool does **not** authorize profiling a live server. GPU runs remain operator-approved and
+  co-residency is owned by whoever owns the inference
 
 ## C6 monitor design — five rules from a sabotage/sandbagging red-team (intake-979; 2026-08-03)
 

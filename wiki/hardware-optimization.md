@@ -30,11 +30,19 @@ entirely down the quant ladder, inside `mul_mat_vec_q`, which is **77.8% of deco
 calibration, DGX Spark GB10 reaches **77–80% at Q4_K_M dense across five models on the same engine** —
 NVIDIA's quant sag is 5–10 pp; ours is 27 pp. The gap is in the low-bit path, and it is ours to close.
 
-**Every percentage above is against SPEC bandwidth, not achievable.** No measured MI210
-STREAM/BabelStream figure exists anywhere in this project. If real achievable is ~1.3–1.4 TB/s (typical
-HBM2e), every MI210 figure rises **17–26%** and the NVIDIA gap narrows correspondingly. That is a
-one-hour measurement that calibrates the denominator of every roofline claim we have ever made, and it
-has not been run.
+**The denominator was measured the same day (2026-08-03): achievable = 1433.3 GB/s, 87.5% of the
+1638 GB/s datasheet peak** — high for HBM2e. Correction factor **1.143×**, so fp16's 62.6%-of-spec is
+**71.5%-of-achievable** and Q4_K's 35.1% is 40.1%. The prior estimate (~1.3–1.4 TB/s, a 17–26% rise) was
+**low**, and it is worth recording that the guess erred in a knowable direction: HBM2e on a well-tuned
+part attains more of its datasheet than the folklore figure suggests.
+
+**⚠ And the thing that is easy to get wrong: this does NOT narrow the AMD-vs-NVIDIA gap.** Converting our
+numbers to an achievable basis while a competitor's stay on a spec basis makes the gap *look* smaller
+without it *being* smaller. The cross-vendor comparison must stay **spec-to-spec** — our 62.6% against
+DGX Spark's 77–80%, both against datasheet — until somebody measures GB10's achievable bandwidth. Use the
+achievable basis for headroom and campaign sizing; use the spec basis for comparison; **always say which
+one you used.** This is the same failure mode as the vendor-KB defect two paragraphs down, where a
+per-OAM TFLOPS figure was divided by a per-GCD bandwidth to give a ridge point off by 2×.
 
 ### The compute roofline, which nobody had computed
 

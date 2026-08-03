@@ -46,6 +46,31 @@ basis.
 No change. The constants stay as `[D]`-marked handoff prose, citable within the kernel handoffs but not
 as substrate facts, and §8.3.1's two-denominator rule stays unsatisfiable.
 
+### UPDATE 2026-08-03 — the measured denominator now EXISTS, which strengthens option C
+
+The STREAM-class run landed the same day this package was written: **achievable = 1433.3 GB/s, 87.5% of
+the 1638 GB/s datasheet peak**; correction factor **1.143×**. Receipt
+`epyc-inference-research/data/mi210-achievable-bandwidth/20260803T124401Z/receipt.json`, SHA-256
+`0aab9c7e135929e72fd3a5c2498eb807dc16d0f80b773f063e1df3524df7b4d3`, committed `328b768d`. Graded
+OBSERVATION; three servers resident and idle, autopilot paused, 0 busy slots, 0% GPU use.
+
+So option C is no longer "ratify derived constants and schedule the measurement" — **both denominators
+are available now** and can be ratified together. Two things this changes in the ask:
+
+1. **A third constant joins the set: the ridge point has two bases.** 110.5 FLOP/byte against spec
+   bandwidth, **126.3 against measured** — and the second is **mixed-basis** (spec FLOPS ÷ measured
+   bandwidth), because the matrix units have not been measured. It must be ratified *with that label*, not
+   as a cleaner replacement for the first.
+2. **A usage rule belongs in the amendment, not just the numbers.** Use the achievable basis for headroom
+   and campaign sizing; use the spec basis for any cross-vendor comparison, and always say which. This is
+   not pedantry — converting our own figures to an achievable basis while a competitor's stay on a spec
+   basis makes the gap look smaller without it being smaller, and that is the exact error found this
+   session in AMD's own KB.
+
+**Amended recommendation: still C, now executable in one step.** The estimate that preceded the run
+(~1.3–1.4 TB/s, a 17–26% rise) was low — recorded here because a ratified constant should carry the fact
+that its predecessor guess was wrong in a knowable direction.
+
 ---
 
 ## DP-2 — Speedup aggregation: correct-subset harmonic mean, and a prohibition

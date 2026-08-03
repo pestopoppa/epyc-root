@@ -134,13 +134,7 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
   workaround `-mllvm --amdgpu-unroll-threshold-local=600`. We are on ROCm 6.2 so this does not bite today;
   it belongs on the build-flag checklist **before any ROCm upgrade**.
 
-**Blocker that gates several of the above — profiler tooling.** `rocprofv2`, `rocprof` and `omniperf` were
-absent as of 2026-07-20 (`mi210-big-model-and-acceleration-roadmap.md:205`); `rocprof` v1's SQ/TA counters
-read zero and it aborts on graph builds; `rocm-bandwidth-test` is not installed; QuixiCore's timing
-recipe assumes `rocprofv3`, also absent. Earlier files report successful rocprofv2 runs on 2026-07-04, so
-**the chronology reads as a regression, not a contradiction** — something changed between those dates.
-Combined with "CDNA2 counter taxonomy unproven", **C4 is blocked on tool availability as well as on metric
-selection.** Host action; not delegable to a sub-agent.
+**Profiler tooling — RESOLVED 2026-08-03 (was a blocker).** `rocprofv2`, `rocprof` and `rocm-bandwidth-test` are now available, version-matched to ROCm 6.2.0-66, side-loaded by extraction rather than installed so nothing in the shared `/opt/rocm` bind mount changed: `source /mnt/raid0/llm/tools/rocm-profilers-6.2/env.sh`. **The gfx90a counter taxonomy is proven** — 465 counters across 12 blocks, enumerated on our own card, including every counter this program already cites. Details, per-block collection limits, and the two path quirks: [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md). The LDS bank/phase solver and the C4 analyzer are unblocked on tooling; `omniperf` still needs a Python venv and is deliberately deferred as a non-critical-path fallback.
 
 ## Open questions (decided ones live in the deep dive §5)
 - Which controller wins on gfx90a? Unknown until the AgentKernelArena A/B runs on the MI210 with EPYC ops.

@@ -27,7 +27,15 @@ but any citation must carry the `[D]`._
 | int8 matrix | **181.0 TOPS** `[D]` | **CDNA2 does NOT double int8** — unlike CDNA3 |
 | fp32 matrix / vector | 45.3 / 22.6 TFLOPS `[D]` | |
 | FP8 / FP4 / TF32 | **none** | no matrix-core support on gfx90a at any rate |
-| **Ridge point** | **110.5 FLOP/byte** `[D]` | vs 1.638 TB/s spec BW (113.1 on a decimal-GB basis) |
+| **Ridge point (spec basis)** | **110.5 FLOP/byte** `[D]` | 181.0 TFLOPS ÷ 1.638 TB/s spec BW |
+| **Ridge point (achievable BW)** | **126.3 FLOP/byte** `[D,M]` | 181.0 TFLOPS ÷ **1433.3 GB/s measured** (2026-08-03) |
+
+**The second ridge is MIXED-BASIS and must be labelled as such.** It divides a *spec* FLOPS number by a
+*measured* bandwidth number, because we have measured the memory system and not the matrix units. It is
+the right figure for "how much compute per byte would saturate the real memory system **if** the matrix
+units ran at spec", and it is the wrong figure for anything else. Measuring achievable FLOPS would give a
+clean second basis; nobody has. Mixing bases without saying so is exactly the defect found in AMD's own
+KB this session (per-OAM TFLOPS ÷ per-GCD bandwidth → a ridge off by 2×).
 
 For contrast the RTX PRO 6000 Blackwell fp16 ridge is **281** (FP4 ridge 1124) — **the MI210 is the more
 bandwidth-balanced part**, so a bandwidth-directed program is the arithmetically correct one here.
@@ -38,10 +46,15 @@ bandwidth-balanced part**, so a bandwidth-directed program is the arithmetically
    fp16 1.00 / Q8_0 1.88 / Q4_K 3.56 / IQ2 5.19 FLOP/byte — **31–113× below the knee**. At that AI the
    matrix units cannot exceed ~1.7–3.2% busy *at any bandwidth*. The 2026-07-04 profile was reading the
    physics, not a missed optimization.
-2. **The batch knee is now predictable:** `B* = 110.5 × bytes_per_weight / 2` → **Q4_K 31, Q8_0 59,
-   bf16 110**. This **retro-predicts the already-measured bf16 knee at B≈96–128**, which is the
-   confirmation that the arithmetic is anchored to something we observed rather than to spec alone. Above
-   `B*`, bandwidth attainment stops being the right ceiling and the matrix roofline takes over.
+2. **The batch knee is now predictable:** `B* = ridge × bytes_per_weight / 2` → on the spec basis
+   **Q4_K 31, Q8_0 59, bf16 110**; on the achievable-BW basis **Q4_K 36, Q8_0 67, bf16 126**. Above `B*`,
+   bandwidth attainment stops being the right ceiling and the matrix roofline takes over.
+
+   **Honest note on which basis fits better: the data does not say.** The measured bf16 knee is
+   **B≈96–128**, and *both* predictions (110 and 126) fall inside that interval. The observation confirms
+   the arithmetic is anchored to something real; it does **not** discriminate between the two bases, and
+   claiming the achievable-basis figure "fits better" would be reading precision the measurement does not
+   have. Narrowing the observed knee would settle it.
 
 **Defect to carry — do not import AMD's own number.** GEAK's `perf_knowledge/hardware/cdna2_mi200/memory.md`
 computes `362 TF / 1.6 TB/s ≈ 226 FLOP/byte` as a **per-GCD** ridge, while its own `arch.md` labels the same
