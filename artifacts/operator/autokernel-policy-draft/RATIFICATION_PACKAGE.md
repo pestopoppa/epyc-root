@@ -92,6 +92,8 @@ measurements pending to wait for.
 
 ### One thing to know before you sign
 
+**RESOLVED 2026-08-03 — this section is superseded.** The matcher was repaired in epyc-root `6f1c4a8b` (the right-hand side of the `[[ … == … ]]` is now unquoted, restoring bash pattern matching) and the missing wildcard cases were added to the canonical suite `scripts/hooks/tests/test_trust_boundary_edit.py` in `51613c9e`. Annexes B, Q, G **and the new Annex K** are enforced by layer 1 today; the suite asserts all four block and that ordinary files, a non-`.md` file inside the protected directory, and a `.md` file outside it do not. Deferred item D5 is CLOSED. The text below is retained as the record of what was found and why the test exists.
+
 **Layer-1 hook enforcement of `measurement/protocols/*.md` does not work today**, and this package
 does not fix it. `scripts/hooks/check_trust_boundary_edit.sh:90` quotes the right-hand side of its
 `[[ … == … ]]`, which disables bash pattern matching, so **every `glob:` entry in the gate list

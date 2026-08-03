@@ -428,6 +428,8 @@ hand-written ledger; see §10 residual 3.
 
 ---
 
+**RESOLVED 2026-08-03 — this section is superseded.** The matcher was repaired in epyc-root `6f1c4a8b` (the right-hand side of the `[[ … == … ]]` is now unquoted, restoring bash pattern matching) and the missing wildcard cases were added to the canonical suite `scripts/hooks/tests/test_trust_boundary_edit.py` in `51613c9e`. Annexes B, Q, G **and the new Annex K** are enforced by layer 1 today; the suite asserts all four block and that ordinary files, a non-`.md` file inside the protected directory, and a `.md` file outside it do not. Deferred item D5 is CLOSED. The text below is retained as the record of what was found and why the test exists.
+
 ## 6. Verify, do not amend — but the glob is declarative only until the matcher is repaired
 
 **Verify, do not amend.** `coordination/session-bus/human_only_paths.yaml:32-34` pins
