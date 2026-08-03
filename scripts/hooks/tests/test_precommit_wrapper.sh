@@ -18,9 +18,18 @@ set -uo pipefail
 #
 # Nothing tested the WRAPPER. pii_precommit.sh itself was correct and had its
 # own tests; the composition around it was not covered, and the composition was
-# the defect. The sibling repos happened to be written correctly (research uses
-# `exec`, orchestrator uses `|| exit $?`), which is why this never surfaced
-# there.
+# the defect.
+#
+# CORRECTION 2026-08-03: an earlier version of this comment claimed the sibling
+# repos "happened to be written correctly (research uses `exec`, orchestrator
+# uses `|| exit $?`)". That was true of research and FALSE of orchestrator,
+# which called both hooks bare exactly as epyc-root did. Reproduced there in a
+# throwaway repo: AWS access key + secret staged, wrapper printed
+# "BLOCKED: [secret] AWS secret access key", exited 0, commit landed. Fixed the
+# same way (accumulate, exit non-zero if any hook failed). The assumption is
+# recorded because it is the interesting part: the test was written believing
+# two of three repos were fine, and it was the test — not the belief — that
+# found otherwise.
 #
 # This test drives each installed wrapper end-to-end against a throwaway repo
 # with a known-bad blob staged, and asserts a non-zero exit. It also asserts the
