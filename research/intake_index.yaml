@@ -47230,7 +47230,8 @@
   - '2601.02553'
   - '2601.03192'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/engram-conditional-memory.md
   cross_references:
     chapters:
     - 08-cost-aware-rewards.md
@@ -47417,7 +47418,8 @@
   - '2503.14476'
   - '2605.28751'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -47614,7 +47616,8 @@
   - '2604.13018'
   - '2606.24530'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters: []
     handoffs:
@@ -47740,7 +47743,8 @@
   - 'Perplexity, KL-divergence or imatrix calibration details: NOT-FOUND-IN-SOURCE'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters: []
     handoffs:
@@ -47844,7 +47848,8 @@
   - No .imatrix file is published, verified by full 115-file enumeration
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters: []
     handoffs:
@@ -47960,7 +47965,9 @@
   referenced_arxiv_ids:
   - '2402.13291'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/security-review-skill.md
+  - handoffs/active/reviewer-typed-artifacts.md
   cross_references:
     chapters: []
     handoffs:
@@ -48192,7 +48199,9 @@
   - 'Third-party or independent results: NONE FOUND. Community response located was interest plus explicit skepticism, not replication.'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
+  - handoffs/active/tq3-quantization-evaluation.md
   cross_references:
     chapters:
     - 02-moe-optimization.md
@@ -48287,7 +48296,9 @@
   - 'SELF-DECLARED CONFOUND: 13.9% of MMLU-Pro answers hit the 4096-token cap and score 49.5% correct versus 86.0% for answers that finish; FP8 truncates at 13.0%, so the -1.4 delta is preserved but BOTH absolutes are conservative by roughly 2-3 points - stated as the main reason their FP8 baseline reads 82.3 where Qwen publishes 85.2'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
+  - handoffs/active/tq3-quantization-evaluation.md
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -48535,7 +48546,9 @@
   - NOT-FOUND-IN-SOURCE - no measured tool scores are published; the README metrics are illustrative
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/security-review-skill.md
+  - handoffs/active/reviewer-typed-artifacts.md
   cross_references:
     chapters: []
     handoffs:
@@ -48620,7 +48633,8 @@
   - 'Instrumentation: time -v for execution time and VmRSS sampled from /proc/[pid]/status for memory'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -48698,7 +48712,8 @@
   - 'Metric: %OPT requires a program to be at least 10% faster AND pass all unit tests'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -48783,7 +48798,8 @@
   - 'Measurement protocol: each unit test run 20 times after a warm-up of three performance-related unit tests; outliers dropped by IQR with multiplier k=1; a gain counts only if Mann-Whitney U gives p<0.1 versus the pre-patch distribution; the reported gain is a CONSERVATIVE MINIMUM delta; non-significant speedups score 0. Docker pinned to 1 CPU core during collection and 5 during evaluation.'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -48896,7 +48912,8 @@
   - 'Timing controls: Docker cpuset-cpus explicitly to prevent multiple benchmark executions contending for the same cores; profiler sampling at 0.1 ms (10 kHz); fixed AWS i7ie.metal-48xl instances with 96 physical cores; Table 6 reports triple execution as mean (min, max)'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -49006,7 +49023,8 @@
   - 'Noise control: fixed GCP n2-standard-64; each worker is 4 vCPUs pinned to disjoint logical-core groups with NO two vCPUs sharing a physical core; 16 GB cap; container bound to the NUMA memory node matching its physical cores; Docker daemon and containerd pinned to a reserved disjoint CPU set; images prebuilt so no install work is on the timed path; measurement via timeit.repeat() for the full runtime distribution; curation retains only instances whose runtime improvement exceeds twice the measurement standard deviation'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -49137,7 +49155,8 @@
   - 'Measurement protocol: 12 measurements per case with the highest and lowest removed before averaging; 5-second per-measurement wall cap; measured on Ubuntu 20.04, Xeon 8358P, 128 cores'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -49225,7 +49244,8 @@
   - 'vision_config: encoder type hmlp, 4 layers, patch_size 40, temporal_patch_size 2, 3 channels. audio_config: dmel mode, 80 mel bins, 16 kHz'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters: []
     handoffs:
@@ -49304,7 +49324,8 @@
   - 'No perplexity, quality or throughput numbers: NOT-FOUND-IN-SOURCE'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/tq3-quantization-evaluation.md
   cross_references:
     chapters: []
     handoffs:
@@ -49361,7 +49382,13 @@
   - 'Relationship to our production kernel: SIBLING, not descendant. 67a433bf4 (our v8 freeze) vs 8bb909374d (their fork point): status=diverged, ahead_by 86, behind_by 62, merge_base a8dc0e3269a5 (2026-07-16). Both descend from upstream, diverging about 10 days apart.'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -49412,7 +49439,13 @@
   - 'Code-quality signal: marlin_utils_fp8.py:336 gates on any(gfx in gcn_arch for gfx in ["gfx90",...]) - the bare prefix "gfx90" ALSO matches gfx900/gfx906/gfx90c (Vega-era) which have no MFMA at all.'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -49476,7 +49509,13 @@
   referenced_arxiv_ids:
   - '2511.08083'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -49538,7 +49577,13 @@
   referenced_arxiv_ids:
   - '2507.23194'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -49593,7 +49638,13 @@
   referenced_arxiv_ids:
   - '2511.08083'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -49638,7 +49689,13 @@
   reported_results: []
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -49684,7 +49741,13 @@
   referenced_arxiv_ids:
   - '2511.08083'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -49738,7 +49801,13 @@
   - Gates can be DISJUNCTIVE ("vmem-to-lds-load-insts|asynccnt") - read the WHOLE string.
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -49794,7 +49863,13 @@
   - 'Published CDNA2 performance data: NONE FOUND.'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -49851,7 +49926,13 @@
   - '2511.08083'
   - '2504.17577'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -49905,7 +49986,13 @@
   - KernelBench L1 100%, L2 90%
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -49960,7 +50047,13 @@
   - roughly 10x fewer hipMemcpyAsync calls
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -50010,7 +50103,13 @@
   - workaround restores performance via -mllvm --amdgpu-unroll-threshold-local=600
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -50069,7 +50168,8 @@
   referenced_arxiv_ids:
   - '2408.06450'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50137,7 +50237,8 @@
   - Licence Apache-2.0; native local-endpoint support via --backend openai --base-url; roughly 15 minutes per model; about 100 MB; actively maintained as of 2025-10 with 1790 stars.
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50196,7 +50297,8 @@
   - Licence(code) NONE; venue NeurIPS D&B 2024; disk ~3 GB; 256 tasks x K=5; sandboxed; last maintained 2026-03 (87 stars).
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50260,7 +50362,8 @@
   - THE llama-cpp-python PAIR ALONE is roughly 21 GB - both affordable AND the most on-domain asset in the cluster.
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50337,7 +50440,9 @@
   - '2605.15222'
   - '2607.07619'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
+  - handoffs/active/autokernel-research-loop.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50401,7 +50506,8 @@
   - Each task supplies a fixed interface, a BASELINE implementation, an EXPERT-OPTIMIZED reference, a correctness oracle and a harness.
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50458,7 +50564,8 @@
   - purpose-built performance tests raise detection to 24-25%
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50529,7 +50636,8 @@
   - 'TEST-LABEL LEAKAGE IN THE BENCHMARK ITSELF, documented in the README: multi-modal-gesture-recognition public test .mat files leak labels; smartphone-decimeter-2022 leaks via span_log.nmea. Fixes are DELIBERATELY POSTPONED "to avoid invalidating the leaderboard", deferred to a v2 in openai/frontier-evals.'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50592,7 +50700,8 @@
   referenced_arxiv_ids:
   - '2410.07095'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters: []
     handoffs:
@@ -50655,7 +50764,8 @@
   - '2410.07095'
   - '2502.13138'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters: []
     handoffs:
@@ -50712,7 +50822,8 @@
   - 'Scale CONFIRMED: 28+ submissions across 9 benchmarks; >1,000 runs across 12 models with harness-level cheating on Terminal-Bench 2.0 and HAL USACO; the top 3 Terminal-Bench 2 submissions are all cheating; 31 confirmed reward-hacking cases across 6 benchmarks (~3x prior audits); CyBench 16/464 = 3.4% (~4x prior work).'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50762,7 +50873,8 @@
   referenced_arxiv_ids:
   - '2410.07095'
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters: []
     handoffs:
@@ -50814,7 +50926,8 @@
   - Sec E establishes that the empirical-variance z statistic, the bootstrap, and the sign test agree, so no resampling machinery is required.
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50876,7 +50989,10 @@
   - 'Retry ablation: presence 3/11 -> 9/11; neutral-prompt retry also 9/11.'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
+  - handoffs/active/security-review-skill.md
+  - handoffs/active/reviewer-typed-artifacts.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50932,7 +51048,8 @@
   - Correctness increased rather than decreased under the speed objective, attributed to added data and to incorrect samples as negative rewards.
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -50985,7 +51102,8 @@
   - Dataset CC-BY-4.0; SandboxFusion executor Apache-2.0, 1,050 stars, pushed 2026-07-14.
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -51030,7 +51148,8 @@
   reported_results: []
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters: []
     handoffs:
@@ -51078,7 +51197,8 @@
   reported_results: []
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -51131,7 +51251,8 @@
   - Seven multi-hop QA benchmarks. No embodied-agent evaluation of any kind.
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/engram-conditional-memory.md
   cross_references:
     chapters: []
     handoffs:
@@ -51184,7 +51305,8 @@
   - 'Programmatic feedback extraction: object mention 0/121 -> 134/156 (86%); RRR 0.64 -> 0.10.'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/engram-conditional-memory.md
   cross_references:
     chapters: []
     handoffs:
@@ -51235,7 +51357,8 @@
   - 'Unexplained inversion: 8B model 32.8 vs 4B model 49.5.'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/engram-conditional-memory.md
   cross_references:
     chapters: []
     handoffs:
