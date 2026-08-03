@@ -87,7 +87,15 @@ while IFS= read -r glob; do
   [[ -z "$glob" ]] && continue
   for root in "${ROOTS[@]}"; do
     candidate=$(realpath -m "${root}/${glob}" 2>/dev/null || printf '%s' "${root}/${glob}")
-    if [[ "$TARGET" == "$candidate" ]]; then
+    # The RHS is deliberately UNQUOTED so bash treats it as a glob pattern.
+    # Quoting it forces a literal string comparison, which silently disables
+    # every wildcard entry in the gate list: `measurement/protocols/*.md` then
+    # compares against the literal path `.../protocols/*.md`, which no real file
+    # ever equals. That left Annex B, Q and G — which MEASUREMENT.md:17-19 says
+    # carry the SAME trust boundary as the constitution — agent-writable, with
+    # the guard reporting success. Do not re-add the quotes; run
+    # test_check_trust_boundary_edit.sh after touching this comparison.
+    if [[ "$TARGET" == $candidate ]]; then
       cat >&2 <<EOF
 BLOCKED: $FILE is on the human-only write list.
 
