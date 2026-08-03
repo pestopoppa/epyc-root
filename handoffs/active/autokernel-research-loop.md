@@ -796,32 +796,40 @@ If the actor declares it, the actor controls its own release scope. Therefore:
 
 Declared, read-only reference implementations the loop may study and port from:
 
-Each row declares a **harvest class**, because the two are legally and practically different:
-`code_portable` means source may be brought across under a compatible licence with attribution;
-`design_oracle` means the *algorithm* may be studied and reimplemented but the code may not be copied.
-Confusing them is a licensing incident, not a style choice.
+Each row declares a **harvest class**, and the axis is **architectural portability, not licensing**.
+Standing project policy is open-source self-hosted with no commercial use, where licences are not
+blockers — an earlier revision of this section made licensing a gate, which was wrong. Attribution is
+recorded as courtesy and provenance, never as a condition of entry.
+
+What actually decides the cost of harvesting is whether the artifact can run on our target:
+`portable_source` means the code compiles and runs on gfx90a or EPYC and may simply be brought across;
+`reimplement` means the algorithm is worth having but the code is not — CUDA-only instructions, a
+different memory hierarchy, or an unavailable intrinsic. Misclassifying is not a legal problem; it is a
+schedule problem, because a `reimplement` oracle costs authoring effort that a `portable_source` one
+does not.
 
 | Oracle | Class | Why it is worth reading |
 |---|---|---|
-| `ik_llama.cpp` (on disk) | `code_portable` (MIT) | source of the iqk lineage; the single largest banked gain this project has |
-| upstream `llama.cpp` / `ggml` | `code_portable` (MIT) | fixes and optimizations the fork has not taken; the fork diverges continuously |
-| AMD **composable_kernel** / hipBLASLt / rocBLAS | `code_portable` (MIT/BSD) | **the most directly relevant unexploited source for gfx90a** — CDNA2 GEMM/attention tiling written by the vendor for this exact architecture |
-| AMD **AITER** and ROCm kernel repos | `code_portable` (MIT) | AMD's own inference kernel work, same target hardware |
-| **FlashAttention / FlashInfer** | `code_portable` (BSD/Apache-2) | attention tiling, KV layout, paged-attention kernels |
-| **CUTLASS** | `design_oracle` (BSD-3, CUDA-targeted) | tiling, pipelining and epilogue *design*; instructions do not port to gfx90a |
-| **vLLM / SGLang / TensorRT-LLM** | `design_oracle` | scheduling, paged KV, continuous batching as design oracles; TensorRT-LLM in particular is read-only |
-| **Marlin / EXL2 / AWQ / GPTQ kernels** | `code_portable` (Apache-2/MIT, check per repo) | low-bit GEMV and dequant layouts — directly adjacent to the G2/G3 seed families |
-| **Triton / MLC / TVM kernel corpora** | `design_oracle` | autotuning and layout search strategies |
+| `ik_llama.cpp` (on disk) | `portable_source` | source of the iqk lineage; the single largest banked gain this project has |
+| upstream `llama.cpp` / `ggml` | `portable_source` | fixes and optimizations the fork has not taken; the fork diverges continuously |
+| AMD **composable_kernel** / hipBLASLt / rocBLAS | `portable_source` | **the most directly relevant unexploited source for gfx90a** — CDNA2 GEMM/attention tiling written by the vendor for this exact architecture |
+| AMD **AITER** and ROCm kernel repos | `portable_source` | AMD's own inference kernel work, same target hardware |
+| **FlashAttention / FlashInfer** | `portable_source` where a HIP path exists, else `reimplement` | attention tiling, KV layout, paged-attention kernels |
+| **CUTLASS** | `reimplement` — CUDA instructions, no gfx90a path | tiling, pipelining and epilogue *design*; instructions do not port to gfx90a |
+| **vLLM / SGLang / TensorRT-LLM** | `reimplement` | scheduling, paged KV, continuous batching as design oracles; TensorRT-LLM in particular is read-only |
+| **Marlin / EXL2 / AWQ / GPTQ kernels** | mixed — CUDA cores `reimplement`, layout/packing `portable_source` | low-bit GEMV and dequant layouts — directly adjacent to the G2/G3 seed families |
+| **Triton / MLC / TVM kernel corpora** | `reimplement` | autotuning and layout search strategies |
 
 This list is a starting set, not a closed one. New oracles enter through the project's existing
-`research-intake` pipeline rather than by an agent adding a row: intake verifies the licence, whether
-gfx90a is actually supported, whether the claimed result was measured on comparable hardware, and
-assigns the harvest class. An oracle whose class cannot be established does not enter.
+`research-intake` pipeline rather than by an agent adding a row: intake verifies whether gfx90a or
+EPYC is actually supported, **normalises the claimed result to roofline utilisation** (§8.3.1) so it
+can be compared with our own, and assigns the harvest class. An oracle whose class cannot be
+established does not enter.
 
 Rules: never build or measure a production claim from an oracle tree; a port is a normal candidate and
-pays T0–T3 identically; every port records the oracle commit, the harvest class relied on, and a
-licence/attribution check. Porting *from* a `design_oracle` records the algorithm's source and states
-that the implementation is independent. The
+pays T0–T3 identically; every port records the oracle commit, the harvest class relied on, and an
+attribution note. A `reimplement` port records the algorithm's source and states that the
+implementation is independent — provenance, so a later reader can find the original reasoning. The
 project's largest recent kernel gain came from porting and enabling iqk (`iqk-port`,
 `iqk/enable-iquants-v7-20260721`; +33–43% prefill era), so this is a first-class campaign kind, not a
 footnote.
@@ -1099,6 +1107,51 @@ Selection follows the hierarchy: placement and launch configuration → dispatch
 layout/repack → operator fusion → work scheduling → new kernel → scheduler architecture → alternate
 engine. A cheaper layer may be skipped only with an evidence receipt showing why it cannot explain the
 measured gap.
+
+### 8.3.1 Roofline utilisation — the normalising metric (operator, 2026-08-03)
+
+Raw speedups do not transfer across hardware and are the main way a published kernel result misleads
+this project. "2× faster" is unusable: it was measured on different bandwidth, a different memory
+hierarchy, and instructions we may not have. **Fraction of achievable memory bandwidth actually used
+against the theoretical decode roof does transfer**, and it is the metric both discovery and oracle
+intake normalise to.
+
+Decode is bandwidth-bound on both backends, so for a given regime:
+
+```
+bytes_per_token   = active weight bytes read per token
+                    (dense: whole model; MoE: active-expert bytes only)
+                  + KV bytes read per token at the measured context
+theoretical_tps   = achievable_bandwidth / bytes_per_token
+utilisation       = measured_tps / theoretical_tps
+```
+
+Record **two denominators, always both**: datasheet peak bandwidth, which is never reachable and gives
+the absolute roof, and *measured* achievable bandwidth from a STREAM-class probe, which is the
+practical roof and the honest one to optimise against. A utilisation quoted without saying which
+denominator it used is not a number.
+
+The MoE distinction is load-bearing here, not a detail — this stack serves several A3B/A4B MoE models,
+where active-expert bytes rather than model size set the roof. Using total parameters would understate
+utilisation severalfold and manufacture headroom that does not exist.
+
+**What it buys, in three places:**
+
+1. **A real headroom bound for DISCOVER.** At 85% utilisation a bandwidth-directed technique has at
+   most ~18% left in it, regardless of how impressive the technique sounds. This is the wall-share
+   ceiling argument applied one level down, at the memory system, and it is what stops the loop
+   spending a campaign on a lever whose ceiling it never computed.
+2. **A comparable reading of someone else's result.** An oracle reporting 40% → 70% utilisation
+   describes a technique that is *available*. If we already measure 75% in that regime, the technique
+   is already harvested here and the seed is `SUPERSEDED_FACT` before any source is read — decided from
+   the paper, at zero compute.
+3. **A phase signal (§8.4.1).** Utilisation approaching the practical roof across a campaign's regimes
+   is the clearest evidence that HARVEST is finished and the remaining gains are not in this direction
+   — a physical reason to switch to EXPLORE rather than an inferred one.
+
+Utilisation is a **diagnostic and a routing input, never a gate**: it does not license, veto or
+substitute for a release claim, and it is not a protocol-bound metric. It sits in the profile manifest
+P0.1 (§19.8) compiles, per backend, per regime, alongside the per-op wall-share map.
 
 ### 8.4 PROPOSE and PRE_RUN_CRITIC
 
@@ -2321,9 +2374,10 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 | AK-D22 | Anchor identity is re-verified at **every campaign boundary**, not only at freeze; `ANCHOR_MOVED` supersedes comparisons while preserving source and correctness results | A hot-fix or rollback between freezes otherwise leaves every ratio in the journal with a denominator that no longer exists, undetected |
 | AK-D23 | `serving_runtime` releases through the three-gate stack-change path (§11.6) on `stack_change_guard.py`, measured in `task_rate` under variable arrival | Pipeline-green, starts, and live-equals-config are distinct and none implies the next; tokens/s is not substitutable for task_rate in scheduler scope |
 | AK-D24 | Speech is its own phase (AK9), not an AK8 bullet | `measurement/protocols/` contains nothing for STT or TTS — two protocol families must be authored from scratch, comparable in size to Annex K |
+| AK-D35 | Roofline utilisation — measured decode t/s over bandwidth-derived theoretical t/s, with MoE counted by active-expert bytes and both datasheet and measured-achievable denominators recorded — is the normalising metric for discovery headroom, oracle intake and the harvest/explore phase signal. Diagnostic and routing input only, never a gate | Raw speedups do not transfer across hardware and are the main way a published result misleads this project; utilisation does transfer, bounds headroom physically, and can retire a seed from the paper alone at zero compute |
 | AK-D32 | Harvest/explore are **phases switched on marginal yield**, not a fixed budget fraction; the decay floor and window are derived, with a minimum dwell and a `PLANNER_DEGRADED` disambiguation | A fixed ratio spends explore budget while a fresh region still yields and caps exploration once it is dead; a freshly opened region's adjacent wins are cheap, high-probability and perishable, so they should be stripped first |
 | AK-D33 | Spikes owe no anchor gate, paired blocks, e-process or confirmation sample — they emit a mechanism verdict, not a rate claim — but still hold a claim and pass preflight | Institutional cost is spent confirming gains, not discovering them; a spike that costs what a T1 costs will not be used |
-| AK-D34 | The oracle registry declares a **harvest class** per row (`code_portable` vs `design_oracle`) and new oracles enter via `research-intake`, not by an agent adding a row | Copying from a design oracle is a licensing incident; and gfx90a support, licence and comparable-hardware provenance all need verifying before a port is proposed |
+| AK-D34 | The oracle registry declares a **harvest class** per row on the axis of architectural portability (`portable_source` vs `reimplement`), **not licensing** — standing policy is open-source self-hosted, non-commercial, licences not blockers and new oracles enter via `research-intake`, not by an agent adding a row | Misclassifying is a schedule problem, not a legal one: a `reimplement` oracle costs authoring effort a `portable_source` one does not. Intake still verifies real gfx90a/EPYC support and normalises the claimed result to roofline utilisation before a port is proposed |
 | AK-D31 | Architectural campaigns replace three §8.4 rejection conditions rather than waiving them: predicted post-change profile for the wall-share ceiling, prospective shapes, and per-step conceptual-change scope; plus spikes and a reserved budget fraction | Those three are correct for incremental work and would block the deep kernel rethinking the loop exists to find; EIG-first ranking starves high-variance work by arithmetic unless budget is reserved |
 | AK-D29 | Source-integrity gates run **before** behavioural gates: symbol/registration preservation, clean build from snapshot, semantic diff conformance, repair from clean parent | AutoPilot's one autonomous source mutation destroyed a module with a syntactically valid edit; none of its four Python defenses transfer to compiled C++, where "it compiles" is far weaker than "it imports" |
 | AK-D30 | `core_header` is its own change class and risk tier, not a size band | A small textual diff to shared ggml core reaches every op in both the CPU and GPU builds |
