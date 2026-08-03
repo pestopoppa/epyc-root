@@ -77,6 +77,13 @@ the fix is a host action (reinstall/re-pin), not a re-litigation of which file i
   schedule around, and the reason a naive collect-everything run silently drops counters:
   `SQ 8 · SPI 6 · TCA 4 · TCC 4 · TCP 4 · CPC 2 · CPF 2 · GRBM 2 · TA 2 · TD 2`
 
+**Reproducible from git, not just present on the filesystem** — `epyc-inference-research`
+`scripts/benchmark/provision_rocm_profilers.sh` (idempotent, `--verify` mode, refuses if the installed
+ROCm is not 6.2.x). The 19 MB of extracted binaries are deliberately not tracked; the recipe is. `env.sh`
+is the tracked canonical copy at `scripts/benchmark/rocm_profilers_env.sh` and the tools-directory path is
+a symlink to it, so there is one copy and it cannot drift. Counter enumeration committed at
+`data/gfx90a-counters/`. Research `7926557b`.
+
 **Installed by EXTRACTION, not by `apt install`, and the distinction is deliberate.** `/opt/rocm` is a
 bind mount of the host's `/opt/rocm-6.2.0`, shared by four live GPU servers and three FROZEN kernel trees
 running three different ggml generations. An apt install would write into that shared tree and could pull
