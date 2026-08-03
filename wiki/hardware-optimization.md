@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-03 (adds the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Last compiled**: 2026-08-03 (adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 93+ documents
 
 ## Compiled Update — 2026-08-03 (the AMD deficit is a QUANT deficit, not a device deficit; and the compute roofline, finally computed)
@@ -73,6 +73,29 @@ At batch-1, llama.cpp is **0.1–5.8% faster** on an RTX 4090 and comparable on 
 concurrent users** and is continuous batching, PagedAttention and the scheduler — a serving-runtime
 property, not a kernel one. Caveat worth carrying: every public batch-1 head-to-head is at **16-bit**,
 i.e. exactly where our gap is not; **the quantized-vs-quantized comparison has never been run anywhere.**
+
+### Every roofline denominator is now measured, and one of them was wrong by 2.2×
+
+**H2D 28.89 GB/s · D2H 28.20 GB/s** on the MI210's PCIe Gen4 x16 link — **91.7% / 89.5% of the 31.5 GB/s
+theoretical**, with a clean saturation curve (25.40 at 1 MB → 28.89 at 128 MB). This **retires a ~64 GB/s
+figure** that had been circulating in our own docs and underpinning CPU-side-KV and offload arguments. It
+was wrong twice over: a **Gen5 number on a Gen4 link**, and a **bidirectional-aggregate number applied to
+one direction**.
+
+**Bulk host↔device transfer is NUMA-node-independent** — all four nodes agree to within 0.1%. So
+cross-node host-thread placement costs nothing *on the transfer path*, which is a narrower claim than it
+sounds: it says nothing about host-side memory access during serving.
+
+The general lesson, and it generalises past this card: **a bandwidth figure carries three attributes that
+are all easy to drop — its link generation, its direction, and its basis.** Every one of those was wrong
+somewhere in our own documentation, and each error survived because the number looked plausible. When a
+transfer figure is quoted, it should be impossible to tell which of unidirectional / bidirectional /
+theoretical / measured is meant only from context.
+
+**A related trap, from the same sweep:** the same "~64 GB/s" string also appears in this project attached
+to **xGMI inter-socket** bandwidth — a completely different link. Correcting those alongside the PCIe ones
+would have been a category error. *Grep-and-fix on a number is not a correction; grep-and-fix on a
+number's referent is.*
 
 ### gfx90a is commercially abandoned, not technically incapable — and the distinction is the whole plan
 

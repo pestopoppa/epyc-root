@@ -107,6 +107,13 @@ from `$ROCM_PATH`, so the prefix needs a mirrored `.info/version`. Both are hand
   it aborts at init on graph-enabled builds. Use `rocprofv2`
 - [ ] Having the tool does **not** authorize profiling a live server. GPU runs remain operator-approved and
   co-residency is owned by whoever owns the inference
+- [ ] **Apply the "does the caller propagate this check's answer?" screen to the whole probe family.** The
+  bandwidth probe shipped with `hipcc … 2>&1 | tail -20`, which takes its exit status from `tail`, so a
+  failed build exited 0 and the script walked on to the reporting path — a non-compiling probe was
+  committed looking like a working one. Fixed there (`PIPESTATUS` + `exit 5`), but the same shape is
+  available to every wrapper we own that pipes a compiler, a test runner or a validator. This is the
+  complement to the screen we already have (*"can I make this check pass by deleting the thing it
+  inspects?"*), and `feedback_pipe_hazards` already records it for piped pytest
 
 ## C6 monitor design — five rules from a sabotage/sandbagging red-team (intake-979; 2026-08-03)
 

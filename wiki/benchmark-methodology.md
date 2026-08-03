@@ -2,8 +2,35 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-03 (adds the aggregation-as-attack-surface result — geometric mean is demonstrably gamed and harmonic mean over a failure-clamped set moved one headline 2.8× on identical outcomes; right-censoring as a scoring primitive and eff@k's undocumented saturation at 2×; the mandatory small-K correction for paired CIs; a citation chain that inverted its own source; counting a literature by its author graph before calling it consensus; two anti-patterns found in released code; and the quantum rule for leaderboard margins; earlier 2026-07-31 note: adds three methodology results from the vision-role evaluation: a saturated suite can order arms WRONGLY not just fail to separate them; an output-length cap silently penalises reasoning models; a model with no draft path running unaccelerated is at its OPTIMUM, never a BASELINE — the concrete case the OPTIMUM/BASELINE/CANDIDATE grammar was ratified to prevent; earlier 2026-07-30 note: MEASUREMENT v2 ratified: core + annex constitution, explicit metric scoping, P-BENCH-PLACEMENT-1 registered, P-BENCH-3 conformed, retracted April exemplar replaced; prior E8/E5 status update retained)
+**Last compiled**: 2026-08-03 (adds four measurement traps caught in-session — an unmatched warm-up that nearly became a hardware finding, a reproducible outlier that still did not support a ranking, an index mapping verified rather than assumed, and a piped compiler whose failure exited 0; plus the aggregation-as-attack-surface result — geometric mean is demonstrably gamed and harmonic mean over a failure-clamped set moved one headline 2.8× on identical outcomes; right-censoring as a scoring primitive and eff@k's undocumented saturation at 2×; the mandatory small-K correction for paired CIs; a citation chain that inverted its own source; counting a literature by its author graph before calling it consensus; two anti-patterns found in released code; and the quantum rule for leaderboard margins; earlier 2026-07-31 note: adds three methodology results from the vision-role evaluation: a saturated suite can order arms WRONGLY not just fail to separate them; an output-length cap silently penalises reasoning models; a model with no draft path running unaccelerated is at its OPTIMUM, never a BASELINE — the concrete case the OPTIMUM/BASELINE/CANDIDATE grammar was ratified to prevent; earlier 2026-07-30 note: MEASUREMENT v2 ratified: core + annex constitution, explicit metric scoping, P-BENCH-PLACEMENT-1 registered, P-BENCH-3 conformed, retracted April exemplar replaced; prior E8/E5 status update retained)
 **Sources**: 100+ documents
+
+## Compiled Update — 2026-08-03 (second): three measurement traps caught in one afternoon of benchmarking
+
+**Confidence: verified — all three were caught on this host, on our own runs, within a few hours.**
+
+1. **An unmatched warm-up nearly became a hardware finding.** A bidirectional bandwidth pass showed one
+   NUMA node 40% faster than another — except the two runs had *different buffer-size lists*, so one had
+   warmed through smaller sizes and the other had not. Re-running matched, **in both orders**, dissolved
+   it. Running the arms in both orders is what separates an order effect from a subject effect, and it
+   costs one extra pass.
+
+2. **What survived the re-run still didn't clear the bar to act on.** One node stayed consistently high
+   across passes while the others ranged 33–48 GB/s run to run. With n=2–3 per arm and no CI that supports
+   **no ranking at all** — only the single outlier reproduces. Filed as an open question with its
+   untested hypotheses named, explicitly not as an input to any placement decision. *A reproducible
+   outlier and a per-arm ranking are different claims with different evidence requirements.*
+
+3. **An index mapping was verified rather than assumed.** The benchmark tool reports "device 0..3" for CPU
+   agents; those were confirmed 1:1 against NUMA nodes via a second tool *before* any per-node claim was
+   made. Had the enumeration order differed, every node-level statement would have been wrong while
+   reading entirely reasonable — the failure mode that leaves no trace in the output.
+
+**And a fourth, in the instrument rather than the measurement.** A benchmark script shipped with
+`compiler … 2>&1 | tail -20`: the pipeline's exit status comes from `tail`, so a *failed build exited 0*
+and the script continued to its reporting path. A non-compiling probe was committed looking like a working
+one. The standing screen — *"can I make this check pass by deleting the thing it inspects?"* — does not
+catch this. The complement does: **"does the thing that runs this check propagate its answer?"**
 
 ## Compiled Update — 2026-08-03: aggregation choices are attack surfaces, a citation chain that inverted its own source, and how to count an apparently-independent literature
 
