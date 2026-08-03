@@ -1198,12 +1198,30 @@ evaluator step would require changing the evaluator.
 
 ### 8.4.0 Operator hypotheses — steering without authority (operator, 2026-08-03)
 
-AutoPilot's planner carries hypotheses with an explicit **falsifier** (*"one-line predicted outcome
-whose absence invalidates this hypothesis"*), tracks them as **still-open until resolved**, and
-re-surfaces the open set into each planning round. AutoKernel has the field — `proposal.hypothesis` —
-and **neither the falsifier discipline nor the still-open tracking**, so a hypothesis here evaporates
-the moment its proposal is dispositioned. It also has no way for the operator to seed one at all.
-Both gaps close together, because they are the same mechanism seen from two ends.
+**Correction, 2026-08-03.** An earlier revision of this section stated that AutoPilot "tracks
+hypotheses as still-open until resolved and re-surfaces the open set into each planning round", and
+that AutoKernel merely lacked what AutoPilot already had. **That was wrong**, verified against the
+source rather than assumed:
+
+- `ExperimentJournal.unfalsified_hypotheses()` returns the **last five trustworthy trials carrying a
+  hypothesis and a falsifier** — a *recency window*, not resolution tracking. Its own docstring says
+  resolution-checking is *"intentionally minimal … presence of the falsifier string only"*. Nothing
+  anywhere marks a hypothesis resolved.
+- The `### Still-open hypotheses` block lives inside the exploration-rich template and is emitted
+  **only when a stagnation signal fires**. The always-rendered block is `### Hypotheses Under Test`,
+  which shows the last three trials and does not render falsifiers at all.
+- The falsifier is **not mandatory**: the rationale sidecar is documented as observability-only, a
+  missing block does not abort a trial, and the default is an empty string.
+- AutoPilot has **no evidence-grade vocabulary whatsoever** — `design_prior`, `evidence_grade` and
+  their kin return zero hits across its package. `design_prior` is AutoKernel's own construct, not an
+  inherited one.
+- There *is* a pre-existing operator inbound path this section missed: operator seed strategies reach
+  the planner's hint block. But it carries no falsifier, no tracking, no resolution record and no
+  blacklist check — **a hint channel, not a hypothesis channel.**
+
+So neither loop has this mechanism, and AutoKernel is not catching up to a sibling; it is specifying
+something new, and specifying it more strictly than the sibling's nearest equivalent. The rest of this
+section stands as designed — the correction changes the provenance of the idea, not its content.
 
 **The channel.** An operator states a hypothesis with its falsifier — "G15's elementwise/norm cluster
 is where the B=128 decode time is, and fusing it lands ≥15%; if a current wall-share map shows the
@@ -2488,7 +2506,7 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 | AK-D33 | Spikes owe no anchor gate, paired blocks, e-process or confirmation sample — they emit a mechanism verdict, not a rate claim — but still hold a claim and pass preflight | Institutional cost is spent confirming gains, not discovering them; a spike that costs what a T1 costs will not be used |
 | AK-D34 | The oracle registry declares a **harvest class** per row on the axis of architectural portability (`portable_source` vs `reimplement`), **not licensing** — standing policy is open-source self-hosted, non-commercial, licences not blockers and new oracles enter via `research-intake`, not by an agent adding a row | Misclassifying is a schedule problem, not a legal one: a `reimplement` oracle costs authoring effort a `portable_source` one does not. Intake still verifies real gfx90a/EPYC support and normalises the claimed result to roofline utilisation before a port is proposed |
 | AK-D37 | **AK-D36 excludes a *target*, not a *regime*.** Single-stream and batched prefill and decode are all legitimate optimization directions, and AutoKernel looks for improvement independently of batch count. What AK-D36 forbids is recruiting the whole-stack llama.cpp-vs-vLLM ratio as a kernel objective, because that ratio is dominated by scheduling above 16 concurrent users | Read as "batch-1 only", AK-D36 would retire G15 — 43% of B=128 decode is non-GEMM elementwise/norm — which is the highest-confidence GPU band currently available. The constraint is on the *metric*, never on the batch regime |
-| AK-D38 | **Operator hypotheses are a first-class planner input**, carrying an explicit falsifier, entering at `design_prior` evidence grade and never above it, tracked still-open until resolved, and subject to every gate without exception | The operator sees things the profile does not; without a channel that steering arrives as an out-of-band instruction with no falsifier and no resolution record. Grading it `design_prior` is what stops a hunch being laundered into a measured fact |
+| AK-D38 | **Operator hypotheses are a first-class planner input**, carrying an explicit falsifier, entering at `design_prior` evidence grade and never above it, tracked still-open until resolved, and subject to every gate without exception | The operator sees things the profile does not; without a channel that steering arrives as an out-of-band instruction with no falsifier and no resolution record. Grading it `design_prior` is what stops a hunch being laundered into a measured fact. **Note the sibling comparison in §8.4.0 was corrected on 2026-08-03: AutoPilot does not have still-open tracking either, its falsifier is optional and observability-only, its open-set block is stagnation-gated, and it has no evidence-grade vocabulary at all — so this is a new mechanism in both loops rather than parity with one** |
 | AK-D31 | Architectural campaigns replace three §8.4 rejection conditions rather than waiving them: predicted post-change profile for the wall-share ceiling, prospective shapes, and per-step conceptual-change scope; plus spikes and a reserved budget fraction | Those three are correct for incremental work and would block the deep kernel rethinking the loop exists to find; EIG-first ranking starves high-variance work by arithmetic unless budget is reserved |
 | AK-D29 | Source-integrity gates run **before** behavioural gates: symbol/registration preservation, clean build from snapshot, semantic diff conformance, repair from clean parent | AutoPilot's one autonomous source mutation destroyed a module with a syntactically valid edit; none of its four Python defenses transfer to compiled C++, where "it compiles" is far weaker than "it imports" |
 | AK-D30 | `core_header` is its own change class and risk tier, not a size band | A small textual diff to shared ggml core reaches every op in both the CPU and GPU builds |
