@@ -1,6 +1,17 @@
 # Measurement decision packages — research-intake 2026-08-03
 
-**Status**: awaiting operator decision. Nothing here has been applied.
+**Status (2026-08-03): ALL SIX RATIFIED.** DP-1 as `MI210-SUBSTRATE-CONSTANTS-1`; DP-2…DP-6 as
+`AGGREGATION-SPEEDUP-1`, `PAIRED-CI-1`, `CENSORING-1`, `P-AK-SEARCH-1-A1` (Annex K) and
+`CONFORMANCE-VECTORS-1`. DP-6's first instrument ships at
+`epyc-inference-research/conformance/` (research `1f5f0bfe`).
+
+**One completion outstanding**: Annex K's narrowing carve-out requires the owning annex to carry a
+cross-reference *in the same apply*; the DP-5 emit omitted it, so a reader at `P-AK-SEARCH-1` cannot
+tell it has been narrowed. Packaged as
+`artifacts/operator/ratify_annexk_narrowing_xref_20260803.sh` — a defect in the packaging, not a new
+decision.
+
+_(original status: awaiting operator decision, nothing applied)_
 **Origin**: `/research-intake` Stage-4 on intake-938…990 (Stage-2 dives A–I, Stage-2b dives 2b-A…2b-I).
 **Why these are packages and not task lines**: the measurement trust boundary is **human-amendment-only**
 (`MEASUREMENT.md`, `agents/shared/MEASUREMENT_POLICY.md`). Each item below changes what a number *means*,

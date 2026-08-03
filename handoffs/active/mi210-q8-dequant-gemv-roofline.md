@@ -100,6 +100,13 @@ Use the **achievable** column for headroom and campaign sizing (it is the real r
 column for any cross-vendor comparison, and say which one you used — a utilisation quoted without its
 denominator is not a number.
 
+**The E8M0 three-way divergence is now instrumented** ✅ 2026-08-03. `CONFORMANCE-VECTORS-1` is
+ratified and its first vectors ship at `epyc-inference-research/conformance/` — three contracts (MX
+spec NaN / ggml `+Inf` / ggml-half 2^127), a consumer that passes 10/10 bit-exact, and a matrix that
+marks every **backend** row `ASSERTED` because no compiled backend has been executed yet. The
+divergence is **documented-divergent, not a defect**: `validate_e_e8m0` rejects `0xFF` at load, so it
+is unreachable in practice.
+
 **Free incidental finding in our own CPU tree, filed here because it is the same IQ2 sign path:**
 `iqk_gemm_iquants.cpp` contains an AVX512-VPOPCNTDQ routine deriving IQ2 signs arithmetically with **zero
 table reads**, but its dispatch at `:184` is guarded by `#if defined z_HAVE_FANCY_SIMD && …`. **The `z_`
