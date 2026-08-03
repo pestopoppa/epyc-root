@@ -146,6 +146,23 @@ is_benchmark_prompt_hash_line() {
   return 1
 }
 
+is_benchmark_per_question_line() {
+  # Per-question eval records embed the benchmark's own problem text verbatim.
+  # Coding suites (LiveCodeBench, SWE-bench) routinely carry 12-19 digit integer
+  # literals in that text — graph edge weights in "Sample Input" blocks, and the
+  # 10^18 constraint bound written out as 1000000000000000000 — plus digit runs
+  # that fall inside a sha256 response fingerprint.
+  #
+  # Scoped to per-question artifacts AND the exact row shape those files emit, so
+  # an arbitrary long digit run elsewhere in an evidence bundle still trips the
+  # guard. Note the `secret` patterns above are NOT disambiguated by this or any
+  # other helper: a real key in one of these files still blocks the commit.
+  local path="$1"
+  local line="$2"
+  [[ "$path" =~ (^|/)(artifacts|data)/.+/per_question[.]jsonl$ ]] || return 1
+  echo "$line" | grep -qE '"(arm|suite|question_id|qid)"[[:space:]]*:' && return 0
+  return 1
+}
 is_benchmark_timing_line() {
   # llama-bench JSON artifacts legitimately contain 12+ digit nanosecond timing
   # counters and model parameter counts. Keep this exemption limited to generated
@@ -237,6 +254,9 @@ scan_blob() {
         continue
       fi
       if is_benchmark_timing_line "$path" "$fullline"; then
+        continue
+      fi
+      if is_benchmark_per_question_line "$path" "$fullline"; then
         continue
       fi
       if is_perf_report_counter_line "$path" "$fullline"; then
