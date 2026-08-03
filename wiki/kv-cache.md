@@ -202,3 +202,44 @@ Five May 2026 papers spanning write-time admission, read-time eviction, per-head
 **Cluster-wide gate** — [`streaming-llm-baseline.md`](../handoffs/active/streaming-llm-baseline.md) (master P#45 MED): land a clean sink + sliding-window baseline in `epyc-llama` to measure the **easy-floor** any KV reduction method must beat. Of the 5 papers above, only KVP explicitly compares to StreamingLLM. Without an internal floor, LU-KV / KVP / ForesightKV gain rankings are unanchored against the simplest competing technique. Gate criteria flip cluster prioritization: if StreamingLLM at 50% budget preserves ≥95% accuracy on representative workloads, **demote** attention-kernel methods (LU-KV/KVP/ForesightKV) — their incremental gain over the floor is too small to justify kernel work. PBKV stays prioritized because it operates at the orchestrator layer and **composes with** sink+window rather than replacing it.
 
 **Sources**: [intake-538](https://arxiv.org/abs/2605.14037) SP-KV · [intake-551](https://arxiv.org/abs/2602.10238) KVP · [intake-552](https://arxiv.org/abs/2602.08585) LU-KV · [intake-553](https://arxiv.org/abs/2602.03203) ForesightKV · [intake-554](https://arxiv.org/abs/2605.06472) PBKV · [Steele falsification](https://arxiv.org/abs/2601.14279) · [Deep-dive](../research/deep-dives/2026-05-19-kv-admission-cluster.md) · [StreamingLLM baseline gate](../handoffs/active/streaming-llm-baseline.md)
+
+## Per-slot context is a hard split, and "safer KV quant" can cost more memory (2026-08-03)
+
+Two measured corrections that change how KV budgets are reasoned about on this fleet.
+
+**`-c` is not what a request gets.** llama.cpp carves the KV cache into `-np` fixed slots at launch,
+so the effective per-request limit is `-c / -np`. A single stream does **not** grow into unused slots
+on this build (no unified KV cache), and overflow is a hard `HTTP 400
+exceed_context_size_error`, never a queue and never a reroute. Verified on three live shapes, with
+the server reporting its own limit:
+
+| `-np` | `-c` | c/np | prompt sent | result |
+|---:|---:|---:|---:|---|
+| 16 | 262144 | 16,384 | 29,121 | 400, `n_ctx=16384` |
+| 4 | 262144 | 65,536 | 116,501 | 400, `n_ctx=65536` |
+| 8 | 65536 | 8,192 | 14,561 | 400, `n_ctx=8192` |
+
+Consequence: a role with heterogeneous instances has heterogeneous *capability*. The same request
+succeeded or failed depending only on which frontdoor instance took it, because `:8070` (`-np 16`)
+offered 16,384 tokens while `:8080` (`-np 4`) offered 65,536.
+
+**The safe pure-attention KV config can be a memory REGRESSION.** For a model at 260 KiB/token f16
+(split evenly K/V):
+
+| config | K | V | KiB/token |
+|---|---:|---:|---:|
+| f16 / f16 | 130 | 130 | 260 |
+| q8_0 / q8_0 | 65 | 65 | **130** |
+| q4_0 / f16 | 32.5 | 130 | **162.5** |
+| q4_0 / q4_0 | 32.5 | 32.5 | 65 |
+
+`-ctk q4_0 -ctv f16` is the documented safe production config for pure-attention models, and it uses
+**more** memory than `q8_0/q8_0` — quantising K hard while leaving V at f16 costs more than
+quantising both moderately. On a VRAM-constrained card the memory-optimal *safe* point is
+`q8_0/q8_0`, not the "more aggressive" asymmetric config. Only `q4_0/q4_0` saves further, and that is
+the config that produces garbage at 32K on pure-attention models — so the saving is gated on
+architecture, not on willingness to trade quality.
+
+_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`;
+`handoffs/completed/kv-cache-quantization.md`; live probes of `:8070`/`:8080`/`:8083` on
+production-consolidated-v8._

@@ -1707,3 +1707,56 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
 - [ ] **`runtime_flags` drift checker grades declared-vs-live but never wired-vs-unwired.** It reports
       `semantic_classifiers` as blocking drift; that flag has **zero consumer modules** outside
       `features.py`. The tool embodies the defect class it was built to detect.
+
+## Context accounting, `-np`, and the E8 blocker (2026-08-03, evening)
+
+- [x] **The E8 "51 rows do not fit" blocker was an accounting artifact** ✅ 2026-08-03 — the 07-27
+      coverage scan assumed a 32,768-token frontdoor (live shape is `-c 262144`, 65,536/slot on the
+      `-np 4` instances) AND counted **bytes as tokens**, inflating 3.3-4.8x. Tokenizing all 51 rows
+      against the live model: **41 fit, 10 genuinely overflow, ZERO in T1.** The decision package
+      already contained the correct number (it noted `/tokenize` = 33,830 for a row it scored at
+      62,515) and used the wrong one.
+- [x] **Per-slot context is a hard static split, verified on three shapes** ✅ 2026-08-03 — `n_ctx`
+      equals `-c / -np` exactly and llama.cpp rejects overflow with HTTP 400. A single stream does
+      NOT grow into unused slots; this build has no unified KV cache.
+- [x] **`-np` divided by 4 (floor 1) at the registry source** ✅ 2026-08-03 — operator directive.
+      Compiled through master -> lean -> descriptors -> stack_priors; all 10 stale arithmetic
+      comments rewritten. KV bytes unchanged.
+- [ ] **Restart the stack so the `-np` change goes live.** The guard reports 12 live-process drift
+      errors (`frontdoor expected 4, live 16`, etc.) — that is config != running, working correctly.
+      Blocked only on the in-flight E8 calibration.
+
+### New tasks from this work
+
+- [ ] **An HTTP 400 / unreachable endpoint is scored as WRONG, not as infra-failed.** This is the root
+      cause of the 2026-08-03 incident where a T1 calibration ran 70/100 questions at `0% correct`
+      purely because the API was down. It is also why an oversized prompt hitting a per-slot 400 would
+      appear as a permanent, misattributed quality regression rather than a capacity problem. The
+      reliability floor exists but did not collapse the run until far too late. Two failure modes, one
+      cause: **absence is being scored as failure.**
+- [ ] **Regenerate the E8 context coverage scan.** `artifacts/operator/e8_quality_context_coverage_v4_20260727.json`
+      reports `required_tokens` in BYTES and was taken against the pre-2026-07-30 fleet. Every
+      downstream artifact built on it — including the Options A-D decision package and the two 19 MB
+      replacement-map candidates — inherits both errors. Rerun with real tokenization against the
+      current shape before anyone acts on that decision.
+- [ ] **Per-instance `-np` cannot be declared.** `slots_by_shape` is keyed by shape CLASS (`full` /
+      `half`), so two `full` instances of one role cannot differ. The compiled artifact is already
+      per-PORT (`slots_by_port`) and `_resolve_parallel_slots` is explicitly "for the instance being
+      launched, not for the role" — so this is a declaration-schema gap, not a plumbing migration.
+      Same shape as the registry's own `kv_quant_by_shape` future-proofing note.
+- [ ] **Routing is not context-length aware.** Nothing inspects prompt length before choosing an
+      instance, so a long prompt landing on a narrow slot gets a hard 400 rather than being routed to
+      a wider instance or to `ingest_long_context`. The frontdoor group is heterogeneous by design
+      (`:8070` 16,384/req vs `:8080`/`:8180` 65,536/req before this change), so the same request
+      succeeds or fails depending on which instance takes it.
+- [ ] **Settle Qwen3.6-27B's architecture — it gates a 2x context win on the MI210.** `:8083` runs
+      `q8_0/q8_0` KV = 130 KiB/token, already the memory-optimal SAFE point (the "safe pure-attention"
+      config `q4_0/f16` is 162.5 KiB/token, WORSE than what runs today). The only further saving is
+      `q4_0/q4_0` at 65 KiB/token, which the completed KV-quantization handoff says produces garbage
+      at 32K on **pure-attention** models but is validated on **hybrid SSM** (PPL 1.2466 vs f16
+      1.2510). Evidence conflicts: the registry computes KV over all **65 blocks** (implying every
+      layer has KV -> pure attention), while a 110-day-old memory describes **Qwen3.5**-27B (previous
+      generation) as hybrid SSM-Dense 3:1. If hybrid, `q4_0/q4_0` frees ~4 GiB and — with the VL
+      model's KV dropped to q8_0 — the card fits `n_ctx 131072`: 46.59 non-KV + 8.13 + 6.00 = 60.72
+      GiB, exactly today's budget. That doubles context on both GPU roles. Bounded test: read GGUF
+      metadata, count KV layers, then a 65K needle check at `q4_0/q4_0`.
