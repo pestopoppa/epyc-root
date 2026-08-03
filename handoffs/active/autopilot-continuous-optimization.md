@@ -1760,3 +1760,42 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       model's KV dropped to q8_0 — the card fits `n_ctx 131072`: 46.59 non-KV + 8.13 + 6.00 = 60.72
       GiB, exactly today's budget. That doubles context on both GPU roles. Bounded test: read GGUF
       metadata, count KV layers, then a 65K needle check at `q4_0/q4_0`.
+
+## Lost updates, stack-restart ergonomics, and `-np` live (2026-08-03, late)
+
+- [x] **`-np` divided by 4 is LIVE and `live == config` is proven** ✅ 2026-08-03 — 16->4, 8->2, 4->1
+      across all 12 instances, verified from running process argv; `stack_change_pipeline.py check`
+      reports `summary: ok` with all 12 live-drift errors cleared.
+- [x] **5 tests hardcoding `-np` converted to derive from `DECLARED_SLOTS`** ✅ 2026-08-03 — they
+      failed *because* the ratified change was correct. 63 passed.
+- [x] **`operator_seed_e8_operational_baseline.py` hardened three ways** ✅ 2026-08-03 — refuses
+      unless the daemon is STOPPED (pausing is provably insufficient), writes under
+      `state_write_lock`, and re-reads the file after writing to prove the stamp survived.
+
+### New tasks
+
+- [ ] **External processes must never write daemon-owned state fields while the daemon lives.**
+      `save_state(merge_control=True)` re-reads only `_EXTERNAL_CONTROL_FIELDS` (`paused`,
+      `pause_reason`, `_in_cache_flush`) and rewrites everything else — including `baseline_state`,
+      `quality_history_by_tier`, the frontier and pareto fields — from the daemon's memory. Any
+      out-of-band edit to those is silently lost at the daemon's next save. This destroyed a
+      59-minute E8 measurement on 2026-08-03 that had already printed `APPLIED`. The lock does NOT
+      protect against it; only daemon absence does. **Nothing enforces this today** — no guard, no
+      docstring on the fields, no runtime warning. Candidate fix: make `save_state` refuse (or loudly
+      warn) when a daemon-owned field on disk differs from the in-memory copy it is about to
+      overwrite, since that difference is by definition an external write about to be destroyed.
+- [ ] **`orchestrator_stack.py start` silently resolves the wrong manifest without `--numa-mode`.**
+      The production lineup is full + halves (`--numa-mode both`). Plain `start` resolved a full-only
+      manifest, so the guard compared priors containing halves against it and produced 39 parity
+      errors reading "include non-launch port(s)" — which describes the *manifest* being wrong, not
+      the priors. Either default to the mode the stack is actually running, persist the last-used
+      mode, or fail with "no --numa-mode given and the live lineup is `both`".
+- [ ] **Stack-change gate catch-22 is undocumented.** The gate refuses a launch while live != config,
+      but the only cure for live != config is a restart, which requires the launch. The escape is to
+      `stop --all` FIRST so there is no live process to drift against. Nothing says this; the FATAL
+      message does not mention it, and the obvious operator reaction (retry `start`) cannot work.
+- [ ] **`ImportError: cannot import name 'LLAMA_SERVER' ... circular import` prints on every stack
+      command.** Fail-open — `runtime-facts selected-servers read failed` and the
+      `ORCHESTRATOR_STACK_NUMA_MODE=both env-filter branch failed ... falling through to
+      stack-priors`. Both degrade silently to a fallback path, so a real defect there would be
+      invisible. It also makes genuine errors hard to spot in stack output.

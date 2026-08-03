@@ -1459,3 +1459,44 @@ pedantry — it is the only way the report's own defect class gets caught.
 _Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`
 (§"Backlog sweep 2026-08-03"); epyc-orchestrator `7fd2dde5`, `8b79026e`; workflow run
 `wf_a44f600b-c02` (21 agents, 8 PARTIAL / 1 CONFIRMED)._
+
+## A write can succeed, be verified, and still be gone
+
+On 2026-08-03 an operator script measured a fresh quality baseline over 59 minutes, wrote it,
+printed `APPLIED`, and reported the exact field transition it had made. Minutes later the file held
+the old value. Nothing crashed and nothing logged an error.
+
+**The mechanism.** The AutoPilot daemon's periodic save is
+`save_state(state, merge_control=True)`. Under the lock it re-reads from disk **only** the fields it
+considers externally owned — `paused`, `pause_reason`, `_in_cache_flush` — and writes everything
+else from its own in-memory copy. `baseline_state` is daemon-owned. So an external write to it is
+not rejected, not merged, and not detected: it is simply overwritten at the daemon's next save. The
+source says so plainly (`autopilot.py:6003`): *"atomic `os.replace` stops torn reads but NOT lost
+updates."*
+
+**Why the obvious mitigations do not work.** Pausing the daemon is insufficient — a paused daemon is
+still a live process holding the whole state in memory, and it writes on resume. Taking the
+documented `state_write_lock` is also insufficient — the lock serialises concurrent writes, it does
+not prevent a later, perfectly serialised write from carrying a stale copy. The only safe window is
+with the daemon **absent**.
+
+### The generalisable shape
+
+Any long-lived process that (a) holds a whole-file document in memory, (b) rewrites the whole file
+periodically, and (c) merges back only a named subset of fields, has silently claimed exclusive
+ownership of every field outside that subset. The subset is usually documented; the *ownership
+claim* usually is not.
+
+- **Ask which fields the daemon merges, not whether it takes a lock.** The merge list IS the
+  permission list. Everything outside it is daemon-owned whether or not anything says so.
+- **A pause is not a quiesce.** Pausing stops work; it does not release state.
+- **Verify the write by re-reading, and re-read late.** The script now re-reads after writing and
+  fails if the value is absent — but even that only catches a clobber that has already happened by
+  then. The durable fix is the daemon being gone.
+- **The report was honest and still wrong.** It printed the transition it performed, which was true
+  at the instant it printed. "I did X" and "X is true now" are different claims, and for shared
+  mutable state only the second one matters.
+
+_Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`;
+`scripts/autopilot/autopilot.py:5998-6037` (`save_state`, `_EXTERNAL_CONTROL_FIELDS`);
+`scripts/autopilot/state_lock.py`._
