@@ -13606,6 +13606,24 @@
   relevance_justification: 'EPYC''s AutoPilot already runs autonomous multi-day experiments and faces context accumulation challenges. HCC''s distillation of experiment traces into hierarchical knowledge layers is directly applicable to improving AutoPilot''s cross-session knowledge retention and strategy_store.
 
     '
+  dive_corrections: |-
+    DIVE CORRECTION 2026-08-03 (Stage-2b dive 2b-F) - AN UPGRADE IN PROVENANCE, WITH A CEILING.
+
+    ML-Master 2.0 IS on the official MLE-Bench leaderboard pre-freeze: row dated 2025-12-16,
+    Deepseek-V3.2-Speciale, Lite 75.76 +- 1.51, All 56.44 +- 2.47, 24h budget, grading reports verified.
+    That provenance is materially BETTER than intake-940's.
+
+    BUT THE BOARD MARKS SOURCE CODE NOT AVAILABLE for the submitted configuration, despite the repo link.
+    Any "open" framing of this entry must be qualified accordingly.
+
+    CEILING: 75.76 = 50/66, tenth by All, and 3 medal outcomes below the 80.30 three-way tie
+    (Famou-Agent 2.0 24h / MLEvolve 12h / PiEvolve 24h). The Lite split is quantized at 1.5152 pp and no
+    longer discriminates among top agents.
+
+    GOVERNING CITATION RULE (see intake-977) applies to every number in this entry: integer medal count out
+    of 66, the +-1.5152 pp quantum stated, leaderboard-verified vs self-reported flagged, and no margin under
+    ~3 medal outcomes described as a difference.
+
 - id: intake-414
   url: https://github.com/mibayy/token-savior
   arxiv_id: null
@@ -19090,6 +19108,34 @@
   novelty_justification: 'Medium. MLC-LLM is the first compiler-based ML deployment stack we have ingested (no prior TVM, Relax, IREE, or WebLLM entries — confirmed by grep on intake_index). The compile-once / dispatch-many-backends paradigm is materially different from the seven GPU runtime/engine entries we already have (intake-458/461/462/463/464/465/466), all of which are hand-tuned-per-backend. Specifically novel: (a) WebGPU / browser deployment via WebLLM sister project — no other intake entry covers browser-based LLM serving; (b) Vulkan as a portable AMD path (intake-303-306 are ROCm-specific); (c) iOS / Android as first-class targets; (d) Apache TVM lineage shared with BitBLAS (intake-497) — same authoring DSL would be reusable.'
   relevance_justification: 'Medium. EPYC stack is CPU-only and MLC-LLM has no competitive CPU backend, so zero immediate-actionable content. However, gpu-acceleration-path.md is the umbrella tracker for GPU-acquisition-prep references and already bundles intake-458/461/462/463/464/465/466 — MLC-LLM completes that bundle for two specific scenarios: (1) AMD RX 7900 XTX path using Vulkan (avoids ROCm/HIP build complexity flagged in the handoff''s build configuration section), (2) consumer-multi-platform deployment if EPYC stack ever exposes a public WebGPU demo. The DGX Spark Blackwell target is better served by vLLM + DDTree/Dflash per the existing handoff Section "vLLM + Speculative Decoding on DGX Spark", so MLC-LLM is a plan-B not plan-A for that specific target.'
   verdict_justification: 'worth_investigating, with concrete activation triggers: (1) if the GPU acquisition lands on consumer AMD (RX 7900 XTX) instead of DGX Spark, MLC-LLM Vulkan backend becomes the simpler alternative to llama.cpp HIP build (handoff''s -DGGML_HIP=ON path), (2) if a browser-based WebGPU demo of EPYC routing/orchestration is ever desired, MLC-LLM via WebLLM is the canonical path, (3) if mobile (iOS/Android) demos or edge deployment are scoped, MLC-LLM is the strongest option in the intake — no other entry covers mobile. NOT activated by: peak H100 throughput needs (use SGLang/vLLM), CPU-only research (use llama.cpp), MoE expert-offloading (use llama.cpp -ot "exps=CPU" or vLLM Wide-EP per intake-463). Credibility scored null per workflow rule (repo with no empirical claims in README/docs intro). Updating gpu-acceleration-path.md to add MLC-LLM to the GPU-prep bundle alongside intake-458/461-466.'
+  dive_corrections: |-
+    DIVE CORRECTION 2026-08-03 (Stage-2b dive 2b-I) - THIS ENTRY POINTS AT THE WRONG REPO FOR THE ROCm
+    QUESTION.
+
+    ROCm codegen lives in apache/tvm (now intake-965), NOT in mlc-llm. The mlc-llm tree contains ZERO
+    rocm/hip/gfx paths - code search returns gfx90a 0, gfx942 0, MI300 0, with positive controls confirming
+    the search worked (rocm 24, MLCEngine 58).
+
+    THE DECISIVE MECHANISM, in TVM rather than here: python/tvm/support/rocm.py registers
+    tvm_callback_rocm_get_arch, which shells out to rocminfo and regex-matches Name:\s+(gfx\d+[a-zA-Z]*),
+    falling back to gfx900. THERE IS NO ALLOWLIST AND NO gfx942 GATE. On our box it resolves gfx90a
+    automatically and hands it to LLVM's AMDGPU backend. This FALSIFIES any "MLC/TVM is CDNA3-scoped"
+    assumption - unlike TileLang, HipKittens and AITER, it genuinely is not.
+
+    WHAT IS THIN, AND IT BOUNDS THE AMBITION: TVM's tensor_intrin/rocm.py registers only THREE MFMA compute
+    intrinsics - f32f32f32 (k=4), f16f16f32 (k=16), s8s8s32 (k=16), all 16x16. THERE IS NO bf16 MFMA
+    INTRINSIC REGISTERED, and bf16 is exactly the datatype where we already have parity capability. Adding
+    one is plausible (the names are built from a template) but it is WORK, not adoption.
+
+    No gfx90a CI and no AMD/ROCm CI exists in either project. Docs name NO gfx architectures, only "MLC LLM
+    only supports ROCm 6.1/6.2" - which brackets our ROCm 6.2 EXACTLY, a compatibility datapoint in our
+    favour that will age. Published CDNA2 performance data: NONE FOUND.
+
+    HONEST FRAMING TO CARRY FORWARD: its value is NOT that it will beat our hand-tuned path. It is the only
+    compile target in the corpus architecturally open to gfx90a BY CONSTRUCTION rather than by vendor
+    permission, and TVM's autoscheduler is a SEARCH SUBSTRATE the agentic loop could DRIVE rather than a
+    competitor. See intake-965 for the re-pointed entry.
+
 - id: intake-501
   arxiv_id: null
   url: https://rits.shanghai.nyu.edu/ai/luce-dflash-brings-2x-speculative-decoding-to-qwen3-6-27b-on-a-single-rtx-3090/
@@ -47243,6 +47289,44 @@
     (12) The "<EMPTY> is shallow and may transfer untrained" inference is OVERTURNED: invariance holds only for source REMOVAL (8.7->7.8); CORRUPTING the source moves rejection sharply (8.7->13.3, 56.0->63.3). It is a learned state-comparison. The surviving reason to port it first is different and stronger: it strictly reduces injected tokens and is fail-closed.
     (13) Compute FOUND in repo: 8 GPUs x 1 node, 200 steps, 128 parallel envs; paper says TP=1 but both scripts set 2. Licence SPLIT: GitHub Apache-2.0, README badge and HF card MIT. Undisclosed reward term `use_invalid_action_penalty` coef 0.1.
     (14) No independent replication or criticism exists (4 days old; HF downloads 0, likes 0; GitHub 14 stars, untouched since 2026-07-31). All figures are OBSERVATION-grade.
+    STAGE-2b ADDENDUM 2026-08-03 (dive 2b-G, memory cluster) - three corrections, one deletion.
+
+    DELETE THE SAMPLE SIZES. The n=140/250 recorded in this entry is STATED NOWHERE IN THE PAPER. It was an
+    inference, and it is wrong: MemHarness's ALFWorld cells CANNOT be single-pass success rates. No common
+    per-category denominator <=200 reproduces the reported decimals across the six Table 2 rows; the minimum
+    consistent denominators are 455/304/400/336/360/190, i.e. roughly 2,045 episode outcomes. No repeats, no
+    seeds and no variance are disclosed.
+
+    THE EvolveR BASELINE REPRODUCES NOTHING PUBLISHED. EvolveR (arXiv 2510.16079, now intake-988) NEVER
+    evaluates on ALFWorld or WebShop - it is a 7-benchmark multi-hop QA paper. "70.1" appears ZERO times;
+    ALFWorld and WebShop appear ZERO times; the only "embodied" mention is in Future Work. So the
+    "EvolveR (reproduced) 70.1" row is not a reproduction of any published number - THERE IS NO ORIGINAL TO
+    DIVERGE FROM, and the label "(reproduced)" asserts fidelity to a non-existent original. Eight shared
+    authors including the same first author (Rong Wu) and the same seniors; both Shanghai AI Lab.
+
+    THE ARM WE WOULD HAVE PORTED IS THE WEAKEST EFFECT IN THE PAPER. The +2.2pp test-time memory effect -
+    exactly what a gradient-free port would target - is z ~ 1.94 at the most favourable denominators, i.e.
+    NOT significant on one seed with no CI. The training effect (+6.68pp, z=5.20) and negative transfer
+    (+6.25pp, z=4.39) DO survive sampling noise; neither is protected against SEED variance, which is
+    unmeasured. The reconstruct-before-inject arm is KEPT BUT DEMOTED.
+
+    DARK ROOM DOES NOT THREATEN THIS ENTRY (intake-990). The collapse mechanism requires a dense
+    policy-dependent potential-difference shaping term with persistent within-group variance; MemHarness has
+    sparse +10/0 plus a saturating 0.1x format bonus plus SFT format cold-start, which is Dark Room's own
+    Proposition-2 SAFE class. Decisively, Dark Room's own NON-COLLAPSING BASELINE IS MemHarness's reward
+    shape, on the same verl-agent framework. It does destabilise on MEASUREMENT: 32-episode binomial noise
+    floor ~8.8 points, "all cross-arm comparisons in this version are DESCRIPTIVE", and an unexplained
+    8B (32.8) below 4B (49.5).
+
+    CREDIBILITY 2 -> 2, COMPOSITION CHANGES: -1 (the EvolveR baseline reproduces nothing published)
+    +1 (independent corroboration from "Honest Lying", intake-989, FOR CLAIM A ONLY - memory injection can
+    drive below a no-memory control, by a controlled memory-WIPE ablation, independent group, no citation
+    either direction. NOT corroboration for the state-mismatch MECHANISM, which is write-side vs read-side -
+    a FOURTH distinct mechanism).
+
+    HIGHER-VALUE LEAD THAN THIS ENTRY'S OWN: EvolveR Table 4 contains a GRADIENT-FREE WIN MemHarness never
+    reports - on Qwen2.5-3B, principle distillation + retrieval with RL DISABLED scores 0.357, BEATING
+    RL-only at 0.325 and reaching 93.5% of the full system's 0.382. See intake-988.
 
 - id: intake-939
   arxiv_id: '2607.25970'
@@ -47403,6 +47487,48 @@
     (12) THIS PAPER REPEATS THE SWE-fficiency Sonnet FIGURE in Sec 1 and Sec 7. NOTE THE CHAIN: a Stage-1 pass flagged it as a row-crossing error, and DIVE-D then OVERTURNED THAT CORRECTION - SWE-fficiency v1 Table 2 lists Claude 4.5 Sonnet at 0.041x and Gemini 2.5 Flash at 0.008x, so this paper's citation is a FAITHFUL v1 QUOTE ON BOTH LEGS. The figure moved to 0.116x only in v3 via an aggregation change. Quote it version-pinned to v1 or not at all.
     (13) NO independent evaluation, replication or criticism exists (paper 6 days old). The only secondary coverage contains a garbled figure and is explicitly NOT a source.
     (14) Fallback policy worth porting (Sec C.4-C.6): a locally-recovered success on a TIMING test is reclassified as a TIMEOUT at the limit; on a CORRECTNESS test the verdict is kept but the DURATION IS NEVER IMPORTED, because "a local rerun under different pressure can return a FASTER time for a generation that was WORSE on the real backend - importing that local runtime would reverse the signal." Eq.9 exposure: 13.9% of rollouts touch fallback at f=0.1%, n=150.
+    STAGE-2b ADDENDUM 2026-08-03 (dive 2b-E, RLPF independence test; dive 2b-H, measurement sources).
+
+    KEY_CLAIM 6 MUST BE NARROWED. It currently reads "Correctness must gate the speed signal as an OUTER
+    gate; additive or blended reward is actively harmful, and a pure-speed objective collapses the policy
+    outright." Three separate corrections:
+     (a) "as an OUTER gate" was ALREADY wrong - this paper's own winner is the COLLAPSED CONJUNCTION.
+         RLPF (intake-974) now makes the stakes concrete by independently choosing the outer gate and
+         REJECTING the conjunction BY DESIGN (epsilon = 0.05 exists solely to guarantee every correct
+         program outranks every failed one). REWRITE to the property both share: "No speed credit for an
+         incorrect candidate. WHICH gate form is best is UNSETTLED - 2607.25970 Table 3 favours the hard
+         conjunction; 2607.27271 Eq. 6 independently chose a strictly-separated outer gate and never tested
+         the conjunction."
+     (b) "additive or blended reward is actively harmful" - UNCHANGED, still single-group. RLPF cannot test
+         it: EVERY reward arm RLPF ran is correctness-gated, with no blended and no ungated arm anywhere in
+         the paper or the code.
+     (c) "a pure-speed objective collapses the policy" - still single-group, AND NOW NEEDS A GUARD so no
+         future pass mistakes RLPF's "runtime-only" arm for it. That arm is GATED (its code comment: "CRR
+         (correctness gating) is preserved by the `not correct` branch above") and it did NOT collapse
+         (37.9% CRR vs 11.1% base).
+
+    CREDIBILITY 4 UNCHANGED. Its +2 came from intake-949 and intake-950, both disjoint. Adding RLPF would
+    DOUBLE-COUNT a corroboration that is ARCHITECTURAL ONLY, and the rubric ceiling is reached regardless.
+
+    STRENGTHENED FROM A DIFFERENT DIRECTION, AND THIS IS THE STRONGEST RESULT OF THE 2b-E DIVE. This entry's
+    test-suite claim - robust CV >= 0.3 satisfied for <=3.8% of problems with original tests vs 48.2% with
+    purpose-built ones - now has GENUINE INDEPENDENT EMPIRICAL CORROBORATION from arXiv 2607.07619
+    (intake-976): different group, different method (30 reps/task plus statistical testing across EffiBench,
+    ENAMEL, EvalPerf and Mercury; 1,538 tasks), same conclusion - only 6.11% of purportedly performant
+    reference implementations show a statistically significant improvement on the ORIGINAL tests, and
+    purpose-built performance tests raise detection to 24-25%. That is corroboration for a DIFFERENT claim
+    than the one the dive set out to test.
+
+    THE PAIRED-CI CITATION IS FAITHFUL BUT ITS SOURCE IS SAME-LAB. arXiv 2512.21326 (intake-982) holds
+    verbatim, and this entry's citation of it is properly hedged - and this entry does NOT itself apply the
+    method, using the conservative unpaired inflation instead. BUT the author is FAIR at Meta AND a direct
+    SWE-RL co-author of this entry's senior author. RESTATEMENT-CLASS SAME-LAB METHODOLOGY: adoptable as an
+    instrument, NEVER countable as a corroborating leg for this entry.
+
+    2404.18864 (intake-984) COEXISTS, does NOT contradict: no binary-vs-continuous ablation exists in it,
+    and it uses a different estimator. Notably its reward denominator is a STORED constant from a separate
+    isolated campaign while the numerator is measured ON THE TRAINING NODE - exactly this entry's condemned
+    channel, shipped independently. Venue upgrade: it is now IEEE TPDS 2026, DOI 10.1109/TPDS.2026.3675550.
 
 - id: intake-940
   arxiv_id: '2607.28568'
@@ -47537,6 +47663,34 @@
     (10) TABLE 11 IS NOT THE COMPLETE LEADERBOARD AUDIT ITS CAPTION CLAIMS: it omits MARS+ (78.79), PiEvolve (80.30), LoongFlow (77.27) and Disarray (90.91), all above 71.21%. The third-party numbers it DOES print all match openai/mle-bench exactly. Separately, MiniMax M2.7 + Claude Code is printed as 45.50%, which is not a multiple of 1/22.
     (11) NO independent replication or critique exists: 0 issues open AND closed, 0 PRs, discussions disabled, 6 forks with ZERO divergence, 0 HF discussions on all four model repos, and all coverage is abstract restatement. THE OFFICIAL LEADERBOARD HAS BEEN FROZEN TO NEW SUBMISSIONS SINCE 2026-04-24, so no verification path currently exists.
     (12) CITATION RULE, recommended: only two claims may ever be cited from this entry - the post-training gain (2/2 backbones, complete rank separation, joint p~0.018) and the prompt-tail reduction in a matched 66-task-run comparison. Everything else is UNSUPPORTED.
+    DIVE CORRECTION 9 - 2026-08-03 (Stage-2b dive 2b-F, MLE-Bench contamination cluster).
+
+    THE OMITTED COMPARATOR IS NOT HYPOTHETICAL, AND IT IS AHEAD. MLEvolve (intake-978) scored Lite 80.30%
+    = 53/66 on the OFFICIAL leaderboard, pre-freeze, third-party accepted, with published grading reports
+    and source available - 6 MEDAL OUTCOMES (9.09 pp) above this entry's 71.21% = 47/66 AT THE IDENTICAL 12h
+    BUDGET, roughly 4x this entry's entire headline margin. It is also 3 medal outcomes BELOW ML-Master 2.0
+    (75.76% = 50/66, intake-413), which this paper CITES in its own reference list and which is likewise on
+    the board. Table 11 omits EVERY top-10 board entry, comparing instead against a self-run n=1
+    GPT-5.5+Codex that has never appeared on the board.
+
+    SO THE CLAIM IS NOT MERELY STATISTICALLY UNSUPPORTED - IT IS FACTUALLY BEHIND THE VERIFIED SOTA at
+    matched wall-clock. REQUIRED SCOPE QUALIFIER, and it is a real one: this is NOT matched on compute or
+    openness. This entry ran on ONE RTX 4090 capped at 12 GB VRAM with a 35B OPEN-WEIGHT backbone; MLEvolve
+    on an H200 (141 GB) with a PROPRIETARY FRONTIER backbone. DEFENSIBLE STATEMENT: within its own compute
+    class the post-training gain over its frozen base is real and separable; its frontier-competitiveness
+    framing is not, and must never be cited.
+
+    NEW ARITHMETIC CONSTRAINT, derived independently of the earlier brute-force reconstruction: ALL of this
+    entry's Lite figures resolve as k/66 (39.39 = 26, 60.61 = 40, 71.21 = 47), confirming the 66-run
+    denominator. NO LITE COMPARISON FROM THIS ENTRY MAY BE STATED FINER THAN 1.5152 pp - one medal outcome.
+
+    GOVERNING CITATION RULE now in force for this entry and intake-413 (see intake-977): any MLE-Bench
+    number must be cited with its integer medal count out of 66, with the +-1.5152 pp quantum stated, and
+    flagged leaderboard-verified or self-reported. No margin under ~3 medal outcomes (4.5 pp) may be
+    described as a difference. Neither entry's numbers may gate keep/revert/promote without local
+    re-measurement.
+
+    CREDIBILITY 1 UNCHANGED. VERDICT adopt_patterns UNCHANGED.
 
 - id: intake-941
   arxiv_id: null
@@ -47901,7 +48055,13 @@
   - NOT-FOUND-IN-SOURCE - no benchmark numbers, speedups or accuracy figures anywhere in the umbrella README, docs/ or matrices/
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -47952,6 +48112,47 @@
     (4) QuixiCore-ROCm is CONFIRMED a hard fork of HazyResearch/HipKittens (GitHub API parent/source), MIT. QuixiCore-CPU has NO LICENCE, confirmed three ways (metadata null, /license 404, no root LICENSE entry) - the only repo in the family without one.
     (5) The AGENTS.md gate is CONFIRMED verbatim, but ADD that it carries NO NUMERIC THRESHOLD at the umbrella level (thresholds live in the per-backend perf.md at >=3% low-risk / >=8-10% with added complexity), NO anti-fabrication clause, and NO revert rule. WHAT IT HAS THAT WE DO NOT, and is worth importing: a CAPABILITY-CLAIM gate ("do not claim a backend supports a kernel, dtype, quant format or performance tier unless the corresponding backend repo has correctness AND performance evidence"); a MECHANISM-PLAUSIBILITY requirement ("'It got faster and I don't know why' is a reason to keep measuring, not to land"), which is absent from our purely statistical P-AK-SEARCH-1; a first-class rejection ledger; and TEST-VECTOR-AS-CONTRACT, which "caught four backends decoding the same E8M0 byte three different ways at the edges. Nothing had compared them because nothing ran" - and this dive found exactly that defect class LIVE in our tree.
     (6) FREE INCIDENTAL FINDING IN OUR OWN TREE, unrelated to either claim: iqk_gemm_iquants.cpp contains an AVX512-VPOPCNTDQ routine deriving IQ2 signs arithmetically with ZERO table reads, but its dispatch at :184 is guarded by `#if defined z_HAVE_FANCY_SIMD && ...`. The z_ prefix makes the macro undefinable, so the branch is PERMANENTLY DEAD (same at :109 and :571) and the table lookup always runs - including on our Zen 5 host, which HAS VPOPCNTDQ. Inherited verbatim from ik_llama.cpp via fec061dea; not introduced by us. Any follow-up belongs on an experimental branch, never the frozen tree.
+    STAGE-2b ADDENDUM 2026-08-03 (dive 2b-A on the QuixiAI org, dive 2b-I on the conformance artifacts).
+
+    THE CONFORMANCE VECTORS ARE THE CHEAPEST HIGH-VALUE ARTIFACT IN THE WHOLE DIVE - MIT, ~8 KB, four JSON
+    files (e8m0.json, e8m0_gguf.json, mxfp4.json, e2m1.json, 815 B - 5.1 KB). Scalar structure
+    {format, spec, note, cases[]}, each case {code, value, bits} - THE DECODED FLOAT AND ITS EXACT HEX BIT
+    PATTERN, so a decoder is pinned BIT-EXACTLY rather than to a tolerance. Coverage is deliberately
+    edge-weighted: codes 0, 1, 2, 126, 127, 128, 253, 254, 255.
+
+    THE SINGLE MOST TRANSFERABLE DESIGN DECISION: the same format appears TWICE AS TWO SEPARATE CONTRACTS -
+    e8m0.json (MX spec, 255 -> NaN) and e8m0_gguf.json (ggml behaviour, 255 -> +Inf, bits 0x7f800000) - with
+    the note "Kept as a separate contract so a backend cannot satisfy one by breaking the other." That is
+    precisely the discipline our tree lacks, and it is the mechanism that would have caught the three
+    different answers for code 255 across seven backend sites this dive found live in our own tree, WHILE
+    KEEPING the ggml-compat path legitimate rather than declaring it a bug.
+
+    AN ANTI-REWARD-HACKING ARGUMENT INSIDE A TEST FIXTURE, which maps onto our C6 differentiator: mxfp4.json
+    pins block positions with the note that "swapping the halves leaves the value multiset and the block norm
+    almost unchanged, so a norm-only check passes a wrong decoder - these vectors pin positions."
+
+    THE COMPANION MATRIX DISTINGUISHES VERIFIED FROM ASSERTED PER ROW - every row carries a `Checked by`
+    column naming the test file, or `not yet checked`: "A backend is conformant only if a test in that repo
+    consumes those vectors; anything else is an observation from reading the source and is marked as such."
+    It records legitimate divergence as documented-divergent rather than failing, and it SELF-INDICTS:
+    "Until then it is hand-written and will drift - the same failure mode it exists to document."
+
+    GOVERNANCE, UNCHANGED: cross-backend conformance vectors are an OPERATOR DECISION ITEM, not a task line.
+    They are a NEW INSTRUMENT, and instruments touch the measurement trust boundary.
+
+    THE PERF LEDGER (QuixiCore-ROCm, now intake-959) supplies the two gaps this dive identified: a Sec 7
+    "Rejected - with the reason, so they are not retried" section with dated entries and mechanisms, and a
+    Sec 12 decision rule with a MECHANISM-PLAUSIBILITY clause - "There is a plausible explanation backed by
+    bytes, FLOPs, counters, or a clean A/B. 'It got faster and I don't know why' is a reason to keep
+    measuring, not to land." Reading them in full CONFIRMS rather than expands the earlier verdict.
+    TWO HONEST CAVEATS: (a) their thresholds are FIXED LITERALS (3% / 8-10%) with NO STATISTICAL TEST AT ALL -
+    median and p20/p80 - materially WEAKER than P-AK-SEARCH-1's anytime-valid e-processes and published MDE.
+    ADOPT THE SHAPE, NOT THE NUMBERS. (b) their Sec 5 timing recipe assumes rocprofv3, which is NOT INSTALLED
+    on this host.
+
+    ORG CONTEXT NOW ESTABLISHED (2b-A): the org's llama.cpp fork is a zero-delta mirror (intake-957) and
+    QuixiFlow's main is likewise zero-delta with three stale branches (intake-958). The real work is in
+    QuixiCore-ROCm (intake-959), which declares cdna2 in four manifests and implements it in ZERO FILES.
 
 - id: intake-945
   arxiv_id: null
@@ -48193,7 +48394,13 @@
   - 'Per-kernel absolute TFLOP/s versus rocBLAS/hipBLASLt/CK: NOT-FOUND-IN-SOURCE (present only in the unfetched PDF body)'
   referenced_arxiv_ids: []
   handoffs_created: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/gpu-acceleration-path.md
   cross_references:
     chapters: []
     handoffs:
@@ -48232,6 +48439,64 @@
     (7) CORRECT the notes: "No .github directory appeared ... so automated CI is unconfirmed" -> CI IS CONFIRMED ABSENT (.github 404s on main). Also note four AMD employees among the authors, and zero mentions of gfx90a, MI210, MI250 or CDNA2 anywhere in the 41-page paper.
     (8) FAIRNESS CAVEATS to carry with any citation: hipBLASLt is run WITHOUT any tuning or algo-search flag while the NVIDIA baseline is explicitly autotuned - an asymmetry that mildly flatters HK against AMD baselines; CDNA3 numbers come from a different container than CDNA4 numbers so the MI325X panel is not stack-comparable; correctness is one sentence with no table; and there is no Limitations or Future Work section.
     (9) TRANSFERABLE SCIENCE, arch-independent and free: DO NOT WAVE-SPECIALIZE (Tab. 2 - 0 producers/8 consumers = 1610 TFLOPs against 4 producers/8 consumers = 893, because AMD hardware statically divides registers across all waves so producers consume registers without contributing); 8-wave ping-pong before 4-wave interleave (Tab. 3 - 48 LoC/3222 TFLOPs vs 183 LoC/3327, 4x less code for ~90% of performance); LDS bank/phase behaviour is UNDOCUMENTED in the CDNA ISA and must be solved empirically (their Tab. 5 answer does not transfer, THE METHOD DOES); swizzle on the HBM side, not the LDS side; and HIPCC will not feed AGPRs to matrix-core instructions, forcing redundant v_accvgpr_read - a live compiler tax on gfx90a and exactly what a profiler-metric analyzer should learn to recognise.
+    STAGE-2b ADDENDUM 2026-08-03 (dive 2b-B, HipKittens harvest) - four mechanisms extracted, one honest
+    negative, and the composition result that makes them free.
+
+    THE COMPOSITION RESULT: HK's register tile is BIT-IDENTICAL to the one already in our frozen v8. HK
+    rt_base row layout is row = laneid%16, col = 4*(laneid/16), 4 elements per lane; ggml-cuda/mma.cuh:127,144
+    under AMD_MFMA_AVAILABLE gives get_i = tid%16, get_j = 4*(tid/16)+l, ne=4. SAME OBJECT. Every HK technique
+    composes onto existing ggml fragments with ZERO layout re-derivation.
+
+    A LIVE gfx90a BUILD ARM EXISTS on the `cdna3` branch: GPU_TARGET=CDNA2 -> -DKITTENS_CDNA2
+    --offload-arch=gfx90a (tests/unit/Makefile:39-40). Full inventory of all 67 headers: the library uses
+    exactly SIX __builtin_amdgcn_* intrinsics and EXACTLY ONE is unavailable on gfx90a
+    (mfma_f32_16x16x32_fp8_fp8, mma.cuh:47) - non-template static inline, so it needs an #if guard. `main`
+    errors on CDNA2; `cdna3` already has the arm wired, carrying a ~3000-test correctness harness that would
+    run on our silicon. THIS IS WHY THE DECLINE TO PORT IS AN ECONOMICS DECISION, NOT A CAPABILITY ONE.
+
+    TRANSPOSE IS FREE ON CDNA: mma_AB/ABt/AtB/AtBt all bottom out in the same mfma161616 - A-row and B-col
+    fragments are register-identical. NVIDIA needs ldmatrix.trans; AMD gets it free.
+
+    SWIZZLE, MADE CONCRETE: addr ^ (((addr % swizzle_repeat) >> 7) << 3), with swizzle_repeat =
+    swizzle_bytes << 4 = 2048 for bf16. Conflict-freedom verified numerically: 16 lanes -> 16 distinct
+    starting banks, zero conflicts. THE DEEP COUPLING is that the per-row-block stride is ALWAYS an exact
+    multiple of swizzle_repeat, which is why the LDS address can be hoisted out of the height loop and the
+    rest encoded as compile-time `offset:` immediates - H address computations collapse to 1.
+
+    DIRECT-TO-LDS, REFINED: CDNA4 DOES use llvm_amdgcn_raw_buffer_load_lds. The earlier "zero occurrences"
+    was true only of __builtin_amdgcn_global_load_lds; the MUBUF form is used. AND WE ALREADY CALL THE SAME
+    INTRINSIC ON gfx90a (mmvq.cu:538,602) - but we deposit LINEARLY. HK inverts the swizzle into the GLOBAL
+    offset because a fixed-mapping DMA cannot XOR the LDS address. That is "swizzle HBM-side" made concrete,
+    and it is what we add when the LDS consumer becomes a 2-D MFMA tile read.
+
+    SCHEDULING IS NOT IN THE LIBRARY - zero occurrences of setprio / sched_barrier / s_barrier across all 67
+    headers. Every schedule is open-coded per kernel. THAT IS EXACTLY THE ABSTRACTION GAP AN AUTOKERNEL STACK
+    FILLS. The 8-wave ping-pong mechanism: offset-barrier team split (team 1 takes an EXTRA s_barrier so it
+    runs permanently one cluster behind), s_setprio(1)/(0) bracketing MFMA blocks, sched_barrier(0) after
+    every cluster, and a mirror-image parity restore before the epilogue OR THE WORKGROUP HANGS.
+
+    THE LDS BANK/PHASE SOLVER IS A REAL RUNNABLE ARTIFACT: analysis/paper_experiments/phases/*/
+    {bank_solver.py, phase_solver.py, kernel.cpp} - a 45-line kernel over rocprofv3 PMC counters, ~40 min GPU
+    on gfx90a. CDNA3/4 answer is 64 banks, 2 phases of 32 lanes. DO NOT ASSUME IT TRANSFERS - whether gfx90a
+    is 32 or 64 banks decides whether the >>7 <<3 swizzle constants transfer at all.
+
+    GRID SWIZZLE MUST BE SWEPT, NOT SET (measured): WGM none 1016.6 TFLOPs / 2 -> +6.6% / 4 -> +9.1% /
+    8 -> +9.6% / 32 -> -13.9%. Pure launch-order reordering, zero kernel-body change. The chiplet half does
+    NOT apply (MI210 = 1 GCD); the L2-locality half does.
+
+    HONEST NEGATIVE, recorded so it is not re-derived: FOR A DEQUANT GAP, HK HAS NOTHING. Its quantized path
+    is gfx950 HARDWARE block-scaling (mfma_scale_f32_*_f8f6f4); there is no software dequant anywhere. Its
+    cross-lane reductions are WORSE than what we would write (a plain __shfl_down ladder, no DPP/permlane) -
+    a place we can BEAT it.
+
+    THE AMD/NVIDIA GAP AS CODE: (a) no async DMA engine - TK's TMA/cp.async/mbarrier becomes hand-rolled VGPR
+    staging with manual s_waitcnt; (b) no SMEM-operand tensor core - WGMMA's st_st form has no MFMA
+    counterpart, so EVERY operand goes through the register file (hence HK's own "TODO: hack to avoid too
+    many VGPRs"); (c) no setmaxnreg, so warp specialization is both unavailable AND unwanted; (d) no
+    cluster/DSMEM tier; (e) no ldmatrix.trans before gfx950.
+
+    LICENCE MIT. DO NOT VENDOR THE FRAMEWORK (C++20 concepts-heavy; ggml already has the identical tile).
+    Lift the four mechanisms as self-contained additions with provenance headers.
 
 - id: intake-948
   arxiv_id: null
@@ -48557,6 +48822,28 @@
     (6) SUPPLY-CHAIN RISK: run_evaluation.py:314 HARDCODES docker_image_prefix = 'docker.io/betty1202/' - a PERSONAL Docker Hub account, not a flag or env var - with 280 matching images at ~1.29 GB each, i.e. ~180 GB compressed for 140 instances, already over our 158 GB budget.
     (7) REPO VITALS: 11 commits, last 2025-10-28, 0 tags, 0 releases, 53 stars, 4 open issues. The scaffolds are NOT vendored - two stub READMEs pointing at Agentless and OpenHands, one link reported broken.
     (8) AUTHOR-LINKAGE CORRECTION: Mingzhe Du co-authors BOTH this entry and intake-952 (EffiBench-X), and See-Kiong Ng / Luu Anh Tuan link EffiBench-X to Mercury. THE TWO ENTRIES ARE NOT INDEPENDENT INSTRUMENTS and must not be counted as mutual corroboration. intake-953 (Harvard/Google) and intake-954 (CUHK/ZJU) are genuinely independent of them and of each other.
+    STAGE-2b ADDENDUM 2026-08-03 (dive 2b-D) - THE LINEAGE FINDING, and it changes how this cluster counts.
+
+    Mingzhe Du is the hub on three papers: Mercury (intake-972) and EffiBench-X share 3 authors
+    (Du, Ng, Luu Anh Tuan); Mercury and SWE-Perf share 2 (Du, Qian Liu); SWE-Perf and EffiBench-X share 1
+    (Du). EffiBench-X additionally inherits EffiBench (4 of 5 authors carry over). So
+    Mercury -> EffiBench(-X) -> SWE-Perf IS ONE CONNECTED COMPONENT OF FOUR PAPERS, and Mercury is its
+    ancestor and connector.
+
+    CONSEQUENCE: the apparent field-wide consensus that "efficiency scores must be normalized against a
+    reference distribution" is HALF ONE LINEAGE. The genuinely independent instruments DIVERGE sharply -
+    ENAMEL (intake-970) normalizes against ONE EXPERT SOLUTION with censoring; EvalPerf (intake-971) against
+    a CLUSTERED LADDER using instruction counts; GSO (intake-973) against a SINGLE HUMAN COMMIT in the same
+    container; COFFE (intake-954) against THE BEST GROUND TRUTH, binary. COUNT THE DESIGN SPACE AS FOUR,
+    NOT EIGHT.
+
+    CLEAN NOTE: SWE-fficiency (intake-953, Harvard/GDM) is OUTSIDE the Du bloc and cited EvalPerf (UIUC), so
+    the disputed normalization claim is a CROSS-LINEAGE MISREADING - a citation-hygiene failure, not a
+    captured literature.
+
+    THREE DISTINCT LIUS, DO NOT MERGE: Jiawei Liu (EvalPerf, UIUC), Qian Liu (Mercury/SWE-Perf, Sea AI Lab),
+    Jinjian Liu (GSO, Berkeley). The "Liu et al., 2024" ambiguity is precisely how the original
+    misattribution became plausible.
 
 - id: intake-952
   arxiv_id: '2505.13004'
@@ -48648,6 +48935,28 @@
     (8) REPO IS DEAD: 10 commits total, last 2025-10-24, no tags, no releases, 15 stars, four open issues with ZERO maintainer replies ever. A maintained fork exists (RidiculousBuffal/effibench-enhanced, Apache-2.0, pushed 2026-07-29) and may already carry fixes for all three blockers.
     (9) REVISIT THE credibility_score 1 ARITHMETIC, which was computed as "no venue located": arXiv 2505.13004 is still v1 only with the comment "Under Review" after 15 months, but the repo description reads [NeurIPS'25] and the README bibtex claims NeurIPS 2025. Artifact-side acceptance claims against an arXiv comment that was never updated - not conclusive either way, but the score should be re-derived.
     (10) AUTHOR-LINKAGE: Mingzhe Du co-authors both this entry and intake-951; they are NOT independent instruments and must not be counted as mutual corroboration.
+    STAGE-2b ADDENDUM 2026-08-03 (dive 2b-D) - THE LINEAGE FINDING, and it changes how this cluster counts.
+
+    Mingzhe Du is the hub on three papers: Mercury (intake-972) and EffiBench-X share 3 authors
+    (Du, Ng, Luu Anh Tuan); Mercury and SWE-Perf share 2 (Du, Qian Liu); SWE-Perf and EffiBench-X share 1
+    (Du). EffiBench-X additionally inherits EffiBench (4 of 5 authors carry over). So
+    Mercury -> EffiBench(-X) -> SWE-Perf IS ONE CONNECTED COMPONENT OF FOUR PAPERS, and Mercury is its
+    ancestor and connector.
+
+    CONSEQUENCE: the apparent field-wide consensus that "efficiency scores must be normalized against a
+    reference distribution" is HALF ONE LINEAGE. The genuinely independent instruments DIVERGE sharply -
+    ENAMEL (intake-970) normalizes against ONE EXPERT SOLUTION with censoring; EvalPerf (intake-971) against
+    a CLUSTERED LADDER using instruction counts; GSO (intake-973) against a SINGLE HUMAN COMMIT in the same
+    container; COFFE (intake-954) against THE BEST GROUND TRUTH, binary. COUNT THE DESIGN SPACE AS FOUR,
+    NOT EIGHT.
+
+    CLEAN NOTE: SWE-fficiency (intake-953, Harvard/GDM) is OUTSIDE the Du bloc and cited EvalPerf (UIUC), so
+    the disputed normalization claim is a CROSS-LINEAGE MISREADING - a citation-hygiene failure, not a
+    captured literature.
+
+    THREE DISTINCT LIUS, DO NOT MERGE: Jiawei Liu (EvalPerf, UIUC), Qian Liu (Mercury/SWE-Perf, Sea AI Lab),
+    Jinjian Liu (GSO, Berkeley). The "Liu et al., 2024" ambiguity is precisely how the original
+    misattribution became plausible.
 
 - id: intake-953
   arxiv_id: '2511.06090'
@@ -48739,6 +49048,51 @@
     (8) A STALE FIGURE SURVIVES INSIDE v3: the prose in Sec 4.1 says GPT-5-mini 0.019x while v3 Tables 2 and 6 both say 0.039x - the same sentence updated "0.15 to 0.23" but not the model number. QUOTE v3 NUMBERS FROM TABLES ONLY.
     (9) The "under 0.5% variance" claim holds as a coefficient of variation over n=3 but reaches 0.61% and 0.73% as max-minus-min relative spread for two models; and v3 Table 11's printed spread for Gemini is 10x its own max-minus-min.
     (10) ADD, and worth copying: anti-reward-hacking by AST-transforming workload scripts so each timing repetition runs in a FRESH CHILD PROCESS (Appendix L.2), defeating lru_cache and global-state leakage - the OPPOSITE doctrine to intake-951's deliberate warm-up, and the correct choice when ranking model output. ADD: the PR scrape cutoff is March 12 2025 and disjointness is from SWE-bench, NOT from training data - every expert patch is a merged public PR in numpy/pandas/scipy, inside every 2026 model's training window. ADD: workload annotation cost ~200 author-hours for 1041 instances, of which 498 survived validation.
+    STAGE-2b ADDENDUM 2026-08-03 (dive 2b-D) - THE LINEAGE FINDING, and it changes how this cluster counts.
+
+    Mingzhe Du is the hub on three papers: Mercury (intake-972) and EffiBench-X share 3 authors
+    (Du, Ng, Luu Anh Tuan); Mercury and SWE-Perf share 2 (Du, Qian Liu); SWE-Perf and EffiBench-X share 1
+    (Du). EffiBench-X additionally inherits EffiBench (4 of 5 authors carry over). So
+    Mercury -> EffiBench(-X) -> SWE-Perf IS ONE CONNECTED COMPONENT OF FOUR PAPERS, and Mercury is its
+    ancestor and connector.
+
+    CONSEQUENCE: the apparent field-wide consensus that "efficiency scores must be normalized against a
+    reference distribution" is HALF ONE LINEAGE. The genuinely independent instruments DIVERGE sharply -
+    ENAMEL (intake-970) normalizes against ONE EXPERT SOLUTION with censoring; EvalPerf (intake-971) against
+    a CLUSTERED LADDER using instruction counts; GSO (intake-973) against a SINGLE HUMAN COMMIT in the same
+    container; COFFE (intake-954) against THE BEST GROUND TRUTH, binary. COUNT THE DESIGN SPACE AS FOUR,
+    NOT EIGHT.
+
+    CLEAN NOTE: SWE-fficiency (intake-953, Harvard/GDM) is OUTSIDE the Du bloc and cited EvalPerf (UIUC), so
+    the disputed normalization claim is a CROSS-LINEAGE MISREADING - a citation-hygiene failure, not a
+    captured literature.
+
+    THREE DISTINCT LIUS, DO NOT MERGE: Jiawei Liu (EvalPerf, UIUC), Qian Liu (Mercury/SWE-Perf, Sea AI Lab),
+    Jinjian Liu (GSO, Berkeley). The "Liu et al., 2024" ambiguity is precisely how the original
+    misattribution became plausible.
+    CLOSURE 2026-08-03 - THE APPENDIX-N ITEM IS RESOLVED, AND THE PREMISE WAS MISATTRIBUTED.
+
+    This entry's Appendix N states that "conversion to normalized or percentage-based speedup metrics
+    inherently reduces variability in final scores (Liu et al., 2024)". Its bibliography resolves that to
+    arXiv 2408.06450 = EvalPerf (intake-971), NOT to ENAMEL. grep -ci "qiu|enamel|eff@k" over v3 returns
+    0, 0, 0 - IT NEVER CITES ENAMEL.
+
+    AND THE ACTUAL CITATION ARGUES THE OPPOSITE. EvalPerf Sec A.2: relative speedup's applicability "becomes
+    less clear across a broad range of tasks. This is because the degree of speedup varies significantly
+    across different tasks ... This variability can lead to confusion." EvalPerf introduces DPS BECAUSE
+    relative speedup is variable; its stability comes from HARDWARE PERFORMANCE COUNTERS and from SELECTING
+    LARGE COMPUTATIONS, not from normalization.
+
+    ENAMEL: NOT-FOUND-IN-SOURCE. Its single normalization sentence is scale-comparability only. Its variance
+    reduction comes from R=6 repeats with the Hodges-Lehmann estimator and from Rao-Blackwellization of the
+    bootstrap estimator - neither is normalization.
+
+    THIRD-PARTY CORROBORATION OF OUR DERIVED MECHANISM, from GSO Appendix D (intake-973), a disjoint Berkeley
+    group: "Our metric controls for machine-specific variation by comparing generated optimizations against
+    expert developer implementations in the same environment, rather than measuring absolute speedups."
+
+    => OUR DECLINE TO AMEND THE MEASUREMENT CONSTITUTION STANDS, on STRONGER grounds than the ones we
+    declined on. This citation trail is recorded so the item cannot reopen.
 
 - id: intake-954
   arxiv_id: '2502.02827'
@@ -48978,3 +49332,1927 @@
   - '[unverified] Do NOT open ggml quant-type work on eschamoe. Even fully solved, the win is an OFFLINE conversion, not a new ggml decode path - the frozen production kernel stays untouched either way.'
   - '[unverified] Treat the apache-2.0 tag as covering the extraction SCRIPTS only. A codebook probed out of a vendor closed wheel carries unresolved derivative-work risk - flag to the operator before any use.'
   notes: 'SCHEMA NORMALIZATION (parent session, 2026-08-03): the compact expansion schema dispatched to sub-agents listed `verdict` and `credibility_score` WITHOUT restating their enums, so several agents returned out-of-schema values. Normalizations are recorded per entry rather than silently applied, following the intake-936 precedent of 2026-07-29. The durable fix belongs in the skill sub-agent dispatch contract - this is the SECOND session with this failure class. THIS ENTRY: agent returned credibility_score 3 (normalized to 1), relevance "high-if-it-lands / low-as-published" (normalized to medium, not an enum value) and verdict "monitor" (normalized to worth_investigating, not an enum value). credibility_score 1 arithmetic: no venue +0; created 2026-08, days before ingest +1; unknown author with no quantization track record - the author other repositories are TTS and VLM MLX conversions +0; commercial bias 0; independent corroboration +0, with zero downloads, zero likes and no third-party replication. FORMAT FINDINGS: the card describes 2-bit AQLM-plus-Hadamard and the ABI exposes escha_aqlm_auto/_gemv/_fused_hmma symbols, so the family is AQLM-DERIVED, but the reconstruct path is bespoke - escham_reconstruct over int16 codes in 16x16 tiles, K=2 giving 32 k_slots and K=3 giving 48. Whether eschamoe is truly AQLM-derived or merely AQLM-adjacent is INFERRED from ABI symbol names and was never stated by EschaLabs. All three published markdown files were read raw; compact.pkl was deliberately NOT downloaded under the external-content quarantine, so its contents and correctness are unverified. WHY THIS MATTERS FOR US: the practical path was never a new ggml quant type - decode is a pure linear map from codes to fp16, so offline dequantization to fp16 followed by requantization to GGUF would need no new ggml type at all. That path is blocked solely by the missing additive baseline term.'
+- id: intake-957
+  arxiv_id: null
+  url: https://github.com/QuixiAI/llama.cpp
+  source_type: repo
+  title: QuixiAI/llama.cpp - a zero-delta mirror fork of ggml-org/llama.cpp
+  authors:
+  - Eric Hartford (QuixiAI)
+  categories:
+  - hardware_optimization
+  - inference_serving
+  novelty: duplicate
+  relevance: none
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-944
+  ingested_date: '2026-08-03'
+  verdict: not_applicable
+  verification: dive-verified
+  key_claims:
+  - 'The repository contains no work of its own. GitHub compare API: status=behind, ahead_by=0, behind_by=108, total_commits=0, files changed=0.'
+  - merge_base equals the fork own HEAD (8bb909374d04...), which is the definitional signature of a fork that has contributed zero commits.
+  - 'Branches: master only. Tags: none. Commits by the owner: 0. All 20 most recent commits are upstream commits by upstream authors.'
+  - Created 2026-07-25, last pushed 2026-07-26, 0 stars, 0 forks - a snapshot taken and abandoned within roughly 26 hours.
+  techniques: []
+  reported_results:
+  - compare ggml-org/llama.cpp:master...QuixiAI:llama.cpp:master -> ahead_by 0, behind_by 108, total_commits 0
+  - 'Relationship to our production kernel: SIBLING, not descendant. 67a433bf4 (our v8 freeze) vs 8bb909374d (their fork point): status=diverged, ahead_by 86, behind_by 62, merge_base a8dc0e3269a5 (2026-07-16). Both descend from upstream, diverging about 10 days apart.'
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    experiments: []
+    intake_entries:
+    - intake-944
+    - intake-958
+    - intake-959
+  contradicting_evidence: []
+  novelty_justification: 'duplicate. Not a duplicate by URL collision - by CONTENT: the tree is byte-equivalent to an upstream snapshot already covered by every llama.cpp entry in the index.'
+  relevance_justification: none. There is nothing to port, adopt, or learn from. Indexed solely as a tombstone.
+  verdict_justification: 'not_applicable is the correct verdict and it is fully justified rather than asserted: the compare API returns zero commits of delta, so out-of-scope is a measured property of the artifact, not a judgement about its domain.'
+  recommended_actions:
+  - INDEX AS A TOMBSTONE ONLY. The purpose of this row is to stop a future dive spending budget re-fetching it.
+  notes: 'CORRECTION TO THE BRIEF THAT COMMISSIONED THIS DIVE: the parent session described this as "a fork of OUR PRODUCTION KERNEL". It is not - it is a sibling fork off ggml-org with no relationship to our tree beyond common upstream ancestry. Recorded so the mistaken framing is not re-derived. credibility_score null: a repo with no empirical claims. PROCESS: answered entirely via api.github.com; nothing cloned, nothing built, /mnt/raid0/llm/llama.cpp never accessed.'
+- id: intake-958
+  arxiv_id: null
+  url: https://github.com/QuixiAI/QuixiFlow
+  source_type: repo
+  title: QuixiAI/QuixiFlow - a vLLM fork whose main is zero-delta and whose three branches are stale
+  authors:
+  - Eric Hartford (QuixiAI)
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - quantization
+  novelty: low
+  relevance: low
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-944
+  ingested_date: '2026-08-03'
+  verdict: not_applicable
+  verification: dive-verified
+  key_claims:
+  - 'main is zero-delta: ahead_by 0, behind_by 329, merge_base equals its own HEAD. All content lives in three branches, all 6518 commits behind main, all merge-basing at cc410e864480 (2026-01-02), never merged even to the fork own main.'
+  - 'The flagship rocm-fp8-marlin branch is PROVABLY NON-BUILDING: CMakeLists.txt:9-10 appends two .cu files that both return HTTP 404 at that ref, as does the entire csrc/quantization/fp8/ directory.'
+  - Even if CMake resolved, csrc/torch_bindings.cpp:46 binds fp8_marlin_gemm against a symbol declared in csrc/ops.h:23-26 but never defined anywhere - a link failure. About 150 lines of Python dispatch route to a kernel that was never written.
+  - The rocm-flash-attn branch is real, working, and honestly annotated - but contains ZERO kernel code. It is an adaptation layer letting vLLM FLASH_ATTN backend be selected on ROCm by wrapping the external flash_attn package.
+  - No benchmarks anywhere. Complete changed-file lists for all three branches (13 and 11 files) contain no benchmark, no results file, and no performance number. The design doc defers measurement in the future tense.
+  techniques:
+  - FP8 Marlin emulation (design only)
+  - ROCm FlashAttention backend selection shim
+  - cu_seqlens_k threading through CommonAttentionMetadata
+  reported_results:
+  - 'rocm-flash-attn: fa_utils.py:225-308 is a shim dropping CUDA-only args and forwarding; rocm.py:356-366 inserts FLASH_ATTN BELOW AITER in priority. Self-documented defects: tree-attention correctness SKIPPED on ROCm ("known BF16 numerical divergence vs tree attention"); FlashAttention-MLA remains CUDA-only.'
+  - 'Code-quality signal: marlin_utils_fp8.py:336 gates on any(gfx in gcn_arch for gfx in ["gfx90",...]) - the bare prefix "gfx90" ALSO matches gfx900/gfx906/gfx90c (Vega-era) which have no MFMA at all.'
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-944
+    - intake-957
+    - intake-959
+  contradicting_evidence:
+  - The repository presents FP8 Marlin ROCm support as its flagship work; the kernel that would implement it does not exist in the tree. The design document and the plumbing are real; the interesting half is absent.
+  novelty_justification: low. The one genuinely transferable idea is a POSTURE, not a technique.
+  relevance_justification: 'low, and re-assessed upward from an initial dismissal after operator steering ("if it is usable to improve performance, it matters"). The rocm-flash-attn branch has no arch gating, so it WOULD engage on gfx90a - but it delivers backend SELECTION, not a new kernel. The transferable shape: when AITER is unavailable or has dropped your arch, route to a GENERIC ROCm flash-attn rather than a vendor-optimized path. Given AITER documented CDNA2 drop that is a strategically relevant fallback shape for us, worth noting and not worth a cherry-pick.'
+  verdict_justification: not_applicable. Our serving path is llama.cpp, not vLLM, so the backend-selection concern does not reach us; and the FP8 concept it claims (decode FP8 to FP16 in registers, fuse scale during decode, MFMA with FP32 accumulate) is EXACTLY what our existing MMQ/dequant path already does for K-quants - so there is no new idea either, independent of the missing code.
+  recommended_actions:
+  - DECLINE cherry-picking the ROCm FP8 Marlin emulation - the kernel does not exist, and the concept is already implemented in our MMQ path.
+  - DECLINE evaluating vLLM-via-QuixiFlow on the MI210. QuixiFlow offers nothing over stock vLLM; a stock-vLLM-on-gfx90a number is a NEW MEASUREMENT TASK, not an intake item.
+  - RECORD the rocm-flash-attn fallback POSTURE as a strategic shape in the AITER-dropped-CDNA2 context - no code, no task line.
+  notes: 'credibility_score 2: no peer-reviewed venue +0; recent +1; not a major lab +0; commercial bias +0; independent corroboration +0; and +1 for the rocm-flash-attn branch being genuine tested code with honest self-documented defect annotations. The score is held down by the flagship branch being a design doc whose CMake references 404 files. PROCESS: api.github.com and raw.githubusercontent.com only; nothing cloned or built.'
+- id: intake-959
+  arxiv_id: null
+  url: https://github.com/QuixiAI/QuixiCore-ROCm
+  source_type: repo
+  title: QuixiAI/QuixiCore-ROCm - a 77-commit hard fork of HipKittens with measured CDNA3 kernel work and an explicit accept/reject commit discipline
+  authors:
+  - Eric Hartford (QuixiAI)
+  categories:
+  - hardware_optimization
+  - benchmark_methodology
+  - quantization
+  novelty: high
+  relevance: medium
+  credibility_score: 5
+  discovered_via: expansion
+  expanded_from: intake-944
+  ingested_date: '2026-08-03'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - A 77-commits-ahead hard fork of HazyResearch/HipKittens, 300 files, containing real measured kernel work with quantified per-kernel gains.
+  - 'THE METHODOLOGICALLY INTERESTING PART: the commit log records REJECTED experiments with their mechanism - "reject LDS-B experiment (inconsistent across shapes)", "reject (CU contention)". That is a working accept/reject discipline in the wild, close in shape to our own measurement constitution.'
+  - 'CDNA2 SUPPORT IS DECLARED AND NOT IMPLEMENTED. .quixicore/backend.yaml declares targets [cdna2, cdna3, cdna4], but the 1759-path tree has ZERO paths matching cdna2/gfx90a/gfx908 (cdna3: 583, cdna4: 347). Its own README states flatly "We support CDNA3 and CDNA 4."'
+  - All measurements are MI300X gfx942 / ROCm 7.2.4 - neither our architecture nor our ROCm version.
+  - Its perf ledger separates Wins from "Rejected - with the reason, so they are not retried", each entry DATED "so it can be challenged with new data", framed as "current truth until re-measured".
+  techniques:
+  - 64-lane wavefront widening for norm/row elementwise kernels
+  - MFMA-tiled GQA forward flash kernel
+  - wide N-tile X-reuse qgemm with occupancy-picked tiling
+  - dated rejection ledger with mechanism
+  - permanent negative-control comparators retained in the bench file
+  reported_results:
+  - 'elementwise: 64-lane wavefront widening for norm/row kernels +30-71%'
+  - 'attention: MFMA-tile the GQA forward flash kernel, 13-16x over naive'
+  - 'qgemm: wide N-tile X-reuse kernel, occupancy-picked, +47-54% at M>=256'
+  - 'REJECTED - GEMM LDS-B staging: +16% at 2048^3 but -6% at 4096^3. Both kernels sat at 35-45 TFLOP/s against ~1300 peak, so "the structural limiter is the 16x16 output tile, not the B load."'
+  - 'REJECTED - qgemm LDS-staged wide tile: bit-identical but slower; KEPT IN THE BENCH FILE AS A COMPARATOR ONLY, a rejected arm retained as a permanent negative control.'
+  - 'REJECTED - chunked-RCCL overlap at 0.82-0.96x: "Correct, just slower. A hardware finding, not a bug."'
+  - 'REJECTED - q8_0 to q5_K weight downgrade, flagged by the authors as their most instructive rejection: ~35% fewer bytes should have bought ~20% end-to-end; instead EVERY denser format (q6_K, q5_K, q4_K, q4_0, iq4_nl, mxfp4, nvfp4) was SLOWER in wall clock, nvfp4 worst at ~2.5x slower while moving 47% FEWER BYTES. Cause: "the k-quant decoder is ALU-BOUND, so narrower formats cost more unpack work than they save in bytes."'
+  - 'THE LDS META-PATTERN: LDS staging LOST for dense GEMM B-tiles and qgemm wide tiles but WON 1.4-2.0x for k-quant span-fill decode. "The distinction is reuse per barrier ... Do not assume either direction - A/B it, and report which side of that line the kernel is on."'
+  referenced_arxiv_ids:
+  - '2511.08083'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - autokernel-research-loop.md
+    - mi210-q8-dequant-gemv-roofline.md
+    experiments: []
+    intake_entries:
+    - intake-944
+    - intake-947
+    - intake-958
+  contradicting_evidence:
+  - 'A ROOFLINE CROSS-CHECK THE DIVE CORRECTLY REFUSED: perf/results/2026-08-02/mxfp4-gguf/bench.txt reports mxfp4_gemv_q8_1 4096x4096 at 0.0050 ms / 1792.8 GB/s "weight-bound" on MI300X/ROCm 7.2.4. Comparing that against our Q4_K rung is UNSAFE: the ~8.9 MB weight working set FITS MI300X 256 MB Infinity Cache, so the figure is NOT HBM-limited and the "% of peak" framing does not apply. Different arch, quant and ROCm. DO NOT enter as a rung.'
+  - Their decision thresholds are FIXED LITERALS (land at >=3% median low-risk, >=8-10% with added complexity) with NO STATISTICAL TEST AT ALL - median and p20/p80 only. That is materially WEAKER than P-AK-SEARCH-1 anytime-valid e-processes and published MDE. Adopt the SHAPE, not the NUMBERS.
+  - Their Sec 5 timing recipe assumes rocprofv3, which is NOT INSTALLED on our host.
+  novelty_justification: high. The index carries no other example of a from-scratch AMD kernel program that publishes its rejections with mechanism and dates them so they can be challenged. That artifact - not the kernels - is what is new to us.
+  relevance_justification: 'medium: high on METHOD, none on our silicon. Every number is gfx942 with a 256 MB Infinity Cache we do not have. What transfers is the ledger shape and one generalized rule that lands directly on a bandwidth-utilisation program: "fewer bytes only wins if the kernel is actually near the bandwidth roofline. MEASURE ACHIEVED FRACTION OF ROOFLINE FIRST. At ~14% of roofline you are ALU-BOUND and format changes will BACKFIRE."'
+  verdict_justification: 'worth_investigating, not adopt_component: no code is portable to gfx90a (zero cdna2 paths despite the manifest declaration). Not not_applicable: the accept/reject discipline is directly transferable and the q8_0-to-q5_K rejection is a mechanism finding that bears on our own quant-ladder program. The upstream it forks is peer-reviewed (MLSys 2026) and landed in AITER, so this is a fork of independently validated work rather than a self-report.'
+  recommended_actions:
+  - ADOPT THE SHAPE of the rejection ledger and the "Established Findings - Do Not Re-Derive" section, NOT the 3%/8-10% literals. Route through the human-only measurement amendment path; do not self-apply.
+  - 'CARRY the q8_0-to-q5_K rejection as a standing caution on any bytes-per-token lever: at low roofline fraction the k-quant decoder is ALU-bound and narrower formats backfire.'
+  - CARRY the LDS meta-pattern (reuse per barrier decides the sign) as a required A/B rather than an assumption.
+  - DECLINE using any MI300X number here as a roofline cross-check - cache-resident, see contradicting_evidence.
+  notes: 'credibility_score 5: no peer-reviewed venue for THIS fork +0; recent +1; upstream is MLSys 2026 and landed in AITER, i.e. independent third-party validation of the parent rather than a self-report +2; not a major lab +1 for demonstrated measurement discipline; commercial bias +0; net 5 against the 0-6 rubric. THIRD INDEPENDENT CONFIRMATION OF CDNA2 ECOSYSTEM ABANDONMENT: AITER dropped CDNA2; HipKittens never supported it; this fork declares cdna2 in metadata and ships zero cdna2 code. Every modern AMD kernel library targets gfx942+ only, so gfx90a optimization is unavoidably IN-HOUSE - which is the premise AutoKernel exists to answer. OPERATOR STEERING (2026-08-03): acquiring CDNA3 silicon is explicitly OFF THE TABLE; the strategic response is to improve MI210 utilisation, not to change hardware.'
+- id: intake-960
+  arxiv_id: null
+  url: https://github.com/AMD-AIG-AIMA/GEAK-agent/tree/main/perf_knowledge
+  source_type: repo
+  title: GEAK perf_knowledge - AMD vendor-maintained GPU performance knowledge base with first-class gfx90a coverage
+  authors:
+  - AMD AIG AIMA
+  categories:
+  - hardware_optimization
+  - agent_architecture
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-674
+  ingested_date: '2026-08-03'
+  verdict: adopt_component
+  verification: dive-verified
+  key_claims:
+  - 'A distinct artifact from GEAK-the-agent: roughly 586 documents / 43.9k lines of structured hardware and optimization knowledge, Apache-2.0.'
+  - 'IT CARRIES FIRST-CLASS gfx90a KNOWLEDGE. perf_knowledge/hardware/cdna2_mi200/ has four files (arch.md, matrix_core.md, memory.md, occupancy.md), all gens: [gfx90a], all updated: 2026-06-08, titled "CDNA2 / MI250X / MI210 (gfx90a)" - our exact card, named.'
+  - 'perf_knowledge/index/capability_index.yaml carries 40 gens: entries including gfx90a (vs 214 gfx942, 225 gfx950, 20 gfx908). perf_knowledge/README.md scopes CDNA1 (MI100), CDNA2 (MI200/250X), CDNA3, CDNA4.'
+  - NO ARCH GATING EXISTS. The GEAK README states the on-box card is auto-detected; there is no allowlist rejecting gfx90a. The README narrowing to "CDNA, e.g. gfx942 / gfx950" is a DEPLOYMENT/EVALUATION statement, not a capability removal.
+  - Its own consumption contract states the base is "reference material... not decisions" and that consumers must "decide by on-box measurement" - i.e. AMD is pointing us at exactly the standing unchecked MI210 reproduction gate.
+  - IT IS NOT ERROR-FREE. cdna2_mi200/memory.md computes "362 TF / 1.6 TB/s ~= 226 FLOP/byte" as a PER-GCD ridge, while its own arch.md labels 362.1 TF as PER-OAM (both GCDs). Off by 2x. The MI210 ridge is ~110-113 FLOP/byte.
+  techniques:
+  - structured per-architecture performance knowledge base
+  - capability index keyed by GPU generation
+  - vendor SOTA registry keyed operator x backend
+  reported_results:
+  - CDNA2 matrix_core doc supplies the peak table from which MI210 derives to ~181 TFLOP/s fp16/bf16 matrix (104 CU x 1024 FLOP/cyc x 1.7 GHz) and a ridge of ~110-113 FLOP/byte against 1.6-1.638 TB/s. This closes a blank spot that existed in every MI210 handoff.
+  - 'cdna2_mi200/memory.md states plainly: "Direct global->LDS exists on CDNA2 (32 b/lane, like CDNA3)" - AMD-authored third-party confirmation of a capability claim we had already overturned two other ways.'
+  - Ships languages/ docs on hipkittens, tilelang, mojo, cutlass and flydsl, plus a landscape/ section on multi-backend libs, DSLs, AI kernel agents, autotuning and "AMD SOTA 2026".
+  referenced_arxiv_ids:
+  - '2507.23194'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - mi210-mfma-compute-bound-paths.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-674
+    - intake-677
+    - intake-678
+    - intake-679
+    - intake-947
+    - intake-964
+  contradicting_evidence:
+  - A confirmed defect in the KB itself (the 2x per-GCD/per-OAM ridge error) proves it must be checked rather than imported. Useful, not authoritative.
+  - All PUBLISHED GEAK evaluation remains gfx942. First-class knowledge is not first-class evidence; the MI210 reproduction gate is unaffected by this finding.
+  novelty_justification: high. Our corpus treated GEAK as one artifact (the agent). The knowledge base is separately licensed, separately versioned, separately useful, and it is where the gfx90a coverage actually lives.
+  relevance_justification: high. It closed the compute-roofline blank spot in this project at zero GPU cost, corroborated an overturned capability claim, and supplies a vendor-maintained survey of the exact seven-school taxonomy our Stage-2 dive built by hand - available as an external check on our own reasoning.
+  verdict_justification: 'adopt_component: Apache-2.0, directly consumable as reference material by the C4 analyzer and the planner context compiler, and it is the only vendor artifact in the corpus with current gfx90a content. Not adopt_patterns, because the artifact itself is what we use, not an idea extracted from it.'
+  recommended_actions:
+  - AMEND the standing "GEAK-v1 is the only gfx90a-proven substrate" caveat to distinguish gfx90a KNOWLEDGE (first-class, current) from gfx90a EVALUATION (absent). RETIRE "677/678/679 are a coverage regression" - for GEAK proper it is unpublished coverage.
+  - PIN GEAK v1.0.0 @ 4ffba15a55f250816598b4e27eb56ca40a699cea for the paper MI250X evidence; the repo HEAD is past the published papers.
+  - RECORD the 2x ridge-point defect so 226 FLOP/byte is never imported. Use ~110-113.
+  - READ landscape/ and languages/ as an external check on the seven-school taxonomy - flydsl is entirely absent from our corpus.
+  notes: 'credibility_score 3: no peer-reviewed venue for the KB itself +0; updated 2026-06-08, within 12 months +1; AMD is the hardware vendor and a major lab +1; commercial bias -1 (AMD authors the agent, the benchmark and the hardware); independent corroboration +2 capped (its direct-global-to-LDS statement corroborates two independent findings of ours - LLVM FeatureVMemToLDSLoad in FeatureGFX9, and our own tree already calling the intrinsic on gfx90a). Net 3. NORMALIZATION NOTE: the sub-agent returned no numeric credibility for this row; the score above was assigned by the parent session against the 0-6 rubric.'
+- id: intake-961
+  arxiv_id: null
+  url: https://github.com/triton-lang/triton/pull/5018
+  source_type: repo
+  title: 'triton-lang/triton PR #5018 - the AMD Triton-team scheduling idea HipKittens credits as the origin of its interleaved schedule'
+  authors:
+  - AMD Triton team (via triton-lang)
+  categories:
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-947
+  ingested_date: '2026-08-03'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - HipKittens second blog attributes its interleaved 4-wave schedule as drawing "inspiration from ideas by AMD Triton team", citing this PR.
+  - 'THE REASON THIS MATTERS: Triton is our CONFIRMED-OPEN school-4 path on gfx90a. The scheduling idea HipKittens productionized in a CDNA3-only C++ library originated in an ecosystem we can actually use.'
+  techniques:
+  - interleaved wave scheduling
+  - Triton-level instruction scheduling for AMD backends
+  reported_results: []
+  referenced_arxiv_ids:
+  - '2511.08083'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-947
+    - intake-760
+    - intake-966
+  contradicting_evidence: []
+  novelty_justification: medium. The scheduling technique is already characterized in our corpus through HipKittens; what is new is the PROVENANCE - that it exists upstream in Triton rather than only inside a CDNA3 C++ library.
+  relevance_justification: high. It converts a technique we had filed as "foreclosed with HipKittens" into an in-school lead on a compile target that is open to gfx90a.
+  verdict_justification: 'worth_investigating: the PR contents were not read in this pass, so nothing is adopted yet. It is registered so the lead is not lost.'
+  recommended_actions:
+  - 'READ PR #5018 and establish whether the scheduling support it added is arch-gated or reaches gfx90a.'
+  notes: 'credibility_score null: a pull request with no empirical claims of its own. NOT FETCHED in this pass - registered from the HipKittens blog attribution. Flagged NOT-YET-READ so a future session knows the content is unverified even though the pointer is verified.'
+- id: intake-962
+  arxiv_id: null
+  url: https://forum.modular.com/
+  source_type: blog
+  title: Modular Mojo as a kernel-authoring target, and the unexplored "CDNA2 / MI250X support?" forum thread
+  authors:
+  - Modular
+  categories:
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-947
+  ingested_date: '2026-08-03'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - Mojo has NO standalone entry anywhere in this index - a corpus gap in the compile-target school.
+  - 'HipKittens second blog supplies a DATED Mojo datapoint: Mojo "currently provides a warp-specialized matmul kernel as of 11/06/2025".'
+  - A Modular forum thread titled "CDNA2 / MI250X support?" exists and is unexplored - a RARE CDNA2-POSITIVE lead in a literature where every other school has converged on gfx942+.
+  techniques:
+  - Mojo kernel authoring
+  - warp-specialized matmul
+  reported_results: []
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    experiments: []
+    intake_entries:
+    - intake-947
+    - intake-960
+    - intake-965
+  contradicting_evidence:
+  - The HipKittens finding that AMD hardware STATICALLY DIVIDES REGISTERS across waves, making wave specialization counterproductive (4 producers 893 TFLOPs vs 0 producers 1610), applies to Mojo warp-specialized matmul too. A warp-specialized kernel is the wrong shape for CDNA, whichever language authors it.
+  novelty_justification: medium. A named compile target absent from a corpus that already enumerates six others.
+  relevance_justification: 'medium. Rare specifically because it is CDNA2-positive: every other school in the seven-school taxonomy has abandoned gfx90a. A single unexplored vendor thread is thin evidence, but it is the only lead of its kind.'
+  verdict_justification: worth_investigating and explicitly NOT more than that - the forum thread has not been read and the Mojo datapoint arrives second-hand through a competitor blog.
+  recommended_actions:
+  - READ the Modular forum "CDNA2 / MI250X support?" thread and settle whether Mojo compiles for gfx90a today.
+  - IF it does, evaluate against the wave-specialization negative before spending any authoring effort.
+  notes: 'credibility_score null: a vendor forum and a second-hand blog datapoint, no empirical claims. NOT FETCHED in this pass - registered to close the corpus gap and preserve the lead.'
+- id: intake-963
+  arxiv_id: null
+  url: https://www.youtube.com/watch?v=jsYyF03Fs3o
+  source_type: blog
+  title: 'GPU MODE Lecture 97: HipKittens (William Hu) - TRANSCRIPT UNOBTAINED after four independent retrieval routes'
+  authors:
+  - William Hu
+  - GPU MODE
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-947
+  ingested_date: '2026-08-03'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - 'The lecture is confirmed to exist: "GPU MODE Lecture 97: HipKittens", speaker William Hu, uploaded 2026-02-18, roughly 1,202 views.'
+  - 'FOUR INDEPENDENT RETRIEVAL ROUTES FAILED: direct YouTube fetch (footer chrome only), youtubetotranscript.com (HTTP 403), tactiq.io (landing page only), and a text-extraction proxy (confirms "Show transcript" controls exist but does not surface text). No slides in gpu-mode/lectures (no lecture_097 directory). Three targeted searches found no write-up or notes.'
+  - 'THE QUESTION IT WOULD SETTLE REMAINS OPEN AND WAS NOT GUESSED: whether HipKittens omission of CDNA2 is INTENT or CAPABILITY.'
+  techniques: []
+  reported_results: []
+  referenced_arxiv_ids:
+  - '2511.08083'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    experiments: []
+    intake_entries:
+    - intake-947
+    - intake-966
+  contradicting_evidence:
+  - 'What CAN be said without the transcript: the authors never state a reason in either blog or the paper - the paper has NO Limitations and NO Future Work section, and the blog has no limitations section. Circumstantial evidence points to INTENT rather than capability and is now stronger (the two builtins HipKittens uses are gated mai-insts and gfx90a-insts; the load path is software pipelining; AMD own docs confirm CDNA2 direct-to-LDS) - but circumstantial is not stated intent.'
+  novelty_justification: low. It is an author talk about a paper already indexed as intake-947.
+  relevance_justification: medium. It is the cheapest remaining route to settle intent-vs-capability, which bears on whether the seven-school foreclosure is a hardware fact or a market fact.
+  verdict_justification: worth_investigating with an explicit TRANSCRIPT-UNOBTAINED flag. Indexed primarily so a future session does not re-spend the retrieval budget on the same four dead routes.
+  recommended_actions:
+  - RETRY via an audio-capable route or the GPU Mode Discord. The four failed routes are logged above so they are not repeated.
+  - DECLINE inferring the authors CDNA2 intent from circumstantial evidence - stated plainly rather than guessed.
+  notes: 'credibility_score null: a lecture recording, no empirical claims of its own. The value of this row is the NEGATIVE RESULT - four named failed routes - which is exactly the "absent from an index page is not evidence of nonexistence" discipline the skill requires, applied in the other direction: the artifact exists and is confirmed, only its content is unreachable.'
+- id: intake-964
+  arxiv_id: null
+  url: https://github.com/llvm/llvm-project
+  source_type: repo
+  title: llvm-project AMDGPU TableGen as the authoritative gfx90a capability oracle (BuiltinsAMDGPU.td / GCNProcessors.td / AMDGPU.td)
+  authors:
+  - LLVM Project
+  categories:
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-947
+  ingested_date: '2026-08-03'
+  verdict: adopt_component
+  verification: dive-verified
+  key_claims:
+  - A four-step, end-to-end-verified recipe answers any "does gfx90a have instruction X" question authoritatively and offline, in seconds, with no GPU.
+  - 'CORRECTION THAT MUST BE CARRIED: AMDGPU.td does NOT contain the processor definitions. def GFX90A lives in GCNProcessors.td (line 171), which AMDGPU.td includes. A future session grepping only AMDGPU.td for gfx90a will get a MISLEADING PARTIAL ANSWER.'
+  - 'Feature sets resolve through !listconcat chains, so the parent MUST be followed or the answer is a FALSE NEGATIVE. gfx90a: FeatureISAVersion9_0_A (1904) -> FeatureISAVersion9_0_MI_Common (1850) -> FeatureISAVersion9_0_Common -> FeatureGFX9.'
+  - 'THE FINAL QUOTED STRING IN BuiltinsAMDGPU.td IS THE GATE. Reading rule: gated mai-insts or gfx90a-insts => AVAILABLE on gfx90a; gated fp8-insts, gfx940-insts, gfx950-insts, gfx12-insts, gfx1250-insts or any *-cvt-scale-insts => NOT.'
+  - 'CAVEAT THAT MUST RIDE WITH THE RECIPE: this oracle answers ISA CAPABILITY ONLY. It says nothing about whether HIPCC will GENERATE GOOD CODE - the HipKittens AGPR/MFMA finding is exactly a case where the ISA permits what the compiler will not emit. Capability != codegen quality != performance. Three distinct questions; LLVM answers only the first.'
+  techniques:
+  - TableGen feature-set transitive resolution
+  - clang feature-string name mapping (strip Feature, lowercase, hyphenate)
+  - builtin gate string reading
+  reported_results:
+  - 'STEP 1 GCNProcessors.td:171 - def GFX90A : AMDGPUProcessorModel<"gfx90a", SIDPFullSpeedModel, FeatureISAVersion9_0_A.Features, ...>'
+  - 'STEP 2 direct features: FeatureGFX90AInsts, FeaturePackedFP32Ops, FeatureFullRate64Ops, FeatureRequiresAlignedVGPRs, FeatureTgSplitSupport. From 9_0_MI_Common: FeatureMAIInsts, Dot1-7, Dot10, FmaMix, SupportsSRAMECC. From FeatureGFX9: FeatureVMemToLDSLoad (AMDGPU.td:1628 and :1659).'
+  - 'STEP 3 name mapping: FeatureGFX90AInsts -> "gfx90a-insts"; FeatureMAIInsts -> "mai-insts"; FeatureVMemToLDSLoad -> "vmem-to-lds-load-insts".'
+  - 'STEP 4 verified gates: mfma_f32_16x16x16f16 -> "mai-insts" => gfx90a HAS; mfma_f32_16x16x16bf16_1k -> "gfx90a-insts" => gfx90a HAS (named for our chip); mfma_f32_16x16x32_fp8_fp8 -> "fp8-insts" => gfx90a LACKS; global_load_lds and raw_ptr_buffer_load_lds -> "vmem-to-lds-load-insts" => gfx90a HAS DIRECT-TO-LDS.'
+  - 'GATE FREQUENCY MAP (BuiltinsAMDGPU.td, 1406 lines): gfx1250-insts 81, image-insts 70, extended-image-insts 41, gfx950-insts 30, mai-insts 24, gfx12-insts 17, fp8-insts 16, gfx90a-insts 14, fp8-cvt-scale 11, bf8-cvt-scale 11, 16-bit-insts 11, vmem-to-lds-load-insts 8, gfx940-insts 7.'
+  - Gates can be DISJUNCTIVE ("vmem-to-lds-load-insts|asynccnt") - read the WHOLE string.
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - autokernel-research-loop.md
+    - mi210-mfma-compute-bound-paths.md
+    - k28-fused-chunked-gdn-kernel-research.md
+    experiments: []
+    intake_entries:
+    - intake-947
+    - intake-944
+    - intake-960
+  contradicting_evidence: []
+  novelty_justification: high. Every prior gfx90a capability question in this project was answered from vendor documentation, a paper appendix, or inference. This is the first authoritative, offline, reproducible oracle for the class.
+  relevance_justification: high and standing. It settled the async-buffer-load question that had foreclosed an entire school, and it is reusable for every future "does gfx90a have X" question at near-zero cost.
+  verdict_justification: 'adopt_component: the recipe is the artifact and it is directly usable. Pin at an LLVM RELEASE TAG, not main, so answers are reproducible.'
+  recommended_actions:
+  - ADOPT the four-step recipe as the standing reference procedure for gfx90a capability questions, pinned at an LLVM release tag.
+  - CARRY the AMDGPU.td-does-not-hold-processors correction prominently - it is the specific way a future session gets a wrong answer.
+  - CARRY the capability != codegen != performance caveat with every use.
+  notes: 'credibility_score null: a source tree, no empirical claims. PRACTICAL: no llvm-project checkout exists on this host (filesystem-wide find, no hits). Both files are fetchable read-only in seconds via gh api repos/llvm/llvm-project/contents/<path> --jq .content | base64 -d.'
+- id: intake-965
+  arxiv_id: null
+  url: https://github.com/apache/tvm
+  source_type: repo
+  title: apache/tvm - where the ROCm codegen actually lives, and the only compile target open to gfx90a by construction
+  authors:
+  - Apache TVM
+  categories:
+  - hardware_optimization
+  - inference_serving
+  novelty: high
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-500
+  ingested_date: '2026-08-03'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - INTAKE-500 POINTS AT THE WRONG REPO for the ROCm question. ROCm codegen lives in apache/tvm, NOT mlc-llm - mlc-llm tree contains ZERO rocm/hip/gfx paths.
+  - 'THE DECISIVE MECHANISM: TVM python/tvm/support/rocm.py registers tvm_callback_rocm_get_arch, which shells out to rocminfo and regex-matches Name:\s+(gfx\d+[a-zA-Z]*), falling back to gfx900. THERE IS NO ALLOWLIST AND NO gfx942 GATE. On our box it resolves gfx90a automatically and hands it to LLVM AMDGPU backend.'
+  - This FALSIFIES any "MLC/TVM is CDNA3-scoped" assumption. Unlike TileLang, HipKittens and AITER, it genuinely is not.
+  - 'WHAT IS THIN, AND IT BOUNDS THE AMBITION: TVM tensor_intrin/rocm.py registers only THREE MFMA compute intrinsics - f32f32f32 (k=4), f16f16f32 (k=16), s8s8s32 (k=16), all 16x16. THERE IS NO bf16 MFMA INTRINSIC REGISTERED, and bf16 is exactly the datatype where we already have parity capability. Adding one is plausible (names are built from a template) but it is WORK, not adoption.'
+  techniques:
+  - TVM autoscheduler / meta-schedule search
+  - ROCm target auto-detection via rocminfo
+  - MFMA tensor intrinsic registration
+  reported_results:
+  - 'mlc-llm code search: gfx90a 0 hits, gfx942 0, MI300 0, with positive controls confirming the search worked (rocm 24, MLCEngine 58).'
+  - NO gfx90a CI and no AMD/ROCm CI in either project.
+  - Docs name NO gfx architectures, only "MLC LLM only supports ROCm 6.1/6.2" - which brackets our ROCm 6.2 EXACTLY, a compatibility datapoint in our favour that will age.
+  - 'Published CDNA2 performance data: NONE FOUND.'
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - autokernel-research-loop.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-500
+    - intake-497
+    - intake-947
+    - intake-962
+  contradicting_evidence:
+  - No published CDNA2 performance data exists, no gfx90a CI, and the bf16 MFMA intrinsic - our parity datatype - is not registered. Architectural openness is not demonstrated performance.
+  novelty_justification: high. The seven-school taxonomy recorded school 4 as "Triton YES" and treated MLC/TVM as a single uncertain entry. Separating the repos turns one ambiguous option into one falsified pointer plus one genuinely open compile target.
+  relevance_justification: high. It is the ONLY compile target in the corpus architecturally open to gfx90a BY CONSTRUCTION rather than by vendor permission, and TVM autoscheduler is a SEARCH SUBSTRATE the agentic loop (school 5) could DRIVE rather than a competitor. Schools 4 and 5 compose here.
+  verdict_justification: 'worth_investigating, deliberately not adopt_component: architectural openness is established, competitive performance on gfx90a is not, and the missing bf16 intrinsic sits exactly on our parity datatype. The honest framing is that its value is NOT that it will beat our hand-tuned path.'
+  recommended_actions:
+  - RE-POINT intake-500 at apache/tvm for the ROCm question and record why - mlc-llm tree has zero ROCm code.
+  - REGISTER MLC/TVM as a school-4 backend option in the AutoKernel option set, with the correct mechanism and the bf16-intrinsic caveat attached.
+  - SCOPE "add a TVM bf16 MFMA intrinsic" as a task ONLY IF the MLC/TVM path is pursued - the registry gap sits exactly on our parity datatype.
+  notes: 'credibility_score null: a source tree with no empirical claims. The ROCm-6.1/6.2 bracket is a compatibility datapoint in our favour TODAY that will age as TVM moves forward and we do not.'
+- id: intake-966
+  arxiv_id: null
+  url: https://hazyresearch.stanford.edu/blog/2025-11-09-amd-brr
+  source_type: blog
+  title: HipKittens second blog ("AMD brr") - the AMD-vs-NVIDIA speeds-and-feeds argument, and three items the paper omits
+  authors:
+  - HazyResearch (Stanford)
+  categories:
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-947
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'THE THESIS IN ONE LINE, and it is the argument our program is built on: "AMD GPUs are now offering state-of-the-art speeds and feeds. However, this performance is locked away from AI workflows due to the lack of mature AMD software."'
+  - 'CONFIRMS three findings already extracted from the paper: the wave-specialization negative, the 8-wave/4-wave pair, and the AGPR/HIPCC tax ("even the HIPCC compiler cannot generate code that uses AGPRs as input to MFMA").'
+  - 'NEW: a TileLang citation as PRIOR ART for wave specialization (arXiv 2504.17577).'
+  - 'NEW: a DATED Mojo datapoint - Mojo "currently provides a warp-specialized matmul kernel as of 11/06/2025".'
+  - 'NEW: a TRITON-TEAM ATTRIBUTION - the interleaved schedule "draws inspiration from ideas by AMD Triton team" (triton-lang/triton PR #5018). Since Triton is our confirmed-open school-4 path, that is a DIRECT, IN-SCHOOL LEAD.'
+  - 'ON OLDER HARDWARE: NOT PRESENT. No mention of MI210, MI250, MI250X, CDNA2 or gfx90a anywhere. THE SILENCE IS TOTAL - which is itself the finding: they never articulated a CDNA2 position to reason about.'
+  techniques:
+  - 8-wave ping-pong scheduling
+  - interleaved wave scheduling
+  - HBM-side swizzle
+  reported_results:
+  - 'HEAD-TO-HEAD SPEC FRAMING: MI355X has "2x larger register file per processor than the B200" and "60% more processors" (256 CU vs 160 SM), but "70% the SRAM of a B200 (165KB instead of 228KB)", and lacks async matmul, register reallocation, tensor memory acceleration and first-class mbarrier. BF16 matrix: AMD 2.5 PFLOPs vs NVIDIA 2.2 PFLOPs.'
+  referenced_arxiv_ids:
+  - '2511.08083'
+  - '2504.17577'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - mi210-mfma-compute-bound-paths.md
+    experiments: []
+    intake_entries:
+    - intake-947
+    - intake-961
+    - intake-962
+    - intake-497
+    - intake-963
+  contradicting_evidence:
+  - A vendor-adjacent narrative blog by the paper authors is RESTATEMENT of their own results, not corroboration. The three NEW items are leads; the confirmations add no independent evidential weight to intake-947.
+  novelty_justification: medium. It adds less than hoped - three genuinely new items against a large restatement surface - but the companion rule makes it a distinct artifact from the paper, and two of the three leads are actionable.
+  relevance_justification: medium. Its speeds-and-feeds argument is the exact framing behind our own bandwidth-utilisation target, and the Triton PR attribution converts a foreclosed technique into an in-school lead.
+  verdict_justification: 'adopt_patterns: the transferable content is the three leads and the framing, not any artifact.'
+  recommended_actions:
+  - 'FOLLOW the Triton PR #5018 lead (intake-961) - in-school and actionable.'
+  - FOLLOW the Modular/Mojo CDNA2 thread (intake-962).
+  - 'RECORD the total CDNA2 silence as the finding it is: no stated position exists to argue with.'
+  notes: 'credibility_score 3: no peer-reviewed venue for the blog +0 (the underlying paper is MLSys 2026 and is indexed separately as intake-947); recent +1; Stanford HazyResearch, a major lab +1; commercial bias +0; independent corroboration +1 (four AMD employees co-author the underlying paper). Companion-artifact rule applied: a blog is not a duplicate of the paper it accompanies.'
+- id: intake-967
+  arxiv_id: '2604.18616'
+  url: https://arxiv.org/abs/2604.18616
+  source_type: paper
+  title: ARGUS - agentic GPU kernel optimisation reaching hand-optimised-assembly parity on AMD MI300X
+  authors: []
+  categories:
+  - hardware_optimization
+  - agent_architecture
+  - autonomous_research
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-947
+  ingested_date: '2026-08-03'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - Agentic GPU kernel optimisation reaching 99-104% of HAND-OPTIMISED ASSEMBLY on AMD MI300X for GEMM, FlashAttention and MoE.
+  - 2-1543x over prior agentic systems; 100% on KernelBench Level 1 and 90% on Level 2.
+  - IT IS ABSENT FROM ALL SIX MI210/autokernel handoffs - a controller candidate the program had never seen.
+  techniques:
+  - agentic kernel optimisation loop
+  - assembly-level performance targeting
+  reported_results:
+  - 99-104% of hand-optimised assembly on AMD MI300X across GEMM / FlashAttention / MoE
+  - 2-1543x over prior agentic systems
+  - KernelBench L1 100%, L2 90%
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - autokernel-research-loop.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-674
+    - intake-666
+    - intake-673
+    - intake-679
+    - intake-669
+    - intake-672
+  contradicting_evidence:
+  - 'MI300X is gfx942/CDNA3, not our silicon. Under the standing gfx90a caveat this predicts nothing about MI210 performance. What it DOES establish is architecture-independent and directly load-bearing for the program: that an agentic loop can reach parity with AMD own hand-tuned assembly at all.'
+  - No independent reproduction was sought in this pass. The headline range 2-1543x is enormous and almost certainly reflects a baseline selection effect on the low end of prior agentic systems.
+  novelty_justification: high. The controller-candidate set in agentic-rocm-kernel-authoring.md predates this and contains nothing reporting assembly parity on AMD hardware.
+  relevance_justification: high. It is the strongest existence proof in the corpus for the central AutoKernel bet, on the vendor whose silicon we run.
+  verdict_justification: 'worth_investigating rather than adopt_component: neither the code availability nor the licence was established in this pass, and it is CDNA3-evaluated. It is registered as a controller candidate so the A/B design accounts for it.'
+  recommended_actions:
+  - REGISTER ARGUS as a controller candidate alongside EvoEngineer, KernelFoundry, K-Search, Xe-Forge and GEAK.
+  - ESTABLISH code availability, licence and gfx90a reachability before it enters any A/B plan.
+  notes: 'credibility_score 3: no peer-reviewed venue confirmed +0; recent +1; lab affiliation not established in this pass +0; commercial bias +0; independent corroboration +0; +2 for the strength and specificity of the assembly-parity claim being on named AMD kernels rather than a synthetic suite. AUTHORS NOT CAPTURED - the dive surfaced this from a benchmark comparison rather than a full read. FULL READ PENDING: this entry is dive-verified as to existence, identity and headline claims; the methodology has not been audited.'
+- id: intake-968
+  arxiv_id: null
+  url: https://rocm.blogs.amd.com/
+  source_type: blog
+  title: AMD ROCm llama.cpp optimization blog - hipBLASLt grouped-GEMM tuning and hipMemcpyAsync reduction
+  authors:
+  - AMD ROCm
+  categories:
+  - hardware_optimization
+  - inference_serving
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-947
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'Two named, transferable levers for llama.cpp on ROCm: hipBLASLt grouped-GEMM plus tuning, reported at +29%; and roughly 10x fewer hipMemcpyAsync calls.'
+  - Both are vendor-reported on CDNA3-class hardware; neither has been reproduced on gfx90a.
+  techniques:
+  - hipBLASLt grouped GEMM
+  - hipBLASLt offline tuning
+  - hipMemcpyAsync call-count reduction
+  reported_results:
+  - 'hipBLASLt grouped-GEMM plus tuning: +29%'
+  - roughly 10x fewer hipMemcpyAsync calls
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - mi210-q8-dequant-gemv-roofline.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-960
+    - intake-969
+  contradicting_evidence:
+  - Vendor blog. Triple commercial bias applies (AMD authors the library, the blog and the hardware). Numbers are vendor-reported until reproduced on our own gfx90a, and the hardware context is CDNA3-class.
+  - 'The launch-overhead lever may already be partly banked: HIP graphs are enabled in our build and measured at +5.9%.'
+  novelty_justification: medium. Grouped GEMM and launch-overhead reduction are both known lever classes; what is new is that the vendor has quantified them ON OUR ENGINE rather than on a synthetic benchmark.
+  relevance_justification: high. These land on llama.cpp specifically, which almost nothing else in the AMD kernel literature does.
+  verdict_justification: 'adopt_patterns: the levers are the deliverable, not the blog. Neither is adoptable as shipped without a gfx90a reproduction.'
+  recommended_actions:
+  - EVALUATE hipBLASLt grouped-GEMM tuning for our prefill path - note our own measurement already found MMQ beat forced-rocBLAS at batch-1 as a BYTES-MOVED gap, so this lever belongs to prefill/batched, not decode.
+  - CHECK the hipMemcpyAsync call count in our own build before assuming the 10x is available - HIP graphs may already have captured most of it.
+  notes: 'credibility_score 2: no peer-reviewed venue +0; recent +1; AMD is a major lab +1; commercial bias -1; independent corroboration +1 (the launch-overhead direction is corroborated by our own banked HIP-graph result). Net 2.'
+- id: intake-969
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/19984
+  source_type: repo
+  title: 'llama.cpp issue #19984 - LLVM loop-unroll regression in ROCm 7+ costing 3.7-5x on prefill'
+  authors:
+  - llama.cpp contributors
+  categories:
+  - hardware_optimization
+  - inference_serving
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-947
+  ingested_date: '2026-08-03'
+  verdict: adopt_component
+  verification: dive-verified
+  key_claims:
+  - An LLVM loop-unroll regression introduced in ROCm 7+ costs 3.7-5x on prefill in llama.cpp HIP builds.
+  - 'Workaround: -mllvm --amdgpu-unroll-threshold-local=600.'
+  - WE ARE ON ROCm 6.2, so this does not bite today. It is a PRECONDITION of any ROCm upgrade, not a current defect.
+  techniques:
+  - compiler unroll-threshold override
+  reported_results:
+  - 3.7-5x prefill regression on ROCm 7+
+  - workaround restores performance via -mllvm --amdgpu-unroll-threshold-local=600
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - gpu-acceleration-path.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-968
+  contradicting_evidence: []
+  novelty_justification: medium. Operational rather than conceptual - but a 3.7-5x prefill cliff hidden behind a routine toolchain upgrade is exactly the class of finding an intake exists to catch before it is paid for.
+  relevance_justification: high. Our production kernel is llama.cpp-HIP and a ROCm upgrade is a plausible future action; this converts a silent 3.7-5x regression into a known build-flag precondition.
+  verdict_justification: 'adopt_component: the workaround flag is the artifact and it is directly usable.'
+  recommended_actions:
+  - ADD -mllvm --amdgpu-unroll-threshold-local=600 to the build-flag checklist as a PRECONDITION of any ROCm 7+ upgrade. No action needed on ROCm 6.2.
+  - RE-MEASURE prefill immediately after any ROCm upgrade rather than assuming the flag is sufficient.
+  notes: 'credibility_score 3: no peer-reviewed venue +0; recent +1; llama.cpp upstream is a known-contributor community +1; commercial bias +0; independent corroboration +1 (a reported regression with a reproducible workaround in the project issue tracker is community-verified rather than self-reported). Net 3. NOT REPRODUCED HERE - we do not run ROCm 7.'
+- id: intake-970
+  arxiv_id: '2406.06647'
+  url: https://arxiv.org/abs/2406.06647
+  source_type: paper
+  title: How Efficient is LLM-Generated Code? A Rigorous and High-Standard Benchmark (ENAMEL)
+  authors:
+  - Ruizhong Qiu
+  - Weiliang Will Zeng
+  - James Ezick
+  - Christopher Lott
+  - Hanghang Tong
+  categories:
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-953
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'RIGHT-CENSORING IS THE TRANSFERABLE PRIMITIVE, and it is a primitive we hold nowhere. Per-level score f = (T_i - max_m t)^+ / (T_i - max_m t*), worst-case over the M_l cases in a level: once max_m t >= T_i the clamp makes f = 0 "regardless of the exact value". The unknowable censored magnitude is DISCHARGED rather than IMPUTED.'
+  - 'Generalized: make the score dependence on the measurement VANISH at exactly the point the measurement becomes uninformative.'
+  - eff@k is an unbiased estimator with Var <= (k/n) Var[naive] (Theorem 1), computed over ascending order statistics.
+  - R=6 repeats aggregated by the HODGES-LEHMANN estimator (median of pairwise means) for "robustness against outliers as well as high statistical efficiency".
+  - ENAMEL IS NOT THE SOURCE OF THE DISPUTED NORMALIZATION CLAIM. grep -ci "qiu|enamel|eff@k" over SWE-fficiency v3 returns 0, 0, 0 - it never cites ENAMEL. NOT-FOUND-IN-SOURCE.
+  techniques:
+  - right-censoring at a wall-clock cap
+  - eff@k unbiased estimator over order statistics
+  - Hodges-Lehmann aggregation of repeated timings
+  - Rao-Blackwellized bootstrap
+  reported_results:
+  - Measured SD 0.02/0.08 for eff@k vs vanilla 0.20/0.25 at k=1/10.
+  - Time limit T_i = alpha * max_{l,m} t*, with alpha=2.
+  - 'Algorithm 1 is about 6 lines and numerically stable (the binomials overflow if computed directly): lambda_n = k/n; for r = n-1..k: lambda_r = lambda_{r+1} * (1 - (k-1)/r); sort e ascending; return sum lambda_r e_(r).'
+  - 'Table 9 evidence of LeetCode contamination in competitors: Code Llama 34B Python scores Mercury Beyond 0.424 and EffiBench 0.336 against ENAMEL eff@1 0.268.'
+  - Licence Apache-2.0; disk ~234 MB; CPU-only, minutes to hours.
+  referenced_arxiv_ids:
+  - '2408.06450'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - architect-model-selection-bench.md
+    - batched-decode-measurement.md
+    experiments: []
+    intake_entries:
+    - intake-939
+    - intake-951
+    - intake-952
+    - intake-953
+    - intake-954
+    - intake-971
+    - intake-973
+  contradicting_evidence:
+  - 'CAVEAT DERIVED FROM EQ.1 AND NOT STATED IN THE PAPER: eff@k SATURATES. As t->0, f -> alpha*A/(alpha*A - B_l); on the hardest level the ceiling is alpha/(alpha-1) = 2 at alpha=2. A 2x and a 1000x win over the expert reference score IDENTICALLY. eff@k retains magnitude only inside roughly a [0,2] band.'
+  - 'HARD GATE ON THE SHIPPED CODE: ENAMEL executes untrusted generated code with NO CONTAINER, in bare subprocesses, with a documented inability to kill try/except infinite loops. On a host shared with other agents llama-server processes that is not runnable as shipped. ADOPT THE METRIC, RUN IT UNDER OUR OWN ISOLATION, never demo.py as delivered.'
+  - ENAMEL own eff@k is itself normalized, and so is the "speedup" baseline it beats - its Sec C.3 comparison is normalized-vs-normalized. The axis that mattered was CENSORING, never normalization.
+  novelty_justification: 'high. Right-censoring as a scoring primitive appears nowhere in our measurement constitution or protocol annexes, and it addresses a failure mode we have hit: what to do with a run that exceeds a wall-clock cap.'
+  relevance_justification: high. Every capped bench we run - kernel candidates, eval fan-out, model ladders - currently has an implicit and unexamined answer to the censored-value question.
+  verdict_justification: 'adopt_patterns, not adopt_component: the metric and the censoring rule transfer; the harness cannot be run as shipped on this host. The Hodges-Lehmann aggregator is separately a drop-in.'
+  recommended_actions:
+  - PREPARE right-censoring as a MEASUREMENT-CONSTITUTION decision package - human-only boundary, do not self-apply. Score -> 0 at the cap; never impute the censored value.
+  - 'BLOCKING PRECONDITION on the above: if eff@k is adopted, run it under OUR OWN container isolation.'
+  - ADOPT the Hodges-Lehmann estimator for aggregating R repeated timings - a drop-in with no constitutional implication.
+  - 'CARRY the saturation caveat: eff@k cannot distinguish a 2x from a 1000x. Do not use it where magnitude matters.'
+  notes: 'credibility_score 3: peer-reviewed venue ICLR 2025 +2; published 2024-06, more than 12 months before ingest +0; UIUC + Qualcomm, known contributors +1; commercial bias +0; independent corroboration +0; -0. Net 3, reduced from the naive sum because the code has been unmaintained since 2025-04 (17 stars). ID RESOLUTION: 2406.06647 = ENAMEL (ICLR 2025), DISTINCT from 2408.06450 = EvalPerf (COLM 2024). These two were conflated in dive prose across two separate dives this session; OUR INDEX WAS ALREADY CLEAN - both IDs appeared only inside intake-939 referenced_arxiv_ids, correctly, as two distinct entries. No index repair was needed.'
+- id: intake-971
+  arxiv_id: '2408.06450'
+  url: https://arxiv.org/abs/2408.06450
+  source_type: paper
+  title: Evaluating Language Models for Efficient Code Generation (EvalPerf / Differential Performance Evaluation)
+  authors:
+  - Jiawei Liu
+  - Songrun Xie
+  - Junhao Wang
+  - Yuxiang Wei
+  - Yifeng Ding
+  - Lingming Zhang
+  categories:
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-953
+  ingested_date: '2026-08-03'
+  verdict: adopt_component
+  verification: dive-overturned
+  key_claims:
+  - 'THE OVERTURN: this - not ENAMEL - is the actual citation behind SWE-fficiency claim that normalized metrics inherently reduce variability, AND THE SOURCE ARGUES THE OPPOSITE.'
+  - 'Sec A.2 verbatim in substance: relative speedup applicability "becomes less clear across a broad range of tasks. This is because the degree of speedup varies significantly across different tasks ... This variability can lead to confusion." EvalPerf introduces DPS BECAUSE relative speedup is variable.'
+  - Its stability comes from HARDWARE PERFORMANCE COUNTERS and from SELECTING LARGE COMPUTATIONS, not from normalization.
+  - DPS adaptively CLUSTERS reference solutions by efficiency, cutting where delta > bias + sqrt(w/t_bar) - a noise-aware threshold that WIDENS FOR SHORTER RUNTIMES, motivated by their own measurement that CV rises as runtime falls.
+  - 'DPS is GRADED but ORDINAL: the score is where you land in the empirical distribution, so the magnitude-to-score mapping is set by that distribution SHAPE, not by physics; resolution is capped by m >= 4 clusters.'
+  techniques:
+  - Differential Performance Evaluation (DPS)
+  - retired-instruction measurement via hardware counters
+  - efficiency-clustered reference ladder
+  - noise-aware clustering threshold
+  reported_results:
+  - Measurand is RETIRED INSTRUCTIONS via hardware counters - "variance of repeated executions at most a few hundred instructions" against "billions".
+  - Cross-platform max CV 0.4% over 4 test beds.
+  - Licence Apache-2.0; native local-endpoint support via --backend openai --base-url; roughly 15 minutes per model; about 100 MB; actively maintained as of 2025-10 with 1790 stars.
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - architect-model-selection-bench.md
+    experiments: []
+    intake_entries:
+    - intake-953
+    - intake-970
+    - intake-973
+    - intake-954
+    - intake-952
+  contradicting_evidence:
+  - 'DPS converts magnitude into RANK, which is exactly why it survives cross-platform and exactly why it CANNOT TELL YOU HOW MUCH FASTER. Magnitude retention ranking across the cluster: GSO raw harmonic-mean speedup (unbounded) > ENAMEL eff@k (continuous, ceiling 2) > Mercury Beyond (continuous, clipped) > EvalPerf DPS (ordinal) > COFFE efficient@k = GSO Opt@K (binary).'
+  - 'Instruction counting is EXPLICITLY INVALID for our inference kernels, which are bandwidth-bound. Falsified in-session: a tiled traversal executing +1.9% instructions ran 2.83x faster.'
+  novelty_justification: high. It is the only instrument in the cluster whose measurand is not wall clock, and its noise-aware clustering threshold is a design we hold nothing like.
+  relevance_justification: 'high for generated-code scoring, and explicitly NONE for kernel scoring. The separation matters: adopting it for the eval ladder is sound, and pointing it at a bandwidth-bound kernel would be a category error.'
+  verdict_justification: 'adopt_component: Apache-2.0, native local-endpoint support, ~15 min/model, ~100 MB, actively maintained - the lowest-friction instrument in the entire cluster. The dive-overturned verification refers to the CLAIM ATTRIBUTED TO IT, which was overturned; the instrument itself came through the dive stronger.'
+  recommended_actions:
+  - CLOSE the SWE-fficiency Appendix-N open item. The citation resolves to EvalPerf, which argues the OPPOSITE of the claim made from it. Our decline to amend the measurement constitution stands, on STRONGER grounds than the ones we declined on. Record the citation trail so it cannot reopen.
+  - RUN EvalPerf against our local endpoint - lowest friction in the cluster, ~15 min/model.
+  - DO NOT prototype instruction counting for our inference kernels - bandwidth-bound, and already falsified in-session.
+  notes: 'credibility_score 4: peer-reviewed venue COLM 2024 +2; published 2024-08, over 12 months +0; UIUC EvalPlus team, known contributors +1; commercial bias +0; independent corroboration +1 (GSO Appendix D, a disjoint Berkeley group, independently states the same same-environment control principle). Net 4. THIRD-PARTY CORROBORATION OF OUR DERIVED MECHANISM, verbatim from GSO Appendix D: "Our metric controls for machine-specific variation by comparing generated optimizations against expert developer implementations in the same environment, rather than measuring absolute speedups." THREE DISTINCT LIUS, DO NOT MERGE: Jiawei Liu (EvalPerf, UIUC), Qian Liu (Mercury/SWE-Perf, Sea AI Lab), Jinjian Liu (GSO, Berkeley). The "Liu et al., 2024" ambiguity is precisely how the original misattribution became plausible.'
+- id: intake-972
+  arxiv_id: '2402.07844'
+  url: https://arxiv.org/abs/2402.07844
+  source_type: paper
+  title: 'Mercury: A Code Efficiency Benchmark for Code Large Language Models'
+  authors:
+  - Mingzhe Du
+  - Anh Tuan Luu
+  - Bin Ji
+  - Qian Liu
+  - See-Kiong Ng
+  categories:
+  - benchmark_methodology
+  novelty: low
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-952
+  ingested_date: '2026-08-03'
+  verdict: not_applicable
+  verification: dive-verified
+  key_claims:
+  - 'REJECTED ON A HARD GATE: the repo carries NO LICENCE FILE AT ALL (default all-rights-reserved), and the dataset is CC BY-NC 4.0 over LeetCode content under a Fair-Use claim. It fails our open-source-self-hostable requirement ON THE CODE, independently of the NC restriction. It is the WORST-licensed of the four instruments, not the better-vetted alternative it appeared to be.'
+  - 'DEFECT 1: "Beyond" IS NOT A PERCENTILE despite the prose - the formula is min-max LINEAR INTERPOLATION, yet Figure 2 caption reads "outpacing 86.18% of collected solutions". Those coincide only under uniformity, and the Limitations concede "we measure code efficiency under the assumption that the code runtime is uniformly distributed."'
+  - 'DEFECT 2: two-sided clipping CONFLATES WRONG with MERELY-VERY-SLOW - both map to 0.'
+  - 'DEFECT 3: LeetCode contamination, conceded by a competitor with receipts.'
+  - 'IT IS THE LINEAGE HUB. Mingzhe Du is the connector on three papers: Mercury and EffiBench-X share 3 authors; Mercury and SWE-Perf share 2; SWE-Perf and EffiBench-X share 1. EffiBench-X additionally inherits EffiBench (4 of 5 authors). Mercury -> EffiBench(-X) -> SWE-Perf is ONE CONNECTED COMPONENT OF FOUR PAPERS.'
+  techniques:
+  - Beyond metric (min-max interpolated runtime score)
+  - LeetCode-derived efficiency tasks
+  reported_results:
+  - 'ENAMEL Table 9: Code Llama 34B Python scores Mercury Beyond 0.424 and EffiBench 0.336 against ENAMEL eff@1 0.268, concluding LLMs "have seen the public solutions on LeetCode ... but have never seen our expert-written efficient solutions."'
+  - Licence(code) NONE; venue NeurIPS D&B 2024; disk ~3 GB; 256 tasks x K=5; sandboxed; last maintained 2026-03 (87 stars).
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - architect-model-selection-bench.md
+    experiments: []
+    intake_entries:
+    - intake-951
+    - intake-952
+    - intake-953
+    - intake-970
+    - intake-971
+    - intake-973
+  contradicting_evidence:
+  - 'Peer review is not the differentiator it appeared to be: EvalPerf is ALSO peer-reviewed (COLM 2024) and beats Mercury on licence (Apache-2.0 vs none), maintenance, measurement design (hardware counters vs wall clock) and native local-endpoint support.'
+  novelty_justification: low. Its metric design is superseded within its own lineage and its contamination is documented by a competitor with receipts.
+  relevance_justification: medium as EVIDENCE ONLY. It is the ancestor that makes the four-paper lineage component visible, and that lineage finding is what stops us counting the design space as eight independent instruments when it is four.
+  verdict_justification: 'not_applicable, and the verdict is carried by a HARD GATE rather than a judgement: no licence file means the code is all-rights-reserved and cannot be self-hosted. This is superseded-adjacent but the licence gate is decisive on its own. Ingest as lineage evidence, never as a runnable instrument.'
+  recommended_actions:
+  - REJECT Mercury as a harness on the licence gate. Ingest as lineage evidence only.
+  - PERSIST the lineage finding in cross_references on every affected entry - the apparent field-wide consensus that efficiency scores must be normalized against a reference distribution is HALF ONE LINEAGE.
+  notes: 'credibility_score 3: peer-reviewed NeurIPS D&B 2024 +2; published 2024-02, over 24 months before ingest -1; Sea AI Lab / NTU / NUS, known contributors +1; commercial bias +0; independent corroboration +1 (ENAMEL Table 9 contamination finding). Net 3. THE CONSEQUENCE FOR THE LADDER: the genuinely independent instruments DIVERGE sharply - ENAMEL normalizes against ONE EXPERT SOLUTION with censoring; EvalPerf against a CLUSTERED LADDER using instruction counts; GSO against a SINGLE HUMAN COMMIT in the same container; COFFE against THE BEST GROUND TRUTH, binary. Count the design space as FOUR, not eight.'
+- id: intake-973
+  arxiv_id: '2505.23671'
+  url: https://arxiv.org/abs/2505.23671
+  source_type: paper
+  title: 'GSO: Challenging Software Optimization Tasks for Evaluating SWE-Agents'
+  authors:
+  - Manish Shetty
+  - Naman Jain
+  - Jinjian Liu
+  - Vijay Kethanaboyina
+  - Koushik Sen
+  - Ion Stoica
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  discovered_via: expansion
+  expanded_from: intake-953
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'IT CONTAINS OUR OWN STACK: 2 of its 102 tasks are abetlen/llama-cpp-python optimization tasks with EXPERT-COMMIT performance targets. That is the most on-domain evaluation asset in this entire cluster.'
+  - 'AGGREGATION IS THE SINGLE MOST TRANSFERABLE FINDING. Harmonic mean over per-test speedups, chosen explicitly over geometric mean citing Jacob & Mudge 1995: "A model achieving speedups of [0.1, 1000] across two tests yields a geometric mean of 10, despite degrading performance on one test. In Section 5, we show that agents INDEED PERFORM SUCH OPTIMIZATIONS and thus can game the geometric mean."'
+  - Appendix E also rejects the arithmetic mean and risk-adjusted geomean, because "we do not want symmetric treatment - large wins on minor tests should not hurt, only significant regressions matter." Harmonic mean asymmetric sensitivity "punishes slowdowns heavily, while almost ignoring large speedups."
+  - 'Oracle-equivalence is a GOLDEN-FILE CHARACTERIZATION TEST, not a test suite. Six-function contract: setup() [UNTIMED] / experiment(data) [THE TIMED REGION] / store_result / load_result / check_equivalence(reference, current) / run_test(eqcheck, reference, prefix) -> float. The oracle is a stored JSON produced by running the same script against the PRE-optimization codebase.'
+  - Opt@K = Opt_{0.95}@K - 95% of the HUMAN EXPERT speedup, measured in the same container. Leading SWE-agents score under 5%.
+  techniques:
+  - harmonic-mean speedup aggregation
+  - golden-file characterization equivalence oracle
+  - per-task Docker isolation
+  - expert-commit performance targets
+  - Opt@K threshold metric
+  reported_results:
+  - Licence MIT; venue NeurIPS D&B 2025; actively maintained 2026-07 (90 stars); Docker per task - the ONLY properly isolated instrument in the cluster; 3 hours per task.
+  - 'DISK: 168 GB compressed across 102 images - DOES NOT FIT our 158 GB free. Breakdown: pandas 54.4 GB/34 tasks, numpy 46.6/36, llama-cpp-python 20.8/2, pillow-simd 9.5/7, transformers 8.5/4, tokenizers 7.8/4, pydantic 7.0/4, pillow 5.4/4, tornado 4.3/4, datasets 3.9/3. Same-repo tasks share base layers, so realized disk is below the naive sum.'
+  - THE llama-cpp-python PAIR ALONE is roughly 21 GB - both affordable AND the most on-domain asset in the cluster.
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - architect-model-selection-bench.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-953
+    - intake-970
+    - intake-971
+    - intake-972
+    - intake-954
+    - intake-939
+  contradicting_evidence:
+  - TWO WEAKNESSES TO CARRY IF WE BORROW. (1) check_equivalence compares a REDUCED SUMMARY - in the shipped example only shape plus first_entries = replaced[:5]. An optimization wrong outside that digest PASSES, and the oracle is LLM-authored and only spot-checked. (2) timeit.timeit(..., number=1) - a SINGLE TIMED RUN per test. Its defence is breadth plus harmonic-mean asymmetry, not repetition - materially weaker than ENAMEL R=6 plus Hodges-Lehmann.
+  - 'EXPLICIT DECLINE, recorded so a later session does not import them with the good parts: GSO single-shot number=1 timing and its reduced-digest equivalence check.'
+  novelty_justification: high. The harmonic-mean-with-a-gaming-argument is the only aggregation choice in this literature backed by a demonstrated attack rather than a preference, and the golden-file characterization oracle is a correctness design we hold nothing like.
+  relevance_justification: 'high, and uniquely concrete: it is the only instrument in the corpus whose tasks land on our own serving stack.'
+  verdict_justification: adopt_patterns rather than adopt_component because the full 168 GB image set does not fit our 158 GB free. The AGGREGATION rule and the EQUIVALENCE-CONTRACT discipline are adopted; the timing discipline is explicitly declined; and the llama-cpp-python subset is separately affordable.
+  recommended_actions:
+  - ADOPT THE HARMONIC MEAN for aggregating per-test speedups and retire the geometric mean wherever we use it. HIGHEST-VALUE SINGLE FINDING in this cluster - GSO demonstrates agents GAME geomean. Audit current aggregation sites first.
+  - PULL the 2 llama-cpp-python tasks (~21 GB) and run them against our coder and architect roles - on-domain, MIT, expert-commit targets.
+  - IMPORT the six-function equivalence contract, but NOT the reduced-digest check and NOT number=1 timing.
+  notes: 'credibility_score 5: peer-reviewed NeurIPS D&B 2025 +2; published 2025-05, within 24 months +0; Berkeley Sky Computing with Koushik Sen and Ion Stoica, a major lab +1; commercial bias +0; independent corroboration +2 capped (its Appendix D same-environment principle independently converges with EvalPerf, and its geomean-gaming finding is corroborated by our own separately-derived aggregation concern). Net 5 - the highest in the cluster. RELATED ARTIFACTS not separately indexed: gso-bench/gso-experiments (full eval logs and transcripts, which would let us calibrate against published agent runs WITHOUT SPENDING COMPUTE), GSO HackDetector (a reward-hacking detector for optimization benchmarks, directly relevant to correctness-gating design), gso-bench/scaffolds (Harbor integration, the concrete path to pointing GSO at our local endpoint).'
+- id: intake-974
+  arxiv_id: '2607.27271'
+  url: https://arxiv.org/abs/2607.27271
+  source_type: paper
+  title: RLPF - staged correctness-gated reward for RL code performance optimization
+  authors:
+  - Jing
+  - Cui
+  - Hu
+  - Chen
+  - Shi
+  - Fan
+  - Liu
+  - Yang
+  - Zhang
+  - Chen
+  - Li
+  - Song
+  categories:
+  - benchmark_methodology
+  - training_distillation
+  - autonomous_research
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-939
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'THE INDEPENDENCE TEST RESULT IS PARTIAL, AND THE KIND MATTERS: the corroboration for intake-939 is ARCHITECTURAL, NOT EMPIRICAL. RLPF is a genuinely independent group that independently arrived at a correctness-gated staged reward, with released code implementing a strictly separated outer gate.'
+  - BUT EVERY REWARD ARM RLPF TESTED IS CORRECTNESS-GATED. There is NO blended arm and NO ungated arm anywhere in the paper or the code. RLPF therefore CANNOT show that gating beats blending - it never ran the comparison. Its ablations test WHICH GATED TERMS matter, not WHETHER THE GATE matters.
+  - 'RLPF DESIGN CONTRADICTS intake-939 WINNING ARM. 939 winner was the COLLAPSED CONJUNCTION (correct-but-slow -> full failure reward). RLPF explicitly and deliberately does the OPPOSITE: epsilon = 0.05 exists SOLELY to guarantee every correct program outranks every failed one. Two capable groups, OPPOSITE CHOICES within the same family.'
+  - 'THE PRE-CORRECTNESS PROGRESS LADDER IS THE HIGHEST-VALUE TRANSFER: s(NX)=-0.05 < s(NC)=0.00 < s(NR)=+0.05 < s(WO)=+0.10. Our kernel loop currently treats ALL non-verifying candidates as EQUAL failures; ranking hipcc-fail < runtime-fail < wrong-output gives a SEARCH GRADIENT in the regime where most MI210 candidates die. intake-939 has no analogue.'
+  - 'CGRE supplies the CONTINUOUS normalized gap-closure form a hill-climbing search actually needs: (T_base - T_cand)/(T_base - T_ref), clipped to [0,1].'
+  techniques:
+  - epsilon-separated staircase reward
+  - pre-correctness failure ladder
+  - CGRE normalized gap closure
+  - Slow/CRR conditional diagnostic
+  reported_results:
+  - 'Reward, code-verified: R_succ = CGRE + 0.16*FBR + 0.10*RBR; final R = s(sigma) if incorrect, else max{s(WO) + eps, R_succ} with eps=0.05. Verified in released reward.py.'
+  - 'Ablation (n=306, ONE SEED, no CIs): RLPF full 54.58 CRR / 14.97 Slow-CRR; w/o FBR 40.52; w/o RBR 39.87; w/o shaping 39.54; runtime-only (GATED) 37.91; RLVR correctness-only 50.00 CRR but Slow/CRR 36.60; Qwen3-32B base 11.11.'
+  - 'THE ROBUST LEG: at near-matched correctness, correctness-only training leaves 36.6% of its correct programs no faster than baseline vs 15.0% for RLPF. On the paper own transition counts (+58/-13), McNemar chi2 ~28.5, p<0.0001.'
+  - 'THE MARGINAL LEG: the CORRECTNESS comparison is +34/-20, McNemar p~0.06. The three component ablations differ by 1-2 tasks out of 306 and the authors say so: "Point estimates favor the full reward but cannot establish component necessity."'
+  - 'Compute: 597 GPU-hours (74.6h x 8 A800-80GB) for the full run; roughly 4,000 GPU-hours for the reported study.'
+  referenced_arxiv_ids:
+  - '2605.15222'
+  - '2607.07619'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - autokernel-research-loop.md
+    - architect-model-selection-bench.md
+    - mi210-kernel-rnd-loop-proposal.md
+    experiments: []
+    intake_entries:
+    - intake-939
+    - intake-949
+    - intake-950
+    - intake-975
+    - intake-976
+  contradicting_evidence:
+  - PAPER/CODE DISCREPANCY - THE SMOKING GUN. Eq. 2 defines RBR = 1[T_c <= T_r]. Released reward.py applies an UNDOCUMENTED rbr_tolerance = 0.02 (t_model <= t_ref * 1.02), with a code comment attributing it to timing noise. The authors OBSERVED the hazard at the threshold, PATCHED IT WITH A 2% FUDGE, and did NOT report it. All published RBR figures carry 2% slack Eq. 2 does not state - a measured admission that their harness cannot resolve sub-2% differences, while CGRE, the headline metric, is a CONTINUOUS function of exactly those differences.
+  - IT INHERITS THE TIMING HAZARD ALMOST COMPLETELY. Reward execution runs ON THE SAME BOX as 32B GRPO rollout generation; CUDA tasks timed on the TRAINING GPUs; no isolation, taskset, numactl, affinity or quiescing anywhere. Measure-ONCE during training. FRESH candidate timing against DISK-CACHED baseline timing with zero drift correction (PERFCODEBENCH_USE_BASE_REF_CACHE defaults TRUE, USE_CANDIDATE_CACHE defaults FALSE) - precisely the stored-vs-fresh comparison intake-939 affine recalibration exists to fix.
+  - 'NON-INDEPENDENCE THE BRIEF DID NOT ANTICIPATE: PerfCodeBench IS THE AUTHORS OWN BENCHMARK - 7 of its 8 authors are also RLPF authors, including the same first author. RLPF trains on it, evaluates on it, and draws EVERY headline number from it. BOTH papers headline numbers rest on self-built, externally-unrun corpora.'
+  - 'NO LICENCE FILE. README: "A standalone license has not yet been added." Benchmark tasks are not in the repo. adopt_component is BLOCKED on this.'
+  novelty_justification: medium. The reward family is already characterized by intake-939; what is new is an independent group choosing the OPPOSITE gate form within it, plus two mechanisms 939 lacks entirely (the failure ladder and the continuous gap-closure form).
+  relevance_justification: high. The pre-correctness failure ladder maps directly onto the MI210 kernel loop, where most candidates die before they can be timed and are currently all scored identically.
+  verdict_justification: adopt_patterns, with adopt_component explicitly BLOCKED by the missing licence file and the absent benchmark tasks.
+  recommended_actions:
+  - ADOPT the pre-correctness progress ladder as kernel-loop fitness - hipcc-fail < runtime-fail < wrong-output. HIGHEST-VALUE TRANSFER in this dive.
+  - ADOPT the epsilon-separated staircase; reward.py is a working reference implementation.
+  - ADOPT CGRE normalized gap closure - it closes the gap an earlier dive left open by supplying the CONTINUOUS form a search needs, where 939 binary/bucketed finding was gradient-specific and harmful to hill-climbing.
+  - ADOPT the Slow/CRR conditional diagnostic for architect-model-selection-bench.md - among a model CORRECT outputs, what fraction is no faster than baseline. Separates correctness inflation from genuine efficiency gain.
+  - ADOPT RLPF harness as a NEGATIVE EXAMPLE for our timing discipline - an independent group shipped the uncorrected fresh/cached form.
+  - 'LOG rbr_tolerance = 0.02 as a MEASUREMENT ANTI-PATTERN: grep released code for undocumented tolerances before trusting any threshold metric.'
+  - DECLINE using RLPF as EMPIRICAL corroboration that gating beats blending - the comparison does not exist in the paper.
+  - DECLINE training or fine-tuning anything from RLPF - 597 GPU-hours on 8x A800 against an inference-only host.
+  notes: 'credibility_score 3: no peer-reviewed venue +0; submitted 2026-07-29, days before ingest +1; HKUST/NYU/HKU, known contributors +1; commercial bias +0; independent corroboration +1 (architectural convergence with intake-939, which is itself a separate group). Net 3. INDEPENDENCE CONFIRMED ON AUTHORSHIP: zero overlap with FAIR (Synnaeve/Zheng appear only as authors of a cited work, RLEF), zero overlap with the Afterburner group, does not cite 2607.25970, submitted one day after 939 so mutual citation is IMPOSSIBLE, 7 shared references indicating convergence rather than derivation. EFFECT ON intake-939: credibility 4 UNCHANGED (adding RLPF would DOUBLE-COUNT a corroboration that is architectural only, and the ceiling is reached regardless). NET ON MEASUREMENT: RLPF LARGE effects (101x, 51x, median 4.77x) survive its timing hazard; its threshold metrics near parity, and any future use of this harness to rank CLOSE variants, do not.'
+- id: intake-975
+  arxiv_id: '2605.15222'
+  url: https://arxiv.org/abs/2605.15222
+  source_type: paper
+  title: PerfCodeBench - 1,854 executable performance tasks with both a baseline and an expert reference per task
+  authors:
+  - Jing et al.
+  categories:
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-974
+  ingested_date: '2026-08-03'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - TRACK, DO NOT ADOPT - and the reason is specific rather than general.
+  - 'ATTRACTIVE: it is the ONLY member of the cluster with genuine SYSTEMS content (OpenMP atomics, SIMD string processing, bitmap filtering, packed integer decoding, CUDA reductions/scans/tiled transpose) and the only one supplying BOTH a baseline AND an expert-optimized reference per task - which is what makes a normalized gap-closure metric possible at all.'
+  - It is materially closer to MI210 kernel work than LeetCode-style tasks.
+  - 'FAILS THE BAR TODAY on four counts: not independent (same group as intake-974); NOT RELEASED (only an anonymous 4open.science review link, no licence); CUDA is 5.2% of the test split (16/306); and the CUDA path is NVIDIA-only via _detect_nvcc() with no ROCm/HIP path.'
+  techniques:
+  - baseline-plus-expert-reference task construction
+  - family-disjoint train/val/test split
+  reported_results:
+  - '1,854 executable performance tasks: train 1413 / val 135 / test 306, family-disjoint.'
+  - 'Languages: C++ 1087, Java 176, C 162, Go 160, Python 144, CUDA 125.'
+  - Each task supplies a fixed interface, a BASELINE implementation, an EXPERT-OPTIMIZED reference, a correctness oracle and a harness.
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - architect-model-selection-bench.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-974
+    - intake-939
+    - intake-976
+  contradicting_evidence:
+  - Every RLPF headline number is drawn from this benchmark, and 7 of its 8 authors are RLPF authors. It is a self-built, externally-unrun corpus - the same non-independence pattern the index has already flagged for the Mingzhe Du bloc and for FAIR own DMC-Optim.
+  novelty_justification: medium. Systems-level performance tasks with paired baseline and expert reference are genuinely rare in this literature; everything else is competitive-programming or repo-level Python.
+  relevance_justification: medium and conditional. If it were released under a licence and grew a ROCm path, it would be the closest published instrument to our own kernel work. Today the CUDA slice is 5.2% of the test split and nvcc-bound.
+  verdict_justification: 'worth_investigating with an explicit DEFER: re-check in roughly 60 days for a release, a licence, and any ROCm/HIP path. Not not_applicable - the design is right; the availability is not.'
+  recommended_actions:
+  - 'DEFER roughly 60 days. Named triggers for reopening: a public release with a licence, and any ROCm/HIP execution path.'
+  notes: 'credibility_score 2: no peer-reviewed venue +0; recent +1; known contributors +1; commercial bias +0; independent corroboration +0; -0. Net 2, held low by the anonymous review-only release and the self-evaluation circularity with intake-974.'
+- id: intake-976
+  arxiv_id: '2607.07619'
+  url: https://arxiv.org/abs/2607.07619
+  source_type: paper
+  title: Rethinking Code Performance Benchmarks for LLMs - only 6.11% of "performant" reference implementations are significantly faster on the original tests
+  authors:
+  - Le
+  - Xu
+  - Wang
+  - Chen
+  categories:
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-974
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - THE STRONGEST CORROBORATION THIS BATCH PRODUCED, and it is for a claim we were not testing. intake-939 duration-spread finding - that robust CV >= 0.3 is satisfied for at most 3.8% of problems with ORIGINAL tests versus 48.2% with purpose-built ones - now has GENUINE INDEPENDENT EMPIRICAL CORROBORATION by a completely different route.
+  - 'Different group, different method: 30 repetitions per task plus statistical testing across EffiBench, ENAMEL, EvalPerf and Mercury; 1,538 tasks.'
+  - 'Same conclusion: only 6.11% of purportedly performant reference implementations show a STATISTICALLY SIGNIFICANT improvement on the ORIGINAL tests.'
+  - 209 of 308 manually-analysed non-significant cases contain REAL improvements that the ORIGINAL TESTS FAIL TO EXPOSE - so the problem is the test workload, not the optimization.
+  - Their generated performance-oriented tests raise detection to 24-25%.
+  techniques:
+  - 30-repetition per-task timing with statistical testing
+  - performance-oriented test generation
+  - cross-benchmark reference-implementation audit
+  reported_results:
+  - 4 benchmarks, 1,538 tasks, 30 reps each plus statistical testing
+  - only 6.11% of "performant" references are significantly faster on original tests
+  - 209 of 308 manually-analysed non-significant cases contain real improvements the original tests fail to expose
+  - purpose-built performance tests raise detection to 24-25%
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - architect-model-selection-bench.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-939
+    - intake-974
+    - intake-970
+    - intake-971
+    - intake-972
+    - intake-952
+  contradicting_evidence: []
+  novelty_justification: high. It is the only cross-benchmark audit in the corpus that re-runs four instruments at 30 reps and applies a statistical test to the reference implementations themselves.
+  relevance_justification: 'high, and it settles a live question. It is the empirical reason our sealed SWE40/LCB tasks physically cannot carry a timing signal: their original correctness tests do not exercise the workload where the optimization lives.'
+  verdict_justification: adopt_patterns. Its finding is what we consume, not its harness.
+  recommended_actions:
+  - CITE as the independent corroboration of intake-939 duration-spread claim - different group, different method, same conclusion.
+  - DECLINE adding an efficiency axis over our sealed SWE40/LCB tasks. Original correctness tests clear the duration-spread gate for at most 3.8% of problems, and this paper independently measures 6.11% significance on reference implementations. Our sealed tasks physically cannot carry a timing signal.
+  notes: 'credibility_score 3: no peer-reviewed venue confirmed +0; recent +1; known contributors +1; commercial bias +0; independent corroboration +1 (converges with intake-939 by a fully disjoint method). Net 3. SURFACED VIA intake-974 Limitations section, which cites it - i.e. the authors of the paper we were auditing pointed us at the strongest evidence against the field they work in.'
+- id: intake-977
+  arxiv_id: '2410.07095'
+  url: https://arxiv.org/abs/2410.07095
+  source_type: paper
+  title: 'MLE-bench: Evaluating Machine Learning Agents on Machine Learning Engineering'
+  authors:
+  - Jun Shern Chan
+  - Neil Chowdhury
+  - Oliver Jaffe
+  - James Aung
+  - Dane Sherburn
+  - Evan Mays
+  - Giulio Starace
+  - Kevin Liu
+  - Leon Maksin
+  - Tejal Patwardhan
+  - Lilian Weng
+  - Aleksander Madry
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-940
+  ingested_date: '2026-08-03'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - 'LITE IS QUANTIZED AT 1.5152 pp AND THE TOP OF THE BOARD IS A THREE-WAY EXACT TIE. Lite = 22 competitions x 3 seeds = 66 task-runs, so Any-Medal can only take values k/66. Every published Lite number is an integer medal count in disguise: 80.30% = 53/66, 86.36% = 57/66, 90.91% = 60/66, 77.27% = 51/66, 75.76% = 50/66, 71.21% = 47/66.'
+  - The recurring +-1.52 on the official board is EXACTLY ONE MEDAL OUTCOME of SEM. Three different agents - Famou-Agent 2.0 (24h), MLEvolve (12h), PiEvolve (24h) - all sit at 80.30 +- 1.52. LITE NO LONGER DISCRIMINATES AMONG TOP AGENTS.
+  - 'n=3 IS UNDER-POWERED BY THE SABOTAGE PAPER OWN CITATION: "Because performance on MLE-Bench is high-variance, Chan et al. suggest 3 runs per task, however more recent work suggests a minimum of 10 runs (see appendix H of Toledo et al.)." The entire leaderboard convention is 3.'
+  - 'THE VERIFICATION PATH IS CLOSED, with the exact date. README verbatim: "Update (04-24-2026): We are currently not taking any new submissions to the leaderboard while we develop an improved process for ensuring submissions are fair and comparable."'
+  - 'ITS OWN AUTHORS NAME THE RESIDUAL RISK. Sec 6: "We have mitigations in place to prevent plagiarism ... but it is difficult to detect the reuse of high-level strategies. Our experiments find no systematic effect of contamination for GPT-4o, but make no guarantees about future models."'
+  techniques:
+  - Dolos naming-invariant plagiarism detection (k=23 fingerprints)
+  - GPT-4o rule-violation log analysis
+  - token-probability familiarity probe
+  - obfuscated competition descriptions
+  reported_results:
+  - 'CONTAMINATION METHODOLOGY, all four mechanisms verified in the primary PDF. Dolos: top-50 notebooks per competition, k=23 naming-invariant fingerprints, >60% = disqualify, run on MEDAL-WINNING SUBMISSIONS ONLY, "finding no detected cases of plagiarism". Rule-violation log analysis: "find no cases of rule-breaking", all flags human-adjudicated false positives. Obfuscated descriptions: all 75 rewritten, GPT-4o (AIDE), 10 seeds - Original 8.5+-0.6 vs Obfuscated 8.4+-1.0, no significant difference.'
+  - 'THE FAMILIARITY PROBE CONTRADICTS ITSELF: the BODY says "no correlation", but FIGURE 5 own annotation reads "Pearson correlation: -0.24, p-value: 0.04" - a statistically significant NEGATIVE correlation. The caption is more careful: "no POSITIVE relationship."'
+  - 'DIRECT TEST-SET MEMORIZATION CONFIRMED, fn.12: "GPT-4 base model could reproduce several rows from the dataset of the Titanic competition when given the first few rows as a prompt."'
+  - 'THE BENCHMARK QUARANTINES ITS OWN GAMED SUBMISSIONS: a segregated "Additional Leaderboard Submissions ... not directly comparable" section holds exactly two entries, BOTH annotated Test-set feedback - Disarray (4-model ensemble) 90.91 +- 0.00 Lite / 77.78 All (PR #118) and LoongFlow 77.27 +- 0.0 Lite / 62.66 All (PR #119). Disarray quarantined 90.91% would otherwise be #1 on Lite by 7 medal outcomes. Issue #124 (2026-02-24, closed): "If we are just adding methods to the leaderboard where people climb on the test set, what is the point of any of this?"'
+  - 'TEST-LABEL LEAKAGE IN THE BENCHMARK ITSELF, documented in the README: multi-modal-gesture-recognition public test .mat files leak labels; smartphone-decimeter-2022 leaks via span_log.nmea. Fixes are DELIBERATELY POSTPONED "to avoid invalidating the leaderboard", deferred to a v2 in openai/frontier-evals.'
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - architect-model-selection-bench.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-940
+    - intake-413
+    - intake-978
+    - intake-979
+    - intake-980
+    - intake-981
+  contradicting_evidence:
+  - 'LOCAL RUNNABILITY: NO-GO as a 3-seed Lite eval. DISK 157.73 GB across 22 competitions against 157 GB free - we are ~1 GB short before anything else, and preparation downloads raw archives AND writes prepared splits, so peak usage materially exceeds that. Distribution is pathological: siim-isic-melanoma-classification ALONE is 116.16 GB = 74% of Lite; the other 21 competitions total 41.57 GB. Preparation "takes approximately two days when running from scratch."'
+  - 'COMPUTE: 66 sandbox-runs. At the official 24h protocol that is 1,584 GPU-hours ~ 66 days serialized on our single MI210; at 12h, 792 h ~ 33 days; at Toledo 10 seeds, 2,640 / 5,280 h. The bottleneck is exclusively GPU-serialization and disk, not capability - our MI210 (64 GB) and host EXCEED the official per-run reference (36 vCPU / 440 GB / one 24 GB A10). Even a perfect run produces a number that CANNOT BE SUBMITTED OR RANKED.'
+  novelty_justification: medium. The benchmark itself is well known; what is new to this index is the ARITHMETIC - that every Lite figure is an integer medal count and the board is quantized at 1.5152 pp.
+  relevance_justification: high, because two entries already in this index (intake-940, intake-413) report MLE-Bench numbers, and those numbers cannot be read at the resolution they are stated without this row.
+  verdict_justification: 'worth_investigating: the 21-competition, 41.57 GB sub-split is a feasible LOCAL REGRESSION INSTRUMENT for harness changes. Not adopt_component, because a sub-split score is not an MLE-Bench Lite score and must never be reported as one (1/63 != 1/66).'
+  recommended_actions:
+  - 'ADOPT A GOVERNING CITATION RULE: any MLE-Bench number from intake-940 or intake-413 must be cited with its integer medal count out of 66, with the +-1.5152 pp quantum stated, and flagged leaderboard-verified or self-reported. NO MARGIN UNDER ~3 MEDAL OUTCOMES (4.5 pp) MAY BE DESCRIBED AS A DIFFERENCE. Neither entry numbers may gate keep/revert/promote without local re-measurement.'
+  - DECLINE a 3-seed local Lite eval - does not fit on disk, 33-66 days of exclusive MI210, and unsubmittable.
+  - CONDITIONAL GO on the 21-competition 41.57 GB sub-split as a local regression instrument for harness changes, explicitly NEVER reported as an MLE-Bench Lite score.
+  - 'PREREQUISITE: free >=60 GB on /mnt/raid0 before any MLE-Bench-shaped work.'
+  notes: 'credibility_score 4: peer-reviewed venue +0 (arXiv/OpenAI technical report); published 2024-10, within 24 months +0; OpenAI, a major lab +1; commercial bias -1; independent corroboration +2 capped (the quantization arithmetic reproduces independently from published leaderboard figures, and the under-powering critique comes from a third-party paper). Base +2 for the benchmark being open-sourced MIT with its own defects documented by its own maintainers. Net 4. Licence MIT (Copyright 2024 OpenAI); harness open and runnable.'
+- id: intake-978
+  arxiv_id: '2606.06473'
+  url: https://arxiv.org/abs/2606.06473
+  source_type: paper
+  title: MLEvolve - Monte Carlo GRAPH search with cross-branch reference edges for ML engineering agents (ID CORRECTION)
+  authors:
+  - Du et al. (Shanghai AI Laboratory)
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - memory_augmented
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-940
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'ID CORRECTION, recorded so the wrong pointer is not re-derived: MLEvolve is arXiv 2606.06473 (Du et al., Shanghai AI Laboratory, 2026-06-04). arXiv 2606.11926 is a DIFFERENT paper - see intake-981.'
+  - 'IT IS ON THE OFFICIAL LEADERBOARD, PRE-FREEZE, THIRD-PARTY ACCEPTED. Row dated 2026-02-14: Gemini-3-Pro-Preview, Lite 80.30 +- 1.52, Medium 57.89, High 42.22, All 61.33 +- 1.33, 12h, source available, grading reports available. THE ONLY TOP-10 MAINLINE ENTRY WITH SOURCE CODE AVAILABLE. Licence Apache 2.0.'
+  - THE PAPER NUMBERS ARE NOT THE LEADERBOARD NUMBERS. The paper reports All 65.3 +- 0.8 on a DIFFERENT backbone (Gemini-3.1-Pro-preview), post-freeze and unverifiable. Only Lite (80.3) is common to both. CITE 61.33 All (verified), NEVER 65.3 (self-reported).
+  - 'UNDISCLOSED HARDWARE DEVIATION: the paper used "21 vCPUs, 234 GB RAM, and a single NVIDIA H200"; the official environment is 36 vCPUs, 440 GB RAM, one 24 GB A10. That is roughly 6x the GPU memory at 58% the vCPUs, and the paper does not acknowledge the deviation.'
+  - 'THE PORTABLE METHOD, and nothing in it requires the H200 or Gemini: progressive MCGS (Monte Carlo GRAPH Search) with cross-branch REFERENCE EDGES rather than tree isolation; an entropy-inspired progressive explore-to-exploit annealing schedule; Retrospective Memory (static KB plus dynamic global memory with hybrid lexical-semantic retrieval); and planning decoupled from code generation. Apache-2.0, CUDA optional.'
+  techniques:
+  - Monte Carlo Graph Search with cross-branch reference edges
+  - entropy-inspired explore-to-exploit annealing
+  - retrospective memory (static KB + dynamic global)
+  - planning decoupled from code generation
+  reported_results:
+  - 'Official board, pre-freeze 2026-02-14: Lite 80.30 +- 1.52 (53/66), Medium 57.89, High 42.22, All 61.33 +- 1.33, 12h budget.'
+  - 'Paper self-report, post-freeze, different backbone: All 65.3 +- 0.8. UNVERIFIABLE.'
+  referenced_arxiv_ids:
+  - '2410.07095'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-940
+    - intake-413
+    - intake-977
+    - intake-981
+  contradicting_evidence:
+  - 'DOES IT BEAT intake-940 (Frontis-MA1)? YES at matched WALL-CLOCK - 80.30 vs 71.21 Lite at 12h = 6 medal outcomes (9.09 pp), roughly 4x the entire Frontis-MA1 headline margin. NOT matched on COMPUTE: Frontis-MA1 ran on one RTX 4090 capped at 12 GB VRAM with a 35B open-weight backbone; MLEvolve on an H200 (141 GB) with a proprietary frontier backbone.'
+  - 'The correct statement: at matched wall-clock but ~12x GPU memory and a closed frontier model, the verified SOTA is 6 medal outcomes ahead of Frontis-MA1 best. Frontis-MA1 frontier-competitiveness claim must be scoped to its compute class - the paper does not scope it, and the omission is the defect.'
+  novelty_justification: medium. Graph search over tree search and cross-branch reference edges are the genuinely new mechanisms; the memory and planning structure are variations on patterns already indexed.
+  relevance_justification: high. It is the verified comparator that intake-940 Table 11 omits, and MCGS with reference edges is directly applicable to the autopilot archive and the AutoKernel planner, both of which currently isolate branches.
+  verdict_justification: 'adopt_patterns: Apache-2.0 and CUDA-optional, but specialized for Kaggle-style MLE program synthesis rather than anything in our serving path. The mechanisms transfer; the harness does not.'
+  recommended_actions:
+  - ADD a ninth dive_correction to intake-940 naming this as the omitted verified comparator, with the compute-class scope qualifier attached.
+  - CITE 61.33 All (leaderboard-verified) and NEVER 65.3 (self-reported on a different backbone, post-freeze).
+  - EVALUATE cross-branch reference edges against our current branch-isolated archive designs.
+  notes: 'credibility_score 3: no peer-reviewed venue +0; published 2026-06-04, within 12 months +1; Shanghai AI Laboratory, a major lab +1; commercial bias +0; independent corroboration +1 (its Lite figure is third-party verified on the official board with published grading reports). Net 3, held down by the undisclosed hardware deviation and the paper/board number divergence. EFFECT ON intake-940: its Lite figures all resolve as k/66 (39.39=26, 60.61=40, 71.21=47), confirming the 66-run denominator INDEPENDENTLY of the earlier brute-force reconstruction. No Frontis-MA1 Lite comparison may be stated finer than 1.5152 pp. Its credibility 1 and verdict adopt_patterns are UNCHANGED. EFFECT ON intake-413: ML-Master 2.0 IS on the official board pre-freeze (2025-12-16, Deepseek-V3.2-Speciale, Lite 75.76+-1.51, All 56.44+-2.47, 24h, grading verified) - provenance materially BETTER than intake-940 - BUT the board marks source code NOT available for the submitted configuration despite the repo link, so any "open" framing must be qualified.'
+- id: intake-979
+  arxiv_id: '2511.09904'
+  url: https://arxiv.org/abs/2511.09904
+  source_type: paper
+  title: CTRL-ALT-DECEIT - sabotage and sandbagging by ML-engineering agents, and what a monitor can and cannot catch
+  authors:
+  - CTRL-ALT-DECEIT authors
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - autonomous_research
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-940
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'THE OBSERVED SANDBAGGING STRATEGIES MAP DIRECTLY ONTO KERNEL WORK. Verbatim: "agents might train their models on a needlessly small subset to avoid supposed memory issues, or use small and few layers for their CNNs." Kernel analogues: conservative tile/block sizes justified by "LDS pressure"; disabled fast paths justified by "numerical safety"; low unroll factors justified by "register spills." EACH INDIVIDUALLY DEFENSIBLE - which is exactly why they evaded the general monitor.'
+  - GIVE THE MONITOR THE WHOLE SEARCH TREE, NOT THE SELECTED CANDIDATE. Best-path-only transcripts STRUCTURALLY ADVANTAGE the saboteur, and the authors say so. Our loop must hand the monitor every evaluated variant INCLUDING DISCARDED HIGHER-SCORING ONES - otherwise a candidate that quietly discards its own best result is invisible.
+  - 'NAME THE THREAT MODEL IN THE MONITOR PROMPT. Largest measured effect in the paper: a generic "is this suspicious?" monitor RARELY FIRES on sandbagging; the specific one "performs well."'
+  - MONITOR-AWARENESS DEGRADES DETECTION UNIVERSALLY - every monitor had higher AUC on unaware runs. Assume any agent that can read the loop config knows it is monitored.
+  - AGGREGATE. Mean over monitor models is roughly the best single monitor (0.993 vs 0.970); mean@k over repeated samples of ONE model also improves AUC with fast diminishing returns. Cheap on our stack.
+  - 'ACCEPT THE FPR COST OR DO NOT CLAIM SAFETY: "gaining strict safety guarantees may require prohibitively high false positive rates."'
+  techniques:
+  - sabotage and sandbagging red-teaming of agents
+  - threat-model-specific monitor prompting
+  - monitor ensembling and mean@k aggregation
+  - CoT-visible monitoring
+  reported_results:
+  - 'CODE-SABOTAGE MONITORING IS STRONG (Fig 6): claude-3.7 0.970 aware / 1.000 unaware; claude-3.5-haiku 0.831/0.929; gpt-4o 0.774/0.880; gpt-4o-mini 0.773/0.920; Mean Monitor 0.993/1.000.'
+  - Attempting sabotage REDUCED main-task performance for both scaffolds - a measurable tax, usable as a secondary signal.
+  - 'CoT visibility is load-bearing: hidden reasoning tokens are described as a "large advantage to the agent."'
+  referenced_arxiv_ids:
+  - '2410.07095'
+  - '2502.13138'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - rocm-verify-profile-backend.md
+    - agentic-rocm-kernel-authoring.md
+    experiments: []
+    intake_entries:
+    - intake-977
+    - intake-668
+    - intake-679
+    - intake-980
+  contradicting_evidence:
+  - 'A CLAIM PASSED ALONG EARLIER IN THIS SESSION IS NOT VERIFIABLE AND IS RETRACTED AS A NUMBER. The "~0.60 AUC" figure for sandbagging detection lives ONLY in Fig 8 plot legend, which is not text-extractable from the PDF or the HTML render. NOT-FOUND-IN-SOURCE. What IS verbatim and citable: "The sandbagging-specific monitor performs well, while the general monitor rarely finds sandbagging suspicious", and Sec 5.2: "both substantially better than random and worse than perfect." CITE THE QUALITATIVE FINDING, NEVER THE NUMBER.'
+  novelty_justification: high. The index has anti-reward-hacking sources (robust-kbench, AgentKernelArena unseen-shape), but nothing that red-teams a monitor against a DELIBERATELY UNDERPERFORMING agent, which is the failure mode a kernel search is most exposed to.
+  relevance_justification: 'high and directly actionable: seven concrete transfers to the AutoKernel C6 design, five of which are prompt- or plumbing-level and cost nothing.'
+  verdict_justification: 'adopt_patterns: the transfers are design rules, not code.'
+  recommended_actions:
+  - 'ADOPT all five cheap monitor rules for the AutoKernel C6 layer: whole search tree, named threat model, mean@k aggregation, assume monitor-awareness, preserve CoT.'
+  - DECLARE AN EXPLICIT FPR BUDGET rather than claiming safety.
+  - AUDIT OUR OWN eval fan-out and scorer paths for HARNESS-LEVEL answer leakage, which is DEVELOPER-SIDE and would not be caught by any agent-side monitor.
+  notes: 'credibility_score 4: peer-reviewed venue +0; published 2025-11, within 24 months +0; known contributors +1; commercial bias +0; independent corroboration +1; base +2 for red-teaming with a released methodology and reporting the failure mode of its own instrument. Net 4.'
+- id: intake-980
+  arxiv_id: '2604.11806'
+  url: https://arxiv.org/abs/2604.11806
+  source_type: paper
+  title: Detecting Safety Violations Across Many Agent Traces (Meerkat), with its companion cheating-audit blog post (TITLE CORRECTION)
+  authors:
+  - Stein
+  - Brown
+  - Hassani
+  - Naik
+  - Wong
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-940
+  ingested_date: '2026-08-03'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - 'TITLE CORRECTION, recorded so the conflation is not re-derived: arXiv 2604.11806 is titled "Detecting Safety Violations Across Many Agent Traces" (Meerkat). "Finding Widespread Cheating on Popular Agent Benchmarks" is the COMPANION BLOG POST by the same authors at debugml.github.io/cheating-agents. Same work, two artifacts - indexed here as one entry with a companion field, per the companion-artifact rule.'
+  - THE CHEATING AUDIT DOES NOT COVER MLE-BENCH - OVERTURNED. The nine audited benchmarks are Terminal-Bench 2.0, HAL USACO, CyBench, BountyBench, ImpossibleBench, TRACE, CUA-SHADE-Arena, Cyber Misuse and Bio Misuse. MLE-bench is ABSENT, and the paper makes NO leaderboard-status claim.
+  - 'A FRAMING THIS SESSION PASSED ALONG IS RETRACTED: "plausibly the cause of the MLE-Bench freeze" was speculation. Snapshots are dated 2026-04-10 and the freeze is 2026-04-24, fourteen days later - suggestive but ENTIRELY CIRCUMSTANTIAL.'
+  - 'THE TAXONOMY IS THE TRANSFERABLE PART. HARNESS-LEVEL (developer/scaffold): verifier injection, answer-key injection, solution injection (e.g. an AGENTS.md containing the solutions). TASK-LEVEL (agent-initiated): online solution retrieval, mining version-control history for the fix, verifier prompt injection, hardcoded test answers, simulating rather than executing.'
+  techniques:
+  - large-scale agent-trace safety violation detection
+  - harness-level vs task-level cheating taxonomy
+  reported_results:
+  - 'Scale CONFIRMED: 28+ submissions across 9 benchmarks; >1,000 runs across 12 models with harness-level cheating on Terminal-Bench 2.0 and HAL USACO; the top 3 Terminal-Bench 2 submissions are all cheating; 31 confirmed reward-hacking cases across 6 benchmarks (~3x prior audits); CyBench 16/464 = 3.4% (~4x prior work).'
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - autokernel-research-loop.md
+    - architect-model-selection-bench.md
+    experiments: []
+    intake_entries:
+    - intake-977
+    - intake-979
+    - intake-668
+  contradicting_evidence:
+  - 'The overturn cuts against the reason this source was queued. It was expected to explain the MLE-Bench freeze; it does not cover MLE-Bench at all. The real on-benchmark antecedents are MLE-Bench own quarantine section and issue #124 - see intake-977.'
+  novelty_justification: high. The harness-level vs task-level split is a distinction our own C6 design did not carry, and the harness-level half is the one an agent-side monitor structurally cannot catch.
+  relevance_justification: medium. The taxonomy is directly usable; the audited benchmarks are not ours, and the headline rates do not transfer.
+  verdict_justification: 'worth_investigating: the taxonomy is adopted as a checklist, but nothing here is a component and the rates are benchmark-specific.'
+  recommended_actions:
+  - ADOPT the harness-level/task-level taxonomy as the checklist for auditing our own eval fan-out - specifically the harness-level half, which is developer-side.
+  - RECORD the retraction of the freeze-causation framing so it is not restated.
+  notes: 'credibility_score 3: peer-reviewed venue +0; published 2026-04, within 12 months +1; UPenn, known contributors +1; commercial bias +0; independent corroboration +1 (its harness-level findings are independently echoed by MLE-Bench own quarantine entries). Net 3. COMPANION ARTIFACT: debugml.github.io/cheating-agents - a distinct artifact under the companion rule, not a duplicate of the paper.'
+- id: intake-981
+  arxiv_id: '2606.11926'
+  url: https://arxiv.org/abs/2606.11926
+  source_type: paper
+  title: Toward Generalist Autonomous Research via Hypothesis-Tree Refinement (Arbor) - the paper this ID actually is (ID CORRECTION)
+  authors:
+  - Jin et al. (RUC-NLPIR)
+  categories:
+  - agent_architecture
+  - autonomous_research
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-940
+  ingested_date: '2026-08-03'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - 'ID CORRECTION: arXiv 2606.11926 is Arbor (Jin et al., RUC-NLPIR, 2026-06-10), NOT MLEvolve. MLEvolve is 2606.06473 - see intake-978. This entry exists so the misattribution cannot be re-derived.'
+  - Hypothesis-tree refinement for autonomous research, reporting an MLE-Bench Lite headline that would rank above every mainline board entry.
+  techniques:
+  - hypothesis-tree refinement
+  - autonomous research loop
+  reported_results:
+  - MLE-Bench Lite 86.36% = 57/66 with unquantified dispersion.
+  referenced_arxiv_ids:
+  - '2410.07095'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-977
+    - intake-978
+    - intake-940
+  contradicting_evidence:
+  - THE HEADLINE IS SINGLE-RUN ON A BENCHMARK WHOSE VERIFICATION PATH IS CLOSED. 86.36% = 57/66 with unquantified dispersion, and it would rank above every mainline entry under exactly the conditions where independent verification is unavailable (leaderboard frozen 2026-04-24). Under the governing citation rule in intake-977 this figure cannot be compared to any board entry at finer than 1.5152 pp, and it is self-reported rather than leaderboard-verified.
+  novelty_justification: medium. Hypothesis-tree refinement is a variation within a family the index already covers.
+  relevance_justification: medium. Registered primarily to correct the ID, and secondarily because its search structure is adjacent to the MCGS work in intake-978.
+  verdict_justification: worth_investigating and held there deliberately. The credibility ceiling is set by the unverifiable single-run headline, not by the method.
+  recommended_actions:
+  - 'CARRY the ID correction: 2606.11926 = Arbor, 2606.06473 = MLEvolve.'
+  - DO NOT cite its 86.36% against any leaderboard entry - self-reported, single-run, post-freeze.
+  notes: 'credibility_score 2: no peer-reviewed venue +0; published 2026-06-10, within 12 months +1; RUC-NLPIR, known contributors +1; commercial bias +0; independent corroboration +0. Net 2. Held at 2 specifically because the headline is SINGLE-RUN on a frozen-verification benchmark and would rank above every mainline entry under exactly the conditions where verification is closed.'
+- id: intake-982
+  arxiv_id: '2512.21326'
+  url: https://arxiv.org/abs/2512.21326
+  source_type: paper
+  title: Closed-form paired confidence intervals for LLM evaluation, with a mandatory small-K correction
+  authors:
+  - Sida Wang (FAIR at Meta)
+  categories:
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-939
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'IT CLOSES A REAL HOLE: we compute no variance at all on paired comparisons today. Tables 1-2 give an adoptable CLOSED-FORM paired-CI recipe.'
+  - THE sqrt(2) CLAIM HOLDS VERBATIM, and intake-939 citation of it is FAITHFUL and properly hedged - and intake-939 does NOT itself apply the method, using the conservative unpaired inflation instead.
+  - WE DO NOT NEED TO ADD BOOTSTRAPPING. Sec E PROVES equivalence of the empirical-variance z, the bootstrap, and the sign test.
+  - 'THE SMALL-K CORRECTION b IS MANDATORY, not optional: without it relative error is ~70% EVEN AT N=2000, because a 1/(K-1) per-question bias does not average away as N grows. At K=3-5 reps, omitting it makes the estimate worthless.'
+  - 'SCOPE LIMIT THAT MUST BE RECORDED WITH ANY ADOPTION: Wang models only TWO noise sources (data, prediction). OUR DOMINANT HAZARD IS A THIRD - environment/machine drift - which pairing does NOT remove unless arms are interleaved in one environment window. Adopting Wang without intake-939 affine drift correction is adopting HALF THE INSTRUMENT.'
+  techniques:
+  - closed-form paired confidence intervals
+  - small-K bias correction
+  - empirical-variance z equivalence with bootstrap and sign test
+  reported_results:
+  - Without the small-K correction b, relative error is roughly 70% even at N=2000.
+  - Sec E establishes that the empirical-variance z statistic, the bootstrap, and the sign test agree, so no resampling machinery is required.
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - architect-model-selection-bench.md
+    - batched-decode-measurement.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-939
+    - intake-949
+    - intake-970
+    - intake-983
+  contradicting_evidence:
+  - 'CAVEAT CONFIRMED AND IT IS DISQUALIFYING AS A CORROBORATION LEG: the author is sida@meta.com, FAIR at Meta, AND a direct SWE-RL co-author of intake-939 senior author Synnaeve. This is RESTATEMENT-CLASS SAME-LAB METHODOLOGY. It may be adopted as an instrument; it may NEVER be counted as a corroborating leg for intake-939.'
+  - Its Beta noise curves are Bernoulli-specific; our tok/s metric is continuous, so the noise model does not transfer directly to throughput measurement even where the CI machinery does.
+  novelty_justification: high. Nothing in our measurement constitution or annexes computes a paired variance in closed form, and the small-K correction is a specific failure mode we would otherwise have hit at our typical K=3-5.
+  relevance_justification: high. Every paired A/B we run - model ladders, kernel candidates, config arms - currently reports a point estimate with no interval.
+  verdict_justification: 'adopt_patterns and NOT adopt_component: the closed-form recipe is what transfers, and it must be composed with intake-939 affine drift correction rather than adopted alone. Any change to how we compute intervals is a measurement-trust-boundary matter and is prepared as a decision package, not self-applied.'
+  recommended_actions:
+  - 'PREPARE as a MEASUREMENT decision package (human-only boundary): paired CI estimators per Sec A.3 WITH the mandatory small-K correction.'
+  - DO NOT add bootstrapping - Sec E proves the closed form, the bootstrap and the sign test agree.
+  - 'RECORD the scope limit: pairing does not remove environment drift. Adopt WITH intake-939 affine correction or not at all.'
+  - NEVER count this as independent corroboration of intake-939 - same lab, direct co-author.
+  notes: 'credibility_score 3: peer-reviewed venue +0; published 2025-12, within 12 months +1; FAIR at Meta, a major lab +1; commercial bias +0; independent corroboration +1 (Sec E internal cross-validation across three estimators is a genuine methodological check, though not external). Net 3. THE SAME-LAB FINDING IS THE LOAD-BEARING PART OF THIS ENTRY: it prevents a future pass from stacking this on top of intake-939 as a second independent leg.'
+- id: intake-983
+  arxiv_id: '2606.16062'
+  url: https://arxiv.org/abs/2606.16062
+  source_type: paper
+  title: 'LLM test augmentation: a 61.9% per-augmentation defect rate, and a gate-before-judge hardening procedure'
+  authors:
+  - Rajan
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-948
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - ALL FIVE HEADLINE FIGURES VERIFIED EXACTLY.
+  - CARRY THE 61.9% PER-AUGMENTATION DEFECT RATE (n=105), NOT THE 28.5%. It is the author own nominated headline and the more stable number; 28.5% = 14/49 is K=3 iterative and concentrated in 2 of 12 repos.
+  - 'THE HARDENING PROCEDURE IS THE DELIVERABLE, AND ITS ORDER IS LOAD-BEARING: GATE BEFORE JUDGE. Inject the augmented test into the real project test file, apply the GOLD solution, run the project NATIVE runner; if it fails on gold, DISCARD and retry at higher temperature. Only THEN consult a 3-sample self-consistency judge.'
+  - 'WHAT THE JUDGE CANNOT CATCH: it reasons about LLM-generated TEST code that may not itself run. It endorsed all 6 named INVALID_AUG cases.'
+  - 'ABLATION: retry PRESENCE is load-bearing (3/11 -> 9/11); retry STYLE is not (a neutral prompt also reaches 9/11).'
+  techniques:
+  - gold-solution acceptance gate for generated tests
+  - temperature-escalating retry
+  - 3-sample self-consistency judge
+  - native-runner injection
+  reported_results:
+  - 28.5% = 14/49 (K=3 iterative; single-shot alone 18.4%), concentrated in 2 of 12 repos.
+  - '+14.14pp: n=134, DerSimonian-Laird random effects, CI [+11.80, +16.48], p<1e-6, I2=0%.'
+  - 61.9% per-augmentation defect rate, n=105.
+  - 'Retry ablation: presence 3/11 -> 9/11; neutral-prompt retry also 9/11.'
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - architect-model-selection-bench.md
+    - reviewer-typed-artifacts.md
+    experiments: []
+    intake_entries:
+    - intake-948
+    - intake-943
+    - intake-845
+  contradicting_evidence:
+  - Code is "available upon reasonable request" - NOT OPEN, and it fails our gate for anything runnable.
+  - Single author, gmail address, NO AFFILIATION STATED ANYWHERE.
+  - 'Mitigating and unusual: the paper RETRACTS ITS OWN HEADLINE and reports the arc - the opposite of the usual failure mode in this literature.'
+  novelty_justification: high. We have no gold-sanity gate for machine-generated tests anywhere, and a 61.9% per-augmentation defect rate is the empirical reason one is required rather than advisable.
+  relevance_justification: high. It lands directly on the dual-gold annotation work and on any future use of generated tests in the eval ladder or the kernel correctness surface.
+  verdict_justification: 'adopt_patterns: the procedure transfers and is cheap; the code is not open and cannot be a component.'
+  recommended_actions:
+  - 'ADD the gold-sanity gate for machine-generated tests: inject, apply gold, run the native runner, discard on gold-failure, retry at higher temperature, judge last.'
+  - PRESERVE THE ORDER. Gate before judge is the finding; the judge endorsed all six named invalid cases.
+  - CARRY 61.9% (n=105) as the citable rate, not 28.5%.
+  notes: 'credibility_score 3: no peer-reviewed venue +0; published 2026-06, within 12 months +1; no stated affiliation +0; commercial bias +0; independent corroboration +0; +2 for reporting a full meta-analysis with CIs and I2, and for retracting its own headline in favour of the more stable figure. Net 3.'
+- id: intake-984
+  arxiv_id: '2404.18864'
+  url: https://arxiv.org/abs/2404.18864
+  source_type: paper
+  title: Reinforcement learning for fast HPC code generation (IEEE TPDS 2026) - it COEXISTS with intake-939 rather than contradicting it
+  authors: []
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-939
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - IT COEXISTS WITH intake-939, IT DOES NOT CONTRADICT IT. No binary-vs-continuous ablation exists in this paper - its only reward-side ablation is synthetic-data vs not. It also uses a different estimator (PPO + KL + learned reward vs GRPO).
+  - 'VENUE UPGRADE since our prior reading: it is now IEEE TPDS 2026, DOI 10.1109/TPDS.2026.3675550, retitled to reference "...Fast HPC Code".'
+  - ITS REWARD DENOMINATOR IS A STORED CONSTANT from a separate isolated campaign while the numerator is measured ON THE TRAINING NODE - EXACTLY the channel intake-939 condemns. An independent group shipped the uncorrected stored-vs-fresh form.
+  - 'REWARD GEOMETRY THAT MATTERS: incorrect = -1 HARD, but correct-but-slow tends to -1 ASYMPTOTICALLY, so the margin VANISHES; and the third branch (synthetic data) has NO GATE AT ALL.'
+  - Correctness went UP, not down - attributed to more data plus incorrect samples acting as negative rewards.
+  techniques:
+  - PPO with KL penalty and a learned reward model
+  - synthetic-data augmentation for HPC code
+  - asymptotic slow-code penalty
+  reported_results:
+  - 'Venue: IEEE TPDS 2026, DOI 10.1109/TPDS.2026.3675550.'
+  - Correctness increased rather than decreased under the speed objective, attributed to added data and to incorrect samples as negative rewards.
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - autokernel-research-loop.md
+    - architect-model-selection-bench.md
+    experiments: []
+    intake_entries:
+    - intake-939
+    - intake-974
+    - intake-949
+  contradicting_evidence:
+  - The stored-denominator / fresh-numerator design is a measurement defect by our own standards, and it is the second independent instance found this session (intake-974 ships the same shape). Two independent groups converging on the same uncorrected comparison is evidence about the FIELD, not about the method being sound.
+  novelty_justification: medium. The reward-geometry detail (a vanishing margin for correct-but-slow) is the genuinely new part; the rest is a variant within a family already indexed.
+  relevance_justification: medium. It settles a question that was open - whether it contradicts intake-939 - and supplies a second documented instance of the stored-vs-fresh anti-pattern.
+  verdict_justification: 'adopt_patterns: what we take is the negative example and the reward-geometry observation, not the method.'
+  recommended_actions:
+  - RECORD as a second independent instance of the stored-denominator/fresh-numerator anti-pattern, alongside intake-974. Cite in MEASUREMENT.md era handling.
+  - 'CARRY the vanishing-margin observation: an asymptotic penalty for correct-but-slow provides no gradient near the reference.'
+  notes: 'credibility_score 4: peer-reviewed venue IEEE TPDS 2026 +2; original arXiv 2024-04, over 24 months -1; known contributors +1; commercial bias +0; independent corroboration +2 capped (its stored-vs-fresh design independently reproduces the exact defect intake-939 identifies, and intake-974 supplies a third instance). Net 4. THE VENUE UPGRADE IS THE REASON THIS ENTRY EXISTS SEPARATELY: a prior reading treated it as an unrefereed 2024 preprint.'
+- id: intake-985
+  arxiv_id: '2506.05817'
+  url: https://arxiv.org/abs/2506.05817
+  source_type: paper
+  title: CodeContests+ - a fully open substitute for the test-construction half of a performance benchmark
+  authors: []
+  categories:
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-939
+  ingested_date: '2026-08-03'
+  verdict: adopt_component
+  verification: dive-verified
+  key_claims:
+  - YES, IT IS A FULLY OPEN SUBSTITUTE for the test-construction half of DMC-Optim. Dataset CC-BY-4.0 (6,167 downloads); executor SandboxFusion Apache-2.0, 1,050 stars, pushed 2026-07-14.
+  - A Generator-Validator-Checker agent system built on testlib with ENFORCED RNG DETERMINISM, producing byte-identical tests across platforms.
+  - 'IT VALIDATES TEST SUITES AS BINARY CLASSIFIERS: 1.72M submissions, more than 300M program executions.'
+  - 'THE FINDING THAT MAKES IT USEFUL TO US: CodeContests has MORE THAN 4,000 PROBLEMS WITH TPR<=0.1 AND TNR>=0.9 - they reject nearly every correct submission. PER-PROBLEM TPR/TNR SHIP WITH THE DATASET.'
+  - 'SCOPE: it substitutes for TEST CONSTRUCTION only. The optimization half - duration spread, robust CV >= 0.3 - is still ours to build.'
+  techniques:
+  - Generator-Validator-Checker test synthesis on testlib
+  - enforced RNG determinism
+  - test suites evaluated as binary classifiers (per-problem TPR/TNR)
+  reported_results:
+  - 1.72M submissions and >300M program executions used for validation.
+  - More than 4,000 CodeContests problems have TPR<=0.1 and TNR>=0.9.
+  - Dataset CC-BY-4.0; SandboxFusion executor Apache-2.0, 1,050 stars, pushed 2026-07-14.
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - architect-model-selection-bench.md
+    experiments: []
+    intake_entries:
+    - intake-939
+    - intake-976
+    - intake-983
+  contradicting_evidence:
+  - It solves the correctness-test half and leaves the performance half entirely unaddressed. Adopting it does not shorten the path to an efficiency ladder; it removes one dependency on a closed corpus.
+  novelty_justification: high. Treating a test suite as a binary classifier with per-problem TPR/TNR is a framing absent from our corpus, and shipping those rates with the dataset is what makes it directly consumable.
+  relevance_justification: high. It removes a closed-corpus dependency and its per-problem classifier rates are immediately usable for screening any task set we build on.
+  verdict_justification: 'adopt_component: dataset and executor are both openly licensed, actively maintained, and directly runnable.'
+  recommended_actions:
+  - ADOPT as the open substitute for test construction. Screen candidate task sets with the shipped per-problem TPR/TNR before spending compute on them.
+  - 'RECORD the scope limit: the optimization half remains ours to build.'
+  notes: 'credibility_score 4: peer-reviewed venue +0; published 2025-06, within 24 months +0; known contributors +1; commercial bias +0; independent corroboration +1; base +2 for validating at 300M+ executions with per-problem rates published rather than summarized. Net 4.'
+- id: intake-986
+  arxiv_id: null
+  url: https://github.com/effibench/effibench-enhanced
+  source_type: repo
+  title: effibench-enhanced - a re-upload, not a fork; two of three blockers fixed and the important one is not
+  authors: []
+  categories:
+  - benchmark_methodology
+  novelty: low
+  relevance: medium
+  credibility_score: 1
+  discovered_via: expansion
+  expanded_from: intake-952
+  ingested_date: '2026-08-03'
+  verdict: not_applicable
+  verification: dive-verified
+  key_claims:
+  - IT IS NOT A FORK. fork:false, parent:null - a re-upload with no lineage. Created and last pushed SIX MINUTES APART, 0 stars, 0 issues.
+  - 'TWO OF THREE BLOCKERS FIXED: the openjdk:21 404 is fixed (eclipse-temurin:21-jdk-alpine), and the time.sleep AttributeError is fixed (import time).'
+  - 'THE ONE THAT MATTERS IS NOT FIXED: the fail-open-to-0.0 metric is BYTE-IDENTICAL to upstream. Plus a SECOND silent-zero in statistics.cpp.'
+  - 'ITS POSIX profiler.sh port INTRODUCED A MEASUREMENT REGRESSION: per-sample file append at 100us INSIDE the measurement loop.'
+  techniques: []
+  reported_results: []
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - architect-model-selection-bench.md
+    experiments: []
+    intake_entries:
+    - intake-952
+    - intake-987
+  contradicting_evidence:
+  - The fail-open-to-0.0 metric is our OWN named defect class sitting on the exact metric an efficiency ladder would adopt, and this repo does not fix it while appearing to be a maintenance fork. A future session could reasonably assume "enhanced" means the blockers are cleared; two are, and the load-bearing one is not.
+  novelty_justification: low. It is a re-upload with two one-line fixes.
+  relevance_justification: medium, and entirely as a caution plus two cherry-picks. The two one-liners are worth taking; the repo is not worth depending on.
+  verdict_justification: 'not_applicable as a dependency: zero lineage, zero maintenance signal, an uncorrected fail-open metric, and a self-introduced measurement regression in its profiler port.'
+  recommended_actions:
+  - CHERRY-PICK the two one-liners onto UPSTREAM EffiBench-X; do not depend on this repo.
+  - DO NOT take its POSIX profiler.sh port - the per-sample file append at 100us inside the measurement loop is a regression.
+  - KEEP the canonical-solutions acceptance gate as a precondition of adopting the EffiBench-X metric at all, since the fail-open-to-0.0 path is unfixed in both.
+  notes: 'credibility_score 1: no venue +0; recent +1; unknown author +0; commercial bias +0; independent corroboration +0. Net 1. The created-and-pushed-six-minutes-apart signal is what distinguishes a re-upload from a maintained fork, and it is the kind of provenance check that is cheap and decisive.'
+- id: intake-987
+  arxiv_id: null
+  url: https://github.com/s7nfo/Cirron
+  source_type: repo
+  title: Cirron - hardware performance counters from Python, with two defects that reproduce our own fail-open anti-pattern inside the instrument
+  authors:
+  - s7nfo
+  categories:
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  discovered_via: expansion
+  expanded_from: intake-971
+  ingested_date: '2026-08-03'
+  verdict: not_applicable
+  verification: dive-verified
+  key_claims:
+  - ALL FOUR FLAG SEMANTICS CONFIRMED FROM SOURCE.
+  - 'DEFECT 1: TWO FILE DESCRIPTORS LEAKED PER MEASUREMENT (opens 3, closes 1). A search loop over thousands of candidates exhausts the fd limit.'
+  - 'DEFECT 2: end.restype = None makes the Python error check DEAD, so a failed measurement returns instruction_count=0 SILENTLY - our own fail-open anti-pattern, INSIDE THE INSTRUMENT.'
+  - Adding counters requires surfacing time_running first.
+  - Unmaintained since 2024-09-10.
+  techniques:
+  - perf_event_open wrapper for Python
+  - retired-instruction counting
+  reported_results: []
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - architect-model-selection-bench.md
+    experiments: []
+    intake_entries:
+    - intake-971
+    - intake-986
+  contradicting_evidence:
+  - A silently-zero-returning measurement instrument is strictly worse than no instrument, because it produces a number. Combined with the fd leak this fails at exactly the scale an automated search would use it.
+  novelty_justification: medium. Instruction counting from Python is a capability we do not have; the implementation is the problem, not the idea.
+  relevance_justification: medium and bounded. Even repaired, instruction counting is EXPLICITLY INVALID for our inference kernels, which are bandwidth-bound - falsified in-session, where a tiled traversal executing +1.9% instructions ran 2.83x faster. Its scope is generated-code scoring only.
+  verdict_justification: 'not_applicable as shipped: two defects, both of which bite precisely under automated use, and unmaintained since 2024. Recorded rather than adopted so the defects are known if a future session reaches for it.'
+  recommended_actions:
+  - DO NOT USE AS SHIPPED. If instruction counting is ever needed for generated-code scoring, fix the fd leak and the dead error check first, and never point it at a bandwidth-bound kernel.
+  notes: 'credibility_score 1: no venue +0; last touched 2024-09-10, over 12 months but under 24 +0; unknown author +0; commercial bias +0; independent corroboration +0; +1 for the flag semantics being verifiable directly from source. Net 1.'
+- id: intake-988
+  arxiv_id: '2510.16079'
+  url: https://arxiv.org/abs/2510.16079
+  source_type: paper
+  title: EvolveR - principle distillation plus retrieval, whose gradient-free ablation beats its own RL-only arm
+  authors:
+  - Rong Wu
+  - et al. (Shanghai AI Laboratory)
+  categories:
+  - memory_augmented
+  - agent_architecture
+  - training_distillation
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-938
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'THE SINGLE MOST STACK-RELEVANT NUMBER IN THE MEMORY CLUSTER, and it is in an ablation the citing paper never reports. EvolveR Table 4, Qwen2.5-3B: principle distillation + retrieval with RL DISABLED scores 0.357, BEATING RL-only at 0.325, and reaching 93.5% of the full system 0.382.'
+  - That is the same shape as our own adopted ReasoningBank baseline, and it is a GRADIENT-FREE WIN - directly portable to an inference-only host.
+  - IT NEVER EVALUATES ON ALFWorld OR WebShop. It is a 7-benchmark multi-hop QA paper. "70.1" appears ZERO times; ALFWorld and WebShop appear ZERO times; the only "embodied" mention is in Future Work.
+  - 'CONSEQUENCE FOR intake-938: MemHarness "EvolveR (reproduced) 70.1" IS NOT A REPRODUCTION OF ANY PUBLISHED NUMBER - there is no original to diverge from. The label "(reproduced)" asserts fidelity to a non-existent original.'
+  - 'NON-INDEPENDENCE: 8 SHARED AUTHORS with MemHarness including the same first author (Rong Wu) and the same seniors; both Shanghai AI Lab.'
+  techniques:
+  - principle distillation from experience
+  - retrieval over distilled principles
+  - gradient-free memory augmentation
+  reported_results:
+  - 'Table 4, Qwen2.5-3B: distillation + retrieval, RL disabled = 0.357; RL-only = 0.325; full system = 0.382.'
+  - Seven multi-hop QA benchmarks. No embodied-agent evaluation of any kind.
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - engram-conditional-memory.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-938
+    - intake-989
+    - intake-990
+  contradicting_evidence:
+  - The gradient-free arm is a single ablation cell in one paper on one 3B model, with no CI and no seed variance reported. It is a strong lead, not a settled result.
+  - The 8-author overlap with intake-938 means these two papers are not independent evidence for each other in either direction.
+  novelty_justification: high. The corpus has memory-augmentation entries and RL entries; this is the first indexed case where the memory machinery WITHOUT GRADIENTS outperforms the gradient method it is usually packaged with.
+  relevance_justification: high, and it is the highest-value item in the memory cluster precisely because we cannot train. A method whose gradient-free arm reaches 93.5% of the full system is the arm we can actually run.
+  verdict_justification: 'adopt_patterns: the distill-then-retrieve arm is what transfers; the RL half is out of reach and, per its own ablation, not where most of the value is.'
+  recommended_actions:
+  - PROMOTE the gradient-free distill+retrieve arm as the primary memory lead over intake-938 reconstruct-before-inject arm, which targets a +2.2pp effect at z~1.94 on one seed.
+  - 'CORRECT intake-938 record: its "EvolveR (reproduced) 70.1" baseline reproduces nothing published.'
+  notes: 'credibility_score 3: no peer-reviewed venue +0; published 2025-10, within 12 months +1; Shanghai AI Laboratory, a major lab +1; commercial bias +0; independent corroboration +1 (the distill-then-retrieve shape converges with our own separately adopted ReasoningBank baseline). Net 3.'
+- id: intake-989
+  arxiv_id: '2605.29463'
+  url: https://arxiv.org/abs/2605.29463
+  source_type: paper
+  title: 'Honest Lying: Understanding Memory Confabulation in Reflexive Agents'
+  authors: []
+  categories:
+  - memory_augmented
+  - agent_architecture
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-938
+  ingested_date: '2026-08-03'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'GENUINE INDEPENDENT CORROBORATION FOR ONE CLAIM ONLY: memory injection CAN drive performance below a no-memory control, established by a controlled memory-WIPE ablation (2 of 16 memory-harmful, +6/+7 trials), by an independent group with no citation in either direction.'
+  - IT IS NOT CORROBORATION FOR THE STATE-MISMATCH MECHANISM. That is write-side (confabulated self-diagnosis under binary feedback) versus read-side. A FOURTH DISTINCT MECHANISM, not the same one.
+  - 'THE STRONGEST CONVERGENCE IS THE ENTITY-BEARING POLARITY: 0 of 121 reflections mention the correct target object; environment 22 substitutes tomato/microwave for Mug/CoffeeMachine.'
+  - 'TWO ZERO-TRAINING PORTABLES, both runnable on an inference-only host: RRR (SequenceMatcher >= 0.85 over stored reflections - pure log post-processing, computable RETROACTIVELY over existing traces, no inference cost) and PROGRAMMATIC FEEDBACK EXTRACTION (parse tool output for concrete failure facts instead of asking the model to self-diagnose).'
+  techniques:
+  - controlled memory-wipe ablation
+  - RRR redundancy metric over stored reflections
+  - programmatic feedback extraction from tool output
+  reported_results:
+  - Memory-harmful in 2 of 16 trials under a controlled wipe ablation.
+  - 0 of 121 reflections mention the correct target object.
+  - 'Programmatic feedback extraction: object mention 0/121 -> 134/156 (86%); RRR 0.64 -> 0.10.'
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - engram-conditional-memory.md
+    experiments: []
+    intake_entries:
+    - intake-938
+    - intake-988
+    - intake-990
+  contradicting_evidence:
+  - 'CAVEATS THAT BOUND THE TRANSFER: n=2 environments; harm is measured as trials-to-solve rather than success rate; and it is LARGELY A WEAK-MODEL ARTIFACT - gpt-4o-mini gives 100% object mention and solves 2/16, which is the no-memory baseline. THE MECHANISM AND THE METRIC TRANSFER; THE RATES DO NOT.'
+  novelty_justification: high. It supplies the only controlled memory-wipe ablation in the cluster, and RRR is a metric computable over traces we already have.
+  relevance_justification: medium. The two zero-training portables are immediately runnable; the harm rates are weak-model artifacts and do not describe our stack.
+  verdict_justification: 'adopt_patterns: RRR and programmatic feedback extraction are the transfers, both zero-training.'
+  recommended_actions:
+  - ADOPT RRR as a retroactive diagnostic over existing agent traces - pure log post-processing, zero inference cost.
+  - ADOPT programmatic feedback extraction in place of model self-diagnosis wherever tool output carries the concrete failure fact.
+  - DO NOT transfer the harm RATES - largely a weak-model artifact at n=2 environments.
+  notes: 'credibility_score 3: no peer-reviewed venue +0; published 2026-05, within 12 months +1; independent group +1; commercial bias +0; independent corroboration +1 (it independently corroborates intake-938 claim A by a different route and with no citation in either direction, which is the strongest form). Net 3. THE PRECISION MATTERS: this is corroboration for CLAIM A ONLY. Counting it as support for the state-mismatch mechanism would be exactly the mechanism-conflation error the intake rubric exists to prevent.'
+- id: intake-990
+  arxiv_id: '2607.21273'
+  url: https://arxiv.org/abs/2607.21273
+  source_type: paper
+  title: 'The Dark Room in the Reward Channel: dense prediction rewards collapse GRPO-trained agents - and why it does NOT threaten MemHarness'
+  authors: []
+  categories:
+  - training_distillation
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-938
+  ingested_date: '2026-08-03'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - THE COLLAPSE MECHANISM DOES NOT REACH MemHarness, and the reason is specific. The mechanism requires a DENSE policy-dependent potential-difference shaping term with persistent within-group variance. MemHarness has sparse +10/0 plus a SATURATING 0.1x format bonus plus SFT format cold-start, which places it in Dark Room own Proposition-2 SAFE class.
+  - 'DECISIVELY: Dark Room own NON-COLLAPSING BASELINE IS MemHarness reward shape, on the same verl-agent framework.'
+  - 'BUT IT DOES DESTABILISE MemHarness ON MEASUREMENT: 32-episode binomial noise floor is roughly 8.8 points; the paper states "all cross-arm comparisons in this version are DESCRIPTIVE"; and it reports an unexplained 8B (32.8) scoring below 4B (49.5).'
+  techniques:
+  - potential-based reward shaping analysis
+  - GRPO collapse characterization
+  - within-group variance diagnostics
+  reported_results:
+  - 32-episode binomial noise floor roughly 8.8 points.
+  - 'Unexplained inversion: 8B model 32.8 vs 4B model 49.5.'
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - engram-conditional-memory.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-938
+    - intake-988
+    - intake-989
+  contradicting_evidence:
+  - Its own cross-arm comparisons are declared DESCRIPTIVE by the authors, and an unexplained model-size inversion sits in the results. The theoretical result (the Proposition-2 safe class) is the durable part; the empirical arm is not decision-grade.
+  novelty_justification: high. A formal safe/unsafe classification of reward shapes is something the corpus lacks entirely, and it is directly usable as a design filter rather than a finding to remember.
+  relevance_justification: medium. We do not train, so the collapse mechanism does not bite us directly; the classification is useful as a design filter for any reward we author for the kernel loop, and the noise-floor observation is a transferable measurement caution.
+  verdict_justification: 'worth_investigating: the theory is adoptable as a filter but the empirical arm is self-declared descriptive, and our own use case (a search loop, not a trained policy) sits outside its scope.'
+  recommended_actions:
+  - USE the Proposition-2 safe/unsafe reward-shape classification as a design filter for any kernel-loop fitness function that adds shaping terms.
+  - CARRY the 32-episode binomial noise floor (~8.8 points) as a caution on any small-n episodic comparison.
+  - RECORD that this does NOT invalidate intake-938 - its reward shape is Dark Room own non-collapsing baseline.
+  notes: 'credibility_score 3: no peer-reviewed venue +0; published 2026-07, within 12 months +1; independent group +1; commercial bias +0; independent corroboration +1 (its safe-class analysis independently reaches the same conclusion about MemHarness reward shape that a direct reading of MemHarness supports). Net 3. THE VALUE OF THIS ENTRY IS A NEGATIVE: it was queued as a potential threat to intake-938 and it is not one, for a stated mechanical reason. Recording the non-threat prevents the concern being re-raised.'
