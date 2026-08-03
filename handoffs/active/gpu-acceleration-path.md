@@ -329,7 +329,26 @@ Two facts that several sizing arguments on this page and elsewhere were resting 
 
 - [x] Measure H2D/D2H bandwidth on the Gen4 x16 link and replace every circulating figure with the measurement ✅ 2026-08-03 — H2D 28.89 / D2H 28.20 GB/s; the ~64 GB/s figure retired
 - [x] Sweep the repo for arguments sized against the retired ~64 GB/s PCIe figure and re-size them ✅ 2026-08-03 — three sites corrected in this file (the superseded-DGX premise, the hybrid-MoE transfer claim, and the topology diagram's "PCIe 5.0"). **Deliberately NOT touched: the ~64 GB/s figures in `sarathi-serve-cpu-evaluation.md`, `numa-prefill-decode-disaggregation.md` and `design-backlog-triage-2026-07-23.md` are xGMI INTER-SOCKET bandwidth — a different link entirely.** This measurement says nothing about xGMI, and "correcting" those would be a category error. Their own Phase-0 xGMI measurement remains unrun.
-- [ ] **Open question, not a finding: bidirectional aggregate from NUMA node 0 is consistently ~50 GB/s while other nodes are noisy (node 3 ranged 33.8–48.3 across passes).** n=2–3 per node with no CI, so this supports no per-node ranking — only the node-0 outlier reproduces. It is **not** device locality (the MI210 is on node 1, verified three ways). Untested hypotheses: independent placement of the two concurrent copy threads; per-node free-memory/fragmentation state (node 0 had 2266 MB free vs node 1's 22839 MB at measurement time); IOMMU path. **Do not treat as a placement input until re-run with a stated n and CI**
+- [x] **Bidirectional NUMA asymmetry — RE-RUN AT n=10, INTERLEAVED, AND IT IS REAL** ✅ 2026-08-03. Round-robin across nodes (not blocked — a blocked design would alias thermal drift onto the arm, which `P-AK-SEARCH-1` forbids):
+
+  | node | n | mean GB/s | sd | 95% CI |
+  |---|---|---|---|---|
+  | **0** | 10 | **45.32** | 3.98 | [42.85, 47.78] |
+  | 1 | 10 | 33.96 | 0.26 | [33.80, 34.12] |
+  | 2 | 10 | 34.06 | 0.49 | [33.76, 34.36] |
+  | 3 | 10 | 36.85 | 2.05 | [35.58, 38.12] |
+
+  Node 0 vs all others: **+10.36 GB/s, z = 8.0**. The effect is real and was not visible at n=2–3.
+  **The variance structure is the clue**: the fast nodes are *noisy* (node 0 sd 3.98, node 3 sd 2.05)
+  while the slow ones are *tight* (node 1 sd 0.26). That is the signature of an intermittently-available
+  fast path, not a fixed per-node cost — a stable topological difference would show as tight
+  distributions at different means.
+- [ ] **Explain the mechanism before this becomes a placement input.** It is still bidirectional-only
+  (unidirectional is flat to within 0.1%), and it is **not** device locality — the MI210 is on node 1,
+  which is among the *slow* group. Untested hypotheses: independent placement of the two concurrent copy
+  threads by the runtime; per-node free-memory/fragmentation state; IOMMU path asymmetry. **G1 targets
+  host-side memory access during serving, which this does not measure** — do not let a bulk-transfer
+  result close or redirect it
 - [ ] Restore the P2-5j placement protocol to git, then run device-local (node 1) vs the current
   cross-node 184–191 host-thread placement
 

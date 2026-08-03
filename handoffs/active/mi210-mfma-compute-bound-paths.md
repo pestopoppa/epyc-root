@@ -23,19 +23,25 @@ but any citation must carry the `[D]`._
 
 | Quantity | MI210 (gfx90a, 104 CU @ 1.7 GHz) | Note |
 |---|---|---|
-| fp16 / bf16 matrix | **181.0 TFLOPS** `[D]` | 104 CU × 1024 FLOP/clk × 1.7 GHz |
+| fp16 / bf16 matrix | **172.2 TFLOPS `[M]` measured** · 181.0 `[D]` derived | derived = 104 CU × 1024 FLOP/clk × 1.7 GHz; **measured 2026-08-03 = 95.1% of it** |
 | int8 matrix | **181.0 TOPS** `[D]` | **CDNA2 does NOT double int8** — unlike CDNA3 |
 | fp32 matrix / vector | 45.3 / 22.6 TFLOPS `[D]` | |
 | FP8 / FP4 / TF32 | **none** | no matrix-core support on gfx90a at any rate |
-| **Ridge point (spec basis)** | **110.5 FLOP/byte** `[D]` | 181.0 TFLOPS ÷ 1.638 TB/s spec BW |
-| **Ridge point (achievable BW)** | **126.3 FLOP/byte** `[D,M]` | 181.0 TFLOPS ÷ **1433.3 GB/s measured** (2026-08-03) |
+| **Ridge — measured basis (USE THIS)** | **120.1 FLOP/byte `[M]`** | 172.2 TFLOPS ÷ 1433.3 GB/s, **both measured 2026-08-03** |
+| Ridge — spec basis | 110.5 FLOP/byte `[D]` | 181.0 TFLOPS ÷ 1.638 TB/s; correct on its own basis, use for cross-vendor |
+| ~~Ridge — mixed basis~~ | ~~126.3~~ **SUPERSEDED 2026-08-03** | divided spec FLOPS by measured BW; retired once both terms were measured |
 
-**The second ridge is MIXED-BASIS and must be labelled as such.** It divides a *spec* FLOPS number by a
-*measured* bandwidth number, because we have measured the memory system and not the matrix units. It is
-the right figure for "how much compute per byte would saturate the real memory system **if** the matrix
-units ran at spec", and it is the wrong figure for anything else. Measuring achievable FLOPS would give a
-clean second basis; nobody has. Mixing bases without saying so is exactly the defect found in AMD's own
-KB this session (per-OAM TFLOPS ÷ per-GCD bandwidth → a ridge off by 2×).
+**Peak FLOPS is measured, so the ridge is no longer mixed-basis.** 172.2 TFLOPS against 181.0 derived is
+**95.1%**, and the shortfall is **clock, not architecture**: the implied sustained clock is **1.617 GHz**
+against the 1.7 GHz boost the derivation assumed. **The `104 CU × 1024 FLOP/clk` arithmetic is
+confirmed** — only the clock assumption was optimistic. Receipt
+`epyc-inference-research/data/mi210-mfma-peak/20260803T143200Z/`, committed `a2b4e9fc`.
+
+Measurement quality: the occupancy sweep is **flat from 104 blocks (416 waves, one per SIMD) to 3328
+blocks** (172.13–172.32), so the matrix cores are **issue-limited, not occupancy-limited** — a real
+plateau rather than a grid artifact. Spread across timed reps 0.02%. The emitted ISA carries exactly
+`UNROLL=8` `v_mfma_f32_16x16x16f16` instructions, which is the check a peak-FLOPS microbenchmark most
+needs: **a loop optimized away reports infinite throughput.**
 
 For contrast the RTX PRO 6000 Blackwell fp16 ridge is **281** (FP4 ridge 1124) — **the MI210 is the more
 bandwidth-balanced part**, so a bandwidth-directed program is the arithmetically correct one here.
@@ -46,15 +52,15 @@ bandwidth-balanced part**, so a bandwidth-directed program is the arithmetically
    fp16 1.00 / Q8_0 1.88 / Q4_K 3.56 / IQ2 5.19 FLOP/byte — **31–113× below the knee**. At that AI the
    matrix units cannot exceed ~1.7–3.2% busy *at any bandwidth*. The 2026-07-04 profile was reading the
    physics, not a missed optimization.
-2. **The batch knee is now predictable:** `B* = ridge × bytes_per_weight / 2` → on the spec basis
-   **Q4_K 31, Q8_0 59, bf16 110**; on the achievable-BW basis **Q4_K 36, Q8_0 67, bf16 126**. Above `B*`,
-   bandwidth attainment stops being the right ceiling and the matrix roofline takes over.
+2. **The batch knee is now predictable:** `B* = ridge × bytes_per_weight / 2`. On the **measured basis
+   (use this)** → **Q4_K 34, Q8_0 64, bf16 120**; on the spec basis → Q4_K 31, Q8_0 59, bf16 110. Above
+   `B*`, bandwidth attainment stops being the right ceiling and the matrix roofline takes over.
 
-   **Honest note on which basis fits better: the data does not say.** The measured bf16 knee is
-   **B≈96–128**, and *both* predictions (110 and 126) fall inside that interval. The observation confirms
-   the arithmetic is anchored to something real; it does **not** discriminate between the two bases, and
-   claiming the achievable-basis figure "fits better" would be reading precision the measurement does not
-   have. Narrowing the observed knee would settle it.
+   **Still honest about what the knee does and does not settle.** The measured bf16 knee is **B≈96–128**,
+   and the measured-basis prediction (120) falls inside it — as did both earlier candidates (110, 126).
+   Measuring peak FLOPS removed the *basis* ambiguity; it did **not** sharpen the knee, because the
+   observation interval is wider than the spread between candidates. Narrowing the observed knee is what
+   would settle it, and nothing in the current program turns on the answer.
 
 **Defect to carry — do not import AMD's own number.** GEAK's `perf_knowledge/hardware/cdna2_mi200/memory.md`
 computes `362 TF / 1.6 TB/s ≈ 226 FLOP/byte` as a **per-GCD** ridge, while its own `arch.md` labels the same
@@ -134,7 +140,7 @@ Acceptance to proceed to kernel work: a candidate path shows **high VALUBusy + l
 - [x] Derive `B* = 110.5 × bytes_per_weight / 2` (Q4_K 31, Q8_0 59, bf16 110) and check it against the measured bf16 knee at B≈96–128 ✅ 2026-08-03
 - [x] Record the 2× per-GCD/per-OAM defect in AMD's GEAK `cdna2_mi200/memory.md` so its 226 FLOP/byte is never imported ✅ 2026-08-03
 - [x] Import the arch-independent HipKittens scheduling lessons (no wave-specialization, 8-wave ping-pong, HBM-side swizzle, AGPR/HIPCC tax, sweep-don't-set grid swizzle) ✅ 2026-08-03
-- [ ] **Measure peak FLOPS with a gfx90a MFMA microbenchmark — it is the LAST derived-from-spec denominator we hold.** HBM bandwidth (1433.3 GB/s) and PCIe (28.89/28.20 GB/s) were both measured 2026-08-03; peak FLOPS is the only remaining spec number, and it is what forces the ridge point onto a **mixed basis** (spec FLOPS ÷ measured bandwidth). Measuring it would give a clean achievable-vs-achievable ridge and let the two candidate `B*` values (110 and 126) be told apart. **Low urgency, stated honestly**: decode sits 31–113× below the ridge, so nothing in the current program turns on which value is right — this closes a basis caveat, not a bottleneck
-- [ ] Until then, no `[D]` peak-FLOPs figure may be cited outside this handoff as anything but derived
+- [x] **Measure peak FLOPS with a gfx90a MFMA microbenchmark** ✅ 2026-08-03 — **172.2 TFLOPS**, 95.1% of the derived 181.0, implied sustained clock 1.617 GHz. This was the last derived-from-spec denominator; **every roofline constant this project uses is now measured.** Receipt `data/mi210-mfma-peak/20260803T143200Z/`, research `a2b4e9fc`
+- [x] Peak-FLOPs figures no longer need the `[D]`-only citation restriction — the measured value supersedes it for all internal use; the derived figure remains the right one for cross-vendor spec-to-spec comparison ✅ 2026-08-03
 - [ ] Sweep grid-swizzle WGM (none/2/4/8/16/32) on our own MMQ launches — pure launch-order change, no kernel body edit; the CDNA3 optimum at 8 is a starting point, not an answer
 - [ ] Elementwise/norm fusion for batched decode remains the live orthogonal lever (43% of B=128 time is non-GEMM vs 37% GEMM) — now seeded in `autokernel-research-loop.md` §19.6/§19.8 rather than only noted here

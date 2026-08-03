@@ -2160,10 +2160,13 @@ can act on a waiver-bearing verdict.
   **NUMA-node-independent** to within 0.1%, which matters for seed G1: the GPU lane's cross-node host
   placement costs nothing on the *transfer* path. It says nothing about host-side memory access during
   serving, which is the regime G1 actually targets — do not let this close G1.
-- [ ] Import the **derived** MI210 compute-roofline constants as substrate facts, marked `[D]` and never
-  upgraded by import (§19.0 rule 4): 181.0 TFLOPS fp16/bf16, 181.0 TOPS int8 (**CDNA2 does not double
-  int8**; no FP8/FP4/TF32), fp32 matrix 45.3 / vector 22.6, **ridge 110.5 FLOP/byte**, and
-  `B* = 110.5 × bytes_per_weight / 2`. Full derivation and the 2× defect in AMD's own published figure:
+- [ ] Import the MI210 roofline constants as substrate facts. **All three are now MEASURED (2026-08-03)**,
+  so §19.0 rule 4's no-upgrade-on-import concern applies only to the derived companions: peak
+  **172.2 TFLOPS `[M]`** (181.0 `[D]`), achievable BW **1433.3 GB/s `[M]`** (1638 `[D]`), PCIe
+  **28.89/28.20 GB/s `[M]`**, giving a clean measured-basis **ridge 120.1 FLOP/byte** and
+  `B*` = Q4_K 34 / Q8_0 64 / bf16 120. Carry the spec-basis ridge (110.5) alongside for cross-vendor
+  comparison, and **never mix bases**. Derivations, the measured/derived reconciliation, and the 2×
+  defect in AMD's own published figure:
   [`mi210-mfma-compute-bound-paths.md`](mi210-mfma-compute-bound-paths.md).
 
 **Exit:** crash/restart/rewind never loses a candidate or its negative lesson; the loop starts with the

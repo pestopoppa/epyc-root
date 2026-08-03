@@ -67,6 +67,22 @@ are available now** and can be ratified together. Two things this changes in the
    basis makes the gap look smaller without it being smaller, and that is the exact error found this
    session in AMD's own KB.
 
+### PACKAGED 2026-08-03 — DP-1 is ready to execute
+
+```bash
+bash artifacts/operator/ratify_mi210_substrate_constants_20260803.sh --dry-run   # verify, writes nothing
+bash artifacts/operator/ratify_mi210_substrate_constants_20260803.sh             # amend
+```
+
+Idempotent; refuses on any precondition failure. It checks that all three receipts are **committed**
+(an untracked receipt looks identical to a committed one) and that the constants in the script still
+**match the receipts**, so the script cannot drift from its own evidence. Dry-run passes as of
+2026-08-03. **Peak FLOPS has since been measured too (172.2 TFLOPS), so the ridge is no longer
+mixed-basis — the clean measured-basis value is 120.1 FLOP/byte** and the amendment carries both bases
+plus the no-mixing rule.
+
+DP-2…DP-6 are **not** covered by this script — independent decisions with their own options.
+
 **Amended recommendation: still C, now executable in one step.** The estimate that preceded the run
 (~1.3–1.4 TB/s, a 17–26% rise) was low — recorded here because a ratified constant should carry the fact
 that its predecessor guess was wrong in a knowable direction.
