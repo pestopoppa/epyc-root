@@ -164,6 +164,23 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
 - [x] Harden the runner: per-question JSONL, pinned item sets, production sampling, `enable_thinking`, repeats, truncation capture ✅ 2026-07-20
 - [x] Fixture-test adapters + scorer offline (25 assertions, 0 failures) ✅ 2026-07-20
 - [ ] Confirm MMLU-Pro control re-runs under the hardened protocol (sidecar's n=50 run predates it).
+- [x] **Canonical judge-suite head-to-head, 27B vs frontdoor** ✅ 2026-08-02 — paired, one judge,
+      matched 8192 budget, identical 70 questions: **180/204 (88.2%) vs 179/204 (87.7%)**, 9 wins /
+      4 losses / 55 ties, exact sign test **p = 0.267**. Consistent with this handoff's standing NULL.
+- [x] **Established WHY the suite reads NULL** ✅ 2026-08-02 — **50 of 68 questions (74%) score a
+      perfect 3 for both arms**; `general` is 100% saturated. It is a ceiling artifact, not model
+      equivalence: published benchmarks separate the same pair on **8 of 8** axes.
+- [ ] **Retire or harden the saturated suites.** `general` (100% both-perfect), `thinking` (90%),
+      `math` (89%) carry no discriminating information at this model tier and should not be used for
+      any keep/drop read.
+- [ ] **Strip per-question calibration examples from `rubric_system_prompt`.** It names specific
+      `question_id`s with the score they got on other models (`math/t3_q2_combinatorics` as a
+      score-1 exemplar, `coder/t1_q1_algorithm` as score-0), priming the judge on identity before it
+      reads the answer. Affects absolute level; harmless for A-vs-B since both arms get it.
+- [x] **Fixed two false suite questions (suites → v2)** ✅ 2026-08-02 — `math/t3_q2_combinatorics`
+      asserted an identity whose LHS is identically 1 (the 27B proved it and was penalised);
+      `coder/t1_q1_algorithm` claimed two bugs in code with one. Both answer keys documented the
+      defect and shipped anyway. Scores recorded before this fix are against suite v1.
   - **Audit 2026-07-29:** still unrun. The only matching sidecar directory is `architect-bench-sidecar-20260720/phase1_gpu_override/main_a3_qwen36_27b_q8_mmlu_pro_20260720T174115Z/`; its server log fails before inference with `--device ROCm0` invalid, and it contains neither runner output nor per-question results. The hardened campaign has no `questions_mmlu_pro.json` manifest or MMLU-Pro run directory. A replacement is fresh GPU inference, not deterministic replay; retain the checkbox and request an owned GPU window plus the hardened runner/pinned-manifest recipe.
 - [ ] (Phase 2, if approved) build/validate the SWE-bench-Verified agentic scorer → FAIL_TO_PASS pass/fail.
 
@@ -336,7 +353,16 @@ So when thinking terminates it is roughly **quality-neutral** on this suite (bot
   *No GPU work was run: the guard was tested in isolation and all three are `bash -n` clean.*
 - [x] **Declined: AIME'25 hard-tier avg@16 top-up.** Considered; explicitly *not* pursued — it sharpens ~7 problems where A1=A3 already tie (likely a tighter confirmation of parity), whereas OlympiadBench adds harder *items* with real n. Higher expected information → chose OlympiadBench. ✅ 2026-07-21
 - [ ] Resolve the decision tree from Phase 1; **(conditional) build + run A5** if branch 2 fires.
-- [ ] **Phase 2** (if run) — tool-using planning on the surviving 1–2 arms.
+- [x] **Phase 2 — tool-use eval RUN across the whole fleet** ✅ 2026-08-02. `tool_compliance`
+      (9 questions, 0-3 rubric) scored by architect_critic under one judge, one 8192 budget, all six
+      models, zero ineligible: architect_critic 85.2%, frontdoor 77.8%, worker_general 77.8%,
+      architect_general 74.1%, worker_vision 74.1%, ingest_long_context 70.4%. **14.8 pp spread** —
+      the only axis we own that discriminates. Evidence:
+      `epyc-inference-research/data/judge_suite_headtohead_20260802/`. NOTE this is the fleet-wide
+      tool-use screen, NOT the "tool-using planning on the surviving arms" depth probe, which is
+      still unrun.
+- [ ] **Phase 2 depth probe** — tool-using *planning* (multi-step, stateful) on the surviving arms.
+      The 9-question compliance screen above is a breadth instrument and does not answer it.
 - [ ] **Record the architect decision** (checkbox-flip here) → route to AXA-1 (`mi210-big-model-and-acceleration-roadmap.md`) + the model registry.
 
 ## R4 — OlympiadBench-numeric SATURATES too (adapter design flaw, not the ceiling-breaker claimed)
