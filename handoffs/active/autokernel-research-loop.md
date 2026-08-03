@@ -813,7 +813,7 @@ does not.
 | `ik_llama.cpp` (on disk) | `portable_source` | source of the iqk lineage; the single largest banked gain this project has |
 | upstream `llama.cpp` / `ggml` | `portable_source` | fixes and optimizations the fork has not taken; the fork diverges continuously |
 | AMD **composable_kernel** / hipBLASLt / rocBLAS | `portable_source` | **the most directly relevant unexploited source for gfx90a** — CDNA2 GEMM/attention tiling written by the vendor for this exact architecture |
-| AMD **AITER** and ROCm kernel repos | `portable_source` | AMD's own inference kernel work, same target hardware |
+| AMD **AITER** | ~~`portable_source`~~ **RETIRED 2026-08-03** | I added this row claiming AITER was "AMD's own inference kernel work, same target hardware". It is not: AITER's supported-hardware table lists **no MI210/MI250/gfx90a, not even experimental** — consumer RDNA parts rank ahead of our datacenter card. See the `cdna2-abandoned-by-vendor-and-quant-schools` HARD_CONSTRAINT in §19.2. Kept visible rather than deleted: the row was wrong, and a future reader reaching for AMD's inference kernels should meet the correction rather than re-add it |
 | **FlashAttention / FlashInfer** | `portable_source` where a HIP path exists, else `reimplement` | attention tiling, KV layout, paged-attention kernels |
 | **CUTLASS** | `reimplement` — CUDA instructions, no gfx90a path | tiling, pipelining and epilogue *design*; instructions do not port to gfx90a |
 | **vLLM / SGLang / TensorRT-LLM** | `reimplement` | scheduling, paged KV, continuous batching as design oracles; TensorRT-LLM in particular is read-only |
@@ -1131,6 +1131,20 @@ the absolute roof, and *measured* achievable bandwidth from a STREAM-class probe
 practical roof and the honest one to optimise against. A utilisation quoted without saying which
 denominator it used is not a number.
 
+**Both denominators now exist for the MI210 (measured 2026-08-03).** Achievable is **1433.3 GB/s**,
+87.5% of the 1638 GB/s datasheet peak — a correction factor of 1.143×, so fp16's 62.6%-of-spec is
+71.5%-of-achievable. The ridge inherits it: 110.5 FLOP/byte spec-basis, 126.3 achievable-basis, the
+second **mixed-basis** (spec FLOPS over measured bandwidth) because nobody has measured the matrix
+units. Both fall inside the measured bf16 knee at B≈96–128, so that observation does not discriminate
+between them, and claiming it does would read precision the data has not got.
+
+**The usage rule matters more than either number, and it is not one I specified.** Converting *our*
+figures to an achievable basis while a competitor's stay on a spec basis makes a gap look smaller
+without it being smaller. **Cross-vendor comparison stays spec-to-spec** until someone measures the
+other device's achievable bandwidth; achievable-basis figures are for reasoning about *our own*
+headroom. Mixing bases across vendors is the same failure mode as quoting an unnormalised speedup,
+one level subtler.
+
 The MoE distinction is load-bearing here, not a detail — this stack serves several A3B/A4B MoE models,
 where active-expert bytes rather than model size set the roof. Using total parameters would understate
 utilisation severalfold and manufacture headroom that does not exist.
@@ -1145,7 +1159,16 @@ utilisation severalfold and manufacture headroom that does not exist.
    describes a technique that is *available*. If we already measure 75% in that regime, the technique
    is already harvested here and the seed is `SUPERSEDED_FACT` before any source is read — decided from
    the paper, at zero compute.
-3. **A phase signal (§8.4.1).** Utilisation approaching the practical roof across a campaign's regimes
+3. **Two workloads, not one target (operator, 2026-08-03).** The quant-ladder finding is easy to read as
+   "aim at the fp16 rung". It is really two distinct programs, and the second is the one that pays.
+   *(a)* Lift the fp16 rung itself — the headroom above 71.5%-of-achievable, shared by every quant
+   because it is the common GEMV/memory path. *(b)* **Close the ladder gap**, i.e. the collapse from
+   fp16 down through Q8_0 → Q4_K → MoE-Q8 → MoE-IQ2. (b) is the higher-value direction here for a
+   plain reason: **production does not serve fp16.** A win on the fp16 rung alone lands on a rung no
+   production role occupies, so a campaign that optimises (a) and stops has moved a number nobody is
+   served by. Campaigns declare which of the two they target, and a (a)-only result states explicitly
+   which production rungs it did and did not reach.
+4. **A phase signal (§8.4.1).** Utilisation approaching the practical roof across a campaign's regimes
    is the clearest evidence that HARVEST is finished and the remaining gains are not in this direction
    — a physical reason to switch to EXPLORE rather than an inferred one.
 
@@ -1172,6 +1195,38 @@ real graph and the campaign is not explicitly microkernel-only; the same mechani
 matching conditions **by an entry carrying a receipt**; the resource or storage estimate exceeds
 budget; the change crosses a repo/release domain the backend adapter does not own; or the proposed
 evaluator step would require changing the evaluator.
+
+### 8.4.0 Operator hypotheses — steering without authority (operator, 2026-08-03)
+
+AutoPilot's planner carries hypotheses with an explicit **falsifier** (*"one-line predicted outcome
+whose absence invalidates this hypothesis"*), tracks them as **still-open until resolved**, and
+re-surfaces the open set into each planning round. AutoKernel has the field — `proposal.hypothesis` —
+and **neither the falsifier discipline nor the still-open tracking**, so a hypothesis here evaporates
+the moment its proposal is dispositioned. It also has no way for the operator to seed one at all.
+Both gaps close together, because they are the same mechanism seen from two ends.
+
+**The channel.** An operator states a hypothesis with its falsifier — "G15's elementwise/norm cluster
+is where the B=128 decode time is, and fusing it lands ≥15%; if a current wall-share map shows the
+cluster under 20% I am wrong". It enters the planner's context as a first-class prior, ranked with the
+rest, and it is a *proposal source*, never an authority.
+
+**The grade is what makes this safe.** An operator hypothesis enters at `design_prior` evidence grade
+and **can never be promoted by its origin** — §19.0 rule 4 already forbids upgrading evidence on
+import, and an operator hunch is exactly the input most likely to be treated as settled because of who
+said it. It faces the pre-run critic unchanged, obeys every §8.4 rejection condition, and is subject
+to the do-not-repeat ledger like any other proposal. If it repeats a receipted negative, the critic
+says so; being the operator's idea is not new evidence.
+
+**Still-open tracking, for every hypothesis regardless of origin.** Each carries a falsifier, stays
+open until confirmed / refuted / inconclusive with the evidence that resolved it, and the open set is
+re-surfaced into each planning round. This is the half AutoPilot actually has and AutoKernel lacked,
+and it is what stops a hypothesis being silently dropped when its first proposal fails for an
+unrelated reason — the failure mode that leaves a question feeling "already tried" without a receipt.
+
+**What it must not become.** Not a queue-jumping mechanism, not a way to bypass the wall-share ceiling
+or the correctness gates, and not a route to mark something resolved without evidence. An operator
+hypothesis that the loop refutes is **refuted**, and the record says so — that is the mechanism
+working, and it is the main reason to have it rather than steering out-of-band.
 
 ### 8.4.1 Architectural campaigns — how deep rethinking stays possible
 
@@ -2194,6 +2249,11 @@ evaluator or its own scope, and T1 may legally guide search.
 - [ ] Build the structured source/profile/workload/negative-history/oracle context compiler with
   quarantined rendering of external content.
 - [ ] Build planner and pre-/post-run critic adapters; prefer distinct providers for the two roles.
+- [ ] Implement **operator hypotheses and still-open hypothesis tracking** (§8.4.0): the operator-facing
+  channel, the mandatory falsifier, `design_prior` grading that origin cannot raise, re-surfacing the
+  open set each round, and resolution journaled as confirmed/refuted/inconclusive with its evidence.
+  Test that an operator hypothesis is rejected by the critic when it repeats a receipted negative —
+  authorship is not evidence.
 - [ ] Enforce proposal schema, one-concept rule, wall-share ceiling, novelty, budget, hierarchy, and
   the oracle question.
 - [ ] Build store-guided next-experiment selection using information gain plus expected value.
@@ -2425,6 +2485,8 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 | AK-D32 | Harvest/explore are **phases switched on marginal yield**, not a fixed budget fraction; the decay floor and window are derived, with a minimum dwell and a `PLANNER_DEGRADED` disambiguation | A fixed ratio spends explore budget while a fresh region still yields and caps exploration once it is dead; a freshly opened region's adjacent wins are cheap, high-probability and perishable, so they should be stripped first |
 | AK-D33 | Spikes owe no anchor gate, paired blocks, e-process or confirmation sample — they emit a mechanism verdict, not a rate claim — but still hold a claim and pass preflight | Institutional cost is spent confirming gains, not discovering them; a spike that costs what a T1 costs will not be used |
 | AK-D34 | The oracle registry declares a **harvest class** per row on the axis of architectural portability (`portable_source` vs `reimplement`), **not licensing** — standing policy is open-source self-hosted, non-commercial, licences not blockers and new oracles enter via `research-intake`, not by an agent adding a row | Misclassifying is a schedule problem, not a legal one: a `reimplement` oracle costs authoring effort a `portable_source` one does not. Intake still verifies real gfx90a/EPYC support and normalises the claimed result to roofline utilisation before a port is proposed |
+| AK-D37 | **AK-D36 excludes a *target*, not a *regime*.** Single-stream and batched prefill and decode are all legitimate optimization directions, and AutoKernel looks for improvement independently of batch count. What AK-D36 forbids is recruiting the whole-stack llama.cpp-vs-vLLM ratio as a kernel objective, because that ratio is dominated by scheduling above 16 concurrent users | Read as "batch-1 only", AK-D36 would retire G15 — 43% of B=128 decode is non-GEMM elementwise/norm — which is the highest-confidence GPU band currently available. The constraint is on the *metric*, never on the batch regime |
+| AK-D38 | **Operator hypotheses are a first-class planner input**, carrying an explicit falsifier, entering at `design_prior` evidence grade and never above it, tracked still-open until resolved, and subject to every gate without exception | The operator sees things the profile does not; without a channel that steering arrives as an out-of-band instruction with no falsifier and no resolution record. Grading it `design_prior` is what stops a hunch being laundered into a measured fact |
 | AK-D31 | Architectural campaigns replace three §8.4 rejection conditions rather than waiving them: predicted post-change profile for the wall-share ceiling, prospective shapes, and per-step conceptual-change scope; plus spikes and a reserved budget fraction | Those three are correct for incremental work and would block the deep kernel rethinking the loop exists to find; EIG-first ranking starves high-variance work by arithmetic unless budget is reserved |
 | AK-D29 | Source-integrity gates run **before** behavioural gates: symbol/registration preservation, clean build from snapshot, semantic diff conformance, repair from clean parent | AutoPilot's one autonomous source mutation destroyed a module with a syntactically valid edit; none of its four Python defenses transfer to compiled C++, where "it compiles" is far weaker than "it imports" |
 | AK-D30 | `core_header` is its own change class and risk tier, not a size band | A small textual diff to shared ggml core reaches every op in both the CPU and GPU builds |
