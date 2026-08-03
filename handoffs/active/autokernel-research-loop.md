@@ -529,8 +529,12 @@ to cover the AutoKernel import manifest and evidence citations.
     rescored without inference when the generation path remains valid.
 12. **Determinism class is an interface.** A candidate may not silently change same-seed run-to-run
     bitwise stability; a change of class is a declared, release-relevant property.
-13. **One conceptual mutation per proposal.** Parameter sweeps may generate many points; a source
-    proposal must remain falsifiable and revertible.
+13. **One conceptual mutation per proposal — per *step*.** Parameter sweeps may generate many
+    points; a source proposal must remain falsifiable and revertible. An **architectural campaign**
+    (§8.4.1) declares a multi-step lineage with an end-state up front; the rule then binds each step,
+    and the critic evaluates the plan as a whole. A change that is irreducibly multi-part — a new
+    layout plus the kernel that consumes it plus its dispatch plus its repack path — must be
+    *expressible*, or the loop can only ever polish what already exists.
 14. **No estimated percentage by narration.** Readiness is computed from records by a deterministic
     controller; the LLM may request, never declare.
 15. **Production recipes gate.** Baseline/off-recipe cells are diagnostic and never veto or justify a
@@ -1097,6 +1101,42 @@ real graph and the campaign is not explicitly microkernel-only; the same mechani
 matching conditions **by an entry carrying a receipt**; the resource or storage estimate exceeds
 budget; the change crosses a repo/release domain the backend adapter does not own; or the proposed
 evaluator step would require changing the evaluator.
+
+### 8.4.1 Architectural campaigns — how deep rethinking stays possible
+
+Three of §8.4's rejection conditions are correct for incremental work and **wrong for architectural
+work**, and left unqualified they would block exactly the kernel rethinking this loop exists to find.
+Each is therefore replaced — not waived — inside a declared architectural campaign.
+
+| §8.4 rejection | Why it misfires on deep work | Replaced by |
+|---|---|---|
+| Expected gain exceeds its own **wall-share ceiling** | An architectural change *redistributes* wall share rather than optimizing within it. Eliminating an intermediate materialization, or moving work off the critical path entirely, is bounded by no ceiling computed on today's profile. The narrow "fusion explanation" escape does not cover a new execution layout, a persistent team, or a different residency model | A **predicted post-change profile**: the proposal states what the wall-share distribution *becomes*, per op family. This is strictly more falsifiable than a ceiling test — it can be wrong in a way the profiler can see |
+| **Target shapes do not occur in a real graph** | A new kernel may need shapes that do not occur *because the current implementation forces different ones*. Requiring the shape to pre-exist forbids changing what shapes exist | **Prospective shapes**, admissible when the proposal declares the mechanism by which they come to occur and a way to observe that they did |
+| **One conceptual mutation** | A layout, its kernel, its dispatch predicate and its repack path are not independently correct or measurable. Forced apart, none can be proposed at all | One conceptual change per **step** of a declared lineage with a stated end-state (invariant 13) |
+
+**Spikes.** An architectural campaign may open a **spike**: a deliberately incomplete prototype whose
+only purpose is to measure whether the mechanism is real. A spike is an *experiment* in §8.9's sense —
+it is never banked, never enters the champion, and never carries a correctness claim. It buys evidence
+about a deep idea at a fraction of the cost of building it, and a refuted spike is a first-class
+result that closes a direction with a receipt. Its output is a mechanism verdict, never a speed rank.
+
+**Budget reservation.** Ranking by expected information gain first is right for search efficiency and,
+left alone, mathematically starves high-variance work: a cheap discriminator always outranks a
+speculative rewrite. Each campaign therefore reserves a declared fraction of its budget for
+architectural proposals, which compete only with each other. Without the reservation the loop converges
+on incrementalism by construction — not by policy, but by arithmetic.
+
+**What does NOT relax.** Everything that decides whether a change is *admissible* stays exactly as it
+is: source-integrity gates (§8.5.1), correctness precedence, no-fallback proof, determinism class,
+declared-equals-traced scope, and the diff-complexity ceiling — which does not forbid a large diff, it
+marks it `REQUIRES_HUMAN_CODE_REVIEW`. The `core_header` risk tier applies to most architectural work
+by construction. Depth is bought with *more* evidence, never with weaker gates.
+
+**Already available for deep work, and not to be duplicated:** hierarchy layers 7–9 (new kernel,
+scheduler architecture, alternate engine) are in scope today and reachable by skipping cheaper layers
+with an evidence receipt (§8.3); `oracle_port` (§6.5) covers importing a whole subsystem at the scale
+the iqk port actually delivered; and §9.8 capability objectives cover a change that unlocks a workload
+where a throughput ratio is undefined.
 
 ### 8.5 MUTATE and BUILD
 
@@ -2238,6 +2278,7 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 | AK-D22 | Anchor identity is re-verified at **every campaign boundary**, not only at freeze; `ANCHOR_MOVED` supersedes comparisons while preserving source and correctness results | A hot-fix or rollback between freezes otherwise leaves every ratio in the journal with a denominator that no longer exists, undetected |
 | AK-D23 | `serving_runtime` releases through the three-gate stack-change path (§11.6) on `stack_change_guard.py`, measured in `task_rate` under variable arrival | Pipeline-green, starts, and live-equals-config are distinct and none implies the next; tokens/s is not substitutable for task_rate in scheduler scope |
 | AK-D24 | Speech is its own phase (AK9), not an AK8 bullet | `measurement/protocols/` contains nothing for STT or TTS — two protocol families must be authored from scratch, comparable in size to Annex K |
+| AK-D31 | Architectural campaigns replace three §8.4 rejection conditions rather than waiving them: predicted post-change profile for the wall-share ceiling, prospective shapes, and per-step conceptual-change scope; plus spikes and a reserved budget fraction | Those three are correct for incremental work and would block the deep kernel rethinking the loop exists to find; EIG-first ranking starves high-variance work by arithmetic unless budget is reserved |
 | AK-D29 | Source-integrity gates run **before** behavioural gates: symbol/registration preservation, clean build from snapshot, semantic diff conformance, repair from clean parent | AutoPilot's one autonomous source mutation destroyed a module with a syntactically valid edit; none of its four Python defenses transfer to compiled C++, where "it compiles" is far weaker than "it imports" |
 | AK-D30 | `core_header` is its own change class and risk tier, not a size band | A small textual diff to shared ggml core reaches every op in both the CPU and GPU builds |
 | AK-D26 | Planner narrative is separated from the machine record and excluded from retrieval by default; supersession can be retrieval-scoped | AutoPilot's worst contamination regenerated from its own prose inside an append-only journal, where scrubbing derived stores never stuck |
