@@ -4,6 +4,26 @@
 
 Umbrella repository for cross-repo coordination and governance. No application code lives here — orchestrator code is in `epyc-orchestrator`, research in `epyc-inference-research`, llama.cpp patches in `epyc-llama`.
 
+## Act, Don't Defer — read this before deciding to stop
+
+**The default is ACT.** Escalation is the exception and must earn itself. Before deferring, escalating, or
+writing anything into a "Deferred / Open / Awaiting operator" list:
+
+> **Name the specific decision only the operator can make, or the external event you are waiting on.**
+> If you cannot name one in a single sentence, you are not blocked — **finish the work.**
+
+- **Find a bug → fix it.** **Find a gap → close it.** Neither is an "open item".
+- **Work the operator already approved is not re-openable** by restating it as a question.
+- A genuine choice → decision package (options + tradeoffs + recommendation) — and **keep going on
+  everything that does not depend on the answer.** A pending decision blocks its own item, never the rest.
+- **Recurrence check:** an item appearing in two consecutive wrap-ups or status reports with an unchanged
+  blocker is proof it was never blocked. Do it *before* writing anything else.
+- Mentioning something in passing is fine. Mentioning it **instead of doing it** is the failure.
+
+The operator should not have to hand-hold a workflow to a clean conclusion. Full rule, with the admission
+test and its origin: [`agents/shared/OPERATING_CONSTRAINTS.md` → *Act, Don't
+Defer*](agents/shared/OPERATING_CONSTRAINTS.md#act-dont-defer--the-admission-test-for-escalating-at-all).
+
 ## Repository Map
 
 | Repo | Working path | Contents |
@@ -106,9 +126,5 @@ The [measurement constitution](MEASUREMENT.md) is authoritative (protocol annexe
 
 ## Operator Decision Requests
 
-**Default is ACT.** Escalation must earn itself: name the specific operator decision or external event
-you are blocked on in one sentence, or finish the work. Find a bug, fix it; find a gap, close it. An item
-recurring across two status reports without its blocker changing was never blocked. Full rule:
-[Act, Don't Defer](agents/shared/OPERATING_CONSTRAINTS.md#act-dont-defer--the-admission-test-for-escalating-at-all).
-
-When a choice genuinely is the operator's, use the canonical [operator decision-package contract](agents/shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).
+See **Act, Don't Defer** at the top of this file before escalating anything. When a choice genuinely is
+the operator's, use the canonical [operator decision-package contract](agents/shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).

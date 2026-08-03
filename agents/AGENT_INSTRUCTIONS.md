@@ -33,7 +33,13 @@ Use the canonical [repository map](../CLAUDE.md#repository-map) and dependency m
   classification, no swallowed exceptions, small testable changes — are canonical in
   `agents/shared/ENGINEERING_STANDARDS.md` (read-order item 3), not restated here.
 - Decisions gate on **claims**, not observations: a performance/quality number must cite a `MEASUREMENT.md` protocol; historical numbers are era-labeled first (`agents/shared/MEASUREMENT_POLICY.md`). Never edit historical records to "fix" them — append.
-- Operator input requests follow the canonical [decision-package contract](shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).
+- **Default is ACT — escalation must earn itself.** Before deferring, escalating, or writing a "Deferred /
+  Open / Awaiting operator" item, name the specific decision only the operator can make, or the external
+  event you await, in one sentence. If you cannot, **finish the work**. Find a bug → fix it; find a gap →
+  close it. Work already approved is not re-openable by restating it as a question. An item recurring
+  across two status reports with an unchanged blocker was never blocked. Full rule:
+  [Act, Don't Defer](shared/OPERATING_CONSTRAINTS.md#act-dont-defer--the-admission-test-for-escalating-at-all).
+- Operator input requests that pass that test follow the canonical [decision-package contract](shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).
 
 ## Output Contract
 
