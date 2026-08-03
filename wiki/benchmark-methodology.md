@@ -1301,3 +1301,69 @@ hash anywhere). Both were verified before the reorder, not after.
 
 _Sources: `handoffs/active/session-bus-thin-dispatcher.md`; `progress/2026-07/2026-07-29.md`;
 epyc-orchestrator branch `tierc-10d-crash-window-durability` (`8cdf14f9`)._
+
+## A saturated suite does not merely fail to separate models — it reads NULL and looks like evidence (2026-08-02)
+
+The canonical 79-question judge suite was used for keep/drop reads on the model fleet. A paired
+head-to-head measured it against its own job and it could not do it.
+
+**Setup.** `architect_general` (Qwen3.6-27B Q8_0) vs `frontdoor` (Qwen3.6-35B-A3B Q8_0), one judge
+(Qwen3.5-122B, neither arm), identical 70 questions, identical per-suite `max_tokens`, and the
+larger-slotted arm deliberately **held down** to the other's 8192-token per-slot budget so neither
+got more room. Result: **180/204 (88.2%) vs 179/204 (87.7%)**, 9 wins / 4 losses / **55 ties**,
+exact sign test **p = 0.267**.
+
+**The null is a property of the instrument.** 50 of 68 questions (**74%**) scored a perfect 3 for
+*both* arms and carry zero discriminating information.
+
+| suite | both-perfect | informative? |
+|---|---|---|
+| general | 10/10 (100%) | none at all |
+| thinking | 9/10 (90%) | almost none |
+| math | 8/9 (89%) | almost none |
+| coder | 7/9 (78%) | little |
+| instruction_precision | 7/11 (64%) | some |
+| agentic | 6/10 (60%) | some |
+| tool_compliance | 3/9 (33%) | the only real signal |
+
+Published benchmarks separate the same pair on **8 of 8** axes. Two independent judges even
+disagreed on the *direction* of the difference — which is what no-signal looks like from the
+inside.
+
+**Why this is more dangerous than a benchmark that obviously fails.** A saturated suite returns a
+confident, well-formed number with a p-value attached. Nothing in the output announces that the
+questions are at ceiling. The prior wiki entry on the 42-question vision suite recorded the sharper
+form of this: a saturated benchmark can **mis-rank**, not merely fail to rank — the incumbent
+placed 2nd of 5 there and *last* on the unsaturated MMMU-250. **Ceiling saturation should be
+computed and reported as a first-class statistic of every suite run**, not discovered when a
+result looks surprising. The cheap version is the both-perfect count.
+
+### Two questions in the suite were false, and their own answer keys said so
+
+- `math/t3_q2_combinatorics` asserted `sum (-1)^k C(n,k) C(2n-k,n) = C(n,⌊n/2⌋)`. The LHS is
+  **identically 1**; it agrees only at n=1. The reference answer computes `1 ≠ 2`, writes *"Hmm…
+  Let me recheck the identity"*, and ships with *"a model answer should recognize the general
+  structure even if the exact identity requires adjustment."* The 27B **proved the identity false**
+  and was scored 2/3 for not constructing an involution for a statement that does not hold.
+- `coder/t1_q1_algorithm` claimed TWO bugs in a binary search that had ONE (verified exhaustively:
+  57,915 cases, zero failures with only `left = mid + 1`). Its key traces its own "Bug 2" trigger,
+  writes `return 3 ✓`, then admits *"the code works after fixing Bug 1."*
+
+**The generalisable rule: a reference answer that argues with itself is a defect report.** Grep the
+answer keys for self-doubt markers (`Hmm`, `let me recheck`, `may have a typo`, `requires
+adjustment`, `actually, the code works`) before trusting a suite. Run against pre-fix content this
+found 8 markers on exactly the 2 broken questions and nothing elsewhere in 8 suites — a cheap,
+high-precision screen.
+
+### The rubric was contaminated in a way that survives re-runs
+
+`rubric_system_prompt` embedded "calibration examples" naming **specific `question_id`s together
+with the scores they received on other models** — including `math/t3_q2_combinatorics` as a
+*score-1* exemplar and `coder/t1_q1_algorithm` as *score-0*. The judge is primed on question
+identity before it reads an answer. This biases the absolute level but **not** an A-vs-B contrast,
+because both arms receive it identically — the same reasoning that makes vendor-reported
+thinking-on numbers usable for ranking and unusable for levels.
+
+_Sources: `epyc-inference-research/data/judge_suite_headtohead_20260802/` (README + SHA256SUMS,
+`check_evidence_durability.py` 0 errors); `handoffs/active/architect-model-selection-bench.md`;
+`handoffs/active/canonical-judge-suite-revamp.md`; `progress/2026-08/2026-08-02.md`._

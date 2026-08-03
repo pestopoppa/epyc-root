@@ -191,3 +191,39 @@ after each model executed once — about 0.93 GiB the sum cannot see. 2.0 covers
 and leaves the live pair (36.70 + 20.56 = 57.26) feasible with 4.74 spare. Configurable via
 `--vram-headroom` / `$ORCHESTRATOR_VRAM_HEADROOM_GIB`. **Nothing declares this number** — it is a
 judgement over measured values and is the one restated constant in the artifact.
+
+### Open defect found at 2026-08-02 wrap-up — `slots_by_port` is compile-mode-scoped
+
+- [ ] **Make `runtime.cache.slots_by_port` independent of the compile-time NUMA mode.**
+      `orchestrator_stack.py status` reports four attestation warnings against
+      CORRECTLY-launched servers:
+
+          server_8080/8180 (frontdoor halves) runtime slots expected 16; live cmdline has 4
+          server_8082/8182 (worker halves)    runtime slots expected 16; live cmdline has 4
+
+      The halves are right — per-instance `-np` is full 16 / half 4, set 2026-08-02.
+      The producer is right too: `stack_manifest.declared_slots_by_port('frontdoor')`
+      returns `{8070: 16, 8080: 4, 8180: 4}`, and recompiling the priors with
+      `numa_mode='both'` reproduces exactly that map.
+
+      The COMPILED artifact carries only `{8070: 16}`, because
+      `orchestration/derived/stack_priors.yaml` was compiled in the default
+      `full` mode while the live fleet runs `both`. Attestation looks up the
+      live `--port`, misses, and falls back to the role-level `slots: 16`.
+
+      This is the precise failure `_slots_by_port`'s own docstring says it exists
+      to prevent — "it would report drift on correctly-launched servers, which is
+      the fastest way to teach a reader to ignore this output." It is now doing
+      that, so the warning channel is actively training readers to ignore it.
+
+      Fix direction: `slots_by_port` is a port -> slots LOOKUP, so carrying ports
+      that are not launched in the current mode costs nothing and makes
+      attestation correct in every mode. Merge the mode-independent
+      `declared_slots_by_port(role)` in as a floor. Watch for the circular import
+      between `src/registry/stack_priors` and `scripts/server/stack_manifest`
+      (already observed emitting "partially initialized module" warnings on the
+      `_stack_manifest_info` path) — a lazy import inside the function is likely
+      required.
+
+      NOT a functional break: launches are correct, only the attestation
+      expectation is wrong. Deferred at wrap-up rather than fixed unverified.
