@@ -2137,9 +2137,12 @@ can act on a waiver-bearing verdict.
   being smaller.
 - [ ] Put both denominators into the P0.1 profile manifest as substrate constants, with the basis of each
   attainment figure recorded alongside it rather than inferred.
-- [ ] Measure **H2D/D2H** on the Gen4 x16 link — still unmeasured, and now unblocked:
-  `rocm-bandwidth-test` is available (see the profiler tooling note in
-  [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md)). Needs an operator-approved window.
+- [x] Measure **H2D/D2H** on the Gen4 x16 link ✅ 2026-08-03 — **H2D 28.89 GB/s, D2H 28.20 GB/s**
+  (91.7% / 89.5% of Gen4 x16 theoretical), receipt
+  `epyc-inference-research/data/mi210-h2d-d2h/20260803T131500Z/`, committed `2aa14264`. Bulk transfer is
+  **NUMA-node-independent** to within 0.1%, which matters for seed G1: the GPU lane's cross-node host
+  placement costs nothing on the *transfer* path. It says nothing about host-side memory access during
+  serving, which is the regime G1 actually targets — do not let this close G1.
 - [ ] Import the **derived** MI210 compute-roofline constants as substrate facts, marked `[D]` and never
   upgraded by import (§19.0 rule 4): 181.0 TFLOPS fp16/bf16, 181.0 TOPS int8 (**CDNA2 does not double
   int8**; no FP8/FP4/TF32), fp32 matrix 45.3 / vector 22.6, **ridge 110.5 FLOP/byte**, and
@@ -2779,7 +2782,7 @@ negatives so the planner cannot omit inconvenient history.
 
 | Draft family | Audit verdict | Seed disposition |
 |---|---|---|
-| **G1 host/PCIe/pinned-memory NUMA** | Strong, cheap, still relevant. A four-arm P2-5j placement protocol already exists — consume it, do not reinvent a duplicate sweep. **Note: that protocol was deleted from git (§3.7) and must be restored before the seed is executable.** **Node attachment resolved 2026-08-03: the MI210 is on NUMA node 1** (sysfs `/sys/class/drm/card2/device`, `0x740f`, `numa_node=1`) — **so the GPU lane's host threads at 184–191 are already cross-node and device-local placement has never been tried**. Also correct the link generation: it is **measured Gen4 x16**, not the PCIe 5.0 our docs claimed | `READY_EXISTING_PROTOCOL`, config/placement campaign; node attachment now imported, historical placement confounds still to import |
+| **G1 host/PCIe/pinned-memory NUMA** | Strong, cheap, still relevant. A four-arm P2-5j placement protocol already exists — consume it, do not reinvent a duplicate sweep. **Note: that protocol was deleted from git (§3.7) and must be restored before the seed is executable.** **Node attachment resolved 2026-08-03: the MI210 is on NUMA node 1** (verified three ways — `/sys/class/drm/card2/device` `0x740f`, `/sys/bus/pci/devices/0000:43:00.0/numa_node`, KFD topology node 4). **The GPU lane's host threads at 184–191 are on NUMA node 3** per `numactl` — neither device-local nor adjacent, and device-local placement has never been tried. **Scope narrowed by measurement 2026-08-03**: bulk H2D/D2H transfer is node-INDEPENDENT (all four nodes within 0.1%), so this placement costs nothing on the transfer path; the open question is host-side memory access during serving. Also correct the link generation: it is **measured Gen4 x16**, not the PCIe 5.0 our docs claimed | `READY_EXISTING_PROTOCOL`, config/placement campaign; node attachment now imported, historical placement confounds still to import |
 | **G2 batch-one low-bit GEMV** | Too broad as written. Generic Q8 dequant is a stale premise (integer-native path); generic megakernel and several speculation/prefetch variants have matching negative or conditional history; workgroup sizing and prior prefetch changes are legacy priors, not patches to replay on v8. Layout/coalescing and MLP questions remain conditional on a fresh profile | Split into atomic priors; seed only current-profile gaps — coalescing/layout if cache-line evidence is poor, or another gfx90a MLP lever if the production path still exposes it |
 | **G3 GPU-native low-bit layouts** | Sound high-upside family, but only if metadata traffic, cache-line use, unpack cost, or occupancy is currently deficient. Startup time and VRAM/context cost are first-class outputs | `MEASUREMENT_FIRST`; T1 starts with load/repack accounting plus captured GEMV/MMQ shapes, then one tiny real graph |
 | **G4 persistent grouped MoE** | Valid high-effort family for batched MoE; must be distinguished from the persistent stream-K MMQ path already present. "Persistent" alone is not novelty | `CONDITIONAL_HIGH_EFFORT`; require routing/expert wall share, grid/occupancy evidence, and a target batched regime before source work |

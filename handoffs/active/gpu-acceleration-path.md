@@ -309,10 +309,14 @@ AITER kernel performance numbers (17x MLA decode, 14x MHA prefill, 3x fused MoE)
 
 Two facts that several sizing arguments on this page and elsewhere were resting on, both wrong:
 
-1. **The link is measured PCIe Gen4 x16, not Gen5.** Three mutually inconsistent figures circulate in our
-   docs (~64 vs ~26 GB/s). Any CPU-side-KV or offload argument sized against a Gen5 number is
-   overstated by roughly 2×. **H2D/D2H bandwidth remains unmeasured** — it should be measured before it
-   is used as a design premise again, not re-derived from a spec sheet.
+1. **The link is PCIe Gen4 x16 — and H2D/D2H are now MEASURED, 2026-08-03.**
+   **H2D 28.89 GB/s · D2H 28.20 GB/s**, i.e. **91.7% / 89.5% of the 31.5 GB/s Gen4 x16 theoretical**.
+   Receipt `epyc-inference-research/data/mi210-h2d-d2h/20260803T131500Z/`, committed `2aa14264`; graded
+   OBSERVATION. Saturation curve is clean (25.40 GB/s at 1 MB → 28.89 at 128 MB), so the plateau is real.
+   **This retires the ~64 GB/s figure in this document — it was wrong by 2.2×** (it was a Gen5 number for
+   a Gen4 link). The ~26 GB/s figure that also circulated was approximately right. Any CPU-side-KV or
+   offload argument previously sized against ~64 GB/s must be re-sized against ~28.9.
+   **Bulk transfer is NUMA-node-independent**: all four nodes agree to within 0.1%.
 2. **The MI210 is attached to NUMA node 1, not node 3** — sysfs ground truth,
    `/sys/class/drm/card2/device`, device `0x740f`, `numa_node=1`. **No numeric node appeared anywhere in
    the six MI210/autokernel handoffs before this.** The consequence: the GPU lane's host threads pinned
@@ -323,8 +327,8 @@ Two facts that several sizing arguments on this page and elsewhere were resting 
    *Blocker:* the four-arm P2-5j placement protocol that would test it **was deleted from git** and must
    be restored before the seed is executable (`autokernel-research-loop.md` §3.7, §19.6 G1).
 
-- [ ] Measure H2D/D2H bandwidth on the Gen4 x16 link and replace every circulating figure with the
-  measurement
+- [x] Measure H2D/D2H bandwidth on the Gen4 x16 link and replace every circulating figure with the measurement ✅ 2026-08-03 — H2D 28.89 / D2H 28.20 GB/s; the ~64 GB/s figure retired
+- [ ] **Open question, not a finding: bidirectional aggregate from NUMA node 0 is consistently ~50 GB/s while other nodes are noisy (node 3 ranged 33.8–48.3 across passes).** n=2–3 per node with no CI, so this supports no per-node ranking — only the node-0 outlier reproduces. It is **not** device locality (the MI210 is on node 1, verified three ways). Untested hypotheses: independent placement of the two concurrent copy threads; per-node free-memory/fragmentation state (node 0 had 2266 MB free vs node 1's 22839 MB at measurement time); IOMMU path. **Do not treat as a placement input until re-run with a stated n and CI**
 - [ ] Restore the P2-5j placement protocol to git, then run device-local (node 1) vs the current
   cross-node 184–191 host-thread placement
 
