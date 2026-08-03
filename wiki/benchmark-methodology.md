@@ -1364,6 +1364,23 @@ identity before it reads an answer. This biases the absolute level but **not** a
 because both arms receive it identically — the same reasoning that makes vendor-reported
 thinking-on numbers usable for ranking and unusable for levels.
 
-_Sources: `epyc-inference-research/data/judge_suite_headtohead_20260802/` (README + SHA256SUMS,
-`check_evidence_durability.py` 0 errors); `handoffs/active/architect-model-selection-bench.md`;
-`handoffs/active/canonical-judge-suite-revamp.md`; `progress/2026-08/2026-08-02.md`._
+### Reference — where the raw material lives
+
+Per the 2026-08-03 ruling, campaign output is **not committed**; research reaches the repo as
+distilled knowledge and references. This section is that reference, and is the durable citation.
+
+| | |
+|---|---|
+| Campaign | `judge_suite_headtohead_20260802` |
+| Location | `epyc-inference-research/data/` (local disk, gitignored) |
+| Contents | 35 files: both arms' `capture.jsonl`, Claude-as-Judge CSVs, the same-judge head-to-head CSVs + `summary.json`, and both harnesses (`run_judge_suite.py`, `judge_local.py`) |
+| Integrity | `SHA256SUMS` in-bundle; verify with `sha256sum -c SHA256SUMS` |
+| Sibling | `data/swe_verified_preliminary_20260724/` — three SWE-eval JSONs that **disagree with the ratified 23/40** (21 resolved / 8 empty-patch); superseded, kept with the discrepancy explained |
+
+Reproduce rather than retrieve: `run_judge_suite.py score --url <endpoint> --ctx-budget 8192`
+captures an arm, `judge_local.py --arm NAME=<capture> …` scores any number of arms under one judge.
+Both probe serving shape from `/props` rather than assuming it.
+
+_Sources: `handoffs/active/architect-model-selection-bench.md`;
+`handoffs/active/canonical-judge-suite-revamp.md`; `progress/2026-08/2026-08-02.md`;
+epyc-inference-research `7d7bc8d3`._

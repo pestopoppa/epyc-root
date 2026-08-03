@@ -258,7 +258,7 @@ judgement over measured values and is the one restated constant in the artifact.
 - [ ] **Per-worktree venv (or editable reinstall) for full non-pytest isolation.** The `.pth` shim
       handles `python script.py` from a worktree, but the venv still carries the main checkout on
       `sys.path` unconditionally. Venv configuration, not source; not attempted.
-- [ ] **Decide the durable-evidence form under the wiki-only ruling.** Operator ruling 2026-08-03:
+- [x] **Decide the durable-evidence form under the wiki-only ruling.** ✅ 2026-08-03 — RESOLVED: a durable citation is a reference to distilled knowledge in the wiki, where literature references are documented. Both bundles untracked (research `a752ca21`), kept locally with SHA256SUMS; `wiki/benchmark-methodology.md` gained a Reference section naming path, contents, verification and reproduction; the registry citation repoints at the wiki. `check_evidence_durability.py`: 0 errors. Superseded detail: Operator ruling 2026-08-03:
       research reaches GitHub only as distilled knowledge and REFERENCES in the wiki, never as raw
       material at any size. Two evidence bundles were committed to
       `epyc-inference-research/data/` earlier the same day (`judge_suite_headtohead_20260802` 1.5 MB,
