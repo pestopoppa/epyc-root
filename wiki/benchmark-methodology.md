@@ -2,8 +2,52 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-03 (adds four measurement traps caught in-session — an unmatched warm-up that nearly became a hardware finding, a reproducible outlier that still did not support a ranking, an index mapping verified rather than assumed, and a piped compiler whose failure exited 0; plus the aggregation-as-attack-surface result — geometric mean is demonstrably gamed and harmonic mean over a failure-clamped set moved one headline 2.8× on identical outcomes; right-censoring as a scoring primitive and eff@k's undocumented saturation at 2×; the mandatory small-K correction for paired CIs; a citation chain that inverted its own source; counting a literature by its author graph before calling it consensus; two anti-patterns found in released code; and the quantum rule for leaderboard margins; earlier 2026-07-31 note: adds three methodology results from the vision-role evaluation: a saturated suite can order arms WRONGLY not just fail to separate them; an output-length cap silently penalises reasoning models; a model with no draft path running unaccelerated is at its OPTIMUM, never a BASELINE — the concrete case the OPTIMUM/BASELINE/CANDIDATE grammar was ratified to prevent; earlier 2026-07-30 note: MEASUREMENT v2 ratified: core + annex constitution, explicit metric scoping, P-BENCH-PLACEMENT-1 registered, P-BENCH-3 conformed, retracted April exemplar replaced; prior E8/E5 status update retained)
+**Last compiled**: 2026-08-03 (adds the validator-hygiene set — probe runnability not existence, mirror the launch environment when probing, three result states not two, and prefer the API under a CLI when a boolean is wanted; plus four measurement traps caught in-session — an unmatched warm-up that nearly became a hardware finding, a reproducible outlier that still did not support a ranking, an index mapping verified rather than assumed, and a piped compiler whose failure exited 0; plus the aggregation-as-attack-surface result — geometric mean is demonstrably gamed and harmonic mean over a failure-clamped set moved one headline 2.8× on identical outcomes; right-censoring as a scoring primitive and eff@k's undocumented saturation at 2×; the mandatory small-K correction for paired CIs; a citation chain that inverted its own source; counting a literature by its author graph before calling it consensus; two anti-patterns found in released code; and the quantum rule for leaderboard margins; earlier 2026-07-31 note: adds three methodology results from the vision-role evaluation: a saturated suite can order arms WRONGLY not just fail to separate them; an output-length cap silently penalises reasoning models; a model with no draft path running unaccelerated is at its OPTIMUM, never a BASELINE — the concrete case the OPTIMUM/BASELINE/CANDIDATE grammar was ratified to prevent; earlier 2026-07-30 note: MEASUREMENT v2 ratified: core + annex constitution, explicit metric scoping, P-BENCH-PLACEMENT-1 registered, P-BENCH-3 conformed, retracted April exemplar replaced; prior E8/E5 status update retained)
 **Sources**: 100+ documents
+
+## Compiled Update — 2026-08-03 (third): a validator is only as good as the thing it actually ran
+
+**Confidence: verified — every item below was produced by a tool on this host, not inferred.**
+
+Four defects in one afternoon of building measurement tooling, all the same shape: **a verdict produced
+by something other than the thing being measured.** They are worth recording together because the shape
+recurs far more often than any individual instance.
+
+### The shape
+
+| Defect | What was checked | What should have been |
+|---|---|---|
+| Binary selection took the first candidate found | *a file exists and is executable* | *it runs* |
+| A build was called broken | *invoked bare* | *invoked the way it is launched* |
+| Production risk was implied | *the CLI binary* | *the server binary actually serving* |
+| A tree was called dead | *one binary in it* | *every binary in it* |
+
+Each check was seconds long, and each was skipped in favour of a cheaper adjacent one whose answer
+looked the same. **The failure is not laziness about running checks — it is running a check whose
+result is easy to obtain and treating it as the result you needed.**
+
+### Three rules that fall out
+
+1. **Probe runnability, never existence.** `exists() && executable` is not "works". On a host where
+   several build trees carry executables that die at startup, an existence check is an availability
+   *claim* with no evidence behind it. This was found live in two service resolvers.
+2. **A probe must mirror the launch environment.** Binaries here need their own directory on
+   `LD_LIBRARY_PATH` because different trees carry different library generations. Probing without it
+   makes *working* builds look broken — which then gets written down as fact.
+3. **Three result states, never two.** `PASS` / `FAIL` / `ERROR`. A tool that could not run has not
+   found a defect, and collapsing that into `FAIL` sends someone to fix a thing that was never wrong.
+   The same collapse in the other direction is how fail-open defects survive.
+
+### And the CLI lesson
+
+A validator was first built on `llama-cli --check-tensors`. With a non-TTY stdin it enters an
+interactive loop and emits `> ` forever — **312 million lines, 895 MB of log** — with the
+disable-conversation flag set *and* stdin redirected from `/dev/null`. Replaced by a ~40-line harness
+calling the loader API directly, which returns a boolean and does nothing else.
+
+**When a CLI will not yield a boolean, the API underneath it usually will.** A benchmark harness built
+on a CLI inherits every one of that CLI's interactive-use assumptions, and those assumptions are rarely
+documented as constraints.
 
 ## Compiled Update — 2026-08-03 (second): three measurement traps caught in one afternoon of benchmarking
 

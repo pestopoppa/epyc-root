@@ -881,3 +881,29 @@ The pin encodes a *decision*, so un-pinning = superseding the decision with an a
 
 Re-run A1–A3 at each stack-review checkpoint (or ≥ every 14 days), first valid post-fence reading **2026-08-06**. If two consecutive checkpoints read λ ≈ 0 organic *and* the MI210 cutover executes, recommend converting "open in principle" → "closed: superseded by GPU lane" to the operator.
 - [x] **MiniCPM-o CPU assessment + promotion decision** — **CANCELLED ✅ 2026-07-31**. Reason: the promotion decision was resolved on GPU evidence before the CPU leg ran, and the answer is **do not promote**. On 42q OCRBench+ChartQA (MI210, best-on-disk quant per arm) MiniCPM-o scored 31/42 vs the Qwen2.5-VL-7B incumbent's 35/42 — a quality downgrade for both `worker_vision` and `vision_escalation`. A CPU speed bench cannot reverse a quality deficit, and the weights have been deleted, so the CPU leg is moot. `worker_vision` and `vision_escalation` both stay on Qwen2.5-VL-7B. (Original text: bench MiniCPM-o-4.5 Q4 on a CPU lane vs the current Qwen2.5-VL-7B worker — speed + K35-fixture quality — then DECIDE promotion per the runbook: vision_escalation only, or BOTH. CPU leg only — the operator runs the GPU leg in their parallel session.)
+
+## 2026-08-03 — llama-mtmd-cli resolution: two latent defects fixed, follow-ups filed
+
+_Found while auditing stale build trees; neither was live, both would have bitten the moment
+`llama.cpp/build/` went missing. Orchestrator `5c2b33d0`._
+
+The vision/OCR path resolves `llama-mtmd-cli` in two places — `services/lightonocr_llama_server.py`
+and `vision/analyzers/vl_describe.py`. Both had the same shape of defect:
+
+1. **`exists()` was treated as runnable.** `lightonocr` checked `exists() + X_OK`; `vl_describe`
+   checked only `exists()`. Several build trees carry an executable `llama-mtmd-cli` that dies at
+   startup on a missing `libomp.so`, and both resolvers would have selected one.
+2. **Neither fallback chain contained a production build.** They listed only legacy trees, so a
+   missing configured path would have silently selected llama.cpp **8219** or **8954** against current
+   models — three release generations behind frozen production, nothing logged.
+
+- [x] Probe `--version` instead of trusting `exists()`, with the binary's own dir on `LD_LIBRARY_PATH` so the probe mirrors the launch environment ✅ 2026-08-03
+- [x] Put `build/` and `build-hip/` (both `10107`, ratified v8) first in both chains, and log a warning naming the binary and version on any fallback ✅ 2026-08-03
+- [ ] **Verify the fix after the OCR service's next restart.** `CLI_PATH` resolves at module import, so PID 3266570 is still running the old resolution. The fix is inert until whoever owns inference restarts it — no action needed *for* the restart, just confirm resolution afterwards
+- [ ] **Unify the duplicated probe.** `_probe_mtmd_cli` (lightonocr) and `_mtmd_runs` (vl_describe) are the same ~15 lines. Duplicated deliberately rather than refactored into a shared util during a live-service change; it will drift if left
+- [ ] **Decide `build-blis52`.** It is now unreferenced by both resolvers. Its `llama-cli` is broken but its `llama-mtmd-cli` **runs at 8893**, so it is not simply dead. Prunable, but that is a fresh decision — 143 MB
+
+**Host fact worth not re-deriving:** these build trees run different ggml generations, so a binary must
+be invoked with its **own** directory on `LD_LIBRARY_PATH` or it fails with a symbol error that looks
+like a broken build. Four working trees were misdiagnosed as dead this session for exactly that reason.
+`_mtmd_subprocess_env` already does this at launch; any probe must mirror it.
