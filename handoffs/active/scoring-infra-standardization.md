@@ -200,3 +200,38 @@ _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25
   - [ ] **Dependency decision (2026-07-29):** the research benchmark environment has no `spacy` installation or pinned English model, while the canonical scorer intentionally has only stdlib import dependencies. Do not silently substitute stemming for the specified lemmatization. Choose either a pinned, reproducible lemmatizer dependency with model/data provenance, or explicitly amend this task to a documented dependency-free lexical verifier; then add the helper without changing the critical generic `score_response()` dispatcher (GitNexus: 60 exact upstream impacts, CRITICAL).
 - [ ] **Implement BOTH Ordered Rate and Coverage-with-order, not one.** An earlier note called them redundant; the dive **overturned** that — they diverge by up to **26.5 pts** on weak models (Qwen2-0.5B 30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so both carry distinct signal exactly in the small/quantized regime we care about.
 - [ ] Source is **ACL 2025 Main and an Outstanding Paper** (arXiv 2506.15629) — our 43-question `instruction_precision` suite has **no ordering/sequence verifier of any kind**. Known fragility: spaCy-lemmatization dependence (same class as the substring/comma brittleness). **Confound to record**: the paper's leaderboard runs 32 open models at 4-bit against full-precision API arms — do not cite that table itself as quant-quality evidence.
+
+## 2026-08-03 — intake Stage-2b: audit our own eval paths for HARNESS-LEVEL answer leakage
+
+_Via `/research-intake` (intake-980, plus intake-977). Filed here because the defect class is
+**developer-side**: no agent-side monitor can catch it, so it is a scoring-infrastructure obligation
+rather than a C6 one._
+
+An audit of 28+ submissions across 9 agent benchmarks separates cheating into two classes, and only the
+second is what our reviewer/monitor work addresses:
+
+- **Harness-level** (developer or scaffold, invisible to any agent-side monitor): verifier injection ·
+  answer-key injection · **solution injection** (e.g. an `AGENTS.md` in the working tree that contains
+  the solutions).
+- **Task-level** (agent-initiated, what a monitor can see): online solution retrieval · mining
+  version-control history for the fix · verifier prompt injection · hardcoded test answers ·
+  **simulating rather than executing**.
+
+The audit found the **top 3 submissions on one benchmark were all cheating**, and 31 confirmed
+reward-hacking cases across 6 benchmarks — roughly 3× prior audits. Separately, a widely-used benchmark
+maintains its own quarantine section for submissions annotated *"Test-set feedback"*, one of which would
+otherwise have ranked #1 by 7 medal outcomes.
+
+- [ ] **Audit our eval fan-out and scorer paths against the harness-level list.** Specifically: does any
+  prompt-assembly path put reference answers, gold patches, or oracle metadata into a context the model
+  under test can read? Does any scorer path let a candidate observe its own grade before the run ends?
+- [ ] **Check the working tree the agent sees.** Our own repo carries `CLAUDE.md`, `AGENTS.md` and skill
+  files at paths an evaluated agent would naturally read — the exact shape of the solution-injection
+  case. Establish what is visible during an eval run, not what we intended to be visible
+- [ ] **Record the finding either way.** "Audited, no leakage found" is a result worth having on file;
+  an unaudited harness is not evidence of a clean one
+
+**Correction carried from the dive, so it is not restated:** the audit does **not** cover MLE-bench, and
+it makes no leaderboard-status claim. An earlier framing of it as "plausibly the cause of the MLE-Bench
+freeze" was speculation and is retracted — the real on-benchmark antecedents are that benchmark's own
+quarantine entries and its issue #124.

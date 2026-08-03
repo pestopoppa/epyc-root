@@ -136,6 +136,73 @@ No change. Capped runs keep whatever per-site handling they currently have, unex
 
 ---
 
+## DP-5 — two `P-AK-SEARCH-1` / Annex K amendments: a mechanism clause and a capability-claim gate
+
+### Context
+
+`P-AK-SEARCH-1` was ratified 2026-08-03 and is **purely statistical**: pass the e-process, clear φ,
+publish the MDE — and you may bank a candidate **nobody can explain**. A third-party kernel program with
+a well-designed contract holds two rules we do not, and one of them is directly anti-reward-hacking,
+which is our own named C6 differentiator.
+
+### Options
+
+| Option | Entails | Tradeoffs |
+|---|---|---|
+| **A. Add both clauses** | (i) **Mechanism-plausibility**: a banked result requires an explanation backed by bytes, FLOPs, counters or a clean A/B — *"'It got faster and I don't know why' is a reason to keep measuring, not to land."* (ii) **Capability-claim gate**: do not claim a backend supports a kernel/dtype/quant/perf-tier unless that backend has **both correctness and performance evidence** | Cheap, and (i) is directly anti-reward-hacking. (ii) is a *capability*-claim gate, structurally different from every measurement gate we hold — it governs what we may say a backend does, not how we measure it. Cost: a real result with no mechanism yet becomes unbankable until explained |
+| **B. Add the mechanism clause only** | (i) alone | Takes the anti-hacking half; leaves the capability-claim gap open, which is the one this project has actually tripped on (three different answers for one decode edge case across seven backend sites, undetected) |
+| **C. Decline both** | Status quo | Keeps a purely statistical bar on a loop whose whole purpose is autonomous search |
+
+### Recommendation
+
+**A.** Both clauses are cheap and they close different holes. **Adopt the SHAPE only, never the source's
+numbers** — its thresholds are fixed literals (3% median low-risk, 8–10% with added complexity) with
+**no statistical test at all**, only median and p20/p80. That is materially *weaker* than what we already
+have; importing the literals would be a downgrade dressed as an adoption.
+
+### Default
+
+No change. A candidate may be banked on statistics alone with no mechanism, and capability claims stay
+ungated.
+
+---
+
+## DP-6 — cross-backend numerical conformance vectors as a new instrument
+
+### Context
+
+A dive found, live in our own tree, **three different answers for the same quantization edge case across
+seven backend sites** — CPU yields a finite value, HIP/Metal/SYCL/Vulkan/OpenCL yield +Inf, CUDA ≥ 12.8
+yields NaN. Nothing had compared them **because nothing ran**. A ~8 KB MIT artifact (four JSON files)
+pins decoders **bit-exactly** rather than to a tolerance, and its central design decision is the one we
+would need: the same format appears **twice as two separate contracts** — spec behaviour and ggml
+behaviour — *"kept as a separate contract so a backend cannot satisfy one by breaking the other."*
+
+This is an **operator decision, not a task line**, because conformance vectors are a **new instrument**,
+and instruments touch the measurement trust boundary.
+
+### Options
+
+| Option | Entails | Tradeoffs |
+|---|---|---|
+| **A. Adopt cross-backend conformance vectors as a first-class instrument** | Committed edge-weighted vectors (codes 0/1/2/126/127/128/253/254/255), each case carrying the decoded value **and its exact hex bit pattern**; per-format dual contracts; a companion matrix distinguishing **VERIFIED from ASSERTED per row** (each row names the test file that consumes it, or says `not yet checked`) | Catches a defect class we demonstrably have. Its own anti-reward-hacking argument transfers to C6: block positions are pinned because *"swapping the halves leaves the value multiset and the block norm almost unchanged, so a norm-only check passes a wrong decoder."* Cost: a new instrument to maintain, and the source self-indicts — *"until then it is hand-written and will drift, the same failure mode it exists to document"* |
+| **B. Adopt the vectors as a test fixture only, with no instrument status** | Same files, run in CI, no trust-boundary implication | Cheaper and needs no amendment. But a fixture nobody registers is a fixture nobody notices has stopped running — which is how the original divergence survived |
+| **C. Decline** | Status quo | The three-way divergence stays undetected and legitimate-divergence stays indistinguishable from a bug |
+
+### Recommendation
+
+**A**, and specifically **keep the dual-contract design** — it is what lets the ggml-compat path be
+recorded as *documented-divergent* rather than failed, which is the honest description of it. The
+`VERIFIED`-vs-`ASSERTED` column is the part that makes the instrument self-reporting: a claim is
+conformant only if a test actually consumes the vectors, and everything else is marked as a reading of
+the source.
+
+### Default
+
+No change. The divergence remains recorded in the intake index only, where nothing executes against it.
+
+---
+
 ## Provenance
 
 | Package | Primary source | Verification |
@@ -144,5 +211,7 @@ No change. Capped runs keep whatever per-site handling they currently have, unex
 | DP-2 | intake-973 (GSO), intake-953 (SWE-fficiency clamp sensitivity) | dive-verified / dive-overturned |
 | DP-3 | intake-982, composed with intake-939 | dive-verified |
 | DP-4 | intake-970 (ENAMEL) | dive-verified |
+| DP-5 | intake-959 (QuixiCore-ROCm perf ledger), intake-944 | dive-verified; adopt the shape, explicitly not the 3% / 8–10% literals |
+| DP-6 | intake-944 (conformance vectors), plus the divergence found in our own tree | dive-verified |
 
 No number quoted above comes from a `stage1-unverified` entry.

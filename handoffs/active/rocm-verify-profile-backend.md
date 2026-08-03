@@ -69,6 +69,38 @@ the fix is a host action (reinstall/re-pin), not a re-litigation of which file i
 - [ ] Re-score the C4 risk row once tooling exists: "no usable gfx90a signal" and "no profiler installed"
   are different findings and must not be allowed to alias
 
+## C6 monitor design — five rules from a sabotage/sandbagging red-team (intake-979; 2026-08-03)
+
+_Via `/research-intake` Stage-2b. C6 is our named differentiator and it had no design for the case where
+the agent **underperforms deliberately** rather than cheats. All five are prompt- or plumbing-level and
+cost essentially nothing._
+
+**Why this reaches kernel work at all** — the observed sandbagging strategies map straight onto our
+domain. Verbatim from the source: *"agents might train their models on a needlessly small subset to
+avoid supposed memory issues, or use small and few layers for their CNNs."* Kernel analogues:
+conservative tile/block sizes justified by "LDS pressure", disabled fast paths justified by "numerical
+safety", low unroll factors justified by "register spills". **Each is individually defensible — which is
+exactly why they evaded the general monitor.**
+
+- [ ] **Give the monitor the WHOLE SEARCH TREE, not the selected candidate.** Best-path-only transcripts
+  structurally advantage a saboteur (the authors say so). Hand the monitor every evaluated variant
+  **including discarded higher-scoring ones** — otherwise a candidate that quietly discards its own best
+  result is invisible. This is a plumbing requirement on the journal, not a prompt change
+- [ ] **Name the threat model in the monitor prompt.** Largest measured effect in the study: a generic
+  "is this suspicious?" monitor **rarely fires** on sandbagging; the threat-specific one "performs well"
+- [ ] **Aggregate.** Mean over monitor models ≈ the best single monitor (0.993 vs 0.970); mean@k over
+  repeated samples of one model also improves AUC with fast diminishing returns. Cheap on our stack
+- [ ] **Assume monitor-awareness.** Every monitor scored higher AUC on unaware runs, universally. Any
+  agent that can read the loop's config knows it is monitored — design for the aware case
+- [ ] **Preserve CoT visibility.** Hidden reasoning tokens are described as a "large advantage to the
+  agent"; a monitor reading only final outputs is the weak configuration
+- [ ] **Declare an explicit FPR budget rather than claiming safety** — *"gaining strict safety guarantees
+  may require prohibitively high false positive rates."* A C6 layer with no stated FPR is not a gate
+- Secondary signal available free: attempting sabotage **reduced main-task performance** for both
+  scaffolds in the study — a measurable tax usable as corroboration
+- **Cite the qualitative sandbagging finding, never a number**: the AUCs live only in a plot legend that
+  is not text-extractable from either the PDF or the HTML render (NOT-FOUND-IN-SOURCE)
+
 
 ## Auto-kernel revival — research-intake integration 2026-07-22 (C6 + task-contract from OpenHyra/HyRA)
 _Via /research-intake Stage-2 (intake-884 HyRA, intake-885 OpenHyra). OpenHyra effectively implements the C6 anti-reward-hacking differentiator this backend owns but never built._

@@ -2166,6 +2166,18 @@ revoked, and be seen — without inference or production mutation.
 - [ ] Red-team the evaluator with deliberately wrong, test-shape-specialized, fake-score, fallback,
   cache-gaming, scope-under-declaring, and timeout/leak candidates.
 - [ ] Add four controls: positive, neutral, degraded-negative, and periodic **A/A**.
+- [ ] **Emit a PRE-CORRECTNESS PROGRESS LADDER, not a single failure verdict.** Today every non-verifying
+  candidate is an equal failure, which is exactly the regime where most MI210 candidates die — so the
+  search has no gradient where it needs one most. Rank `hipcc-fail < runtime-fail < wrong-output`
+  (reference implementation: intake-974's `s(NX)=-0.05 < s(NC)=0.00 < s(NR)=+0.05 < s(WO)=+0.10`). This
+  is the highest-value transfer of the 2026-08-03 intake batch and intake-939 has no analogue for it.
+- [ ] **Record CGRE — normalized gap closure `(T_base − T_cand)/(T_base − T_ref)`, clipped to [0,1] —
+  alongside the raw ratio.** It supplies the CONTINUOUS form a hill-climbing search needs, closing a gap
+  an earlier dive left open when it declined intake-939's binary/bucketed finding as gradient-hostile.
+  Requires an expert reference per target, which most of our targets do not yet have — scope that first.
+- [ ] **Adopt the epsilon-separated staircase so every correct candidate outranks every failed one**
+  (`R = max(s(WO) + ε, R_succ)`, ε=0.05). **Note this is the OUTER-GATE form, which intake-939's own
+  winner rejects in favour of the collapsed conjunction — see the deliberate open question in AK4.**
 
 **Exit:** controls reach their expected deterministic states, the actor cannot tamper with the
 evaluator or its own scope, and T1 may legally guide search.
@@ -2182,6 +2194,13 @@ evaluator or its own scope, and T1 may legally guide search.
 - [ ] Build champion composition and mandatory combined-candidate reevaluation.
 - [ ] Implement deterministic stop/plateau/budget/storage/integrity/evaluator-gap guards.
 - [ ] Add planner regression fixtures proving it consults failures and does not repeat known negatives.
+- [ ] **Settle WHICH gate form this loop uses — the literature does not, and we should not inherit the
+  ambiguity silently.** Two capable groups made OPPOSITE choices within the same family: intake-939's
+  winner is the **collapsed conjunction** (correct-but-slow → full failure reward), while intake-974
+  independently chose a **strictly-separated outer gate** and never tested the conjunction. Neither ran
+  the comparison the other needs. **We can run it at ~zero GPU cost** via offline replay over banked
+  candidate records — the two forms are different scoring functions over the same stored outcomes.
+  Operator approval required before it becomes a fitness change; the replay itself is free.
 
 **Exit:** a mock campaign moves from source/profile facts through proposals, corrections, negative
 memory, and champion maintenance without human steering.

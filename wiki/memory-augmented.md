@@ -2,8 +2,48 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-07-28 (adds the standing integrity gates + universal degenerate-vector guarantee)
+**Last compiled**: 2026-08-03 (adds the gradient-free memory result — distill+retrieve with RL DISABLED beats the same system's RL-only arm and reaches 93.5% of the full system, which puts the useful half of this literature on the inference-only side of the training line — plus two zero-training portables and a worked case of a "(reproduced)" baseline that reproduces nothing published; earlier 2026-07-28 note: adds the standing integrity gates + universal degenerate-vector guarantee)
 **Sources**: 29+ documents (2 deep-dives, 22 intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+
+## Compiled Update — 2026-08-03: the useful half of the memory literature does not need gradients
+
+**Confidence: inferred — single-ablation results on small models, no CIs, no seed variance reported.
+Recorded as a strong lead, not a settled result.**
+
+The most stack-relevant number in this cluster sits in an ablation table that the paper citing it never
+reports: on a 3B model, **principle distillation + retrieval with RL DISABLED scores 0.357, beating the
+same system's RL-only arm at 0.325**, and reaching **93.5% of the full system's 0.382**. The citing
+paper presents that work as its exhibit for "memory + RL is harmful"; the work's own ablation shows its
+memory machinery *without gradients* outperforming pure RL.
+
+**Why this matters here specifically**: we cannot train. A literature whose headline results all require
+RL is one we can read but not use. This result says most of the value is on our side of the line.
+
+Two further portables, both zero-training and both computable over traces we already have:
+
+- **A redundancy metric over stored reflections** (`SequenceMatcher ≥ 0.85`) — pure log post-processing,
+  no inference cost, and **computable retroactively** rather than needing new capture.
+- **Programmatic feedback extraction**: parse tool output for the concrete failure fact instead of asking
+  the model to self-diagnose. Measured effect on entity grounding: **0/121 → 134/156 (86%)** correct
+  target-object mentions. The *mechanism* and the *metric* transfer; the rates are largely a weak-model
+  artifact at n=2 environments and do not.
+
+### Three methodological traps this cluster illustrates
+
+1. **A "(reproduced)" baseline can reproduce nothing.** One paper's reported baseline for a cited system
+   is labelled reproduced — but that system **never evaluates on those benchmarks at all**; the metric
+   name appears zero times in it. There was no original to diverge from, and the label asserted fidelity
+   to something that does not exist. *Check that the original number exists before treating a delta from
+   it as a finding.*
+2. **Reported decimals can rule out the stated denominator.** No common per-category denominator ≤200
+   reproduces one paper's six reported cells; the minimum consistent denominators imply ~2,045 episode
+   outcomes. **Recomputing the implied denominator from published decimals is a cheap integrity check**
+   that needs no access to anything.
+3. **The arm you want to port may be the weakest effect in the paper.** The test-time memory effect —
+   exactly the gradient-free piece a port would target — is **+2.2 pp at z ≈ 1.94 on one seed with no
+   CI**, while the effects that survive sampling noise are the training-time ones we cannot use. *Check
+   the significance of the specific arm you intend to adopt, not the paper's headline.*
+
 
 ## Summary
 
