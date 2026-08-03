@@ -64,7 +64,47 @@ Require explicit user confirmation and rollback planning before:
   handling to fix a cosmetic problem is the error, independent of which key turns out to be
   fatal. Origin: INC-20260728-ctrlc-destroyed-main (`docs/reference/agent-config/INCIDENT_LOG.md`).
 
+## Act, Don't Defer — the admission test for escalating at all
+
+**The default is ACT. Escalation is the exception and must earn itself.**
+
+Before any item is deferred, escalated, or written into a "Deferred / Open / Awaiting operator" list, it
+must pass this test:
+
+> **Name the specific decision only the operator can make, or the external event you are waiting on.**
+> If you cannot name one in a single sentence, you are not blocked — finish the work.
+
+- **Find a bug → fix it.** Do not report it as an open item.
+- **Find a gap → close it.** Do not file it as a recommendation.
+- **Find work you were already told to do → do it.** An instruction does not expire, and a decision the
+  operator already gave is not re-openable by restating it as a question.
+- **Something genuinely needs a choice → present it as a decision package** (below) and *keep going on
+  everything that does not depend on the answer*. A pending decision blocks its own item, never the rest.
+
+Mentioning something in passing is fine. Mentioning it **instead of doing it** is the failure.
+
+**Three shapes that look like diligence and are not:**
+
+| Looks like | Actually is |
+|---|---|
+| "Deferred: X" with no named blocker | a stall wearing a status label |
+| "Awaits your call" on something already answered | re-opening a closed decision |
+| A well-formed decision package for a choice you could make yourself | the contract below applied where it does not belong |
+
+**The recurrence check, and it is not optional.** If an item appears in **two consecutive** wrap-ups,
+progress reports, or status summaries without its blocker changing, that is proof it was never blocked.
+Do it now — before writing anything else — and say plainly that it should have been done earlier.
+
+*Origin: 2026-08-03. Three consecutive wrap-ups carried the identical "Deferred" list — an Annex K
+cross-reference that needed one already-written command, and a directory deletion the operator had
+explicitly approved two messages before it was listed as "awaits your call". Both were finished in
+minutes once actually attempted. The contract below made each deferral **well-formed**, which made it
+feel correct; nothing said escalation itself needed justifying. Finishing one of them immediately
+uncovered a third copy of a latent defect, which is the argument against deferring in one line.*
+
 ## Operator Decision Requests
+
+Applies **only** to items that pass the admission test above.
 
 Never escalate a decision with an open-ended question ("How should I proceed?", "What do you want to do about X?"). Every request for operator input is a **decision package**:
 

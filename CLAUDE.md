@@ -106,4 +106,9 @@ The [measurement constitution](MEASUREMENT.md) is authoritative (protocol annexe
 
 ## Operator Decision Requests
 
-Use the canonical [operator decision-package contract](agents/shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).
+**Default is ACT.** Escalation must earn itself: name the specific operator decision or external event
+you are blocked on in one sentence, or finish the work. Find a bug, fix it; find a gap, close it. An item
+recurring across two status reports without its blocker changing was never blocked. Full rule:
+[Act, Don't Defer](agents/shared/OPERATING_CONSTRAINTS.md#act-dont-defer--the-admission-test-for-escalating-at-all).
+
+When a choice genuinely is the operator's, use the canonical [operator decision-package contract](agents/shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).
