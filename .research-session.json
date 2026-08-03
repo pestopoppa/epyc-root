@@ -1,183 +1,138 @@
 {
-  "session_started": "2026-07-29",
-  "stage": 4,
-  "stage1_completed": "2026-07-29",
+  "session_started": "2026-08-03",
+  "stage": "2b",
+  "stage1_completed": "2026-08-03",
   "processed_urls": [
-    "https://arxiv.org/abs/2607.21051",
-    "https://arxiv.org/html/2607.23809v1",
-    "https://github.com/earthtojake/text-to-cad",
-    "https://modelscope.ai/papers/2607.05471",
-    "https://modelscope.ai/models/Kwaipilot/KAT-Coder-V2.5-Dev",
-    "https://huggingface.co/Comfy-Org/z_image_turbo",
-    "https://arxiv.org/html/2607.20064v2",
-    "https://www.liquid.ai/blog/lfm2-5-encoders",
-    "https://arxiv.org/html/2607.14159v1",
-    "https://arxiv.org/html/2607.21461v2",
-    "https://github.com/kvcache-ai/AgentENV",
-    "https://huggingface.co/KyleHessling1/Qwopus3.6-27B-Fusion-GGUF"
+    "https://arxiv.org/pdf/2607.28568",
+    "https://arxiv.org/pdf/2607.25970",
+    "https://arxiv.org/pdf/2607.28272",
+    "https://unsloth.ai/docs/models/inkling",
+    "https://huggingface.co/unsloth/Inkling-Small-GGUF",
+    "https://engineering.block.xyz/blog/codecrucible-a-blueprint-for-llm-driven-sast",
+    "https://github.com/QuixiAI/QuixiCore",
+    "https://huggingface.co/EschaLabs/Qwen3.6-35B-A3B-Escha-W2",
+    "https://www.eschalabs.com/"
   ],
+  "submitted_url_count": 10,
+  "unique_url_count": 9,
+  "within_batch_duplicate": "https://arxiv.org/pdf/2607.25970 was submitted twice",
   "entries_created": [
-    "intake-913",
-    "intake-914",
-    "intake-915",
-    "intake-916",
-    "intake-917",
-    "intake-918",
-    "intake-919",
-    "intake-920",
-    "intake-921",
-    "intake-922",
-    "intake-923",
-    "intake-924",
-    "intake-925",
-    "intake-926",
-    "intake-927",
-    "intake-928",
-    "intake-929",
-    "intake-930",
-    "intake-931",
-    "intake-932"
+    "intake-938",
+    "intake-939",
+    "intake-940",
+    "intake-941",
+    "intake-942",
+    "intake-943",
+    "intake-944",
+    "intake-945",
+    "intake-946",
+    "intake-947",
+    "intake-948",
+    "intake-949",
+    "intake-950",
+    "intake-951",
+    "intake-952",
+    "intake-953",
+    "intake-954",
+    "intake-955",
+    "intake-956"
   ],
-  "next_intake_id": 938,
-  "expansion_count": 8,
+  "next_intake_id": 957,
+  "expansion_count": 10,
   "expansion_cap": 10,
-  "notes": "12-URL batch (11 operator-submitted + 1 added mid-turn). Dedup sweep run UNBOUNDED 2026-07-29 over 909 entries / 527 arxiv_ids / 895 urls: ZERO primary arxiv_id or url collisions for all 12. 8 expansion entries (intake-925..932) reference-chased from intake-916/918/919/921; all 8 verified non-primary in the index (referenced only inside other entries' reference lists, which per the companion-artifact rule is not a collision). Tier-2b cheap contradiction pass run on 8 claims. PERSIST FIX: 9 handoff cross-refs were written with completed//blocked/ path prefixes and failed the validator, which resolves BARE filenames across handoffs/{active,completed,archived}; prefixes were stripped from list items only (prose untouched) and the validator then returned exit 0 / 932 entries.",
   "steering_ledger": [
     {
       "seq": 1,
-      "stage": 1,
-      "verbatim": "Please add this intake also to your workflow: https://huggingface.co/KyleHessling1/Qwopus3.6-27B-Fusion-GGUF",
+      "stage": 2,
+      "ts": "2026-08-03",
+      "verbatim": "\"  The structural finding: the compendium had deep coverage of speedup-rewarded GPU kernel generation and zero coverage of code-runtime-efficiency as a model capability or evaluation axis. Afterburner, SWE-fficiency, SWE-Perf, PIE, EffiBench-X and COFFE\n  were all absent from 937 entries. That hole is now filled with six instruments.\" - looking forward to seeing how these tie in after the deep dives.",
       "disposition": "planned",
-      "plan_ref": "intake-924 persisted; carried to Stage-3 plan as a bench-arm candidacy decision"
+      "plan_ref": "STAGE3-TIE-IN: the Stage-3 plan must contain an explicit synthesis item showing how the six code-efficiency instruments tie together and into our evaluation ladder + autokernel loop, not just per-entry rows."
     },
     {
       "seq": 2,
       "stage": 2,
-      "verbatim": "deep dive everything EXCEPT 915",
+      "ts": "2026-08-03",
+      "verbatim": "\"944 QuixiCore \u2014 its own agent says dive HipKittens instead; 92KB umbrella exhausts fast.\" - this could still be relevant to see how others are thinking about experimental kernel work to close the gap between AMD and NVIDIA GPUs. It could be relevant for our inference research and th eupcoming autokernel program.",
       "disposition": "planned",
-      "plan_ref": "Stage-2 dive set = all 20 batch entries minus intake-915 = {913,914,916,917,918,919,920,921,922,923,924,925,926,927,928,929,930,931,932} (19 entries)",
-      "stage2_response": "Dispatched as 12 dive agents grouped by lineage: 913 | 914+922 | 916+917+932 | 918+928+929 | 919+925 | 920 | 921+926 | 923 | 924 | 927 | 930 | 931. intake-915 explicitly NOT dived per operator."
+      "plan_ref": "DIVE-I: OVERTURNS my decline. QuixiCore dived, scoped to 'how others approach experimental kernel work to close the AMD/NVIDIA gap', with intake-947 HipKittens folded in as the same subject matter. Feeds the upcoming autokernel program."
     },
     {
       "seq": 3,
       "stage": 2,
-      "verbatim": "wasn't this recently fixed in the episodic memory store so that later distillations can be quite rich?",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "note": "CORRECT. Verified: episodic_store.py memories table has untruncated action/context/outcome TEXT. My claim conflated it with session_log.py. No plan item needed; the PRO-LONG gap narrows to 'no single chronological grep-able artifact', which IS a plan item."
+      "ts": "2026-08-03",
+      "verbatim": "\"952 EffiBench-X \u2014 better to run than dive.\" - I don't know what this is yes, but if it's better to 'run' it must be worthwhiel diving.",
+      "disposition": "planned",
+      "plan_ref": "DIVE-D: OVERTURNS my decline. EffiBench-X dived alongside SWE-Perf and SWE-fficiency. Operator's reasoning accepted: runnability is a reason to dive, not a substitute for it."
     },
     {
       "seq": 4,
       "stage": 2,
-      "verbatim": "our fleet will be upgraded slowly over time as better open-weight models are released. The point is to have a harness flexible enough to adjust to whatever fleet we freeze at any moment in time.",
+      "ts": "2026-08-03",
+      "verbatim": "The models whose links I shared (Inkling and Eschalabs) are part of my ongoing search for faster worker_general and architect_critic model candidates (to replace gemma4-26b-a4b). We don't necessarily have to download/test/bench them, but a deep dive could be worthwhile within the context just mentioned to see if they may be worthwhile to.",
       "disposition": "planned",
-      "plan_ref": "P-H1 (re-targetable harness principle) \u2014 reframes 926 above 921 as the adoption target"
+      "plan_ref": "DIVE-A and DIVE-B: reframes both model dives as ROLE-CANDIDATE ASSESSMENTS against the incumbent gemma4-26B-A4B for worker_general and architect_critic. No download/bench required; the deliverable is a reasoned worthwhile-or-not verdict."
     },
     {
       "seq": 5,
       "stage": 2,
-      "verbatim": "so z-image turbo isn't expected to generate images better than ernie already can?",
+      "ts": "2026-08-03",
+      "verbatim": "Deep dive ALL original links and the literature expansion you recommended.",
       "disposition": "planned",
-      "plan_ref": "P-IMG1 \u2014 answered: not on the measured axis; UNKNOWN on general quality (no ERNIE GenEval/DPG counterpart exists). Filed as a scoped gap, not a swap."
+      "plan_ref": "Dive set = all 9 originals (938-946) + recommended expansion (948,950,951,953,954,955) + operator-added 952 + 947 folded into DIVE-I. Still declined and NOT dived: 949 (Afterburner), 956 (eschamoe probe) - both named explicitly in the report."
     },
     {
       "seq": 6,
-      "stage": 2,
-      "verbatim": "We should upgrade the model to Q5_0 then.",
+      "stage": "2b",
+      "ts": "2026-08-03",
+      "verbatim": "\"Cap is 5 (separate budget from the Stage-1 expansion, which used its own 10).\" - what?!? There shoudl be no cap here, everything that is viable/usable/worthwhile MUST be harvested! If needed go back and collect more insights. What's the point of spending time deeply reviewing source material if then we ignore most of it?!???",
       "disposition": "planned",
-      "plan_ref": "P-IMG2 \u2014 filed as a SCOPED A/B, not a switch. My enabling rationale was retracted (our Q4_K_M A/B was CPU; #1385 is ROCm), and Q5_0<Q8 is a precision downgrade. The narrower legacy-vs-k-quant question on CPU is still worth testing."
+      "plan_ref": "STAGE-2b-UNCAPPED: the skill's 5-entry Stage-2b cap is OVERRIDDEN. All viable dive-surfaced sources are dived, and agents are authorised to collect ADDITIONAL sources beyond the surfaced list where they bear on an actionable question."
     },
     {
       "seq": 7,
-      "stage": 2,
-      "verbatim": "67% on SWE bench blows our current 27B candidates out of the water. We should probably collect this model and run the architect bench on it.",
+      "stage": "2b",
+      "ts": "2026-08-03",
+      "verbatim": "\"5 QuixiAI/llama.cpp fork + QuixiFlow | DIVE-I flagged rather than dismissed it. Our production kernel is llama.cpp; a fork by the same org warrants a look before this thread closes\" - of course it warrants a look. Our kernel's efficiency still sorely lags cuda kernel performances on comparable hardware. See public throughput reports of our stack models running on DGX sparks (250 GB/s bandwidth vs our CPU+RAM's ~460 GB/s) and RTX 6000 Pro (1.7TB/s bandwidth just like our MI210 gpu). See also the performance difference between llama.cpp vs vLLM also. A parallel agent session is currently building out the autokernel stack. It needs to be as informed as possible if we plan to close the kernel gap vs comparable nvidia hardwre solutions.",
       "disposition": "planned",
-      "plan_ref": "P-CODER1 \u2014 collect + bench Qwopus3.6-27B-Coder MTP-Q8_0. CAVEAT filed with it: 67.0% is SWE-bench Verified full-500 vendor n=1, NOT commensurable with our sealed SWE-oracle-40 23/40."
+      "plan_ref": "2b-A + 2b-C: THE KERNEL-GAP AXIS IS NOW THE PRIORITY FRAME. Dive the QuixiAI llama.cpp fork AND QuixiFlow (vLLM fork), and open a NEW investigation into the llama.cpp-vs-vLLM and AMD-vs-NVIDIA throughput gap at matched memory bandwidth (DGX Spark 250 GB/s, our CPU+RAM ~460 GB/s, RTX 6000 Pro 1.7 TB/s ~= MI210). Deliverable must be usable by the PARALLEL SESSION building the autokernel stack. NOTE: that session owns autokernel scope - this intake FEEDS it, and must not write into its handoffs."
     },
     {
       "seq": 8,
-      "stage": 2,
-      "verbatim": "This Qwopus merge Fusion model is much more interesting then since it implements a novel geometric weight merging operation. Could be interesting to look into when we find the time.",
+      "stage": "2b",
+      "ts": "2026-08-03",
+      "verbatim": "\"Defensible swaps if you'd rather: 2408.06450 EvalPerf ... Mercury ... 2511.09904 CTRL-ALT-DECEIT ... 2607.21273 ... effibench-enhanced\" - why swap? You can deep dive new literature as needed. Don't feel so constrained. What ultimately matters are the insights that can be made actionable for our project's purpose.",
       "disposition": "planned",
-      "plan_ref": "P-MERGE1 \u2014 zero-inference weight-delta geometry probe. NOTE the operation is plain lerp; what is untested is whether the depth-alpha DIAGNOSTIC has content."
+      "plan_ref": "STAGE-2b-UNCAPPED: no swaps. ALL listed alternatives are dived alongside the primaries. Selection criterion is ACTIONABILITY FOR THE PROJECT, not budget."
     },
     {
       "seq": 9,
-      "stage": 2,
-      "verbatim": "so you're saying that there's nothing we could reverse-engineer as part of experimental kernel development?",
+      "stage": "2b",
+      "ts": "2026-08-03",
+      "verbatim": "\"ThunderKittens (CUDA parent; HipKittens is the relevant branch)\" - lookign forward to seeing what we can harves from HipKittens.",
       "disposition": "planned",
-      "plan_ref": "P-KERN1 \u2014 I overstated. Expert Deferral is NOT AMX-dependent and is the transferable candidate."
-    },
-    {
-      "seq": 10,
-      "stage": 2,
-      "verbatim": "agentic_swe_harness.py performs no /testbed state reset between trials ... this seems like an important gap to fix.",
-      "disposition": "planned",
-      "plan_ref": "P-SWE1 \u2014 prerequisite correctness fix"
-    },
-    {
-      "seq": 11,
-      "stage": 2,
-      "verbatim": "should the rebuild be done as part of this session's exploratory process?",
-      "disposition": "planned",
-      "plan_ref": "DONE IN STAGE 2 \u2014 intake-926 body rebuilt 2026-07-29; residual risk now confined to non-dived entries (only intake-915)."
-    },
-    {
-      "seq": 12,
-      "stage": 3,
-      "verbatim": "\"The genuinely novel contribution is Expert Deferral - async CPU-GPU overlap for MoE, raising CPU utilization from <75% to ~100% for up to 1.45x throughput at &lt;=0.5% accuracy drop (SOSP'25).\" - super interesting research thread.",
-      "disposition": "planned",
-      "plan_ref": "P-KERN1 \u2014 elevated to a named research thread on operator interest"
-    },
-    {
-      "seq": 13,
-      "stage": 3,
-      "verbatim": "lets kick off stage 3",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "note": "procedural"
+      "plan_ref": "2b-B: a DEDICATED deep harvest of HipKittens beyond the paper - read the actual kernel source and extract every arch-independent technique portable to hand-written gfx90a MFMA paths. Reverses my decline; ThunderKittens also re-included as the CUDA parent since the NVIDIA-vs-AMD delta is now the operator's stated frame."
     }
   ],
-  "open_operator_decisions": [
-    {
-      "id": "OD-A",
-      "topic": "KTransformers ingest-or-reaffirm-the-kill",
-      "detail": "kvcache-ai KTransformers has NEVER been ingested as its own intake entry (only 4 incidental mentions inside other entries) and was affirmatively killed in handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md as 'dead weight' on a simulators-are-dead-weight argument that did not evaluate the runtime. It is the closest public match to this hardware profile. Tier-2b ALSO found the index's 'KTransformers publishes NO benchmarks' claim is NO LONGER TRUE. Per the never-dismiss-without-asking rule this is an operator decision, not a self-authorized rejection."
-    },
-    {
-      "id": "OD-B",
-      "topic": "intake-528 / ERNIE cross-reference defect",
-      "detail": "handoffs/active/ernie-image-turbo-evaluation.md (lines 17,78,83,94) and research/deep-dives/ernie-image-turbo-dit-text-to-image.md (lines 3,276) both cite intake-528 as the ERNIE-Image-Turbo entry, but intake-528 is 'Effort Engine (bucketMul)'. Verified: NO intake row for ERNIE exists at all. The deployed image_generate model is unindexed. Correction needs operator approval."
-    },
-    {
-      "id": "OD-C",
-      "topic": "internal-kb-rag.md line 92 stale claim",
-      "detail": "Asserts the Liquid ColBERT is PyLate/PLAID-only with no GGUF/llama.cpp/ONNX. True of the older LFM2-ColBERT-350M, but LFM2.5-ColBERT-350M-GGUF and LFM2.5-Embedding-350M-GGUF exist since 2026-06-16 with 7 quants + reference rerank scripts, changing the pending K-eval from a PyLate stand-up to a llama-server GGUF exercise."
-    },
-    {
-      "id": "OD-D",
-      "topic": "frozen-v8 converter vs deep-dive discrepancy",
-      "detail": "convert_hf_to_gguf.py in the frozen v8 tree is ~296 lines with NO Lfm2 registration, contradicting the 2026-05-29 lfm2 deep dive's claim that @ModelBase.register('Lfm2MoeForCausalLM') is present. Does not change any Stage-1 conclusion; the deep-dive finding may be stale. Needs a separate look."
-    },
-    {
-      "id": "OD-E",
-      "topic": "audit sibling Stage-1 entries for the 926 fabrication mode",
-      "detail": "The 926 failure was CONFIDENT FABRICATION OF A FULL RESULTS TABLE, not partial extraction. Entries produced by the same Stage-1 expansion pass (intake-925, 927) and any other multi-paper sub-agent output should be spot-checked against primary source before Stage 3 relies on them. NOTE: 925 and 927 were both independently dived and their tables re-verified, so the residual risk is concentrated in non-dived entries \u2014 of which only intake-915 remains."
-    }
-  ],
+  "notes": "9-URL batch (10 submitted, 2607.25970 duplicated). Dedup sweep run UNBOUNDED over 937 entries (937 arxiv_id fields, 937 url fields) plus a whole-file mention check: ZERO collisions for all 9, and zero collisions for all 10 expansion candidates. 10 expansion entries intake-947..956 (cap used in full). PARENT-VERIFIED: all three arXiv IDs independently title-checked against arxiv.org/abs, so the sub-agent scratchpad filename collision (two agents wrote a generically-named scratchpad/paper.txt) caused no cross-contamination. STORAGE CORRECTION: an agent claimed 'storage is a non-issue' from TOTAL capacity; df -h /mnt/raid0 shows 159G AVAIL of 3.7T (96% used), so Inkling UD-Q4_K_M 162.54GB does NOT fit. SCHEMA DEFECT (mine): the compact expansion schema omitted the verdict/credibility enums, so agents returned verdict 'dive'/'decline-with-watch'/'adopt-methodology', novelty 'novel', and credibility 7/8/9 against a 0-6 rubric. All normalized per rubric and RECORDED in each entry's notes. SECOND session with this failure class (intake-936, 2026-07-29) - fix belongs in the skill dispatch contract. VALIDATOR FIX: 5 entries cited 'architect-bench-runbook.md' as a handoff; it is docs/reference/, not a handoff. Corrected to architect-model-selection-bench.md at source and a pre-flight cross-reference resolution check added before append. Append done as TEXT per entry; pre-existing 937 entries verified byte-identical. Validator exit 0 / 956 entries.",
   "tier2b_contradiction_pass": {
     "raises_dive_priority": [
-      "intake-914 + intake-922 (agent-initiated compression vs observation masking, arXiv 2508.21433)",
-      "intake-921 (harness evolution rebuttal, arXiv 2607.12227, published 2 days prior)",
-      "intake-916 + intake-917 + intake-924 (SWE-bench Verified reporting hygiene - recommend ONE combined dive)"
+      "intake-939: abstract says 14%/28% complexity-class, body+conclusion say 13%/22%; and its cited SWE-fficiency Sonnet figure (4.1%) was OVERTURNED at ingest by intake-953 (actual 0.116x; 0.041x is Gemini 2.5 Flash) with a v1-vs-v3 version caveat",
+      "intake-949: the 0.33%->7.33% degradation pair is CONFIRMED but confounded - F% moved 72.00->38.33 in the same rows, inflating the headline ~2x",
+      "intake-950: the 1.91x spurious-speedup figure is a TOP-5% TAIL (mean 1.12x, sd 0.36), is absent from v1, and the mitigation is gem5 simulation NOT hardware counters",
+      "intake-941/942: port cost understated - intake-955 config.json shows no RoPE, per-layer sconv state, and shared-expert-sink routing = three new subsystems",
+      "intake-951 vs intake-954: unresolved DESIGN DISAGREEMENT on whether efficiency should be a third axis or fused into efficient@k; both peer-reviewed"
     ],
     "lowers_dive_priority": [
-      "intake-913 (naive-trajectory-SFT-fails is closer to published consensus than contested)"
+      "intake-947 HipKittens: CDNA3-ONLY, verified structurally via include/kittens.cuh dispatch - closes a false lead rather than opening one",
+      "intake-945 eschalabs.com: exhausted, agent recommends against diving; remaining org questions are unpublished not unfetched",
+      "intake-956: author is blocked on compute and the unblocking experiment needs sm_80+ hardware we do not have"
     ],
     "unverified_in_stage1": [
-      "intake-920 (only vendor-authored surfaces found)",
-      "intake-924 (zero third-party discussion found)",
-      "intake-919 (no replication yet; paper ~1 week old)"
+      "intake-950 COFFE's 1.91x is likely a RESTATEMENT of PIE, not independent corroboration - do not double-count",
+      "intake-939 artifact release/licence for DMC-Optim, CES sandbox and offline simulator not located",
+      "intake-951 SWE-Perf harness licence unresolved; intake-953 SWE-fficiency harness advertised 'Coming Soon'",
+      "intake-955 Thinking Machines acceptable-use policy never fetched - gates the apache-2.0 verdict"
     ]
   },
   "prior_sessions": [
@@ -198,70 +153,81 @@
         "intake-912"
       ],
       "notes": "recurrent-depth / looped-transformer batch; completed through Stage 4"
+    },
+    {
+      "session_started": "2026-07-29",
+      "stage": 4,
+      "stage1_completed": "2026-07-29",
+      "processed_urls": [
+        "https://arxiv.org/abs/2607.21051",
+        "https://arxiv.org/html/2607.23809v1",
+        "https://github.com/earthtojake/text-to-cad",
+        "https://modelscope.ai/papers/2607.05471",
+        "https://modelscope.ai/models/Kwaipilot/KAT-Coder-V2.5-Dev",
+        "https://huggingface.co/Comfy-Org/z_image_turbo",
+        "https://arxiv.org/html/2607.20064v2",
+        "https://www.liquid.ai/blog/lfm2-5-encoders",
+        "https://arxiv.org/html/2607.14159v1",
+        "https://arxiv.org/html/2607.21461v2",
+        "https://github.com/kvcache-ai/AgentENV",
+        "https://huggingface.co/KyleHessling1/Qwopus3.6-27B-Fusion-GGUF"
+      ],
+      "entries_created": [
+        "intake-913",
+        "intake-914",
+        "intake-915",
+        "intake-916",
+        "intake-917",
+        "intake-918",
+        "intake-919",
+        "intake-920",
+        "intake-921",
+        "intake-922",
+        "intake-923",
+        "intake-924",
+        "intake-925",
+        "intake-926",
+        "intake-927",
+        "intake-928",
+        "intake-929",
+        "intake-930",
+        "intake-931",
+        "intake-932"
+      ],
+      "next_intake_id": 938,
+      "stage2_completed": "2026-07-29",
+      "stage4_progress": {
+        "code_fix_1_rlimit_nproc": "DONE 2026-07-29 \u2014 SUBSTITUTED after the operator was shown the finding. RLIMIT_NPROC is per-UID and this host runs 9,534 threads as uid 1000 (5,688 llama-server), so any per-scorer cap would fail the child's first fork and would fail NONDETERMINISTICALLY with fleet load. Operator chose process-group kill + honest docstring. Implemented start_new_session=True + os.killpg on timeout (closing a CONFIRMED orphan leak subprocess.run's timeout path left open) and corrected the docstring to state why RLIMIT_NPROC is wrong here and that cgroup v2 pids.max is the correct mechanism (verified available). 9/9 execution checks pass.",
+        "code_fix_2_testbed_reset": "DONE 2026-07-29 \u2014 DockerEnv.reset_testbed(base_commit) added, called fail-closed at the top of run_instance (status testbed_reset_failed, zero turns, empty patch). Uses `git reset --hard <base> && git clean -fd`. DELIBERATE DEVIATION from the plan text: -x omitted, because it also deletes IGNORED files incl. the .egg-info/build artifacts left by `pip install -e .`, which would break imports and manufacture false failures. 14/14 execution checks pass, including that the ignored artifact survives and an agent COMMIT is undone.",
+        "tier4_intakes": "DONE \u2014 intake-933..936 persisted, all dive-verified/overturned. Two agents returned out-of-range schema values (credibility 8 and 66; novelty 'significant'); normalized per rubric and recorded in each entry's notes.",
+        "remaining": "handoff writes (Tier 0-3), master-index rows, handoffs_updated/created backfill on intake-913..936",
+        "od_b_resolved": "2026-07-29 \u2014 intake-937 created for ERNIE-Image-Turbo (the deployed image_generate model, which had NO index row for its entire deployed life); 6 mis-citations of intake-528 repointed across the handoff and the deep dive, each with an inline dated correction note."
+      },
+      "notes": "12-URL batch (11 operator-submitted + 1 added mid-turn). Dedup sweep run UNBOUNDED 2026-07-29 over 909 entries / 527 arxiv_ids / 895 urls: ZERO primary arxiv_id or url collisions for all 12. 8 expansion entries (intake-925..932) reference-chased from intake-916/918/919/921; all 8 verified non-primary in the index (referenced only inside other entries' reference lists, which per the companion-artifact rule is not a collision). Tier-2b cheap contradiction pass run on 8 claims. PERSIST FIX: 9 handoff cross-refs were written with completed//blocked/ path prefixes and failed the validator, which resolves BARE filenames across handoffs/{active,completed,archived}; prefixes were stripped from list items only (prose untouched) and the validator then returned exit 0 / 932 entries."
     }
   ],
   "stage2_dive_set": [
-    "intake-913",
-    "intake-914",
-    "intake-916",
-    "intake-917",
-    "intake-918",
-    "intake-919",
-    "intake-920",
-    "intake-921",
-    "intake-922",
-    "intake-923",
-    "intake-924",
-    "intake-925",
-    "intake-926",
-    "intake-927",
-    "intake-928",
-    "intake-929",
-    "intake-930",
-    "intake-931",
-    "intake-932"
+    "intake-938",
+    "intake-939",
+    "intake-940",
+    "intake-941",
+    "intake-942",
+    "intake-943",
+    "intake-944",
+    "intake-945",
+    "intake-946",
+    "intake-947",
+    "intake-948",
+    "intake-950",
+    "intake-951",
+    "intake-952",
+    "intake-953",
+    "intake-954",
+    "intake-955"
   ],
   "stage2_not_dived": [
-    "intake-915 (operator-excluded)"
+    "intake-949 (Afterburner) - confound already caught and quantified at Stage 1; operator did not add it",
+    "intake-956 (eschamoe codebook probe) - author blocked on compute, unblocking needs sm_80+ hardware we lack; re-check in 2-4 weeks"
   ],
-  "stage2_completed": "2026-07-29",
-  "stage2_outcome": {
-    "dives_run": 12,
-    "entries_dived": 19,
-    "dive_overturned": [
-      "intake-913",
-      "intake-917",
-      "intake-922",
-      "intake-925",
-      "intake-926",
-      "intake-928",
-      "intake-930",
-      "intake-931",
-      "intake-932"
-    ],
-    "dive_verified": [
-      "intake-914",
-      "intake-916",
-      "intake-918",
-      "intake-919",
-      "intake-920",
-      "intake-921",
-      "intake-923",
-      "intake-924",
-      "intake-927",
-      "intake-929"
-    ],
-    "not_dived": [
-      "intake-915 (operator-excluded)"
-    ],
-    "headline": "intake-926 was substantially FABRICATED at Stage 1 (TRAE nonexistent, verifier sign inverted, process metrics and the ~90%-child-agent figure absent). Corrected in-index at Stage 2 per the skill's immediate-correction rule. Sibling entries from the same batch should be audited before Stage 3 relies on them.",
-    "intake_926_rebuilt": "2026-07-29 \u2014 body rebuilt from primary source in Stage 2 per the immediate-correction rule; fabricated values retained ONLY in dive_corrections + notes as the audit trail. reported_results/key_claims/techniques/contradicting_evidence/verdict_justification/recommended_actions all replaced."
-  },
-  "stage4_progress": {
-    "code_fix_1_rlimit_nproc": "DONE 2026-07-29 \u2014 SUBSTITUTED after the operator was shown the finding. RLIMIT_NPROC is per-UID and this host runs 9,534 threads as uid 1000 (5,688 llama-server), so any per-scorer cap would fail the child's first fork and would fail NONDETERMINISTICALLY with fleet load. Operator chose process-group kill + honest docstring. Implemented start_new_session=True + os.killpg on timeout (closing a CONFIRMED orphan leak subprocess.run's timeout path left open) and corrected the docstring to state why RLIMIT_NPROC is wrong here and that cgroup v2 pids.max is the correct mechanism (verified available). 9/9 execution checks pass.",
-    "code_fix_2_testbed_reset": "DONE 2026-07-29 \u2014 DockerEnv.reset_testbed(base_commit) added, called fail-closed at the top of run_instance (status testbed_reset_failed, zero turns, empty patch). Uses `git reset --hard <base> && git clean -fd`. DELIBERATE DEVIATION from the plan text: -x omitted, because it also deletes IGNORED files incl. the .egg-info/build artifacts left by `pip install -e .`, which would break imports and manufacture false failures. 14/14 execution checks pass, including that the ignored artifact survives and an agent COMMIT is undone.",
-    "tier4_intakes": "DONE \u2014 intake-933..936 persisted, all dive-verified/overturned. Two agents returned out-of-range schema values (credibility 8 and 66; novelty 'significant'); normalized per rubric and recorded in each entry's notes.",
-    "remaining": "handoff writes (Tier 0-3), master-index rows, handoffs_updated/created backfill on intake-913..936",
-    "od_b_resolved": "2026-07-29 \u2014 intake-937 created for ERNIE-Image-Turbo (the deployed image_generate model, which had NO index row for its entire deployed life); 6 mis-citations of intake-528 repointed across the handoff and the deep dive, each with an inline dated correction note."
-  }
+  "stage2b_cap": "REMOVED BY OPERATOR \u2014 harvest everything viable/usable/worthwhile; collect more sources if needed"
 }
