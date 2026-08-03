@@ -77,6 +77,13 @@ the fix is a host action (reinstall/re-pin), not a re-litigation of which file i
   schedule around, and the reason a naive collect-everything run silently drops counters:
   `SQ 8 · SPI 6 · TCA 4 · TCC 4 · TCP 4 · CPC 2 · CPF 2 · GRBM 2 · TA 2 · TD 2`
 
+**The container fix keeps getting reverted, and it does not matter.** `.devcontainer/Dockerfile` gained a
+`libpciaccess0` line (root `e0cbad4a`); a host-side sync rewrote the whole `.devcontainer/` directory twice
+on 2026-08-03 and dropped it both times, leaving a stale `Dockerfile.orig` beside it. That sync is outside
+the container and cannot be reached from a session here. **Nothing depends on the line**: the provisioner
+side-loads `libpciaccess0` itself when the container lacks it, which is the path actually in use today. Do
+not re-litigate this — restore the line if convenient, and rely on the provisioner regardless.
+
 **Reproducible from git, not just present on the filesystem** — `epyc-inference-research`
 `scripts/benchmark/provision_rocm_profilers.sh` (idempotent, `--verify` mode, refuses if the installed
 ROCm is not 6.2.x). The 19 MB of extracted binaries are deliberately not tracked; the recipe is. `env.sh`

@@ -2,8 +2,55 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-03 (adds the sandbagging-monitor design rules — a generic "is this suspicious?" monitor rarely fires on deliberate underperformance, best-path-only transcripts structurally advantage the saboteur, and monitor-awareness degrades detection universally — plus the harness-level vs task-level cheating split, where the harness-level half is developer-side and no agent-side monitor can catch it; earlier 2026-07-30 note: adds the full-stack agent-file audit and restructure: layered context architecture, incident-log house style, enforcement hardening, and the frozen-tree governance gap; prior coordination-plane update retained)
+**Last compiled**: 2026-08-03 (adds the well-formed-deferral failure — a quality bar on the FORM of an escalation with no bar on its NECESSITY produces well-formed escalations of things that needed none, plus the recurrence check and two placement lessons about where behavioural rules must live; earlier note: adds the sandbagging-monitor design rules — a generic "is this suspicious?" monitor rarely fires on deliberate underperformance, best-path-only transcripts structurally advantage the saboteur, and monitor-awareness degrades detection universally — plus the harness-level vs task-level cheating split, where the harness-level half is developer-side and no agent-side monitor can catch it; earlier 2026-07-30 note: adds the full-stack agent-file audit and restructure: layered context architecture, incident-log house style, enforcement hardening, and the frozen-tree governance gap; prior coordination-plane update retained)
 **Sources**: 70+ documents
+
+## Compiled Update — 2026-08-03 (second): a well-formed deferral is still a deferral
+
+**Confidence: verified — traced to the exact instructions that produced the behaviour, and fixed there.**
+
+An agent carried an identical "Deferred" list across **three consecutive** wrap-ups. One item needed a
+command the agent had already written and tested; another had been explicitly approved by the operator
+*two messages before* it was listed as "awaits your call". Both completed in minutes once attempted.
+
+### The mechanism, which is the transferable part
+
+The instruction set enshrined **how** to escalate — a decision-package contract requiring context,
+options, tradeoffs, recommendation and default — and said **nothing about whether escalation was
+permitted at all.** So a deferral that satisfied the contract *looked correct*, because it satisfied the
+only rule governing it. The wrap-up routine compounded this with a guideline to *"note deferred work
+explicitly"*: an instruction to write down what should have been done.
+
+**A quality bar on the form of an escalation, with no bar on its necessity, produces well-formed
+escalations of things that needed none.** That generalises past agents — it is the same shape as any
+review checklist that grades how a decision is documented but never whether it should have been a
+decision.
+
+### The fix, and why the obvious placement was wrong
+
+Add an **admission test above the contract**: name the specific decision only the operator can make, or
+the external event awaited, in one sentence — or finish the work. Find a bug, fix it; find a gap, close
+it. Work already approved is not re-openable by restating it as a question. A pending decision blocks its
+own item, never the rest.
+
+Plus a **recurrence check**, which is the mechanical part: *an item appearing in two consecutive status
+reports with an unchanged blocker is proof it was never blocked.* That converts a judgement call into an
+observation anyone can make from the artifacts.
+
+Two placement lessons:
+
+1. **The rule was in agent memory for 71 days and prevented nothing.** Memory is per-agent and does not
+   cross agents; the shared instruction files are the only durable channel. A behavioural rule that lives
+   only in one agent's memory is not a rule, it is a habit.
+2. **First placement was still wrong** — the last section of the top-level file, under an escalation
+   heading, which an agent reads only once it has *already decided to escalate*. That is after the
+   decision that needs governing. A rule that governs a default has to be read before the default is
+   exercised, which in practice means near the top.
+
+### The argument against deferring, in one line
+
+Finishing one of the three deferred items immediately uncovered a **third copy of a latent defect** that
+the deferral had been hiding.
 
 ## Compiled Update — 2026-08-03: monitoring an agent that underperforms on purpose is a different problem from monitoring one that cheats
 

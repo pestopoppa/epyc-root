@@ -189,6 +189,12 @@ End your response with a summary block:
 
 - Be factual and specific — include file paths, commit hashes, and measured values where available
 - Use tables for multi-file or multi-model changes
-- Note deferred work explicitly so the next session can pick it up
+- **Do not defer work you can do.** Before writing anything into a "Deferred" list, apply the admission
+  test in `agents/shared/OPERATING_CONSTRAINTS.md` → *Act, Don't Defer*: name the specific operator
+  decision or external event you are blocked on, in one sentence. If you cannot, **finish the work now**
+  — a wrap-up is the last place a doable task should be recorded instead of done. If an item appeared in
+  the previous wrap-up and its blocker has not changed, that is proof it was never blocked: do it before
+  writing this report.
+- Note genuinely deferred work explicitly — with its named blocker — so the next session can pick it up
 - Keep progress entries self-contained — a reader shouldn't need to look at other files to understand what happened
 - **Push and promote after committing** (Step 7) so work reaches GitHub's contribution graph, which counts only the default branch (`main`) — never leave a wrap-up with unpushed or unpromoted commits. Never force-push, and never auto-resolve or force a promotion conflict: if a push is rejected or a promotion hits a divergent `main`, leave `main` untouched and surface it for the operator.
