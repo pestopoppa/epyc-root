@@ -46,6 +46,16 @@ CASES: list[tuple[str, str, int, str]] = [
     ("Edit",  str(REPO_ROOT / "agents/shared/MEASUREMENT_POLICY.md"), 2, "MEASUREMENT_POLICY.md"),
     ("Edit",  str(ORCH / "orchestration/instrument_eras.yaml"), 2, "era registry rows"),
     ("Edit",  str(ORCH / "orchestration/autopilot_baseline.yaml"), 2, "autopilot baseline"),
+    # layer 2 — WILDCARD gate-list entries. Until 2026-08-03 the matcher quoted
+    # its right-hand side, making the comparison literal, so `measurement/
+    # protocols/*.md` matched nothing and Annexes B/Q/G were agent-writable
+    # while the guard reported success. Every case above is a LITERAL entry and
+    # passed throughout, which is why the defect survived this suite. These are
+    # the cases that were missing; do not remove them.
+    ("Edit",  str(REPO_ROOT / "measurement/protocols/bench-cpu.md"), 2, "Annex B (wildcard entry)"),
+    ("Edit",  str(REPO_ROOT / "measurement/protocols/quality-eval.md"), 2, "Annex Q (wildcard entry)"),
+    ("Write", str(REPO_ROOT / "measurement/protocols/gpu-cross-device.md"), 2, "Annex G (wildcard entry)"),
+    ("Edit",  "measurement/protocols/bench-cpu.md", 2, "Annex B (wildcard, relative path)"),
     # must allow — ordinary work
     ("Edit",  str(REPO_ROOT / "coordination/session-bus/config.yaml"), 0, "bus config (agent-editable)"),
     ("Edit",  str(REPO_ROOT / "CLAUDE.md"), 0, "CLAUDE.md"),
@@ -53,6 +63,11 @@ CASES: list[tuple[str, str, int, str]] = [
     ("Write", str(REPO_ROOT / "scripts/coordination/session_bus.py"), 0, "a source file"),
     ("Edit",  str(REPO_ROOT / "MEASUREMENT_NOTES.md"), 0, "similarly-named non-boundary file"),
     ("Edit",  str(ORCH / "orchestration/model_registry.yaml"), 0, "a non-boundary orchestrator file"),
+    # The compliant-path counterpart to the wildcard cases above: the pattern
+    # must not over-block. A non-.md file inside the protected directory, and a
+    # .md file outside it, both stay writable.
+    ("Edit",  str(REPO_ROOT / "measurement/protocols/README.txt"), 0, "non-.md inside a protected dir"),
+    ("Edit",  str(REPO_ROOT / "measurement/policy-notes.md"), 0, ".md outside the protected dir"),
 ]
 
 
