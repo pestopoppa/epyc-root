@@ -92,7 +92,39 @@ Operator-level/torch-eager scores overstate real gains ~25pp (1.16×→0.93× vs
 The MI210 is installed; any execution remains operator-approved under the measurement policy. **All AMD numbers are vendor-reported until reproduced on our own gfx90a.**
 
 ## 9. Freshness Appendix (sweep at each handoff audit / when the MI210 racks)
-**Last swept: 2026-07-29 (mainB).**
+**Last swept: 2026-08-03 (research-intake Stage-2b).**
+
+### Sweep 2026-08-03 — the coverage conclusion below is AMENDED
+
+- **GEAK v4 carries first-class gfx90a *knowledge*, while publishing zero gfx90a *numbers*.** The
+  distinction is load-bearing and the prior sweeps missed it by reading the README rather than the tree.
+  `perf_knowledge/hardware/cdna2_mi200/` ships four files (`arch.md`, `matrix_core.md`, `memory.md`,
+  `occupancy.md`), all `gens: [gfx90a]`, all `updated: 2026-06-08`, titled *"CDNA2 / MI250X / MI210
+  (gfx90a)"*; `perf_knowledge/index/capability_index.yaml` carries **40 gfx90a entries** (vs 214 gfx942,
+  225 gfx950, 20 gfx908); `perf_knowledge/README.md` scopes CDNA1→CDNA4. **No arch gating exists** — the
+  README states the on-box card is auto-detected, and there is no allowlist rejecting gfx90a.
+- **README, verbatim:** *"GEAK targets AMD Instinct MI GPUs (CDNA, e.g. gfx942 / gfx950; the on-box card
+  is auto-detected)"*. That is a deployment/evaluation statement, **not** a capability removal.
+- **RETIRED: "677/678/679 are a gfx90a coverage regression."** For GEAK proper this is *unpublished*
+  coverage, not removed coverage. The narrower claim — that all published *evaluation* is gfx942 and
+  therefore no number transfers — stands unchanged, and so does the MI210 reproduction gate.
+- **Pin:** `v1.0.0 = 4ffba15a55f250816598b4e27eb56ca40a699cea`, Apache-2.0, still pinnable. v1→v4 spans
+  eight tags (v1.0.0 2025-08-01 → v4.0.0 2026-07-22); repo pushed 2026-08-03, 143 stars.
+- **Caveat on the v1 evidence itself:** v1's *release notes* name only MI300X. The gfx90a/MI250X claim
+  traces to the v1 **paper** (arXiv 2507.23194), not to the release.
+- **The KB is useful but not error-free — one defect confirmed.** `cdna2_mi200/memory.md` computes
+  `362 TF / 1.6 TB/s ≈ 226 FLOP/byte` as a **per-GCD** ridge while its own `arch.md` labels 362.1 TF as
+  **per-OAM (both GCDs)**. Off by 2×; the MI210 ridge is **~110–113 FLOP/byte**. Do not import 226.
+- **Corroboration harvested from the same KB:** *"Direct global→LDS exists on CDNA2 (32 b/lane, like
+  CDNA3)"* — AMD-authored third-party confirmation of a claim we had already overturned two other ways
+  (LLVM `FeatureVMemToLDSLoad ∈ FeatureGFX9`; the `vmem-to-lds-load-insts` gate on eight builtins). Now
+  settled three ways; promoted to **do-not-re-derive**.
+- **Unexploited, worth a read:** GEAK ships `languages/` docs on hipkittens · tilelang · mojo · cutlass ·
+  flydsl, and a `landscape/` section on multi-backend libs, DSLs, AI kernel agents, autotuning and
+  "AMD SOTA 2026" — a vendor-maintained survey of the same taxonomy our Stage-2 dive built by hand, and
+  an external check on it. `flydsl` is entirely absent from our corpus.
+
+### Prior sweep — 2026-07-29 (mainB)
 - **AgentKernelArena current official report:** AMD's 2026-07-03 report now describes **214** task configurations (148 Triton2Triton, 36 HIP2HIP, 26 Torch2HIP, 4 repository) and publishes a controlled **44-task MI300X** comparison. GEAKv3 leads the reported subset, but this is AMD-vendor evidence on CDNA3, not a transferable MI210 result. Source: [AMD AgentKernelArena report](https://rocm.blogs.amd.com/software-tools-optimization/agent-kernel-arena/README.html).
 - **Coverage conclusion unchanged:** the current AMD AgentKernelArena and GEAKv3 reports add a public controlled comparison and newer GEAKv3 evidence, but neither supplies a gfx90a/MI210 run. GEAK-v1 remains the only gfx90a-proven AMD substrate; no promotion, performance claim, or reproduction waiver follows from MI300X/MI355 reporting.
 - **GEAK repo pins (drift is real):** `AMD-AGI/GEAK` HEAD `c8bfc19`, tags through `v4.8.3.3`, branches `GEAK-v2` and `GEAK-HIP`. The repo HEAD is *past* the published papers — **pin a paper-matching commit/tag before treating repo code as a paper's artifact.** (GEAK-eval and Apex live in the same org.)

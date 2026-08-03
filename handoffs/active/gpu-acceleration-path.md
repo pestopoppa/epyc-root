@@ -303,7 +303,30 @@ AITER kernel performance numbers (17x MLA decode, 14x MHA prefill, 3x fused MoE)
 | [TurboQuant extreme KV cache quantization (discussion #20969)](https://github.com/ggml-org/llama.cpp/discussions/20969) | 2026 | **worth_investigating** |
 | [Context kills VRAM (Medium)](https://medium.com/@lyx_62906/context-kills-vram-how-to-run-llms-on-consumer-gpus-a785e8035632) | 2025 | **monitor_only** |
 
-**Key findings**: KV cache for 128k context on a 70B model consumes ~40GB alone. For our hybrid approach, keeping KV cache in GPU VRAM alongside attention weights is ideal but VRAM-limited. Quantizing KV to Q8 halves the footprint. Our 1.13TB RAM is the fallback -- CPU-side KV is viable with PCIe 5.0 bandwidth (~64 GB/s bidirectional). TurboQuant (extreme KV quantization) could compress KV cache enough to fit long contexts in 24GB VRAM alongside model weights.
+**Key findings**: KV cache for 128k context on a 70B model consumes ~40GB alone. For our hybrid approach, keeping KV cache in GPU VRAM alongside attention weights is ideal but VRAM-limited. Quantizing KV to Q8 halves the footprint. Our 1.13TB RAM is the fallback -- CPU-side KV is viable over the host link, **but see the link/placement correction below before sizing anything against it**. TurboQuant (extreme KV quantization) could compress KV cache enough to fit long contexts in 24GB VRAM alongside model weights. [was: "PCIe 5.0 bandwidth (~64 GB/s bidirectional)" — **corrected 2026-08-03**]
+
+### Host link and NUMA placement — corrected 2026-08-03 (research-intake Stage-2b)
+
+Two facts that several sizing arguments on this page and elsewhere were resting on, both wrong:
+
+1. **The link is measured PCIe Gen4 x16, not Gen5.** Three mutually inconsistent figures circulate in our
+   docs (~64 vs ~26 GB/s). Any CPU-side-KV or offload argument sized against a Gen5 number is
+   overstated by roughly 2×. **H2D/D2H bandwidth remains unmeasured** — it should be measured before it
+   is used as a design premise again, not re-derived from a spec sheet.
+2. **The MI210 is attached to NUMA node 1, not node 3** — sysfs ground truth,
+   `/sys/class/drm/card2/device`, device `0x740f`, `numa_node=1`. **No numeric node appeared anywhere in
+   the six MI210/autokernel handoffs before this.** The consequence: the GPU lane's host threads pinned
+   at **184–191 are already cross-node**, so every GPU-serving number we hold was measured under
+   cross-node host placement, and **device-local placement has never been tried.** This is the
+   highest value-per-effort item surfaced by the Stage-2b dives — it requires no kernel work at all.
+
+   *Blocker:* the four-arm P2-5j placement protocol that would test it **was deleted from git** and must
+   be restored before the seed is executable (`autokernel-research-loop.md` §3.7, §19.6 G1).
+
+- [ ] Measure H2D/D2H bandwidth on the Gen4 x16 link and replace every circulating figure with the
+  measurement
+- [ ] Restore the P2-5j placement protocol to git, then run device-local (node 1) vs the current
+  cross-node 184–191 host-thread placement
 
 ### Summary Assessment
 

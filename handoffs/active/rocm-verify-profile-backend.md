@@ -46,7 +46,28 @@ evaluate(candidate_source, torch_reference_module, inputs) -> {
 Mirrors GEAK-eval's evaluator, Apex's Magpie scorer, and CUDA Agent's `verification.py`/`profiling.py`/`compile.sh` (intake-660) — all validate this factoring. Resist widening the seam; a new controller's needs should be derivable from these fields.
 
 ## gfx90a caveat + audit
-Same `gfx90a` predicts **compile compatibility, not performance equivalence** — reproduce every AMD number on the MI210 before trusting it (GEAK-v1 is the only gfx90a-proven reference; GEAK-v2/HIP/AgentKernelArena are gfx942-only). **Run the GEAK-family freshness sweep (deep dive §9) at each audit.** All intake-674–679 AMD numbers are vendor-reported until reproduced on our own gfx90a (`feedback_classify_eval_failures_by_reason`, observe-before-diagnosing).
+Same `gfx90a` predicts **compile compatibility, not performance equivalence** — reproduce every AMD number on the MI210 before trusting it (GEAK-v1 carries the only gfx90a *evaluation*; GEAK-v2/HIP/AgentKernelArena publish gfx942 numbers only — but GEAK **v4** retains first-class gfx90a *knowledge*, amended 2026-08-03 in [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md)). **Run the GEAK-family freshness sweep (deep dive §9) at each audit.** All intake-674–679 AMD numbers are vendor-reported until reproduced on our own gfx90a (`feedback_classify_eval_failures_by_reason`, observe-before-diagnosing).
+
+## C4 is blocked on TOOL AVAILABILITY, not only on metric selection — 2026-08-03 (research-intake Stage-2b)
+
+The C4 row above is scored HIGH risk for "CDNA2 counter taxonomy unproven". That is only half of it:
+**the profilers themselves are absent.** `rocprofv2`, `rocprof` and `omniperf` were all missing as of
+2026-07-20 ([`mi210-big-model-and-acceleration-roadmap.md:205`](mi210-big-model-and-acceleration-roadmap.md));
+`rocprof` v1's SQ/TA counters read zero on this box and it aborts at init on graph-enabled builds;
+`rocm-bandwidth-test` is not installed; and QuixiCore's timing recipe — otherwise worth copying — assumes
+`rocprofv3`, also absent.
+
+**This is a regression, not a contradiction.** Two other files record successful `rocprofv2` runs on
+2026-07-04, sixteen days earlier, so something changed on the host between those dates. Recording it as a
+chronology rather than as an inconsistency is the point: the earlier runs are still valid evidence, and
+the fix is a host action (reinstall/re-pin), not a re-litigation of which file is right.
+
+- [ ] Restore `rocprofv2` (and evaluate `rocprofv3`) on the host; establish which of the 2026-07-04 →
+  2026-07-20 changes removed them, so it does not recur mid-campaign
+- [ ] Install `rocm-bandwidth-test` — it is also the instrument for the achievable-bandwidth denominator
+  §8.3.1 requires (`autokernel-research-loop.md` §14 AK1)
+- [ ] Re-score the C4 risk row once tooling exists: "no usable gfx90a signal" and "no profiler installed"
+  are different findings and must not be allowed to alias
 
 
 ## Auto-kernel revival — research-intake integration 2026-07-22 (C6 + task-contract from OpenHyra/HyRA)

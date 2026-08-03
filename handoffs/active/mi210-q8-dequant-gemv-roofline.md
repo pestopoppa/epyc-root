@@ -29,6 +29,56 @@ The aggregate-MoE #1 kernel lever, scoped + de-risked into a fundable GO with a 
 - **Build sequence:** Phase 0 (sub-4-bit MMQ correctness ✅; remaining = quantize an IQ2 proxy + operator-gated IQ2-vs-Q8 bench) → **Phase 1 (shared LDS-staging/occupancy rewrite, IN PROGRESS)** → Phase 2 (apply to IQ2/IQ3 + retune codebook dequant + quantize 122B→IQ2).
 - **Key files:** `ggml/src/ggml-cuda/mmq.cu` (267–340), `mmq.cuh` (MMA tile map 239–264, LDS `MMQ_MMA_TILE_X_K_*` 219–225). Prior CSVs: `campaign/moe-agg/prof/pmc_{q8,bf16}/`.
 
+## UPDATE 2026-08-03 — the gap is ONE handoff but TWO mechanisms; splitting them (research-intake Stage-2b)
+
+_Via `/research-intake` Stage-2b dive 2b-C. This **refines** the 2026-07-04 update above, it does not
+contradict it — the recomputed ladder reproduces the existing fable5 series to within 1 pp._
+
+**The full quant ladder, recomputed on one consistent GiB basis** (spec-BW denominator; see the calibration
+caveat below), with `mul_mat_vec_q` measured at **77.8% of decode time**:
+
+| Rung | Bandwidth attainment |
+|---|---|
+| fp16 (llama.cpp) | **62.6%** |
+| fp16 (vLLM-ROCm, same device) | **69.2%** |
+| Q8_0 | 50.2% |
+| Q4_K | 35.1% |
+| MoE-bf16 | 34.4% |
+| MoE-Q8 (frontdoor) | 21.3% |
+| **MoE-IQ2 (architect, `Qwen3.5-122B-A10B UD-IQ2_M`)** | **10.3%** |
+| Qwen3-Next-80B i1-IQ2 | 3.3% |
+
+**The reading that matters: 62–69% is already reached on this device, so the memory system is not the
+limiter.** The collapse is entirely down the quant ladder. For reference, DGX Spark GB10 reaches **77–80%
+at Q4_K_M dense across five models** on the same engine — NVIDIA's quant sag is 5–10 pp; ours is 27 pp.
+
+**Why this handoff now carries two items instead of one.** The 2026-07-04 update's finding —
+*"the 47→62% gap is achieved-bandwidth / occupancy, NOT dequant-compute. Do not port iqk to hide dequant"* —
+is **correct, and it is correct for Q8_0**, whose GEMV is already int8-native. But **Q4_K 35→50 is a
+different mechanism** (k-quant superblock unpack, not occupancy), and treating the two as one gap has
+already produced one wrong verdict. They are filed separately in the checklist below.
+
+**Corrected IQ2_XXS characterization** (verified read-only against our tree, supersedes the
+"four *dependent* random reads plus *a* sign-table read" framing): per 32 quantized weights there are
+**four INDEPENDENT data-dependent gathers** into a 256-entry / 2 KiB grid — all four indices arrive in a
+**single 8-byte `memcpy`** (`ggml-quants.c:2500`), so no address depends on another lookup's result, ILP ≈ 4,
+**not a pointer chase** — plus **FOUR** sign-table gathers (`ksigns_iq2xs[…]` is inside the `l` loop), each
+grid entry expanding to 8 values. The 4+4 ratio holds across every SIMD path including our production iqk
+(`iqk_gemm_iquants.cpp:176-181`, signs `:86-90`), AVX2, and CUDA.
+
+**Calibration caveat that bounds every percentage on this page.** All attainment figures — ours and
+everyone's — are against **spec** bandwidth, not achievable. No measured MI210 STREAM/BabelStream figure
+exists anywhere in the repo. If real achievable is ~1.3–1.4 TB/s (typical for HBM2e), **every MI210
+percentage above rises 17–26%** and the NVIDIA gap narrows correspondingly. The measurement is seeded in
+`autokernel-research-loop.md` §14 AK1 and is a one-hour run.
+
+**Free incidental finding in our own CPU tree, filed here because it is the same IQ2 sign path:**
+`iqk_gemm_iquants.cpp` contains an AVX512-VPOPCNTDQ routine deriving IQ2 signs arithmetically with **zero
+table reads**, but its dispatch at `:184` is guarded by `#if defined z_HAVE_FANCY_SIMD && …`. **The `z_`
+prefix makes the macro undefinable, so the branch is permanently dead** (same at `:109`, `:571`) and the
+table lookup always runs — **including on our Zen 5 host, which has VPOPCNTDQ.** Inherited verbatim from
+ik_llama.cpp via `fec061dea`; not introduced by us. Experimental branch only — production is frozen.
+
 ## Objective
 
 Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward the bandwidth roofline. Measured today: Q8 decode ~47% roofline (766 GB/s), fp16 ~62%, and rocprof attributes single-stream decode ~78% to `mul_mat_vec_q` (the Q8 weight GEMV) + 5.68% to `quantize_q8_1` (activation requant). Two gaps: **47→62% = Q8 dequant cost** (kernel-addressable); **62→100% = batch-1 latency wall** (memory-level-parallelism, harder). This handoff attacks both.
@@ -80,3 +130,10 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
   McNemar p=1.000 (`progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md:12`). Certified by read-certification (`auditor`).
 - [ ] SoA-repack lever (only if coalescing measured poor - currently deemed healthy)
 - [ ] Optional stream-K K-splitting for Q8-MMQ aggregate (separate bet)
+- [x] Recompute the full quant ladder on one consistent basis (fp16 62.6 / Q8_0 50.2 / Q4_K 35.1 / MoE-Q8 21.3 / MoE-IQ2 10.3) ✅ 2026-08-03 — via /research-intake Stage-2b; reproduces the fable5 series to within 1 pp
+- [x] Correct the IQ2_XXS access characterization: four INDEPENDENT gathers (single 8-byte memcpy, ILP≈4) plus FOUR sign-table gathers, not a dependent pointer chase with one sign read ✅ 2026-08-03
+- [ ] **Item A — Q8_0 50→62 rung (achieved-bandwidth / occupancy).** The 2026-07-04 finding stands: no per-element fp dequant to hide. Continue on the async-prefetch/MLP track; do NOT reopen an iqk port for this rung
+- [ ] **Item B — Q4_K 35→50 rung (k-quant superblock unpack).** A DIFFERENT mechanism from item A and the largest single banded win available (+38–43%, high confidence). Decisive first measurement: per-op wall share of superblock unpack inside `mul_mat_vec_q` at Q4_K vs Q8_0 on the same model, before any kernel is authored
+- [ ] **Item C — architect MoE-IQ2 at 10.3%**, our worst rung by 2× and a production-serving model. Attach the kill-criterion first (below) — this is a probe, not yet a funded kernel
+- [ ] Kill-criterion probe for item C: on gfx906 an optimised community fork **and** vLLM independently converge on ~10% bandwidth for MoE batch-1 — the same rung as ours. Two stacks hitting one wall means this may be an **architectural floor**; establish cheaply whether it is before funding a kernel
+- [ ] Investigate the permanently-dead `z_HAVE_FANCY_SIMD` AVX512-VPOPCNTDQ IQ2 sign path on an EXPERIMENTAL branch only (production kernel is frozen; this is a CPU-side finding filed here for mechanism adjacency)

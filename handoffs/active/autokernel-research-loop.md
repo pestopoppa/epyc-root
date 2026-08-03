@@ -2069,6 +2069,21 @@ can act on a waiver-bearing verdict.
 - [x] Add deterministic reconstruction test from journal plus immutable artifacts only. ✅ 2026-08-03 (journal + integration suites)
 - [ ] Fix the `kernel_store.py:88` file-handle warning; add both `kernel_rnd` suites to
   `PYTEST_SMOKE`; pin pytest in `pyproject.toml`/`uv.lock` rather than injecting it via `--with`.
+- [ ] **Measure achievable MI210 bandwidth (STREAM/BabelStream-class) — §8.3.1's second denominator does
+  not exist yet.** Every roofline percentage in this project, and every one quoted at us from outside, is
+  against **spec**, not achievable; no measured MI210 STREAM figure exists anywhere in the repo. If real
+  achievable is ~1.3–1.4 TB/s (typical HBM2e), **every MI210 attainment figure rises 17–26%** and the
+  AMD-vs-NVIDIA gap narrows correspondingly — which changes how several campaigns should be sized. A
+  one-hour run that calibrates the denominator of every roofline claim we have ever made. This is the one
+  GPU-touching item in AK1: it needs an operator-approved window and a device claim, but it is a bandwidth
+  probe, not inference. Record **both** denominators per §8.3.1 and put them in the P0.1 profile manifest.
+  *(`rocm-bandwidth-test` is not installed — see the profiler-tooling blocker in
+  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md).)*
+- [ ] Import the **derived** MI210 compute-roofline constants as substrate facts, marked `[D]` and never
+  upgraded by import (§19.0 rule 4): 181.0 TFLOPS fp16/bf16, 181.0 TOPS int8 (**CDNA2 does not double
+  int8**; no FP8/FP4/TF32), fp32 matrix 45.3 / vector 22.6, **ridge 110.5 FLOP/byte**, and
+  `B* = 110.5 × bytes_per_weight / 2`. Full derivation and the 2× defect in AMD's own published figure:
+  [`mi210-mfma-compute-bound-paths.md`](mi210-mfma-compute-bound-paths.md).
 
 **Exit:** crash/restart/rewind never loses a candidate or its negative lesson; the loop starts with the
 project's prior knowledge rather than an empty memory; no contaminated legacy row can reach the planner.
@@ -2116,6 +2131,13 @@ project's prior knowledge rather than an empty memory; no contaminated legacy ro
   teardown. The loop compiles code it authored and then runs it with GPU access on a shared host;
   the actor's tool allowlist does not constrain that binary's syscalls (§8.5.1).
 - [ ] Add resource starvation/drain/resume tests and campaign checkpointing.
+- [ ] **Import the MI210's actual NUMA attachment as a resource-plane fact: the device is on node 1, not
+  node 3** (sysfs ground truth, `/sys/class/drm/card2/device`, `0x740f`, `numa_node=1`). The seed G1 row
+  in §19.6 asks to "import current MI210 node attachment" and **no numeric node appears anywhere in the
+  six MI210/autokernel handoffs.** The consequence is immediate and needs no kernel work: **the GPU
+  lane's host threads at 184–191 are already cross-node, and device-local placement has never been
+  tried.** Placement evidence lives in
+  [`gpu-acceleration-path.md`](gpu-acceleration-path.md).
 
 **Exit:** the controller can safely author, build, acquire and release CPU **and GPU** resources, be
 revoked, and be seen — without inference or production mutation.
@@ -2385,6 +2407,7 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 | AK-D27 | A fifth control — historical-win replay that MUST promote — joins positive/neutral/negative/A-A | The other four test rejection; nothing tested acceptance, leaving a dead gate indistinguishable from an exhausted surface |
 | AK-D28 | A freeze is one pre-validated apply bundle covering all four boundary writes, not four ceremonies | The doctrine is one signature over a consolidated bundle; four hand-assembled artifacts per freeze is the avoidable recurring cost |
 | AK-D25 | Freeze cadence defaults to **on readiness or quarterly, whichever comes first**, as an operator policy rather than a loop parameter | Cadence trades accumulated value per freeze against champion drift, re-anchor cost, and how often the highest-risk code is exercised |
+| AK-D36 | **Closing the llama.cpp-vs-vLLM gap is not a kernel goal and must not become a campaign objective.** At batch-1 llama.cpp is 0.1–5.8% *faster* on an RTX 4090 and comparable on an H200; on our MI210 vLLM leads by **+11%**, and that 11% *is* the kernel delta. The headline 24–44× arrives only at **16–64 concurrent users** and is continuous batching, PagedAttention and the scheduler — a `serving_runtime` question under AK-D9/AK-D23, not a kernel freeze. **Caveat that rides with this row:** every public batch-1 head-to-head is at **16-bit**, i.e. exactly where our gap is not; the quantized-vs-quantized head-to-head **has never been run anywhere**, so a future measurement could move the +11%, though not the concurrency decomposition | A whole-stack throughput ratio recruited as a kernel target would spend a kernel campaign on a scheduler property. Naming the decomposition once stops it being re-derived — and no statement to this effect existed anywhere in the six MI210/autokernel handoffs before 2026-08-03 |
 
 ---
 
@@ -2565,6 +2588,17 @@ Each entry requires exact match dimensions and a `reopen_when` predicate. "Do no
 regime identity is dangerous because this project repeatedly observes sign changes across architecture,
 substrate, batch, context, and quant.
 
+**Seed entries — established capability facts, do not re-derive (2026-08-03, research-intake Stage-2b).**
+These are the inverse of a negative: claims that were asserted, checked, and **overturned**, which is
+exactly the shape a planner will otherwise rediscover from the literature every few months.
+
+| Entry | Class | Content | `reopen_when` |
+|---|---|---|---|
+| `gfx90a-has-direct-global-to-lds` | `SUPERSEDED_FACT` | **"gfx90a lacks the CDNA3 asynchronous buffer-load machinery" is FALSE.** Corroborated three independent ways: (a) LLVM — `FeatureVMemToLDSLoad` sits inside `FeatureGFX9` and gates 8 builtins via `"vmem-to-lds-load-insts"`; (b) AMD's own GEAK CDNA2 doc — *"Direct global→LDS exists on CDNA2 (32 b/lane, like CDNA3)"*; (c) our own tree already calls `llvm.amdgcn.raw.buffer.load.lds` on gfx90a (`mmvq.cu:538,602`). What gfx90a genuinely lacks is the **async DMA engine** (no TMA/`cp.async`/mbarrier) and the **SMEM-operand matrix instruction** — different limitations with different consequences | Never for the capability itself. The *performance* question (whether the linear-deposit form we use is leaving anything on the table vs an HBM-side-swizzled deposit) is open and lives in the G-family |
+| `hipkittens-tile-layout-is-ours` | `SUPERSEDED_FACT` | HK's `rt_base` is **bit-identical** to `ggml-cuda/mma.cuh`'s `tile<16,16>` in frozen v8. A planner proposing "port HK's tile abstraction" is proposing to re-derive a layout we already ship | Source change to `mma.cuh`'s AMD MFMA branch |
+| `mfma-decode-kernels-are-worth-zero` | `HARD_CONSTRAINT` | At batch-1 arithmetic intensity (1.0–5.2 FLOP/byte, 31–113× below the 110.5 ridge) the matrix units cannot exceed ~1.7–3.2% busy **at any bandwidth**. `MfmaUtil ≈ 0%` is physics, not a defect. Authoring MFMA decode kernels returns 0 | Batch size at or above `B* = 110.5 × bytes_per_weight / 2` (Q4_K 31, Q8_0 59, bf16 110) — i.e. this is a *decode* constraint, and batched/prefill regimes are explicitly not covered |
+| `cdna2-abandoned-by-vendor-and-quant-schools` | `HARD_CONSTRAINT` | AITER's supported-hardware table lists **no MI210/MI250/gfx90a, not even experimental** — consumer RDNA parts are supported ahead of our datacenter card. TileLang is CDNA3-limited; the quantization×kernel co-design school (ZipServ, EXL3, Escha, Sakana) is ROCm-excluded across the board. **Nobody will port anything to this card for us** — which is the premise AutoKernel exists to answer, not a reason to stop | A vendor or project announcing gfx90a support; re-checked at each freshness sweep |
+
 **Contradiction detection is mandatory at compile time.** An entry is checked against live operator
 decisions and against sibling entries; anything that contradicts either becomes `conflicted` and is
 never authoritative. This is not hypothetical: twice in one session an agent let a committed artifact
@@ -2658,7 +2692,7 @@ negatives so the planner cannot omit inconvenient history.
 
 | Draft family | Audit verdict | Seed disposition |
 |---|---|---|
-| **G1 host/PCIe/pinned-memory NUMA** | Strong, cheap, still relevant. A four-arm P2-5j placement protocol already exists — consume it, do not reinvent a duplicate sweep. **Note: that protocol was deleted from git (§3.7) and must be restored before the seed is executable** | `READY_EXISTING_PROTOCOL`, config/placement campaign; import current MI210 node attachment and historical placement confounds |
+| **G1 host/PCIe/pinned-memory NUMA** | Strong, cheap, still relevant. A four-arm P2-5j placement protocol already exists — consume it, do not reinvent a duplicate sweep. **Note: that protocol was deleted from git (§3.7) and must be restored before the seed is executable.** **Node attachment resolved 2026-08-03: the MI210 is on NUMA node 1** (sysfs `/sys/class/drm/card2/device`, `0x740f`, `numa_node=1`) — **so the GPU lane's host threads at 184–191 are already cross-node and device-local placement has never been tried**. Also correct the link generation: it is **measured Gen4 x16**, not the PCIe 5.0 our docs claimed | `READY_EXISTING_PROTOCOL`, config/placement campaign; node attachment now imported, historical placement confounds still to import |
 | **G2 batch-one low-bit GEMV** | Too broad as written. Generic Q8 dequant is a stale premise (integer-native path); generic megakernel and several speculation/prefetch variants have matching negative or conditional history; workgroup sizing and prior prefetch changes are legacy priors, not patches to replay on v8. Layout/coalescing and MLP questions remain conditional on a fresh profile | Split into atomic priors; seed only current-profile gaps — coalescing/layout if cache-line evidence is poor, or another gfx90a MLP lever if the production path still exposes it |
 | **G3 GPU-native low-bit layouts** | Sound high-upside family, but only if metadata traffic, cache-line use, unpack cost, or occupancy is currently deficient. Startup time and VRAM/context cost are first-class outputs | `MEASUREMENT_FIRST`; T1 starts with load/repack accounting plus captured GEMV/MMQ shapes, then one tiny real graph |
 | **G4 persistent grouped MoE** | Valid high-effort family for batched MoE; must be distinguished from the persistent stream-K MMQ path already present. "Persistent" alone is not novelty | `CONDITIONAL_HIGH_EFFORT`; require routing/expert wall share, grid/occupancy evidence, and a target batched regime before source work |
@@ -2671,6 +2705,18 @@ negatives so the planner cannot omit inconvenient history.
 | **G11 mixed-KV specialized attention** | One of the clearest remaining concrete gaps: the default path can fall back on mixed q4/f16 while blanket all-quant support harms protected homogeneous paths | `READY_AFTER_PROTOCOL`; seed a dedicated mixed-format path with no-fallback proof and homogeneous f16/f16 and q4/q4 sentinels |
 | **G12 joint speculation-depth/batch/context policy** | Strong and cheap, but a serving/config policy rather than a kernel source freeze; prior results prove the sign is regime-specific | `READY_SERVING_ADAPTER`; search the existing parameter surface cheaply and release through `serving_runtime` |
 | **G13 vLLM capability audit** | Useful design oracle, but a broad rerun is stale work — earlier local audits already separated dense-control advantages from gfx90a/model blockers | Import the existing capability result; reopen only on a source-version, supported-model, quant, or gfx90a capability change. Port algorithms via `oracle_port` (§6.5), never unsupported instructions |
+
+**Three GPU families added 2026-08-03 (research-intake Stage-2b).** All three are quant-ladder or
+non-GEMM findings that the original G1–G13 audit had no measurement to see. Their common premise: on this
+device **fp16 already attains 62.6% of spec bandwidth and vLLM-ROCm attains 69.2%**, so the memory system
+is not the limiter and the entire collapse is down the quant ladder — the ladder and its spec-vs-achievable
+calibration caveat are in [`mi210-q8-dequant-gemv-roofline.md`](mi210-q8-dequant-gemv-roofline.md).
+
+| New family | Audit verdict | Seed disposition |
+|---|---|---|
+| **G14 architect MoE-IQ2 batch-1 GEMV** | `Qwen3.5-122B-A10B UD-IQ2_M` attains **10.3%** — our worst rung by 2×, and a **production-serving** model, so a win lands on a live role rather than a benchmark. Reaching even the Q4_K rung takes 43.7 → ~145 tok/s. **But a kill-criterion must be attached before funding:** on gfx906 an optimised community fork **and** vLLM independently converge on ~10% bandwidth for MoE batch-1 — the same rung. Two independent stacks hitting one wall means this may be an **architectural floor**, not a kernel gap | `CONDITIONAL_PROBE_FIRST`; the cheapest discriminator is not a kernel — establish whether the ~10% MoE batch-1 rung is architectural before any source work. Band if it is not: +2–3×, MED-LOW confidence |
+| **G15 batched elementwise/norm fusion (GPU)** | **43% of B=128 decode time is non-GEMM elementwise/norm; GEMM is only 37%.** The finding has existed since 2026-07-04 in [`mi210-mfma-compute-bound-paths.md:11`](mi210-mfma-compute-bound-paths.md) and was **never made a seed** — a genuine gap in the G-family, not a duplicate. Distinct from CPU-family C2: different memory hierarchy, different fusion boundaries, different correctness surface | `READY_PROFILE_SELECTED`; seed exact operator clusters from a current B=64/128 wall-share map, not "fuse the tail" generically. Band +20–27%, HIGH confidence |
+| **G16 MoE expert-gather GEMV** | Our dense/MoE attainment ratio is **2.1×** (fp16 62.6 → MoE-Q8 21.3) against NVIDIA's **1.3×** (GB10 dense 77–80 → MoE-Q8 59.6) on the same engine. That excess ratio is the gather, not the quant — it is the one place where our sag is measurably worse than a comparison platform's rather than merely present | `MEASUREMENT_FIRST`; first artifact is an expert-token histogram plus gather wall share at the production routing skew, then one atomic gather experiment. Band ~2.0×, MEDIUM |
 
 **CPU families.** Current anchors: [CPU optimization index](cpu-inference-optimization-index.md),
 [prefill compute](cpu-prefill-compute-large-models.md), and the research repository's preserved CPU
@@ -2741,6 +2787,21 @@ Every draft idea enters the prior catalog; the initial *executable* queue is:
 8. **C5/G4 grouped MoE scheduling** — after real batch/expert histograms are compiled.
 9. **G9/G10 recurrent work** — through the existing K28 and state/rollback gates.
 10. **S1/G12 serving policy campaigns** — through the serving adapter when that release path exists.
+
+**Inserted 2026-08-03 (research-intake Stage-2b).** These do not displace the ten above; they slot by
+readiness, and two of them are cheaper than anything currently in the list:
+
+0. **Measured achievable MI210 bandwidth** (§14 AK1) — one hour, no kernel, and it is the denominator of
+   every roofline number the loop will read or emit. Ranked ahead of P0 because P0's profile manifest
+   consumes it.
+3b. **G15 batched elementwise/norm fusion** — the largest HIGH-confidence GPU band available (+20–27%)
+   and it sits on an already-measured wall share, so its discriminator is a profile it can compile
+   immediately rather than a new experiment.
+7b. **G16 MoE expert-gather** — after the expert-token histogram C5/G4 already requires, so it costs one
+   shared instrument rather than its own.
+9b. **G14 architect MoE-IQ2** — last on purpose. Its kill-criterion probe runs first and may retire it
+   at near-zero cost; funding a kernel before that probe is how a campaign gets spent on an
+   architectural floor.
 
 A bootstrap/acceptance sequence, not a permanent research priority. Fresh profiles and production
 workload exposure re-rank it.

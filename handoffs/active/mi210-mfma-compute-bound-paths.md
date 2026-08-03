@@ -1,6 +1,8 @@
 # Handoff: MI210 MFMA for compute-bound paths (prefill / diffusion / high-batch)
 
-**Status**: OPEN — design + scoped-measurement first, then kernel work. **Created**: 2026-07-04 (MI210 campaign follow-on).
+**Status**: **CLOSED-BY-ARITHMETIC for decode** (2026-08-03) — the 2026-07-04 `MfmaUtil ≈ 0%` observation is
+now explained, not merely measured; see §"Compute roofline" below. **OPEN for prefill/diffusion** on the
+original measure-first gate. **Created**: 2026-07-04 (MI210 campaign follow-on).
 **Owner tree**: `/mnt/raid0/llm/llama.cpp-experimental` (kernel work here, never production-v6). **Substrate**: MI210 gfx90a/CDNA2 — has fp16/bf16/int8 **MFMA matrix cores**. All numbers OBSERVATION.
 **Context doc**: `fable5-window2-findings-05b-mi210-inference-architecture.md` §9 (the GDN-MFMA-decode KILL, and why MFMA is alive for compute-bound regimes).
 
@@ -11,6 +13,75 @@ Kernel-thread `a8afd338` ran the decisive pre-build rocprofv2 measurement. **Nei
 - **High-batch decode** (`-npl 128`): batched GEMM is `mul_mat_q` MMQ **int8-MFMA** (AccVGPR=128). VALUBusy **16.8%** (not compute-bound), MemUnitBusy 48%; and **43% of batch-128 time is non-GEMM elementwise/norm** + 20% memory-bound GEMV.
 
 → MFMA kernel-authoring **DEFERRED** — matrix cores are already engaged on both. **Higher-value orthogonal levers surfaced instead (NOT MFMA kernels):** (a) prefill could skip the Q8→f16 dequant/convert (~15%) via a direct int8-MFMA GEMM — a *dispatch-tuning* change, not a new kernel; (b) high-batch could fuse the elementwise/norm tail (43% of B=128 time). **Reopen the MFMA build only if a NEW compute-bound path appears** (a diffusion/DiT serving path — `ernie-image-turbo`; or gfx90a training [unverified]); the measure-first gate below still stands. Original objective kept for the record.
+
+## Compute roofline — the blank spot, closed by arithmetic (2026-08-03, research-intake)
+
+_Via `/research-intake` Stage-2b (intake-944/947 dive-I, plus AMD's own GEAK `perf_knowledge/hardware/cdna2_mi200/` KB).
+**No peak-FLOPs figure or ridge point existed anywhere in the six MI210/autokernel handoffs before this.**
+All four rates are **`[D]` derived from spec**, not measured — they reproduce AMD's published figures exactly,
+but any citation must carry the `[D]`._
+
+| Quantity | MI210 (gfx90a, 104 CU @ 1.7 GHz) | Note |
+|---|---|---|
+| fp16 / bf16 matrix | **181.0 TFLOPS** `[D]` | 104 CU × 1024 FLOP/clk × 1.7 GHz |
+| int8 matrix | **181.0 TOPS** `[D]` | **CDNA2 does NOT double int8** — unlike CDNA3 |
+| fp32 matrix / vector | 45.3 / 22.6 TFLOPS `[D]` | |
+| FP8 / FP4 / TF32 | **none** | no matrix-core support on gfx90a at any rate |
+| **Ridge point** | **110.5 FLOP/byte** `[D]` | vs 1.638 TB/s spec BW (113.1 on a decimal-GB basis) |
+
+For contrast the RTX PRO 6000 Blackwell fp16 ridge is **281** (FP4 ridge 1124) — **the MI210 is the more
+bandwidth-balanced part**, so a bandwidth-directed program is the arithmetically correct one here.
+
+**Two standing questions this converts from deferred to closed:**
+
+1. **`MfmaUtil ≈ 0%` at batch-1 is CORRECT BEHAVIOUR, not a defect.** Batch-1 arithmetic intensity is
+   fp16 1.00 / Q8_0 1.88 / Q4_K 3.56 / IQ2 5.19 FLOP/byte — **31–113× below the knee**. At that AI the
+   matrix units cannot exceed ~1.7–3.2% busy *at any bandwidth*. The 2026-07-04 profile was reading the
+   physics, not a missed optimization.
+2. **The batch knee is now predictable:** `B* = 110.5 × bytes_per_weight / 2` → **Q4_K 31, Q8_0 59,
+   bf16 110**. This **retro-predicts the already-measured bf16 knee at B≈96–128**, which is the
+   confirmation that the arithmetic is anchored to something we observed rather than to spec alone. Above
+   `B*`, bandwidth attainment stops being the right ceiling and the matrix roofline takes over.
+
+**Defect to carry — do not import AMD's own number.** GEAK's `perf_knowledge/hardware/cdna2_mi200/memory.md`
+computes `362 TF / 1.6 TB/s ≈ 226 FLOP/byte` as a **per-GCD** ridge, while its own `arch.md` labels the same
+362.1 TF figure **per-OAM (both GCDs)**. **Off by 2×. Use ~110–113, never 226.** The KB is useful and
+first-class for gfx90a, but it is not error-free.
+
+**K9 consequence, banded:** authoring MFMA *decode* kernels is worth **0, with certainty — do not build.**
+That is the same conclusion the 2026-07-04 measurement reached, now with a mechanism instead of a counter.
+
+## Arch-independent scheduling lessons (HipKittens, intake-947 — free, apply today)
+
+Harvested from a CDNA3/4 paper with **zero mentions of gfx90a**, but these five are architectural rather
+than generation-specific, so they transfer without a port. **Do not vendor the framework** — its register
+tile is bit-identical to the one already in our frozen v8 (`ggml/src/ggml-cuda/mma.cuh:127,144`:
+`get_i = tid%16`, `get_j = 4*(tid/16)+l`, `ne=4` — the same object as HK's `rt_base`), so every technique
+below composes onto our existing fragments with **zero layout re-derivation**.
+
+1. **Do NOT wave-specialize.** AMD statically divides registers across all waves, so producer waves consume
+   registers without contributing output: measured 4 producers / 8 consumers = **893 TFLOPs** vs
+   0 producers / 8 consumers = **1610**. Architectural, not gfx950-specific.
+2. **8-wave ping-pong before 4-wave interleave** — ~90% of the performance at ¼ the code (48 LoC vs 183).
+   Mechanism: offset-barrier team split (team 1 takes an extra `s_barrier` so it runs one cluster behind),
+   `s_setprio(1)/(0)` bracketing MFMA blocks, `sched_barrier(0)` after each cluster, and a mirror-image
+   parity restore before the epilogue **or the workgroup hangs**.
+3. **Swizzle HBM-side, not LDS-side.** No single swizzle serves both `ds_write_b64` and `ds_read_b128`. We
+   already call the direct-to-LDS intrinsic on gfx90a (`mmvq.cu:538,602`) but **deposit linearly**; HK
+   inverts the swizzle into the *global* offset because a fixed-mapping DMA cannot XOR the LDS address.
+   That is the concrete mechanism, and it is what we add when the LDS consumer becomes a 2-D MFMA tile read.
+4. **HIPCC will not feed AGPRs to matrix-core instructions** even though the hardware supports it, forcing
+   redundant `v_accvgpr_read`. A live compiler tax on gfx90a — and exactly the kind of thing C4 should
+   learn to recognize.
+5. **Chiplet swizzling is a non-issue** for the single-GCD MI210 — one fewer knob, not a loss. But the
+   *L2-locality* half of grid swizzle does apply, and it **must be swept, not set**: measured WGM none
+   1016.6 TFLOPs → 2 +6.6% → 4 +9.1% → **8 +9.6%** → **32 −13.9%**. Pure launch-order reordering, zero
+   kernel-body change.
+
+**Honest negative, recorded so it is not re-derived:** for a *dequant* gap HipKittens has **nothing** — its
+quantized path is gfx950 hardware block-scaling (`mfma_scale_f32_*_f8f6f4`), with no software dequant
+anywhere. Its cross-lane reductions are a plain `__shfl_down` ladder with no DPP/permlane, i.e. **worse than
+what we would write** — a place we can beat it.
 
 ## Objective
 
@@ -45,3 +116,11 @@ Acceptance to proceed to kernel work: a candidate path shows **high VALUBusy + l
 ## Progress checklist
 
 - [ ] DEFERRED (with data): reopen MFMA build only if a new compute-bound path appears (measurement gate failed both paths)
+- [x] Close the compute-roofline blank spot from spec arithmetic: 181.0 TFLOPS fp16/bf16, 181.0 TOPS int8 (no doubling), ridge 110.5 FLOP/byte, all marked `[D]` ✅ 2026-08-03 — via /research-intake Stage-2b
+- [x] Explain `MfmaUtil ≈ 0%` at batch-1 as correct behaviour (AI 1.0–5.2 FLOP/byte, 31–113× below the knee) rather than a defect ✅ 2026-08-03
+- [x] Derive `B* = 110.5 × bytes_per_weight / 2` (Q4_K 31, Q8_0 59, bf16 110) and check it against the measured bf16 knee at B≈96–128 ✅ 2026-08-03
+- [x] Record the 2× per-GCD/per-OAM defect in AMD's GEAK `cdna2_mi200/memory.md` so its 226 FLOP/byte is never imported ✅ 2026-08-03
+- [x] Import the arch-independent HipKittens scheduling lessons (no wave-specialization, 8-wave ping-pong, HBM-side swizzle, AGPR/HIPCC tax, sweep-don't-set grid swizzle) ✅ 2026-08-03
+- [ ] Verify the `[D]` peak-FLOPs figures against a measured gfx90a MFMA microbenchmark before any of them is cited outside this handoff as anything but derived
+- [ ] Sweep grid-swizzle WGM (none/2/4/8/16/32) on our own MMQ launches — pure launch-order change, no kernel body edit; the CDNA3 optimum at 8 is a starting point, not an answer
+- [ ] Elementwise/norm fusion for batched decode remains the live orthogonal lever (43% of B=128 time is non-GEMM vs 37% GEMM) — now seeded in `autokernel-research-loop.md` §19.6/§19.8 rather than only noted here
