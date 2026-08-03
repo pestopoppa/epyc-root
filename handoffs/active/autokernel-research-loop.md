@@ -2344,17 +2344,17 @@ cannot retrigger the expensive gate unchanged.
 - [x] Render the package as a four-part decision package (`OPERATING_CONSTRAINTS.md:69-78`). ✅ 2026-08-03
 - [ ] Run an end-to-end campaign that stops at a validated package with zero production writes.
 - [ ] Run repeated restart/crash/resource-preemption/tamper fault injections.
-- [ ] Give the operator surface a freshness and health contract, not just data. Today's `/kernel` page is
+- [x] Give the operator surface a freshness and health contract, not just data. Today's `/kernel` page is
   **absence-tolerant over a missing directory** — it renders clean when its producer is dead, which is
   the exact shape of AutoPilot dying at trial 1302 and staying dead ~23 h with every dashboard green.
   Required: a per-panel freshness envelope, an SSOT panel→producer registry whose test fails when a
-  panel has no registered source, a `/health` fold, a transport watchdog, and a restart chaos test.
-- [ ] Replace the `/kernel` dashboard JSON contract. The existing one exposes a partial Pareto and
+  panel has no registered source, a `/health` fold, a transport watchdog, and a restart chaos test. ✅ 2026-08-03
+- [x] Replace the `/kernel` dashboard JSON contract. The existing one exposes a partial Pareto and
   nothing else; the new contract carries campaign phase, champion membership and readiness, per-backend
   standing, storage and budget headroom, open blocking conditions (`EVALUATOR_COVERAGE_GAP`,
   `ANCHOR_MOVED`, phase-trade exceptions), resource claims held, and release-package state. Version the
   contract explicitly, keep it absence-tolerant as the current page is, preserve the freshness envelope,
-  and point `KERNEL_DASHBOARD_JSON` at a durable path rather than the missing scratch directory.
+  and point `KERNEL_DASHBOARD_JSON` at a durable path rather than the missing scratch directory. ✅ 2026-08-03
 
 **Exit:** campaigns produce correct, idempotent, operator-executable release packages and never write
 production.
@@ -2417,7 +2417,7 @@ Each line names the specific blocker, per *Act, Don't Defer*.
 |---|---|---|
 | AK6 end-to-end campaign stopping at a validated package | a real champion and a compute window (AK7) | — |
 | AK6 fault injection (restart/crash/preemption/tamper) | needs process management, forbidden to the agents that built this | who runs it, and where |
-| AK6 `/kernel` freshness contract + JSON contract v2 | **nothing** | ✅ this is real work with no decision in front of it |
+| ~~AK6 `/kernel` freshness contract + JSON contract v2~~ | — | **DONE 2026-08-03.** It had no blocker, so it got built rather than listed. Contract v2 + producer in `autokernel/surface/`, panel→producer registry and health fold in `dashboard/panels.py`. The restart chaos test walks the actual incident: alive → silent-within-budget (still green, the control that stops it alarming forever) → past budget, board **names** the dead producer → hub restarts, verdict does not go green → a live exporter over a dead loop cannot resurrect the panel → export swept away, hub renders rather than 500s. |
 | AK7 first supervised freeze | operator freeze request | — |
 | AK8 seed queue, `oracle_port`, external suites | fresh profiling, which needs the loop running | — |
 | AK9 speech compiler extension | `P-STT-1`/`P-TTS-1` ratification (operator) | — |

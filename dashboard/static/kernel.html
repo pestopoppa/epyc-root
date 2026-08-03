@@ -46,6 +46,15 @@
   .mech .down{color:var(--good)} .mech .up{color:var(--bad)}
   code{background:#0d1117;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:11px;font-family:ui-monospace,Menlo,Consolas,monospace}
   .empty{color:var(--muted);padding:24px;text-align:center;font-size:13px}
+  /* The reporting banner. A blank card must never be able to render without the
+     sentence that says what blank MEANS here — that sentence travels on the wire
+     as _freshness.absence_means and is shown whenever the panel is not observed. */
+  .reporting{border-radius:8px;padding:10px 14px;margin-bottom:18px;font-size:12.5px;
+    border:1px solid var(--border);background:var(--panel2);color:var(--muted)}
+  .reporting.alarm{border-color:#4d1f1c;background:rgba(248,81,73,.08);color:#f0a29c}
+  .reporting.absent{border-color:#4d3f14;background:rgba(210,153,34,.08);color:#e5c07b}
+  .reporting b{color:inherit}
+  .sec-observed{color:var(--good)} .sec-silent{color:var(--bad)} .sec-refused{color:var(--warn)}
   .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:10px;border:1px solid var(--amber);color:var(--amber);margin-left:6px}
 </style>
 </head>
@@ -65,7 +74,14 @@
     <b>OBSERVATION discipline.</b> Loading…
   </div>
 
+  <div class="reporting" id="reporting"></div>
+
   <div class="stats" id="stats"></div>
+
+  <section class="panel" id="sections-panel" style="display:none">
+    <h2>Contract v2 — what each owner reported <span class="tag">observation</span></h2>
+    <div id="sections"></div>
+  </section>
 
   <section class="panel">
     <h2>Pareto frontier — CORRECT runs only <span class="tag">observation</span></h2>
@@ -122,10 +138,69 @@ function mechCell(m){
   return '<span class="mech">'+(parts.join(" · ")||"—")+'</span>';
 }
 
+// The reporting banner. Renders the three INDEPENDENT wire facts the badge alone
+// cannot carry — artifact_present / reporting / content — plus the watchdog
+// verdict and, whenever the panel is not `observed`, the registry's declared
+// `absence_means`. A blank card therefore cannot appear without the sentence
+// explaining what blank means here, which is the whole point of the AK6 surface.
+function renderReporting(d){
+  const box=$("#reporting"); const f=d._freshness||{};
+  const wd=f.watchdog||{}; const alarm=["stopped_reporting","not_advancing","future_timestamp"].includes(wd.state);
+  box.classList.remove("alarm","absent");
+  if(alarm) box.classList.add("alarm");
+  else if(f.reporting==="absent") box.classList.add("absent");
+  const bits=[];
+  bits.push("<b>"+esc(String(f.reporting||"unknown").toUpperCase())+"</b>");
+  bits.push("content "+esc(f.content||"unknown"));
+  bits.push("artifact "+(f.artifact_present?"present":"absent"));
+  bits.push("watchdog "+esc(wd.state||"—"));
+  if(f.age_s!=null) bits.push("age "+(f.age_s>=86400?(f.age_s/86400).toFixed(1)+"d":(f.age_s/3600).toFixed(1)+"h"));
+  let h=bits.join(" · ");
+  if(wd.reason && wd.state!=="ok" && wd.state!=="unwatched") h+='<div style="margin-top:6px">'+esc(wd.reason)+'</div>';
+  // A PARTIAL report is not an absent one. `absence_means` is the registry's one
+  // declared sentence for this panel, so it is led into differently when some
+  // owners did report — otherwise the card reads "OBSERVED … NOBODY IS REPORTING"
+  // side by side, which is a third confusing state rather than a clearer one.
+  const partial = f.reporting==="observed" && Array.isArray(f.unreported) && f.unreported.length;
+  if(partial) h+='<div style="margin-top:6px">'+f.unreported.length+' of the producer\'s sections have NO PRODUCER: <code>'+esc(f.unreported.join(", "))+'</code></div>';
+  else if(Array.isArray(f.unreported)&&f.unreported.length) h+='<div style="margin-top:6px">unreported sections: <code>'+esc(f.unreported.join(", "))+'</code></div>';
+  if(f.absence_means) h+='<div style="margin-top:6px"'+(partial?' class="muted"':'')+'>'+(partial?"What a blank card here would mean: ":"")+esc(f.absence_means)+'</div>';
+  h+='<div style="margin-top:6px" class="muted">producer: '+esc(f.producer||"—")+' ('+esc(f.producer_repo||"—")+') · evidence: <code>'+esc(f.evidence||"—")+'</code></div>';
+  box.innerHTML=h;
+}
+
+// Contract v2's seven sections. v2 has NO run log, so without this the page drew
+// nothing at all for a fully reported contract and then said the loop had
+// exported nothing — see server._kernel_render.
+function renderSections(d){
+  const panel=$("#sections-panel"), body=$("#sections");
+  const secs=(d._render&&d._render.mode==="contract_v2")?(d.sections||{}):null;
+  if(!secs||!Object.keys(secs).length){ panel.style.display="none"; body.innerHTML=""; return; }
+  panel.style.display="";
+  let h='<table><thead><tr><th>section</th><th>status</th><th>as of</th><th>detail</th></tr></thead><tbody>';
+  for(const name of Object.keys(secs).sort()){
+    const s=secs[name]||{}; const st=String(s.status||"missing");
+    const cls = st==="observed"?"sec-observed":(st==="refused"?"sec-refused":"sec-silent");
+    let detail=s.reason||"";
+    if(st==="observed"){
+      if(name==="campaign") detail=`${s.state||"—"} · seq ${s.seq==null?"—":s.seq}${s.stopped?" · STOPPED (declared)":""}`;
+      else if(name==="blocking_conditions") detail=(s.open||[]).map(c=>c.kind).join(", ")||"no open conditions reported";
+      else if(name==="release_package") detail=String(s.state||"—");
+      else if(name==="champion") detail=String(s.combined_candidate_id||"—");
+      else if(name==="backend_standing") detail=Object.keys(s.backends||{}).map(b=>b+": "+((s.backends[b]||{}).standing||"—")).join(" · ")||"—";
+      else detail="reported";
+    }
+    h+='<tr><td>'+esc(name)+'</td><td class="'+cls+'">'+esc(st)+'</td><td class="muted">'+esc(s.as_of||"—")+'</td><td>'+esc(detail)+'</td></tr>';
+  }
+  body.innerHTML=h+'</tbody></table>';
+}
+
 function render(d){
   const notice = d.observation_notice || "Every number is an OBSERVATION; operator-only authorizes prod push.";
   $("#observation").innerHTML='<b>OBSERVATION discipline.</b> '+esc(notice);
   setBadge((d._freshness&&d._freshness.staleness_class)||"missing", d._freshness);
+  renderReporting(d);
+  renderSections(d);
 
   const t=d.totals||{};
   const stats=$("#stats"); stats.innerHTML="";
@@ -140,7 +215,12 @@ function render(d){
   const singleOnly=withSingle.length-plotted.length;
   paretoChart($("#pareto"), plotted);
   const note=$("#pareto-note");
-  if(!withSingle.length){
+  const rnote=(d._render&&d._render.note)||null;
+  if(!withSingle.length && d._render && d._render.mode!=="run_log_v1"){
+    // v2 / unsourced / unreadable: the v1 sentences below are claims about a run
+    // log this document does not have. Say what was actually read instead.
+    note.textContent = rnote;
+  } else if(!withSingle.length){
     // Honest degradation: the panel is an empty shell because the producer
     // (epyc-inference-research kernel_store export) does not populate absolute
     // throughput fields yet — the hub only reads that contract, it cannot fill it.
@@ -156,7 +236,9 @@ function render(d){
 
   // best per model
   const best=d.best_per_model||[];
-  if(!best.length){ $("#best").innerHTML='<div class="empty">no correctness-passing absolute-throughput runs yet</div>'; }
+  if(!best.length){ $("#best").innerHTML='<div class="empty">'+esc(
+      (d._render&&d._render.mode!=="run_log_v1"&&rnote) ||
+      "no correctness-passing absolute-throughput runs yet")+'</div>'; }
   else{
     let h='<table><thead><tr><th>model</th><th class="num">best single t/s</th><th class="num">Δ%</th><th>variant</th><th>git</th></tr></thead><tbody>';
     for(const b of best){ h+='<tr><td>'+esc(b.model)+'</td><td class="num">'+num(b.single_tps)+'</td><td class="num">'+deltaCell(b.delta_pct)+'</td><td>'+esc(b.label)+'</td><td><code>'+esc(b.git_sha||"")+'</code></td></tr>'; }
@@ -166,7 +248,13 @@ function render(d){
   // run log
   const runs=d.runs||[];
   $("#runcount").textContent = runs.length?`(${runs.length})`:"";
-  if(!runs.length){ $("#runs").innerHTML='<div class="empty">no runs recorded yet — the kernel-R&D loop has not exported any results</div>'; return; }
+  // The empty sentence comes from the WIRE (server._kernel_render), never from a
+  // literal here: the hardcoded one said "the kernel-R&D loop has not exported
+  // any results" over a fully reported contract v2, which carries no run log.
+  if(!runs.length){
+    $("#runs").innerHTML='<div class="empty">'+esc(rnote||"no runs in this contract")+'</div>';
+    return;
+  }
   let h='<table><thead><tr><th>label</th><th>model</th><th class="num">single t/s</th><th class="num">Δ%</th><th>correct</th><th>test-backend-ops</th><th>coherence</th><th>mechanism (dominant kernel)</th><th>git</th></tr></thead><tbody>';
   for(const r of runs){
     const ok = r.correct ? '<span class="ok">✓ OK</span>' : (r.status!=="OK"?'<span class="fail">✗ '+esc(r.status||"FAIL")+'</span>':'<span class="fail">✗ corr?</span>');

@@ -333,15 +333,25 @@ class OutcomeContractReaderTests(unittest.TestCase):
 
 
 class HealthPayloadTests(unittest.TestCase):
-    def test_stale_outcome_does_not_gate_health(self):
-        # A stale outcome export must NOT flip stack health to degraded (a paused
-        # loop reads stale by design); the block is still surfaced for visibility.
-        # Control all three inputs so only the outcome staleness is under test:
-        # timeline -> missing (not degraded), kernel -> fresh, outcome -> stale.
+    """AK6 AMENDMENT (2026-08-03).
+
+    This class used to assert that an outcome export 10 days stale left
+    ``/api/health`` at ``ok``, on the reasoning that "a paused loop reads stale
+    by design". That reasoning is right about a paused loop and wrong about a
+    dead one, and the hub could not tell them apart — which is the trial-1302
+    outage in one assertion: an autopilot that last said ``status: ok`` ten days
+    ago, and a green dashboard.
+
+    The rule now: an UNDECLARED silence past the panel's ``silent_after_s``
+    budget degrades the fold even on a non-gating panel, and a DECLARED pause
+    does not. Staleness and absence are still governed by ``gates_health``, so
+    everything this class was protecting except the undeclared case is intact.
+    """
+
+    def _health_with(self, outcome_doc):
         with tempfile.TemporaryDirectory() as d:
             oc = Path(d) / "outcome.json"
-            oc.write_text(json.dumps({"generated_at": _iso(_NOW - timedelta(days=10)),
-                                      "outcome_progress": {"status": "ok"}}))
+            oc.write_text(json.dumps(outcome_doc))
             kn = Path(d) / "kernel.json"
             kn.write_text(json.dumps({"generated_at": _iso(_NOW),
                                       "runs": [{"ts": _iso(_NOW)}]}))
@@ -352,15 +362,38 @@ class HealthPayloadTests(unittest.TestCase):
                 server.AUTOPILOT_OUTCOME_JSON = oc
                 server.KERNEL_DASHBOARD_JSON = kn
                 server.TIMELINE_PATH = Path(d) / "missing_timeline.json"
-                h = server.health_payload()
+                return server.health_payload()
             finally:
                 server.AUTOPILOT_OUTCOME_JSON = orig_oc
                 server.KERNEL_DASHBOARD_JSON = orig_kn
                 server.TIMELINE_PATH = orig_tl
-        self.assertIn("outcome", h)
+
+    def test_an_undeclared_ten_day_outcome_silence_degrades_health(self):
+        h = self._health_with({"generated_at": _iso(_NOW - timedelta(days=10)),
+                               "outcome_progress": {"status": "ok"}})
         self.assertEqual(h["outcome"]["staleness_class"], "stale")
         self.assertEqual(h["kernel"]["staleness_class"], "fresh")
-        # outcome is intentionally excluded from the degraded gate -> still ok.
+        self.assertEqual(h["outcome"]["watchdog"]["state"], "stopped_reporting")
+        self.assertEqual(h["status"], "degraded")
+        self.assertEqual(h["status_set_by"]["panel"], "outcome")
+
+    def test_a_declared_pause_at_the_same_age_stays_ok(self):
+        """COMPLIANT-PATH CONTROL: the Phase-0 stop-loss case this class was
+        originally written to protect. A paused loop still exports, and only the
+        loop can tell a pause from a crash — so it declares it."""
+        h = self._health_with({"generated_at": _iso(_NOW - timedelta(days=10)),
+                               "outcome_progress": {"status": "paused"}})
+        self.assertEqual(h["outcome"]["staleness_class"], "stale")
+        self.assertEqual(h["outcome"]["watchdog"]["state"], "idle")
+        self.assertEqual(h["status"], "ok")
+
+    def test_a_stale_outcome_still_does_not_gate_on_staleness_alone(self):
+        """COMPLIANT-PATH CONTROL: ``gates_health=False`` still means what it
+        said. Inside the 6 h silence budget the panel is ``aging`` with no alarm,
+        and the fold stays green."""
+        h = self._health_with({"generated_at": _iso(_NOW - timedelta(hours=5)),
+                               "outcome_progress": {"status": "ok"}})
+        self.assertEqual(h["outcome"]["watchdog"]["state"], "ok")
         self.assertEqual(h["status"], "ok")
 
 

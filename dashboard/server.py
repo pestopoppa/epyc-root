@@ -20,7 +20,21 @@ GET /bus                     the session-bus page (static HTML, re-read per requ
 GET /api/bus                 roster, per-agent liveness, inbox depth, operator tokens (+ alarms)
 GET /api/queue               folded work queue (latest row per task_id) + invariant alarms
 GET /api/outcome             the autopilot outcome contract (+ freshness), if exported
-GET /api/health              board=live + timeline/kernel/outcome staleness class
+GET /api/health              the FOLD over ``dashboard/panels.py``: every panel's
+                             freshness envelope + watchdog, plus one status that
+                             names the worst panel and why
+
+TWO HEALTH ROUTES, ON PURPOSE (AK6)
+-----------------------------------
+``/health`` is the TRANSPORT probe and answers only "this process is serving".
+``scripts/dashboard/hub_supervisor.sh`` polls it every 15s and KILLS AND RESTARTS
+the hub when the body stops matching ``"status"…ok``. Folding producer health into
+it would mean a dead AutoKernel loop restarts the dashboard in a loop — a restart
+cannot revive another repo's producer — so the two planes stay separate and
+``tests/test_dashboard_panels.py`` pins that boundary in both directions.
+
+``/api/health`` is the operator fold and is three-valued (``ok`` / ``absent`` /
+``degraded``). It is where "nobody is reporting" is allowed to be loud.
 
 Run: ``python3 -m dashboard.server --port 8100``  (or ``python3 dashboard/server.py``)
 """
@@ -46,7 +60,10 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from dashboard import freshness, handoff_parser
+# ``freshness`` is no longer imported here: every classification now goes through
+# ``panels`` (which owns the one classifier), so the hub cannot grow a fourth
+# hand-rolled threshold ladder by reaching past the registry.
+from dashboard import handoff_parser, panels
 
 # ``resolve()`` follows the /workspace -> /mnt/raid0/llm/epyc-root symlink, so the
 # hub always reads its own repo regardless of which path launched it.
@@ -59,12 +76,34 @@ KERNEL_HTML = _STATIC / "kernel.html"
 BUS_HTML = _STATIC / "bus.html"
 BENCHMARKS_HTML = _STATIC / "benchmarks.html"
 
-# Kernel-R&D dashboard contract — produced by epyc-inference-research's kernel-R&D
-# loop (kernel_store.py export); the hub only READS it (self-contained data
-# contract, no kernel context needed here). Path is overridable for testing.
+# Kernel-R&D dashboard contract — produced by the AutoKernel research loop in
+# epyc-inference-research (``autokernel.surface.dashboard_contract.export_contract``);
+# the hub only READS it (self-contained data contract, no kernel context needed
+# here, and the hub never imports that package). Path is overridable for testing.
+#
+# AK6 DURABLE PATH. The old default was
+# ``/mnt/raid0/llm/tmp/mi210-build/campaign/kernel_dashboard.json``, which failed
+# three ways at once: ``/mnt/raid0/llm/tmp`` is the first entry of the producer's
+# ``storage.EPHEMERAL_ROOTS`` (one sweep from gone, leaving no event behind), the
+# directory does not exist on this host, and it sat in a build scratch tree owned
+# by nobody. The producer now writes ``DEFAULT_EXPORT_PATH`` below: on the array
+# that survives reboots, outside every checkout (so it can never ride into a
+# parallel session's commit), and a fixed constant so the hub needs no env var.
 KERNEL_DASHBOARD_JSON = Path(os.environ.get(
     "KERNEL_DASHBOARD_JSON",
-    "/mnt/raid0/llm/tmp/mi210-build/campaign/kernel_dashboard.json"))
+    "/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json"))
+
+# The two contract versions the hub reads. Copied as STRINGS on purpose: the hub
+# is stdlib-only and must never import epyc-inference-research to render a page
+# (a consumer that needs its producer's code installed is a consumer that goes
+# dark when the producer's repo moves). ``tests/test_dashboard_panels.py`` pins
+# these against the producer's own constants when that repo is importable, and
+# SKIPS NOTHING when it is not — it asserts the literals instead.
+KERNEL_SCHEMA_V1 = "epyc.autokernel.kernel_dashboard.v1"
+KERNEL_SCHEMA_V2 = "epyc.autokernel.kernel_dashboard.v2"
+#: v2 section statuses. Three, not two: ``not_reported`` is what a dead owner
+#: looks like, and it is a value rather than an omission.
+KERNEL_SECTION_OBSERVED = "observed"
 
 # Autopilot outcome contract — the *steering* view of the orchestration loop
 # (keepable / wasted-eval / learning-excluded rates + frontier/baseline-promotion
@@ -79,17 +118,15 @@ AUTOPILOT_OUTCOME_JSON = Path(os.environ.get(
     "/mnt/raid0/llm/tmp/autopilot/outcome_contract.json"))
 BENCHMARK_ARTIFACT_INVENTORY = REPO / "data" / "benchmark_artifact_inventory.json"
 
-# Timeline freshness thresholds (handoffs move on a human/commit cadence).
-_TIMELINE_WARN_S = 6 * 3600
-_TIMELINE_STALE_S = 2 * 86400
-# Kernel-R&D loop is a slow (nightshift/overnight, single-GPU) cadence.
-_KERNEL_WARN_S = 3 * 86400
-_KERNEL_STALE_S = 14 * 86400
-# Autopilot exports on a fast cadence WHEN RUNNING; a stale export means the loop
-# is paused (Phase-0 stop-loss) or the exporter is dead — an honest signal, but
-# expected during a pause, so it is surfaced without gating hub health.
-_OUTCOME_WARN_S = 6 * 3600
-_OUTCOME_STALE_S = 2 * 86400
+# Freshness thresholds are DECLARED IN THE REGISTRY (dashboard/panels.py) and
+# read back here, so the numbers on the wire and the numbers in the panel→producer
+# contract cannot drift. The old module-level literals are kept as names only.
+_TIMELINE_WARN_S = panels.source("timeline").warn_s
+_TIMELINE_STALE_S = panels.source("timeline").stale_s
+_KERNEL_WARN_S = panels.source("kernel").warn_s
+_KERNEL_STALE_S = panels.source("kernel").stale_s
+_OUTCOME_WARN_S = panels.source("outcome").warn_s
+_OUTCOME_STALE_S = panels.source("outcome").stale_s
 
 _BOARD_TTL_S = 30.0
 _NO_STORE = {"Cache-Control": "no-store", "Content-Type": "application/json"}
@@ -134,6 +171,30 @@ def _parse_semantic_timestamp(value: object) -> float | None:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
     return dt.timestamp()
+
+
+# --------------------------------------------------------------------------- #
+# Per-panel freshness envelope + transport watchdog (AK6)
+# --------------------------------------------------------------------------- #
+# The watchdog's second arm needs memory: "the producer keeps re-reporting, and
+# its progress watermark has not moved". That memory is in-process and is
+# deliberately NOT persisted — a hub restart forgets it, and the first arm (the
+# producer's own semantic timestamp going stale) is stateless and survives a
+# restart, so the detector degrades to the arm that needs no memory rather than
+# to silence. Persisting it would also mean the hub WRITES, and a read-only hub
+# cannot corrupt a producer's evidence.
+_watchdog_lock = threading.Lock()
+_watchdog_state: dict = {}
+
+
+def _panel_envelope(panel: str, obs: "panels.Observation", *,
+                    now: float | None = None) -> dict:
+    """Classify one panel's observation, updating the watchdog's memory first."""
+    source = panels.source(panel)
+    with _watchdog_lock:
+        panels.observe_watermark(_watchdog_state, panel, obs.watermark, now=now)
+        snapshot = {k: dict(v) for k, v in _watchdog_state.items()}
+    return panels.envelope(source, obs, now=now, watchdog_state=snapshot)
 
 
 def _parse_activity_log(text: str) -> dict:
@@ -265,25 +326,180 @@ def _activity_window(days: int = _ACT_WINDOW_DAYS) -> dict:
             "per_day": per_day, "rollups": rollups}
 
 
-def _read_kernel_contract() -> dict:
-    """Read the kernel dashboard contract, tolerating absence/corruption."""
+#: Marker the READER writes into a degraded shell when it could not turn the
+#: bytes on disk into a contract. Distinct from ``error`` (which a producer could
+#: legitimately write) and from ``artifact_present`` (which now answers only "does
+#: a file exist"). Three facts, three fields:
+#:
+#:   artifact_present=False                        no producer left anything
+#:   artifact_present=True,  _reader_error=<why>   something is there and it is
+#:                                                 BROKEN — a different, more
+#:                                                 urgent fact than "never ran"
+#:   artifact_present=True,  _reader_error=None    a contract the hub could read
+#:
+#: Before this, an unreadable file reported ``artifact_present=False`` and the
+#: watchdog quoted the registry's "no campaign has ever exported one" — telling
+#: the operator the opposite of what happened, and pointing the investigation at
+#: the wrong repository.
+READER_ERROR_KEY = "_reader_error"
+
+
+def _read_json_object(path: Path, what: str) -> tuple:
+    """``(artifact_present, data_or_None, reader_error_or_None)`` for one artifact.
+
+    ONE reader for all four file-backed panels, so the absent/corrupt distinction
+    cannot be right in one of them and wrong in the other three.
+    """
     try:
-        data = json.loads(KERNEL_DASHBOARD_JSON.read_text(encoding="utf-8"))
+        raw = path.read_text(encoding="utf-8")
     except FileNotFoundError:
-        data = {**_KERNEL_EMPTY, "generated_at": None,
-                "error": "kernel-R&D contract not exported yet — the loop "
-                         "(epyc-inference-research) has not run kernel_store.py export."}
-    except (OSError, json.JSONDecodeError) as exc:
-        data = {**_KERNEL_EMPTY, "generated_at": None,
-                "error": f"kernel-R&D contract unreadable: {exc}"}
+        return False, None, None
+    except OSError as exc:
+        return path.exists(), None, f"{what} unreadable: {exc}"
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        return True, None, f"{what} unreadable: {exc}"
     if not isinstance(data, dict):
-        data = {**_KERNEL_EMPTY, "generated_at": None,
-                "error": "kernel-R&D contract malformed (not an object)"}
-    return data
+        return True, None, f"{what} malformed (not an object)"
+    return True, data, None
 
 
-def _kernel_contract_freshness(data: dict) -> dict:
-    """Classify kernel freshness from semantic run timestamps, not file mtime."""
+def _read_kernel_contract() -> tuple:
+    """Read the kernel dashboard contract → ``(artifact_present, data)``.
+
+    ABSENCE-TOLERANT, NEVER ABSENCE-SILENT. The degraded shell returned when the
+    producer left nothing is ``_KERNEL_ABSENT`` — whose ``runs``/``pareto``/
+    ``totals`` are **null, not empty lists**. That single choice is the scar fix
+    on the wire: ``[]`` says "the producer reported and there is nothing", ``null``
+    says "no producer reported". The old shell said ``[]`` for both, which is how a
+    dead loop rendered as a clean, empty, trusted page.
+
+    The first element of the tuple is the fact no document can carry: whether a
+    file existed at all — NOT whether it could be parsed. See ``READER_ERROR_KEY``.
+    """
+    present, data, err = _read_json_object(
+        KERNEL_DASHBOARD_JSON, "kernel dashboard contract")
+    if data is not None:
+        return True, data
+    shell = {**_KERNEL_ABSENT, "generated_at": None, "produced_at": None}
+    if err is None:
+        shell["error"] = ("kernel dashboard contract not exported — the AutoKernel "
+                          "loop (epyc-inference-research) has written nothing to "
+                          f"{KERNEL_DASHBOARD_JSON}.")
+    else:
+        shell["error"] = err
+        shell[READER_ERROR_KEY] = err
+    return present, shell
+
+
+def kernel_contract_version(data: dict) -> str:
+    """``"v2"`` / ``"v1"`` / ``"unknown"`` for a kernel dashboard document.
+
+    A labelled document is taken at its label. An UNLABELLED one is read as v1,
+    because legacy exports carry no ``schema`` key at all and demanding the label
+    would make every real v1 file unrecognised — which pushes a reader toward
+    "render empty", the absence-tolerant failure again. A document labelled with
+    something we do not know is ``unknown`` and is NEVER coerced to v1: a
+    misread document renders as an empty-but-clean panel.
+    """
+    if not isinstance(data, dict):
+        return "unknown"
+    schema = data.get("schema")
+    if schema == KERNEL_SCHEMA_V2:
+        return "v2"
+    if schema is None or schema == KERNEL_SCHEMA_V1:
+        return "v1"
+    return "unknown"
+
+
+def _kernel_observation(data: dict, *, artifact_present: bool = True) -> panels.Observation:
+    """Turn a kernel dashboard document into a ``panels.Observation``.
+
+    v2 dates itself with ``produced_at``, which the PRODUCER derives from the
+    loop's journaled record timestamps (controller transition ``at``, champion
+    ``created_at``, readiness ``computed_at``, …) and never from the export. A
+    no-op re-export cannot move it, and live host readings (free disk, held device
+    claims) are excluded from it by the producer — so a surface process that is
+    merely alive cannot manufacture freshness for a dead controller.
+
+    v1 keeps exactly its pre-AK6 reading: newest ``runs[].ts``, else
+    ``generated_at``.
+    """
+    evidence = str(KERNEL_DASHBOARD_JSON)
+    if data.get(READER_ERROR_KEY):
+        # Something IS on disk and the hub could not read it. Nothing in a
+        # document the reader could not parse may date a report.
+        return panels.Observation(
+            artifact_present=artifact_present, timestamp=None, source=None,
+            populated=None, detail=data[READER_ERROR_KEY], evidence=evidence)
+    version = kernel_contract_version(data)
+    if version == "unknown":
+        return panels.Observation(
+            artifact_present=artifact_present, timestamp=None, source=None,
+            populated=None, evidence=evidence,
+            detail=f"unrecognised kernel dashboard schema {data.get('schema')!r} — "
+                   f"the hub reads {KERNEL_SCHEMA_V2} and the unlabelled v1 shape. "
+                   "Refusing to guess: a v2 document misread as v1 renders as an "
+                   "empty-but-clean panel.")
+    if version == "v2":
+        raw_sections = data.get("sections")
+        if not isinstance(raw_sections, dict) or not raw_sections:
+            # A v2 document's sections ARE the report. Missing or garbage sections
+            # is a malformed contract, and a malformed contract that happens to
+            # carry a fresh ``produced_at`` must not be dated by it.
+            return panels.Observation(
+                artifact_present=artifact_present, timestamp=None, source=None,
+                populated=None, evidence=evidence,
+                detail="contract-v2 document carries no readable 'sections' map — "
+                       "the sections ARE the report, so this document dates nothing.")
+        sections = raw_sections
+        observed = [name for name, sec in sections.items()
+                    if isinstance(sec, dict) and sec.get("status") == KERNEL_SECTION_OBSERVED]
+        campaign = sections.get("campaign") if isinstance(sections.get("campaign"), dict) else {}
+        run = (data.get("producer") or {}).get("run") if isinstance(data.get("producer"), dict) else None
+        watermark = None
+        if isinstance(run, dict):
+            watermark = f"{run.get('campaign_id')}:{run.get('controller_seq')}"
+        # DERIVED from the sections, then unioned with the producer's own summary —
+        # never taken from the summary alone. A producer that omits (or empties)
+        # ``unreported_sections`` while every owner behind it is dead would
+        # otherwise hand the hub a fresh, observed, "reported-and-empty" panel:
+        # the absence-tolerant clean render, reconstructed from a self-report.
+        declared = data.get("unreported_sections")
+        unreported = {name for name in sections if name not in observed}
+        if isinstance(declared, list):
+            unreported |= {str(name) for name in declared}
+        if not observed:
+            # The exporter ran and NOT ONE owner reported. This is the documented
+            # third state (artifact present, reporting absent) and it is reached by
+            # making the document undated, exactly as an all-``not_reported``
+            # contract with a null ``produced_at`` already was.
+            return panels.Observation(
+                artifact_present=artifact_present, timestamp=None,
+                source="produced_at", populated=None,
+                detail=(data.get("error") or
+                        "contract-v2 document has no section in status "
+                        f"{KERNEL_SECTION_OBSERVED!r}: the exporter ran and every "
+                        "owner behind it was silent."),
+                watermark=watermark,
+                unreported=tuple(sorted(unreported)),
+                evidence=evidence,
+            )
+        return panels.Observation(
+            artifact_present=artifact_present,
+            timestamp=_parse_semantic_timestamp(data.get("produced_at")),
+            source="produced_at",
+            evidence=evidence,
+            populated=bool(observed),
+            detail=data.get("error"),
+            watermark=watermark,
+            # The controller's own word for "I have halted". A stopped campaign is
+            # ALLOWED to be silent; only the producer may say so, and it does.
+            producer_idle=bool(campaign.get("status") == KERNEL_SECTION_OBSERVED
+                               and campaign.get("stopped") is True),
+            unreported=tuple(sorted(unreported)),
+        )
     ts_candidates = []
     runs = data.get("runs")
     if isinstance(runs, list):
@@ -293,23 +509,30 @@ def _kernel_contract_freshness(data: dict) -> dict:
                 if ts is not None:
                     ts_candidates.append(ts)
     if ts_candidates:
-        source_ts = max(ts_candidates)
-        source = "runs[].ts"
+        source_ts, source = max(ts_candidates), "runs[].ts"
     else:
-        source_ts = _parse_semantic_timestamp(data.get("generated_at"))
-        source = "generated_at"
-    if source_ts is None:
-        return {"staleness_class": "missing", "age_s": None,
-                "timestamp": None, "source": None}
-    age = max(0.0, time.time() - source_ts)
-    if age <= _KERNEL_WARN_S:
-        cls = "fresh"
-    elif age <= _KERNEL_STALE_S:
-        cls = "aging"
-    else:
-        cls = "stale"
-    return {"staleness_class": cls, "age_s": round(age, 1),
-            "timestamp": round(source_ts, 3), "source": source}
+        source_ts, source = _parse_semantic_timestamp(data.get("generated_at")), "generated_at"
+    n_runs = len(runs) if isinstance(runs, list) else None
+    return panels.Observation(
+        artifact_present=artifact_present,
+        timestamp=source_ts,
+        source=source,
+        populated=None if n_runs is None else bool(n_runs),
+        detail=data.get("error"),
+        watermark=None if source_ts is None else f"v1:{n_runs}:{source_ts}",
+        evidence=evidence,
+    )
+
+
+def _kernel_contract_freshness(data: dict, *, artifact_present: bool = True) -> dict:
+    """Classify kernel freshness from semantic timestamps, never file mtime.
+
+    Kept as a named function because it is the hub's oldest freshness contract and
+    the existing regression locks call it directly; it is now one line of the
+    generalised per-panel envelope rather than a private threshold ladder.
+    """
+    return _panel_envelope("kernel", _kernel_observation(
+        data, artifact_present=artifact_present))
 
 
 def _load_file_activity() -> dict:
@@ -370,7 +593,19 @@ def board_payload(*, force: bool = False) -> dict:
             _board_cache["activity_window"] = _activity_window()
             _board_cache_ts = now
         payload = dict(_board_cache)
-    payload["_freshness"] = {"staleness_class": "fresh", "source": "live-scan"}
+    # The TTL cache is a latency device, not a producer: the board is rebuilt
+    # inside the request from the filesystem and git, so it is fresh by
+    # construction and has no producer that could stop reporting.
+    # ``bool(columns)`` was always True: ``columns`` is a dict of FOUR LISTS that
+    # build_board always emits, so it is truthy over an empty (or missing)
+    # handoff tree. The one health-gating live panel could therefore never report
+    # ``content=empty`` — it claimed content by construction, which is the
+    # renders-clean-over-nothing shape at the top of the page.
+    columns = payload.get("columns") or {}
+    payload["_freshness"] = _panel_envelope(
+        "board", panels.live(populated=any(
+            bool(v) for v in columns.values()) if isinstance(columns, dict)
+            else bool(columns)))
     return payload
 
 
@@ -407,40 +642,159 @@ def detail_payload(handoff_id: str) -> tuple[int, dict]:
     return 200, card
 
 
+_TIMELINE_ABSENT = {"series": None, "tasks_weekly": None, "handoffs_weekly": None,
+                    "generated_at": None}
+
+
+def _read_timeline_contract() -> tuple:
+    """Read the git-derived timeline artifact → ``(artifact_present, data)``.
+
+    Same absent-vs-empty rule as the kernel contract: the degraded shell carries
+    ``null`` series, not ``[]``, so "the hook never ran" is not spelled the same
+    way as "no handoffs moved this week".
+    """
+    present, data, err = _read_json_object(TIMELINE_PATH, "timeline artifact")
+    if data is not None:
+        return True, data
+    if err is None:
+        return False, {**_TIMELINE_ABSENT, "error": "timeline artifact not generated yet"}
+    return present, {**_TIMELINE_ABSENT, "error": err, READER_ERROR_KEY: err}
+
+
+def _timeline_observation(data: dict, *, artifact_present: bool = True) -> panels.Observation:
+    """Date the timeline by the hook's own ``generated_at``, not by mtime.
+
+    Pre-AK6 this panel was the last mtime badge in the hub. A regeneration hook
+    that rewrites the file without advancing its content moves the mtime and
+    nothing else, so mtime reads 'fresh' over a frozen timeline; ``last_sha`` is
+    the watermark that catches exactly that.
+    """
+    if data.get(READER_ERROR_KEY):
+        return panels.Observation(
+            artifact_present=artifact_present, timestamp=None, source=None,
+            populated=None, detail=data[READER_ERROR_KEY])
+    series = data.get("series")
+    return panels.Observation(
+        artifact_present=artifact_present,
+        timestamp=_parse_semantic_timestamp(data.get("generated_at")),
+        source="generated_at",
+        populated=None if series is None else bool(series),
+        detail=data.get("error"),
+        watermark=data.get("last_sha") if isinstance(data.get("last_sha"), str) else None,
+    )
+
+
 def timeline_payload() -> dict:
     """Read the git-derived timeline artifact, tolerating absence/corruption."""
-    fresh = freshness.classify(TIMELINE_PATH, _TIMELINE_WARN_S, _TIMELINE_STALE_S)
-    try:
-        data = json.loads(TIMELINE_PATH.read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        data = {"series": [], "tasks_weekly": [], "handoffs_weekly": [],
-                "generated_at": None, "error": "timeline artifact not generated yet"}
-    except (OSError, json.JSONDecodeError) as exc:
-        data = {"series": [], "tasks_weekly": [], "handoffs_weekly": [],
-                "generated_at": None, "error": f"timeline artifact unreadable: {exc}"}
-    if not isinstance(data, dict):  # valid JSON but not an object (hand-edited/clobbered)
-        data = {"series": [], "tasks_weekly": [], "handoffs_weekly": [],
-                "generated_at": None, "error": "timeline artifact malformed (not an object)"}
-    data["_freshness"] = fresh
+    present, data = _read_timeline_contract()
+    data["_freshness"] = _panel_envelope(
+        "timeline", _timeline_observation(data, artifact_present=present))
     return data
 
 
-_KERNEL_EMPTY = {
-    "db_present": False, "runs": [], "pareto": [], "best_per_model": [],
-    "totals": {"runs": 0, "correct": 0, "failed": 0, "models": 0},
+#: What the panel looks like when NO producer reported. ``null``, not ``[]`` —
+#: see ``_read_kernel_contract``. The deployed ``static/kernel.html`` reads every
+#: one of these through ``x || []`` / ``x || {}``, so a null degrades to the same
+#: empty render it always did (absence tolerance is preserved) while the WIRE now
+#: distinguishes the two facts that page could not.
+_KERNEL_ABSENT = {
+    "db_present": None, "runs": None, "pareto": None, "best_per_model": None,
+    "totals": None, "sections": None, "degraded": True,
     "observation_notice": (
         "Every number here is an OBSERVATION (MEASUREMENT.md) — it never gates a "
-        "keep/revert/deploy/promote decision. Operator-only authorizes prod push."),
+        "keep/revert/deploy/promote decision. Operator-only authorizes prod push. "
+        "THIS PANEL IS UNSOURCED: no producer reported, so an empty card here "
+        "means 'nobody is reporting', not 'nothing is wrong'."),
 }
 
 
-def kernel_payload() -> dict:
-    """Read the kernel-R&D dashboard contract, tolerating absence/corruption.
+#: What the ``/kernel`` PAGE is able to draw for a given document, and the
+#: sentence it must show when it can draw nothing of its own.
+#:
+#: ON THE WIRE, not in ``static/kernel.html``, for two reasons. A sentence
+#: hardcoded in the page cannot be tested and cannot know which contract it is
+#: looking at — and the deployed page said
+#:
+#:     "no runs recorded yet — the kernel-R&D loop has not exported any results"
+#:
+#: over a FULLY REPORTED contract v2, because v2 carries campaign / champion /
+#: backend-standing / blocking / headroom / claim / package SECTIONS and no
+#: ``runs`` array at all. The producer was alive, every owner had reported, and
+#: the page told the operator the loop had exported nothing. That is the
+#: absence-tolerance scar in the render layer, and it is the reason this block
+#: exists: the empty-state text is now DERIVED from the document that was read.
+RENDER_MODE_V2 = "contract_v2"
+RENDER_MODE_V1 = "run_log_v1"
+RENDER_MODE_ABSENT = "unsourced"
+RENDER_MODE_UNREADABLE = "unreadable"
 
-    The hub only renders the contract; the loop (epyc-inference-research) owns it.
+
+def _kernel_render(data: dict, version: object, present: bool, env: dict) -> dict:
+    """``{mode, note}``: which body the page draws, and the honest empty sentence.
+
+    ``note`` is what the run-log panel shows when it has no rows. It is never the
+    v1 sentence unless the document really is a v1 run log — "the loop has not
+    exported any results" is a claim about the PRODUCER, and only an absent or
+    empty v1 contract supports it.
     """
-    data = _read_kernel_contract()
-    data["_freshness"] = _kernel_contract_freshness(data)
+    if not present:
+        return {"mode": RENDER_MODE_ABSENT,
+                "note": (f"NO PRODUCER REPORTED. {env.get('absence_means') or ''} "
+                         f"Evidence: {env.get('evidence')}").strip()}
+    if data.get(READER_ERROR_KEY):
+        return {"mode": RENDER_MODE_UNREADABLE,
+                "note": (f"THE EXPORT IS PRESENT AND UNREADABLE — "
+                         f"{data[READER_ERROR_KEY]}. This is not 'the loop never "
+                         f"ran': something wrote {env.get('evidence')} and the hub "
+                         f"could not parse it.")}
+    if version == "v2":
+        sections = data.get("sections")
+        sections = sections if isinstance(sections, dict) else {}
+        observed = sum(1 for sec in sections.values()
+                       if isinstance(sec, dict)
+                       and sec.get("status") == KERNEL_SECTION_OBSERVED)
+        return {"mode": RENDER_MODE_V2,
+                "note": (f"contract v2: {observed} of {len(sections)} sections "
+                         "reported. v2 carries campaign, champion, backend "
+                         "standing, blocking conditions, headroom, resource "
+                         "claims and release-package state — it carries NO run "
+                         "log, so the v1 run-log and Pareto panels are empty by "
+                         "SHAPE, not because the producer exported nothing.")}
+    runs = data.get("runs")
+    if isinstance(runs, list) and runs:
+        return {"mode": RENDER_MODE_V1, "note": None}
+    return {"mode": RENDER_MODE_V1,
+            "note": ("no runs recorded yet — the kernel-R&D loop has exported a "
+                     "v1 contract with an empty run log")}
+
+
+def kernel_payload() -> dict:
+    """Read the kernel dashboard contract (v2, or legacy v1), tolerating absence.
+
+    The hub only renders the contract; the AutoKernel loop
+    (epyc-inference-research) owns it and is the only writer.
+
+    THE HUB'S OWN FIELDS ARE UNDERSCORED, and that is a seam rule rather than a
+    style: ``contract_version`` is a key the PRODUCER owns (it writes the integer
+    ``2``, and ``schemas.validate_kernel_dashboard_v2`` requires an integer), and
+    this function used to overwrite it in place with the string ``"v2"``. The
+    consequence was that the document served at ``/api/kernel`` no longer
+    validated under its own producer's validator — one field, changed type,
+    silently, by the consumer. Derived-by-the-hub facts now live under
+    ``_contract_version`` / ``_freshness`` / ``_render``, so what the hub serves
+    is the producer's document plus additions the producer will never collide
+    with.
+    """
+    present, data = _read_kernel_contract()
+    # ``present`` alone is not enough: a corrupt file is present, and the degraded
+    # shell carries no ``schema``, which ``kernel_contract_version`` would read as
+    # the unlabelled-legacy shape and report as "v1".
+    version = (None if not present or data.get(READER_ERROR_KEY)
+               else kernel_contract_version(data))
+    data["_contract_version"] = version
+    data["_freshness"] = _panel_envelope(
+        "kernel", _kernel_observation(data, artifact_present=present))
+    data["_render"] = _kernel_render(data, version, present, data["_freshness"])
     return data
 
 
@@ -451,8 +805,8 @@ def kernel_payload() -> dict:
 # outbox/heartbeat/cursor. Read-only, fails soft, never writes.
 
 _BUS_ROOT = _REPO_ROOT / "coordination" / "session-bus"
-_HEARTBEAT_WARN_S = 15 * 60
-_HEARTBEAT_STALE_S = 60 * 60
+_HEARTBEAT_WARN_S = panels.source("bus").warn_s
+_HEARTBEAT_STALE_S = panels.source("bus").stale_s
 
 
 def _read_bus_config() -> dict:
@@ -552,6 +906,10 @@ def queue_payload() -> dict:
 
     ts_candidates = [t for t in (_parse_semantic_timestamp(r.get("ts")) for r in rows) if t]
     generated_at = max(ts_candidates) if ts_candidates else None
+    # A queue file that exists and folds to zero rows is REPORTED-AND-EMPTY; a
+    # queue file that is not there at all is UNSOURCED. Both render as an empty
+    # table, so the difference has to live on the wire.
+    queue_present = (_BUS_ROOT / "queue.jsonl").exists()
     return {
         "generated_at": (datetime.fromtimestamp(generated_at, timezone.utc).isoformat()
                          if generated_at else None),
@@ -561,12 +919,15 @@ def queue_payload() -> dict:
         "none_lane_ready_depth": none_ready,
         "rows": rows,
         "alarms": alarms,
-        "_freshness": {
-            "staleness_class": _heartbeat_class(
-                None if generated_at is None else max(0.0, time.time() - generated_at)),
-            "age_s": None if generated_at is None else max(0.0, time.time() - generated_at),
-            "source": "queue.jsonl rows[].ts",
-        },
+        "_freshness": _panel_envelope("queue", panels.Observation(
+            artifact_present=queue_present,
+            timestamp=generated_at,
+            source="queue.jsonl rows[].ts",
+            populated=bool(rows),
+            detail=None if queue_present else
+            "coordination/session-bus/queue.jsonl does not exist",
+            watermark=None if generated_at is None else f"{len(rows)}:{generated_at}",
+        )),
     }
 
 
@@ -657,16 +1018,28 @@ def bus_payload() -> dict:
         "tokens": tokens,
         "co_residency": {"expected_topology_hash": expected_hash, "live_topology_hash": live_hash},
         "alarms": alarms,
-        "_freshness": {
-            "staleness_class": _heartbeat_class(min(ages) if ages else None),
-            "age_s": min(ages) if ages else None,
-            "source": "heartbeats/*.json mtime (freshest)",
-        },
+        "_freshness": _panel_envelope("bus", panels.Observation(
+            # Does the bus tree EXIST — not "could this interpreter parse it".
+            # PyYAML is optional here, and deriving presence from a parse made a
+            # stdlib-only hub report "the session bus is not initialised in this
+            # checkout" over a perfectly healthy bus.
+            artifact_present=(_BUS_ROOT / "config.yaml").exists(),
+            timestamp=None if not ages else now - min(ages),
+            source="heartbeats/*.json mtime (freshest)",
+            populated=bool(agents),
+            detail=config.get("_error"),
+        )),
     }
 
 
+#: The shell for "no outcome contract could be read". ``blockers`` is **null, not
+#: ``[]``** for the same reason ``_KERNEL_ABSENT`` uses nulls: ``[]`` is a CLAIM
+#: — "the exporter looked and there are no blockers" — and making an absent
+#: producer emit it is the conflation this surface exists to end. The deployed
+#: page reads it through ``Array.isArray(op.blockers)?op.blockers:[]``
+#: (``static/handoffs.html``), so absence tolerance is unchanged; only the wire is.
 _OUTCOME_EMPTY = {
-    "outcome_progress": {"status": "missing", "blockers": []},
+    "outcome_progress": {"status": "missing", "blockers": None},
     "observation_notice": (
         "Autopilot outcome KPIs are OBSERVATIONS (MEASUREMENT.md) — they steer "
         "attention, they never gate a keep/revert/promote decision. The live "
@@ -694,57 +1067,90 @@ def _normalize_outcome_contract(raw: dict) -> dict:
     elif _looks_like_outcome_progress(raw):
         data = {"generated_at": raw.get("generated_at"), "outcome_progress": raw}
     else:
+        # A JSON object that is not an outcome contract. It keeps its
+        # ``generated_at`` for display, but READER_ERROR_KEY stops that value
+        # dating a report: without it, any object carrying a fresh
+        # ``generated_at`` read as fresh / observed / empty / watchdog-ok — a
+        # document the hub could not understand, rendered clean.
+        err = "autopilot outcome contract missing 'outcome_progress'"
         return {**_OUTCOME_EMPTY, "generated_at": raw.get("generated_at"),
-                "error": "autopilot outcome contract missing 'outcome_progress'"}
+                "error": err, READER_ERROR_KEY: err}
     data.setdefault("observation_notice", _OUTCOME_EMPTY["observation_notice"])
     data.setdefault("generated_at", None)
     return data
 
 
-def _read_outcome_contract() -> dict:
-    """Read the autopilot outcome contract, tolerating absence/corruption.
+def _read_outcome_contract() -> tuple:
+    """Read the autopilot outcome contract → ``(artifact_present, data)``.
 
     Returns the honest degraded ``_OUTCOME_EMPTY`` (with an ``error`` reason and
     ``generated_at=None``) on any absence/corruption — the card must never 500,
     and an absent export is the *expected* default (no exporter writes it yet).
     """
-    try:
-        raw = json.loads(AUTOPILOT_OUTCOME_JSON.read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        return {**_OUTCOME_EMPTY, "generated_at": None,
-                "error": "autopilot outcome contract not exported yet — the "
-                         "orchestrator loop (:8000) has not written it."}
-    except (OSError, json.JSONDecodeError) as exc:
-        return {**_OUTCOME_EMPTY, "generated_at": None,
-                "error": f"autopilot outcome contract unreadable: {exc}"}
-    if not isinstance(raw, dict):
-        return {**_OUTCOME_EMPTY, "generated_at": None,
-                "error": "autopilot outcome contract malformed (not an object)"}
-    return _normalize_outcome_contract(raw)
+    present, raw, err = _read_json_object(
+        AUTOPILOT_OUTCOME_JSON, "autopilot outcome contract")
+    if raw is not None:
+        return True, _normalize_outcome_contract(raw)
+    if err is None:
+        return False, {**_OUTCOME_EMPTY, "generated_at": None,
+                       "error": "autopilot outcome contract not exported yet — the "
+                                "orchestrator loop (:8000) has not written it."}
+    return present, {**_OUTCOME_EMPTY, "generated_at": None,
+                     "error": err, READER_ERROR_KEY: err}
 
 
-def _outcome_contract_freshness(data: dict) -> dict:
+def _outcome_observation(data: dict, *, artifact_present: bool = True) -> panels.Observation:
+    """Date the outcome contract by ``generated_at`` — the moment the exporter last
+    READ the journal — never by file mtime.
+
+    THIS is the trial-1302 panel. The autopilot exports on a fast cadence while it
+    runs, so ``silent_after_s`` (6 h) turns "AutoPilot died and nobody noticed for
+    ~23 h" into a named ``stopped_reporting`` verdict on the fold. The watermark
+    arm covers the other half: an exporter that keeps writing a fresh
+    ``generated_at`` while ``latest_trial_id`` never moves is alive and making no
+    progress, which reads identical on a timestamp alone.
+    """
+    evidence = str(AUTOPILOT_OUTCOME_JSON)
+    if data.get(READER_ERROR_KEY):
+        return panels.Observation(
+            artifact_present=artifact_present, timestamp=None, source=None,
+            populated=None, detail=data[READER_ERROR_KEY], evidence=evidence)
+    op = data.get("outcome_progress")
+    op = op if isinstance(op, dict) else {}
+    status = op.get("status")
+    watermark = None
+    if op.get("latest_trial_id") is not None:
+        watermark = f"trial:{op.get('latest_trial_id')}"
+    return panels.Observation(
+        artifact_present=artifact_present,
+        timestamp=_parse_semantic_timestamp(data.get("generated_at")),
+        source="generated_at",
+        populated=None if not op else (status != "missing"),
+        detail=data.get("error"),
+        watermark=watermark,
+        evidence=evidence,
+        # THE COMPLIANT PATH, and the reason a stopped autopilot may now degrade
+        # the fold. A Phase-0 stop-loss pause is a legitimate long silence — but
+        # only the loop can tell a pause from a crash, and a paused loop still
+        # exports. So the pause must be DECLARED, exactly as the AutoKernel
+        # controller declares ``sections.campaign.stopped``. Undeclared silence
+        # past the 6 h budget is what killed trial 1302 and is no longer excused
+        # by ``gates_health``.
+        producer_idle=bool(op.get("paused") is True
+                           or status in ("paused", "stopped", "idle")),
+    )
+
+
+def _outcome_contract_freshness(data: dict, *, artifact_present: bool = True) -> dict:
     """Classify outcome-contract freshness from the export's semantic timestamp.
 
-    Uses ``generated_at`` (when the exporter last read the journal), NEVER the
-    file mtime — mirrors the kernel-contract fix so a no-op re-export cannot read
-    'fresh forever'. NOTE: export-freshness only proves the pipeline is alive; the
-    actual *stall* signal is ``trials_since_frontier``/``trials_since_promotion``
-    in the contract body, which the card surfaces directly.
+    NOTE: export-freshness only proves the pipeline is alive; the actual *stall*
+    signal is ``trials_since_frontier``/``trials_since_promotion`` in the contract
+    body, which the card surfaces directly — and which the watchdog's watermark arm
+    now turns into a verdict rather than a number the operator has to read.
     """
-    source_ts = _parse_semantic_timestamp(data.get("generated_at"))
-    if source_ts is None:
-        return {"staleness_class": "missing", "age_s": None,
-                "timestamp": None, "source": None}
-    age = max(0.0, time.time() - source_ts)
-    if age <= _OUTCOME_WARN_S:
-        cls = "fresh"
-    elif age <= _OUTCOME_STALE_S:
-        cls = "aging"
-    else:
-        cls = "stale"
-    return {"staleness_class": cls, "age_s": round(age, 1),
-            "timestamp": round(source_ts, 3), "source": "generated_at"}
+    return _panel_envelope("outcome", _outcome_observation(
+        data, artifact_present=artifact_present))
 
 
 def outcome_payload() -> dict:
@@ -755,40 +1161,184 @@ def outcome_payload() -> dict:
     mirrors a file-backed export if present; when it is absent (today's default)
     the payload is the honest 'not exported' state that the card points at :8000.
     """
-    data = _read_outcome_contract()
-    data["_freshness"] = _outcome_contract_freshness(data)
+    present, data = _read_outcome_contract()
+    data["_freshness"] = _outcome_contract_freshness(data, artifact_present=present)
     return data
 
+
+def _read_benchmark_inventory() -> tuple:
+    """Read the benchmark-artifact inventory → ``(artifact_present, data)``."""
+    present, data, err = _read_json_object(
+        BENCHMARK_ARTIFACT_INVENTORY, "benchmark artifact inventory")
+    if data is not None:
+        return True, data
+    shell = {"status": "not_built", "path": str(BENCHMARK_ARTIFACT_INVENTORY),
+             "generated_at": None, "models": None}
+    if err is None:
+        return False, {**shell,
+                       "error": "benchmark artifact inventory has never been built"}
+    return present, {**shell, "error": err, READER_ERROR_KEY: err}
+
+
+def _benchmark_observation(data: dict, *, artifact_present: bool = True) -> panels.Observation:
+    if data.get(READER_ERROR_KEY):
+        return panels.Observation(
+            artifact_present=artifact_present, timestamp=None, source=None,
+            populated=None, detail=data[READER_ERROR_KEY])
+    models = data.get("models")
+    return panels.Observation(
+        artifact_present=artifact_present,
+        timestamp=_parse_semantic_timestamp(data.get("generated_at")),
+        source="generated_at",
+        populated=None if models is None else bool(models),
+        detail=data.get("error"),
+    )
+
+
 def benchmark_artifacts_payload() -> dict:
-    try:
-        return json.loads(BENCHMARK_ARTIFACT_INVENTORY.read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        return {"status": "not_built", "path": str(BENCHMARK_ARTIFACT_INVENTORY)}
+    present, data = _read_benchmark_inventory()
+    data["_freshness"] = _panel_envelope(
+        "benchmark_artifacts", _benchmark_observation(data, artifact_present=present))
+    return data
+
+
+def panel_envelopes() -> dict:
+    """Every registered panel's freshness envelope, keyed by panel id.
+
+    TOTAL over ``panels.PANELS`` by construction: the loop is over the REGISTRY,
+    so a panel that gains a registry entry without a reader here raises
+    ``KeyError`` at request time instead of silently dropping out of the fold —
+    and ``tests/test_dashboard_panels.py`` catches it before that happens.
+    """
+    kernel_present, kernel_data = _read_kernel_contract()
+    outcome_present, outcome_data = _read_outcome_contract()
+    timeline_present, timeline_data = _read_timeline_contract()
+    bench_present, bench_data = _read_benchmark_inventory()
+    readers = {
+        # The REAL board envelope, not ``panels.live()``: the latter hardcodes
+        # ``populated=True``, so the fold's board card claimed content regardless
+        # of what the scan actually found. The payload is TTL-cached, so this is
+        # a dict lookup in the common case.
+        "board": lambda: board_payload()["_freshness"],
+        "handoff_detail": lambda: panels.live(),
+        "health": lambda: panels.live(),
+        "transport_probe": lambda: panels.live(),
+        "timeline": lambda: _timeline_observation(
+            timeline_data, artifact_present=timeline_present),
+        "kernel": lambda: _kernel_observation(
+            kernel_data, artifact_present=kernel_present),
+        "outcome": lambda: _outcome_observation(
+            outcome_data, artifact_present=outcome_present),
+        "benchmark_artifacts": lambda: _benchmark_observation(
+            bench_data, artifact_present=bench_present),
+        "queue": lambda: queue_payload()["_freshness"],
+        "bus": lambda: bus_payload()["_freshness"],
+    }
+    out: dict = {}
+    for name in panels.PANELS:
+        made = readers[name]()
+        # queue/bus build their envelope inside their own payload (they need the
+        # fold they already computed); everything else hands back an Observation.
+        out[name] = made if isinstance(made, dict) else _panel_envelope(name, made)
+    return out
 
 
 def health_payload() -> dict:
-    """Fold the board (live) + timeline + kernel + outcome artifacts into one line."""
-    tl = freshness.classify(TIMELINE_PATH, _TIMELINE_WARN_S, _TIMELINE_STALE_S)
-    kn = _kernel_contract_freshness(_read_kernel_contract())
-    oc = _outcome_contract_freshness(_read_outcome_contract())
-    # ``missing`` is not degraded (fresh checkout / loop not started); ``stale`` is.
-    # The outcome export is deliberately EXCLUDED from the degraded gate: a paused
-    # loop (Phase-0 stop-loss) reads stale/missing by design, so it is surfaced for
-    # visibility but must not flip the stack-health probe to degraded.
-    degraded = tl["staleness_class"] == "stale" or kn["staleness_class"] == "stale"
+    """THE FOLD. Every registered panel's envelope, folded into one verdict that
+    NAMES the worst panel and says why.
+
+    Three-valued (``ok`` / ``absent`` / ``degraded``) because "nobody is
+    reporting" is neither of the other two, and the pre-AK6 two-valued fold had to
+    call it ``ok``. The rules live in ``panels.fold``; the compatibility aliases
+    below (``board``/``timeline``/``kernel``/``outcome`` at the top level) are the
+    same envelope objects, kept so existing consumers and regression locks are not
+    broken by the generalisation.
+    """
+    envs = panel_envelopes()
+    verdict = panels.fold(envs)
     return {
-        "status": "degraded" if degraded else "ok",
-        "board": {"staleness_class": "fresh", "source": "live-scan"},
-        "timeline": tl,
-        "kernel": kn,
-        "outcome": oc,
+        "status": verdict["status"],
+        # WHICH panel produced ``status``. ``worst`` is the worst by severity
+        # score and need not be that panel — live right now the fold is ``absent``
+        # because of ``kernel`` while ``worst`` is ``bus``, and a badge that pairs
+        # the colour of one with the sentence of the other names the wrong
+        # offender.
+        "status_set_by": verdict["status_set_by"],
+        "worst": verdict["worst"],
+        "attention": verdict["attention"],
+        "absent": verdict["absent"],
+        "panels": envs,
+        # Back-compat aliases — same objects, old names.
+        "board": envs["board"],
+        "timeline": envs["timeline"],
+        "kernel": envs["kernel"],
+        "outcome": envs["outcome"],
         "now": time.time(),
     }
+
+
+def transport_probe_payload() -> dict:
+    """``/health`` — the SUPERVISOR's probe. Transport liveness ONLY.
+
+    ``scripts/dashboard/hub_supervisor.sh`` restarts the hub when this body stops
+    matching ``"status"…ok``. Producer health must therefore never reach it: a
+    dead AutoKernel loop or a paused autopilot would put the hub into a restart
+    loop, and restarting the dashboard cannot revive a producer in another repo.
+    The fold is one link away and is named here so the separation is discoverable
+    from the wire rather than only from this docstring.
+    """
+    return {"status": "ok", "probe": "transport",
+            "detail": "the hub process is serving; this route says nothing about "
+                      "whether any producer is reporting",
+            "producer_health": "/api/health"}
 
 
 # --------------------------------------------------------------------------- #
 # HTTP layer
 # --------------------------------------------------------------------------- #
+# ROUTES ARE TABLES, NOT AN if/elif CHAIN. The chain was unenumerable: nothing
+# could ask the hub which panels it serves, so the panel→producer registry could
+# only ever be checked against a hand-written list — the same defect one level up.
+# With tables, ``panels.registry_gaps(server)`` reads the routes the hub ACTUALLY
+# dispatches on and fails when a route has no registered producer, or a registered
+# producer has no route, or a route is bound to the wrong payload function.
+HTML_ROUTES = {
+    "/": STATIC_HTML,
+    "/kernel": KERNEL_HTML,
+    "/bus": BUS_HTML,
+    "/benchmarks": BENCHMARKS_HTML,
+}
+
+#: ``route -> () -> dict``, answered 200.
+API_ROUTES = {
+    "/api/handoff_board": board_payload,
+    "/api/handoff_timeline": timeline_payload,
+    "/api/kernel": kernel_payload,
+    "/api/bus": bus_payload,
+    "/api/queue": queue_payload,
+    "/api/outcome": outcome_payload,
+    "/api/benchmark_artifacts": benchmark_artifacts_payload,
+    "/api/health": health_payload,
+}
+
+#: ``route -> (id) -> (status, dict)``. The payload function is bound DIRECTLY,
+#: with no adapter, so the registry cross-check compares real function identity
+#: rather than a wrapper's name.
+API_ROUTES_WITH_STATUS = {
+    "/api/handoff_detail": detail_payload,
+}
+
+#: The supervisor's transport probe. In its OWN table, not ``API_ROUTES``: it is
+#: not a panel over a producer, and it must never carry a producer's verdict (see
+#: the module docstring — the supervisor restarts the hub on a non-ok body). It is
+#: still enumerated, and still registered in ``panels.PANELS``, so "the route that
+#: is exempt from the fold" is a declared fact rather than an omission.
+PROBE_ROUTES = {
+    "/health": transport_probe_payload,
+}
+TRANSPORT_PROBE_ROUTE = "/health"
+
+
 class _Handler(BaseHTTPRequestHandler):
     server_version = "EPYCHandoffHub/1.0"
 
@@ -821,37 +1371,16 @@ class _Handler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         route = parsed.path.rstrip("/") or "/"
         try:
-            if route == "/":
-                self._send_html(STATIC_HTML)
-            elif route == "/kernel":
-                self._send_html(KERNEL_HTML)
-            elif route == "/bus":
-                self._send_html(BUS_HTML)
-            elif route == "/benchmarks":
-                self._send_html(BENCHMARKS_HTML)
-            elif route == "/health":
-                self._send_json({"status": "ok"})
-            elif route == "/api/handoff_board":
-                self._send_json(board_payload())
-            elif route == "/api/handoff_detail":
+            if route in HTML_ROUTES:
+                self._send_html(HTML_ROUTES[route])
+            elif route == TRANSPORT_PROBE_ROUTE:
+                self._send_json(transport_probe_payload())
+            elif route in API_ROUTES:
+                self._send_json(API_ROUTES[route]())
+            elif route in API_ROUTES_WITH_STATUS:
                 qs = parse_qs(parsed.query)
-                handoff_id = (qs.get("id") or [""])[0]
-                status, payload = detail_payload(handoff_id)
+                status, payload = API_ROUTES_WITH_STATUS[route]((qs.get("id") or [""])[0])
                 self._send_json(payload, status=status)
-            elif route == "/api/handoff_timeline":
-                self._send_json(timeline_payload())
-            elif route == "/api/kernel":
-                self._send_json(kernel_payload())
-            elif route == "/api/bus":
-                self._send_json(bus_payload())
-            elif route == "/api/queue":
-                self._send_json(queue_payload())
-            elif route == "/api/outcome":
-                self._send_json(outcome_payload())
-            elif route == "/api/benchmark_artifacts":
-                self._send_json(benchmark_artifacts_payload())
-            elif route == "/api/health":
-                self._send_json(health_payload())
             else:
                 self._send_json({"error": "not found", "path": route}, status=404)
         except BrokenPipeError:
