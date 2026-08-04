@@ -1799,3 +1799,66 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `ORCHESTRATOR_STACK_NUMA_MODE=both env-filter branch failed ... falling through to
       stack-priors`. Both degrade silently to a fallback path, so a real defect there would be
       invisible. It also makes genuine errors hard to spot in stack output.
+
+## Scorer repair and an unprovable outage (2026-08-04)
+
+- [x] **The eval scorer was discarding 1,452 questions every run — 1,452 -> 14** ✅ 2026-08-04.
+      Two independent defects. (a) `debugbench` python rows (1,414) carried
+      `scoring_method: code_execution` with NO oracle — no `test_code`, no `entry_point` — while
+      their 2,839 cpp/java siblings carrying identical ground truth scored fine on `substring`.
+      (b) `instruction_precision` (17) and `agentic` (8) keep the needle in
+      `scoring_config["substring"]` and `debug_scorer._score_substring` only read `expected` — the
+      documented `expected=='' never scored` defect. Scorer fixed BEFORE the validator on purpose:
+      the reverse order would have converted 25 dropped rows into 25 systematically wrong ones.
+      epyc-orchestrator `2f366e6b`; pool change is local (gitignored, 1.35 GB).
+- [x] **Server logs append instead of truncating** ✅ 2026-08-04 (`a627d565`) — eight launcher call
+      sites were `open(log_file, "w")`, so restarting the stack destroyed the previous process's
+      log including the lines saying why it exited.
+
+### New tasks
+
+- [ ] **UNEXPLAINED: every llama-server exited at ~07:00 on 2026-08-04 while whisper and tts —
+      same stack start, two seconds apart, same parentage — survived.** That selectivity rules out
+      container/host restart (uptime 5d17h), OOM (no kernel oom-kill, no earlyoom entry, 1,079 GB
+      available), tool-shell reaping (own sid+pgid, parented to containerd-shim), nightshift
+      (`inference_guard.sh` only reads), cron (none), and any repo script. Surviving evidence was
+      one line — `srv operator(): cleaning up before exit...`, a signal handler. Six other claude
+      sessions are live on this host; INC-20260731-broad-process-pattern-kills is the leading
+      explanation and is NOT proven. Logs now append, so a recurrence is diagnosable. **If it
+      recurs, capture `logs/llama-server-*.log` BEFORE restarting.**
+- [ ] **14 residual unscoreable rows are broken DATA, not scorer bugs** — `livecodebench` 11 have
+      comment-only `test_code` (`"# assert __init__(/) == as a list of"`), `cruxeval` 1 has no
+      ground truth anywhere, `mode_advantage_hard` 1. Either regenerate their oracles or retire the
+      rows; leaving them silently dropped is what hid the other 1,438.
+- [ ] **debugbench `expected` is truncated to exactly 100 characters** on every row across all
+      three languages. `substring` scoring therefore asks the model to reproduce a 100-char prefix
+      of the reference solution. That scores *something*, but it is not obviously "did it fix the
+      bug" — worth deciding whether this suite measures what its name claims.
+- [ ] **Design-lens review of AutoPilot dispatched** (workflow `wf_50aef395-2a4`) — essential vs
+      incident-scarred vs speculative, against Karpathy's autoresearch. Operator's sharpening:
+      scar tissue is not only "justified, keep it" — a CLUSTER of scars is evidence the underlying
+      design is wrong and was patched where symptoms surfaced. Apply that lens at synthesis. Three
+      clusters already visible from 2026-08-03/04 alone: (1) *absence scored as failure* — patched
+      separately in the reliability floor, the `throughput_unmeasured` branch, and the
+      degraded-suites renderer, one root cause being that nothing distinguishes "no measurement"
+      from "bad measurement"; (2) *lost updates on autopilot_state.json* — patched with a write
+      lock, a daemon-absence gate, and a post-write verify, root cause being one whole-file
+      document with 5+ writers and no ownership model; (3) *era provenance* — stamped independently
+      for quality and speed with separate holds, root cause being no single provenance concept.
+
+      **The refactoring frame (operator, 2026-08-04): simplifying does not mean REMOVING scar
+      tissue — it means INTEGRATING it into the design.** A scar is a lesson bolted on as a runtime
+      check. Integrating it moves the lesson into the structure, so the failure becomes
+      unrepresentable rather than caught. The review's deliverable is therefore not a delete list;
+      it is, for each scar cluster, the single structural change that makes the whole class of
+      incident impossible:
+
+      | Cluster | Bolted-on now | Integrated form |
+      |---|---|---|
+      | absence scored as failure | 3 guards: reliability floor, `throughput_unmeasured`, suite renderer | a measurement is `Measured(v)` or `Absent(reason)`; comparing `Absent` to a floor is not expressible, so no guard is needed |
+      | lost updates on state | write lock + daemon-absence gate + post-write verify | fields carry owners; the writer API can only write fields it owns |
+      | era provenance | quality stamped, then speed stamped separately, two holds | a value IS `(number, era)`; cross-era comparison is a type error, not a runtime hold |
+
+      Each trades N runtime checks for one structural invariant. Rank candidates by (scars
+      retired) x (blast radius of the change), and treat a cluster with no such integration as a
+      finding in its own right.
