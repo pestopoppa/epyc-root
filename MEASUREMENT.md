@@ -15,7 +15,7 @@ Everything else exists to make that rule cheap to follow.
 
 **Document layout (v2).** This core file holds the constitution: claim grammar, metric scoping,
 protocol index, noise table, governance, and retroactivity. Full normative protocol text lives in
-four annexes in `measurement/protocols/`, which carry the SAME trust boundary and amendment rules as this
+five annexes in `measurement/protocols/`, which carry the SAME trust boundary and amendment rules as this
 file — they are the constitution, filed by family or instrument class, not commentary on it. Daily-use guidance for
 sessions is the digest at `agents/shared/MEASUREMENT_POLICY.md`; when in doubt, this file and its
 annexes win.
@@ -44,7 +44,8 @@ confirmed-direction errors have burned debugging time before (CLAUDE.md §Debugg
 
 Full normative text: **B** = `measurement/protocols/bench-cpu.md`, **Q** =
 `measurement/protocols/quality-eval.md`, **G** = `measurement/protocols/gpu-cross-device.md`,
-**K** = `measurement/protocols/kernel-research.md`.
+**K** = `measurement/protocols/kernel-research.md`,
+**S** = `measurement/protocols/speech.md`.
 Status: ✅ ratified, 📋 staged (operator-apply).
 
 | Protocol | Scope | Metric (direction) | Status | Annex |
@@ -66,6 +67,14 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 | P-SHED-1 | Cross-device shed trade (CPU→GPU displacement) | net task_rate (↑) | ✅ | G |
 | P-DFLASH-LINEUP-1 | DFlash lineup enablement (per-lane) | acceptance + t/s ratio (↑) | ✅ 2026-07-25 | G |
 | P-AK-SEARCH-1 | Kernel-candidate search inside experimental worktrees, per-backend | search verdict — **not a claim**; direction carried per record | ✅ 2026-08-03 | K |
+| P-STT-1 | STT transcription correctness: corpus, normalization, match rule | WER % (↓) — **not a claim** without its owning release protocol | ✅ 2026-08-03 | S |
+| P-STT-2 | STT speed: real-time factor, latency, throughput | RTF (↓), first-token latency ms (↓), throughput (↑) | ✅ 2026-08-03 | S |
+| P-STT-3 | Speech memory stability and audio-input identity (backend-agnostic) | verdict — **not a claim** | ✅ 2026-08-03 | S |
+| P-STT-REL-1 | whisper_stt release decision rule | verdict — **not a claim** | ✅ 2026-08-03 | S |
+| P-TTS-1 | TTS text/audio identity, deterministic and numerical checks | verdict — **not a claim** | ✅ 2026-08-03 | S |
+| P-TTS-2 | TTS intelligibility/quality proxy with a human-independent floor | round-trip WER % (↓) | ✅ 2026-08-03 | S |
+| P-TTS-3 | TTS speed: first-audio latency, RTF, throughput | first-audio ms (↓), RTF (↓), throughput (↑) | ✅ 2026-08-03 | S |
+| P-TTS-REL-1 | qwentts_tts release decision rule | verdict — **not a claim** | ✅ 2026-08-03 | S |
 
 ## 3. Claim grammar & examples
 
@@ -242,6 +251,13 @@ confers no authority beyond its own enumeration.
 4. **New measurements** — cite a protocol from §2. No protocol → observation, not claim.
 
 ## CHANGELOG
+
+- **2026-08-03 (v2.x)** — AMENDMENT: **Annex S** (`measurement/protocols/speech.md`) created
+  as a **fifth** annex, filed by modality, holding the STT (`P-STT-1`, `P-STT-2`, `P-STT-3`,
+  `P-STT-REL-1`) and TTS (`P-TTS-1`, `P-TTS-2`, `P-TTS-3`, `P-TTS-REL-1`) protocol families —
+  the first measurement protocols of any kind for the `whisper_stt` and `qwentts_tts`
+  backends. Supersedes the layout sentence (`four` → `five`) and the annex key line; §2 gains
+  eight rows. `P-AK-SEARCH-1`'s owning-annex set is extended to "B, Q, G or S".
 
 - **2026-08-02 (v2.x)** — §5 gains **evidence durability**: evidence for a ratified claim must
   live in-repo under `epyc-inference-research/data/<campaign>/` with hashes and a README;

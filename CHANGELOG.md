@@ -909,3 +909,4 @@
 - 2026-08-03: P-AK-SEARCH-1-A1 ratified.
 - 2026-08-03: CONFORMANCE-VECTORS-1 ratified.
 - 2026-08-03: Annex K narrowing cross-reference added under P-AK-SEARCH-1, completing the P-AK-SEARCH-1-A1 apply per the annex admission test.
+- 2026-08-03: Annex S created (measurement/protocols/speech.md) — STT (P-STT-1..3, P-STT-REL-1) and TTS (P-TTS-1..3, P-TTS-REL-1) protocol families ratified; first measurement protocols for the whisper_stt and qwentts_tts backends; P-AK-SEARCH-1's owning-annex set extended to "B, Q, G or S".

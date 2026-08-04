@@ -449,3 +449,16 @@ median and p20/p80 only. That is materially weaker than `P-AK-SEARCH-1`’s anyt
 published MDE. **Importing those literals would be a downgrade dressed as an adoption.** They are
 explicitly not adopted.
 
+
+
+## P-AK-SEARCH-1 — owning-annex set extended 2026-08-03 (Annex S)
+
+`P-AK-SEARCH-1`'s scope clause requires a search record presented on a durable surface to be
+re-measured under *"its owning protocol in Annex B, Q or G"*. Annex S
+(`measurement/protocols/speech.md`, ratified 2026-08-03) creates the owning protocols for the
+`whisper_stt` and `qwentts_tts` backends, which had none when this protocol was ratified. That
+set now reads **B, Q, G or S**.
+
+This narrows nothing and lifts nothing. It records that the re-measurement route this protocol
+requires now EXISTS for the two speech backends; before Annex S it did not, which made the
+requirement unsatisfiable for them rather than strict.
