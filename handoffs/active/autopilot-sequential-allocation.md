@@ -134,6 +134,55 @@ outcome.
     `core_id core_v1`, last trial `1067` (2026-07-03, git tag `autopilot/trial-1067`), config_diff
     `{n_questions: 18 → 16, suites: [...] → null}`, hypothesis "Seed 16 questions across all",
     last state `k=40 E_quality=11.5507 lambda=0.5 r_eff=11`.
+- [x] **SEQ-B ROOT-CAUSED AND FIXED** ✅ 2026-08-04 (epyc-orchestrator `f1a6b23b`). **The prior
+      SEQ-B text in this handoff was WRONG** — it read "the axis computes fine; it is reporting that
+      candidates genuinely do not improve throughput". It did not compute fine, and the same
+      candidates measure **+13% to +27% faster** once the measurement is paired.
+
+      Root cause: a mis-paired measurement, not a mis-specified alternative.
+      `EvalTower._aggregate_decision_partitions` returns an `EvalResult` whose `n_questions` counts
+      only the DECISION partition (55) while `eval_wall_s` is the FULL batch's wall clock (65), and
+      the incumbent comparator counted the full 65. Candidate rate = 55/wall vs incumbent 65/wall
+      **on the same trial** — so an unchanged config measured 0.846x its own throughput, giving
+      `z_rate = -0.208` every trial. `next_lambda` clipped the negative running mean to 0, the
+      wealth factor became exactly 1.0, and it froze. Evidence: `E_rate_noninf == 0.9100` in
+      **192 of 396 rows** — precisely `1 x (1 + 0.1 x -0.9)`, one update then frozen; `z_rate` at
+      the clip floor in **199/396 (50%)**.
+
+      Second defect, the same absence-vs-zero class as the reliability floor and
+      `throughput_unmeasured`: `task_rate_qph_from` returns `0.0` as its "unavailable" sentinel
+      while the guard tested `is not None`, so an UNMEASURABLE trial was consumed as a MEASURED
+      zero questions/hour. Now returns `None` and the axis is skipped.
+
+      Third: `rate_noninferiority_z` clipped `y` two-sided, which truncates the null-side lower
+      tail, lifts `E[z]` above 0 under H0, and makes the wealth a **submartingale** — Ville does not
+      apply. Fixed by lowering the clip to `-1.0` (never binds, since `y >= -1` identically).
+
+      Replay over all 396: `z_rate` at clip floor 50% -> 0%, positive evidence 8% -> 69%, three
+      candidates cross `E_rate = 20`, one reaches 222, **zero false confirms**. NO THRESHOLD CHANGED.
+
+- [ ] **Decide whether to re-arm the sequential gate.** Currently `AUTOPILOT_SEQ_VERDICT=0`
+      (operator unblock, 2026-08-04) because an unreachable gate meant AutoPilot could not ratchet at
+      all. Re-arming changes what counts as a promotion -> human-amendment-only. **On current
+      evidence re-arming would RE-BLOCK the ratchet rather than restore it**: post-fix the binding
+      constraint is the QUALITY axis (max `E_quality` 11.55 vs bar 20). Coupled switch:
+      `AUTOPILOT_SEQ_P0_2_BRIDGE` `1 -> 0` makes the rate axis binding again (advisory today).
+
+- [ ] **The real reason `E_quality` never cleared 20 is trial starvation, not calibration.**
+      Measured over the journal: **89 of 141 candidates got exactly ONE trial** (median k = 1). An
+      e-process accumulates multiplicatively; at k=1 it cannot clear any bar. The two leading
+      candidates were close — `70902e4b665474e7` at k=40 reached E=11.55, **~9 trials short** at its
+      observed growth, and `dd793a6ee43ce718` at k=24 reached 8.71, ~10 short. This is the same
+      finding as the 2026-07-28 re-adjudication (`budget=8` / `budget_min_e=2.0` killed 121 of 121
+      refutations, a compute heuristic with no bearing on anytime-validity). **Fix the allocation
+      before concluding anything about `confirm_e = 20`.**
+
+- [ ] **Rate-axis comparator has no era fence of its own.** The incumbent pool is the 120 most recent
+      same-tier trials; `quality_exclude_before_ts` is scoped `eval_quality` only. Post-fix median
+      measured lift is **+4%, inside the 5% margin**, so "candidates really are faster" cannot be
+      distinguished from "the comparator lags a host that got faster". Main residual anti-conservative
+      risk.
+
 - [ ] SEQ-A — Sticky `refuted` label (above).
 - [ ] SEQ-B — Frozen baseline-promotion gate (above).
 - [x] SEQ-4 — Re-examine the 9 candidates whose refutation does not survive the relaxed budget. ✅ 2026-07-29 — deterministic re-adjudication in [`readjudicate_sequential_20260728.json`](../../epyc-orchestrator/orchestration/reports/readjudicate_sequential_20260728.json) confirms all nine under the same era-fenced `core_v1` evidence; none reaches `confirm_e=20.0`.
