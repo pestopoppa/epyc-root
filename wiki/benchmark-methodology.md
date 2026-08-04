@@ -1551,3 +1551,67 @@ Both probe serving shape from `/props` rather than assuming it.
 _Sources: `handoffs/active/architect-model-selection-bench.md`;
 `handoffs/active/canonical-judge-suite-revamp.md`; `progress/2026-08/2026-08-02.md`;
 epyc-inference-research `7d7bc8d3`._
+
+## Same-binary A/A on the EPYC 9655: the drift is monotone, and that decides the design (2026-08-04)
+
+Four runs of **identical code** — production `llama.cpp` @ `67a433bf4` — under the ratified
+canonical recipe (`taskset -c 0-95 numactl --interleave=all llama-bench -t 96 -fa 1 -mmp 0`, full
+OMP stack, `Qwen3-Coder-30B-A3B-Instruct-Q4_K_M`), on a quiet host verified canonical first
+(governor `performance`, THP `always/always`, `numa_balancing=0`, NPS4):
+
+| run | pp512 t/s | within-run sd | tg128 t/s | within-run sd |
+|---|---|---|---|---|
+| A | 899.95 | 9.00 | 52.76 | 0.21 |
+| B | 894.70 | 22.36 | 52.31 | 0.37 |
+| C | 867.16 | 40.83 | 51.62 | 0.85 |
+| D | 886.16 | 70.58 | 50.52 | 0.52 |
+
+**Between-run CV: 1.62% (prefill), 1.88% (decode). Max–min spread 3.70% / 4.32%.**
+
+Three things follow, and the third is the one that changes how you build an A/B here.
+
+**1. A single-run A/B can be fooled by ~4% of pure noise.** Kernel wins worth chasing are roughly
++1% to +30%, so a marginal win is unresolvable in one run. An n=1 strict-`<` accept rule — which is
+what `karpathy/autoresearch` uses, and it is right to for its setting — is a coin flip with a
+decimal point on this host.
+
+**2. Within-run variance GROWS as the sequence proceeds.** Prefill's internal sd went
+9.0 → 22.4 → 40.8 → 70.6. Whatever the mechanism is, it destabilises the measurement as well as
+shifting it.
+
+**3. Decode declines MONOTONICALLY — 52.76 → 52.31 → 51.62 → 50.52, a 4.2% slide in one
+direction.** That is drift, not scatter, and its consequence is structural: **an A/B that runs
+candidate-then-anchor charges the second arm a systematic ~4% penalty.** More repetitions do not fix
+it — they measure the drift more precisely. Interleaved paired blocks, alternating within a window,
+are therefore the minimum correct design, because they make thermal state, page-cache state and
+background load common-mode and cancelling.
+
+Equally load-bearing in the other direction: **1.6–1.9% CV does not justify an e-process.** Pairing
+plus a pre-committed N and a median covers this noise. Anytime-valid machinery solves a harder
+problem than this host presents, and the cost of solving the harder problem badly is real — the
+first implementation here had a sign-based construction whose e-value ceiling was 5.5687 against a
+threshold of 10, so no candidate could cross at any effect size.
+
+### Two test-method traps found while taking it
+
+**The frequency check fails on a healthy IDLE machine.** The codified recipe requires ≥80 cores
+above 2.5 GHz. At idle: **16**. Under load: **117**, median 2794 MHz. A preflight that evaluates the
+boost gate at idle aborts on a perfectly good host; it must be read at `load/core ≥ 0.25` or not at
+all.
+
+**A co-tenant destroys a measurement silently, and the reading looks like a finding.** A
+rest-recovery probe returned `pp512 714.68 / tg128 39.14` — a 26% collapse — while a parallel
+session was bringing up the orchestration stack: seven `llama-server` processes within 51 s, load
+3.3 → 23.9, memory 54 → 306 GB, cores above 2.5 GHz 117 → 35. **Reported as drift, a 26% collapse
+would have justified almost any amount of machinery.** Rule out the test method before believing a
+result, and hold a resource claim — the co-tenant did nothing wrong, because nothing told it the
+host was in use.
+
+### Reference
+
+`epyc-inference-research/data/autokernel_aa_20260804/` — the four `llama-bench` JSONs, their
+stderr, the runner, and `SHA256SUMS`. Preserved there rather than in `/mnt/raid0/llm/tmp/` because
+the 2026-07-04 async-prefetch win was written to a tmp path that no longer exists.
+
+_Sources: `handoffs/active/autokernel-research-loop.md`; `progress/2026-08/2026-08-04.md`;
+epyc-inference-research `6e5f33c1`._

@@ -2420,32 +2420,150 @@ document; this phase is the checklist.
 - [ ] Build the per-candidate run ledger that makes the above machine-enforced rather than
   procedural.
 
-**The campaign itself:**
+**Built 2026-08-04 — the loop became runnable:**
 
-- [ ] Decide **which backend goes first**. `llama_cpu` needs no GPU device claim and its canonical
-  baseline is the most characterised surface we have; `llama_gpu` needs the claim and contends with
-  whoever is serving. Recommendation: CPU first, for the claim reason alone.
-- [ ] Acquire the region claim and **bind it for both consumers** — the footprint is read off the
-  ratified prefix, never retyped.
-- [ ] Anchor on the **current production tip** and create the worktree (never a long-lived branch
-  forked from an old tip — INC-20260706-iqk-missing-subsystem).
-- [ ] **Run the five fixed controls BEFORE any real search** (§15.2): positive, neutral, negative,
-  A/A, and the **historical-win replay — the iqk port, which MUST promote**. A loop whose controls
-  have not run is an instrument nobody has calibrated, and the negative control is the one that
-  catches a fast-looking wrong kernel.
-- [ ] Solve the calibration block off the A/A pool; record φ, α_sel, α_conf, the noise floor and the
-  MDE that campaign will be judged under.
-- [ ] Seed hypotheses from the §19.8 queue and the operator hypothesis channel.
-- [ ] Run to a first banked candidate, then to a composed champion.
+- [x] **`campaign.py` — the entrypoint the package spent 94k lines not having.** A `grep` for
+  `__main__|argparse|def main(` across every non-test module returned *nothing*: 5,695 tests passing
+  in 47 s and no way to start it. Twelve steps, `--dry-run` as the DEFAULT so it cannot benchmark by
+  accident on a shared host. ✅ 2026-08-04
+- [x] The accept rule, in four conditions rather than a statistics module: T0 all-PASS
+  lexicographically first, then over N **pre-committed** pairs keep iff `min(delta) > 0` and
+  `median(relative) > drift_bound`. `decide()` refuses any other block count, so optional stopping is
+  impossible rather than discouraged. ✅ 2026-08-04
+- [x] **The first real A/A this package has ever had** — four runs of identical code, between-run CV
+  1.62%/1.88%, and a monotone 4.2% decode decline that makes interleaved pairing mandatory rather
+  than merely advisable. Everything was calibrated against synthetic numbers until now.
+  `data/autokernel_aa_20260804/`. ✅ 2026-08-04
+- [x] `program.md` — the human control surface: the loop procedure plus a hypothesis inbox, modelled
+  on `karpathy/autoresearch`'s 114-line equivalent. ✅ 2026-08-04
+- [x] Hypothesis path end to end: falsifier optional at entry and **mandatory before compute**;
+  adoption **removes** the entry from the operator's store (journal-first, so a crash leaves a
+  detectable duplicate and never a loss); the do-not-repeat ledger `check_do_not_repeat()` had always
+  consumed and nothing had ever built. ✅ 2026-08-04
+- [x] `--hypothesis` wired to the claim, closing the FIFTH "guard defined and never wired" in this
+  package — `claim_for_hypothesis` calls itself *"The ONLY route from a hypothesis to a resource
+  claim"* and had zero non-test callers. ✅ 2026-08-04
+- [x] **~79,600 lines deleted** (`release/`, `adapters/`, `surface/`, the AK4 strategy plane), tag
+  `autokernel-preserve-20260804`. Verified first with Python's own import machinery: the driver's
+  closure is 22 modules and reached none of it. The review's condemnation of `evaluator/integrity.py`
+  and `evaluator/surface.py` was **wrong** — the driver imports both. ✅ 2026-08-04
+- [x] Refactor plan Steps 0–2 executed: placeholder digests refused (`BuildProvenance.
+  output_binary_sha256` accepted 64 zeros), `produced_by` on the two evidence types that lacked it,
+  `Check.worst_of` (an empty vector is COULD_NOT_CHECK, never PASS), `schemas.require`, and the
+  self-audit identity binding at `evaluator/api.py` and `evaluator/integrity.py`. ✅ 2026-08-04
 
-**What "it is working" looks like:** controls green with the negative control REFUSED and the iqk
-replay PROMOTED; e-values that move with effect size rather than pinning at a ceiling; the journal
-growing with banked and abandoned candidates both; readiness reporting a figure or an explicit
-parity standing, never a silent absence.
+**Discovered 2026-08-04, still open:**
+
+- [ ] **Answer whether the decode drift recovers after rest** (Step 1 above). The probe was destroyed
+  by a co-tenant; the question is unanswered and it changes what a campaign does between candidates.
+- [ ] Replace the placeholder accept threshold (2.1310%, from four runs on one model) with the first
+  campaign's own calibration block.
+- [ ] `evaluator/api.py`'s **supplied-source** path still PASSes any real foreign module. That is the
+  shared-AST-engine contract and cannot change without a `module_id` kwarg — Step 4 of the refactor
+  plan (`capability.py`), deliberately deferred until after campaign #1.
+- [ ] The `capability.py` hoist itself: 11 audit functions, ~631 lines, 5 denylist tables → one
+  walker + ~200 lines. **Guard rail:** the five denylists are *four different policies*, not four
+  drifted copies — `microbench.py`'s list is INC-20260731 encoded as data. Unioning them is a
+  category error that would weaken the execution plane while reading as a cleanup.
+- [ ] A structural audit that every declared guard has a caller. Five instances of "declared and
+  never wired" have now been found by hand, the most recent written hours after the refactor plan
+  assessed that row as "0 live". Fixing instances is not working.
+
+---
+
+## ▶ START HERE WHEN INFERENCE RESOURCES ARE AVAILABLE
+
+Everything below is executable **today**. The loop has an entrypoint, an accept rule calibrated
+against a real measurement, and a hypothesis path. What it has never had is compute. Nothing in this
+section is blocked on a decision — it is blocked on a quiet machine.
+
+**Read first, in this order:** `execution/README.md` (the runbook, cold start to first candidate),
+then `program.md` (the loop procedure and the hypothesis inbox), then this list.
+
+### Step 0 — before anything, confirm you actually hold the host
+
+The single most expensive lesson of 2026-08-04, and it cost two of six A/A runs inside an hour: a
+parallel session brought up the orchestration stack mid-measurement — seven `llama-server`
+processes, load 3.3 → 23.9, memory 54 → 306 GB — and the readings collapsed 26%. **The co-tenant did
+nothing wrong. We held no claim.**
+
+- [ ] Confirm nothing else is serving or benchmarking, and that whoever owns the stack knows the
+      host is being taken. `--execute` refuses without `--i-hold-the-host` for exactly this reason.
+- [ ] Verify host canonical state — governor `performance`, THP `always/always`, `numa_balancing=0`.
+- [ ] **Do not trust the boost gate at idle.** Measured 2026-08-04: 16 cores above 2.5 GHz idle vs
+      **117 under load**, against a required 80. The gate is now evaluated only at `load/core ≥ 0.25`;
+      a preflight that reads it at idle aborts on a perfectly healthy machine.
+
+### Step 1 — answer the one open measurement question (≈20 min, cheap, do it first)
+
+- [ ] **Does the decode decline recover after rest?** The A/A showed a monotone
+      52.76 → 52.31 → 51.62 → 50.52 slide across four consecutive runs — drift, not scatter. The
+      rest-recovery probe was destroyed by the co-tenant and the question is **unanswered**.
+      Run 4 A/A runs, idle 180 s, run 2 more, **under a held claim this time**.
+      *If it recovers*: thermal or page-cache state, and inter-arm rest becomes part of the recipe.
+      *If it does not*: monotone (memory fragmentation, THP degradation) and the fix is different.
+      Either answer changes what a campaign must do between candidates, so it is worth 20 minutes
+      before spending hours. Evidence goes beside `data/autokernel_aa_20260804/`.
+
+### Step 2 — calibrate the instrument before trusting it
+
+- [ ] **Run the five fixed controls (§15.2) before any real search**: positive, neutral, negative,
+      A/A, and the **historical-win replay — the iqk port, which MUST promote**. The negative control
+      is the one that catches a fast-looking wrong kernel, and a loop whose controls have not run is
+      an instrument nobody has calibrated. Every number in the 3,582 tests is synthetic; these are
+      the first real ones.
+- [ ] Solve the calibration block off the A/A pool and record φ, α_sel, α_conf, the noise floor and
+      the MDE this campaign is judged under. The current accept threshold — **2.1310%**, from
+      `data/autokernel_aa_20260804/` — is a placeholder from four runs on one model; replace it with
+      the campaign's own calibration.
+
+### Step 3 — the first candidate
+
+- [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
+      characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
+      serving. The claim reason alone decides it.
+- [ ] **Reproduce a known-real win as candidate #1** — the 2026-07-04 async-prefetch result
+      (+3%, MemUnitStalled reduction on `mul_mat_vec_q8_0_prefetch`). A null result on a known win is
+      diagnostic of the *harness*; a null on a novel idea tells you nothing about either. Note its
+      original evidence was written to `/mnt/raid0/llm/tmp/mi210-build/campaign/` and **that
+      directory no longer exists** — the win must be re-derived from the commit, not the record.
+- [ ] Then a real one. Drop a hypothesis into the store (`HYPOTHESES.md` has the shape), or run
+      exploratory with no `--hypothesis` at all.
+
+The command, from `epyc-inference-research`:
+
+```bash
+python3 -m scripts.kernel_rnd.autokernel.campaign --dry-run \
+    --model <production-representative GGUF> --candidate <patch-or-branch>
+# read all 12 steps, THEN:
+python3 -m scripts.kernel_rnd.autokernel.campaign --execute --i-hold-the-host \
+    --model <same> --candidate <same> --journal-root <durable, NOT a scratch path> \
+    [--hypothesis akh-... --hypothesis-store <path>]
+```
+
+`--dry-run` is the default and spawns nothing (proved by `test_readme.py` with every spawn primitive
+booby-trapped). **Read the dry run before executing** — that is how the LD_LIBRARY_PATH display
+defect was caught on 2026-08-04, and the failure it hid is the worst shape available here: a
+candidate linked against the anchor's `libggml` measures the *anchor*, and reports a clean,
+well-formed null with every gate passing.
+
+### Step 4 — to a champion
+
+- [ ] Run to a first banked candidate, then compose a champion lineage.
+- [ ] Seed further hypotheses from the §19.8 queue and the operator channel.
+
+**What "it is working" looks like:** the negative control REFUSED and the iqk replay PROMOTED;
+e-values that move with effect size instead of pinning at a ceiling (they pinned at 5.5687 for every
+magnitude until 2026-08-04); the journal growing with banked *and* abandoned candidates; readiness
+reporting a figure or an explicit parity standing, never a silent absence.
 
 **What should abort it:** the negative control passing; the A/A arm showing a non-null effect; CPU
-frequency throttled (a multi-day −60% has happened here); a frozen tree showing any modification;
-the claim lost mid-measurement.
+frequency throttled under load (a multi-day −60% has happened here); a frozen tree showing any
+modification; the claim lost mid-measurement; two arms sharing an `LD_LIBRARY_PATH`.
+
+**Budget:** a full A/A is ~2 min/run; a candidate build is the long pole. Steps 0–2 are roughly an
+hour of machine time and are the whole difference between a trustworthy first result and a number
+nobody can defend.
 
 **Exit:** a champion exists for at least one source tree, green through T2, with a readiness signal
 the operator can read — which is exactly what AK7 requires as its input.
@@ -2509,7 +2627,7 @@ Each line names the specific blocker, per *Act, Don't Defer*.
 | AK6 end-to-end campaign stopping at a validated package | a real champion and a compute window (AK7) | — |
 | AK6 fault injection (restart/crash/preemption/tamper) | needs process management, forbidden to the agents that built this | who runs it, and where |
 | ~~AK6 `/kernel` freshness contract + JSON contract v2~~ | — | **DONE 2026-08-03.** It had no blocker, so it got built rather than listed. Contract v2 + producer in `autokernel/surface/`, panel→producer registry and health fold in `dashboard/panels.py`. The restart chaos test walks the actual incident: alive → silent-within-budget (still green, the control that stops it alarming forever) → past budget, board **names** the dead producer → hub restarts, verdict does not go green → a live exporter over a dead loop cannot resurrect the panel → export swept away, hub renders rather than 500s. |
-| AK7 first supervised freeze | a CHAMPION, which needs a first campaign (AK6.5) — then the operator's freeze request | — |
+| AK7 first supervised freeze | a CHAMPION, which needs a first campaign (AK6.5) — and AK6.5 is now blocked on NOTHING but a quiet machine | — |
 | AK8 seed queue, `oracle_port`, external suites | fresh profiling, which needs the loop running | — |
 | AK9 speech compiler extension | `P-STT-1`/`P-TTS-1` ratification (operator) | — |
 | Sub-floor estimate selection in `readiness.py` | **operator call** — excluding them makes a phase measured entirely at parity report "no figure" | — |
