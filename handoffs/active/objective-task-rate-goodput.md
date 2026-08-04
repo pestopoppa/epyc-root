@@ -1,9 +1,13 @@
 # Objective: task_rate Axis + Goodput Frontier Rebuild
 
-**Status**: HOLD/SHADOW — W1-W2 + W4 landed 2026-06-12; W3 live vector flip held by 2026-06-13 policy decision; replay reports fold supersession events as of `d21bbee` and include baseline-promotion evidence as of `47c75de`
+**Status**: W3 FLIPPED AND LIVE ✅ 2026-08-04 — live dominance is `task_rate_4d_v1`
+`(quality, seq_task_rate_qph, -cost, reliability)` (`afdd5d74`); legacy `median_request_tps` is now
+the shadow series. Frontier restarted at the flip commit. Open: W3d (the superseded hold conditions,
+incl. the still-live zero-quality/high-rate objection), W3e (retire the tier-cost axis — blocked by
+positional consumers), W5 (regime-profiled offered load).
 **Created**: 2026-06-12
-**Updated**: 2026-07-26
-**Priority**: GATED — N6 policy decision closed 2026-06-13; W3 reopens only after the evidence-plane and quality-eligibility gates below
+**Updated**: 2026-08-04
+**Priority**: ACTIVE — the flip landed on an operator decision; remaining work is axis hygiene (W3d/W3e) and the load-profile era (W5)
 **Spec**: [fable5-findings-05-objective-design.md](../completed/fable5-findings-05-objective-design.md) — read before claiming any waypoint. Slots into [fable5-findings-01-impl-plan.md](../completed/fable5-findings-01-impl-plan.md) as Phase 1.6.
 **Related**: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (noise/admission rules the new axis inherits), [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) (live consumer), [MEASUREMENT.md](../../MEASUREMENT.md) §P-SPEED-OBJ (already names task_rate as the speed axis) + §5 era table (E3→E4 retire-view)
 
@@ -43,7 +47,82 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
 
 - [x] **W1 — axis + shadow journal** (~half day): added task-rate helpers and policy constants in `src/autopilot_core/tier_specs.py`; `eval_tower._aggregate()` records `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task`; new journal rows include live legacy vector + shadow task-rate vector under policy labels.
 - [x] **W2 — historical replay + bloat-artifact diff report** (~half day, ZERO inference): replay implemented via `scripts/analysis/task_rate_goodput_replay.py` and `journal_reconstruction` objective-policy replay. Full-journal report: `epyc-orchestrator/orchestration/reports/task_rate_goodput_replay_2026-06-12.md`. Follow-up `d21bbee` folds append-only supersession events before rendering report rows, so replay tables match supersession-aware archive/dashboard state. Follow-up `47c75de` adds a `Baseline Promotion Evidence` section scoped to `baseline_promotion` events whose source trial is present in the effective folded replay rows; malformed/incomplete events render as `n/a` rather than crashing the report.
-- [ ] **W3 — flip the vector** (~half day): archive/gate/baseline move to the 3-D vector behind a policy-version bump; retire t/s AND the tier-cost axis from dominance (tier-mix stays telemetry for capacity planning); record the E3→E4 retire-view per MEASUREMENT.md §5 (frontier restarts fresh; old view archived read-only). **Hold as of 2026-06-13**: W2 replay found 1/5 legacy T1 frontier points fall off under `task_rate_3d_v1`, not the spec's >=2/5 proof threshold, and raw `task_rate` admits a zero-quality high-rate frontier point. Do not flip live dominance yet.
+- [x] **W3 — flip the vector** ✅ 2026-08-04 — LIVE. Operator threw the armed W3b-C tripwire
+      ("Autopilot should use tasks/hr"). Landed as `task_rate_4d_v1`
+      `(quality, seq_task_rate_qph, -cost, reliability)` in `afdd5d74`, **not** the planned 3-D
+      vector, and **not** on the shadow rate metric. Three findings forced both departures:
+      - The 3-D `task_rate_3d_v1` CANNOT be the live vector. Consumers index the tuple
+        positionally past axis 1 — `safety_gate.py:2303` refuses `len(objectives) < 4`
+        ("frontier representative missing objective tuple") and `pareto_archive.py` reads
+        `[2]`/`[3]`. Going 3-D would not raise; it would **silently block every baseline
+        promotion**. `tier_specs.objectives_from` is the documented chokepoint on
+        CONSTRUCTION, but not on CONSUMPTION. So the 4-D shape is kept and axis 1's UNIT
+        changes. **Retiring the tier-cost axis is therefore still open — see W3e.**
+      - Axis 1 uses `seq_task_rate_qph`, not `task_rate_qph`. The latter divides the
+        decision-partition question count by the FULL-batch wall clock: trial 775 scored
+        202.9 qph @ 51.5 t/s vs trial 778 at 170.5 qph @ 49.8 t/s — a **19% objective gap
+        from a 3% speed difference**, the rest being `n` moving 43→38. It also returns
+        `0.0` for "unavailable" on **128 of 1,466** journal rows.
+      - `dominates()` truncated via `zip()`, so a 3-D point vs a 4-D one compared qph
+        against t/s and reliability against `-cost`. It now raises on shape mismatch.
+
+      Verified live on trial 1472: `objectives_live_v1 = [2.025, 59.49, -0.5, 0.8]`,
+      `objectives_legacy_v1 = [2.025, 14.78, -0.5, 0.8]`. Frontier restarted via
+      `pareto_exclude_before_ts` at the flip commit (both vectors are 4-D, so nothing
+      catches a mixed frontier by shape — the epoch fence is what separates them).
+- [ ] **W3d — the 2026-06-13 hold conditions were never satisfied; they were superseded.**
+      Record why, so the hold is not silently re-derived: the flip shipped on an operator
+      decision, not on the ">=2/5 legacy frontier points drop" proof threshold. The
+      "raw `task_rate` admits a zero-quality high-rate frontier point" objection is still
+      LIVE and unaddressed — quality remains a separate axis, so a zero-quality/high-rate
+      point can still enter the frontier. Decide whether goodput (quality-scaled rate)
+      should replace raw rate on axis 1, or whether the reliability floor is sufficient.
+- [ ] **W3e — retire the tier-cost axis from dominance** (deferred out of W3). The original
+      W3 scope included dropping `-cost`; that is what made the vector 3-D and is blocked by
+      the positional consumers above. Doing it means fixing `safety_gate.py:2303` and
+      `pareto_archive.py`'s `[2]`/`[3]` reads to be axis-NAME-driven rather than positional.
+      Until then `-cost` stays a dominance axis and the frontier is wider than intended.
+
+### W6 — the eval instrument the rate axis is measured on (opened 2026-08-04)
+
+Questions/hour is only meaningful relative to a fixed question set, so the flip made the
+instrument's composition load-bearing in a way it never was under tokens/second.
+
+- [x] **W6a — declare the tier mix** ✅ 2026-08-04 (`81be1e56`). The sampler stratified by
+      SUITE only (`per_suite = n // len(suites)`); difficulty tier was never a sampling
+      dimension, so the realized mix was a byproduct — the real seed-42 n=50 draw was
+      **T1:24 / T2:15 / T3:11** and moved with `n` and with any pool edit. Operator chose
+      **equal thirds**. Verified on the real 79,479-row pool: n=50 → 17/17/16, n=100 →
+      34/33/33, 34 distinct suites still represented, deterministic. A starved tier is
+      REPORTED, never backfilled from another tier.
+- [x] **W6b — rotate the core draw so the optimizer cannot overfit one set** ✅ 2026-08-04
+      (`ce6e4bea`). Operator: *"the draw should be somewhat randomized."* Rotating PER TRIAL
+      was rejected with numbers: quality is a fraction-correct over n=50, so an independent
+      draw each trial adds binomial error `sqrt(0.25/50)` = 7.1% ≈ **0.21 on the 0–3 scale**
+      against a baseline near 1.5 — several times the effect sizes the ratchet detects.
+      Rotation is per EPOCH (default 20 trials, env-overridable): fixed within a block,
+      fresh between. Measured cross-block overlap **3/50, 0/50, 1/50**, mix 17/17/16 every
+      rotation. n, mix and pool constant ⇒ expected difficulty unchanged ⇒ a rotation does
+      NOT force a re-baseline.
+- [x] **W6c — make instrument drift detectable across a restart** ✅ 2026-08-04 (`8e90948e`).
+      `_DATASET_SHA_BY_CORE_ID` was a module-level dict, so drift was only visible WITHIN one
+      process — and a pool edit lands while the daemon is DOWN. That is exactly how the
+      2026-08-04 debugbench retarget passed unnoticed. Ledger persisted; tier mix compared
+      too, because `dataset_content_sha256` deliberately does not hash `tier`.
+- [ ] **W6d — decide whether the mix should be production-traffic-weighted rather than
+      equal thirds.** Equal thirds was chosen as a clean default; a production-representative
+      mix would make qph track real throughput more closely. Needs the production task-tier
+      distribution, which was not established — the investigation was cut short. Cheapest to
+      change while a frontier is already restarting.
+- [ ] **W6e — surface the generalization gap.** The W6 audit block already draws FRESH
+      questions per trial (`_audit_seed(trial_id, core_id)`) but is `shadow_only=1`. Report
+      core-vs-fresh score as an explicit overfitting signal, so epoch rotation is
+      instrumented rather than assumed to be sufficient.
+- [ ] **W6f — re-establish the T1 quality baseline on the new instrument.** Cleared
+      2026-08-04 because equal thirds is a harder mix than the old T1-heavy draw and holding
+      1.5357 would score every new trial as a regression and block all promotion. Old values
+      preserved in state under `_pre_equal_thirds_baseline_record`. Blocked on trials landing
+      on the new instrument; will self-seed via the SG-3/B3a explicit-seed path.
   - [x] **W3a — E8 quality-eligible replay EXECUTED** ✅ 2026-07-27 (Claude session, zero
     inference; report `epyc-orchestrator/orchestration/reports/task_rate_goodput_replay_e8_20260727.md`).
     Machinery green on the fresh era: 1356 journal rows parsed (0 malformed), state epoch

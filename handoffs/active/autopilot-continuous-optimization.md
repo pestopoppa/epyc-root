@@ -1862,3 +1862,46 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       Each trades N runtime checks for one structural invariant. Rank candidates by (scars
       retired) x (blast radius of the change), and treat a cluster with no such integration as a
       finding in its own right.
+
+### 2026-08-04 — AutoPilot kept HALTING; the objective flipped to tasks/hour
+
+- [x] **A deterministic planner block ended the RUN instead of the TRIAL** ✅ 2026-08-04
+      (`b8965913`). This was the real ratchet blocker, not the `None`-action crash fixed
+      earlier the same day (`2ec74a83`, which held). At 15:23:54 the run ended at trial 1472
+      on `critique decision 'revise' left final action unchanged` → `AutoPilot shutting down`.
+      A critic returning `revise` with confidence 0.94 whose substituted action equalled the
+      draft **terminated the daemon**. Every sibling breaker in the same `if/elif` chain
+      (critic-reject loop, consecutive meta, consecutive skip) substitutes a safe action and
+      halts only after a RUN; this one halted on its FIRST hit, sitting directly beside
+      `planners_offline_no_deterministic_fallback` — a genuinely unrecoverable condition. A
+      critic disagreeing with a planner is not that.
+
+      Now substitutes `seed_batch`, keeps the rejected draft as invalid-action feedback, and
+      halts only after `MAX_CONSECUTIVE_PLANNER_DETERMINISTIC_BLOCKS` (4, env-overridable).
+      The decision was **extracted** to `_planner_deterministic_block_decision` rather than
+      patched inline — the behaviour it replaced was a bare `break` a thousand lines into
+      `_run_loop_inner`, which is exactly why one disagreement could end a run unnoticed.
+      Writing the tests found two ways the NEW guard failed open: a stored negative counter
+      (`-3 → -2 → -1 …` never reaches the limit) and a non-numeric value raising out of the
+      trial loop. **This is a fourth instance of the scar cluster above** — the halt-vs-degrade
+      decision has no single owner, so each breaker re-decided it independently and this one
+      decided wrong.
+- [x] **Live dominance flipped to questions/hour** ✅ 2026-08-04 (`afdd5d74`). Details in
+      [objective-task-rate-goodput.md](objective-task-rate-goodput.md) W3. Consumer of note
+      for this handoff: the frontier restarted at the flip commit and the T1 quality baseline
+      was cleared, so early post-flip trials are seeding, not ratcheting.
+- [x] **The eval instrument is now declared and rotated** ✅ 2026-08-04 (`81be1e56`,
+      `ce6e4bea`) — equal-thirds tier mix + per-epoch core rotation so the optimizer cannot
+      overfit one fixed question set. See W6a/W6b in the objective handoff.
+- [ ] **`dominates()` silently truncated mismatched objective tuples** — fixed to raise
+      (`afdd5d74`), but the underlying shape is unowned: `safety_gate.py:2303` and
+      `pareto_archive.py` read objective axes POSITIONALLY (`[2]`, `[3]`), so the "single
+      chokepoint" `tier_specs.objectives_from` governs construction only. **A fifth scar in
+      the same cluster**: no named-axis objective type, so every consumer re-derives the
+      layout. Fixing it is the prerequisite for W3e (retiring the cost axis).
+- [ ] **The de-FABLE rename shipped broken operator-facing commands** — `model_gate_report.py`
+      emitted RECOVERY COMMANDS pointing at `start_fable_authority_daemon.py` and
+      `fable5_gate_report.py`, neither of which exists, and two test modules could not be
+      collected. Fixed in `81be1e56`. Open follow-up: audit remaining restated paths/commands
+      across the repo for the same class — a literal restated at N sites is a rename hazard,
+      and the test that should have caught this restated it too.

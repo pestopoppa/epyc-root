@@ -230,6 +230,38 @@ failure caught in amber.
         because a trial on a broken store produces evidence that *looks valid* — which is precisely
         what the last 22 days of trials were. Documented override:
         `AUTOPILOT_SKIP_EPISODIC_GATE=1`, logged loudly. ✅ 2026-07-28
+  - [x] M-17c — **`semantic_self_match` re-specified: per-row verdict, not a mean.** ✅ 2026-08-04
+        (`ce6e4bea`). The gate refused to start AutoPilot on a store that was otherwise healthy.
+        Root cause was the METRIC. It took a **mean over a sample of 8**: measured that day, 59 of
+        60 rows self-matched at ~0.996 and exactly ONE scored 0.0212, giving
+        `(7×0.996 + 0.021)/8 = 0.874` against the 0.90 floor — precisely the 0.8718 reported. **One
+        bad vector in 60,340 rows stopped the system.**
+
+        The mean was also BLIND in the opposite direction, which matters more: ten vectors belonging
+        to OTHER rows among ninety perfect ones averages 0.955 and **passes**. So the metric could
+        both false-alarm on 0.0017% corruption and hide 10%. Replaced with a per-row verdict over 60
+        rows — a cross-row hit (`< 0.55`) fails on its own because it is unambiguous, plus a 2%
+        tolerated fraction below the 0.90 floor. This is a sharpening, not a weakening: it still
+        FAILED after the change and named the offending row.
+
+        Note for M-17's table above: the injected-defect validation used *whole-store* corruption,
+        where a mean and a fraction agree. Neither the single-bad-row nor the partial-corruption
+        case was in the fixture set, which is why the metric's two failure modes survived it.
+  - [x] M-17d — **Repaired the one genuinely corrupt vector** ✅ 2026-08-04. Row
+        `eaacda97-50bc-4e63-b3c1-e75a73afdb7a` (written 17:11:27 during trial 1472), idx 60336:
+        re-embedded 0.0212 → 1.0000. `IndexFlatIP` rebuilt preserving every position, because
+        `memories.embedding_idx` is a POSITION and `remove_ids` would shift every index above the
+        removed one — silently invalidating them. Verified exactly 1 of 60,340 positions changed.
+        Store passes all five checks.
+
+        `repair_episodic_embeddings.py --diagnose-only` reported **HEALTHY** throughout: it checks
+        structural coverage (id_map sync, orphans), not vector CONTENT. A content-level single-row
+        defect has no tooling — see M-17e.
+  - [ ] M-17e — **No tool repairs a content-corrupt vector.** The 2026-08-04 fix was a one-off
+        script. `repair_faiss_id_map.py` fixes desync, `repair_episodic_embeddings.py` fixes
+        coverage, `reseed_episodic_store.py` rebuilds everything — nothing targets "this row's
+        vector is wrong". Promote the position-preserving single-row re-embed into
+        `scripts/maintenance/` so the next occurrence is not a bespoke script.
   - [x] M-17c — 9 regression tests (`tests/unit/test_episodic_integrity_check.py`), one per injected
         defect plus the skip path. Full episodic suite **157 passed**. ✅ 2026-07-28
   - [x] M-17d — **A bug in my own check, caught and pinned.** The first version divided distinct
