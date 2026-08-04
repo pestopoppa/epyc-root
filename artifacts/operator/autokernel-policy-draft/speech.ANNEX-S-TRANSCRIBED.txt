@@ -25,6 +25,17 @@ ordered between them.
 **Every protocol filed in Annex S MUST state, in its own grammar line, the class of record it
 emits** — a claim, or a verdict that is not a claim.
 
+**Attestation, and why four grammars here carry no `attest <ref>`.** Attestation in this
+constitution refers to a **claim** (`MEASUREMENT.md:13`). Annex S emits records of both classes, so
+the field is not uniform across it and must not be made uniform: `P-STT-1`, `P-STT-2`, `P-TTS-2` and
+`P-TTS-3` emit measured values and their grammars carry `attest <ref>`; `P-STT-3`, `P-STT-REL-1`,
+`P-TTS-1` and `P-TTS-REL-1` emit **verdicts**, which are not claims, and their grammars carry no
+such field. What makes a verdict auditable is its receipts — `res`, `host`, `recipe`, `eval` and
+`bundle` — not an attestation it is not entitled to. This follows Annex K, which reasoned the same
+way for its own non-claim record (`kernel-research.md:404-408`): *"The grammar carries no `attest
+<ref>` field. Attestation in this constitution refers to a claim, and this record is not one."* Two
+annexes disagreeing about what a verdict attests would make the distinction decorative in both.
+
 **Comparison scope.** Records emitted under an Annex S protocol are comparable **only within one
 backend and one instrument version**. For this annex the instrument version includes, in addition to
 the binary and its linkage: the pinned output normalizer (`P-STT-1` §1.3), the pinned decode step
@@ -579,7 +590,7 @@ corresponding enumeration for comparison. Missing ANY → **observation**.
 **Prospective.** Applies only to runs started after ratification.
 
 **Grammar:**
-`STT stability <PASS|FAIL|NO_DETECTABLE_DIFFERENCE>, cycles=<n> [P-STT-3, rss_slope=<v>MiB/cycle lower-better CI=[<lo>,<hi>], anchor_band=[<lo>,<hi>], vram_slope=<v>MiB/cycle, teardown=<n_clean>/<n>, ops=<attempted>/<skipped>/<passed> vs anchor <attempted>/<skipped>/<passed>, YYYY-MM-DD, attest <ref>]`
+`STT stability <PASS|FAIL|NO_DETECTABLE_DIFFERENCE>, cycles=<n> [P-STT-3, rss_slope=<v>MiB/cycle lower-better CI=[<lo>,<hi>], anchor_band=[<lo>,<hi>], vram_slope=<v>MiB/cycle, teardown=<n_clean>/<n>, ops=<attempted>/<skipped>/<passed> vs anchor <attempted>/<skipped>/<passed>, YYYY-MM-DD]`
 
 ---
 
@@ -694,7 +705,7 @@ executed under no STT protocol, because none existed — is not retro-conforming
 this protocol's existence.
 
 **Grammar:**
-`STT release verdict <PASS|FAIL|PASS_WITH_WAIVER> for whisper.cpp <candidate_commit[:12]> vs <anchor_commit[:12]>/<anchor_binary_sha256[:12]>/<anchor_linkage_sha256[:12]> [P-STT-REL-1, correctness=<PASS|FAIL> (margin=<m>, det=<determinism-class>), integrity=<PASS|FAIL>, speed=<PASS|FAIL> (cells <n_pass>/<n_total>), unchanged_test=<stage1>/<stage2>, controls=<4/5|5/5>, waivers=<none|waiver_sha256[:12]…>, review=<REQUIRES_HUMAN_CODE_REVIEW|none>, eval=<bundle_sha256[:12]>, bundle=<release_bundle_sha256[:12]>, YYYY-MM-DD, attest <ref>]`
+`STT release verdict <PASS|FAIL|PASS_WITH_WAIVER> for whisper.cpp <candidate_commit[:12]> vs <anchor_commit[:12]>/<anchor_binary_sha256[:12]>/<anchor_linkage_sha256[:12]> [P-STT-REL-1, correctness=<PASS|FAIL> (margin=<m>, det=<determinism-class>), integrity=<PASS|FAIL>, speed=<PASS|FAIL> (cells <n_pass>/<n_total>), unchanged_test=<stage1>/<stage2>, controls=<4/5|5/5>, waivers=<none|waiver_sha256[:12]…>, review=<REQUIRES_HUMAN_CODE_REVIEW|none>, eval=<bundle_sha256[:12]>, bundle=<release_bundle_sha256[:12]>, YYYY-MM-DD]`
 
 **This verdict authorizes nothing.** It is evidence an operator reads before executing a freeze.
 
@@ -841,7 +852,7 @@ close; and retained raw PCM and code sequences from which every reduction is rec
 artifact becomes a claim by virtue of this protocol existing.
 
 **Grammar:**
-`TTS identity <IDENTICAL|DIVERGENT|COULD_NOT_CHECK>, n=<utterances> [P-TTS-1, greedy=<true>, codes=<n_identical>/<n>, code_sha=<candidate[:12]>/<anchor[:12]>, samples=<n_identical>/<n>, maxabs=<v> tol=<t>, spectral=<v> tol=<t>, reducer=<id>@<sha[:12]>, nan=<none|COUNT>, clip=<frac> band=[<lo>,<hi>], det=<determinism-class>, cache=<state>, YYYY-MM-DD, attest <ref>]`
+`TTS identity <IDENTICAL|DIVERGENT|COULD_NOT_CHECK>, n=<utterances> [P-TTS-1, greedy=<true>, codes=<n_identical>/<n>, code_sha=<candidate[:12]>/<anchor[:12]>, samples=<n_identical>/<n>, maxabs=<v> tol=<t>, spectral=<v> tol=<t>, reducer=<id>@<sha[:12]>, nan=<none|COUNT>, clip=<frac> band=[<lo>,<hi>], det=<determinism-class>, cache=<state>, YYYY-MM-DD]`
 
 ---
 
@@ -1155,7 +1166,7 @@ artifact may be retro-certified, and the 2026-07-31 speech freeze — executed u
 because none existed — is not retro-conforming and is not reopened by this protocol's existence.
 
 **Grammar:**
-`TTS release verdict <PASS|FAIL|PASS_WITH_WAIVER> for qwentts.cpp <candidate_commit[:12]>+ggml<submodule_commit[:12]> vs <anchor_commit[:12]>/<anchor_binary_sha256[:12]>/<anchor_linkage_sha256[:12]> [P-TTS-REL-1, identity=<PASS|FAIL> (det=<determinism-class>), intelligibility=<PASS|FAIL> (floor=<v>, <saturated|unsaturated>, stt=<binary_sha256[:12]>), integrity=<PASS|FAIL>, speed=<PASS|FAIL> (cells <n_pass>/<n_total>), unchanged_test=<stage1_submodule_traversed>/<stage2>, controls=<4/5|5/5>, waivers=<none|waiver_sha256[:12]…>, review=<REQUIRES_HUMAN_CODE_REVIEW|none>, eval=<bundle_sha256[:12]>, bundle=<release_bundle_sha256[:12]>, YYYY-MM-DD, attest <ref>]`
+`TTS release verdict <PASS|FAIL|PASS_WITH_WAIVER> for qwentts.cpp <candidate_commit[:12]>+ggml<submodule_commit[:12]> vs <anchor_commit[:12]>/<anchor_binary_sha256[:12]>/<anchor_linkage_sha256[:12]> [P-TTS-REL-1, identity=<PASS|FAIL> (det=<determinism-class>), intelligibility=<PASS|FAIL> (floor=<v>, <saturated|unsaturated>, stt=<binary_sha256[:12]>), integrity=<PASS|FAIL>, speed=<PASS|FAIL> (cells <n_pass>/<n_total>), unchanged_test=<stage1_submodule_traversed>/<stage2>, controls=<4/5|5/5>, waivers=<none|waiver_sha256[:12]…>, review=<REQUIRES_HUMAN_CODE_REVIEW|none>, eval=<bundle_sha256[:12]>, bundle=<release_bundle_sha256[:12]>, YYYY-MM-DD]`
 
 **This verdict authorizes nothing.** It is evidence an operator reads before executing a freeze.
 

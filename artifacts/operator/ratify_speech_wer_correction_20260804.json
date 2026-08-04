@@ -1,0 +1,65 @@
+{
+  "ratification": "speech-wer-correction-v1",
+  "status": "UNSIGNED — staged by an agent 2026-08-04. Only a human may amend a ratified receipt.",
+  "date_utc": null,
+  "supersedes": {
+    "path": "artifacts/operator/ratify_speech_kernel_freeze_20260731.json",
+    "sha256": "a773e3a1dc8654ac51d4d91d212aad4f18050b34c087e40a9d108c31bfba17f8",
+    "disposition": "PARTIAL. The superseded receipt remains durable historical provenance and its kernel-freeze ratification is UNAFFECTED — production-consolidated-v8 and production-speech-v1 stay frozen exactly as ratified on 2026-07-31. This record corrects ONE anchored measurement inside it and nothing else.",
+    "why_not_edited_in_place": "MEASUREMENT.md:174-175 forbids destroying primary records; measurement/protocols/bench-cpu.md:163-168 is the in-corpus precedent for the supersession form."
+  },
+  "scope": "Corrects whisper_cpp.measurements_anchored.wer_pct, and records that qwentts_cpp.measurements_anchored.roundtrip_wer_pct names no instrument.",
+
+  "correction": {
+    "field": "kernels.whisper_cpp.measurements_anchored.wer_pct",
+    "recorded_value": 2.35,
+    "corrected_value": 3.37,
+    "recorded_value_actually_is": "the `faster-whisper large-v3-turbo int8 CPU 48t` arm — CTranslate2, a different inference engine on a different runtime, measured on CPU rather than on the MI210.",
+    "corrected_value_is": "the `whisper.cpp large-v3-turbo f16 MI210 GPU` arm — the production configuration this receipt freezes.",
+    "model": "whisper large-v3-turbo f16",
+    "device": "HIP / gfx90a (MI210)",
+    "errors": 63,
+    "ref_words": 1870,
+    "n_utterances": 100,
+    "sibling_whisper_cpp_arms_for_context": {
+      "large-v3-turbo f16 MI210 beam5": 3.26,
+      "large-v3 f16 MI210": 3.32
+    }
+  },
+
+  "evidence": {
+    "path": "epyc-inference-research/data/speech_kernel_freeze_20260731/stt_wer_results.json",
+    "sha256": "266333e9a2b1b12c17f9b9b27c168ea450f87dad1a3217029e061ef41d1b1e74",
+    "readme": "epyc-inference-research/data/speech_kernel_freeze_20260731/README.md",
+    "provenance": "Byte-identical copy of /mnt/raid0/llm/tmp/stt_wer_results.json, preserved 2026-08-04.",
+    "durability_note": "The primary record was in an ephemeral scratch root and tracked in no repository — so the evidence behind BOTH the wrong figure and the right one was one sweep from gone. Preserving it is the 2026-08-02 evidence-durability ruling applied to this receipt, and is a precondition of this correction rather than a side effect of it."
+  },
+
+  "why_it_matters": {
+    "direction": "The recorded figure is ~1 percentage point BETTER than the kernel it names actually achieves.",
+    "consequence": "Forward-looking, not historical. No past decision is known to rest on it. But every future whisper_stt non-inferiority comparison inherits it as the denominator: a candidate that genuinely matched production's real 3.37% would read as a ~1pp REGRESSION against a baseline it never had, and a candidate genuinely 1pp worse would read as parity.",
+    "found_by": "Transcribing P-STT-1/P-TTS-1 into Annex S on 2026-08-03, while resolving the receipt's citations against their source file."
+  },
+
+  "recorded_not_corrected": {
+    "field": "kernels.qwentts_cpp.measurements_anchored.roundtrip_wer_pct",
+    "value": 1.49,
+    "defect": "Names no STT instrument. A round-trip WER measures synthesized audio THROUGH a recognizer, so the figure is a property of the (TTS kernel, recognizer) pair; the recognizer is unrecorded.",
+    "why_not_corrected_here": "There is no correct value to substitute — the measurement must be re-taken with the instrument named. P-TTS-2 (Annex S) requires stt_instrument=<binary_sha256[:12]>/<model_sha256[:12]> in its grammar for exactly this reason, so the existing figure cannot satisfy the ratified grammar.",
+    "disposition": "Treat as provenance, NOT as a baseline, until re-measured."
+  },
+
+  "unaffected": [
+    "The kernel-set freeze itself: llama.cpp @ production-consolidated-v8 (67a433bf45a8a091d83b4ea0b32ff0735fd51800), whisper.cpp @ production-speech-v1 (b307379226d93d9c5ed790d7cea0626613c0ef4b), qwentts.cpp @ production-speech-v1 (2c1b5182e7e9f1acaa04405ff21747d8a7acf4d5).",
+    "Both speech binary_sha256 values.",
+    "The load-bearing gfx90a / ROCm-6.2 patch records.",
+    "The ggml version spread and the per-launcher LD_LIBRARY_PATH requirement.",
+    "whisper_cpp.measurements_anchored.latency_s_11s_clip (0.21) — not audited by this correction; its arm attribution was not checked."
+  ],
+
+  "operator_actions": [
+    "Sign: set status to RATIFIED and date_utc to the apply time.",
+    "Commit this receipt together with the preserved evidence directory in epyc-inference-research.",
+    "Decide whether latency_s_11s_clip warrants the same attribution audit — it was not checked."
+  ]
+}
