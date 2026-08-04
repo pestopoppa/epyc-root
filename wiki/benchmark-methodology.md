@@ -1615,3 +1615,55 @@ the 2026-07-04 async-prefetch win was written to a tmp path that no longer exist
 
 _Sources: `handoffs/active/autokernel-research-loop.md`; `progress/2026-08/2026-08-04.md`;
 epyc-inference-research `6e5f33c1`._
+
+## A cited measurement can name the wrong arm — re-derive it, then bound the defect (2026-08-04)
+
+A ratified freeze receipt recorded `whisper_cpp.measurements_anchored.wer_pct = 2.35`. That figure
+is real and it is in the source file — as the **`faster-whisper large-v3-turbo int8 CPU 48t`** arm:
+CTranslate2, a different inference engine, on CPU rather than the MI210. The production
+configuration the receipt freezes, `whisper.cpp large-v3-turbo f16 MI210`, measures **3.37%**
+(63/1870) in the same file.
+
+Nothing about the receipt looked wrong. The number was accurate, the units were right, the source
+existed and was cited. Only the *arm* was wrong, and an arm is not something a validator checks.
+
+**The consequence is forward-looking, which is why it survives review.** No past decision rested on
+it. But it is the anchor every future `whisper_stt` non-inferiority comparison divides by — so a
+candidate that genuinely matched production's real 3.37% would have read as a ~1pp **regression**
+against a baseline it never had, and one genuinely 1pp worse would have read as parity. A wrong
+denominator does not fail; it silently inverts verdicts.
+
+Two practices follow.
+
+**Re-derive a cited number from the source, do not match it.** The error was found while
+transcribing protocol drafts and resolving each citation against its source file — not by any
+check that ran. Listing every arm's value beside the cited one makes a mis-attribution obvious in a
+way that confirming "2.35 appears in the file" never can.
+
+**Then audit the ADJACENT citations, to bound the defect.** The same receipt records
+`latency_s_11s_clip = 0.21`. Dividing 11 s by each arm's `xrt_overall` puts the production
+whisper.cpp arm at **0.212 s** — 2.1 ms away, with the nearest competing arm 3× off at 0.627 s. That
+figure is correctly attributed. Both numbers were transcribed out of one file into adjacent lines of
+one receipt and one of them is right, which establishes a **single copy error rather than systematic
+mis-sourcing** — so the freeze's remaining anchored values need no re-audit on suspicion.
+
+That bound is the deliverable. A correction whose scope nobody establishes is how a one-line error
+turns into a re-audit of everything it sat beside, and the cost of *that* is what stops people
+correcting things at all.
+
+**Correct by supersession, never in place.** `MEASUREMENT.md:174-175` forbids destroying primary
+records; `bench-cpu.md:163-168` is the in-corpus precedent. The superseding receipt pins the prior
+receipt's SHA-256 and states its scope explicitly — here, one field, with the kernel freeze itself
+declared unaffected. A supersession that quietly widens its own scope is worse than the defect.
+
+**And a defect that cannot be corrected must be labelled, not left.** The same receipt's
+`qwentts roundtrip_wer_pct = 1.49` names no STT instrument. A round-trip WER measures synthesized
+audio *through a recognizer*, so it is a property of the (TTS kernel, recognizer) pair — there is no
+correct value to substitute and it must be re-measured. It is recorded as **provenance, not a
+baseline**. `P-TTS-2` (Annex S, ratified 2026-08-03) now requires
+`stt_instrument=<binary_sha256[:12]>/<model_sha256[:12]>` in its grammar, so the figure can no longer
+satisfy the protocol governing it — which is the right pressure, applied structurally.
+
+_Sources: `artifacts/operator/ratify_speech_wer_correction_20260804.json`;
+`epyc-inference-research/data/speech_kernel_freeze_20260731/README.md`;
+`progress/2026-08/2026-08-04.md`; epyc-root `00792e05`; epyc-inference-research `502509a5`._

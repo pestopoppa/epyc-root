@@ -2613,10 +2613,24 @@ tree's ggml.
 - [x] Wire linkage verification through the research repo's `scripts/utils/verify_ggml_linkage.sh` for
   every candidate build and every T3 phase-2 check. ✅ 2026-08-03
 - [ ] Extend the release-plan compiler to the speech trees — note these two *are* independently
-  freezable, unlike CPU and GPU (§1.5). **Blocked on ratification**, not on work:
-  `SOURCE_TREE_BY_BACKEND` already maps both speech backends, but `PHASES_BY_BACKEND` deliberately
-  withholds their phase vocabulary while `P-STT-1`/`P-TTS-1` are drafts. The compiler cannot grade
-  a cell under an unratified protocol, so wiring it now would fabricate authority.
+  freezable, unlike CPU and GPU (§1.5). **UNBLOCKED 2026-08-03**: Annex S is ratified, so
+  `P-STT-1`/`P-TTS-1` are in force and `PHASES_BY_BACKEND` can now carry the speech phase
+  vocabulary honestly. It was withheld only because the compiler cannot grade a cell under an
+  unratified protocol; that reason is gone. Note the whole speech plane (`adapters/`) was deleted
+  on 2026-08-04 and lives at tag `autokernel-preserve-20260804` — restore from there rather than
+  rewriting, and only when a speech campaign is actually scheduled.
+- [x] `Annex S` ratified — `measurement/protocols/speech.md`, 86 KB, five annexes in
+  `MEASUREMENT.md`. `P-STT-1/2/3`, `P-STT-REL-1`, `P-TTS-1/2/3`, `P-TTS-REL-1` are in force; the
+  four verdict grammars carry no `attest <ref>`, reconciled with Annex K's own reasoning.
+  ✅ 2026-08-03
+- [x] Speech WER supersession ratified — `ratify_speech_wer_correction_20260804.json`, 2.35 → 3.37.
+  The recorded figure was the `faster-whisper` CTranslate2 arm, a different engine; the production
+  `whisper.cpp large-v3-turbo f16 MI210` arm measures 3.37 (63/1870). Forward-looking: every future
+  `whisper_stt` non-inferiority comparison would have inherited that denominator. ✅ 2026-08-04
+- [x] `latency_s_11s_clip` audited and found CORRECT — 11 s / `xrt_overall` 51.86 = 0.212 s against
+  the recorded 0.21, nearest competing arm 3× away. So the defect was one copy error on one line,
+  not systematic mis-sourcing, and the receipt's other anchored values need no re-audit.
+  ✅ 2026-08-04
 
 #### What remains open after AK9, and why
 
@@ -2629,13 +2643,14 @@ Each line names the specific blocker, per *Act, Don't Defer*.
 | ~~AK6 `/kernel` freshness contract + JSON contract v2~~ | — | **DONE 2026-08-03.** It had no blocker, so it got built rather than listed. Contract v2 + producer in `autokernel/surface/`, panel→producer registry and health fold in `dashboard/panels.py`. The restart chaos test walks the actual incident: alive → silent-within-budget (still green, the control that stops it alarming forever) → past budget, board **names** the dead producer → hub restarts, verdict does not go green → a live exporter over a dead loop cannot resurrect the panel → export swept away, hub renders rather than 500s. |
 | AK7 first supervised freeze | a CHAMPION, which needs a first campaign (AK6.5) — and AK6.5 is now blocked on NOTHING but a quiet machine | — |
 | AK8 seed queue, `oracle_port`, external suites | fresh profiling, which needs the loop running | — |
-| AK9 speech compiler extension | `P-STT-1`/`P-TTS-1` ratification (operator) | — |
+| AK9 speech compiler extension | — | **Ratification landed 2026-08-03; no longer blocked.** Restore `adapters/` from `autokernel-preserve-20260804` when a speech campaign is scheduled. |
+| `qwentts` round-trip WER names no STT instrument | a quiet host — it needs re-measuring, not correcting; `P-TTS-2` now requires `stt_instrument=` so the figure cannot satisfy its own protocol | — |
 | Sub-floor estimate selection in `readiness.py` | **operator call** — excluding them makes a phase measured entirely at parity report "no figure" | — |
 
-The three protocol drafts awaiting signature are `artifacts/operator/autokernel-policy-draft/`:
-`Annex-S-speech-container.draft.md`, `P-STT-1.draft.md`, `P-TTS-1.draft.md`. Until they are ratified
-`t3.phase_identity_preflight` raises `ReleaseProtocolNotRatified` for `mode="release"`, so **every run
-this package can currently perform is a dry run** — which is the correct posture, not a limitation.
+**All three protocol drafts are ratified** (Annex S, 2026-08-03) — `measurement/protocols/speech.md`.
+`P-KERNEL-FREEZE-1` remains a draft, so `t3.phase_identity_preflight` still raises
+`ReleaseProtocolNotRatified` for `mode="release"` and **every run this package can perform is a dry
+run** — the correct posture, and now the only remaining protocol gate.
 
 ---
 
