@@ -2359,6 +2359,76 @@ cannot retrigger the expensive gate unchanged.
 **Exit:** campaigns produce correct, idempotent, operator-executable release packages and never write
 production.
 
+### Phase AK6.5 — cold start: the first campaign
+
+Added 2026-08-04. **This phase was missing**, and its absence was load-bearing: the handoff went
+straight from AK6 (the packager) to AK7 (the first supervised freeze), which reads as though a
+freeze request is what starts things. It is not. AK7 needs a **champion**, a champion is *"the
+current best complete set of compatible, correct changes, anchored on the current production tip
+and green through T2"* (§1.2), and no champion exists because **the loop has never run**. Verified
+2026-08-03: no champion record anywhere, no state directory. `production-consolidated-v8` is the
+**incumbent**, not the champion — a champion is built *on top of* it, so freezing v8 would be
+freezing what is already frozen.
+
+Numbered 6.5 rather than renumbering AK7–AK9, which are cited 27 times across this handoff and the
+package README.
+
+**Runbook:** `epyc-inference-research/scripts/kernel_rnd/autokernel/execution/README.md` — 518
+lines, written by the session that built the execution layer, cold start to first candidate with
+the preflight, the abort conditions, and an honest §6 of what still blocks. It is the operational
+document; this phase is the checklist.
+
+**Gating tasks — the campaign cannot produce a result until these close:**
+
+- [ ] **THE BLOCKER — no candidate can cross the evidence threshold.** For the CPU decode cell
+  calibration solves `B_min=5`, `threshold=10`, and the sign-martingale over 5 same-sign blocks
+  tops out at **5.5687**. Verified magnitude-independent: true-effect factors 1.08, 1.3, 1.6 and
+  3.0 all return the same e-value, because the construction is sign-based. Every win must come from
+  the declared extension round, and `MicrobenchPlan` has no field for one. Until this closes the
+  campaign runs and banks `evidence_below_threshold` forever — which looks like "no candidate was
+  good enough" and is actually "the instrument cannot resolve a win at all".
+- [ ] Settle whether the extension round's order schedule is **re-derived or extended**.
+  `OrderSchedule.order_for` is prefix-stable, which argues extended. Record the argument — an
+  unverifiable assumption under every effect estimate makes a whole campaign worthless.
+- [ ] Bind the anchor triple for **two tools**: T0 hashes `llama-cli`, microbench compares against
+  `llama-bench`, and `AnchorIdentity.binary_sha256` is single-valued.
+- [ ] `cpu_region_claim._CLAIM_ID_PREFIX` is `akc-`, the prefix `EvaluationRequest` requires of a
+  **candidate** id — so a claim id passed where a candidate id belongs satisfies the one validator
+  written to catch that mistake.
+- [ ] Wire the T0 producers that exist and are unwired (`extract_elf_symbols`,
+  `parse_unified_diff`, the `surface.py` derivation): 8 PASS / 9 COULD_NOT_CHECK today, and four of
+  those nine are a few hours of wiring.
+
+**The campaign itself:**
+
+- [ ] Decide **which backend goes first**. `llama_cpu` needs no GPU device claim and its canonical
+  baseline is the most characterised surface we have; `llama_gpu` needs the claim and contends with
+  whoever is serving. Recommendation: CPU first, for the claim reason alone.
+- [ ] Acquire the region claim and **bind it for both consumers** — the footprint is read off the
+  ratified prefix, never retyped.
+- [ ] Anchor on the **current production tip** and create the worktree (never a long-lived branch
+  forked from an old tip — INC-20260706-iqk-missing-subsystem).
+- [ ] **Run the five fixed controls BEFORE any real search** (§15.2): positive, neutral, negative,
+  A/A, and the **historical-win replay — the iqk port, which MUST promote**. A loop whose controls
+  have not run is an instrument nobody has calibrated, and the negative control is the one that
+  catches a fast-looking wrong kernel.
+- [ ] Solve the calibration block off the A/A pool; record φ, α_sel, α_conf, the noise floor and the
+  MDE that campaign will be judged under.
+- [ ] Seed hypotheses from the §19.8 queue and the operator hypothesis channel.
+- [ ] Run to a first banked candidate, then to a composed champion.
+
+**What "it is working" looks like:** controls green with the negative control REFUSED and the iqk
+replay PROMOTED; e-values that move with effect size rather than pinning at a ceiling; the journal
+growing with banked and abandoned candidates both; readiness reporting a figure or an explicit
+parity standing, never a silent absence.
+
+**What should abort it:** the negative control passing; the A/A arm showing a non-null effect; CPU
+frequency throttled (a multi-day −60% has happened here); a frozen tree showing any modification;
+the claim lost mid-measurement.
+
+**Exit:** a champion exists for at least one source tree, green through T2, with a readiness signal
+the operator can read — which is exactly what AK7 requires as its input.
+
 ### Phase AK7 — first supervised freeze
 
 - [ ] Operator requests a freeze on a real champion; AutoKernel produces the package.
@@ -2418,7 +2488,7 @@ Each line names the specific blocker, per *Act, Don't Defer*.
 | AK6 end-to-end campaign stopping at a validated package | a real champion and a compute window (AK7) | — |
 | AK6 fault injection (restart/crash/preemption/tamper) | needs process management, forbidden to the agents that built this | who runs it, and where |
 | ~~AK6 `/kernel` freshness contract + JSON contract v2~~ | — | **DONE 2026-08-03.** It had no blocker, so it got built rather than listed. Contract v2 + producer in `autokernel/surface/`, panel→producer registry and health fold in `dashboard/panels.py`. The restart chaos test walks the actual incident: alive → silent-within-budget (still green, the control that stops it alarming forever) → past budget, board **names** the dead producer → hub restarts, verdict does not go green → a live exporter over a dead loop cannot resurrect the panel → export swept away, hub renders rather than 500s. |
-| AK7 first supervised freeze | operator freeze request | — |
+| AK7 first supervised freeze | a CHAMPION, which needs a first campaign (AK6.5) — then the operator's freeze request | — |
 | AK8 seed queue, `oracle_port`, external suites | fresh profiling, which needs the loop running | — |
 | AK9 speech compiler extension | `P-STT-1`/`P-TTS-1` ratification (operator) | — |
 | Sub-floor estimate selection in `readiness.py` | **operator call** — excluding them makes a phase measured entirely at parity report "no figure" | — |
