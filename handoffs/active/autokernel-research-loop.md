@@ -2380,24 +2380,45 @@ document; this phase is the checklist.
 
 **Gating tasks — the campaign cannot produce a result until these close:**
 
-- [ ] **THE BLOCKER — no candidate can cross the evidence threshold.** For the CPU decode cell
-  calibration solves `B_min=5`, `threshold=10`, and the sign-martingale over 5 same-sign blocks
-  tops out at **5.5687**. Verified magnitude-independent: true-effect factors 1.08, 1.3, 1.6 and
-  3.0 all return the same e-value, because the construction is sign-based. Every win must come from
-  the declared extension round, and `MicrobenchPlan` has no field for one. Until this closes the
-  campaign runs and banks `evidence_below_threshold` forever — which looks like "no candidate was
-  good enough" and is actually "the instrument cannot resolve a win at all".
-- [ ] Settle whether the extension round's order schedule is **re-derived or extended**.
-  `OrderSchedule.order_for` is prefix-stable, which argues extended. Record the argument — an
-  unverifiable assumption under every effect estimate makes a whole campaign worthless.
-- [ ] Bind the anchor triple for **two tools**: T0 hashes `llama-cli`, microbench compares against
-  `llama-bench`, and `AnchorIdentity.binary_sha256` is single-valued.
-- [ ] `cpu_region_claim._CLAIM_ID_PREFIX` is `akc-`, the prefix `EvaluationRequest` requires of a
-  **candidate** id — so a claim id passed where a candidate id belongs satisfies the one validator
-  written to catch that mistake.
-- [ ] Wire the T0 producers that exist and are unwired (`extract_elf_symbols`,
-  `parse_unified_diff`, the `surface.py` derivation): 8 PASS / 9 COULD_NOT_CHECK today, and four of
-  those nine are a few hours of wiring.
+- [x] **THE BLOCKER — no candidate could cross the evidence threshold.** Calibration solves
+  `threshold=10`; the sign-martingale over 5 same-sign blocks topped out at **5.5687**, verified
+  magnitude-independent (true-effect factors 1.08 → 3.0 all returned the same e-value). Closed by
+  building the extension-round producer. Demonstrated both directions: a real +8% effect goes
+  `5.5688 → 42.2877` over 10 blocks and banks; a true null stays at `0.9000` and abandons.
+  ✅ 2026-08-04
+- [x] Extension-round order schedule settled — **extended**, keyed on attempt parity, so
+  `derive(attempt=n)` equals `n` chained `retry()` calls. `attempt=0` is byte-identical, so the
+  first campaign is unaffected. ✅ 2026-08-04
+- [x] Anchor triple bound for **two tools** (T0 hashes `llama-cli`, microbench compares against
+  `llama-bench`). ✅ 2026-08-04
+- [x] `cpu_region_claim` prefix collision with the candidate-id space closed. ✅ 2026-08-04
+- [x] T0 producers wired (`extract_elf_symbols`, `parse_unified_diff`, the `surface.py`
+  derivation). ✅ 2026-08-04
+
+> **⚠ READ BEFORE RUNNING THE FIRST CAMPAIGN — the α budget is not machine-protected.**
+> A **declared round can be re-run until it crosses**. The pooling seam refuses the same round
+> object twice, and a round licensed to another campaign, but it cannot refuse a second *run* of
+> the same declared round — because a second run of the same plan **is** the same plan. Measured
+> null crossing rates at threshold 10, α = 0.1 (40k/10k trials):
+>
+> | submitted | null crossing |
+> |---|---|
+> | base only | 0.000% |
+> | base + one declared round | 1.355% |
+> | best of 5 re-runs | 4.710% |
+> | **best of 25 re-runs** | **9.760%** — the entire error budget, on one candidate |
+> | best of 50 | 13.120% |
+>
+> Not closable inside the package as it stands: detecting a *discarded* completed round needs a
+> durable per-candidate run ledger and the runner writes none. **Until it is, operator discipline
+> is the control — a round that is run is the round that counts, and re-running a candidate's
+> extension round after seeing it miss is not a retry, it is α spend.** Close shape is in
+> `execution/README.md` §6.5: journal every completed run keyed on
+> `(campaign_id, candidate_id, attempt, segment, extension_round)` and refuse at the pooling seam
+> when the journal already holds a different completed run for that key.
+
+- [ ] Build the per-candidate run ledger that makes the above machine-enforced rather than
+  procedural.
 
 **The campaign itself:**
 
