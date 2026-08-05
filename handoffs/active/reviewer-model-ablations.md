@@ -50,6 +50,15 @@ rerun; it is the remaining anchor/floor set and the screening protocol.
 - [ ] **RM-7 — With-vs-without verifier-request access** ablation on the winning pair (isolates contextual verification vs second-opinion effect).
 - [ ] **RM-8 — Report + registry annotation**: winners' calibration profiles into model registry `measured:` fields; publish claims in P-REV-1 grammar only.
 - [ ] **RM-9 — (deferred, LOW) A5 reviewer-as-architect** (GLM-5.2 solo) — only after A4 results justify it.
+- [ ] **RM-10 — Run a mindfulness-only metacognitive prompt ablation, not a superalignment test.** Add three
+  matched prompt arms to the confirmation protocol on the same leading reviewer configuration: the current
+  framing-neutral prompt, a matched-length neutral reflection/self-check prompt, and a mindfulness-only
+  present-attention/self-monitoring prompt. Hold candidate rows, grammar, field order, token budget, sampling,
+  verifier access, and seeds fixed; score with objective/dual-gold outcomes plus a blinded cross-family or
+  human-owned sample, reporting FA, FR, calibration, consistency, latency, and style/rubric leakage. Exclude
+  emptiness, non-duality, moral-goal substitution, constitutional relaxation, and any instruction that can
+  weaken MEASUREMENT.md, operator authority, safety rules, or frozen-kernel constraints. Ignore the source's
+  current effect sizes and do not describe any result as superalignment evidence.
 
 ## Dependency Graph
 

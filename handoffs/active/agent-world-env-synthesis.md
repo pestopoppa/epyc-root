@@ -101,6 +101,16 @@ Delivered at `scripts/autopilot/species/env_synth/`:
 - Target: ≥90% of paper's reported improvements on ≥5 of our benchmarks
 - Gate: AW-6 arena size ≥1,000 environments AND ≥10,000 synthesized tasks before training
 
+### AW-10: Active hypothesis-boundary acquisition [Phase 1, observe-only]
+
+- [ ] When two still-open AutoPilot or AutoKernel hypotheses make different predictions, let EnvSynth create
+  matched tasks at that disagreement boundary. Each synthesized task must bind the parent hypothesis ids,
+  common vocabulary, empirical-demand/source receipt, excluded alternatives, construction cost, verifier,
+  and matched control; it enters dynamic T1 only and never alters T0. Feed falsifier-resolution evidence back
+  to the owning loop, but never let planner narrative alone define the task, label, or verifier. This is
+  boundary acquisition for a declared representation, not an autonomous claim that the representation is
+  complete.
+
 ## Integration Map
 
 | Subsystem | Current state | Interaction with env_synth |

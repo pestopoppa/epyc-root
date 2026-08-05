@@ -72,3 +72,14 @@ the pipeline-ordering half lives in [`security-review-skill.md`](security-review
 - [ ] **Add a gold-sanity gate to the schema contract for any machine-generated annotation or test.** Procedure, in this order: inject into the real project test file → apply the **gold** solution → run the project's **native** runner → discard and retry at higher temperature on gold-failure → *only then* consult a 3-sample self-consistency judge. **The order is the finding**: the judge reasons about generated test code that may not itself run, and it endorsed **all six** named invalid cases in the source study. Measured per-augmentation defect rate is **61.9% (n=105)** — the author's own nominated headline, and more stable than the 28.5% iterative figure concentrated in 2 of 12 repos.
 - [ ] **Ablation to preserve when implementing the retry:** retry *presence* is load-bearing (3/11 → 9/11); retry *style* is not (a neutral prompt also reaches 9/11). Do not spend design effort on the retry prompt.
 - Source code is *"available upon reasonable request"* — **not open**, so this is a pattern adoption and nothing is vendored.
+
+## RA-12 — immutable machine-review envelope (intake-1004; 2026-08-05)
+
+- [ ] **Bind every machine review to one immutable, version-correct envelope.** The envelope must carry the
+  source/candidate content hash and version, reviewer model+quant, prompt bundle hash, pipeline and schema
+  versions, output hash, validation status, and supersession link. Any source, candidate, prompt, pipeline,
+  or schema change invalidates the prior decision/objections until re-run; retain the old artifact as stale
+  history, never splice it into a current page. Machine-generated objections are typed `unverified_lead`
+  until a current primary artifact or objective verifier resolves them and are never counted as independent
+  corroboration. Add a regression fixture that combines a current source abstract with an old signed review
+  body and prove that validation refuses a current binding.

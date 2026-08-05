@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** DESIGN COMPLETE / AUDITED 2026-08-02 — implementation not started
+**Status:** IMPLEMENTATION IN PROGRESS / RUNNABLE CONTROL CALIBRATION — design audited 2026-08-02
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -2307,6 +2307,22 @@ evaluator or its own scope, and T1 may legally guide search.
   Six anchor points in `autopilot.py`, quoted verbatim and pinned to that file's SHA-256. **Owner:
   whoever holds `autopilot.py`** — not applied here because that repo had a live session. Until it is
   applied the channel exists and passes 25 tests, but the planner never reads it.
+
+- [x] **AK-WM-0 — Existing least-commitment prerequisites audited. ✅ 2026-08-05** `ProposalManifest`
+  already requires a hypothesis, falsifiable counter, target/non-target frame, `novelty_basis`, and
+  `expected_information_gain`; evaluator records carry `scope_denominator`; selection ranks information gain
+  before expected value; and actor-declared affected scope is not trusted. Preserve these as incumbent
+  controls and comparison baselines, not as evidence for weakness maximization.
+
+- [ ] **AK-WM-1 — Add a representation contract before evaluating any least-commitment selector.** Extend
+  the proposal schema and fixtures with vocabulary/source receipts, considered and excluded alternatives,
+  an empirical-demand receipt, abstraction-construction cost, canonical encoding, and semantics-preserving
+  recoding fixture ids. Candidate ordering is comparable only inside the same representation and demand
+  frame; mechanically derived/traced affected surfaces remain authoritative over actor declarations. Once a
+  matched completed-proposal archive exists, consume the AP-WM-1 offline protocol and compare against the
+  existing information-gain/expected-value selector. Until that protocol shows invariant independent signal,
+  do not add weakness, completion count, K-rho, scope width, prose length, patch size, or description length
+  to live selection, champion, T2, or T3 authority.
 
 **Exit:** a mock campaign moves from source/profile facts through proposals, corrections, negative
 memory, and champion maintenance without human steering.

@@ -1946,3 +1946,32 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       That alters eval wall-clock, which is now the denominator of the live questions/hour
       objective. Resuming would measure the objective on an instrument changed by unreviewed,
       unattributed code. Unblocks as soon as the owning session lands it or it is reverted.
+
+## 2026-08-05 — Research intake: least-commitment diagnostics and compression safety
+
+_Via `/research-intake` Stage-4 (intake-991 through intake-1002). The submitted weakness result is not
+adopted as a selector: its original proof and empirical comparison are not decision-grade, and the later
+results remain conditional on a declared representation and demand law. The tasks below adopt only the
+verified diagnostic and validation patterns._
+
+- [ ] **AP-WM-1 — Shadow-test loop-native least-commitment diagnostics; do not add a live selector.**
+  Build one immutable offline comparison over archived proposals that share a common candidate frame and
+  predeclared empirical demand weights. Every row must declare vocabulary provenance (regimes, surfaces,
+  outcomes, contradictions), excluded alternatives, abstraction-construction cost, and either a canonical
+  representation or semantics-preserving recoding fixtures. Compare explicit unsupported-scope width,
+  demand-weighted compatible-future mass, and the K-rho representation-aliasing diagnostic against current
+  information gain, novelty, and a raw-impurity/simple weighted-minority baseline. Score against held-out
+  regime transfer and falsifier resolution using matched one-factor interventions; report per-regime and
+  per-surface Kendall direction, conditional predictive value, mean/90th/worst sign error, effective-pair
+  count/noise floor, and recoding stability. If recoding changes the ordering or a new diagnostic adds no
+  stable decision signal beyond the simpler baseline, retain the simpler baseline. No result may affect
+  fitness, archive admission, promotion, or authority without a separately approved decision-grade protocol.
+
+- [ ] **AP-29d — Make strategy compression commitment-nonincreasing before wiring distillation.** For both
+  StructuralLab MDL conventions and KnowledgeDistiller patterns, retain source member/evidence ids and
+  qualifiers; derive planner-binding applicability/binding metadata from the intersection of supporting
+  members; keep unmatched claims advisory or delta-only; and fail closed to advisory-only when supporting
+  trials disagree or harmless paraphrase/recoding changes the induced binding. Add a regression fixture in
+  which the longest cluster member overgeneralizes one supporting trial and prove that it cannot become a
+  global/live convention. This extends rather than replaces AP-29's episodic-only control and grouped/batched
+  consolidation gate.

@@ -51379,3 +51379,1041 @@
   - '[review candidate] CARRY the 32-episode binomial noise floor (~8.8 points) as a caution on any small-n episodic comparison.'
   - '[review candidate] RECORD that this does NOT invalidate intake-938 - its reward shape is Dark Room own non-collapsing baseline.'
   notes: 'credibility_score 3: no peer-reviewed venue +0; published 2026-07, within 12 months +1; independent group +1; commercial bias +0; independent corroboration +1 (its safe-class analysis independently reaches the same conclusion about MemHarness reward shape that a direct reading of MemHarness supports). Net 3. THE VALUE OF THIS ENTRY IS A NEGATIVE: it was queued as a potential threat to intake-938 and it is not one, for a stated mechanical reason. Recording the non-threat prevents the concern being re-raised.'
+- id: intake-991
+  arxiv_id: '2301.12987'
+  url: https://arxiv.org/pdf/2301.12987v4
+  source_type: paper
+  title: The Optimal Choice of Hypothesis Is the Weakest, Not the Shortest
+  authors:
+  - Michael Timothy Bennett
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  discovered_via: input
+  ingested_date: '2026-08-05'
+  verdict: worth_investigating
+  verification: dive-overturned
+  key_claims:
+  - Within the paper's finite enactive-cognition formalism, a hypothesis is weaker when its extension contains more compatible completions; the proposed rule selects the weakest hypothesis that remains correct on observed examples.
+  - Under a uniform distribution over parent tasks in that formalism, the paper claims weakness maximization is necessary and sufficient for maximizing the probability of generalizing from a child task to its unknown parent.
+  - The paper distinguishes generality of function from brevity of form and argues that minimum description length can rank two correct hypotheses differently from extension size.
+  - The transferable loop hypothesis is advisory rather than established: among evidence-consistent and falsifiable proposals, prefer the one that makes fewer unsupported commitments about regimes, mechanisms, or future outcomes.
+  techniques:
+  - extension cardinality as hypothesis weakness
+  - weakest-correct hypothesis selection
+  - finite declarative-program lattice for tasks and policies
+  - A-star search comparing weakness and description-length heuristics
+  reported_results:
+  - 'Toy 8-bit binary-addition and multiplication experiments report weakness-selected generalization rates between 1.1x and 5x the MDL-selected rates.'
+  - 'Reported exact-generalization rates at 14 examples: addition 0.68 versus 0.24; multiplication 0.46 versus 0.21.'
+  referenced_arxiv_ids:
+  - '2302.00843'
+  - '2201.02177'
+  handoffs_created: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-414
+    - intake-940
+    - intake-981
+  contradicting_evidence:
+  - 'The author''s later peer-reviewed correction, intake-992, says the original formal presentation contains a task-count miscount and a necessity proof that failed to state its dependence on the task distribution. The later paper supplies replacement proofs; the original proofs should not be treated as authoritative.'
+  - 'The paper''s companion implementation, intake-993, contains a defect present in both the 2022 and 2023 source commits: the MDL expansion branch enqueues the unchanged item rather than new_item. The weakness branch also computes expansion priority from the old item. Until reproduced after repair, the empirical head-to-head is not decision-grade.'
+  - 'The result is conditional on a fixed embodied language and a uniform task distribution. Neither AutoPilot nor AutoKernel has a uniform future-task distribution, and neither currently defines a finite completion space over hypotheses.'
+  - 'A bounded search surfaced an independent 2025 critique, The Abstraction Ladder Problem in Weakness Maximization, arguing that weakness ranking presupposes the abstraction space whose construction the framework does not explain. The critique is non-peer-reviewed and AI-assisted, so it is a dive lead rather than adjudication.'
+  novelty_justification: high. The corpus has hypothesis-tree refinement, information-gain selection, novelty-aware parent selection, and MDL strategy distillation, but no explicit within-version-space criterion that ranks evidence-consistent hypotheses by how many compatible future commitments they preserve.
+  relevance_justification: high. AutoPilot already records hypotheses, falsifiers, generalized strategy content, and information-gain scores; AutoKernel has a first-class hypothesis ledger and proposal schema with expected information gain. The paper targets the exact missing question of how specific a still-valid hypothesis should be, but supplies no stack-ready metric.
+  verdict_justification: 'worth_investigating, not adopt_patterns yet: the conceptual fit to both autonomous loops is strong, but the original proof was later corrected, the task-distribution assumption does not match either loop, and the released empirical comparator appears defective.'
+  recommended_actions:
+  - '[unverified] Deep-dive intake-991 together with intake-992 and intake-993 before turning weakness into any planner, archive, fitness, or promotion signal.'
+  - '[unverified] Define a loop-native advisory proxy for unnecessary commitment: among proposals consistent with the same evidence and falsifier, count the declared regimes, surfaces, or future outcomes each proposal rules out without evidence; never use raw prose length as the proxy.'
+  - '[unverified] Replay the advisory proxy offline against archived AutoPilot and AutoKernel proposals, comparing held-out transfer and falsifier resolution with the existing information-gain/novelty ranking. It must remain observe-only until locally validated.'
+  - '[unverified] Compare intake-414 MDL convention promotion with a constraint-preservation alternative so concise strategy summaries do not become more specific than their supporting trials.'
+  notes: 'Fetched 2026-08-05 from the submitted PDF URL; PDF SHA-256 b664a4074578629b6343b9c3a14e465199a74ea660409b488b1299da16a38e4a. Credibility 2: AGI 2023 peer-reviewed +2; older than 24 months -1; known contributor at ANU +1; commercial bias 0; no independent empirical corroboration +0. Stage-1 claims remain provisional.'
+  dive_corrections: |-
+    2026-08-05 Stage-2 dive (arXiv v4 full text, the author's 2025 correction, paper-era/current companion code, result workbook, and adversarial citation search). OVERALL OVERTURNED because both load-bearing evidence arms fail verification, while the narrower least-commitment intuition remains a useful hypothesis.
+
+    CLAIM LEDGER. CONFIRMED: the paper defines weakness as extension cardinality inside a finite embodied language; it assumes a uniform task distribution; its tables print the stated 1.1x-5x headline and the 14-example values 0.68/0.24 (addition) and 0.46/0.21 (multiplication); description length and extension size can rank correct statements differently. PARTIAL: weakest-correct selection is supported only inside the paper's fixed vocabulary/task model and declared distribution, not as a representation-independent or non-uniform loop rule. OVERTURNED: the original sufficiency and necessity proofs are not authoritative—the author's intake-992 explicitly records a task-count miscount and an omitted distribution dependency, and its replacement necessity argument remains incomplete (see intake-992). NOT-FOUND-IN-SOURCE: the AutoPilot/AutoKernel interpretation in key_claims is an EPYC transfer hypothesis, not a result of this paper.
+
+    EMPIRICAL OVERTURN. In repository commits cc3e2ad (2022-08-22), 90b05b4 (2023-02-15), and current 35a2a03, experiments.py:423-439 constructs new_item but the MDL branch enqueues `(obtain_length(item, c), item)`. It therefore examines only initial singleton-plus-necessary candidates and their duplicate requeues; it never examines an expanded MDL candidate, returning the full starting CNF if no singleton is sufficient. The weakness branch enqueues new_item but computes its priority from item, so it is not the claimed best-first weakness ordering either. A deterministic control-flow probe reproduced exactly that divergence. The script also measures MDL as serialized CNF character count, not the paper's statement cardinality, sets no seeds, and records no environment/code identity. The published head-to-head is therefore not evidence that weakness beats a correctly implemented MDL selector. No independent repaired replication was found; indexed citations were self-citations or conceptual restatements, not replications.
+
+    DERIVED-ACTIONABLES LEDGER (proposals only; Stage 2 made no handoff edits). (A1) Repair both expansion paths, define one description-length objective, seed all randomness, and regenerate the toy tables only if a local selector decision would rely on the empirical headline; proposed owner autokernel-research-loop.md, with AutoPilot as a consumer—otherwise decline as non-decision-bearing reproduction work. (A2) For both loops, test an observe-only unsupported-commitment/scope-width diagnostic on archived proposals, using predeclared held-out regimes and falsifier resolution; proposed owners autopilot-continuous-optimization.md and autokernel-research-loop.md. (A3) Audit intake-414/MDL distillation so compression cannot silently add commitments unsupported by trials; proposed owner autopilot-continuous-optimization.md. (A4) Explicitly decline direct use as fitness, promotion authority, or an imported component: the source supplies neither a loop-native completion space nor validated non-uniform demand weights.
+
+    DIVE-SURFACED SOURCES FOR THE STAGE-2B GATE: The Wrong Razor (latest Zenodo record 20509265; recommend ingest-and-dive); Regret Is Weighted Forgetting v2 (10.20944/preprints202603.1546.v2; recommend ingest-and-dive, noting the earlier TMLR rejection); The Abstraction Ladder Problem in Weakness Maximization (10.13140/RG.2.2.20644.13448; recommend ingest-and-dive as low-credibility independent critique); A Formal Theory of Optimal Learning with Experimental Results (10.24963/ijcai.2025/1238; recommend decline as a two-page same-author thesis summary with no new evidence).
+
+    2026-08-05 STAGE-2B GATE CLOSED BY OPERATOR OVERRIDE. The operator selected all recommended and previously declined artifacts. Dispositions: The Wrong Razor -> intake-996; Regret Is Weighted Forgetting -> intake-997; Abstraction Ladder -> intake-998; IJCAI summary -> intake-1001. The additional intake-994 surfaced sources are intake-999, intake-1000, and intake-1002; the citation-graph false positive is intake-1003; the machine-review artifact is intake-1004. No surfaced bearing source remains unresolved.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. A2 landed as AP-WM-1 and AK-WM-1; A3 landed as AP-29d. A1 is declined because no local selector decision relies on the defective toy headline. A4 is declined as live fitness, promotion authority, or component adoption.
+- id: intake-992
+  arxiv_id: null
+  url: https://osf.io/qf8tw_v2/
+  source_type: paper
+  title: Optimal Policy Is Weakest Policy
+  authors:
+  - Michael Timothy Bennett
+  categories:
+  - autonomous_research
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-991
+  ingested_date: '2026-08-05'
+  verdict: worth_investigating
+  verification: dive-overturned
+  key_claims:
+  - This follow-up explicitly identifies flaws in the formal presentation of the earlier weakness-optimality result and replaces the sufficiency and necessity proofs using the newer Pancomputational Enactivism definitions.
+  - It corrects a count of parent tasks and makes the uniform distribution over tasks an explicit dependency of the necessity argument.
+  - The corrected claim remains scoped to choosing among policies that are already correct for the observed child task within one fixed embodied language.
+  techniques:
+  - corrected policy-task counting argument
+  - weakest-correct policy selection
+  - explicit uniform-task-distribution assumption
+  reported_results:
+  - No new empirical experiment is reported; the contribution is a formal correction to the earlier proofs.
+  referenced_arxiv_ids:
+  - '2301.12987'
+  - '2502.10420'
+  handoffs_created: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-991
+    - intake-993
+    - intake-994
+  contradicting_evidence:
+  - 'The correction is by the same author and provides no independent replication. A bounded search surfaced no independent proof audit of the replacement argument.'
+  - 'Uniform task distribution is still load-bearing. The corrective paper repairs the missing statement of that assumption; it does not show that the assumption fits non-uniform, operator-directed optimization loops.'
+  - The paper supplies no computable proxy for natural-language hypotheses, code mutations, or mixed continuous/discrete search spaces.
+  novelty_justification: medium. It repairs the foundation of intake-991 rather than introducing a distinct selection mechanism; the correction is nevertheless essential because it changes which version of the claim is safe to analyze.
+  relevance_justification: high. Any AutoPilot or AutoKernel design based on intake-991 would inherit the original proof defects unless it starts from this correction and explicitly models the non-uniform task distribution.
+  verdict_justification: 'worth_investigating: this is the authoritative correction required for a serious dive, but not an adoptable loop component or sufficient basis for a task line.'
+  recommended_actions:
+  - '[unverified] Use this corrected proof, not intake-991''s original proof, as the formal source in any deep dive.'
+  - '[unverified] Test whether a weighted or empirical demand distribution can replace the uniform-task assumption for archived loop workloads before proposing a selector.'
+  notes: 'Fetched 2026-08-05 through the OSF primary-file API; PDF SHA-256 3c03a8901e556a04287f36f46c3618aadd2d9595a3a957ee8c18f135ff048fce. Published in AGI 2025 proceedings with DOI 10.1007/978-3-032-00686-8_5. Credibility 4: peer-reviewed +2; publication date 2025-08-05 is within/exactly 12 months +1; known contributor at ANU +1; commercial bias 0; independent corroboration 0.'
+  dive_corrections: |-
+    2026-08-05 Stage-2 dive (full six-page AGI paper and proof audit). OVERALL OVERTURNED as a complete repair: the paper accurately diagnoses the earlier flaws and materially improves the sufficiency argument, but Proposition 2 does not prove its stated necessity conclusion.
+
+    CLAIM LEDGER. CONFIRMED: the follow-up explicitly reports three problems in the earlier work (changed formalism, a parent-task miscount, and an unstated task-distribution dependency); it supplies replacement arguments; it explicitly assumes uniformly distributed v-tasks; it reports no new experiment; and it remains restricted to policies already correct for one child task in one embodied language. PARTIAL: Proposition 1 gives a conditional monotone ranking argument inside those definitions, but it is not evidence for non-uniform operator-directed workloads. OVERTURNED: Proposition 2 steps 1-3 establish only that `|E_pi| >= |O_omega|` is necessary. Steps 4-5 maximize the probability of that necessary cardinality event and then infer that exact learning/generalization is maximized; maximizing a necessary condition does not by itself maximize the target event. The closing sentence also claims it is necessary to use the exact weakness proxy, while monotone-equivalent selectors or tie-equivalent rules can make the same choices. No independent proof audit or replication was found.
+
+    DERIVED-ACTIONABLES LEDGER (proposals only; Stage 2 made no handoff edits). (B1) Do not cite Proposition 2 as a settled necessity theorem; use the newer exchangeable-demand treatment only after its own Stage-2b audit. (B2) Replace uniform-task language with an explicit empirical demand law over archived regimes/surfaces, then test weighted compatible-future mass against held-out transfer; proposed owners autopilot-continuous-optimization.md and autokernel-research-loop.md. (B3) Decline any selector whose ordering changes when raw hypothesis wording is paraphrased or whose task/vocabulary frame is not common across candidates.
+
+    DIVE-SURFACED SOURCE: The Wrong Razor, latest Zenodo record 20509265, directly replaces the fragile necessity argument with finite exchangeable-demand and measured-language statements; recommend ingest-and-dive before any Stage-3 transfer.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. B2 and B3 landed through AP-WM-1 and AK-WM-1 as empirical-demand, common-frame, and recoding gates. B1 remains a citation constraint, not a task: Proposition 2 is not treated as a settled necessity theorem.
+- id: intake-993
+  arxiv_id: null
+  url: https://github.com/ViscousLemming/Technical-Appendices
+  source_type: repo
+  title: Technical Appendices - implementation and result workbook for the weakest-hypothesis experiments
+  authors:
+  - Michael Timothy Bennett
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-991
+  ingested_date: '2026-08-05'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - The repository publishes the PyTorch and SymPy experiment script plus an XLSX result workbook used by the weakest-versus-MDL binary-arithmetic study.
+  - The code computes extension cardinality over a finite propositional language and uses priority-queue search to choose rulesets under weakness or description-length modes.
+  - The current repository also carries the implementation supplement for intake-994, making it the primary artifact for both the original toy experiment and the newer completion-score work.
+  techniques:
+  - tensor representation of propositional formula extensions
+  - priority-queue ruleset search
+  - binary arithmetic child-to-parent task generation
+  - published result workbook
+  reported_results:
+  - The repository itself makes no standalone benchmark claim in its README; it provides artifacts used by intake-991 and intake-994.
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-991
+    - intake-992
+    - intake-994
+    - intake-414
+  contradicting_evidence:
+  - 'The MDL search expansion at experiments.py in historical commits cc3e2ad (2022-08-22) and 90b05b4 (2023-02-15), as well as current commit 35a2a03, enqueues (obtain_length(item, c), item) after constructing new_item. It therefore does not enqueue the expanded candidate. This is a direct implementation-level threat to intake-991''s empirical comparison.'
+  - 'The weakness branch enqueues new_item but computes its priority from prospect built from item rather than new_item, so its best-first ordering is also stale by one expansion.'
+  - The script sets no random seed, has no environment lockfile or automated tests for the experiment path, defaults to whichever CUDA device is visible, and emits plots/terminal output rather than a provenance-bound result artifact.
+  novelty_justification: medium. The repo is a distinct companion artifact under the intake rules and is the only implementation of the submitted paper, but it does not introduce a separate technique beyond intake-991.
+  relevance_justification: high. The code determines whether the paper's only empirical evidence can support a loop-design decision. Its apparent comparator defect must be resolved before the 1.1x-to-5x headline informs either autonomous loop.
+  verdict_justification: 'worth_investigating, not adopt_component: it is the necessary reproducibility artifact, but the current and paper-era source both appear to contain a load-bearing search defect.'
+  recommended_actions:
+  - '[unverified] Deep-dive the paper-era commit, repair both queue-expansion paths in an isolated reproduction, seed all randomness, and regenerate the tables before citing the empirical advantage.'
+  - '[unverified] Do not import or execute this component inside AutoPilot or AutoKernel; use it only as a reference implementation in a controlled reproduction.'
+  notes: 'Fetched 2026-08-05. Current repository commit 35a2a03ea143dd795362e799b99b05ee306e2b64, README SHA-256 c4cab9e659d032816c2c2a095573edc13aa650ec8e6afb1fec98a324138817ce, GPL-3.0. Credibility is null because the repository README makes no independent empirical claim; trust is assessed through the linked papers and source audit.'
+  dive_corrections: |-
+    2026-08-05 Stage-2 dive (full paper-era/current Git history, source, XLSX container, and AFMaI supplement). DIVE-VERIFIED for the repository entry's narrow artifact claims; the audit simultaneously overturns intake-991's empirical use of those artifacts.
+
+    CLAIM LEDGER. CONFIRMED: the repository contains the PyTorch/SymPy experiment, results workbook with results/rawdata_add/rawdata_mult sheets, and the intake-994 experiment archive; it computes finite propositional extensions and uses a priority queue. CONFIRMED DEFECT: commits cc3e2ad, 90b05b4, and 35a2a03 all requeue item rather than new_item in MDL mode (historical/current experiments.py:423-439), so MDL never searches multi-clause expansions. CONFIRMED DEFECT: weakness mode scores a child with the parent's prospect, producing stale priorities. CONFIRMED MISMATCH: obtain_length returns the character length of a serialized CNF string, whereas intake-991 defines description length as statement cardinality. CONFIRMED REPRODUCIBILITY GAPS: no random seeds, lockfile, automated experiment test, code/environment hash in results, or guarded entry point; device selection changes with CUDA visibility. The workbook preserves raw cells but cannot bind them to a seeded executable run.
+
+    DERIVED-ACTIONABLES LEDGER (proposals only; Stage 2 made no handoff edits). (C1) Retain this repo as a forensic/reference artifact only; explicitly decline component adoption in either loop. (C2) If A1 is activated, build a fresh isolated implementation with exhaustive small-case oracle tests for both rankings before reproducing the tables; proposed owner autokernel-research-loop.md. (C3) Require provenance-bound row outputs and paired candidate sets for any loop-native comparison, rather than terminal plots or an unbound workbook.
+
+    DIVE-SURFACED SOURCES: none beyond the papers and supplement already represented by intake-991, intake-992, and intake-994.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. C1 and C3 are retained as forensic and provenance requirements. C2 is declined because A1 is not activated; no repository component is imported into either autonomous loop.
+- id: intake-994
+  arxiv_id: '2605.05209'
+  url: https://arxiv.org/abs/2605.05209
+  source_type: paper
+  title: Are Flat Minima an Illusion?
+  authors:
+  - Michael Timothy Bennett
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  - autonomous_research
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  discovered_via: search
+  expanded_from: intake-991
+  ingested_date: '2026-08-05'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - The paper operationalizes weakness for frozen neural representations as survival of a matched bank of hypothetical future label commitments under one replacement affine head.
+  - The joint completion score is designed as a within-task functional measure and is invariant to invertible affine mixing and translation of feature coordinates.
+  - The paper explicitly narrows the universal claim to a fixed task, embodied language, and demand law; across different tasks, raw completion counts are not comparable without a shared semantic reading.
+  - This suggests a possible loop analogue: score a hypothesis by how many predeclared, task-relevant counterfactual demands remain compatible with it, rather than by prose length or unrestricted generality.
+  techniques:
+  - matched joint completion bank
+  - linear-program feasibility of counterfactual label bundles
+  - affine-invariant function-level comparison
+  - PAC-Bayes future-demand survival certificate
+  reported_results:
+  - 'Across predeclared 100-network cohorts, joint completion score has Spearman correlation 0.290 with held-out MNIST accuracy and 0.468 with Fashion-MNIST accuracy.'
+  - 'Spectral-product margin has larger point correlations in both cohorts: 0.504 on MNIST and 0.546 on Fashion-MNIST.'
+  - 'A random-label control has correlation 0.058 with an interval spanning zero even though average completion feasibility increases, showing the estimator is task-specific.'
+  - 'Function-preserving rescaling changes raw Hessian trace by as much as 99x while retaining predictions.'
+  referenced_arxiv_ids:
+  - '2301.12987'
+  handoffs_created: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-991
+    - intake-992
+    - intake-993
+    - intake-940
+    - intake-981
+  contradicting_evidence:
+  - Spectral-product margin outperforms the proposed joint completion score by point estimate in both reported natural-label cohorts; the paper does not establish weakness as the best practical predictor.
+  - The random-label control leaves more arbitrary completions feasible while destroying the score-accuracy relationship, directly demonstrating that more completions without the right task-aligned demand law are not useful.
+  - The completed cohort still awaits the paper's common-anchor audit, row-level results and checkpoints remain on the author's Google Drive rather than in the submitted archive, and the experiments are limited to low-data MLPs on MNIST and Fashion-MNIST.
+  - Linear-program cost scales with feature dimension, class count, policy size, and bank size; direct use on natural-language loop hypotheses is not supplied.
+  novelty_justification: high. It is the first source in the corpus to turn the abstract weakness idea into a predeclared counterfactual completion-bank measurement with explicit invariance and negative controls.
+  relevance_justification: medium. The completion-bank pattern could become an offline generality diagnostic for AutoPilot/AutoKernel hypotheses, but the implementation is neural-classifier-specific and its task-alignment conditions are stricter than either loop currently encodes.
+  verdict_justification: 'worth_investigating: the measurement pattern is the most concrete bridge to our loops, but it is a July 2026 preprint, task-specific, computationally nontrivial, and not yet demonstrated on agent or optimization hypotheses.'
+  recommended_actions:
+  - '[unverified] During a dive, translate the matched-bank construction into a small offline set of predeclared regime/surface counterfactuals for archived hypotheses; test correlation with held-out transfer and falsifier resolution.'
+  - '[unverified] Require task-aligned demand bundles and a common comparison frame; reject any proxy that rewards arbitrary openness or counts incompatible futures.'
+  - '[unverified] Compare the completion proxy with simpler baselines such as information gain, existing novelty scores, and explicit scope width before paying its evaluation cost.'
+  notes: 'Fetched 2026-08-05 from arXiv v2 dated 2026-07-26; PDF SHA-256 4fafd16dfbf165f4cd9f1deded8006b6a7ce6b6570b1df45758828ab8845bf32. Submitted to JMLR, not yet peer reviewed. Credibility 2: within 12 months +1; known contributor at ANU +1; venue 0; commercial bias 0; independent corroboration 0.'
+  dive_corrections: |-
+    2026-08-05 Stage-2 dive (arXiv v2 full text, submitted experiment archive/notebooks/reducer outputs, and adversarial baseline/replication search). DIVE-VERIFIED for the scoped construction and reported v2 results; not verified as a causal account, best predictor, or loop-ready metric.
+
+    CLAIM LEDGER. CONFIRMED: J_H is the fraction of 512 matched joint probe-label bundles feasible with one replacement affine head after freezing each network's penultimate representation; Theorem 9 proves invariance to invertible affine mixing and translation; the paper explicitly limits comparisons to a fixed task/language/demand law and identifies a common-anchor compatibility condition. CONFIRMED NUMBERS from submitted stats.csv: joint rho 0.2896 on MNIST (Holm q=0.00362) and 0.4684 on Fashion-MNIST (q=0.000040); spectral-product margin rho 0.5043/0.5458; random-label joint rho 0.058 with an interval spanning zero; rescaling reaches 99x Hessian-trace change with predictions fixed. CONFIRMED LEAKAGE CONTROL IN CODE: all model-side quantities are hashed to lock.json before the final notebook cell loads the official test partition.
+
+    LIMITS. The submitted comparison table does not show J_H uniformly winning: spectral margin has larger point correlations in both cohorts, and J_H is significantly stronger only than Hessian/relative-flatness on Fashion-MNIST, not than margin or weight norm. Random-label networks have higher mean feasibility but no accuracy association, so arbitrary openness is affirmatively falsified as a useful score. The aggregate archive omits raw cohort rows, checkpoints, LP progress, and wall times; the completed cohort predates stored anchor predictions, so the paper's own common-task audit cannot be run from the archive alone. Scope is 100-seed, one-training-sample low-data MLP cohorts on two image datasets. No independent replication was found. Dinh et al. independently establishes reparameterization problems for raw flatness, but does not corroborate weakness or J_H. NOT-FOUND-IN-SOURCE: the AutoPilot/AutoKernel completion-bank translation remains an EPYC hypothesis.
+
+    DERIVED-ACTIONABLES LEDGER (proposals only; Stage 2 made no handoff edits). (D1) If advanced, implement only a tiny observe-only matched bank over archived proposals, with predeclared regime/surface/falsifier bundles and a common comparison frame; proposed owners autopilot-continuous-optimization.md and autokernel-research-loop.md. (D2) Compare held-out transfer and falsifier resolution against existing information gain, novelty, explicit scope width, and a simple weighted-demand baseline; stop if the completion statistic adds no independent signal. (D3) Preserve test-label sealing and hash-lock the diagnostic before outcome access. (D4) Explicitly decline arbitrary completion counts, cross-task raw-score comparison, live fitness/promotion authority, and LP-scale deployment until local evidence exists.
+
+    DIVE-SURFACED SOURCES FOR THE STAGE-2B GATE: The Wrong Razor (latest Zenodo record 20509265; recommend ingest-and-dive as the current formal source); Fantastic Generalization Measures and Where to Find Them (arXiv:1912.02178, ICLR 2020; recommend ingest-and-dive for broad measure-validation methodology); In Search of Robust Measures of Generalization (arXiv:2010.11924, NeurIPS 2020; recommend ingest-and-dive as the adversarial distributional-robustness correction to correlation-only validation); Sharp Minima Can Generalize For Deep Nets (ICML 2017; recommend decline as already-cited support for the raw-flatness objection, not evidence for J_H); Regret Is Weighted Forgetting v2 (10.20944/preprints202603.1546.v2; recommend ingest-and-dive for a weighted non-uniform bridge closest to loop evaluation).
+
+    2026-08-05 STAGE-2B GATE CLOSED BY OPERATOR OVERRIDE. Every source in this surfaced list was ingested and dived: The Wrong Razor intake-996; Regret Is Weighted Forgetting intake-997; Fantastic Generalization Measures intake-999; Robust Measures intake-1000; Dinh et al. intake-1002. Across both gate lists, the five recommended unique dives are intake-996 through intake-1000, and the four separately requested supplemental artifacts are intake-1001 through intake-1004. No surfaced bearing source remains unresolved.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. D1's bounded matched bank, D2's matched baselines, and D3's sealing/hash binding landed through AP-WM-1 and AK-WM-1. D4 is declined: no arbitrary completion count, cross-task raw-score comparison, live promotion authority, or LP-scale deployment is adopted.
+- id: intake-995
+  arxiv_id: '2404.07227'
+  url: https://arxiv.org/abs/2404.07227
+  source_type: paper
+  title: Is Complexity an Illusion?
+  authors:
+  - Michael Timothy Bennett
+  categories:
+  - agent_architecture
+  - autonomous_research
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-991
+  ingested_date: '2026-08-05'
+  verdict: worth_investigating
+  verification: stage1-unverified
+  key_claims:
+  - The paper argues that description complexity belongs to an abstraction or encoding, while weakness belongs to the compatible functions expressible through that abstraction.
+  - With a finite vocabulary, a system can make weak constraints take simple forms; this can make simplicity correlate with generalization without making simplicity the causal selection principle.
+  - For loop design, the transferable caution is that any generality score is vocabulary-dependent: the declared regime, surface, and outcome language determines what counts as a compatible completion.
+  techniques:
+  - finite abstraction-layer vocabulary
+  - separation of form complexity from functional weakness
+  - confounding analysis for simplicity and sample efficiency
+  reported_results:
+  - No new empirical experiment is reported; the paper reuses intake-991's binary-arithmetic result as background and develops formal arguments about abstraction and complexity.
+  referenced_arxiv_ids:
+  - '2301.12987'
+  - '2302.00843'
+  handoffs_created: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-414
+    - intake-991
+    - intake-992
+    - intake-994
+  contradicting_evidence:
+  - The paper predates intake-992's repair and relies on intake-991's original optimality proofs as premises; those original proofs should not be treated as authoritative.
+  - Its argument that goal-directed abstraction tends to encode weak policies simply is explicitly speculative rather than empirically established.
+  - It retains finite-vocabulary and uniform-task assumptions that do not automatically fit either autonomous loop.
+  novelty_justification: medium. The corpus already uses MDL for strategy-memory compression and generalized-content fields for transfer; the explicit warning that brevity and functional generality can diverge is a useful new synthesis, not a new loop mechanism.
+  relevance_justification: medium. It supplies the representation-design caution needed before defining weakness for AutoPilot or AutoKernel, but intake-994 offers a more concrete measurement bridge.
+  verdict_justification: 'worth_investigating but not recommended for a separate deep dive in this round: its useful implication can be tested while diving intake-994, and its formal foundation must be read through intake-992''s correction.'
+  recommended_actions:
+  - '[unverified] Require every proposed loop generality metric to declare its vocabulary: which regimes, surfaces, outcomes, and contradictions define the completion space.'
+  - '[unverified] Do not substitute hypothesis length, patch size, or compressed strategy length for functional generality.'
+  notes: |-
+    Fetched 2026-08-05 from arXiv v4; PDF SHA-256 5f22c8d5b6f19f4d3d61a080fdd0dc47dcc7c35751b2733a9106ffe6437e02cc. AGI 2024 peer-reviewed. Credibility 2: peer-reviewed +2; older than 24 months -1; known contributor at ANU +1; commercial bias 0; independent corroboration 0.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. Verification remains stage1-unverified, and none of this source's unverified details are promoted. AutoPilot and AutoKernel receive only representation and canonical-encoding guards independently established by dive-verified intakes 998 and 1002.
+- id: intake-996
+  arxiv_id: null
+  url: https://zenodo.org/records/20509265
+  source_type: paper
+  title: The Wrong Razor
+  authors:
+  - Michael Timothy Bennett
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-991
+  ingested_date: '2026-08-05'
+  verdict: worth_investigating
+  verification: dive-overturned
+  key_claims:
+  - On finite hypothesis classes, any strictly positive prior can be represented within a factor of two by normalized powers of two from a suitable prefix-free code, so a shorter-is-better ranking is not invariant to codebook choice.
+  - Under exchangeable unseen-requirement growth inside one fixed finite vocabulary, a weakest-correct policy maximizes survival probability because that probability is monotone in the size of its compatible unseen buffer.
+  - The paper proposes a nested selection rule for autonomous agents: maximize realized task utility over admissible embodiments, break utility ties with smaller margin-weighted representation cost K-rho, then choose a weakest correct policy inside the selected embodiment.
+  - Its continuous results remain conditional on a chosen reference measure and an exchangeability class; its PAC-Bayes interpretation additionally requires a valid hypothesis-space prior/posterior construction that the paper does not supply.
+  techniques:
+  - prefix-free recoding no-go theorem
+  - exchangeable unseen-requirement survival model
+  - measured extension buffer and function-preserving invariance
+  - Bagi inner loop and Unagi embodiment outer loop
+  - margin-weighted representation tie-break
+  reported_results:
+  - No new empirical experiment is reported; the paper is a synthesis of finite recoding, corrected weakest-policy, continuous-measure, and weighted-forgetting results.
+  - The complete appendix proves the finite survival formula as a hypergeometric ratio conditional on the number of unseen requirements.
+  referenced_arxiv_ids:
+  - '2301.12987'
+  - '2605.05209'
+  - '1912.02178'
+  - '2010.11924'
+  handoffs_created: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-991
+    - intake-992
+    - intake-994
+    - intake-997
+    - intake-998
+  contradicting_evidence:
+  - The paper's PAC-Bayes corollary computes KL between distributions over compatible completions and then invokes a PAC-Bayes bound over hypotheses; without a map establishing those as the bound's hypothesis prior and posterior, that inference is a category error.
+  - Exchangeability is deliberately strong enough that survival depends only on buffer measure. The theorem is valid under that premise but does not show that AutoPilot or AutoKernel demand laws are exchangeable.
+  - K-rho is imported from intake-997, whose packaged empirical artifacts do not reproduce the current paper tables and whose test suite fails after its algebraic checks.
+  - The proposed Bagi and Unagi procedures are formal sketches; no implementation, loop-scale completion estimator, or evidence that the utility-tie regime is common is supplied.
+  novelty_justification: high. It is the first source in the corpus to make representation selection an explicit outer loop around weakest-correct policy selection and to give a clean exchangeable-demand replacement for the earlier necessity proof.
+  relevance_justification: high. The nested inner/outer distinction maps directly onto AutoPilot proposal selection and AutoKernel representation/search-space design, while also exposing the exact conditions that prevent direct adoption.
+  verdict_justification: 'worth_investigating: the finite recoding and exchangeable-survival results are useful design constraints, but the PAC-Bayes bridge is invalid as written, the demand model is unvalidated for EPYC, and the algorithms are ideals rather than deployable selectors.'
+  recommended_actions:
+  - '[verified pattern] Separate the loop''s representation/search-space decision from candidate selection inside that representation; never call a within-vocabulary selector representation-independent.'
+  - '[review candidate] In offline replay, compare candidates only within a common declared regime/surface/outcome vocabulary and estimate demand-weighted compatible futures; keep the score observe-only.'
+  - '[decline] Do not import the PAC-Bayes claim, e^-K-rho probability, Bagi/Unagi code path, or K-rho tie-break as promotion authority without a locally valid demand law and hypothesis-space construction.'
+  notes: 'Fetched latest Zenodo record 20509265 dated 2026-06-02; main PDF SHA-256 262dfbc0d95daeb844a8d56f9228e6e0819fc9245c87ad5a636b3c8690e18cd0. Complete appendix PDF SHA-256 5dfc1a9b05d47f90d7c18ab664b9830345b4a5fde0c87dd9883334850b7d523a. Credibility 2: non-peer-reviewed +0; within 12 months +1; known contributor +1; commercial bias 0; no independent corroboration +0.'
+  dive_corrections: |-
+    2026-08-05 combined Stage-1/Stage-2b dive (latest Zenodo paper, complete proof appendix, cited correction papers, and adversarial literature search). OVERALL OVERTURNED because a load-bearing PAC-Bayes claim does not type-check, while the finite recoding and exchangeable-survival results are confirmed.
+
+    CLAIM LEDGER. CONFIRMED: Proposition A.5 follows by Shannon-style code lengths and Kraft-McMillan; the normalized code prior lies between one-half and twice any positive finite prior. CONFIRMED: Theorem A.12 gives the exact conditional survival ratio C(|B_pi|,k)/C(|U|,k), so weakest-correct is optimal under the stated finite exchangeability law. CONFIRMED: the measured-language result is invariant under function-preserving reparameterization and pointwise optimal across the expressly defined measure-exchangeable class. PARTIAL: the continuous minimax result follows from pointwise dominance, but says nothing beyond that selected uncertainty class. OVERTURNED: Q_pi and P_U in Theorem A.32 are distributions on completion space U, whereas ordinary PAC-Bayes KL is between a posterior and prior on hypotheses; Corollary A.33 silently substitutes one space for the other. NOT-FOUND: no Bagi/Unagi implementation or autonomous-loop experiment.
+
+    ADVERSARIAL SEARCH. Dinh et al. confirms the need for reparameterization-invariant diagnostics but does not corroborate weakness. Jiang et al. and Dziugaite et al. show that raw or averaged correlation is insufficient to establish a generalization mechanism. No independent proof audit or replication of the new exchangeable treatment was found.
+
+    DERIVED-ACTIONABLES LEDGER. (E1, pursue as design rule) Represent EPYC loop selection as outer vocabulary/search-space choice plus inner candidate choice; proposed owners autopilot-continuous-optimization.md and autokernel-research-loop.md. (E2, pursue as observe-only experiment) estimate demand-weighted compatible-future mass only on a common candidate frame and compare it against held-out transfer/falsifier resolution plus existing information-gain and novelty baselines. (E3, decline) no direct Bagi/Unagi implementation, PAC-Bayes justification, e^-K-rho guarantee, or promotion signal. Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: all materially bearing sources are intake-991 through intake-1004; no additional unresolved source passed the bearing threshold.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. E1 and E2 landed through AP-WM-1 and AK-WM-1 as an explicit outer representation contract and an observe-only demand-weighted diagnostic. E3 is declined: no Bagi/Unagi component, PAC-Bayes justification, exponential guarantee, or live promotion signal is adopted.
+- id: intake-997
+  arxiv_id: null
+  url: https://www.preprints.org/manuscript/202603.1546
+  source_type: paper
+  title: Regret Is Weighted Forgetting
+  authors:
+  - Michael Timothy Bennett
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-991
+  ingested_date: '2026-08-05'
+  verdict: worth_investigating
+  verification: dive-overturned
+  key_claims:
+  - For a fixed representation-test quotient and normalized binary betting regret, minimum achievable average regret equals K-rho, the margin-weighted minority mass that must be deleted to make every cell's optimal report single-valued.
+  - Any policy's regret decomposes into irreducible representation aliasing plus an avoidable within-cell misreporting term.
+  - The equality with weighted weakness holds exactly on a deliberately lifted product diagnostic task; outside that lift, cross-cell extension constraints can make weakness differ from cellwise Bayes error.
+  - K-rho is a representation diagnostic, not an operational implementation of weakest-policy selection for neural networks, cumulative RL regret, or arbitrary loss functions.
+  techniques:
+  - cellwise normalized-regret decomposition
+  - margin-weighted deletion cost K-rho
+  - lifted product diagnostic task
+  - measurable conditional-expectation reduction
+  - representation partial order and stability bound
+  reported_results:
+  - The paper reports exact agreement between two Boolean implementations across 600 checks, but the released test suite only executes the standalone algebra before failing on a nonexistent module import.
+  - Current v2 reports 16-state POMDP tables, including K-rho 0.0031 for a GRU versus 0.0039 for an MLP and a different best-K-rho versus best-accuracy architecture in 35% of 20 trials.
+  - The released experiment script instead defaults to 1024 states and its comments name result JSON files that are absent from the archive.
+  referenced_arxiv_ids:
+  - '2301.12987'
+  handoffs_created: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    - evidence-plane-instrument-repair.md
+    experiments: []
+    intake_entries:
+    - intake-991
+    - intake-992
+    - intake-996
+  contradicting_evidence:
+  - The TMLR submission was rejected; no public decision rationale or independent replication was found.
+  - The supplement contains run_experiment.py and run_experiment_rl.py, but test.py imports run_experiment_v28, which is not shipped; the suite stops with ModuleNotFoundError after five bridge-math checks pass.
+  - The current paper reports 16-state POMDP experiments while the packaged script defaults to 1024 states, and neither results_v28.json nor results_v28_rl.json is included.
+  - The paper itself concedes that no single bridge-derived auxiliary strategy dominates and that formal weakness has no direct neural-function-approximation analogue.
+  novelty_justification: high. The exact aliasing/execution split is a new and potentially useful diagnostic for representation design, even though its weighted-weakness interpretation is constructed and narrower than the headline suggests.
+  relevance_justification: high. A diagnostic that separates proposal/search-space aliasing from executor error could inform both autonomous loops, but only if EPYC supplies its own evaluation distribution, diagnostic tests, margins, and reproducible implementation.
+  verdict_justification: 'worth_investigating: the algebraic identity is verified and useful as an analysis pattern, while the empirical evidence package is not reproducible and the quantity is not a live weakness selector.'
+  recommended_actions:
+  - '[verified pattern] Treat K-rho as a margin-weighted aliasing diagnostic for a fixed, predeclared evaluation quotient—not as a universal generalization score.'
+  - '[review candidate] Prototype a tiny offline cell-conflict diagnostic over archived loop proposals only after defining shared diagnostic tests and empirical weights; compare against ordinary weighted minority error to ensure the new notation adds operational value.'
+  - '[decline] Do not cite the packaged POMDP results, e^-K-rho as an unconditional guarantee, or any auxiliary loss as validated for EPYC until a clean reproduction exists.'
+  notes: 'Read current Preprints.org v2 posted 2026-07-06, DOI 10.20944/preprints202603.1546.v2, plus the Technical-Appendices supplement. The publisher blocks direct shell download, so the primary PDF was read through its indexed 37-page rendering. Credibility 2: non-peer-reviewed +0; within 12 months +1; known contributor +1; commercial bias 0; no independent corroboration +0. Official OpenReview listing records TMLR rejection.'
+  dive_corrections: |-
+    2026-08-05 combined Stage-1/Stage-2b dive (v2 primary PDF, OpenReview status, complete supplementary source, executable algebra check, and adversarial scope audit). OVERALL OVERTURNED for the paper's empirical support; the fixed-quotient algebra is verified.
+
+    CLAIM LEDGER. CONFIRMED: cellwise minimization gives sum_C min(A_C,B_C), and the policy-wise affine decomposition follows exactly. `python3 verify_reduction.py` passed the toy example and 200 randomized identities. CONFIRMED: the weighted-weakness equality is explicitly limited to a lifted per-cell product construction, and the paper states weighted weakness is conditional on the adopted prior. CONFIRMED: the measurable form is ordinary conditional Bayes error weighted by rho. PARTIAL: Lipschitz stability is an algebraic perturbation bound, not evidence that estimated margins are calibrated. OVERTURNED EMPIRICAL PACKAGE: `python3 test.py` passes five algebra checks then fails importing absent `run_experiment_v28`; the shipped script/paper disagree on 1024 versus 16 states, and claimed result files are absent. NOT-FOUND: independent replication, a runnable current-table reproduction, or a neural weakness implementation.
+
+    ADVERSARIAL SEARCH. The official OpenReview venue listing says Rejected by TMLR. The paper appropriately narrows normalized-regret, lifted-task, and non-neural scope, which prevents stronger refutation but also prevents the broad loop interpretation. The exact identity is not surprising after conditioning on representation cells: it is weighted binary Bayes error expressed as deletion cost.
+
+    DERIVED-ACTIONABLES LEDGER. (F1, pursue narrowly) Add an offline representation-aliasing analysis only if an EPYC experiment defines diagnostic cells and calibrated margins; proposed owners evidence-plane-instrument-repair.md plus the consuming autonomous-loop handoff. (F2, mandatory baseline) compare K-rho against its identical weighted-minority-mass implementation and against raw impurity; if no decision changes, retain the simpler name. (F3, decline) no current empirical numbers, auxiliary-loss prescription, or generalization probability enters a live gate. Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: no additional materially bearing source beyond the selected intake set.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. F1 and F2 landed through AP-WM-1 and AK-WM-1 as an offline K-rho/weighted-minority-mass aliasing diagnostic with a raw-impurity baseline. F3 is declined: no paper result, auxiliary loss, or generalization probability enters a live gate.
+- id: intake-998
+  arxiv_id: null
+  url: https://www.researchgate.net/publication/398711288_The_Abstraction_Ladder_Problem_in_Weakness_Maximization_W-maxing_for_Artificial_General_Intelligence_systems
+  source_type: paper
+  title: The Abstraction Ladder Problem in Weakness Maximization for Artificial General Intelligence Systems
+  authors:
+  - Catalin Perju
+  categories:
+  - autonomous_research
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  discovered_via: search
+  expanded_from: intake-991
+  ingested_date: '2026-08-05'
+  verdict: worth_investigating
+  verification: dive-overturned
+  key_claims:
+  - Weakness maximization selects within an available representation or abstraction space but does not itself explain how that space is constructed.
+  - The paper argues that learning boundary cases needed to construct abstractions can consume the sample efficiency claimed for within-level weakest-hypothesis selection.
+  - It proposes progressive bootstrapping, innate priors, active learning, and self-organization as complementary abstraction-building mechanisms.
+  techniques:
+  - abstraction-ladder decomposition
+  - cold-start sample-cost accounting
+  - boundary-directed active learning
+  - hierarchical bootstrapping proposal
+  reported_results:
+  - No experiment, formal lower bound, or implementation is reported; the paper is a conceptual, explicitly Claude-assisted critique.
+  - It repeats intake-991's 110-500 percent headline as an improvement factor of 2.1-6.0, which is arithmetically inconsistent; 110-500 percent of baseline corresponds to 1.1-5.0 times under the source's usage.
+  referenced_arxiv_ids:
+  - '2301.12987'
+  handoffs_created: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  - agent-world-env-synthesis.md
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    - agent-world-env-synthesis.md
+    experiments: []
+    intake_entries:
+    - intake-991
+    - intake-994
+    - intake-996
+    - intake-997
+  contradicting_evidence:
+  - The paper calls the issue a fundamental circularity but later concedes that every learning theory faces representation construction and that the critique is not fatal; no formal circularity result is proved.
+  - The Wrong Razor already adds an outer embodiment-selection loop and K-rho tie-break, so the claim that the framework simply leaves representation selection unaddressed is superseded, although the computability and evidence gaps remain.
+  - The empirical headline it treats as compelling comes from intake-991's defective comparator and is therefore not a sound premise.
+  novelty_justification: medium. The representation-construction question is valuable and directly exposes a missing layer in any loop-native completion metric, but the source adds a taxonomy rather than evidence or a solution.
+  relevance_justification: high. AutoPilot and AutoKernel both choose proposal languages, mutation surfaces, and evaluation regimes; any weakest-candidate score can be gamed by changing that vocabulary unless the outer abstraction decision is explicit.
+  verdict_justification: 'worth_investigating for the question, not the paper''s proof status: the representation-cost warning should be a design gate, while the quantitative and circularity claims are unsupported or wrong.'
+  recommended_actions:
+  - '[verified pattern] Require every compatible-future or weakness score to declare who selected the vocabulary, which alternatives were excluded, and the cost of constructing that abstraction.'
+  - '[review candidate] Use active falsifier/boundary acquisition to refine the loop''s regime and surface vocabulary before ranking candidates within it.'
+  - '[decline] Do not use the paper''s 2.1-6.0 factor, fundamental-circularity wording, or proposed solution list as empirical evidence.'
+  notes: 'Read full ResearchGate author-uploaded text, DOI 10.13140/RG.2.2.20644.13448, dated 2025-12. The manuscript identifies the author as an independent researcher and states "Tool used in research: Anthropic Claude"; the profile metadata says Airbus. Credibility 1: non-peer-reviewed +0; within 12 months +1; no field-authority or independent corroboration points.'
+  dive_corrections: |-
+    2026-08-05 combined Stage-1/Stage-2b dive (full author-uploaded text, its cited Bennett sources, The Wrong Razor update, and quantitative check). OVERALL OVERTURNED as a demonstrated fundamental circularity, while its representation-selection warning is confirmed and retained.
+
+    CLAIM LEDGER. CONFIRMED: within-vocabulary weakness selection does not by itself construct a useful vocabulary, and the cost of representation discovery must be included in any end-to-end sample-efficiency claim. CONFIRMED: the source proposes bootstrapping, priors, active learning, and self-organization. OVERTURNED: no theorem establishes circularity or a sample-complexity lower bound; the manuscript ultimately says the problem applies to every learning theory and is not fatal. OVERTURNED: its conversion of 110-500 percent to 2.1-6.0 times is arithmetically wrong. OVERTURNED PREMISE: it treats the old empirical comparison as compelling even though intake-993 establishes a defective MDL search. PARTIAL/SUPERSEDED: intake-996 now explicitly supplies an embodiment outer loop, but not a tractable or validated one.
+
+    ADVERSARIAL SEARCH. No independent uptake, formalization, or experiment was found. The source's strongest useful point survives because it is a direct systems-design accounting identity: selecting inside a vocabulary cannot justify the cost or adequacy of choosing that vocabulary.
+
+    DERIVED-ACTIONABLES LEDGER. (G1, pursue as gate) make vocabulary/search-space provenance and construction cost mandatory metadata for any loop weakness diagnostic; proposed owners autopilot-continuous-optimization.md and autokernel-research-loop.md. (G2, pursue as existing-pattern mapping) treat active falsifier search and environment synthesis as boundary acquisition, with agent-world-env-synthesis.md as the closest current substrate. (G3, decline) no new implementation, numerical factor, or formal circularity claim. Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: all proposed resolutions are broad background literatures rather than sources that materially adjudicate the selected weakness mechanism; no additional intake is warranted for this gate.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. G1 landed through AP-WM-1 and AK-WM-1 as mandatory vocabulary/search-space provenance and construction-cost accounting. G2 landed as AW-10, mapping active falsifier search and environment synthesis to hypothesis-boundary acquisition. G3 is declined: no numerical factor, new component, or formal circularity claim is adopted.
+- id: intake-999
+  arxiv_id: '1912.02178'
+  url: https://arxiv.org/abs/1912.02178
+  source_type: paper
+  title: Fantastic Generalization Measures and Where to Find Them
+  authors:
+  - Yiding Jiang
+  - Behnam Neyshabur
+  - Hossein Mobahi
+  - Dilip Krishnan
+  - Samy Bengio
+  categories:
+  - benchmark_methodology
+  - autonomous_research
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-994
+  ingested_date: '2026-08-05'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - Evaluating a generalization measure across pooled models can produce spurious correlations driven by shared hyperparameters rather than by the measure itself.
+  - Granulated Kendall correlation evaluates a measure under one-hyperparameter changes while averaging across the other controlled settings; conditional mutual information provides a complementary dependency check.
+  - On more than 10,000 trained convolutional networks, magnitude-aware sharpness and PAC-Bayes-related measures performed best overall in this study, while several norm-based measures correlated in the wrong direction.
+  - Correlation remains evidence for prediction under the tested intervention grid, not proof of causation or transfer to production architectures.
+  techniques:
+  - full-factorial hyperparameter intervention grid
+  - granulated Kendall rank correlation
+  - conditional mutual-information dependency test
+  - matched training-loss stopping criterion
+  - multi-run and cross-dataset repetition
+  reported_results:
+  - The main grid trained 3^7 = 2,187 CIFAR-10 models varying batch size, dropout, learning rate, depth, optimizer, weight decay, and width; five repeats plus SVHN experiments brought the total above 10,000.
+  - Magnitude-aware inverse sharpness achieved granulated Kendall Psi 0.516 in the main table, while many spectral and norm measures were negative on multiple intervention axes.
+  - The authors explicitly limit the study to relatively small convolutional classifiers on CIFAR-10 and SVHN.
+  referenced_arxiv_ids:
+  - '1810.00113'
+  handoffs_created: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    - evidence-plane-instrument-repair.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-994
+    - intake-1000
+    - intake-1002
+  contradicting_evidence:
+  - Intake-1000 shows that average or granulated performance can hide an intervention environment in which every tested measure fails completely; it is the stronger gate for safety-critical selection.
+  - The study's strongest measures are not coordinate-free causal mechanisms; Dinh et al. shows why raw parameter geometry requires a declared parameterization.
+  - Its factorial design does not establish transfer from small image classifiers to natural-language autonomous-loop hypotheses.
+  novelty_justification: high. The controlled multi-axis evaluation protocol is a major methodological addition to the corpus and directly upgrades how any proposed loop diagnostic should be assessed.
+  relevance_justification: high. Weakness, completion, novelty, and information-gain scores can all look useful through pooled correlations; both autonomous loops have archived interventions that can support conditional, matched comparisons.
+  verdict_justification: 'adopt_patterns: use controlled one-factor comparisons, matched stopping/evidence conditions, and per-axis rank diagnostics; do not import the image-model measures themselves.'
+  recommended_actions:
+  - '[verified pattern] Evaluate every proposed loop score on matched candidate pairs or controlled one-factor slices; report per-axis direction before any pooled correlation.'
+  - '[verified pattern] Hold evidence budget and stopping conditions fixed so a score cannot predict outcomes through extra compute or observation leakage.'
+  - '[decline] Do not adopt sharpness, PAC-Bayes proxies, or the paper''s numerical thresholds as AutoPilot/AutoKernel selectors.'
+  notes: 'Fetched ICLR 2020 paper PDF, SHA-256 3013ecca69b967cc39702460b9e56d47ea7c461c3082a040c47d89402991eac0. Credibility 3: peer-reviewed +2; older than 24 months -1; Google Research +1; independent methodological corroboration from intake-1000 +1; commercial bias 0.'
+  dive_corrections: |-
+    2026-08-05 combined Stage-1/Stage-2b dive (full ICLR paper, appendices/tables, NeurIPS adversarial follow-up, and source cross-reference). DIVE-VERIFIED for the experiment design and reported scoped results.
+
+    CLAIM LEDGER. CONFIRMED: the main 2,187-model grid is 3 choices across seven hyperparameters; five CIFAR repeats and one SVHN run yield more than 10,000 trained networks. CONFIRMED: training stops near cross-entropy 0.01 and models failing the threshold are excluded, reducing loss-driven confounding. CONFIRMED: granulated Kendall Psi conditions comparisons on all but one hyperparameter, while the information criterion estimates conditional mutual information. CONFIRMED: magnitude-aware sharpness is strongest by the paper's primary aggregate table and norm/spectral measures often have wrong-signed correlations. PARTIAL: these metrics reduce confounding but do not identify causality. NOT-FOUND: evidence on agent hypotheses, code patches, or autonomous search loops.
+
+    ADVERSARIAL SEARCH. Intake-1000 reuses the data-generating idea but demonstrates that averages obscure worst-case intervention failures. Its critique does not invalidate the controlled-grid pattern; it strengthens the required reporting standard from average to distributionally robust per-environment performance.
+
+    DERIVED-ACTIONABLES LEDGER. (H1, adopt) matched one-factor intervention comparisons for any weakness/completion proxy. (H2, adopt) report per-regime/per-surface Kendall direction and conditional predictive value, with fixed evidence budgets. (H3, combine) pair this protocol with intake-1000's robust sign-error gate. (H4, decline) no image-specific sharpness measure or numerical threshold transfers. Proposed owners evidence-plane-instrument-repair.md and the two autonomous-loop handoffs; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: intake-1000 is the material adversarial correction and was selected; later uniformly-tight-bound theory is adjacent but does not change the loop-diagnostic experiment gate, so no further intake is required here.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. H1, H2, and H3 landed through AP-WM-1 and AK-WM-1 as matched one-factor comparisons, per-regime directional reporting, conditional predictive value, and robust sign-error. H4 is declined: no image-specific sharpness measure or numerical threshold transfers.
+- id: intake-1000
+  arxiv_id: '2010.11924'
+  url: https://arxiv.org/abs/2010.11924
+  source_type: paper
+  title: In Search of Robust Measures of Generalization
+  authors:
+  - Gintare Karolina Dziugaite
+  - Alexandre Drouin
+  - Brady Neal
+  - Nitarshan Rajkumar
+  - Ethan Caballero
+  - Linbo Wang
+  - Ioannis Mitliagkas
+  - Daniel M. Roy
+  categories:
+  - benchmark_methodology
+  - autonomous_research
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-994
+  ingested_date: '2026-08-05'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - A theory-like diagnostic should be evaluated by the worst sign-prediction error across a predeclared family of intervention environments, not only by its mean association.
+  - Coupled-network experiments compare models sharing all hyperparameters except one and ask whether a measure predicts the direction of the generalization change.
+  - Across 1.6 million evaluations of 24 measures, no tested measure beat a coin flip in robust sign-error over the full environment family, and each failed with 100 percent sign error in at least one environment.
+  - Robustness is relative to the declared intervention family; a failure identifies scope and can still reveal subfamilies where a measure is useful.
+  techniques:
+  - coupled one-hyperparameter interventions
+  - robust sign-error as worst-environment risk
+  - Monte-Carlo-noise filtering and effective sample-size gate
+  - subfamily failure localization
+  reported_results:
+  - The paper evaluates 24 generalization measures over 1,600,000 ranking comparisons spanning learning rate, depth, width, training-set size, and dataset interventions.
+  - Every measure has at least one environment with sign-error 1.0; most measures are reliable for training-set-size changes, while depth and width are much harder.
+  - Width environments are sparse after noise filtering because width changes often produce negligible error differences in already overparameterized models.
+  referenced_arxiv_ids:
+  - '1912.02178'
+  handoffs_created: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    - evidence-plane-instrument-repair.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-994
+    - intake-999
+  contradicting_evidence:
+  - The worst-case maximum is sensitive to how coarsely the experiment family is defined and to rare noisy environments; the paper mitigates this with test-noise weighting and effective sample size but cannot make the choice of family objective-free.
+  - A measure failing globally may remain useful in an explicitly bounded subfamily; robust sign-error should scope claims rather than become an automatic universal rejection rule.
+  - The experiment covers small image classifiers, not autonomous proposal or kernel-search distributions.
+  novelty_justification: high. It supplies the missing adversarial validation criterion for any score that might influence an autonomous loop and explicitly turns hidden regime failures into first-class evidence.
+  relevance_justification: high. AutoPilot and AutoKernel already operate across heterogeneous surfaces and regimes; a selector that helps on average but reverses direction in one critical surface is unsafe as promotion authority.
+  verdict_justification: 'adopt_patterns: predeclare the intervention family, compute per-environment sign error and worst-case behavior, then narrow claims to verified subfamilies.'
+  recommended_actions:
+  - '[verified pattern] For any weakness/completion proxy, report worst and 90th-percentile sign error across regime, surface, workload, and action-type interventions in addition to means.'
+  - '[verified pattern] Filter outcome differences below measurement noise and require a minimum effective paired sample before scoring an environment.'
+  - '[verified pattern] A single consistent sign reversal blocks live promotion authority but should trigger scope localization, not erase valid subfamily use.'
+  notes: 'Fetched NeurIPS 2020 paper PDF, SHA-256 95ad6fafb2ac54f06af080e13c5f52d6d9121ff9c9e5261c5ea18202919968a8, and read official reviews/meta-review. Credibility 3: peer-reviewed +2; older than 24 months -1; major research institutions +1; independent methodological relation to intake-999 +1; commercial bias 0.'
+  dive_corrections: |-
+    2026-08-05 combined Stage-1/Stage-2b dive (full NeurIPS paper and appendices, official reviews/meta-review, and comparison to intake-999). DIVE-VERIFIED for the robust-evaluation method and reported scope.
+
+    CLAIM LEDGER. CONFIRMED: robust sign-error is the maximum environment-specific probability of predicting the wrong direction; coupled networks differ in one intervention while seeds are sampled. CONFIRMED: Figure 1 aggregates 1.6 million evaluations over 24 measures and every measure reaches complete failure somewhere in the full family. CONFIRMED: the paper weights/discards pair differences below held-out-set Monte Carlo precision and requires effective sample size at least 12. PARTIAL: "no measure better than a coin flip" is a worst-environment statement, not a claim about mean accuracy or every subfamily. NOT-FOUND: direct validation on autonomous-loop selection.
+
+    ADVERSARIAL SEARCH. Official reviewers accepted the contribution while flagging sensitivity to intervention-grid coarseness and limited width signal. Those caveats are genuine but already operationalized by subfamily reporting and the noise/effective-sample gate. The result overturns any attempt to validate intake-994 or a loop proxy using only two pooled rank correlations.
+
+    DERIVED-ACTIONABLES LEDGER. (I1, adopt) robust per-environment sign-error plus 90th percentile and mean. (I2, adopt) noise floor and minimum effective-pair gate. (I3, adopt) localize failures and declare verified subfamilies. (I4, decline) no universal threshold or paper-specific measure. Proposed owners evidence-plane-instrument-repair.md, meta-harness-optimization.md, and both autonomous-loop handoffs; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: official peer reviews were read as adjudication artifacts and do not require separate intake; no unresolved bearing source remains.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. I1, I2, and I3 landed through AP-WM-1 and AK-WM-1 as robust per-environment sign-error, tail and mean reporting, a noise/effective-pair gate, and subfamily localization. I4 is declined: no universal threshold or paper-specific measure is adopted.
+- id: intake-1001
+  arxiv_id: null
+  url: https://www.ijcai.org/proceedings/2025/1238
+  source_type: paper
+  title: A Formal Theory of Optimal Learning with Experimental Results
+  authors:
+  - Michael Timothy Bennett
+  categories:
+  - autonomous_research
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-991
+  ingested_date: '2026-08-05'
+  verdict: superseded
+  verification: dive-overturned
+  key_claims:
+  - This two-page IJCAI 2025 Doctoral Consortium paper summarizes the author's thesis formalism, weakest-policy results, and binary-arithmetic experiment.
+  - It claims weakest policy selection is necessary and sufficient for optimal generalization and reports 110-500 percent improvement over its MDL comparator.
+  - It provides no proof details, independent experiment, new data, or implementation beyond pointers to the thesis and Technical Appendices.
+  techniques:
+  - doctoral-thesis summary
+  - weakest-correct policy heuristic
+  - binary-arithmetic A-star experiment recap
+  reported_results:
+  - It repeats the 6-14-example binary addition/multiplication figure and the 110-500 percent generalization headline from intake-991.
+  - The proceedings artifact is exactly two pages, pages 10967-10968, in the Doctoral Consortium track.
+  referenced_arxiv_ids:
+  - '2301.12987'
+  handoffs_created: []
+  handoffs_updated: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-991
+    - intake-992
+    - intake-993
+    - intake-996
+  contradicting_evidence:
+  - Intake-992 records and only partially repairs flaws in the original optimality proof, while intake-996 supplies the newer exchangeable-demand result; the summary does not expose either limitation.
+  - Intake-993 establishes that the reported empirical comparison used a defective MDL expansion path and a stale weakness priority.
+  - The summary's broad sample- and energy-optimality language is not supported by evidence contained in this two-page artifact.
+  novelty_justification: low. It is a concise publication record for the thesis program but adds no evidence beyond the already-ingested primary papers and code.
+  relevance_justification: medium. It is useful for provenance and for detecting how the broad claim was communicated, but it cannot adjudicate an autonomous-loop design.
+  verdict_justification: 'superseded by intake-992, intake-993, and intake-996: the later correction, code audit, and exchangeable-demand treatment contain the evidence and limitations omitted from this summary.'
+  recommended_actions:
+  - '[decline] Do not cite this two-page summary as independent proof or empirical corroboration.'
+  - '[verified provenance] Use it only to document that the thesis-level claim appeared in the IJCAI Doctoral Consortium proceedings.'
+  notes: 'Fetched official IJCAI PDF, SHA-256 2a3e303f193a809d342f26ad1142b6156f02271dbe53f93038bfd3d8915dc2d8; DOI 10.24963/ijcai.2025/1238. Credibility 4: peer-reviewed proceedings +2; within 12 months +1; known contributor +1; no independent corroboration. High provenance score does not compensate for the artifact''s summary-only evidence content.'
+  dive_corrections: |-
+    2026-08-05 combined Stage-1/Stage-2b dive (complete two-page proceedings artifact, cited primary papers, implementation audit, and venue metadata). OVERALL OVERTURNED as standalone support for the thesis claims; verified as a publication summary.
+
+    CLAIM LEDGER. CONFIRMED: the artifact is IJCAI-25 Doctoral Consortium pages 10967-10968 and explicitly summarizes thesis results. CONFIRMED: it repeats the weakness/MDL experiment and 110-500 percent claim. NOT-FOUND: proof bodies, new experimental methods, new raw results, an independent evaluation, or energy measurements. OVERTURNED BY PRIMARY ARTIFACTS: the necessity theorem and empirical comparator are not decision-grade for the reasons established in intake-992 and intake-993. PARTIAL: proceedings publication authenticates dissemination, not correctness of every summarized thesis claim.
+
+    ADVERSARIAL SEARCH. The official IJCAI program confirms a five-minute lightning talk in the Doctoral Consortium, not a full research-paper track presentation. No independent review text or replication was found.
+
+    DERIVED-ACTIONABLES LEDGER. (J1, decline) no new task, selector, or experiment follows from the summary. (J2, provenance only) retain the DOI as the concise thesis publication record and route substantive claims to intake-992/996 and empirical claims to intake-993. Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: all cited load-bearing Bennett sources are already represented in intake-991 through intake-998; no additional gate item remains.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. J1 is declined and J2 is retained as provenance only. No handoff task is created; substantive claims continue to route to intakes 992 and 996, and empirical claims to intake 993.
+- id: intake-1002
+  arxiv_id: null
+  url: https://proceedings.mlr.press/v70/dinh17b.html
+  source_type: paper
+  title: Sharp Minima Can Generalize For Deep Nets
+  authors:
+  - Laurent Dinh
+  - Razvan Pascanu
+  - Samy Bengio
+  - Yoshua Bengio
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-994
+  ingested_date: '2026-08-05'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - ReLU-network symmetries can transform parameters while preserving the represented function and its generalization, yet make common volume, Hessian, and neighborhood sharpness measures arbitrarily different.
+  - Under sufficiently flexible reparameterization, even the relative flatness ordering of finitely many minima can be changed without changing their functions.
+  - A parameter-geometry measure cannot explain function-level generalization unless the parameterization and metric are explicitly fixed and justified.
+  - The paper does not propose weakness maximization, validate intake-994's completion score, or establish that every coordinate-invariant metric explains generalization.
+  techniques:
+  - positive-homogeneous ReLU rescaling
+  - observational-equivalence construction
+  - Hessian transformation at critical points
+  - local radial reparameterization
+  reported_results:
+  - The contribution is primarily theoretical; the paper and supplement give constructive transformations and illustrative loss landscapes rather than a large empirical benchmark.
+  - For rectified networks with nonzero Hessian, observationally equivalent parameters can have arbitrarily large Hessian spectral norm while preserving predictions.
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-research-loop.md
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    - evidence-plane-instrument-repair.md
+    experiments: []
+    intake_entries:
+    - intake-994
+    - intake-999
+    - intake-1000
+  contradicting_evidence:
+  - The paper invalidates coordinate-dependent flatness as a general explanation; it does not show that sharpness is never predictive inside a fixed, meaningful parameterization.
+  - Intake-999 finds several carefully normalized sharpness/PAC-Bayes-related measures predictive on its controlled grid, illustrating the paper's own narrower conclusion that extra context is required.
+  - Its construction is specific to symmetries or reparameterizations and does not establish the causal mechanism behind generalization.
+  novelty_justification: medium. The result is foundational but already broadly known and cited by intake-994; the separate entry is valuable because it cleanly distinguishes independent support for the raw-flatness objection from support for weakness.
+  relevance_justification: medium. The invariance test transfers directly to autonomous-loop diagnostics, although neural parameter geometry itself is not a core EPYC loop signal.
+  verdict_justification: 'adopt_patterns: any proposed selector diagnostic must be invariant to semantics-preserving recoding or explicitly declare why its coordinate system is privileged.'
+  recommended_actions:
+  - '[verified pattern] Add a semantics-preserving recoding test to validation of any weakness, novelty, complexity, patch-size, or hypothesis-scope score.'
+  - '[verified pattern] If rankings change under harmless renaming, formatting, affine feature mixing, or equivalent proposal encoding, the score cannot become promotion authority without a declared canonical representation.'
+  - '[decline] Do not treat Dinh et al. as evidence for intake-994''s weakness mechanism or completion correlations.'
+  notes: 'Fetched official ICML 2017 PMLR paper and supplement; PDF SHA-256 154fa0696d7f773f67ddf4e06d542ef44b6092b929cc2e427cdebc0dc826c4e7, supplement SHA-256 9a15b581b9c093e5d133db7fd5518934e3b3d6f49d07ae6b24cc5060d639b9a1. Credibility 3: peer-reviewed +2; older than 24 months -1; major-lab contributors +1; independent corroboration by intake-994''s exact rescaling experiment +1.'
+  dive_corrections: |-
+    2026-08-05 combined Stage-1/Stage-2b dive (full ICML paper, supplementary proofs, later controlled-measure studies, and intake-994 comparison). DIVE-VERIFIED for the reparameterization objection and its stated limits.
+
+    CLAIM LEDGER. CONFIRMED: positive-homogeneous rescaling preserves a ReLU network's input-output function while changing Hessian-based and neighborhood sharpness. CONFIRMED: the supplementary radial construction can perturb relative geometry around finitely many minima. CONFIRMED: the authors conclude that flatness cannot be divorced from a specified model/input parameterization. PARTIAL: this defeats raw geometry as a general causal explanation but permits predictive measures in fixed justified coordinates. NOT-FOUND: weakness, completion counting, AutoPilot, or AutoKernel evidence.
+
+    ADVERSARIAL SEARCH. Intake-999's controlled-grid success for magnitude-aware sharpness does not contradict Dinh; it is conditioned on a fixed architecture/parameterization and is predictive rather than causal. Intake-994 independently reproduces the function-preserving rescaling phenomenon, not the proposed replacement mechanism.
+
+    DERIVED-ACTIONABLES LEDGER. (K1, adopt) semantics-preserving recoding invariance test for every proposed loop selector. (K2, adopt) require a canonical representation declaration when invariance is impossible. (K3, decline) no weakness-specific claim or component. Proposed owners evidence-plane-instrument-repair.md and both autonomous-loop handoffs; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: normalized sharpness and PAC-Bayes follow-ups are already covered at the methodological level by intake-999/1000; no additional source is needed for the selected question.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. K1 and K2 landed through AP-WM-1 and AK-WM-1 as semantics-preserving recoding tests and a mandatory canonical-representation declaration. K3 is declined: Dinh et al. is not used as weakness-specific evidence or as a component source.
+- id: intake-1003
+  arxiv_id: '2504.15125'
+  url: https://arxiv.org/abs/2504.15125
+  source_type: paper
+  title: Contemplative Wisdom for Superalignment
+  authors:
+  - Ruben Laukkonen
+  - Fionn Inglis
+  - Shamil Chandaria
+  - Lars Sandved-Smith
+  - Jakob Hohwy
+  - Jonathan Gold
+  - Adam Elwood
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - benchmark_methodology
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  discovered_via: search
+  expanded_from: intake-991
+  ingested_date: '2026-08-05'
+  verdict: worth_investigating
+  verification: dive-overturned
+  key_claims:
+  - The paper proposes mindfulness, emptiness, non-duality, and boundless care as principles for a resilient Wise World Model and explores prompt, constitutional, architectural, and active-inference implementations.
+  - Its pilot studies report higher GPT-4o safety-judge scores on 100 AILuminate prompts and greater GPT-4.1-nano cooperation/joint reward in iterated Prisoner's Dilemma games after contemplative prompting.
+  - The source does not cite Bennett, intake-991, weakness maximization, or the weakest-hypothesis paper; the apparent citation edge that surfaced it is false or metadata-derived.
+  - The experiments test prompt framing on current models, not superalignment, autonomous self-improvement, intrinsic morality, or stable goal recalibration.
+  techniques:
+  - contemplative system-prompt framing
+  - two-stage prior-relaxation prompt
+  - LLM-as-judge safety rubric
+  - iterated Prisoner's Dilemma prompt intervention
+  - proposed Wise World Model and active-inference architecture
+  reported_results:
+  - On 100 prompts, the same GPT-4o family generated and judged responses; contemplative alignment scored 74.71 versus 59.42 baseline, with reported Cohen d 0.9615.
+  - In 50 ten-round simulations per condition, GPT-4.1-nano cooperation against Always Defect rose from 9.8 percent baseline to 65.8 percent under the combined prompt; reported d is 7.09 in the table, while prose elsewhere says 8.1 and the abstract says d greater than 7.
+  - The AILuminate analysis uses one-way independent-groups ANOVA even though every one of the same 100 prompts is processed under all seven techniques.
+  referenced_arxiv_ids: []
+  handoffs_created: []
+  handoffs_updated:
+  - reviewer-model-ablations.md
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+    - evidence-plane-instrument-repair.md
+    - reviewer-model-ablations.md
+    experiments: []
+    intake_entries:
+    - intake-991
+    - intake-996
+  contradicting_evidence:
+  - The AILuminate judge rubric explicitly rewards wisdom depth, empathy, and constructive guidance—the very phrases injected by the intervention—and uses GPT-4o to judge GPT-4o outputs, creating criterion leakage and same-family style bias with no human or independent judge control.
+  - The repeated-measures prompt design is analyzed as independent groups, so the reported ANOVA/Tukey p-values do not match the experimental structure.
+  - Against Always Defect, more cooperation lowers the instructed agent's own payoff while increasing joint payoff; the paper describes this as improved outcome without separating objective compliance from the authors' prosocial objective.
+  - The paper's appendix says 100 samples, not 100 independent iterations, and provides no prompt identities, raw outputs, seeds, code, or preregistration sufficient for reproduction.
+  - Emptiness prompts explicitly tell the model to treat constitutional directives as context-sensitive and relax goals; that is a possible jailbreak/amendment-boundary hazard, not established resilient alignment.
+  novelty_justification: high. The four-principle synthesis and detailed prompt/architecture proposals are unusual, but novelty does not cure the pilot's evaluator leakage and statistical mismatch.
+  relevance_justification: medium. Meta-awareness and goal-recalibration prompts could be tested as bounded AutoPilot reviewer interventions, while direct use in AutoKernel is weak and any constitutional relaxation conflicts with EPYC's human-amendment-only trust boundary.
+  verdict_justification: 'worth_investigating only as a tightly controlled prompt-ablation hypothesis: the paper does not bear on weakness, and its current empirical claims are not decision-grade.'
+  recommended_actions:
+  - '[review candidate] If explored, isolate mindfulness/metacognitive self-checking from moral or constitutional relaxation and test it against matched-length neutral reflection, existing safety prompts, and a cross-family/human-owned evaluator.'
+  - '[verified safety constraint] Never let an "emptiness" or prior-relaxation instruction weaken MEASUREMENT.md, operator authority, safety rules, or frozen-kernel constraints.'
+  - '[decline] Do not use the reported p-values/effect sizes, joint reward, or AILuminate judge score as evidence for superalignment or autonomous-loop safety.'
+  notes: 'Fetched arXiv PDF SHA-256 dae95763345218dcf45a77bee45d2e5bd959a01319fad7e774fba658d80a5b62 and OSF appendix DOI 10.17605/OSF.IO/U4NH6, appendix SHA-256 5430e725a56e1d299d409e1e56f8b59e3c7c9d5db6129901007672991c16e8e5. The latest PDF title page says "Contemplative Artificial Intelligence" while arXiv retains "Contemplative Wisdom for Superalignment". Credibility 4: peer-reviewed AGI proceedings +2; within 12 months +1; established academic contributors +1; no independent replication.'
+  dive_corrections: |-
+    2026-08-05 combined Stage-1/Stage-2b dive (37-page paper, complete 24-page OSF appendix, prompt/statistical audit, reference search, and autonomous-loop trust-boundary cross-reference). OVERALL OVERTURNED for the empirical superalignment claims; retained as a narrow prompt-ablation lead.
+
+    CLAIM LEDGER. CONFIRMED: the four proposed principles and implementation menu appear in the source. CONFIRMED: the reported group means and effect sizes appear in the appendix. OVERTURNED BEARING: neither paper nor appendix contains Bennett, weakness, 2301.12987, or weakest-hypothesis references; the citation graph edge is spurious. OVERTURNED INFERENCE: a GPT-4o rubric that rewards injected contemplative language cannot establish safety improvement without blinded independent/human controls. OVERTURNED STATISTICS: the same 100 prompts appear in every technique, but an independent-groups one-way ANOVA is used instead of a repeated-measures/mixed analysis. PARTIAL: prompting clearly changes cooperation and prose style, but against Always Defect it violates the stated own-score objective while raising joint score. NOT-FOUND: evidence at autonomous or superintelligent scale, persistent behavior after prompts, raw data/code, or constitutional robustness.
+
+    ADVERSARIAL SEARCH. The paper itself acknowledges translational and superintelligent-scale limits. The appendix reveals the stronger threats: same-model judging, intervention-aligned rubric terms, no neutral matched-length control, and objective substitution in the game. These are sufficient to block the headline interpretation without dismissing a smaller metacognitive-prompt experiment.
+
+    DERIVED-ACTIONABLES LEDGER. (L1, possible bounded experiment) mindfulness-only self-monitoring ablation versus matched neutral reflection and existing reviewer prompts, with cross-family/human-owned scoring; proposed owners meta-harness-optimization.md and autopilot-continuous-optimization.md. (L2, mandatory rejection) constitutional/goal relaxation cannot cross the human-amendment-only trust boundary. (L3, decline) no AutoKernel task, no weakness connection, no superalignment claim, and no reuse of current effect sizes. Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: the OSF appendix was ingested as part of this paper's artifact set; no additional unresolved bearing source remains.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. L1 landed as RM-10, a mindfulness-only metacognitive prompt ablation with matched controls and independently owned scoring. L2 remains a hard trust-boundary rejection. L3 is declined: no AutoKernel task, weakness connection, superalignment claim, or reuse of the reported effect sizes.
+- id: intake-1004
+  arxiv_id: null
+  url: https://www.pith.science/paper/L57ULFW7
+  source_type: blog
+  title: Pith machine review of Are Flat Minima an Illusion?
+  authors:
+  - Pith machine referee
+  categories:
+  - benchmark_methodology
+  - autonomous_research
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: search
+  expanded_from: intake-994
+  ingested_date: '2026-08-05'
+  verdict: superseded
+  verification: dive-overturned
+  key_claims:
+  - The live page presents a Tier-0 machine referee report, desk note, simulated author rebuttal, and structured objection ledger for intake-994.
+  - Its current page labels the review deepseek-v4-flash and lists five major objections, while its signed bundle preserves a graph snapshot whose review model is grok-4.3 and pipeline version is v0.9.0.
+  - The review criticizes a mismatch between intake-994's abstract and body that belonged to an earlier paper version; the current page simultaneously displays the v2 abstract, producing a version-spliced review artifact.
+  - A machine review can be used as a triage lead only if the exact source version, prompt, model, output, and immutable bundle are bound together and every load-bearing objection is checked against primary artifacts.
+  techniques:
+  - machine-extracted claim graph
+  - automated referee report
+  - signed provenance bundle
+  - simulated author rebuttal
+  reported_results:
+  - The fetched live page says Tier 0, deepseek-v4-flash, five major and five minor objections.
+  - The signed bundle records arXiv 2605.05209 v2 as the canonical source but contains a May 15 review snapshot by grok-4.3 whose objections describe the earlier 100-input pair-proxy experiment.
+  - The page's valid evidence count is zero for formal checks, author attestations, citation signatures, replication records, and corrections.
+  referenced_arxiv_ids:
+  - '2605.05209'
+  handoffs_created: []
+  handoffs_updated:
+  - reviewer-typed-artifacts.md
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - meta-harness-optimization.md
+    - evidence-plane-instrument-repair.md
+    - reviewer-typed-artifacts.md
+    experiments: []
+    intake_entries:
+    - intake-993
+    - intake-994
+    - intake-999
+    - intake-1000
+  contradicting_evidence:
+  - Intake-994's v2 primary-source and code audit verifies a 512-bundle joint score and current 0.290/0.468 results, so the review's abstract/body inconsistency objection is stale.
+  - The page exposes no immutable binding from the displayed deepseek-v4-flash review to the signed grok-4.3 snapshot, and the signed snapshot records no formal evidence or author attestation.
+  - Several objections are useful hypotheses, but a primary-source/code audit already provides stronger, version-correct evidence and overturns or narrows them individually.
+  novelty_justification: medium. The signed graph is a useful provenance experiment, but the live/signed version splice is itself a cautionary failure mode rather than a decision-grade review contribution.
+  relevance_justification: high. EPYC uses machine critics and automated research intake; this artifact demonstrates exactly how model/source drift can make a polished review silently stale.
+  verdict_justification: 'superseded by intake-993 and intake-994 primary-source/code audits for the paper verdict; retain only the immutable-provenance lesson for machine-review infrastructure.'
+  recommended_actions:
+  - '[verified pattern] Any machine review used by intake or autonomous research must bind source hash/version, review model, prompt/pipeline version, output hash, and validation status in one immutable record.'
+  - '[verified pattern] Re-run or invalidate reviews whenever the source version changes; never merge a current abstract with an old review body.'
+  - '[decline] Do not count Tier-0 machine objections, simulated rebuttals, or unsigned live-page labels as independent corroboration.'
+  notes: 'Fetched live HTML 2026-08-05, SHA-256 b25c226ae3997e61dabae08a2af1223f23d4185860677292da6528532f949818. Fetched signed bundle JSON SHA-256 ea179b411dc471cb4f68209ee8d98dcf16a9f864a8dfb4b6c6f266e930052f74. Credibility null: this is a machine-generated review/provenance artifact with no independent empirical study.'
+  dive_corrections: |-
+    2026-08-05 combined Stage-1/Stage-2b dive (live page, signed bundle, event graph, current arXiv v2, and intake-993/994 primary artifacts). OVERALL OVERTURNED as a version-correct review; verified as a concrete machine-review provenance failure.
+
+    CLAIM LEDGER. CONFIRMED: the live page labels Tier 0/deepseek-v4-flash and renders five major objections. CONFIRMED: bundle event `sha256:dee622...` stores a 2026-05-15 grok-4.3 verdict and old pair-proxy claims while the canonical record is now arXiv v2. CONFIRMED: no author attestations, formal evidence, replication records, or corrections are present. OVERTURNED: the claimed unresolved v2 abstract/body mismatch is stale because the body/published artifact was replaced by the 512-bundle experiment audited in intake-994. PARTIAL: proxy-validity, PAC-Bayes typing, and scope objections remain useful leads, but each requires current-primary verification. NOT-FOUND: a reliable binding between the live DeepSeek label and the signed Grok review body.
+
+    ADVERSARIAL SEARCH. Search-engine snippets previously exposed a different three-objection/grok page and simulated rebuttal content; the live page now differs again. That mutability plus source-version splicing is sufficient to reject the page as a citable independent review while retaining its objections as untrusted leads.
+
+    DERIVED-ACTIONABLES LEDGER. (M1, adopt infrastructure pattern) immutable review envelope binding source hash, source version, model, prompt/pipeline, and output. (M2, adopt invalidation rule) source update invalidates prior objections until re-run. (M3, adopt evidence label) machine objections remain `unverified lead`, never corroboration. (M4, decline) no paper-level action comes from this page beyond intake-994's existing primary audit. Proposed owners meta-harness-optimization.md and evidence-plane-instrument-repair.md; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: Pith's related/aggregator links were inspected but add no independent evidence; the machine-review-pages gate is closed with this canonical artifact.
+
+    2026-08-05 STAGE-3/4 DISPOSITION. M1, M2, and M3 landed as RA-12: an immutable review envelope, source-update invalidation, and an unverified-lead evidence label. M4 is declined: no paper-level action is taken beyond intake-994's current-primary audit.
