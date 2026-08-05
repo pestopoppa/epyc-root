@@ -76,8 +76,9 @@ KERNEL_HTML = _STATIC / "kernel.html"
 BUS_HTML = _STATIC / "bus.html"
 BENCHMARKS_HTML = _STATIC / "benchmarks.html"
 
-# Kernel-R&D dashboard contract — produced by the AutoKernel research loop in
-# epyc-inference-research (``autokernel.surface.dashboard_contract.export_contract``);
+# Kernel-R&D dashboard contract — produced by the AutoKernel campaign driver in
+# epyc-inference-research (``autokernel.dashboard.export_terminal_entry`` after
+# the terminal journal append);
 # the hub only READS it (self-contained data contract, no kernel context needed
 # here, and the hub never imports that package). Path is overridable for testing.
 #
@@ -117,6 +118,23 @@ AUTOPILOT_OUTCOME_JSON = Path(os.environ.get(
     "AUTOPILOT_OUTCOME_JSON",
     "/mnt/raid0/llm/tmp/autopilot/outcome_contract.json"))
 BENCHMARK_ARTIFACT_INVENTORY = REPO / "data" / "benchmark_artifact_inventory.json"
+
+# AutoKernel has two different facts worth showing and they must not be allowed
+# to certify each other:
+#
+# * KERNEL_DASHBOARD_JSON is the runtime contract.  It is what the watchdog and
+#   /api/health classify, and implementation work must never make it look fresh.
+# * AUTOKERNEL_RESEARCH_REPO is a live, read-only activity source.  It tells the
+#   operator that the implementation and calibration bundles are moving even
+#   before the first campaign exists.  This is presentation context only: it is
+#   deliberately kept under the hub-owned ``_activity`` key and is never passed
+#   to ``_kernel_observation``.
+AUTOKERNEL_RESEARCH_REPO = Path(os.environ.get(
+    "AUTOKERNEL_RESEARCH_REPO",
+    "/workspace/repos/epyc-inference-research"))
+AUTOKERNEL_STATE_ROOT = Path(os.environ.get(
+    "AUTOKERNEL_STATE_ROOT",
+    "/mnt/raid0/llm/autokernel"))
 
 # Freshness thresholds are DECLARED IN THE REGISTRY (dashboard/panels.py) and
 # read back here, so the numbers on the wire and the numbers in the panel→producer
@@ -768,11 +786,146 @@ def _kernel_render(data: dict, version: object, present: bool, env: dict) -> dic
                      "v1 contract with an empty run log")}
 
 
+def _iso_mtime(path: Path) -> str | None:
+    """UTC mtime for activity display, or ``None`` when the file raced away."""
+    try:
+        return datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).isoformat()
+    except OSError:
+        return None
+
+
+def _autokernel_git_activity(repo: Path, *, limit: int = 8) -> dict:
+    """Recent implementation commits, without importing the research package.
+
+    The dashboard process is intentionally stdlib-only.  ``git log`` also gives
+    us the committed fact rather than the shared checkout's dirty state, which
+    may belong to any of several sessions on this host.
+    """
+    command = [
+        "git", "-C", str(repo), "log", f"-{limit}",
+        "--format=%H%x00%cI%x00%s", "--", "scripts/kernel_rnd/autokernel",
+    ]
+    try:
+        proc = subprocess.run(command, capture_output=True, text=True,
+                              timeout=5.0, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {"status": "unavailable", "reason": str(exc), "recent_commits": []}
+    if proc.returncode != 0:
+        return {"status": "unavailable",
+                "reason": proc.stderr.strip() or f"git exited {proc.returncode}",
+                "recent_commits": []}
+    commits = []
+    for line in proc.stdout.splitlines():
+        parts = line.split("\0", 2)
+        if len(parts) != 3:
+            continue
+        sha, committed_at, subject = parts
+        commits.append({"sha": sha, "short_sha": sha[:10],
+                        "committed_at": committed_at, "subject": subject})
+    return {"status": "observed" if commits else "empty",
+            "head": commits[0] if commits else None,
+            "recent_commits": commits}
+
+
+def _autokernel_work_bundles(repo: Path, *, limit: int = 12) -> list[dict]:
+    """Summarise durable ``data/autokernel_*`` bundles without interpreting results.
+
+    A ``*.started_at`` marker with no matching ``*.ended_at`` marker is reported
+    as in progress.  This is intentionally a mechanical file-state statement,
+    not a benchmark verdict or a claim that the controller is alive.
+    """
+    data_root = repo / "data"
+    try:
+        roots = [p for p in data_root.iterdir()
+                 if p.is_dir() and p.name.startswith("autokernel_")]
+    except OSError:
+        return []
+    bundles = []
+    for root in roots:
+        try:
+            files = [p for p in root.rglob("*") if p.is_file()]
+        except OSError:
+            continue
+        timestamps = [(p, _iso_mtime(p)) for p in files]
+        timestamps = [(p, ts) for p, ts in timestamps if ts is not None]
+        newest_path, updated_at = (max(timestamps, key=lambda item: item[1])
+                                   if timestamps else (None, None))
+        active = []
+        for marker in files:
+            suffix = ".started_at"
+            if not marker.name.endswith(suffix):
+                continue
+            ended = marker.with_name(marker.name[:-len(suffix)] + ".ended_at")
+            if not ended.is_file():
+                active.append(str(marker.relative_to(root))[:-len(suffix)])
+        bundles.append({
+            "name": root.name,
+            "path": str(root),
+            "updated_at": updated_at,
+            "latest_file": (str(newest_path.relative_to(root))
+                            if newest_path is not None else None),
+            "file_count": len(files),
+            "json_results": sum(1 for p in files if p.suffix == ".json"),
+            "active_markers": sorted(active),
+            "state": "in_progress" if active else ("populated" if files else "empty"),
+        })
+    bundles.sort(key=lambda row: row.get("updated_at") or "", reverse=True)
+    return bundles[:limit]
+
+
+def _autokernel_journal_inventory(root: Path) -> dict:
+    """Inventory journals under the declared state root; never guess other roots.
+
+    ``campaign.py --journal-root`` is caller-supplied today.  The explicit
+    ``discovery_scope`` makes that limitation visible instead of implying this
+    scan is a complete campaign registry.
+    """
+    journals = []
+    if root.is_dir():
+        try:
+            shards = list(root.rglob("events.jsonl"))
+        except OSError:
+            shards = []
+        for shard in shards:
+            try:
+                stat = shard.stat()
+            except OSError:
+                continue
+            journals.append({"root": str(shard.parent),
+                             "updated_at": datetime.fromtimestamp(
+                                 stat.st_mtime, timezone.utc).isoformat(),
+                             "bytes": stat.st_size})
+    journals.sort(key=lambda row: row.get("updated_at") or "", reverse=True)
+    return {
+        "state_root": str(root),
+        "discovery_scope": ("journals below AUTOKERNEL_STATE_ROOT only; campaign.py "
+                            "also accepts arbitrary durable --journal-root paths"),
+        "journals": journals,
+    }
+
+
+def autokernel_activity(repo: Path | None = None,
+                        state_root: Path | None = None) -> dict:
+    """Live implementation/research context that cannot affect runtime health."""
+    repo = repo or AUTOKERNEL_RESEARCH_REPO
+    state_root = state_root or AUTOKERNEL_STATE_ROOT
+    return {
+        "schema": "epyc.autokernel.dashboard_activity.v1",
+        "role": ("PRESENTATION CONTEXT ONLY — this does not report controller "
+                 "liveness and does not affect _freshness or /api/health"),
+        "research_repo": str(repo),
+        "implementation": _autokernel_git_activity(repo),
+        "work_bundles": _autokernel_work_bundles(repo),
+        "durable_state": _autokernel_journal_inventory(state_root),
+    }
+
+
 def kernel_payload() -> dict:
     """Read the kernel dashboard contract (v2, or legacy v1), tolerating absence.
 
-    The hub only renders the contract; the AutoKernel loop
-    (epyc-inference-research) owns it and is the only writer.
+    The hub renders the terminal contract plus presentation-only activity;
+    ``autokernel.dashboard`` in epyc-inference-research owns the contract and is
+    the only writer. Activity context never enters the freshness observation.
 
     THE HUB'S OWN FIELDS ARE UNDERSCORED, and that is a seam rule rather than a
     style: ``contract_version`` is a key the PRODUCER owns (it writes the integer
@@ -795,6 +948,10 @@ def kernel_payload() -> dict:
     data["_freshness"] = _panel_envelope(
         "kernel", _kernel_observation(data, artifact_present=present))
     data["_render"] = _kernel_render(data, version, present, data["_freshness"])
+    # Live implementation and calibration activity is useful even while the
+    # first campaign contract is absent.  It stays separate from the Observation
+    # above so a new commit or A/A result can never resurrect a dead controller.
+    data["_activity"] = autokernel_activity()
     return data
 
 

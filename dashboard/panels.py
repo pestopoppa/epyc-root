@@ -308,14 +308,16 @@ PANELS: Mapping[str, PanelSource] = _index((
         kind=KIND_EXPORT,
         payload_func="kernel_payload",
         route="/api/kernel",
-        producer="autokernel.surface.dashboard_contract (AutoKernel research loop)",
+        producer="autokernel.dashboard (campaign terminal journal hook)",
         producer_repo="epyc-inference-research",
         evidence="/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json",
         timestamp_field="produced_at (v2) | runs[].ts then generated_at (v1)",
         absence_means=(
-            "NOBODY IS REPORTING. The AutoKernel loop writes this contract to a "
-            "durable path on every export; if the file is not there, no campaign "
-            "has ever exported one — the panel is not 'quiet', it is unsourced. "
+            "NOBODY IS REPORTING. An executing AutoKernel campaign writes this "
+            "contract after its terminal result is fsynced; if the file is not "
+            "there, no terminal campaign has exported one — the runtime panel is "
+            "not 'quiet', it is unsourced. Implementation commits and calibration "
+            "bundles are shown separately and do not certify controller liveness. "
             "This is the scar the AK6 surface exists to close, so absence here is "
             "anomalous by declaration and is named in the /api/health fold."),
         warn_s=3 * _DAY,
@@ -324,9 +326,9 @@ PANELS: Mapping[str, PanelSource] = _index((
         watched=True,
         gates_health=True,
         absence_is_anomalous=True,
-        notes="produced_at is derived by the producer from the LOOP's journaled "
-              "record timestamps, never from the export; a no-op re-export cannot "
-              "move it. When the contract declares the controller stopped "
+        notes="produced_at is the terminal JournalEntry.written_at, never the "
+              "export time; a no-op re-export cannot move it. When the contract "
+              "declares the campaign stopped "
               "(sections.campaign.stopped), silence is expected and the watchdog "
               "reports 'idle' instead of 'stopped_reporting'.",
     ),

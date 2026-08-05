@@ -1966,6 +1966,15 @@ verified diagnostic and validation patterns._
   count/noise floor, and recoding stability. If recoding changes the ordering or a new diagnostic adds no
   stable decision signal beyond the simpler baseline, retain the simpler baseline. No result may affect
   fitness, archive admission, promotion, or authority without a separately approved decision-grade protocol.
+  - [x] **AP-WM-1a — Implement and regression-test the immutable offline protocol. ✅ 2026-08-05**
+    `epyc-inference-research/scripts/kernel_rnd/autokernel/offline_least_commitment.py` validates one common
+    candidate/representation/demand frame, completed matched one-factor interventions, explicit metric
+    directions, recoding coverage, and observe-only authority; it emits the full required report and has no
+    live mutation API. A deterministic matched fixture proves the report and conservative simpler-baseline
+    fallback.
+  - [ ] **AP-WM-1b — Execute over real completed proposals.** AutoKernel currently has no proposal archive:
+    campaign Step 3 has not run. Admit the first archive only after proposal-v3 frame receipts and completed
+    matched interventions exist; synthetic regression rows are protocol tests, never decision evidence.
 
 - [ ] **AP-29d — Make strategy compression commitment-nonincreasing before wiring distillation.** For both
   StructuralLab MDL conventions and KnowledgeDistiller patterns, retain source member/evidence ids and

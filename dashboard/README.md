@@ -110,9 +110,17 @@ trusted.
   restarting the dashboard cannot revive a producer in another repository.
 
 Producer side (contract v2): `epyc-inference-research` →
-`scripts/kernel_rnd/autokernel/surface/dashboard_contract.py`, exporting to the
-durable `/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json`
-(`KERNEL_DASHBOARD_JSON` still overrides it for tests).
+`scripts/kernel_rnd/autokernel/dashboard.py`. The campaign driver exports only
+after its terminal `STOP_STATE` is fsynced, to the durable
+`/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json`
+(`KERNEL_DASHBOARD_JSON` still overrides the reader for tests). The terminal
+journal timestamp, not export time, drives freshness.
+
+The hub also adds `_activity`: committed AutoKernel history, durable
+`data/autokernel_*` bundles, in-progress timestamp markers, and a bounded journal
+inventory. This is presentation context only. It is structurally excluded from
+`_freshness` and `/api/health`, so a commit or A/A artifact cannot make an absent
+or dead campaign look alive.
 
 ### The seam: what the hub owns of the producer's document
 
@@ -142,12 +150,11 @@ literals here, and literals drift. Two rules keep them honest:
   declared one under `declared_evidence`. A card that names a path the hub is not
   reading sends an investigation to a file nobody wrote.
 
-The seam itself is tested **in the producer's repo**, because only there can a
-real contract be built from the owning modules:
-`epyc-inference-research/scripts/kernel_rnd/autokernel/surface/test_surface_seam.py`
-(registered in that repo's `make test`). It writes a real export with the real
-producer and reads it with this hub, field by field, and carries the **restart
-chaos test**: producer alive and reporting → producer dies → time passes → the
+The producer is tested in
+`epyc-inference-research/scripts/kernel_rnd/autokernel/test_dashboard.py`; the
+consumer and cross-document seam are tested in `tests/test_dashboard_panels.py`.
+The latter carries the **restart chaos test**: producer alive and reporting →
+producer dies → time passes → the
 board goes from green to naming it, and keeps naming it across a hub restart
 (the age arm is stateless by design). Death is simulated by not exporting and by
 injecting the clock — **nothing is started, signalled or killed**, and the suite

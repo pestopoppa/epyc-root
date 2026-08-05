@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** IMPLEMENTATION IN PROGRESS / RUNNABLE CONTROL CALIBRATION — design audited 2026-08-02
+**Status:** RUNNABLE / CONTROLS PASSED / READY FOR EXPLICITLY AUTHORIZED STEP 3 — design audited 2026-08-02
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -17,6 +17,12 @@
 [`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
+
+**Current checkpoint (2026-08-05):** Steps 0–2 and the five-control calibration are complete. The
+next live action is §AK6.5 Step 3, beginning with the known-real CPU candidate. The operator has
+explicitly required fresh permission before any further inference; no live work may start from this
+handoff alone. Offline AK-WM-1 plumbing is complete, while AK-WM-2 remains empirical and requires a
+real matched completed-proposal archive produced by those future candidates.
 
 ---
 
@@ -2311,18 +2317,29 @@ evaluator or its own scope, and T1 may legally guide search.
 - [x] **AK-WM-0 — Existing least-commitment prerequisites audited. ✅ 2026-08-05** `ProposalManifest`
   already requires a hypothesis, falsifiable counter, target/non-target frame, `novelty_basis`, and
   `expected_information_gain`; evaluator records carry `scope_denominator`; selection ranks information gain
-  before expected value; and actor-declared affected scope is not trusted. Preserve these as incumbent
-  controls and comparison baselines, not as evidence for weakness maximization.
+  before expected value; and actor-declared affected scope is not trusted. **2026-08-05 re-audit:** the
+  schema/evaluator controls survive, but the named planner/selection implementation was pruned on
+  2026-08-04; its ordering is now a historical incumbent protocol, not a currently runnable selector.
+  Preserve these as comparison baselines, not as evidence for weakness maximization.
 
-- [ ] **AK-WM-1 — Add a representation contract before evaluating any least-commitment selector.** Extend
+- [x] **AK-WM-1 — Add a representation contract before evaluating any least-commitment selector. ✅
+  2026-08-05** Extended
   the proposal schema and fixtures with vocabulary/source receipts, considered and excluded alternatives,
   an empirical-demand receipt, abstraction-construction cost, canonical encoding, and semantics-preserving
-  recoding fixture ids. Candidate ordering is comparable only inside the same representation and demand
-  frame; mechanically derived/traced affected surfaces remain authoritative over actor declarations. Once a
-  matched completed-proposal archive exists, consume the AP-WM-1 offline protocol and compare against the
-  existing information-gain/expected-value selector. Until that protocol shows invariant independent signal,
-  do not add weakness, completion count, K-rho, scope width, prose length, patch size, or description length
-  to live selection, champion, T2, or T3 authority.
+  recoding fixture ids. New records use `proposal.v3`; v2 remains readable under its original validator.
+  `frame_sha256` is mechanically re-derived, and `check_representation_comparable()` fails closed across
+  representation or demand frames. Mechanically derived/traced affected surfaces remain authoritative over
+  actor declarations. Executing campaigns now require `--proposal-manifest`; proposal-v3 is validated and
+  fsynced before preflight, claim, mutation, or build, identical resume is idempotent, and same-id/different-
+  bytes is refused. The AP-WM-1 evaluator is implemented as an observe-only module outside the campaign
+  import path and exposes no selector/champion/T2/T3 mutation API.
+- [ ] **AK-WM-2 — Run AP-WM-1 on the first real matched completed-proposal archive.** The archive protocol,
+  matched-intervention validation, metric-direction declaration, per-regime/surface report, noise floor,
+  robust sign error, and recoding-stability checks are executable now. The current durable campaign store
+  contains zero proposal records because candidate Step 3 has not run; do not substitute synthetic
+  regression fixtures for empirical evidence. Until a real archive shows invariant independent signal, do
+  not add weakness, completion count, K-rho, scope width, prose length, patch size, or description length to
+  live selection, champion, T2, or T3 authority.
 
 **Exit:** a mock campaign moves from source/profile facts through proposals, corrections, negative
 memory, and champion maintenance without human steering.
@@ -2411,8 +2428,8 @@ document; this phase is the checklist.
 - [x] T0 producers wired (`extract_elf_symbols`, `parse_unified_diff`, the `surface.py`
   derivation). ✅ 2026-08-04
 
-> **⚠ READ BEFORE RUNNING THE FIRST CAMPAIGN — the α budget is not machine-protected.**
-> A **declared round can be re-run until it crosses**. The pooling seam refuses the same round
+> **✅ CLOSED 2026-08-05 — the α budget is machine-protected at the completed-run seam.**
+> Previously, a **declared round could be re-run until it crossed**. The pooling seam refused the same round
 > object twice, and a round licensed to another campaign, but it cannot refuse a second *run* of
 > the same declared round — because a second run of the same plan **is** the same plan. Measured
 > null crossing rates at threshold 10, α = 0.1 (40k/10k trials):
@@ -2425,16 +2442,15 @@ document; this phase is the checklist.
 > | **best of 25 re-runs** | **9.760%** — the entire error budget, on one candidate |
 > | best of 50 | 13.120% |
 >
-> Not closable inside the package as it stands: detecting a *discarded* completed round needs a
-> durable per-candidate run ledger and the runner writes none. **Until it is, operator discipline
-> is the control — a round that is run is the round that counts, and re-running a candidate's
-> extension round after seeing it miss is not a retry, it is α spend.** Close shape is in
-> `execution/README.md` §6.5: journal every completed run keyed on
-> `(campaign_id, candidate_id, attempt, segment, extension_round)` and refuse at the pooling seam
-> when the journal already holds a different completed run for that key.
+> `CompletedRunLedger` now fsyncs every completed run, keyed on
+> `(campaign_id, candidate_id, attempt, segment, extension_round)`. The runner refuses a completed
+> key before inference; the pooling seam refuses missing, substituted, or conflicting run identities;
+> and the stock executing path refuses a missing durable `--journal-root` during preflight. A repeat
+> is `attempt + 1` with the retry schedule, never a re-roll of observed evidence.
 
-- [ ] Build the per-candidate run ledger that makes the above machine-enforced rather than
-  procedural.
+- [x] Build the per-candidate run ledger that makes the above machine-enforced rather than
+  procedural. `MICROBENCH_RUN_COMPLETED` carries the full raw vector plus its content-hash identity;
+  runner and pooling tests prove a duplicate key spends no further inference. ✅ 2026-08-05
 
 **Built 2026-08-04 — the loop became runnable:**
 
@@ -2468,12 +2484,16 @@ document; this phase is the checklist.
   `Check.worst_of` (an empty vector is COULD_NOT_CHECK, never PASS), `schemas.require`, and the
   self-audit identity binding at `evaluator/api.py` and `evaluator/integrity.py`. ✅ 2026-08-04
 
-**Discovered 2026-08-04, still open:**
+**Discovered 2026-08-04 — current disposition:**
 
-- [ ] **Answer whether the decode drift recovers after rest** (Step 1 above). The probe was destroyed
-  by a co-tenant; the question is unanswered and it changes what a campaign does between candidates.
-- [ ] Replace the placeholder accept threshold (2.1310%, from four runs on one model) with the first
-  campaign's own calibration block.
+- [x] **Answer whether the decode drift recovers after rest** (Step 1 below). Under one q0–q3 claim,
+  the old decline did not reproduce: decode rose across the four pre-rest runs; 180 seconds idle made
+  the first following run 3.29% colder; the second recovered to 0.50% below the pre-rest run. Do not
+  add inter-arm rest; retain pairing and warm once after a long idle boundary. Evidence:
+  `epyc-inference-research/data/autokernel_aa_20260805_rest_recovery/`. ✅ 2026-08-05
+- [x] Replace the placeholder accept threshold (2.1310%, from four runs on one model) with the first
+  campaign's own calibration block. The fresh accepted campaign binds a 3% contribution floor,
+  φ=4.9207%, B_min=12 and MDE=2.7408%. ✅ 2026-08-05
 - [ ] `evaluator/api.py`'s **supplied-source** path still PASSes any real foreign module. That is the
   shared-AST-engine contract and cannot change without a `module_id` kwarg — Step 4 of the refactor
   plan (`capability.py`), deliberately deferred until after campaign #1.
@@ -2487,11 +2507,11 @@ document; this phase is the checklist.
 
 ---
 
-## ▶ START HERE WHEN INFERENCE RESOURCES ARE AVAILABLE
+## ▶ START HERE — NEXT: RUN THE FIRST CANDIDATE
 
 Everything below is executable **today**. The loop has an entrypoint, an accept rule calibrated
-against a real measurement, and a hypothesis path. What it has never had is compute. Nothing in this
-section is blocked on a decision — it is blocked on a quiet machine.
+against a real measurement, a hypothesis path, a machine-enforced completed-run ledger, and two
+real A/A bundles. Steps 0–2 were completed on 2026-08-05; the next executable work is Step 3.
 
 **Read first, in this order:** `execution/README.md` (the runbook, cold start to first candidate),
 then `program.md` (the loop procedure and the hypothesis inbox), then this list.
@@ -2503,35 +2523,43 @@ parallel session brought up the orchestration stack mid-measurement — seven `l
 processes, load 3.3 → 23.9, memory 54 → 306 GB — and the readings collapsed 26%. **The co-tenant did
 nothing wrong. We held no claim.**
 
-- [ ] Confirm nothing else is serving or benchmarking, and that whoever owns the stack knows the
-      host is being taken. `--execute` refuses without `--i-hold-the-host` for exactly this reason.
-- [ ] Verify host canonical state — governor `performance`, THP `always/always`, `numa_balancing=0`.
-- [ ] **Do not trust the boost gate at idle.** Measured 2026-08-04: 16 cores above 2.5 GHz idle vs
+- [x] Confirm no material CPU contention and that whoever owns the stack knows the host is being
+      measured. The resident production stack was operator-confirmed idle; a one-core test process
+      was ~0.5% of the 192-thread host, not 89% host-wide. One q0–q3 claim covered the full probe.
+      ✅ 2026-08-05
+- [x] Verify host canonical state — governor `performance`, THP `always/always`, `numa_balancing=0`.
+      ✅ 2026-08-05
+- [x] **Do not trust the boost gate at idle.** Measured 2026-08-04: 16 cores above 2.5 GHz idle vs
       **117 under load**, against a required 80. The gate is now evaluated only at `load/core ≥ 0.25`;
-      a preflight that reads it at idle aborts on a perfectly healthy machine.
+      a preflight that reads it at idle aborts on a perfectly healthy machine. Followed for the
+      claimed probe. ✅ 2026-08-05
 
 ### Step 1 — answer the one open measurement question (≈20 min, cheap, do it first)
 
-- [ ] **Does the decode decline recover after rest?** The A/A showed a monotone
-      52.76 → 52.31 → 51.62 → 50.52 slide across four consecutive runs — drift, not scatter. The
-      rest-recovery probe was destroyed by the co-tenant and the question is **unanswered**.
-      Run 4 A/A runs, idle 180 s, run 2 more, **under a held claim this time**.
-      *If it recovers*: thermal or page-cache state, and inter-arm rest becomes part of the recipe.
-      *If it does not*: monotone (memory fragmentation, THP degradation) and the fix is different.
-      Either answer changes what a campaign must do between candidates, so it is worth 20 minutes
-      before spending hours. Evidence goes beside `data/autokernel_aa_20260804/`.
+- [x] **Does the decode decline recover after rest?** The previous monotone trajectory did not
+      reproduce. Decode rose 32.55 → 32.67 → 32.85 → 34.00, then fell to 32.89 on the first run
+      after 180 seconds idle and recovered to 33.83 on the second. The cold-first-run effect argues
+      against inter-arm rest; retain interleaved pairing and warm once after long idle. Absolute
+      throughput also shifted sharply between days, so calibration stays inside one host-state
+      window. Evidence: `data/autokernel_aa_20260805_rest_recovery/`. ✅ 2026-08-05
 
 ### Step 2 — calibrate the instrument before trusting it
 
-- [ ] **Run the five fixed controls (§15.2) before any real search**: positive, neutral, negative,
+- [x] **Run the five fixed controls (§15.2) before any real search**: positive, neutral, negative,
       A/A, and the **historical-win replay — the iqk port, which MUST promote**. The negative control
       is the one that catches a fast-looking wrong kernel, and a loop whose controls have not run is
-      an instrument nobody has calibrated. Every number in the 3,582 tests is synthetic; these are
-      the first real ones.
-- [ ] Solve the calibration block off the A/A pool and record φ, α_sel, α_conf, the noise floor and
+      an instrument nobody has calibrated. Every benchmark number in the 3,596 tests is synthetic;
+      the five controls are the first real ones. The fresh 3%-floor campaign produced a **5/5 PASS**
+      panel: positive and historical IQK arms promoted, neutral/A/A stayed below the noise floor,
+      and the wrong-work negative received no speed rank. Evidence:
+      `data/autokernel_controls_3pct_20260805/`. ✅ 2026-08-05
+- [x] Solve the calibration block off the A/A pool and record φ, α_sel, α_conf, the noise floor and
       the MDE this campaign is judged under. The current accept threshold — **2.1310%**, from
       `data/autokernel_aa_20260804/` — is a placeholder from four runs on one model; replace it with
-      the campaign's own calibration.
+      the campaign's own calibration. A first predeclared 2% campaign correctly rejected because
+      its 20-block MDE was 2.5867%; no controls ran under it. A genuinely fresh 3% campaign then
+      accepted with φ=`0.049206882811302755`, α_sel=`0.1`, α_conf=`0.05`, B_min=`12`, MDE=`2.7408%`,
+      and an A/A false-crossing rate of `1.4%`. ✅ 2026-08-05
 
 ### Step 3 — the first candidate
 
@@ -2553,7 +2581,8 @@ python3 -m scripts.kernel_rnd.autokernel.campaign --dry-run \
     --model <production-representative GGUF> --candidate <patch-or-branch>
 # read all 12 steps, THEN:
 python3 -m scripts.kernel_rnd.autokernel.campaign --execute --i-hold-the-host \
-    --model <same> --candidate <same> --journal-root <durable, NOT a scratch path> \
+    --model <same> --candidate <same> --proposal-manifest <proposal-v3.json> \
+    --journal-root <durable, NOT a scratch path> \
     [--hypothesis akh-... --hypothesis-store <path>]
 ```
 
@@ -2654,10 +2683,10 @@ Each line names the specific blocker, per *Act, Don't Defer*.
 
 | Open item | Blocked on | Not blocked — just undone |
 |---|---|---|
-| AK6 end-to-end campaign stopping at a validated package | a real champion and a compute window (AK7) | — |
+| AK6 end-to-end campaign stopping at a validated package | — | Step 3 first candidate |
 | AK6 fault injection (restart/crash/preemption/tamper) | needs process management, forbidden to the agents that built this | who runs it, and where |
-| ~~AK6 `/kernel` freshness contract + JSON contract v2~~ | — | **DONE 2026-08-03.** It had no blocker, so it got built rather than listed. Contract v2 + producer in `autokernel/surface/`, panel→producer registry and health fold in `dashboard/panels.py`. The restart chaos test walks the actual incident: alive → silent-within-budget (still green, the control that stops it alarming forever) → past budget, board **names** the dead producer → hub restarts, verdict does not go green → a live exporter over a dead loop cannot resurrect the panel → export swept away, hub renders rather than 500s. |
-| AK7 first supervised freeze | a CHAMPION, which needs a first campaign (AK6.5) — and AK6.5 is now blocked on NOTHING but a quiet machine | — |
+| ~~AK6 `/kernel` freshness contract + JSON contract v2~~ | — | **REBASED 2026-08-05.** The prior `autokernel/surface/` producer was deleted on 2026-08-04 while the hub still named it. The surviving campaign path now exports the fsynced terminal `STOP_STATE` through compact `autokernel/dashboard.py`. The hub separately shows committed implementation and durable `data/autokernel_*` activity, structurally excluded from liveness/health. Runtime truth remains absent until the first real campaign exports. |
+| AK7 first supervised freeze | a CHAMPION, which needs AK6.5 Step 3 | — |
 | AK8 seed queue, `oracle_port`, external suites | fresh profiling, which needs the loop running | — |
 | AK9 speech compiler extension | — | **Ratification landed 2026-08-03; no longer blocked.** Restore `adapters/` from `autokernel-preserve-20260804` when a speech campaign is scheduled. |
 | `qwentts` round-trip WER names no STT instrument | a quiet host — it needs re-measuring, not correcting; `P-TTS-2` now requires `stt_instrument=` so the figure cannot satisfy its own protocol | — |

@@ -103,13 +103,17 @@ Delivered at `scripts/autopilot/species/env_synth/`:
 
 ### AW-10: Active hypothesis-boundary acquisition [Phase 1, observe-only]
 
-- [ ] When two still-open AutoPilot or AutoKernel hypotheses make different predictions, let EnvSynth create
+- [x] When two still-open AutoPilot or AutoKernel hypotheses make different predictions, let EnvSynth create
   matched tasks at that disagreement boundary. Each synthesized task must bind the parent hypothesis ids,
   common vocabulary, empirical-demand/source receipt, excluded alternatives, construction cost, verifier,
   and matched control; it enters dynamic T1 only and never alters T0. Feed falsifier-resolution evidence back
   to the owning loop, but never let planner narrative alone define the task, label, or verifier. This is
   boundary acquisition for a declared representation, not an autonomous claim that the representation is
-  complete.
+  complete. ✅ 2026-08-05 — `HypothesisBoundaryContract` binds the two parents, common vocabulary, receipts,
+  exclusions, cost, matched control, verifier provenance, and representation frame. The LLM may phrase only
+  the prompt; the controller supplies the label/ground truth and verifier. Arena records are explicitly `dynamic_t1` and
+  `t0_eligible=false`, T1 projection preserves the contract, and typed falsifier evidence refuses to claim
+  delivery unless an owning-loop sink is injected. Covered by offline fake-LLM tests; no inference run.
 
 ## Integration Map
 

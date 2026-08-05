@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EPYC — Kernel-R&D (MI210)</title>
+<title>EPYC — AutoKernel</title>
 <style>
   :root{
     --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#30363d;
@@ -56,11 +56,15 @@
   .reporting b{color:inherit}
   .sec-observed{color:var(--good)} .sec-silent{color:var(--bad)} .sec-refused{color:var(--warn)}
   .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:10px;border:1px solid var(--amber);color:var(--amber);margin-left:6px}
+  .activity-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:18px}
+  .activity-grid h3{font-size:12px;color:var(--muted);margin:0 0 8px}
+  .activity-list{margin:0;padding-left:18px}.activity-list li{margin:5px 0}
+  @media(max-width:760px){.activity-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
-  <h1>Kernel-R&D <span class="sub">· MI210 (gfx90a) · single-GPU nightshift loop</span></h1>
+  <h1>AutoKernel <span class="sub">· EPYC CPU / MI210 · one-candidate campaign loop</span></h1>
   <nav>
     <a href="/">Handoffs</a>
     <a href="/kernel" class="active">Kernel-R&D</a>
@@ -76,6 +80,11 @@
 
   <div class="reporting" id="reporting"></div>
 
+  <section class="panel" id="activity-panel">
+    <h2>AutoKernel activity <span class="tag">context, not liveness</span></h2>
+    <div id="activity"><div class="empty">loading implementation and durable work activity…</div></div>
+  </section>
+
   <div class="stats" id="stats"></div>
 
   <section class="panel" id="sections-panel" style="display:none">
@@ -83,18 +92,18 @@
     <div id="sections"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel legacy-run-panel">
     <h2>Pareto frontier — CORRECT runs only <span class="tag">observation</span></h2>
     <svg id="pareto" viewBox="0 0 640 280" role="img" aria-label="pareto frontier single vs aggregate throughput"></svg>
     <div id="pareto-note" class="muted" style="font-size:11px;margin-top:6px"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel legacy-run-panel">
     <h2>Best correctness-passing variant per model</h2>
     <div id="best"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel legacy-run-panel">
     <h2>Run log <span class="muted" id="runcount" style="text-transform:none;font-weight:400"></span></h2>
     <div id="runs"></div>
   </section>
@@ -195,15 +204,58 @@ function renderSections(d){
   body.innerHTML=h+'</tbody></table>';
 }
 
+function shortAge(iso){
+  const ms=Date.now()-Date.parse(iso); if(!isFinite(ms)) return "—";
+  const s=Math.max(0,ms/1000);
+  return s>=86400?`${(s/86400).toFixed(1)}d ago`:s>=3600?`${(s/3600).toFixed(1)}h ago`:`${Math.round(s/60)}m ago`;
+}
+
+// This context is intentionally rendered apart from the reporting banner.
+// A fresh commit or calibration file is useful progress, but it is not proof
+// that a campaign controller exists or is alive.
+function renderActivity(d){
+  const box=$("#activity"), a=d._activity||{};
+  const impl=a.implementation||{}, commits=impl.recent_commits||[];
+  const bundles=a.work_bundles||[], journals=((a.durable_state||{}).journals||[]);
+  let h='<div class="activity-grid"><div><h3>Implementation</h3>';
+  if(commits.length){
+    const head=commits[0];
+    h+='<div><code>'+esc(head.short_sha||"")+'</code> '+esc(head.subject||"")+'</div>';
+    h+='<div class="muted" style="margin-top:4px">'+esc(head.committed_at||"—")+' · '+esc(shortAge(head.committed_at))+'</div>';
+    h+='<details style="margin-top:8px"><summary class="muted">recent AutoKernel commits ('+commits.length+')</summary><ul class="activity-list">';
+    for(const c of commits) h+='<li><code>'+esc(c.short_sha||"")+'</code> '+esc(c.subject||"")+'</li>';
+    h+='</ul></details>';
+  } else h+='<div class="muted">implementation history unavailable: '+esc(impl.reason||impl.status||"no commits")+'</div>';
+  h+='</div><div><h3>Durable work bundles</h3>';
+  if(!bundles.length) h+='<div class="muted">no <code>data/autokernel_*</code> bundles found</div>';
+  else{
+    h+='<table><thead><tr><th>bundle</th><th>state</th><th>results</th><th>latest activity</th></tr></thead><tbody>';
+    for(const b of bundles){
+      const active=(b.active_markers||[]);
+      const state=b.state==="in_progress"?'<span class="sec-refused">in progress</span>':esc(b.state||"—");
+      const detail=active.length?' · '+esc(active.join(", ")):"";
+      h+='<tr><td><code>'+esc(b.name||"")+'</code></td><td>'+state+detail+'</td><td class="num">'+esc(b.json_results==null?"—":b.json_results)+'</td><td>'+esc(shortAge(b.updated_at))+'<div class="muted">'+esc(b.latest_file||"")+'</div></td></tr>';
+    }
+    h+='</tbody></table>';
+  }
+  h+='<div class="muted" style="margin-top:8px">runtime journals visible under <code>'+esc((a.durable_state||{}).state_root||"—")+'</code>: '+journals.length+'. '+esc((a.durable_state||{}).discovery_scope||"")+'</div>';
+  h+='</div></div><div class="muted" style="margin-top:10px">'+esc(a.role||"")+'</div>';
+  box.innerHTML=h;
+}
+
 function render(d){
   const notice = d.observation_notice || "Every number is an OBSERVATION; operator-only authorizes prod push.";
   $("#observation").innerHTML='<b>OBSERVATION discipline.</b> '+esc(notice);
   setBadge((d._freshness&&d._freshness.staleness_class)||"missing", d._freshness);
   renderReporting(d);
+  renderActivity(d);
   renderSections(d);
 
   const t=d.totals||{};
   const stats=$("#stats"); stats.innerHTML="";
+  const legacy=d._render&&d._render.mode==="run_log_v1";
+  stats.style.display=legacy?"":"none";
+  for(const panel of document.querySelectorAll(".legacy-run-panel")) panel.style.display=legacy?"":"none";
   const defs=[["runs",t.runs],["correct",t.correct],["failed",t.failed],["models",t.models]];
   for(const [l,n] of defs){ const s=el("div","stat"); s.innerHTML='<span class="n">'+(n||0)+'</span><span class="l">'+l+'</span>'; stats.appendChild(s); }
 

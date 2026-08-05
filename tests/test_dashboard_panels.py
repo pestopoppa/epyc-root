@@ -24,6 +24,7 @@ import importlib
 import json
 import os
 import re
+import subprocess
 import tempfile
 import types
 import unittest
@@ -54,7 +55,7 @@ def _v2_doc(*, produced_at, observed=("campaign",), stopped=False, seq=17,
             exported_at=None):
     """A minimal but shape-faithful contract-v2 document.
 
-    Mirrors what ``autokernel.surface.dashboard_contract.build_contract`` emits:
+    Mirrors what ``autokernel.dashboard.build_terminal_contract`` emits:
     seven mandatory sections each carrying a ``status``, ``produced_at`` derived
     from the observed liveness sections, ``generated_at`` equal to it, and an
     ``exported_at`` wall clock that is deliberately NOT a freshness source.
@@ -78,7 +79,7 @@ def _v2_doc(*, produced_at, observed=("campaign",), stopped=False, seq=17,
         "produced_at": produced_at,
         "generated_at": produced_at,
         "exported_at": exported_at or _iso(_NOW_DT),
-        "producer": {"module_id": "autokernel.surface.dashboard_contract/v2",
+        "producer": {"module_id": "autokernel.dashboard/v2",
                      "run": {"campaign_id": "ak-demo", "controller_seq": seq,
                              "controller_state": "EVALUATING",
                              "ledger_receipt": "sha256:deadbeef"}},
@@ -571,6 +572,26 @@ class KernelAbsenceOnTheWireTest(unittest.TestCase):
         self.assertEqual(out.get("totals") or {}, {})
         json.dumps(out)  # serialisable; the route cannot 500
 
+    def test_live_activity_context_does_not_resurrect_a_missing_runtime_export(self):
+        """Implementation/calibration progress is useful, but is not liveness."""
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td) / "research"
+            bundle = repo / "data" / "autokernel_aa_demo"
+            bundle.mkdir(parents=True)
+            (bundle / "anchor.json").write_text("{}\n", encoding="utf-8")
+            original = server.AUTOKERNEL_RESEARCH_REPO
+            server.AUTOKERNEL_RESEARCH_REPO = repo
+            try:
+                with _KernelFile(None):
+                    out = server.kernel_payload()
+            finally:
+                server.AUTOKERNEL_RESEARCH_REPO = original
+        self.assertEqual(out["_freshness"]["reporting"], panels.REPORTING_ABSENT)
+        self.assertEqual(out["_freshness"]["watchdog"]["state"],
+                         panels.WATCHDOG_NEVER)
+        self.assertEqual(out["_activity"]["work_bundles"][0]["json_results"], 1)
+        self.assertIn("does not report controller liveness", out["_activity"]["role"])
+
     def test_corrupt_json_is_absence_not_a_crash(self):
         with _KernelFile("{not json"):
             out = server.kernel_payload()
@@ -624,6 +645,57 @@ class KernelAbsenceOnTheWireTest(unittest.TestCase):
                           text)
             self.assertIn(f'SECTION_OBSERVED = "{server.KERNEL_SECTION_OBSERVED}"',
                           text)
+
+
+class KernelActivityContextTest(unittest.TestCase):
+    """The live context reports work mechanically and never grades its results."""
+
+    def test_started_without_ended_is_in_progress_then_becomes_populated(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            bundle = repo / "data" / "autokernel_probe"
+            bundle.mkdir(parents=True)
+            (bundle / "anchor.started_at").write_text("2026-08-05T00:00:00Z\n",
+                                                       encoding="utf-8")
+            (bundle / "anchor.json").write_text("{}\n", encoding="utf-8")
+            row = server._autokernel_work_bundles(repo)[0]
+            self.assertEqual(row["state"], "in_progress")
+            self.assertEqual(row["active_markers"], ["anchor"])
+            self.assertEqual(row["json_results"], 1)
+
+            (bundle / "anchor.ended_at").write_text("2026-08-05T00:01:00Z\n",
+                                                     encoding="utf-8")
+            row = server._autokernel_work_bundles(repo)[0]
+            self.assertEqual(row["state"], "populated")
+            self.assertEqual(row["active_markers"], [])
+
+    def test_git_activity_is_scoped_to_the_autokernel_implementation(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            source = repo / "scripts" / "kernel_rnd" / "autokernel"
+            source.mkdir(parents=True)
+            (source / "loop.py").write_text("READY = False\n", encoding="utf-8")
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
+            env = dict(os.environ, GIT_AUTHOR_NAME="test", GIT_AUTHOR_EMAIL="test@example.invalid",
+                       GIT_COMMITTER_NAME="test", GIT_COMMITTER_EMAIL="test@example.invalid")
+            subprocess.run(["git", "-C", str(repo), "commit", "-q", "-m",
+                            "autokernel: compose campaign"], check=True, env=env)
+            activity = server._autokernel_git_activity(repo)
+        self.assertEqual(activity["status"], "observed")
+        self.assertEqual(activity["head"]["subject"], "autokernel: compose campaign")
+        self.assertEqual(len(activity["head"]["short_sha"]), 10)
+
+    def test_journal_inventory_states_its_bounded_discovery_scope(self):
+        with tempfile.TemporaryDirectory() as td:
+            state = Path(td)
+            journal = state / "campaign-a"
+            journal.mkdir()
+            (journal / "events.jsonl").write_text('{"seq":1}\n', encoding="utf-8")
+            inventory = server._autokernel_journal_inventory(state)
+        self.assertEqual([row["root"] for row in inventory["journals"]],
+                         [str(journal)])
+        self.assertIn("--journal-root", inventory["discovery_scope"])
 
 
 # --------------------------------------------------------------------------- #
