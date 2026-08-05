@@ -37,6 +37,25 @@ Each entry in `research/intake_index.yaml` follows this schema.
 | `notes` | string | Free-form analysis notes, deep-dive findings, revision history |
 | `verification` | enum | `stage1-unverified` (default on Stage-1 persist) · `dive-verified` · `dive-overturned`. **Set by Stage 1; promoted only by a Stage-2 dive that read primary source.** |
 | `dive_corrections` | string | Dated record of what a Stage-2 dive changed, so an overturned conclusion cannot be re-derived. Append-only. |
+| `integration_disposition` | enum | Workflow disposition: `integrated`, `knowledge_only`, `monitor`, `declined`, or `awaiting_dive`. This describes how the source is handled; `integrated` means routed into a durable owner, not necessarily deployed code. |
+| `disposition_evidence` | list[string] | One or more repository-grounded reasons for the disposition. Required whenever `integration_disposition` is present. |
+
+## Integration disposition lifecycle (added 2026-08-05)
+
+Actionable verdicts (`worth_investigating` and `new_opportunity`) need an explicit
+workflow disposition once their initial review ages past the intake window:
+
+| State | Meaning | Required companion metadata |
+|---|---|---|
+| `integrated` | Routed into a durable active/completed handoff owner. This does **not** by itself claim code deployment. | `handoffs_created` or `handoffs_updated`; `disposition_evidence` |
+| `knowledge_only` | Retained as architecture, methodology, or comparison context with no implementation task. | `disposition_evidence` |
+| `monitor` | No current task; revisit only when the stated trigger or feasibility condition changes. | `disposition_evidence` naming the trigger/posture |
+| `declined` | Reviewed and intentionally closed as non-authoritative, negative, superseded, or otherwise not worth pursuing. | `disposition_evidence` naming the reason |
+| `awaiting_dive` | Still plausibly actionable, but Stage 2 primary-source verification has not happened. | `verification: stage1-unverified`; `disposition_evidence` |
+
+A wiki citation is discovery evidence, not implementation evidence. It may support
+`knowledge_only`, `monitor`, or `awaiting_dive`; it must not be used alone to infer
+`integrated`.
 
 ## Cross-References Object
 

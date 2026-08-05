@@ -1,0 +1,2905 @@
+{
+  "cutoff": "2026-07-28",
+  "direct_handoff_citation_count": 163,
+  "disposition_counts": {
+    "awaiting_dive": 17,
+    "declined": 2,
+    "integrated": 182,
+    "knowledge_only": 15,
+    "monitor": 14
+  },
+  "entries": {
+    "intake-103": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md",
+        "handoffs/completed/routing-intelligence-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "Thinking to Recall: How Reasoning Unlocks Parametric Knowledge in LLMs",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-105": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/agent-architecture.md, wiki/training-distillation.md.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md"
+      ],
+      "relevance": "medium",
+      "title": "PostTrainBench: Can LLM Agents Automate LLM Post-Training?",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-106": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/agent-architecture.md, wiki/training-distillation.md.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md"
+      ],
+      "relevance": "medium",
+      "title": "Agentic Critical Training (ACT)",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-111": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes. Wiki citation(s): wiki/reinforcement-learning.md.",
+      "handoffs_updated": [],
+      "relevance": "low",
+      "title": "AReaL: Large-Scale Asynchronous Reinforcement Learning System",
+      "wiki_citations": [
+        "wiki/reinforcement-learning.md"
+      ]
+    },
+    "intake-115": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/agent-architecture.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Paperclip - Multi-agent orchestration for autonomous business structures",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-117": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/agent-architecture.md, wiki/memory-augmented.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Hermes Agent - Self-improving AI agent with learning loop",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-119": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/backlog-roi-audit-2026-07-14.md"
+      ],
+      "relevance": "medium",
+      "title": "llmfit - Right-size LLM models to your hardware",
+      "wiki_citations": []
+    },
+    "intake-125": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "S3-CoT: Self-Sampled Succinct Reasoning Enables Efficient Chain-of-Thought LLMs",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/cost-aware-routing.md"
+      ]
+    },
+    "intake-128": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "high",
+      "title": "Reasoning Efficiently Through Adaptive Chain-of-Thought Compression",
+      "wiki_citations": [
+        "wiki/cost-aware-routing.md"
+      ]
+    },
+    "intake-130": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "Do NOT Think That Much \u2014 On the Overthinking of o1-Like LLMs",
+      "wiki_citations": [
+        "wiki/cost-aware-routing.md"
+      ]
+    },
+    "intake-131": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/agent-architecture.md, wiki/autonomous-research.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "AgentRxiv: Towards Collaborative Autonomous Research",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-132": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/autonomous-research.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "ResearchBench: Benchmarking LLMs in Scientific Discovery",
+      "wiki_citations": [
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-133": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "Reasoning as Compression \u2014 Unifying Budget Forcing via Information Bottleneck",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/cost-aware-routing.md"
+      ]
+    },
+    "intake-134": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "CoLaR: Think Silently, Think Fast \u2014 Dynamic Latent Compression of Reasoning",
+      "wiki_citations": [
+        "wiki/cost-aware-routing.md"
+      ]
+    },
+    "intake-140": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "Lossless Claw \u2014 LCM (Lossless Context Management) plugin for OpenClaw",
+      "wiki_citations": [
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-141": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "Contextual Memory Virtualisation: DAG-Based State Management and Structurally Lossless Trimming for LLM Agents",
+      "wiki_citations": [
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-142": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md"
+      ],
+      "relevance": "medium",
+      "title": "Distilling Many-Shot In-Context Learning into a Cheat Sheet",
+      "wiki_citations": []
+    },
+    "intake-144": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/hermes-outer-shell.md",
+        "handoffs/completed/langgraph-migration.md"
+      ],
+      "relevance": "medium",
+      "title": "Deep Agents \u2014 Batteries-Included Agent Harness (LangGraph)",
+      "wiki_citations": [
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-145": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/hermes-outer-shell.md",
+        "handoffs/completed/langgraph-migration.md"
+      ],
+      "relevance": "medium",
+      "title": "Agent Protocol \u2014 Framework-Agnostic Agent Serving Standard",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-146": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/langgraph-migration.md"
+      ],
+      "relevance": "medium",
+      "title": "LangGraph \u2014 Low-Level Agent Orchestration as Graphs",
+      "wiki_citations": []
+    },
+    "intake-148": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: AutoResearch/PraxLab patterns and follow-ups are recorded in the AutoPilot owner, including completed failure_context and parent_trial work.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md"
+      ],
+      "relevance": "medium",
+      "title": "AutoResearch: AI agents running autonomous ML experiments on single GPU",
+      "wiki_citations": [
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-151": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/delegation-context-preassembly.md"
+      ],
+      "relevance": "high",
+      "title": "GitNexus: Client-side knowledge graph for codebase intelligence via MCP",
+      "wiki_citations": [
+        "wiki/context-management.md",
+        "wiki/tool-implementation.md"
+      ]
+    },
+    "intake-154": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/intake-derived-work-2026-07-25.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
+        "handoffs/completed/rlm-orchestrator-roadmap.md"
+      ],
+      "relevance": "high",
+      "title": "Scaling Long-Horizon LLM Agent via Context-Folding",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/context-extension.md"
+      ]
+    },
+    "intake-155": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/unified-trace-memory-service.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
+        "handoffs/completed/rlm-orchestrator-roadmap.md"
+      ],
+      "relevance": "medium",
+      "title": "AgentFold: Long-Horizon Web Agents with Proactive Context Management",
+      "wiki_citations": [
+        "wiki/context-extension.md"
+      ]
+    },
+    "intake-156": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
+        "handoffs/completed/rlm-orchestrator-roadmap.md"
+      ],
+      "relevance": "medium",
+      "title": "MemAgent: Reshaping Long-Context LLM with Multi-Conv RL-based Memory Agent",
+      "wiki_citations": [
+        "wiki/context-extension.md",
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-157": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
+        "handoffs/completed/rlm-orchestrator-roadmap.md"
+      ],
+      "relevance": "medium",
+      "title": "ReSum: Unlocking Long-Horizon Search Intelligence via Context Summarization",
+      "wiki_citations": [
+        "wiki/context-extension.md"
+      ]
+    },
+    "intake-159": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/mtp-speculative-decoding.md"
+      ],
+      "relevance": "medium",
+      "title": "DART: Diffusion-Inspired Speculative Decoding for Fast LLM Inference",
+      "wiki_citations": [
+        "wiki/speculative-decoding.md"
+      ]
+    },
+    "intake-161": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/multimodal-pipeline.md",
+        "handoffs/active/opendataloader-pipeline-integration.md"
+      ],
+      "relevance": "medium",
+      "title": "OpenDataLoader PDF - PDF Parser for AI-ready data",
+      "wiki_citations": [
+        "wiki/document-processing.md"
+      ]
+    },
+    "intake-162": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation.",
+      "handoffs_updated": [
+        "handoffs/completed/08-doc-to-lora-prototype.md"
+      ],
+      "relevance": "medium",
+      "title": "QVAC Fabric LLM.cpp: llama.cpp fork with Vulkan/Metal BitNet GPU inference and LoRA fine-tuning",
+      "wiki_citations": []
+    },
+    "intake-164": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation.",
+      "handoffs_updated": [
+        "handoffs/completed/08-doc-to-lora-prototype.md"
+      ],
+      "relevance": "medium",
+      "title": "LoRA Fine-Tuning BitNet b1.58 LLMs on Heterogeneous Edge GPUs via QVAC Fabric",
+      "wiki_citations": []
+    },
+    "intake-165": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes. Wiki citation(s): wiki/quantization.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "BitNet b1.58 2B4T Technical Report",
+      "wiki_citations": [
+        "wiki/quantization.md"
+      ]
+    },
+    "intake-166": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/multi-model-page-cache.md",
+        "handoffs/completed/ssm-hybrid-acceleration.md"
+      ],
+      "relevance": "medium",
+      "title": "Flash-MoE: Pure C/Metal inference engine for Qwen3.5-397B on MacBook Pro",
+      "wiki_citations": [
+        "wiki/moe-optimization.md"
+      ]
+    },
+    "intake-167": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/ssm-hybrid-acceleration.md"
+      ],
+      "relevance": "medium",
+      "title": "FlashMoE: Reducing SSD I/O Bottlenecks via ML-Based Cache Replacement for MoE Inference on Edge Devices",
+      "wiki_citations": [
+        "wiki/moe-optimization.md"
+      ]
+    },
+    "intake-168": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/ssm-hybrid-acceleration.md"
+      ],
+      "relevance": "medium",
+      "title": "SpecMoEOff: Accelerating MoE Inference by Hiding Offloading Latency with Speculative Decoding",
+      "wiki_citations": [
+        "wiki/moe-optimization.md"
+      ]
+    },
+    "intake-169": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task.",
+      "handoffs_updated": [],
+      "relevance": "low",
+      "title": "LLM in a Flash: Efficient Large Language Model Inference with Limited Memory",
+      "wiki_citations": []
+    },
+    "intake-172": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/hermes-outer-shell.md"
+      ],
+      "relevance": "medium",
+      "title": "OpenGauss: Open Source Autoformalization Harness for Lean",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-173": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/hermes-outer-shell.md"
+      ],
+      "relevance": "medium",
+      "title": "OpenGauss GitHub Repository \u2014 Lean Workflow Orchestrator",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-174": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/colbert-reranker-web-research.md",
+        "handoffs/completed/routing-intelligence-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "Reason-ModernColBERT: Late-Interaction Retriever for Reasoning Tasks",
+      "wiki_citations": [
+        "wiki/routing-intelligence.md",
+        "wiki/search-retrieval.md"
+      ]
+    },
+    "intake-176": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/completed/routing-intelligence-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "ReasonIR: Training Retrievers for Reasoning Tasks",
+      "wiki_citations": [
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-183": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/harness-selection-and-integration.md"
+      ],
+      "relevance": "low",
+      "title": "0xSero GitHub Profile \u2014 Sybil Solutions",
+      "wiki_citations": [
+        "wiki/moe-optimization.md"
+      ]
+    },
+    "intake-184": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/reap-moe-expert-pruning.md"
+      ],
+      "relevance": "medium",
+      "title": "0xSero HuggingFace Profile \u2014 28 REAP/AutoRound Models",
+      "wiki_citations": [
+        "wiki/inference-serving.md",
+        "wiki/moe-optimization.md"
+      ]
+    },
+    "intake-185": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/intake-derived-work-2026-07-25.md",
+        "handoffs/completed/reap-moe-expert-pruning.md"
+      ],
+      "relevance": "high",
+      "title": "CerebrasResearch/reap \u2014 Official REAP Implementation",
+      "wiki_citations": [
+        "wiki/moe-optimization.md"
+      ]
+    },
+    "intake-186": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/reap-moe-expert-pruning.md"
+      ],
+      "relevance": "high",
+      "title": "Cerebras Qwen3-Coder-REAP-25B-A3B \u2014 Official Pre-Pruned Model",
+      "wiki_citations": [
+        "wiki/inference-serving.md",
+        "wiki/moe-optimization.md"
+      ]
+    },
+    "intake-187": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/reap-moe-expert-pruning.md"
+      ],
+      "relevance": "high",
+      "title": "bartowski GGUF Quants of REAP-25B \u2014 llama.cpp Ready",
+      "wiki_citations": [
+        "wiki/moe-optimization.md",
+        "wiki/quantization.md"
+      ]
+    },
+    "intake-188": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/reap-moe-expert-pruning.md"
+      ],
+      "relevance": "high",
+      "title": "EvoESAP: Non-Uniform Expert Pruning for MoE via Evolutionary Search",
+      "wiki_citations": [
+        "wiki/moe-optimization.md"
+      ]
+    },
+    "intake-189": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/reap-moe-expert-pruning.md"
+      ],
+      "relevance": "high",
+      "title": "Router Knowledge Distillation for MoE Compression",
+      "wiki_citations": [
+        "wiki/moe-optimization.md"
+      ]
+    },
+    "intake-190": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/reap-moe-expert-pruning.md"
+      ],
+      "relevance": "medium",
+      "title": "MoNE: Replacing Redundant MoE Experts with Lightweight Novices",
+      "wiki_citations": [
+        "wiki/moe-optimization.md"
+      ]
+    },
+    "intake-192": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/yarn-context-extension-research.md",
+        "handoffs/completed/kv-cache-quantization.md"
+      ],
+      "relevance": "high",
+      "title": "PolarQuant: Quantizing KV Caches with Polar Transformation",
+      "wiki_citations": [
+        "wiki/context-extension.md",
+        "wiki/kv-cache.md",
+        "wiki/quantization.md"
+      ]
+    },
+    "intake-193": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/yarn-context-extension-research.md",
+        "handoffs/completed/kv-cache-quantization.md"
+      ],
+      "relevance": "high",
+      "title": "QJL: 1-Bit Quantized JL Transform for KV Cache Quantization with Zero Overhead",
+      "wiki_citations": [
+        "wiki/context-extension.md",
+        "wiki/kv-cache.md",
+        "wiki/quantization.md"
+      ]
+    },
+    "intake-194": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/kv-cache-quantization.md"
+      ],
+      "relevance": "high",
+      "title": "llama-cpp-turboquant-cuda: CUDA TurboQuant Fork of llama.cpp",
+      "wiki_citations": [
+        "wiki/quantization.md"
+      ]
+    },
+    "intake-195": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/quantization.md.",
+      "handoffs_updated": [
+        "handoffs/completed/kv-cache-quantization.md"
+      ],
+      "relevance": "high",
+      "title": "TurboQuant - Extreme KV Cache Quantization (llama.cpp discussion)",
+      "wiki_citations": [
+        "wiki/quantization.md"
+      ]
+    },
+    "intake-233": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/mathsmith-hc-formalizer-eval.md",
+        "handoffs/completed/lean-proving-pipeline.md"
+      ],
+      "relevance": "high",
+      "title": "Goedel-Code-Prover: Hierarchical Proof Search for Open State-of-the-Art Code Verification",
+      "wiki_citations": [
+        "wiki/formal-verification.md"
+      ]
+    },
+    "intake-235": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/lean-proving-pipeline.md"
+      ],
+      "relevance": "high",
+      "title": "Leanstral: Open-Source Foundation for Trustworthy Vibe-Coding",
+      "wiki_citations": [
+        "wiki/formal-verification.md",
+        "wiki/moe-optimization.md"
+      ]
+    },
+    "intake-237": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/nemotron-mamba2-evaluation.md",
+        "handoffs/completed/ssm-hybrid-acceleration.md"
+      ],
+      "relevance": "high",
+      "title": "Nemotron-Cascade 2 vs Qwen3.5-35B-A3B: Mamba2 vs Delta Net RTX 3090 Benchmark",
+      "wiki_citations": [
+        "wiki/ssm-hybrid.md"
+      ]
+    },
+    "intake-238": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/nemotron-mamba2-evaluation.md",
+        "handoffs/completed/ssm-hybrid-acceleration.md"
+      ],
+      "relevance": "high",
+      "title": "Nemotron-Cascade 2: Post-Training LLMs with Cascade RL and Multi-Domain On-Policy Distillation",
+      "wiki_citations": [
+        "wiki/reinforcement-learning.md",
+        "wiki/ssm-hybrid.md"
+      ]
+    },
+    "intake-239": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Small Model Deployment Learnings: Qwen3.5-4B, Outlines, LoRA, RL Thresholds",
+      "wiki_citations": []
+    },
+    "intake-240": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+        "handoffs/completed/routing-intelligence-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning",
+      "wiki_citations": [
+        "wiki/llm-prompting.md"
+      ]
+    },
+    "intake-244": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/completed/halo-trace-loop-spike.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+        "handoffs/completed/meta-harness-optimization.md"
+      ],
+      "relevance": "high",
+      "title": "Meta-Harness: End-to-End Optimization of Model Harnesses",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-246": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/tq3-quantization-evaluation.md"
+      ],
+      "relevance": "medium",
+      "title": "llama.cpp-tq3 \u2014 TQ3_1S 3.5-bit Walsh-Hadamard Transform Quantization",
+      "wiki_citations": [
+        "wiki/local-inference.md",
+        "wiki/quantization.md"
+      ]
+    },
+    "intake-247": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "Claude Code \u2014 Unshipped Features Inventory (src.zip 2026-03-31)",
+      "wiki_citations": []
+    },
+    "intake-248": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md"
+      ],
+      "relevance": "high",
+      "title": "SiliconSwarm@Ensue \u2014 Multi-Agent ANE Optimization via Collective Intelligence",
+      "wiki_citations": [
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-249": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/harness-selection-and-integration.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+        "handoffs/completed/orchestrator-conversation-management.md"
+      ],
+      "relevance": "medium",
+      "title": "Claude Code Repo Leak Analysis \u2014 Harness Architecture Deep Dive (@neural_avb via Codex)",
+      "wiki_citations": []
+    },
+    "intake-251": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/multimodal-pipeline.md",
+        "handoffs/completed/gemma4-mtp-drafter-evaluation.md"
+      ],
+      "relevance": "medium",
+      "title": "Gemma 4 MLX Collection \u2014 Apple MLX Optimized Gemma 4 Models",
+      "wiki_citations": [
+        "wiki/multimodal.md"
+      ]
+    },
+    "intake-252": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/multimodal-pipeline.md",
+        "handoffs/completed/gemma4-mtp-drafter-evaluation.md"
+      ],
+      "relevance": "medium",
+      "title": "Gemma 4 Official \u2014 Google DeepMind Open Model Family",
+      "wiki_citations": [
+        "wiki/multimodal.md"
+      ]
+    },
+    "intake-253": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "mesh-llm \u2014 Decentralized P2P LLM Inference with MoE Expert Sharding",
+      "wiki_citations": []
+    },
+    "intake-254": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/harness-selection-and-integration.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+        "handoffs/completed/orchestrator-conversation-management.md"
+      ],
+      "relevance": "medium",
+      "title": "Goose \u2014 Open Source Autonomous AI Coding Agent by Block",
+      "wiki_citations": []
+    },
+    "intake-255": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/harness-selection-and-integration.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+        "handoffs/completed/orchestrator-conversation-management.md"
+      ],
+      "relevance": "medium",
+      "title": "Clido \u2014 Multi-Provider CLI Coding Agent in Rust",
+      "wiki_citations": []
+    },
+    "intake-256": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/multiscreen-attention-evaluation.md",
+        "handoffs/completed/gemma4-mtp-drafter-evaluation.md",
+        "handoffs/completed/kv-cache-quantization.md"
+      ],
+      "relevance": "high",
+      "title": "Screening Is Enough \u2014 Multiscreen Architecture Replacing Softmax Attention",
+      "wiki_citations": [
+        "wiki/kv-cache.md",
+        "wiki/ssm-hybrid.md"
+      ]
+    },
+    "intake-263": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/harness-selection-and-integration.md"
+      ],
+      "relevance": "medium",
+      "title": "claude-acp-server \u2014 Anthropic API to ACP Translation Layer",
+      "wiki_citations": []
+    },
+    "intake-266": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "A Survey of On-Policy Distillation for Large Language Models",
+      "wiki_citations": []
+    },
+    "intake-267": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/completed/bulk-inference-2026-04-packages.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "ByteRover: Agent-Native Memory Through LLM-Curated Hierarchical Context",
+      "wiki_citations": [
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-271": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/tool-output-compression.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Skill Issue: Harness Engineering for Coding Agents",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-272": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-273": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/context-folding-progressive.md",
+        "handoffs/active/tool-output-compression.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Context Rot: How Increasing Input Tokens Impacts LLM Performance",
+      "wiki_citations": [
+        "wiki/context-extension.md",
+        "wiki/context-management.md"
+      ]
+    },
+    "intake-274": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/context-folding-progressive.md",
+        "handoffs/active/tool-output-compression.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "The Complexity Trap: Simple Observation Masking Is as Efficient as LLM Summarization for Agent Context Management",
+      "wiki_citations": [
+        "wiki/context-extension.md",
+        "wiki/context-management.md"
+      ]
+    },
+    "intake-275": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/decision-aware-routing.md"
+      ],
+      "relevance": "medium",
+      "title": "PufferLib 4.0: 20M Step/s RL Training Without PyTorch",
+      "wiki_citations": []
+    },
+    "intake-278": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "GLM-5.1 API Guide \u2014 Z.AI Developer Documentation",
+      "wiki_citations": []
+    },
+    "intake-279": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "GLM-5.1 HuggingFace Model Card \u2014 754B MoE-DSA Open-Weight Flagship",
+      "wiki_citations": []
+    },
+    "intake-280": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "GLM-5.1 Blog Post \u2014 Z.AI Announcement (partial fetch)",
+      "wiki_citations": []
+    },
+    "intake-281": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "GLM-5: from Vibe Coding to Agentic Engineering",
+      "wiki_citations": []
+    },
+    "intake-288": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/kv-cache-quantization.md",
+        "handoffs/completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Expected Attention: KV Cache Compression by Estimating Attention from Future Queries Distribution",
+      "wiki_citations": [
+        "wiki/kv-cache.md"
+      ]
+    },
+    "intake-290": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/memento-block-reasoning-compression.md",
+        "handoffs/active/reasoning-compression.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "OpenMementos-228K: Segmented Reasoning Traces with Block Summaries",
+      "wiki_citations": []
+    },
+    "intake-291": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task. Wiki citation(s): wiki/memory-augmented.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Rowboat: Open-Source AI Coworker with Knowledge Graph Memory",
+      "wiki_citations": [
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-292": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/memento-block-reasoning-compression.md",
+        "handoffs/active/reasoning-compression.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "InftyThink: Breaking the Length Limits of Long-Context Reasoning in Large Language Models",
+      "wiki_citations": [
+        "wiki/context-extension.md",
+        "wiki/kv-cache.md"
+      ]
+    },
+    "intake-293": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/memento-block-reasoning-compression.md",
+        "handoffs/active/reasoning-compression.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "InftyThink+: Effective and Efficient Infinite-Horizon Reasoning via Reinforcement Learning",
+      "wiki_citations": [
+        "wiki/context-extension.md",
+        "wiki/kv-cache.md"
+      ]
+    },
+    "intake-294": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/memento-block-reasoning-compression.md",
+        "handoffs/active/reasoning-compression.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Accordion-Thinking: Self-Regulated Step Summaries for Efficient and Readable LLM Reasoning",
+      "wiki_citations": [
+        "wiki/context-extension.md",
+        "wiki/kv-cache.md"
+      ]
+    },
+    "intake-295": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/delegation-context-preassembly.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
+        "handoffs/completed/repl-turn-efficiency-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "FFF.nvim: Frecency-Based Fuzzy File Finder for AI Agents",
+      "wiki_citations": [
+        "wiki/context-management.md"
+      ]
+    },
+    "intake-302": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/tool-output-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "SkillReducer: Optimizing LLM Agent Skills for Token Efficiency",
+      "wiki_citations": [
+        "wiki/context-management.md"
+      ]
+    },
+    "intake-303": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-acceleration-path.md",
+        "handoffs/completed/llama-cpp-v3-upstream-rebuild.md"
+      ],
+      "relevance": "medium",
+      "title": "rocWMMA: C++ Header Library for AMD Matrix Multiply-Accumulate Operations",
+      "wiki_citations": [
+        "wiki/hardware-optimization.md",
+        "wiki/local-inference.md"
+      ]
+    },
+    "intake-304": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-acceleration-path.md",
+        "handoffs/completed/kv-cache-quantization.md",
+        "handoffs/completed/long-context-eval-datasets.md"
+      ],
+      "relevance": "medium",
+      "title": "How to Accelerate AI Applications on RDNA 3 Using WMMA",
+      "wiki_citations": []
+    },
+    "intake-305": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/cpu-shape-specialized-gemv-decode.md",
+        "handoffs/active/gpu-acceleration-path.md"
+      ],
+      "relevance": "medium",
+      "title": "Accelerating llama.cpp on AMD Instinct MI300X",
+      "wiki_citations": []
+    },
+    "intake-306": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-acceleration-path.md",
+        "handoffs/completed/kv-cache-quantization.md",
+        "handoffs/completed/llama-cpp-v3-upstream-rebuild.md",
+        "handoffs/completed/long-context-eval-datasets.md"
+      ],
+      "relevance": "medium",
+      "title": "AMD RDNA3 Users Finally Get Decent llama.cpp Performance \u2014 rocWMMA Optimization Fixes",
+      "wiki_citations": []
+    },
+    "intake-307": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-acceleration-path.md"
+      ],
+      "relevance": "medium",
+      "title": "AITER: AI Tensor Engine for ROCm \u2014 Optimized Kernels for LLM Inference",
+      "wiki_citations": []
+    },
+    "intake-308": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-acceleration-path.md"
+      ],
+      "relevance": "medium",
+      "title": "hipBLASLt TensileLite GEMM Tuning \u2014 Custom Kernel Generation for AMD GPUs",
+      "wiki_citations": []
+    },
+    "intake-309": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-acceleration-path.md"
+      ],
+      "relevance": "medium",
+      "title": "Stream-K++: Adaptive GPU GEMM Kernel Selection and Scheduling Using Bloom Filters",
+      "wiki_citations": []
+    },
+    "intake-311": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-acceleration-path.md",
+        "handoffs/completed/kv-cache-quantization.md",
+        "handoffs/completed/llama-cpp-v3-upstream-rebuild.md"
+      ],
+      "relevance": "medium",
+      "title": "Best Practices for Competitive Inference Optimization on AMD Instinct MI300X",
+      "wiki_citations": []
+    },
+    "intake-312": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task. Wiki citation(s): wiki/agent-architecture.md, wiki/autonomous-research.md.",
+      "handoffs_updated": [],
+      "relevance": "high",
+      "title": "The Mismanaged Geniuses Hypothesis: AI Models Are Already Good Enough for the Next Leap",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-316": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Long-Term Memory for Conversational LLMs Remains Unsolved",
+      "wiki_citations": [
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-317": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/multimodal-pipeline.md"
+      ],
+      "relevance": "medium",
+      "title": "VoxCPM2: Tokenizer-Free Multilingual TTS with Voice Design and Cloning",
+      "wiki_citations": [
+        "wiki/multimodal.md"
+      ]
+    },
+    "intake-318": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes. Wiki citation(s): wiki/agent-architecture.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Agentnetes (a8s): Kubernetes-Inspired Self-Organizing AI Agent Orchestration",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-319": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: the SuperGemma candidate was evaluated by the architect-model selection owner; routing metadata was the missing piece.",
+      "handoffs_updated": [
+        "handoffs/active/architect-model-selection-bench.md"
+      ],
+      "relevance": "medium",
+      "title": "SuperGemma4-26B-Uncensored GGUF v2 \u2014 Community Fine-tune",
+      "wiki_citations": []
+    },
+    "intake-320": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md"
+      ],
+      "relevance": "medium",
+      "title": "Unsloth Blog: RL Environments and How to Build Them",
+      "wiki_citations": [
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-326": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/unified-trace-memory-service.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "MemPalace: Local AI Memory System with 96.6% LongMemEval Recall",
+      "wiki_citations": [
+        "wiki/memory-augmented.md",
+        "wiki/search-retrieval.md"
+      ]
+    },
+    "intake-327": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md"
+      ],
+      "relevance": "high",
+      "title": "Hermes Agent Self-Evolution: DSPy+GEPA Skill Optimization Without GPU",
+      "wiki_citations": [
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-328": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/active/bulk-inference-campaign.md"
+      ],
+      "relevance": "medium",
+      "title": "MiniMax-M2.7: 229B Parameter Self-Evolving Model",
+      "wiki_citations": [
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-329": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/active/bulk-inference-campaign.md"
+      ],
+      "relevance": "medium",
+      "title": "MiniMax M2.7 Announcement: Early Echoes of Self-Evolution",
+      "wiki_citations": [
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-330": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/delegation-context-preassembly.md",
+        "handoffs/active/tool-output-compression.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "code-review-graph: AST-Based Code Review with 8.2x Token Reduction",
+      "wiki_citations": [
+        "wiki/context-management.md",
+        "wiki/tool-implementation.md"
+      ]
+    },
+    "intake-331": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/repl-turn-efficiency-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "predict-rlm: Production RLM Implementation with DSPy",
+      "wiki_citations": []
+    },
+    "intake-332": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-acceleration-path.md",
+        "handoffs/active/multiscreen-attention-evaluation.md",
+        "handoffs/active/reasoning-compression.md",
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "Ouro: Scaling Latent Reasoning via Looped Language Models",
+      "wiki_citations": []
+    },
+    "intake-333": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/multiscreen-attention-evaluation.md"
+      ],
+      "relevance": "medium",
+      "title": "Interleaved Head Attention (IHA)",
+      "wiki_citations": []
+    },
+    "intake-334": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-acceleration-path.md"
+      ],
+      "relevance": "medium",
+      "title": "MegaTrain: Full Precision Training of 100B+ Parameter LLMs on a Single GPU",
+      "wiki_citations": []
+    },
+    "intake-337": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task. Wiki citation(s): wiki/tool-implementation.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Agent Skills: Production Engineering Workflows for AI Coding Agents",
+      "wiki_citations": [
+        "wiki/tool-implementation.md"
+      ]
+    },
+    "intake-338": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/completed/halo-trace-loop-spike.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Agent Lightning: Zero-Code Agent Optimization Framework (Microsoft Research)",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-341": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes. Wiki citation(s): wiki/reinforcement-learning.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "RLTT: Reward Latent Thought Trajectories for Looped Language Models",
+      "wiki_citations": [
+        "wiki/reinforcement-learning.md"
+      ]
+    },
+    "intake-342": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/multiscreen-attention-evaluation.md"
+      ],
+      "relevance": "medium",
+      "title": "Explicit Multi-head Attention for Inter-head Interaction in LLMs",
+      "wiki_citations": []
+    },
+    "intake-343": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/multiscreen-attention-evaluation.md"
+      ],
+      "relevance": "medium",
+      "title": "Knocking-Heads Attention",
+      "wiki_citations": []
+    },
+    "intake-344": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Agent Lightning: Adding Reinforcement Learning to AI Agents Without Code Rewrites",
+      "wiki_citations": [
+        "wiki/reinforcement-learning.md"
+      ]
+    },
+    "intake-345": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/completed/halo-trace-loop-spike.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "GEPA Full Program Adapter: Evolving Entire DSPy Programs",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/autonomous-research.md"
+      ]
+    },
+    "intake-346": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task. Wiki citation(s): wiki/memory-augmented.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Mem0: State of AI Agent Memory 2026",
+      "wiki_citations": [
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-347": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Memory for Autonomous LLM Agents: Mechanisms, Evaluation, and Emerging Frontiers",
+      "wiki_citations": []
+    },
+    "intake-348": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "ICLR 2026 Workshop: MemAgents \u2014 Memory for LLM-Based Agentic Systems",
+      "wiki_citations": []
+    },
+    "intake-349": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/completed/repl-turn-efficiency-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "dspy.RLM: Official Recursive Language Model Module in DSPy",
+      "wiki_citations": []
+    },
+    "intake-351": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/attention-matching-kv-compaction.md",
+        "handoffs/completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Fast KV Compaction via Attention Matching",
+      "wiki_citations": [
+        "wiki/kv-cache.md"
+      ]
+    },
+    "intake-352": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/attention-matching-kv-compaction.md",
+        "handoffs/completed/dynamic-stack-concurrency-completed-through-2026-05-28.md",
+        "handoffs/completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "KVCOMM: Online Cross-context KV-cache Communication for Efficient LLM-based Multi-agent Systems",
+      "wiki_citations": [
+        "wiki/kv-cache.md"
+      ]
+    },
+    "intake-361": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/colbert-reranker-web-research.md",
+        "handoffs/active/hermes-outer-shell.md",
+        "handoffs/active/searxng-search-backend.md",
+        "handoffs/completed/searxng-bash-websearch-bridge.md"
+      ],
+      "relevance": "medium",
+      "title": "mcp-searxng: MCP Server for SearXNG",
+      "wiki_citations": [
+        "wiki/search-retrieval.md",
+        "wiki/tool-implementation.md"
+      ]
+    },
+    "intake-362": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/intake-derived-work-2026-07-25.md",
+        "handoffs/active/reviewer-calibration-accounting.md"
+      ],
+      "relevance": "medium",
+      "title": "LLM-as-a-Verifier: Project Page",
+      "wiki_citations": []
+    },
+    "intake-366": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/decision-aware-routing.md"
+      ],
+      "relevance": "medium",
+      "title": "Deep Learning for Sequential Decision Making under Uncertainty: Foundations, Frameworks, and Frontiers",
+      "wiki_citations": []
+    },
+    "intake-367": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/active/eval-tower-verification.md"
+      ],
+      "relevance": "medium",
+      "title": "Scoring Verifiers: Evaluating Synthetic Verification for Code and Reasoning",
+      "wiki_citations": [
+        "wiki/benchmark-methodology.md",
+        "wiki/reinforcement-learning.md"
+      ]
+    },
+    "intake-369": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/eval-benchmark-cost-reduction.md",
+        "handoffs/completed/integration-test-coverage-phases-1-4-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces",
+      "wiki_citations": [
+        "wiki/benchmark-methodology.md"
+      ]
+    },
+    "intake-373": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes. Wiki citation(s): wiki/training-distillation.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Rethink SFT Generalization \u2014 HuggingFace Collection",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-384": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/tq3-quantization-evaluation.md"
+      ],
+      "relevance": "medium",
+      "title": "Introducing Ternary Bonsai: Top Intelligence at 1.58 Bits",
+      "wiki_citations": []
+    },
+    "intake-403": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Target Policy Optimization \u2014 JAX Implementation",
+      "wiki_citations": []
+    },
+    "intake-406": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/colbert-reranker-web-research.md"
+      ],
+      "relevance": "medium",
+      "title": "WARP: An Efficient Engine for Multi-Vector Retrieval",
+      "wiki_citations": [
+        "wiki/search-retrieval.md"
+      ]
+    },
+    "intake-407": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/colbert-reranker-web-research.md"
+      ],
+      "relevance": "medium",
+      "title": "XTR: Rethinking the Role of Token Retrieval in Multi-Vector Retrieval",
+      "wiki_citations": [
+        "wiki/search-retrieval.md"
+      ]
+    },
+    "intake-408": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/colbert-reranker-web-research.md",
+        "handoffs/active/decision-aware-routing.md",
+        "handoffs/active/yarn-context-extension-research.md",
+        "handoffs/completed/08-doc-to-lora-prototype.md"
+      ],
+      "relevance": "medium",
+      "title": "Episodic Memories Generation and Evaluation Benchmark for Large Language Models",
+      "wiki_citations": [
+        "wiki/benchmark-methodology.md",
+        "wiki/context-extension.md",
+        "wiki/routing-intelligence.md"
+      ]
+    },
+    "intake-409": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/colbert-reranker-web-research.md",
+        "handoffs/active/decision-aware-routing.md",
+        "handoffs/active/yarn-context-extension-research.md"
+      ],
+      "relevance": "medium",
+      "title": "EM-LLM: Human-inspired Episodic Memory for Infinite Context LLMs",
+      "wiki_citations": [
+        "wiki/context-extension.md"
+      ]
+    },
+    "intake-410": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/frontier-f1-real-task-corpus.md"
+      ],
+      "relevance": "low",
+      "title": "Reasoning-Driven Synthetic Data Generation and Evaluation",
+      "wiki_citations": [
+        "wiki/autonomous-research.md",
+        "wiki/benchmark-methodology.md",
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-416": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes.",
+      "handoffs_updated": [],
+      "relevance": "low",
+      "title": "Attention to Mamba: A Recipe for Cross-Architecture Distillation",
+      "wiki_citations": []
+    },
+    "intake-420": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes.",
+      "handoffs_updated": [],
+      "relevance": "low",
+      "title": "OpenMythos: A Theoretical Reconstruction of the Claude Mythos Architecture",
+      "wiki_citations": []
+    },
+    "intake-440": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes.",
+      "handoffs_updated": [],
+      "relevance": "low",
+      "title": "(1D) Ordered Tokens Enable Efficient Test-Time Search",
+      "wiki_citations": []
+    },
+    "intake-457": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes.",
+      "handoffs_updated": [],
+      "relevance": "low",
+      "title": "Hyperloop Transformers",
+      "wiki_citations": []
+    },
+    "intake-497": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md",
+        "handoffs/active/gpu-acceleration-path.md",
+        "handoffs/active/rocm-verify-profile-backend.md"
+      ],
+      "relevance": "medium",
+      "title": "tile-ai/tilelang-puzzles \u2014 Learning TileLang with 10 puzzles",
+      "wiki_citations": [
+        "wiki/hardware-optimization.md"
+      ]
+    },
+    "intake-526": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "BrowserForge \u2014 Bayesian browser header and fingerprint profile generator",
+      "wiki_citations": []
+    },
+    "intake-528": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/cpu-shape-specialized-gemv-decode.md",
+        "handoffs/active/ernie-image-turbo-evaluation.md"
+      ],
+      "relevance": "low",
+      "title": "Effort Engine: a possibly new algorithm for LLM Inference (bucketMul)",
+      "wiki_citations": [
+        "wiki/hardware-optimization.md"
+      ]
+    },
+    "intake-539": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/delta-mem-reproduction.md"
+      ],
+      "relevance": "medium",
+      "title": "\u03b4-mem: Efficient Online Memory for Large Language Models",
+      "wiki_citations": [
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-540": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task.",
+      "handoffs_updated": [],
+      "relevance": "low",
+      "title": "Dream Server \u2014 Local-first all-in-one AI stack (llama.cpp + WebUI + agents + RAG + voice + image-gen)",
+      "wiki_citations": []
+    },
+    "intake-541": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/rao-redel-substrate-spike.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "X breakdown of RAO (Recursive Agent Optimization) by @neural_avb",
+      "wiki_citations": []
+    },
+    "intake-543": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/internal-kb-rag.md"
+      ],
+      "relevance": "low",
+      "title": "Toward Scalable Terminal Task Synthesis via Skill Graphs (SkillSynth)",
+      "wiki_citations": []
+    },
+    "intake-544": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/hermes-outer-shell.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "Recursive Multi-Agent Systems (RMAS)",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-546": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/internal-kb-rag.md"
+      ],
+      "relevance": "low",
+      "title": "Training-Free Group Relative Policy Optimization",
+      "wiki_citations": []
+    },
+    "intake-548": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/rao-redel-substrate-spike.md",
+        "handoffs/active/scaffold-autopilot-cost-lever-deployment.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Reinforcement Learning for LLM-based Multi-Agent Systems through Orchestration Traces",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-549": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/rao-redel-substrate-spike.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "medium",
+      "title": "Tree Search for LLM Agent Reinforcement Learning (Tree-GRPO)",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-550": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/hermes-outer-shell.md",
+        "handoffs/active/rao-redel-substrate-spike.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "ReDel: A Toolkit for LLM-Powered Recursive Multi-Agent Systems",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-551": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/attention-matching-kv-compaction.md",
+        "handoffs/active/streaming-llm-baseline.md"
+      ],
+      "relevance": "high",
+      "title": "Learning to Evict from Key-Value Cache (KVP)",
+      "wiki_citations": [
+        "wiki/kv-cache.md"
+      ]
+    },
+    "intake-552": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/attention-matching-kv-compaction.md",
+        "handoffs/active/streaming-llm-baseline.md"
+      ],
+      "relevance": "medium",
+      "title": "LU-KV: Predicting Future Utility \u2014 Global Combinatorial Optimization for Task-Agnostic KV Cache Eviction",
+      "wiki_citations": [
+        "wiki/kv-cache.md"
+      ]
+    },
+    "intake-553": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/attention-matching-kv-compaction.md",
+        "handoffs/active/streaming-llm-baseline.md"
+      ],
+      "relevance": "high",
+      "title": "ForesightKV: Optimizing KV Cache Eviction for Reasoning Models by Learning Long-Term Contribution",
+      "wiki_citations": [
+        "wiki/kv-cache.md"
+      ]
+    },
+    "intake-554": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/attention-matching-kv-compaction.md",
+        "handoffs/active/design-backlog-triage-2026-07-23.md",
+        "handoffs/active/streaming-llm-baseline.md"
+      ],
+      "relevance": "high",
+      "title": "PBKV: Efficient Serving for Dynamic Agent Workflows with Prediction-based KV-Cache Management",
+      "wiki_citations": [
+        "wiki/kv-cache.md"
+      ]
+    },
+    "intake-555": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/hermes-outer-shell.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Latent Collaboration in Multi-Agent Systems (LatentMAS)",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-556": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/agent-architecture.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Thought Communication in Multiagent Collaboration",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-557": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/x-mas-text-routing.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "X-MAS: Towards Building Multi-Agent Systems with Heterogeneous LLMs",
+      "wiki_citations": [
+        "wiki/agent-architecture.md",
+        "wiki/routing-intelligence.md"
+      ]
+    },
+    "intake-558": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/hermes-outer-shell.md",
+        "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md"
+      ],
+      "relevance": "high",
+      "title": "Dead Weights, Live Signals: Feedforward Graphs of Frozen Language Models",
+      "wiki_citations": [
+        "wiki/agent-architecture.md"
+      ]
+    },
+    "intake-559": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "Training Large Language Models to Reason in a Continuous Latent Space (Coconut)",
+      "wiki_citations": [
+        "wiki/context-management.md"
+      ]
+    },
+    "intake-560": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "CODI: Compressing Chain-of-Thought into Continuous Space via Self-Distillation",
+      "wiki_citations": [
+        "wiki/context-management.md"
+      ]
+    },
+    "intake-561": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "high",
+      "title": "Token Assorted: Mixing Latent and Text Tokens for Improved Language Model Reasoning",
+      "wiki_citations": [
+        "wiki/context-management.md"
+      ]
+    },
+    "intake-562": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/design-backlog-triage-2026-07-23.md",
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "high",
+      "title": "Soft Thinking: Unlocking the Reasoning Potential of LLMs in Continuous Concept Space",
+      "wiki_citations": [
+        "wiki/context-management.md"
+      ]
+    },
+    "intake-563": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md",
+        "handoffs/active/frontier-f3-data-flywheel.md",
+        "handoffs/active/learned-routing-controller.md"
+      ],
+      "relevance": "medium",
+      "title": "Evolution Strategies at Scale: LLM Fine-Tuning Beyond Reinforcement Learning",
+      "wiki_citations": [
+        "wiki/autonomous-research.md",
+        "wiki/reinforcement-learning.md"
+      ]
+    },
+    "intake-564": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md",
+        "handoffs/active/frontier-f3-data-flywheel.md",
+        "handoffs/active/learned-routing-controller.md"
+      ],
+      "relevance": "high",
+      "title": "ESSA: Evolutionary Strategies for Scalable Alignment",
+      "wiki_citations": [
+        "wiki/autonomous-research.md",
+        "wiki/reinforcement-learning.md"
+      ]
+    },
+    "intake-565": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md",
+        "handoffs/active/learned-routing-controller.md"
+      ],
+      "relevance": "medium",
+      "title": "Matching Accuracy, Different Geometry: Evolution Strategies vs GRPO in LLM Post-Training",
+      "wiki_citations": [
+        "wiki/reinforcement-learning.md"
+      ]
+    },
+    "intake-566": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/angelslim-techniques-evaluation.md",
+        "handoffs/active/design-backlog-triage-2026-07-23.md",
+        "handoffs/active/per-request-reasoning-budget.md",
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "high",
+      "title": "Certainty-Guided Reasoning in Large Language Models: A Dynamic Thinking Budget Approach (CGR)",
+      "wiki_citations": [
+        "wiki/context-management.md"
+      ]
+    },
+    "intake-567": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-acceleration-path.md",
+        "handoffs/active/per-request-reasoning-budget.md"
+      ],
+      "relevance": "medium",
+      "title": "ECHO: Elastic Speculative Decoding with Sparse Gating for High-Concurrency Scenarios",
+      "wiki_citations": [
+        "wiki/context-management.md"
+      ]
+    },
+    "intake-568": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/delta-mem-reproduction.md"
+      ],
+      "relevance": "high",
+      "title": "Trained Persistent Memory for Frozen Encoder\u2013Decoder LLMs: Six Architectural Methods",
+      "wiki_citations": [
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-587": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Hy-MT2 \u2014 ModelScope collection (Tencent Hunyuan MT 2nd generation)",
+      "wiki_citations": []
+    },
+    "intake-588": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Hy-MT2 \u2014 HuggingFace collection (Tencent Hunyuan MT 2nd generation)",
+      "wiki_citations": []
+    },
+    "intake-595": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task.",
+      "handoffs_updated": [],
+      "relevance": "low",
+      "title": "Hunyuan-MT Technical Report (gen-1: Hunyuan-MT-7B + Hunyuan-MT-Chimera-7B)",
+      "wiki_citations": []
+    },
+    "intake-596": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task.",
+      "handoffs_updated": [],
+      "relevance": "low",
+      "title": "HY-MT1.5 Technical Report (Hy-MT1.5-1.8B + Hy-MT1.5-7B)",
+      "wiki_citations": []
+    },
+    "intake-600": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/deepseek-v4-flash-cpu-port.md",
+        "handoffs/active/engram-conditional-memory.md"
+      ],
+      "relevance": "low",
+      "title": "Pooling Engram Conditional Memory in Large Language Models using CXL",
+      "wiki_citations": [
+        "wiki/memory-augmented.md"
+      ]
+    },
+    "intake-602": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/per-request-reasoning-budget.md"
+      ],
+      "relevance": "high",
+      "title": "Chain-of-Thought Reasoning Without Prompting (CoT-Decoding)",
+      "wiki_citations": [
+        "wiki/inference-serving.md"
+      ]
+    },
+    "intake-603": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/per-request-reasoning-budget.md"
+      ],
+      "relevance": "high",
+      "title": "Deep Think with Confidence (DeepConf)",
+      "wiki_citations": [
+        "wiki/inference-serving.md"
+      ]
+    },
+    "intake-604": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/inference-serving.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Eliciting Fine-Tuned Transformer Capabilities via Inference-Time Techniques",
+      "wiki_citations": [
+        "wiki/inference-serving.md"
+      ]
+    },
+    "intake-612": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/delta-mem-reproduction.md"
+      ],
+      "relevance": "medium",
+      "title": "LongMemEval-V2: Evaluating Long-Term Agent Memory Toward Experienced Colleagues",
+      "wiki_citations": []
+    },
+    "intake-613": {
+      "basis": "semantic_repository_audit",
+      "disposition": "knowledge_only",
+      "evidence": "2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "The Agent Memory Race of 2026: 5 Repos, 4 Architectures, 1 Unsolved Problem (OSS Insight)",
+      "wiki_citations": []
+    },
+    "intake-644": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md",
+        "handoffs/completed/08-doc-to-lora-prototype.md"
+      ],
+      "relevance": "medium",
+      "title": "Rethinking On-Policy Distillation of Large Language Models",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-645": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "TRACE: Distilling Where It Matters via Token-Routed Self On-Policy Alignment",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-682": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/multimodal-pipeline.md"
+      ],
+      "relevance": "medium",
+      "title": "unsloth/gemma-4-12b-it-GGUF \u2014 Unsloth Dynamic 2.0 GGUF quants of Google Gemma 4 12B (dense, multimodal, instruction-tuned)",
+      "wiki_citations": []
+    },
+    "intake-683": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/multimodal-pipeline.md"
+      ],
+      "relevance": "medium",
+      "title": "LocateAnything: Fast and High-Quality Vision-Language Grounding with Parallel Box Decoding",
+      "wiki_citations": [
+        "wiki/multimodal.md"
+      ]
+    },
+    "intake-691": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/multimodal-pipeline.md"
+      ],
+      "relevance": "low",
+      "title": "Holo-3.1-4B \u2014 H Company computer-use / GUI-grounding VLM (Holo3.1 family)",
+      "wiki_citations": [
+        "wiki/multimodal.md"
+      ]
+    },
+    "intake-694": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/log-linear-gated-deltanet-readiness.md",
+        "handoffs/active/multimodal-pipeline.md",
+        "handoffs/active/opendataloader-pipeline-integration.md"
+      ],
+      "relevance": "medium",
+      "title": "Open-weights week roundup (Victor M / HF, 2026-06-05) \u2014 25+ notable open-weight drops across modalities",
+      "wiki_citations": [
+        "wiki/multimodal.md",
+        "wiki/ssm-hybrid.md"
+      ]
+    },
+    "intake-729": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/autopilot-continuous-optimization.md",
+        "handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md"
+      ],
+      "relevance": "high",
+      "title": "Ornith-1.0 (HF collection): open-weights agentic-coding LLM family (DeepReinforce AI)",
+      "wiki_citations": []
+    },
+    "intake-733": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes.",
+      "handoffs_updated": [],
+      "relevance": "low",
+      "title": "Rampart \u2014 client-side PII redaction token-classifier (18.5M MiniLM, 4-bit ONNX)",
+      "wiki_citations": []
+    },
+    "intake-754": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/knowledge-management.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Learning to Theorize the World from Observation",
+      "wiki_citations": [
+        "wiki/knowledge-management.md"
+      ]
+    },
+    "intake-757": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/backlog-roi-audit-2026-07-14.md",
+        "handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md"
+      ],
+      "relevance": "medium",
+      "title": "Dockerless: Environment-Free Program Verifier for Coding Agents",
+      "wiki_citations": []
+    },
+    "intake-764": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md"
+      ],
+      "relevance": "medium",
+      "title": "PorTAL: Portable Task Adapters for Large Language Models",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-765": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/training-distillation.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Cross-LoRA: A Data-Free LoRA Transfer Framework across Heterogeneous LLMs",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-766": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/training-distillation.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "LoRA-X: Bridging Foundation Models with Training-Free Cross-Model Adaptation",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-767": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/training-distillation.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Activation Manifold Projection (CAST: Cartridge Activation Space Transfer)",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-768": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/training-distillation.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "SHINE: A Scalable In-Context Hypernetwork for Mapping Context to LoRA in a Single Pass",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-769": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/training-distillation.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Instant Personalized LLM Adaptation via Hypernetwork (Profile-to-PEFT / P2P)",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-770": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/training-distillation.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "The Platonic Representation Hypothesis",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-771": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/training-distillation.md.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Text-to-LoRA: Instant Transformer Adaption",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-776": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-cot-scaffold-sidecar.md"
+      ],
+      "relevance": "medium",
+      "title": "Glint-Research/Fable-5-traces - Fable 5 coding-agent trace corpus with un-redacted chain-of-thought (upstream of the batch's SFT sets)",
+      "wiki_citations": []
+    },
+    "intake-778": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/gpu-cot-scaffold-sidecar.md"
+      ],
+      "relevance": "low",
+      "title": "Glint-Research/Complete-FABLE.5-traces-2M - post-closure compilation of all public FABLE.5/Mythos trace datasets (~2M traces, gated)",
+      "wiki_citations": []
+    },
+    "intake-786": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/frontier-f1-real-task-corpus.md",
+        "handoffs/completed/meta-harness-optimization.md"
+      ],
+      "relevance": "medium",
+      "title": "Self-Taught Optimizer (STOP): Recursively Self-Improving Code Generation",
+      "wiki_citations": []
+    },
+    "intake-788": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/meta-harness-optimization.md"
+      ],
+      "relevance": "medium",
+      "title": "AFlow: Automating Agentic Workflow Generation",
+      "wiki_citations": []
+    },
+    "intake-789": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/completed/meta-harness-optimization.md"
+      ],
+      "relevance": "medium",
+      "title": "SIA: Self Improving AI with Harness & Weight Updates",
+      "wiki_citations": []
+    },
+    "intake-791": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/frontier-f1-real-task-corpus.md"
+      ],
+      "relevance": "medium",
+      "title": "SwarmAgentic: Towards Fully Automated Agentic System Generation via Swarm Intelligence",
+      "wiki_citations": []
+    },
+    "intake-792": {
+      "basis": "semantic_repository_audit",
+      "disposition": "awaiting_dive",
+      "evidence": "2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Foundation Model Self-Play: Open-Ended Strategy Innovation via Foundation Models",
+      "wiki_citations": []
+    },
+    "intake-794": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "DeepCode: Open Agentic Coding (PaperBench benchmark)",
+      "wiki_citations": []
+    },
+    "intake-795": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/minddr-deep-research-mode.md"
+      ],
+      "relevance": "low",
+      "title": "AutoReproduce: Automatic AI Experiment Reproduction with Paper Lineage",
+      "wiki_citations": []
+    },
+    "intake-811": {
+      "basis": "semantic_repository_audit",
+      "disposition": "monitor",
+      "evidence": "2026-08-05 audit: notes or scope make this conditional/low-priority; revisit only if its feasibility, release, support, incident, or training-scope trigger changes.",
+      "handoffs_updated": [],
+      "relevance": "low",
+      "title": "Program-as-Weights: A Programming Paradigm for Fuzzy Functions",
+      "wiki_citations": []
+    },
+    "intake-827": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/harness-selection-and-integration.md"
+      ],
+      "relevance": "low",
+      "title": "grok-build \u2014 xAI's terminal-based AI coding agent (Rust TUI)",
+      "wiki_citations": []
+    },
+    "intake-833": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/harness-selection-and-integration.md"
+      ],
+      "relevance": "low",
+      "title": "Local Studio (Sybil Solutions / 0xSero) \u2014 local-first multi-backend LLM management GUI",
+      "wiki_citations": []
+    },
+    "intake-850": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: reviewer-control-plane reference R6 grounds the adversarial CandidatePackage boundary owned by reviewer-decision-plane.",
+      "handoffs_updated": [
+        "handoffs/active/reviewer-decision-plane.md"
+      ],
+      "relevance": "high",
+      "title": "Optimization-based Prompt Injection Attack to LLM-as-a-Judge (Shi et al.)",
+      "wiki_citations": []
+    },
+    "intake-851": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: reviewer-control-plane reference R8 grounds raw-confidence and cohort-calibration policy owned by reviewer-calibration-accounting.",
+      "handoffs_updated": [
+        "handoffs/active/reviewer-calibration-accounting.md"
+      ],
+      "relevance": "high",
+      "title": "Overconfidence is Key: Verbalized Uncertainty Evaluation in Large Language and Vision-Language Models (Groot & Valdenegro-Toro)",
+      "wiki_citations": []
+    },
+    "intake-852": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: reviewer-control-plane reference R9 grounds raw-confidence and cohort-calibration policy owned by reviewer-calibration-accounting.",
+      "handoffs_updated": [
+        "handoffs/active/reviewer-calibration-accounting.md"
+      ],
+      "relevance": "high",
+      "title": "Large Language Models Are Overconfident in Their Own Responses (Sanz-Guerrero et al.)",
+      "wiki_citations": []
+    },
+    "intake-853": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: reviewer-control-plane reference R10 grounds ABSTAIN and risk-coverage behavior in the decision and escalation owners.",
+      "handoffs_updated": [
+        "handoffs/active/reviewer-decision-plane.md",
+        "handoffs/active/reviewer-escalation-and-human-gate-policy.md"
+      ],
+      "relevance": "high",
+      "title": "Uncertainty-Based Abstention in LLMs Improves Safety and Reduces Hallucinations (Tomani et al.)",
+      "wiki_citations": []
+    },
+    "intake-854": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: reviewer-control-plane reference R11 grounds the measured, opt-in rebuttal policy in the escalation owner.",
+      "handoffs_updated": [
+        "handoffs/active/reviewer-escalation-and-human-gate-policy.md"
+      ],
+      "relevance": "high",
+      "title": "Debate Helps Weak Judges Reward Stronger Models (Elasky et al.)",
+      "wiki_citations": []
+    },
+    "intake-855": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: reviewer-control-plane reference R15 grounds calibrated selective authority in reviewer-calibration-accounting.",
+      "handoffs_updated": [
+        "handoffs/active/reviewer-calibration-accounting.md"
+      ],
+      "relevance": "high",
+      "title": "Learning Conformal Abstention Policies for Adaptive Risk Management in Large Language and Vision-Language Models (Tayebati et al.)",
+      "wiki_citations": []
+    },
+    "intake-856": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: reviewer-control-plane reference R13 supplies critique-quality evaluation prior art to the model-ablation and eval-tower owners.",
+      "handoffs_updated": [
+        "handoffs/active/reviewer-model-ablations.md",
+        "handoffs/active/eval-tower-verification.md"
+      ],
+      "relevance": "medium",
+      "title": "CriticBench: Benchmarking LLMs for Critique-Correct Reasoning (Lin et al.)",
+      "wiki_citations": []
+    },
+    "intake-857": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: reviewer-control-plane reference R14 is retained as a training-time calibration comparison in the calibration owner.",
+      "handoffs_updated": [
+        "handoffs/active/reviewer-calibration-accounting.md"
+      ],
+      "relevance": "low",
+      "title": "ConfTuner: Training Large Language Models to Express Their Confidence Verbally (Li et al.)",
+      "wiki_citations": []
+    },
+    "intake-858": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: reviewer-control-plane reference R3 supplies iterative self-improvement prior art to reviewer-decision-plane.",
+      "handoffs_updated": [
+        "handoffs/active/reviewer-decision-plane.md"
+      ],
+      "relevance": "medium",
+      "title": "Reflexion: Language Agents with Verbal Reinforcement Learning (Shinn et al.)",
+      "wiki_citations": []
+    },
+    "intake-865": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/document-parser-table-bench.md"
+      ],
+      "relevance": "medium",
+      "title": "DeepSeek-OCR: Contexts Optical Compression",
+      "wiki_citations": []
+    },
+    "intake-882": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/agent-collab-rnd-harness.md"
+      ],
+      "relevance": "medium",
+      "title": "OpenResearch - Run autoresearch on your machine (alphaXiv)",
+      "wiki_citations": []
+    },
+    "intake-891": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: ID-15 routed the Fable-Fusion pair to a mandatory GGUF header gate, followed by completed architect-model benchmark work.",
+      "handoffs_updated": [
+        "handoffs/active/intake-derived-work-2026-07-25.md",
+        "handoffs/active/architect-model-selection-bench.md"
+      ],
+      "relevance": "high",
+      "title": "DavidAU Qwen3.6-27B-Fable-Fusion-711 \u2014 abliterated merge with a PAIRED MTP / non-MTP GGUF quant ladder",
+      "wiki_citations": []
+    },
+    "intake-892": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "high",
+      "title": "ThinkingCap-Qwen3.6-27B-GGUF \u2014 token-efficient reasoning FINETUNE (not a reasoning-budget dial)",
+      "wiki_citations": []
+    },
+    "intake-893": {
+      "basis": "semantic_repository_audit",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: ID-14 owns the approved container/disposable-host Fractal trial and its containment-pattern extraction.",
+      "handoffs_updated": [
+        "handoffs/active/intake-derived-work-2026-07-25.md"
+      ],
+      "relevance": "medium",
+      "title": "Fractal \u2014 recursive agent loops for giant tasks (Plasma AI research post)",
+      "wiki_citations": []
+    },
+    "intake-898": {
+      "basis": "semantic_repository_audit",
+      "disposition": "declined",
+      "evidence": "2026-08-05 audit: the evaluation owner records FrontierCS as a closed negative that should not be re-chased.",
+      "handoffs_updated": [],
+      "relevance": "high",
+      "title": "FrontierCS: Evolving Challenges for Evolving Intelligence",
+      "wiki_citations": []
+    },
+    "intake-903": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "medium",
+      "title": "MoEUT: Mixture-of-Experts Universal Transformers",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-907": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "low",
+      "title": "DeepLoop: Depth Scaling for Looped Transformers",
+      "wiki_citations": [
+        "wiki/training-distillation.md"
+      ]
+    },
+    "intake-909": {
+      "basis": "semantic_repository_audit",
+      "disposition": "declined",
+      "evidence": "2026-08-05 audit: this operator-synthesized overview remains Stage-1 unverified and has no independent source authority; primary looped-transformer sources are tracked separately.",
+      "handoffs_updated": [],
+      "relevance": "medium",
+      "title": "Looped Transformers: Reusing Model Parameters for Scalable Reasoning Through Recurrent Depth (operator-submitted overview)",
+      "wiki_citations": []
+    },
+    "intake-912": {
+      "basis": "direct_handoff_citation",
+      "disposition": "integrated",
+      "evidence": "2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.",
+      "handoffs_updated": [
+        "handoffs/active/reasoning-compression.md"
+      ],
+      "relevance": "low",
+      "title": "Mixture-of-Depths: Dynamically allocating compute in transformer-based language models",
+      "wiki_citations": []
+    }
+  },
+  "generated_date": "2026-08-05",
+  "schema": "intake-disposition-backfill-v1",
+  "target_count": 230,
+  "wiki_only_count": 27
+}

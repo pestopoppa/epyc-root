@@ -145,4 +145,59 @@ def test_unactioned_intake_accepts_created_or_updated_handoff(tmp_path: Path) ->
     assert len(issues) == 1
     assert issues[0][0] == module.WARNING
     assert issues[0][1] == "intake-unrouted"
-    assert "no handoff created or updated" in issues[0][2]
+    assert "[legacy-needs-disposition]" in issues[0][2]
+
+
+def test_unactioned_intake_reports_distinct_disposition_categories(tmp_path: Path) -> None:
+    module = _load_module()
+    index_path = tmp_path / "intake_index.yaml"
+    active_dir = tmp_path / "active"
+    completed_dir = tmp_path / "completed"
+    active_dir.mkdir()
+    completed_dir.mkdir()
+    old_date = (date.today() - timedelta(days=60)).isoformat()
+    _write(
+        index_path,
+        f"""entries:
+  - id: intake-101
+    title: Direct route missing metadata
+    verdict: worth_investigating
+    ingested_date: {old_date}
+  - id: intake-102
+    title: Slash route missing metadata
+    verdict: worth_investigating
+    ingested_date: {old_date}
+  - id: intake-103
+    title: Stage one
+    verdict: new_opportunity
+    ingested_date: {old_date}
+    verification: stage1-unverified
+    integration_disposition: awaiting_dive
+  - id: intake-104
+    title: Verified but unactioned
+    verdict: worth_investigating
+    ingested_date: {old_date}
+    verification: dive-verified
+  - id: intake-105
+    title: Explicit monitor
+    verdict: worth_investigating
+    ingested_date: {old_date}
+    integration_disposition: monitor
+""",
+    )
+    _write(active_dir / "owner.md", "Uses intake-101/102 for the owner design.\n")
+
+    issues = module.check_unactioned_intake(
+        index_path,
+        max_age_days=30,
+        active_dir=active_dir,
+        completed_dir=completed_dir,
+    )
+
+    categories = {issue[1]: issue[2].split("]", 1)[0] + "]" for issue in issues}
+    assert categories == {
+        "intake-101": "[missing-routing-metadata]",
+        "intake-102": "[missing-routing-metadata]",
+        "intake-103": "[stage1-awaiting-dive]",
+        "intake-104": "[verified-unactioned]",
+    }

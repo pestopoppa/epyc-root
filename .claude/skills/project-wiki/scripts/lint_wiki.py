@@ -161,8 +161,43 @@ def check_contradictory_status(active_dir: Path, completed_dir: Path) -> list[Is
     return issues
 
 
-def check_unactioned_intake(index_path: Path, max_age_days: int) -> list[Issue]:
-    """Pass 4: Find actionable intake entries with no handoff routing."""
+INTAKE_REFERENCE_RE = re.compile(
+    r"(?i)\bintake-(\d+)((?:\s*/\s*(?:intake-)?\d+)*)"
+)
+
+
+def _intake_handoff_routes(
+    active_dir: Path | None,
+    completed_dir: Path | None,
+) -> dict[str, set[str]]:
+    """Map intake IDs to non-index handoffs that cite them.
+
+    Slash shorthand such as ``intake-902/903/907`` expands to all three IDs.
+    Coordination indices are excluded because an index listing is not an owner.
+    """
+    routes: dict[str, set[str]] = {}
+    for directory in (active_dir, completed_dir):
+        if directory is None or not directory.exists():
+            continue
+        for path in sorted(directory.glob("*.md")):
+            if path.name.endswith("index.md") or path.name == "master-handoff-index.md":
+                continue
+            content = path.read_text(errors="replace")
+            for match in INTAKE_REFERENCE_RE.finditer(content):
+                numbers = [match.group(1), *re.findall(r"\d+", match.group(2))]
+                for number in numbers:
+                    intake_id = f"intake-{int(number):03d}"
+                    routes.setdefault(intake_id, set()).add(str(path))
+    return routes
+
+
+def check_unactioned_intake(
+    index_path: Path,
+    max_age_days: int,
+    active_dir: Path | None = None,
+    completed_dir: Path | None = None,
+) -> list[Issue]:
+    """Pass 4: classify aged actionable intake instead of conflating states."""
     issues: list[Issue] = []
     if not index_path.exists():
         return issues
@@ -174,6 +209,7 @@ def check_unactioned_intake(index_path: Path, max_age_days: int) -> list[Issue]:
 
     today = date.today()
     actionable_verdicts = {"worth_investigating", "new_opportunity"}
+    handoff_routes = _intake_handoff_routes(active_dir, completed_dir)
 
     for entry in entries:
         verdict = entry.get("verdict", "")
@@ -194,8 +230,27 @@ def check_unactioned_intake(index_path: Path, max_age_days: int) -> list[Issue]:
         if age > max_age_days:
             eid = entry.get("id", "unknown")
             title = entry.get("title", "untitled")[:60]
-            issues.append((WARNING, eid,
-                f"verdict='{verdict}', no handoff created or updated, {age}d old: {title}"))
+            disposition = entry.get("integration_disposition")
+            verification = entry.get("verification")
+            if handoff_routes.get(eid) or disposition == "integrated":
+                category = "missing-routing-metadata"
+                detail = "handoff citation/integrated disposition exists but routing fields are absent"
+            elif disposition in {"knowledge_only", "monitor", "declined"}:
+                continue
+            elif disposition == "awaiting_dive" or verification == "stage1-unverified":
+                category = "stage1-awaiting-dive"
+                detail = "Stage-1 review still needs a primary-source dive"
+            elif verification in {"dive-verified", "dive-overturned"}:
+                category = "verified-unactioned"
+                detail = "dive verification exists but no route or terminal disposition is recorded"
+            else:
+                category = "legacy-needs-disposition"
+                detail = "legacy actionable entry has no explicit disposition"
+            issues.append((
+                WARNING,
+                eid,
+                f"[{category}] {detail}; verdict='{verdict}', {age}d old: {title}",
+            ))
 
     return issues
 
@@ -319,11 +374,16 @@ def main() -> int:
         all_issues.extend(issues)
         pass_names.append(("Contradictory status", issues))
 
-    # Pass 4: Un-actioned intake
+    # Pass 4: Intake disposition
     if "unactioned_intake" in enabled:
-        issues = check_unactioned_intake(index_path, lint_cfg["unactioned_intake_days"])
+        issues = check_unactioned_intake(
+            index_path,
+            lint_cfg["unactioned_intake_days"],
+            active_dir,
+            completed_dir,
+        )
         all_issues.extend(issues)
-        pass_names.append(("Un-actioned intake", issues))
+        pass_names.append(("Intake disposition", issues))
 
     # Pass 5: Missing cross-refs
     if "missing_cross_refs" in enabled:

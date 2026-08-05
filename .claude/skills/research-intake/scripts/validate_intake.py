@@ -33,6 +33,9 @@ VERDICT_VALUES = {
     "new_opportunity", "already_integrated", "worth_investigating",
     "not_applicable", "superseded", "adopt_patterns", "adopt_component",
 }
+INTEGRATION_DISPOSITION_VALUES = {
+    "integrated", "knowledge_only", "monitor", "declined", "awaiting_dive",
+}
 
 # Default paths — overridden by wiki.yaml if present
 _RESEARCH_ROOT_DEFAULT = "/mnt/raid0/llm/epyc-inference-research"
@@ -213,6 +216,43 @@ def validate_index(entries: list[dict], valid_categories: set[str],
         ver = entry.get("verdict")
         if ver and ver not in VERDICT_VALUES:
             errors.append(f"{eid}: invalid verdict '{ver}'")
+
+        disposition = entry.get("integration_disposition")
+        if disposition and disposition not in INTEGRATION_DISPOSITION_VALUES:
+            errors.append(
+                f"{eid}: invalid integration_disposition '{disposition}'"
+            )
+
+        evidence = entry.get("disposition_evidence")
+        if evidence is not None:
+            if not isinstance(evidence, list) or not evidence:
+                errors.append(
+                    f"{eid}: disposition_evidence must be a non-empty list"
+                )
+            elif not all(isinstance(item, str) and item.strip() for item in evidence):
+                errors.append(
+                    f"{eid}: disposition_evidence must contain non-empty strings"
+                )
+
+        if disposition:
+            if not evidence:
+                errors.append(
+                    f"{eid}: integration_disposition requires disposition_evidence"
+                )
+            if disposition == "integrated" and not (
+                entry.get("handoffs_created") or entry.get("handoffs_updated")
+            ):
+                errors.append(
+                    f"{eid}: integrated disposition requires a created or updated handoff"
+                )
+            if (
+                disposition == "awaiting_dive"
+                and entry.get("verification") != "stage1-unverified"
+            ):
+                errors.append(
+                    f"{eid}: awaiting_dive disposition requires "
+                    "verification='stage1-unverified'"
+                )
 
         # Credibility score validation (optional field)
         cred = entry.get("credibility_score")
