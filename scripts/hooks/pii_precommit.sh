@@ -145,9 +145,13 @@ is_timestamp_or_log_line() {
   # Self-describing numeric JSON fields. ADDED 2026-08-02.
   # A digit run whose own KEY says it is a byte count, size or duration is not an
   # account number: `"total_shard_bytes": 238577580768` is a 238 GB model shard.
+  # Byte-count keys may carry a semantic suffix (`storage_floor_bytes_free`), and
+  # human-readable evidence may render the unit directly (`269009571840 bytes
+  # free at campaign open`). Both forms remain keyed to an explicit byte unit.
   # Keyed on the field NAME rather than the value's shape, so it cannot be widened
   # into "long numbers in JSON are fine" — the key has to assert the semantics.
-  echo "$line" | grep -qE '"[a-z0-9_]*(bytes|size|_ns|_us|_ms|elapsed|duration)"[[:space:]]*:[[:space:]]*[0-9]{12,19}\b' && return 0
+  echo "$line" | grep -qE '"[a-z0-9_]*(bytes(_[a-z0-9_]+)?|size|_ns|_us|_ms|elapsed|duration)"[[:space:]]*:[[:space:]]*[0-9]{12,19}\b' && return 0
+  echo "$line" | grep -qE '\b[0-9]{12,19}[[:space:]]+bytes([[:space:]]+(free|used|total))?\b' && return 0
   return 1
 }
 
