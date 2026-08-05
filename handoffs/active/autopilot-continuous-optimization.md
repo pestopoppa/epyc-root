@@ -1651,10 +1651,13 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `chat_pipeline/stages.py:288` feeds the **process-global, never-cleared**
       `tool_registry.get_invocation_log()` into the durable record, so one request persists another
       request's tool calls. `clear_invocation_log` has zero callers in `src/`.
-- [ ] **Vision panel reported `fixed` with zero panel changes.** `grep -ci image
-      src/api/routes/dashboard.html` -> **0**. Capture works and the snapshot carries it; the
-      renderer discards it. Also a capture hole: `vision_stage.py:76` treats `request.files` as
-      vision input but records nothing for that form.
+- [x] **Vision task-detail renderer now displays captured path-backed inputs.** ✅ 2026-08-05 —
+      task detail extracts the image reference already captured on `routing_decision`, serves
+      allowlisted raster files through a task-scoped no-store/nosniff endpoint, and renders a
+      bounded preview plus full-resolution link. The reported `chat-bc6df1a2` was verified live.
+- [ ] **`request.files` vision input still has no telemetry image reference.**
+      `vision_stage.py:76` treats `request.files` as vision input, but routing telemetry records
+      neither a retained path nor displayable bytes for that form.
 - [ ] **Evidence-durability symlink guard covers the form that barely occurs.**
       `check_evidence_durability.py:306` — `inside_repo = (not absolute) or ...` is unconditionally
       True for relative paths, so `_is_scratch()` is never consulted for them. **416 of 421** registry
