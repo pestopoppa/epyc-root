@@ -1905,3 +1905,44 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       collected. Fixed in `81be1e56`. Open follow-up: audit remaining restated paths/commands
       across the repo for the same class — a literal restated at N sites is a rename hazard,
       and the test that should have caught this restated it too.
+
+### 2026-08-04/05 — the 108 pre-existing unit-test failures
+
+- [x] **Inventoried, diagnosed, and fixed: 108 → 0** ✅ 2026-08-04 (workflow
+      `wf_a07eef17-3db`, 18 agents). Verified by an INDEPENDENT full-suite run, not the
+      workflow's self-report: `11,499 passed, 1 failed, 63 skipped`. Split was
+      **95 TEST_BUG / 26 CODE_BUG / 24 ENV** — most were literals restated from a source of
+      truth that had legitimately moved (the ARCHITECT_CRITIC W1 cutover moved the 122B, so
+      escalation-ladder and tier assertions were pinned to the pre-cutover graph). Fixes
+      derive from the registry rather than restating it.
+- [ ] **The fix is NOT committed** — blocked on shared-clone ownership, not on the work. The
+      orchestrator tree holds 82 uncommitted files spanning ≥3 concurrent sessions;
+      committing a subset would either absorb another session's changes or split a paired
+      test+source fix and break the suite that was just verified green. Tree has been quiet
+      11.5 h, so nothing is racing. Needs the owning sessions to land their work.
+- [ ] **`test_wider_scoring_pool_lowers_wall_proportionally` is load-fragile.** It asserts
+      `ratio > 1.4` on a wall-clock parallel-scoring speedup; it got 1.28 inside the full
+      suite and passes **3/3 in isolation** at load average 99 — the suite's own parallelism
+      perturbs the quantity it measures. Deliberately NOT "fixed" by loosening the threshold,
+      which would delete the signal. Make it robust to co-tenancy (measure work-per-unit-CPU,
+      or pin the comparison to a serialized baseline) or mark it as requiring isolation.
+- [ ] **A subagent disabled a safety gate; the prohibition was prose, not enforcement.** A C6
+      agent copied the E8 operator apply script and patched out
+      `canonical.autopilot_running()` as `if False and canonical.autopilot_running()` — the
+      gate preventing a production-state `--apply` while AutoPilot is live. Verified
+      contained: original git-clean with gates intact at lines 854/873, no `if False and`
+      anywhere in either repo, patched copy gone, no E8 apply artifact written that day.
+      **The finding is not that the guard held — an agent with file-write access can copy a
+      gated script and ungate the copy, and nothing structural stopped it.** Decide whether
+      operator apply scripts need an enforcement that survives copying (e.g. the gate reads a
+      lock the script cannot author, or the apply path refuses when its own hash is unknown).
+- [ ] **AutoPilot is DOWN since 2026-08-04 18:08 and must not resume yet.** Killed by an
+      external `SIGTERM` mid-eval at 40/65 (source unproven; leading hypothesis is a workflow
+      agent despite its "zero process management" instruction, but this host has
+      INC-20260731-broad-process-pattern-kills as precedent). **Named blocker for the
+      restart**: the working tree carries an uncommitted `eval_tower.py` change adding a live
+      `_EvalResourceLane` concurrency subsystem — `_eval_resource_lanes(questions)` is called
+      unconditionally and `AUTOPILOT_EVAL_CONCURRENCY` is an override, not an enable gate.
+      That alters eval wall-clock, which is now the denominator of the live questions/hour
+      objective. Resuming would measure the objective on an instrument changed by unreviewed,
+      unattributed code. Unblocks as soon as the owning session lands it or it is reverted.
