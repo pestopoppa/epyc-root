@@ -2,7 +2,7 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-03 (adds the validator-hygiene set — probe runnability not existence, mirror the launch environment when probing, three result states not two, and prefer the API under a CLI when a boolean is wanted; plus four measurement traps caught in-session — an unmatched warm-up that nearly became a hardware finding, a reproducible outlier that still did not support a ranking, an index mapping verified rather than assumed, and a piped compiler whose failure exited 0; plus the aggregation-as-attack-surface result — geometric mean is demonstrably gamed and harmonic mean over a failure-clamped set moved one headline 2.8× on identical outcomes; right-censoring as a scoring primitive and eff@k's undocumented saturation at 2×; the mandatory small-K correction for paired CIs; a citation chain that inverted its own source; counting a literature by its author graph before calling it consensus; two anti-patterns found in released code; and the quantum rule for leaderboard margins; earlier 2026-07-31 note: adds three methodology results from the vision-role evaluation: a saturated suite can order arms WRONGLY not just fail to separate them; an output-length cap silently penalises reasoning models; a model with no draft path running unaccelerated is at its OPTIMUM, never a BASELINE — the concrete case the OPTIMUM/BASELINE/CANDIDATE grammar was ratified to prevent; earlier 2026-07-30 note: MEASUREMENT v2 ratified: core + annex constitution, explicit metric scoping, P-BENCH-PLACEMENT-1 registered, P-BENCH-3 conformed, retracted April exemplar replaced; prior E8/E5 status update retained)
+**Last compiled**: 2026-08-05
 **Sources**: 100+ documents
 
 ## Compiled Update — 2026-08-03 (third): a validator is only as good as the thing it actually ran
@@ -1667,3 +1667,26 @@ satisfy the protocol governing it — which is the right pressure, applied struc
 _Sources: `artifacts/operator/ratify_speech_wer_correction_20260804.json`;
 `epyc-inference-research/data/speech_kernel_freeze_20260731/README.md`;
 `progress/2026-08/2026-08-04.md`; epyc-root `00792e05`; epyc-inference-research `502509a5`._
+
+## Compiled Update — 2026-08-05: a control should be allowed to reject the experiment
+
+AutoKernel’s first proposed 2% campaign was rejected before inference because its minimum detectable
+effect was too large for the promised decision. The redesigned fresh 3% campaign then passed all five
+controls, measured a 4.9207% effect with 2.7408% MDE, and included a 1.4% A/A crossing as a direct noise
+check. The lesson is procedural: preflight is not ceremonial. If the control cannot falsify the claim at
+the stated resolution, change the design before spending the run.
+
+The campaign also tightened the archive semantics. Completed runs enter a dedicated ledger so optional
+stopping cannot make an attractive partial look final. Arms share a declared host-state frame and
+interleaving policy; an inter-arm “rest” is not inserted as if it were treatment-neutral, because a
+separate recovery audit found warm behavior after idle and did not reproduce the hypothesized decline.
+Finally, resource-lane work versioned `task_rate_goodput` itself: v2 is the current objective identifier,
+v1 is replay-only, and state with a mismatched objective version fails at startup. Metric direction,
+comparison frame, stopping rule, and objective identity therefore travel together as protocol state.
+
+### Source References
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md)
+- [Objective task-rate goodput](../handoffs/active/objective-task-rate-goodput.md)
+- [2026-08-05 progress](../progress/2026-08/2026-08-05.md)
+- Research intakes 999 and 1000 (control design and archive safeguards)

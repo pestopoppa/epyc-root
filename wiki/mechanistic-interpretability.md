@@ -39,6 +39,12 @@ Qwen-Scope's **Section 8** identifies SAE features causally linked to **endless 
 - **`training_distillation`**: Section 7 SASFT (auxiliary feature-suppression loss in SFT) and Section 8 SAE-DAPO (rare-negative-rollout augmentation in RL) are training-time methods, both gated on training infra acquisition.
 - **`safety`**: Section 6 feature-driven safety synthesis (99.74% target-feature coverage at matched WildJailbreak budget) and SAE feature steering for refusal control (where ICML 2025 documents broad-task degradation) live primarily in this category once a `safety` page is compiled.
 
+## Related Categories
+
+- [Agent Architecture](agent-architecture.md)
+- [Benchmark Methodology](benchmark-methodology.md)
+- [Routing Intelligence](routing-intelligence.md)
+
 ## Open Questions
 
 - Does the Wang et al. 2026 utility-falsification finding hold when re-run on Qwen-Scope's specific Qwen3 / Qwen3.5 SAEs (rather than the 16K-width SAEs they trained themselves)? Qwen-Scope widths are 32K-128K — wider dictionaries may have different interpretability-utility tradeoffs.

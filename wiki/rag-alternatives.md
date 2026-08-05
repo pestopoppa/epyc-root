@@ -15,6 +15,12 @@ A third pattern — **persistent compiled wikis** — is itself a RAG alternativ
 
 The 2026-04-28 update on SLIDERS surfaced a **critical adoption blocker**: every code path in the released repo is hard-wired to GPT-4.1 / GPT-4.1-mini via the OpenAI / Azure OpenAI APIs, with no local-model code path. Initial intake framing that SLIDERS "runs locally on any capable LLM" was unsupported. Local adoption requires both endpoint substitution and validation that small-model SQL-agent loops survive — gated as a Phase 0 falsification experiment in `sliders-local-validation.md`.
 
+## Key Findings
+
+- Structured DB + SQL can remove repeated evidence aggregation, but SLIDERS is not locally deployable without replacing its hosted-model dependency and validating the resulting SQL-agent loop.
+- Persistent compiled wikis are a practical low-latency alternative to query-time synthesis, with curation effort and staleness as their principal costs.
+- Architecture-level rejection requires a bounded falsification gate; one failed implementation does not close the whole structured-state design class.
+
 ## Structured DB + SQL: SLIDERS (intake-494)
 
 **Architecture (per the released MIT codebase at `github.com/stanford-oval/sliders`)**:

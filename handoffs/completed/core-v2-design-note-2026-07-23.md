@@ -1,6 +1,6 @@
 # Designed T1 eval core — `core_v2` — design note & operator promotion checklist
 
-**Date**: 2026-07-23 · **Status**: SUPERSEDED/COMPLETED — `core_v2` was operator-applied as E4 on 2026-07-23 (orchestrator `f60646e9`); archive proposed 2026-07-29. The checklist below is retained only as historical evidence.
+**Date**: 2026-07-23 · **Status**: COMPLETED / SUPERSEDED — `core_v2` was operator-applied as E4 on 2026-07-23 (orchestrator `f60646e9`) and retired from the coordination queue 2026-08-05. The checklist below is retained only as historical evidence.
 **Artifact**: `epyc-orchestrator/benchmarks/prompts/core_v2.jsonl` (1 metadata row + 50 question rows).
 **Amendment (2026-07-23)**: `vl` is now INCLUDED (was whole-suite excluded on the then-believed 0/376 record).
 A 20-question vl truth slice through the real eval path scored **20/20 correct, 0 errors** — see
@@ -193,7 +193,7 @@ Historical resolution: the operator applied the E4/core_v2 boundary on 2026-07-2
 - [x] **Verify live** ✅ 2026-07-23: first T1 trial's `eval_details` shows `core_id=core_v2`,
       `core_selection=designed_core`, `n_questions=50`. ✅ 2026-07-23
 
-- [ ] **Archive disposition proposal:** move this completed/superseded design note to `handoffs/completed/` after operator acknowledgement; retain it as promotion evidence, not as an active checklist.
+- [x] **Archive disposition:** operator-approved staleness cleanup moved this completed/superseded design note to `handoffs/completed/`; retain it as promotion evidence, not as an active checklist. ✅ 2026-08-05
 
 **Refresh policy**: `core_v2` is frozen. Any item swap bumps to `core_v3` with a new era row (never edit this
 one). Once the audit block has accrued per-item solve stats over this era, an empirical medium-difficulty

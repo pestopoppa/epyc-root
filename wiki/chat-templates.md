@@ -1,5 +1,7 @@
 # Chat Templates — Per-Model Turn Markers and Routing Endpoints
 
+**Category**: `chat_templates`
+
 > Quick reference for which chat template each production model uses, which
 > orchestrator code path applies the template (client-side vs server-side
 > jinja), and how to wire a newly-onboarded model so it produces clean
@@ -14,6 +16,18 @@
 `handoffs/active/model-stack-single-source-update-pipeline.md`
 
 ---
+
+## Summary
+
+Production chat templates are part of the model-serving contract: the selected endpoint, client-side
+wrapping, server-side Jinja behavior, and per-model reasoning kwargs must agree. A mismatch can produce
+plausible HTTP success while silently degrading output or routing evidence.
+
+## Key Findings
+
+- Prefer `/v1/chat/completions` with server-side Jinja for dynamic or multi-channel templates.
+- Treat model-family detection and `enable_thinking` behavior as per-role configuration, not global defaults.
+- Validate the rendered turn markers with a live completion whenever a model or endpoint changes.
 
 ## Per-family templates currently in production
 
@@ -262,3 +276,23 @@ channel prefixes based on kwargs, ALWAYS use `/v1/chat/completions`.
   worker_general silent failure
 - `progress/2026-05/2026-05-23.md` — `/v1/chat/completions` migration
   and live verification
+
+## Open Questions
+
+- Which template invariants should be promoted into automated per-role startup attestations?
+
+## Related Categories
+
+- [LLM Prompting](llm-prompting.md)
+- [Model Serving](model-serving.md)
+- [Tool Implementation](tool-implementation.md)
+
+## Source References
+
+- `src/api/routes/chat_utils.py`
+- `src/backends/llama_server.py`
+- `src/llm_primitives/backend.py`
+- `scripts/server/stack_numa.py`
+- `progress/2026-05/2026-05-22.md`
+- `progress/2026-05/2026-05-23.md`
+- `handoffs/active/model-stack-single-source-update-pipeline.md`

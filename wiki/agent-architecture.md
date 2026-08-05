@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-03 (adds the well-formed-deferral failure — a quality bar on the FORM of an escalation with no bar on its NECESSITY produces well-formed escalations of things that needed none, plus the recurrence check and two placement lessons about where behavioural rules must live; earlier note: adds the sandbagging-monitor design rules — a generic "is this suspicious?" monitor rarely fires on deliberate underperformance, best-path-only transcripts structurally advantage the saboteur, and monitor-awareness degrades detection universally — plus the harness-level vs task-level cheating split, where the harness-level half is developer-side and no agent-side monitor can catch it; earlier 2026-07-30 note: adds the full-stack agent-file audit and restructure: layered context architecture, incident-log house style, enforcement hardening, and the frozen-tree governance gap; prior coordination-plane update retained)
+**Last compiled**: 2026-08-05
 **Sources**: 70+ documents
 
 ## Compiled Update — 2026-08-03 (second): a well-formed deferral is still a deferral
@@ -1500,3 +1500,28 @@ claim* usually is not.
 _Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`;
 `scripts/autopilot/autopilot.py:5998-6037` (`save_state`, `_EXTERNAL_CONTROL_FIELDS`);
 `scripts/autopilot/state_lock.py`._
+
+## Compiled Update — 2026-08-05: representation boundaries are authority boundaries
+
+Three independent changes converge on one architectural rule: any artifact that can change what the
+system believes or selects needs a typed, immutable boundary. AutoKernel’s proposal-v3 contract binds a
+candidate representation to a frame hash and fails closed when alternatives cannot be recoded into a
+common comparison frame. AgentWorld’s `HypothesisBoundaryContract` separately binds label ownership,
+verifier ownership, eligibility, and falsifier evidence, preventing an environment generator from grading
+its own hypothesis into authority.
+
+The reviewer lane now applies the same rule to machine critique. RA-12 requires an immutable review
+envelope so a generated review cannot be silently rewritten between production, evaluation, and later
+consumption. RM-10 treats metacognitive prompting as a matched-control ablation rather than an assumed
+upgrade, with the trust boundary declared before results are interpreted. Together these changes make
+“who produced this?”, “under which frame?”, and “may it steer?” first-class fields. That is more important
+than choosing a cleverer model: it keeps optimization, environment synthesis, and review evidence from
+collapsing into one self-justifying channel.
+
+### Source References
+
+- [AgentWorld environment synthesis](../handoffs/active/agent-world-env-synthesis.md)
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
+- [Reviewer-model ablations](../handoffs/active/reviewer-model-ablations.md)
+- Research intakes 1003 and 1004 (machine-review and metacognitive-review evidence)

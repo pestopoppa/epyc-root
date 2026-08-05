@@ -162,7 +162,7 @@ def check_contradictory_status(active_dir: Path, completed_dir: Path) -> list[Is
 
 
 def check_unactioned_intake(index_path: Path, max_age_days: int) -> list[Issue]:
-    """Pass 4: Find intake entries that should have handoffs but don't."""
+    """Pass 4: Find actionable intake entries with no handoff routing."""
     issues: list[Issue] = []
     if not index_path.exists():
         return issues
@@ -179,7 +179,7 @@ def check_unactioned_intake(index_path: Path, max_age_days: int) -> list[Issue]:
         verdict = entry.get("verdict", "")
         if verdict not in actionable_verdicts:
             continue
-        if entry.get("handoffs_created"):
+        if entry.get("handoffs_created") or entry.get("handoffs_updated"):
             continue
 
         ingested = entry.get("ingested_date", "")
@@ -195,7 +195,7 @@ def check_unactioned_intake(index_path: Path, max_age_days: int) -> list[Issue]:
             eid = entry.get("id", "unknown")
             title = entry.get("title", "untitled")[:60]
             issues.append((WARNING, eid,
-                f"verdict='{verdict}', no handoff created, {age}d old: {title}"))
+                f"verdict='{verdict}', no handoff created or updated, {age}d old: {title}"))
 
     return issues
 

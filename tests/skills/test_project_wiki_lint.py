@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 
@@ -113,3 +114,35 @@ Reference page with a hand-curated shape.
             "Missing **Category** metadata; treating as a legacy/reference page",
         )
     ]
+
+
+def test_unactioned_intake_accepts_created_or_updated_handoff(tmp_path: Path) -> None:
+    module = _load_module()
+    index_path = tmp_path / "intake_index.yaml"
+    old_date = (date.today() - timedelta(days=60)).isoformat()
+    _write(
+        index_path,
+        f"""entries:
+  - id: intake-created
+    title: Created route
+    verdict: worth_investigating
+    ingested_date: {old_date}
+    handoffs_created: [created.md]
+  - id: intake-updated
+    title: Updated route
+    verdict: new_opportunity
+    ingested_date: {old_date}
+    handoffs_updated: [updated.md]
+  - id: intake-unrouted
+    title: Unrouted item
+    verdict: worth_investigating
+    ingested_date: {old_date}
+""",
+    )
+
+    issues = module.check_unactioned_intake(index_path, max_age_days=30)
+
+    assert len(issues) == 1
+    assert issues[0][0] == module.WARNING
+    assert issues[0][1] == "intake-unrouted"
+    assert "no handoff created or updated" in issues[0][2]
