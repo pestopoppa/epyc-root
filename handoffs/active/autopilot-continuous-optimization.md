@@ -1991,19 +1991,29 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `ratify_and_apply_mixed_role_split_v3.py` at `2026-08-07T12:32:51.554623Z`. Canonical state now
       names `task_rate_4d_v3_mixed_role_split`, `resource_lanes_v3_mixed_role_split`, and
       `model_judge_tail_v4_gpu_lifecycle_quiescence`; the receipt records `autopilot_started=false`.
-- [ ] **Validate serving under explicit inference permission before collecting the E12 baseline.** An
-      API reload and representative primary/auxiliary split-lane inference are still intentionally
-      unperformed. Do not collect or ratify the E12 baseline, and do not start AutoPilot, until the
-      operator explicitly authorizes inference and startup.
-- [ ] **AP-48 — Add backlog-aware adaptive full/split admission after the E12 burst baseline.** Treat
-      E12's always-split policy for router-owned EvalTower traffic as the conservative burst anchor,
+- [x] **Validate serving and attempt the E12 baseline under explicit inference permission. ✅ 2026-08-07**
+      Primary/auxiliary split placement was proven live. The canonical 100-question run then failed
+      closed: one roughly 175K-token prompt was learned-routed through frontdoor to worker_general
+      half1, timed out after 1,515 s, and left llama slot 0 prefilling after client failure. Both
+      lifecycle drain checks rejected the run; reliability was 0.79 and no candidate was written.
+      The exact orphan was removed by recycling only server `:8182`; all lifecycle counts returned to
+      zero. AutoPilot remained stopped.
+- [ ] **Ratify E13 long-context routing boundary and collect a clean baseline.** Orchestrator commit
+      `25f557cc` adds a pre-learned-routing guard for unforced text above the configured 20K-character
+      threshold, preserves forced/explicit/image routes, reports actual rather than retained-preview
+      prompt length in structured tap telemetry, expands baseline source hashing to the router and
+      lifecycle/tap sources, and opens `task_rate_4d_v4_long_context_guard` /
+      `resource_lanes_v4_long_context_guard`. Focused validation: 241 passed. The human-only boundary
+      transaction is `ratify_and_apply_long_context_guard_v4.py`; do not collect E13 until it is applied.
+- [ ] **AP-48 — Add backlog-aware adaptive full/split admission after the E13 burst baseline.** Treat
+      E13's guarded split policy for router-owned EvalTower traffic as the conservative burst anchor,
       not the final general scheduler. Build an admission policy that uses arrival pressure, physical
       frontdoor/worker queue depth, and calibrated probability of a frontdoor-terminal answer to choose
       `homogeneous_native_batch` versus `mixed_role_split` at request boundaries. It may schedule a full
       instance only while downstream pressure is absent; when pressure appears, drain rather than preempt
       the active full request and switch subsequent admissions to complementary halves. Evaluate direct-only,
       mixed-pipeline, and randomly paced arrivals separately. Any live adoption opens a new execution/speed
-      era so E12 questions/hour is never mixed with the adaptive denominator.
+      era so E13 questions/hour is never mixed with the adaptive denominator.
 - [ ] **AP-49 — Explore true live-decode checkpoint/resume only on a versioned experimental kernel.** The
       production llama-server defers slot save/restore while `slot->is_processing()`, so current migration is
       an idle-session KV handoff and cannot relocate an active decode. Prototype a token-boundary pause →
