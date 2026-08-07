@@ -313,7 +313,7 @@ CHECKPOINT + RESET (selective) + RESEED → back to top
 
 **Parallel-dispatch metric policy (2026-05-26 audit)**: concurrent EvalTower fan-out is valid only inside one trial's own eval batch; separate trials must not run concurrently in one autopilot process. Concurrent fan-out intentionally trades lower individual request t/s for higher aggregate batch throughput. `EvalResult.speed` and Pareto objective #2 are the effective speed for the eval mode: median request t/s for serial evals, aggregate batch t/s for concurrent same-trial eval batches. Concurrent runs also journal `speed_metric_mode`, `median_request_tps`, `aggregate_tps`, `eval_concurrency`, and `eval_wall_s`, so the planner does not infer a regression from raw per-instance slowdown while diagnostics still expose it.
 
-**Dispatch-latency / idle-visibility policy (2026-05-26 hardening)**: the dashboard CPU-region table is a placement-readiness view, not proof that autopilot is alive or actively dispatching. `phase_status.py` now writes `/mnt/raid0/llm/tmp/autopilot_phase.json{,l}` so the dashboard can show whether the loop is stopped, paused, in health backoff, building the planner prompt, invoking the planner, dispatching, journaling, checkpointing, or scheduling async artifacts. Auxiliary plot/digest work may run asynchronously (`AUTOPILOT_ASYNC_AUX=1`, `AUTOPILOT_ASYNC_WORKERS=2`) after durable journal/state mutation; checkpointing remains synchronous. Seeder role evals may fan out with `AUTOPILOT_SEED_ROLE_CONCURRENCY=auto`, but only in contention-matrix-safe background waves with same-port and heavy-port guards. The high-blast-radius request caller contracts remain unchanged; request-level `trial_id`/`batch_id` stamping through `call_orchestrator_forced` is a separate accepted-risk follow-up, not part of this hardening.
+**Dispatch-latency / idle-visibility policy (2026-05-26 hardening; lock-display semantics corrected 2026-08-06)**: the dashboard CPU-region table is a physical placement-lease occupancy view, not proof that autopilot is alive or actively dispatching. An overlapping shape renders locked whenever any active placement lease occupies one of its CPU regions; contention-matrix admission metadata must not make an occupied region look free. An active cell's `active/configured` denominator is the selected llama-server instance's declared per-shape serving slots, not the exclusive placement lease's admission width. `phase_status.py` now writes `/mnt/raid0/llm/tmp/autopilot_phase.json{,l}` so the dashboard can show whether the loop is stopped, paused, in health backoff, building the planner prompt, invoking the planner, dispatching, journaling, checkpointing, or scheduling async artifacts. Auxiliary plot/digest work may run asynchronously (`AUTOPILOT_ASYNC_AUX=1`, `AUTOPILOT_ASYNC_WORKERS=2`) after durable journal/state mutation; checkpointing remains synchronous. Seeder role evals may fan out with `AUTOPILOT_SEED_ROLE_CONCURRENCY=auto`, but only in contention-matrix-safe background waves with same-port and heavy-port guards. The high-blast-radius request caller contracts remain unchanged; request-level `trial_id`/`batch_id` stamping through `call_orchestrator_forced` is a separate accepted-risk follow-up, not part of this hardening.
 
 **Controller-mode relaunch safety policy (2026-05-31 hardening)**: the Claude->Codex planner loop is safe to run only when `AUTOPILOT_PLANNER_MODE=draft_critique` uses the fail-closed coordinator path from `d5c3a2f` or later. Under active critique, Codex parse failures and provider failures no longer default to approve. The universal action validator rejects schema drift before dispatch, closing the silent-drop class where the planner and critic approve fields the executor ignores. Mutation actions also check target cleanliness before any write: code mutation checks its resolved allowlisted file, prompt mutation and GEPA check the whole `orchestration/prompts/` path because PromptForge stages that directory, and structural prune checks its exact prompt file. This prevents forge commits from sweeping pre-existing shared-clone work in a target path.
 
@@ -1557,6 +1557,25 @@ First full smoke run of the trial loop. Four defects, three silent.
       then spun in a pause-wait loop at 1 log line/second. Resumed.
 - [x] **Bounded trial completed clean** ✅ 2026-08-03 — `ran 1 of 1 (trial 1460 -> 1461)`,
       structural_lab, tier 1, quality 1.8293, T1 65/65, **0 INFRA_SKIPs** (was 17).
+- [x] **Regions-lock grid no longer labels occupied cross-role shapes free** ✅ 2026-08-06 —
+      backend display cells now render `×` for every physical overlap with an active placement
+      lease, independently of contention-matrix admission. Regression coverage pins the reported
+      two-half case: `worker_general.half0` + `.half1` occupy q0–q3, making every Full/Half shape
+      for `architect_critic`, `frontdoor`, and `ingest_long_context` locked while the two worker
+      halves remain active. A second exact regression pins `frontdoor.full`: it renders `⚡ 1/4`
+      (configured serving slots, not its exclusive lease width), locks both frontdoor halves,
+      `architect_critic.Full`, and every Full/Half shape for ingest and worker. The apparent live
+      failure after the first source fix was an escaped pytest API process, not the repaired matrix:
+      PID 3903691 was launched by a unit test on 2026-08-05 with stale Python and a pytest lock
+      directory. The launcher/test escape is now structurally guarded (INC-20260806-pytest-api-escape).
+      Validation: 137 focused repair tests + 193 broader dashboard consumers passed; repository
+      gates passed.
+- [ ] **Reload the escaped live API at the inference owner's next safe boundary.** Named external
+      event: the session owning live inference must run the API-only
+      `orchestrator_stack.py reload orchestrator` after its in-flight requests drain. Current PID
+      3903691 is healthy but stale and carries `PYTEST_CURRENT_TEST` plus pytest `TMPDIR` /
+      `ORCHESTRATOR_TMP_DIR`; this session did not kill or reload it across another session's live
+      requests (reload-ownership rule, INC-20260728-reload-preemption).
 - [x] **CORRECTION: SEQ-3b is NOT the mechanism that clears the E8 hold** ✅ 2026-08-03 — this entry
       previously called SEQ-3b "the ONLY correct path" to lift the re-baseline hold. That conflated two
       different things. SEQ-3b is a **sequential-allocation candidate re-run** (`70902e4b665474e7`,
@@ -1918,17 +1937,16 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       truth that had legitimately moved (the ARCHITECT_CRITIC W1 cutover moved the 122B, so
       escalation-ladder and tier assertions were pinned to the pre-cutover graph). Fixes
       derive from the registry rather than restating it.
-- [ ] **The fix is NOT committed** — blocked on shared-clone ownership, not on the work. The
-      orchestrator tree holds 82 uncommitted files spanning ≥3 concurrent sessions;
-      committing a subset would either absorb another session's changes or split a paired
-      test+source fix and break the suite that was just verified green. Tree has been quiet
-      11.5 h, so nothing is racing. Needs the owning sessions to land their work.
-- [ ] **`test_wider_scoring_pool_lowers_wall_proportionally` is load-fragile.** It asserts
-      `ratio > 1.4` on a wall-clock parallel-scoring speedup; it got 1.28 inside the full
-      suite and passes **3/3 in isolation** at load average 99 — the suite's own parallelism
-      perturbs the quantity it measures. Deliberately NOT "fixed" by loosening the threshold,
-      which would delete the signal. Make it robust to co-tenancy (measure work-per-unit-CPU,
-      or pin the comparison to a serialized baseline) or mark it as requiring isolation.
+- [x] **Inherited prerequisite and resource-lane fixes committed** ✅ 2026-08-05 — the
+      retired session's 66-file prerequisite/test closure landed as `53e802a5`; the audited
+      scheduler/instrument package landed as `65aac3d6`. The latter adds prompt-weighted
+      per-question lanes, defers model-backed scoring until generation drains, caps the scorer
+      tail to certified serving width, stamps execution/scoring identity, and bumps the live
+      objective to `task_rate_4d_v2_resource_lanes` so v1 snapshots cannot seed the frontier.
+- [x] **Load-fragile scoring-pool test repaired** ✅ 2026-08-05 — replaced the wall-clock
+      ratio assertion with direct observed scorer concurrency (`4` versus `8` active tasks).
+      This preserves the wiring signal under host co-tenancy instead of weakening a timing
+      threshold. It passed inside the 361-test focused post-repair set.
 - [ ] **A subagent disabled a safety gate; the prohibition was prose, not enforcement.** A C6
       agent copied the E8 operator apply script and patched out
       `canonical.autopilot_running()` as `if False and canonical.autopilot_running()` — the
@@ -1939,16 +1957,61 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       gated script and ungate the copy, and nothing structural stopped it.** Decide whether
       operator apply scripts need an enforcement that survives copying (e.g. the gate reads a
       lock the script cannot author, or the apply path refuses when its own hash is unknown).
-- [ ] **AutoPilot is DOWN since 2026-08-04 18:08 and must not resume yet.** Killed by an
+- [x] **E10 scorer-tail boundary applied and its diagnostic baseline preserved. ✅ 2026-08-06** AutoPilot was
+      killed by an
       external `SIGTERM` mid-eval at 40/65 (source unproven; leading hypothesis is a workflow
       agent despite its "zero process management" instruction, but this host has
-      INC-20260731-broad-process-pattern-kills as precedent). **Named blocker for the
-      restart**: the working tree carries an uncommitted `eval_tower.py` change adding a live
-      `_EvalResourceLane` concurrency subsystem — `_eval_resource_lanes(questions)` is called
-      unconditionally and `AUTOPILOT_EVAL_CONCURRENCY` is an override, not an enable gate.
-      That alters eval wall-clock, which is now the denominator of the live questions/hour
-      objective. Resuming would measure the objective on an instrument changed by unreviewed,
-      unattributed code. Unblocks as soon as the owning session lands it or it is reverted.
+      INC-20260731-broad-process-pattern-kills as precedent). The uncommitted-instrument blocker
+      is closed by `65aac3d6`, and the E9 resource-lane amendment was human-ratified. A first
+      100-question baseline exposed judge-tail cohort contention and an over-broad collector
+      guard that treated unrelated repository HEAD movement as instrument drift. `994ccec7`
+      serializes judge calls per physical serving cohort, retains native generation batching,
+      and binds collection to measurement-critical source hashes plus the state preimage while
+      retaining start/end commits as provenance. The operator applied the E10 boundary. Its
+      100-question diagnostic candidate was rejected and retained immutably: eight judge
+      transport timeouts exposed generation backends that had not drained before nested scoring.
+- [x] **E11 model-judge drain boundary ratified; its baseline was deliberately superseded before
+      collection. ✅ 2026-08-07** `6098da69` requires stable API-lifecycle and `/slots` drain around
+      nested scoring, propagates scorer batch/deadline identity, and rejects scorer-infrastructure
+      errors even at the 0.80 reliability floor. The operator applied the E11 boundary, but the
+      subsequent burst audit found that resource-lanes v2 selected full native batching before
+      router-owned requests revealed their downstream worker cohort. No E11 baseline was promoted.
+- [x] **E12 mixed-role split implementation is complete and test-clean. ✅ 2026-08-07** `718e130c` Router-owned
+      EvalTower bursts now declare `mixed_role_split` before dispatch, suppress the overlapping full
+      CPU instance, and retain a bounded four-request client pipeline while physical half-instance
+      leases determine actual decode concurrency. Forced-role homogeneous cohorts retain certified
+      full-server native batching. The public placement policy is now shape-agnostic
+      `burst_prefer_split` with the old spelling accepted only as an input compatibility alias. The
+      auxiliary half-A frontdoor lane was corrected from the stale pre-reduction `-np 8` to `-np 2`,
+      resolves to its physical half lock, and has a per-slot context admission fence. The judge
+      trace verifier now replays both the current GPU-judge request contract and historical sealed
+      traces. Full suite: 13,149 passed, 77 skipped, 4 xfailed; the final auxiliary mixed-mode
+      refinement then passed its 148-test routing/inference set.
+- [x] **E12 measurement boundary ratified. ✅ 2026-08-07** The operator applied
+      `ratify_and_apply_mixed_role_split_v3.py` at `2026-08-07T12:32:51.554623Z`. Canonical state now
+      names `task_rate_4d_v3_mixed_role_split`, `resource_lanes_v3_mixed_role_split`, and
+      `model_judge_tail_v4_gpu_lifecycle_quiescence`; the receipt records `autopilot_started=false`.
+- [ ] **Validate serving under explicit inference permission before collecting the E12 baseline.** An
+      API reload and representative primary/auxiliary split-lane inference are still intentionally
+      unperformed. Do not collect or ratify the E12 baseline, and do not start AutoPilot, until the
+      operator explicitly authorizes inference and startup.
+- [ ] **AP-48 — Add backlog-aware adaptive full/split admission after the E12 burst baseline.** Treat
+      E12's always-split policy for router-owned EvalTower traffic as the conservative burst anchor,
+      not the final general scheduler. Build an admission policy that uses arrival pressure, physical
+      frontdoor/worker queue depth, and calibrated probability of a frontdoor-terminal answer to choose
+      `homogeneous_native_batch` versus `mixed_role_split` at request boundaries. It may schedule a full
+      instance only while downstream pressure is absent; when pressure appears, drain rather than preempt
+      the active full request and switch subsequent admissions to complementary halves. Evaluate direct-only,
+      mixed-pipeline, and randomly paced arrivals separately. Any live adoption opens a new execution/speed
+      era so E12 questions/hour is never mixed with the adaptive denominator.
+- [ ] **AP-49 — Explore true live-decode checkpoint/resume only on a versioned experimental kernel.** The
+      production llama-server defers slot save/restore while `slot->is_processing()`, so current migration is
+      an idle-session KV handoff and cannot relocate an active decode. Prototype a token-boundary pause →
+      checkpoint → restore → resume protocol that preserves KV plus sampler/RNG, grammar/tool-parser,
+      speculative-decoder, request/stream ownership, cancellation, and exact output continuity. Start from
+      fresh frozen production into `llama.cpp-experimental`; do not modify the production kernel. Require
+      byte/token continuity tests, failure-atomic rollback, bounded pause/transfer cost, and a demonstrated
+      advantage over request-boundary drain-and-switch before considering a new production version.
 
 ## 2026-08-05 — Research intake: least-commitment diagnostics and compression safety
 
@@ -1979,11 +2042,15 @@ verified diagnostic and validation patterns._
     campaign Step 3 has not run. Admit the first archive only after proposal-v3 frame receipts and completed
     matched interventions exist; synthetic regression rows are protocol tests, never decision evidence.
 
-- [ ] **AP-29d — Make strategy compression commitment-nonincreasing before wiring distillation.** For both
+- [x] **AP-29d — Make strategy compression commitment-nonincreasing before wiring distillation. ✅ 2026-08-05** For both
   StructuralLab MDL conventions and KnowledgeDistiller patterns, retain source member/evidence ids and
   qualifiers; derive planner-binding applicability/binding metadata from the intersection of supporting
   members; keep unmatched claims advisory or delta-only; and fail closed to advisory-only when supporting
   trials disagree or harmless paraphrase/recoding changes the induced binding. Add a regression fixture in
   which the longest cluster member overgeneralizes one supporting trial and prove that it cannot become a
   global/live convention. This extends rather than replaces AP-29's episodic-only control and grouped/batched
-  consolidation gate.
+  consolidation gate. Landed as orchestrator commit `b6a6e5e5`: StructuralLab and
+  KnowledgeDistiller now retain source/evidence/qualifier provenance, derive applicability and
+  planner bindings only from unanimous supporting-member intersections, and fail closed to
+  advisory-only on outcome, binding, qualifier, or recoding disagreement. Regression fixtures
+  prove that a longest-member overgeneralizer cannot become a live convention.
