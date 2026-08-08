@@ -88,6 +88,17 @@ this repo, and settle two that nobody owns at all.
         before we spend a CPU window. Caveats that must travel with it: **n=200, single run, no
         variance**, and the "full context" arm is **sliding-window 200k / 50k-overlap plus LLM
         aggregation, not one prefill** — so it is not the clean long-context control E3 still owes.
+  - [ ] **E3b — Run a clean same-model direct-context versus REPL/data-by-reference comparison.** The
+        Pokee-Isaac report's 10M RULER result is a direct full-prompt arm, not external-memory or REPL
+        paging, and its proprietary architecture cannot be reproduced from the report. Use locally
+        supported context lengths and matched retrieval, document-QA, and tool-mediated tasks. Compare
+        (A) one direct prompt, (B) existing Context-Folding, and (C) a REPL whose large corpus remains
+        in variables/files and is accessed through precise deterministic searches/slices. Hold model,
+        task, answer scorer, total time limit, and available information fixed. Report quality,
+        evidence recall, TTFT, prefill/decode tokens and throughput, peak memory/KV, number and precision
+        of tool calls, root/subcall tokens, turns, retries, and wall time. Include a zero-sub-LLM
+        Python/search arm. Treat long context as archive/fallback and REPL as control-plane hypotheses;
+        choose by measured Pareto result, not by the proprietary 10M headline.
 - [ ] E4 — Write the resolution into `rao-redel-substrate-spike.md` § caveat and master-index N17 as
       first-party evidence — or explicitly record that ours agrees with the external reproduction.
 

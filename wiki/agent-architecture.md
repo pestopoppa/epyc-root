@@ -2,8 +2,40 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-05
-**Sources**: 70+ documents
+**Last compiled**: 2026-08-08
+**Sources**: 75+ documents
+
+## Compiled Update — 2026-08-08: persistent agents need fencing and side-effect uncertainty, not another runtime
+
+**Confidence: verified for pinned implementation behavior and EPYC overlap; external for vendor benchmark results.**
+
+Prime Agent's broad daemon, checkpoint, scheduling, child-agent, and refinement surface mostly overlaps
+existing EPYC facilities. Two invariants do not: a canonical session lease with a monotonically
+increasing fencing token, and a recovery journal that distinguishes a side effect known to have
+completed from one that may have occurred before a crash. A resumable agent must never blindly replay
+the latter; it must reconcile external state or require an explicit retry/skip decision while retaining
+the uncertain record.
+
+Continual Harness is useful on the other side of the authority boundary. Its trajectory-conditioned
+prompt/subagent/skill/memory edits can become typed, default-off proposals, but the released code applies
+edits live, lacks held-out acceptance and transactional rollback, and executes generated Python in the
+same process with `__import__` available. The 842-repeat invalid-tool loop and Factorio privilege exploit
+are therefore stronger as adversarial fixtures than as optimizer examples: bound repetition, classify
+oracle inadequacy, and prevent a reward-improving privilege violation from being stored as a skill.
+
+Pokee-Isaac reinforces the service/evaluation contract—scoped tools, resumable sessions, sandboxing,
+typed failures, and trace replay—but does not disclose enough to reconstruct its 10M-context model.
+Its published RULER arm is a direct full-prompt evaluation, not a REPL paging trick. EPYC should measure
+direct context, Context-Folding, and a data-by-reference REPL as separate matched arms; long context is
+an archive/fallback hypothesis and precise tools are a control-plane hypothesis, not competing slogans.
+
+### Source References
+
+- [REPL Session Memory](../handoffs/active/repl-session-memory-maturity.md) — D-f/D-g lease fencing and uncertain-effect journal
+- [AutoPilot Continuous Optimization](../handoffs/active/autopilot-continuous-optimization.md) — AP-CH-1/AP-CH-2 shadow proposal boundary
+- [Tool-Use Eval Contract](../handoffs/active/tool-use-eval-contract.md) — bounded repetition, privilege, and typed-failure fixtures
+- [RLM Contested Claims](../handoffs/active/rlm-contested-claims-self-evaluation.md) — matched direct-context versus REPL/data-by-reference arm
+- Intakes 1009/1010, 1012, 1016, and 1020/1021 in [the research index](../research/intake_index.yaml) — pinned Prime, Pokee, Continual, and DTAP evidence
 
 ## Compiled Update — 2026-08-03 (second): a well-formed deferral is still a deferral
 

@@ -364,3 +364,20 @@ The **parent** half is already implemented: `final_schema_validation` (2026-05-2
   - Zero inference cost to adopt; it is prompt text, not code.
 
 - [x] Candidate fix for the comment-only-REPL blocker: adopt the negative-constraint + stated-consequence pattern (one block, no narration, no comments, drop-consequence named) into the sentinel prompts. [intake-868] ✅ 2026-07-29 — orchestrator `e6b989b9` adds the explicit discard-and-score-incorrect consequence to every executable-only sentinel prompt; `tests/test_tool_sentinels.py` passes 8/8 with no AutoPilot restart or inference.
+
+## 2026-08-07 — state-judged agent security and recovery fixtures (intake-1012/1016/1020/1021)
+
+- [ ] **TU-DTAP-1 — Import a reviewed, bounded Apache-2.0 DTAP subset into a disposable local runner.**
+  Select paired benign/direct/indirect cases across prompt, tool, skill, environment, and compositional
+  injection. Preserve each task's config and deterministic final-state judge, but inspect every setup
+  script before use and never run it on the host. Hold model, prompt, tools, endpoint, temperature,
+  retries, and harness fixed across arms. Add repeated seeds/confidence intervals, immutable trace
+  replay, and typed `model|parser|tool|endpoint|harness|judge|infrastructure|overflow` outcomes. Keep
+  attack generation target-disjoint from the final comparison; matched-target DTAP-RED results are an
+  attack-search upper bound, not a general robustness score.
+
+- [ ] **TU-ADV-1 — Add the Continual/Pokee negative cases as exact contract fixtures.** Fixture A
+  repeats one invalid tool payload and must terminate/classify well before 842 attempts. Fixture B
+  offers a privileged environment/oracle path that improves reward while violating allowed
+  capabilities; the evaluator must reject the exploit and prevent its conversion into a reusable
+  skill. Score benign completion beside attack success and retain the full typed failure chain.

@@ -2,8 +2,41 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-08-03 (adds the gradient-free memory result — distill+retrieve with RL DISABLED beats the same system's RL-only arm and reaches 93.5% of the full system, which puts the useful half of this literature on the inference-only side of the training line — plus two zero-training portables and a worked case of a "(reproduced)" baseline that reproduces nothing published; earlier 2026-07-28 note: adds the standing integrity gates + universal degenerate-vector guarantee)
-**Sources**: 29+ documents (2 deep-dives, 22 intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+**Last compiled**: 2026-08-08
+**Sources**: 35+ documents (2 deep-dives, 28+ intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+
+## Compiled Update — 2026-08-08: memory operations need provenance, calibrated verification, and a no-memory control
+
+**Confidence: verified for artifact scope and local design routing; external for reported benchmark gains.**
+
+The new memory sources agree on a useful operation vocabulary but not on evidence quality. VerMem's
+paper defines versioned `ADD|UPDATE|DELETE|RETRIEVE|FILTER|SELECT_EPISODE|SUMMARIZE|NOOP` actions and
+reports a material semantic-verifier ablation, while its released repository supplies only structural
+and lexical rules—not the load-bearing DeepSeek semantic judges or a complete durable runtime. Mem0
+adds practical local scoping, conflict retrieval, mutation history, and manual update/delete, but its
+current default extraction path has drifted to ADD-only and the paper's efficiency figures omit memory
+construction/write cost. Memory-R1 usefully separates a manager from an answer-time distiller and
+applies downstream outcome credit, but releases no training implementation and shows non-uniform gains.
+
+Two negative controls bound the design. Cognitive Workspace's apparent reuse advantage is structurally
+forced by a zeroed RAG control, a truthy match predicate, cumulative counter leakage, and dependent
+statistics; it is a regression fixture, not evidence for a memory system. ActiveMem's parallel gist
+workers are worth comparing, but its memory is task-local, the runtime is unreleased, and raw content
+can become unrecoverable unless every gist retains a resolvable evidence pointer.
+
+The EPYC design consequence is a default-inert shadow layer over immutable raw events: append-only
+operation envelopes, source references, actor/scope, before/after versions, rollback links, tombstones
+that are explicitly distinct from physical erasure, separately calibrated structural and semantic
+verification, and independent answer-time distillation. Evaluation must include no-memory/full-context,
+raw append-log retrieval, Context-Folding, shadow mutation proposals, and gist extraction under
+restart, cross-session, conflict, staleness, poisoning, deletion, rollback, and raw-source recovery.
+
+### Source References
+
+- [Unified Trace / Memory Service](../handoffs/active/unified-trace-memory-service.md) — UTM-V1…V6 shadow schema, verifier, distiller, credit, and lifecycle matrix
+- [Context-Folding](../handoffs/active/context-folding-progressive.md) — CF-AM-1 matched parallel-gist versus folding/raw-evidence comparison
+- [REPL Session Memory](../handoffs/active/repl-session-memory-maturity.md) — durable session ownership and uncertain-side-effect recovery requirements
+- Intakes 1008/1015, 1017/1018, and 1022/1023 in [the research index](../research/intake_index.yaml) — Cognitive Workspace, ActiveMem, VerMem, Mem0, and Memory-R1 claim ledgers
 
 ## Compiled Update — 2026-08-03: the useful half of the memory literature does not need gradients
 

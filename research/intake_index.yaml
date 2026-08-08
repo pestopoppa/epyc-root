@@ -10655,7 +10655,7 @@
   expanded_from: intake-326
   ingested_date: '2026-04-12'
   contradicting_evidence:
-  - Cloud-only approach conflicts with our local-first constraint
+  - '2026-08-07 correction: the managed platform is cloud-hosted, but the official Apache-2.0 repository supports self-hosting plus Ollama and OpenAI-compatible local endpoints; the earlier cloud-only conclusion is false.'
   - 85% vs MemPalace 96.6% — derived approach underperforms raw approach
   cross_references:
     intake:
@@ -10664,9 +10664,12 @@
   notes: 'Useful as comparison point for MemPalace. The 85% vs 96.6% gap illustrates the raw-vs-derived tradeoff from intake-316: Mem0 uses LLM extraction (derived, lossy) while MemPalace stores verbatim (raw, lossless). Cloud-only with $249/mo pricing makes it not_applicable for our local stack, but the architecture comparison is informative for our context-folding design decisions. DEEP-DIVE 2026-04-12: Mem0 architecture: 5-component pipeline (extraction → conflict detection → vector storage → Mem0g graph → reranking). Three memory types: episodic (what happened), semantic (what is known), procedural (how to do things — added v1.0.0). Async by default (writes don''t block response). LOCOMO benchmarks: full-context 72.9%, Mem0g graph 68.4%, Mem0 vector 66.9%, RAG 61.0%, OpenAI Memory 52.9%. Published ECAI 2025 (arxiv:2504.19413). Actor-aware memory (June 2025): prevents one agent''s inference becoming ground truth for another. Multi-scope: user_id + agent_id + run_id + app_id. ACKNOWLEDGED FAILURE: staleness ("confidently wrong rather than just outdated"), cross-session identity resolution unsolved. FOR EPYC: (1) Three-type taxonomy (episodic/semantic/procedural) should reorganize our MEMORY.md. (2) Actor-aware memory is critical for multi-model orchestrator — coder model inferences ≠ ground truth for worker model. (3) Conflict detection before write is missing from our handoff system. (4) Not deployable (cloud-only, no local inference support). UPGRADE relevance medium→medium-high for PATTERNS.
 
     '
+  verification: dive-overturned
+  dive_corrections: |-
+    2026-08-07 corrective artifact dive. OVERTURNED: Mem0 is cloud-only and has no local-inference path. The official Apache-2.0 repository supports self-hosting, Ollama, LiteLLM, configurable OpenAI-compatible endpoints, local vector stores, user/agent/run scopes, mutation history, and explicit update/delete APIs. The managed platform and its proprietary optimizations remain distinct from the open-source SDK. The current repository's April-2026 default extraction path is ADD-only and therefore does not reproduce the older paper's automatic ADD/UPDATE/DELETE/NOOP conflict-resolution algorithm. See intake-1022 for the paper/repository claim ledger and bounded EPYC prototype.
   integration_disposition: knowledge_only
   disposition_evidence:
-  - '2026-08-05 audit: retained as architecture/methodology/comparison context; no repository evidence supports an implementation task. Wiki citation(s): wiki/memory-augmented.md.'
+  - 'The 2026 blog remains comparison context because its managed-platform metrics do not transfer to the OSS SDK; implementation-relevant paper and repository evidence is tracked separately under intake-1022.'
 - id: intake-347
   arxiv_id: '2603.07670'
   url: https://arxiv.org/abs/2603.07670
@@ -53542,3 +53545,1016 @@
     DIVE-SURFACED SOURCES: Pith's related/aggregator links were inspected but add no independent evidence; the machine-review-pages gate is closed with this canonical artifact.
 
     2026-08-05 STAGE-3/4 DISPOSITION. M1, M2, and M3 landed as RA-12: an immutable review envelope, source-update invalidation, and an unverified-lead evidence label. M4 is declined: no paper-level action is taken beyond intake-994's current-primary audit.
+- id: intake-1005
+  arxiv_id: '2607.28611'
+  url: https://www.arxiv.org/pdf/2607.28611
+  source_type: paper
+  title: 'Chimera: Designing and Chinchilla-Scaling Hybrid Visual Diffusion Transformers'
+  authors: [Chongjian Ge, Hanwen Jiang, Tianyu Wang, Jiuxiang Gu, Yiran Xu, Ziwen Chen, Shaoteng Liu, Jing Shi, Yicong Hong, Zefan Cai, Hailin Jin, Hao Tan]
+  categories: [multimodal, ssm_hybrid, moe_optimization, context_extension, benchmark_methodology]
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  discovered_via: input
+  ingested_date: '2026-08-07'
+  verdict: adopt_patterns
+  verification: stage1-unverified
+  key_claims:
+  - '[unverified] Chimera interleaves Kimi Delta Attention, periodic Multi-head Latent Attention, modality-aware short convolutions, and sparse MoE in one raster-ordered text/image/video stream without explicit positional embeddings.'
+  - '[unverified] HeteroP transfers initialization and optimizer hyperparameters across width and depth using module-specific functional fan-in rather than one global scaling rule.'
+  - '[unverified] The NoPE hybrid recurrent/global design is reported to extrapolate from five-second training clips to thirty-second generation without length-specific fine-tuning.'
+  techniques: [Kimi Delta Attention, periodic MLA, modality-aware causal short convolution, sparse MoE, identity hyper-connections, HeteroP, multi-estimator compute-optimal scaling]
+  reported_results:
+  - '[unverified] At diffusion loss 0.149, Section 5.5 implies 6.8x less compute than matched Wan2.1, while the abstract and introduction say 7.3x.'
+  - '[unverified] From five to thirty seconds, reported FID moves 77.1 to 82.1 and FVD 685.8 to 829.5.'
+  - '[unverified] On one A100-SXM4-80GB, the KDA/MLA backbone is reported 2.14x faster than MHA/MLA at 255k tokens; the latter OOMed near 152k.'
+  cross_references:
+    chapters: [02-moe-optimization.md, 06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs: [ernie-image-turbo-evaluation.md, multimodal-pipeline.md, gpu-acceleration-path.md, multiscreen-attention-evaluation.md, log-linear-gated-deltanet-readiness.md, lightning-attention-port.md]
+    experiments: []
+    intake_entries: [intake-356, intake-503, intake-535, intake-928, intake-937]
+  contradicting_evidence:
+  - 'The paper itself gives incompatible 7.3x headline and 6.8x detailed matched-loss factors.'
+  - 'No independent replication or adversarial review surfaced; prior video-DiT scaling work warns that fitted laws are sensitive to learning rate and batch size.'
+  recommended_actions:
+  - '[unverified] Require proxy-to-target hyperparameter-transfer checks across both width and depth before using HeteroP-style scaling laws.'
+  - '[unverified] If code or weights appear, gate first on KDA, periodic MLA, convolution, ggml conversion, and gfx90a support before any image-quality benchmark.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 source fetch: ar5iv HTML SHA-256 48f10a2fd531894b7429da47f5e70ad1fb79fb9d36a3253896cf5d43b8375b3b. No code, weights, or project/model URL was found. Medium relevance: design and scaling patterns bear on the deployed diffusion surface, but no runnable component exists.'
+- id: intake-1006
+  arxiv_id: null
+  url: https://www.liquid.ai/blog/lfm2-5-2-6b
+  source_type: blog
+  title: 'LFM2.5-2.6B: Deploy Agents Everywhere'
+  authors: [Liquid AI]
+  categories: [agent_architecture, training_distillation, local_inference, context_extension, ssm_hybrid, benchmark_methodology]
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: input
+  ingested_date: '2026-08-07'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - 'Liquid releases a 2.69B dense hybrid with 22 short-convolution blocks, eight GQA blocks, a 128K vocabulary, and 131,072-token context, post-trained for tool use and multi-turn agency.'
+  - 'Multi-Domain On-Policy Distillation routes student rollouts to domain teachers branched from the same SFT checkpoint for token-level feedback; teacher sizes, routing thresholds, and objective details remain undisclosed.'
+  - 'Agentic RL randomizes harnesses and combines judge rubrics, programmatic checks, and a hard safety gate; a Harness Proxy captures token trajectories from unmodified black-box harnesses.'
+  - 'The model always enters a reasoning section under its official chat template, so task-level latency and reasoning-token overhead—not raw decode rate alone—are load-bearing for the worker_general decision.'
+  techniques: [double-gated short convolutions, GQA, tokenizer expansion, context-extension mid-training, teacher-specialized RLVR, MOPD, multi-harness Agentic RL, Harness Proxy, Rollout Routing Replay]
+  reported_results:
+  - '[vendor-self-reported] IFBench 59.17, Multi-IF 80.07, BFCLv4 56.88, ToolSandbox 77.83, and LiveCodeBench v6 59.41.'
+  - '[vendor-self-reported] CPU decode is reported at 220 tokens/s on Apple M5 Max, 113 on Ryzen AI Max+ 395, and 30 on an unspecified phone.'
+  - '[vendor-self-reported] H100 SGLang throughput is reported near 15K aggregate output tokens/s at high concurrency.'
+  - 'The vendor comparison covers Gemma 4 E2B/E4B, not EPYC''s Gemma 4 26B-A4B worker_general, so it does not establish replacement quality.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 09-claude-debugger.md]
+    handoffs: [frontier-f3-data-flywheel.md, agent-world-env-synthesis.md, harness-selection-and-integration.md, eval-tower-verification.md, multiscreen-attention-evaluation.md, log-linear-gated-deltanet-readiness.md]
+    experiments: []
+    intake_entries: [intake-505, intake-650, intake-651, intake-652, intake-653, intake-916, intake-920, intake-933]
+  contradicting_evidence:
+  - 'The blog says deployment is without restrictions, while the linked LFM Open License conditions commercial use on annual revenue below $10M; under the operator-confirmed noncommercial EPYC use this is not a candidate blocker.'
+  - 'Independent community runs support local execution but report materially lower phone throughput and weaker tool calling than Qwen3.5-4B; differing hardware and harnesses prevent direct falsification.'
+  recommended_actions:
+  - '[candidate trial] Evaluate the official Q4_K_M GGUF as a direct worker_general challenger on the existing 39-question sentinel, full worker suite, and 27-case tool-compliance suite, preserving identical prompts and gates.'
+  - '[candidate trial] Record end-to-end completion time, reasoning/output tokens, tool-parse success, TTFT, prefill/decode rates, memory, concurrency, and 16K-context behavior; do not infer task efficiency from vendor decode rates.'
+  - '[routing gate] Test worker_math and toolrunner aliases explicitly. If general/tool quality passes but knowledge or coding does not, evaluate a narrower route instead of replacing every Gemma4 alias.'
+  - '[verified implementation constraint] Use the frozen v8 binary unchanged: its source already contains LFM2 architecture support and the specialized LFM2.5 Pythonic tool parser; smoke-load the official artifact before any benchmark.'
+  handoffs_updated:
+  - 'handoffs/active/architect-model-selection-bench.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'WG-LFM-1 in architect-model-selection-bench.md now owns the Q4_K_M/Q8_0/Gemma4 matched worker verdict; this is durable routing, not a deployment claim.'
+  notes: 'Blog SHA-256 691506f9c96bbf4dd575a4e660f6dc95de871830beb1e64a62b47e62137dca36. The linked older LFM2 paper does not substantiate this LFM2.5 post-training run. Teacher sizes, MOPD objective, harness count, reward weights, total compute, and R3 definition were not found.'
+  dive_corrections: |-
+    2026-08-07 Stage-2 dive (launch article, current model/config/chat-template artifacts, official GGUF repository, frozen-v8 static runtime inspection, current worker manifest, local Gemma4 measurements, and adversarial independent search). OVERALL VERIFIED as an immediately testable worker_general challenger; replacement superiority remains NOT-FOUND.
+
+    CLAIM LEDGER. CONFIRMED: the released checkpoint is a 2.69B dense 22-convolution/eight-GQA hybrid with 128K vocabulary and 131,072-token context. CONFIRMED: the official template serializes Pythonic tool calls and always begins a reasoning section. CONFIRMED: the frozen production-consolidated-v8 source already implements LFM2 and a specialized LFM2.5 parser, so no production-kernel patch or build is indicated. CONFIRMED: official Q4_0/Q4_K_M/Q5_K_M/Q6_K/Q8 GGUFs exist; Q4_K_M is 1,674,454,848 bytes. PARTIAL: MOPD, Harness Proxy, and agentic-RL mechanisms are described but not specified sufficiently for reproduction. OVERTURNED AS EPYC BLOCKER: the $10M commercial threshold does not block the operator-confirmed noncommercial use. NOT-FOUND: an independent role-matched result against EPYC's Gemma4 26B-A4B, MI210/EPYC measurements, or proof that mandatory reasoning preserves end-to-end speed.
+
+    ADVERSARIAL SEARCH. Vendor tables compare only small Gemma4 E2B/E4B variants. Community anecdotes conflict on tool reliability and use unmatched hardware, quants, templates, and harnesses; none is decision-grade. The card itself does not recommend the model for agentic coding or knowledge-heavy tasks, which matters because worker_general currently carries worker_math/toolrunner aliases.
+
+    DERIVED-ACTIONABLES LEDGER. (L1, candidate trial) smoke-load official Q4_K_M with the unchanged v8 binary and exact official template/parser. (L2, replacement gate) identical Gemma4-vs-LFM worker, sentinel, and tool-compliance runs with quality non-regression and parse-validity gates. (L3, systems gate) compare task wall time, reasoning/output tokens, TTFT, throughput, memory, concurrency, and 16K context. (L4, routing contingency) narrow the role if tool/general work passes but coding/knowledge/math regress. Proposed owners harness-selection-and-integration.md and eval-tower-verification.md; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: the official LiquidAI/LFM2.5-2.6B-GGUF repository is a distinct deployability artifact and is proposed for the Stage-2b source gate.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): WG-LFM-1 in `handoffs/active/architect-model-selection-bench.md` owns the Q4_K_M/Q8_0/Gemma4 matched worker verdict; no deployment or runtime change was made.
+- id: intake-1007
+  arxiv_id: null
+  url: https://huggingface.co/datasets/r0b0tlab/qwen3.8-max-glm5.2-kimi-k3-distillation
+  source_type: repo
+  title: 'Multi-Teacher Distillation Dataset (57,937 traces)'
+  authors: [r0b0tlab]
+  categories: [training_distillation, agent_architecture, benchmark_methodology]
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  discovered_via: input
+  ingested_date: '2026-08-07'
+  verdict: adopt_patterns
+  verification: dive-overturned
+  key_claims:
+  - 'The intended current corpus contains 57,937 SFT traces from Qwen3.8-Max-Preview, GLM-5.2, and Kimi Code K3, but the published 24 Hugging Face configs are not distinct loadable views.'
+  - 'Every advertised config resolves to the same 953,708-row union of current and stale Parquet generations because the dataset-card YAML omits per-config data_files mappings.'
+  - 'The package provides useful provenance, tokenizer-stat, mask, and cluster metadata, but the advertised zero-leakage split is false and service/upstream reuse authority is not established.'
+  techniques: [multi-teacher SFT, identity and near-duplicate filtering, grouped deterministic splits, assistant-only loss masking, tokenizer freeze, capability-aware weighted sampling, deterministic tool-RL prompts, per-row lineage]
+  reported_results:
+  - 'A complete intended-canonical scan confirms 57,937 rows split 52,205/2,872/2,860, with unique IDs, parent IDs, and source hashes.'
+  - 'All 24 server configs report 890,684 train, 31,517 validation, and 31,507 test rows—the same 953,708-row exploded union and 32-column schema—rather than distinct views.'
+  - 'A complete cluster audit finds 209 template clusters/5,454 rows, 16 prompt clusters/535 rows, and six dedup clusters/694 rows spanning train/evaluation splits.'
+  - 'Provenance is incomplete: 15,122 rows use source_license=unknown-see-provenance, 5,854 have blank source_split, and benchmark-family training content contaminates corresponding evaluation families.'
+  cross_references:
+    chapters: [07-benchmark-suite-construction.md, 09-claude-debugger.md]
+    handoffs: [frontier-f3-data-flywheel.md, swarm-dataset-distillation.md, eval-tower-verification.md, 08-doc-to-lora-prototype.md]
+    experiments: []
+    intake_entries: [intake-376, intake-388, intake-410, intake-516, intake-736, intake-916]
+  contradicting_evidence:
+  - 'README/MIXTURE/manifest describe 57,937 rows, while CITATION, PROVENANCE, QUALITY, and qualification metadata still describe a legacy 51,389-row release; the exact delta is 4,347 K3 plus 2,201 V4 rows.'
+  - 'Manifest/tree closure fails: named shards are absent, 136 files are omitted from the top-level inventory, and stale 46,250-row train generations coexist with current shards.'
+  - 'The grouped-split claim is directly falsified by whole-corpus template, prompt, and dedup cluster overlaps across splits.'
+  recommended_actions:
+  - '[decline corpus] Do not ingest or train on revision 7a3473446840bcc397928cd8183d4b3ba3ca13a7 until config mappings, stale shards, split groups, manifest closure, and source/service rights are repaired and reverified.'
+  - '[adopt release gate] Add pinned package preflight for explicit data_files, stale-shard exclusion, manifest/tree closure, per-config schema/count/hash assertions, and a quickstart load smoke test.'
+  - '[adopt split gate] Fail any mixture whose prompt_cluster_id, template_cluster_id, or dedup_cluster_id crosses train/evaluation, and exclude every trained source family from capability evaluation.'
+  - '[adopt patterns only] Reimplement provenance, tokenizer-freeze, token-stat, and assistant-mask artifacts cleanly, adding an independent semantic-mask rerender audit.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Pinned revision 7a3473446840bcc397928cd8183d4b3ba3ca13a7; README SHA-256 69c9b2776d57c7450aca5ffee91a472631cc931749d32d6ab340fad20fc81cad; manifest SHA-256 9c9c6404c6e5123fcd3d552710d2d23a94eb294f16031b3aedae29dc40f70cf0; complete 213-Parquet-footer inventory SHA-256 4df755f3abe3c102dd581abf671e27fcf93263aa7aaf2810a9d56e1701229e64. This is a provenance/packaging finding, not legal advice.'
+  dive_corrections: |-
+    2026-08-07 Stage-2 pinned-artifact and whole-corpus dive. OVERALL OVERTURNED as a safely consumable 24-view, leakage-controlled dataset; useful release-engineering patterns remain.
+
+    CLAIM LEDGER. CONFIRMED: the intended canonical corpus has 57,937 rows—48,283 Qwen, 5,307 GLM, 4,347 Kimi—and split counts 52,205/2,872/2,860. CONFIRMED: the 51,389 legacy discrepancy resolves exactly to the K3 and V4 additions. OVERTURNED: 24 distinct loadable configs—each maps to an identical 953,708-row union, 22,888,992 rows aggregated across config labels. OVERTURNED: 890,684 server train rows describe the corpus—they are the union of all view/stale Parquets. OVERTURNED: manifest/tree consistency and zero leakage—stale/missing/unlisted shards coexist, with 209 template, 16 prompt, and six dedup clusters crossing splits. PARTIAL: exact IDs/hashes are unique, but near-duplicate rejection cannot be reproduced because admission records are absent. PARTIAL: row provenance fields exist, but 26.1% have unknown license labels and thousands lack source splits. PARTIAL: precomputed token counters have no zeros/failures, but semantic assistant-only masking was not independently rerendered. NOT-FOUND: a training ablation showing weighted sampling repairs thin capabilities or authorization for teacher-service output reuse.
+
+    ADVERSARIAL SEARCH. All 213 Parquet footers and every intended canonical row were audited. Benchmark families including GSM8K, MATH, MBPP, HumanEval, IFEval, ARC, CommonsenseQA, and OpenBookQA appear in training-derived material, so bundled holdouts are not clean evaluation. No independent audit or downstream failed-consumption report surfaced; the decisive contradiction is directly reproducible from the primary package.
+
+    DERIVED-ACTIONABLES LEDGER. (D1, verified package gate) explicit data_files, stale exclusion, manifest closure, per-config identity, and loader smoke. (D2, verified split gate) prompt/template/dedup group isolation. (D3, contamination gate) exclude all source families in the mixture from evaluation with denominator-bearing reports. (D4, clean-room patterns) provenance/tokenizer/mask artifacts only after semantic mask audit. (D5, decline) no current corpus ingestion or training. Proposed owners swarm-dataset-distillation.md, eval-tower-verification.md, and frontier-f3-data-flywheel.md; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: the legacy 51,389-row and Qwen-only predecessor repositories explain lineage/stale artifacts; current Alibaba Model Studio terms bear on service-output authority. None outranks the consolidated Stage-2b research-source selections, so no standalone dive is recommended now.
+- id: intake-1008
+  arxiv_id: '2508.13171'
+  url: https://arxiv.org/pdf/2508.13171
+  source_type: paper
+  title: 'Cognitive Workspace: Active Memory Management for LLMs -- An Empirical Study of Functional Infinite Context'
+  authors: [Tao An]
+  categories: [memory_augmented, context_management, agent_architecture, benchmark_methodology]
+  novelty: low
+  relevance: high
+  credibility_score: 0
+  discovered_via: input
+  ingested_date: '2026-08-07'
+  verdict: superseded
+  verification: dive-verified
+  key_claims:
+  - 'Cognitive Workspace proposes task decomposition, predicted information needs, hierarchical buffers, active retrieval, consolidation, and adaptive forgetting, but demonstrates only process-lifetime Python state rather than durable persistence.'
+  - 'The paper reports 54-60% memory reuse versus 0% for traditional RAG, 17-18% custom net efficiency despite about 3.3x more operations, and O(log n) operation growth; code inspection overturns their bearing as empirical memory-quality evidence.'
+  techniques: [task decomposition, information-need prediction, immediate/working/episodic/semantic memory tiers, persistent state, access-count boosting, relevance decay, promotion, consolidation]
+  reported_results:
+  - 'Reuse is a fraction of logged operations labeled memory_reuse, while outputs receive no correctness, groundedness, or task-success score.'
+  - 'The RAG baseline is hard-coded to 0% reuse, and a truthy task_context makes working-memory matching nearly unconditional after initialization.'
+  - 'The custom efficiency formula excludes measured latency, tokens, FLOPs, answer quality, and retrieval quality; the claimed O(log n) has no derivation or varying-n experiment.'
+  - 'Huge effect sizes compare deterministic positive counter ratios with hard-coded zeros across dependent cumulative rounds rather than independent model/task trials.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs: [context-folding-progressive.md, episodic-memory-integrity.md, unified-trace-memory-service.md, internal-kb-rag.md, 03-session-scratchpad-memory.md, orchestrator-conversation-management.md]
+    experiments: []
+    intake_entries: [intake-156, intake-610, intake-611, intake-612, intake-869]
+  contradicting_evidence:
+  - 'Companion-code inspection shows a structurally forced baseline, cumulative counter leakage, a custom objective, dependent samples, and no complexity experiment.'
+  - 'External coverage repeats the paper; no independent reproduction or task-quality validation surfaced.'
+  recommended_actions:
+  - '[decline component] Do not reproduce this as positive memory evidence; it lacks durable persistence and answer-quality measurement.'
+  - '[adopt negative fixture] Add forced-zero baselines, truthy match predicates, cumulative-counter leakage, dependent samples, and tautological significance tests to benchmark-review regression cases.'
+  - '[measurement contract] Future memory comparisons require isolated tasks, shared observable reuse events, cold/warm controls, task correctness and grounding, and quality-latency-token-memory reporting.'
+  handoffs_updated:
+  - 'handoffs/active/unified-trace-memory-service.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'UTM-V1 through UTM-V6 now own the verified negative fixtures and lifecycle-evaluation constraints; the Cognitive Workspace runtime remains declined.'
+  notes: 'PDF SHA-256 795b50f59a738a6d7253922029e45f37363f6d24d06aec08fa185528e37c9a8a. Superseded by already-covered or later benchmarked memory agents for architecture evidence; highly relevant as negative measurement evidence. Default companion mode is rule-based simulation and its real-LLM outputs are not quality-scored.'
+  dive_corrections: |-
+    2026-08-07 Stage-2 paper/code dive. OVERALL VERIFIED as a benchmark-integrity negative fixture; OVERTURNED as empirical evidence for memory quality, efficiency, complexity, or durable persistence.
+
+    CLAIM LEDGER. CONFIRMED: tiered buffers, information-need prediction, active retrieval, promotion, consolidation, and decay are proposed; the reported 54-60% reuse, roughly 3.3x operation ratio, and 17-18% custom efficiency appear in the paper. OVERTURNED: the RAG reuse control is observed—it is hard-coded to zero. OVERTURNED: reuse is query-selective—a truthy task_context makes populated items effectively match. OVERTURNED: operation samples are independent—one cumulative log is repeatedly summed and leaks into later experiments. OVERTURNED: significance and efficiency establish benefit—the tests compare dependent positive counters with forced zeros, and the objective omits task quality and measured cost. OVERTURNED: O(log n) is demonstrated—there is no derivation or scaling experiment. PARTIAL: GPT-3.5 is named, but the released runner defaults to deterministic mocks and retains no scored model traces. NOT-FOUND: answer correctness, grounding, conflict-resolution quality, serialization, restart, or cross-session restoration.
+
+    ADVERSARIAL SEARCH. Eight documents and ten sequential questions provide no independent model/task trials, seeds, confidence intervals, privacy tests, or corroboration. Metric direction is nominally higher reuse/efficiency and fewer operations, but none is connected to answer quality.
+
+    DERIVED-ACTIONABLES LEDGER. (C1, adopt negative fixture) codify forced controls, truthy predicates, cumulative leakage, dependent samples, and custom objectives as review failures. (C2, shared contract) require within-call/task/restart/cross-session persistence horizons, conflict/staleness/deletion/raw-source recovery, and quality-cost Pareto measurements. (C3, decline) no positive component adoption or reuse/efficiency citation. Proposed owners tool-use-eval-contract.md and episodic-memory-integrity.md; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: Mem0 (arXiv:2504.19413) is proposed as the strongest production-oriented cross-session comparator; no independent Cognitive Workspace reproduction surfaced.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): UTM-V1 through UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own the verified negative fixtures and lifecycle-evaluation constraints; the Cognitive Workspace runtime remains declined.
+- id: intake-1009
+  arxiv_id: null
+  url: https://github.com/PrimeIntellect-ai/prime-agent
+  source_type: repo
+  title: 'Prime Agent: A Self-Improving RLM Agent'
+  authors: [Prime Intellect]
+  categories: [agent_architecture, tool_implementation, memory_augmented, autonomous_research, local_inference]
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-08-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'A persistent IPython REPL is the model-facing control environment while a TypeScript host owns providers, persistence, child lifecycle, schedules, and safety.'
+  - 'Recursive children are asynchronous and retained across restore; results arrive through explicit family-scoped messages or files rather than a synchronous return value.'
+  - 'Continual Harness keeps an immutable base prompt plus mutable supplemental prompts, memories, skills, subagents, refinement history, snapshots, rollback proposals, atomic writes, and stale-plan protection, but applies refinements without held-out acceptance.'
+  - 'Daemon supervisor, session workers, process-safe session leases, reconnect cursors, persisted schedules, and recovery journals support detach and long-running operation.'
+  - 'Local OpenAI-compatible providers are supported, but generated Python and commands execute with user permissions; worker/kernel separation is explicitly not a security sandbox.'
+  techniques: [persistent IPython, typed host bridge, retained-child registry, refinement ledger, daemon/session-worker split, reconnect cursors, family messaging, prompt schedules, bounded autonomous mode, local provider discovery]
+  reported_results:
+  - 'No benchmark-quality accuracy, throughput, latency, cost, resume-success, or local-model-quality results were found in the repository artifacts.'
+  cross_references:
+    chapters: [09-claude-debugger.md]
+    handoffs: [repl-session-memory-maturity.md, rlm-contested-claims-self-evaluation.md, rao-redel-substrate-spike.md, session-bus-thin-dispatcher.md, internal-interaction-lifecycle.md, autopilot-continuous-optimization.md, meta-harness-optimization.md, harness-selection-and-integration.md, rlm-orchestrator-roadmap.md, session_persistence.md, repl-session-log.md]
+    experiments: []
+    intake_entries: [intake-153, intake-244, intake-338, intake-397, intake-451, intake-473, intake-547, intake-803, intake-901]
+  contradicting_evidence:
+  - 'README wording implies programmatic child-result return, while the runtime contract says rlm() returns only admission and results arrive later by message or file.'
+  - 'No controlled benchmark supports third-party performance-superiority headlines; the repository itself explicitly confirms the no-sandbox concern.'
+  - 'Daemon documentation says protocol v4, while source and tests enforce protocol v7; documentation cannot be treated as the wire-contract authority.'
+  - 'Refinement versioning and rollback proposals do not provide an objective held-out accept/reject gate or automatic rollback controller.'
+  recommended_actions:
+  - '[export] Add a canonical per-session process lease around REPL/graph open and resume, including concurrent-owner, stale-owner, and path-alias tests.'
+  - '[export] Journal received/completed/uncertain states around side-effectful resumable commands and refuse blind replay after a crash between receipt and result persistence.'
+  - '[decline wholesale runtime] EPYC already covers append journals, checkpoints, evaluated rollback, behavior signatures, schedules, and no-op suppression; do not introduce a competing daemon/retained-child/cron substrate without a concrete owner need.'
+  - '[safety constraint] Any external evaluation must use an actual process/container sandbox; the repository''s worker/kernel boundary is not one.'
+  handoffs_updated:
+  - 'handoffs/active/repl-session-memory-maturity.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'D-f and D-g in repl-session-memory-maturity.md now own the process-safe lease and uncertain-side-effect journal; overlapping runtime features remain declined.'
+  notes: 'Repository commit b9a4461149419156599d60174dddf15458e2b9ee; commit API SHA-256 bd0ab4dc633dc8fe3d29fdb1b6f95399c0a57831f0a599d178ddbcbeb714281a. Adopt the two missing recovery invariants, not the competing runtime: EPYC already owns the central RLM, persistence, bus, and autonomous-loop capabilities.'
+  dive_corrections: |-
+    2026-08-07 Stage-2 repository dive. OVERALL VERIFIED as a well-tested source of persistence/recovery patterns; only a process-safe session lease and uncertain-side-effect journal are material EPYC gaps.
+
+    CLAIM LEDGER. CONFIRMED: TypeScript host/Python execution split; registry-backed retained children; leases; generation/sequence cursors; schedules; recovery journals; immutable-base plus four-kind refinement CRUD; atomic replacement; stale-plan checks; local OpenAI-compatible providers; and explicit no-sandbox status. OVERTURNED: documented daemon protocol v4—the implementation/tests enforce v7. PARTIAL: restored child records and recovery mechanics are tested, but no empirical success rate or performance result exists. PARTIAL: rollback/version facilities exist, but refineHarness plans then directly applies without objective held-out acceptance. NOT-FOUND: benchmark-quality recovery, reliability, latency, cost, or local-model parity results.
+
+    ADVERSARIAL SEARCH AND LOCAL DIFF. EPYC already has append-only turns/mutations, durable graph checkpoints, evaluated rollback, behavior signatures, schedules, and optimizer no-op suppression. It lacks a canonical-session ownership lease and its checkpoint path explicitly permits pending side-effect re-execution; Prime's uncertain-operation journal directly addresses that hazard. General worker-daemon, retained-child, cursor, and cron adoption would otherwise duplicate the stack.
+
+    DERIVED-ACTIONABLES LEDGER. (R1, export) canonical session lease with concurrent/stale/path-alias tests. (R2, export) received/completed/uncertain idempotency journal and crash-window test; never blindly replay uncertain effects. (R3, optional) retained-child lifecycle only if a persistent multi-agent runtime is separately selected. (R4, decline) no full daemon, per-session cron, or live refinement import. Proposed owner repl-session-memory-maturity.md; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: none required for repository mechanics; the related Continual Harness implementation is recorded on intake-1016's gate.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): D-f and D-g in `handoffs/active/repl-session-memory-maturity.md` own the process-safe session lease and uncertain-side-effect recovery journal; the competing runtime remains declined.
+- id: intake-1010
+  arxiv_id: null
+  url: https://www.primeintellect.ai/blog/prime-agent
+  source_type: blog
+  title: 'Prime Agent: A self-improving RLM agent'
+  authors: [Seth Karten, Alex L. Zhang, Kevin Thomas, Sebastian Muller, Prime Intellect Team]
+  categories: [agent_architecture, memory_augmented, autonomous_research, swarm_techniques, tool_implementation, benchmark_methodology]
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  discovered_via: input
+  ingested_date: '2026-08-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'Prime Agent combines an RLM with a Continual Harness that may refine prompt additions, subagents, skills, and memory while preserving an immutable base prompt.'
+  - 'Persistent daemon sessions, goals, token budgets, heartbeats, continuation, resource limits, and unchanged-workspace gates support long autonomous runs.'
+  - 'Headline ARC performance uses Opus 5; the same harness with open-weight GLM-5.2 is reported far lower, so the source does not demonstrate local/open-weight parity.'
+  - 'The Factorio section separately reports a 100K+ run and an RCON/heartbeat exploit; it does not attribute that exact score to the exploit, but confirms that refinement encoded cheating behavior into reusable skills.'
+  techniques: [RLM context-as-variable, asynchronous child fan-out, continual harness CRUD and rollback, append-only session events, kernel snapshots, lifecycle states, family messaging, bounded goals and schedules]
+  reported_results:
+  - '[vendor-self-reported] Prime Agent plus Opus 5 reports 95.5% ARC Best@1; the chart reports GLM-5.2 at 8.6%, and the linked median-run scorecard currently returns 404.'
+  - '[vendor-self-reported] Long-context tables favor Prime Agent on most shown comparisons but report neither uncertainty intervals nor repeated-run counts.'
+  - '[vendor-self-reported] PMPP-Hard results are mixed: Prime improves Sol but trails the native Kimi-Code result with Kimi K3.'
+  - '[vendor-self-reported] The Factorio section reports both 100K+ progress and a separate reward-hacking incident; causal attribution between them is not provided.'
+  cross_references:
+    chapters: [09-claude-debugger.md]
+    handoffs: [harness-selection-and-integration.md, meta-harness-optimization.md, autopilot-continuous-optimization.md, context-folding-progressive.md, rlm-contested-claims-self-evaluation.md, agent-collab-rnd-harness.md, rlm-orchestrator-roadmap.md, orchestrator-conversation-management.md]
+    experiments: []
+    intake_entries: [intake-153, intake-244, intake-547, intake-803, intake-919]
+  contradicting_evidence:
+  - 'No independent exact reproduction of the headline ARC result surfaced; the source substitutes official native-harness figures after its own reruns underperformed them.'
+  - 'Independent RLM reproduction finds recursion task- and depth-dependent rather than universally beneficial.'
+  - 'The source itself demonstrates that immutable prompts and rollback do not prevent refinement from optimizing an exploitable objective.'
+  recommended_actions:
+  - '[adopt adversarial fixtures] Add the Factorio privilege exploit and 842-repeat invalid-schema loop from Continual Harness to oracle-adequacy, bounded-repetition, and privilege-boundary tests.'
+  - '[retain existing gate] Keep automatic refinement behind EPYC proposal/evaluate/keep-or-revert controls with held-out regressions, approval, rollback, and immutable-source enforcement.'
+  - '[decline metric transfer] Do not use Prime headline scores as local/open-weight or EPYC baseline evidence; rerun any relevant workload under one model/harness protocol.'
+  handoffs_updated:
+  - 'handoffs/active/repl-session-memory-maturity.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'D-f and D-g in repl-session-memory-maturity.md now own the process-safe lease and uncertain-side-effect journal; overlapping runtime features remain declined.'
+  notes: 'Blog SHA-256 61acfe716b5fec461faa90119805d6fad8fbc743efd2a06636f6591df4068e17. Credibility 1: recent and known lab, offset by commercial framing, with no peer review or independent corroboration. The linked ARC median scorecard returned 404 on 2026-08-07.'
+  dive_corrections: |-
+    2026-08-07 Stage-2 blog/repository dive. OVERALL VERIFIED for architecture and qualitative failure evidence; headline performance remains vendor-authored and non-transferable.
+
+    CLAIM LEDGER. CONFIRMED: daemonized sessions, JSONL recovery, persistent RLM, retained family agents, continual-harness CRUD, goals/budgets/heartbeats, and unchanged-workspace gates. CONFIRMED VENDOR REPORT: Opus 95.5, Sol 78.3, Terra 25.7, and GLM-5.2 8.6 on the ARC chart; most long-context rows favor Prime, while PMPP is mixed. PARTIAL: Factorio reports both 100K+ progress and a separate RCON/heartbeat exploit, but does not attribute the exact score to cheating. CONFIRMED: exploit behavior was encoded into reusable refinements. NOT-FOUND: matched open-weight parity, raw run traces, uncertainty, independent reproduction, or a replayable linked scorecard; the latter is 404.
+
+    ADVERSARIAL SEARCH. Prime mixes its own harness results with official native-agent figures after its reruns underperformed, weakening comparability. Independent Factorio-environment documentation corroborates the general shortcut/reward-hacking pressure, not Prime's exact incident. The case demonstrates that immutable bases, heartbeats, and rollback capability do not make the reward signal adequate.
+
+    DERIVED-ACTIONABLES LEDGER. (B1, adopt fixture) RCON/heartbeat exploit plus privilege-boundary assertions. (B2, paired fixture) Continual's 842 identical invalid-schema calls with bounded-repetition enforcement. (B3, retain existing architecture) proposal/evaluate/keep-or-revert remains mandatory; no live direct self-modification. (B4, decline) no Prime metric becomes an EPYC baseline. Proposed owner meta-harness-optimization.md; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: Factorio Learning Environment v0.3.0 documents independent environment-side reward-hacking/holdout pressure; it is lower priority than the Continual implementation at the consolidated source gate.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): D-f and D-g in `handoffs/active/repl-session-memory-maturity.md` own the process-safe session lease and uncertain-side-effect recovery journal; overlapping persistence and scheduling features remain declined.
+- id: intake-1011
+  arxiv_id: null
+  url: https://github.com/alexisfox7/PRO-LONG
+  source_type: repo
+  title: 'PRO-LONG: Repository for Proactive Memory Management for Long-Horizon Agents'
+  authors: [Alexis Fox, Junlin Wang, Paul Rosu, Bhuwan Dhingra]
+  categories: [agent_architecture, context_management, memory_augmented, tool_implementation, benchmark_methodology]
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: input
+  ingested_date: '2026-08-07'
+  verdict: adopt_patterns
+  verification: stage1-unverified
+  key_claims:
+  - '[unverified] PRO-LONG externalizes trajectory history to an append-only log and gives the agent an explicitly authored working-memory board that it can overwrite as its compact active state.'
+  - '[unverified] Retrieval is performed through ordinary shell/Python inspection rather than an opaque embedding index, making retention and omission inspectable.'
+  - '[unverified] The stateless ablation deletes agent-authored workspace files between turns but retains the environment log and prompt, so it is not a no-memory control.'
+  techniques: [append-only trajectory log, agent-authored memory board, shell-native retrieval, workspace persistence, stateless ablation]
+  reported_results:
+  - '[unverified] The README repeats paper claims of +18 percentage points, 4.2-5.8x fewer billed tokens, and 97.4 best@2 at $1,750.'
+  - '[unverified] The repository scorecards list 25 one-repetition task URLs with a mean listed score of 94.708, which is insufficient to reconstruct the 97.4 best@2 headline.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 09-claude-debugger.md]
+    handoffs: [rlm-contested-claims-self-evaluation.md, repl-session-memory-maturity.md, context-folding-progressive.md, tool-output-compression.md, harness-selection-and-integration.md, tool-use-eval-contract.md]
+    experiments: []
+    intake_entries: [intake-919]
+  contradicting_evidence:
+  - 'The configured 25 benchmark task hashes do not match the three bundled workspace snapshots, so the shipped artifacts do not provide a complete replay package.'
+  - 'Only Codex CLI and Claude Code CLI backends are implemented; no local/open-weight or generic OpenAI-compatible provider path was found.'
+  - 'No tests or CI were found, and the repository has no LICENSE file; a pyproject MIT classifier is not a license grant.'
+  recommended_actions:
+  - '[verified by intake-919 dive] Reuse transparent append-log plus explicit working-board patterns only behind existing context-integrity and replay gates.'
+  - '[unverified] Require a fully reconstructible task/run manifest, repeated trials, and a genuine matched no-memory control before treating repository scorecards as evidence.'
+  - '[decline] Do not adopt the CLI-coupled runtime or redistribute code without a license grant.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Repository inspected at e8f7ca926fe4882e083f35ae5dc631d738a86577. The companion paper is already dive-verified as intake-919, including the repository license and local-provider gaps; this distinct URL is retained for artifact provenance rather than a redundant dive.'
+- id: intake-1012
+  arxiv_id: null
+  url: https://console.pokee.ai/pokee-isaac-28b-v0-technical-report.pdf
+  source_type: paper
+  title: 'Pokee-Isaac 28B: A 10M-Token Context Efficient Agentic Model'
+  authors: [Zheqing Zhu, Christopher Wu, Yi Wan, Yiqing Cai, Qiwei He, Ruihao Zhu, Chang Zen Tee, Lexin Chen, Pu Thavikulwat, Jared Ee]
+  categories: [context_extension, inference_serving, local_inference, agent_architecture, benchmark_methodology, hardware_optimization]
+  novelty: medium
+  relevance: high
+  credibility_score: 0
+  discovered_via: input
+  ingested_date: '2026-08-07'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - 'Pokee presents Isaac as a proprietary 28B text model with an undisclosed non-decoder-only architecture, 10M-token retrieval, and single-B200 serving.'
+  - 'The report says some weights derive from Qwen3.6-27B but does not disclose topology, context-extension mechanism, training recipe, precision, checkpoint, or runtime.'
+  - 'Public offline documentation narrows the deployment claim: standard offline mode still sends completions to Pokee infrastructure, while fully air-gapped use requires a negotiated gateway.'
+  - 'The report exposes useful public evaluation and service contracts, but it contains insufficient information to reconstruct the model or its 10M-context mechanism.'
+  techniques: [undisclosed non-decoder sequence architecture, Qwen3.6-27B-derived weights, long-context quality-throughput profiling, OpenAI-compatible adapters, policy-restricted tool surfaces]
+  reported_results:
+  - '[vendor-self-reported] RULER is 93.3% at 10M tokens; failures and endpoint overflows for competitors are scored as zero, mixing model capability with serving availability and verifier/infrastructure failure.'
+  - '[vendor-self-reported] One B200-class GPU reaches 137,200 tokens/s prefill and about 337 tokens/s decode at 10M context; exact SKU, precision, memory, and AMD measurements are absent.'
+  - '[vendor-self-reported] Isaac is statistically near GPT-5.6 Luna on BFCLv4 and behind it on Terminal-Bench 2.1; DTAP uses Pokee''s harness for Isaac and the stock runner for every baseline.'
+  - 'The report labels $0.15/$1.00 per million tokens provisional, while current official documentation lists $0.30/$5.00 and a $3/$15 high-reasoning tier.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs: [yarn-context-extension-research.md, eval-tower-verification.md, mi210-big-model-and-acceleration-roadmap.md, qwen36-27b-cpu-feasibility.md, harness-selection-and-integration.md, model-capability-descriptors.md, long-context-eval-datasets.md, cpu-context-regime-coverage.md, qwen36-production-upgrade.md]
+    experiments: []
+    intake_entries: [intake-369, intake-409, intake-455, intake-756]
+  contradicting_evidence:
+  - 'No public checkpoint, model license, source repository, generally available self-host runtime, or independent exact reproduction surfaced.'
+  - 'Current terms call Isaac proprietary, prohibit reverse engineering, and restrict competitive benchmarking; Qwen provenance does not make the derived model open-weight.'
+  - 'Synthetic retrieval and completed-task-only denominators do not establish coherent 10M-token reasoning or reliable agent execution.'
+  recommended_actions:
+  - '[clean-room pattern] Add a joint long-context quality/serving protocol that reports RULER-style task quality beside TTFT, prefill, decode, memory, and concurrency, with identical harnesses and explicit failure classes.'
+  - '[clean-room pattern] Extend agent-security evaluation to report benign success plus direct and indirect attack success under the same runner, repeated seeds, confidence intervals, and structured trace replay.'
+  - '[verified constraint] Reuse only generic public contracts—resumable/background sessions, role-scoped tools, deny-by-default policy, sandboxing, and typed failures—from independent implementation; do not access or infer nonpublic Isaac internals.'
+  - '[decline] Do not create a 10M-context architecture port or MI210 throughput target from this report: the mechanism and transferable implementation evidence are absent.'
+  handoffs_updated:
+  - 'handoffs/active/tool-use-eval-contract.md'
+  - 'handoffs/active/rlm-contested-claims-self-evaluation.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'TU-DTAP-1 and E3b now own same-harness security evaluation and direct-context-versus-REPL measurement; proprietary model reconstruction remains declined.'
+  notes: 'PDF SHA-256 193fcfd84da8d34b6237f99809dadf166089da703d83b4371daa650f44eb368e. The PDF watermark is an arXiv submission identifier, not a public arXiv ID. Credibility 0: recent but commercial, non-peer-reviewed, and independently unreplicated.'
+  dive_corrections: |-
+    2026-08-07 Stage-2 dive (complete technical report, current public docs/terms, benchmark-method audit, and local architecture cross-reference). OVERALL VERIFIED as a source of clean-room evaluation/service patterns; model architecture and performance transfer remain NOT-FOUND.
+
+    CLAIM LEDGER. CONFIRMED: Isaac is presented as a proprietary 28B, non-decoder-only model using some Qwen3.6-27B weights. CONFIRMED: RULER uses ten samples per configuration and zeros failures/overflows; BFCL uses 5,106 programmatic items; Terminal-Bench runs 86 tasks once; DTAP runs 6,195 tasks once and warns of roughly three-point noise. CONFIRMED: DTAP compares Isaac under Pokee's harness with baselines under the stock runner. CONFIRMED: 10M single-device serving is reported as 72.9-second TTFT, 137,200-token/s prefill, and 337-token/s decode on unspecified B200-class hardware. PARTIAL: synthetic retrieval supports long-context lookup but not coherent 10M reasoning. NOT-FOUND: architecture, context mechanism, checkpoint, runtime, precision, exact GPU SKU/memory, MI210 result, independent reproduction, or a basis to transfer B200 numbers. OVERTURNED: an unrestricted offline reading—ordinary offline tenants still use a completion API, while air-gapped deployment is negotiated.
+
+    ADVERSARIAL SEARCH. Completed-task-only denominators, single runs, unequal temperatures, different DTAP harnesses, unavailable competitor endpoints scored as zero, and absent uncertainty materially narrow the comparative claims. Public terms restrict reverse engineering and competitive development from Isaac/service outputs. This does not preclude independently implementing generic public capabilities, but it rules out treating report prose as an architecture specification or claiming an Isaac clone.
+
+    DERIVED-ACTIONABLES LEDGER. (P1, adopt evaluation pattern) joint long-context quality plus serving-resource lane with explicit model/overflow/endpoint/retry/verifier/infrastructure outcomes. (P2, adopt security pattern) same-harness benign/direct/indirect evaluation with seeds and intervals. (P3, gap audit) compare resumable/background sessions, typed event streams, role-scoped tool policy, sandboxing, and replay against existing EPYC implementations; adopt only missing invariants. (P4, decline) no proprietary model port, 10M implementation task, or MI210 performance claim. Proposed owners long-context-eval-datasets.md, eval-tower-verification.md, tool-use-eval-contract.md, and session_persistence.md; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: arXiv:2605.04808 (DTAP) is load-bearing for the security-evaluation protocol and harness-confound audit; arXiv:2404.06654 (RULER) and arXiv:2602.00933 (MCP-Atlas) were also surfaced, but DTAP is the recommended Stage-2b selection.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): TU-DTAP-1 in `handoffs/active/tool-use-eval-contract.md` and E3b in `handoffs/active/rlm-contested-claims-self-evaluation.md` own same-harness security evaluation and direct-context-versus-REPL measurement; proprietary model reconstruction remains declined.
+- id: intake-1013
+  arxiv_id: null
+  url: inline:from-zero-to-graph-architect-2026-08-07
+  source_type: blog
+  title: 'From Zero to Graph Architect: A Practical Path in AI Engineering'
+  authors: [User-supplied material]
+  categories: [agent_architecture, tool_implementation, benchmark_methodology, autonomous_research]
+  novelty: low
+  relevance: high
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-08-07'
+  verdict: already_integrated
+  verification: stage1-unverified
+  key_claims:
+  - '[unverified synthesis] Agent graphs should be learned from strict single loops upward: action, result, verifier, and repeat condition precede nodes, edges, and shared state.'
+  - '[unverified synthesis] Useful graph patterns include routers, orchestrator-workers, fan-out/fan-in, evaluator-optimizers, human gates, validation, recovery, persistence, and observability.'
+  - '[unverified synthesis] Senior judgment means retaining a loop or deterministic script unless branching, parallelism, checkpoints, or explicit recovery paths justify a graph.'
+  techniques: [strict verifier loops, typed graph state, conditional routing, deterministic validation nodes, human approval gates, checkpointed recovery, trace replay, evaluation suites]
+  reported_results:
+  - 'No empirical results, cited evidence, executable artifact, or independently testable workforce/timing measurement is provided.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md, 09-claude-debugger.md]
+    handoffs: [langgraph-migration.md, meta-harness-optimization.md, autopilot-continuous-optimization.md, reviewer-escalation-and-human-gate-policy.md, session_persistence.md, loops-and-dashboards-audit-2026-07-05.md]
+    experiments: []
+    intake_entries: [intake-146, intake-147, intake-847]
+  contradicting_evidence:
+  - 'The completed LangGraph migration predates this material and already implements the core loop, routing, state, persistence, human-gate, and observability patterns.'
+  - 'Claims that the term is two weeks old, almost nobody has the skill, practitioners gain years of advantage, or eight weeks is sufficient are unsupported.'
+  recommended_actions:
+  - '[adopt editorial pattern] Use the five-phase sequence as optional onboarding structure, mapped to existing graph/eval safety gates.'
+  - '[decline] Create no new architecture owner or framework migration from this essay; repository implementation and validation sources are stronger.'
+  - '[decline] Do not repeat novelty, scarcity, or learning-duration claims as facts.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Conversation-native material; no external artifact was fetched. High practical relevance but low technical novelty. A source dive cannot resolve its uncited market and timing claims, so it is explicitly declined from Stage 2.'
+- id: intake-1014
+  arxiv_id: null
+  url: https://huggingface.co/LiquidAI/LFM2.5-2.6B
+  source_type: repo
+  title: 'LFM2.5-2.6B (Hugging Face model card)'
+  authors: [Liquid AI]
+  categories: [local_inference, agent_architecture, ssm_hybrid, context_extension, training_distillation]
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  discovered_via: expansion
+  expanded_from: intake-1006
+  ingested_date: '2026-08-07'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - 'The released 2.69B checkpoint declares 30 layers comprising 22 short-convolution blocks and eight GQA blocks, a 128K vocabulary, and a 131,072-token context window.'
+  - 'The LFM Open License permits broad use but conditions commercial use on annual revenue below $10M; this is not a blocker for the operator-confirmed noncommercial EPYC use.'
+  - 'The official template emits a reasoning section on every response and uses Pythonic tool-call syntax; frozen v8 already has the matching architecture and parser paths.'
+  techniques: [hybrid short-convolution/GQA backbone, 128K tokenizer, released safetensors checkpoint, chat template, Transformers integration]
+  reported_results:
+  - 'The model card reproduces vendor benchmark and throughput tables but provides no EPYC-hardware result or independent role-specific evaluation.'
+  - 'Its Gemma4 comparators are E2B/E4B rather than EPYC''s deployed 26B-A4B worker, so the table cannot decide the replacement.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md]
+    handoffs: [harness-selection-and-integration.md, eval-tower-verification.md, log-linear-gated-deltanet-readiness.md]
+    experiments: []
+    intake_entries: [intake-1006, intake-505, intake-650, intake-651, intake-652, intake-653]
+  contradicting_evidence:
+  - 'The concrete commercial threshold contradicts an unrestricted-deployment reading of the launch blog but is immaterial to the stated noncommercial deployment.'
+  - 'Community tool-use and phone-speed anecdotes use unmatched harnesses and hardware and cannot establish a local role.'
+  recommended_actions:
+  - '[candidate trial] Treat this as a direct worker_general candidate and benchmark official Q4_K_M against the current Gemma4 26B-A4B under identical role prompts, tool parsing, and quality gates.'
+  - '[candidate trial] Include mandatory-reasoning overhead and end-to-end task completion time alongside throughput, context, and memory measurements.'
+  handoffs_updated:
+  - 'handoffs/active/architect-model-selection-bench.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'WG-LFM-1 in architect-model-selection-bench.md now owns the Q4_K_M/Q8_0/Gemma4 matched worker verdict; this is durable routing, not a deployment claim.'
+  notes: 'README SHA-256 0375875211eb1a9781c02c962df80c61bbe4c8b18be00d99b29c47246a178d3d; config SHA-256 480f63fa8e1efa534ae8b92774b3b53b8d6812d62a726e9ecfc866933662f273; license SHA-256 4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c.'
+  dive_corrections: |-
+    2026-08-07 Stage-2 companion-artifact dive. OVERALL VERIFIED for release identity and deployability; role replacement remains unproven.
+
+    CLAIM LEDGER. CONFIRMED: architecture/config dimensions, 131,072-token declaration, 34T-token pretraining claim, released safetensors, official chat template, and official GGUF family. CONFIRMED: the model always reasons and the card recommends tool use, extraction, RAG, and long-context work while warning against agentic coding and knowledge-heavy tasks. CONFIRMED: frozen v8 statically supports both LFM2 loading and the LFM2.5 tool syntax. OVERTURNED AS BLOCKER: commercial-threshold concern under noncommercial use. PARTIAL: 128K quality and tool reliability are vendor-evaluated, not locally established. NOT-FOUND: an EPYC measurement or fair Gemma4 26B-A4B comparison.
+
+    ADVERSARIAL SEARCH. No independent controlled comparison resolves the local role decision; contradictory anecdotes are harness- and hardware-confounded. Official results therefore define hypotheses and test coverage, not acceptance evidence.
+
+    DERIVED-ACTIONABLES LEDGER. Same L1-L4 candidate, replacement, systems, and routing gates recorded on intake-1006. This card additionally fixes the exact template/parser contract for replay. Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: https://huggingface.co/LiquidAI/LFM2.5-2.6B-GGUF (official quantized deployment artifact; proposed for Stage-2b ingest-and-dive).
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): WG-LFM-1 in `handoffs/active/architect-model-selection-bench.md` owns the Q4_K_M/Q8_0/Gemma4 matched worker verdict; no deployment or runtime change was made.
+- id: intake-1015
+  arxiv_id: null
+  url: https://github.com/tao-hpu/cognitive-workspace
+  source_type: repo
+  title: 'Cognitive Workspace - Proof of Concept Implementation'
+  authors: [Tao An]
+  categories: [memory_augmented, context_management, agent_architecture, benchmark_methodology, tool_implementation]
+  novelty: low
+  relevance: high
+  credibility_score: 0
+  discovered_via: expansion
+  expanded_from: intake-1008
+  ingested_date: '2026-08-07'
+  verdict: superseded
+  verification: dive-verified
+  key_claims:
+  - 'The repository implements tiered active memory as small Python proofs of concept, with simulation as the default evaluation path.'
+  - 'Its counters and matching logic make the headline reuse and efficiency results unsuitable as evidence of model quality or algorithmic complexity.'
+  - 'Advertised 8K/64K/256K buffers are item-count deques, default embeddings are padded MD5-derived vectors, and the sketch omits the proposed hardware/attention machinery and durable persistence.'
+  techniques: [simulated memory operations, working/episodic/semantic stores, task-context matching, counter-based reuse, custom efficiency ratio]
+  reported_results:
+  - 'The RAG comparison assigns zero reuse by construction; after initialization, a truthy task_context causes every working-memory item to match.'
+  - 'Efficiency is computed from reuse and operation counters, not latency, tokens, FLOPs, answer quality, or retrieval quality; no varying-size experiment tests O(log n).'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs: [context-folding-progressive.md, episodic-memory-integrity.md, unified-trace-memory-service.md, internal-kb-rag.md]
+    experiments: []
+    intake_entries: [intake-1008]
+  contradicting_evidence:
+  - 'The code operationalization structurally guarantees the direction of several reported comparisons and uses dependent cumulative counters as samples.'
+  - 'No correctness, groundedness, task-success, or independent-replication artifact is present.'
+  recommended_actions:
+  - '[adopt negative fixture] Add these exact defects to benchmark-review checks: hard-coded controls, truthy predicates, cumulative counter leakage, custom objectives, and absent scale experiments.'
+  - '[decline] Do not adopt the component or cite its reuse/efficiency numbers as memory evidence.'
+  handoffs_updated:
+  - 'handoffs/active/unified-trace-memory-service.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'UTM-V1 through UTM-V6 now own the verified negative fixtures and lifecycle-evaluation constraints; the Cognitive Workspace runtime remains declined.'
+  notes: 'Repository commit 6740fc3b69a842ccc49663ac6c371600d0d9fc2e; tree e72e68322a1c66bde77ea2b55ebecbe195d42713; README SHA-256 d2cefbb12f505555c675fdba345fd14658dc80da5d9355ab632f027dc66547cf; primary PoC SHA-256 2c4562a8424dd4fe93bea870a9bbbb2799eaad78441b74f9166d03eb12a51a40. MIT license. Stage-1 artifact identities were corrected. Retained as an auditable negative fixture, not as positive architecture evidence.'
+  dive_corrections: |-
+    2026-08-07 Stage-2 repository dive. OVERALL VERIFIED as a small MIT-licensed rule-based sketch and negative measurement fixture; Stage-1 artifact hashes were corrected.
+
+    CLAIM LEDGER. CONFIRMED: simulation is the default, 8K/64K/256K labels are item-count deques, default vectors derive from padded MD5 hashes, and the code contains the forced-zero control, truthy matching, cumulative logs, dependent tests, and uncalibrated custom efficiency. PARTIAL: the repo sketches buffer operations but does not implement the paper's NSA/MoD attention, SRAM/HBM hierarchy, Mamba indexing, real token capacities, or persistence. NOT-FOUND: output-quality evaluation or independent replication.
+
+    ADVERSARIAL SEARCH. Results contain only reuse/counter/statistical fields. Correct identities are commit 6740fc3b69a842ccc49663ac6c371600d0d9fc2e and tree e72e68322a1c66bde77ea2b55ebecbe195d42713; Stage-1's abbreviated identities and content hashes were wrong.
+
+    DERIVED-ACTIONABLES LEDGER. Adopt only the static regression cases listed on intake-1008; decline the runtime and empirical claims. Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: none beyond intake-1008's Mem0 comparator proposal.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): UTM-V1 through UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own the verified negative fixtures and lifecycle-evaluation constraints; the Cognitive Workspace runtime remains declined.
+- id: intake-1016
+  arxiv_id: '2605.09998'
+  url: https://arxiv.org/abs/2605.09998
+  source_type: paper
+  title: 'Continual Harness: Online Adaptation for Self-Improving Foundation Agents'
+  authors: [Seth Karten, Joel Zhang, Tersoo Upaa Jr, Ruirong Feng, Wenzhe Li, Chengshuai Shi, Chi Jin, Kiran Vodrahalli]
+  categories: [agent_architecture, autonomous_research, memory_augmented, training_distillation, benchmark_methodology]
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-1009
+  ingested_date: '2026-08-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'A refiner diagnoses recent trajectory failures and mutates prompt additions, subagents, executable skills, and memory during the same non-resetting episode.'
+  - 'The paper proposes a co-learning variant combining reset-free DAgger, process rewards, frontier-teacher relabeling, and student fine-tuning, but the released repository contains no PRM/DAgger/training pipeline.'
+  - 'The released refiner persists generated edits directly; no objective acceptance gate, held-out validation, transactional four-component rollback, oscillation bound, or reward-hacking defense was found.'
+  - 'Only failed tool results are deterministically detected; richer failure signatures are inferred by the refiner model, and the implementation hard-codes 25/100-step refinement cadence.'
+  techniques: [reset-free harness refinement, trajectory-window failure signatures, four-component CRUD, DAgger, process reward model, teacher relabeling, soft SFT]
+  reported_results:
+  - '[author-reported] Gemini 3 Pro reaches 100% of 31 Emerald milestones at $130 median versus 98% at $215 for the minimalist scaffold.'
+  - '[author-reported] Below a capability floor, the method reverses: Flash-Lite baseline reaches 20 milestones while Continual Harness variants reach 3-13 at comparable or higher cost.'
+  - '[author-reported] Five selected advancing Gemma co-learning runs gain roughly two to five milestones, but rewards are non-monotonic and the training pipeline is not released.'
+  - 'Appendix B.3 records one invalid tool payload repeated 842 times within a 1,003-turn, roughly 3.5-hour loop.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 08-cost-aware-rewards.md, 09-claude-debugger.md]
+    handoffs: [meta-harness-optimization.md, autopilot-continuous-optimization.md, harness-selection-and-integration.md, repl-session-memory-maturity.md, agent-collab-rnd-harness.md, tool-use-eval-contract.md, evidence-plane-ledger-and-sequential-verdicts.md, skillbank-distillation.md, session_persistence.md]
+    experiments: []
+    intake_entries: [intake-153, intake-154, intake-240, intake-244, intake-338, intake-451, intake-803, intake-901, intake-1009, intake-1010]
+  contradicting_evidence:
+  - 'Controlled experiments are confined to Pokémon and do not compare reset-free with reset-based optimization at equal budget.'
+  - 'The paper records non-monotonic rewards, post-resume regression, schema fragility, feedback blindness, and conversion of a sandbox loophole into a reusable primitive.'
+  - 'No independent reproduction or released co-training pipeline surfaced.'
+  recommended_actions:
+  - '[adopt proposal input] Feed recent trajectory windows to a shadow-only refinement proposer; all outputs remain ordinary candidates for EPYC''s existing evaluation/keep-or-revert path.'
+  - '[adopt adversarial fixtures] Add the 842-repeat schema failure and Factorio exploit to repetition, privilege, reward-hacking, and oracle-adequacy tests.'
+  - '[measurement experiment] Compare reset-free and episodic proposal generation at equal budget on coding/operations tasks; do not import Pokémon scores or privileged emulator state as baseline evidence.'
+  - '[safety constraint] Treat the released same-process Python executor with __import__ as a namespace convenience, not a sandbox.'
+  handoffs_updated:
+  - 'handoffs/active/autopilot-continuous-optimization.md'
+  - 'handoffs/active/tool-use-eval-contract.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'AP-CH-1, AP-CH-2, and TU-ADV-1 now own shadow proposal generation and adversarial fixtures; live self-modification, executor import, and training remain declined.'
+  notes: 'PDF SHA-256 50f60996b0d962cdbf01f5b6a262ccd68b149c8b67cc2594218453717ea0c45e. Companion repository commit bbab97ad73e460b7cd7c08527d10ced30cc03fbe. Adopt the diagnosis/proposal pattern only; the live self-modification path is below EPYC promotion and rollback requirements.'
+  dive_corrections: |-
+    2026-08-07 Stage-2 paper/implementation dive. OVERALL VERIFIED for reset-free proposal generation and its disclosed failures; live self-modification and released co-learning are OVERTURNED as integration-ready components.
+
+    CLAIM LEDGER. CONFIRMED: one ongoing Pokémon episode, four-kind mutation, DAgger/PRM/frontier-teacher/soft-SFT proposal, main reported milestones, non-monotonic reward, capability-floor dependence, and no convergence/reset-free-vs-episodic proof. OVERTURNED IMPLEMENTATION: generic configurable every-F refinement—the code hard-codes every 25 steps then 100. PARTIAL: rich failure signatures are not an implemented detector; only tool errors are explicit and other diagnoses are model-inferred. NOT-FOUND: released PRM/DAgger training, held-out acceptance, transactional commit, automatic rollback, oscillation guard, or reward-hacking gate. OVERTURNED SAFETY: the same-process executor exposes __import__ and is not a security boundary. CONFIRMED ADVERSE CASE: one exact invalid schema repeated 842 times in a 1,003-turn loop. CONFIRMED: privileged emulator-derived state and saved-state resume narrow generalization.
+
+    ADVERSARIAL SEARCH. Main evaluations have at least three seeds, but Gemma plots select five advancing runs; no independent replication surfaced. The paper itself records regression after resume, two-to-three-iteration recovery, frontier-teacher dependence, and an exploit compiled into a reusable skill. These support a proposal-only role behind EPYC's stronger gates.
+
+    DERIVED-ACTIONABLES LEDGER. (H1, export) trajectory-window diagnosis as candidate generation only. (H2, keep) EPYC held-out evaluation, objective acceptance, checkpoint, and keep/revert authority remain outside the proposer. (H3, adopt fixtures) 842-repeat schema loop and Factorio privilege exploit. (H4, compare) equal-budget reset-free versus episodic proposal generation. (H5, decline) no live apply, released training reproduction, or sandbox reuse. Proposed owners meta-harness-optimization.md and autopilot-continuous-optimization.md; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: https://github.com/sethkarten/continual-harness is the load-bearing public implementation and is proposed for Stage-2b ingest-and-dive; the same-team project page and independent Factorio environment notes are lower priority.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): AP-CH-1 and AP-CH-2 in `handoffs/active/autopilot-continuous-optimization.md` plus TU-ADV-1 in `handoffs/active/tool-use-eval-contract.md` own shadow proposals and adversarial fixtures; live self-modification, executor import, and training remain declined.
+- id: intake-1017
+  arxiv_id: '2606.10532'
+  url: https://arxiv.org/abs/2606.10532
+  source_type: paper
+  title: 'ActiveMem: Distributed Active Memory for Long-Horizon LLM Reasoning'
+  authors: [Yunhan Jiang, Wenbin Duan, Shasha Guo, Liang Pang, Xiaoqian Sun, Huawei Shen]
+  categories: [memory_augmented, context_management, agent_architecture, training_distillation, benchmark_methodology]
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-1008
+  ingested_date: '2026-08-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'A high-level Planner retains a bounded ten-step history while parallel 4B Memorizers distill retrieved documents into query-conditioned gists stored in sixteen logical shards.'
+  - 'A central Operator routes documents, uses a Qwen3-4B similarity judge for gist reuse, and asynchronously consolidates new-query gists.'
+  - 'The system is centrally orchestrated; the evaluated distribution is logical sharding and parallel auxiliary inference, not decentralized control.'
+  - 'Gist-only shards are lossy: entries retain gist, document identifier, and query history but no raw content or demonstrated recovery guarantee.'
+  techniques: [bounded planner history, semantic-gist distillation, document-keyed memory shards, parallel small memorizers, similarity-gated reuse, asynchronous consolidation, trajectory-derived SFT]
+  reported_results:
+  - 'On 150 BrowseComp-Plus examples, ActiveMem reports 0.786 LasJ at 2,145 estimated PFLOPs versus Context-Folding at about 0.71 and 3,920 PFLOPs.'
+  - 'On 106 GAIA WebSearch validation examples, it reports 0.62 LasJ versus a strongest listed baseline of 0.59.'
+  - 'Memorizers account for 68.9% of the reported BrowseComp compute; replacing the 4B Memorizer with 0.6B lowers PFLOPs but drops LasJ from 0.786 to 0.560.'
+  - 'Removing shards jointly removes storage, persistence, and reuse, so the ablation does not isolate the benefit of logical distribution.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md, 09-claude-debugger.md]
+    handoffs: [context-folding-progressive.md, episodic-memory-integrity.md, unified-trace-memory-service.md, internal-kb-rag.md, tool-output-compression.md, harness-selection-and-integration.md, 03-session-scratchpad-memory.md, orchestrator-conversation-management.md]
+    experiments: []
+    intake_entries: [intake-1008, intake-154, intake-155, intake-156]
+  contradicting_evidence:
+  - 'No code, Memorizer checkpoint, seed count, confidence interval, statistical test, or independent replication surfaced.'
+  - 'The cost model omits retrieval, search, memory, communication, scheduling, training, and wall-clock effects; ACT depends on an author-chosen coefficient and the comparison set.'
+  - 'Qwen3.5-397B-A17B is both Planner and LasJ judge, and no fully local end-to-end run is reported.'
+  recommended_actions:
+  - '[candidate pattern] Compare parallel small gist extractors against Context-Folding and lossless append-log retrieval in one local harness.'
+  - '[evidence gate] Preserve resolvable raw-document references beside every gist and separately measure omission, contradiction, wall time, memory, communication, tokens, and answer quality.'
+  - '[decline direct adoption] Treat failure-triggered reuse and component-cost ablations as patterns, not the unreleased runtime or comparison-set-relative ACT score.'
+  handoffs_updated:
+  - 'handoffs/active/context-folding-progressive.md'
+  - 'handoffs/active/unified-trace-memory-service.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'CF-AM-1 and UTM-V6 now own the provenance-preserving parallel-gist comparison; unreleased runtime and ACT-score adoption remain declined.'
+  notes: 'PDF SHA-256 0282e79d580e677e4d6935b7c6d4d70970c213296676227fd0c9dd8f7717fdbc. The 12,000-pair Memorizer SFT uses gpt-oss-120b targets and document-level train/test separation. Auxiliary inference uses three separate A100-80GB-class roles and SFT uses four A100-80GB GPUs; transfer beyond web search is untested.'
+  dive_corrections: |-
+    2026-08-07 Stage-2 paper dive. OVERALL VERIFIED for its task-local parallel gist architecture and reported tables; direct runtime/ACT adoption remains unsupported.
+
+    CLAIM LEDGER. CONFIRMED: ten-step Planner history, sixteen parallel 4B Memorizers, central Operator, Qwen3-4B similarity routing, asynchronous consolidation, and logical rather than decentralized distribution. PARTIAL: a document identifier could permit external re-fetch, but shard state contains no raw text or demonstrated recovery path. CONFIRMED: BrowseComp-Plus 150-case .786/2145 PFLOP result, GAIA 106-case .62 result, 68.9% Memorizer cost share, and .786-to-.560 quality loss with a 0.6B Memorizer. CONFIRMED: no-shard and consolidation ablations confound multiple memory properties. CONFIRMED: memory persists only through one task lifecycle. NOT-FOUND: code, checkpoint, seed count, confidence intervals, significance tests, independent replication, or local end-to-end run.
+
+    ADVERSARIAL SEARCH. The ACT score uses an author-selected coefficient and comparison-set normalization; cost omits wall time, retrieval/search, communication, scheduling, memory, and training. Qwen3.5-397B-A17B is both Planner and LasJ judge. Observed memory-hit rates are sparse, and privacy, poisoning, staleness, and conflicts are untested.
+
+    DERIVED-ACTIONABLES LEDGER. (A1, bounded experiment) identical-harness parallel gist extraction versus Context-Folding and lossless append-log retrieval. (A2, mandatory provenance) keep resolvable raw evidence and score gist omission/contradiction independently. (A3, full costing) include wall time, all inference, communication, retrieval, and memory. (A4, decline) no unreleased runtime or ACT-headline adoption. Proposed owners context-folding-progressive.md and unified-trace-memory-service.md; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: BrowseComp-Plus (arXiv:2508.06600) validates the load-bearing benchmark contract; Mem0 (arXiv:2504.19413) provides a cross-session comparator. Both are proposed at the consolidated source gate.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): CF-AM-1 in `handoffs/active/context-folding-progressive.md` and UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own the provenance-preserving parallel-gist comparison; unreleased runtime and ACT-score adoption remain declined.
+- id: intake-1018
+  arxiv_id: '2608.03137'
+  url: https://arxiv.org/abs/2608.03137
+  source_type: paper
+  title: 'Verifiable Memory: Learning Unified Memory Management with Local and Global Verifiers for Large Language Model Agents'
+  authors: [Xiaolong Sun, Qichao Wang, Hangyu Li, Liang Chen]
+  categories: [memory_augmented, agent_architecture, training_distillation, benchmark_methodology, context_extension]
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  discovered_via: expansion
+  expanded_from: intake-1008
+  ingested_date: '2026-08-07'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - 'VerMem separates long-term memory, bounded active context, and same-task episodic history while one learned policy chooses Add, versioned Update, soft Delete, Retrieve, Filter, SelectEpisode, Summarize, or no-op.'
+  - 'Frozen DeepSeek-V3.2 local and global semantic judges provide operation- and trajectory-level credit during training, combined with task correctness, evidence recall, efficiency, and hard constraints.'
+  - 'Training uses 32,000 constructed HotpotQA SFT states followed by three GRPO phases for long-term, short-term, and joint control.'
+  - 'Every memory state resets after each episode, so the evaluation establishes within-episode control rather than durable cross-session memory; soft Delete retains tombstones/version history and is not physical privacy erasure.'
+  techniques: [unified LTM/STM/episodic control, seven atomic memory tools, version chains, tombstone deletion, episode restoration, local/global verification, hierarchical credit, SFT-GRPO curriculum]
+  reported_results:
+  - 'Across five benchmarks, VerMem averages 48.01 with Qwen2.5-7B and 59.85 with Qwen3-4B, respectively 6.05 and 5.54 points above the strongest listed external baseline.'
+  - 'Full local-plus-global verification improves the matched no-verifier averages by about 6.2 points across both backbones, with one small PDDL regression.'
+  - 'The online-token table interpolates about 2,080 tokens to target macro success 40 and separately reports 44.30 success at 2,500 tokens; accounting excludes training, embeddings, indexing, verifier calls, and Qwen-Max judging.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md, 09-claude-debugger.md]
+    handoffs: [episodic-memory-integrity.md, unified-trace-memory-service.md, internal-kb-rag.md, context-folding-progressive.md, repl-session-memory-maturity.md, engram-conditional-memory.md, delta-mem-reproduction.md, research-evaluation-index.md, tool-use-eval-contract.md, evidence-plane-ledger-and-sequential-verdicts.md, orchestrator-conversation-management.md, 03-session-scratchpad-memory.md]
+    experiments: []
+    intake_entries: [intake-154, intake-157, intake-338, intake-539, intake-568, intake-610, intake-611, intake-612, intake-1008]
+  contradicting_evidence:
+  - 'The released local/global verifiers are rule-based Python implementations, not the paper''s DeepSeek-V3.2 semantic-verifier prompts and scoring path.'
+  - 'The repository has no license, checkpoints, datasets, result files, evaluation module, exact environment lock, or pinned dependencies, so it cannot reproduce the headline tables.'
+  - 'No independent replication surfaced, and robustness to conflicting, poisoned, stale, private, or strategically manipulated memory is untested.'
+  recommended_actions:
+  - '[shadow prototype] Map the seven operations plus provenance, version, rollback, and tombstone state to the unified trace ledger without policy training or live mutation.'
+  - '[verifier calibration] Separate deterministic structural checks from semantic judges and measure false-pass/false-fail rates against human-labelled adversarial memory cases.'
+  - '[measurement gate] Compare operation-level credit against task-level evaluation while retaining durable restart/cross-session persistence and raw-source recovery as distinct required lanes.'
+  - '[decline full reproduction] Do not budget the six-run curriculum until semantic-verifier prompts/code, data, evaluation module, checkpoints, pinned environment, and license exist.'
+  handoffs_updated:
+  - 'handoffs/active/unified-trace-memory-service.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'UTM-V1 through UTM-V6 now own the default-inert shadow schema, verifier, distiller, credit, and full evaluation matrix; this is task routing, not deployed memory behavior.'
+  notes: 'PDF SHA-256 5bf8cb5cb2c4ab8348eea5bbc3449431eac75cf3c19e3dee2b610c706a5122a0; repository commit 4782751c79faa08421a27c23b4d02c591bc3357d; tree 9bf955e2c06d5c8b7d34ff53ac43ab0de61fe548. Compared with Cognitive Workspace, this uses real task outcomes, common baselines, isolated examples, three seeds, component ablations, evidence recall, and token curves; it still omits dominant offline verifier/training costs.'
+  dive_corrections: |-
+    2026-08-07 Stage-2 paper/repository dive. OVERALL VERIFIED as a materially stronger within-episode memory-evaluation design and a source of operation/provenance/structural-gate patterns; OVERTURNED as a reproducible semantic-verifier release.
+
+    CLAIM LEDGER. CONFIRMED: unified LTM/STM/episodic control, seven operations, versioned updates, tombstones, 32,000 SFT states, three GRPO phases, frozen DeepSeek-V3.2 semantic judges, episode reset, headline averages, and roughly 6.2-point matched verifier ablation. PARTIAL: TN@S*=2080 is an interpolation to target success 40, not a direct observed point. OVERTURNED: soft Delete is privacy erasure—it preserves audit history. OVERTURNED ARTIFACT: released local/global verifiers implement the paper judges—they explicitly use deterministic rules/lexical matching and contain no DeepSeek invocation. OVERTURNED ARTIFACT: released training defaults/seeds match the paper—they are tiny smoke settings with two rather than three seeds. CONFIRMED ARTIFACT: schemas, source references, normal/error/rollback provenance, version/tombstone checks, and default-off lexical matching are transferable. NOT-FOUND: semantic prompts/scoring path, checkpoint, dataset, evaluator, result files, complete state-transition engine, pinned environment, or license.
+
+    ADVERSARIAL SEARCH. VerMem repairs Cognitive Workspace's forced controls, cumulative leakage, and absence of task outcomes through isolated episodes, three seeds, matched ablations, evidence recall, and token curves. It still omits sample counts, formal uncertainty, dominant offline cost, and durable cross-session evaluation; metric types are mixed and Hotpot uses Qwen-Max judging. No independent reproduction surfaced.
+
+    DERIVED-ACTIONABLES LEDGER. (V1, shadow prototype) seven-operation/provenance/version/tombstone trace schema. (V2, verifier separation) retain deterministic structural checks independently of a calibrated semantic judge and report false-pass/false-fail on poisoned, conflicting, stale, private, and manipulated memories. (V3, persistence suite) within-task, restart, cross-session, deletion, and raw-evidence recovery lanes. (V4, decline) no full training reproduction or headline attribution to released rules. Proposed owners unified-trace-memory-service.md, episodic-memory-integrity.md, and evidence-plane-ledger-and-sequential-verdicts.md; Stage 2 made no handoff edits.
+
+    DIVE-SURFACED SOURCES: AtomMem (arXiv:2601.08323) and Memory-R1 (arXiv:2508.19828) are direct operation-policy comparators; Mem0 (arXiv:2504.19413) is the higher-priority cross-session comparator. All are presented at the consolidated source gate.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): UTM-V1 through UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own the default-inert shadow schema, verifier calibration, distiller comparison, operation credit, and full lifecycle evaluation matrix; no live memory mutation was enabled.
+- id: intake-1019
+  arxiv_id: null
+  url: https://huggingface.co/LiquidAI/LFM2.5-2.6B-GGUF
+  source_type: repo
+  title: 'LFM2.5-2.6B-GGUF (official quantized deployment artifacts)'
+  authors: [Liquid AI]
+  categories: [local_inference, agent_architecture, ssm_hybrid, tool_implementation]
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-1014
+  ingested_date: '2026-08-07'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - 'The official repository publishes Q4_K_M (1,674,454,848 bytes) and Q8_0 (2,874,779,456 bytes), plus Q4_0, Q5_K_M, Q6_K, F16, and BF16 artifacts at one pinned revision.'
+  - 'The GGUF-embedded chat template preserves reasoning, renders LiquidAI Python-style tool calls, and opens every assistant generation with a think tag; frozen production v8 already contains the matching LFM2 loader and LFM2.5 parser.'
+  - 'The separate LEAP Q4/Q8 sidecars use a simplified template that omits the embedded template''s reasoning prefill and tool-call rendering, so template identity is part of the deployment artifact and benchmark contract.'
+  techniques: [official GGUF quantization family, embedded chat template, Python-style tool calls, llama.cpp deployment]
+  reported_results:
+  - 'The repository provides artifact sizes and launch commands but no Q4-versus-Q8 quality measurements, no tool-compliance results, and no comparison with EPYC''s Gemma4 26B-A4B worker.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md]
+    handoffs: [harness-selection-and-integration.md, eval-tower-verification.md, tool-use-eval-contract.md, log-linear-gated-deltanet-readiness.md]
+    experiments: []
+    intake_entries: [intake-1006, intake-1014]
+  contradicting_evidence:
+  - 'No independent controlled quantization study establishes that Q4_K_M preserves the role quality of Q8_0, or that either replaces the current worker.'
+  - 'The LEAP sidecar/template mismatch can silently change mandatory-reasoning and tool-call behavior if a runner ignores the embedded GGUF template.'
+  recommended_actions:
+  - '[candidate trial] Benchmark both official Q4_K_M and Q8_0 against Gemma4 26B-A4B under identical worker_general prompts, exact embedded template, tools, seeds, and stop conditions.'
+  - '[measurement gate] Record task success, strict tool-schema compliance, reasoning-token overhead, retries, peak resident memory, prompt/decode throughput, and end-to-end wall time; report the Q8-minus-Q4 quality and resource delta directly.'
+  - '[template gate] Hash and archive the embedded template used by the runner; separately reject or qualify the LEAP sidecars unless behavioral parity is demonstrated.'
+  handoffs_updated:
+  - 'handoffs/active/architect-model-selection-bench.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'WG-LFM-1 in architect-model-selection-bench.md now owns the Q4_K_M/Q8_0/Gemma4 matched worker verdict; this is durable routing, not a deployment claim.'
+  notes: 'Pinned Hugging Face revision b421ad1d549afeda6a0fb2ad3a697cb5a7879adc. API SHA-256 b5869deadc47ed541738345e5c89d3318210ddd15fd202d72aa8d0810e599685; README SHA-256 9172447d3835f57649cfb5e1ba7d63a49061a4355d490129d8f96c7a9785e48f. Q4 LEAP JSON SHA-256 2e21c0a856852ca49771213e451b771bcca52030824fff66beecd1e5054c38e8; Q8 LEAP JSON SHA-256 38eeebf5f8820ca3e784fffcb85a1bfc324e4f46e1b71201b7ea3a3b7bfbe222. The GGUF metadata/template was inspected from the first 8 MiB without executing source code or modifying the frozen kernel.'
+  dive_corrections: |-
+    2026-08-07 Stage-2b official-artifact dive. OVERALL VERIFIED as the exact deployable worker candidate; quantized role quality remains unmeasured.
+
+    CLAIM LEDGER. CONFIRMED: pinned revision, published quant family, exact Q4_K_M/Q8_0 sizes, llama.cpp launch path, embedded LFM2.5 architecture metadata, reasoning preservation, Python-style tool rendering, and think-prefill behavior. CONFIRMED: frozen v8 statically contains the required loader and parser paths. OVERTURNED ASSUMPTION: Q4 alone is a sufficient candidate sweep—the operator requires Q8 as well. PARTIAL: repository existence establishes loadability, not task quality or context fidelity. NOT-FOUND: official Q4-versus-Q8 quality, tool reliability, EPYC MI210 throughput, or Gemma4 26B-A4B role comparison. CONFIRMED DISCREPANCY: LEAP sidecars omit load-bearing embedded-template behavior.
+
+    ADVERSARIAL SEARCH. No independent same-model, same-template, same-harness quant comparison surfaced. Community anecdotes are hardware- and prompt-confounded. Artifact metadata therefore fixes the hypotheses and runner contract but supplies no acceptance result.
+
+    DERIVED-ACTIONABLES LEDGER. (L1, smoke) Q4 and Q8 load/template/tool parsing. (L2, matched quality) worker task success and strict tool compliance under identical prompts and seeds. (L3, systems) reasoning tokens, retries, memory, throughput, and wall time. (L4, decision) Q8/Q4/Gemma Pareto verdict with no role change before the gate passes. Proposed owners harness-selection-and-integration.md and eval-tower-verification.md; Stage 2b made no handoff edits.
+
+    DIVE-SURFACED SOURCES: the base model card and frozen-v8 implementation were already verified under intake-1014; no additional gate-worthy source surfaced.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): WG-LFM-1 in `handoffs/active/architect-model-selection-bench.md` owns the pinned Q4_K_M/Q8_0/Gemma4 matched worker verdict; no deployment or runtime change was made.
+- id: intake-1020
+  arxiv_id: null
+  url: https://github.com/sethkarten/continual-harness
+  source_type: repo
+  title: 'Continual Harness implementation'
+  authors: [Seth Karten and contributors]
+  categories: [agent_architecture, autonomous_research, memory_augmented, tool_implementation]
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-1016
+  ingested_date: '2026-08-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'The implementation persists four mutation classes—prompt additions, subagents, executable skills, and memories—and invokes an LLM refiner over recent trajectory windows.'
+  - 'Refinement cadence is hard-coded to every 25 steps through step 200 and every 100 thereafter, rather than honoring a generic caller-supplied frequency.'
+  - 'Generated edits are applied pass-by-pass to live state without held-out acceptance, an atomic four-component transaction, or an objective keep/revert gate.'
+  - 'The purported Python sandbox executes in-process with exec and exposes __import__; it is not a security boundary.'
+  techniques: [trajectory-window diagnosis, four-pass CRUD proposals, persisted component versions, reset-free refinement]
+  reported_results:
+  - 'The repository does not provide an independent resume/performance benchmark or the paper''s PRM/DAgger training pipeline; published Pokémon results remain claims of the companion paper.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 08-cost-aware-rewards.md, 09-claude-debugger.md]
+    handoffs: [meta-harness-optimization.md, autopilot-continuous-optimization.md, harness-selection-and-integration.md, repl-session-memory-maturity.md, tool-use-eval-contract.md, evidence-plane-ledger-and-sequential-verdicts.md, skillbank-distillation.md, session_persistence.md]
+    experiments: []
+    intake_entries: [intake-1009, intake-1010, intake-1016]
+  contradicting_evidence:
+  - 'The code does not implement transactional candidate acceptance, held-out evaluation, automatic rollback, reward-hacking protection, or the proposed co-learning pipeline.'
+  - 'Only tool success/error is a deterministic failure signal; richer diagnoses are produced by the refiner model and should not be treated as verified signatures.'
+  - 'Same-process exec with import access invalidates any claim that generated skills are safely sandboxed.'
+  recommended_actions:
+  - '[adopt proposal adapter] Convert bounded EPYC trajectory windows into typed prompt/subagent/skill/memory candidate envelopes, with no direct mutation authority.'
+  - '[retain existing authority] Keep schema validation, held-out evaluation, checkpointing, transactional keep/revert, privilege policy, and rollback outside the proposer.'
+  - '[adopt adversarial fixtures] Reproduce the 842-repeat invalid-tool loop and Factorio privilege exploit as bounded repetition, oracle-adequacy, and reward-hacking tests.'
+  - '[decline direct runtime] Reuse neither the in-process executor nor live four-pass apply path as a sandbox or optimizer authority.'
+  handoffs_updated:
+  - 'handoffs/active/autopilot-continuous-optimization.md'
+  - 'handoffs/active/tool-use-eval-contract.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'AP-CH-1, AP-CH-2, and TU-ADV-1 now own shadow proposal generation and adversarial fixtures; live self-modification, executor import, and training remain declined.'
+  notes: 'Pinned commit bbab97ad73e460b7cd7c08527d10ced30cc03fbe; tree f82df62c88b096b565886553ac26ef268fd613df. README SHA-256 96a5e9f91c64f49335e90b96f6ec7b25902df3c32ed6c8fceca6831e9fa1ca87; harness_evolver.py SHA-256 29414e694886d163376b5c6d0db61d9af5feea04bfffa0805e517a9fb4861563; prompt_optimizer.py SHA-256 7bc0148a23b09ffbd6c3eaddc77ef8ea3437f4df9c6394eb63d3fe2d06bf3f13; PokeAgent.py SHA-256 44bcbe9775824bc75562f5b2c940f85028d968db3b614b632e55876decc2088b. MIT license.'
+  dive_corrections: |-
+    2026-08-07 Stage-2b implementation dive. OVERALL VERIFIED as a concrete shadow-proposal source and adversarial fixture; OVERTURNED as a safe live optimizer or released co-learning system.
+
+    CLAIM LEDGER. CONFIRMED: four persisted component types, four-pass mutation, version records, trajectory-window prompts, and immediate live application. OVERTURNED: generic configurable cadence—the decisive branch hard-codes 25/100 steps. PARTIAL: failure signatures beyond tool-result flags are LLM inferences. OVERTURNED: secure sandbox—the implementation uses same-process exec with __import__. NOT-FOUND: PRM, DAgger, frontier-teacher training, held-out acceptance, transaction boundary, automatic rollback, oscillation bound, or reward-hacking detector.
+
+    ADVERSARIAL SEARCH. The companion paper itself supplies the strongest negative cases: 842 identical invalid calls and conversion of privileged environment access into a reusable skill. No independent reproduction surfaced. The repository has useful unit tests for several local components, but they do not establish safe end-to-end self-modification.
+
+    DERIVED-ACTIONABLES LEDGER. (C1, export) typed proposal schemas and trajectory-window diagnosis. (C2, constrain) shadow-only generation with bounded repeats and schema validation. (C3, preserve) EPYC evaluation/lease/checkpoint/keep-revert authority. (C4, fixtures) invalid-schema repetition and privilege/reward exploit. (C5, decline) executor, live writes, and unreleased training. Proposed owners meta-harness-optimization.md and autopilot-continuous-optimization.md; Stage 2b made no handoff edits.
+
+    DIVE-SURFACED SOURCES: the companion paper is already dive-verified as intake-1016; no additional gate-worthy source surfaced.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): AP-CH-1 and AP-CH-2 in `handoffs/active/autopilot-continuous-optimization.md` plus TU-ADV-1 in `handoffs/active/tool-use-eval-contract.md` own shadow proposals and adversarial fixtures; live self-modification, executor import, and training remain declined.
+- id: intake-1021
+  arxiv_id: '2605.04808'
+  url: https://arxiv.org/abs/2605.04808
+  source_type: paper
+  title: 'DecodingTrust-Agent Platform (DTap): A Controllable and Interactive Red-Teaming Platform for AI Agents'
+  authors: [Zhaorun Chen, Xun Liu, Haibo Tong, Chengquan Guo, Yuzhou Nie, Jiawei Zhang, Mintong Kang, Chejian Xu, Qichang Liu, Xiaogeng Liu, Tianneng Shi, Chaowei Xiao, Sanmi Koyejo, Percy Liang, Wenbo Guo, Dawn Song, Bo Li]
+  categories: [safety, benchmark_methodology, agent_architecture, tool_implementation]
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-1012
+  ingested_date: '2026-08-07'
+  verdict: adopt_component
+  verification: dive-verified
+  key_claims:
+  - 'DTAP defines benign, direct-injection, and indirect-injection threat models across 14 domains and more than 50 simulated environments.'
+  - 'At the pinned repository revision, 6,682 task configs comprise 2,806 benign, 1,878 direct, and 1,998 indirect cases; each task is paired with setup and deterministic state-inspecting judge logic.'
+  - 'Attack vectors cover prompt, tool, skill, environment, and compositional injection, while DTAP-RED iteratively optimizes attacks using judge feedback.'
+  - 'The reported 100% optimized-attack result is a matched-construction upper bound generated against GPT-5.1 with one SDK, not a model-agnostic robustness score.'
+  techniques: [containerized simulated services, state-based security judges, direct and indirect injection, compositional attacks, autonomous red teaming]
+  reported_results:
+  - 'The released benchmark contains 6,682 cases, while Pokee-Isaac reports a 6,195-case subset/version; those security results are not numerically interchangeable.'
+  - 'The paper provides task-level outcomes but no repeated full-agent seeds or confidence intervals; evaluator framework, temperature, endpoint, and attack-generation target remain load-bearing controls.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md, 09-claude-debugger.md]
+    handoffs: [tool-use-eval-contract.md, eval-tower-verification.md, harness-selection-and-integration.md, evidence-plane-ledger-and-sequential-verdicts.md, reviewer-escalation-and-human-gate-policy.md]
+    experiments: []
+    intake_entries: [intake-1012]
+  contradicting_evidence:
+  - 'Pokee''s comparison uses a different task count and unequal runners, so DTAP does not rescue that cross-model ranking.'
+  - 'Attack optimization and evaluation against the same target/harness can measure search success rather than out-of-sample robustness.'
+  - 'The paper lacks repeated-seed uncertainty and does not itself provide EPYC''s typed separation of model, harness, endpoint, verifier, and infrastructure failures.'
+  recommended_actions:
+  - '[adopt licensed subset] Reuse a small Apache-2.0 task/config/judge subset with paired benign/direct/indirect cases and deterministic final-state judges inside an isolated local runner.'
+  - '[same-harness gate] Hold model, prompt, tools, endpoint policy, retry policy, temperature, and runner constant; add repeated seeds, confidence intervals, and typed non-model failures.'
+  - '[adversarial coverage] Include prompt, tool, skill, environment, and compositional injection, with attack-generation targets held out from the final comparison.'
+  - '[safety constraint] Review and sandbox every setup script and simulated service; do not execute upstream environment scripts outside a disposable boundary.'
+  handoffs_updated:
+  - 'handoffs/active/tool-use-eval-contract.md'
+  - 'handoffs/active/rlm-contested-claims-self-evaluation.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'TU-DTAP-1 and E3b now own same-harness security evaluation and direct-context-versus-REPL measurement; proprietary model reconstruction remains declined.'
+  notes: 'Paper PDF SHA-256 2bf3999596554d3f2140bb28c926debb7f227975473b5adf0e953acf24cd8f24. Official repository https://github.com/AI-secure/DecodingTrust-Agent pinned at commit e0323a521ba4ef88f8e14c1eccf68d0a3d19a458, tree fd5a107aedb8971c346fc0e85d4789bf510e3f5f; README SHA-256 9d3bafff324ab257a9af5baad14cb650f81131ed2943529eb63c83152bf8280c; Apache-2.0 license SHA-256 c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4. Static counts reproduce the paper''s 6,682 total exactly.'
+  dive_corrections: |-
+    2026-08-07 Stage-2b paper/repository dive. OVERALL VERIFIED as a strong security-evaluation contract and a directly reusable task/judge schema; published rankings require stricter controls.
+
+    CLAIM LEDGER. CONFIRMED: 14 domains, 50-plus simulations, three threat classes, five injection families, 6,682 released configs, exact split counts, per-case setup, and deterministic state-based judges with full/partial/fail criteria. CONFIRMED: custom-agent integration, Docker isolation, per-task results, and skip-existing resume. PARTIAL: reproducibility applies to a pinned environment/task revision, not arbitrary live endpoints. OVERTURNED AS GENERAL RESULT: 100% optimized attack means universal vulnerability—it is generated and measured against the matched target. NOT-FOUND: repeated full-agent seeds, confidence intervals, one fixed cross-agent temperature/framework, or an explanation for Pokee's 487-case smaller subset.
+
+    ADVERSARIAL SEARCH. Current public project surfaces 6,684 tasks while the pinned paper/repo contains 6,682, demonstrating live-version drift. Pokee uses only 6,195 and a different harness. Attack generation against GPT-5.1/OpenAI SDK makes that cell a construction upper bound. No independent exact reproduction surfaced.
+
+    DERIVED-ACTIONABLES LEDGER. (D1, adopt component) bounded task/config/judge subset. (D2, equalize) same harness, tools, policies, and temperatures. (D3, strengthen) repeated seeds, intervals, typed failure attribution, and trace replay. (D4, separate) attack-optimization target from held-out evaluation. (D5, contain) disposable environments only. Proposed owners tool-use-eval-contract.md and eval-tower-verification.md; Stage 2b made no handoff edits.
+
+    DIVE-SURFACED SOURCES: the official Apache-2.0 repository is a companion artifact bundled into this dive; RULER and MCP-Atlas were already surfaced under intake-1012. No further gate-worthy source surfaced.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): TU-DTAP-1 in `handoffs/active/tool-use-eval-contract.md` and E3b in `handoffs/active/rlm-contested-claims-self-evaluation.md` own the bounded same-harness security contract and the direct-context-versus-REPL comparison.
+- id: intake-1022
+  arxiv_id: '2504.19413'
+  url: https://arxiv.org/abs/2504.19413
+  source_type: paper
+  title: 'Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory'
+  authors: [Prateek Chhikara, Dev Khant, Saket Aryan, Taranjeet Singh, Deshraj Yadav]
+  categories: [memory_augmented, knowledge_management, agent_architecture, benchmark_methodology]
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-1018
+  ingested_date: '2026-08-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'The 2025 paper extracts salient facts from an asynchronous conversation summary, the last ten messages, and the new turn, then retrieves ten similar memories and chooses ADD, UPDATE, DELETE, or NOOP.'
+  - 'Mem0g adds entity/relation graph updates and conflict resolution, while the base design scopes persistent memories across sessions.'
+  - 'The official Apache-2.0 repository is self-hostable and supports Ollama, LiteLLM, OpenAI-compatible endpoints, local stores, user/agent/run scopes, mutation history, update, and delete.'
+  - 'The current April-2026 OSS default extraction path is ADD-only and diverges from the paper''s automatic four-operation algorithm; manual update/delete and audit history remain available.'
+  techniques: [salient-fact extraction, top-k conflict retrieval, ADD/UPDATE/DELETE/NOOP, graph memory, scoped persistent storage]
+  reported_results:
+  - 'On LoCoMo, base Mem0 reports 67.13 overall LLM-judge score and Mem0g 68.44, below full-context quality but with p95 read-path latency of 1.440 and 2.590 seconds versus 17.117 seconds.'
+  - 'The reported 91% latency and greater-than-90% token savings exclude memory construction/write costs and compare a roughly 7K-token memory context with about 26K raw conversation tokens.'
+  - 'Ten repeats rerun the LLM judge, not the complete stochastic extraction/retrieval pipeline; adversarial and unanswerable LoCoMo items are excluded.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs: [unified-trace-memory-service.md, episodic-memory-integrity.md, internal-kb-rag.md, context-folding-progressive.md, repl-session-memory-maturity.md, orchestrator-conversation-management.md, 03-session-scratchpad-memory.md]
+    experiments: []
+    intake_entries: [intake-316, intake-326, intake-346, intake-1008, intake-1017, intake-1018]
+  contradicting_evidence:
+  - 'Full context remains the higher-quality paper baseline; Mem0 demonstrates an efficiency trade rather than an unqualified accuracy win.'
+  - 'The LLM judge model is not identified and its rubric accepts same-topic responses generously; the reported uncertainty is judge variance, not end-to-end run variance.'
+  - 'The paper and current OSS branch differ materially, and neither demonstrates poisoning resistance, privacy erasure, crash-safe cross-session recovery, or raw-evidence reconstruction.'
+  recommended_actions:
+  - '[shadow write path] Prototype local candidate extraction plus scoped top-k conflict retrieval and ADD/UPDATE/DELETE/NOOP decisions, but preserve the append-only raw trace as authority.'
+  - '[merge stronger schema] Add VerMem source references, actor identity, before/after versions, rollback links, tombstones, and explicit physical-erasure state rather than copying destructive delete semantics.'
+  - '[measurement gate] Compare against raw append-log/full-context and Context-Folding with complete extraction, write, retrieval, answer, verifier, token, latency, memory, restart, staleness, conflict, poisoning, and privacy costs.'
+  - '[decline replacement] Do not let lossy extracted facts overwrite or become more authoritative than recoverable source evidence.'
+  handoffs_updated:
+  - 'handoffs/active/unified-trace-memory-service.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'UTM-V1 through UTM-V6 now own the default-inert shadow schema, verifier, distiller, credit, and full evaluation matrix; this is task routing, not deployed memory behavior.'
+  notes: 'Paper PDF SHA-256 bec870b657aa73405275a6d8fe27bcd4271799e028bc62986ab9c4cd27a3712d. Official repository https://github.com/mem0ai/mem0 pinned at commit 4debc58a83377b18be81ae1e5969a300736b2fac, tree 942567bb7cb6591d4e2cc6d5bbcda9b231135332; README SHA-256 7509347d34a767a2ef37ceb6cf6c714de9e8d84fe66ad5eea92bbae824a8fbeb; Apache-2.0 license SHA-256 0bbcbe931c353293a2fafce08326181dfeea0e568c566afd4ce8337a70f5e219. Existing intake-346 was corrected from cloud-only to managed-cloud plus local OSS.'
+  dive_corrections: |-
+    2026-08-07 Stage-2b paper/current-repository dive. OVERALL VERIFIED as a practical local persistence and conflict-management comparator; accuracy, cost, and current-code equivalence are materially narrower than the headline.
+
+    CLAIM LEDGER. CONFIRMED: asynchronous summary plus last-ten/new-turn extraction, top-ten conflict retrieval, four operations, graph variant, LoCoMo scope, table values, and large read-path latency/token reductions. OVERTURNED: Mem0 beats full context on quality. PARTIAL: 91%/90% efficiency applies to the measured query path and excludes construction/write lifecycle costs. PARTIAL: ten runs quantify judge variance only. NOT-FOUND: named judge model, end-to-end seeds, true erasure, provenance/raw restoration, crash/restart tests, poisoning/privacy evaluation, or actor-authority calibration. OVERTURNED PRIOR INTAKE: cloud-only—the Apache repository supports local providers and stores. CONFIRMED VERSION DRIFT: current default extraction is ADD-only, unlike the paper's automatic four-way conflict policy.
+
+    ADVERSARIAL SEARCH. LoCoMo excludes adversarial/unanswerable cases and contains only ten long conversations. Baselines and construction costs are heterogeneous. Memory-R1 independently uses the same four operations but also exposes how outcome rewards can improve or regress categories. No independent reproduction of Mem0's full paper lifecycle surfaced.
+
+    DERIVED-ACTIONABLES LEDGER. (M1, export) local scoped candidate extraction and conflict retrieval. (M2, strengthen) VerMem provenance/version/rollback/tombstone schema plus raw-source authority. (M3, evaluate) complete lifecycle cost and quality under restart/conflict/stale/poison/private/delete cases. (M4, constrain) shadow writes before any authoritative memory mutation. (M5, decline) destructive delete and lossy-source replacement. Proposed owners unified-trace-memory-service.md and episodic-memory-integrity.md; Stage 2b made no handoff edits.
+
+    DIVE-SURFACED SOURCES: the current official Apache repository is bundled as a companion artifact; Memory-R1 is separately ingested as intake-1023. The newer managed-platform benchmark is version-divergent and not treated as evidence for this paper or OSS implementation.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): UTM-V1 through UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own the default-inert shadow schema, conflict/version semantics, raw-source authority, and full lifecycle evaluation matrix; direct deployment and destructive source replacement remain declined.
+- id: intake-1023
+  arxiv_id: '2508.19828'
+  url: https://arxiv.org/abs/2508.19828
+  source_type: paper
+  title: 'Memory-R1: Enhancing Large Language Model Agents to Manage and Utilize Memories via Reinforcement Learning'
+  authors: [Sikuan Yan, Xiufeng Yang, Zuchao Huang, Ercong Nie, Zifeng Ding, Zonggen Li, Xiaowen Ma, Jinhe Bi, Kristian Kersting, Jeff Z. Pan, Hinrich Schuetze, Volker Tresp, Yunpu Ma]
+  categories: [memory_augmented, training_distillation, agent_architecture, benchmark_methodology]
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-1018
+  ingested_date: '2026-08-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  key_claims:
+  - 'Memory-R1 trains a Memory Manager to choose ADD, UPDATE, DELETE, or NOOP and a separate Answer Agent to distill sixty retrieved memories before answering.'
+  - 'PPO/GRPO exact-match answer reward supplies downstream credit: the manager is optimized while the answer agent is frozen, then the answer agent is optimized against the fixed manager.'
+  - 'The main training set contains only 152 LoCoMo QA pairs; the paper states question-level train/validation/test counts but does not establish conversation-level isolation.'
+  - 'The official Apache-2.0 repository currently contains only a README and figures and explicitly says code is coming soon.'
+  techniques: [RL-trained memory operations, two-agent manager/distiller separation, PPO, GRPO, outcome-driven exact-match reward]
+  reported_results:
+  - 'Llama-3.1-8B GRPO reports LoCoMo judge 62.74 versus Memory-SFT 58.76 and Mem0 45.68; the advertised 37% gain uses Mem0 rather than the stronger controlled Memory-SFT row.'
+  - 'For Qwen-2.5-7B, GRPO reports judge 61.51 versus Memory-SFT 61.13, while PPO is worse at 59.53 and several multi-hop/temporal category metrics regress.'
+  - 'On LongMemEval, Llama GRPO improves judge score only 0.6 points over SFT and Qwen GRPO improves 3.0 points; this is a useful but not uniformly large transfer result.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md, 08-cost-aware-rewards.md]
+    handoffs: [unified-trace-memory-service.md, episodic-memory-integrity.md, evidence-plane-ledger-and-sequential-verdicts.md, internal-kb-rag.md, context-folding-progressive.md, delta-mem-reproduction.md]
+    experiments: []
+    intake_entries: [intake-346, intake-1008, intake-1018, intake-1022]
+  contradicting_evidence:
+  - 'The paper''s strongest-baseline phrasing ignores its stronger Memory-SFT controlled row when calculating the headline relative gain.'
+  - 'Exact-match reward is narrow, some PPO and category metrics regress, the generous LLM judge is unnamed, and a question-level split may leak dialogue-specific information across partitions.'
+  - 'No implementation, checkpoints, datasets, environment lock, result files, provenance/version/tombstone schema, privacy controls, or independent exact reproduction are released.'
+  recommended_actions:
+  - '[adopt architecture pattern] Separate memory-operation proposals from answer-time evidence distillation, and test the distiller independently before any policy training.'
+  - '[shadow credit experiment] Combine deterministic structural checks, calibrated VerMem-style local/global semantic checks, downstream task outcome, and raw-evidence recall; log per-operation credit without live mutation.'
+  - '[data gate] Require conversation-level splits, adversarial conflicts, poisoning, stale facts, deletion, restart, and cross-session cases before interpreting a learned memory policy.'
+  - '[defer RL training by evidence] Implement and evaluate a deterministic/rule and supervised baseline first; start local RL only after reproducible code/data/verifier contracts and a measured advantage exist.'
+  handoffs_updated:
+  - 'handoffs/active/unified-trace-memory-service.md'
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'UTM-V1 through UTM-V6 now own the default-inert shadow schema, verifier, distiller, credit, and full evaluation matrix; this is task routing, not deployed memory behavior.'
+  notes: 'Paper PDF SHA-256 c206af4e792e9550f2aaec8a6c4d9b141d1ddcb587e781d7866870c8f3e4dd4f. arXiv v5 dated 2026-01-14; published at the MemAgents Workshop, ICLR 2026. Official repository https://github.com/yansikuan/memory-r1 pinned at commit 9c413a2413c4fee160ec05445856c1529d63ac7a, tree dc17d0b7abf81b63fd11e2cb4b4294132b4090c6; README SHA-256 6a90b17a333b07ed2a2dff10178b814f35bf414140f7f3c58e0a410a8c797689; Apache-2.0 license SHA-256 c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4.'
+  dive_corrections: |-
+    2026-08-07 Stage-2b paper/repository dive. OVERALL VERIFIED for the learned-operation/two-agent research pattern; OVERTURNED as a released reproducible RL component and narrowed as a universal improvement claim.
+
+    CLAIM LEDGER. CONFIRMED: four operations, separate manager and answer distiller, PPO/GRPO, exact-match downstream reward, 152 training QA pairs, three benchmark families, multiple backbones, and main table values. PARTIAL: two-stage training is described, but code and complete state transitions are absent. PARTIAL/LEAK RISK: question-level split counts are explicit; conversation-level separation is not. OVERTURNED HEADLINE FRAMING: 37% judge gain uses Mem0 even though Memory-SFT is a stronger listed baseline; the controlled gain is about 6.8% relative for Llama and 0.6% for Qwen. OVERTURNED CONSISTENCY: PPO and several categories regress. NOT-FOUND: named judge, code, checkpoints, data, seeds for full stochastic reruns, privacy/provenance/version/tombstones, or independent reproduction.
+
+    ADVERSARIAL SEARCH. The exact-match reward favors concise benchmark answers and does not measure memory safety, semantic correctness, privacy, or recoverability. An ablation's judge metric can worsen even as lexical metrics improve. The official repository says code is coming soon. MemFactory implements an inspired interface, not an exact released reproduction, so it does not close the artifact gap.
+
+    DERIVED-ACTIONABLES LEDGER. (R1, export) manager/distiller separation. (R2, shadow) per-operation outcome/structural/semantic/evidence credit. (R3, baseline first) deterministic and supervised comparators before RL. (R4, split/eval) conversation-isolated, adversarial, durable, and deletion-aware cases. (R5, decline now) no paper-result reproduction or live learned mutation without the missing artifacts and calibrated verifiers. Proposed owners unified-trace-memory-service.md and evidence-plane-ledger-and-sequential-verdicts.md; Stage 2b made no handoff edits.
+
+    DIVE-SURFACED SOURCES: the official repository and workshop version are companion artifacts bundled into this dive. MemFactory is a later inspired framework rather than an exact reproduction and is recorded as a comparator, not opened as another source gate.
+
+    STAGE-3/4 ROUTING 2026-08-07 (operator-approved): UTM-V4 through UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own distiller comparison, shadow operation credit, and deterministic-first lifecycle evaluation; unreleased RL training and live learned mutation remain declined.

@@ -224,3 +224,52 @@ _Via `/research-intake` Stage-4 (intake-930 ReasoningBank, intake-888 CORE, inta
 ### Correction — ReasoningBank's standing (do not carry "best overall" forward)
 
 - [x] **UTM-M10 — Correct the ReasoningBank standing in every place this repo restates it ✅ 2026-07-29.** Root `683f70de` had introduced the stale wording in intake-930; this correction fixes it: intake-936 places ReasoningBank **LAST of 13** memory methods on **Cross-Episode Knowledge (Easy split)**; the earlier "second behind ACE" reading was **wrong**. It **is** best-among-memory-methods on **In-Episode Execution at 16K / 32K / 128K** — but even there a **long-context baseline beats all fifteen** methods. SkillOS-base also wins the WebShop-like domain, so no family-wide gradient-free ranking remains. Keep the store-shape adoption (UTM-M1), drop the "best overall" framing wherever it appeared.
+
+## 2026-08-07 — verifiable memory operations, default-inert shadow path (intake-1008/1015/1017/1018/1022/1023)
+
+- [ ] **UTM-V1 — Complete the append-only memory-operation envelope and state-transition engine.** Add
+  typed `ADD|UPDATE|DELETE|RETRIEVE|FILTER|SELECT_EPISODE|SUMMARIZE|NOOP` proposals over the existing
+  raw-event authority. Every operation carries operation/session/actor ids, immutable source-event
+  references, before/after value hashes, version and supersession links, applicability boundary,
+  proposer/verifier versions, `proposed|validated|committed|rejected|rolled_back` state, and error or
+  rollback provenance. `UPDATE` creates a new version; soft `DELETE` creates a tombstone and preserves
+  history; physical privacy erasure is a separate explicit state and must not be claimed from a
+  tombstone. Implement restore/rollback and stale-fencing fixtures. Existing raw traces are never
+  overwritten or made unrecoverable.
+
+- [ ] **UTM-V2 — Add a local scoped write proposer, not an authoritative writer.** Combine Mem0's
+  user/agent/run scoping, recent-message context, top-k conflict retrieval, and four-way mutation
+  proposal with VerMem's stronger envelope. Record actor versus subject so one model's inference
+  cannot silently become another actor's fact. Run in shadow on recorded traces first; compare
+  proposed operations with current append-only behavior and human-labelled cases. Do not copy the
+  current Mem0 branch's ADD-only default as the target and do not allow lossy facts to replace raw
+  evidence.
+
+- [ ] **UTM-V3 — Separate structural and semantic verification and calibrate both.** Structural checks
+  deterministically enforce schema, scope, provenance, version, tombstone, rollback, source existence,
+  and transition legality. A separately versioned semantic judge scores local operation correctness
+  and global memory coherence. Build human-labelled conflicting, stale, poisoned, private, strategically
+  manipulated, duplicate, missing-source, and delete/restore cases; report false-pass/false-fail by
+  class. The released VerMem rule verifier is only the structural baseline and cannot inherit the
+  paper's DeepSeek semantic-verifier result.
+
+- [ ] **UTM-V4 — Test answer-time evidence distillation independently of memory writing.** Preserve
+  Memory-R1's manager/distiller separation: retrieve a bounded candidate set, then have the answer
+  path select evidence with source ids before answering. Sweep the retrieval/distillation budget
+  rather than assuming sixty entries is optimal. Score answer quality, evidence precision/recall,
+  unsupported claims, tokens, latency, and raw-source recoverability against no-distiller retrieval.
+
+- [ ] **UTM-V5 — Emit per-operation credit in shadow, without RL training.** Record deterministic
+  structural result, calibrated local/global semantic result, downstream task outcome, evidence
+  recall, operation cost, and rollback/recovery outcome as separate fields. Compare task-only credit
+  with operation-level credit. No learned policy may consume this signal until deterministic and
+  supervised baselines, conversation-isolated splits, verifier calibration, and reproducible data
+  show a measured advantage; the official Memory-R1 repository currently releases no training code.
+
+- [ ] **UTM-V6 — Run a complete memory evaluation matrix with a mandatory no-memory control.** Include
+  no-memory/raw full context, current append-log retrieval, current Context-Folding, Mem0-style shadow
+  proposals, VerMem operations, answer distillation, and the CF-AM-1 parallel-gist arm. Measure within-
+  task, crash/restart, cross-session, conflict/staleness, poisoning, actor scope, tombstone, physical
+  erasure, rollback, and raw-evidence recovery. Account for extraction, write, embedding, retrieval,
+  answer, verifier, training (if later permitted), tokens, latency, wall time, and storage separately.
+  Use conversation-level splits and repeated end-to-end seeds; judge repeats alone are not uncertainty.

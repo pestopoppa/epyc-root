@@ -2,8 +2,33 @@
 
 **Category**: `ssm_hybrid`
 **Confidence**: verified (CPU/arch findings) · observation (2026-07-06 MI210 bf16-GDN-state numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-07-06 (⚠️ 2026-07-06 bf16 Delta-Net recurrent-state GPU-lever note added under Key Findings — human review)
-**Sources**: 13 documents
+**Last compiled**: 2026-08-08
+**Sources**: 17 documents
+
+## Compiled Update — 2026-08-08: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement
+
+**Confidence: verified for artifact identity, template behavior, and static runtime support; external for vendor benchmark numbers.**
+
+LFM2.5-2.6B is a 2.69B dense hybrid with 22 short-convolution blocks, eight GQA blocks, a 128K
+vocabulary, and 131,072-token context. The official repository publishes both Q4_K_M and Q8_0 GGUFs,
+and frozen production-consolidated-v8 already contains LFM2 loading plus the specialized LFM2.5 Pythonic
+tool parser. The official template always opens a reasoning section; separate LEAP sidecars omit that
+reasoning prefill and tool rendering, so they are not interchangeable without a behavioral parity test.
+
+The small footprint makes the model a credible `worker_general` challenger under EPYC's noncommercial
+use, but neither vendor tables nor community anecdotes compare it with the actual Gemma4 26B-A4B
+incumbent under one harness. The decision gate is therefore a matched three-arm run—official Q4_K_M,
+official Q8_0, and unchanged Gemma4—with identical prompts, tool schema, seeds, limits, template, and
+scorer era. Promotion depends on strict task success and tool compliance together with reasoning-token
+overhead, retries, TTFT, prompt/decode throughput, peak memory, and complete wall time. No role alias,
+registry, stack, or production process changes on architectural promise alone.
+
+### Source References
+
+- [Architect Model Comparison Benchmark](../handoffs/active/architect-model-selection-bench.md) — WG-LFM-1 matched Q4/Q8/Gemma decision contract
+- Intake 1006 in [the research index](../research/intake_index.yaml) — launch article, mandatory reasoning, and benchmark caveats
+- Intake 1014 in [the research index](../research/intake_index.yaml) — base model/config/license and frozen-v8 static support
+- Intake 1019 in [the research index](../research/intake_index.yaml) — pinned official GGUF revision and artifact/template inspection
 
 ## Summary
 

@@ -590,3 +590,18 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
 - [x] **Inkling — NO on both roles** ✅ 2026-08-03 (intake-941/942/955). Three independent reasons, any one sufficient: (a) **12B active parameters vs gemma4-26B-A4B's ~4B** on a bandwidth-bound decode path projects **2–4× slower**, which is the opposite of the requirement; (b) the upstream llama.cpp PR is **rejected in its current form and strips MTP**, and `src/llama-arch.h` in frozen v8 carries 138 `LLM_ARCH_*` entries ending at `DFLASH` with **no `LLM_ARCH_INKLING`** — so there is no serving path today; (c) for `architect_critic` it would *close* the 122B's measured GPU-resident IQ2 path (43.7 tok/s single / 148.7 aggregate @B32, PPL 5.02). No download, no bench — the verdict is decided from architecture and kernel support.
 - [x] **Escha — NO to the artifact, YES to the experiment it motivates** ✅ 2026-08-03 (intake-945/946/956). The `eschamoe` 2-bit format is closed CUDA sm_80-120 with no ROCm path, so the published build is unusable here. But it points at a model worth testing on its own merits — see the task below. The third-party codebook reverse-engineering probe (intake-956) stays `stage1-unverified` and **deferred with a named trigger**: its author is blocked, 2–4 weeks.
 - [ ] **Bench `Qwen3.6-35B-A3B` at `UD-IQ3_XXS` as a `worker_general` candidate.** ~3B active (leaner than gemma4-26B-A4B's ~4B on the bandwidth-bound path), **already supported by the frozen kernel**, and at **13.2 GB it fits `worker_general`'s existing 16 GB budget** in `stack_templates/default.yaml` with no lineup change. **Use `UD-IQ3_XXS`, NOT the size-matched `UD-Q2_K_XL`** — `ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp:73-74` carries `static_assert(!iqk_typeA_supported(GGML_TYPE_Q2_K))` and the same for `Q3_K`, so a Q2_K build forfeits iqk acceleration entirely. Quant-axis detail lives in [`tq3-quantization-evaluation.md`](tq3-quantization-evaluation.md); hold MTP constant across arms, and pair speed with a correctness check.
+
+## 2026-08-07 — LFM2.5-2.6B `worker_general` candidate (intake-1006/1014/1019)
+
+- [ ] **WG-LFM-1 — Run a matched Q4_K_M / Q8_0 / Gemma4 26B-A4B worker verdict.** Pin the
+  official LiquidAI GGUF revision `b421ad1d549afeda6a0fb2ad3a697cb5a7879adc`; test both
+  `LFM2.5-2.6B-Q4_K_M.gguf` and `LFM2.5-2.6B-Q8_0.gguf`, with the current Gemma4 26B-A4B
+  `worker_general` as the unchanged incumbent. Start with load/template/tool-call smokes on frozen v8;
+  then use identical role prompts, tools, task rows, seeds, limits, stop conditions, and scorer era.
+  Hash and archive the **GGUF-embedded** chat template used by the runner—the separate LEAP sidecars
+  omit its reasoning prefill and tool rendering and are ineligible unless parity is independently
+  proven. Report strict task success, per-suite outcomes, tool-schema compliance and repair rate,
+  reasoning/output tokens, retries, peak resident memory, prompt/decode throughput, TTFT, and complete
+  wall time. Publish Q8-minus-Q4 and each-LFM-minus-Gemma paired deltas. Do not change the role alias,
+  registry, stack manifest, or production process unless a later operator decision accepts a
+  decision-grade Pareto result.

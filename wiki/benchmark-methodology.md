@@ -2,8 +2,41 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-05
-**Sources**: 100+ documents
+**Last compiled**: 2026-08-08
+**Sources**: 105+ documents
+
+## Compiled Update — 2026-08-08: evaluate the artifact and harness that actually execute
+
+**Confidence: verified — package layouts, task counts, code paths, and local routing were checked against pinned artifacts.**
+
+A dataset configuration name is not a dataset boundary. The audited multi-teacher distillation package
+declares 24 configurations, but every Hugging Face dataset-server config resolves to the same
+953,708-row union because the YAML omits per-config `data_files`; stale Parquet generations coexist,
+and prompt/template/dedup clusters cross train/evaluation splits. Release preflight must therefore pin
+the revision, resolve the loader exactly as a consumer will, assert per-config schema/count/hash,
+exclude stale shards, close manifest/tree inventory, and fail on any group crossing the split. The
+current corpus remains ineligible for consumption.
+
+The same identity rule applies to agent security. DTAP provides a strong reusable shape—paired benign,
+direct-injection, and indirect-injection tasks with deterministic state judges—but Pokee uses a smaller
+task set and unequal runners, so their cross-model ranking mixes model behavior with endpoint, harness,
+and infrastructure failures. A decision-grade comparison holds prompt, tools, endpoint policy,
+temperature, retries, runner, and task revision fixed; repeats complete agent runs; reports confidence
+intervals; keeps attack-generation targets out of the final evaluation; and classifies
+`model|parser|tool|endpoint|harness|judge|infrastructure|overflow` separately.
+
+Memory evaluation needs the same discipline. A forced-zero reuse control, cumulative counters, or judge
+reruns substituted for end-to-end seeds can produce impressive but meaningless confidence. Required
+controls are isolated examples, no-memory/full-context, observable shared events, complete construction
+and query-path cost, task correctness, evidence recall, restart/cross-session durability, and explicit
+raw-source recovery.
+
+### Source References
+
+- [Tool-Use Eval Contract](../handoffs/active/tool-use-eval-contract.md) — TU-DTAP-1 same-harness protocol and typed failure attribution
+- [Unified Trace / Memory Service](../handoffs/active/unified-trace-memory-service.md) — UTM-V6 lifecycle and no-memory control matrix
+- [RLM Contested Claims](../handoffs/active/rlm-contested-claims-self-evaluation.md) — clean direct-context versus REPL control
+- Intakes 1007, 1008/1015, 1012, and 1021 in [the research index](../research/intake_index.yaml) — reproduced package failure, invalid memory controls, Pokee caveats, and DTAP contract
 
 ## Compiled Update — 2026-08-03 (third): a validator is only as good as the thing it actually ran
 

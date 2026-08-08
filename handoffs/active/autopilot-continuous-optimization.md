@@ -2064,3 +2064,19 @@ verified diagnostic and validation patterns._
   planner bindings only from unanimous supporting-member intersections, and fail closed to
   advisory-only on outcome, binding, qualifier, or recoding disagreement. Regression fixtures
   prove that a longest-member overgeneralizer cannot become a live convention.
+
+## 2026-08-07 — reset-free trajectory refinement, proposal-only (intake-1016/1020)
+
+- [ ] **AP-CH-1 — Add a default-off adapter that turns a bounded recent trajectory window into typed
+  prompt/subagent/skill/memory candidates.** The adapter may diagnose and propose only. Validate every
+  payload against a local schema, cap repeated equivalent proposals, and emit ordinary candidate
+  envelopes with source trajectory ids, proposer identity, component kind, before/after content, and
+  claimed failure signature. It has no authority to write live prompts, execute generated Python,
+  mutate skills/memory, select itself, or keep a change. Existing held-out evaluation, checkpoints,
+  transactional keep/revert, privilege policy, and promotion authority remain outside the proposer.
+
+- [ ] **AP-CH-2 — Compare reset-free and episodic proposal generation at equal budget.** Use the same
+  completed trajectories, proposer model, token/tool budget, candidate schema, evaluator, and held-out
+  task set. Report valid-candidate rate, duplicate/oscillation rate, held-out lift, regressions, cost,
+  and wall time. The upstream 25/100-step cadence is not a default; cadence is a declared experimental
+  variable. No live AutoPilot resume or acceptance-policy change follows from this task.

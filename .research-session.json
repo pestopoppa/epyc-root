@@ -1,439 +1,188 @@
 {
-  "session_id": "7d1097ae-99a6-469d-b97d-9fcfb78c96a8",
-  "started_at": "2026-08-05T07:48:40Z",
-  "last_checkpoint": "2026-08-05T09:21:25Z",
-  "phase": 7,
+  "session_id": "90661311-c2d6-4333-b8f2-61d52abc4b48",
+  "started_at": "2026-08-07T10:07:17Z",
+  "last_checkpoint": "2026-08-07T15:32:00Z",
+  "phase": 4,
   "stage": "stage4-complete",
-  "stage1_completed": "2026-08-05",
-  "stage2_completed": "2026-08-05",
-  "stage4_completed": "2026-08-05",
-  "submitted_url_count": 1,
+  "stage1_completed": "2026-08-07",
+  "stage4_completed": "2026-08-07",
+  "submitted_url_count": 9,
+  "submitted_inline_material_count": 1,
   "processed_urls": [
-    "https://arxiv.org/pdf/2301.12987v4",
-    "https://zenodo.org/records/20509265",
-    "https://www.preprints.org/manuscript/202603.1546",
-    "https://www.researchgate.net/publication/398711288_The_Abstraction_Ladder_Problem_in_Weakness_Maximization_W-maxing_for_Artificial_General_Intelligence_systems",
-    "https://arxiv.org/abs/1912.02178",
-    "https://arxiv.org/abs/2010.11924",
-    "https://www.ijcai.org/proceedings/2025/1238",
-    "https://proceedings.mlr.press/v70/dinh17b.html",
-    "https://arxiv.org/abs/2504.15125",
-    "https://www.pith.science/paper/L57ULFW7"
+    "https://www.arxiv.org/pdf/2607.28611",
+    "https://www.liquid.ai/blog/lfm2-5-2-6b",
+    "https://huggingface.co/datasets/r0b0tlab/qwen3.8-max-glm5.2-kimi-k3-distillation",
+    "https://arxiv.org/pdf/2607.25970",
+    "https://arxiv.org/pdf/2508.13171",
+    "https://github.com/PrimeIntellect-ai/prime-agent",
+    "https://www.primeintellect.ai/blog/prime-agent",
+    "https://github.com/alexisfox7/PRO-LONG",
+    "https://console.pokee.ai/pokee-isaac-28b-v0-technical-report.pdf",
+    "inline:from-zero-to-graph-architect-2026-08-07",
+    "https://huggingface.co/LiquidAI/LFM2.5-2.6B",
+    "https://github.com/tao-hpu/cognitive-workspace",
+    "https://arxiv.org/abs/2605.09998",
+    "https://arxiv.org/abs/2606.10532",
+    "https://arxiv.org/abs/2608.03137",
+    "https://huggingface.co/LiquidAI/LFM2.5-2.6B-GGUF",
+    "https://github.com/sethkarten/continual-harness",
+    "https://arxiv.org/abs/2605.04808",
+    "https://arxiv.org/abs/2504.19413",
+    "https://arxiv.org/abs/2508.19828"
   ],
   "entries_processed": [
-    "intake-991",
-    "intake-992",
-    "intake-993",
-    "intake-994",
-    "intake-995",
-    "intake-996",
-    "intake-997",
-    "intake-998",
-    "intake-999",
-    "intake-1000",
-    "intake-1001",
-    "intake-1002",
-    "intake-1003",
-    "intake-1004"
+    "intake-1005",
+    "intake-1006",
+    "intake-1007",
+    "intake-1008",
+    "intake-1009",
+    "intake-1010",
+    "intake-1011",
+    "intake-1012",
+    "intake-1013",
+    "intake-1014",
+    "intake-1015",
+    "intake-1016",
+    "intake-1017",
+    "intake-1018",
+    "intake-1019",
+    "intake-1020",
+    "intake-1021",
+    "intake-1022",
+    "intake-1023"
   ],
   "entries_remaining": [],
-  "next_intake_id": 1005,
-  "expansion_count": 4,
+  "next_intake_id": 1024,
+  "expansion_count": 5,
   "expansion_cap": 10,
   "state": {
     "expansion_queue": [],
-    "original_intake": "intake-991",
-    "recommended_dive_groups": [
-      [
-        "intake-991",
-        "intake-993"
+    "dedup_sweep": {
+      "index_entries_checked": 1004,
+      "exact_collisions": {
+        "https://arxiv.org/pdf/2607.25970": "intake-939"
+      }
+    },
+    "expansion_sources": {
+      "reference_or_artifact_links": [
+        "intake-1014",
+        "intake-1015",
+        "intake-1016"
       ],
-      [
-        "intake-992"
-      ],
-      [
-        "intake-994"
+      "targeted_search": [
+        "intake-1017",
+        "intake-1018"
       ]
+    },
+    "recommended_dive_groups": [
+      ["intake-1007"],
+      ["intake-1008", "intake-1015", "intake-1017", "intake-1018"],
+      ["intake-1009", "intake-1010", "intake-1016"],
+      ["intake-1012"],
+      ["intake-1006", "intake-1014"]
+    ],
+    "selected_dive_groups": [
+      ["intake-1007"],
+      ["intake-1008", "intake-1015", "intake-1017", "intake-1018"],
+      ["intake-1009", "intake-1010", "intake-1016"],
+      ["intake-1012"],
+      ["intake-1006", "intake-1014"]
+    ],
+    "dive_results": {
+      "dive_verified": [
+        "intake-1006", "intake-1008", "intake-1009", "intake-1010",
+        "intake-1012", "intake-1014", "intake-1015", "intake-1016",
+        "intake-1017", "intake-1018", "intake-1019", "intake-1020",
+        "intake-1021", "intake-1022", "intake-1023"
+      ],
+      "dive_overturned": ["intake-346", "intake-1007"]
+    },
+    "stage2b_count": 5,
+    "corrected_entries": [
+      "intake-346: overturned cloud-only/no-local-inference conclusion using the official Apache-2.0 repository"
+    ],
+    "stage2b_source_gate": [
+      {
+        "url": "https://huggingface.co/LiquidAI/LFM2.5-2.6B-GGUF",
+        "bearing": ["intake-1006", "intake-1014"],
+        "recommendation": "ingest-and-dive",
+        "reason": "official quantized deployability artifact for the worker_general candidate",
+        "status": "completed",
+        "intake_id": "intake-1019"
+      },
+      {
+        "url": "https://github.com/sethkarten/continual-harness",
+        "bearing": ["intake-1016"],
+        "recommendation": "ingest-and-dive",
+        "reason": "load-bearing implementation scope for proposal logic, direct-apply behavior, and sandbox limits",
+        "status": "completed",
+        "intake_id": "intake-1020"
+      },
+      {
+        "url": "https://arxiv.org/abs/2605.04808",
+        "bearing": ["intake-1012"],
+        "recommendation": "ingest-and-dive",
+        "reason": "primary DTAP security-evaluation contract behind Pokee's harness-confounded comparison",
+        "status": "completed",
+        "intake_id": "intake-1021"
+      },
+      {
+        "url": "https://arxiv.org/abs/2504.19413",
+        "bearing": ["intake-1008", "intake-1017", "intake-1018"],
+        "recommendation": "ingest-and-dive",
+        "reason": "production-oriented cross-session memory comparator for persistence and deletion",
+        "status": "completed",
+        "intake_id": "intake-1022"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.19828",
+        "bearing": ["intake-1017", "intake-1018"],
+        "recommendation": "ingest-and-dive",
+        "reason": "direct RL-trained memory-management comparator for operation-level credit",
+        "status": "completed",
+        "intake_id": "intake-1023"
+      }
     ],
     "explicit_dive_declines": [
-      "intake-995: its actionable representation warning can be assessed inside the intake-994 dive; it adds no separate experiment and relies on the proof later corrected by intake-992"
+      "intake-1005: medium-relevance vision scaling work has no released code or weights, and its internal 7.3x versus 6.8x headline inconsistency does not affect an active production decision",
+      "intake-1011: the companion PRO-LONG paper and repository were already audited under dive-verified intake-919; this row preserves the distinct repository artifact without duplicating the dive",
+      "intake-1013: the graph-architecture roadmap is a useful onboarding synthesis, but its technical patterns are already implemented and audited by the completed LangGraph migration while its novelty and market claims have no cited evidence"
     ],
-    "operator_overrides": [
-      "The normal Stage-2b cap and all source-decline recommendations were overridden: every one of the five recommended unique sources and four separately named supplemental artifacts was ingested and dived."
+    "prior_completed_session_id": "7d1097ae-99a6-469d-b97d-9fcfb78c96a8",
+    "stage3_plan": "research/intake-stage3-plan-2026-08-07-agent-memory-worker-security.md",
+    "stage3_plan_status": "approved-and-implemented",
+    "stage4_task_ids": [
+      "WG-LFM-1", "D-f", "D-g", "AP-CH-1", "AP-CH-2", "TU-DTAP-1",
+      "TU-ADV-1", "E3b", "UTM-V1", "UTM-V2", "UTM-V3", "UTM-V4",
+      "UTM-V5", "UTM-V6", "CF-AM-1"
     ],
-    "stage2b_entries": [
-      "intake-996",
-      "intake-997",
-      "intake-998",
-      "intake-999",
-      "intake-1000",
-      "intake-1001",
-      "intake-1002",
-      "intake-1003",
-      "intake-1004"
-    ],
-    "dive_surfaced_gate": "closed",
-    "stage3_plan": "research/intake-stage3-plan-2026-08-05-weakness-autonomous-loops.md",
-    "stage3_plan_status": "approved-and-implemented"
+    "stage4_handoff_count": 7,
+    "stage4_checkbox_flips": 0
   },
   "steering_ledger": [
     {
       "seq": 1,
-      "stage": 1,
-      "ts": "2026-08-05T07:48:40Z",
-      "verbatim": "PLease intake this paper: https://arxiv.org/pdf/2301.12987v4 I believe it oculd be quite relevant to our autonomous loops (autopilot and autokernel)",
-      "disposition": "planned",
-      "plan_ref": "STAGE3-AUTONOMOUS-LOOPS: assess separate AutoPilot and AutoKernel applications, including hypothesis formulation, archive abstraction, proposal selection, and the limits imposed by non-uniform task distributions",
-      "stage4_disposition": "landed"
+      "stage": 2,
+      "ts": "2026-08-07T13:58:18Z",
+      "verbatim": "\"LFM2.5-2.6B (https://www.liquid.ai/blog/lfm2-5-2-6b) is a plausible inexpensive agent candidate, but “without restrictions” conflicts with\n    the released model license’s $10M annual-revenue threshold.\" - who cares. We're not building for commercial purposes. This seems like a very promising candidate to replace gemma4 as worker_general.\n\n\"Prime Agent (https://www.primeintellect.ai/blog/prime-agent) contains useful persistence and recovery patterns, but its Factorio experiment\n    explicitly reward-hacked the environment and converted the exploit into reusable skills. The related Continual Harness\n    (https://arxiv.org/abs/2605.09998) should therefore remain a shadow-mode proposal mechanism behind existing keep/revert gates.\" - looking forward to the deep dive on this to see what can be exported/merged from it into our stack.\n\n  \"The Pokee-Isaac report (https://console.pokee.ai/pokee-isaac-28b-v0-technical-report.pdf) is relevant but presently proprietary and\n    non-reproducible. Its B200 results do not transfer to MI210, and several comparisons mix model failures with endpoint, harness, and\n    infrastructure failures.\" - yes, I'm aware but was wondering whether any functionalities can be independently re-engineered by us for our own purposes.\n\n\"  - VerMem (https://arxiv.org/abs/2608.03137) substantially improves memory-evaluation methodology, but its public repository implements\n    rule-based verifiers rather than the paper’s load-bearing DeepSeek semantic verifiers.\" - looking forward to this deep dive also. I'm sure more itneresting material will surface.\n\nproceed with recommended dives",
+      "disposition": "incorporated-stage2",
+      "plan_ref": "STAGE3-SELECTED-DIVES"
     },
     {
       "seq": 2,
       "stage": 2,
-      "ts": "2026-08-05T08:11:16Z",
-      "verbatim": "proceed with recommended deep dives",
-      "disposition": "landed",
-      "plan_ref": "STAGE2-DEEP-DIVES: intake-991 through intake-994"
+      "ts": "2026-08-07T14:24:04Z",
+      "verbatim": "\"LFM2.5-2.6B (https://huggingface.co/LiquidAI/LFM2.5-2.6B) is a credible worker_general challenger. The noncommercial license use is not a\n    blocker; frozen v8 already supports LFM2 loading and its specialized tool-call syntax. The real gate is a direct Q4_K_M comparison against\n    Gemma4 26B-A4B, including mandatory-reasoning overhead, tool compliance, task success, memory, and wall time.\" - at such a small model size, we should test Q8 also.\n\n\"Prime Agent (https://github.com/PrimeIntellect-ai/prime-agent) contributes two concrete missing invariants: a process-safe session lease\n    and an uncertain-side-effect recovery journal. Most other persistence, scheduling, rollback, and optimization features overlap existing\n    EPYC capabilities.\n\n  - Continual Harness (https://arxiv.org/abs/2605.09998) belongs in shadow proposal generation behind existing keep/revert gates. Its\n    implementation lacks held-out acceptance, transactional rollback, reward-hacking protection, and a genuine sandbox. The 842-repeat\n    invalid-tool loop and Factorio exploit make excellent adversarial fixtures.\" - interesting.\n\n\"- Pokee-Isaac (https://console.pokee.ai/pokee-isaac-28b-v0-technical-report.pdf) yields clean-room implementable evaluation/service patterns:\n    joint long-context quality and serving metrics, typed failure attribution, same-harness security evaluation, scoped tools, resumable\n    sessions, sandboxing, and trace replay. Its 10M-context architecture cannot be reconstructed from the report.\" - so there are no hints that we could use to speculate as to how they enable 10M context windows? Is it a REPL trick of some kind? I'm still of the opinion that working with a REPL and focusing and yper-precise tool calls is the most efficient way to proceed.\n\n\"VerMem (https://arxiv.org/abs/2608.03137) materially improves memory evaluation over Cognitive Workspace. Its operation, provenance,\n    version, rollback, and tombstone schemas are worth prototyping in shadow traces. The released rule-based verifiers cannot support the\n    paper’s reported semantic-verifier gains.\" - lets take/implement everythign we can get.\n   \"  Stage 2 surfaced five recommended follow-up sources:\n\n  1. Official LFM GGUF repository (https://huggingface.co/LiquidAI/LFM2.5-2.6B-GGUF) — fixes the exact deployment artifact.\n  2. Continual Harness implementation (https://github.com/sethkarten/continual-harness) — establishes actual proposal, persistence, and sandbox\n     behavior.\n\n  3. DTAP (https://arxiv.org/abs/2605.04808) — primary security-evaluation contract behind Pokee’s confounded comparison.\n  4. Mem0 (https://arxiv.org/abs/2504.19413) — production-oriented cross-session persistence/deletion comparator.\n  5. Memory-R1 (https://arxiv.org/abs/2508.19828) — direct RL memory-management comparator for VerMem’s operation-level credit.\" -  proceed with depp diving  all five of the recommended literature expansion.",
+      "disposition": "incorporated-stage2b",
+      "plan_ref": "research/intake-stage3-plan-2026-08-07-agent-memory-worker-security.md"
     },
     {
       "seq": 3,
-      "stage": "2b",
-      "ts": "2026-08-05T08:11:16Z",
-      "verbatim": "Deep dive all five. \"the two-page IJCAI thesis summary (https://www.ijcai.org/proceedings/2025/1238), Dinh as a separate intake, the\n  tangential Contemplative Superalignment citation, and machine-generated review pages.\" - why defer it? Do it now also",
-      "disposition": "landed",
-      "plan_ref": "STAGE2B-ALL-NINE: operator overrides the normal cap and selects all five recommended dives plus the four previously declined/supplemental source classes"
-    },
-    {
-      "seq": 4,
       "stage": 3,
-      "ts": "2026-08-05T08:24:00Z",
-      "verbatim": "Shall we proceed with Stage 3 of the intake now?",
-      "disposition": "planned",
-      "plan_ref": "S3-APPROVAL: audit and present the complete Stage-3 write plan before any Stage-4 handoff edits",
-      "stage4_disposition": "landed"
-    }
-  ],
-  "notes": "Stage 4 completed the operator-approved plan exactly. Five existing handoffs received six open tasks and one checked prerequisite-audit row; no new handoff or index row was created. Intakes 991-1004 now record the approved owner bindings and explicit Stage-3/4 dispositions, while intake-995 remains stage1-unverified. The submitted weakness mechanism remains observe-only and cannot affect fitness, admission, selection, promotion, or authority. No implementation, chapter, wiki, measurement-policy, Meta-Harness pointer, evidence-plane, or production-kernel edit was made.",
-  "prior_sessions": [
-    {
-      "session_started": "2026-08-03",
-      "stage": "4-complete",
-      "stage1_completed": "2026-08-03",
-      "processed_urls": [
-        "https://arxiv.org/pdf/2607.28568",
-        "https://arxiv.org/pdf/2607.25970",
-        "https://arxiv.org/pdf/2607.28272",
-        "https://unsloth.ai/docs/models/inkling",
-        "https://huggingface.co/unsloth/Inkling-Small-GGUF",
-        "https://engineering.block.xyz/blog/codecrucible-a-blueprint-for-llm-driven-sast",
-        "https://github.com/QuixiAI/QuixiCore",
-        "https://huggingface.co/EschaLabs/Qwen3.6-35B-A3B-Escha-W2",
-        "https://www.eschalabs.com/"
-      ],
-      "submitted_url_count": 10,
-      "unique_url_count": 9,
-      "within_batch_duplicate": "https://arxiv.org/pdf/2607.25970 was submitted twice",
-      "entries_created": [
-        "intake-938",
-        "intake-939",
-        "intake-940",
-        "intake-941",
-        "intake-942",
-        "intake-943",
-        "intake-944",
-        "intake-945",
-        "intake-946",
-        "intake-947",
-        "intake-948",
-        "intake-949",
-        "intake-950",
-        "intake-951",
-        "intake-952",
-        "intake-953",
-        "intake-954",
-        "intake-955",
-        "intake-956"
-      ],
-      "next_intake_id": 991,
-      "expansion_count": 10,
-      "expansion_cap": 10,
-      "steering_ledger": [
-        {
-          "seq": 1,
-          "stage": 2,
-          "ts": "2026-08-03",
-          "verbatim": "\"  The structural finding: the compendium had deep coverage of speedup-rewarded GPU kernel generation and zero coverage of code-runtime-efficiency as a model capability or evaluation axis. Afterburner, SWE-fficiency, SWE-Perf, PIE, EffiBench-X and COFFE\n  were all absent from 937 entries. That hole is now filled with six instruments.\" - looking forward to seeing how these tie in after the deep dives.",
-          "disposition": "planned",
-          "plan_ref": "STAGE3-TIE-IN: the Stage-3 plan must contain an explicit synthesis item showing how the six code-efficiency instruments tie together and into our evaluation ladder + autokernel loop, not just per-entry rows.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 2,
-          "stage": 2,
-          "ts": "2026-08-03",
-          "verbatim": "\"944 QuixiCore — its own agent says dive HipKittens instead; 92KB umbrella exhausts fast.\" - this could still be relevant to see how others are thinking about experimental kernel work to close the gap between AMD and NVIDIA GPUs. It could be relevant for our inference research and th eupcoming autokernel program.",
-          "disposition": "planned",
-          "plan_ref": "DIVE-I: OVERTURNS my decline. QuixiCore dived, scoped to 'how others approach experimental kernel work to close the AMD/NVIDIA gap', with intake-947 HipKittens folded in as the same subject matter. Feeds the upcoming autokernel program.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 3,
-          "stage": 2,
-          "ts": "2026-08-03",
-          "verbatim": "\"952 EffiBench-X — better to run than dive.\" - I don't know what this is yes, but if it's better to 'run' it must be worthwhiel diving.",
-          "disposition": "planned",
-          "plan_ref": "DIVE-D: OVERTURNS my decline. EffiBench-X dived alongside SWE-Perf and SWE-fficiency. Operator's reasoning accepted: runnability is a reason to dive, not a substitute for it.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 4,
-          "stage": 2,
-          "ts": "2026-08-03",
-          "verbatim": "The models whose links I shared (Inkling and Eschalabs) are part of my ongoing search for faster worker_general and architect_critic model candidates (to replace gemma4-26b-a4b). We don't necessarily have to download/test/bench them, but a deep dive could be worthwhile within the context just mentioned to see if they may be worthwhile to.",
-          "disposition": "planned",
-          "plan_ref": "DIVE-A and DIVE-B: reframes both model dives as ROLE-CANDIDATE ASSESSMENTS against the incumbent gemma4-26B-A4B for worker_general and architect_critic. No download/bench required; the deliverable is a reasoned worthwhile-or-not verdict.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 5,
-          "stage": 2,
-          "ts": "2026-08-03",
-          "verbatim": "Deep dive ALL original links and the literature expansion you recommended.",
-          "disposition": "planned",
-          "plan_ref": "Dive set = all 9 originals (938-946) + recommended expansion (948,950,951,953,954,955) + operator-added 952 + 947 folded into DIVE-I. Still declined and NOT dived: 949 (Afterburner), 956 (eschamoe probe) - both named explicitly in the report.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 6,
-          "stage": "2b",
-          "ts": "2026-08-03",
-          "verbatim": "\"Cap is 5 (separate budget from the Stage-1 expansion, which used its own 10).\" - what?!? There shoudl be no cap here, everything that is viable/usable/worthwhile MUST be harvested! If needed go back and collect more insights. What's the point of spending time deeply reviewing source material if then we ignore most of it?!???",
-          "disposition": "planned",
-          "plan_ref": "STAGE-2b-UNCAPPED: the skill's 5-entry Stage-2b cap is OVERRIDDEN. All viable dive-surfaced sources are dived, and agents are authorised to collect ADDITIONAL sources beyond the surfaced list where they bear on an actionable question.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 7,
-          "stage": "2b",
-          "ts": "2026-08-03",
-          "verbatim": "\"5 QuixiAI/llama.cpp fork + QuixiFlow | DIVE-I flagged rather than dismissed it. Our production kernel is llama.cpp; a fork by the same org warrants a look before this thread closes\" - of course it warrants a look. Our kernel's efficiency still sorely lags cuda kernel performances on comparable hardware. See public throughput reports of our stack models running on DGX sparks (250 GB/s bandwidth vs our CPU+RAM's ~460 GB/s) and RTX 6000 Pro (1.7TB/s bandwidth just like our MI210 gpu). See also the performance difference between llama.cpp vs vLLM also. A parallel agent session is currently building out the autokernel stack. It needs to be as informed as possible if we plan to close the kernel gap vs comparable nvidia hardwre solutions.",
-          "disposition": "planned",
-          "plan_ref": "2b-A + 2b-C: THE KERNEL-GAP AXIS IS NOW THE PRIORITY FRAME. Dive the QuixiAI llama.cpp fork AND QuixiFlow (vLLM fork), and open a NEW investigation into the llama.cpp-vs-vLLM and AMD-vs-NVIDIA throughput gap at matched memory bandwidth (DGX Spark 250 GB/s, our CPU+RAM ~460 GB/s, RTX 6000 Pro 1.7 TB/s ~= MI210). Deliverable must be usable by the PARALLEL SESSION building the autokernel stack. NOTE: that session owns autokernel scope - this intake FEEDS it, and must not write into its handoffs.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 8,
-          "stage": "2b",
-          "ts": "2026-08-03",
-          "verbatim": "\"Defensible swaps if you'd rather: 2408.06450 EvalPerf ... Mercury ... 2511.09904 CTRL-ALT-DECEIT ... 2607.21273 ... effibench-enhanced\" - why swap? You can deep dive new literature as needed. Don't feel so constrained. What ultimately matters are the insights that can be made actionable for our project's purpose.",
-          "disposition": "planned",
-          "plan_ref": "STAGE-2b-UNCAPPED: no swaps. ALL listed alternatives are dived alongside the primaries. Selection criterion is ACTIONABILITY FOR THE PROJECT, not budget.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 9,
-          "stage": "2b",
-          "ts": "2026-08-03",
-          "verbatim": "\"ThunderKittens (CUDA parent; HipKittens is the relevant branch)\" - lookign forward to seeing what we can harves from HipKittens.",
-          "disposition": "planned",
-          "plan_ref": "2b-B: a DEDICATED deep harvest of HipKittens beyond the paper - read the actual kernel source and extract every arch-independent technique portable to hand-written gfx90a MFMA paths. Reverses my decline; ThunderKittens also re-included as the CUDA parent since the NVIDIA-vs-AMD delta is now the operator's stated frame.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 10,
-          "stage": "2b",
-          "ts": "2026-08-03",
-          "verbatim": "if anything, make sure you're persisting insights as you go along so that nothing is accidentally forgotten",
-          "disposition": "planned",
-          "plan_ref": "DONE IN-FLIGHT (durability, not a scope change): dive evidence was being written to a GITIGNORED scratch path (tmp/*). Moved to research/deep-dives/2026-08-03-intake-938-956-dive-evidence/ and committed at 5f420f7a alongside the index updates. Rationale is our own feedback_verify_evidence_in_git_not_filesystem: untracked looks identical to committed. Remaining Stage-2b dives are copied there and committed as they land, not at the end.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 11,
-          "stage": "2b",
-          "ts": "2026-08-03",
-          "verbatim": "\"so these dives feed it and write nothing into its handoffs.\" - why would we not? The handoff is a living artifact, I can have the parallel agent keep implementing new tasks as they are added",
-          "disposition": "planned",
-          "plan_ref": "SCOPE EXPANDED: my self-imposed boundary against writing into the parallel session's autokernel handoffs is REMOVED. Stage 4 may append task lines to autokernel-research-loop.md, rocm-verify-profile-backend.md, mi210-kernel-rnd-loop-proposal.md and the MI210/ROCm handoffs. NOT a waiver of the Stage-3 plan gate: per the skill's load-bearing rule and the 2026-07-25 incident, an operator comment granting SCOPE is not authorization to write before plan approval. The Stage-3 plan will name every autokernel handoff as a write target with verbatim task lines for review.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 12,
-          "stage": "2b",
-          "ts": "2026-08-03",
-          "verbatim": "\" The one real branch, rocm-flash-attn, is genuine tested code with honest defect annotations - but it's an adaptation layer with zero kernel code\" - if it's usable to improve performance, it matters.",
-          "disposition": "planned",
-          "plan_ref": "CORRECTION TO MY FRAMING: I dismissed rocm-flash-attn as 'zero kernel code'. Wrong axis - a layer that ENABLES a faster path IS a performance improvement. Re-assess: (a) does routing llama.cpp/vLLM to a generic ROCm flash-attn beat the AITER-less default on gfx90a, (b) is the cu_seqlens_k threading pattern reusable, (c) what does the BF16 numerical-divergence-vs-tree-attention defect cost. Goes in the Stage-3 plan as an autokernel-adjacent item.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 13,
-          "stage": "2b",
-          "ts": "2026-08-03",
-          "verbatim": "\"it's that the commit log records rejected experiments: \\\"reject LDS-B experiment (inconsistent across shapes)\\\", \\\"reject (CU contention)\\\". That's a working accept/reject discipline in the wild, methodologically close to our own measurement constitution.\" - very interesting.",
-          "disposition": "planned",
-          "plan_ref": "PURSUE: mine QuixiCore-ROCm's full commit log as a worked example of a kernel accept/reject ledger in production. Extract the rejection taxonomy and the evidence each rejection carries. Feeds the P-AK-SEARCH-1 rejection-ledger amendment already surfaced by DIVE-I, and the operator has flagged it as of interest.",
-          "stage4_disposition": "landed"
-        },
-        {
-          "seq": 14,
-          "stage": "2b",
-          "ts": "2026-08-03",
-          "verbatim": "\"A third independent confirmation of CDNA2 abandonment... The agent's read: gfx90a optimization is unavoidably in-house, and that belongs in the autokernel go/no-go - weighed against acquiring CDNA3 silicon before funding a long CDNA2 program.\" - if by 'acquiring CDNA3 silicon' you mean purchasing new/different hardware, that's not happening anytime soon. Investing resources into improving our usage of the MI210 is paramount. We need to leverage the 1.7 TB/s bandwidth and the FLOPs it provides to make models run as fast as possible. If NVIDIA cards can get up to 80% BW utilization, there's no reason why an equivalent AMD kernel cannot achieve the same.",
-          "disposition": "planned",
-          "plan_ref": "STRATEGIC DIRECTION - SUPERSEDES THE AGENT RECOMMENDATION I RELAYED. Hardware acquisition is OFF THE TABLE. The autokernel go/no-go is DECIDED: GO, on the MI210. The target is explicit and quantitative: BANDWIDTH UTILIZATION APPROACHING ~80%, the level NVIDIA kernels reach. Our measured rungs are Q4_K 34% / Q8_0 50% / fp16 62.5% (ceiling soft, measured on stock Qwen3-8B not our 27B), so the Q4_K gap to 80% is ~2.35x. Every autokernel actionable is now ranked by expected BW-attainment gain. 2b-C must quantify the NVIDIA-side 80% figure and attribute our shortfall. CDNA2-abandonment findings are reframed: they establish that nobody will do this FOR us, NOT that it should not be done.",
-          "stage4_disposition": "landed"
-        }
-      ],
-      "notes": "9-URL batch (10 submitted, 2607.25970 duplicated). Dedup sweep run UNBOUNDED over 937 entries (937 arxiv_id fields, 937 url fields) plus a whole-file mention check: ZERO collisions for all 9, and zero collisions for all 10 expansion candidates. 10 expansion entries intake-947..956 (cap used in full). PARENT-VERIFIED: all three arXiv IDs independently title-checked against arxiv.org/abs, so the sub-agent scratchpad filename collision (two agents wrote a generically-named scratchpad/paper.txt) caused no cross-contamination. STORAGE CORRECTION: an agent claimed 'storage is a non-issue' from TOTAL capacity; df -h /mnt/raid0 shows 159G AVAIL of 3.7T (96% used), so Inkling UD-Q4_K_M 162.54GB does NOT fit. SCHEMA DEFECT (mine): the compact expansion schema omitted the verdict/credibility enums, so agents returned verdict 'dive'/'decline-with-watch'/'adopt-methodology', novelty 'novel', and credibility 7/8/9 against a 0-6 rubric. All normalized per rubric and RECORDED in each entry's notes. SECOND session with this failure class (intake-936, 2026-07-29) - fix belongs in the skill dispatch contract. VALIDATOR FIX: 5 entries cited 'architect-bench-runbook.md' as a handoff; it is docs/reference/, not a handoff. Corrected to architect-model-selection-bench.md at source and a pre-flight cross-reference resolution check added before append. Append done as TEXT per entry; pre-existing 937 entries verified byte-identical. Validator exit 0 / 956 entries.",
-      "tier2b_contradiction_pass": {
-        "raises_dive_priority": [
-          "intake-939: abstract says 14%/28% complexity-class, body+conclusion say 13%/22%; and its cited SWE-fficiency Sonnet figure (4.1%) was OVERTURNED at ingest by intake-953 (actual 0.116x; 0.041x is Gemini 2.5 Flash) with a v1-vs-v3 version caveat",
-          "intake-949: the 0.33%->7.33% degradation pair is CONFIRMED but confounded - F% moved 72.00->38.33 in the same rows, inflating the headline ~2x",
-          "intake-950: the 1.91x spurious-speedup figure is a TOP-5% TAIL (mean 1.12x, sd 0.36), is absent from v1, and the mitigation is gem5 simulation NOT hardware counters",
-          "intake-941/942: port cost understated - intake-955 config.json shows no RoPE, per-layer sconv state, and shared-expert-sink routing = three new subsystems",
-          "intake-951 vs intake-954: unresolved DESIGN DISAGREEMENT on whether efficiency should be a third axis or fused into efficient@k; both peer-reviewed"
-        ],
-        "lowers_dive_priority": [
-          "intake-947 HipKittens: CDNA3-ONLY, verified structurally via include/kittens.cuh dispatch - closes a false lead rather than opening one",
-          "intake-945 eschalabs.com: exhausted, agent recommends against diving; remaining org questions are unpublished not unfetched",
-          "intake-956: author is blocked on compute and the unblocking experiment needs sm_80+ hardware we do not have"
-        ],
-        "unverified_in_stage1": [
-          "intake-950 COFFE's 1.91x is likely a RESTATEMENT of PIE, not independent corroboration - do not double-count",
-          "intake-939 artifact release/licence for DMC-Optim, CES sandbox and offline simulator not located",
-          "intake-951 SWE-Perf harness licence unresolved; intake-953 SWE-fficiency harness advertised 'Coming Soon'",
-          "intake-955 Thinking Machines acceptable-use policy never fetched - gates the apache-2.0 verdict"
-        ]
-      },
-      "prior_sessions": [
-        {
-          "session_started": "2026-07-28",
-          "stage4_completed": "2026-07-28",
-          "entries_created": [
-            "intake-902",
-            "intake-903",
-            "intake-904",
-            "intake-905",
-            "intake-906",
-            "intake-907",
-            "intake-908",
-            "intake-909",
-            "intake-910",
-            "intake-911",
-            "intake-912"
-          ],
-          "notes": "recurrent-depth / looped-transformer batch; completed through Stage 4"
-        },
-        {
-          "session_started": "2026-07-29",
-          "stage": 4,
-          "stage1_completed": "2026-07-29",
-          "processed_urls": [
-            "https://arxiv.org/abs/2607.21051",
-            "https://arxiv.org/html/2607.23809v1",
-            "https://github.com/earthtojake/text-to-cad",
-            "https://modelscope.ai/papers/2607.05471",
-            "https://modelscope.ai/models/Kwaipilot/KAT-Coder-V2.5-Dev",
-            "https://huggingface.co/Comfy-Org/z_image_turbo",
-            "https://arxiv.org/html/2607.20064v2",
-            "https://www.liquid.ai/blog/lfm2-5-encoders",
-            "https://arxiv.org/html/2607.14159v1",
-            "https://arxiv.org/html/2607.21461v2",
-            "https://github.com/kvcache-ai/AgentENV",
-            "https://huggingface.co/KyleHessling1/Qwopus3.6-27B-Fusion-GGUF"
-          ],
-          "entries_created": [
-            "intake-913",
-            "intake-914",
-            "intake-915",
-            "intake-916",
-            "intake-917",
-            "intake-918",
-            "intake-919",
-            "intake-920",
-            "intake-921",
-            "intake-922",
-            "intake-923",
-            "intake-924",
-            "intake-925",
-            "intake-926",
-            "intake-927",
-            "intake-928",
-            "intake-929",
-            "intake-930",
-            "intake-931",
-            "intake-932"
-          ],
-          "next_intake_id": 938,
-          "stage2_completed": "2026-07-29",
-          "stage4_progress": {
-            "code_fix_1_rlimit_nproc": "DONE 2026-07-29 — SUBSTITUTED after the operator was shown the finding. RLIMIT_NPROC is per-UID and this host runs 9,534 threads as uid 1000 (5,688 llama-server), so any per-scorer cap would fail the child's first fork and would fail NONDETERMINISTICALLY with fleet load. Operator chose process-group kill + honest docstring. Implemented start_new_session=True + os.killpg on timeout (closing a CONFIRMED orphan leak subprocess.run's timeout path left open) and corrected the docstring to state why RLIMIT_NPROC is wrong here and that cgroup v2 pids.max is the correct mechanism (verified available). 9/9 execution checks pass.",
-            "code_fix_2_testbed_reset": "DONE 2026-07-29 — DockerEnv.reset_testbed(base_commit) added, called fail-closed at the top of run_instance (status testbed_reset_failed, zero turns, empty patch). Uses `git reset --hard <base> && git clean -fd`. DELIBERATE DEVIATION from the plan text: -x omitted, because it also deletes IGNORED files incl. the .egg-info/build artifacts left by `pip install -e .`, which would break imports and manufacture false failures. 14/14 execution checks pass, including that the ignored artifact survives and an agent COMMIT is undone.",
-            "tier4_intakes": "DONE — intake-933..936 persisted, all dive-verified/overturned. Two agents returned out-of-range schema values (credibility 8 and 66; novelty 'significant'); normalized per rubric and recorded in each entry's notes.",
-            "remaining": "handoff writes (Tier 0-3), master-index rows, handoffs_updated/created backfill on intake-913..936",
-            "od_b_resolved": "2026-07-29 — intake-937 created for ERNIE-Image-Turbo (the deployed image_generate model, which had NO index row for its entire deployed life); 6 mis-citations of intake-528 repointed across the handoff and the deep dive, each with an inline dated correction note."
-          },
-          "notes": "12-URL batch (11 operator-submitted + 1 added mid-turn). Dedup sweep run UNBOUNDED 2026-07-29 over 909 entries / 527 arxiv_ids / 895 urls: ZERO primary arxiv_id or url collisions for all 12. 8 expansion entries (intake-925..932) reference-chased from intake-916/918/919/921; all 8 verified non-primary in the index (referenced only inside other entries' reference lists, which per the companion-artifact rule is not a collision). Tier-2b cheap contradiction pass run on 8 claims. PERSIST FIX: 9 handoff cross-refs were written with completed//blocked/ path prefixes and failed the validator, which resolves BARE filenames across handoffs/{active,completed,archived}; prefixes were stripped from list items only (prose untouched) and the validator then returned exit 0 / 932 entries."
-        }
-      ],
-      "stage2_dive_set": [
-        "intake-938",
-        "intake-939",
-        "intake-940",
-        "intake-941",
-        "intake-942",
-        "intake-943",
-        "intake-944",
-        "intake-945",
-        "intake-946",
-        "intake-947",
-        "intake-948",
-        "intake-950",
-        "intake-951",
-        "intake-952",
-        "intake-953",
-        "intake-954",
-        "intake-955"
-      ],
-      "stage2_not_dived": [
-        "intake-949 (Afterburner) - confound already caught and quantified at Stage 1; operator did not add it",
-        "intake-956 (eschamoe codebook probe) - author blocked on compute, unblocking needs sm_80+ hardware we lack; re-check in 2-4 weeks"
-      ],
-      "stage2b_cap": "REMOVED BY OPERATOR — harvest everything viable/usable/worthwhile; collect more sources if needed",
-      "stage2b_entries": {
-        "range": "intake-957..990",
-        "count": 34,
-        "cap": "REMOVED BY OPERATOR"
-      },
-      "stage4_completed": "2026-08-03",
-      "stage4_summary": {
-        "commits": [
-          "95168bab autokernel slice",
-          "33497494 Stage-2b entries + deferred field changes",
-          "7b1eac15 recommended_actions attribution",
-          "d0d43d06 efficiency/reviewer/memory/model candidates",
-          "f7b985c7 handoffs_updated backfill"
-        ],
-        "handoffs_written": [
-          "autokernel-research-loop.md",
-          "agentic-rocm-kernel-authoring.md",
-          "mi210-mfma-compute-bound-paths.md",
-          "mi210-q8-dequant-gemv-roofline.md",
-          "rocm-verify-profile-backend.md",
-          "gpu-acceleration-path.md",
-          "architect-model-selection-bench.md",
-          "tq3-quantization-evaluation.md",
-          "security-review-skill.md",
-          "reviewer-typed-artifacts.md",
-          "engram-conditional-memory.md"
-        ],
-        "decision_packages": "artifacts/operator/measurement-decision-packages-20260803.md (DP-1..DP-4, NOT applied)",
-        "wiki_updates": [
-          "wiki/hardware-optimization.md",
-          "wiki/benchmark-methodology.md"
-        ],
-        "index_entries": 990
-      }
+      "ts": "2026-08-07T15:32:00Z",
+      "verbatim": "Proceed",
+      "disposition": "approved-and-landed",
+      "plan_ref": "research/intake-stage3-plan-2026-08-07-agent-memory-worker-security.md"
     }
   ]
 }

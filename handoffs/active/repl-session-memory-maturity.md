@@ -309,3 +309,22 @@ surface touched. Nothing committed.
 
 Provenance: 2026-07-27 research intake of intake-901, Stage-2 dive D1 against primary source at
 pinned SHA `f25f310b` plus a read of our own tree. Full evidence in intake-901 `dive_corrections`.
+
+## 2026-08-07 — process-safe ownership and uncertain-effect recovery (intake-1009/1010)
+
+- [ ] **D-f — Add a cross-process session lease with fencing, not a process-local mutex.** Acquire
+  ownership transactionally in the existing SQLite session store using `session_id`, owner identity,
+  PID plus process-start identity, monotonically increasing fencing token, heartbeat/expiry, and
+  acquired/released timestamps. Every mutating checkpoint/session write must present the current
+  fencing token. A stale lease may be reclaimed only after liveness/expiry reconciliation; PID reuse,
+  simultaneous acquire, owner crash, delayed stale writer, and idempotent release are mandatory
+  regression fixtures. Preserve read-only concurrent inspection.
+
+- [ ] **D-g — Journal uncertain external side effects before resume can replay them.** Add a durable
+  per-action record with stable action/idempotency key, tool and normalized arguments hash, attempt
+  number, `prepared|dispatched|confirmed|failed|uncertain|reconciled` state, timestamps, result/evidence
+  reference, and reconciliation policy. Persist `prepared` before dispatch and terminal evidence after
+  return. After a crash between dispatch and confirmation, resume must not blindly repeat: probe the
+  external state or require an explicit retry/skip resolution, append the reconciliation outcome, and
+  retain the original uncertain row. Test crashes before dispatch, after dispatch, after effect but
+  before confirmation, duplicate callback, and non-idempotent tool behavior.

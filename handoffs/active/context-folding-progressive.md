@@ -163,3 +163,11 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch): ACM (intake
 - [x] Record the **ARC-AGI-3 provenance downgrade for intake-919** ✅ 2026-07-29 — verified in committed intake-919 Stage-2 evidence (`epyc-root` `683f70de`, `research/intake_index.yaml` adversarial finding): all PRO-LONG figures use ARC-AGI-3's public set, which the benchmark authors exclude from official progress/leaderboard claims. The ARC-sponsored Duke-harness provenance and its reported `97.1% / 0.0%` bimodality downgrade SOTA framing; internal same-set ablations remain usable.
 
 **Dedup / conflation hazard — `arXiv 2607.21503` is NOT ACM.** It is a **different paper from the same week with a near-identical title** to intake-914's source. Anyone re-fetching ACM by title will land on it. Check the arXiv ID, not the title, before citing anything as ACM evidence in this handoff.
+
+- [ ] **CF-AM-1 — Compare parallel small-model gist extraction with current folding and lossless raw
+  retrieval.** On one held-out local document/search set, run identical tasks through current
+  deterministic Context-Folding, a bounded fan-out of small local gist extractors, and raw append-log
+  retrieval. Every gist must retain resolvable raw-document/event ids; failure to resolve is a hard
+  error. Report answer quality, evidence recall, gist omission/contradiction, hit/reuse rate, complete
+  inference and retrieval tokens, communication, peak memory, and wall time. Hold the final planner and
+  judge fixed. Do not adopt ActiveMem's comparison-set-relative ACT score or unreleased runtime.
