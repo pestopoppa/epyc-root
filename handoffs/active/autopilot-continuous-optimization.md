@@ -2012,15 +2012,18 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       then exposed and closed error-sentinel formalization, fixed 90-second placement budgets, the API's
       stale 1,800-second timeout ceiling, strict zero-error admission, and giant-request placement. E14 was
       used only as the canonical preimage; no defective diagnostic was promoted.
-- [ ] **Apply the consolidated E15 v7 physical-cohort boundary and clean baseline.** Orchestrator commits
+- [x] **Apply the consolidated E15 v7 physical-cohort boundary and clean baseline. ✅ 2026-08-08** Orchestrator commits
       `498675be` and `d08bc9cf` make full and split CPU placements share one client-side physical exclusion
       lane, retain same-cohort native batching, and stage a human-only combined ratifier. Live telemetry
       proved both split halves released before the full q0–q3 giant lease acquired. Diagnostic
       `evaltower-T1-1786200440931-fea99b27-100q` completed 100/100 with reliability `1.0`, zero scorer,
       transport, drain, overflow, or orphan errors, four-way admission, quality `1.5`, wall time
       `2128.0008s`, and `169.1729` questions/hour. Immutable evidence SHA-256 is
-      `e7e78849e37a16641711c9d6d6a0a8dff99cf406f6285ab3f21f99bf43cb86d9`. The only remaining action is
-      the operator trust-boundary command; AutoPilot remains stopped.
+      `e7e78849e37a16641711c9d6d6a0a8dff99cf406f6285ab3f21f99bf43cb86d9`. The operator applied the
+      consolidated ratifier at `2026-08-08T14:47:08.081912Z`; receipt
+      `ratify_e15_physical_cohort_v7_20260808.json` records `ratified_and_applied` and
+      `autopilot_started=false`. Candidate and backup hashes were independently rechecked, and the E15
+      era ledger was sealed at orchestrator commit `047837d8`. AutoPilot remains stopped.
 - [ ] **AP-48 — Add backlog-aware adaptive full/split admission after the E13 burst baseline.** Treat
       E13's guarded split policy for router-owned EvalTower traffic as the conservative burst anchor,
       not the final general scheduler. Build an admission policy that uses arrival pressure, physical
