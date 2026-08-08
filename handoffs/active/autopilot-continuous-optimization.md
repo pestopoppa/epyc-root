@@ -2023,7 +2023,16 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       consolidated ratifier at `2026-08-08T14:47:08.081912Z`; receipt
       `ratify_e15_physical_cohort_v7_20260808.json` records `ratified_and_applied` and
       `autopilot_started=false`. Candidate and backup hashes were independently rechecked, and the E15
-      era ledger was sealed at orchestrator commit `047837d8`. AutoPilot remains stopped.
+      era ledger was sealed at orchestrator commit `047837d8`.
+- [x] **Restart AutoPilot on the ratified E15 boundary. ✅ 2026-08-08** Strict readiness initially
+      exposed a tooling-contract mismatch: E15 wrote bootstrap status
+      `baseline_admitted_frontier_pending`, while preflight accepted only `pending`. Orchestrator
+      `89cf79c2` recognizes both equivalent pending states; 59 focused tests and Ruff passed, and strict
+      restart readiness then reported `restart_ready=true` with archive authority `match`. Stale pre-E15
+      trial 1473 had no journal result, so the existing crash-recovery path recorded an
+      `autopilot_killed_mid_trial` tombstone and advanced to 1474. The operator-authorized supervised
+      daemon started at `2026-08-08T17:43:46Z` with a 3,000-trial budget. Trial 1474 entered four-way T1
+      evaluation; coupled telemetry certified concurrent complementary-half placement with no overflow.
 - [ ] **AP-48 — Add backlog-aware adaptive full/split admission after the E13 burst baseline.** Treat
       E13's guarded split policy for router-owned EvalTower traffic as the conservative burst anchor,
       not the final general scheduler. Build an admission policy that uses arrival pressure, physical
