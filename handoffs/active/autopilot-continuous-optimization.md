@@ -1998,13 +1998,23 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       lifecycle drain checks rejected the run; reliability was 0.79 and no candidate was written.
       The exact orphan was removed by recycling only server `:8182`; all lifecycle counts returned to
       zero. AutoPilot remained stopped.
-- [ ] **Ratify E13 long-context routing boundary and collect a clean baseline.** Orchestrator commit
-      `25f557cc` adds a pre-learned-routing guard for unforced text above the configured 20K-character
-      threshold, preserves forced/explicit/image routes, reports actual rather than retained-preview
-      prompt length in structured tap telemetry, expands baseline source hashing to the router and
-      lifecycle/tap sources, and opens `task_rate_4d_v4_long_context_guard` /
-      `resource_lanes_v4_long_context_guard`. Focused validation: 241 passed. The human-only boundary
-      transaction is `ratify_and_apply_long_context_guard_v4.py`; do not collect E13 until it is applied.
+- [x] **Ratify E13 long-context routing boundary and attempt the canonical baseline. ✅ 2026-08-08**
+      The operator applied `ratify_and_apply_long_context_guard_v4.py`; the era ledger was sealed at
+      orchestrator commit `3824536e`. A 22K-character one-token smoke routed and dispatched directly to
+      `ingest_long_context :8085`, with truthful `prompt_len=22194` versus the retained 8,028-character
+      preview. The canonical 100-question attempt `evaltower-T1-1786169959693-b051ae9b-100q` then exposed
+      a second execution-layer bypass: `try_cheap_first` treated ingest as an expensive specialist and sent
+      the 637,310-character prompt to `worker_general :8182` before ingest could run. The collector was
+      stopped in its pre-model-scoring drain, no candidate was written, and only the exact unresponsive
+      `:8182` PID was recycled. Lifecycle and serving slots returned to zero; AutoPilot remained stopped.
+- [ ] **Ratify E14 end-to-end long-context capacity enforcement and collect a clean baseline.**
+      Orchestrator commit `60012fe9` makes ingest routing a capacity boundary through execution by bypassing
+      speculative cheap-first calls for `ingest_long_context`, adds the direct regression, includes
+      `src/api/routes/chat.py` in the baseline source-hash boundary, and opens
+      `task_rate_4d_v5_long_context_capacity_enforced` /
+      `resource_lanes_v5_long_context_capacity_enforced`. Validation: 137 routing/baseline tests plus the
+      191-test stack promotion gate passed; the human transaction prevalidates without writes as
+      `ratify_and_apply_long_context_capacity_v5.py`. Do not collect E14 until it is applied.
 - [ ] **AP-48 — Add backlog-aware adaptive full/split admission after the E13 burst baseline.** Treat
       E13's guarded split policy for router-owned EvalTower traffic as the conservative burst anchor,
       not the final general scheduler. Build an admission policy that uses arrival pressure, physical
