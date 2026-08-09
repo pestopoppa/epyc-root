@@ -137,66 +137,156 @@ translated from signatures to authority scopes for the unsigned pilot.)
 
 ## 4. The grade carrier
 
-### 4.1 Recommended carrier — and the Corroborated decision
+**Ratified by the operator 2026-08-09:** drop `Corroborated`, and adopt a **product lattice** rather
+than a single chain. The two decisions fit together — removing the independence dimension leaves
+exactly the two axes the v1 chain was conflating.
 
-The v1 chain was `0 < Hinted < Judged < Corroborated < Traced < Verified < Witnessed`. **This spec
-recommends dropping `Corroborated` from the carrier**, leaving:
+### 4.1 Why the chain was wrong
 
-```text
-L = 0 < Hinted < Judged < Traced < Verified < Witnessed
-a ⊕ b = max(a,b)     alternative support
-a ⊗ b = min(a,b)     joint / chained support
-identities: 0 (additive), Witnessed (multiplicative)
-```
+The v1 carrier was `0 < Hinted < Judged < Corroborated < Traced < Verified < Witnessed`. It mixed
+three unrelated questions into one ordering, which produced at least one indefensible comparison —
+`Corroborated < Traced` ranked *two independently reviewed sources* below *one exact-but-unverified
+anchor*. Factoring the questions apart:
 
-**Why.** ⊕ = max is idempotent, so `Judged ⊕ Judged = Judged`: the fold can *never derive*
-`Corroborated` from two independent Judged paths. Accrual is impossible in this algebra **by
-construction** — and deliberately so, because accrual *is* non-idempotence, and every accruing
+| Question | Where it goes now |
+|---|---|
+| How strong is the epistemic act behind this? | **Q axis** (below) |
+| How precisely can a reader get back to the evidence? | **T axis** (below) |
+| How many independent paths support it? | **Not a grade** — a policy predicate over the corroboration statistic (§7.3) |
+
+`Corroborated` had to go regardless of the lattice decision: `⊕ = join` is idempotent, so the fold
+can **never derive** it from two independent `Judged` paths. Accrual is impossible in this algebra
+by construction — and deliberately so, because accrual *is* non-idempotence, and every accruing
 formalism (gradual argumentation, subjective-logic cumulative fusion, Dempster–Shafer) forfeits the
-deletion and convergence theorems the carrier was chosen for. Leaving `Corroborated` in the chain
-means the same word denotes two different things: an asserted leaf grade, and a mechanical
-independence statistic that lives outside the certified fold. A future implementer "fixing" the
-apparent gap by adding a count-the-paths rule inside the fold would silently void the Deletion
+deletion and convergence theorems the carrier exists to inherit. Keeping the label would have meant
+one word denoting two different things, with a standing invitation for an implementer to "fix" the
+apparent gap by adding a count-the-paths rule inside the fold — silently voiding the Deletion
 Property's hypotheses.
 
-Independence therefore becomes a **consumer-policy predicate**, not a grade: `disjoint_supports ≥ k`
-evaluated over the leaf-disjoint packing statistic (§7.3), capped and explicitly under-approximate.
+### 4.2 The carrier
 
-**Alternative, if the operator prefers to keep the label:** retain `Corroborated` in the carrier but
-constrain it to appear ONLY on evidence tokens whose payload is an explicit reviewed independence
-judgment — never as a fold output. Both options are coherent; the difference is whether the trap is
-removed or documented. *(Decision-queue item 2/3.)*
+```text
+Q  (warrant quality)     Q0 · Q1 Hinted · Q2 Judged · Q3 Verified · Q4 Witnessed
+T  (traceability)        T0 Unanchored · T1 Located · T2 Anchored · T3 Attested
 
-### 4.2 The total order is a choice, not a requirement
+L  = Q × T               20 elements
+a ⊕ b = (max Q, max T)   pointwise join   — alternative support
+a ⊗ b = (min Q, min T)   pointwise meet   — joint / chained support
+0 = (Q0, T0)             additive identity and annihilator for ⊗
+1 = (Q4, T3)             multiplicative identity
+```
 
-The v1 draft said the total order is what makes the semiring absorptive. That is
-sufficient-but-not-necessary, and the distinction widens the design space:
+**Q — what epistemic act stands behind the claim**
 
-- Absorption comes from the lattice law `a ⊕ (a ⊗ b) = a`, which holds in **every bounded
-  distributive lattice**.
-- The convergence result states verbatim that "every distributive lattice is also a 0-stable
-  semiring where we set ⊕ = ∨ and ⊗ = ∧".
-- The circuit result specializes "actually to any distributive lattice".
-- The absorptive-polynomial framework's own flagship semiring is *not* a chain, and its finiteness
-  argument is a well-quasi-order over a **product of chains**.
+| Level | Meaning |
+|---|---|
+| `Q0` | no active evidence |
+| `Q1 Hinted` | extracted or discovered; no verification performed |
+| `Q2 Judged` | an identified actor's judgment, within a declared authority scope |
+| `Q3 Verified` | passed an applicable verifier or a Stage-2 primary-source review |
+| `Q4 Witnessed` | directly attested by a governing measurement or an execution record |
 
-So a **product lattice** — e.g. `quality × traceability`, with pointwise join/meet — stays inside
-every theorem this spec relies on, and would resolve the v1 chain's conflation of support quality
-with anchor traceability (`Corroborated < Traced` was never a defensible single ordering).
+**T — how precisely a reader can get back to it**
 
-What the total order actually buys, and what a product lattice costs:
+| Level | Meaning |
+|---|---|
+| `T0 Unanchored` | no resolvable anchor |
+| `T1 Located` | correct document and revision; no span |
+| `T2 Anchored` | exact durable span — heading path + content hash, JSON pointer, trial id |
+| `T3 Attested` | durable in-repo artifact with an attestation reference per the measurement constitution |
 
-| Property | Total order | Product lattice |
+`T3` is deliberately the constitution's own durable-evidence rule: a hash over an artifact that no
+longer exists proves nothing, so `T3` requires the artifact to be present and cited, while `T2`
+requires only that the anchor resolves.
+
+### 4.3 The algebra still holds — every theorem, unchanged
+
+Each axis is a finite chain; a product of finite chains is a bounded **distributive lattice**. That
+is exactly the hypothesis class the pilot's formal results require, and two of the sources say so in
+their own words: the convergence result states that *"every distributive lattice is also a 0-stable
+semiring where we set ⊕ = ∨ and ⊗ = ∧"*, and the circuit result specializes *"actually to any
+distributive lattice"*.
+
+| Property | Holds? | Why |
 |---|---|---|
-| ⊕/⊗ are *selection* (every folded value is an input annotation) | yes — good for explanation | no — values can be new pairs |
-| Threshold "≥ Traced" is a homomorphism onto booleans at any cut | yes | only for upward-closed sets |
-| Deletion, convergence, circuits, closed forms | hold | hold |
+| Absorptive (`a ⊕ (a ⊗ b) = a`) | ✅ | lattice absorption, componentwise |
+| 0-stable (`1 ⊕ u = 1`) | ✅ | `(Q4,T3)` is top |
+| ⊗-idempotent | ✅ | meet is idempotent → `a^∞ = a`, so `gfp = F^N(F^N(1))` |
+| Fully continuous | ✅ | finite |
+| Deletion Property applies | ✅ | absorptive; semantics pinned to P^AT (§5.2) |
+| ≤ N-step convergence | ✅ | 0-stable |
+| Poly-size provenance circuits | ✅ | absorptive |
 
-**Pilot recommendation:** ship the chain (simplest thing that works), and record the product lattice
-as a ratified-available option so a later carrier change is a policy amendment rather than a
-re-derivation. *(Decision-queue item 3.)*
+The carrier grew from 6 elements to 20 — still trivially small, still a fixed finite set, and the
+fold cost is unchanged (both operations are two integer comparisons instead of one).
+
+### 4.4 What the product lattice costs, and how each cost is paid
+
+**(a) Grades become pairs, and some are incomparable.** `(Q3,T1)` — verified but only
+source-located — and `(Q2,T2)` — judged but exactly anchored — neither dominates the other. This is
+the *point*: the chain forced a false ranking between them. Displays show both coordinates
+(`Verified/Located`), and sorting requires a declared tiebreak rather than a natural order.
+
+**(b) The join can be synthetic — this is the real one.** In a chain, `⊕ = max` is a *selection*
+operator: the folded value is always one of the inputs, so you can always point at the path that
+produced it. In a product lattice it is not. If path A is `(Q3,T1)` and path B is `(Q2,T2)`, the
+join is `(Q3,T2)` — a grade **no single path achieves**.
+
+Read correctly, the join says *"some path is Verified, and some path is Anchored."* It does **not**
+say one path is both. Two mechanisms keep that honest:
+
+- **Witness sets.** Every folded grade reports the minimal set of paths that jointly achieve it — at
+  most two for a two-axis lattice. "Verified by path A; anchored by path B" is more informative than
+  the chain's single number ever was, and it makes the synthetic join self-explaining.
+- **Conjunctive policy predicates.** When a consumer needs *one* path to clear both bars, that is a
+  different query — `∃ path : Q ≥ q ∧ T ≥ t` — evaluated per-path over the provenance circuit's
+  minimal supports, not read off the join. **Authoritative use policies default to the conjunctive
+  reading**; exploratory ones may use the join.
+
+Both questions are legitimate and the system answers them separately instead of conflating them,
+which is the same discipline that motivated splitting the axes in the first place.
+
+**(c) Thresholds must be upward-closed sets, not cut points.** In practice every policy the pilot
+needs is conjunctive — `Q ≥ Q3 ∧ T ≥ T2` — and a conjunction of per-axis floors *is* upward-closed,
+so this costs one extra threshold per policy and nothing else. Non-rectangular policies (for
+example, "accept `(Q4,T1)` or `(Q2,T3)` but nothing between") are expressible as an explicit set of
+minimal accepted pairs, and MUST be written that way rather than as an inequality.
+
+### 4.5 Status-to-grade mapping (replaces the v1 §7.5 table)
+
+Proposed pilot policy; requires operator ratification before any authoritative query uses it.
+
+| Record | Q | T | Qualification |
+|---|---|---|---|
+| Stage-1 extracted claim, source link only | `Q1 Hinted` | `T1 Located` | discovery only; cannot gate an integration plan |
+| Stage-1 extracted claim with an exact span | `Q1 Hinted` | `T2 Anchored` | the anchor is good; the claim is still unverified |
+| Identified model or reviewer judgment | `Q2 Judged` | as anchored | scoped to that actor's authority |
+| Exact durable anchor, not substantively verified | `Q1` | `T2 Anchored` | **this is what v1 called "Traced"** — a T-statement that had been ranked as a Q-level |
+| Stage-2 accepted claim with primary-source anchor | `Q3 Verified` | `T2 Anchored` | entry-level `dive-verified` does not verify every extracted claim |
+| Deterministic verifier result under an applicable contract | `Q3`–`Q4` | `T2`–`T3` | policy decides; verifier identity and version required |
+| Protocol-admissible measurement with durable attestation | `Q4 Witnessed` | `T3 Attested` | for the measured observation only — derived mechanism or generalization claims need their own rules |
+| `dive-overturned` | opposition frame | — | does not erase the original proposal |
+| Stage-3 operator approval | **no Q** | **no T** | intent plane; authority, not evidence |
+| Wiki assertion | **no independent grade** | — | a projection cannot corroborate its own sources |
+| Handoff status | **no automatic grade** | — | work state, unless backed by execution or measurement evidence |
+
+The single clearest gain from factoring: the row that v1 called `Traced` is now visibly a
+**traceability** statement about a claim whose **quality** is still `Hinted`. Under the chain it
+outranked `Corroborated`; under the lattice it is `(Q1, T2)` and nobody can mistake it for a
+verification.
+
+### 4.6 Mechanical vs judged evidence
+
+Unchanged from v1 and worth restating: mechanical evidence — content hashes, structural diffs,
+schema checks, test results, protocol validators, execution attestations — SHOULD be produced
+eagerly because it is cheap, repeatable, and high value, and it is what moves the **T** axis. Model
+judgment SHOULD be lazy, memoized by exact input frontier, capped by policy, and it moves the **Q**
+axis at most to `Q2`. An unverified model judgment may support a hypothesis or abstain; it may
+propose an opposition frame for verification; it cannot by itself produce an authoritative `False`
+verdict or retract another actor's evidence.
 
 ---
+
 
 ## 5. The fold
 
@@ -329,6 +419,12 @@ incrementally, cached by circuit hash, searched upward from 1, displayed as `1 �
 and **explicitly under-approximate when the cap binds**. It stays out of the correctness-critical
 fixpoint. Near-duplicate supports MUST be merged before the count (product-style aggregation
 otherwise rewards redundancy), with the similarity threshold recorded in the output.
+
+**This statistic is now load-bearing, not decorative.** With `Corroborated` removed from the carrier
+(§4.1), it is the *only* mechanical notion of independence in the system, and any policy of the form
+`disjoint_supports ≥ k` reads directly from it. Two consequences: a cap that binds MUST be reported
+as an under-approximation at the point of use, never silently; and a policy MUST NOT treat "cap
+reached" as "≥ cap satisfied" without saying so.
 
 ---
 
@@ -463,11 +559,26 @@ encodes the certification boundary in the vocabulary itself:
 
 | Grade | Definition | Certifiable? |
 |---|---|---|
-| **SE** (scintilla) | at least one applicable pro chain | **yes** — from the min/max core |
-| **DV** (dialectical validity) | at least one applicable pro chain and no applicable con chain | **yes** — the Belnap `Supported` cell |
+| **SE** (scintilla) | at least one applicable pro path | **yes** — from the lattice core |
+| **DV** (dialectical validity) | at least one applicable pro path and no applicable con path | **yes** — the Belnap `Supported` cell |
 | **PE** (preponderance) | `max_pro > max_con` over advisory degrees | advisory only |
 | **CCE** (clear and convincing) | PE ∧ `max_pro > α` ∧ `(max_pro − max_con) > β` | advisory only |
 | **BRD** (beyond reasonable doubt) | CCE ∧ `max_con < γ` | advisory only |
+
+Because grades are now pairs, a policy states **two floors and a reading**:
+
+```yaml
+use: "wiki-authoritative"
+standard: DV                      # certifiable from the lattice core
+min_grade: {Q: Q3, T: T2}         # Verified, exactly anchored
+reading: conjunctive              # ONE path must clear both floors (§4.4b)
+independence: {min_disjoint: 2}   # optional; reads the §7.3 statistic
+conflict_policy: reject
+```
+
+`reading: conjunctive` is the default for authoritative use; `reading: join` is permitted only for
+exploratory policies, and any answer served under it carries the witness set so the reader can see
+that two different paths supplied the two coordinates.
 
 Aggregation is **max, never sum** (arguments cannot be assumed independent; accrual is done by
 linking premises, not adding weights). `α, β, γ` are policy constants recorded in the versioned,
@@ -633,14 +744,18 @@ identity; **and Example 9 fails closed** under any candidate optimization.
 
 ## 19. Open decisions (operator)
 
+**Settled 2026-08-09:** the carrier (items 2 and 3 below). Everything else is open.
+
 | # | Decision | Recommendation on record |
 |---|---|---|
 | 1 | Gold corpus contents | the four documented corrections + one E8 slice ([corpus doc](vidya-pilot-corpus.md)) |
-| 2 | Grade mapping, incl. Corroborated | drop from carrier; independence as a policy predicate (§4.1) |
-| 3 | Chain vs product lattice | ship the chain; record the product lattice as available (§4.2) |
+| 2b | Status-to-grade **table** under the new carrier (§4.5) | ratify as written; it is the carrier change applied row-by-row |
+| 2 | ~~Grade mapping, incl. Corroborated~~ | **RATIFIED 2026-08-09** — dropped from the carrier; independence is a policy predicate (§4.1). The status-to-grade *table* (§4.5) still needs ratification. |
+| 3 | ~~Chain vs product lattice~~ | **RATIFIED 2026-08-09** — product lattice `Q × T` adopted (§4.2) |
 | 4 | Sidecar location + visible banners | `.vidya/` sidecars; visible banner only on authoritative use |
 | 5 | Canonical pilot ledger | append-only SQLite; deterministic JSONL export |
-| 6 | Trigger / Use / Generate frame types | decide before P1 closes (§14) |
+| 6 | Trigger / Use / Generate frame types | decline `Trigger` (obligation activation covers it); declare `Use`/`Generate` already met by `derived_from`/`produced_by` (§14) |
+| 7 | Xu et al. 2018 (R2 precedent) | decline-with-citation |
 
 ---
 

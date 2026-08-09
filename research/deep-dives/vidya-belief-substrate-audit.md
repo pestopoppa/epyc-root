@@ -66,6 +66,15 @@ systemic findings are about scope, sequencing, and reuse — not correctness:
 
 ### 2.3 The seven technical wrinkles (C1–C7)
 
+> **Operator ratification 2026-08-09 — C1 and C2 are settled.** `Corroborated` is **dropped from
+> the carrier** (independence becomes a policy predicate over the §7.3 statistic), and the carrier
+> is a **product lattice `Q × T`** (warrant quality × traceability) rather than a single chain.
+> Both are implemented in [`docs/design/vidya-pilot-spec.md`](../../docs/design/vidya-pilot-spec.md) §4.
+> The two decisions compose: removing the independence dimension leaves exactly the two axes the
+> chain was conflating, and the row v1 called `Traced` is now visibly `(Q1 Hinted, T2 Anchored)` —
+> a traceability statement about an unverified claim, which the chain had ranked *above*
+> `Corroborated`.
+
 - **C1 — Corroborated-in-the-chain tension (highest-value fix).** ⊕=max is idempotent:
   `Judged ⊕ Judged = Judged`. The algebra can never *derive* `Corroborated` — it can only be minted
   as an asserted leaf grade, while mechanical corroboration lives in the separate leaf-disjoint

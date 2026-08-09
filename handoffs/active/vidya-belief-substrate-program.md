@@ -178,12 +178,20 @@ R1/R2 are paper-track and independent; R3 deliberately severed; R4/R5 need pilot
 
 ## Decision queue for operator
 
-1. P0.1 corpus ratification (which real corrections + which claims).
-2. Grade-mapping ratification (v1 §7.5 table, as amended by V2.2/V2.12).
-3. Chain vs product lattice for the shipped carrier (V2.3 documents; operator picks).
+- [x] **2. Carrier — `Corroborated`** — RATIFIED 2026-08-09: dropped from the carrier; independence
+      is a policy predicate over the leaf-disjoint statistic ✅
+- [x] **3. Chain vs product lattice** — RATIFIED 2026-08-09: **product lattice `Q × T`** adopted
+      (warrant quality × traceability); spec §4 rewritten, dependents propagated ✅
+
+Open:
+
+1. P0.1 corpus ratification (19 claims across four documented corrections + one E8 slice).
+2b. Status-to-grade **table** ratification (spec §4.5) — the carrier is settled, the mapping of
+    existing intake/measurement statuses onto `Q × T` is not.
 4. Sidecar location + visible-banner policy for shadow projections.
-5. Canonical pilot ledger: append-only SQLite (recommended) vs repository JSONL export.
-6. Xu et al. 2018: decline-with-citation (recommended) or ingest as entry.
+5. Canonical pilot ledger: repository JSONL (house style) vs append-only SQLite.
+6. Frame-type coverage: adopt-or-decline `Trigger` and the `Use`/`Generate` pair (spec §14).
+7. Xu et al. 2018: decline-with-citation (recommended) or ingest as an entry.
 
 ## Cross-cutting concerns
 

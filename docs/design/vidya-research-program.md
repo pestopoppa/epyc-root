@@ -116,7 +116,9 @@ target. Two consequences, both binding:
    presence. They must route through the absorptive, chain-positive generalized-polynomial semiring
    (with dual indeterminates), where well-definedness, closure ordinal ≤ ω, and universality are all
    proven for the class the carrier belongs to.
-2. On a min/max lattice this is affordable: `a^∞ = a`, so `gfp = F^N(F^N(1))` — roughly 2N iterations.
+2. On the ratified product lattice this is affordable: meet is idempotent, so `a^∞ = a` and
+   `gfp = F^N(F^N(1))` — roughly 2N iterations. (The property is meet-idempotence, not totality;
+   it survived the 2026-08-09 carrier change unchanged.)
 
 Also recorded: for derived (fixed-point) facts, the base-case source explicitly gives **no** reason
 why a query is false when its value is 0 — negation of a least-fixpoint formula is a *safety* game,
@@ -181,9 +183,11 @@ Deliverables: exact bounded algorithm; proof of exactness below the cap; under-a
 semantics when bounds bind; runtime/memory distribution on real circuits; and evidence that the
 statistic predicts retraction fragility better than a naive source count.
 
-**Interaction with the carrier decision:** if `Corroborated` is dropped from the grade chain (pilot
-spec §4.1), this statistic becomes the *only* mechanical notion of independence in the system, which
-raises its priority from nice-to-have to load-bearing for any policy that uses `disjoint_supports ≥ k`.
+**Interaction with the carrier decision — now settled.** The operator ratified dropping
+`Corroborated` from the carrier on 2026-08-09 (pilot spec §4.1), so this statistic **is** the only
+mechanical notion of independence in the system. That moves R4 from nice-to-have to load-bearing for
+any policy of the form `disjoint_supports ≥ k`, and makes the under-approximation semantics
+(what a bound-hitting cap is allowed to claim) a correctness question rather than a display detail.
 
 ---
 

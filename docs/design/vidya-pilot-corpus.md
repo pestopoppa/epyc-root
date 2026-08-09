@@ -230,6 +230,13 @@ once.
 5. The corpus is frozen at a named commit; changing it to make a test pass requires an explicit
    amendment record.
 
+**Carrier note (ratified 2026-08-09).** Gold labels are recorded as `Q × T` pairs, not single
+grades. This materially improves several corpus cases: E4's renamed kernel is a pure **T**
+regression (the anchor stopped resolving) with **Q** untouched, which under the old chain could only
+be expressed as a vague downgrade; and E2's scorer artifact is a pure **Q** event (the evidence was
+always exactly anchored — it was the verification that was wrong). A substrate that moves the wrong
+axis on either case is measurably wrong in a way the chain could not have detected.
+
 **Scoring** uses the metrics in spec §17.2: +1 / 0 / −1 (correct / abstained / harmful-stale),
 current- and outdated-awareness separately, forced-answer stale-fact-error, marker-free
 construction, and invalidation recall/precision reported separately by failure direction.
