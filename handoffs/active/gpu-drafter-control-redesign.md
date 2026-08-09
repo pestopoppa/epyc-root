@@ -28,6 +28,8 @@ drafting."* This track owns that redesign so it doesn't fall between handoffs.
 | **Adaptive-K / cascade drafting** | Vary draft depth per-token by confidence; cascade a cheap→richer drafter | The fixed-depth external lanes over-draft; adaptive-K prunes wasted verify | α-vs-depth curve on the real corpus |
 | **Teleport-composed drafting** | Reuse the AXA-2 re-prefill+catch-up path as the drafter transport | Amortizes the CPU weight read (no findings-02 penalty) when the target overflows to CPU | needs AXA-2 v1 landed; composed-spec state `speculative.cpp:3063` |
 
+*(⚠ 2026-08-09: no local Qwen3.5-397B weights — the 204 GB UD-Q4_K_XL copy was deleted in the disk reclaim and was never the ~400 GB Q8 this target assumes. GLM-5.2-UD-IQ2_M **is** still on disk, so the GLM half of this target remains actionable; the 397B half needs a fresh download first.)*
+
 **Extreme-scale target** (the reason to bother): Qwen3.5-397B-A17B / GLM-5.2-class at *full
 CPU quality* + GPU-drafted speed — same-model IQ2 (~124 GB) / IQ1 (~74 GB) don't fit 64 GB
 HBM, so **REAP + IQ1 (~56 GB)** is *required* for a same-model GPU drafter, or a smaller

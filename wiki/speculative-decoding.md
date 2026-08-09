@@ -2,8 +2,47 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-07-31 (adds the composed-recipe reconciliation — production was not launching the operator's `ngram-mod,draft-mtp` recipe since `2370025f`, the naive fix would have disabled speculation entirely, fixed by `2874ed73`+`6390b871` — plus the soft-budget/independent-knob/acceptance-dilution mechanism findings and the draft-max sweep; earlier 2026-07-29 note: verifying a draft/MTP head is a weight-map question, not a config question; earlier 2026-07-24 note: adds the per-model GPU MTP-depth optimum for all three architect candidates and the architecture-dependent spec-dec × batching interaction; earlier 2026-07-20 note: adds the external-drafter-dead / native-MTP-dominant finding, the surviving quant-asymmetric self-spec redesign, and the K28 fused-GDN-kernel research; earlier 2026-07-19 note: adds v7 promotion/reviewer decoupling, repaired native GLM-MTP evidence, and the lossless-only release boundary; 2026-07-04/05/06 MI210/spec-sheet subsections remain flagged where noted)
+**Last compiled**: 2026-08-09 (adds DSpark as a distinct draft type — `deepseek4` arch already ships in production v8 via upstream #24162, but no `DRAFT_DSPARK` member exists among the ten enumerated spec types, and DSpark is a separate sidecar GGUF so NextN metadata does not imply it; earlier 2026-07-31 note: adds the composed-recipe reconciliation — production was not launching the operator's `ngram-mod,draft-mtp` recipe since `2370025f`, the naive fix would have disabled speculation entirely, fixed by `2874ed73`+`6390b871` — plus the soft-budget/independent-knob/acceptance-dilution mechanism findings and the draft-max sweep; earlier 2026-07-29 note: verifying a draft/MTP head is a weight-map question, not a config question; earlier 2026-07-24 note: adds the per-model GPU MTP-depth optimum for all three architect candidates and the architecture-dependent spec-dec × batching interaction; earlier 2026-07-20 note: adds the external-drafter-dead / native-MTP-dominant finding, the surviving quant-asymmetric self-spec redesign, and the K28 fused-GDN-kernel research; earlier 2026-07-19 note: adds v7 promotion/reviewer decoupling, repaired native GLM-MTP evidence, and the lossless-only release boundary; 2026-07-04/05/06 MI210/spec-sheet subsections remain flagged where noted)
 **Sources**: 63+ documents
+
+## Compiled Update — 2026-08-09
+
+### DSpark is a distinct draft type, not an MTP variant — and the framework already fits it
+
+DeepSeek shipped **DSpark** with DeepSeek-V4-Flash-0731, replacing naive MTP. Three facts,
+each verified directly against the frozen production tree on 2026-08-09:
+
+1. **The `deepseek4` architecture is already in production.** `LLM_ARCH_DEEPSEEK4` sits at
+   `src/llama-arch.cpp:81` in `production-consolidated-v8`, landed by **upstream PR #24162**
+   (`8c146a836`), not by our out-of-tree port. Verified with
+   `git log -S"LLM_ARCH_DEEPSEEK4" -- src/llama-arch.cpp`.
+2. **The spec-decode framework has ten types and DSpark is not among them.**
+   `common/common.h:170-181` enumerates `DRAFT_SIMPLE`, `DRAFT_EAGLE3`, `DRAFT_MTP`,
+   `DRAFT_DFLASH`, four NGRAM variants, and `DRAFT_TREE`. `--spec-type` and `--spec-draft-n-max`
+   already exist as CLI args (`common/arg.cpp:3861,3935`). The delta to support DSpark is one
+   enum member plus loader and verify path — the `DRAFT_DFLASH` integration (`d1b34251b`,
+   PR #22105) is the closest precedent.
+3. **DSpark ≠ MTP/NextN, and the distinction is load-bearing.** DSpark ships as a **separate
+   sidecar GGUF** (~10.9 GB at Q8_0), not as tensors inside the quant. A V4 GGUF carrying
+   `deepseek4.nextn_predict_layers` metadata therefore provides *no* DSpark capability. Reading
+   NextN metadata as "MTP present, so the newer drafter is available" is the trap here.
+
+**Generalizable lesson**: when a vendor renames or replaces its drafting algorithm, check the
+engine's *draft-type enumeration*, not the model's architecture support. Arch support and drafter
+support are independent axes — we had the first and lacked the second, and the handoff that
+tracked them as one thing scoped a multi-thousand-line port for what is a small integration.
+
+Vendor-claimed uplift is ~1.9× decode at `--spec-draft-n-max 3` with ~10 GB extra residency.
+Unverified locally; per `feedback_measure_alpha_before_specdec_investment`, acceptance rate α must
+be measured before any conclusion, and the n-max default must be swept rather than accepted.
+
+### Source References (2026-08-09)
+
+- [`deepseek-v4-flash-0731-dspark.md`](../handoffs/active/deepseek-v4-flash-0731-dspark.md) — successor handoff; Phase 2 scopes the `DRAFT_DSPARK` integration
+- [`deepseek-v4-flash-cpu-port.md`](../handoffs/completed/deepseek-v4-flash-cpu-port.md) — closed predecessor; §"CLOSURE — 2026-08-09" records the upstream supersession
+- [`progress/2026-08/2026-08-09.md`](../progress/2026-08/2026-08-09.md) — the disk-reclaim session that surfaced the finding
+- Direct source reads in `/mnt/raid0/llm/llama.cpp` @ `67a433bf4`: `src/llama-arch.cpp:81`, `common/common.h:170-181`, `common/arg.cpp:3861,3935`
+- [Quantization](quantization.md) — the MXFP4-expert quant behaviour that makes V4 Q8 only 7 GB larger than Q4
 
 ## Compiled Update — 2026-07-24
 

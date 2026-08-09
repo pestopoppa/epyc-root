@@ -182,12 +182,30 @@ These tasks are scattered across active handoffs and require inference compute b
 | G8 | MiniMax M2.7 tool-calling | Research intake (intake-328/329) | Evaluate tool-calling reliability vs Qwen3 stack. Test orchestrator function-calling pipeline. | Standalone | ~4h |
 | G9 | MiniMax M2.7 architect_general replacement eval | Research intake (intake-328/329) | **Goal: test whether MiniMax M2.7 can replace or complement the live `architect_general` role only.** The removed `architect_coding` role is no longer a target. Compare M2.7 against current `architect_general` (Qwen3.5-122B-A10B) on architecture/general-reasoning tasks plus any existing MiniMax G8 tool-calling evidence. Do not treat this as a coder replacement or RAM-consolidation decision unless a separate coder-eval owner reopens that scope. | Standalone | ~4-6h |
 
-- [ ] **G9-disk — MiniMax-M2.7 keep-vs-delete decision (operator; filed 2026-07-26).** The 227GB
+- [x] **G9-disk — MiniMax-M2.7 keep-vs-delete decision (operator; filed 2026-07-26).** ✅ 2026-08-09 —
+  **RESOLVED: DELETE.** Operator decided during the 2026-08-09 model-root reclaim. 227 GB freed.
+  Evidence supporting delete: the artifact was never exercised (zero run artifacts under
+  `/mnt/raid0/llm/tmp`), only Q8_0 ever landed (the campaign expected Q8_0 *and* UD-Q4_K_XL), and
+  G8/G9 have been "IN PROGRESS" since 2026-04-19 — superseded by the post-v8 architect-bench
+  campaign. Ledgered in the **master** registry (`epyc-inference-research`): `minimax_m27_q8`
+  marked `artifact_status.download: deleted` + a `deprecated_models` entry; lean registry
+  recompiled (`deprecated_models` 22 → 37, the only section that changed). **Do not re-download
+  without a fresh operator decision.** G7a/G8/G9 below are consequently dead — treat as killed,
+  not pending.
+  *Process note:* the 2026-07-26 entries (Qwable/longcat/f16-upcast) were appended to the **lean**
+  registry only and were dropped by the 2026-07-29 recompile `f6691d79`, which correctly
+  regenerates the derived artifact from master. They have been restored into master and now
+  survive recompiles. **Ledger entries go in the master registry, never the compiled output.**
+  <details><summary>Original decision text (filed 2026-07-26)</summary>
+
+  The 227GB
   `models/MiniMax-M2.7-GGUF/` dir survived the 2026-07-26 disk cleanup ONLY because G7a-G9 are
   still-open rows. Decide when the post-v8 architect-bench campaign lands its verdicts: either
   G9 merges into the architect bench as an M2.7 arm (keep the download), or G7a-G9 are killed as
   superseded by that campaign (delete 227GB, record in both registries' deletion ledgers per the
   2026-07-26 pattern). Do not re-download if deleted without a fresh operator decision.
+
+  </details>
 
 ### Progress (updated 2026-04-13)
 

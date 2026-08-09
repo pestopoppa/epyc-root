@@ -376,7 +376,7 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
 
 ### New Related Research
 
-- **[intake-637] "DeepSeek-V4-Flash GGUF (antirez)"** (huggingface.co/antirez/deepseek-v4-gguf) — verdict: **worth_investigating**
+- **[intake-637] "DeepSeek-V4-Flash GGUF (antirez)"** (huggingface.co/antirez/deepseek-v4-gguf) — verdict: **worth_investigating** — **SUPERSEDED 2026-08-09**: the antirez Q4-mixed GGUF was deleted; `deepseek4` is now in production via upstream #24162, and the current artifact is the Unsloth **0731** UD-Q8_K_XL plus a **DSpark** draft sidecar. DSpark is a new spec-decode type (not MTP/NextN) and is the direct concern of this handoff — see [`deepseek-v4-flash-0731-dspark.md`](deepseek-v4-flash-0731-dspark.md) Phase 2, which adds `COMMON_SPECULATIVE_TYPE_DRAFT_DSPARK` alongside the existing `DRAFT_MTP`/`DRAFT_DFLASH`/`DRAFT_EAGLE3` members.
   - Relevance: Ships an optional MTP-only side-file (3.6 GiB) packaging V4's multi-token-prediction head as a spec-dec drafter — same MTP-as-drafter pattern as our gemma4 / DSv3.2 deployments.
   - Key technique: Standalone MTP head GGUF, intended to drive a self-drafting MoE target (V4 verifier + V4-MTP drafter).
   - Reported results: MTP sidecar 3.6 GiB; no acceptance-rate measurement on card.

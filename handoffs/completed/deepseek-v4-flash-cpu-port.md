@@ -1,6 +1,28 @@
 # DeepSeek-V4-Flash CPU Port — Experimental Branch
 
-**Status**: REFRESHED 2026-07-29 — **Strategy B executed 2026-05-30**: download complete (153.32 GiB), smoke PASS, and three V4 measurements cluster at 8–11 t/s. The old 18 t/s Q4 floor is retired: it was an unmodelled active-parameter extrapolation from gemma4. D2 records a V4-specific **8 t/s lower envelope** and **8–12 t/s planning band**; this does not clear quality, role candidacy, or the separate D1 operator decision. Quality reference logprobs remain externally blocked on Mac/ds4. Do NOT restart the download narrative — see §"Strategy B execution — 2026-05-30 update" + §"Next Decisions".
+**Status**: **CLOSED — SUPERSEDED BY UPSTREAM 2026-08-09.** The port objective is achieved: `deepseek4` is in the production tree via **upstream PR #24162** (`8c146a836`, present in `production-consolidated-v8` at `src/llama-arch.cpp:81`). No ik_llama API translation was ever needed — this is precisely the "core-contributor upstream deepseek4 PR" alternative trigger this handoff named. **D1 is resolved: PARK PERMANENTLY.** The 153.32 GiB antirez Q4-mixed GGUF was **deleted 2026-08-09** during a disk reclaim and is not to be re-downloaded; the successor artifact is the Unsloth **0731** revision at UD-Q8_K_XL. Live work continues in [`deepseek-v4-flash-0731-dspark.md`](deepseek-v4-flash-0731-dspark.md). See §"CLOSURE — 2026-08-09" below before reading anything under it: all Strategy-A/B narrative, resume instructions, and phase plans are **historical**.
+
+<details>
+<summary>Historical status line (superseded 2026-08-09)</summary>
+
+REFRESHED 2026-07-29 — **Strategy B executed 2026-05-30**: download complete (153.32 GiB), smoke PASS, and three V4 measurements cluster at 8–11 t/s. The old 18 t/s Q4 floor is retired: it was an unmodelled active-parameter extrapolation from gemma4. D2 records a V4-specific **8 t/s lower envelope** and **8–12 t/s planning band**; this does not clear quality, role candidacy, or the separate D1 operator decision. Quality reference logprobs remain externally blocked on Mac/ds4.
+
+</details>
+
+## CLOSURE — 2026-08-09
+
+**Disposition**: objective met by upstream; handoff moved to `handoffs/completed/`.
+
+| Item | Outcome |
+|---|---|
+| Port `deepseek4` to our tree | **Achieved by upstream PR #24162** (`8c146a836`), shipped in `production-consolidated-v8`. Verified: `git log -S"LLM_ARCH_DEEPSEEK4" -- src/llama-arch.cpp`. |
+| D1 Strategy A (ik_llama API translation, 3–5d) | **PARK PERMANENTLY.** Moot on two counts: the arch landed in mainline llama.cpp, and ik_llama is deprecated as a serving path (`CLAUDE.md`, v8 final freeze). |
+| D2 floor recalibration | Retained as-is (8 t/s lower envelope, 8–12 t/s band) — but those numbers were measured on the **antirez Q4-mixed** build, which is neither the production binary nor the 0731 weights. Treat as **historical, not a baseline**; re-measure on 0731 UD-Q8_K_XL under v8. |
+| D3 quality gate / architect-general candidacy | **Protocol survives, subject retired.** `v4_quality_gate_runner.py` + `v4_quality_gate_compare.py` (34 deterministic comparator tests pass) carry forward to the successor handoff. The Mac/ds4 external reference block is no longer on the critical path — with the arch in mainline, parity can be taken against a mainline build instead of the antirez fork. |
+| Antirez Q4-mixed GGUF (153.32 GiB) | **Deleted 2026-08-09.** Superseded by the 0731 revision; the file predated the 0731 release and carried NextN/MTP metadata only, no DSpark. |
+| ik_llama branch `feature/deepseek4-port` @ `c04881fc0` | Left in place, now dead. Safe to prune whenever ik_llama is garbage-collected. |
+
+**Do NOT** restart the Strategy-A narrative, the antirez download, or the fork-divergence survey. Everything live is in the successor handoff.
 **Created**: 2026-05-28
 **Priority**: P2
 **Effort**: High (multi-thousand-line arch addition, mirroring/exceeding the DSv3.2 DSA work)
@@ -443,7 +465,8 @@ Per `feedback_no_wholesale_git_add_shared_files`: when staging cherry-picked cha
 ## Progress checklist
 
 - [x] Strategy B executed: download (153GiB), build, smoke PASS, 4 fork bug patches landed ✅
-- [ ] D1 operator go/park decision on Strategy-A (ik_llama API translation, 3-5d)
+- [x] D1 operator go/park decision on Strategy-A (ik_llama API translation, 3-5d) ✅ 2026-08-09 — **PARKED PERMANENTLY**, superseded by upstream PR #24162 landing `deepseek4` in mainline (shipped in `production-consolidated-v8`); ik_llama is additionally deprecated as a serving path. No translation work will be done.
 - [x] D2 recalibrate the 18 t/s throughput floor to be V4-arch-aware (honest ~8-12 t/s expected range) ✅ 2026-07-29 — retired the unmodelled gemma4 active-parameter extrapolation; V4's three saved 8.47/9.13/10.7 t/s observations set an 8 t/s lower envelope and 8–12 t/s planning band. This is a throughput screen only; D1, quality parity, and role candidacy remain open.
 - [x] D3 repurpose quality gate as architect_general candidacy probe ✅ 2026-07-29 — role-scoped the existing 20-prompt parity protocol: it may nominate a future architect-general comparison only after reference parity passes. Saved 9.13 t/s is provisional throughput evidence, not candidacy; reference logprobs remain externally blocked. Comparator suite: 34 deterministic tests pass.
-- [ ] Unblock quality gate on Mac/ds4 reference logprobs (externally blocked)
+- [x] Unblock quality gate on Mac/ds4 reference logprobs (externally blocked) ✅ 2026-08-09 — **dissolved, not satisfied**: the block existed only because our build was an out-of-tree fork needing an external reference. With `deepseek4` in mainline, parity is taken against a mainline build. The comparator protocol carries to [`deepseek-v4-flash-0731-dspark.md`](deepseek-v4-flash-0731-dspark.md); no Mac/ds4 dependency remains.
+- [x] Handoff closed and superseded ✅ 2026-08-09 — see §"CLOSURE — 2026-08-09"; live work in [`deepseek-v4-flash-0731-dspark.md`](deepseek-v4-flash-0731-dspark.md)

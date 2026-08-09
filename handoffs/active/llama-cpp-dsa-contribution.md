@@ -200,7 +200,8 @@ Tracked as a sibling effort, NOT folded into this handoff. V4 is a fundamentally
 
 - **Upstream issue**: ggml-org/llama.cpp#22319 (model request, open)
 - **WIP discussion**: ggml-org/llama.cpp#22376 (4+ community forks: nisparks `wip/deepseek-v4-support`, draft PR #22378 "no intent to merge", cdome94, Fringe210, antirez/llama.cpp-deepseek-v4-flash)
-- **Our port**: experimental branch `feature/deepseek4-port` off ik_llama production tree — see `handoffs/active/deepseek-v4-flash-cpu-port.md`
+- **RESOLVED 2026-08-09**: `deepseek4` **merged upstream** as PR #24162 (`8c146a836`) and is present in `production-consolidated-v8` (`src/llama-arch.cpp:81`). Our out-of-tree port is moot — the ik_llama branch `feature/deepseek4-port` is dead and the port handoff is closed ([`../completed/deepseek-v4-flash-cpu-port.md`](../completed/deepseek-v4-flash-cpu-port.md)). Live successor work — 0731 weights + a `draft-dspark` spec type — is in [`deepseek-v4-flash-0731-dspark.md`](deepseek-v4-flash-0731-dspark.md).
+- <s>**Our port**: experimental branch `feature/deepseek4-port` off ik_llama production tree</s> — superseded, see above
 - **Watch trigger**: if a core contributor (fairydreaming or similar) opens a deepseek4 upstream PR, our role mirrors D1 (CPU benchmark contribution against canonical NPS4 stack); roll back our experimental branch in favor of the upstream PR for review and merge.
 
 ## Notes

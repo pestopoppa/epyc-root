@@ -397,13 +397,13 @@ pgrep -a 'llama-' || echo "clean"
 ## Consumers
 
 - **Primary**: `research/deep-dives/nemotron-labs-diffusion-tri-mode.md` §10 — gates Variant A (Linear-SS) vs Variant B (TiDAR-pattern one-pass) vs Variant C1/C2 (split-role hybrid). User-proposed FLOP-for-BW asymmetry framing.
-- **Secondary**: `handoffs/active/deepseek-v4-flash-cpu-port.md` — informs whether V4-Flash decode (13B-active) will be FLOPS-limited at the same operating point.
+- **Secondary**: `handoffs/completed/deepseek-v4-flash-cpu-port.md` — informs whether V4-Flash decode (13B-active) will be FLOPS-limited at the same operating point.
 - **Tertiary**: `cpu-inference-optimization-index.md` measurement infrastructure — first principled FLOPS/BW snapshot for the canonical NPS4 stack. Future kernel claims can cite this baseline.
 
 ## Cross-references
 
 - Nemotron deep-dive §10: `research/deep-dives/nemotron-labs-diffusion-tri-mode.md`
-- DeepSeek-V4 port handoff: `handoffs/active/deepseek-v4-flash-cpu-port.md`
+- DeepSeek-V4 port handoff: `handoffs/completed/deepseek-v4-flash-cpu-port.md`
 - TiDAR intake (corrected): intake-633 / intake-634 / intake-635 (deep-dive 2026-05-28 corrected mechanism reading)
 - Canonical baseline: `feedback_canonical_baseline_protocol` (460 GB/s aggregate reference)
 - BW-bound prior: `project_cpu_decode_bw_bound` (cycles inside dot loops are DRAM-wait, not ALU)
