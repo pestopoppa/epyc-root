@@ -107,6 +107,37 @@ So the induction has a genuine gap at exactly the step the conjecture is about. 
 result, not a proof: it establishes that the obvious route does not close, and localizes the
 difficulty.
 
+### 2.4b Counterexample search — executed 2026-08-09, no counterexample found
+
+The conjecture was not left as an assertion. Two independent evaluators were implemented
+(`scripts/vidya/r1_search.py`) and compared exhaustively over small two-stratum programs:
+
+- **Route A (incremental)** — evaluate stratum 1, specialize by zeroing the retracted token,
+  freeze and re-tokenize the resulting pairs, evaluate stratum 2 against them.
+- **Route B (ground truth)** — delete the fact and recompute both strata from scratch.
+
+| | |
+|---|---:|
+| (program × fact-assignment × retraction) instances checked | **5,670** |
+| Counterexamples found | **0** |
+| Max facts **added** by a retraction (boundary growth observed) | **2** |
+
+Two things make this a result rather than a null:
+
+1. **The search exercised the phenomenon.** Boundary growth was observed — retractions genuinely
+   added higher-stratum facts in the corpus, which is the exact case the conjecture is about. A
+   sweep that never triggered growth would have proved nothing.
+2. **The harness has demonstrated detection power.** A mutation test replaced route A with the
+   naive-but-plausible implementation that evaluates negation against the *pre-retraction* lower
+   stratum. That variant produced **2,715 counterexamples out of the same 5,670 instances**. So
+   the comparison can see a wrong answer; it simply does not see one for the real implementation.
+
+**This is a bounded verification result, not a proof.** It rules out the conjecture failing for a
+simple structural reason at this program size, and nothing more. Larger programs, deeper strata,
+and non-two-valued absence remain unexplored. The honest classification is *unresolved, with
+supporting evidence* — which is a materially better position than *unresolved* and is exactly the
+kind of result the R-track was supposed to produce.
+
 ### 2.5 What would settle it
 
 1. Either a proof of (a) + (b), likely via the game semantics — the posLFP result is proved through

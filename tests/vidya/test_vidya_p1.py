@@ -569,3 +569,38 @@ class TestDeterminism:
         # that observes stability is not charged against it -- counting it was an off-by-one this
         # suite caught, and it is the same distinction as "N+1" = N steps plus the zero-init layer.
         assert res.iterations <= max(len(res.beliefs), 1)
+
+
+class TestAnchorNormalization:
+    """R3 (narrow slice): an anchor must survive reformatting and nothing more."""
+
+    QUOTE = "Property 13 (Deletion). For every provenance semiring Prov(X) and D' subset of D"
+
+    def test_reflowing_does_not_break_an_anchor(self):
+        reflowed = self.QUOTE.replace(" ", "\n  ", 3)
+        assert canonical.quote_hash(reflowed) == canonical.quote_hash(self.QUOTE)
+
+    def test_indentation_and_trailing_space_do_not_break_an_anchor(self):
+        assert canonical.quote_hash(f"    {self.QUOTE}   \n") == canonical.quote_hash(self.QUOTE)
+
+    def test_a_changed_word_DOES_break_the_anchor(self):
+        # The normalization must not be so permissive that it matches a different passage.
+        assert canonical.quote_hash(self.QUOTE.replace("every", "some")) != canonical.quote_hash(self.QUOTE)
+
+    def test_case_is_significant(self):
+        # Deliberately NOT normalized: case can carry meaning in a quotation.
+        assert canonical.quote_hash(self.QUOTE.lower()) != canonical.quote_hash(self.QUOTE)
+
+    def test_punctuation_is_significant(self):
+        # Also deliberately not normalized -- this project has a recorded scorer defect that came
+        # from treating a comma as insignificant.
+        assert canonical.quote_hash(self.QUOTE.replace(".", "")) != canonical.quote_hash(self.QUOTE)
+
+    def test_the_landed_intake_1038_anchor_matches_its_recorded_hash(self):
+        """End-to-end: the real anchor in the index verifies against its own quote."""
+        import yaml
+
+        idx = Path(__file__).resolve().parents[2] / "research" / "intake_index.yaml"
+        entry = next(e for e in yaml.safe_load(idx.read_text()) if e["id"] == "intake-1038")
+        anchor = entry["claim_anchors"][0]
+        assert canonical.quote_hash(anchor["quote"]) == anchor["quote_sha256"]

@@ -44,6 +44,11 @@ FT_RETRACT = "epyc.vidya/frame/retraction/v1"
 FT_JUDGMENT = "epyc.vidya/frame/judgment_recorded/v1"
 FT_CORRECTION = "epyc.vidya/frame/correction_recorded/v1"
 FT_CORRECTION_REVIEWED = "epyc.vidya/frame/correction_reviewed/v1"
+# R4b: a human-authored assertion that two claim ids denote the same proposition. The judgment is
+# deliberately NOT made by the fold -- deciding two differently-worded claims are the same is
+# exactly the semantic call the substrate keeps out of the deterministic path (spec §4.2 boundary).
+# The fold only APPLIES an alias somebody else authored, and records that it did.
+FT_ALIAS = "epyc.vidya/frame/claim_alias/v1"
 
 # A judgment frame must be keyed by what the judge saw AND the full decoder tuple, or replay is
 # provably inconsistent (spec §6). Greedy decoding does not exempt a frame from this: the
@@ -138,6 +143,8 @@ class FoldResult:
     counted_judgments: dict[str, str] = field(default_factory=dict)
     superseded_judgments: list[str] = field(default_factory=list)
     reviewed_corrections: list[str] = field(default_factory=list)
+    applied_aliases: list[str] = field(default_factory=list)
+    alias_map: dict[str, str] = field(default_factory=dict)
 
     def state_hash(self) -> str:
         """A content hash over the derived state -- the determinism-suite anchor."""
@@ -193,6 +200,8 @@ def fold(
     retracted: set[str] = set()
     corrections_by_claim: dict[str, list[str]] = {}
     reviewed_corrections: set[str] = set()
+    alias_of: dict[str, str] = {}          # claim_id -> canonical claim_id
+    applied_aliases: list[str] = []
     judgment_votes: dict[str, str] = {}   # replay-key hash -> first frame_id that voted
     superseded_judgments: list[str] = []
     ignored: dict[str, int] = {}
@@ -215,6 +224,30 @@ def fold(
             if isinstance(target, str):
                 reviewed_corrections.add(target)
 
+    # Aliases resolve before interpretation so support from both members lands on one claim.
+    # Union-find with path compression, ordered by canonical id so the choice of representative
+    # does not depend on frame arrival order -- otherwise the same alias set could produce two
+    # different state hashes.
+    for frame in frames:
+        if frame.get("frame_type") != FT_ALIAS:
+            continue
+        members = sorted(
+            m for m in (frame.get("assertion", {}).get("claim_ids") or []) if isinstance(m, str)
+        )
+        if len(members) < 2:
+            continue
+        canonical = members[0]
+        for member in members[1:]:
+            alias_of[member] = canonical
+        applied_aliases.append(frame.get("frame_id", ""))
+
+    def _canonical(cid: str) -> str:
+        seen: set[str] = set()
+        while cid in alias_of and cid not in seen:
+            seen.add(cid)
+            cid = alias_of[cid]
+        return cid
+
     # Pass 2: interpret the surviving frames.
     for frame in frames:
         ftype = frame.get("frame_type")
@@ -226,14 +259,14 @@ def fold(
         if fid in retracted:
             claim_id = frame.get("assertion", {}).get("claim_id")
             if claim_id:
-                claims.add(claim_id)
+                claims.add(_canonical(claim_id))
             continue
 
         if ftype == FT_CLAIM:
             claim_id = frame.get("assertion", {}).get("claim_id")
             if not claim_id:
                 raise FoldError(f"claim frame {fid} has no assertion.claim_id")
-            claims.add(claim_id)
+            claims.add(_canonical(claim_id))
 
         elif ftype in (FT_SUPPORT, FT_OPPOSE):
             assertion = frame.get("assertion", {})
@@ -244,6 +277,7 @@ def fold(
                 grade = parse_grade(assertion.get("grade"))
             except ValueError as exc:
                 raise FoldError(f"{ftype} frame {fid}: {exc}") from exc
+            claim_id = _canonical(claim_id)
             claims.add(claim_id)
             label = assertion.get("evidence_id") or fid or f"<frame {len(support)}>"
             bucket = support if ftype == FT_SUPPORT else oppose
@@ -254,11 +288,12 @@ def fold(
             already_reviewed = fid in reviewed_corrections
             for claim_id in assertion.get("claim_ids") or []:
                 if isinstance(claim_id, str):
+                    claim_id = _canonical(claim_id)
                     claims.add(claim_id)
                     if not already_reviewed:
                         corrections_by_claim.setdefault(claim_id, []).append(fid)
 
-        elif ftype == FT_CORRECTION_REVIEWED:
+        elif ftype in (FT_CORRECTION_REVIEWED, FT_ALIAS):
             continue
 
         elif ftype == FT_JUDGMENT:
@@ -334,6 +369,8 @@ def fold(
         counted_judgments=judgment_votes,
         superseded_judgments=superseded_judgments,
         reviewed_corrections=sorted(reviewed_corrections),
+        applied_aliases=sorted(a for a in applied_aliases if a),
+        alias_map=dict(sorted(alias_of.items())),
     )
 
 

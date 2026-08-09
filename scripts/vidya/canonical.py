@@ -109,3 +109,33 @@ def envelope_hash(envelope: dict, *, algorithm: str = HASH_ALGORITHM) -> str:
         raise CanonicalizationError("envelope must be a mapping")
     stripped = {k: v for k, v in envelope.items() if k not in _SELF_REFERENTIAL_KEYS}
     return content_hash(stripped, algorithm=algorithm)
+
+
+# ---------------------------------------------------------------- R3 (narrow)
+
+def normalized_quote(text: str) -> str:
+    """Canonical form of a quoted span, for anchor hashing.
+
+    This is the one slice of R3 (semantic identity) that is load-bearing for a claims substrate.
+    The full R3 programme -- purity-as-evidence, licensed rewrites, e-graphs -- was severed because
+    it concerns CODE identity, which this pilot does not track. But anchors have the same problem
+    in miniature: a source reflowed from 80 to 100 columns, or re-indented, is the same passage,
+    and an anchor keyed on raw bytes would break on a change that altered nothing.
+
+    The licensed rewrites here are deliberately the weakest set that solves the actual problem:
+    collapse all whitespace runs to a single space, and strip the ends. Nothing else. No case
+    folding (case can be semantic in a quotation), no punctuation normalization (a changed comma
+    may change meaning -- and the project has a recorded scorer defect from exactly that), no
+    unicode confusable mapping.
+
+    An anchor that survives more than this should be a NEW anchor recorded by a human who looked,
+    not a hash that quietly matched.
+    """
+    return " ".join(text.split())
+
+
+def quote_hash(text: str, *, algorithm: str = HASH_ALGORITHM) -> str:
+    """Algorithm-tagged hash of a normalized quoted span."""
+    if algorithm != "sha256":
+        raise CanonicalizationError(f"unsupported hash algorithm {algorithm!r}")
+    return hashlib.sha256(normalized_quote(text).encode("utf-8")).hexdigest()

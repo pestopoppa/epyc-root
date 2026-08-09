@@ -131,11 +131,41 @@ dived entry has had *something* corrected about it. Whether that reflects a heal
 culture or a high initial error rate is exactly the kind of question a longitudinal series answers
 and a single snapshot cannot.
 
+### The retrospective series — computed 2026-08-09
+
+I had filed the longitudinal half as time-gated and then contradicted myself two paragraphs
+earlier by noting that most of R5 is retrospectively computable. It is. The index carries
+`ingested_date` back to 2026-03, so the series exists already:
+
+| Month | Entries | Claims | Dived | Corrected | Overturned | Apparent corr-rate |
+|---|---:|---:|---:|---:|---:|---:|
+| 2026-03 | 240 | 508 | 0 | 3 | 0 | 1% |
+| 2026-04 | 280 | 1,288 | 1 | 7 | 1 | 2% |
+| 2026-05 | 135 | 611 | 1 | 3 | 0 | 2% |
+| 2026-06 | 76 | 358 | 0 | 0 | 0 | 0% |
+| 2026-07 | 206 | 884 | 35 | 49 | 13 | 24% |
+| 2026-08 | 130 | 542 | 123 | 88 | 13 | 68% |
+
+**The apparent trend is a trap, and reading it correctly is the finding.** Correction rate appears
+to climb from 1% to 68%, which reads as quality collapsing. It is not: corrections are recorded by
+*dives*, and dive activity went from ~0/month before July to 123 in August. The series measures
+**when verification happened**, not when errors happened. An entry from March has a 1% correction
+rate because almost nothing from March was ever dived — its errors, if any, are still there
+undiscovered.
+
+The signal that survives that confound is the **overturn rate among dived entries: 27 of 160 =
+16.9%**. Roughly one dived entry in six had a load-bearing claim falsified against primary source.
+That number is comparable across months because its denominator is dives rather than entries.
+
+This is a worked instance of the substrate's own thesis: an uncorrected claim is not a correct
+claim, it is an unexamined one, and a metric whose denominator is "everything" cannot tell the
+difference.
+
 ### Deliverables status
 
 | R5 deliverable | Status |
 |---|---|
-| Longitudinal survival / downgrade / expiry distribution | **Time-gated**; retrospectively computable once time passes |
+| Longitudinal survival / downgrade / expiry distribution | **Computed** (above) — retrospective from `ingested_date`; the 16.9% overturn-among-dived figure is the confound-free signal |
 | Time-to-first-reuse, reuse count | **Blocked on the query log** (write-time decision above) |
 | Obligation acceptance / action / dismissal rates | **Blocked on disposition recording** (write-time decision above) |
 | Context and labour savings from surviving beliefs | Downstream of the two above |
