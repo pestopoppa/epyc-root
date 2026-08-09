@@ -2033,6 +2033,20 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `autopilot_killed_mid_trial` tombstone and advanced to 1474. The operator-authorized supervised
       daemon started at `2026-08-08T17:43:46Z` with a 3,000-trial budget. Trial 1474 entered four-way T1
       evaluation; coupled telemetry certified concurrent complementary-half placement with no overflow.
+- [x] **Make the optimization brief survive live API reloads. ✅ 2026-08-09** Orchestrator `517feccf`
+      replaces the permanent red abort state with bounded exponential retry, last-good retention, a
+      panel-specific 15-second cold-fetch budget, and one-minute refresh. Server synthesis moves off the
+      API event loop and uses a 30-second reconnect cache with stale-cache provenance. Validation passed
+      206 focused tests plus Ruff. The HTML fix became available without disrupting active trial 1499;
+      the backend cache activates on the next ordinary API reload.
+- [ ] **AP-50 — Turn “what optimizes the orchestrator” into a decision cockpit.** Default to the current
+      measurement era and distinguish proposed, executed, valid, kept, promoted, and currently-live
+      states; “applied” alone is operationally ambiguous. Add current trial/intervention/falsifier,
+      incumbent-vs-candidate objective deltas with n/uncertainty/replication, an experiment funnel with
+      rejection reasons, and a live lever scoreboard sourced from journal/study evidence rather than the
+      periodically generated digest. Retain the provenance graph as a drill-down, but lay it out
+      left-to-right as hypothesis → experiment → evidence → verdict → runtime state, with era/status
+      filters and explicit edge semantics.
 - [ ] **AP-48 — Add backlog-aware adaptive full/split admission after the E13 burst baseline.** Treat
       E13's guarded split policy for router-owned EvalTower traffic as the conservative burst anchor,
       not the final general scheduler. Build an admission policy that uses arrival pressure, physical
