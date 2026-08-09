@@ -57831,3 +57831,1890 @@
     (F2) CITE BY DURABLE IDENTIFIER. Stage ROLE (local cumsum / WY recompute / chunked state update / output) survived the rename;
     kernel NAMES did not. This is the same principle as intake-1025's architecture-shape matching - attribute to structure, not to
     volatile labels - and it generalises past profiling to how we cite anything upstream.
+
+- id: intake-1031
+  arxiv_id: null
+  url: https://nanopub.net/
+  source_type: blog
+  title: 'Nanopublications ecosystem: three-graph claim units, trusty URIs, retraction/supersession semantics'
+  categories:
+  - knowledge_management
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors:
+  - Groth, Gibson, Velterop (2010 concept paper)
+  - Kuhn, Dumontier (trusty URIs, arXiv 1401.5775)
+  - Kuhn et al. (services/Nanodash ecosystem, PeerJ CS-387)
+  key_claims:
+  - 'A nanopublication is exactly three named RDF graphs - assertion (atomic claim), provenance (how it came to be), publication info (who/when/license) - plus a head graph; a running decentralized registry network exists, no blockchain'
+  - 'Trusty URIs embed a content hash in the identifier; the RA/RB modules hash the NORMALIZED RDF graph, so identity survives serialization changes'
+  - 'Supersession = npx:supersedes in the new nanopub publication-info; retraction = separate retraction nanopub with npx:retracts; either is valid only when signed with the same key pair as the original author'
+  credibility_score: 5
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1034
+  verification: dive-verified
+  reader_should_conclude: >-
+    ADOPT for the frame layer: three-part envelope (assertion / provenance / pubinfo) with the two
+    reference lint rules (provenance must reference the assertion; pubinfo speaks only of the
+    frame); hash-WITHOUT-id-and-signature canonical-JSON content addressing with the id derived
+    and a detached signature over it (inverting nanopub's sign-then-hash); supersedes (pubinfo of
+    the new frame), retracts (assertion of a separate frame - retraction is a first-class claim
+    with its own grade), disputes (npx:invalidates analog), all gated at fold on same-actor or an
+    explicit authority override; the KeyDeclaration intro-frame pattern (reserve fields now, sign
+    later). DECLINE the server network / trust-range machinery for single-host. Cite
+    trustyuri-spec v1 (2015) for RA/RB - the 2014 paper defines only FA/RA. Do not let a design
+    doc claim novelty for this layer; novelty survives only above it (graded fold, freshness
+    gates, belief-state certificates).
+  dive_corrections: >-
+    2026-08-09 Stage-2 dive (primary: trusty-URI paper arXiv 1401.5775v3, nanopub guidelines
+    working draft, PeerJ CS-387 via PMC mirror, npx vocabulary ttl, trustyuri-spec@2015-02-23):
+    all Stage-1 claims verified verbatim, incl. the same-key retraction rule. Corrections: RB
+    module exists only in the living spec, not the 2014 paper; nanopub order is sign-then-
+    content-address (trusty URI covers the signature) - EPYC should invert to hash-then-detached-
+    sign so frame ids are stable whether or not signed; npx vocabulary is richer than Stage-1
+    recorded (npx:invalidates, hasOriginalVersion, approvesOf/disapprovesOf, KeyDeclaration,
+    RetractionNanopub); guidelines URL moved (/working_draft/ is live, /working_with_a_
+    nanopublication/ is 404). Format-invariance evidence: 156,026 test nanopubs hashed
+    identically across TriG/N-Quads/TriX.
+  notes: >-
+    Discovered during the 2026-08-09 audit of tmp/vidya-epyc-governance-pilot-handoff.md (Vidya
+    belief-system design). Landscape agent verified the three-graph anatomy, trusty-URI
+    normalization-hashing, and same-key retraction rule against nanopub.net and PeerJ CS-387
+    (retrieved 2026-08-09). What nanopubs LACK maps exactly onto the proposed Vidya kernel: no
+    graded evidence, no deterministic fold to derived belief state, no freshness gates, no
+    authority classes beyond single-key authorship, no replayable derivation certificates.
+
+- id: intake-1032
+  arxiv_id: '2501.13956'
+  url: https://github.com/getzep/graphiti
+  source_type: repo
+  title: 'Zep/Graphiti: bi-temporal knowledge-graph agent memory with contradiction-driven edge invalidation'
+  categories:
+  - memory_augmented
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors:
+  - Preston Rasmussen
+  - Pavlo Paliychuk
+  - Travis Beauvais
+  - Jack Ryan
+  - Daniel Chalef
+  key_claims:
+  - 'Bi-temporal edges: event timeline (t_valid/t_invalid = when the fact became/stopped being true) plus transactional timeline (t_created/t_expired = when the system learned/expired it); four timestamps per fact'
+  - 'LLM-driven contradiction detection invalidates temporally overlapping edges by setting t_invalid; new information always wins; old facts are invalidated, never deleted'
+  - 'Episode-level provenance: every entity/edge traces to raw ingested data; the repo (Apache-2.0, ~29.7k stars) adds typed Pydantic entity/edge ontologies post-paper'
+  reported_results:
+  - 'Self-reported 94.8% DMR (vs MemGPT 93.4%); up to +18.5% LongMemEval with 90% latency reduction (vendor numbers; DMR widely considered saturated)'
+  credibility_score: 4
+  contradicting_evidence:
+  - 'Paper (2025-01) and repo have diverged: the paper disclaims typed ontologies/confidence, the repo ships typed ontologies - paper describes an older system'
+  - 'All benchmark numbers are vendor self-reported'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1034
+  verification: dive-verified
+  reader_should_conclude: >-
+    ADOPT: the five-timestamp bi-temporal field set (created_at / expired_at / valid_at /
+    invalid_at / reference_time - the fifth is code-only, absent from the paper) into evidence-
+    token and claim schemas, with expired_at fold-derived rather than stored-mutable; the
+    two-clock invalidation closure rule loser.invalid_at := winner.valid_at AND loser.expired_at
+    := now, but gated by authority class (Graphiti has none); the two-stage contradiction scoping
+    (structural candidates + hybrid retrieval, THEN a small-model judge) with the verdict reified
+    as a ledger frame, never an in-place update; bidirectional claim<->evidence index fields
+    (episodes / entity_edges). DECLINE Graphiti as a dependency: uuid4 identity (not content-
+    addressed), in-place mutation, nondeterministic LLM-mediated ingestion. Do not cite the
+    vendor benchmark numbers as evidence.
+  dive_corrections: >-
+    2026-08-09 Stage-2 dive (arXiv 2501.13956 HTML v1 + repo pinned at main 425bf2481b51437e4345
+    5e09d241c5f46e3d95f3, files edges.py/nodes.py/utils/maintenance/edge_operations.py): all four
+    Stage-1 claims verified from source. CORRECTION: "new always wins" is imprecise - the code is
+    symmetric on event time; the real rule is "later valid_at wins, with no source-authority
+    weighting" (an incoming edge with EARLIER valid_at is itself invalidated by the existing
+    candidate). Schema has drifted past the paper (reference_time, episode_metadata, SagaNode,
+    typed Pydantic ontologies) - treat the paper as design intent, the repo as ground truth.
+  notes: >-
+    Discovered during the 2026-08-09 Vidya-handoff audit; previously mentioned only in passing in
+    other entries' notes, never ingested (companion-artifact rule: not a duplicate). Landscape
+    agent verified the bi-temporal model and invalidation semantics against arXiv 2501.13956 HTML
+    full text and the repo (retrieved 2026-08-09).
+
+- id: intake-1033
+  arxiv_id: '2603.17244'
+  url: https://arxiv.org/html/2603.17244v1
+  source_type: paper
+  title: 'Kumiho: formal AGM belief-revision semantics for a versioned graph-native agent memory'
+  categories:
+  - memory_augmented
+  - knowledge_management
+  - agent_architecture
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed 2026-08-09 into handoffs/active/vidya-belief-substrate-program.md (adoption extracts in V2/P0-P5/R task lines); audit record research/deep-dives/vidya-belief-substrate-audit.md.'
+  authors:
+  - Young Bin Park
+  key_claims:
+  - 'Proves AGM postulates (K*2-K*6, Relevance, Core-Retainment; deliberately rejects Recovery) for an operational Redis+Neo4j agent-memory system; 49-scenario AGM compliance suite'
+  - 'Immutable append-only Revision sequences per item with mutable tag pointers as the current view; rollback moves a pointer, never mutates history'
+  - 'Six typed provenance/dependency edges (Depends_On, Derived_From, Supersedes, Referenced, Contains, Created_From) plus AnalyzeImpact transitive dependency cascade identifying downstream conclusions needing re-evaluation'
+  - 'Retraction = tag removal or soft deprecation; superseded revisions are excluded from retrieval so the agent never sees A and not-A together'
+  reported_results:
+  - 'Self-reported best-in-class LoCoMo retrieval F1 (0.447 four-category, n=1540); 97.5% adversarial refusal'
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Single-author preprint; all numbers self-reported; the LoCoMo claim is metric-incommensurable with judge-accuracy numbers reported by other systems (e.g. Eywa, arXiv 2605.30771)'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1034
+    - intake-1035
+  verification: dive-verified
+  reader_should_conclude: >-
+    CITE for: append-only immutable revisions + mutable tag pointers (Def 7.1); AGM K*2-K*6 +
+    Hansson Relevance/Core-Retainment proven at belief-BASE level over ground propositional
+    triples only (K*7/K*8 explicitly open; the base-not-closed scoping is what makes
+    Core-Retainment-without-Recovery consistent); the principled Recovery rejection (SS7.3) as
+    formal precedent for no-auto-resurrection on un-retraction (re-assertion = fresh frame, never
+    rollback). ADOPT the executable postulate-compliance-suite pattern (49 scenarios) for any
+    EPYC fold. ADOPT the scope guard: keep the fold layer ground/propositional, citing Flouris
+    et al. 2005 impossibility results for DLs (via Kumiho SS7). Do NOT cite AnalyzeImpact as
+    exact impact analysis - it is depth-bounded advisory Depends_On traversal with no soundness/
+    completeness theorem; provenance circuits with zero-substitution are strictly stronger. LoCoMo
+    competitor numbers are imported from published evals, not re-run (paper admits).
+  dive_corrections: >-
+    2026-08-09 Stage-2 dive (arXiv 2603.17244v1 full text): all Stage-1 claims CONFIRMED except
+    AnalyzeImpact downgraded to PARTIAL ("transitive cascade" overstates: depth-bounded, single
+    Cypher ShortestPath, advisory over-approximation, no correctness theorem). Refinements:
+    supplementary AGM postulates K*7/K*8 open; proofs scoped to a deliberately simple
+    propositional logic to avoid Flouris et al. (2005) DL impossibility; adversarial 97.5% is
+    binary refusal detection, not F1, and the paper attributes it to the architecture ("the
+    memory graph contains no fabricated information") - usable as an argument for refusal
+    semantics. OPERATOR DISPOSITIONS 2026-08-09 (Stage-2 close-out): dive-surfaced Flouris et
+    al. 2005 DECLINED as a separate entry (transitive citation via this entry suffices for the
+    fold-layer scope guard); LoCoMo-Plus DECLINED (benchmark; not benching agent memory now).
+  notes: >-
+    Discovered during the 2026-08-09 Vidya-handoff audit novelty sweep. Its AnalyzeImpact
+    dependency cascade is the published analog of Vidya's reverse-impact traversal; its
+    pointer-based projection semantics parallel the proposed active-frame interpretation.
+
+- id: intake-1034
+  arxiv_id: '2606.04990'
+  url: https://arxiv.org/html/2606.04990v3
+  source_type: paper
+  title: 'From Agent Traces to Trust: survey of evidence tracing and execution provenance in LLM agents'
+  categories:
+  - agent_architecture
+  - knowledge_management
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors:
+  - Yiqi Wang
+  - Jiaqi Zhang
+  - Taotao Cai
+  - Zirui Liu
+  - Qingqiang Sun
+  - Zequn Sun
+  - Zhangkai Wu
+  - Manqing Dong
+  - Mingkai Zheng
+  - Xuefei Yin
+  - Yanming Zhu
+  key_claims:
+  - 'Five-dimensional taxonomy (body SS3; abstract inconsistently lists six): trace sources; evidence/execution units; provenance relations; granularity/timing (recording policy); trust functions'
+  - 'NINE-relation provenance vocabulary: PROV-compatible Use, Generate, Derive PLUS agent-specific Support, Depend-on, Contradict, Invalidate, Trigger, Update (Stage-1 recorded only seven)'
+  - 'Memory gap (SS6.4 + Table 6, NOT Table 3): "memory provenance remains underdeveloped... limited support for tracing memory origins, temporal validity, conflicts, contamination, privacy exposure, and downstream influence"; no Table-6 row reaches Yes on Conflict+Staleness+Evidence-Aware Verification (best: Mem0 Limited/Partial/Partial)'
+  - 'States MemGPT, Generative Agents, A-MEM record memory operations but none connect writes to sources, track staleness, or propagate invalidation on contradicting evidence'
+  - 'Desiderata: memory items carry source attribution, write time, update history, retrieval context, downstream usage, conflict status, and invalidation events severing dependency links, with survival of conclusions holding independent support'
+  credibility_score: 3
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1032
+    - intake-1033
+    - intake-1035
+    - intake-1036
+  verification: dive-verified
+  reader_should_conclude: >-
+    CITE the memory-gap statement from SS6.4 + Table 6 with a verbatim quote - the Stage-1
+    "Table 3" attribution was WRONG (Table 3 is a 27-system taxonomy mapping whose gap sentence
+    is about taxonomy coverage). Run the NINE-relation coverage check against EPYC frame types:
+    Support/Contradict/Derive/Depend-on/Invalidate/Update are covered by pro-con edges,
+    circuits, manifests, retraction and supersession frames; Trigger and the activity pair
+    Use/Generate need an explicit adopt-or-decline decision. Score any belief-substrate design
+    against Table 6's six-column rubric (Write Provenance / Retrieval Provenance / Update-
+    Evolution / Conflict / Staleness / Evidence-Aware Verification) as the positioning exercise.
+    Gem worth quoting: "PROV invalidation ends an entity's existence; agent Invalidate marks a
+    claim, plan, or memory item as epistemically invalid while the record persists" - the
+    standards-anchored statement of retraction-without-deletion. Paper is at v4; no ranking of
+    systems exists - do not cite one.
+  dive_corrections: >-
+    2026-08-09 Stage-2 dive (arXiv 2606.04990, v3 read + v4 cross-checked): author list captured
+    (11 authors, lead Yiqi Wang); paper moved to v4 on 2026-06-28 - re-pin citations; gap claim
+    re-attributed from "Table 3" to SS6.4/Table 6 (Stage-1 phrase appears nowhere verbatim);
+    relation vocabulary corrected 7 -> 9 (Use/Generate/Derive are PROV-compatible base
+    relations); "desiderata list" is actually SS8's five open-problem headings plus one
+    prescriptive sentence, not a structured checklist. Dive-surfaced: Agent-Sentry, PROV-AGENT,
+    PaperTrail, A-MemGuard as the survey's closest-representative systems (no ranking given).
+    OPERATOR DISPOSITIONS 2026-08-09 (Stage-2 close-out): PaperTrail and Agent-Sentry SELECTED
+    for Stage-2b round 2; PROV-AGENT DECLINED (interop reference only - Table 2 mapping captured
+    in intake-1046); A-MemGuard DECLINED (design argument for fold-time checking already
+    recorded here; no mechanism to import).
+
+- id: intake-1035
+  arxiv_id: '2606.06240'
+  url: https://arxiv.org/abs/2606.06240
+  source_type: paper
+  title: 'TOKI: bitemporal operator algebra for contradiction resolution in LLM-agent persistent memory'
+  categories:
+  - memory_augmented
+  - knowledge_management
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed 2026-08-09 into handoffs/active/vidya-belief-substrate-program.md (adoption extracts in V2/P0-P5/R task lines); audit record research/deep-dives/vidya-belief-substrate-audit.md.'
+  authors:
+  - Ziming Wang
+  key_claims:
+  - 'Types the four common contradiction-resolution heuristics (last-writer-wins, evidence-weighted merge, await-confirmation, per-rule policy) as one family of bitemporal operators over a dual-row schema'
+  - 'Every operator carries a provenance annotation preserving the losing fact in an append-only audit row'
+  - 'Proves keyed logging of the adjudicating LLM judge is NECESSARY for replay consistency'
+  - 'Extends operators to n-ary conflict sets; LoCoMo evaluation across eight systems, self-admitted underpowered'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Single-author preprint; underpowered evaluation by its own admission; the classical valid-time/transaction-time split is unconfirmed from the abstract'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1033
+    - intake-1034
+  verification: dive-verified
+  reader_should_conclude: >-
+    ADOPT the three H1-compliance requirements as fold-spec rules: (1) KEY COMPLETENESS -
+    judgment frames keyed by (read-set R, decoder tuple theta = prompt, seed, model_version,
+    temperature, tool_output_hash) or content-addressed equivalent; (2) INSERT-IF-ABSENT -
+    first committed vote wins per key; a re-run judge is short-circuited by the existing frame,
+    never appended as a competing vote; (3) NO RE-QUERY ON FOLD - no code path may invoke a
+    model during fold/replay. Necessity is Theorem 17 (proof witness in Appendix B.2), scoped to
+    boundedly nondeterministic judges in the relational schedule model; sufficiency is Corollary
+    6; together a tight characterization. TRAP: temp-0/greedy decoding does NOT make a judge
+    deterministic in this model (Omega includes sampling state and hardware numerics). Also
+    verify conflict tie-breaks form a TOTAL order (grade-then-timestamp-then-frame-id) - the
+    n-ary confluence proposition requires argmax over a total order + commutative semiring.
+    The +0.86 headline is a targeted-slice delta; the paper itself blocks superiority readings.
+  dive_corrections: >-
+    2026-08-09 Stage-2 dive (arXiv 2606.06240v1 full text): all Stage-1 claims CONFIRMED, incl.
+    classical bitemporality (valid time + SQL:2011 system time, Snodgrass) which Stage-1 had
+    flagged unconfirmed. Necessity verified as a real theorem (Thm 17; an intermediate fetch
+    summary suggested it was unproven - overturned by the raw text). Sharpening: +0.86 is Delta
+    accuracy on the audit-row defence's targeted contradiction slice of LoCoMo, not end-to-end;
+    "every baseline that keeps an LLM judge on the write path admits >=1 predicate; Toki alone
+    excludes all three while keeping it". DECLINED for import: the N2/N3 anomaly taxonomy
+    (presupposes TOKI's dual-row SQL schema; an append-only ledger structurally excludes audit
+    erasure). Also adopted: the Claim-vs-Wire double-verdict audit pattern (design-implied vs
+    observed-from-code verdicts per guarantee). OPERATOR DISPOSITIONS 2026-08-09 (Stage-2
+    close-out): dive-surfaced WorldDB and MIRIX DECLINED (design-space poles already
+    characterized by this entry's verdict matrix); LongMemEval-S and MultiTQ DECLINED
+    (benchmark harnesses; revisit only if a temporal-behavior bench is commissioned).
+  notes: >-
+    Discovered during the 2026-08-09 Vidya-handoff audit novelty sweep. Bears directly on the
+    Vidya rule that model judgments enter only as typed frames: TOKI formalizes WHY (replay
+    consistency requires logging the judge's outputs as inputs).
+
+- id: intake-1036
+  arxiv_id: '2606.26511'
+  url: https://arxiv.org/abs/2606.26511
+  source_type: paper
+  title: 'MemStrata: deterministic bi-temporal supersession rules for evolving agent knowledge (no-LLM invalidation)'
+  categories:
+  - memory_augmented
+  - knowledge_management
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed 2026-08-09 into handoffs/active/vidya-belief-substrate-program.md (adoption extracts in V2/P0-P5/R task lines); audit record research/deep-dives/vidya-belief-substrate-audit.md.'
+  authors:
+  - Neeraj Yadav (MemStrata.dev / Called It Inc.)
+  key_claims:
+  - 'Deterministic (subject, relation)-key supersession over a validity-interval ledger - no LLM and no similarity threshold in the SUPERSESSION path (non-triple prose falls to a similarity+LLM surprise-gate fallback)'
+  - 'Reports 0.95-1.00 accuracy on evolving-knowledge queries vs naive RAG 0.20-0.43; forced-answer stale-fact error 15-40% (RAG) driven to ~0%; n is tiny (4 suites x 20-30 paired scenarios, 3B judge)'
+  - 'Negative result (the durable contribution): cosine AUROC 0.5926 for separating duplicates from contradictions - near chance; contradictions are often MORE embedding-similar to the original than rephrasings'
+  - 'Suppresses stale retrieval rather than gating/refusing - no refusal-semantics freshness gate; bi-temporal schema present but unexercised (ingestion order proxies time; as-of-T retrieval is future work)'
+  credibility_score: 2
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1034
+  verification: dive-verified
+  reader_should_conclude: >-
+    CITE ONLY three things: (a) the AUROC-0.5926 negative result as the empirical justification
+    for the no-similarity-threshold supersession/retraction axiom; (b) the marker-free benchmark
+    construction rule (stale and current versions textually identical except the changed value)
+    plus the forced-answer stale-fact-error metric - "RAG hides its failure by refusing to
+    answer" - for any freshness-gate eval harness; (c) the lossy write-time-merge ablation
+    regressing below RAG as support for compress-at-projection-never-at-write. Do NOT cite the
+    headline accuracy numbers as evidence (single-author company preprint, tiny self-built
+    benchmarks, 3B judge, promised release has no URL). The supersession primitive itself is
+    subsumed: key-equality + value-inequality -> supersede works exactly where a claim carries a
+    canonical key; keyless claims fall to an adjudicating judge, which is where TOKI's keyed-
+    logging discipline (intake-1035) takes over - the two papers jointly cover both paths.
+  dive_corrections: >-
+    2026-08-09 Stage-2 dive (arXiv 2606.26511v1 full text): author captured (Neeraj Yadav,
+    single-author company paper). Two Stage-1 overstatements corrected: "no LLM, no similarity"
+    holds only for the triple path (SS4.1 item 3 is a similarity+LLM text-gate fallback);
+    "bi-temporal ledger" is schema-present but functionally uni-temporal in the evaluation.
+    Extraction quality is the admitted gating factor (~97% keying on clean templates vs ~44% on
+    unstructured prose, quarantined in App B.8). Credibility settled at 2: mechanisms and
+    negative results usable, headline numbers not citable.
+
+- id: intake-1037
+  arxiv_id: '2405.02079'
+  url: https://arxiv.org/abs/2405.02079
+  source_type: paper
+  title: 'ArgLLMs: argumentative LLMs - QBAF gradual semantics over LLM-generated pro/con graphs for claim verification'
+  categories:
+  - agent_architecture
+  - knowledge_management
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors:
+  - Gabriel Freedman
+  - Adam Dejl
+  - Deniz Gorur
+  - Xiang Yin
+  - Antonio Rago
+  - Francesca Toni
+  key_claims:
+  - 'LLMs construct quantitative bipolar argumentation frameworks (pro/con argument trees with intrinsic strengths) around a claim; DF-QuAD gradual semantics computes the final acceptability degree'
+  - 'AAAI 2025 oral; formal contestability properties defined; code at github.com/CLArg-group/argumentative-llms'
+  - 'Active successor line: MArgE (arXiv 2508.02584, multi-LLM evidence meshing), ArgRAG (arXiv 2508.20131, QBAF-based explainable RAG), UQ for ArgLLMs (arXiv 2510.02339)'
+  credibility_score: 5
+  contradicting_evidence:
+  - 'Follow-up UQ paper (arXiv 2510.02339) reports the degrees are sensitive to LLM-assigned base scores - supporting keeping degrees advisory, never certified'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1034
+  verification: dive-verified
+  reader_should_conclude: >-
+    ADOPT DF-QuAD as the advisory overlay semantics: exact bottom-up evaluation on the acyclic
+    condensation - aggregate F() = 0 if no children else 1 - PROD|1 - v_i|; combine C(v0,va,vs)
+    = v0 if va=vs, v0 - v0*|vs-va| if va>vs, else v0 + (1-v0)*|vs-va| - with reviewer-asserted
+    or uniform-0.5 base scores; one topological pass, no iteration, fully deterministic. Cite
+    the exactly TWO contestability properties (base-score and argument-relation monotonicity) +
+    Proposition 1 as the reviewer-facing monotonicity contract. LICENSE WALL: the ArgLLMs repo
+    is under a bespoke non-commercial "Academic Public License" and vendors an UNLICENSED copy
+    of Uncertainpy - REIMPLEMENT from the published formulas (~20 lines), never import either
+    repo. When quoting accuracy, name the arm: Est.-Base-Arg D=1 differs from the 0.5-Base-Arg
+    arm. Accrual remains non-idempotent - degrees are advisory, never certification inputs.
+  dive_corrections: >-
+    2026-08-09 Stage-2 dive (arXiv 2405.02079v3 + repo head 9b13955 2026-08-03): mechanics
+    confirmed with precision - QBAFs are restricted TREES of depth 1 or 2 (7 arguments max);
+    pro/con of a node = parity of attack edges on its path to root; semantics evaluation is
+    delegated to a VENDORED Uncertainpy, so the "library" is Potyka's, not ArgLLMs'.
+    "Contestability properties" pinned to exactly two + one satisfaction proposition. AAAI 39(14)
+    14930-14939. Accuracy is explicitly NOT the sell ("performs comparably with CoT") -
+    contestability is.
+  notes: >-
+    Discovered during the 2026-08-09 Vidya-handoff audit of graded-evidence alternatives. The
+    algebra agent's triage: every formalism with in-algebra accrual (QBAF gradual semantics,
+    subjective-logic cumulative fusion, Dempster-Shafer) is non-idempotent and loses the Datalog
+    provenance inheritance; gradual semantics additionally lack general cyclic-convergence
+    guarantees and have no incremental-retraction results (NOT-FOUND in bounded search).
+
+- id: intake-1038
+  arxiv_id: '2202.10766'
+  url: https://proceedings.kr.org/2022/10/
+  source_type: paper
+  title: 'Revisiting Semiring Provenance for Datalog (KR 2022) - the Deletion Property and semantics coincidence on absorptive semirings'
+  categories:
+  - knowledge_management
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors:
+  - Camille Bourgaux
+  - Pierre Bourhis
+  - Liat Peterfreund
+  - "Michaël Thomazo"
+  key_claims:
+  - 'Property 13 (Deletion), by that exact name (p. 98): provenance on a reduced database equals partial evaluation of the old provenance with deleted base-fact annotations set to 0; holds for semantics P^AT, P^NRT, P^AM, P^SAM; FAILS for minimal-depth semantics P^MDT and P^HMDT (Example 9)'
+  - 'Proposition 3: commutative, +-idempotent, omega-continuous K gives P^AM = P^SAM = P^AT; Proposition 12: absorption is additionally needed for P^NRT = P^AT'
+  - 'Conclusion states tree-based (AT, NRT) and model-based (AM, SAM) semantics coincide on absorptive semirings - a robust provenance notion in that restricted setting'
+  - 'Complexity: per-iteration annotations have poly-size arithmetic circuits, but no polynomially computable circuit for P^NRT on N-infinity power series unless P = NP'
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Engineering landmine, not a contradiction: Deletion FAILS for minimal-depth derivation semantics, so an engine that stores only minimal-depth derivations (Souffle-style provenance) does NOT get exact zero-substitution retraction'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1039
+    - intake-1040
+  verification: dive-verified
+  reader_should_conclude: >-
+    CITE Property 13 (Deletion, p.8 SS4.5, verbatim-confirmed) as the retraction axiom. Deletion
+    holds for semantics P^AT/P^NRT/P^AM/P^SAM (appendix Props 39/40/46/52) and FAILS for
+    minimal-depth P^MDT/P^HMDT (Example 9) - adopt Example 9 as a negative test vector for any
+    future "optimized fold", and never adopt minimal-depth shortcut evaluation. If insertion-
+    monotonicity is also wanted, cite P^AT (Table 1: Insertion holds only for AT/NRT; Prop 6
+    gives P^NE = P^AT, so naive evaluation IS the all-trees semantics). On an absorptive target,
+    Prop 12 + Prop 3 collapse AT/NRT/AM/SAM into one semantics. Prop 56 (App F): no polynomially
+    computable circuit for P^NRT on N-infinity power series unless P=NP - the reason to store
+    per-iteration circuits. Framing corrections for the Vidya doc: deletion is not hypothesis-
+    conditioned on +-idempotence (that is what makes the semantics COINCIDE), and NO totality
+    hypothesis exists anywhere ("totally ordered" absent from the paper; its central Boolean-
+    compatibility semiring PosBool(X) is a non-chain lattice).
+  dive_corrections: >-
+    2026-08-09 Stage-2 promotion dive (arXiv 2202.10766 full 33-pp version with appendices): all
+    six Stage-1 claims verbatim-confirmed with proposition numbers pinned (Prop 13 statement,
+    Table 1 row, Example 9 item iv, Props 3/12, Prop 56 via Arenas-Conca-Perez 2012 #P-hardness).
+    No corrections. Product-lattice question (operator-flagged): every load-bearing hypothesis is
+    algebraic (+-idempotent / absorptive / omega-continuous); a product of chains satisfies all
+    of them - my derivation, consistent with the paper's own use of PosBool(X). KR DOI not
+    re-verified via DBLP API this session (venue itself confirmed).
+  notes: >-
+    Ingested during the 2026-08-09 Vidya-handoff audit as the load-bearing formal citation for
+    exact retraction by zero substitution. Attribution check: CONFIRMED (4 of 4 claims located
+    verbatim in the proceedings PDF, retrieved 2026-08-09). Venue: KR 2022 Main Track pp. 91-101;
+    also arXiv 2202.10766, HAL hal-03771031.
+
+- id: intake-1039
+  arxiv_id: '1910.07910'
+  url: https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.CSL.2021.17
+  source_type: paper
+  title: 'Semiring Provenance for Fixed-Point Logic (CSL 2021) - generalized absorptive polynomials'
+  categories:
+  - knowledge_management
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors:
+  - Katrin M. Dannert
+  - "Erich Grädel"
+  - Matthias Naaf
+  - Val Tannen
+  key_claims:
+  - 'Introduces generalized absorptive polynomials S-infinity[X]; Theorem 17 (Universality): the most general appropriate provenance semiring for full LFP'
+  - 'Proposition 14: every antichain of monomials is finite; no infinitely ascending chains - a well-quasi-order (Dickson-style componentwise) argument on (N-infinity)^k; hence polynomials are finite antichains of maximal monomials'
+  - 'The framework requires FULLY continuous (chain suprema AND infima) absorptive semirings; omega-continuity alone is shown insufficient for alternating fixed points (Example 5); the omega-flavored result is Proposition 19: closure ordinal at most omega'
+  - 'Provenance values of fixed-point formulae correspond to model-checking-game strategies'
+  credibility_score: 4
+  contradicting_evidence:
+  - 'Known limitation (correct in the Vidya doc): finiteness of maximal monomials carries NO polynomial bound on their NUMBER - which is exactly why the circuit-representation line (Deutch et al. 2014; Fan-Koutris-Roy 2025) exists'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1038
+    - intake-1040
+  verification: dive-verified
+  reader_should_conclude: >-
+    CITE BY LIPICS NUMBERING and say so explicitly - the arXiv extended version renumbers
+    everything (LIPIcs Thm 17 Universality = arXiv Thm 24; Prop 14 antichains = arXiv Prop 18;
+    Prop 19 closure ordinal = arXiv Cor 28). The correct robustness clause for any belief domain
+    is: absorptive (Def 8: a + ab = a, equivalently 1 + b = 1) + FULLY continuous (Def 4: chain
+    sups AND infs exist and are preserved) - NOT omega-continuous (Example 5, Lukasiewicz
+    semiring, shows omega-continuity insufficient for gfp) and NOT "totally ordered" (S-infinity
+    [X] itself is a non-chain; Prop 14's wqo argument is literally a product of chains via
+    Dickson). Closure ordinal <= omega (Prop 19), so stratified folds never need transfinite
+    iteration; finite lattices terminate outright. S-infinity[X] is the certified most-general
+    carrier if symbolic provenance above the concrete lattice is ever wanted: compute once there,
+    specialize by Thm 17.
+  dive_corrections: >-
+    2026-08-09 Stage-2 promotion dive (published LIPIcs 183:17 PDF + arXiv 1910.07910v3 42-pp
+    extended version): all four Stage-1 claims confirmed verbatim, incl. Example 5's exact
+    counterexample (f(x,y) = max(0, x+y-1) on x_n = 1 - 1/(1+n): G(1) = 1 but sup G(x_n) = 0).
+    Correction recorded: dual numbering across versions - spec citations must name the LIPIcs
+    version. Prop 19's proof route (prove in S-infinity[X] via Kleene, transport by universality
+    to semirings whose update operators are NOT continuous) is itself a pattern worth citing.
+  notes: >-
+    Ingested during the 2026-08-09 Vidya-handoff audit as a load-bearing formal citation for the
+    provenance-circuit spine. Attribution: CONFIRMED with the continuity nuance above (retrieved
+    2026-08-09). arXiv 1910.07910 is the preliminary version titled 'Generalized Absorptive
+    Polynomials and Provenance Semantics for Fixed-Point Logic'; published as LIPIcs CSL.2021.17.
+
+- id: intake-1040
+  arxiv_id: '2105.14435'
+  url: https://arxiv.org/abs/2105.14435
+  source_type: paper
+  title: 'Convergence of Datalog over (Pre-)Semirings (PODS 2022 / JACM 2024) - p-stability and convergence bounds'
+  categories:
+  - knowledge_management
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors:
+  - Mahmoud Abo Khamis
+  - Hung Q. Ngo
+  - Reinhard Pichler
+  - Dan Suciu
+  - Yisu Remy Wang
+  key_claims:
+  - 'Defines p-stability: u is p-stable if the truncated star u^(p) equals u^(p+1); a semiring is 0-stable when 1 + u = 1 for all u (absorptive/bounded)'
+  - 'Every datalog-degree program over a p-stable semiring converges; for naturally-ordered 0-stable semirings, convergence in at most N steps (N = number of ground atoms)'
+  - 'A finite total-order chain with max/min (top as multiplicative identity) is 0-stable, absorptive, and fully continuous - so it qualifies under both this framework and the Naaf RAMiCS 2021 closed-form line (companion: arXiv 2106.00399)'
+  - 'Follow-up arXiv 2312.14063 improved iterative-evaluation convergence to polynomial for the relevant stable-semiring setting'
+  credibility_score: 4
+  contradicting_evidence:
+  - 'ATTRIBUTION CORRECTION for the Vidya doc: its "N variables x carrier-height h strict increases" bound is standard Kleene-iteration folklore, NOT a stated theorem of this paper or of Naaf 2021. The citable result is stronger for the 7-chain case: at most N steps via 0-stability. The doc must either cite the folklore bound as folklore or cite the 0-stable N-step theorem.'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1038
+    - intake-1039
+  verification: dive-verified
+  reader_should_conclude: >-
+    CITE Corollary 5.19 (arXiv full version) for the general 0-stable result: every datalog-
+    degree program over a 0-stable POPS converges in <= N steps, N = number of ground IDB atoms
+    - adopt as a hard runtime assertion on the refold oracle (exceeding N iterations = bug).
+    Stage-1's "naturally-ordered" scoping was narrower than the paper: Thm 5.12(2) is the
+    naturally-ordered engine, Cor 5.19 generalizes to arbitrary 0-stable POPS. The exact general
+    bound is SUM_{i=1..N}(p+2)^i (Thm 1.2 / Thm 5.12(1); note Cor 5.18 states SUM_{i=0..N} - an
+    internal index discrepancy; cite the i=0 form as safe). p.25 VERBATIM: "every distributive
+    lattice is also a 0-stable semiring where we set + = join and * = meet" - product lattices
+    are explicitly in scope, settling the operator's product-lattice question with paper text.
+    DO NOT attribute the N-x-carrier-height folklore bound to this paper. Quoted numbering is
+    the arXiv full version (= JACM-length text); JACM 71(2):8 final-copy numbering not
+    independently re-checked (paywall).
+  dive_corrections: >-
+    2026-08-09 Stage-2 promotion dive (arXiv 2105.14435 55-pp full PDF): p-stability and
+    0-stable definitions confirmed verbatim (0-stable equivalences given twice, incl. "join-
+    semilattice with maximal element 1" and the explicit distributive-lattice sentence citing
+    Dannert et al.); N-step theorem pinned (Thm 1.2 bullet 3, engine Thm 5.12(2), POPS form Cor
+    5.19); general bound formula now exact, replacing Stage-1's approximate "(p+2)-power" note.
+    Bonus citables recorded: Lemma 5.20 (Trop_p^+ matrix ((p+1)N-1)-stable, tight), Thm 5.22
+    (linear programs over strict p-stable POPS in O(pN + N^3) semiring ops, Floyd-Warshall-
+    Kleene). Triple venue: PODS 2022 10.1145/3517804.3524140; SIGMOD Rec 52(1) 2023; JACM 71(2)
+    2024 10.1145/3643027.
+  notes: >-
+    Ingested during the 2026-08-09 Vidya-handoff audit; the one PARTIAL attribution among the
+    five formal citations checked. Companion work tracked in-entry rather than separately: Naaf,
+    'Computing Least and Greatest Fixed Points in Absorptive Semirings' (RAMiCS 2021, arXiv
+    2106.00399, DOI 10.1007/978-3-030-88701-8_21) - closed-form polynomial-operation-count
+    computation exploiting absorption. Retrieved 2026-08-09.
+
+- id: intake-1041
+  arxiv_id: null
+  url: https://openproceedings.org/ICDT/2014/paper_36.pdf
+  source_type: paper
+  title: 'Circuits for Datalog Provenance (ICDT 2014) - poly-size provenance circuits for absorptive semirings'
+  categories:
+  - knowledge_management
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Daniel Deutch, Tova Milo, Sudeepa Roy, Val Tannen]
+  key_claims:
+  - 'Theorem 1: NO faithful datalog semantics has poly-size Boolean FORMULA provenance (via Karchmer-Wigderson monotone lower bound for st-connectivity)'
+  - 'Theorem 2 + Algorithm 1: monotone Boolean CIRCUITS of poly size exist, built in N+1 layers (engine: Esparza-Luttenberger CALCO 2011)'
+  - 'Proposition 5 + Theorem 4: Sorp(X), the free commutative absorptive semiring, gets poly-size circuit provenance and specializes correctly to any commutative absorptive omega-continuous semiring - p.209 explicitly "actually to any distributive lattice"'
+  - 'Theorem 3: Why(X) (witness sets) cannot be reached from a general provenance cache; Theorem 5 gives a dedicated poly construction only'
+  credibility_score: 4
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1038, intake-1039, intake-1042]
+  verification: dive-verified
+  reader_should_conclude: >-
+    This paper is the direct license for an incremental-retraction implementation: maintain the
+    layered K-circuit once (N+1 iterations deep), process deletions by 0-substitution on circuit
+    leaves - deletion propagation is literally the paper's motivating application. Name Sorp(X)/
+    antichain-polynomial circuits as the canonical provenance cache, evaluated into the concrete
+    lattice by specialization (Prop 5). The provenance store must be a DAG/circuit store, NEVER a
+    flat expression store (Thm 1). Decline anything Why(X)-shaped (Thm 3).
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (primary PDF read pp. 4-5, 9-11), so it
+    lands dive-verified. Stage-1 had only two independent secondary quotations; now grounded:
+    the circuit result is for the FREE absorptive semiring, hence every distributive lattice.
+    Constants are asymptotic - benchmark circuit size before relying on the incremental path.
+    OPERATOR DISPOSITIONS 2026-08-09 (Stage-2 close-out): Esparza-Luttenberger CALCO 2011
+    SELECTED for Stage-2b round 2; Deutch/Gilad/Moskovitch selP (VLDB J 2018) DECLINED (top-k
+    practical follow-on, not needed for the substrate).
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (formal cluster). Cited by intake-1038
+    (Bourgaux) and refined by intake-1042 (Fan-Koutris-Roy PODS 2025). Surfaced: Esparza &
+    Luttenberger CALCO 2011 (the N+1-iteration engine) as a follow-up candidate if the circuit
+    cache is adopted.
+
+- id: intake-1042
+  arxiv_id: '2504.08914'
+  url: https://arxiv.org/abs/2504.08914
+  source_type: paper
+  title: 'Circuits and Formulas for Datalog over Semirings (PODS 2025) - depth dichotomy for absorptive provenance'
+  categories:
+  - knowledge_management
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Austen Z. Fan, Paraschos Koutris, Sudeepa Roy]
+  key_claims:
+  - 'Depth DICHOTOMY (not a single optimality point): for the covered Datalog classes the optimal circuit depth is either Theta(log m) or Theta(log^2 m), nothing in between'
+  - 'Basic chain Datalog over absorptive semirings: poly formulas iff the corresponding regular language is finite (Thms 5.3/5.4)'
+  - 'Polynomial-fringe programs (incl. ALL linear programs) over absorptive semirings: poly-size circuits of depth O(log^2 m) (Thm 6.2) - the fold is parallelizable in NC^2'
+  - 'Cor 4.7: boundedness over an absorptive multiplicatively-idempotent semiring is equivalent to boundedness over the Booleans - checks transfer'
+  credibility_score: 4
+  contradicting_evidence:
+  - 'Abstract typo found in dive: "circuits of size O(log^2 m)" should read DEPTH O(log^2 m) with polynomial size (body Thm 6.2)'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1041, intake-1038]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Cite for: linear rule programs get depth-O(log^2 m) poly-size provenance circuits (NC^2-
+    parallelizable fold); never promise poly-size flat FORMULAS for recursive rules; run
+    boundedness checks over plain Booleans and transfer (Cor 4.7). Venue: PODS 2025 = PACMMOD
+    3(2) Article 93, DOI 10.1145/3725230.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (arXiv v1 PDF), dive-verified. Correction
+    to the session's own Stage-1 phrasing: the result is a two-point dichotomy Theta(log m) vs
+    Theta(log^2 m), not a single depth-optimality claim.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (formal cluster). The chain L is absorptive
+    AND multiplicatively idempotent (meet), so every theorem class applies.
+
+- id: intake-1043
+  arxiv_id: '2106.00399'
+  url: https://arxiv.org/abs/2106.00399
+  source_type: paper
+  title: 'Computing Least and Greatest Fixed Points in Absorptive Semirings (RAMiCS 2021) - closed-form folds'
+  categories:
+  - knowledge_management
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Matthias Naaf]
+  key_claims:
+  - 'Theorem 1: over an absorptive fully-continuous commutative semiring, least solution = F^n(0) and greatest solution = F^n(F^n(1)^inf), each a polynomial number of semiring operations (n = number of unknowns)'
+  - 'a^inf := PROD a^n is well-defined (inf of the descending chain 1 >= a >= a^2 ...) and usually easy; on any multiplicatively-idempotent lattice a^inf = a'
+  - 'Theorem 17: lfp/gfp characterized as sums over finite / all derivation trees, proved in S-infinity[A] and transported by universality'
+  - 'Theorems 34/35: symbolic univariate solution P(0) resp. P(0) + P-prime(1)^inf, and Gaussian-style elimination (Hopkins-Kozen adaptation)'
+  credibility_score: 3
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1039, intake-1040]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Replace "iterate until stable" in any fold spec with the closed forms: lfp = F^n(0), gfp =
+    F^n(F^n(1)^inf) - straight-line n-step folds with NO fixpoint test needed (keep the check
+    only as a debug assertion); the n independently matches the Abo Khamis N-step budget. This
+    is the only source in the set that makes greatest fixed points (coinductive "presumed-X
+    until contradicted" rules) implementable. Total order not assumed (chain-completeness is
+    about totally ordered SUBSETS; the flagship instance S-infinity[X] is a non-chain).
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (arXiv v3 PDF, 29 pp), dive-verified.
+    Venue detail: RAMiCS 2021, LNCS 13027 pp. 344-361 per Stage-1; LNCS volume/pages not
+    re-verified against Springer this session - confirm before formal citation.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (formal cluster). Companion to intake-1039
+    (same Aachen group; uses its universality theorem).
+
+- id: intake-1044
+  arxiv_id: '2312.14063'
+  url: https://arxiv.org/abs/2312.14063
+  source_type: paper
+  title: 'Polynomial Time Convergence of the Iterative Evaluation of Datalog-degree Programs (PACMMOD 2024)'
+  categories:
+  - knowledge_management
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Sungjin Im, Benjamin Moseley, Hung Ngo, Kirk Pruhs]
+  key_claims:
+  - 'Theorem 1.1: over any p-stable commutative semiring, iterative evaluation converges within ceil(pn(n+3)(sigma(n(n+3)/2)lg(lambda+1) + 4 sigma lg sigma + 1)) steps - polynomial, replacing the prior Theta((p+2)^n) exponential for the general p>=1 case; via a strengthening of Parikh''s theorem'
+  - 'Explicitly recites the prior special cases: 0-stable converges in O(n) steps (JACM); linear over p-stable is poly (ICDT 2024 companion)'
+  credibility_score: 4
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1040]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Extension insurance ONLY. For a 0-stable domain (any lattice, incl. the chain) this paper
+    does NOT supersede the JACM N-step bound - Theorem 1.1's interest is p >= 1, and its bound
+    degenerates at p = 0. Cite it exactly when a non-absorptive dimension (counting, truncated
+    cost) is proposed: it removes the exponential-cliff objection, with sigma lg sigma as the
+    new cost driver. Published: PACMMOD 2(5):221, Dec 2024, DOI 10.1145/3695839.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (arXiv PDF), dive-verified. The operator
+    question "does it supersede the JACM bounds for the finite-chain case" answered in the
+    negative with the exact reason recorded.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (formal cluster). Surfaced companion: Im,
+    Moseley, Ngo, Pruhs, ICDT 2024 LIPIcs 290:11 (linear-case convergence rate) - declined as a
+    separate entry, tracked here.
+
+- id: intake-1045
+  arxiv_id: '2308.05506'
+  url: https://arxiv.org/abs/2308.05506
+  source_type: paper
+  title: 'Semirings of Evidence (CLAR 2020 / JLC 2021) - semiring semantics for justification logic'
+  categories:
+  - knowledge_management
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Michael Baur, Thomas Studer]
+  key_claims:
+  - 'Logic SE interprets justification terms as polynomial functions on a semiring: axiom j makes application (joint use) multiplicative, axiom j+ makes sum additive - and j+ requires BOTH summands to justify the SAME formula (x:A AND y:A -> (x+y):A), unlike traditional LP weakening s:A -> (s+t):A'
+  - 'Soundness and completeness proved w.r.t. semiring models; conservativity over CL; deduction theorem explicitly FAILS'
+  - 'arXiv v2 extends and CORRECTS the CLAR 2020 completeness proof - cite the JLC/arXiv version, never the conference version'
+  - 'Follow-up adoption is minimal: OpenAlex cited_by = 2 (JLC) as of 2026-08-09; no 2024-2026 line builds on SE specifically'
+  credibility_score: 2
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1039]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Cite ONLY in the design-rationale section, as the philosophical account of why alternative-
+    evidence sum acts within a single claim's evidence set (j+) while multiplicative composition
+    crosses a rule application (j). Motivation-grade, not certified-core: do not build on SE's
+    proof theory (deduction theorem fails, adoption thin). VENUE CORRECTION: the conference
+    version is CLAR 2020 (Logic and Argumentation, LNCS, DOI 10.1007/978-3-030-44638-3_3), NOT
+    LFCS 2020 as earlier session notes said.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (arXiv v2 PDF, 26 pp), dive-verified;
+    exact SE axiom table transcribed; venue corrected LFCS->CLAR; citation counts from OpenAlex
+    (Semantic Scholar API 429/404 this session - not cross-checked there).
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (formal cluster). The j+ typing is the
+    logic-facing justification for per-claim pro/con folds.
+
+- id: intake-1046
+  arxiv_id: null
+  url: https://www.w3.org/TR/prov-o/
+  source_type: blog
+  title: 'W3C PROV-O / PROV-DM - standard provenance vocabulary (Entity/Activity/Agent, invalidation, derivation)'
+  categories:
+  - knowledge_management
+  novelty: low
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [W3C Provenance Working Group (Lebo, Sahoo, McGuinness eds.)]
+  key_claims:
+  - 'W3C Recommendation since 30 April 2013; core triad Entity/Activity/Agent with wasDerivedFrom, wasGeneratedBy, wasAttributedTo, wasInvalidatedBy/invalidatedAtTime, actedOnBehalfOf, wasQuotedFrom, hadPrimarySource, alternateOf/specializationOf, Bundles (provenance of provenance)'
+  - 'SEMANTIC TRAP verified in dive: prov:invalidatedAtTime means the ENTITY/record became unusable (ledger-lifecycle clock) - it is NOT "the fact stopped being true in the world"; the two clocks must not be aliased to one term'
+  - 'PROV has no epistemic status, no grades, no freshness policy, no authority classes, no signatures, no determinism metadata - schema only'
+  credibility_score: 6
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1031, intake-1034, intake-1047]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Adopt as a documented ALIAS LAYER, not as RDF: keep snake_case JSON field names and ship a
+    one-table field->PROV-IRI context in the schema doc so frames export mechanically. Mapping
+    highlights: derived_from -> wasDerivedFrom; actor -> wasAttributedTo; created_at ->
+    generatedAtTime; expired_at (ledger clock) -> invalidatedAtTime; valid_at/invalid_at (world
+    clock) have NO PROV equivalent - keep private; supersedes -> wasRevisionOf; subagent chains
+    -> actedOnBehalfOf; ledger segments/certificates -> Bundle. Preserve attribution vs
+    association vs delegation as three distinct fields - PROV-DM's distinction matches operator/
+    main/subagent chains exactly.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (prov-o + prov-dm Recommendations read),
+    dive-verified. The clock-aliasing trap (expired_at vs invalid_at) is the dive's key finding.
+    Surfaced: PROV-JSON member submission (check before inventing an export format) and
+    PROV-CONSTRAINTS (lint inspiration for fold invariants).
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (adoption cluster). source_type blog per
+    schema enum (it is a W3C spec).
+
+- id: intake-1047
+  arxiv_id: null
+  url: https://github.com/in-toto/attestation
+  source_type: repo
+  title: 'in-toto attestation framework v1 + SLSA provenance - typed signed statements, scoped authority, deterministic verification'
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: low
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [in-toto project (CNCF), OpenSSF SLSA]
+  key_claims:
+  - 'Statement = {_type, subject: [{name, digest{alg:hex}}], predicateType: versioned URI, predicate: typed body}, signed in a DSSE envelope (payload base64 JSON, signatures outside the hashed payload)'
+  - 'Layout = signed policy: per-step functionary pubkeys + integer threshold + expected_materials/products artifact rules; verification is deterministic replay proving the chain followed registered rules - explicitly not that the product is good'
+  - 'SLSA provenance (predicateType) separates buildDefinition (buildType/externalParameters/resolvedDependencies) from runDetails (builder.id/invocationId/timestamps) - near-isomorphic to the EPYC measurement constitution recipe + era discipline'
+  - 'expected_command is informational only, not security-critical (dive verified) - do not copy as an enforcement field'
+  credibility_score: 6
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1031, intake-1046, intake-1048]
+  verification: dive-verified
+  reader_should_conclude: >-
+    RHYME, don't BE: keep the native three-part envelope but adopt (1) frame_type as a versioned
+    URI-shaped string (predicateType discipline), (2) optional subjects[{name, digest}] on
+    frames about artifacts (bench frame subject = GGUF+binary digests), (3) the SLSA predicate
+    shape as the assertion body for build/bench frames, (4) fold policy as a SIGNED, EXPIRING
+    policy frame with per-frame-type authority_scope + attestation threshold - including the
+    idea EPYC did not have: a freshness gate for the POLICY itself (fold refuses to grade
+    against an expired policy). Keep ONE artifact rule as a fold invariant: MATCH (digest
+    continuity between pipeline stages). DSSE is the later-authentication wrapper (signatures
+    outside the hashed payload, so unsigned frames can be signed later without id changes).
+    Document a lossless frame->Statement/DSSE export. Decline the full layout/link toolchain.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (attestation spec v1 statement.md +
+    envelope.md, in-toto-spec.md, slsa.dev/spec/v1.1/provenance), dive-verified. Surfaced: DSSE
+    v1.0.2 (PAE normative text), SLSA VSA (verification summary attestation - structurally close
+    to a replay certificate, NOT yet read), ITE-6/ITE-10. OPERATOR DISPOSITIONS 2026-08-09
+    (Stage-2 close-out): SLSA VSA SELECTED for Stage-2b round 2; DSSE v1.0.2 DECLINED as a
+    separate entry (normative reference captured here); ITE-6/ITE-10 DECLINED (background).
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (adoption cluster). in-toto verification
+    already occupies the exact epistemic stance of a derivation certificate (rule-following, not
+    truth) - cite as precedent for the stance.
+
+- id: intake-1048
+  arxiv_id: null
+  url: https://www.rfc-editor.org/rfc/rfc9162.html
+  source_type: blog
+  title: 'RFC 9162 + C2SP tlog-tiles + Tessera + Rekor v2 - authenticated append-only logs without consensus'
+  categories:
+  - knowledge_management
+  novelty: low
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [IETF TRANS WG, C2SP, transparency.dev, Sigstore]
+  key_claims:
+  - 'RFC 9162 (STATUS: Experimental): domain-separated Merkle hashing (0x00 leaf / 0x01 node), inclusion + consistency proofs, signed tree heads; append-only enforced by verification math + monitors, no consensus'
+  - 'C2SP tlog-tiles: 256-hash immutable tiles served statically; checkpoint = signed note (Ed25519); clients fetch tiles and compute their own proofs - no proof API'
+  - 'Rekor v2 GA 2025-10-10 on Tessera: yearly bounded shards, dropped SETs/search-index/attestation-storage/most entry types (only hashedrekord + dsse remain); witnessing "implemented soon" at GA - verify before citing as shipped'
+  - 'Tessera production-ready; POSIX backend single-binary; but it is a Go library - a sidecar, not an import, for a Python pilot'
+  credibility_score: 6
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1047]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Adopt the LADDER, not the stack. L0: append-only SQLite + per-row prev_hash (tamper-evident
+    only). L1 (pilot target, ~200 lines Python, zero services): periodic Merkle roots using RFC
+    9162 MTH verbatim (0x00/0x01 domain separation) + C2SP signed-note checkpoints at wrap-up
+    boundaries, checkpoints persisted to git/second host - an externally-held checkpoint is what
+    upgrades tamper-evident to tamper-proof for prior history. L2 (defer until: a second writer,
+    external verifiers, millions of entries, or HTTP-served proofs): tlog-tiles materialization
+    via Tessera-POSIX sidecar. Rekor-v2 lessons: bounded shards aligned with measurement eras;
+    authenticated surface = entries + proofs + checkpoints only (SQL queries are convenience,
+    not authority); the ledger is not a time oracle; two entry types were enough - one envelope,
+    typed by frame_type. Cite RFC 9162 for the tree ALGORITHM, C2SP for serving/storage formats.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (RFC 9162, tlog-tiles.md@main, Tessera
+    README, Rekor v2 GA post), dive-verified. Correction: RFC 9162 is Experimental; deployed CT
+    still runs 6962-era APIs and the ecosystem converged on the C2SP static-log family. Surfaced:
+    C2SP signed-note spec (the checkpoint format L1 copies - normative text not yet read),
+    static-ct-api, tlog-witness. OPERATOR DISPOSITIONS 2026-08-09 (Stage-2 close-out): C2SP
+    signed-note SELECTED for Stage-2b round 2; static-ct-api, rekor-tiles, tlog-witness
+    DECLINED (deferred until an L2 trigger exists - second writer, external verifier, or
+    HTTP-served proofs).
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (adoption cluster). source_type blog per
+    schema enum (specs).
+
+- id: intake-1049
+  arxiv_id: '1811.12787'
+  url: https://arxiv.org/abs/1811.12787
+  source_type: paper
+  title: 'Continuous dynamical systems for weighted bipolar argumentation (KR 2018) + Attractor/Uncertainpy libraries'
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Nico Potyka]
+  key_claims:
+  - 'Acyclic graphs: convergence PROVEN, equilibrium computable in linear time; support-only cycles: PROVEN monotone convergence; general cycles: OPEN - "convergence in general remains an open question", empirical convergence on 3,000 random BAGs'
+  - 'Quadratic energy model has a per-node CLOSED FORM when aggregate E_j is known: E_j=0 -> w(j); E_j>0 -> w(j)+(1-w(j))h(E_j); E_j<0 -> w(j)-w(j)h(-E_j), h(x)=max(x,0)^2/(1+max(x,0)^2)'
+  - 'The paper''s 30-second wall-clock iteration cap is nondeterministic across hosts - must not be copied into a deterministic system'
+  - 'Uncertainpy (github.com/nicopotyka/Uncertainpy, head cdf67c2 2026-01-05) implements QEM/DF-QuAD/Euler/modular semantics with RK4 - but has NO LICENSE (all-rights-reserved default), 7 stars, no packaging'
+  credibility_score: 5
+  contradicting_evidence:
+  - 'VENUE CORRECTION: the dynamical-systems paper is KR 2018 pp. 148-157 (AAAI Press published KR proceedings - source of the AAAI-18 mis-attribution); arXiv 1811.12787 is the companion NMR 2018 tutorial for the JAVA library Attractor, a DIFFERENT library from Uncertainpy'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1037]
+  verification: dive-verified
+  reader_should_conclude: >-
+    On an acyclic condensation, use NO iterative solver at all - both DF-QuAD and QEM evaluate
+    exactly in one topological pass (QEM per-node closed form above), eliminating delta/epsilon/
+    max-iter nondeterminism; pin only float64 and canonical node order. If cycles are ever
+    admitted: pin and RECORD semantics id, tolerances, a FIXED iteration count (never wall-
+    clock), per-node converged flags; non-converged nodes render as "no advisory degree", never
+    a stale number. DECLINE Uncertainpy and Attractor as dependencies (unlicensed / Java,
+    thin maturity); reimplement from formulas.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (KR 2018 PDF + arXiv tutorial + repo head
+    cdf67c2), dive-verified with the venue and two-libraries corrections recorded. Surfaced:
+    Kampik/Yin/Potyka/Toni AAMAS-26 strength-change explanations (merged into Uncertainpy PR#5),
+    arXiv 2509.14963 set-contribution functions, arXiv 2602.14674 base-score extraction from
+    preferences. OPERATOR DISPOSITIONS 2026-08-09 (Stage-2 close-out): all three DECLINED as
+    monitor items - they are overlay-UX refinements; revisit only when the advisory degree
+    overlay actually exists.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (argumentation cluster). The honest
+    proven-vs-empirical convergence split is exactly the citation needed to justify declining
+    in-algebra accrual for a certified core.
+
+- id: intake-1050
+  arxiv_id: null
+  url: https://webspace.science.uu.nl/~prakk101/pubs/GordonPrakkenWalton2007a.pdf
+  source_type: paper
+  title: 'The Carneades Model of Argument and Burden of Proof (AIJ 2007) + carneades-4 - proof standards as consumer policy'
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Thomas F. Gordon, Henry Prakken, Douglas Walton]
+  key_claims:
+  - 'The 2007 AIJ paper defines exactly THREE proof standards - SE (scintilla), BA (best argument), DV (dialectical validity), ordered DV > BA > SE - and says the list is non-exhaustive; BRD is explicitly future work in 2007'
+  - 'The familiar five-standard set (SE, PE, CCE, BRD, DV) comes from the later Gordon-Walton line; carneades-4 (Go, MPL-2.0, dormant since 2024-10) implements PE (default), CCE (PE + margin), BRD (CCE + con below threshold) plus weighing functions'
+  - 'Per-premise burden: ordinary/assumption/exception premise types allocate production burden between proponent and respondent; proof standard is assigned PER STATEMENT and both are reallocatable as dialogue progresses'
+  - 'Argument graphs are ACYCLIC by definition (Def 4) - external precedent for acyclic-condensation requirements'
+  credibility_score: 6
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1037, intake-1049]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Adopt the NAMES as policy-grade vocabulary with the certification boundary encoded: grade
+    "supported" := SE (>=1 live pro chain) and "uncontested" := DV (>=1 live pro, zero live con
+    - the Belnap True cell) are computable from the CERTIFIED min/max core; "preponderance" :=
+    PE, "clear+convincing" := CCE, "beyond-reasonable-doubt" := BRD exist ONLY where the
+    advisory degree overlay exists (thresholds alpha/beta/gamma recorded per policy). CITATION
+    DISCIPLINE: SE/BA/DV cite Gordon-Prakken-Walton 2007 (DOI 10.1016/j.artint.2007.04.010);
+    PE/CCE/BRD cite the Gordon-Walton 2009 line / carneades-4 - "the five Carneades 2007 proof
+    standards" is a citation error. DECLINE assumption/exception premise typing as machinery
+    (needs a dialogical status function the substrate does not track); keep only the insight
+    that burden-of-production direction is a policy attribute.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (Utrecht preprint PDF, full 22 pp +
+    carneades-4 USAGE.md, head d19d543), dive-verified. OVERTURNED the session's own Stage-1
+    framing: "five proof standards in the 2007 paper" is wrong - three in 2007, five in the
+    later line. Surfaced: Gordon & Walton 2009 "Proof burdens and standards" (Argumentation in
+    AI, Springer) - required for correct PE/CCE/BRD citation.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (argumentation cluster).
+
+- id: intake-1051
+  arxiv_id: '2508.02584'
+  url: https://arxiv.org/abs/2508.02584
+  source_type: paper
+  title: 'MArgE: meshing argumentative evidence from multiple LLMs for claim verification'
+  categories:
+  - agent_architecture
+  novelty: medium
+  relevance: low
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Ng, Jiang, Freedman, Rago, Toni]
+  key_claims:
+  - 'Meshes per-LLM argument trees by Simple Union or Semantic Merging (sentence-transformer pairwise similarity above threshold); evaluated by DF-QuAD (QEM tried, DF-QuAD wins)'
+  - 'The transferable mechanism: DEDUPLICATE BEFORE AGGREGATING - under DF-QuAD product aggregation, near-duplicate evidence double-counts and inflates the degree; semantic merge exists to counter exactly this'
+  credibility_score: 3
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1037]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Adopt one thing: a dedup/merge pass (similarity threshold RECORDED in the output) before any
+    advisory degree computation - without it the overlay rewards redundant assertions. Decline
+    the multi-LLM ensemble harness itself. v1 preprint, no venue yet; same CLArg group.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (arXiv v1), dive-verified.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (argumentation cluster). Complements the
+    leaf-disjoint corroboration statistic: dedup handles near-duplicates the provenance graph
+    does not collapse structurally.
+
+- id: intake-1052
+  arxiv_id: '2508.20131'
+  url: https://arxiv.org/abs/2508.20131
+  source_type: paper
+  title: 'ArgRAG: explainable RAG via quantitative bipolar argumentation - contestation primitives'
+  categories:
+  - agent_architecture
+  - rag_alternatives
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Zhu, Potyka, Hernandez, He, Ding, Xiong, Zhou, Kharlamov, Staab]
+  key_claims:
+  - 'QBAF over claim + top-k retrieved passages, uniform base score 0.5, LLM-extracted edges, Quadratic Energy semantics; "the only RAG-based method that outperforms the no-retrieval baseline" on PubHealth/RAGuard'
+  - 'Two contestation primitives: Contest Base Score and Contest Polarity - changes incorporated automatically and the result recomputed deterministically'
+  credibility_score: 3
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1037, intake-1049]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Adopt the two contestation primitives as the wiki-projection renderer's challenge
+    affordances (reviewer contests a base score or a polarity edge; degrees recompute
+    deterministically) and the dialogue-explanation template ("accepted because [supporter] even
+    though [attacker]"). Adopt uniform-0.5 default for unscored evidence nodes (graceful
+    degradation evidence). Decline LLM relation-extraction at read time - EPYC edges are already
+    typed.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (arXiv v1), dive-verified. Potyka
+    co-authored (semantics used correctly); watch for venue.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (argumentation cluster).
+
+- id: intake-1053
+  arxiv_id: '2510.02339'
+  url: https://arxiv.org/abs/2510.02339
+  source_type: paper
+  title: 'Evaluating UQ methods in Argumentative LLMs (EMNLP 2025 Findings) - base-score sensitivity'
+  categories:
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Zhou, Dejl, Freedman, Chen, Rago, Toni]
+  key_claims:
+  - 'Confirms structural sensitivity: "the confidence scores from the used UQ method directly feed into the final predictions"; swapping the base-score method alone moves accuracy by up to ~0.19 in one configuration'
+  - 'Direct prompting is the best or statistically-tied UQ method in all 36 configurations - entropy-style UQ does not pay'
+  credibility_score: 4
+  contradicting_evidence:
+  - 'The 36-configuration grid decomposition returned by the fetch is internally inconsistent (would be 144); do not carry a specific decomposition without checking Table 1''s caption'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1037]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Quote the "directly feed into the final predictions" sensitivity + 0.19 swing as the
+    recorded justification for degrees-advisory-never-certified. The sensitivity is structural
+    (DF-QuAD propagates whatever base scores are), so the rule holds even for reviewer-asserted
+    scores: a degree inherits its assertions' epistemic status. If machine-suggested base-score
+    defaults are ever added, use direct prompting. NOT-FOUND-IN-SOURCE: any analysis of
+    human-asserted base scores.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (EMNLP 2025 Findings, pp. 21700-21711),
+    dive-verified with the grid-decomposition caveat recorded.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (argumentation cluster).
+
+- id: intake-1054
+  arxiv_id: '2503.04800'
+  url: https://arxiv.org/abs/2503.04800
+  source_type: paper
+  title: 'HoH: dynamic benchmark for the impact of outdated information on RAG - freshness metrics'
+  categories:
+  - benchmark_methodology
+  - knowledge_management
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Jie Ouyang, Tingyue Pan, Mingyue Cheng, Ruiran Yan, Yucong Luo, Jiaying Lin, Qi Liu]
+  key_claims:
+  - 'First benchmark isolating stale-coexisting-with-fresh: 96,124 QA pairs / 219,463 docs from monthly Wikipedia snapshot diffs (Myers sentence diff + token alignment; fine-tuned Qwen-0.5B change screening 96.8% acc; each pair carries BOTH current and outdated answers + evidence)'
+  - 'One outdated passage: Llama-70B perfect scores drop >10%, harmful outputs +up-to-11%, overall -24%; retrievers rank outdated >= relevant (top-5 hit rates >50%); "outdated information poses a greater risk than having no relevant information at all"'
+  - 'Scoring scheme: perfect +1 / missing (uncertainty) 0 / harmful -1 - rewards refusal over confidently-stale; plus Current Awareness (A_C) and Outdated Awareness (A_O) decomposition (models score badly: Qwen-7B A_O = 41.3%)'
+  - 'Negative result: temporal-decay reranking cost ~17% relevant-hit loss while still retrieving stale ~50% - retrieval-side filtering does not solve staleness'
+  credibility_score: 5
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1036]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Adopt the METRIC DESIGN, not the dataset: (+1/0/-1) harmful-penalizing scoring and the
+    A_C/A_O awareness pair as headline metrics for any freshness-gate pilot; the snapshot-diff
+    construction transfers to EPYC's own wiki (diff successive wiki/belief snapshots to auto-
+    generate a freshness eval set). Cite the retrieval-side-mitigation failure as design
+    rationale for serve-time refusal gates. Code Apache-2.0 (github.com/0russwest0/HoH), dataset
+    HF russwest404/HoH-QAs.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (arXiv v3, 2025-07-18), dive-verified;
+    Stage-1 filing accurate, authors captured.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (freshness cluster). Surfaced EvolvingQA,
+    MRAG, TempRALM as baselines - none warrants separate intake.
+
+- id: intake-1055
+  arxiv_id: '2605.30771'
+  url: https://arxiv.org/abs/2605.30771
+  source_type: paper
+  title: 'Eywa: provenance-grounded agent memory - evidence before belief (nearest published near-miss)'
+  categories:
+  - memory_augmented
+  - knowledge_management
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed 2026-08-09 into handoffs/active/vidya-belief-substrate-program.md (adoption extracts in V2/P0-P5/R task lines); audit record research/deep-dives/vidya-belief-substrate-audit.md.'
+  authors: [Resham Joshi]
+  key_claims:
+  - 'Tier-0 immutable evidence rows before any LLM processing ("evidence before belief"); candidate facts pass a 4-way conjunction V = Vsupport AND Vhard AND Vsubject AND Vact (lexical support, exact hard-anchor match, subject-in-window, negation/uncertainty preservation) - though 67.4% of candidates had NO hard anchor and validated via the softer checks'
+  - 'Deterministic LLM-free read path: five routes fused by weighted RRF k=20, 148-200 ms on a 6,320-fact store; single-active-state invariant per (user, scope, mutable fact_type); indexes are rebuildable idempotent projections'
+  - '90.19% LoCoMo (C1-C4, adversarial C5 EXCLUDED; comparison table explicitly "literature context rather than controlled head-to-head")'
+  - 'LACKS: graded confidence (pass/fail validation, binary lifecycle), deterministic fold/replay, and runtime freshness refusal (refusal-aware F1 is a post-hoc metric, not a serve-time gate); paper admits "a targeted update-and-supersession benchmark is needed"'
+  credibility_score: 4
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1033, intake-1034, intake-1036]
+  verification: dive-verified
+  reader_should_conclude: >-
+    The nearest published neighbor to the Vidya write/read discipline; its "idempotent
+    projection" framing externally validates wiki-as-rebuildable-projection. Adopt the 4-conjunct
+    typed validation gate as an ingestion pattern. Position any EPYC pilot against its two
+    admitted gaps (no update-and-supersession benchmark, no runtime staleness refusal) - the two
+    Vidya differentiators remain unoccupied. Add the C5-excluded / non-head-to-head context
+    whenever the 90.19% figure is mentioned.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (arXiv v1, 29 pp), dive-verified; Stage-1
+    characterization fully accurate, sole author captured (Resham Joshi).
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (freshness cluster).
+
+- id: intake-1056
+  arxiv_id: '2607.28374'
+  url: https://arxiv.org/abs/2607.28374
+  source_type: paper
+  title: 'LedgerMind: provenance-constrained agent trajectories - Active/Stale/Conflicted/Dropped evidence lifecycle'
+  categories:
+  - agent_architecture
+  - knowledge_management
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Enjun Du, Hange Zhou, Chenxu Du, Siyi Liu, Zirong Chen, Ziyu Zheng, Yongqi Zhang]
+  key_claims:
+  - 'Evidence ledger entries carry source tool, epistemic type (Perception/Retrieval/Derivation), rule-normalized fact, confidence in [0,1], lifecycle omega in {Active, Stale, Conflicted, Dropped}, dependency links; 11-field schema with TTL in Appendix B'
+  - 'Structural precondition, verbatim: "every SC or DC must cite active ledger entries before it can influence later reasoning"; "provenance is a structural precondition for reasoning rather than a prompt-level preference"'
+  - 'Repair = 7 typed operators in 3 layers - Evidence{Drop, Refresh}, Action{Retry, Switch, Acquire}, Trajectory{StopAndAnswer, Abstain} - locality-first escalation, fixed per-trigger budget; refusal (Abstain) is a typed terminal transition, not a failure mode'
+  - 'Scope: single multimodal VQA trajectory (episodic scratch-state); persistent memory is future work'
+  credibility_score: 4
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1034, intake-1055]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Adopt the VOCABULARY, not the system: {Active, Stale, Conflicted, Dropped} as per-evidence
+    lifecycle states, cite-only-Active as a structural precondition (the mechanism form of
+    "stale is never served as current" at claim granularity), and Abstain as a typed transition
+    in the freshness gate's state machine. Read Appendix B's 11-field schema + transition
+    triggers from the PDF before finalizing frame field names. Their eval (VTC-Bench SOTA etc.)
+    is VQA-orthogonal to EPYC - do not cite it as evidence for the substrate.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (arXiv v1, 2026-07-30), dive-verified;
+    Stage-1 accurate; authors captured; repair-operator taxonomy added.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (freshness cluster).
+
+- id: intake-1057
+  arxiv_id: '2605.17596'
+  url: https://arxiv.org/abs/2605.17596
+  source_type: paper
+  title: 'NeuSymMS: CLIPS truth maintenance over a mutable Postgres store - the TMS-on-mutable-store anti-pattern'
+  categories:
+  - memory_augmented
+  novelty: low
+  relevance: low
+  discovered_via: search
+  verdict: not_applicable
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Mujahid Sultan, Sri Thuraisamy, Daya Rajaratnam]
+  key_claims:
+  - 'Genuine Doyle-cited TMS usage: negation extractors trigger retraction of positive facts; contradiction matching via entity normalization + Levenshtein 0.85 (threshold unjustified)'
+  - 'Retraction DESTROYS history: in-place mutation via Django ORM with an is_active soft-delete flag; no replay, no as-of, no versioning; "auditable memory" claimed while auditability is a flag and a source_text string'
+  - 'Zero quantitative evaluation of any kind on a 7-page paper; evaluation "left to future work"'
+  credibility_score: 2
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1033]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Cite as the named negative pattern: "truth maintenance requires an immutable event history -
+    a TMS over in-place mutation cannot justify or replay its own retractions." Nothing to adopt
+    mechanically. not_applicable is asserted deliberately: it is in-domain but contributes no
+    mechanism the project would import, and its value is exhausted by the anti-pattern citation
+    (knowledge-only).
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (arXiv v2 full text), dive-verified;
+    Stage-1 accurate on all counts once the full text resolved two abstract-level ambiguities.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (freshness cluster). One nod, not adoption:
+    category-conditional lifecycle defaults (per-type TTLs) - EPYC frame types can carry these
+    natively.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Anti-pattern citation for the belief-substrate design rationale; no task derives from it.'
+
+- id: intake-1058
+  arxiv_id: '2512.12818'
+  url: https://arxiv.org/abs/2512.12818
+  source_type: paper
+  title: 'Hindsight (Vectorize + VT + WaPo): four epistemic networks - stance-partitioned agent memory'
+  categories:
+  - memory_augmented
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Chris Latimer, Nicolo Boschi, Chris Bartholomew, Andrew Neeser, Gaurav Srivastava, Xuan Wang, Naren Ramakrishnan]
+  key_claims:
+  - 'Four networks partitioned by EPISTEMIC STANCE: World (objective facts), Experience (first-person), Opinion (subjective judgments), Observation (entity summaries) - with different update semantics per stance'
+  - 'Confidence scoring is Opinion-network-ONLY: tuples (t, c, tau), c updated via reinforce/weaken/contradict/neutral (e.g. c-prime = min(c+alpha, 1.0)); the other three networks are not confidence-scored'
+  - 'Tri-temporal fields per memory: tau_start, tau_end (validity interval) + tau_mention (mention time)'
+  - 'No audit ledger, no replay, no explicit retraction; opinion updates in place with versioned timestamps'
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Vendor bias (Vectorize product company) tempered by academic co-authors (Virginia Tech, Washington Post); benchmarks self-reported (LongMemEval 91.4% w/ Gemini-3, LoCoMo 89.61%)'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1032, intake-1055]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Adopt narrowly: (a) the epistemic-stance axis (world/experience/judgment/summary) as a frame-
+    type dimension enabling per-stance staleness policy - a synthesized summary goes stale when
+    any dependency does; a first-person experience never does; (b) the tri-temporal field trio
+    (validity interval separated from mention time). Decline the system. Correct any earlier note
+    saying all four networks hold confidence-scored beliefs - only Opinion does.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (arXiv v1, 2025-12-14), dive-verified.
+    Stage-1 refinements: confidence is Opinion-only (PARTIAL on the four-networks claim);
+    affiliation is Vectorize.io + Washington Post + Virginia Tech, not Vectorize alone.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (freshness cluster).
+
+- id: intake-1059
+  arxiv_id: null
+  url: https://github.com/jolovicdev/esper
+  source_type: repo
+  title: 'esper: minimal append-only SQLite belief ledger with deterministic as-of Bayesian fold (PoC)'
+  categories:
+  - memory_augmented
+  - knowledge_management
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [jolovicdev (GitHub handle; no real-name attribution)]
+  key_claims:
+  - '10-column evidence_ledger (id, user_id, subject, predicate, object, polarity, conf_cal, episode_id, evidence_ts, source_type), no UPDATE/DELETE path; ~440 lines, MIT, 1 commit, 0 stars (head bf4d2d0, 2026-08-05)'
+  - 'Belief = PURE FUNCTION of (event set, query time): contribution = polarity * (source-type reliability weight * logit(conf_cal)) * exp(-lambda * age_at_query); decay computed from age AT QUERY TIME, never stored'
+  - 'conf_cal (how sure the extractor was) is separated from per-source-TYPE reliability multipliers (how much extractors of that type are trusted), applied in log-odds space'
+  - 'Gap: retraction is only implicit accumulation of negative evidence - no event-targeted retraction'
+  credibility_score: null
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1035]
+  verification: dive-verified
+  reader_should_conclude: >-
+    A compact existence proof of the deterministic-fold requirement: copy (a) the as_of query
+    shape (belief as pure function of event set + query time; nothing time-derived is stored)
+    and (b) the conf_cal-vs-source-type-reliability separation. Record event-targeted retraction
+    as an explicit requirement esper lacks. CORRECTION carried from the dive: the "sibling"
+    repos endoxa (rabbiveesh - defeasible/argumentation resolution, Rust MCP, active), belief-
+    ledger-pramana (sergiparpal - pre-ACTION freshness gate blocking unevidenced agent actions;
+    closest of the three to refusal-gate framing), cato-ledger (ZuseHub - governance protocol
+    spec, no implementation) are by three UNRELATED authors, not by esper's author - do not
+    re-derive them as one family.
+  dive_corrections: >-
+    Ingested as a Stage-2b dive-and-index in one pass (source read at head bf4d2d0c815e9d551c75d
+    23817b502b22671e0b9), dive-verified. OVERTURNED the Stage-1 sibling-repos attribution (three
+    unrelated authors; found under rabbiveesh, sergiparpal, ZuseHub). credibility_score null:
+    repo PoC, no empirical claims. OPERATOR DISPOSITIONS 2026-08-09 (Stage-2 close-out): endoxa,
+    cato-ledger, anchor-db DECLINED (thematic neighbors, nothing to import); belief-ledger-
+    pramana DECLINED-AS-MONITOR (freshness-gated action authorization concept noted here;
+    bounded look only if provenance-gated actuation work begins).
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (freshness cluster). belief-ledger-pramana
+    flagged as the only sibling arguably worth a future bounded look (freshness-gated action
+    authorization).
+
+- id: intake-1060
+  arxiv_id: '2602.21045'
+  url: https://arxiv.org/abs/2602.21045
+  source_type: paper
+  title: 'PaperTrail (CHI 2026): claim-evidence interface - two-sided decomposition, span anchors, omissions lane'
+  categories:
+  - knowledge_management
+  - document_processing
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Anna Martin-Boyle, Cara A.C. Leckey, Martha C. Brown, Harmanpreet Kaur]
+  key_claims:
+  - 'Decomposes BOTH LLM answers and source documents into atomic/faithful/decontextualized claims (verifiable + declarative) and evidence; maps them into three lanes: supported assertions, unsupported claims, and information OMITTED from sources'
+  - 'Anchor mechanism is hybrid: LLM emits structured claims, then a DETERMINISTIC programmatic matching function locates exact character spans - the stochastic step never touches the anchor'
+  - 'Claim-to-claim matching is LLM + cosine gates (SPECTER, candidate 0.75, unsupported-flag below 0.55); extraction quality F1 0.65-0.73 vs two claim datasets; NO accuracy eval of the matching step itself'
+  - 'n=26 within-subjects study: claim-level provenance display significantly LOWERED trust but did NOT change reliance behavior - advisory provenance badges fail to alter action'
+  - 'NO stable claim identity across revisions (fresh decomposition each interaction, temperature 1.0); no grades, no ledger, no retraction'
+  credibility_score: 5
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1034]
+  verification: dive-verified
+  reader_should_conclude: >-
+    ADOPT three patterns: (1) the atomic/faithful/decontextualized + verifiable/declarative
+    criteria as the cited definition for claim atomization; (2) extract-then-programmatically-
+    anchor for wiki assertion maps (hash the located span, key the manifest on it); (3) the
+    OMISSIONS lane - manifests should report beliefs relevant to a page but not surfaced, not
+    only what is asserted. CITE the trust-behavior gap as empirical support for refusal-
+    semantics gates over render-and-warn badges. DECLINE pipeline reuse (Gemini-specific,
+    temp 1.0, no identity layer). The decomposer is itself an unverified claim source at F1
+    0.65-0.73 - assertion maps need their own audit lane.
+  dive_corrections: >-
+    Ingested as a Stage-2b round-2 dive-and-index in one pass (arXiv v1 full text; CHI 2026
+    DOI 10.1145/3772318.3791101), dive-verified. Stable-identity claim REFUTED (absent by
+    design). Located first-query via title+author search.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by intake-1034's
+    survey). No artifact release (prompts in Appendix A only).
+
+- id: intake-1061
+  arxiv_id: '2603.22868'
+  url: https://arxiv.org/abs/2603.22868
+  source_type: paper
+  title: 'Agent-Sentry: bounding LLM agents via execution provenance - per-argument provenance + pre-execution gate'
+  categories:
+  - agent_architecture
+  - knowledge_management
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Rohan Sequeira, Stavros Damianakis, Umar Iqbal, Konstantinos Psounis]
+  key_claims:
+  - 'Per-argument provenance frame: (name, value, source_set of prior tool calls and/or user prompt, derivation type in {verbatim, derived, generated}) - a directed graph of how each call contributes values to subsequent calls'
+  - 'Three-layer pre-execution cascade: L1 structural classifier (XGBoost, 17 features) -> Allow/Block/Ambiguous; L2 deterministic (tool, argument, value) allowlist for GROUNDABLE arguments requiring trusted sources; L3 LLM judge on residuals (invoked on only 3.1% of decisions)'
+  - 'Headline: blocks 94.3% of successful injections while allowing 95.1% of benign executions; 0.073 s/trace amortized; ~6.2x less overhead than CaMeL; beats Progent on utility (96.4% vs 69.2%)'
+  - 'ADMITTED weakest link: provenance is SELF-REPORTED by the agent LLM via prompt instrumentation ("not always reliable: noisy or attacker-influenced sources can mislead"); partial mitigation = deterministic verbatim-integrity cross-checks'
+  credibility_score: 4
+  contradicting_evidence:
+  - 'Preprint, no venue; majority of eval on the author-built Agent-Sentry Bench (5,380 traces); no measurement of provenance-annotation accuracy itself'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1034]
+  verification: dive-verified
+  reader_should_conclude: >-
+    ADOPT the schema, replace the witness: (a) add derivation-type (verbatim/derived/generated)
+    and source-set pointers to actuator context-frame schemas, with the LEDGER (not the LLM) as
+    the provenance witness - self-reported provenance is the named anti-pattern; (b) adopt the
+    tri-state cascade shape (deterministic policy first, judge only for declared residuals) with
+    these overhead numbers as the cost budget; (c) adopt the groundable/free-text argument split
+    + (tool, argument, value) allowlist + verbatim-integrity check as deterministic gate
+    primitives (stronger in EPYC because the ledger witnesses source text). Enforcement
+    philosophy is INVERTED vs EPYC's plan: it learns a bound from benign history (which drifts -
+    the authors' own limitation); EPYC's declared-use-policy refusal avoids exactly this and is
+    closer to their baseline Progent.
+  dive_corrections: >-
+    Ingested as a Stage-2b round-2 dive-and-index in one pass (arXiv v2 full text),
+    dive-verified. OPERATOR DISPOSITION 2026-08-09: dive-surfaced Progent (explicit policy-
+    language framework for agent tool-call privilege control, Agent-Sentry's primary baseline)
+    DECLINED-AS-MONITOR - it is the direct prior art for an actuator policy grammar; bounded
+    look when provenance-gated actuation work actually begins.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by intake-1034's
+    survey). Threat model = indirect prompt injection; out of scope: direct jailbreaks,
+    ambiguous user requests.
+
+- id: intake-1062
+  arxiv_id: null
+  url: https://doi.org/10.1007/978-0-387-98197-0_12
+  source_type: paper
+  title: 'Gordon & Walton 2009, Proof Burdens and Standards - the authoritative five-standard threshold definitions'
+  categories:
+  - knowledge_management
+  - agent_architecture
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Thomas F. Gordon, Douglas Walton]
+  key_claims:
+  - 'Defs 7-11 give the exact standards over audience weights in [0,1]: SE = at least one applicable pro; PE = SE and max-pro > max-con; CCE = PE and max-pro > alpha and (max-pro - max-con) > beta; BRD = CCE and max-con < gamma; DV = applicable pro exists and NO applicable con'
+  - 'Aggregation is MAX, never SUM ("since arguments cannot be assumed to be independent, summing weights would risk taking the same information into account multiple times"); accrual is done by linking premises into one argument; explicitly anti-probabilistic'
+  - 'alpha/beta/gamma "are set by the applicable protocol of the dialogue" - thresholds are protocol/policy-owned, never per-query'
+  - 'Burden taxonomy formalized (Defs 12-15): claiming, questioning, production (all-scintilla acceptability), persuasion (assigned standards at close), tactical (closing test applied hypothetically at interior stages)'
+  - 'The alpha/beta/gamma models of CCE and BRD are ORIGINAL to this 2009 chapter ("We feel confident enough about the models... to want to publish them"); DV and best-argument/PE trace to the 2007 AIJ paper; the five-standard NAME set traces to Freeman & Farley 1996'
+  credibility_score: 6
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1050, intake-1037]
+  verification: dive-verified
+  reader_should_conclude: >-
+    THE citation for EPYC policy-grade definitions (DOI 10.1007/978-0-387-98197-0_12; in Rahwan
+    & Simari eds., Argumentation in Artificial Intelligence, Springer). Copy the Def 6-11
+    grammar with three EPYC-owned gap closures, marked as amendments: max over empty con-set :=
+    0; unweighted applicable argument caps the claim at SE/DV; acyclicity of the frame graph is
+    a precondition. The split is confirmed by the source's own boundary: SE/DV consume only
+    applicability (certifiable from the min/max core); PE/CCE/BRD additionally consume audience
+    weights + alpha/beta/gamma (subjective; advisory-only). DV is NOT on the SE<=PE<=CCE<=BRD
+    chain - it is a separate shape for rule-and-exception aggregation. Adopt the burden
+    vocabulary: production = SE-acceptability gate for admitting a frame; tactical burden = an
+    interior-stage certificate under closing policy.
+  dive_corrections: >-
+    Ingested as a Stage-2b round-2 dive-and-index in one pass, dive-verified at PRIMARY-SOURCE
+    level: full 20-pp author preprint recovered via Wayback Machine from the defunct
+    dougwalton.ca (now a parked domain). Page range 239-260 is from a secondary citation, not
+    verified against the Springer TOC - check before formal citation.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by intake-1050's
+    Carneades dive, which had established the 2007 paper defines only three standards).
+
+- id: intake-1063
+  arxiv_id: null
+  url: https://github.com/C2SP/C2SP
+  source_type: repo
+  title: 'C2SP signed-note v1.0.0 + tlog-checkpoint v1.0.0 - byte-exact checkpoint format for the L1 ledger rung'
+  categories:
+  - knowledge_management
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_component
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [C2SP (Community Cryptography Specification Project)]
+  key_claims:
+  - 'Note format: UTF-8 text ending in newline, blank line, then signature lines "em-dash space key-name space base64(4-byte big-endian keyID || sig)"; key ID = SHA-256(key_name || 0x0A || sig_type || pubkey)[:4]; verifiers MUST ignore unknown keys, MUST reject if no known key verifies, SHOULD reject if a known key fails'
+  - 'Checkpoint body: origin line (schema-less-URL identity, no spaces/plus), ASCII decimal tree size, base64 RFC 6962 SHA-256 root; extension lines NOT RECOMMENDED; "A log MUST not sign any checkpoint which is inconsistent with any checkpoint it previously signed"'
+  - 'DRIFT FINDING: tagged v1.0.0 says "SHOULD use Ed25519"; main-branch editor copy now says "SHOULD use ML-DSA-44 cosignatures" (new type 0x06, post-quantum) - a naive follow-main implementation would drift; PIN the tags'
+  - 'Git history of checkpoint files gives file ordering/tamper-evidence; the RFC 6962 consistency proof from the prior trusted checkpoint is what proves the LOG never rewrote history - both required, neither substitutes'
+  credibility_score: null
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1048]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Implement the L1 checkpoint emitter/verifier to the byte spec pinned at signed-note/v1.0.0
+    + tlog-checkpoint/v1.0.0 (paste-ready spec recorded in the 2026-08-09 dive report):
+    3-line body, one blank line, Ed25519 type-0x01 signatures over the note text only; commit
+    the vkey line ("name+hex(keyID)+base64(0x01||pubkey)") to git beside the ledger; store the
+    last-verified checkpoint and consistency-prove every successor. Golden-test against the
+    spec's own worked example. ML-DSA-44 drift is a watch item with trigger = upstream tagging
+    a checkpoint version requiring it. verdict adopt_component: this is a spec to implement
+    verbatim, not a pattern to adapt.
+  dive_corrections: >-
+    Ingested as a Stage-2b round-2 dive-and-index in one pass (raw main + tagged v1.0.0 both
+    fetched, load-bearing sections diffed), dive-verified. OPERATOR DISPOSITION 2026-08-09:
+    dive-surfaced c2sp.org/tlog-cosignature DECLINED-WITH-TRIGGER (needed only if L1 adds
+    witnesses or signed timestamps; plain note signatures carry no time).
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by intake-1048).
+
+- id: intake-1064
+  arxiv_id: null
+  url: https://slsa.dev/spec/v1.1/verification_summary
+  source_type: blog
+  title: 'SLSA Verification Summary Attestation (VSA) v1.1 - template for replayable query-response certificates'
+  categories:
+  - knowledge_management
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [OpenSSF SLSA]
+  key_claims:
+  - 'Field set verified: verifier.id (REQUIRED) + verifier.version map; timeVerified; resourceUri (REQUIRED); policy {uri REQUIRED, digest} ; inputAttestations [{uri, digest}]; verificationResult PASSED|FAILED (REQUIRED); verifiedLevels (REQUIRED, "highest level of each track", custom non-SLSA_ values permitted); dependencyLevels (counts per level); slsaVersion'
+  - 'Design intent: "allows software consumers to make a decision about the validity of an artifact without needing to have access to all of the attestations... or all of its transitive dependencies" - delegated, summary-level trust'
+  - 'A VSA is itself an in-toto attestation: the OUTPUT of verification has the same type as its INPUTS - which is what makes delegated, chained verification compose'
+  credibility_score: null
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1047, intake-1063]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Use as the TEMPLATE for the query-response certificate (mint an epyc predicateType; do not
+    claim SLSA conformance). Direct transfers: verifier.id/version -> evaluator identity +
+    policy-table versions; policy.digest -> the ratified grade config by content digest;
+    inputAttestations -> every consumed frame by ledger coordinate + digest (the replayability
+    hook); verifiedLevels -> strongest standard met per track (certifiable EPYC_SE/EPYC_DV
+    track vs advisory track); dependencyLevels -> frontier summary (frame counts per grade).
+    Reinterpret resourceUri as the canonical query hash. Reserve a three-valued result
+    vocabulary now (PASSED/FAILED/ADVISORY) so certifiable and advisory never share a boolean.
+    THE load-bearing idea: a certificate is itself an attestation frame that RE-ENTERS the
+    ledger - gets a Merkle leaf, is covered by the next L1 checkpoint, and is citable by digest
+    in later queries' inputAttestations. Verification composes because certificates close over
+    the frame algebra.
+  dive_corrections: >-
+    Ingested as a Stage-2b round-2 dive-and-index in one pass (slsa.dev v1.1 page),
+    dive-verified.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by intake-1047).
+    source_type blog per schema enum (spec page).
+
+- id: intake-1065
+  arxiv_id: null
+  url: https://archive.model.in.tum.de/um/bibdb/esparza/calco11.pdf
+  source_type: paper
+  title: 'Esparza & Luttenberger, Solving Fixed-Point Equations by Derivation Tree Analysis (CALCO 2011) - the fold termination engine'
+  categories:
+  - knowledge_management
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Javier Esparza, Michael Luttenberger]
+  key_claims:
+  - 'Survey (LNCS 6859 pp. 19-35, DOI 10.1007/978-3-642-22944-2_2) of the EKL line incl. JACM 2010 Newtonian program analysis; VERIFIED as the exact [18] that Deutch et al. ICDT 2014 cite for the N+1-iteration circuit construction'
+  - 'Kleene iteration = derivation trees by HEIGHT; Newton iteration = trees by DIMENSION (Strahler number); Theorem 5: idempotent+commutative omega-continuous semirings -> Newton terminates in at most n+1 iterations'
+  - 'Theorem 6 (THE license for EPYC): 1-bounded semirings (idempotent + a <= 1, equivalent to absorptive) -> PLAIN KLEENE iteration reaches lfp in n steps, f^n(0), "even if the semiring is not omega-continuous"; the displayed pumping proof needs no commutativity'
+  - 'Theorem 7: star-distributive semirings (e.g. tropical, Why(X)) -> n Kleene steps + ONE linear solve; the paper notes this solved the tropical-provenance problem left open by Green-Karvounarakis-Tannen 2007'
+  - 'Reconciliation: Deutch Algorithm 1 is PLAIN iteration licensed by Theorem 6; their "N+1" counts the zero-init layer; Theorem 5''s n+1 is a NEWTON count - the two must not be conflated'
+  credibility_score: 6
+  contradicting_evidence:
+  - 'CALCO Theorem 4 (Newton convergence speed for commutative semirings) had an unpublished proof at the time ("we feel confident it is correct"); published 2016 as Luttenberger & Schlund, Inf. Comput. 246:43-61 - irrelevant to the EPYC-load-bearing Theorems 2/3/5/6'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1041, intake-1043, intake-1040]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Cite Theorem 6 as the termination license for the certified fold: on an absorptive lattice
+    (chain or product), lfp = f^N(0) by plain iteration - N data-independent steps, no
+    convergence test, no omega-continuity, no commutativity, no Newton machinery. Correct the
+    design doc's "N+1" phrasing to "N steps + zero-init layer". Adopt from the ICDT companion:
+    two-level circuit compaction (store only top/bottom layers), semi-naive embedded circuit
+    construction (Algorithm 2), and self-dependency removal - licensed for distributive
+    lattices. Record the algebraic ladder as the guard for any semiring swap: absorptive = N
+    Kleene; merely idempotent+commutative = n+1 Newton with star-solves; star-distributive = N
+    Kleene + 1 linear solve. Leaving absorptive territory makes circuit depth data-dependent.
+    DECLINED as separate entries: EKL JACM 2010 and Luttenberger-Schlund 2016 (content carried
+    by this survey + intake-1040/1043).
+  dive_corrections: >-
+    Ingested as a Stage-2b round-2 dive-and-index in one pass (full TUM-archive PDF + ICDT 2014
+    cross-check), dive-verified. The E&L engine, the ICDT circuit, Naaf's closed forms and the
+    Abo Khamis stability bounds are one explicitly cross-cited family - no invented connections.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by intake-1041).
+
+- id: intake-1066
+  arxiv_id: '1712.01980'
+  url: https://arxiv.org/abs/1712.01980
+  source_type: paper
+  title: 'Gradel & Tannen, Semiring Provenance for First-Order Model Checking - dual indeterminates; retraction-with-negation'
+  categories:
+  - knowledge_management
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Erich Gradel, Val Tannen]
+  key_claims:
+  - 'Dual indeterminates: N[X, X-bar] = polynomials quotiented by p * p-bar = 0; negation via NNF with negated atoms as first-class X-bar tokens ("absence of support" as an annotated token); universality (Prop 14): any token map with f(p)f(p-bar)=0 extends uniquely to a homomorphism'
+  - 'THE R1-CRITICAL RESULT (SS5, Model Update): for queries with negation, zero-substitution retraction on the positive polynomial IS WRONG (worked counterexample: it yields 0 while the updated model still satisfies phi); the correct primitive is SPECIALIZATION of the model-compatible polynomial (zero the tokens of literals failing in the post-update model) - deletion-created derivations are pre-materialized as X-bar monomials and merely activated; the update map is a homomorphism, so it commutes with provenance computation'
+  - 'Certified absence: pi[[not phi]] = pi[[nnf(not phi)]]; Cor 21: phi is Mod_pi-satisfiable iff pi[[phi]] != 0, and Mod_pi-valid iff pi[[not phi]] = 0; an absence certificate is an absorption-dominant Falsifier-strategy monomial'
+  - 'Scope: strictly FOL on finite universes; the paper itself says fixed points are future work "in relationship to games"; N[X, X-bar] is +-positive but NOT positive (zero divisors by design) - truth-preservation holds only for model-defining/model-compatible interpretation shapes'
+  - 'NEGATIVE search result (2026-08-09, bounded): NO dedicated semiring-provenance treatment of STRATIFIED Datalog exists anywhere; the frontier routes through posLFP/full LFP (CSL 2021) and stops at negated INPUT predicates for Datalog proper'
+  credibility_score: 5
+  contradicting_evidence:
+  - 'arXiv-only report, never a standalone peer-reviewed paper - but its machinery is peer-reviewed downstream (CSL 2021 LIPIcs, KR 2022 uptake) and the FOL proofs were verified inline during the dive'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1038, intake-1039, intake-1043]
+  verification: dive-verified
+  reader_should_conclude: >-
+    MATERIALLY AMENDS the belief-substrate design: KR-2022 zero-substitution retraction is
+    licensed ONLY while the certified core stays positive; once negation is tracked, the
+    retraction primitive becomes specialization of a dual-indeterminate model-compatible
+    provenance object (cite SS5's counterexample). Ground R2 as pi[[nnf(not phi)]] over the
+    dual-token discipline, computed on the min/max lattice via Naaf's closed forms (gfp =
+    F^N(F^N(1)); a-to-the-infinity = a on chains). Register EPYC's residual R1 theorem
+    precisely: stratum-boundary re-tokenization (freeze stratum k's (value, dual-value) pairs,
+    re-tokenize as fresh (x, x-bar) for stratum k+1) is WELL-TYPED by Props 12+14 but its
+    equivalence with stratified/perfect-model provenance - and exactness of cross-boundary
+    retraction - is proven NOWHERE; also no size bounds exist for both-polarity provenance
+    under recursion (no dual-indeterminate circuit theorem - EPYC would be proving the first).
+    Record the negative search result to stop future re-searching.
+  dive_corrections: >-
+    Ingested as a Stage-2b round-2 dive-and-index in one pass (RWTH full PDF, 18 pp, proofs
+    verified inline; CSL 2021 cross-read for the fixed-point boundary), dive-verified.
+    Dive-surfaced: Gradel & Tannen 1907.08470 "Provenance Analysis for Logic and Games"
+    (Moscow J. Comb. Number Theory 9(3):203-228, 2020) - the missing link where the
+    dual-indeterminate power series N-infinity[[X, X-bar]] is constructed and semipositive
+    Datalog is worked out; SELECTED for an immediate final-round dive per the operator's
+    standing dive-everything-load-bearing instruction.
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by the formal cluster's
+    Dannert dive). The single most consequential formal finding of the audit session.
+
+- id: intake-1067
+  arxiv_id: '1907.08470'
+  url: https://arxiv.org/abs/1907.08470
+  source_type: paper
+  title: 'Gradel & Tannen, Provenance Analysis for Logic and Games (Moscow J. 2020) - N-infinity[[X, X-bar]] construction + posLFP base case'
+  categories:
+  - knowledge_management
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-08-09'
+  handoffs_created:
+  - vidya-belief-substrate-program.md
+  authors: [Erich Gradel, Val Tannen]
+  key_claims:
+  - 'THE construction paper: Definition 29 builds K[[X, X-bar]] (quotient of power series by p * p-bar = 0); Proposition 30 proves universality for omega-continuous targets - the object CSL 2021 cites as "the most general provenance semiring for Datalog with negated input predicates and posLFP"'
+  - 'posLFP fully worked out: provenance of least fixed points over dual-annotated input literals is well-defined, Kleene-computable, and equals the reachability-game valuation (Def 40 + Prop 41 + Thm 36/Cor 38) - the per-stratum semipositive base case'
+  - 'SCOPE CAVEAT (p.19, verbatim): the posLFP transformations are "not available for important fixed-point formalism such as the modal mu-calculus, STRATIFIED DATALOG, transitive closure logics" - cross-stratum composition is outside the paper'
+  - 'HARD CONSTRAINT (Example 42): "greatest fixed-points do not specialise correctly from N-infinity[[s,t]] to N-infinity" - gfp-based absence certificates cannot be incrementally specialized; they require the absorptive chain-positive S-infinity[X, X-bar] route (CSL 2021)'
+  - 'No absence info for derived posLFP facts in this framework (p.18: when pi[[phi]] = 0 "we do not get additional information on the reasons why phi is false"; not-phi is a SAFETY game, not reachability)'
+  credibility_score: 6
+  contradicting_evidence:
+  - 'Minor typo found in dive: Prop 30 as printed omits the infinity superscript on the domain; cite the object as N-infinity[[X, X-bar]] per the Section-6 preamble, Outlook, and CSL 2021'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: [intake-1066, intake-1039, intake-1043]
+  verification: dive-verified
+  reader_should_conclude: >-
+    Cite as the R1 base-case chain: Def 29 + Prop 30 (construction/universality) and Def 40 +
+    Prop 41 + Cor 38 (per-stratum semipositive lfp provenance; retraction-as-specialization is
+    sound PER-STRATUM because lfp commutes with the omega-continuous evaluation homomorphisms).
+    Journal citation: Moscow J. Comb. Number Theory 9(3):203-228, 2020, DOI
+    10.2140/moscow.2020.9.203; read v2. Record both caveats in the R1/R2 design: (1) the
+    cross-stratum composition is EPYC's novel claim - certified stratum-locally, nowhere
+    end-to-end; (2) absence certificates must route through S-infinity[X, X-bar] (CSL 2021),
+    never through N-infinity[[X, X-bar]] specialization (Example 42).
+  dive_corrections: >-
+    Ingested as the final Stage-2b round-2 dive (arXiv v2 full 25 pp read; load-bearing
+    passages pdftotext-verified), dive-verified. OPERATOR-REVIEW DISPOSITION 2026-08-09:
+    dive-surfaced Xu, Zhang, Alawini, Tannen, "Provenance analysis for missing answers and
+    integrity repairs" (IEEE Data Eng. Bull. 41(1):39-50, 2018) RECOMMENDED-DECLINE-WITH-
+    CITATION (the only published APPLICATION of dual-indeterminate negation to missing-answer
+    explanation - cite as R2 precedent in the design doc; not foundational; operator may
+    override at Stage-3 plan review).
+  notes: >-
+    Dived 2026-08-09 during the Vidya-handoff audit (final round; surfaced by intake-1066's
+    dive as the missing link in the R1/R2 citation chain). Also contains strategy-valued game
+    provenance (counting strategies/plays, cost, confidence) and the impossibility of counting
+    positional strategies via semiring valuations (Prop 19).

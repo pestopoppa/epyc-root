@@ -513,3 +513,101 @@ post-approval round, so the rest of the plan was authored without their findings
 - **A maintained prior-art register is a cheap, high-leverage artifact, and its design is worth copying wholesale.** An upstream serving project ships one as markdown consulted *before* any profiler finding may be called novel, with a five-column schema — pattern, trace keywords, primary code, existing path, and **a pre-written conclusion**. That last column is the load-bearing one: it moves the verdict out of model judgment at read time and into reviewable data at authoring time, the same move a claim grammar makes for measurement claims. Three further mechanisms transfer directly: partitioning rows **mainline vs in-flight** (a pattern merged upstream but absent from a frozen local build is a *port*, not a research proposal), an **expected-absence register** recording why a path may be legitimately missing so a disabled path does not read as a defect, and a **pinned-head refresh** that records the upstream commit each scan was taken against so staleness is measurable rather than asserted. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md), [cpu-kernel-env-flags-inventory.md](../handoffs/active/cpu-kernel-env-flags-inventory.md), intake-1029 in [research/intake_index.yaml](../research/intake_index.yaml).
 
 - **External code moves, so an unpinned citation of an external symbol is unfalsifiable later.** Two independent sources — a technical article and a maintained upstream catalog — both named a kernel that no longer exists under that name; neither was wrong when written, both were wrong when read, and neither recorded the head it was true at. This is now a written contract in the intake skill: pin the commit or retrieval date, prefer durable identifiers (the *role* a thing plays) over volatile ones (internal symbol names), record the head for tree-wide claims, and **verify absence across trees rather than one file** — the same dive nearly reported a source as fabricated because a first search covered only a framework's model file while every symbol lived in its kernels tree. Sources: [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md), [k28-fused-chunked-gdn-kernel-research.md](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md), intake-1030.
+
+## Compiled Update — 2026-08-09 (second batch): auditing a belief-system design, and what the epistemic literature actually licenses
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled from a single research-intake
+> session that ingested and dive-verified 37 sources (`intake-1031`–`intake-1067`); every formal claim
+> below was checked against primary text during that session, and each is cited to its intake entry.
+
+- **When a design proposes infrastructure, audit the codebase before auditing the literature.** A
+  2,682-line proposal for an "append-only ledger of typed frames plus derived belief state" was
+  reviewed against the actual tree first, and the pattern turned out to be **landed in-project three
+  times over** — the evidence-plane ledger (13/14 waypoints done, typed sequential e-process
+  verdicts, per-candidate views rebuilt by fold), the AutoKernel journal (fsync-per-event, seven
+  schema-bound record kinds, pure `rebuild_views()` bound to an events digest, `RETRIEVAL_SUPERSEDED`
+  so a record can leave *retrieval* without leaving the *record*), and the experiment journal
+  (supersession fold with baseline authority already cut over to `ledger_fold`). The honest scope of
+  the proposal shrank from "EPYC lacks a substrate" to three verified gaps: claim-level dependency
+  edges (wiki dependency tracking existed nowhere as a design), refusal-semantics freshness gating,
+  and provenance-gated actuation. Sources:
+  [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md),
+  [vidya-belief-substrate-audit.md](../research/deep-dives/vidya-belief-substrate-audit.md),
+  [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md).
+
+- **Vocabulary reuse is a hard governance constraint, not a style preference.** Three independent
+  vocabularies already own parts of this space: `MEASUREMENT.md`'s reconciliation verbs
+  (`retro-certify` / `demote-to-prior` / `retire-view`), the dashboard's freshness classifier — which
+  declares itself "THE ONE CLASSIFIER" over `fresh`/`aging`/`stale`/`missing` plus the independent
+  `observed|silent|absent` × `populated|empty|unknown` axes — and the sequential-verdict states
+  (`accumulating` / `confirmed_improvement`). Any new taxonomy **maps onto these or extends them
+  explicitly; it never forks them**, or the project acquires a second governance system whose
+  disagreement with the first is undetectable. Sources: [MEASUREMENT.md](../MEASUREMENT.md) §6,
+  `dashboard/freshness.py`, [vidya-belief-substrate-audit.md](../research/deep-dives/vidya-belief-substrate-audit.md) §3.
+
+- **The frame and ledger layers of any claim-tracking system are solved prior art; only the epistemic
+  kernel is unserved.** Typed, content-addressed claim units with provenance, actor signature, and
+  supersession/retraction are **nanopublications**, running publicly for fifteen years (three named
+  graphs; content addressing over a *normalized* graph so identity survives serialization; retraction
+  valid only when signed with the original author's key). The field vocabulary is **W3C PROV-O**
+  (including `wasInvalidatedBy`/`invalidatedAtTime`). The typed-signed-statement encoding with
+  per-step scoped authority is **in-toto/DSSE + SLSA** — which already occupies the exact epistemic
+  stance ("verification proves the derivation followed registered rules, not that the artifact is
+  good"). The authenticated append-only log without consensus is **RFC 9162 / C2SP tile logs**,
+  self-hostable and freshly re-engineered. What remains genuinely unbuilt is the kernel: a
+  deterministic fold to *graded* belief state, freshness gates that refuse, and certificates over an
+  accumulating supersession-aware state. Sources: intake-1031, 1046, 1047, 1048, 1063, 1064.
+
+- **A semantic trap worth internalizing: record-lifecycle time and world-truth time are different
+  clocks.** PROV's `invalidatedAtTime` means *the record became unusable*; a bi-temporal knowledge
+  graph's `invalid_at` means *the fact stopped being true in the world*. Aliasing both to one field
+  is a category error that silently corrupts every freshness query built on it. The corrected field
+  set keeps five distinct times — ledger-side `created_at`/`expired_at`, world-side
+  `valid_at`/`invalid_at`, and the source's own `reference_time` (a 2025 paper read in 2026 asserting
+  a 2024 fact carries three). Sources: intake-1046, intake-1032.
+
+- **Similarity cannot detect contradiction — so no retraction path may be gated on an embedding
+  threshold.** Measured on 98 labelled pairs, cosine similarity separates duplicates from
+  contradictions at **AUROC 0.5926**, barely above chance, because a contradiction is often *more*
+  embedding-similar to the original than a harmless rephrasing is. This is the empirical basis for
+  requiring key-equality-plus-value-inequality (or an explicitly logged adjudicator) rather than a
+  similarity score anywhere in an invalidation path. Source: intake-1036.
+
+- **Any LLM judgment that can affect a derived result must be logged as a keyed input, or replay is
+  provably inconsistent.** A 2026 result establishes *necessity*: for a boundedly nondeterministic
+  judge, a system without a durable keyed log admits an adversarial replay pair that reaches
+  different conclusions from identical committed state — and with the log, that anomaly is excluded
+  (a tight characterization). Three operational rules follow: key judgment records by the read-set
+  plus the full decoder tuple (prompt, seed, model version, temperature, tool-output hash); enforce
+  first-committed-vote-wins per key so a re-run judge is short-circuited rather than appended; and
+  invoke no model during a fold or replay. The trap: **greedy/temperature-0 decoding does not make a
+  judge deterministic** under this model, because the nondeterminism space includes sampling state
+  and hardware numerics. Source: intake-1035.
+
+- **Advisory provenance display does not change behaviour; refusal does.** A controlled n=26 study of
+  a claim-level provenance interface found it *significantly lowered* participants' trust in
+  LLM-generated scholarly edits while **not changing their reliance** on those edits under time
+  pressure. Independently, a RAG staleness benchmark found one outdated passage cuts overall scores
+  by more than 24% and raises harmful outputs, while retrieval-side mitigation still surfaced stale
+  content roughly half the time. Together these are the empirical case for gates that block or
+  abstain at serve time over banners that warn — and for a scoring scheme that penalizes confidently
+  stale answers (+1 correct / 0 abstain / −1 harmful) rather than rewarding abstention as safety.
+  Sources: intake-1060, intake-1054.
+
+- **A published citation can be correct in every particular and still be attributed wrongly.** Five
+  formal citations underpinning the design were checked against primary text: four confirmed, one
+  partial — the convergence bound the draft attributed to a specific paper is standard Kleene-iteration
+  folklore, and the citable theorem is in fact *stronger* than what was claimed. Two further
+  corrections came from reading the sources rather than their abstracts: an argumentation paper
+  defines **three** proof standards, not the five widely associated with it (the other two arrive in a
+  later chapter by the same authors), and a "counterexample" scope caveat turned a headline retraction
+  primitive into a positive-fragment-only result. The transferable rule: **verify the attribution, not
+  just the existence** — "this paper says X" is a claim about the paper, and it fails independently of
+  whether X is true. Sources: intake-1038, 1039, 1040, 1050, 1062, 1066.
+
+### Source References
+
+- [`research/deep-dives/vidya-belief-substrate-audit.md`](../research/deep-dives/vidya-belief-substrate-audit.md) — the consolidated audit: verdict, seven wrinkles, corrections ledger, corrected formal foundations, adoption kit, landscape, machine-wide assessment, and the 37-entry reference table
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the resulting program: spec-amendment sheet, downscoped gold corpus, shadow pilot, research track, operator decision queue
+- [`progress/2026-08/2026-08-09.md`](../progress/2026-08/2026-08-09.md) — session record for the audit batch
+- [`research/intake_index.yaml`](../research/intake_index.yaml) — entries `intake-1031`–`intake-1067`, each carrying its verified claims, adoption extract, and dated `dive_corrections`
