@@ -6149,6 +6149,7 @@
   verdict: new_opportunity
   discovered_via: input
   ingested_date: '2026-03-28'
+  locator_note: 'Operator-supplied inline material (benchmark write-up pasted into session); no canonical URL was captured at intake.'
   cross_references:
     handoffs:
     - tree-speculation-numa-drafting.md
@@ -6244,6 +6245,7 @@
   verdict: worth_investigating
   discovered_via: input
   ingested_date: '2026-03-28'
+  locator_note: 'Operator-supplied inline material (deployment write-up pasted into session); no canonical URL was captured at intake.'
   cross_references:
     intake:
     - intake-103
@@ -6520,6 +6522,7 @@
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-04-01'
+  locator_note: 'Operator-supplied inline material derived from a local src.zip archive dated 2026-03-31; not a published document, so no URL exists.'
   cross_references:
     handoffs:
     - claude-code-local-constellation-routing.md
@@ -6565,6 +6568,7 @@
   discovered_via: input
   verdict: new_opportunity
   ingested_date: '2026-04-01'
+  locator_note: 'Operator-supplied inline material (multi-agent optimization write-up pasted into session); no canonical URL was captured at intake.'
   cross_references:
     handoffs:
     - autopilot-continuous-optimization.md
@@ -6602,6 +6606,7 @@
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-04-01'
+  locator_note: 'Operator-supplied inline material: a third-party repo-leak analysis relayed via session, attributed in-title to @neural_avb; no canonical URL was captured at intake.'
   cross_references:
     handoffs:
     - hermes-agent-index.md
@@ -9341,6 +9346,7 @@
   verdict: already_integrated
   discovered_via: input
   ingested_date: '2026-04-12'
+  locator_note: 'Operator-supplied inline material summarizing a course lecture; no canonical URL was captured at intake.'
   cross_references:
     handoffs:
     - hermes-agent-index.md
@@ -9371,6 +9377,7 @@
   verdict: already_integrated
   discovered_via: input
   ingested_date: '2026-04-12'
+  locator_note: 'Operator-supplied inline material (practitioner write-up pasted into session); no canonical URL was captured at intake.'
   cross_references:
     handoffs:
     - autopilot-continuous-optimization.md
@@ -19791,6 +19798,7 @@
   discovered_via: input
   verdict: already_integrated
   ingested_date: '2026-04-28'
+  locator_note: 'Operator-supplied inline material: a social-media post relayed into session; no canonical URL was captured at intake.'
   key_claims:
   - 'Memory math: Qwen3.6-27B Q4_K_M (16 GB model) + 5 GB q4_0/q4_0 KV at 262K context = 21 GB on 24 GB consumer card, leaving 3 GB headroom.'
   - 'KV cache type is the dominant unlock: f16 does not fit at 262K, q8 fits at 23 GB but allegedly runs 3x slower than q4_0, q4_0 fits at 21 GB at "full speed" (claimed 40 tok/s flat from 4K to 262K).'
@@ -37962,6 +37970,7 @@
   notes: Provided as two screenshots (epyc-root/tmp/HMViJC-WIAAkUTU.jpeg, HMVh-pCWkAAklkX.jpeg), filenames consistent with Twitter/X media. arxiv_id deliberately left null so the FAKE claimed ID 2607.04117 cannot false-positive dedup against a future real paper. Riffs on the real post-closure Fable/Mythos trace-compilation trend (cf. intake-778 ~2M traces vs the parody's '2.3M').
   discovered_via: input
   ingested_date: '2026-07-04'
+  locator_note: 'Operator-supplied inline material: two screenshots at epyc-root/tmp/HMViJC-WIAAkUTU.jpeg and HMVh-pCWkAAklkX.jpeg (filenames consistent with Twitter/X media). arxiv_id is deliberately null so the FAKE claimed ID cannot false-positive a dedup sweep.'
   handoffs_updated: []
   handoffs_created: []
 - id: intake-775
@@ -56464,6 +56473,17 @@
   discovered_via: input
   verdict: adopt_patterns
   ingested_date: '2026-08-09'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.98, section 4.5 Data Modification
+    quote: Property 13 (Deletion). For every provenance semiring Prov(X) and D' subset of D, if lambda'
+      is the restriction of lambda_X to D' and Delta = D \ D', then P(Sigma, D', Prov(X), lambda', alpha)
+      is equal to the partial evaluation of P(Sigma, D, Prov(X), lambda_X, alpha) obtained by setting the
+      annotations of facts in Delta to 0.
+    quote_sha256: 4b2f0719e8119602837072e10fb2b011961a743c8a0ed7621dd2be938f9c2430
+    source_revision: arXiv:2202.10766 (full version with appendices, 33pp)
+    verified_by: research-intake/stage2 (2026-08-09 formal-foundations dive)
   handoffs_created:
   - vidya-belief-substrate-program.md
   authors:

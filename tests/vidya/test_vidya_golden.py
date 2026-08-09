@@ -47,7 +47,12 @@ GOLDEN_FRAME_IDS = [
     "sha256:39b19b50e431c54061f35b10e7b4a828de9aea28de96e1df651e0ab776ee1868",
     "sha256:99e30050c9790594ef481d11c9cf0441b67b46c9366eed8c837569add6b4b12b",
 ]
-GOLDEN_STATE_HASH = "sha256:8591365a98fb27d9f25a3fc1f64a781293a8a4997cf000860549aacaba534ed1"
+# fold-version history for this pin. A derived-state SHAPE change must produce a new state
+# identity (spec §17.3), so the pin is re-cut deliberately and the reason recorded -- never
+# regenerated quietly to make a red test green.
+#   0.1.0 -> sha256:8591365a98fb27d9f25a3fc1f64a781293a8a4997cf000860549aacaba534ed1
+#   0.2.0 -> current: Belief gained `corrections` and `review_required` (P2c)
+GOLDEN_STATE_HASH = "sha256:76eef15c9a5b7f01d6a699312a816577a457bc93c42dae9d6064cec577a59336"
 GOLDEN_MERKLE_ROOT = "cea68c9737862e21a50c4fe718b8fbc7ca42d6427b18359c89e05c966b0a2ce5"
 GOLDEN_NOTE_HASH = "sha256:ac51c1a0bc1cd76cc77c621bf252c68de5edccc0adadd400947dcc071b69d715"
 
@@ -97,6 +102,18 @@ class TestGoldenFixtures:
     def test_reordering_independent_frames_preserves_state_hash(self):
         corpus = _golden_corpus()
         assert fold(list(reversed(corpus)), as_of=GOLDEN_AS_OF).state_hash() == GOLDEN_STATE_HASH
+
+    def test_state_hash_is_sensitive_to_the_derived_state_shape(self):
+        """The pin must move when the shape moves -- that is what makes it a state IDENTITY.
+
+        This test exists because the 0.1.0 -> 0.2.0 change was caught by a red pin rather than by
+        anyone remembering to think about it.
+        """
+        from fold import Belief  # noqa: PLC0415
+
+        assert {"corrections", "review_required"} <= set(
+            Belief(claim_id="x").as_dict()
+        ), "belief serialization dropped fields the current pin was cut against"
 
     def test_golden_corpus_contains_a_synthetic_join(self):
         # Guard the fixture itself: if a future edit makes every claim single-path, the pins would

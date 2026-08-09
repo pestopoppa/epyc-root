@@ -465,6 +465,44 @@ class TestFold:
         assert res.ignored_frame_types["epyc.vidya/frame/projection_rendered/v1"] == 1
 
 
+class TestCorrections:
+    """P2c: a recorded correction marks a belief for review WITHOUT touching its grade."""
+
+    def _correction(self, claim_ids, text="OVERTURNED: the figure does not appear in the source"):
+        return frames.make_frame(
+            frame_type="epyc.vidya/frame/correction_recorded/v1",
+            assertion={"entry_id": "intake-x", "claim_ids": claim_ids,
+                       "correction_text": text, "classification": None},
+            provenance={"method": "adapter", "about": "intake-x", "parsed": False},
+            actor="adapter", authority_scope="research-verification", created_at=NOW)
+
+    def test_correction_marks_review_without_changing_the_grade(self):
+        s = _support_frame("clm-1", "evd-1", "Verified", "Anchored")
+        b_before = fold([s], as_of=NOW).beliefs["clm-1"]
+        b_after = fold([s, self._correction(["clm-1"])], as_of=NOW).beliefs["clm-1"]
+        assert b_after.pro == b_before.pro, "a correction is not counter-evidence"
+        assert b_after.con == b_before.con
+        assert b_after.review_required and not b_before.review_required
+
+    def test_correction_does_not_flip_the_verdict(self):
+        # Support is support. Refusing an unreviewed correction is the freshness gate's job;
+        # folding it into the verdict would make a correction indistinguishable from opposition.
+        s = _support_frame("clm-1", "evd-1", "Verified", "Anchored")
+        b = fold([s, self._correction(["clm-1"])], as_of=NOW).beliefs["clm-1"]
+        assert b.verdict(lat.parse_grade("Verified/Anchored")) == Verdict.SUPPORTED
+
+    def test_correction_creates_the_claim_if_unseen(self):
+        b = fold([self._correction(["clm-orphan"])], as_of=NOW).beliefs["clm-orphan"]
+        assert b.review_required and b.pro == lat.BOTTOM
+
+    def test_corrections_are_sorted_for_determinism(self):
+        s = _support_frame("clm-1", "evd-1", "Judged", "Located")
+        c1, c2 = self._correction(["clm-1"], "first"), self._correction(["clm-1"], "second")
+        a = fold([s, c1, c2], as_of=NOW).state_hash()
+        b = fold([s, c2, c1], as_of=NOW).state_hash()
+        assert a == b
+
+
 # ------------------------------------------------------- determinism (§17.3)
 
 class TestDeterminism:

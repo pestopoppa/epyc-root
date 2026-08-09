@@ -31,7 +31,7 @@ from frames import validate_frame  # noqa: E402
 from lattice import parse_grade  # noqa: E402
 from ledger import Ledger  # noqa: E402
 
-FOLD_VERSION = "vidya-pilot-0.1.0"
+FOLD_VERSION = "vidya-pilot-0.2.0"  # 0.2.0: belief state gained corrections/review_required (P2c)
 DEFAULT_ORIGIN = "epyc.local/belief-ledger"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 VIDYA_DIR = REPO_ROOT / ".vidya"

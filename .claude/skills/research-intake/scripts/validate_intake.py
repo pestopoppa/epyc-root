@@ -217,6 +217,29 @@ def validate_index(entries: list[dict], valid_categories: set[str],
         if missing:
             errors.append(f"{eid}: missing required fields: {missing}")
 
+        # Required fields must be NON-EMPTY, not merely present.
+        #
+        # WHY: on 2026-08-09 an audit found 9 entries whose required `url` was present with a null
+        # value, which the presence check above accepts. This is the same shape as the duplicate-key
+        # gap fixed the same day -- a check that looks like it enforces something and does not.
+        #
+        # `url` has a legitimate empty case: operator-supplied inline material (a pasted write-up, a
+        # screenshot, a leaked archive) genuinely has no canonical URL, and inventing one would be
+        # worse than leaving it blank. So the rule is that an entry must be LOCATABLE by at least one
+        # of url / arxiv_id / locator_note, where locator_note is a written explanation of why
+        # neither identifier exists. That keeps the honest case honest and still refuses a silently
+        # blank field.
+        if not any(
+            str(entry.get(k) or "").strip() for k in ("url", "arxiv_id", "locator_note")
+        ):
+            errors.append(
+                f"{eid}: not locatable — needs a non-empty 'url' or 'arxiv_id', or a "
+                f"'locator_note' explaining why neither exists"
+            )
+        for field in ("title", "id", "source_type", "verdict"):
+            if field in entry and not str(entry.get(field) or "").strip():
+                errors.append(f"{eid}: required field '{field}' is present but empty")
+
         # ID format and sequencing
         if isinstance(eid, str) and eid.startswith("intake-"):
             try:

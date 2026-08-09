@@ -42,6 +42,7 @@ FT_SUPPORT = "epyc.vidya/frame/evidence_supports_claim/v1"
 FT_OPPOSE = "epyc.vidya/frame/evidence_opposes_claim/v1"
 FT_RETRACT = "epyc.vidya/frame/retraction/v1"
 FT_JUDGMENT = "epyc.vidya/frame/judgment_recorded/v1"
+FT_CORRECTION = "epyc.vidya/frame/correction_recorded/v1"
 
 # A judgment frame must be keyed by what the judge saw AND the full decoder tuple, or replay is
 # provably inconsistent (spec §6). Greedy decoding does not exempt a frame from this: the
@@ -72,6 +73,15 @@ class Belief:
     pro_paths: list[tuple[str, Grade]] = field(default_factory=list)
     con_paths: list[tuple[str, Grade]] = field(default_factory=list)
     retracted_support: list[str] = field(default_factory=list)
+    # Corrections recorded against this claim's source entry. These do NOT change the grade -- what
+    # a correction did to an individual claim is prose, and guessing at it is the failure this
+    # substrate exists to prevent. They mark the belief as needing review, which is a freshness
+    # question, not a support question.
+    corrections: list[str] = field(default_factory=list)
+
+    @property
+    def review_required(self) -> bool:
+        return bool(self.corrections)
 
     def verdict(self, floor: Grade, *, conjunctive: bool = True) -> str:
         """Four-valued verdict against a policy floor.
@@ -79,6 +89,10 @@ class Belief:
         `conjunctive` is the authoritative default: it asks whether ONE path clears both axes,
         rather than whether the join does. Reading the join would answer a strictly weaker
         question while looking like an answer to this one.
+
+        Note that an unreviewed correction does NOT change this verdict -- support is support. It
+        is the freshness gate's job to refuse a `review_required` belief for authoritative use;
+        collapsing the two would make a correction look like counter-evidence, which it is not.
         """
         if conjunctive:
             pro_ok, _ = satisfies_conjunctive(self.pro_paths, floor)
@@ -102,6 +116,8 @@ class Belief:
             "pro_witnesses": self.pro_witnesses,
             "con_witnesses": self.con_witnesses,
             "retracted_support": self.retracted_support,
+            "corrections": self.corrections,
+            "review_required": self.review_required,
         }
         if floor is not None:
             out["verdict"] = self.verdict(floor)
@@ -173,6 +189,7 @@ def fold(
     support: dict[str, list[tuple[str, Grade]]] = {}
     oppose: dict[str, list[tuple[str, Grade]]] = {}
     retracted: set[str] = set()
+    corrections_by_claim: dict[str, list[str]] = {}
     judgment_votes: dict[str, str] = {}   # replay-key hash -> first frame_id that voted
     superseded_judgments: list[str] = []
     ignored: dict[str, int] = {}
@@ -219,6 +236,13 @@ def fold(
             bucket = support if ftype == FT_SUPPORT else oppose
             bucket.setdefault(claim_id, []).append((label, grade))
 
+        elif ftype == FT_CORRECTION:
+            assertion = frame.get("assertion", {})
+            for claim_id in assertion.get("claim_ids") or []:
+                if isinstance(claim_id, str):
+                    claims.add(claim_id)
+                    corrections_by_claim.setdefault(claim_id, []).append(fid)
+
         elif ftype == FT_JUDGMENT:
             _check_judgment(frame)
             from canonical import content_hash
@@ -253,8 +277,14 @@ def fold(
             con_paths = sorted(oppose.get(claim_id, []))
             pro, pro_w = join_with_witnesses(pro_paths)
             con, con_w = join_with_witnesses(con_paths)
+            corrections = sorted(corrections_by_claim.get(claim_id, []))
             prev = beliefs.get(claim_id)
-            if prev is None or prev.pro != pro or prev.con != con:
+            if (
+                prev is None
+                or prev.pro != pro
+                or prev.con != con
+                or prev.corrections != corrections
+            ):
                 beliefs[claim_id] = Belief(
                     claim_id=claim_id,
                     pro=pro,
@@ -264,6 +294,7 @@ def fold(
                     pro_paths=pro_paths,
                     con_paths=con_paths,
                     retracted_support=sorted(retracted),
+                    corrections=corrections,
                 )
                 changed = True
         if not changed:

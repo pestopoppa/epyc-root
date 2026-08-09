@@ -257,6 +257,18 @@ Begins only when the operator names the intakes. Never self-trigger.
 **Writes permitted in Stage 2** (intake index only):
 
 - Promote `verification: stage1-unverified` → `dive-verified` (or `dive-overturned`).
+- **Record a `claim_anchors` entry for every claim the dive will let a plan or handoff cite.**
+  You have the passage open; nobody downstream will. Capture `claim_index`, a `locator` (page,
+  section, heading path, or line range), the `quote` verbatim, its `quote_sha256`, and the
+  `source_revision` you read — schema and worked example in
+  [`references/intake-schema.md`](references/intake-schema.md) § `claim_anchors`.
+
+  **Why this is a Stage-2 obligation and not a nicety.** A 2026-08-09 pass over all 1,067 entries
+  found that **zero** claims were anchored to a span: every entry identified a *document*, so no
+  claim — however thoroughly dived — could be cited as verifiable at a location. Recording the
+  anchor while the source is open costs seconds. Reconstructing it later costs a re-read, and for
+  a moved or renamed source it is often impossible, which is exactly how the 2026-08-09
+  renamed-kernel incident happened. Do not anchor ordinary prose; anchor what will be cited.
 - Append a dated `dive_corrections` field recording what the dive changed, so an overturned
   conclusion cannot be re-derived later.
 - Correct fabricated or cross-contaminated content immediately — do not carry it to Stage 3.

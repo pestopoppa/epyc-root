@@ -40,6 +40,58 @@ Each entry in `research/intake_index.yaml` follows this schema.
 | `dive_corrections` | string | Dated record of what a Stage-2 dive changed, so an overturned conclusion cannot be re-derived. Append-only. |
 | `integration_disposition` | enum | Workflow disposition: `integrated`, `knowledge_only`, `monitor`, `declined`, or `awaiting_dive`. This describes how the source is handled; `integrated` means routed into a durable owner, not necessarily deployed code. |
 | `disposition_evidence` | list[string] | One or more repository-grounded reasons for the disposition. Required whenever `integration_disposition` is present. |
+| `locator_note` | string | Why this entry has no `url` and no `arxiv_id`. See below. |
+| `claim_anchors` | list[object] | Per-claim span anchors recorded at dive time. See below. |
+
+## `locator_note` — the honest empty-URL case (added 2026-08-09)
+
+`url` is required, but a 2026-08-09 audit found **9 entries** whose `url` was present with a null
+value — accepted because the validator checked key *presence*, not non-emptiness. All nine turned
+out to be legitimate: `discovered_via: input` operator-supplied inline material (a pasted write-up,
+a social post, a screenshot pair, a local `src.zip`). No canonical URL exists, and inventing one
+would be strictly worse than leaving it blank.
+
+So the rule is **locatability**, not URL-presence: an entry must carry a non-empty `url`, a
+non-empty `arxiv_id`, **or** a `locator_note` saying why neither exists and where the material
+actually came from. The validator enforces exactly that and rejects an entry satisfying none of the
+three.
+
+Write the note so a future reader can find the material or know that they cannot:
+
+```yaml
+locator_note: 'Operator-supplied inline material: two screenshots at epyc-root/tmp/HMViJC-WIAAkUTU.jpeg
+  and HMVh-pCWkAAklkX.jpeg (filenames consistent with Twitter/X media). arxiv_id is deliberately null
+  so the FAKE claimed ID cannot false-positive a dedup sweep.'
+```
+
+An entry whose only locator is a note is, by construction, **unanchored** — nothing can be
+retrieved from it — and any downstream consumer should treat it accordingly.
+
+## `claim_anchors` — recording the span a dive actually read (added 2026-08-09)
+
+A Stage-2 dive reads a specific passage. `key_claims` records what it concluded; `claim_anchors`
+records **where it read it**, which is otherwise lost the moment the dive ends.
+
+```yaml
+claim_anchors:
+  - claim_index: 0                      # index into key_claims
+    kind: page-and-quote                # page-and-quote | heading-and-hash | json-pointer | line-range | file-hash
+    locator: 'p.98, §4.5'               # human-resolvable pointer within the source
+    quote: 'Property 13 (Deletion). For every provenance semiring Prov(X)...'
+    quote_sha256: '<hex of the normalized quote>'
+    source_revision: 'arXiv:2202.10766v1'   # the revision the quote was read at
+    verified_by: 'research-intake/stage2'
+```
+
+**Why this field exists.** Without it an entry identifies a *document*; with it, an individual claim
+identifies a *location*. That distinction is the entire difference between a claim a reader can
+check and one they must take on trust, and it is measurable: a 2026-08-09 pass over all 1,067
+entries found that **zero** claims could reach an anchored grade, because no entry carried a
+per-claim span. Recording the anchor at dive time — when the author has the passage open — costs
+seconds; reconstructing it later costs a re-read, and often is not possible at all.
+
+Anchors are optional and per-claim: record them for claims that will be cited, gate a decision, or
+enter an authoritative projection. Ordinary prose does not need one.
 
 ## Integration disposition lifecycle (added 2026-08-05)
 
