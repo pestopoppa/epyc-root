@@ -2156,14 +2156,18 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       representative 24-row smoke completed in 1.27 seconds. The live store remains untouched until the
       replacement DB/index/id-map set is complete and passes the existing swap checks.
 - [ ] **Finish the staged-policy evidence bundle and one consolidated ratifier.** The atomic semantic
-      rebuild is running from the `20260809T154014Z` backup set after the live gate found 4/60 bad
-      self-matches in an otherwise structurally healthy 63,786-row store. After rebuild: require
-      `check_episodic_integrity.py --semantic --require-semantic`; recover interrupted non-mutating
-      deep-eval trial 1505 append-only; deploy only the dashboard/API code with an API-only reload; collect
+      rebuild is complete; recover interrupted non-mutating deep-eval trial 1505 append-only; deploy only
+      the dashboard/API code with an API-only reload; collect
       immutable incumbent baselines T1=100, T2=500, T3=160; then produce one human-only ratifier that
       applies the policy/bundle and writes a clean `production_best` checkpoint. Orchestrator `545af011`
       makes collector preflight fail closed until `in_flight_trial` is cleared (5/5 focused tests).
       AutoPilot stays stopped throughout and after apply pending separate restart permission.
+- [x] **Complete and certify the 63,786-row episodic semantic rebuild. ✅ 2026-08-09** Orchestrator
+      `43323891` supports an explicit maintenance-only embedder fleet. Six temporary processes exposed
+      96 slots with 16 compute threads each across all physical cores; the measured 96-row smoke reached
+      151.8 rows/s. Atomic run `20260809T160329Z` published 63,786/63,786 vectors with desync 0 and zero
+      bad pointers. The independent semantic gate passed with 0/60 below 0.9, mean cosine 0.9999, median
+      1.0000, and minimum 0.9924. Temporary ports 18090–18095 were then shut down and verified absent.
 - [ ] **AP-50 — Turn “what optimizes the orchestrator” into a decision cockpit.** Default to the current
       measurement era and distinguish proposed, executed, valid, kept, promoted, and currently-live
       states; “applied” alone is operationally ambiguous. Add current trial/intervention/falsifier,
