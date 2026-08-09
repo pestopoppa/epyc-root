@@ -210,3 +210,16 @@ conversion rule.
 **Inputs required before the full design session** (per the design-session discipline for
 NUMA/concurrency complexity): E5 NUMA×batch mapping, teleport break-even measurements, and the
 architect-bench GPU-arm results (the first heterogeneous binding candidate).
+
+## 2026-08-09 — async generation/execution split (research-intake Stage-2b, HYPOTHESIS)
+
+- [ ] **HYPOTHESIS ONLY — asynchronous separation of generation from candidate execution.**
+  OpenMLE-Evo ([intake-1024](../../research/intake_index.yaml), dive-verified) runs generation and
+  sandbox execution as independent queues, and intake-940's dive measured the claimed step-time
+  speedup at 1.91x. **That win exists because their generation runs on a GPU while execution runs
+  elsewhere.** On a CPU-bound box the two contend for the same cores and the mechanism inverts into
+  contention — which is precisely what the co-residency and region-claim discipline exists to prevent.
+  **This is explicitly NOT a portable win.** The single condition under which it could transfer is a
+  genuine heterogeneous split: generation resident on the MI210, candidate execution on CPU. Evaluate
+  only as part of a binding-candidate design session, never as an assumed speedup, and note the
+  measured figure is from a source whose headline claims intake-940 largely overturned.

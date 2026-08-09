@@ -171,3 +171,15 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch): ACM (intake
   error. Report answer quality, evidence recall, gist omission/contradiction, hit/reuse rate, complete
   inference and retrieval tokens, communication, peak memory, and wall time. Hold the final planner and
   judge fixed. Do not adopt ActiveMem's comparison-set-relative ACT score or unreleased runtime.
+
+## 2026-08-09 — per-operator context budgets (research-intake Stage-2b)
+
+- [ ] **Port per-operator context budgets to the delegation path.** Our delegation/tool-output context
+  is assembled against a single budget; OpenMLE-Evo budgets **per operator**, which is the mechanism
+  behind the prompt-tail reduction intake-940's dive rated as one of only two citable claims from that
+  source. Shipped constants, read from `OpenMLE-Evo/tts_search/configs/search/airaevo.yaml`
+  ([intake-1024](../../research/intake_index.yaml), dive-verified 2026-08-09): global
+  `max_related_cards 3`; improve `ancestor_k 3` / `sibling_k 3`; crossover `2` / `2`; debug
+  `max_related_cards 8`. Cross-links AP-ME-1 in
+  [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) — the planner-context
+  half of the same idea. Offline-first: measure current per-operator context size before changing it.

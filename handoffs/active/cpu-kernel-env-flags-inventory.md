@@ -533,3 +533,14 @@ Build environment additions (one-time):
 ## Progress checklist
 
 - [x] Reference flag inventory maintained (launcher audit closed 2026-06-14, no corrective change pending) ✅
+
+## 2026-08-09 — expected-absence register (research-intake Stage-2b)
+
+- [ ] **Add an "effect on trace interpretation" column to the flag inventory.** This file records which
+  flags exist; it does not record what their being set or unset should make a profile *look* like.
+  intake-1029 (dive-verified 2026-08-09) carries a 15-row toggles table with exactly that column,
+  including cases where a flag intentionally disables a fast path so split kernels are the expected
+  observation rather than a missing optimization. Without such a register every legitimately-disabled
+  path reads as a defect. Cross-links AK-CAT-3 in
+  [autokernel-research-loop.md](autokernel-research-loop.md), which consumes this as the substrate for
+  the gfx90a prior-art catalogue.

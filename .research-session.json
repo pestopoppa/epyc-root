@@ -1,188 +1,166 @@
 {
-  "session_id": "90661311-c2d6-4333-b8f2-61d52abc4b48",
-  "started_at": "2026-08-07T10:07:17Z",
-  "last_checkpoint": "2026-08-07T15:32:00Z",
-  "phase": 4,
+  "session_id": "ddfe3ef9-f2e2-432d-b3ad-00ce3dbba0ca",
+  "started_at": "2026-08-09T10:00:00Z",
+  "last_checkpoint": "2026-08-09T13:10:00Z",
+  "phase": 5,
   "stage": "stage4-complete",
-  "stage1_completed": "2026-08-07",
-  "stage4_completed": "2026-08-07",
-  "submitted_url_count": 9,
-  "submitted_inline_material_count": 1,
+  "stage1_completed": "2026-08-09",
+  "submitted_url_count": 2,
+  "submitted_inline_material_count": 2,
   "processed_urls": [
-    "https://www.arxiv.org/pdf/2607.28611",
-    "https://www.liquid.ai/blog/lfm2-5-2-6b",
-    "https://huggingface.co/datasets/r0b0tlab/qwen3.8-max-glm5.2-kimi-k3-distillation",
-    "https://arxiv.org/pdf/2607.25970",
-    "https://arxiv.org/pdf/2508.13171",
-    "https://github.com/PrimeIntellect-ai/prime-agent",
-    "https://www.primeintellect.ai/blog/prime-agent",
-    "https://github.com/alexisfox7/PRO-LONG",
-    "https://console.pokee.ai/pokee-isaac-28b-v0-technical-report.pdf",
-    "inline:from-zero-to-graph-architect-2026-08-07",
-    "https://huggingface.co/LiquidAI/LFM2.5-2.6B",
-    "https://github.com/tao-hpu/cognitive-workspace",
-    "https://arxiv.org/abs/2605.09998",
-    "https://arxiv.org/abs/2606.10532",
-    "https://arxiv.org/abs/2608.03137",
-    "https://huggingface.co/LiquidAI/LFM2.5-2.6B-GGUF",
-    "https://github.com/sethkarten/continual-harness",
-    "https://arxiv.org/abs/2605.04808",
-    "https://arxiv.org/abs/2504.19413",
-    "https://arxiv.org/abs/2508.19828"
+    "https://arxiv.org/pdf/2607.28568",
+    "https://github.com/FrontisAI/OpenRSI",
+    "inline:sglang-torch-profiler-qwen35-08b-case-study",
+    "inline:frontis-ma1-openmle-summary",
+    "https://github.com/sgl-project/sglang/tree/main/.claude/skills/llm-torch-profiler-analysis",
+    "https://rocm.blogs.amd.com/software-tools-optimization/kernel-analysis-deep/README.html"
   ],
   "entries_processed": [
-    "intake-1005",
-    "intake-1006",
-    "intake-1007",
-    "intake-1008",
-    "intake-1009",
-    "intake-1010",
-    "intake-1011",
-    "intake-1012",
-    "intake-1013",
-    "intake-1014",
-    "intake-1015",
-    "intake-1016",
-    "intake-1017",
-    "intake-1018",
-    "intake-1019",
-    "intake-1020",
-    "intake-1021",
-    "intake-1022",
-    "intake-1023"
+    "intake-1024",
+    "intake-1025",
+    "intake-1026",
+    "intake-1027"
   ],
   "entries_remaining": [],
-  "next_intake_id": 1024,
-  "expansion_count": 5,
+  "next_intake_id": 1031,
+  "expansion_count": 2,
   "expansion_cap": 10,
   "state": {
-    "expansion_queue": [],
-    "dedup_sweep": {
-      "index_entries_checked": 1004,
-      "exact_collisions": {
-        "https://arxiv.org/pdf/2607.25970": "intake-939"
+    "prior_completed_session_id": "90661311-c2d6-4333-b8f2-61d52abc4b48",
+    "dedup_sweep": "UNBOUNDED, no head/tail. arXiv 2607.28568 collided on BOTH arxiv_id and url with intake-940 (line 48664) -> DUPLICATE, no new entry. The other four candidate URLs each returned 0 collisions.",
+    "duplicates_rejected": [
+      {
+        "url": "https://arxiv.org/pdf/2607.28568",
+        "collides_with": "intake-940",
+        "basis": "exact arxiv_id AND url match"
       }
-    },
-    "expansion_sources": {
-      "reference_or_artifact_links": [
-        "intake-1014",
-        "intake-1015",
-        "intake-1016"
-      ],
-      "targeted_search": [
-        "intake-1017",
-        "intake-1018"
-      ]
-    },
+    ],
+    "expansion_sources": [
+      "intake-1026 <- intake-1025 (provenance search)",
+      "intake-1027 <- intake-1025 (provenance search)"
+    ],
     "recommended_dive_groups": [
-      ["intake-1007"],
-      ["intake-1008", "intake-1015", "intake-1017", "intake-1018"],
-      ["intake-1009", "intake-1010", "intake-1016"],
-      ["intake-1012"],
-      ["intake-1006", "intake-1014"]
+      "intake-1024 (rank 1)",
+      "intake-1025 (rank 2)",
+      "intake-1026 (rank 3)"
     ],
     "selected_dive_groups": [
-      ["intake-1007"],
-      ["intake-1008", "intake-1015", "intake-1017", "intake-1018"],
-      ["intake-1009", "intake-1010", "intake-1016"],
-      ["intake-1012"],
-      ["intake-1006", "intake-1014"]
-    ],
-    "dive_results": {
-      "dive_verified": [
-        "intake-1006", "intake-1008", "intake-1009", "intake-1010",
-        "intake-1012", "intake-1014", "intake-1015", "intake-1016",
-        "intake-1017", "intake-1018", "intake-1019", "intake-1020",
-        "intake-1021", "intake-1022", "intake-1023"
-      ],
-      "dive_overturned": ["intake-346", "intake-1007"]
-    },
-    "stage2b_count": 5,
-    "corrected_entries": [
-      "intake-346: overturned cloud-only/no-local-inference conclusion using the official Apache-2.0 repository"
-    ],
-    "stage2b_source_gate": [
-      {
-        "url": "https://huggingface.co/LiquidAI/LFM2.5-2.6B-GGUF",
-        "bearing": ["intake-1006", "intake-1014"],
-        "recommendation": "ingest-and-dive",
-        "reason": "official quantized deployability artifact for the worker_general candidate",
-        "status": "completed",
-        "intake_id": "intake-1019"
-      },
-      {
-        "url": "https://github.com/sethkarten/continual-harness",
-        "bearing": ["intake-1016"],
-        "recommendation": "ingest-and-dive",
-        "reason": "load-bearing implementation scope for proposal logic, direct-apply behavior, and sandbox limits",
-        "status": "completed",
-        "intake_id": "intake-1020"
-      },
-      {
-        "url": "https://arxiv.org/abs/2605.04808",
-        "bearing": ["intake-1012"],
-        "recommendation": "ingest-and-dive",
-        "reason": "primary DTAP security-evaluation contract behind Pokee's harness-confounded comparison",
-        "status": "completed",
-        "intake_id": "intake-1021"
-      },
-      {
-        "url": "https://arxiv.org/abs/2504.19413",
-        "bearing": ["intake-1008", "intake-1017", "intake-1018"],
-        "recommendation": "ingest-and-dive",
-        "reason": "production-oriented cross-session memory comparator for persistence and deletion",
-        "status": "completed",
-        "intake_id": "intake-1022"
-      },
-      {
-        "url": "https://arxiv.org/abs/2508.19828",
-        "bearing": ["intake-1017", "intake-1018"],
-        "recommendation": "ingest-and-dive",
-        "reason": "direct RL-trained memory-management comparator for operation-level credit",
-        "status": "completed",
-        "intake_id": "intake-1023"
-      }
+      "intake-1024",
+      "intake-1025",
+      "intake-1026"
     ],
     "explicit_dive_declines": [
-      "intake-1005: medium-relevance vision scaling work has no released code or weights, and its internal 7.3x versus 6.8x headline inconsistency does not affect an active production decision",
-      "intake-1011: the companion PRO-LONG paper and repository were already audited under dive-verified intake-919; this row preserves the distinct repository artifact without duplicating the dive",
-      "intake-1013: the graph-architecture roadmap is a useful onboarding synthesis, but its technical patterns are already implemented and audited by the completed LangGraph migration while its novelty and market claims have no cited evidence"
+      "intake-1027"
     ],
-    "prior_completed_session_id": "7d1097ae-99a6-469d-b97d-9fcfb78c96a8",
-    "stage3_plan": "research/intake-stage3-plan-2026-08-07-agent-memory-worker-security.md",
-    "stage3_plan_status": "approved-and-implemented",
-    "stage4_task_ids": [
-      "WG-LFM-1", "D-f", "D-g", "AP-CH-1", "AP-CH-2", "TU-DTAP-1",
-      "TU-ADV-1", "E3b", "UTM-V1", "UTM-V2", "UTM-V3", "UTM-V4",
-      "UTM-V5", "UTM-V6", "CF-AM-1"
+    "dive_results": [
+      {
+        "intake": "intake-1024",
+        "verdict": "CONFIRMED with 1 self-overturn",
+        "verification": "dive-verified",
+        "headline": "client-only sandbox confirmed from config; selector weights 1.0/0.4/0.25 confirmed from a 2nd file; PR#2 author is association NONE not staff; sandbox artifact readable in fork regardless of merge; sandbox_exec.py is an unsandboxed in-process exec"
+      },
+      {
+        "intake": "intake-1025",
+        "verdict": "CONFIRMED (all 4 kernel names verbatim); provenance NOT-FOUND",
+        "verification": "dive-verified",
+        "headline": "fla/ tree maps the 4-stage decomposition to real files; roofline confirmed by arithmetic; measurements remain single-sourced"
+      },
+      {
+        "intake": "intake-1026",
+        "verdict": "CONFIRMED + 1 partial overturn + 2 Stage-1 misses",
+        "verification": "dive-verified",
+        "headline": "report layer separable (rows: Sequence[dict]); H100 validation section exists; catalog gate + two-trace mapping protocol were missed at Stage 1 and are the highest-value elements"
+      }
     ],
-    "stage4_handoff_count": 7,
-    "stage4_checkbox_flips": 0
+    "stage2b_count": 3,
+    "corrected_entries": [
+      "intake-1024 (licence reasoning withdrawn per operator; PR author speculation overturned)"
+    ],
+    "stage2b_source_gate": "CLOSED 2026-08-09. S1/S2/S3 selected by operator and dived-and-indexed as intake-1028/1029/1030 (dive-verified). S4 (vllm-torch-compile-fusions.md) declined by operator and recorded in intake-1026 dive_corrections.",
+    "stage3_plan": "/home/node/.claude/plans/generic-skipping-finch.md",
+    "stage3_plan_status": "approved 2026-08-09",
+    "time_sensitive": "FrontisAI/OpenRSI PR #2 (draft, opened 2026-08-09) proposes to publish the OpenMLE evaluation sandbox that the intake-940 dive named as the hard reproducibility blocker. Draft PRs merge or die; the observation decays.",
+    "operator_constraint_personal_use_only": "Non-commercial licence terms (CC BY-NC) are NOT an adoption blocker. Personal use only. Applies retroactively to intake-1024 reasoning.",
+    "dive_surfaced_sources": [
+      {
+        "id": "S1",
+        "ref": "LifeIsSoSolong/OpenRSI@codex/openmle-sandbox (PR #2 tree, 7617 lines)",
+        "bears_on": "intake-1024",
+        "settles": "whether the OpenMLE grading service is actually deployable, and what its execution-isolation model really is",
+        "recommendation": "ingest-and-dive"
+      },
+      {
+        "id": "S2",
+        "ref": "sglang .claude/skills/.../references/fuse-overlap-catalog.md + overlap-catalog.md",
+        "bears_on": "intake-1026",
+        "settles": "the concrete row schema, provenance tiering and refresh procedure for a gfx90a/llama.cpp catalog analogue",
+        "recommendation": "ingest-and-dive"
+      },
+      {
+        "id": "S3",
+        "ref": "sglang python/sglang/kernels/ops/attention/fla/ tree + cutedsl_gdn.py + bench_gdn_replayssm_fold.py",
+        "bears_on": "intake-1025",
+        "settles": "the per-stage kernel contract K28 would target, and whether an existing GDN microbenchmark is portable",
+        "recommendation": "ingest-and-dive"
+      },
+      {
+        "id": "S4",
+        "ref": "sglang .claude/skills/.../references/vllm-torch-compile-fusions.md",
+        "bears_on": "intake-1026",
+        "settles": "whether torch.compile fusion passes suggest ggml-graph fusion analogues",
+        "recommendation": "decline - narrow, torch.compile-specific, no ggml analogue"
+      }
+    ],
+    "entries_processed": [
+      "intake-1024",
+      "intake-1025",
+      "intake-1026",
+      "intake-1027",
+      "intake-1028",
+      "intake-1029",
+      "intake-1030"
+    ],
+    "stage4_handoff_count": 8,
+    "stage4_new_task_lines": 31,
+    "stage4_checkbox_flips": 0,
+    "stage4_governance": "SKILL.md Stage-2b cap removed; external-citation provenance contract added; reader_should_conclude added to schema and backfilled to 24 entries; 8 malformed cross-refs re-quoted; cross-reference migration 2026-08-09: 446 annotated IDs normalised to bare IDs, 9 free-prose and 3 placeholder values moved to a new intake_entry_notes sibling, 458 annotations preserved verbatim, 0 values lost, 0 unresolvable remaining; citation graph 1494 -> 1940 resolvable edges across 133 entries; backfill set recomputed against the repaired graph and intake-547 added (25 total)"
   },
   "steering_ledger": [
     {
       "seq": 1,
       "stage": 2,
-      "ts": "2026-08-07T13:58:18Z",
-      "verbatim": "\"LFM2.5-2.6B (https://www.liquid.ai/blog/lfm2-5-2-6b) is a plausible inexpensive agent candidate, but “without restrictions” conflicts with\n    the released model license’s $10M annual-revenue threshold.\" - who cares. We're not building for commercial purposes. This seems like a very promising candidate to replace gemma4 as worker_general.\n\n\"Prime Agent (https://www.primeintellect.ai/blog/prime-agent) contains useful persistence and recovery patterns, but its Factorio experiment\n    explicitly reward-hacked the environment and converted the exploit into reusable skills. The related Continual Harness\n    (https://arxiv.org/abs/2605.09998) should therefore remain a shadow-mode proposal mechanism behind existing keep/revert gates.\" - looking forward to the deep dive on this to see what can be exported/merged from it into our stack.\n\n  \"The Pokee-Isaac report (https://console.pokee.ai/pokee-isaac-28b-v0-technical-report.pdf) is relevant but presently proprietary and\n    non-reproducible. Its B200 results do not transfer to MI210, and several comparisons mix model failures with endpoint, harness, and\n    infrastructure failures.\" - yes, I'm aware but was wondering whether any functionalities can be independently re-engineered by us for our own purposes.\n\n\"  - VerMem (https://arxiv.org/abs/2608.03137) substantially improves memory-evaluation methodology, but its public repository implements\n    rule-based verifiers rather than the paper’s load-bearing DeepSeek semantic verifiers.\" - looking forward to this deep dive also. I'm sure more itneresting material will surface.\n\nproceed with recommended dives",
-      "disposition": "incorporated-stage2",
-      "plan_ref": "STAGE3-SELECTED-DIVES"
+      "verbatim": "Deep dive all recommended intakes.",
+      "disposition": "planned",
+      "plan_ref": "stage2-dives-1024-1025-1026"
     },
     {
       "seq": 2,
       "stage": 2,
-      "ts": "2026-08-07T14:24:04Z",
-      "verbatim": "\"LFM2.5-2.6B (https://huggingface.co/LiquidAI/LFM2.5-2.6B) is a credible worker_general challenger. The noncommercial license use is not a\n    blocker; frozen v8 already supports LFM2 loading and its specialized tool-call syntax. The real gate is a direct Q4_K_M comparison against\n    Gemma4 26B-A4B, including mandatory-reasoning overhead, tool compliance, task success, memory, and wall time.\" - at such a small model size, we should test Q8 also.\n\n\"Prime Agent (https://github.com/PrimeIntellect-ai/prime-agent) contributes two concrete missing invariants: a process-safe session lease\n    and an uncertain-side-effect recovery journal. Most other persistence, scheduling, rollback, and optimization features overlap existing\n    EPYC capabilities.\n\n  - Continual Harness (https://arxiv.org/abs/2605.09998) belongs in shadow proposal generation behind existing keep/revert gates. Its\n    implementation lacks held-out acceptance, transactional rollback, reward-hacking protection, and a genuine sandbox. The 842-repeat\n    invalid-tool loop and Factorio exploit make excellent adversarial fixtures.\" - interesting.\n\n\"- Pokee-Isaac (https://console.pokee.ai/pokee-isaac-28b-v0-technical-report.pdf) yields clean-room implementable evaluation/service patterns:\n    joint long-context quality and serving metrics, typed failure attribution, same-harness security evaluation, scoped tools, resumable\n    sessions, sandboxing, and trace replay. Its 10M-context architecture cannot be reconstructed from the report.\" - so there are no hints that we could use to speculate as to how they enable 10M context windows? Is it a REPL trick of some kind? I'm still of the opinion that working with a REPL and focusing and yper-precise tool calls is the most efficient way to proceed.\n\n\"VerMem (https://arxiv.org/abs/2608.03137) materially improves memory evaluation over Cognitive Workspace. Its operation, provenance,\n    version, rollback, and tombstone schemas are worth prototyping in shadow traces. The released rule-based verifiers cannot support the\n    paper’s reported semantic-verifier gains.\" - lets take/implement everythign we can get.\n   \"  Stage 2 surfaced five recommended follow-up sources:\n\n  1. Official LFM GGUF repository (https://huggingface.co/LiquidAI/LFM2.5-2.6B-GGUF) — fixes the exact deployment artifact.\n  2. Continual Harness implementation (https://github.com/sethkarten/continual-harness) — establishes actual proposal, persistence, and sandbox\n     behavior.\n\n  3. DTAP (https://arxiv.org/abs/2605.04808) — primary security-evaluation contract behind Pokee’s confounded comparison.\n  4. Mem0 (https://arxiv.org/abs/2504.19413) — production-oriented cross-session persistence/deletion comparator.\n  5. Memory-R1 (https://arxiv.org/abs/2508.19828) — direct RL memory-management comparator for VerMem’s operation-level credit.\" -  proceed with depp diving  all five of the recommended literature expansion.",
-      "disposition": "incorporated-stage2b",
-      "plan_ref": "research/intake-stage3-plan-2026-08-07-agent-memory-worker-security.md"
+      "verbatim": "The profiling deep dive shoudl inform hwo autokernel can be made more efficient at exploring optimizations.",
+      "disposition": "planned",
+      "plan_ref": "dive-1025/1026 -> autokernel-research-loop.md derived-actionables"
     },
     {
       "seq": 3,
-      "stage": 3,
-      "ts": "2026-08-07T15:32:00Z",
-      "verbatim": "Proceed",
-      "disposition": "approved-and-landed",
-      "plan_ref": "research/intake-stage3-plan-2026-08-07-agent-memory-worker-security.md"
+      "stage": 2,
+      "verbatim": "RE: \"resolve the CC BY-NC vs general.license\" STOP WORRYING ABOUT COMMERCIAL LICENSES. This project is personal use ONLY",
+      "disposition": "planned",
+      "plan_ref": "correct intake-1024 verdict_justification + drop licence actionable; update standing licensing policy"
+    },
+    {
+      "seq": 4,
+      "stage": 2,
+      "verbatim": "\"Four sources the dives surfaced. Cap is 5; each costs a full dive.\" - THERE IS NO CAP!! Where are you reading that there is one. Deep dice all newly surfaced literature also (except S4)",
+      "disposition": "planned",
+      "plan_ref": "stage2b-dive-S1-S2-S3; S4 declined by operator"
+    },
+    {
+      "seq": 5,
+      "stage": 2,
+      "verbatim": "\"It's in your own skill file - .claude/skills/research-intake/SKILL.md:266-268, restated at :428 and enforced by an anti-rationalization row at :465.\" - we must remove this cap as part of this session. I never want to hear about it agian",
+      "disposition": "planned",
+      "plan_ref": "STAGE-4 ITEM: strike the Stage-2b 5-entry cap from SKILL.md at :266-268, :428, :465 (and the Stage-1 'cap 10' report line at :196 if it is the same rule) - MUST land this session"
     }
-  ]
+  ],
+  "stage4_completed": "2026-08-09"
 }

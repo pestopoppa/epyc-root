@@ -417,3 +417,50 @@ Per-lane VGPR fragment cost (elements/lane = rows×cols/64; fp16/bf16 packed 2/V
 - Confirm `mma.cuh` compiles the `AMD_MFMA_AVAILABLE` path in the current `build-hip` before committing to Phase 2.
 - Verify the UT-transform sign against the reference kernel: `(I + strictLower(...))⁻¹` (Appendix 1).
 - Run **Phase 0 attribution first** and let the modeled ceiling — not this document — decide whether Phase 1 proceeds.
+
+## 2026-08-09 — what SOTA actually ships (research-intake Stage-2b, reference only)
+
+Source: [intake-1030](../../research/intake_index.yaml), dive-verified 2026-08-09 by reading
+`sgl-project/sglang` `main` (Apache-2.0). **Reference material — no checkboxes here by design; the
+tasks are K28-R1..R4 in [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).**
+
+This handoff's core framing is that "the chunked *algorithm* is what every SOTA engine ships
+(FLA -> vLLM/SGLang, FlashQLA, TFLA)" and that what loses on MI210 is llama.cpp's *generic-ggml
+decomposition* into ~150+ separate ops. That comparison was argued but never enumerated. It is now.
+
+**THE HEADLINE, AND IT LOWERS THE BAR.** SGLang does **not** run one monolithic fused recurrence
+kernel. It runs **four separately-autotuned Triton stages behind a single autograd wrapper**, keeping
+chunk-local tensors on-chip between them. Matching that is materially easier than matching a single
+hand-fused megakernel, which is what "a real fused kernel" in Part B implicitly sets up.
+
+| Stage (as described in intake-1025) | Entrypoint | Triton kernel | File | Lines |
+|---|---|---|---|---|
+| local cumulative sum | `chunk_local_cumsum` | `chunk_local_cumsum_{scalar,vector}_kernel` | `fla/cumsum.py` | 294 |
+| "KKT solve" (WY/UT transform) | `recompute_w_u_fwd` | `recompute_w_u_fwd_kernel` | `fla/wy_fast.py` | 156 |
+| chunked state update / recompute | `chunk_gated_delta_rule_fwd_h` | `chunk_gated_delta_rule_fwd_kernel_h_blockdim64` | `fla/chunk_delta_h.py` | 386 |
+| output | `chunk_fwd_o` | `chunk_fwd_kernel_o` | `fla/chunk_o.py` | 174 |
+
+Orchestrated by `chunk_gated_delta_rule_fwd` -> `ChunkGatedDeltaRuleFunction` ->
+`chunk_gated_delta_rule` in `fla/chunk.py` (262 lines, zero `@triton.jit` — it is the orchestrator).
+The wider `python/sglang/kernels/ops/attention/fla/` tree holds 23 files including
+`fused_gdn_gating.py`, `fused_recurrent.py`, `fused_sigmoid_gating_recurrent.py`, `fused_norm_gate.py`,
+`layernorm_gated.py`, `l2norm.py`, `chunk_intra{,_token_parallel}.py`, `kda.py` and the
+`gdn_replayssm` spec-decode/fold variants. Prologue projection is
+`fused_qkv_split_gdn_prefill` (`attention/triton_gdn_fused_proj.py:356`, Triton kernel at `:314`).
+
+**PORTABILITY SIGNAL.** All four stage files are pure Triton with `@triton.jit` plus
+autotune/heuristics and carry **no `is_cuda` guard and no device-capability check**. That is a
+necessary condition for gfx90a, not a sufficient one — autotune configs, block sizes and `num_warps`
+are NVIDIA-SM-shaped, and nothing here has been compiled or run on gfx90a. `cutedsl_gdn.py` and
+`cutedsl_gdn_mtp_ring.py` in the parent directory are **NVIDIA-only and declined**.
+
+**NAMES DRIFT — cite by role and commit.** intake-1025's article and intake-1029's catalog refresh grep
+(written against sglang head `8524678889485801e7a4a12d62015be0c68f7a90`, 2026-06-26) both name a
+`chunk_gated_delta_rule_fwd_kkt_solve_kernel`. **No such symbol exists in current source**; that stage
+is `recompute_w_u_fwd_kernel`. Neither source was wrong when written, both are wrong now, and neither
+recorded the head it was true at. Also note the search hazard that nearly produced a false negative
+here: grepping `srt/models/qwen3_5.py` alone returns **zero** hits for all four kernel names — they
+live in `kernels/ops/attention/`, a different tree. Verify absence in the kernels tree, not the model tree.
+
+**Scope of this dive**: the FORWARD pass as used in serving. The backward pass, and the fold and
+spec-decode variants, were not read.

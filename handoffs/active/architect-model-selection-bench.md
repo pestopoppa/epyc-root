@@ -605,3 +605,19 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
   wall time. Publish Q8-minus-Q4 and each-LFM-minus-Gemma paired deltas. Do not change the role alias,
   registry, stack manifest, or production process unless a later operator decision accepts a
   decision-grade Pareto result.
+
+## 2026-08-09 — OpenRSI release-state watch (research-intake Stage-2b)
+
+- [ ] **Watch FrontisAI/OpenRSI PR #2 ("feat(gym): add OpenMLE Sandbox") to a decision.** State at
+  ingest: DRAFT, 30 files, +7,617/-0, one commit, `mergeable_state: clean`, opened 2026-08-09 from
+  fork `LifeIsSoSolong/OpenRSI` branch `codex/openmle-sandbox` by an account with GitHub
+  `author_association: NONE` — **not a Frontis account by any GitHub signal**. It publishes the
+  distributed grading service that intake-940's dive named as the hard blocker on reproducing the
+  paper tables. **TRIGGER**: if it merges, re-open that reproducibility finding
+  ([intake-1024](../../research/intake_index.yaml) → intake-940). If it is abandoned, record that the
+  blocker hardened. `main` was last pushed 2026-08-04, five days before the PR, so nothing has landed.
+  **Caveat if it does merge**: reproduction would still require pulling worker and controller images
+  from an external registry (they are not in the patch) and reconfiguring this host to cgroup v1 via a
+  GRUB edit plus reboot — a host-boot change that is operator-only. The patch also ships default DB
+  passwords and two internal RFC1918 worker IPs that the project's own `docs/validation.md` claims the
+  public release scrubbed, which corroborates it as an unscrubbed internal snapshot.

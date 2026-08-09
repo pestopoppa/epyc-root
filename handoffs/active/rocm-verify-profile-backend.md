@@ -162,3 +162,53 @@ _Via /research-intake Stage-2 (intake-884 HyRA, intake-885 OpenHyra). OpenHyra e
 
 ### Follow-up discovered during C6 implementation — 2026-07-22
 - [ ] The C6 harness (`scripts/kernel_rnd/c6_reward_integrity.py`) Linux sandbox (bwrap/unshare+RLIMIT) **fails closed** and is bypassed via `allow_unsandboxed` only because the devcontainer lacks bwrap/user-namespaces (it is itself the isolation boundary). Before real MI210 kernel-authoring runs, verify a working sandbox backend on the host and remove the unsandboxed override there.
+
+## 2026-08-09 — C4 report contract and capture protocol (research-intake Stage-2b)
+
+Source: [intake-1026](../../research/intake_index.yaml) (SGLang `llm-torch-profiler-analysis` skill) and
+intake-1029 (its two reference catalogs), both dive-verified 2026-08-09 against
+`sgl-project/sglang` `main`. SGLang is Apache-2.0. **These are design references, not components** —
+the upstream tooling parses torch-profiler Chrome traces and declares no ROCm path anywhere.
+
+- [ ] **RVP-1 — Adopt the three-table output contract as the C4 report spec**: kernel /
+  overlap-opportunity / fuse-pattern, rendering only rows at or above a `1.0%` cumulative GPU-time
+  share. **The report layer is separable from the parser** — verified in source:
+  `scripts/analyze_llm_torch_profile.py` renderers (`render_kernel_table_for_stage`,
+  `render_overlap_table_for_stage`, `render_fuse_table_for_stage`) all take `rows: Sequence[dict]`,
+  with parsing delegated to sibling `triage_kernel_helpers` / `triage_overlap_helpers` /
+  `profile_common` modules. So only a `rocprofv2` row adapter has to be built. Adopt the determinism
+  rule verbatim (source-backed matching, explicitly *not* a fuzzy matcher) and the bounded
+  `high` / `medium` / `low` similarity vocabulary.
+- [ ] **RVP-2 — Split the C4 HIGH-risk path into a deterministic pass plus a bounded judgment pass,
+  then re-score the C4 row.** C4 currently reads as "GEAK-v2 LLM-reads-raw-`rocprof`". The reference
+  design does not do that: a deterministic script emits the tables, and the model is confined to the
+  similarity note and the catalog comparison. This *shrinks* the trusted surface rather than adding
+  to it, and is the cheapest available de-risking of the standing HIGH-risk row.
+- [ ] **RVP-3 — Adopt the two-trace mapping/formal protocol.** Capture an attribution trace first with
+  graphs disabled or a lower-fusion configuration, then a formal trace with the real optimizations on,
+  because graphs and fusion destroy `kernel -> cpu_op -> source` mapping. Upstream explicitly forbids
+  calling the mapping pass a fast profile. **Convergence worth naming**: this handoff already records
+  that `rocprof` v1 *aborts at init on graph-enabled builds*. The capture mode our profiler can
+  survive is the same one that yields source attribution — so this is a two-phase protocol, not a
+  workaround for a defect.
+- [ ] **RVP-4 — Adopt the capture discipline**: warm up before arming the profiler and bound the
+  capture (upstream default is 10 warm-up / 5 active steps), and keep prefill and decode captures
+  stage-separated so they are never averaged together.
+- [ ] **RVP-5 — Adopt architecture-shape matching as a profiling primitive.** Attribute trace structure
+  to *architectural blocks*, not only to kernel names: repeating trace groups map to the model's layer
+  pattern. Kernel names drift (see the K28 rename evidence in
+  [`k28-fused-chunked-gdn-kernel-research.md`](k28-fused-chunked-gdn-kernel-research.md)); block
+  structure does not.
+- [ ] **RVP-6 — Log RocmProfileData (RPD) as a fourth profiler candidate** alongside `rocprofv2`,
+  `rocprof` v1 and `omniperf`, and check gfx90a availability before assuming any RPD-based workflow is
+  reachable on this box. Source intake-1027 is `stage1-unverified` and is MI300X/gfx942 only —
+  **no figure from it may be cited for any purpose.**
+- [ ] **RVP-7 — Decide our catalog scope deliberately instead of inheriting it.** intake-1029's catalog
+  excludes "host-only scheduler, event-loop, executor, offload, and load-path patterns" by explicit
+  written policy. A host/device transfer bottleneck therefore has no row and cannot be surfaced by a
+  kernel-time-share table at all. Either widen the scope or pair the catalog with a host-side one.
+
+**Declined here, recorded so they are not re-derived**: (a) inheriting the upstream synthetic stage
+shapes (prefill `4090`/`1`, decode `1`/`2048`) without re-deriving from our own production
+prompt-length distribution — a gate's scope must match the measured subset; (b) adopting the upstream
+analysis scripts as a component, since they parse torch Chrome traces and `rocprof` output is not one.

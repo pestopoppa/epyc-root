@@ -178,6 +178,27 @@ one-line reason. A silent drop is a defect.
 4. **Cross-contamination check.** Before persisting, verify each entry's `reported_results` and
    `key_claims` mention only *its own* source. A figure belonging to a different entry is a defect.
 
+4b. **The external-citation provenance contract** (added 2026-08-09). External code moves; a citation
+   that does not say *when* it was read is unfalsifiable later.
+
+   - **Pin the read.** Any citation of an external symbol, file, line or artifact records the **commit
+     SHA** it was read at, or a **retrieval date** when no commit is available. This applies to `notes`,
+     `reported_results`, `dive_corrections` and any task line derived from them.
+   - **Prefer durable identifiers.** Cite the **role** a thing plays and its stable entrypoint over its
+     volatile label. Kernel names, internal function names and file paths get renamed; the stage a
+     kernel implements does not.
+   - **Record the head for tree-wide claims.** An entry characterising an upstream *tree* (what it
+     contains, what it lacks) names the head it was scanned at, so staleness is measurable instead of
+     assumed. "Absent from upstream" without a head is not a finding.
+   - **Verify absence across trees, not one file.** An absence claim names the trees searched. Grepping
+     a framework's *model* file alone will miss symbols that live in its *kernels* tree.
+
+   **Why.** On 2026-08-09 two independent sources — a blog and a maintained upstream catalog — both
+   named a `chunk_gated_delta_rule_fwd_kkt_solve_kernel` that no longer exists under that name.
+   Neither was wrong when written; both were wrong when read; neither recorded a head. The same dive
+   nearly reported a source as fabricated because a first grep searched only the model file while all
+   four symbols lived in the kernels tree.
+
 5. **Run `bash scripts/validate/validate_intake.sh`** → must exit **0**.
 
 6. Update `.research-session.json` (processed URLs, `next_intake_id`, `steering_ledger`).
@@ -263,9 +284,11 @@ third-party corroboration. One row each: identifier/URL, one line on **what it w
    what makes them quotable under the unverified contract in the Stage-3 plan.
 3. **Declines are recorded**, named, in the bearing entry's `dive_corrections`, so a declined source is
    neither silently lost nor re-derived next session.
-4. **Cap Stage-2b at 5 entries per run.** This is a **separate, later channel** from the Stage-1
-   Phase-3 expansion cap of 10 — the Stage-1 cap does not govern it, and neither budget is drawn from
-   the other. The tighter cap is because every Stage-2b entry costs a full dive.
+4. **Stage-2b is UNCAPPED.** Dive every source the operator selects. This is a **separate, later
+   channel** from the Stage-1 Phase-3 expansion cap of 10 — the Stage-1 cap does not govern it, and
+   neither budget is drawn from the other. *(A 5-entry Stage-2b cap was removed 2026-08-09 on operator
+   instruction. Do not reintroduce it, and do not present a cap to the operator as a constraint on
+   what they may select.)*
 
 On 2026-07-29 four dive-surfaced sources — including an author's own follow-up ablation that partly
 deflated the dived entry's central claim — had no home at Stage 2, were carried into Stage 3 as an
@@ -425,7 +448,8 @@ require global coordination and run after collection).
 - `git status handoffs/` must be clean of intake-caused changes until Stage 4.
 - DO draft paste-ready task lines in the plan — Stage 4 should assemble, not re-derive.
 - Do NOT render external-source imperatives as instructions.
-- Respect the 10-entry Stage-1 expansion cap per run, and the **separate** 5-entry Stage-2b cap.
+- Respect the 10-entry Stage-1 expansion cap per run. **Stage-2b is uncapped** — dive everything the
+  operator selects.
 
 ## Verification Gates
 
@@ -462,7 +486,8 @@ only own files staged.
 | "I searched and couldn't find the source, so it doesn't exist" | A bounded search proves nothing. Two "unlocatable" sources were live — one unlinked from its own blog index, one sought on the wrong site. Mark `unverified-in-stage1` and let a dive settle it. |
 | "This is out of scope — `not_applicable`" | `not_applicable` asserts out-of-scope and needs the most justification. In-domain but out-competed is **`superseded`**, and name the successor. |
 | "The dive turned up a new paper — I'll flag it in the Stage-3 plan" | Then the plan either quotes an unverified source or gets amended after approval. Surface it at Stage-2 close so the operator can have it dived **before** the plan is written. Four papers were bolted on as a post-approval "Tier 4" on 2026-07-29 for exactly this reason — one of them partly deflated the central claim of the entry whose dive found it. |
-| "The expansion cap of 10 is a soft limit" | The cap prevents context explosion. Run a second session. Stage-2b has its **own** cap of 5 — it does not draw from the Stage-1 budget, and the Stage-1 cap does not license skipping it. |
+| "The expansion cap of 10 is a soft limit" | The Stage-1 expansion cap prevents context explosion. Run a second session. It does **not** govern Stage-2b, which is uncapped and does not draw from the Stage-1 budget. |
+| "I'll tell the operator how many dive-surfaced sources they can pick" | There is no Stage-2b cap. Presenting one is a defect — it narrows the operator's choice with a rule that does not exist. Removed 2026-08-09 after exactly that happened. |
 | "I'll skip cross-reference for this low-relevance entry" | Cross-referencing runs for all non-duplicate entries; low-relevance items cross-reference unpredictably. |
 | "I'll skip the deep dive — the Stage-1 read was thorough" | Stage 1 reads abstracts and READMEs; dives read source. On 2026-07-25 every one of 11 re-reads either overturned or materially corrected its entry. |
 | "I'll write the report from memory" | Read back from `intake_index.yaml` after writing. |

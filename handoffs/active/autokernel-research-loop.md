@@ -3254,3 +3254,66 @@ workload exposure re-rank it.
 - The planner context remains bounded, cites every retrieved item by ID and source locator, and renders
   external content in quarantine form.
 - T1 positive/neutral/negative/A-A controls calibrate sampling and noise floors before novel research.
+
+---
+
+## 20. Prior-art gating and the known-optimization catalogue — 2026-08-09 (research-intake Stage-2b)
+
+Source: [intake-1026](../../research/intake_index.yaml) (SGLang `llm-torch-profiler-analysis` skill) and
+intake-1029 (its `fuse-overlap-catalog.md` / `overlap-catalog.md`), plus intake-1028 (the OpenMLE
+sandbox service). All dive-verified 2026-08-09; SGLang is Apache-2.0.
+
+**The gap this section closes.** §8.4 rejects a proposal when "the same mechanism was falsified under
+matching conditions **by an entry carrying a receipt**" — a gate over *our own* negative history. §19
+imports *the project's own* historical research. Neither gates against **upstream prior art**. A loop
+that cannot tell "nobody has done this" from "this is mainline elsewhere and we simply do not have it"
+will spend kernel-authoring budget rediscovering ports.
+
+- [ ] **AK-CAT-1 — Add a four-way prior-art classification to §8.4 PROPOSE.** Before a finding may be
+  called novel, classify it as exactly one of: (a) an existing path that should already apply here;
+  (b) an existing path that appears disabled, unsupported or regressed in this trace; (c) a pattern
+  mainline upstream but missing locally, or still open upstream; (d) genuinely new, only when no
+  catalogue row fits. **Buckets a–c exit to a config, flag or port change**, not to a campaign.
+- [ ] **AK-CAT-2 — Build a gfx90a/llama.cpp prior-art catalogue (§19 corpus).** Copy the reference
+  five-column schema exactly: `| Pattern | Trace keywords | Primary code | Existing path | Reader
+  should conclude |`, with trace keywords bound to `rocprofv2` kernel names and primary code to
+  ggml/llama.cpp symbols. **The pre-written conclusion column is the load-bearing one** — it moves the
+  verdict out of model judgment at read time and into reviewable data at authoring time, which is the
+  same move MEASUREMENT_POLICY's claim grammar makes for measurement claims. Partition rows **mainline
+  vs in-flight**: a pattern merged upstream but absent from FROZEN `production-consolidated-v8` is a
+  **PORT, not a research proposal**, and that distinction currently has no column anywhere.
+- [ ] **AK-CAT-3 — Build the expected-absence register BEFORE the catalogue rows.** The reference
+  carries a 15-row toggles table whose column is literally "effect on trace interpretation", including
+  cases where a flag *intentionally* disables a fast path so split kernels are expected. Without it,
+  every legitimately-disabled path reads as a missing optimization. Our substrate is
+  [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md), which inventories flags
+  without their expected trace consequence. This is the three-states-not-two discipline as data.
+- [ ] **AK-CAT-4 — Adopt the pinned-head refresh discipline.** The reference pins the upstream head of
+  every scanned project with a dated note and ships the exact scan commands, making staleness
+  *measurable* rather than asserted. Record the commit each scan was taken against.
+- [ ] **AK-CAT-5 — Add a cumulative GPU-time-share floor as a proposal-space pruner** (reference
+  default `1.0%`). §8.4's wall-share ceiling validates a candidate *after* it is generated; a floor
+  prunes the space *before* generation. Complementary, and cheaper.
+- [ ] **AK-C6-1 — Name syscall confinement explicitly in C6's acceptance criteria.** intake-1028 is a
+  purpose-built, professionally structured distributed execution sandbox — controller, dispatcher,
+  router, Docker workers with `--cpus`/`--memory`/`--gpus device=` limits — that nonetheless launches
+  **every** worker with `--security-opt seccomp=unconfined`, on containers whose entire job is running
+  untrusted model-generated code. "Runs in a container" is not "sandboxed". Relatedly, its
+  `openmle_gym/sandbox_exec.py` is named for a sandbox and documented as executing "inside the
+  configured OS sandbox" while implementing `spec.loader.exec_module` in-process with no isolation —
+  a live instance of the naming hazard this loop's C6 item exists to prevent.
+- [ ] **AK-C6-2 — Harvest the controller/dispatcher/router/worker + SQL job-store split as a design
+  comparator** for owned-scope candidate execution, specifically its **idempotency migration** — the
+  mechanism for not double-running a submitted job after a controller restart. That is the same class
+  of problem as autopilot rewind having to purge the strategy store. Comparator only; the stack itself
+  is declined (external registry images, cgroup-v1 host reboot).
+- [ ] **AK-KM-1 — Record the model-tree-vs-kernel-tree search rule in the §19 corpus.** Verifying a
+  symbol's absence in a framework's *model* file alone produces a false negative; this session nearly
+  reported a source as fabricated for exactly that reason before finding all four symbols in the
+  *kernels* tree. Absence claims must name the trees searched.
+- [ ] **AK-DEL-1 — SCOPE-REDUCTION GATE: measure the bucket split before building any novel-kernel
+  proposal generator.** Run AK-CAT-1 once over real findings and record how many land in each of the
+  four buckets. If a–c dominate — as the reference workflow's own "prefer reporting" ordering implies
+  they will — then generative capacity aimed at bucket (d) is aimed at the smallest slice of the
+  space, and the cheaper win is a better catalogue. **This item exists to shrink scope, not to add
+  machinery; it must be run before AK-CAT-2 is expanded past a seed set.**

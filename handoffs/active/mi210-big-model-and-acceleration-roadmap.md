@@ -245,6 +245,29 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
       raise the Phase 0 ceiling; `K28.5` stays open only for direct profiler or
       throwaway-prototype evidence. Artifact:
       `data/k28_gdn_perf/k28-qwen35moe-gpu-trace-verbose-pinned-20260720T112158Z/summary.json`.
+  - [ ] **K28-R1 — Adopt the SGLang `fla/` four-stage decomposition as K28's named reference**
+    (research-intake 2026-08-09, intake-1030 dive-verified against `sgl-project/sglang` `main`).
+    Cite by stage ROLE + entrypoint + pinned commit, never by kernel name alone (see K28-R4):
+    `chunk_local_cumsum` (`fla/cumsum.py`) -> `recompute_w_u_fwd` (`fla/wy_fast.py`, the WY/UT
+    transform) -> `chunk_gated_delta_rule_fwd_h` (`fla/chunk_delta_h.py`) -> `chunk_fwd_o`
+    (`fla/chunk_o.py`), orchestrated by `chunk_gated_delta_rule_fwd` / `ChunkGatedDeltaRuleFunction`
+    in `fla/chunk.py`. **This reframes the effort**: the SOTA engine is NOT running one monolithic
+    fused kernel — it runs four separately-autotuned Triton stages with on-chip chunk locality, a
+    materially easier target to match. Detail in
+    [k28-fused-chunked-gdn-kernel-research.md](k28-fused-chunked-gdn-kernel-research.md).
+  - [ ] **K28-R2 — Cheap first probe: attempt `fla/bench_gdn_replayssm_fold.py` under torch-ROCm on
+    gfx90a.** 127 lines, argparse-driven, device-parameterized (`torch.Generator(device=device)`,
+    `torch.randperm(..., device=device)`), with no CUDA-only API in the sampled surface. Far cheaper
+    than authoring a kernel, and it is a candidate route to the direct GDN attribution that K28.4/K28.4a
+    could not obtain because the ROCm profilers were absent. Feeds the K28.5 proof gate.
+  - [ ] **K28-R3 — Sequence K28-R2 behind the `pytorch-triton-rocm` install/verify task in
+    [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md).** All four stage kernels are pure
+    Triton with autotune and no `is_cuda` guard, so gfx90a is plausible — but nothing here is evaluable
+    until Triton compiles for gfx90a. That task is the gating dependency, not an unrelated item.
+  - [ ] **K28-R4 — Test whether the fixed 64-wide blocking in
+    `chunk_gated_delta_rule_fwd_kernel_h_blockdim64` is dimensionally favourable on CDNA2** (64-lane
+    wavefront vs NVIDIA's 32-lane warp). **HYPOTHESIS ONLY** — the 64 may denote a feature-dimension
+    tile rather than lane geometry; confirm from the kernel body before building on it.
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
 

@@ -36,6 +36,7 @@ Each entry in `research/intake_index.yaml` follows this schema.
 | `citation_context` | string | Surrounding text where this was cited (seed entries only) |
 | `notes` | string | Free-form analysis notes, deep-dive findings, revision history |
 | `verification` | enum | `stage1-unverified` (default on Stage-1 persist) · `dive-verified` · `dive-overturned`. **Set by Stage 1; promoted only by a Stage-2 dive that read primary source.** |
+| `reader_should_conclude` | string | A **directive to a future agent**, not prose for a human: what a reader consulting this entry should take away and what they must not. See below. |
 | `dive_corrections` | string | Dated record of what a Stage-2 dive changed, so an overturned conclusion cannot be re-derived. Append-only. |
 | `integration_disposition` | enum | Workflow disposition: `integrated`, `knowledge_only`, `monitor`, `declined`, or `awaiting_dive`. This describes how the source is handled; `integrated` means routed into a durable owner, not necessarily deployed code. |
 | `disposition_evidence` | list[string] | One or more repository-grounded reasons for the disposition. Required whenever `integration_disposition` is present. |
@@ -65,7 +66,27 @@ cross_references:
   handoffs: ["tree-speculation-numa-drafting.md"]
   experiments: ["specexec-verification-profile.md"]
   intake_entries: ["intake-003"]
+  intake_entry_notes: ["intake-003 (SpecExec — the verification-profile source)"]
 ```
+
+### `intake_entries` must contain BARE IDs only (enforced 2026-08-09)
+
+`intake_entries` is the **citation graph**. Every value must be an exact, resolvable `intake-NNN`
+that exists in the index — nothing else. No annotation, no parenthetical, no free prose, no
+`intake-?` placeholder.
+
+Put the annotation in **`intake_entry_notes`**, an optional sibling list of free-form strings. The
+convention is to lead with the ID (`"intake-261 (Skill0 — RL-based skill internalization)"`) so the
+note stays greppable, but nothing parses it — it is for human readers.
+
+**Why this is enforced.** Before the 2026-08-09 migration, **458 of 1,952 cross-reference values
+(23.5%), across 133 entries, did not resolve** — overwhelmingly annotated IDs of the form
+`intake-261 (Title…)`. Any consumer building a citation graph silently dropped roughly a quarter of
+the edges, and the most-cited-entry ranking that a backfill was scoped from was wrong as a result. A
+second, sharper failure: eight of those annotations contained an unquoted `:`, so YAML parsed the
+list item as a **mapping** rather than a string, and the value stopped being a string at all. The
+migration normalised every value to a bare ID and preserved all 458 annotations verbatim in
+`intake_entry_notes`; nothing was discarded.
 
 ## ID Sequencing
 
@@ -111,6 +132,27 @@ the paper (and which had additionally been cross-pasted into an *unrelated* entr
 tool behaviour absent from its source, which contained two generic sentences. Both survived until a
 Stage-2 dive read the primary sources. The `verification` field makes that provisional status visible
 instead of invisible.
+
+## `reader_should_conclude` (added 2026-08-09)
+
+An optional, **directive** field. `verdict_justification` explains a decision to a human reviewer;
+this tells a future agent what to do with the entry. It exists because the expensive failure mode is
+not a missing entry, it is a correct entry whose conclusion gets **re-derived wrongly** by the next
+reader.
+
+Rules:
+
+- **Write it as an instruction, not a summary.** "Cite the stage list; never cite the L4 occupancy
+  figures" — not "this entry describes a profiling session".
+- **Say what must NOT be carried**, not only what may be. Most re-derivation errors are over-claims.
+- **Never write an affirmative conclusion on a `stage1-unverified` entry.** The only legitimate value
+  there is a prohibition ("unverified — do not cite any figure"). Writing an authoritative-sounding
+  conclusion on an unverified entry is precisely the failure this field exists to prevent.
+- **It does not replace `verdict`, `verdict_justification` or `dive_corrections`** and must not
+  contradict them. If it would, the dive was incomplete — fix the dive.
+
+Adopted from the SGLang profiler catalog's "Skill should conclude" column (intake-1029), where the
+pre-written verdict is what keeps the classification deterministic at read time.
 
 **Cross-contamination check.** Before persisting, verify each entry's `key_claims` and
 `reported_results` reference only its **own** source. A figure belonging to a different entry is a

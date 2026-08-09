@@ -631,6 +631,69 @@ Three "Research Intake Update" sections have surfaced **scoring-mechanism** upgr
 - [x] **AP-SI-2** — design validation gates for any self-improvement loop; gate on curated-baseline comparison (SkillsBench v3 caution) ✅ 2026-07-11
 - [x] **AP-SI-3** — evaluate ShinkaEvolve archive-based evolution for StrategyStore enrichment ✅ 2026-07-11
 
+## Research Intake Update — 2026-08-09: Meta-Evolutionary Search Layer (rec-005)
+
+**Source**: OpenRSI / OpenMLE-Evo ([intake-1024](../../research/intake_index.yaml), dive-verified 2026-08-09);
+parent paper intake-940 (dive-verified 2026-08-03).
+
+**Framing**: OpenMLE-Evo is a *test-time evolutionary search layer* over executable, objectively-scored
+candidates. Autopilot is already such a layer, so this is a mechanism comparison against a sibling
+design, not a new system. **Take the search/memory layer; discard OpenMLE-Gym** — intake-940
+established Gym's contract is `evaluate(y_true, y_pred) -> float` scoring a prediction file, which
+cannot express a throughput objective. Our T0/T1/T2 eval tower plus the AP-27 RLVR contract already
+occupy that layer and occupy it better for our objective space.
+
+**EVIDENCE CEILING — binds every item below.** intake-940's dive found **no selector-only ablation
+anywhere** in the source paper, and only two of its claims survive scrutiny. Everything here is a
+design pattern to test, never a validated win. Each must clear the guard stack the rec-004 section
+above already mandates: paired curated-baseline comparison, per-suite negative-delta rejection, the
+EV-10 skill-efficacy gate for skill-like artifacts, folded-journal evidence quarantine for
+StrategyStore projections, and explicit human-curated confirmation before enabling any live loop.
+**SkillsBench v3 (self-generated skills −1.3pp avg) is the standing prior.** None of these items
+authorizes inference; all are offline/schema-first.
+
+**Gaps verified against orchestrator source on 2026-08-09**, not assumed: `parent_utility` 0 files,
+`method_family` 0, `error_signature` 0, `experience_card` 0. **`crossover` EXISTS** —
+`scripts/autopilot/species/mutation_graph.py::informed_crossover_candidates`, consumed by
+`species/prompt_forge.py` — but it ranks donor *section ids* by frequency (`counter.most_common`)
+across Pareto-passing mutations, which is popularity, not complementarity. `novelty` appears once, at
+`scripts/autopilot/autopilot.py:5314`, as prose inside an `info_gain` description — a described
+consideration, not a computed term.
+
+- [ ] **AP-ME-1 — Per-operator context budgets.** `ShortTermMemory` (AP-22) is a single ~120-line
+  budget shared across the whole loop. Give each operator its own bound. Seed values from the shipped
+  OpenMLE-Evo config (`OpenMLE-Evo/tts_search/configs/search/airaevo.yaml`): global
+  `max_related_cards 3`; improve `ancestor_k 3` / `sibling_k 3`; crossover `2` / `2`; debug
+  `max_related_cards 8`. **Offline-first**: measure current per-operator context size before changing
+  anything, so the change has a baseline to beat.
+- [ ] **AP-ME-2 — Scored parent utility with an always-on novelty term.** P17's Bradley-Terry tiebreak
+  fires only *under hypervolume stagnation* — reactive de-concentration. Add a computed utility over
+  normalized score, gain-over-strongest-parent (positive-only) and method-family novelty
+  `1/sqrt(1+N_f)`, always on, so concentration is prevented rather than corrected. Complementary to
+  P17, not a replacement. **Use the SHIPPED weights `score 1.0 / delta 0.4 / novelty 0.25`** — present
+  in two places in `airaevo.yaml` — and NOT the paper's prose `1.0/0.6/0.3`; intake-940's dive proved
+  paper and code disagree and that the case study used an unreleased configuration. Islands are
+  inactive in every shipped profile (`num_islands 1`, `migration_prob 0.0`,
+  `initial_temp = final_temp = 1.0`), so **do not port island machinery**.
+- [ ] **AP-ME-3 — Complementarity cue for crossover donor selection**, replacing frequency ranking in
+  `informed_crossover_candidates`. **BSV-3 already computes a semantic conflict severity** over shared
+  subsystem, files touched, prompt sections touched, feature flags and behavior-signature delta. That
+  is a complementarity signal with its sign flipped — crossover donor pairing and BSV-3 conflict
+  scoring **must share one function** rather than be built twice with drifting definitions.
+- [ ] **AP-ME-4 — Deterministic `error_signature` plus a repeated-failures counter.** Per the
+  correction recorded in `autokernel-research-loop.md` §8.4.0, `ExperimentJournal.unfalsified_hypotheses()`
+  is a recency window over the last five trials checking presence of a falsifier string only, and
+  nothing marks a hypothesis resolved. A deterministic failure signature is the cheapest available
+  upgrade and is a precondition for AP-ME-1's debug budget to select anything meaningful.
+- [ ] **AP-ME-5 — Experience-card row schema** (provenance, score, error type, method family, resource
+  usage, novelty statistics) as the row type behind the StrategyStore / DesignArchive projections that
+  already exist and already validate clean (69/69 projected, 2026-07-11). **Schema only** — no new
+  autonomous loop, no live parent sampler.
+- [ ] **AP-ME-6 — Negative-evidence rendering discipline.** intake-940's dive narrowed this from an
+  exclusion filter to a *rendering* rule: a deterministic error signature per card plus a board-level
+  repeated-error counter, rendered as one compact typed line rather than raw prior-attempt text.
+  Failures still enter context — they enter it small. Pairs with AP-ME-4; feeds AP-ME-1's budgets.
+
 ## Known Issues — KV Cache seq_add Crash on Qwen3.5 Hybrids (2026-04-15, PATCHED)
 
 architect_general (Qwen3.5-122B-A10B, ports 8083+8183) crashed with assertion failure in `llama-kv-cache.cpp:614`:
