@@ -81,9 +81,12 @@ Operator priority: an integrated solution that works, not novelty.
       strict parser rejects. Repaired by deleting the superseded first block; citation graph proven
       identical before/after (2,007 edges, 1,067 entries); 1,840 dead lines removed; validator
       exit 0 ✅ 2026-08-09
-- [ ] D3 Add a duplicate-key check to `scripts/validate/validate_intake.sh` so this class fails
-      validation instead of surviving 538 times — the validator passed throughout because
-      `yaml.safe_load` silently takes the last key
+- [x] D3 Duplicate-key check added to the intake validator. It had to run at **parse** time — a
+      duplicate is last-one-wins in PyYAML, so by the time the validator inspects the parsed
+      structure the earlier value is already gone, which is why 538 instances passed cleanly for as
+      long as they existed. Implemented as a `SafeLoader` subclass that records duplicates with line
+      numbers; tested against BOTH paths (clean file exits 0; an injected duplicate fails with
+      `line N: duplicate key 'x'`) ✅ 2026-08-09
 
 ### V2 — Spec revision (the amendment sheet; first work package; blocks P1)
 

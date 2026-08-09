@@ -138,9 +138,53 @@ def _load_aliases(config: dict) -> dict[str, str]:
     return aliases
 
 
-def load_yaml(path: Path) -> object:
+class _DuplicateKeyLoader(yaml.SafeLoader):
+    """SafeLoader that records duplicate mapping keys instead of silently dropping them.
+
+    WHY THIS EXISTS: PyYAML's default behaviour on a duplicate key is last-one-wins, with no
+    warning. On 2026-08-09 an audit found 538 index entries carrying two
+    `cross_references.intake_entries` blocks each — the earlier list silently discarded on every
+    load — and this validator had passed cleanly through all 538 for as long as they existed,
+    because by the time it inspects the parsed structure the duplicate is already gone. The check
+    therefore has to happen at PARSE time; there is no way to see it afterwards.
+
+    Nothing was lost in that particular case (the surviving block was a superset every time), but
+    the file was malformed YAML that a strict parser rejects, and the next occurrence has no
+    reason to be so lucky.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.duplicate_keys: list[str] = []
+
+    def construct_mapping(self, node, deep=False):  # noqa: D102 - see class docstring
+        seen: set = set()
+        for key_node, _ in node.value:
+            try:
+                key = self.construct_object(key_node, deep=deep)
+            except yaml.constructor.ConstructorError:
+                continue
+            try:
+                if key in seen:
+                    line = key_node.start_mark.line + 1
+                    self.duplicate_keys.append(f"line {line}: duplicate key '{key}'")
+                seen.add(key)
+            except TypeError:  # unhashable key — YAML itself will complain
+                continue
+        return super().construct_mapping(node, deep=deep)
+
+
+def load_yaml(path: Path, dup_errors: list[str] | None = None) -> object:
+    """Load YAML. If `dup_errors` is given, duplicate-key findings are appended to it."""
     with open(path) as f:
-        return yaml.safe_load(f)
+        loader = _DuplicateKeyLoader(f)
+        try:
+            data = loader.get_single_data()
+            if dup_errors is not None:
+                dup_errors.extend(loader.duplicate_keys)
+        finally:
+            loader.dispose()
+    return data
 
 
 def validate_taxonomy(taxonomy: dict) -> list[str]:
@@ -388,7 +432,17 @@ def main() -> int:
         print("OK: Taxonomy valid, no index to validate")
         return 0
 
-    data = load_yaml(INDEX_PATH)
+    dup_errors: list[str] = []
+    data = load_yaml(INDEX_PATH, dup_errors=dup_errors)
+    if dup_errors:
+        shown = dup_errors[:20]
+        for d in shown:
+            errors.append(f"{INDEX_PATH.name}: {d}")
+        if len(dup_errors) > len(shown):
+            errors.append(
+                f"{INDEX_PATH.name}: ... and {len(dup_errors) - len(shown)} more duplicate keys "
+                "(a duplicate key is silently last-one-wins in YAML — the earlier value is lost)"
+            )
     entries = data if isinstance(data, list) else data.get("entries", [])
     if not entries:
         print("WARNING: Index is empty")
