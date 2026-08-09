@@ -86,6 +86,14 @@ class Ledger:
     def __init__(self, path: str | Path):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        # Append-time head cache. Without it `append` re-reads the whole file to find the tail,
+        # which is O(n) per append and O(n^2) over a bulk ingest -- a 9,449-frame adapter run
+        # would have parsed ~44M records. The cache is only trusted while the on-disk size matches
+        # what this process last wrote, so an external writer or an interrupted append invalidates
+        # it and the slow, correct path runs instead. Safe because the pilot is single-writer by
+        # construction (spec §11.0) and the invalidation is conservative.
+        self._cached_head: tuple[int, str] | None = None
+        self._cached_size: int | None = None
 
     # -- reading ---------------------------------------------------------
 
@@ -146,9 +154,15 @@ class Ledger:
 
     def append(self, frame: dict, *, frame_hash: str | None = None) -> LedgerRecord:
         """Append one frame. Returns only after the bytes are fsynced."""
+        is_new = not self.path.exists()
+        cached = self._valid_cached_head()
+        if cached is not None:
+            record = self._record_after(cached, frame, frame_hash=frame_hash)
+            self._write_record(record, sync_dir=is_new)
+            return record
+
         repair: list[str] = []
         existing = self.read_all(repair_report=repair)
-        is_new = not self.path.exists()
 
         if repair:
             self._truncate_to(existing)
@@ -169,6 +183,30 @@ class Ledger:
         record = self._next_record(existing, frame, frame_hash=frame_hash)
         self._write_record(record, sync_dir=is_new)
         return record
+
+    def _valid_cached_head(self) -> tuple[int, str] | None:
+        """Return the cached (seq, link_hash) only if the file is exactly as we left it."""
+        if self._cached_head is None or self._cached_size is None:
+            return None
+        try:
+            if self.path.stat().st_size != self._cached_size:
+                self._cached_head = self._cached_size = None
+                return None
+        except FileNotFoundError:
+            self._cached_head = self._cached_size = None
+            return None
+        return self._cached_head
+
+    def _record_after(
+        self, head: tuple[int, str], frame: dict, *, frame_hash: str | None = None
+    ) -> LedgerRecord:
+        seq, link = head
+        return LedgerRecord(
+            seq=seq + 1,
+            prev_hash=link,
+            frame_hash=frame_hash or content_hash(frame),
+            frame=frame,
+        )
 
     def _next_record(
         self, existing: list[LedgerRecord], frame: dict, *, frame_hash: str | None = None
@@ -192,6 +230,11 @@ class Ledger:
             fh.write(record.to_line() + b"\n")
             fh.flush()
             os.fsync(fh.fileno())
+        self._cached_head = (
+            record.seq,
+            _link_hash(record.prev_hash, record.frame_hash, record.seq),
+        )
+        self._cached_size = self.path.stat().st_size
         if sync_dir:
             dir_fd = os.open(self.path.parent, os.O_RDONLY)
             try:
@@ -208,6 +251,7 @@ class Ledger:
             fh.flush()
             os.fsync(fh.fileno())
         os.replace(tmp, self.path)
+        self._cached_head = self._cached_size = None
 
     # -- integrity -------------------------------------------------------
 

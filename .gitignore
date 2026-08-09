@@ -82,3 +82,12 @@ artifacts/operator/autopilot_state.pre-*.json
 artifacts/operator/instrument_eras.pre-*.yaml
 artifacts/operator/*operational_diagnostic*.json
 artifacts/operator/*operational_baseline_candidate*.json
+
+# Vidya pilot (docs/design/vidya-pilot-spec.md §11.0)
+# The ledger is the canonical record but is regenerable from its adapters and large (~7.7MB for a
+# full intake ingest), so it is not committed. The CHECKPOINTS are — an externally held checkpoint
+# is precisely what upgrades the ledger from tamper-evident to tamper-proof for prior history, and
+# git is the external holder. Never add .vidya/checkpoints/ here.
+.vidya/ledger.jsonl
+.vidya/ledger.jsonl.repair
+.vidya/state.sqlite
