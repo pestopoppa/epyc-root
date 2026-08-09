@@ -174,10 +174,16 @@ Operator priority: an integrated solution that works, not novelty.
       the retrofit cannot reach the T axis's Anchored level because an index entry identifies a
       document, not a span. This prices write-time instrumentation against prose-parsing in the
       policy layer's own currency ✅ 2026-08-09
-- [ ] P2b Instrument the intake skill's writes so frames are emitted AT WRITE TIME with the anchor
-      the author had in hand — the only path to `T2 Anchored`, per the P2a measurement
-- [ ] P2c Emit correction/retraction frames from `dive_corrections` prose (currently only the
-      verification status is read, so a dive's actual correction is invisible to the fold)
+- [x] P2b `claim_anchors` schema field + adapter grading (span -> T2 Anchored; span + revision +
+      quote hash -> T3 Attested) + a Stage-2 obligation in SKILL.md. Demonstrated end-to-end:
+      intake-1038's Property 13 claim carries a real anchor and is the first and only claim of
+      4,191 to clear a conjunctive Verified/Anchored policy (was 0) ✅ 2026-08-09
+- [x] P2c Correction frames from `dive_corrections` (150 entries, 652 claims) carrying verbatim
+      text; the fold turns them into `review_required` — a freshness signal, never a grade change.
+      The prose is deliberately NOT parsed and not keyword-scanned ✅ 2026-08-09
+- [ ] P2d Backfill `claim_anchors` for the claims that actually get cited. 1 of 4,191 is anchored;
+      the mechanism exists and the obligation is written into SKILL.md, but existing dived entries
+      predate it. Scope to claims cited by a handoff or plan, not all 4,191
 - [ ] P3 Reverse impact + coverage labels + obligation fold (compare incremental vs full refold)
 - [ ] P4 Shadow wiki projection + sidecars with assertion maps AND omissions lane (PaperTrail
       span-anchor pattern)

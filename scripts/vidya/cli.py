@@ -172,6 +172,36 @@ def cmd_checkpoint(args) -> int:
     return _emit(payload, args.json, human)
 
 
+# ------------------------------------------------------------------ impact
+
+def cmd_impact(args) -> int:
+    from impact import impact_of_retracting  # noqa: PLC0415
+
+    led = _ledger(args)
+    records = led.read_all()
+    report = impact_of_retracting(
+        [r.frame for r in records], args.frame_id, as_of=args.as_of
+    ).as_dict()
+
+    human = [
+        f"retracting {len(report['retracted_frames'])} frame(s) at frontier {len(records)}",
+        f"  affected           {report['affected_count']}"
+        f"   (fragile: {report['fragile_count']})",
+        f"  verified unaffected {report['verified_unaffected_count']}",
+        f"  unaffected but unmapped {report['unaffected_but_unmapped_count']}"
+        "   <- NOT a clean bill of health",
+    ]
+    for item in report["affected"][:20]:
+        human.append(
+            f"    {item['claim_id']}: {item['before']['pro']['Q']}/{item['before']['pro']['T']}"
+            f" -> {item['after']['pro']['Q']}/{item['after']['pro']['T']}"
+            f"  [{item['coverage']}]" + ("  FRAGILE" if item["fragile"] else "")
+        )
+    if report["affected_count"] > 20:
+        human.append(f"    ... and {report['affected_count'] - 20} more")
+    return _emit(report, args.json, "\n".join(human))
+
+
 # ------------------------------------------------------------------ verify
 
 def cmd_verify(args) -> int:
@@ -276,6 +306,11 @@ def build_parser() -> argparse.ArgumentParser:
     c.add_argument("--origin", default=DEFAULT_ORIGIN)
     c.add_argument("--emit", action="store_true", help="write it under .vidya/checkpoints/")
     c.set_defaults(func=cmd_checkpoint)
+
+    im = sub.add_parser("impact", help="hypothetical retraction: what changes if these frames go?")
+    im.add_argument("frame_id", nargs="+")
+    im.add_argument("--as-of", required=True)
+    im.set_defaults(func=cmd_impact)
 
     v = sub.add_parser("verify", help="verify the chain and any published checkpoints")
     v.set_defaults(func=cmd_verify)
