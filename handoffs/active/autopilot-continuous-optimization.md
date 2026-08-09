@@ -2057,6 +2057,16 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       suppressed 908 uncertified points, including the trial-1302 scaling outlier. Validation passed 217
       focused tests, dashboard JavaScript parsing, Ruff, and repository gates. The API-only deployment did
       not stop or restart AutoPilot.
+- [x] **Disambiguate evaluation lanes from decision-question difficulty in GEPA/Pareto. ✅ 2026-08-09**
+      Orchestrator `9e7e5226` adds a separate `decision_question_mix` contract to Pareto points and
+      GEPA trajectory rows while retaining `eval_tier` as the outer lane. Summaries, legends, rows, and
+      tooltips now say `lane T1/T2/T3`; current mixed-core trials additionally show the ratified
+      `D1/D2/D3 17/17/16` target, scored/target count, mix policy, core id, and rotation. The planner can
+      select T2/T3 `deep_eval`, and the higher-tier probe guard can force stale/empty T2/T3 coverage,
+      while T1 remains the canonical deployment frontier. Validation passed 202 focused tests, Ruff,
+      seven JavaScript-block parses, and repository gates. Trial 1502 was allowed to seal, AutoPilot was
+      paused only at the boundary for an API-only reload, then resumed without an AutoPilot or model-server
+      restart; live payloads report trial 1502 as outer lane T1 with equal-thirds target and 42/50 scored.
 - [ ] **AP-50 — Turn “what optimizes the orchestrator” into a decision cockpit.** Default to the current
       measurement era and distinguish proposed, executed, valid, kept, promoted, and currently-live
       states; “applied” alone is operationally ambiguous. Add current trial/intervention/falsifier,

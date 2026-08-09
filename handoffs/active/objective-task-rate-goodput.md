@@ -94,7 +94,11 @@ instrument's composition load-bearing in a way it never was under tokens/second.
       **T1:24 / T2:15 / T3:11** and moved with `n` and with any pool edit. Operator chose
       **equal thirds**. Verified on the real 79,479-row pool: n=50 → 17/17/16, n=100 →
       34/33/33, 34 distinct suites still represented, deterministic. A starved tier is
-      REPORTED, never backfilled from another tier.
+      REPORTED, never backfilled from another tier. **Dashboard visibility ✅ 2026-08-09
+      (`epyc-orchestrator` `9e7e5226`)**: GEPA and Pareto now distinguish the outer EvalTower
+      lane from this inner difficulty mix. Current points render as `lane T1` plus
+      `D1/D2/D3 17/17/16`, with the scored/target count, policy, core id, and rotation in
+      point/row context; a bare `T1` no longer falsely implies T1-only decision questions.
 - [x] **W6b — rotate the core draw so the optimizer cannot overfit one set** ✅ 2026-08-04
       (`ce6e4bea`). Operator: *"the draw should be somewhat randomized."* Rotating PER TRIAL
       was rejected with numbers: quality is a fraction-correct over n=50, so an independent
