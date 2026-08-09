@@ -1,6 +1,6 @@
 # Vidya Pilot Spec
 
-**Status:** proposed pilot contract — shadow-only, gates nothing, not yet operator-ratified
+**Status:** pilot contract — shadow-only, gates nothing; **all §19 decisions operator-ratified 2026-08-09**
 **Date:** 2026-08-09 (V2 revision of the 2026-08-09 v1 draft)
 **Owning handoff:** [`handoffs/active/vidya-belief-substrate-program.md`](../../handoffs/active/vidya-belief-substrate-program.md)
 **Audit of record:** [`research/deep-dives/vidya-belief-substrate-audit.md`](../../research/deep-dives/vidya-belief-substrate-audit.md)
@@ -121,7 +121,29 @@ determinism metadata have no PROV equivalent and stay private.
 Attribution, association, and delegation stay three distinct fields — the operator → main → subagent
 chain is exactly `actedOnBehalfOf`, and collapsing it loses who actually decided.
 
-### 3.4 Supersession, retraction, dispute
+### 3.4 `triggered_by` — procedural causation, adopted 2026-08-09
+
+`pubinfo.triggered_by: <frame_id>` records **why this frame was emitted**. It lives in `pubinfo`
+because it is a statement about the frame, not about the world, and it is strictly distinct from
+`provenance.derived_from`, which records what evidence the assertion rests on.
+
+| Field | Answers | Carries grade? |
+|---|---|---|
+| `provenance.derived_from` | what evidence supports the assertion | **yes** — it is a support edge |
+| `pubinfo.triggered_by` | what event caused this frame to exist | **no** — never |
+
+**The rule that keeps it safe: a triggered frame inherits nothing from its trigger.** Not grade, not
+authority, not freshness. This is the same discipline as intent-not-being-evidence, and without it
+`triggered_by` would become a back door for laundering a low-grade event into support for a
+high-grade claim.
+
+What it buys is an auditable answer to "why is this here?" for the machinery that acts on its own
+derivations — an obligation opening because a belief changed, a re-verification frame emitted
+because an anchor stopped resolving, a projection marked stale because a belief version moved. The
+trigger chain is exactly the record you want when an obligation surfaces and nobody can remember
+what opened it. PROV alias: `prov:wasInformedBy`.
+
+### 3.5 Supersession, retraction, dispute
 
 - **`supersedes`** sits in the new frame's `pubinfo`; the old frame is never touched.
 - **Retraction is a first-class claim frame** whose assertion is `{retracts: <frame_id>}` — with its
@@ -184,7 +206,15 @@ a ⊗ b = (min Q, min T)   pointwise meet   — joint / chained support
 | `Q1 Hinted` | extracted or discovered; no verification performed |
 | `Q2 Judged` | an identified actor's judgment, within a declared authority scope |
 | `Q3 Verified` | passed an applicable verifier or a Stage-2 primary-source review |
-| `Q4 Witnessed` | directly attested by a governing measurement or an execution record |
+| `Q4 Witnessed` | attested by a **protocol-admissible measurement** under the measurement constitution's claim grammar — metric, protocol id, n/reps, date, durable host attestation |
+
+**`Q4` is deliberately narrow (ratified 2026-08-09).** It means exactly one thing: *this claim would
+be admissible as a decision-gating measurement claim*. That makes the top grade checkable rather
+than a matter of taste — a claim is `Q4` iff it satisfies the constitution's grammar, and the
+constitution is the arbiter, not this spec. A passing test, a green build, a successful actuation,
+and a verifier result are all real evidence and all stop at `Q3`: they are verifications, not
+measurements. The practical effect is that nothing reaches the top of the Q axis without a protocol
+id and durable evidence behind it.
 
 **T — how precisely a reader can get back to it**
 
@@ -263,8 +293,9 @@ Proposed pilot policy; requires operator ratification before any authoritative q
 | Identified model or reviewer judgment | `Q2 Judged` | as anchored | scoped to that actor's authority |
 | Exact durable anchor, not substantively verified | `Q1` | `T2 Anchored` | **this is what v1 called "Traced"** — a T-statement that had been ranked as a Q-level |
 | Stage-2 accepted claim with primary-source anchor | `Q3 Verified` | `T2 Anchored` | entry-level `dive-verified` does not verify every extracted claim |
-| Deterministic verifier result under an applicable contract | `Q3`–`Q4` | `T2`–`T3` | policy decides; verifier identity and version required |
-| Protocol-admissible measurement with durable attestation | `Q4 Witnessed` | `T3 Attested` | for the measured observation only — derived mechanism or generalization claims need their own rules |
+| Deterministic verifier result under an applicable contract | `Q3 Verified` | `T2`–`T3` | **capped at `Q3`** — a verifier confirms, it does not measure; verifier identity and version required |
+| Test pass / green build / successful actuation outcome | `Q3 Verified` | `T2`–`T3` | same cap, same reason; an execution record without protocol grammar is not a measurement |
+| Protocol-admissible measurement with durable attestation | `Q4 Witnessed` | `T3 Attested` | the **only** route to `Q4`; for the measured observation only — derived mechanism or generalization claims need their own rules |
 | `dive-overturned` | opposition frame | — | does not erase the original proposal |
 | Stage-3 operator approval | **no Q** | **no T** | intent plane; authority, not evidence |
 | Wiki assertion | **no independent grade** | — | a projection cannot corroborate its own sources |
@@ -471,6 +502,18 @@ Recorded as design rationale, because it is counter-intuitive and was measured b
 
 ## 9. Projections
 
+**Sidecar location and banners (ratified 2026-08-09).** Manifests live under `.vidya/projections/`,
+keyed by projection id and **bound to the article's content hash** — the binding is what stops a
+sidecar from silently describing a different revision of the prose than the one on disk. The wiki
+tree itself is left untouched: no front-matter, no adjacent files, nothing in the compiler's scan
+set.
+
+**No visible banner in shadow mode.** A banner in shadow can only be advisory, and the audit turned
+up direct measured evidence that advisory provenance display *lowers trust without changing
+behaviour* (n=26, controlled). Adding wiki noise for a measured non-effect is a bad trade. Freshness
+lives in the machine-readable manifest, and at promotion the **gate** does the work — it refuses,
+which is the thing banners were failing to do.
+
 A projection (a wiki section, a context pack, a report) MUST declare what it consumed. Its sidecar
 manifest records: section id and content hash; belief ids and exact versions rendered; the evidence
 frontier and fold version; minimum grade and conflict policy used; unresolved conflicts;
@@ -513,11 +556,35 @@ passive queue until recalibrated.
 
 ## 11. Ledger and certificates
 
+### 11.0 Storage — JSONL is canonical (ratified 2026-08-09)
+
+**The ledger is an append-only JSONL file with fsync-per-append. SQLite is a derived, disposable
+index rebuilt from it.** Not the other way round.
+
+This follows the house pattern rather than inventing one: the AutoKernel journal and the experiment
+journal are both append-only JSONL with fsync-per-event and pure view rebuilds, and this program's
+whole premise is riding existing conventions rather than duplicating them. Three concrete
+consequences:
+
+- **The canonical record is reviewable in a diff.** A frame append shows up in `git diff` as one
+  readable line. A binary ledger would make the one artifact that must never be silently altered the
+  one artifact nobody can inspect in review.
+- **It is consistent with governance invariant 3** — derived state is disposable and reproducible.
+  If the index is canonical, that invariant has an exception at its centre.
+- **Adapters keep SQL** — they query the derived index, which is rebuilt by the fold and may be
+  deleted at any time.
+
+Ledger records carry: sequence, `prev_hash`, frame content hash, canonical payload, actor, schema
+version, and acceptance status. Sharding follows the AutoKernel pattern; shard boundaries SHOULD
+align with measurement eras (§11.1). Torn-tail handling is adopted verbatim from that journal: a
+crash can only leave a partial trailing line, which the reader drops and the next append truncates
+and records — so the loss is itself durable rather than silent.
+
 ### 11.1 The authentication ladder
 
 | Rung | What it is | When |
 |---|---|---|
-| **L0** | append-only SQLite + per-row `prev_hash` chain | day one; tamper-*evident* only |
+| **L0** | append-only JSONL, fsync-per-append, per-record `prev_hash` chain | day one; tamper-*evident* only |
 | **L1** | RFC 9162 Merkle roots (domain-separated `0x00`/`0x01`) + C2SP signed-note checkpoints emitted at wrap-up boundaries and **committed to git**; each new checkpoint consistency-proved against the last | **pilot target**, ~200 lines, zero new services |
 | **L2** | tlog-tiles / Tessera materialization | only on a real trigger: a second writer, an external verifier, millions of entries, or HTTP-served proofs |
 
@@ -622,10 +689,19 @@ agent-provenance survey. Covered: **Support** and **Contradict** (pro/con edges)
 note the survey's own distinction, that agent-Invalidate marks a claim epistemically invalid *while
 the record persists*, exactly this design's semantics), **Update** (supersession).
 
-**Open, requiring an explicit decision before P1 closes:** **Trigger** (causal/procedural activation
-— partially covered by intent frames?) and the activity pair **Use / Generate** (which frame consumed
-or produced which artifact in a run — currently implicit in frame authorship metadata). Each gets
-adopt-or-decline with a written reason. *(Decision-queue item 6.)*
+**Settled 2026-08-09 (decision-queue item 6):**
+
+- **`Trigger` — ADOPTED** as `pubinfo.triggered_by` (§3.4), carrying no grade, no authority, and no
+  freshness. It answers "why does this frame exist?", which the obligation and freshness machinery
+  needs in order to be auditable about its own derivations.
+- **`Use` / `Generate` — DECLARED COVERED.** `provenance.derived_from` and `provenance.produced_by`
+  *are* these relations; they are already the PROV aliases `prov:used` and `prov:wasGeneratedBy`.
+  Closed by documenting the mapping rather than by adding fields.
+
+All nine relations of the survey's vocabulary are therefore accounted for: Support and Contradict
+(pro/con edges), Derive (provenance circuits), Depend-on (claim-level manifests), Invalidate
+(retraction frames), Update (supersession), Trigger (`triggered_by`), Use and Generate
+(`derived_from` / `produced_by`).
 
 ### Self-score against the survey's rubric
 
@@ -744,18 +820,19 @@ identity; **and Example 9 fails closed** under any candidate optimization.
 
 ## 19. Open decisions (operator)
 
-**Settled 2026-08-09:** the carrier (items 2 and 3 below). Everything else is open.
+**All open decisions were settled 2026-08-09.** The table is retained as the ratification record;
+nothing in it blocks P1.
 
 | # | Decision | Recommendation on record |
 |---|---|---|
-| 1 | Gold corpus contents | the four documented corrections + one E8 slice ([corpus doc](vidya-pilot-corpus.md)) |
-| 2b | Status-to-grade **table** under the new carrier (§4.5) | ratify as written; it is the carrier change applied row-by-row |
+| 1 | ~~Gold corpus contents~~ | **RATIFIED** — 19 claims, four documented corrections + one E8 slice ([corpus doc](vidya-pilot-corpus.md)) |
+| 2b | ~~Status-to-grade table~~ | **RATIFIED with the tightening**: verifiers, tests, builds and actuation outcomes cap at `Q3`; `Q4` requires protocol-admissible measurement (§4.2, §4.5) |
 | 2 | ~~Grade mapping, incl. Corroborated~~ | **RATIFIED 2026-08-09** — dropped from the carrier; independence is a policy predicate (§4.1). The status-to-grade *table* (§4.5) still needs ratification. |
 | 3 | ~~Chain vs product lattice~~ | **RATIFIED 2026-08-09** — product lattice `Q × T` adopted (§4.2) |
-| 4 | Sidecar location + visible banners | `.vidya/` sidecars; visible banner only on authoritative use |
-| 5 | Canonical pilot ledger | append-only SQLite; deterministic JSONL export |
-| 6 | Trigger / Use / Generate frame types | decline `Trigger` (obligation activation covers it); declare `Use`/`Generate` already met by `derived_from`/`produced_by` (§14) |
-| 7 | Xu et al. 2018 (R2 precedent) | decline-with-citation |
+| 4 | ~~Sidecar location + banners~~ | **RATIFIED** — `.vidya/projections/` bound to article content hash; **no banner in shadow** (§9) |
+| 5 | ~~Canonical pilot ledger~~ | **RATIFIED** — append-only **JSONL is canonical**, SQLite is a rebuildable derived index (§11.0) |
+| 6 | ~~Trigger / Use / Generate~~ | **RATIFIED** — `Trigger` **adopted** as `pubinfo.triggered_by`, grade-free (§3.4); `Use`/`Generate` declared covered (§14) |
+| 7 | ~~Xu et al. 2018~~ | **RATIFIED** — decline-with-citation; cited as R2 application precedent only |
 
 ---
 

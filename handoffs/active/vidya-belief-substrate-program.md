@@ -176,22 +176,26 @@ V2 blocks P1 (the pilot spec must exist before the engine). P0 can run in parall
 operator + curation work). P2 depends on P1 (frames must exist). P3–P5 sequence after P1–P2.
 R1/R2 are paper-track and independent; R3 deliberately severed; R4/R5 need pilot data.
 
-## Decision queue for operator
+## Decision queue — ALL SETTLED 2026-08-09
 
-- [x] **2. Carrier — `Corroborated`** — RATIFIED 2026-08-09: dropped from the carrier; independence
-      is a policy predicate over the leaf-disjoint statistic ✅
-- [x] **3. Chain vs product lattice** — RATIFIED 2026-08-09: **product lattice `Q × T`** adopted
-      (warrant quality × traceability); spec §4 rewritten, dependents propagated ✅
+Retained as the ratification record. Nothing here blocks P1.
 
-Open:
-
-1. P0.1 corpus ratification (19 claims across four documented corrections + one E8 slice).
-2b. Status-to-grade **table** ratification (spec §4.5) — the carrier is settled, the mapping of
-    existing intake/measurement statuses onto `Q × T` is not.
-4. Sidecar location + visible-banner policy for shadow projections.
-5. Canonical pilot ledger: repository JSONL (house style) vs append-only SQLite.
-6. Frame-type coverage: adopt-or-decline `Trigger` and the `Use`/`Generate` pair (spec §14).
-7. Xu et al. 2018: decline-with-citation (recommended) or ingest as an entry.
+- [x] **1. Gold corpus** — ratified as drafted: 19 claims, four documented corrections + one E8
+      measurement slice ✅ 2026-08-09
+- [x] **2. `Corroborated`** — dropped from the carrier; independence is a policy predicate over the
+      leaf-disjoint statistic ✅ 2026-08-09
+- [x] **2b. Status-to-grade table** — ratified **with the tightening**: verifiers, tests, builds and
+      actuation outcomes cap at `Q3`; `Q4 Witnessed` requires a protocol-admissible measurement, so
+      `Q4` now means exactly "would be admissible as a decision-gating claim" ✅ 2026-08-09
+- [x] **3. Carrier shape** — product lattice `Q × T` (warrant quality × traceability) ✅ 2026-08-09
+- [x] **4. Sidecars + banners** — `.vidya/projections/` bound to article content hash; **no visible
+      banner in shadow** (advisory display is measured not to change behaviour) ✅ 2026-08-09
+- [x] **5. Canonical ledger** — append-only **JSONL is canonical** (house pattern: fsync-per-append,
+      torn-tail handling), SQLite is a rebuildable derived index ✅ 2026-08-09
+- [x] **6. Frame-type coverage** — `Trigger` **ADOPTED** as `pubinfo.triggered_by`, carrying no
+      grade / authority / freshness; `Use`/`Generate` declared already covered by
+      `derived_from`/`produced_by`. All nine survey relations now accounted for ✅ 2026-08-09
+- [x] **7. Xu et al. 2018** — decline-with-citation; cited as R2 application precedent only ✅ 2026-08-09
 
 ## Cross-cutting concerns
 

@@ -24,8 +24,9 @@ requirement.
 
 ## 1. The pilot stack (this part *is* binding — it lives in the pilot spec)
 
-For the avoidance of doubt: the pilot is Python 3 with pinned dependencies, append-only SQLite in
-WAL mode, JSON Schema validation, canonical JSON (RFC 8785) for hashing and fixtures, BLAKE3 or
+For the avoidance of doubt: the pilot is Python 3 with pinned dependencies, an **append-only JSONL
+ledger with fsync-per-append as the canonical record** and SQLite (WAL) only as a rebuildable
+derived index, JSON Schema validation, canonical JSON (RFC 8785) for hashing and fixtures, BLAKE3 or
 SHA-256 with the algorithm recorded in every identifier, a deterministic single-writer fold, sorted
 iteration at every hash or output boundary, explicit `as_of` injection, and property/fixture/mutation
 tests. The pilot avoids a full Datalog or e-graph dependency unless the rule set proves too complex
@@ -43,7 +44,7 @@ If promoted, the shape that follows from the constraints (not a selection):
 | Language | Rust, pinned toolchain | deterministic control, low idle overhead, single-binary deploy |
 | Fold | hand-written seminaive core; a Datalog embedding only as a development accelerator | no general engine supplies the required provenance circuits; certified ordering stays ours |
 | Provenance | Vidya-owned hash-consed DAG circuits | the correctness-critical representation; not delegable |
-| Ledger | SQLite WAL | append-heavy with point reads; readers don't block the writer; adapters get SQL |
+| Ledger | JSONL canonical (house pattern); SQLite WAL as derived index | the canonical record stays diff-reviewable; the index is disposable and rebuilt by the fold |
 | Serialization | versioned envelopes; canonical JSON as interchange/audit form | the ledger is permanent, so schema evolution dominates decode speed |
 | Hashing | BLAKE3 with algorithm-tagged identifiers | content, world, and Merkle hashing |
 | Authenticated log | RFC 9162 tree math; tile materialization only at the L2 trigger | see pilot spec §11.1 |

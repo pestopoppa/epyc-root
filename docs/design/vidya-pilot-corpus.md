@@ -1,6 +1,6 @@
 # Vidya Pilot Gold Corpus
 
-**Status:** proposed corpus — requires operator ratification before evaluation runs (decision-queue item 1)
+**Status:** **RATIFIED by the operator 2026-08-09** (decision-queue item 1) — 19 claims, frozen at the commit that lands this file
 **Date:** 2026-08-09
 **Owning handoff:** [`handoffs/active/vidya-belief-substrate-program.md`](../../handoffs/active/vidya-belief-substrate-program.md) §P0
 **Spec:** [`vidya-pilot-spec.md`](vidya-pilot-spec.md) §17
@@ -243,11 +243,16 @@ construction, and invalidation recall/precision reported separately by failure d
 
 ---
 
-## 9. What ratification means (decision-queue item 1)
+## 9. Ratification (decision-queue item 1) — GRANTED 2026-08-09
 
-The operator ratifies: the four families and the measurement slice; the claim list per family; the
-mutation schedule; and the freeze commit. Nothing in this document has been used to score anything
-yet.
+The operator ratified the four families and the measurement slice, the claim list per family, the
+mutation schedule, and the freeze commit. Changing any of it now requires an explicit amendment
+record retaining both the pre- and post-amendment versions. Nothing here has been used to score
+anything yet — the engine does not exist.
+
+**Carrier note:** gold labels are `Q × T` pairs, and `Q4` is reachable only by protocol-admissible
+measurement (spec §4.2, ratified 2026-08-09). That caps the `M` family's claims at `(Q4, T3)` and
+every prose-family claim at `(Q3, T2)` or below — which is correct: none of E1–E4 is a measurement.
 
 **One finding does not wait for ratification** — the E3 defect was a live data error in
 `research/intake_index.yaml` and was repaired on discovery (2026-08-09). Its retraction record now
