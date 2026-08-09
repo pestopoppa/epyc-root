@@ -2039,6 +2039,15 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       API event loop and uses a 30-second reconnect cache with stale-cache provenance. Validation passed
       206 focused tests plus Ruff. The HTML fix became available without disrupting active trial 1499;
       the backend cache activates on the next ordinary API reload.
+- [x] **Make Pareto and GEPA warnings describe the evidence actually on screen. ✅ 2026-08-09**
+      Orchestrator `38f42470` makes current-era Pareto reconstruction follow the state-declared active
+      objective (`task_rate_4d_v7_physical_cohort_exclusion`) instead of silently defaulting to legacy
+      request t/s. W3 is now a neutral historical objective comparison rather than a pending flip warning;
+      all-era request-t/s coordinates are explicitly a non-decision-grade historical comparator. The GEPA
+      no-op caveat remains canonical but is rendered only when a visible trajectory row overlaps its
+      2026-06-04 → 2026-07-25 window. Validation passed 216 focused dashboard/core tests, JavaScript parse,
+      Ruff lint, and repository gates. API-only deployment launched commit `38f42470`; AutoPilot was not
+      stopped or restarted.
 - [ ] **AP-50 — Turn “what optimizes the orchestrator” into a decision cockpit.** Default to the current
       measurement era and distinguish proposed, executed, valid, kept, promoted, and currently-live
       states; “applied” alone is operationally ambiguous. Add current trial/intervention/falsifier,
