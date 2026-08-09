@@ -495,6 +495,37 @@ class TestCorrections:
         b = fold([self._correction(["clm-orphan"])], as_of=NOW).beliefs["clm-orphan"]
         assert b.review_required and b.pro == lat.BOTTOM
 
+    def test_a_reviewed_correction_stops_blocking(self):
+        """Without this the review flag is a one-way ratchet and the gate deadlocks its own work.
+
+        A correction says "someone changed something, nobody has said what it means for this
+        claim". Once a review records that, the claim must be servable again -- otherwise a single
+        dive_corrections field blocks every claim from its entry permanently (spec risk §19.7).
+        """
+        s = _support_frame("clm-1", "evd-1", "Verified", "Anchored")
+        c = self._correction(["clm-1"])
+        reviewed = frames.make_frame(
+            frame_type="epyc.vidya/frame/correction_reviewed/v1",
+            assertion={"reviewed": c["frame_id"], "claim_ids": ["clm-1"],
+                       "finding": "correction concerns a different claim in the same entry"},
+            provenance={"method": "human-review", "about": c["frame_id"]},
+            actor="operator", authority_scope="research-verification", created_at=NOW)
+        assert fold([s, c], as_of=NOW).beliefs["clm-1"].review_required
+        after = fold([s, c, reviewed], as_of=NOW)
+        assert not after.beliefs["clm-1"].review_required
+        assert after.reviewed_corrections == [c["frame_id"]]
+
+    def test_reviewing_one_correction_leaves_another_blocking(self):
+        s = _support_frame("clm-1", "evd-1", "Verified", "Anchored")
+        c1, c2 = self._correction(["clm-1"], "first"), self._correction(["clm-1"], "second")
+        reviewed = frames.make_frame(
+            frame_type="epyc.vidya/frame/correction_reviewed/v1",
+            assertion={"reviewed": c1["frame_id"], "claim_ids": ["clm-1"], "finding": "ok"},
+            provenance={"method": "human-review", "about": c1["frame_id"]},
+            actor="operator", authority_scope="research-verification", created_at=NOW)
+        b = fold([s, c1, c2, reviewed], as_of=NOW).beliefs["clm-1"]
+        assert b.review_required and b.corrections == [c2["frame_id"]]
+
     def test_corrections_are_sorted_for_determinism(self):
         s = _support_frame("clm-1", "evd-1", "Judged", "Located")
         c1, c2 = self._correction(["clm-1"], "first"), self._correction(["clm-1"], "second")

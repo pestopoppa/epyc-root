@@ -91,3 +91,4 @@ artifacts/operator/*operational_baseline_candidate*.json
 .vidya/ledger.jsonl
 .vidya/ledger.jsonl.repair
 .vidya/state.sqlite
+.vidya/projections/

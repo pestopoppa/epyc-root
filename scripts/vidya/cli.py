@@ -260,6 +260,75 @@ def cmd_verify(args) -> int:
     return 0 if not all_problems else 1
 
 
+# ----------------------------------------------------------------- project
+
+def cmd_project(args) -> int:
+    import json as _json  # noqa: PLC0415
+
+    from projection import (  # noqa: PLC0415
+        SelectionPolicy, build_manifest, freshness_of, select_beliefs,
+    )
+
+    led = _ledger(args)
+    result = fold([r.frame for r in led.read_all()], as_of=args.as_of)
+    policy = SelectionPolicy(policy_id=args.policy_id, floor=parse_grade(args.floor))
+    sel = select_beliefs(result, policy, claim_ids=args.claim or None)
+    text, manifest = build_manifest(
+        projection_id=args.projection_id, artifact_path=args.out or "(unwritten)",
+        selection=sel, fold_result=result, policy=policy, fold_version=FOLD_VERSION)
+
+    payload = {"manifest": manifest.as_dict(), "included": len(sel.included),
+               "omitted": len(sel.omitted)}
+    if args.out:
+        art = Path(args.out)
+        art.parent.mkdir(parents=True, exist_ok=True)
+        art.write_text(text)
+        side = _ledger_path(args).parent / "projections" / f"{args.projection_id}.json"
+        side.parent.mkdir(parents=True, exist_ok=True)
+        side.write_text(_json.dumps(manifest.as_dict(), indent=2, sort_keys=True))
+        payload["artifact"] = str(art)
+        payload["sidecar"] = str(side)
+        state, reasons = freshness_of(manifest, result, artifact_text=text)
+        payload["freshness"] = {"state": state, "reasons": reasons}
+
+    human = [
+        f"projection {args.projection_id}: included={len(sel.included)} omitted={len(sel.omitted)}",
+        f"  policy={policy.policy_id} floor={policy.floor} digest={policy.digest()[:23]}",
+    ]
+    if args.out:
+        human.append(f"  artifact={payload['artifact']}  sidecar={payload['sidecar']}")
+        human.append(f"  freshness={payload['freshness']['state']}")
+    for cid, why in sel.omitted[:5]:
+        human.append(f"  omitted {cid}: {why}")
+    if len(sel.omitted) > 5:
+        human.append(f"  ... and {len(sel.omitted) - 5} more omissions (all in the sidecar)")
+    return _emit(payload, args.json, "\n".join(human))
+
+
+# ------------------------------------------------------------------- query
+
+def cmd_query(args) -> int:
+    from gate import UsePolicy, evaluate  # noqa: PLC0415
+
+    led = _ledger(args)
+    result = fold([r.frame for r in led.read_all()], as_of=args.as_of)
+    policy = UsePolicy(
+        use=args.use, floor=parse_grade(args.floor), standard=args.standard,
+        allow_conflicted=args.allow_conflicted,
+        allow_review_required=args.allow_review_required,
+        allow_labelled_stale=args.allow_labelled_stale,
+        min_disjoint_supports=args.min_disjoint,
+    )
+    res = evaluate(args.claim_id, result, policy)
+    human = [f"{res.outcome.upper()}  {args.claim_id}  (use={policy.use} floor={policy.floor})"]
+    human += [f"  reason: {r}" for r in res.reasons]
+    human += [f"  next:   {a}" for a in res.required_next_actions]
+    if res.certificate:
+        human.append(f"  certificate={res.certificate['certificate_hash']}")
+    _emit(res.as_dict(), args.json, "\n".join(human))
+    return 0 if res.usable_as_current else 3
+
+
 # ------------------------------------------------------------------ ingest
 
 def cmd_ingest(args) -> int:
@@ -314,6 +383,27 @@ def build_parser() -> argparse.ArgumentParser:
 
     v = sub.add_parser("verify", help="verify the chain and any published checkpoints")
     v.set_defaults(func=cmd_verify)
+
+    pr = sub.add_parser("project", help="compile a dependency-declared projection")
+    pr.add_argument("projection_id")
+    pr.add_argument("--as-of", required=True)
+    pr.add_argument("--floor", default="Verified/Anchored")
+    pr.add_argument("--policy-id", default="wiki-authoritative-v1")
+    pr.add_argument("--claim", action="append", help="restrict to these claim ids")
+    pr.add_argument("--out", help="write the artifact here (and a sidecar next to the ledger)")
+    pr.set_defaults(func=cmd_project)
+
+    q = sub.add_parser("query", help="apply a use policy to one claim (exit 3 = not usable)")
+    q.add_argument("claim_id")
+    q.add_argument("--as-of", required=True)
+    q.add_argument("--floor", default="Verified/Anchored")
+    q.add_argument("--use", default="wiki-authoritative")
+    q.add_argument("--standard", default="DV")
+    q.add_argument("--allow-conflicted", action="store_true")
+    q.add_argument("--allow-review-required", action="store_true")
+    q.add_argument("--allow-labelled-stale", action="store_true")
+    q.add_argument("--min-disjoint", type=int, default=1)
+    q.set_defaults(func=cmd_query)
 
     i = sub.add_parser("ingest", help="run a source adapter")
     i.add_argument("adapter", choices=["intake"])

@@ -43,6 +43,7 @@ FT_OPPOSE = "epyc.vidya/frame/evidence_opposes_claim/v1"
 FT_RETRACT = "epyc.vidya/frame/retraction/v1"
 FT_JUDGMENT = "epyc.vidya/frame/judgment_recorded/v1"
 FT_CORRECTION = "epyc.vidya/frame/correction_recorded/v1"
+FT_CORRECTION_REVIEWED = "epyc.vidya/frame/correction_reviewed/v1"
 
 # A judgment frame must be keyed by what the judge saw AND the full decoder tuple, or replay is
 # provably inconsistent (spec §6). Greedy decoding does not exempt a frame from this: the
@@ -136,6 +137,7 @@ class FoldResult:
     # and because a rule that cannot be observed cannot be tested.
     counted_judgments: dict[str, str] = field(default_factory=dict)
     superseded_judgments: list[str] = field(default_factory=list)
+    reviewed_corrections: list[str] = field(default_factory=list)
 
     def state_hash(self) -> str:
         """A content hash over the derived state -- the determinism-suite anchor."""
@@ -190,6 +192,7 @@ def fold(
     oppose: dict[str, list[tuple[str, Grade]]] = {}
     retracted: set[str] = set()
     corrections_by_claim: dict[str, list[str]] = {}
+    reviewed_corrections: set[str] = set()
     judgment_votes: dict[str, str] = {}   # replay-key hash -> first frame_id that voted
     superseded_judgments: list[str] = []
     ignored: dict[str, int] = {}
@@ -201,6 +204,16 @@ def fold(
             target = frame.get("assertion", {}).get("retracts")
             if isinstance(target, str):
                 retracted.add(target)
+
+    # Corrections are collected with retractions, before interpretation, so a correction that was
+    # already reviewed never marks anything. Without this the review flag is a one-way ratchet: a
+    # single `dive_corrections` field blocks every claim from its entry forever, and the gate
+    # deadlocks the work it was meant to protect (spec risk §19.7).
+    for frame in frames:
+        if frame.get("frame_type") == FT_CORRECTION_REVIEWED:
+            target = frame.get("assertion", {}).get("reviewed")
+            if isinstance(target, str):
+                reviewed_corrections.add(target)
 
     # Pass 2: interpret the surviving frames.
     for frame in frames:
@@ -238,10 +251,15 @@ def fold(
 
         elif ftype == FT_CORRECTION:
             assertion = frame.get("assertion", {})
+            already_reviewed = fid in reviewed_corrections
             for claim_id in assertion.get("claim_ids") or []:
                 if isinstance(claim_id, str):
                     claims.add(claim_id)
-                    corrections_by_claim.setdefault(claim_id, []).append(fid)
+                    if not already_reviewed:
+                        corrections_by_claim.setdefault(claim_id, []).append(fid)
+
+        elif ftype == FT_CORRECTION_REVIEWED:
+            continue
 
         elif ftype == FT_JUDGMENT:
             _check_judgment(frame)
@@ -315,6 +333,7 @@ def fold(
         ignored_frame_types=ignored,
         counted_judgments=judgment_votes,
         superseded_judgments=superseded_judgments,
+        reviewed_corrections=sorted(reviewed_corrections),
     )
 
 
