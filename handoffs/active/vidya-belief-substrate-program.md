@@ -151,8 +151,19 @@ Operator priority: an integrated solution that works, not novelty.
 
 ### P1–P5 — Pilot build (Python + SQLite, shadow mode; full detail lands in the V2.1 pilot spec)
 
-- [ ] P1 Ledger + frames + canonicalization + L1 checkpoints (C2SP byte spec pinned v1.0.0,
-      checkpoints committed to git) + full fold with N-step assertion
+- [x] P1a Foundation modules landed in `scripts/vidya/` + 59 tests passing: `canonical.py`
+      (canonical JSON, float ban enforced, envelope hashing), `lattice.py` (Q × T with the algebraic
+      laws property-tested over all 20 elements; witness sets; conjunctive-vs-join kept as separate
+      functions), `frames.py` (envelope + both lint rules + the no-grade-in-pubinfo guard),
+      `ledger.py` (append-only JSONL, fsync, prev_hash chain, torn-tail repair recorded as a
+      frame), `checkpoint.py` (RFC 9162 tree math + C2SP notes pinned to v1.0.0), `fold.py` (pure
+      fold, zero-substitution retraction, independent pro/con, judge replay-key enforcement,
+      first-vote-wins) ✅ 2026-08-09
+- [ ] P1b Wire the pieces into a CLI (`vidya append|fold|checkpoint|verify`) and emit the first
+      real checkpoint to `.vidya/`, committed to git — the L1 rung is implemented but has not yet
+      run against a real ledger
+- [ ] P1c Cross-architecture golden fixtures (spec §17.3 requires identical state hashes on more
+      than one architecture; only x86-64 has been exercised)
 - [ ] P2 research-intake adapter: instrument the SKILL's own writes (index append,
       dive_corrections, Stage-2b gate, Stage-3 approval) to emit paired frames at write time
 - [ ] P3 Reverse impact + coverage labels + obligation fold (compare incremental vs full refold)
