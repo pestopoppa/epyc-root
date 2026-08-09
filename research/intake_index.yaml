@@ -1612,8 +1612,6 @@
     - meta-harness-optimization.md
     intake_entries:
     - intake-626
-    intake_entries:
-    - intake-626
     - intake-628
   notes: 'ORIGINALLY a 2026-03-14 seed stub (placeholder title, miscategorized speculative_decoding). ENRICHED
 
@@ -11045,8 +11043,6 @@
     - seal-control-vector-results.md
     intake_entries:
     - intake-141
-    intake_entries:
-    - intake-141
     - intake-333
   handoffs_updated:
   - multiscreen-attention-evaluation.md
@@ -11098,9 +11094,6 @@
     - routing-intelligence.md
     - colbert-zero-research-integration.md
     - validation-sweep-live-models.md
-    intake_entries:
-    - intake-099
-    - intake-174
     intake_entries:
     - intake-099
     - intake-174
@@ -11158,7 +11151,6 @@
     experiments:
     - seal-control-vector-results.md
     - self-speculation-benchmark.md
-    intake_entries:
     intake_entries:
     - intake-354
   handoffs_updated:
@@ -11256,7 +11248,6 @@
     handoffs:
     - context-folding-progressive.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-153
   handoffs_updated: []
@@ -11367,7 +11358,6 @@
     - colbert-reranker-web-research.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-359
   handoffs_updated:
   - colbert-reranker-web-research.md
@@ -11424,8 +11414,6 @@
     handoffs:
     - colbert-reranker-web-research.md
     experiments: []
-    intake_entries:
-    - intake-359
     intake_entries:
     - intake-359
     - intake-360
@@ -11486,7 +11474,6 @@
     handoffs:
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-363
   handoffs_updated:
@@ -11551,10 +11538,6 @@
     - intake-362
     - intake-367
     - intake-368
-    intake_entries:
-    - intake-362
-    - intake-367
-    - intake-368
     - intake-371
   handoffs_updated:
   - autopilot-continuous-optimization.md
@@ -11607,9 +11590,6 @@
     - searxng-search-backend.md
     - hermes-outer-shell.md
     experiments: []
-    intake_entries:
-    - intake-365
-    - intake-372
     intake_entries:
     - intake-365
     - intake-372
@@ -11668,8 +11648,6 @@
     - searxng-search-backend.md
     - hermes-outer-shell.md
     experiments: []
-    intake_entries:
-    - intake-364
     intake_entries:
     - intake-364
     - intake-372
@@ -11794,9 +11772,6 @@
     intake_entries:
     - intake-363
     - intake-370
-    intake_entries:
-    - intake-363
-    - intake-370
     - intake-371
   handoffs_updated:
   - 'handoffs/active/autopilot-continuous-optimization.md'
@@ -11859,8 +11834,6 @@
     experiments: []
     intake_entries:
     - intake-363
-    intake_entries:
-    - intake-363
     - intake-367
   handoffs_updated:
   - autopilot-continuous-optimization.md
@@ -11912,7 +11885,6 @@
     handoffs:
     - integration-test-coverage.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-363
   handoffs_updated:
@@ -11978,9 +11950,6 @@
     intake_entries:
     - intake-363
     - intake-367
-    intake_entries:
-    - intake-363
-    - intake-367
     - intake-371
   handoffs_updated:
   - autopilot-continuous-optimization.md
@@ -12041,9 +12010,6 @@
     intake_entries:
     - intake-363
     - intake-367
-    intake_entries:
-    - intake-363
-    - intake-367
     - intake-370
   handoffs_updated:
   - autopilot-continuous-optimization.md
@@ -12097,9 +12063,6 @@
     intake_entries:
     - intake-364
     - intake-365
-    intake_entries:
-    - intake-364
-    - intake-365
     - intake-359
   handoffs_updated:
   - searxng-search-backend.md
@@ -12148,8 +12111,6 @@
     - reasoning-compression.md
     - mathsmith-hc-formalizer-eval.md
     experiments: []
-    intake_entries:
-    - intake-374
     intake_entries:
     - intake-374
     - intake-375
@@ -12222,9 +12183,6 @@
     intake_entries:
     - intake-373
     - intake-375
-    intake_entries:
-    - intake-373
-    - intake-375
     - intake-378
   handoffs_updated:
   - reasoning-compression.md
@@ -12273,8 +12231,6 @@
     experiments: []
     intake_entries:
     - intake-373
-    intake_entries:
-    - intake-373
     - intake-374
   handoffs_updated: []
   handoffs_created: []
@@ -12321,8 +12277,6 @@
     handoffs:
     - reasoning-compression.md
     experiments: []
-    intake_entries:
-    - intake-373
     intake_entries:
     - intake-373
     - intake-377
@@ -12375,8 +12329,6 @@
     - mathsmith-hc-formalizer-eval.md
     - research-evaluation-index.md
     experiments: []
-    intake_entries:
-    - intake-376
     intake_entries:
     - intake-376
     - intake-379
@@ -12445,8 +12397,6 @@
     experiments: []
     intake_entries:
     - intake-374
-    intake_entries:
-    - intake-374
     - intake-376
   handoffs_updated:
   - reasoning-compression.md
@@ -12512,7 +12462,6 @@
     handoffs:
     - eval-tower-verification.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-377
   handoffs_updated:
@@ -12676,7 +12625,6 @@
     experiments:
     - specexec-verification-profile.md
     intake_entries:
-    intake_entries:
     - intake-381
   handoffs_updated: []
   handoffs_created: []
@@ -12736,7 +12684,6 @@
     - routing-intelligence.md
     - bulk-inference-campaign.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-381
   handoffs_updated:
@@ -13209,8 +13156,6 @@
     - meta-harness-optimization.md
     intake_entries:
     - intake-327
-    intake_entries:
-    - intake-327
     - intake-328
     deep_dives:
     - evomap-evolver-gep-protocol.md
@@ -13276,13 +13221,6 @@
     - intake-270
     - intake-277
     - intake-316
-    intake_entries:
-    - intake-135
-    - intake-268
-    - intake-269
-    - intake-270
-    - intake-277
-    - intake-316
     - intake-321
     deep_dives:
     - claude-mem-persistent-memory.md
@@ -13338,8 +13276,6 @@
     - multimodal-pipeline.md
     intake_entries:
     - intake-123
-    intake_entries:
-    - intake-123
     - intake-317
     deep_dives:
     - voicebox-multi-engine-tts-studio.md
@@ -13392,8 +13328,6 @@
     - meta-harness-optimization.md
     - repl-turn-efficiency.md
     - tool-output-compression.md
-    intake_entries:
-    - intake-257
     intake_entries:
     - intake-257
     - intake-318
@@ -13512,10 +13446,6 @@
     - intake-326
     - intake-327
     - intake-388
-    intake_entries:
-    - intake-326
-    - intake-327
-    - intake-388
     - intake-393
   handoffs_updated:
   - meta-harness-optimization.md
@@ -13623,10 +13553,6 @@
     - intake-123
     - intake-317
     - intake-242
-    intake_entries:
-    - intake-123
-    - intake-317
-    - intake-242
     - intake-396
     deep_dives:
     - luxtts-cpu-tts-candidate.md
@@ -13694,8 +13620,6 @@
     - multimodal-pipeline.md
     intake_entries:
     - intake-396
-    intake_entries:
-    - intake-396
     - intake-401
     deep_dives:
     - hume-tada-text-acoustic-alignment.md
@@ -13742,7 +13666,6 @@
     - decision-aware-routing.md
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-404
   handoffs_updated: []
@@ -13806,7 +13729,6 @@
     - autopilot-continuous-optimization.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-403
   handoffs_updated:
   - reasoning-compression.md
@@ -13857,8 +13779,6 @@
     - colbert-reranker-web-research.md
     - searxng-search-backend.md
     experiments: []
-    intake_entries:
-    - intake-174
     intake_entries:
     - intake-174
     - intake-175
@@ -13916,7 +13836,6 @@
     - colbert-reranker-web-research.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-405
   handoffs_updated:
   - 'handoffs/active/colbert-reranker-web-research.md'
@@ -13968,8 +13887,6 @@
     handoffs:
     - colbert-reranker-web-research.md
     experiments: []
-    intake_entries:
-    - intake-405
     intake_entries:
     - intake-405
     - intake-406
@@ -14107,7 +14024,6 @@
     - long-context-eval-datasets.md
     - yarn-context-extension-research.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-408
   handoffs_updated:
@@ -14335,7 +14251,6 @@
     - learned-routing-controller.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-411
   handoffs_updated:
   - hermes-agent-index.md
@@ -14494,10 +14409,6 @@
     - intake-395
     - intake-301
     - intake-302
-    intake_entries:
-    - intake-395
-    - intake-301
-    - intake-302
     - intake-259
   handoffs_updated:
   - context-folding-progressive.md
@@ -14556,9 +14467,6 @@
     - tool-output-compression.md
     - context-folding-progressive.md
     experiments: []
-    intake_entries:
-    - intake-259
-    - intake-301
     intake_entries:
     - intake-259
     - intake-301
@@ -14675,10 +14583,6 @@
     - intake-158
     - intake-296
     - intake-297
-    intake_entries:
-    - intake-158
-    - intake-296
-    - intake-297
     - intake-298
   handoffs_updated: []
   handoffs_created: []
@@ -14751,7 +14655,6 @@
     - meta-harness-optimization.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-244
   handoffs_updated:
   - meta-harness-optimization.md
@@ -14797,10 +14700,6 @@
     - tool-output-compression.md
     - context-folding-progressive.md
     experiments: []
-    intake_entries:
-    - intake-259
-    - intake-274
-    - intake-301
     intake_entries:
     - intake-259
     - intake-274
@@ -14866,7 +14765,6 @@
     - inference-acceleration-index.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-332
   handoffs_updated: []
   handoffs_created: []
@@ -14915,7 +14813,6 @@
     handoffs:
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-148
   handoffs_updated: []
@@ -14972,7 +14869,6 @@
     - self-speculation-benchmark.md
     - hispec-external-draft-benchmark.md
     intake_entries:
-    intake_entries:
     - intake-422
   handoffs_updated: []
   handoffs_created: []
@@ -15026,7 +14922,6 @@
     - llama-cpp-fork-rebase.md
     - hsd-hierarchical-self-speculation.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-422
   handoffs_updated: []
@@ -15162,8 +15057,6 @@
     - orchestrator-conversation-management.md
     - meta-harness-optimization.md
     experiments: []
-    intake_entries:
-    - intake-413
     intake_entries:
     - intake-413
     - intake-156
@@ -15326,12 +15219,6 @@
     - intake-184
     - intake-279
     - intake-236
-    intake_entries:
-    - intake-181
-    - intake-183
-    - intake-184
-    - intake-279
-    - intake-236
     - intake-281
   handoffs_updated:
   - gpu-acceleration-path.md
@@ -15408,7 +15295,6 @@
     chapters: []
     handoffs:
     - colbert-reranker-web-research.md
-    intake_entries:
     intake_entries:
     - intake-174
     experiments: []
@@ -15512,8 +15398,6 @@
     - colbert-reranker-web-research.md
     intake_entries:
     - intake-174
-    intake_entries:
-    - intake-174
     - intake-428
     experiments: []
   handoffs_updated:
@@ -15572,8 +15456,6 @@
     chapters: []
     handoffs:
     - colbert-reranker-web-research.md
-    intake_entries:
-    - intake-174
     intake_entries:
     - intake-174
     - intake-428
@@ -15644,8 +15526,6 @@
     handoffs:
     - multimodal-pipeline.md
     - tq3-quantization-evaluation.md
-    intake_entries:
-    - intake-121
     intake_entries:
     - intake-121
     - intake-123
@@ -15747,7 +15627,6 @@
     chapters: []
     handoffs: []
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-221
   handoffs_updated: []
@@ -15927,10 +15806,6 @@
     - intake-110
     - intake-126
     - intake-127
-    intake_entries:
-    - intake-110
-    - intake-126
-    - intake-127
     - intake-129
   handoffs_updated:
   - reasoning-compression.md
@@ -15994,7 +15869,6 @@
     - autopilot-continuous-optimization.md
     - repl-turn-efficiency.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-412
   handoffs_updated:
@@ -16344,7 +16218,6 @@
     - meta-harness-optimization.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-412
   handoffs_updated:
   - autopilot-continuous-optimization.md
@@ -16517,7 +16390,6 @@
     - ssm-hybrid-acceleration.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-158
   handoffs_updated:
   - gpu-acceleration-path.md
@@ -16584,7 +16456,6 @@
     handoffs:
     - gpu-acceleration-path.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-447
   handoffs_updated:
@@ -16716,9 +16587,6 @@
     intake_entries:
     - intake-117
     - intake-277
-    intake_entries:
-    - intake-117
-    - intake-277
     - intake-327
   handoffs_updated:
   - hermes-agent-index.md
@@ -16790,8 +16658,6 @@
     experiments: []
     intake_entries:
     - intake-244
-    intake_entries:
-    - intake-244
     - intake-327
   handoffs_updated:
   - meta-harness-optimization.md
@@ -16850,8 +16716,6 @@
     handoffs:
     - opendataloader-pipeline-integration.md
     experiments: []
-    intake_entries:
-    - intake-449
     intake_entries:
     - intake-449
     - intake-359
@@ -16928,8 +16792,6 @@
     - colbert-reranker-web-research.md
     - searxng-search-backend.md
     experiments: []
-    intake_entries:
-    - intake-174
     intake_entries:
     - intake-174
     - intake-430
@@ -17011,11 +16873,6 @@
     - meta-harness-optimization.md
     - repl-turn-efficiency.md
     experiments: []
-    intake_entries:
-    - intake-117
-    - intake-277
-    - intake-327
-    - intake-388
     intake_entries:
     - intake-117
     - intake-277
@@ -17224,7 +17081,6 @@
     - learned-routing-controller.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-332
   handoffs_updated: []
   handoffs_created: []
@@ -17297,7 +17153,6 @@
     - attention-matching-kv-compaction.md
     - triattention-kv-selection.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-033
   handoffs_updated:
@@ -17374,7 +17229,6 @@
     - numa-prefill-decode-disaggregation.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-048
   handoffs_updated:
   - dynamic-stack-concurrency.md
@@ -17447,7 +17301,6 @@
     - single-instance-system-tuning.md
     - numa-prefill-decode-disaggregation.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-459
   handoffs_updated:
@@ -17528,7 +17381,6 @@
     - dynamic-stack-concurrency.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-041
   handoffs_updated:
   - gpu-acceleration-path.md
@@ -17606,10 +17458,6 @@
     - intra-process-tensor-parallel-decode.md
     - gpu-acceleration-path.md
     experiments: []
-    intake_entries:
-    - intake-033
-    - intake-152
-    - intake-424
     intake_entries:
     - intake-033
     - intake-152
@@ -17819,8 +17667,6 @@
     experiments: []
     intake_entries:
     - intake-305
-    intake_entries:
-    - intake-305
     - intake-424
   handoffs_updated:
   - gpu-acceleration-path.md
@@ -17943,8 +17789,6 @@
     experiments: []
     intake_entries:
     - intake-305
-    intake_entries:
-    - intake-305
     - intake-308
   handoffs_updated:
   - large-moe-expert-parallelism.md
@@ -18005,7 +17849,6 @@
     - dynamic-stack-concurrency.md
     - inference-acceleration-index.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-460
   handoffs_updated:
@@ -18070,7 +17913,6 @@
     - dynamic-stack-concurrency.md
     - inference-acceleration-index.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-048
   handoffs_updated:
@@ -18150,8 +17992,6 @@
     experiments: []
     intake_entries:
     - intake-010
-    intake_entries:
-    - intake-010
     - intake-467
   handoffs_updated:
   - large-moe-expert-parallelism.md
@@ -18217,8 +18057,6 @@
     - large-moe-expert-parallelism.md
     - learned-routing-controller.md
     experiments: []
-    intake_entries:
-    - intake-449
     intake_entries:
     - intake-449
     - intake-467
@@ -18302,9 +18140,6 @@
     intake_entries:
     - intake-459
     - intake-460
-    intake_entries:
-    - intake-459
-    - intake-460
     - intake-041
   handoffs_updated:
   - dynamic-stack-concurrency.md
@@ -18366,8 +18201,6 @@
     - repl-turn-efficiency.md
     - tool-output-compression.md
     - context-folding-progressive.md
-    intake_entries:
-    - intake-117
     intake_entries:
     - intake-117
     - intake-144
@@ -18708,8 +18541,6 @@
     experiments: []
     intake_entries:
     - intake-261
-    intake_entries:
-    - intake-261
     - intake-262
     intake_entry_notes:
     - 'intake-261 (Skill0 — RL-based skill internalization)'
@@ -18819,8 +18650,6 @@
     experiments: []
     intake_entries:
     - intake-315
-    intake_entries:
-    - intake-315
     - intake-444
     intake_entry_notes:
     - 'intake-315 (GUIWorld / Neural Computer — also GUI agent territory, marked not_applicable)'
@@ -18926,10 +18755,6 @@
     - intake-110
     - intake-264
     - intake-266
-    intake_entries:
-    - intake-110
-    - intake-264
-    - intake-266
     - intake-286
     intake_entry_notes:
     - 'intake-110 (OPSDC: On-Policy Self-Distillation for Reasoning Compression)'
@@ -18992,7 +18817,6 @@
     - multimodal-pipeline.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-432
     intake_entry_notes:
     - 'intake-432 (Qwen3.5-Omni Technical Report, arxiv:2604.15804) — adjacent omni-modal architecture, filed as not-adopted (API-only)'
@@ -19033,8 +18857,6 @@
     - tq3-quantization-evaluation.md
     - kv-cache-quantization.md
     experiments: []
-    intake_entries:
-    - intake-186
     intake_entries:
     - intake-186
     - intake-246
@@ -19081,8 +18903,6 @@
     - tq3-quantization-evaluation.md
     - kv-cache-quantization.md
     experiments: []
-    intake_entries:
-    - intake-186
     intake_entries:
     - intake-186
     - intake-246
@@ -19732,9 +19552,6 @@
     intake_entries:
     - intake-474
     - intake-493
-    intake_entries:
-    - intake-474
-    - intake-493
     - intake-496
     intake_entry_notes:
     - 'intake-474 (Trinity 2512.04695)'
@@ -19808,9 +19625,6 @@
     - outer-coordinator-learned-head.md
     - tri-role-coordinator-architecture.md
     experiments: []
-    intake_entries:
-    - intake-474
-    - intake-493
     intake_entries:
     - intake-474
     - intake-493
@@ -19946,9 +19760,6 @@
     intake_entries:
     - intake-444
     - intake-411
-    intake_entries:
-    - intake-444
-    - intake-411
     - intake-412
     intake_entry_notes:
     - 'intake-444 (Agent-World, primary subject of agent-world-env-synthesis)'
@@ -20073,14 +19884,6 @@
     - intake-464
     - intake-465
     - intake-466
-    intake_entries:
-    - intake-458
-    - intake-461
-    - intake-462
-    - intake-463
-    - intake-464
-    - intake-465
-    - intake-466
     - intake-497
     intake_entry_notes:
     - 'intake-458 (FlashInfer — production attention backend, used by vLLM/SGLang/MLC)'
@@ -20177,12 +19980,6 @@
     - gpu-acceleration-path.md
     - qwen36-27b-cpu-feasibility.md
     experiments: []
-    intake_entries:
-    - intake-158
-    - intake-296
-    - intake-297
-    - intake-298
-    - intake-447
     intake_entries:
     - intake-158
     - intake-296
@@ -20300,11 +20097,6 @@
     - intake-288
     - intake-351
     - intake-356
-    intake_entries:
-    - intake-256
-    - intake-288
-    - intake-351
-    - intake-356
     - intake-354
     intake_entry_notes:
     - 'intake-256 (Multiscreen architecture — closest sub-quadratic-attention cluster member, same gating criteria)'
@@ -20398,7 +20190,6 @@
     - yarn-context-extension-research.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-502
     intake_entry_notes:
     - 'intake-502 (KSA — same expansion run, sibling sub-quadratic-attention paper from a different industrial lab)'
@@ -20466,7 +20257,6 @@
     chapters: []
     handoffs: []
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-502
     intake_entry_notes:
@@ -20542,7 +20332,6 @@
     - long-context-eval-datasets.md
     - yarn-context-extension-research.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-502
     intake_entry_notes:
@@ -20626,7 +20415,6 @@
     - inference-acceleration-index.md
     - llama-cpp-fork-rebase.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-502
     intake_entry_notes:
@@ -20728,8 +20516,6 @@
     - qwen36-27b-cpu-feasibility.md
     - research-evaluation-index.md
     experiments: []
-    intake_entries:
-    - intake-502
     intake_entries:
     - intake-502
     - intake-506
@@ -20847,8 +20633,6 @@
     experiments: []
     intake_entries:
     - intake-450
-    intake_entries:
-    - intake-450
     - intake-473
     intake_entry_notes:
     - 'intake-450 (veniceai/skills — sibling cross-runtime SKILL.md collection; same packaging format, different domain coverage)'
@@ -20957,11 +20741,6 @@
     - intake-512
     - intake-513
     - intake-514
-    intake_entries:
-    - intake-432
-    - intake-512
-    - intake-513
-    - intake-514
     - intake-515
     intake_entry_notes:
     - 'intake-432 (qwen35-omni-tts-unblock — closest TTS/Omni pattern in our intake history)'
@@ -21016,10 +20795,6 @@
     handoffs:
     - multimodal-pipeline.md
     experiments: []
-    intake_entries:
-    - intake-511
-    - intake-513
-    - intake-514
     intake_entries:
     - intake-511
     - intake-513
@@ -21083,10 +20858,6 @@
     - intake-511
     - intake-512
     - intake-514
-    intake_entries:
-    - intake-511
-    - intake-512
-    - intake-514
     - intake-515
     intake_entry_notes:
     - 'intake-511 (KAME paper)'
@@ -21143,9 +20914,6 @@
     intake_entries:
     - intake-511
     - intake-513
-    intake_entries:
-    - intake-511
-    - intake-513
     - intake-515
     intake_entry_notes:
     - 'intake-511 (KAME paper)'
@@ -21196,10 +20964,6 @@
     handoffs:
     - multimodal-pipeline.md
     experiments: []
-    intake_entries:
-    - intake-511
-    - intake-512
-    - intake-513
     intake_entries:
     - intake-511
     - intake-512
@@ -21259,9 +21023,6 @@
     - research-evaluation-index.md
     - hermes-agent-index.md
     experiments: []
-    intake_entries:
-    - intake-517
-    - intake-518
     intake_entries:
     - intake-517
     - intake-518
@@ -21329,9 +21090,6 @@
     intake_entries:
     - intake-153
     - intake-516
-    intake_entries:
-    - intake-153
-    - intake-516
     - intake-518
     intake_entry_notes:
     - 'intake-153 (RLM foundational paper, arxiv:2512.24601 — already_integrated, ~80% pattern coverage; HALO is an applied implementation)'
@@ -21385,9 +21143,6 @@
     - meta-harness-optimization.md
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
-    - intake-517
-    - intake-516
     intake_entries:
     - intake-517
     - intake-516
@@ -21528,8 +21283,6 @@
     experiments: []
     intake_entries:
     - intake-411
-    intake_entries:
-    - intake-411
     - intake-444
     intake_entry_notes:
     - 'intake-411 (Qwen-Agent MCP singleton manager — adjacent MCP-tool integration pattern)'
@@ -21619,10 +21372,6 @@
     - mathsmith-hc-formalizer-eval.md
     - meta-harness-optimization.md
     experiments: []
-    intake_entries:
-    - intake-441
-    - intake-483
-    - intake-455
     intake_entries:
     - intake-441
     - intake-483
@@ -21737,8 +21486,6 @@
     experiments: []
     intake_entries:
     - intake-521
-    intake_entries:
-    - intake-521
     - intake-523
     intake_entry_notes:
     - 'intake-521 (Qwen-Scope — load-bearing skeptical evidence; AxBench is the canonical "SAE steering doesn''t work as well as simpler baselines" reference)'
@@ -21814,8 +21561,6 @@
     experiments: []
     intake_entries:
     - intake-521
-    intake_entries:
-    - intake-521
     - intake-522
     intake_entry_notes:
     - 'intake-521 (Qwen-Scope — Wang et al. 2026 is cited in the Qwen-Scope reference list but not benchmarked against; this is the load-bearing falsification work for Qwen-Scope steering / SASFT / SAE-DAPO claims; Qwen-Scope is also the paper''s methodological cousin — same TopK SAE recipe at larger widths)'
@@ -21879,8 +21624,6 @@
     experiments: []
     intake_entries:
     - intake-359
-    intake_entries:
-    - intake-359
     - intake-361
     intake_entry_notes:
     - 'intake-359 (SearXNG — the search layer in the same SearXNG→Firecrawl→Camofox three-tool stack; already integrated into epyc-orchestrator web_research pipeline)'
@@ -21931,7 +21674,6 @@
     - searxng-search-backend.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-524
     intake_entry_notes:
     - 'intake-524 (camofox-browser — the REST API wrapper that makes Camoufox accessible to agent processes via HTTP)'
@@ -21973,8 +21715,6 @@
     chapters: []
     handoffs: []
     experiments: []
-    intake_entries:
-    - intake-524
     intake_entries:
     - intake-524
     - intake-525
@@ -22040,9 +21780,6 @@
     - moe-spec-cpu-spec-dec-integration.md
     - gemma4-mtp-drafter-evaluation.md
     experiments: []
-    intake_entries:
-    - intake-251
-    - intake-252
     intake_entries:
     - intake-251
     - intake-252
@@ -22119,7 +21856,6 @@
     handoffs: []
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-169
     intake_entry_notes:
     - 'intake-169 (Apple "LLM in a Flash" — closest prior art for sparsity-aware load-time data placement on Apple Silicon)'
@@ -22193,13 +21929,6 @@
     - cpu-dynamic-moe-load-balancing.md
     - large-moe-expert-parallelism.md
     experiments: []
-    intake_entries:
-    - intake-528
-    - intake-474
-    - intake-493
-    - intake-511
-    - intake-467
-    - intake-530
     intake_entries:
     - intake-528
     - intake-474
@@ -22291,10 +22020,6 @@
     - intake-528
     - intake-474
     - intake-529
-    intake_entries:
-    - intake-528
-    - intake-474
-    - intake-529
     - intake-531
     intake_entry_notes:
     - 'intake-528 (Kolinko Effort Engine deep-dive — same dynamic-sparsity neighborhood; deep-dive flags Deja Vu / PowerInfer / TEAL family as a re-surface trigger condition)'
@@ -22365,10 +22090,6 @@
     - llama-cpp-kernel-push-rebase.md
     - cpu-inference-optimization-index.md
     experiments: []
-    intake_entries:
-    - intake-474
-    - intake-493
-    - intake-529
     intake_entries:
     - intake-474
     - intake-493
@@ -22467,10 +22188,6 @@
     - intake-474
     - intake-563
     - intake-564
-    intake_entries:
-    - intake-474
-    - intake-563
-    - intake-564
     - intake-565
     intake_entry_notes:
     - 'intake-474 (Trinity / sep-CMA-ES coordinator, arxiv:2512.04695)'
@@ -22520,8 +22237,6 @@
     handoffs:
     - multimodal-pipeline.md
     experiments: []
-    intake_entries:
-    - intake-534
     intake_entries:
     - intake-534
     - intake-535
@@ -22588,8 +22303,6 @@
     experiments: []
     intake_entries:
     - intake-533
-    intake_entries:
-    - intake-533
     - intake-535
     intake_entry_notes:
     - 'intake-533 (Sana WM project page)'
@@ -22651,8 +22364,6 @@
     - gpu-acceleration-path.md
     - agent-world-env-synthesis.md
     experiments: []
-    intake_entries:
-    - intake-533
     intake_entries:
     - intake-533
     - intake-534
@@ -22731,11 +22442,6 @@
     - intake-547
     - intake-548
     - intake-549
-    intake_entries:
-    - intake-541
-    - intake-547
-    - intake-548
-    - intake-549
     - intake-550
     intake_entry_notes:
     - 'intake-541 (RAO X-post breakdown by @neural_avb)'
@@ -22797,11 +22503,6 @@
     - meta-harness-optimization.md
     - orchestrator-conversation-management.md
     experiments: []
-    intake_entries:
-    - intake-153
-    - intake-331
-    - intake-349
-    - intake-250
     intake_entries:
     - intake-153
     - intake-331
@@ -22877,10 +22578,6 @@
     - intake-551
     - intake-552
     - intake-553
-    intake_entries:
-    - intake-551
-    - intake-552
-    - intake-553
     - intake-554
     intake_entry_notes:
     - 'intake-551 (KVP, arxiv:2602.10238)'
@@ -22952,7 +22649,6 @@
     - internal-kb-rag.md
     - context-folding-progressive.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-568
     intake_entry_notes:
@@ -23084,7 +22780,6 @@
     - per-request-reasoning-budget.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-536
     intake_entry_notes:
     - 'intake-536 (RAO paper, arxiv:2605.06639) — primary source'
@@ -23138,14 +22833,6 @@
     - moe-spec-cpu-spec-dec-integration.md
     - cpu-context-regime-coverage.md
     experiments: []
-    intake_entries:
-    - intake-110
-    - intake-126
-    - intake-127
-    - intake-128
-    - intake-129
-    - intake-276
-    - intake-566
     intake_entries:
     - intake-110
     - intake-126
@@ -23295,10 +22982,6 @@
     - intake-555
     - intake-556
     - intake-557
-    intake_entries:
-    - intake-555
-    - intake-556
-    - intake-557
     - intake-558
     intake_entry_notes:
     - 'intake-555 (LatentMAS, arxiv:2511.20639) — training-free variant'
@@ -23365,16 +23048,6 @@
     - context-folding-progressive.md
     - per-request-reasoning-budget.md
     experiments: []
-    intake_entries:
-    - intake-110
-    - intake-126
-    - intake-127
-    - intake-129
-    - intake-289
-    - intake-292
-    - intake-559
-    - intake-560
-    - intake-561
     intake_entries:
     - intake-110
     - intake-126
@@ -23520,8 +23193,6 @@
     experiments: []
     intake_entries:
     - intake-153
-    intake_entries:
-    - intake-153
     - intake-536
     intake_entry_notes:
     - 'intake-153 (RLM foundational, arxiv:2512.24601)'
@@ -23594,8 +23265,6 @@
     experiments: []
     intake_entries:
     - intake-536
-    intake_entries:
-    - intake-536
     - intake-153
     intake_entry_notes:
     - 'intake-536 (RAO) — RAO is one specific instantiation of this taxonomy "orchestration reward" family'
@@ -23660,7 +23329,6 @@
     - tri-role-coordinator-architecture.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-536
     intake_entry_notes:
     - 'intake-536 (RAO) — RAO uses LOO baseline + mean-of-children; Tree-GRPO uses prefix-sharing instead — direct methodological alternative'
@@ -23722,8 +23390,6 @@
     experiments: []
     intake_entries:
     - intake-536
-    intake_entries:
-    - intake-536
     - intake-153
     intake_entry_notes:
     - 'intake-536 (RAO) — RAO harness is conceptually a ReDel-class system + learned delegation policy'
@@ -23781,7 +23447,6 @@
     - triattention-kv-selection.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-538
     intake_entry_notes:
     - 'intake-538 (SP-KV)'
@@ -23837,7 +23502,6 @@
     - attention-matching-kv-compaction.md
     - triattention-kv-selection.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-538
     intake_entry_notes:
@@ -23897,7 +23561,6 @@
     - attention-matching-kv-compaction.md
     - triattention-kv-selection.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-538
     intake_entry_notes:
@@ -23961,7 +23624,6 @@
     - orchestrator-conversation-management.md
     - dynamic-stack-concurrency.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-538
     intake_entry_notes:
@@ -24039,8 +23701,6 @@
     experiments: []
     intake_entries:
     - intake-544
-    intake_entries:
-    - intake-544
     - intake-153
     intake_entry_notes:
     - 'intake-544 (RMAS — direct predecessor; LatentMAS is training-free, RMAS adds RecursiveLink fine-tuning)'
@@ -24102,8 +23762,6 @@
     - routing-intelligence.md
     - meta-harness-optimization.md
     experiments: []
-    intake_entries:
-    - intake-544
     intake_entries:
     - intake-544
     - intake-153
@@ -24170,8 +23828,6 @@
     - routing-and-optimization-index.md
     - meta-harness-optimization.md
     experiments: []
-    intake_entries:
-    - intake-544
     intake_entries:
     - intake-544
     - intake-153
@@ -24242,8 +23898,6 @@
     experiments: []
     intake_entries:
     - intake-544
-    intake_entries:
-    - intake-544
     - intake-153
     intake_entry_notes:
     - 'intake-544 (RMAS — similar projection-module idea)'
@@ -24307,9 +23961,6 @@
     intake_entries:
     - intake-545
     - intake-110
-    intake_entries:
-    - intake-545
-    - intake-110
     - intake-134
     intake_entry_notes:
     - 'intake-545 (Abstract CoT — Coconut is the canonical continuous-thought baseline it compares against)'
@@ -24368,8 +24019,6 @@
     - reasoning-compression.md
     - per-request-reasoning-budget.md
     experiments: []
-    intake_entries:
-    - intake-545
     intake_entries:
     - intake-545
     - intake-110
@@ -24434,9 +24083,6 @@
     intake_entries:
     - intake-545
     - intake-110
-    intake_entries:
-    - intake-545
-    - intake-110
     - intake-134
     intake_entry_notes:
     - 'intake-545 (Abstract CoT — closest architectural cousin; both use a discrete reserved/learned vocabulary)'
@@ -24498,9 +24144,6 @@
     - per-request-reasoning-budget.md
     - memento-block-reasoning-compression.md
     experiments: []
-    intake_entries:
-    - intake-545
-    - intake-110
     intake_entries:
     - intake-545
     - intake-110
@@ -24576,10 +24219,6 @@
     - intake-474
     - intake-532
     - intake-564
-    intake_entries:
-    - intake-474
-    - intake-532
-    - intake-564
     - intake-565
     intake_entry_notes:
     - 'intake-474 (Trinity)'
@@ -24648,9 +24287,6 @@
     - learned-routing-controller.md
     - routing-and-optimization-index.md
     experiments: []
-    intake_entries:
-    - intake-532
-    - intake-474
     intake_entries:
     - intake-532
     - intake-474
@@ -24723,10 +24359,6 @@
     - intake-532
     - intake-474
     - intake-563
-    intake_entries:
-    - intake-532
-    - intake-474
-    - intake-563
     - intake-564
     intake_entry_notes:
     - 'intake-532 (EGGROLL)'
@@ -24784,15 +24416,6 @@
     - reasoning-compression.md
     - cpu-context-regime-coverage.md
     experiments: []
-    intake_entries:
-    - intake-110
-    - intake-126
-    - intake-127
-    - intake-128
-    - intake-129
-    - intake-134
-    - intake-289
-    - intake-292
     intake_entries:
     - intake-110
     - intake-126
@@ -24865,7 +24488,6 @@
     - moe-spec-cpu-spec-dec-integration.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-542
     intake_entry_notes:
     - 'intake-542 (jun_song — ZenMagnets reply about spec-dec hurting high-concurrency)'
@@ -24915,7 +24537,6 @@
     - context-folding-progressive.md
     - cpu-context-regime-coverage.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-539
     intake_entry_notes:
@@ -24998,10 +24619,6 @@
     - long-context-eval-datasets.md
     - cpu-context-regime-coverage.md
     experiments: []
-    intake_entries:
-    - intake-032
-    - intake-153
-    - intake-547
     intake_entries:
     - intake-032
     - intake-153
@@ -25133,8 +24750,6 @@
     experiments: []
     intake_entries:
     - intake-444
-    intake_entries:
-    - intake-444
     - intake-574
     intake_entry_notes:
     - 'intake-444 (Agent-World — environment synthesis for evolving agents)'
@@ -25200,9 +24815,6 @@
     intake_entries:
     - intake-520
     - intake-411
-    intake_entries:
-    - intake-520
-    - intake-411
     - intake-444
     intake_entry_notes:
     - 'intake-520 (markdownfs — sibling agent-VFS; markdown-only scope, Git-style versioning, MCP-served; mirage is broader multi-backend, FUSE-fronted, no built-in VCS, no MCP surface)'
@@ -25261,7 +24873,6 @@
     - autopilot-continuous-optimization.md
     - context-folding-progressive.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-571
     intake_entry_notes:
@@ -25331,8 +24942,6 @@
     experiments: []
     intake_entries:
     - intake-571
-    intake_entries:
-    - intake-571
     - intake-444
     intake_entry_notes:
     - 'intake-571 (ECHO — directly cites Endless Terminals as precursor, same author cluster)'
@@ -25391,9 +25000,6 @@
     handoffs:
     - multimodal-pipeline.md
     experiments: []
-    intake_entries:
-    - intake-121
-    - intake-251
     intake_entries:
     - intake-121
     - intake-251
@@ -25495,14 +25101,6 @@
     - intake-298
     - intake-447
     - intake-455
-    intake_entries:
-    - intake-158
-    - intake-159
-    - intake-296
-    - intake-297
-    - intake-298
-    - intake-447
-    - intake-455
     - intake-567
     intake_entry_notes:
     - 'intake-158 (DFlash — block diffusion drafter, separate-model variant of the same idea — Nemotron-Diff''''s key delta is unified-model + shared KV)'
@@ -25557,8 +25155,6 @@
     experiments: []
     intake_entries:
     - intake-576
-    intake_entries:
-    - intake-576
     - intake-578
     intake_entry_notes:
     - 'intake-576 (PRIMARY — tech report PDF, full claims/scoring/cross-refs)'
@@ -25598,8 +25194,6 @@
     chapters: []
     handoffs: []
     experiments: []
-    intake_entries:
-    - intake-576
     intake_entries:
     - intake-576
     - intake-577
@@ -25666,9 +25260,6 @@
     intake_entries:
     - intake-436
     - intake-580
-    intake_entries:
-    - intake-436
-    - intake-580
     - intake-581
   handoffs_updated:
   - opendataloader-pipeline-integration.md
@@ -25724,9 +25315,6 @@
     - opendataloader-pipeline-integration.md
     - internal-kb-rag.md
     experiments: []
-    intake_entries:
-    - intake-579
-    - intake-581
     intake_entries:
     - intake-579
     - intake-581
@@ -25789,9 +25377,6 @@
     - opendataloader-pipeline-integration.md
     - internal-kb-rag.md
     experiments: []
-    intake_entries:
-    - intake-579
-    - intake-580
     intake_entries:
     - intake-579
     - intake-580
@@ -25871,10 +25456,6 @@
     - intake-559
     - intake-332
     - intake-443
-    intake_entries:
-    - intake-559
-    - intake-332
-    - intake-443
     - intake-153
   handoffs_updated:
   - reasoning-compression.md
@@ -25929,10 +25510,6 @@
     handoffs:
     - reasoning-compression.md
     experiments: []
-    intake_entries:
-    - intake-582
-    - intake-584
-    - intake-332
     intake_entries:
     - intake-582
     - intake-584
@@ -26003,10 +25580,6 @@
     - intake-582
     - intake-583
     - intake-332
-    intake_entries:
-    - intake-582
-    - intake-583
-    - intake-332
     - intake-559
   handoffs_updated:
   - reasoning-compression.md
@@ -26062,9 +25635,6 @@
     handoffs:
     - reasoning-compression.md
     experiments: []
-    intake_entries:
-    - intake-584
-    - intake-583
     intake_entries:
     - intake-584
     - intake-583
@@ -26146,13 +25716,6 @@
     - intake-590
     - intake-591
     - intake-595
-    intake_entries:
-    - intake-587
-    - intake-588
-    - intake-589
-    - intake-590
-    - intake-591
-    - intake-595
     - intake-596
   handoffs_updated:
   - tq3-quantization-evaluation.md
@@ -26201,9 +25764,6 @@
     chapters: []
     handoffs: []
     experiments: []
-    intake_entries:
-    - intake-586
-    - intake-588
     intake_entries:
     - intake-586
     - intake-588
@@ -26264,9 +25824,6 @@
     intake_entries:
     - intake-586
     - intake-587
-    intake_entries:
-    - intake-586
-    - intake-587
     - intake-589
   handoffs_updated: []
   handoffs_created: []
@@ -26309,9 +25866,6 @@
     chapters: []
     handoffs: []
     experiments: []
-    intake_entries:
-    - intake-586
-    - intake-587
     intake_entries:
     - intake-586
     - intake-587
@@ -26396,11 +25950,6 @@
     - intake-591
     - intake-592
     - intake-593
-    intake_entries:
-    - intake-586
-    - intake-591
-    - intake-592
-    - intake-593
     - intake-594
   handoffs_updated:
   - tq3-quantization-evaluation.md
@@ -26466,10 +26015,6 @@
     - llama-cpp-kernel-push-rebase.md
     - angelslim-techniques-evaluation.md
     experiments: []
-    intake_entries:
-    - intake-590
-    - intake-586
-    - intake-191
     intake_entries:
     - intake-590
     - intake-586
@@ -26547,9 +26092,6 @@
     intake_entries:
     - intake-590
     - intake-566
-    intake_entries:
-    - intake-590
-    - intake-566
     - intake-567
   handoffs_updated:
   - per-request-reasoning-budget.md
@@ -26615,9 +26157,6 @@
     intake_entries:
     - intake-590
     - intake-591
-    intake_entries:
-    - intake-590
-    - intake-591
     - intake-186
   handoffs_updated:
   - tq3-quantization-evaluation.md
@@ -26676,7 +26215,6 @@
     - tq3-quantization-evaluation.md
     - angelslim-techniques-evaluation.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-590
   handoffs_updated:
@@ -26738,8 +26276,6 @@
     experiments: []
     intake_entries:
     - intake-586
-    intake_entries:
-    - intake-586
     - intake-596
   handoffs_updated: []
   handoffs_created: []
@@ -26799,8 +26335,6 @@
     handoffs:
     - internal-kb-rag.md
     experiments: []
-    intake_entries:
-    - intake-586
     intake_entries:
     - intake-586
     - intake-595
@@ -26944,11 +26478,6 @@
     - intake-585
     - intake-583
     - intake-582
-    intake_entries:
-    - intake-584
-    - intake-585
-    - intake-583
-    - intake-582
     - intake-332
   handoffs_updated:
   - multiscreen-attention-evaluation.md
@@ -27006,8 +26535,6 @@
     experiments: []
     intake_entries:
     - intake-504
-    intake_entries:
-    - intake-504
     - intake-600
   novelty_justification: Distinct architectural axis — n-gram-keyed parametric memory designed for host-DRAM offload — orthogonal to MoE, KV-cache, and speculative decoding. Not previously dedicated-indexed (only a peripheral mention under intake-504 LongCat work).
   relevance_justification: 'Directly addresses our hardware asymmetry: 1.1 TB RAM, no fast GPU. The <3% PCIe-offload penalty for a 100B-param table matches our deployment regime more precisely than any other recently surveyed inference technique. Even if not currently usable post-hoc, it sets a target architecture for future model selection.'
@@ -27053,7 +26580,6 @@
     handoffs:
     - engram-conditional-memory.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-599
   novelty_justification: Niche follow-up — applies CXL-pool ideas to the Engram offload pattern; modest novelty, single-author workshop format.
@@ -27142,10 +26668,6 @@
     - intake-602
     - intake-603
     - intake-604
-    intake_entries:
-    - intake-602
-    - intake-603
-    - intake-604
     - intake-244
   novelty_justification: 'Individual techniques are mostly known/published (many already in our chapters + intake — MoA, self-consistency, MCTS, CoT-decoding). Novelty is in the integration: a single open-source Apache-2.0 OpenAI-API-compatible proxy (4k stars, ~10 contributors, codelion-dominated) that catalogs 20+ test-time methods as swappable per-request modules. No single new technique of its own -> medium, not high.'
   relevance_justification: 'Direct structural analogue to our orchestrator: an OpenAI-API-style inference proxy that does per-request method/role selection over backends. IMPORTANT (2026-05-24 deep-dive correction): OptiLLM''s local-inference-only modules (cot_decoding, entropy_decoding, autothink, deepconf, thinkdeeper) are implemented against HuggingFace transformers in-process (AutoModelForCausalLM + register_forward_hook + output_attentions), so they do NOT run over our llama-server OpenAI endpoints — they are reimplementation targets, not drop-in. Of these, DeepConf and CoT-decoding need only token top_logprobs (which llama-server already exposes), so a proxy/fork reimplementation is feasible; AutoThink steering needs layer-19 activation injection (transformers-only) and would require our own llama.cpp activation-steering to use at all — only AutoThink''s complexity-CLASSIFIER idea is portable. The API-level techniques (MCTS, self_consistency, PlanSearch, RTO, RStar, CoT-reflection, LEAP, RE2, MARS) DO work over llama-server; BoN/MoA/CEPO degrade because llama.cpp lacks the `n` multi-sample parameter and falls back to sequential generation.'
@@ -27198,7 +26720,6 @@
     - per-request-reasoning-budget.md
     - routing-intelligence.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-601
   novelty_justification: Decode-level elicitation of latent CoT is a distinct mechanism from prompt-based or fine-tuned reasoning; medium because it is now well-cited (2024) and partially folded into entropy/adaptive-sampling work we already track.
@@ -27254,7 +26775,6 @@
     - routing-intelligence.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-601
   novelty_justification: Confidence-gated trace filtering is a fresh, training-free efficiency mechanism on top of self-consistency with a large reported token reduction; recent (Aug 2025) and not previously indexed.
   relevance_justification: The 84.7% token-reduction claim is exactly the lever we need on a BW-bound CPU where every decoded token costs DRAM bandwidth; framed as serving-framework-integrable, and Qwen3 is in our active model family (frontdoor Qwen3.6, architect Qwen3.5). Confidence signal also feeds routing-intelligence + per-request-reasoning-budget.
@@ -27300,7 +26820,6 @@
     handoffs:
     - meta-harness-optimization.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-601
   novelty_justification: Provides the theoretical justification OptiLLM leans on (inference-time techniques can substitute for fine-tuning); the ICL-approximates-SFT framing is a known intuition formalized here, hence medium.
@@ -27358,9 +26877,6 @@
     - batched-edit-parallel-apply.md
     - routing-and-optimization-index.md
     experiments: []
-    intake_entries:
-    - intake-295
-    - intake-330
     intake_entries:
     - intake-295
     - intake-330
@@ -27508,7 +27024,6 @@
     - routing-and-optimization-index.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-244
   novelty_justification: Survey/taxonomy with no new technique or empirical result. The agent-harness theme is already densely covered (Externalization review, "Dive into Claude Code" design-space study, the active Meta-Harness handoff). The "code as executable/stateful/verifiable medium" framing overlaps existing coverage; adds an organizing taxonomy (interface/mechanism/scaling) but no novelty beyond it.
   relevance_justification: Squarely inside the agent_architecture domain (orchestrator harness, role routing, escalation, prompt/code mutation in the meta-harness autopilot), but conceptual rather than CPU-inference actionable, and reports no metrics that change any deployment decision. The harness-reliability evaluation gap maps onto existing chapter-09 / meta-harness Tier-1 trace-feedback work. Medium, not high.
@@ -27639,7 +27154,6 @@
     - meta-harness-optimization.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-414
   novelty_justification: Mature, widely-used production framework — not novel research. Already imported as `mcp.server.fastmcp.FastMCP` in the project's archived MCP-server scaffolds (handoffs/archived/mcp-knowledge-tools.md, json-canvas-plugin-architecture.md). Recorded as a reference entry, not a discovery.
   relevance_justification: 'Three active handoffs name MCP-tool wrapping as forward work without naming the framework: tool-output-compression Phase 3 (wrap compression as MCP tool to bypass the PostToolUse-cannot-replace-Bash-output limitation), internal-kb-rag K6 (kb_search MCP tool for Explore subagents), meta-harness-optimization (curated-context MCP server pattern, ref intake-414). FastMCP v2/v3 features beyond the upstream SDK fork — in-memory testing client, server composition, OpenAPI/FastAPI conversion, middleware — directly cut implementation cost for these.'
@@ -27746,9 +27260,6 @@
     intake_entries:
     - intake-326
     - intake-346
-    intake_entries:
-    - intake-326
-    - intake-346
     - intake-267
   novelty_justification: Core architecture (local FAISS store + episodic/semantic/procedural separation + LongMemEval benchmarking) is already well-covered by intake-326 (MemPalace, 96.6%) and intake-346 (Mem0 three-type taxonomy). The Temporal Truth Protocol (storage-time vs event-time) and quantitative-fidelity records (owner/property/exactness) are a distinctive engineering framing not previously catalogued, and the self-correcting fallback-retrieval loop adds a new perspective — hence medium, not low.
   relevance_justification: 'Directly adjacent to active memory work: the orchestrator B1 User Modeling slot (delta-mem-reproduction.md integration target) and internal-kb-rag hybrid retrieval. The Temporal Truth Protocol and quantitative-fidelity patterns are adoptable into B1. NOT a drop-in component: the LLM and embeddings are OpenAI-API-bound, not llama.cpp/local, so it cannot run inside the CPU-inference EPYC stack as-is — patterns transfer, the runtime does not.'
@@ -27827,9 +27338,6 @@
     intake_entries:
     - intake-326
     - intake-610
-    intake_entries:
-    - intake-326
-    - intake-610
     - intake-267
   novelty_justification: 'Current verified #1 on LongMemEval_S real-retrieval (full 500-question run, deterministic, transparent 481/500 breakdown) — a stronger and more credible result than any memory repo previously catalogued. The six-signal hybrid retrieval ensemble and deterministic HNSW (SHA-256 level assignment) are novel engineering not present in intake-326/346.'
   relevance_justification: The six-signal hybrid retrieval and the LOCAL embedder+cross-encoder reranker stack map directly onto internal-kb-rag (already ColBERT/ONNX MaxSim) and colbert-reranker-web-research — these components are local and EPYC-compatible (unlike the OpenAI-bound agent-oss). Generator/judge are cloud APIs but the retrieval engine is self-hostable.
@@ -27897,9 +27405,6 @@
     - delta-mem-reproduction.md
     - long-context-eval-datasets.md
     experiments: []
-    intake_entries:
-    - intake-326
-    - intake-610
     intake_entries:
     - intake-326
     - intake-610
@@ -27973,9 +27478,6 @@
     intake_entries:
     - intake-326
     - intake-610
-    intake_entries:
-    - intake-326
-    - intake-610
     - intake-611
   novelty_justification: Landscape survey, not primary research; value is in contextualizing and correcting existing entries — notably the MemPalace (intake-326) AAAK-compression -12.4pt correction and the "no unified conversation+code memory" gap framing.
   relevance_justification: Maps the competitive landscape for our active memory/RAG handoffs and flags the conversation+code-KG unification gap — exactly where our GitNexus (code) + internal-kb-rag (markdown) + B1 (user) memories sit unintegrated. engram's single-binary SQLite+FTS5 echoes unified-trace-memory-service's SQLite+FTS5 store.
@@ -28037,9 +27539,6 @@
     - autopilot-continuous-optimization.md
     - decision-aware-routing.md
     experiments: []
-    intake_entries:
-    - intake-248
-    - intake-615
     intake_entries:
     - intake-248
     - intake-615
@@ -28145,8 +27644,6 @@
     experiments: []
     intake_entries:
     - intake-248
-    intake_entries:
-    - intake-248
     - intake-614
   novelty_justification: 'Pairwise-ranking ensembles and Bradley-Terry aggregation are textbook; the contribution is the reputation+staking layer and the empirical +17pp on GPQA-Diamond. Medium novelty: combines known primitives into a deployed system with non-trivial adversarial-robustness numbers, but no fundamentally new algorithm.'
   relevance_justification: Closer analog to our autopilot NumericSwarm Pareto-scoring loop than the SiliconSwarm@Ensue entry (intake-248) — Bradley-Terry over peer rankings is the formal version of pairwise-comparison-with-confidence that could replace or augment the 4D Pareto scoring under stagnation. Also informs how decision-aware-routing could use multi-model cross-checks as a quality gate on uncertain prompts.
@@ -28200,7 +27697,6 @@
     chapters: []
     handoffs: []
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-614
   novelty_justification: Yet another Rust fine-tune of Qwen2.5-Coder is incremental; the genuinely novel artifact is the SYNTHETIC DATASET produced by their swarm in 8 days. If the swarm-as-dataset-factory pipeline generalizes (Rust → other narrow domains), the dataset-generation method is the actually-novel piece. The model itself is mid-tier evidence of that pipeline working.
@@ -28285,11 +27781,6 @@
     - intake-618
     - intake-619
     - intake-620
-    intake_entries:
-    - intake-042
-    - intake-618
-    - intake-619
-    - intake-620
     - intake-624
   novelty_justification: 'High — first work to provide lossless cross-tokenizer speculative decoding with no auxiliary training. Directly invalidates Chapter 01 § "Tokenizer Compatibility Constraints" assertion that SD requires exact tokenizer match. SLEM is already deployed in HuggingFace Transformers PR #35029, making this not just research but available infrastructure.'
   relevance_justification: High — directly applicable to the `gpu-drafter-mi200-investigation.md` Stage 2 (drafter farm) and to peer-verifier speculation. Today our stack enforces matched-vocab drafters (Qwen3-1.7B for Qwen3.6 frontdoor). With SLEM/TLI, the drafter pool expands to any small model regardless of tokenizer — unlocking cross-vocab drafter co-location on spare GPU VRAM. Also relevant to coder/architect roles where matched drafters are scarce.
@@ -28366,9 +27857,6 @@
     intake_entries:
     - intake-617
     - intake-619
-    intake_entries:
-    - intake-617
-    - intake-619
     - intake-622
   novelty_justification: High — first general-purpose zero-shot tokenizer transfer via hypernetwork. Prior art (FVT/intake-622, WECHSEL, OFA) requires either retraining or domain-specific procedures. ZeTT subsumes them with a single trained hypernetwork.
   relevance_justification: Medium — offline / drafter-prep mechanism complementary to Timor (intake-617). Where Timor lets you serve mismatched-vocab pairs at runtime, ZeTT lets you build a matched-vocab drafter from a mismatched candidate offline. Practical only if Timor SLEM/TLI proves too lossy on a specific pair we care about.
@@ -28430,8 +27918,6 @@
     handoffs:
     - gpu-drafter-mi200-investigation.md
     experiments: []
-    intake_entries:
-    - intake-617
     intake_entries:
     - intake-617
     - intake-618
@@ -28502,8 +27988,6 @@
     experiments: []
     intake_entries:
     - intake-617
-    intake_entries:
-    - intake-617
     - intake-623
   novelty_justification: Medium — PEARL (intake) already adopted adaptive γ in 2024 via a simpler heuristic; SpecDec++ adds (1) trained acceptance head, (2) MDP threshold derivation. Code available (github.com/Kaffaljidhmah2/SpecDec_pp). Incremental but principled.
   relevance_justification: 'High — directly applicable to Gemma 4 MTP MoE-batch-cancellation problem (1.06× MoE vs 2.98× dense): fixed γ is the wrong setting under MoE expert routing; per-token adaptive γ is the principled fix. Also directly applicable to GPU-drafter Stage 1 where PCIe round-trip cost makes over-drafting expensive.'
@@ -28571,8 +28055,6 @@
     - gemma4-mtp-drafter-evaluation.md
     - moe-spec-cpu-spec-dec-integration.md
     experiments: []
-    intake_entries:
-    - intake-623
     intake_entries:
     - intake-623
     - intake-620
@@ -28653,8 +28135,6 @@
     experiments: []
     intake_entries:
     - intake-617
-    intake_entries:
-    - intake-617
     - intake-618
   novelty_justification: Medium — FVT is a simpler, faster implementation of the older Vocabulary Transfer (Samenko et al. 2021, arxiv:2112.14569). Useful for compression but predates ZeTT (intake-618) which generalizes the same idea via hypernetwork.
   relevance_justification: Low — main use case (compress encoder model for specific domain) does not match our current stack (we run decoder LLMs at production scale; tokenizer choice is downstream of model selection). Could matter if we ever need to retrofit a tighter tokenizer onto a candidate drafter for embedded compression, but not on the critical path.
@@ -28717,8 +28197,6 @@
     - gpu-drafter-mi200-investigation.md
     - gemma4-mtp-drafter-evaluation.md
     experiments: []
-    intake_entries:
-    - intake-621
     intake_entries:
     - intake-621
     - intake-620
@@ -28792,9 +28270,6 @@
     intake_entries:
     - intake-617
     - intake-618
-    intake_entries:
-    - intake-617
-    - intake-618
     - intake-621
   novelty_justification: Medium — procedural contribution rather than algorithmic. Builds on prior drafter-training works (DistillSpec, online distillation) but documents an industry-practical recipe with explicit hardware cost (8 Gaudi-2 / 24h / 10B tokens). Useful as the build-the-drafter complement to Timor (intake-617) serve-the-drafter algorithms.
   relevance_justification: High — closest commercial-grade procedure for producing the kind of drafters this stack needs. If GPU-drafter Stage 2 needs a drafter for a target where no matched-vocab small model exists (Qwen3.5-122B architect, Gemma4-26B-A4B worker), FastDraft is the recipe to build one. Intel affiliation = relevance to potential AMD GPU port via ROCm.
@@ -28859,9 +28334,6 @@
     - internal-kb-rag.md
     - meta-harness-optimization.md
     experiments: []
-    intake_entries:
-    - intake-151
-    - intake-330
     intake_entries:
     - intake-151
     - intake-330
@@ -28950,13 +28422,6 @@
     - intake-627
     - intake-628
     - intake-629
-    intake_entries:
-    - intake-240
-    - intake-244
-    - intake-327
-    - intake-627
-    - intake-628
-    - intake-629
     - intake-630
   novelty_justification: 'High — a distinct method, not a re-skin of GEPA (intake-240) or Meta-Harness (intake-244). Where GEPA/EvoSkill (intake-630) do evolutionary/Pareto skill-or-prompt selection and Meta-Harness mutates harness CODE via agentic search, SkillOpt frames a single SKILL DOCUMENT as the external state of a frozen agent and applies optimizer discipline: a textual learning-rate budget (bounds EDIT COUNT/step, default 4 cosine-decay to 2), rejected-edit buffer, epoch-wise slow/meta update, and strict held-out validation gating (strict improvement on a separate selection split, ties rejected; default 2:1:7 train/sel/test). Deep-read 2026-05-27 confirmed best-or-tied on all 52 cells AND beats a per-cell best-of-six oracle by +5.4 — significant new results not covered by existing entries.'
   relevance_justification: 'High (verified, upgraded confidence) — (1) it optimizes Claude Code SKILL documents on FROZEN models with zero added inference cost, the exact deployment constraint of this stack (CPU inference, no fine-tuning of the served model); (2) VERIFIED to test BOTH the Claude Code harness (on GPT-5.5) AND our exact production frontdoor Qwen3.6-35B-A3B (qwen36_q8_0 per registry) — but SCOPE-CORRECTED 2026-05-27: the open-weight frontdoor was run DIRECT-CHAT ONLY (+9.1 avg), NOT inside the Codex/Claude Code agentic harnesses, so agentic-harness transfer to an open-weight model is unproven by this paper; (3) its optimizer!=target design (strong separate optimizer drives edits) MATCHES PromptForge''s existing Claude-CLI-optimizes-the-Qwen-orchestrator-prompts design — so the "target-matched optimizer recovers only 56-74%" caveat does NOT bite us; (4) open-source MIT (github.com/microsoft/SkillOpt), adoptable not just citable. Maps onto meta-harness-optimization, agent-file-prose-compression, autopilot-continuous-optimization.'
@@ -29020,8 +28485,6 @@
     - swarm-dataset-distillation.md
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
-    - intake-626
     intake_entries:
     - intake-626
     - intake-240
@@ -29101,7 +28564,6 @@
     - eval-tower-verification.md
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-626
   novelty_justification: Medium — same self-evolving-skill family as SkillOpt/Trace2Skill; novel angle is the surrogate verifier that co-evolves to score skills WITHOUT ground-truth test access, and multi-file skill packages rather than a single document.
@@ -29197,8 +28659,6 @@
     experiments: []
     intake_entries:
     - intake-626
-    intake_entries:
-    - intake-626
     - intake-240
   novelty_justification: Medium — foundational 2024 method (textual gradients) repeatedly referenced across the index ("outperforms TextGrad" appears in two prior entries) but never itself entered; indexing it closes a citation gap and anchors the skill/prompt-optimization lineage that SkillOpt and GEPA extend.
   relevance_justification: Medium — the textual-gradient / textual-feedback-backprop primitive underlies the whole PromptForge / meta-harness optimization direction, but TextGrad operates on prompts/components rather than deployable skill documents and SkillOpt (intake-626) reports beating it. Reference-grade rather than directly actionable.
@@ -29258,9 +28718,6 @@
     handoffs:
     - meta-harness-optimization.md
     experiments: []
-    intake_entries:
-    - intake-626
-    - intake-240
     intake_entries:
     - intake-626
     - intake-240
@@ -29433,7 +28890,6 @@
     - dflash-block-diffusion-speculation.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-576
     intake_entry_notes:
     - 'intake-576 (Nemotron-Labs-Diffusion tri-mode — explicit successor)'
@@ -29503,9 +28959,6 @@
     intake_entries:
     - intake-633
     - intake-635
-    intake_entries:
-    - intake-633
-    - intake-635
     - intake-576
     intake_entry_notes:
     - 'intake-633 (paper)'
@@ -29555,9 +29008,6 @@
     handoffs:
     - inference-acceleration-index.md
     experiments: []
-    intake_entries:
-    - intake-633
-    - intake-634
     intake_entries:
     - intake-633
     - intake-634
@@ -29624,8 +29074,6 @@
     experiments: []
     intake_entries:
     - intake-332
-    intake_entries:
-    - intake-332
     - intake-555
     intake_entry_notes:
     - 'intake-332 (Ouro looped/recurrent-depth LM)'
@@ -29690,9 +29138,6 @@
     - hermes-outer-shell.md
     - hermes-agent-index.md
     experiments: []
-    intake_entries:
-    - intake-506
-    - intake-508
     intake_entries:
     - intake-506
     - intake-508
@@ -29819,10 +29264,6 @@
     handoffs:
     - reasoning-compression.md
     experiments: []
-    intake_entries:
-    - intake-110
-    - intake-264
-    - intake-266
     intake_entries:
     - intake-110
     - intake-264
@@ -29974,10 +29415,6 @@
     - intake-105
     - intake-110
     - intake-111
-    intake_entries:
-    - intake-105
-    - intake-110
-    - intake-111
     - intake-238
     intake_entry_notes:
     - 'intake-105 (Agentic Critical Training ACT)'
@@ -30038,11 +29475,6 @@
     - reasoning-compression.md
     - research-evaluation-index.md
     experiments: []
-    intake_entries:
-    - intake-110
-    - intake-266
-    - intake-264
-    - intake-286
     intake_entries:
     - intake-110
     - intake-266
@@ -30121,8 +29553,6 @@
     experiments: []
     intake_entries:
     - intake-110
-    intake_entries:
-    - intake-110
     - intake-266
     intake_entry_notes:
     - 'intake-110 (OPSDC)'
@@ -30185,12 +29615,6 @@
     - reasoning-compression.md
     - 08-doc-to-lora-prototype.md
     experiments: []
-    intake_entries:
-    - intake-639
-    - intake-642
-    - intake-643
-    - intake-624
-    - intake-110
     intake_entries:
     - intake-639
     - intake-642
@@ -30274,11 +29698,6 @@
     - intake-642
     - intake-643
     - intake-624
-    intake_entries:
-    - intake-639
-    - intake-642
-    - intake-643
-    - intake-624
     - intake-110
     intake_entry_notes:
     - 'intake-639 (Unmasking OPD — TRACE provides loss-formulation answer to "where does it help")'
@@ -30345,7 +29764,6 @@
     - pipeline-integration-index.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-161
   handoffs_updated:
   - opendataloader-pipeline-integration.md
@@ -30396,7 +29814,6 @@
     - opendataloader-pipeline-integration.md
     - multimodal-pipeline.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-161
   handoffs_updated:
@@ -30457,11 +29874,6 @@
     - intake-493
     - intake-511
     - intake-530
-    intake_entries:
-    - intake-474
-    - intake-493
-    - intake-511
-    - intake-530
     - intake-531
   novelty_justification: High as a TRAINING method — equi-probability noise partitioning to make each block an equally-hard independently-trainable denoiser is a genuinely new mechanism, validated across image + LM1B. Distinct from prior layerwise/greedy training and from Sakana Trinity/Conductor/sparser-faster-llms lines. Scoped to the training-memory-decomposition contribution, not extrapolated to inference.
   relevance_justification: Low for CPU-only serving. Training-time activation-memory lever (lands on training GPUs we do not have); the 3-4x is diffusion-SAMPLING speedup not AR CPU-decode (LM generation is O(K*M), worse for token serving); all evals are sub-1B toy benchmarks. Above NONE only because it shares the inference-time block-diffusion name-space tracked in chapter 10 (DFlash/Nemotron-Diffusion) and is a same-lab artifact worth indexing — must NOT be conflated with those spec-dec lines.
@@ -30507,12 +29919,6 @@
     handoffs:
     - dflash-block-diffusion-speculation.md
     experiments: []
-    intake_entries:
-    - intake-474
-    - intake-493
-    - intake-511
-    - intake-530
-    - intake-531
     intake_entries:
     - intake-474
     - intake-493
@@ -30573,8 +29979,6 @@
     - hispec-external-draft-benchmark.md
     intake_entries:
     - intake-651
-    intake_entries:
-    - intake-651
     - intake-653
   handoffs_updated:
   - multiscreen-attention-evaluation.md
@@ -30629,13 +30033,6 @@
     - multiscreen-attention-evaluation.md
     - gemma4-mtp-drafter-evaluation.md
     experiments: []
-    intake_entries:
-    - intake-650
-    - intake-652
-    - intake-653
-    - intake-152
-    - intake-310
-    - intake-237
     intake_entries:
     - intake-650
     - intake-652
@@ -30701,9 +30098,6 @@
     intake_entries:
     - intake-650
     - intake-651
-    intake_entries:
-    - intake-650
-    - intake-651
     - intake-653
   handoffs_updated:
   - multiscreen-attention-evaluation.md
@@ -30764,9 +30158,6 @@
     intake_entries:
     - intake-650
     - intake-651
-    intake_entries:
-    - intake-650
-    - intake-651
     - intake-503
   handoffs_updated:
   - multiscreen-attention-evaluation.md
@@ -30823,7 +30214,6 @@
     - hermes-agent-index.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-325
   novelty_justification: New no-code local web-UI product over the Unsloth core (intake-325 covered only the training library). Adds previously-undocumented agentic capabilities (self-healing tool calling, code exec, web search, Model Arena, OpenAI-compatible API, Data Recipes) — a new perspective on existing work rather than a wholly novel technique, hence medium.
   relevance_justification: 'Training side is GPU-gated and not actionable on the CPU-only EPYC host. But the CPU-runnable parts (Data Recipes dataset synthesis from our doc corpus, GGUF chat/eval via llama.cpp) plus the agentic UI overlap two active handoffs: 08-doc-to-lora-prototype (anticipated a Studio UI to manage the pipeline) and the Hermes agent frontend (Model Arena / tool-calling / OpenAI API overlap). Related but not immediately actionable -> medium.'
@@ -30874,9 +30264,6 @@
     - hermes-agent-index.md
     - internal-interaction-lifecycle.md
     experiments: []
-    intake_entries:
-    - intake-318
-    - intake-394
     intake_entries:
     - intake-318
     - intake-394
@@ -30944,7 +30331,6 @@
     - 06-benchmarking-framework.md
     handoffs: []
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-655
   handoffs_updated: []
@@ -31218,11 +30604,6 @@
     - intake-275
     - intake-303
     - intake-307
-    intake_entries:
-    - intake-261
-    - intake-275
-    - intake-303
-    - intake-307
     - intake-466
   handoffs_updated:
   - gpu-acceleration-path.md
@@ -31315,7 +30696,6 @@
     - autopilot-continuous-optimization.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-660
   handoffs_updated:
   - gpu-acceleration-path.md
@@ -31392,9 +30772,6 @@
     intake_entries:
     - intake-660
     - intake-261
-    intake_entries:
-    - intake-660
-    - intake-261
     - intake-275
   handoffs_updated:
   - gpu-acceleration-path.md
@@ -31467,11 +30844,6 @@
     - llama-cpp-dsa-contribution.md
     - inference-acceleration-index.md
     experiments: []
-    intake_entries:
-    - intake-660
-    - intake-261
-    - intake-275
-    - intake-303
     intake_entries:
     - intake-660
     - intake-261
@@ -31556,10 +30928,6 @@
     - cpu-shape-specialized-gemv-decode.md
     - inference-acceleration-index.md
     experiments: []
-    intake_entries:
-    - intake-660
-    - intake-278
-    - intake-303
     intake_entries:
     - intake-660
     - intake-278
@@ -31649,9 +31017,6 @@
     intake_entries:
     - intake-660
     - intake-278
-    intake_entries:
-    - intake-660
-    - intake-278
     - intake-305
   handoffs_updated:
   - gpu-acceleration-path.md
@@ -31727,10 +31092,6 @@
     - cpu-shape-specialized-gemv-decode.md
     - llama-cpp-dsa-contribution.md
     experiments: []
-    intake_entries:
-    - intake-660
-    - intake-261
-    - intake-303
     intake_entries:
     - intake-660
     - intake-261
@@ -31814,13 +31175,6 @@
     - gpu-drafter-mi200-investigation.md
     - inference-acceleration-index.md
     experiments: []
-    intake_entries:
-    - intake-664
-    - intake-660
-    - intake-661
-    - intake-662
-    - intake-663
-    - intake-666
     intake_entries:
     - intake-664
     - intake-660
@@ -31924,13 +31278,6 @@
     - intake-662
     - intake-663
     - intake-666
-    intake_entries:
-    - intake-664
-    - intake-660
-    - intake-661
-    - intake-662
-    - intake-663
-    - intake-666
     - intake-667
   handoffs_updated:
   - agentic-rocm-kernel-authoring.md
@@ -32006,13 +31353,6 @@
     - gpu-acceleration-path.md
     - gpu-drafter-mi200-investigation.md
     experiments: []
-    intake_entries:
-    - intake-666
-    - intake-660
-    - intake-662
-    - intake-664
-    - intake-661
-    - intake-663
     intake_entries:
     - intake-666
     - intake-660
@@ -32109,13 +31449,6 @@
     - intake-668
     - intake-664
     - intake-660
-    intake_entries:
-    - intake-666
-    - intake-669
-    - intake-667
-    - intake-668
-    - intake-664
-    - intake-660
     - intake-662
   handoffs_updated:
   - agentic-rocm-kernel-authoring.md
@@ -32196,15 +31529,6 @@
     - gpu-drafter-mi200-investigation.md
     - inference-acceleration-index.md
     experiments: []
-    intake_entries:
-    - intake-667
-    - intake-664
-    - intake-668
-    - intake-666
-    - intake-669
-    - intake-660
-    - intake-661
-    - intake-662
     intake_entries:
     - intake-667
     - intake-664
@@ -32295,12 +31619,6 @@
     - intake-662
     - intake-664
     - intake-667
-    intake_entries:
-    - intake-669
-    - intake-666
-    - intake-662
-    - intake-664
-    - intake-667
     - intake-668
   handoffs_updated:
   - agentic-rocm-kernel-authoring.md
@@ -32377,10 +31695,6 @@
     - gpu-acceleration-path.md
     - inference-acceleration-index.md
     experiments: []
-    intake_entries:
-    - intake-666
-    - intake-669
-    - intake-662
     intake_entries:
     - intake-666
     - intake-669
@@ -32474,15 +31788,6 @@
     - intake-668
     - intake-669
     - intake-672
-    intake_entries:
-    - intake-660
-    - intake-662
-    - intake-664
-    - intake-666
-    - intake-667
-    - intake-668
-    - intake-669
-    - intake-672
     - intake-673
   handoffs_updated:
   - agentic-rocm-kernel-authoring.md
@@ -32566,13 +31871,6 @@
     - intake-666
     - intake-668
     - intake-673
-    intake_entries:
-    - intake-660
-    - intake-662
-    - intake-664
-    - intake-666
-    - intake-668
-    - intake-673
     - intake-674
   handoffs_updated:
   - agentic-rocm-kernel-authoring.md
@@ -32649,16 +31947,6 @@
     - rocm-verify-profile-backend.md
     - gpu-drafter-mi200-investigation.md
     experiments: []
-    intake_entries:
-    - intake-666
-    - intake-669
-    - intake-672
-    - intake-673
-    - intake-660
-    - intake-661
-    - intake-662
-    - intake-663
-    - intake-665
     intake_entries:
     - intake-666
     - intake-669
@@ -32758,14 +32046,6 @@
     - intake-666
     - intake-672
     - intake-668
-    intake_entries:
-    - intake-674
-    - intake-675
-    - intake-669
-    - intake-673
-    - intake-666
-    - intake-672
-    - intake-668
     - intake-671
   handoffs_updated:
   - agentic-rocm-kernel-authoring.md
@@ -32848,13 +32128,6 @@
     - llama-cpp-dsa-contribution.md
     - inference-acceleration-index.md
     experiments: []
-    intake_entries:
-    - intake-674
-    - intake-675
-    - intake-677
-    - intake-672
-    - intake-669
-    - intake-668
     intake_entries:
     - intake-674
     - intake-675
@@ -32960,14 +32233,6 @@
     - intake-664
     - intake-668
     - intake-667
-    intake_entries:
-    - intake-674
-    - intake-675
-    - intake-677
-    - intake-678
-    - intake-664
-    - intake-668
-    - intake-667
     - intake-671
   handoffs_updated:
   - agentic-rocm-kernel-authoring.md
@@ -33050,12 +32315,6 @@
     - intake-575
     - intake-113
     - intake-114
-    intake_entries:
-    - intake-683
-    - intake-121
-    - intake-575
-    - intake-113
-    - intake-114
     - intake-139
   handoffs_updated:
   - multimodal-pipeline.md
@@ -33113,10 +32372,6 @@
     - delta-mem-reproduction.md
     - learned-routing-controller.md
     experiments: []
-    intake_entries:
-    - intake-684
-    - intake-685
-    - intake-539
     intake_entries:
     - intake-684
     - intake-685
@@ -33243,7 +32498,6 @@
     - opendataloader-pipeline-integration.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-680
   handoffs_updated:
   - 'handoffs/active/multimodal-pipeline.md'
@@ -33302,9 +32556,6 @@
     intake_entries:
     - intake-681
     - intake-685
-    intake_entries:
-    - intake-681
-    - intake-685
     - intake-539
   handoffs_updated:
   - 08-doc-to-lora-prototype.md
@@ -33359,9 +32610,6 @@
     handoffs:
     - 08-doc-to-lora-prototype.md
     experiments: []
-    intake_entries:
-    - intake-681
-    - intake-684
     intake_entries:
     - intake-681
     - intake-684
@@ -33424,9 +32672,6 @@
     intake_entries:
     - intake-355
     - intake-654
-    intake_entries:
-    - intake-355
-    - intake-654
     - intake-099
   handoffs_updated:
   - internal-kb-rag.md
@@ -33476,9 +32721,6 @@
     - routing-and-optimization-index.md
     - decision-aware-routing.md
     experiments: []
-    intake_entries:
-    - intake-474
-    - intake-495
     intake_entries:
     - intake-474
     - intake-495
@@ -33534,7 +32776,6 @@
     - tool-use-eval-contract.md
     - multimodal-pipeline.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-473
   handoffs_updated: []
@@ -33594,10 +32835,6 @@
     - intake-174
     - intake-430
     - intake-431
-    intake_entries:
-    - intake-174
-    - intake-430
-    - intake-431
     - intake-453
   handoffs_updated:
   - colbert-reranker-web-research.md
@@ -33651,9 +32888,6 @@
     intake_entries:
     - intake-104
     - intake-412
-    intake_entries:
-    - intake-104
-    - intake-412
     - intake-001
   handoffs_updated: []
   handoffs_created: []
@@ -33700,9 +32934,6 @@
     - multimodal-pipeline.md
     - multiscreen-attention-evaluation.md
     experiments: []
-    intake_entries:
-    - intake-481
-    - intake-315
     intake_entries:
     - intake-481
     - intake-315
@@ -33774,11 +33005,6 @@
     - intake-555
     - intake-558
     - intake-248
-    intake_entries:
-    - intake-544
-    - intake-555
-    - intake-558
-    - intake-248
     - intake-269
   handoffs_updated:
   - autopilot-continuous-optimization.md
@@ -33828,9 +33054,6 @@
     - meta-harness-optimization.md
     - context-folding-progressive.md
     experiments: []
-    intake_entries:
-    - intake-153
-    - intake-331
     intake_entries:
     - intake-153
     - intake-331
@@ -33886,7 +33109,6 @@
     - multiscreen-attention-evaluation.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-481
   handoffs_updated:
   - 'handoffs/active/log-linear-gated-deltanet-readiness.md'
@@ -33937,7 +33159,6 @@
     - swarm-dataset-distillation.md
     - meta-harness-optimization.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-248
   contradicting_evidence:
@@ -34052,7 +33273,6 @@
     - tool-output-compression.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-397
   contradicting_evidence:
   - Framework-ization of already-ingested vercel-labs/open-agents (intake-397) on the same cloud substrate; closed Vercel Workflows/Sandbox/Gateway, CPU-EPYC-irrelevant infra, no measurable results.
@@ -34118,13 +33338,6 @@
     - internal-kb-rag.md
     - colbert-reranker-web-research.md
     experiments: []
-    intake_entries:
-    - intake-346
-    - intake-326
-    - intake-539
-    - intake-568
-    - intake-610
-    - intake-611
     intake_entries:
     - intake-346
     - intake-326
@@ -34255,10 +33468,6 @@
     - intake-248
     - intake-244
     - intake-451
-    intake_entries:
-    - intake-248
-    - intake-244
-    - intake-451
     - intake-615
   contradicting_evidence:
   - Self-published benchmarks with extreme range (1.3x-1953x) lacking protocol/attestation — observations only per MEASUREMENT.md. Recent CWE-78 security patch (v3.12.4). Federation/enterprise-security layer out of scope for single-host single-user EPYC.
@@ -34362,7 +33571,6 @@
     - multimodal-pipeline.md
     - strand-rust-coder-rustevo2-verification.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-682
   contradicting_evidence:
@@ -34469,8 +33677,6 @@
     experiments: []
     intake_entries:
     - intake-474
-    intake_entries:
-    - intake-474
     - intake-493
   contradicting_evidence:
   - 'Closed commercial SaaS (GPU-cloud, paid tiers, no code/weights), business-report domain; constituent techniques already tracked; no quantitative results; standing Sakana vendor-bias caveat (2502.14297 ''Evaluating Sakana''s AI Scientist: Bold Claims, Mixed Results'').'
@@ -34521,10 +33727,6 @@
     - tool-use-eval-contract.md
     - fable5-architecture-review.md
     experiments: []
-    intake_entries:
-    - intake-451
-    - intake-550
-    - intake-249
     intake_entries:
     - intake-451
     - intake-550
@@ -34584,7 +33786,6 @@
     - 08-doc-to-lora-prototype.md
     - 05-search-r1-reward-design.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-693
   contradicting_evidence:
@@ -34650,7 +33851,6 @@
     - multi-file-coding-completion-capability.md
     - strand-rust-coder-rustevo2-verification.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-153
   contradicting_evidence:
@@ -34718,12 +33918,6 @@
     - inference-acceleration-index.md
     experiments:
     - attention-matching-kv-compaction.md
-    intake_entries:
-    - intake-351
-    - intake-350
-    - intake-352
-    - intake-353
-    - intake-553
     intake_entries:
     - intake-351
     - intake-350
@@ -34949,7 +34143,6 @@
     - autopilot-continuous-optimization.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-601
   contradicting_evidence:
   - SaaS over multiple frontier APIs (governs deploy not analyze); on CPU-only EPYC the 1-8-frontier-model+judge-per-query cost model is the opposite of our RAM/BW constraints. The deployable equivalent (self-hosted MoA) is already intake-601 (OptiLLM), which degrades on llama.cpp (no `n` multi-sample). No published quality/latency/cost numbers.
@@ -35067,7 +34260,6 @@
     - autopilot-continuous-optimization.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-601
   contradicting_evidence:
   - SaaS routing to frontier cloud models we can't host; the self-hostable path (MoA via OptiLLM intake-601) is documented as DEGRADED on llama.cpp (missing `n` multi-sample, sequential fallback); no prod GPU; no quality/latency/cost numbers published.
@@ -35122,8 +34314,6 @@
     - meta-harness-optimization.md
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
-    - intake-539
     intake_entries:
     - intake-539
     - intake-568
@@ -35181,8 +34371,6 @@
     experiments: []
     intake_entries:
     - intake-693
-    intake_entries:
-    - intake-693
     - intake-706
   contradicting_evidence:
   - Single educational script, no reward_models README (404), no empirical/benchmark claims beyond internal val MSE — observation-grade only. Depends on a local augment.py + four ad-hoc datasets; not packaged.
@@ -35234,10 +34422,6 @@
     - 06-benchmarking-framework.md
     handoffs: []
     experiments: []
-    intake_entries:
-    - intake-693
-    - intake-706
-    - intake-716
     intake_entries:
     - intake-693
     - intake-706
@@ -35301,7 +34485,6 @@
     - meta-harness-optimization-completed-through-2026-05-28.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-693
   contradicting_evidence:
   - Packaging/inference harness around off-the-shelf techniques (Outlines, beam search, reward reranking, <think>); no new algorithm/architecture, no arxiv, no benchmarks; educational/practitioner repo (~14 commits).
@@ -35356,10 +34539,6 @@
     - learned-routing-controller.md
     - routing-intelligence.md
     experiments: []
-    intake_entries:
-    - intake-693
-    - intake-706
-    - intake-716
     intake_entries:
     - intake-693
     - intake-706
@@ -35433,9 +34612,6 @@
     - outer-coordinator-learned-head.md
     - meta-harness-optimization-completed-through-2026-05-28.md
     experiments: []
-    intake_entries:
-    - intake-474
-    - intake-493
     intake_entries:
     - intake-474
     - intake-493
@@ -35689,7 +34865,6 @@
     - glm51-reap-cpu-evaluation.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-369
   handoffs_updated:
   - autopilot-continuous-optimization.md
@@ -35751,8 +34926,6 @@
     handoffs:
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
-    - intake-369
     intake_entries:
     - intake-369
     - intake-726
@@ -35834,9 +35007,6 @@
     intake_entries:
     - intake-474
     - intake-493
-    intake_entries:
-    - intake-474
-    - intake-493
     - intake-726
   handoffs_updated:
   - outer-coordinator-learned-head.md
@@ -35886,10 +35056,6 @@
     handoffs:
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
-    - intake-730
-    - intake-731
-    - intake-660
     intake_entries:
     - intake-730
     - intake-731
@@ -35953,10 +35119,6 @@
     - intake-729
     - intake-731
     - intake-660
-    intake_entries:
-    - intake-729
-    - intake-731
-    - intake-660
     - intake-728
   handoffs_updated:
   - autopilot-continuous-optimization.md
@@ -36015,8 +35177,6 @@
     - swarm-dataset-distillation.md
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
-    - intake-729
     intake_entries:
     - intake-729
     - intake-730
@@ -36107,11 +35267,6 @@
     - intake-129
     - intake-139
     - intake-615
-    intake_entries:
-    - intake-077
-    - intake-129
-    - intake-139
-    - intake-615
     - intake-086
   recommended_actions:
   - 'OPERATOR-REVIEW: consider a cross-reference note under reasoning-compression.md linking SPIRAL (2606.23595) as the TRAINED analogue of short-m@k (intake-129) - parallel-trace generation plus a learned/prompted aggregation trace - and flag recursive self-aggregation (SPIRAL cites 2509.26626) as a training-free variant testable on NUMA-concurrent multi-instance serving. If tested, include a same-inference-compute majority-vote / self-consistency control so any gain is attributed to the aggregator rather than to sampling more traces.'
@@ -36180,8 +35335,6 @@
     - security-review-skill.md
     - opendataloader-pipeline-integration.md
     experiments: []
-    intake_entries:
-    - intake-449
     intake_entries:
     - intake-449
     - intake-452
@@ -36259,7 +35412,6 @@
     - routing-and-optimization-index.md
     - outer-coordinator-learned-head.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-496
   recommended_actions:
@@ -36342,7 +35494,6 @@
     - decision-aware-routing.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-496
   recommended_actions:
   - Fetch and confirm the Hugging Face model card google/tabfm-1.0.0-pytorch for license, parameter count, CPU-inference feasibility/latency, and any max-rows / max-features limits before considering any evaluation (blog gives no size or capacity limits; secondary sources cite ~<=10 classes, ~<=500 features, ~<=100k rows -- verify against the card).
@@ -36400,10 +35551,6 @@
     - halo-trace-loop-spike.md
     - frontier-f1-real-task-corpus.md
     experiments: []
-    intake_entries:
-    - intake-473
-    - intake-393
-    - intake-516
     intake_entries:
     - intake-473
     - intake-393
@@ -36473,10 +35620,6 @@
     experiments:
     - self-speculation-benchmark.md
     - draft-vs-target-time-analysis.md
-    intake_entries:
-    - intake-158
-    - intake-296
-    - intake-297
     intake_entries:
     - intake-158
     - intake-296
@@ -36555,9 +35698,6 @@
     intake_entries:
     - intake-158
     - intake-070
-    intake_entries:
-    - intake-158
-    - intake-070
     - intake-296
   recommended_actions:
   - 'OPERATOR-REVIEW: capture DSpark''s semi-autoregressive drafter as a comparison point in speculative-decoding-mtp-refresh.md — specifically whether a parallel-backbone + single-token-correction head beats our native MTP-1 heads on measured alpha for gemma4-26B-A4B, before any training investment (per the measure-alpha 3-bin rule).'
@@ -36618,9 +35758,6 @@
     - speculative-decoding-mtp-refresh.md
     - mtp-speculative-decoding.md
     experiments: []
-    intake_entries:
-    - intake-637
-    - intake-158
     intake_entries:
     - intake-637
     - intake-158
@@ -36691,7 +35828,6 @@
     - inference-acceleration-index.md
     experiments:
     - draft-vs-target-time-analysis.md
-    intake_entries:
     intake_entries:
     - intake-725
   recommended_actions:
@@ -36777,15 +35913,6 @@
     experiments:
     - draft-vs-target-time-analysis.md
     - self-speculation-benchmark.md
-    intake_entries:
-    - intake-158
-    - intake-159
-    - intake-296
-    - intake-297
-    - intake-298
-    - intake-447
-    - intake-590
-    - intake-005
     intake_entries:
     - intake-158
     - intake-159
@@ -36893,14 +36020,6 @@
     - intake-070
     - intake-071
     - intake-158
-    intake_entries:
-    - intake-039
-    - intake-047
-    - intake-055
-    - intake-056
-    - intake-070
-    - intake-071
-    - intake-158
     - intake-159
   recommended_actions:
   - 'OPERATOR-REVIEW: propose a tracking note under handoffs/active/speculative-decoding-mtp-refresh.md evaluating whether Graft''s training-free prune-then-graft ''budget compensation'' can pair with our native MTP/NEXTN drafter in v6 llama.cpp — refilling confidence-pruned draft-tree branches from a CPU-resident top-k successor / n-gram adjacency table (prompt-lookup lineage).'
@@ -36971,11 +36090,6 @@
     - routing-and-optimization-index.md
     - retrain-routing-models.md
     experiments: []
-    intake_entries:
-    - intake-457
-    - intake-482
-    - intake-496
-    - intake-720
     intake_entries:
     - intake-457
     - intake-482
@@ -37197,11 +36311,6 @@
     - intake-493
     - intake-601
     - intake-603
-    intake_entries:
-    - intake-260
-    - intake-493
-    - intake-601
-    - intake-603
     - intake-615
   recommended_actions:
   - 'OPERATOR-REVIEW: consider a small-scale, canonical-recipe CPU eval of training-free RSA (a few N/K/T points) on an open reasoning-capable model already in the stack vs a self-consistency / best-of-N baseline, measuring quality gain per extra token generated, before any deeper investment — token volume is the deploy risk on a bandwidth-bound CPU.'
@@ -37288,11 +36397,6 @@
     - intake-601
     - intake-603
     - intake-614
-    intake_entries:
-    - intake-260
-    - intake-601
-    - intake-603
-    - intake-614
     - intake-712
   recommended_actions:
   - 'OPERATOR-REVIEW: consider noting GSA in decision-aware-routing.md / routing-and-optimization-index.md (P21.B) as a GENERATIVE-synthesis aggregator alternative to DAR-6''s Bradley-Terry discriminative winner-selection — a small A/B (generative-synthesis aggregation vs BT winner) over the existing src/swarm_fanout.py path would test GSA''s ''generation beats selection'' thesis with no new infra.'
@@ -37368,10 +36472,6 @@
     - swarm-dataset-distillation.md
     - agent-world-env-synthesis.md
     experiments: []
-    intake_entries:
-    - intake-404
-    - intake-389
-    - intake-139
     intake_entries:
     - intake-404
     - intake-389
@@ -37456,7 +36556,6 @@
     - agent-world-env-synthesis.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-441
   recommended_actions:
   - 'OPERATOR-REVIEW: cross-link this entry with intake-441 (diversity-collapse-posttraining.md / arXiv 2604.16027) -- 441 establishes that inference-time interventions cannot recover training-time diversity, and this paper is a candidate training-time remedy; the two form a problem->method pair worth noting together.'
@@ -37519,7 +36618,6 @@
     - kv-cache-quantization.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-732
   recommended_actions:
   - 'OPERATOR-REVIEW: supply the canonical source URL to replace the operator-relayed sentinel (arXiv 2606.23595 was a mispaired ID -> SPIRAL/intake-732); on receipt I will re-key and re-run a clean single-source intake.'
@@ -37581,8 +36679,6 @@
     experiments: []
     intake_entries:
     - intake-576
-    intake_entries:
-    - intake-576
     - intake-633
   handoffs_updated:
   - speculative-decoding-mtp-refresh.md
@@ -37636,9 +36732,6 @@
     - speculative-decoding-mtp-refresh.md
     - gpu-acceleration-path.md
     experiments: []
-    intake_entries:
-    - intake-751
-    - intake-576
     intake_entries:
     - intake-751
     - intake-576
@@ -37703,8 +36796,6 @@
     experiments: []
     intake_entries:
     - intake-244
-    intake_entries:
-    - intake-244
     - intake-271
   handoffs_updated:
   - meta-harness-optimization.md
@@ -37763,8 +36854,6 @@
     - agent-world-env-synthesis.md
     - reasoning-compression.md
     experiments: []
-    intake_entries:
-    - intake-498
     intake_entries:
     - intake-498
     - intake-561
@@ -37867,8 +36956,6 @@
     experiments: []
     intake_entries:
     - intake-339
-    intake_entries:
-    - intake-339
     - intake-455
   handoffs_updated:
   - tq3-quantization-evaluation.md
@@ -37920,9 +37007,6 @@
     - eval-tower-verification.md
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
-    - intake-368
-    - intake-371
     intake_entries:
     - intake-368
     - intake-371
@@ -37990,10 +37074,6 @@
     - intake-502
     - intake-504
     - intake-599
-    intake_entries:
-    - intake-502
-    - intake-504
-    - intake-599
     - intake-600
   handoffs_updated:
   - engram-conditional-memory.md
@@ -38047,8 +37127,6 @@
     experiments: []
     intake_entries:
     - intake-307
-    intake_entries:
-    - intake-307
     - intake-303
   handoffs_updated:
   - gpu-acceleration-path.md
@@ -38097,9 +37175,6 @@
     - gpu-drafter-mi200-investigation.md
     - inference-acceleration-index.md
     experiments: []
-    intake_entries:
-    - intake-466
-    - intake-307
     intake_entries:
     - intake-466
     - intake-307
@@ -38153,8 +37228,6 @@
     experiments: []
     intake_entries:
     - intake-464
-    intake_entries:
-    - intake-464
     - intake-466
   handoffs_updated:
   - gpu-acceleration-path.md
@@ -38205,9 +37278,6 @@
     intake_entries:
     - intake-462
     - intake-466
-    intake_entries:
-    - intake-462
-    - intake-466
     - intake-307
   handoffs_updated:
   - gpu-acceleration-path.md
@@ -38254,8 +37324,6 @@
     - rocm-verify-profile-backend.md
     - agentic-rocm-kernel-authoring.md
     experiments: []
-    intake_entries:
-    - intake-462
     intake_entries:
     - intake-462
     - intake-466
@@ -38322,12 +37390,6 @@
     - intake-681
     - intake-684
     - intake-685
-    intake_entries:
-    - intake-098
-    - intake-707
-    - intake-681
-    - intake-684
-    - intake-685
     - intake-618
   handoffs_updated:
   - 'handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md'
@@ -38388,10 +37450,6 @@
     - intake-764
     - intake-098
     - intake-707
-    intake_entries:
-    - intake-764
-    - intake-098
-    - intake-707
     - intake-618
   handoffs_updated: []
   handoffs_created: []
@@ -38448,9 +37506,6 @@
     intake_entries:
     - intake-764
     - intake-098
-    intake_entries:
-    - intake-764
-    - intake-098
     - intake-707
   handoffs_updated: []
   handoffs_created: []
@@ -38501,10 +37556,6 @@
     handoffs:
     - 08-doc-to-lora-prototype.md
     experiments: []
-    intake_entries:
-    - intake-764
-    - intake-098
-    - intake-707
     intake_entries:
     - intake-764
     - intake-098
@@ -38569,10 +37620,6 @@
     - intake-098
     - intake-707
     - intake-764
-    intake_entries:
-    - intake-098
-    - intake-707
-    - intake-764
     - intake-618
   handoffs_updated: []
   handoffs_created: []
@@ -38629,10 +37676,6 @@
     - orchestrator-conversation-management.md
     - swarm-dataset-distillation.md
     experiments: []
-    intake_entries:
-    - intake-764
-    - intake-098
-    - intake-707
     intake_entries:
     - intake-764
     - intake-098
@@ -38698,9 +37741,6 @@
     intake_entries:
     - intake-764
     - intake-098
-    intake_entries:
-    - intake-764
-    - intake-098
     - intake-617
   handoffs_updated: []
   handoffs_created: []
@@ -38755,9 +37795,6 @@
     - 08-doc-to-lora-prototype.md
     - swarm-dataset-distillation.md
     experiments: []
-    intake_entries:
-    - intake-098
-    - intake-707
     intake_entries:
     - intake-098
     - intake-707
@@ -38827,9 +37864,6 @@
     intake_entries:
     - intake-753
     - intake-244
-    intake_entries:
-    - intake-753
-    - intake-244
     - intake-271
   handoffs_updated:
   - autopilot-continuous-optimization.md
@@ -38871,7 +37905,6 @@
     - fable5-window2-findings-05b-mi210-inference-architecture.md
     - swarm-dataset-distillation.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-702
   contradicting_evidence:
@@ -38918,7 +37951,6 @@
     handoffs: []
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-773
   contradicting_evidence:
   - 'Confirmed non-real: arxiv.org/abs/2607.04117 returns 404; web search finds only viral screenshots described as an unverified parody with no matching arXiv upload, company, or project (digg.com/tech/6zrm70b3). ''Pharaoh Labs'' has no footprint.'
@@ -38958,8 +37990,6 @@
     chapters: []
     handoffs: []
     experiments: []
-    intake_entries:
-    - intake-773
     intake_entries:
     - intake-773
     - intake-774
@@ -39005,8 +38035,6 @@
     - swarm-dataset-distillation.md
     - gpu-drafter-mi200-investigation.md
     experiments: []
-    intake_entries:
-    - intake-773
     intake_entries:
     - intake-773
     - intake-702
@@ -39065,8 +38093,6 @@
     experiments: []
     intake_entries:
     - intake-773
-    intake_entries:
-    - intake-773
     - intake-776
   contradicting_evidence:
   - Zero published evals - by MEASUREMENT.md this is hypothesis-grade until run through our eval tower; LoRA r=16 on 4.6k samples is more plausibly style/format transfer than capability gain, and the card itself concedes reasoning mirrors the base.
@@ -39112,8 +38138,6 @@
     handoffs:
     - swarm-dataset-distillation.md
     experiments: []
-    intake_entries:
-    - intake-776
     intake_entries:
     - intake-776
     - intake-773
@@ -39564,8 +38588,6 @@
     - autopilot-continuous-optimization.md
     intake_entries:
     - intake-785
-    intake_entries:
-    - intake-785
     - intake-790
   novelty_justification: Directly demonstrates that harness engineering can be automated end-to-end. Stanford team, submitted Mar 2026.
   relevance_justification: 'High: EPYC orchestrator is itself a harness. Meta-Harness methodology could be applied to our own harness optimization, particularly for seeding strategies and model routing configurations.'
@@ -39615,9 +38637,6 @@
     intake_entries:
     - intake-784
     - intake-791
-    intake_entries:
-    - intake-784
-    - intake-791
     - intake-792
   novelty_justification: Combines Godel machine theory (provably beneficial self-modification) with Darwinian evolution (empirical validation). Hu/Clune lineage from NeuroEvolution.
   relevance_justification: 'High: archive-based open-ended exploration with empirical validation gates mirrors our autopilot optimization loop. The peer-review mechanism discovery is directly relevant to our critic architecture.'
@@ -39661,8 +38680,6 @@
     handoffs:
     - autopilot-continuous-optimization.md
     - meta-harness-optimization.md
-    intake_entries:
-    - intake-784
     intake_entries:
     - intake-784
     - intake-785
@@ -39714,8 +38731,6 @@
     - prompt-construction-determinism.md
     intake_entries:
     - intake-784
-    intake_entries:
-    - intake-784
     - intake-788
   novelty_justification: Bi-level CE optimization with agentic crossover is a novel approach to context/prompt engineering. Jan 2026, preprint.
   relevance_justification: 'High: context engineering is central to our orchestrator. The bi-level optimization maps to our critic + seeder architecture.'
@@ -39765,8 +38780,6 @@
   cross_references:
     handoffs:
     - meta-harness-optimization.md
-    intake_entries:
-    - intake-784
     intake_entries:
     - intake-784
     - intake-787
@@ -39824,9 +38837,6 @@
     intake_entries:
     - intake-784
     - intake-785
-    intake_entries:
-    - intake-784
-    - intake-785
     - intake-786
   novelty_justification: First systematic combination of harness-level and weight-level self-improvement in a single loop. May 2026, preprint.
   relevance_justification: 'Medium: the combined approach is conceptually relevant. Weight updates not applicable to our CPU inference stack.'
@@ -39875,8 +38885,6 @@
     - autopilot-continuous-optimization.md
     intake_entries:
     - intake-784
-    intake_entries:
-    - intake-784
     - intake-785
   novelty_justification: Novel in providing a comprehensive evaluation environment specifically for self-evolving agent harnesses. Jun 2026, preprint.
   relevance_justification: 'High: the evaluation views (train/validation/test/replay/OOD) are directly applicable to our eval-tower verification.'
@@ -39921,8 +38929,6 @@
     - meta-harness-optimization.md
     intake_entries:
     - intake-784
-    intake_entries:
-    - intake-784
     - intake-785
   novelty_justification: PSO applied to agentic system generation is novel. Explicitly benchmarks against ADAS. Jun 2025, preprint.
   relevance_justification: 'Medium: the population-based evolution approach could inform our orchestrator multi-model routing.'
@@ -39963,7 +38969,6 @@
   cross_references:
     handoffs:
     - agent-world-env-synthesis.md
-    intake_entries:
     intake_entries:
     - intake-785
   novelty_justification: Clune/Lu lineage (NeuroEvolution, DGM). Extends self-play from RL to foundation models. Jul 2025, preprint.
@@ -40012,8 +39017,6 @@
     - eval-tower-verification.md
     - meta-harness-optimization.md
     - autopilot-continuous-optimization.md
-    intake_entries:
-    - intake-784
     intake_entries:
     - intake-784
     - intake-790
@@ -40102,7 +39105,6 @@
   verdict: worth_investigating
   ingested_date: '2026-07-08'
   cross_references:
-    intake_entries:
     intake_entries:
     - intake-794
   novelty_justification: Paper lineage mining is a novel approach. ACL 2026 acceptance provides venue credibility. May 2025.
@@ -40207,8 +39209,6 @@
     - hermes-agent-index.md
     intake_entries:
     - intake-784
-    intake_entries:
-    - intake-784
     - intake-785
   novelty_justification: Comprehensive review/survey of the externalization trend. Apr 2026, tech report. Provides systems-level framing for the harness-engineering literature.
   relevance_justification: 'High: provides the conceptual framework that unifies our own work (externalized memory, skills, protocols, harness). The "weights to context to harness" progression validates our architectural choices.'
@@ -40268,8 +39268,6 @@
     experiments: []
     intake_entries:
     - intake-796
-    intake_entries:
-    - intake-796
     - intake-797
   contradicting_evidence:
   - No direct contradiction of the operational lessons found; the external literature CORROBORATES them. SpecBench/TRACE/BenchJack (2026) document that proxy metrics are provably hackable and RL post-training raised exploit rates 0.6%->13.9% — independent support for the PPL-gaming / self-policing finding. Swarm-orchestration literature independently reports emergent convergence/collusion onto shared strategies and the need for explicit anti-convergence termination — support for the Agent Collapse finding.
@@ -40317,8 +39315,6 @@
     - knowledge-base-governance-improvements.md
     - context-folding-progressive.md
     experiments: []
-    intake_entries:
-    - intake-710
     intake_entries:
     - intake-710
     - intake-711
@@ -40384,12 +39380,6 @@
     - colbert-reranker-web-research.md
     - minddr-deep-research-mode.md
     experiments: []
-    intake_entries:
-    - intake-326
-    - intake-346
-    - intake-267
-    - intake-611
-    - intake-316
     intake_entries:
     - intake-326
     - intake-346
@@ -40551,10 +39541,6 @@
     - intake-153
     - intake-154
     - intake-312
-    intake_entries:
-    - intake-153
-    - intake-154
-    - intake-312
     - intake-349
   credibility_score: 3
   verification: dive-verified
@@ -40616,8 +39602,6 @@
     - eval-tower-verification.md
     - reviewer-calibration-accounting.md
     experiments: []
-    intake_entries:
-    - intake-362
     intake_entries:
     - intake-362
     - intake-363
@@ -40717,7 +39701,6 @@
     - angelslim-techniques-evaluation.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-808
   credibility_score: 2
   contradicting_evidence:
@@ -40813,7 +39796,6 @@
     - angelslim-techniques-evaluation.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-806
   credibility_score: 3
   contradicting_evidence:
@@ -40872,11 +39854,6 @@
     - unified-trace-memory-service.md
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
-    - intake-539
-    - intake-568
-    - intake-610
-    - intake-612
     intake_entries:
     - intake-539
     - intake-568
@@ -40951,7 +39928,6 @@
     - eval-tower-verification.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-438
   credibility_score: 3
   contradicting_evidence:
@@ -41011,8 +39987,6 @@
     experiments: []
     intake_entries:
     - intake-098
-    intake_entries:
-    - intake-098
     - intake-764
   credibility_score: 2
   contradicting_evidence:
@@ -41064,7 +40038,6 @@
     - meta-harness-optimization.md
     - capability-registry-and-promotion.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-801
   credibility_score: null
@@ -41137,10 +40110,6 @@
     - intake-354
     - intake-088
     - intake-819
-    intake_entries:
-    - intake-354
-    - intake-088
-    - intake-819
     - intake-814
   handoffs_updated:
   - multiscreen-attention-evaluation.md
@@ -41209,8 +40178,6 @@
     experiments: []
     intake_entries:
     - intake-408
-    intake_entries:
-    - intake-408
     - intake-813
   handoffs_updated:
   - 08-doc-to-lora-prototype.md
@@ -41270,12 +40237,6 @@
     - kv-cache-quantization.md
     - reap-moe-expert-pruning.md
     experiments: []
-    intake_entries:
-    - intake-191
-    - intake-246
-    - intake-181
-    - intake-816
-    - intake-817
     intake_entries:
     - intake-191
     - intake-246
@@ -41349,12 +40310,6 @@
     - kv-cache-quantization.md
     - reap-moe-expert-pruning.md
     experiments: []
-    intake_entries:
-    - intake-181
-    - intake-191
-    - intake-246
-    - intake-815
-    - intake-817
     intake_entries:
     - intake-181
     - intake-191
@@ -41439,12 +40394,6 @@
     - intake-246
     - intake-815
     - intake-816
-    intake_entries:
-    - intake-181
-    - intake-191
-    - intake-246
-    - intake-815
-    - intake-816
     - intake-818
   handoffs_updated:
   - tq3-quantization-evaluation.md
@@ -41517,12 +40466,6 @@
     - kv-cache-quantization.md
     - dynamic-stack-concurrency.md
     experiments: []
-    intake_entries:
-    - intake-815
-    - intake-816
-    - intake-817
-    - intake-181
-    - intake-191
     intake_entries:
     - intake-815
     - intake-816
@@ -41608,13 +40551,6 @@
     - intake-413
     - intake-418
     - intake-155
-    intake_entries:
-    - intake-813
-    - intake-746
-    - intake-747
-    - intake-413
-    - intake-418
-    - intake-155
     - intake-135
   handoffs_updated:
   - autopilot-continuous-optimization.md
@@ -41670,9 +40606,6 @@
     - routing-intelligence.md
     - backlog-roi-audit-2026-07-14.md
     experiments: []
-    intake_entries:
-    - intake-384
-    - intake-821
     intake_entries:
     - intake-384
     - intake-821
@@ -41748,12 +40681,6 @@
     - intake-822
     - intake-828
     - intake-829
-    intake_entries:
-    - intake-384
-    - intake-820
-    - intake-822
-    - intake-828
-    - intake-829
     - intake-830
   handoffs_updated:
   - tq3-quantization-evaluation.md
@@ -41813,10 +40740,6 @@
     - intake-384
     - intake-820
     - intake-821
-    intake_entries:
-    - intake-384
-    - intake-820
-    - intake-821
     - intake-828
   handoffs_updated:
   - tq3-quantization-evaluation.md
@@ -41865,11 +40788,6 @@
     - speculative-decoding-mtp-refresh.md
     - tq3-quantization-evaluation.md
     experiments: []
-    intake_entries:
-    - intake-806
-    - intake-808
-    - intake-824
-    - intake-590
     intake_entries:
     - intake-806
     - intake-808
@@ -41930,11 +40848,6 @@
     - intake-808
     - intake-823
     - intake-590
-    intake_entries:
-    - intake-806
-    - intake-808
-    - intake-823
-    - intake-590
     - intake-591
   handoffs_updated:
   - angelslim-techniques-evaluation.md
@@ -41985,10 +40898,6 @@
     - intake-155
     - intake-413
     - intake-418
-    intake_entries:
-    - intake-155
-    - intake-413
-    - intake-418
     - intake-819
   handoffs_updated:
   - unified-trace-memory-service.md
@@ -42026,7 +40935,6 @@
     handoffs:
     - multimodal-pipeline.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-432
   handoffs_updated:
@@ -42154,9 +41062,6 @@
     intake_entries:
     - intake-821
     - intake-384
-    intake_entries:
-    - intake-821
-    - intake-384
     - intake-829
   handoffs_updated:
   - tq3-quantization-evaluation.md
@@ -42239,12 +41144,6 @@
     - intake-828
     - intake-590
     - intake-591
-    intake_entries:
-    - intake-821
-    - intake-384
-    - intake-828
-    - intake-590
-    - intake-591
     - intake-593
   handoffs_updated:
   - tq3-quantization-evaluation.md
@@ -42315,10 +41214,6 @@
     - intake-821
     - intake-158
     - intake-159
-    intake_entries:
-    - intake-821
-    - intake-158
-    - intake-159
     - intake-738
   handoffs_updated:
   - speculative-decoding-mtp-refresh.md
@@ -42385,8 +41280,6 @@
     - internal-kb-rag.md
     - unified-trace-memory-service.md
     experiments: []
-    intake_entries:
-    - intake-686
     intake_entries:
     - intake-686
     - intake-270
@@ -42485,7 +41378,6 @@
     - hermes-agent-index.md
     - model-stack-single-source-update-pipeline.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-183
   handoffs_updated:
@@ -42677,7 +41569,6 @@
     - eval-tower-verification.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-838
   handoffs_updated: []
   handoffs_created: []
@@ -42721,7 +41612,6 @@
     - reviewer-typed-artifacts.md
     - reviewer-model-ablations.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-837
   handoffs_updated: []
@@ -42807,7 +41697,6 @@
     - reviewer-escalation-and-human-gate-policy.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-841
   handoffs_updated: []
   handoffs_created: []
@@ -42853,7 +41742,6 @@
     - reviewer-latency-and-sampling-budget.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-840
   handoffs_updated: []
   handoffs_created: []
@@ -42894,7 +41782,6 @@
     - reviewer-decision-plane.md
     - reviewer-control-plane-index.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-843
   handoffs_updated: []
@@ -42939,7 +41826,6 @@
     - reviewer-decision-plane.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-842
   handoffs_updated: []
   handoffs_created: []
@@ -42980,7 +41866,6 @@
     - reviewer-calibration-accounting.md
     - reviewer-model-ablations.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-845
   handoffs_updated: []
@@ -43024,7 +41909,6 @@
     - reviewer-calibration-accounting.md
     - reviewer-model-ablations.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-844
   handoffs_updated: []
@@ -43103,7 +41987,6 @@
     - reviewer-decision-plane.md
     - harness-selection-and-integration.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-146
   handoffs_updated:
@@ -43184,7 +42067,6 @@
     - reviewer-trace-materialization.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-847
   handoffs_updated: []
   handoffs_created: []
@@ -43259,7 +42141,6 @@
     - reviewer-decision-plane.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-852
   handoffs_updated:
   - 'handoffs/active/reviewer-calibration-accounting.md'
@@ -43297,7 +42178,6 @@
     handoffs:
     - reviewer-calibration-accounting.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-851
   handoffs_updated:
@@ -43337,7 +42217,6 @@
     - reviewer-decision-plane.md
     - reviewer-escalation-and-human-gate-policy.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-855
   handoffs_updated:
@@ -43418,7 +42297,6 @@
     - reviewer-model-ablations.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-853
   handoffs_updated:
   - 'handoffs/active/reviewer-calibration-accounting.md'
@@ -43495,7 +42373,6 @@
     handoffs:
     - reviewer-calibration-accounting.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-851
   handoffs_updated:
@@ -43585,7 +42462,6 @@
     - mi210-big-model-and-acceleration-roadmap.md
     - cpu-inference-optimization-index.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-074
   referenced_arxiv_ids:
@@ -43836,9 +42712,6 @@
     intake_entries:
     - intake-262
     - intake-694
-    intake_entries:
-    - intake-262
-    - intake-694
     - intake-865
     intake_entry_notes:
     - 'intake-262 (AgentOCR — optical self-compression, same DeepSeek-OCR lineage)'
@@ -43901,8 +42774,6 @@
     - opendataloader-pipeline-integration.md
     - multiscreen-attention-evaluation.md
     experiments: []
-    intake_entries:
-    - intake-262
     intake_entries:
     - intake-262
     - intake-864
@@ -43986,14 +42857,6 @@
     - tool-use-eval-contract.md
     - hermes-agent-index.md
     experiments: []
-    intake_entries:
-    - intake-153
-    - intake-312
-    - intake-349
-    - intake-547
-    - intake-271
-    - intake-273
-    - intake-867
     intake_entries:
     - intake-153
     - intake-312
@@ -44104,14 +42967,6 @@
     - intake-868
     - intake-874
     - intake-875
-    intake_entries:
-    - intake-153
-    - intake-349
-    - intake-547
-    - intake-866
-    - intake-868
-    - intake-874
-    - intake-875
     - intake-878
     intake_entry_notes:
     - 'intake-153 (Recursive Language Models — this post trains what that paper prompts/SFTs)'
@@ -44195,12 +43050,6 @@
     - autopilot-continuous-optimization.md
     - rao-redel-substrate-spike.md
     experiments: []
-    intake_entries:
-    - intake-153
-    - intake-331
-    - intake-349
-    - intake-358
-    - intake-867
     intake_entries:
     - intake-153
     - intake-331
@@ -44312,15 +43161,6 @@
     - intake-141
     - intake-289
     - intake-876
-    intake_entries:
-    - intake-273
-    - intake-274
-    - intake-154
-    - intake-155
-    - intake-157
-    - intake-141
-    - intake-289
-    - intake-876
     - intake-877
     intake_entry_notes:
     - 'intake-273 (Chroma ''Context Rot'' — same coinage, DIFFERENT artifact and group)'
@@ -44415,10 +43255,6 @@
     - intake-167
     - intake-168
     - intake-310
-    intake_entries:
-    - intake-167
-    - intake-168
-    - intake-310
     - intake-871
     intake_entry_notes:
     - 'intake-167 (FlashMoE — ML-based SSD expert cache replacement)'
@@ -44505,12 +43341,6 @@
     - intake-339
     - intake-427
     - intake-870
-    intake_entries:
-    - intake-699
-    - intake-756
-    - intake-339
-    - intake-427
-    - intake-870
     - intake-872
     intake_entry_notes:
     - 'intake-699 (unsloth GLM-5.2-GGUF — our incumbent artifact, UD-IQ2_M)'
@@ -44590,9 +43420,6 @@
     intake_entries:
     - intake-456
     - intake-873
-    intake_entries:
-    - intake-456
-    - intake-873
     - intake-871
     intake_entry_notes:
     - 'intake-456 (ExLlamaV2/vLLM tensor-parallelism argument — covers EXL2, a different format; V3 is a full rewrite)'
@@ -44665,8 +43492,6 @@
     - iqk-port.md
     - v6-iqk-promotion.md
     experiments: []
-    intake_entries:
-    - intake-872
     intake_entries:
     - intake-872
     - intake-871
@@ -44750,13 +43575,6 @@
     - tool-use-eval-contract.md
     - reviewer-control-plane-index.md
     experiments: []
-    intake_entries:
-    - intake-836
-    - intake-837
-    - intake-834
-    - intake-713
-    - intake-660
-    - intake-875
     intake_entries:
     - intake-836
     - intake-837
@@ -44848,13 +43666,6 @@
     - reviewer-model-ablations.md
     - eval-tower-architecture-audit-2026-07-20.md
     experiments: []
-    intake_entries:
-    - intake-363
-    - intake-367
-    - intake-368
-    - intake-370
-    - intake-834
-    - intake-874
     intake_entries:
     - intake-363
     - intake-367
@@ -44955,13 +43766,6 @@
     - intake-838
     - intake-845
     - intake-869
-    intake_entries:
-    - intake-834
-    - intake-836
-    - intake-837
-    - intake-838
-    - intake-845
-    - intake-869
     - intake-875
     intake_entry_notes:
     - 'intake-834 (Agentic Rubrics)'
@@ -45046,10 +43850,6 @@
     - intake-438
     - intake-412
     - intake-869
-    intake_entries:
-    - intake-438
-    - intake-412
-    - intake-869
     - intake-876
     intake_entry_notes:
     - 'intake-438 (MindDR three-agent deep-research pipeline)'
@@ -45116,12 +43916,6 @@
     - autopilot-continuous-optimization.md
     - agent-world-env-synthesis.md
     experiments: []
-    intake_entries:
-    - intake-344
-    - intake-157
-    - intake-536
-    - intake-403
-    - intake-286
     intake_entries:
     - intake-344
     - intake-157
@@ -45195,12 +43989,6 @@
     - moe-spec-cpu-spec-dec-integration.md
     - tree-draft-forward-port-plan.md
     experiments: []
-    intake_entries:
-    - intake-158
-    - intake-296
-    - intake-159
-    - intake-447
-    - intake-417
     intake_entries:
     - intake-158
     - intake-296
@@ -45285,11 +44073,6 @@
     - intake-296
     - intake-447
     - intake-417
-    intake_entries:
-    - intake-158
-    - intake-296
-    - intake-447
-    - intake-417
     - intake-879
     intake_entry_notes:
     - 'intake-158 (DFlash arXiv:2602.06036)'
@@ -45357,10 +44140,6 @@
     - intake-151
     - intake-146
     - intake-291
-    intake_entries:
-    - intake-151
-    - intake-146
-    - intake-291
     - intake-330
     intake_entry_notes:
     - 'intake-151 (GitNexus - deployed code knowledge graph, 29981 symbols)'
@@ -45416,12 +44195,6 @@
     - meta-harness-optimization.md
     - minddr-deep-research-mode.md
     experiments: []
-    intake_entries:
-    - intake-148
-    - intake-149
-    - intake-421
-    - intake-124
-    - intake-867
     intake_entries:
     - intake-148
     - intake-149
@@ -45495,9 +44268,6 @@
     intake_entries:
     - intake-124
     - intake-269
-    intake_entries:
-    - intake-124
-    - intake-269
     - intake-882
     intake_entry_notes:
     - 'intake-124 (alphaXiv Paper Lookup skill - sibling alphaXiv entry)'
@@ -45554,12 +44324,6 @@
     - minddr-deep-research-mode.md
     - tri-role-coordinator-architecture.md
     experiments: []
-    intake_entries:
-    - intake-329
-    - intake-328
-    - intake-108
-    - intake-669
-    - intake-673
     intake_entries:
     - intake-329
     - intake-328
@@ -45636,9 +44400,6 @@
     - autopilot-continuous-optimization.md
     - agent-collab-rnd-harness.md
     experiments: []
-    intake_entries:
-    - intake-884
-    - intake-329
     intake_entries:
     - intake-884
     - intake-329
@@ -45719,12 +44480,6 @@
     - intake-148
     - intake-338
     - intake-345
-    intake_entries:
-    - intake-240
-    - intake-244
-    - intake-148
-    - intake-338
-    - intake-345
     - intake-898
     intake_entry_notes:
     - 'intake-240 (GEPA paper 2507.19457 — the `gepa` engine''s algorithm)'
@@ -45792,11 +44547,6 @@
     - harness-selection-and-integration.md
     - tool-output-compression.md
     experiments: []
-    intake_entries:
-    - intake-819
-    - intake-736
-    - intake-726
-    - intake-849
     intake_entries:
     - intake-819
     - intake-736
@@ -45883,11 +44633,6 @@
     - intake-089
     - intake-627
     - intake-096
-    intake_entries:
-    - intake-240
-    - intake-089
-    - intake-627
-    - intake-096
     - intake-899
     intake_entry_notes:
     - 'intake-240 (GEPA — a DIRECT CORE baseline, already wired into PromptForge at gepa_ratio 0.30)'
@@ -45962,11 +44707,6 @@
     - intake-244
     - intake-444
     - intake-370
-    intake_entries:
-    - intake-327
-    - intake-244
-    - intake-444
-    - intake-370
     - intake-426
     intake_entry_notes:
     - 'intake-327 (Hermes DSPy+GEPA WITHOUT GPU — the exact text-space contrast to this weight-space method)'
@@ -46029,9 +44769,6 @@
     - document-parser-table-bench.md
     - knowledge-base-governance-improvements.md
     experiments: []
-    intake_entries:
-    - intake-268
-    - intake-436
     intake_entries:
     - intake-268
     - intake-436
@@ -46101,10 +44838,6 @@
     - capability-registry-and-promotion.md
     - reviewer-calibration-accounting.md
     experiments: []
-    intake_entries:
-    - intake-160
-    - intake-721
-    - intake-777
     intake_entries:
     - intake-160
     - intake-721
@@ -46184,10 +44917,6 @@
     - intake-110
     - intake-130
     - intake-276
-    intake_entries:
-    - intake-110
-    - intake-130
-    - intake-276
     - intake-657
     intake_entry_notes:
     - 'intake-110 (OPSDC self-distillation for reasoning compression — closest technique analogue; also predicts the easy/hard asymmetry seen here)'
@@ -46257,10 +44986,6 @@
     - mi210-kernel-rnd-loop-proposal.md
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
-    - intake-894
-    - intake-550
-    - intake-517
     intake_entries:
     - intake-894
     - intake-550
@@ -46340,11 +45065,6 @@
     - intake-318
     - intake-700
     - intake-314
-    intake_entries:
-    - intake-893
-    - intake-318
-    - intake-700
-    - intake-314
     - intake-848
     intake_entry_notes:
     - 'intake-893 (companion blog post — the claims this implements)'
@@ -46416,7 +45136,6 @@
     - prompt-construction-determinism.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-441
     intake_entry_notes:
     - 'intake-441 (output-diversity collapse / EV-8 source — complementary construct: that measures WITHIN-prompt sampling variety, this measures ACROSS-prompt invariance under a controlled 24-way permutation, and cannot be faked by lexical filler)'
@@ -46447,7 +45166,7 @@
   - Claims over 80% of Claude Code's system prompt was removed for Opus 5 / Fable 5 with no measurable loss on internal coding evaluations. NO protocol, NO named eval suite, NO n, NO date, NO link, NO attestation is given anywhere in the post.
   - 'Six named shifts: rules -> judgment; examples -> expressive interface design; everything-upfront -> progressive disclosure (skills and tools loaded on demand via ToolSearch); repetition -> single-site tool descriptions; manual memory -> auto-memory; simple specs -> rich code-level references plus rubrics that instantiate verifier agents.'
   - 'CLAUDE.md is reframed as the thin node of a load-on-demand tree: state the repo purpose plus non-obvious gotchas, and spend zero tokens on anything derivable from the file structure.'
-  - 'The /doctor claim is CONFIRMED and understated by the summary: it deduplicates local vs checked-in CLAUDE.md, TRIMS content derivable from the codebase, MIGRATES the always-loaded remainder into skills and nested on-demand files, and reports unused skills/MCP servers/plugins against their context cost. It reports before changing anything, and is a bundled prompt-based skill, so its behaviour is model-mediated, not deterministic.'
+  - 'RETRACTED 2026-08-09 (the 2026-07-25 strike never landed in this file): the four-step /doctor description - dedupe / trim / migrate / report-before-changing - was FABRICATED by a Stage-1 summariser. The source post contains two generic sentences about /doctor and none of those four behaviours. Do not cite any /doctor mechanism to this entry.'
   techniques:
   - progressive-disclosure context tree
   - deferred tool loading via ToolSearch
@@ -46455,10 +45174,10 @@
   - single-site tool descriptions
   - rubric-instantiated verifier agents
   - auto-memory
-  - derivable-content deletion (doctor trim contract)
+  - derivable-content deletion (the '/doctor trim contract' framing is RETRACTED 2026-08-09 - fabricated, see key_claims and dive_corrections)
   reported_results:
   - '">80% removed, no measurable degradation" — vendor observation, zero protocol detail, zero corroboration. No other quantitative result appears in the post; no tables, no baselines, no links to evaluation data.'
-  - 'Independently corroborated (mechanism, not magnitude): /doctor''s CLAUDE.md trim/migrate contract exists in shipped Claude Code and in the first-party command reference.'
+  - 'WITHDRAWN 2026-08-09: this line asserted independent corroboration of a /doctor trim/migrate contract that was fabricated in the first place. A 2026-07-29 re-source cited the Codex CLI manual, but this entry is an Anthropic blog post about Claude Code - the product referent may not match, and the re-source is itself unverified. No /doctor mechanism is corroborated by this entry.'
   referenced_arxiv_ids: []
   novelty: medium
   relevance: high
@@ -46466,6 +45185,25 @@
   verdict: adopt_patterns
   discovered_via: input
   ingested_date: '2026-07-25'
+  verification: dive-overturned
+  dive_corrections: >-
+    2026-07-25 Stage-2a dive found the four-step /doctor description (dedupe / trim / migrate /
+    report-before-changing) FABRICATED by a Stage-1 summariser: the source post carries two generic
+    sentences about /doctor and none of those behaviours. THE STRIKE NEVER LANDED IN THIS FILE.
+    Three separate records - progress/2026-07/2026-07-25.md, intake-derived-work-2026-07-25.md and
+    a 2026-07-29 re-source note - each assert the claim was struck or purged, while the index kept
+    serving it as 'CONFIRMED and understated' for 15 days. Repaired 2026-08-09 during the Vidya
+    belief-substrate audit: key_claims retracted, the techniques framing marked retracted, the
+    'independently corroborated' reported_result withdrawn, and a duplicate intake_entries YAML key
+    merged (a duplicate key silently drops the first list). THE GOVERNANCE FINDING: a correction
+    recorded only in narrative is not a correction - the artifact kept the fabrication and the
+    prose claimed otherwise, which is strictly worse than an uncorrected entry because a reader
+    checking the record is told the problem was handled. Corrections must be verified in the
+    artifact they claim to change.
+  reader_should_conclude: >-
+    dive-overturned. Cite NOTHING about /doctor from this entry. The six named context-engineering
+    shifts and the thin-CLAUDE.md reframing are the entry's usable content; the /doctor mechanism
+    is fabricated and was live in this file for 15 days after being reported as struck.
   cross_references:
     chapters: []
     handoffs:
@@ -46474,11 +45212,6 @@
     - delegation-context-preassembly.md
     - tool-output-compression.md
     experiments: []
-    intake_entries:
-    - intake-846
-    - intake-781
-    - intake-787
-    - intake-249
     intake_entries:
     - intake-846
     - intake-781
@@ -46555,10 +45288,6 @@
     - intake-626
     - intake-627
     - intake-096
-    intake_entries:
-    - intake-626
-    - intake-627
-    - intake-096
     - intake-899
     intake_entry_notes:
     - 'intake-626 (SkillOpt — same "text artifact as external state of a frozen agent" framing; SkillOpt optimizes ONE document, this builds a RETRIEVED library of many small procedures)'
@@ -46630,9 +45359,6 @@
     - scoring-infra-standardization.md
     - frontier-f1-real-task-corpus.md
     experiments: []
-    intake_entries:
-    - intake-886
-    - intake-240
     intake_entries:
     - intake-886
     - intake-240
@@ -46716,11 +45442,6 @@
     - intake-627
     - intake-626
     - intake-096
-    intake_entries:
-    - intake-888
-    - intake-627
-    - intake-626
-    - intake-096
     - intake-089
     intake_entry_notes:
     - 'intake-888 (CORE — cites this paper; this is the direct counterweight to CORE''s insight-store growth)'
@@ -46784,9 +45505,6 @@
     - security-review-skill.md
     - knowledge-base-governance-improvements.md
     experiments: []
-    intake_entries:
-    - intake-096
-    - intake-626
     intake_entries:
     - intake-096
     - intake-626
@@ -46855,10 +45573,6 @@
   handoffs_updated: []
   cross_references:
     superseded_intake: intake-783
-    intake_entries:
-    - intake-783
-    - intake-693
-    - intake-153
     intake_entries:
     - intake-783
     - intake-693
@@ -46941,11 +45655,6 @@
     - intake-457
     - intake-555
     - intake-582
-    intake_entries:
-    - intake-420
-    - intake-457
-    - intake-555
-    - intake-582
     - intake-636
   contradicting_evidence: null
   novelty_justification: Foundational 2018 origin of the recurrent-depth/looped-transformer lineage, but its mechanisms (depth recurrence, cross-step weight tying, ACT halting) are already described inside existing entries — intake-420 (OpenMythos cites 1807.03819), intake-457 (Hyperloop Transformers names UT), intake-582 (GRAM cites it). Adding it contributes lineage grounding and original numbers, not new technique surface.
@@ -47005,9 +45714,6 @@
     - 05-deprecated-approaches.md
     experiments: []
     handoffs: []
-    intake_entries:
-    - intake-636
-    - intake-555
     intake_entries:
     - intake-636
     - intake-555
@@ -47086,9 +45792,6 @@
     intake_entries:
     - intake-636
     - intake-555
-    intake_entries:
-    - intake-636
-    - intake-555
     - intake-582
   contradicting_evidence:
   - 'Follow-up work (bounded Tier-2b search, provisional): RRT''s static LoRA modules "partially restore depth-specific behaviour but lack token-dependent routing"; Mixture-of-LoRAs work (2512.12880 lineage) positions itself as fixing this expressivity gap.'
@@ -47160,9 +45863,6 @@
     handoffs:
     - reasoning-compression.md
     experiments: []
-    intake_entries:
-    - intake-555
-    - intake-636
     intake_entries:
     - intake-555
     - intake-636
@@ -47244,10 +45944,6 @@
     - intake-555
     - intake-582
     - intake-636
-    intake_entries:
-    - intake-555
-    - intake-582
-    - intake-636
     - intake-904
   contradicting_evidence:
   - No substantive contradiction surfaced in a bounded Tier-2b search (provisional). Paper's own framing concedes naive recursion gains are limited relative to added recursive computation; the routing mechanism is the load-bearing addition. Follow-on Soft-MoR work exists in vision (2607.00774).
@@ -47305,11 +46001,6 @@
     handoffs:
     - reasoning-compression.md
     experiments: []
-    intake_entries:
-    - intake-332
-    - intake-341
-    - intake-636
-    - intake-547
     intake_entries:
     - intake-332
     - intake-341
@@ -47387,11 +46078,6 @@
     - intake-341
     - intake-636
     - intake-582
-    intake_entries:
-    - intake-332
-    - intake-341
-    - intake-636
-    - intake-582
     - intake-555
   contradicting_evidence:
   - No independent evaluation found in a bounded Tier-2b search (provisional). An AI-newsletter item restating the IMO/IPhO gold claims is RESTATEMENT, not corroboration. All benchmark numbers are self-reported by an unestablished lab (IQuestLab); weights are "-preview".
@@ -47441,13 +46127,6 @@
     handoffs:
     - reasoning-compression.md
     experiments: []
-    intake_entries:
-    - intake-902
-    - intake-903
-    - intake-904
-    - intake-905
-    - intake-906
-    - intake-907
     intake_entries:
     - intake-902
     - intake-903
@@ -47513,8 +46192,6 @@
     experiments: []
     intake_entries:
     - intake-905
-    intake_entries:
-    - intake-905
     - intake-909
   contradicting_evidence: null
   novelty_justification: First adversarial/interpretability probe of the recurrent-depth latent-reasoning claim to enter the index. It is the primary contradicting evidence attached to intake-905 and directly qualifies the framing the operator overview (intake-909) repeats.
@@ -47571,8 +46248,6 @@
     experiments: []
     intake_entries:
     - intake-905
-    intake_entries:
-    - intake-905
     - intake-332
   contradicting_evidence: null
   novelty_justification: 'high: every looped-lineage entry in the index (Ouro intake-332, GRAM intake-582, this batch) carries the same scope gate — "requires training from scratch, no transfer recipe to pretrained LLMs". This paper is the first indexed work that directly attacks that gate by converting pretrained models. If the recipe works at accessible scale, the entire lineage''s relevance classification changes.'
@@ -47622,7 +46297,6 @@
     handoffs:
     - routing-and-optimization-index.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-906
   contradicting_evidence: null
@@ -47691,12 +46365,6 @@
     - agent-world-env-synthesis.md
     - gpu-acceleration-path.md
     experiments: []
-    intake_entries:
-    - intake-142
-    - intake-546
-    - intake-604
-    - intake-789
-    - intake-897
     intake_entries:
     - intake-142
     - intake-546
@@ -47817,11 +46485,6 @@
     - intake-155
     - intake-157
     - intake-274
-    intake_entries:
-    - intake-154
-    - intake-155
-    - intake-157
-    - intake-274
     - intake-869
   contradicting_evidence:
   - 'Tier-2b (2026-07-29) CONTESTED - arXiv 2508.21433 ''The Complexity Trap: Simple Observation Masking Is as Efficient as LLM Summarization for Agent Context Management'' (JetBrains Research, DL4Code @ NeurIPS 2025) finds trivial observation masking MATCHES or slightly exceeds summarization solve rate at half the cost, and that summarization causes trajectory elongation masking failure signals. Code+data released (github.com/JetBrains-Research/the-complexity-trap). ACM benchmarks against LLM summarization as its foil; if masking already matches summarization, the margin is unanchored unless a masking arm was also run.'
@@ -47922,13 +46585,6 @@
     - intake-509
     - intake-900
     - intake-271
-    intake_entries:
-    - intake-450
-    - intake-096
-    - intake-337
-    - intake-509
-    - intake-900
-    - intake-271
     - intake-124
   contradicting_evidence: null
   novelty_justification: 'The packaging pattern near-duplicates intake-450 (veniceai/skills): multi-skill corpus with parallel plugin manifests and progressive reference loading. NEW to the corpus: (a) the CAD/mechanical/robotics domain, absent from index, chapters and handoffs entirely; (b) the benchmarks shape - 10 natural-language part specifications with structured geometric expectations including explicit negative checks.'
@@ -48020,15 +46676,6 @@
     - frontier-f3-data-flywheel.md
     - learned-routing-controller.md
     experiments: []
-    intake_entries:
-    - intake-444
-    - intake-505
-    - intake-271
-    - intake-266
-    - intake-238
-    - intake-483
-    - intake-278
-    - intake-279
     intake_entries:
     - intake-444
     - intake-505
@@ -48143,11 +46790,6 @@
     - intake-186
     - intake-368
     - intake-181
-    intake_entries:
-    - intake-387
-    - intake-186
-    - intake-368
-    - intake-181
     - intake-916
   contradicting_evidence:
   - 'Tier-2b (2026-07-29) CONTESTED: a third-party writeup (MarkTechPost 2026-07-26) explicitly flags that the open-weight Dev results come from ''a separate in-house protocol and are not comparable to the main flagship table'' (closed KAT-Coder Pro = 73.4%).'
@@ -48244,8 +46886,6 @@
     - pipeline-integration-index.md
     - hermes-outer-shell.md
     experiments: []
-    intake_entries:
-    - intake-928
     intake_entries:
     - intake-928
     - intake-929
@@ -48370,15 +47010,6 @@
     - intake-612
     - intake-925
     - intake-930
-    intake_entries:
-    - intake-153
-    - intake-331
-    - intake-349
-    - intake-537
-    - intake-866
-    - intake-612
-    - intake-925
-    - intake-930
     - intake-931
   contradicting_evidence:
   - 'Tier-2b (2026-07-29): NO criticism or replication of PRO-LONG itself surfaced - the paper is ~1 week old, so absence is expected and proves nothing (unverified-in-stage1 for replication specifically).'
@@ -48470,12 +47101,6 @@
     - colbert-reranker-web-research.md
     - granite-97m-r2-bench-plan.md
     experiments: []
-    intake_entries:
-    - intake-650
-    - intake-651
-    - intake-652
-    - intake-653
-    - intake-519
     intake_entries:
     - intake-650
     - intake-651
@@ -48605,11 +47230,6 @@
     - intake-271
     - intake-369
     - intake-926
-    intake_entries:
-    - intake-244
-    - intake-271
-    - intake-369
-    - intake-926
     - intake-927
   contradicting_evidence:
   - 'Tier-2b (2026-07-29) CONTESTED - arXiv 2607.12227 ''Rethinking the Evaluation of Harness Evolution for Agents'', published TWO DAYS BEFORE MemoHarness, tests GPT-5.4 and Claude Opus 4.6 on Terminal-Bench 2.1 and finds automatic harness evolution ''does not consistently outperform simple test-time scaling methods and exhibits limited generalization''. It names two protocol defects that apply to MemoHarness by construction: (a) no matched feedback/inference-budget baseline, so gains may be bought with extra search iterations; (b) search and final eval on the SAME benchmark, i.e. benchmark overfitting. It does not name MemoHarness.'
@@ -48717,12 +47337,6 @@
     - autopilot-continuous-optimization.md
     - colbert-reranker-web-research.md
     experiments: []
-    intake_entries:
-    - intake-155
-    - intake-157
-    - intake-438
-    - intake-153
-    - intake-869
     intake_entries:
     - intake-155
     - intake-157
@@ -48838,15 +47452,6 @@
     - intake-574
     - intake-369
     - intake-320
-    intake_entries:
-    - intake-889
-    - intake-397
-    - intake-472
-    - intake-451
-    - intake-444
-    - intake-574
-    - intake-369
-    - intake-320
     - intake-675
   contradicting_evidence:
   - 'All four latency claims are unverified-in-stage1: no hardware spec, guest image, memory size, n/reps, method or raw data. Observations, not decision-gating numbers under MEASUREMENT.md.'
@@ -48950,12 +47555,6 @@
     - intake-derived-work-2026-07-25.md
     - qwen36-production-upgrade.md
     experiments: []
-    intake_entries:
-    - intake-891
-    - intake-892
-    - intake-777
-    - intake-181
-    - intake-455
     intake_entries:
     - intake-891
     - intake-892
@@ -49076,12 +47675,6 @@
     - intake-274
     - intake-869
     - intake-331
-    intake_entries:
-    - intake-153
-    - intake-612
-    - intake-274
-    - intake-869
-    - intake-331
     - intake-919
   contradicting_evidence:
   - 'ARITHMETIC INTEGRITY FLAG: the 17.3% headline does not reconcile with the paper''s own per-benchmark table. The five extracted deltas (+8.5, +7.37, +13.37, -0.8, +5.1) average ~+6.7 ABSOLUTE, and one benchmark is a REGRESSION. A figure caption implies the greens are relative improvements; the relative-vs-absolute definition is never stated in the main text. Unresolved - not forced to a reading.'
@@ -49178,11 +47771,6 @@
     - unified-trace-memory-service.md
     - repl-session-memory-maturity.md
     experiments: []
-    intake_entries:
-    - intake-244
-    - intake-271
-    - intake-243
-    - intake-240
     intake_entries:
     - intake-244
     - intake-271
@@ -49295,11 +47883,6 @@
     - intake-327
     - intake-331
     - intake-244
-    intake_entries:
-    - intake-240
-    - intake-327
-    - intake-331
-    - intake-244
     - intake-921
   contradicting_evidence:
   - 'Corpus-internal caution: intake-244 notes text optimizers like DSPy ''compress feedback too aggressively for harness optimization''.'
@@ -49392,8 +47975,6 @@
     experiments: []
     intake_entries:
     - intake-918
-    intake_entries:
-    - intake-918
     - intake-929
   contradicting_evidence:
   - 'Commercial-bias configuration: Alibaba Tongyi Lab reporting its own AI Arena Elo placement is self-evaluating.'
@@ -49482,8 +48063,6 @@
     experiments: []
     intake_entries:
     - intake-918
-    intake_entries:
-    - intake-918
     - intake-928
   contradicting_evidence:
   - 'Self-validation: the headline external validation is ''adopted by the Z-Image project'' - the SAME company, with substantial co-author overlap with 2511.22699 (intake-928). Not independent corroboration.'
@@ -49569,12 +48148,6 @@
     - repl-session-memory-maturity.md
     - context-folding-progressive.md
     experiments: []
-    intake_entries:
-    - intake-612
-    - intake-627
-    - intake-700
-    - intake-888
-    - intake-899
     intake_entries:
     - intake-612
     - intake-627
@@ -49676,7 +48249,6 @@
     - architect-model-selection-bench.md
     experiments: []
     intake_entries:
-    intake_entries:
     - intake-919
   contradicting_evidence:
   - 'CITATION DEFECT (this entry''s reason for existing): intake-919 (PRO-LONG) cites this arXiv ID as ''WorldModeler'' and treats it as a baseline agent harness. NO system named WorldModeler appears anywhere in this document. Either PRO-LONG mislabelled the ID or it compared against a different work. Unresolved - worth flagging upstream.'
@@ -49766,8 +48338,6 @@
     - harness-selection-and-integration.md
     - scoring-infra-standardization.md
     experiments: []
-    intake_entries:
-    - intake-916
     intake_entries:
     - intake-916
     - intake-917
@@ -49881,9 +48451,6 @@
     intake_entries:
     - intake-916
     - intake-917
-    intake_entries:
-    - intake-916
-    - intake-917
     - intake-932
   contradicting_evidence:
   - NO third-party harness validation exists for 79.6. The SWE-bench/experiments repo contains exactly two KAT submissions, both 2025-09 (V1 generation), and the V1 PR is still OPEN/unmerged. There is NO KAT-Coder-V2 submission at all — every number is vendor-run on the vendor's own KwaiEnv platform.
@@ -49975,13 +48542,6 @@
     - harness-selection-and-integration.md
     - architect-model-selection-bench.md
     experiments: []
-    intake_entries:
-    - intake-931
-    - intake-244
-    - intake-271
-    - intake-921
-    - intake-926
-    - intake-919
     intake_entries:
     - intake-931
     - intake-244
@@ -50097,10 +48657,6 @@
     - intake-930
     - intake-899
     - intake-888
-    intake_entries:
-    - intake-930
-    - intake-899
-    - intake-888
     - intake-627
   contradicting_evidence:
   - CONTRADICTS THE PARENT DIVE'S BLANKET FRAMING that the prompt-only variant always trails ReasoningBank. TRUE on ALFWorld (all four executor blocks) but FALSE on WebShop, where the fully open-weight TRAINING-FREE SkillOS-base beats ReasoningBank on Score in all three blocks (38.6>35.4, 43.4>40.4, 52.8>50.8), and FALSE on reasoning with a Gemini-2.5-Pro executor (84.6>83.5). The advantage is DOMAIN-CONDITIONAL, not uniformly RL-gated.
@@ -50212,10 +48768,6 @@
     - intake-930
     - intake-899
     - intake-888
-    intake_entries:
-    - intake-930
-    - intake-899
-    - intake-888
     - intake-627
   contradicting_evidence:
   - 'CONTRADICTS THE PARENT DIVE''S ''second on Cross-Episode Knowledge behind ACE''. The quoted 42.7/44.8 pair is the EASY-split Overall column, where ReasoningBank is DEAD LAST of 13 memory methods and ACE is 9th (best: Qwen3-Emb-4B 50.0). The ordering holds only on MEDIUM. On HARD, ReasoningBank 6.1 is 9th of 13.'
@@ -50311,9 +48863,6 @@
     - hermes-outer-shell.md
     - pipeline-integration-index.md
     experiments: []
-    intake_entries:
-    - intake-918
-    - intake-928
     intake_entries:
     - intake-918
     - intake-928
@@ -50444,18 +48993,6 @@
     - orchestrator-conversation-management.md
     - autopilot-continuous-optimization.md
     experiments: []
-    intake_entries:
-    - intake-698
-    - intake-930
-    - intake-935
-    - intake-899
-    - intake-936
-    - intake-089
-    - intake-346
-    - intake-612
-    - intake-613
-    - intake-135
-    - intake-265
     intake_entries:
     - intake-698
     - intake-930
@@ -50667,25 +49204,6 @@
     - intake-951
     - intake-952
     - intake-953
-    intake_entries:
-    - intake-660
-    - intake-661
-    - intake-664
-    - intake-666
-    - intake-667
-    - intake-674
-    - intake-677
-    - intake-678
-    - intake-874
-    - intake-875
-    - intake-370
-    - intake-403
-    - intake-571
-    - intake-949
-    - intake-950
-    - intake-951
-    - intake-952
-    - intake-953
     - intake-954
   contradicting_evidence:
   - The abstract states a 14% vs 28% complexity-class improvement comparison; Section 6 and the conclusion both state 13% vs 22% for the same comparison. The Stage-1 agent could not reconcile them and reported both rather than picking one.
@@ -50875,17 +49393,6 @@
     - intake-148
     - intake-886
     - intake-898
-    intake_entries:
-    - intake-772
-    - intake-413
-    - intake-753
-    - intake-779
-    - intake-780
-    - intake-781
-    - intake-720
-    - intake-148
-    - intake-886
-    - intake-898
     - intake-117
   contradicting_evidence:
   - Run-to-run standard deviation is +/-7.73% (Evo) and +/-8.57% (Evo-Max) with n=3, while the headline margin over GPT-5.5+Codex is 3.03 percentage points and the Codex/Claude Code/Gemini CLI reference points were each run ONCE. The 60.61 vs 39.39 model-side gap is large relative to that dispersion; the 71.21 vs 68.18 frontier margin is almost certainly not separable.
@@ -51025,24 +49532,6 @@
     - intake-722
     - intake-723
     - intake-942
-    intake_entries:
-    - intake-699
-    - intake-871
-    - intake-870
-    - intake-880
-    - intake-279
-    - intake-281
-    - intake-739
-    - intake-694
-    - intake-654
-    - intake-325
-    - intake-320
-    - intake-682
-    - intake-391
-    - intake-721
-    - intake-722
-    - intake-723
-    - intake-942
     - intake-955
   contradicting_evidence:
   - The accuracy-retention ladder (74.2% / 81.0% / 88.7% / 94.4% / 99.8%) names no benchmark, task, sample size, seed or harness anywhere on the page. It is an unfalsifiable vendor measurement as published.
@@ -51134,21 +49623,6 @@
     - inference-acceleration-index.md
     - llama-cpp-upstream-rebase.md
     experiments: []
-    intake_entries:
-    - intake-699
-    - intake-880
-    - intake-879
-    - intake-391
-    - intake-682
-    - intake-279
-    - intake-281
-    - intake-328
-    - intake-861
-    - intake-870
-    - intake-871
-    - intake-325
-    - intake-654
-    - intake-941
     intake_entries:
     - intake-699
     - intake-880
@@ -51276,17 +49750,6 @@
     - intake-900
     - intake-736
     - intake-657
-    intake_entries:
-    - intake-658
-    - intake-836
-    - intake-834
-    - intake-843
-    - intake-875
-    - intake-845
-    - intake-330
-    - intake-900
-    - intake-736
-    - intake-657
     - intake-948
   contradicting_evidence:
   - intake-836 (Are LLMs Reliable Code Reviewers? Systematic Overcorrection, ASE 2025) finds false rejects exceed false accepts by 3x-440x in LLM code review. CodeCrucible tunes hard for precision in its second pass and measures NO false-reject rate at all - exactly the exposure the reviewer-calibration-accounting.md symmetric FA/FR e-processes exist to catch.
@@ -51380,19 +49843,6 @@
     - gpu-drafter-mi200-investigation.md
     - mi210-big-model-and-acceleration-roadmap.md
     experiments: []
-    intake_entries:
-    - intake-664
-    - intake-667
-    - intake-674
-    - intake-675
-    - intake-677
-    - intake-678
-    - intake-679
-    - intake-307
-    - intake-497
-    - intake-447
-    - intake-191
-    - intake-194
     intake_entries:
     - intake-664
     - intake-667
@@ -51537,17 +49987,6 @@
     - intake-182
     - intake-461
     - intake-946
-    intake_entries:
-    - intake-387
-    - intake-391
-    - intake-590
-    - intake-591
-    - intake-593
-    - intake-594
-    - intake-166
-    - intake-182
-    - intake-461
-    - intake-946
     - intake-956
   contradicting_evidence:
   - tq3-quantization-evaluation.md warns that rotation-based low-bit methods shatter MoE sparse routing (roughly 367K ghost activations). Escha is a 256-expert MoE and publishes no account of how routing fidelity is preserved - the central unanswered technical question.
@@ -51638,19 +50077,6 @@
     - qwen36-27b-cpu-feasibility.md
     - ssm-hybrid-acceleration.md
     experiments: []
-    intake_entries:
-    - intake-387
-    - intake-391
-    - intake-870
-    - intake-871
-    - intake-166
-    - intake-872
-    - intake-756
-    - intake-152
-    - intake-158
-    - intake-236
-    - intake-455
-    - intake-945
     intake_entries:
     - intake-387
     - intake-391
@@ -51759,12 +50185,6 @@
     - mi210-big-model-and-acceleration-roadmap.md
     - rocm-verify-profile-backend.md
     experiments: []
-    intake_entries:
-    - intake-944
-    - intake-679
-    - intake-497
-    - intake-664
-    - intake-447
     intake_entries:
     - intake-944
     - intake-679
@@ -51905,10 +50325,6 @@
     - intake-943
     - intake-845
     - intake-836
-    intake_entries:
-    - intake-943
-    - intake-845
-    - intake-836
     - intake-843
   contradicting_evidence:
   - 'IMPORTANT CORRECTION TO THE EXPECTATION THAT SURFACED IT: it ships ZERO ground-truth cases. A full tree scan confirms no annotation or corpus JSON anywhere; examples/vulnerability-coverage contains only README.md and ai-annotation-prompt.md. It therefore does NOT close the dual-gold-corpus gap - it DEFINES THE SCHEMA for one.'
@@ -52000,12 +50416,6 @@
     - intake-951
     - intake-952
     - intake-953
-    intake_entries:
-    - intake-939
-    - intake-950
-    - intake-951
-    - intake-952
-    - intake-953
     - intake-954
   contradicting_evidence:
   - THE LOAD-BEARING DEGRADATION CLAIM IS CONFIRMED BUT CONFOUNDED. intake-939 cites this paper for the claim that RL raised slower-than-all-humans solutions from 0.33% to 7.33%. Both numbers ARE Table 3 W% (Time) for Qwen 2.5 3B base versus AfterburnerGRPO. HOWEVER F% (failed all tests) falls 72.00 -> 38.33 in the same rows, so the base model 0.33% W% is measured over a roughly 28%-passing denominator. Per PASSING solution the rates are roughly 1.2% (base) versus 11.9% (GRPO) - still a real ~10x degradation, but the raw 22x headline is inflated roughly 2x by the correctness change. CITE THE PAIR ONLY ALONGSIDE F%.
@@ -52078,10 +50488,6 @@
     - batched-decode-measurement.md
     - agentic-rocm-kernel-authoring.md
     experiments: []
-    intake_entries:
-    - intake-939
-    - intake-949
-    - intake-954
     intake_entries:
     - intake-939
     - intake-949
@@ -52172,11 +50578,6 @@
     - inference-acceleration-index.md
     - master-handoff-index.md
     experiments: []
-    intake_entries:
-    - intake-939
-    - intake-949
-    - intake-952
-    - intake-953
     intake_entries:
     - intake-939
     - intake-949
@@ -52299,11 +50700,6 @@
     - intake-949
     - intake-951
     - intake-953
-    intake_entries:
-    - intake-939
-    - intake-949
-    - intake-951
-    - intake-953
     - intake-954
   contradicting_evidence:
   - Whether the HEADLINE ET/MP/MI table is single-execution or averaged is NOT-FOUND-IN-SOURCE - only the supplementary Table 6 explicitly reports triple execution. This is the one methodological soft spot in an otherwise well-controlled harness.
@@ -52416,11 +50812,6 @@
     - eval-benchmark-cost-reduction.md
     - tool-use-eval-contract.md
     experiments: []
-    intake_entries:
-    - intake-939
-    - intake-949
-    - intake-951
-    - intake-952
     intake_entries:
     - intake-939
     - intake-949
@@ -52563,12 +50954,6 @@
     - intake-950
     - intake-951
     - intake-952
-    intake_entries:
-    - intake-939
-    - intake-949
-    - intake-950
-    - intake-951
-    - intake-952
     - intake-953
   contradicting_evidence:
   - 'DESIGN DISAGREEMENT WITH intake-951 (SWE-Perf), which must be resolved rather than averaged: COFFE argues correctness and efficiency must be FUSED into one efficient@k metric capped at pass@k; SWE-Perf keeps Performance as a separate third axis and shows the axes rank models differently. Both are peer-reviewed venues. This is a genuine design decision for our ladder, not noise.'
@@ -52657,11 +51042,6 @@
     - intake-941
     - intake-699
     - intake-880
-    intake_entries:
-    - intake-942
-    - intake-941
-    - intake-699
-    - intake-880
     - intake-879
   contradicting_evidence:
   - 'THIS ENTRY MATERIALLY RAISES THE PORT COST IMPLIED BY intake-941 AND intake-942. The authoritative config shows a v9 port would cost THREE new subsystems, not one: (a) a content-dependent relative attention bias replacing RoPE entirely, (b) a per-layer short-convolution state cache that must be allocated ALONGSIDE KV, and (c) shared-expert-sink MoE routing with route_scale 8.0, a sigmoid gate, use_gate_bias and norm_after_topk. None of these are parameter changes.'
@@ -52740,11 +51120,6 @@
     - intake-945
     - intake-870
     - intake-871
-    intake_entries:
-    - intake-946
-    - intake-945
-    - intake-870
-    - intake-871
     - intake-872
   contradicting_evidence:
   - THE PROBE IS INCOMPLETE AND ITS OWN AUTHOR SAYS SO. The SUPPORT is fully enumerated (per-k_slot row and column tables for all 32 K=2 and all 48 K=3 slots, with shape bindings), but the VALUES live only in an opaque 120 MB pickle, the dense form is unpublished, and the additive baseline term is not captured at all. End-to-end reconstruction does not match real expert weights.
@@ -52799,9 +51174,6 @@
     handoffs:
     - agentic-rocm-kernel-authoring.md
     experiments: []
-    intake_entries:
-    - intake-944
-    - intake-958
     intake_entries:
     - intake-944
     - intake-958
@@ -52860,9 +51232,6 @@
     - agentic-rocm-kernel-authoring.md
     - gpu-acceleration-path.md
     experiments: []
-    intake_entries:
-    - intake-944
-    - intake-957
     intake_entries:
     - intake-944
     - intake-957
@@ -52938,9 +51307,6 @@
     intake_entries:
     - intake-944
     - intake-947
-    intake_entries:
-    - intake-944
-    - intake-947
     - intake-958
   contradicting_evidence:
   - 'A ROOFLINE CROSS-CHECK THE DIVE CORRECTLY REFUSED: perf/results/2026-08-02/mxfp4-gguf/bench.txt reports mxfp4_gemv_q8_1 4096x4096 at 0.0050 ms / 1792.8 GB/s "weight-bound" on MI300X/ROCm 7.2.4. Comparing that against our Q4_K rung is UNSAFE: the ~8.9 MB weight working set FITS MI300X 256 MB Infinity Cache, so the figure is NOT HBM-limited and the "% of peak" framing does not apply. Different arch, quant and ROCm. DO NOT enter as a rung.'
@@ -53012,12 +51378,6 @@
     - intake-678
     - intake-679
     - intake-947
-    intake_entries:
-    - intake-674
-    - intake-677
-    - intake-678
-    - intake-679
-    - intake-947
     - intake-964
   contradicting_evidence:
   - A confirmed defect in the KB itself (the 2x per-GCD/per-OAM ridge error) proves it must be checked rather than imported. Useful, not authoritative.
@@ -53074,9 +51434,6 @@
     intake_entries:
     - intake-947
     - intake-760
-    intake_entries:
-    - intake-947
-    - intake-760
     - intake-966
   contradicting_evidence: []
   novelty_justification: medium. The scheduling technique is already characterized in our corpus through HipKittens; what is new is the PROVENANCE - that it exists upstream in Triton rather than only inside a CDNA3 C++ library.
@@ -53124,9 +51481,6 @@
     handoffs:
     - agentic-rocm-kernel-authoring.md
     experiments: []
-    intake_entries:
-    - intake-947
-    - intake-960
     intake_entries:
     - intake-947
     - intake-960
@@ -53179,8 +51533,6 @@
     handoffs:
     - agentic-rocm-kernel-authoring.md
     experiments: []
-    intake_entries:
-    - intake-947
     intake_entries:
     - intake-947
     - intake-966
@@ -53247,9 +51599,6 @@
     intake_entries:
     - intake-947
     - intake-944
-    intake_entries:
-    - intake-947
-    - intake-944
     - intake-960
   contradicting_evidence: []
   novelty_justification: high. Every prior gfx90a capability question in this project was answered from vendor documentation, a paper appendix, or inference. This is the first authoritative, offline, reproducible oracle for the class.
@@ -53308,10 +51657,6 @@
     - autokernel-research-loop.md
     - rocm-verify-profile-backend.md
     experiments: []
-    intake_entries:
-    - intake-500
-    - intake-497
-    - intake-947
     intake_entries:
     - intake-500
     - intake-497
@@ -53379,11 +51724,6 @@
     - intake-961
     - intake-962
     - intake-497
-    intake_entries:
-    - intake-947
-    - intake-961
-    - intake-962
-    - intake-497
     - intake-963
   contradicting_evidence:
   - A vendor-adjacent narrative blog by the paper authors is RESTATEMENT of their own results, not corroboration. The three NEW items are leads; the confirmations add no independent evidential weight to intake-947.
@@ -53440,12 +51780,6 @@
     - autokernel-research-loop.md
     - rocm-verify-profile-backend.md
     experiments: []
-    intake_entries:
-    - intake-674
-    - intake-666
-    - intake-673
-    - intake-679
-    - intake-669
     intake_entries:
     - intake-674
     - intake-666
@@ -53509,8 +51843,6 @@
     experiments: []
     intake_entries:
     - intake-960
-    intake_entries:
-    - intake-960
     - intake-969
   contradicting_evidence:
   - Vendor blog. Triple commercial bias applies (AMD authors the library, the blog and the hardware). Numbers are vendor-reported until reproduced on our own gfx90a, and the hardware context is CDNA3-class.
@@ -53565,7 +51897,6 @@
     - gpu-acceleration-path.md
     - autokernel-research-loop.md
     experiments: []
-    intake_entries:
     intake_entries:
     - intake-968
   contradicting_evidence: []
@@ -53629,13 +51960,6 @@
     - architect-model-selection-bench.md
     - batched-decode-measurement.md
     experiments: []
-    intake_entries:
-    - intake-939
-    - intake-951
-    - intake-952
-    - intake-953
-    - intake-954
-    - intake-971
     intake_entries:
     - intake-939
     - intake-951
@@ -53713,11 +52037,6 @@
     - intake-970
     - intake-973
     - intake-954
-    intake_entries:
-    - intake-953
-    - intake-970
-    - intake-973
-    - intake-954
     - intake-952
   contradicting_evidence:
   - 'DPS converts magnitude into RANK, which is exactly why it survives cross-platform and exactly why it CANNOT TELL YOU HOW MUCH FASTER. Magnitude retention ranking across the cluster: GSO raw harmonic-mean speedup (unbounded) > ENAMEL eff@k (continuous, ceiling 2) > Mercury Beyond (continuous, clipped) > EvalPerf DPS (ordinal) > COFFE efficient@k = GSO Opt@K (binary).'
@@ -53773,12 +52092,6 @@
     handoffs:
     - architect-model-selection-bench.md
     experiments: []
-    intake_entries:
-    - intake-951
-    - intake-952
-    - intake-953
-    - intake-970
-    - intake-971
     intake_entries:
     - intake-951
     - intake-952
@@ -53845,12 +52158,6 @@
     - architect-model-selection-bench.md
     - autokernel-research-loop.md
     experiments: []
-    intake_entries:
-    - intake-953
-    - intake-970
-    - intake-971
-    - intake-972
-    - intake-954
     intake_entries:
     - intake-953
     - intake-970
@@ -53936,11 +52243,6 @@
     - intake-949
     - intake-950
     - intake-975
-    intake_entries:
-    - intake-939
-    - intake-949
-    - intake-950
-    - intake-975
     - intake-976
   contradicting_evidence:
   - PAPER/CODE DISCREPANCY - THE SMOKING GUN. Eq. 2 defines RBR = 1[T_c <= T_r]. Released reward.py applies an UNDOCUMENTED rbr_tolerance = 0.02 (t_model <= t_ref * 1.02), with a code comment attributing it to timing noise. The authors OBSERVED the hazard at the threshold, PATCHED IT WITH A 2% FUDGE, and did NOT report it. All published RBR figures carry 2% slack Eq. 2 does not state - a measured admission that their harness cannot resolve sub-2% differences, while CGRE, the headline metric, is a CONTINUOUS function of exactly those differences.
@@ -54003,9 +52305,6 @@
     intake_entries:
     - intake-974
     - intake-939
-    intake_entries:
-    - intake-974
-    - intake-939
     - intake-976
   contradicting_evidence:
   - Every RLPF headline number is drawn from this benchmark, and 7 of its 8 authors are RLPF authors. It is a self-built, externally-unrun corpus - the same non-independence pattern the index has already flagged for the Mingzhe Du bloc and for FAIR own DMC-Optim.
@@ -54061,12 +52360,6 @@
     - architect-model-selection-bench.md
     - autokernel-research-loop.md
     experiments: []
-    intake_entries:
-    - intake-939
-    - intake-974
-    - intake-970
-    - intake-971
-    - intake-972
     intake_entries:
     - intake-939
     - intake-974
@@ -54145,12 +52438,6 @@
     - intake-978
     - intake-979
     - intake-980
-    intake_entries:
-    - intake-940
-    - intake-413
-    - intake-978
-    - intake-979
-    - intake-980
     - intake-981
   contradicting_evidence:
   - 'LOCAL RUNNABILITY: NO-GO as a 3-seed Lite eval. DISK 157.73 GB across 22 competitions against 157 GB free - we are ~1 GB short before anything else, and preparation downloads raw archives AND writes prepared splits, so peak usage materially exceeds that. Distribution is pathological: siim-isic-melanoma-classification ALONE is 116.16 GB = 74% of Lite; the other 21 competitions total 41.57 GB. Preparation "takes approximately two days when running from scratch."'
@@ -54209,10 +52496,6 @@
     - meta-harness-optimization.md
     - autokernel-research-loop.md
     experiments: []
-    intake_entries:
-    - intake-940
-    - intake-413
-    - intake-977
     intake_entries:
     - intake-940
     - intake-413
@@ -54281,10 +52564,6 @@
     - intake-977
     - intake-668
     - intake-679
-    intake_entries:
-    - intake-977
-    - intake-668
-    - intake-679
     - intake-980
   contradicting_evidence:
   - 'A CLAIM PASSED ALONG EARLIER IN THIS SESSION IS NOT VERIFIABLE AND IS RETRACTED AS A NUMBER. The "~0.60 AUC" figure for sandbagging detection lives ONLY in Fig 8 plot legend, which is not text-extractable from the PDF or the HTML render. NOT-FOUND-IN-SOURCE. What IS verbatim and citable: "The sandbagging-specific monitor performs well, while the general monitor rarely finds sandbagging suspicious", and Sec 5.2: "both substantially better than random and worse than perfect." CITE THE QUALITATIVE FINDING, NEVER THE NUMBER.'
@@ -54342,9 +52621,6 @@
     intake_entries:
     - intake-977
     - intake-979
-    intake_entries:
-    - intake-977
-    - intake-979
     - intake-668
   contradicting_evidence:
   - 'The overturn cuts against the reason this source was queued. It was expected to explain the MLE-Bench freeze; it does not cover MLE-Bench at all. The real on-benchmark antecedents are MLE-Bench own quarantine section and issue #124 - see intake-977.'
@@ -54392,9 +52668,6 @@
     - autopilot-continuous-optimization.md
     - meta-harness-optimization.md
     experiments: []
-    intake_entries:
-    - intake-977
-    - intake-978
     intake_entries:
     - intake-977
     - intake-978
@@ -54450,10 +52723,6 @@
     - batched-decode-measurement.md
     - autokernel-research-loop.md
     experiments: []
-    intake_entries:
-    - intake-939
-    - intake-949
-    - intake-970
     intake_entries:
     - intake-939
     - intake-949
@@ -54521,9 +52790,6 @@
     intake_entries:
     - intake-948
     - intake-943
-    intake_entries:
-    - intake-948
-    - intake-943
     - intake-845
   contradicting_evidence:
   - Code is "available upon reasonable request" - NOT OPEN, and it fails our gate for anything runnable.
@@ -54581,9 +52847,6 @@
     intake_entries:
     - intake-939
     - intake-974
-    intake_entries:
-    - intake-939
-    - intake-974
     - intake-949
   contradicting_evidence:
   - The stored-denominator / fresh-numerator design is a measurement defect by our own standards, and it is the second independent instance found this session (intake-974 ships the same shape). Two independent groups converging on the same uncorrected comparison is evidence about the FIELD, not about the method being sound.
@@ -54637,9 +52900,6 @@
     intake_entries:
     - intake-939
     - intake-976
-    intake_entries:
-    - intake-939
-    - intake-976
     - intake-983
   contradicting_evidence:
   - It solves the correctness-test half and leaves the performance half entirely unaddressed. Adopting it does not shorten the path to an efficiency ladder; it removes one dependency on a closed corpus.
@@ -54682,8 +52942,6 @@
     handoffs:
     - architect-model-selection-bench.md
     experiments: []
-    intake_entries:
-    - intake-952
     intake_entries:
     - intake-952
     - intake-987
@@ -54734,8 +52992,6 @@
     handoffs:
     - architect-model-selection-bench.md
     experiments: []
-    intake_entries:
-    - intake-971
     intake_entries:
     - intake-971
     - intake-986
@@ -54793,9 +53049,6 @@
     intake_entries:
     - intake-938
     - intake-989
-    intake_entries:
-    - intake-938
-    - intake-989
     - intake-990
   contradicting_evidence:
   - The gradient-free arm is a single ablation cell in one paper on one 3B model, with no CI and no seed variance reported. It is a strong lead, not a settled result.
@@ -54849,9 +53102,6 @@
     intake_entries:
     - intake-938
     - intake-988
-    intake_entries:
-    - intake-938
-    - intake-988
     - intake-990
   contradicting_evidence:
   - 'CAVEATS THAT BOUND THE TRANSFER: n=2 environments; harm is measured as trials-to-solve rather than success rate; and it is LARGELY A WEAK-MODEL ARTIFACT - gpt-4o-mini gives 100% object mention and solves 2/16, which is the no-memory baseline. THE MECHANISM AND THE METRIC TRANSFER; THE RATES DO NOT.'
@@ -54902,9 +53152,6 @@
     - engram-conditional-memory.md
     - autokernel-research-loop.md
     experiments: []
-    intake_entries:
-    - intake-938
-    - intake-988
     intake_entries:
     - intake-938
     - intake-988
@@ -54967,9 +53214,6 @@
     - autopilot-continuous-optimization.md
     - autokernel-research-loop.md
     experiments: []
-    intake_entries:
-    - intake-414
-    - intake-940
     intake_entries:
     - intake-414
     - intake-940
@@ -55050,9 +53294,6 @@
     intake_entries:
     - intake-991
     - intake-993
-    intake_entries:
-    - intake-991
-    - intake-993
     - intake-994
   contradicting_evidence:
   - 'The correction is by the same author and provides no independent replication. A bounded search surfaced no independent proof audit of the replacement argument.'
@@ -55114,10 +53355,6 @@
     - autopilot-continuous-optimization.md
     - autokernel-research-loop.md
     experiments: []
-    intake_entries:
-    - intake-991
-    - intake-992
-    - intake-994
     intake_entries:
     - intake-991
     - intake-992
@@ -55201,11 +53438,6 @@
     - intake-992
     - intake-993
     - intake-940
-    intake_entries:
-    - intake-991
-    - intake-992
-    - intake-993
-    - intake-940
     - intake-981
   contradicting_evidence:
   - Spectral-product margin outperforms the proposed joint completion score by point estimate in both reported natural-label cohorts; the paper does not establish weakness as the best practical predictor.
@@ -55280,10 +53512,6 @@
     - intake-414
     - intake-991
     - intake-992
-    intake_entries:
-    - intake-414
-    - intake-991
-    - intake-992
     - intake-994
   contradicting_evidence:
   - The paper predates intake-992's repair and relies on intake-991's original optimality proofs as premises; those original proofs should not be treated as authoritative.
@@ -55349,11 +53577,6 @@
     - autokernel-research-loop.md
     - meta-harness-optimization.md
     experiments: []
-    intake_entries:
-    - intake-991
-    - intake-992
-    - intake-994
-    - intake-997
     intake_entries:
     - intake-991
     - intake-992
@@ -55435,9 +53658,6 @@
     intake_entries:
     - intake-991
     - intake-992
-    intake_entries:
-    - intake-991
-    - intake-992
     - intake-996
   contradicting_evidence:
   - The TMLR submission was rejected; no public decision rationale or independent replication was found.
@@ -55508,10 +53728,6 @@
     - autokernel-research-loop.md
     - agent-world-env-synthesis.md
     experiments: []
-    intake_entries:
-    - intake-991
-    - intake-994
-    - intake-996
     intake_entries:
     - intake-991
     - intake-994
@@ -55596,9 +53812,6 @@
     intake_entries:
     - intake-994
     - intake-1000
-    intake_entries:
-    - intake-994
-    - intake-1000
     - intake-1002
   contradicting_evidence:
   - Intake-1000 shows that average or granulated performance can hide an intervention environment in which every tested measure fails completely; it is the stronger gate for safety-critical selection.
@@ -55680,8 +53893,6 @@
     experiments: []
     intake_entries:
     - intake-994
-    intake_entries:
-    - intake-994
     - intake-999
   contradicting_evidence:
   - The worst-case maximum is sensitive to how coarsely the experiment family is defined and to rare noisy environments; the paper mitigates this with test-noise weighting and effective sample size but cannot make the choice of family objective-free.
@@ -55746,10 +53957,6 @@
     - autopilot-continuous-optimization.md
     - autokernel-research-loop.md
     experiments: []
-    intake_entries:
-    - intake-991
-    - intake-992
-    - intake-993
     intake_entries:
     - intake-991
     - intake-992
@@ -55825,9 +54032,6 @@
     - autokernel-research-loop.md
     - evidence-plane-instrument-repair.md
     experiments: []
-    intake_entries:
-    - intake-994
-    - intake-999
     intake_entries:
     - intake-994
     - intake-999
@@ -55910,8 +54114,6 @@
     experiments: []
     intake_entries:
     - intake-991
-    intake_entries:
-    - intake-991
     - intake-996
   contradicting_evidence:
   - The AILuminate judge rubric explicitly rewards wisdom depth, empathy, and constructive guidance—the very phrases injected by the intervention—and uses GPT-4o to judge GPT-4o outputs, creating criterion leakage and same-family style bias with no human or independent judge control.
@@ -55985,10 +54187,6 @@
     - evidence-plane-instrument-repair.md
     - reviewer-typed-artifacts.md
     experiments: []
-    intake_entries:
-    - intake-993
-    - intake-994
-    - intake-999
     intake_entries:
     - intake-993
     - intake-994
@@ -57102,12 +55300,6 @@
     - intake-413
     - intake-772
     - intake-753
-    intake_entries:
-    - intake-940
-    - intake-978
-    - intake-413
-    - intake-772
-    - intake-753
     - intake-779
   contradicting_evidence:
   - 'The README restates exactly the headline figures that the intake-940 dive ruled UNSUPPORTED (the GPT-5.5+Codex margin is two medal outcomes out of 66 against a self-run n=1 baseline). A companion README repeating a paper''s own numbers is restatement, not corroboration.'
@@ -57288,9 +55480,6 @@
     intake_entries:
     - intake-447
     - intake-461
-    intake_entries:
-    - intake-447
-    - intake-461
     - intake-458
   contradicting_evidence:
   - 'RESOLVED IN THE ARTICLE''S FAVOUR, and worth recording because it looked like a defect. The SGLang docs page for benchmark_and_profiling documents only output_dir, start_step, num_steps, activities and merge_profiles, and does NOT document profile_by_stage, record_shapes or with_stack — the three fields the article''s curl example relies on. Checking the source instead of the docs settles it: python/sglang/srt/managers/io_struct.py defines ProfileReq with output_dir, start_step, num_steps, activities, profile_by_stage (default False), with_stack, record_shapes, profile_id, merge_profiles, profile_prefix and profile_stages. All three fields are real; the documentation is incomplete. The article''s API usage is accurate.'
@@ -57400,10 +55589,6 @@
     - intake-1025
     - intake-461
     - intake-677
-    intake_entries:
-    - intake-1025
-    - intake-461
-    - intake-677
     - intake-662
   contradicting_evidence:
   - 'The skill is torch-profiler-native, so it does not drop onto our hardware. rocm-verify-profile-backend.md records that on this box rocprofv2 and rocprof v1 are available but rocprof v1 SQ/TA counters read zero and it aborts on graph-enabled builds, and omniperf is extracted but not runnable. rocprof output is not a torch Chrome trace, so the parsing layer would have to be rewritten; only the report contract and thresholds transfer.'
@@ -57504,9 +55689,6 @@
     intake_entries:
     - intake-1025
     - intake-1026
-    intake_entries:
-    - intake-1025
-    - intake-1026
     - intake-461
   contradicting_evidence:
   - 'Vendor-authored comparison in which the vendor''s own hardware wins on both reported metrics, with no independent replication found. The 2x and 3x figures are AMD reporting on AMD versus a competitor.'
@@ -57588,9 +55770,6 @@
     - agent-collab-rnd-harness.md
     - architect-model-selection-bench.md
     experiments: []
-    intake_entries:
-    - intake-1024
-    - intake-940
     intake_entries:
     - intake-1024
     - intake-940
@@ -57677,11 +55856,6 @@
     - mi210-kernel-rnd-loop-proposal.md
     - k28-fused-chunked-gdn-kernel-research.md
     experiments: []
-    intake_entries:
-    - intake-1026
-    - intake-1025
-    - intake-1027
-    - intake-662
     intake_entries:
     - intake-1026
     - intake-1025
@@ -57792,9 +55966,6 @@
     - autokernel-research-loop.md
     - lightning-attention-port.md
     experiments: []
-    intake_entries:
-    - intake-1025
-    - intake-1029
     intake_entries:
     - intake-1025
     - intake-1029

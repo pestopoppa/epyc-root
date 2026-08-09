@@ -39,8 +39,12 @@ Operator priority: an integrated solution that works, not novelty.
 
 ## Key file locations
 
+- **The V2 output (start here — this is now the binding spec, not the v1 draft):**
+  [`docs/design/vidya-pilot-spec.md`](../../docs/design/vidya-pilot-spec.md) ·
+  [`docs/design/vidya-research-program.md`](../../docs/design/vidya-research-program.md) ·
+  [`docs/design/vidya-architecture-appendix.md`](../../docs/design/vidya-architecture-appendix.md) (non-binding)
 - Audit + adoption kit (all schemas/specs to copy): `research/deep-dives/vidya-belief-substrate-audit.md` §§4–5
-- v1 draft (source for the V2 split): `tmp/vidya-epyc-governance-pilot-handoff.md`
+- v1 draft (superseded source text for the V2 split): `tmp/vidya-epyc-governance-pilot-handoff.md`
 - Intake entries with paste-ready extracts: `research/intake_index.yaml` intake-1031..1067
   (notably 1063 = byte-exact L1 checkpoint spec; 1062 = proof-standard definitions; 1064 =
   certificate field map; 1035 = judge-discipline rules)
@@ -62,66 +66,85 @@ Operator priority: an integrated solution that works, not novelty.
 - [x] Intake bookkeeping: `handoffs_created` backfilled on all 37 entries; dispositions on the
       4 worth_investigating entries ✅ 2026-08-09
 
+### Discovered mid-flight — intake-index data defects found while building the gold corpus (2026-08-09)
+
+- [x] D1 A fabricated `/doctor` claim reported "struck" on 2026-07-25 by THREE separate records was
+      never removed from `research/intake_index.yaml` and served as "CONFIRMED and understated" for
+      15 days. Retracted in the artifact; entry set `dive-overturned` with a `dive_corrections`
+      record; dependent `techniques` and `reported_results` lines marked. The governance finding —
+      *a correction recorded only in narrative is not a correction* — is recorded in the entry and
+      in the gold corpus (E3) ✅ 2026-08-09
+- [x] D2 Systemic duplicate-YAML-key defect from the 2026-08-09 citation-graph migration: **538
+      entries** carried two `cross_references.intake_entries` blocks (the migration appended the
+      corrected list instead of replacing the original). Verified block 2 was a strict superset in
+      all 538, so last-key-wins meant no data was lost — but the file was malformed YAML that a
+      strict parser rejects. Repaired by deleting the superseded first block; citation graph proven
+      identical before/after (2,007 edges, 1,067 entries); 1,840 dead lines removed; validator
+      exit 0 ✅ 2026-08-09
+- [ ] D3 Add a duplicate-key check to `scripts/validate/validate_intake.sh` so this class fails
+      validation instead of surviving 538 times — the validator passed throughout because
+      `yaml.safe_load` silently takes the last key
+
 ### V2 — Spec revision (the amendment sheet; first work package; blocks P1)
 
-- [ ] V2.1 Split the v1 draft into three artifacts: (i) pilot spec, (ii) formal research program
-      R1–R5, (iii) non-binding mature-architecture appendix (operator-endorsed, steering seq 4)
-- [ ] V2.2 Resolve the Corroborated-in-chain tension: either drop Corroborated from the carrier or
-      restrict it to explicit independence-judgment tokens; document that ⊕=max can never derive it
-- [ ] V2.3 Document the product-lattice option (quality × traceability) as an available design
+- [x] V2.1 Split the v1 draft into three artifacts: (i) pilot spec, (ii) formal research program
+      R1–R5, (iii) non-binding mature-architecture appendix (operator-endorsed, steering seq 4) ✅ 2026-08-09
+- [x] V2.2 Resolve the Corroborated-in-chain tension: either drop Corroborated from the carrier or
+      restrict it to explicit independence-judgment tokens; document that ⊕=max can never derive it ✅ 2026-08-09
+- [x] V2.3 Document the product-lattice option (quality × traceability) as an available design
       choice: every load-bearing theorem is algebraic (absorptive/0-stable/fully-continuous);
       cite Abo Khamis p.25 verbatim + what totality actually buys (selection semantics, cut-point
-      thresholding)
-- [ ] V2.4 Correct citations: fully-continuous not ω-continuous (Dannert, LIPIcs numbering);
+      thresholding) ✅ 2026-08-09
+- [x] V2.4 Correct citations: fully-continuous not ω-continuous (Dannert, LIPIcs numbering);
       ≤N-step 0-stable convergence (Cor 5.19) replacing the folklore N×h attribution; "N+1" →
       N Kleene steps + zero-init layer (E&L Thm 6); Carneades 2007 = three standards, five-set =
-      Gordon-Walton 2009; Potyka = KR 2018; Baur-Studer = CLAR 2020
-- [ ] V2.5 Pin the fold semantics to a Deletion-satisfying provenance semantics (P^AT); add
+      Gordon-Walton 2009; Potyka = KR 2018; Baur-Studer = CLAR 2020 ✅ 2026-08-09
+- [x] V2.5 Pin the fold semantics to a Deletion-satisfying provenance semantics (P^AT); add
       Example 9 (minimal-depth failure) as a negative test vector; provenance store = DAG/circuit,
-      never expression store
-- [ ] V2.6 Replace iterate-until-stable with closed forms (lfp = F^N(0); gfp = F^N(F^N(1)) on
-      ⊗-idempotent lattices); keep the N-step budget as a runtime assertion
-- [ ] V2.7 Add the TOKI H1 judge-discipline rules as spec requirements (keyed judgment frames with
+      never expression store ✅ 2026-08-09
+- [x] V2.6 Replace iterate-until-stable with closed forms (lfp = F^N(0); gfp = F^N(F^N(1)) on
+      ⊗-idempotent lattices); keep the N-step budget as a runtime assertion ✅ 2026-08-09
+- [x] V2.7 Add the TOKI H1 judge-discipline rules as spec requirements (keyed judgment frames with
       full decoder tuple; first-committed-vote-wins per key; no model invocation during fold/replay;
-      temp-0 is not determinism; total-order conflict tie-break)
-- [ ] V2.8 Re-ground R1: zero-substitution licensed only for the positive core; specialization of
+      temp-0 is not determinism; total-order conflict tie-break) ✅ 2026-08-09
+- [x] V2.8 Re-ground R1: zero-substitution licensed only for the positive core; specialization of
       dual-indeterminate provenance is the negation-era primitive (GT17 §5); per-stratum base case
       cites 1907.08470 (Def 29/Prop 30/Prop 41/Cor 38); register the residual theorem (cross-stratum
       re-tokenization equivalence + retraction exactness — proven nowhere) and the no-stratified-
-      Datalog-provenance negative search result
-- [ ] V2.9 Re-ground R2: certified absence = π⟦nnf(¬φ)⟧ over dual tokens; gfp non-specialization
+      Datalog-provenance negative search result ✅ 2026-08-09
+- [x] V2.9 Re-ground R2: certified absence = π⟦nnf(¬φ)⟧ over dual tokens; gfp non-specialization
       (Example 42) ⇒ absence certificates route through S∞[X,X̄]; cite Xu et al. 2018 as application
-      precedent (decline-with-citation stands unless operator overrides)
-- [ ] V2.10 Sever §7.19 semantic hashing / purity-as-evidence into the R3 research note; move §16.2
-      mature-stack detail to the non-binding appendix (Rekor-v2/Tessera findings supersede parts)
-- [ ] V2.11 Adopt the frame/ledger schemas from the adoption kit (nanopub envelope + lint rules;
+      precedent (decline-with-citation stands unless operator overrides) ✅ 2026-08-09
+- [x] V2.10 Sever §7.19 semantic hashing / purity-as-evidence into the R3 research note; move §16.2
+      mature-stack detail to the non-binding appendix (Rekor-v2/Tessera findings supersede parts) ✅ 2026-08-09
+- [x] V2.11 Adopt the frame/ledger schemas from the adoption kit (nanopub envelope + lint rules;
       Graphiti bi-temporal fields incl. reference_time; PROV alias table; frame_type URIs +
-      subjects[]; signed expiring policy frames; certificate-as-attestation-frame re-entry)
-- [ ] V2.12 Adopt lifecycle + policy vocabulary (Active/Stale/Conflicted/Dropped + cite-only-Active;
+      subjects[]; signed expiring policy frames; certificate-as-attestation-frame re-entry) ✅ 2026-08-09
+- [x] V2.12 Adopt lifecycle + policy vocabulary (Active/Stale/Conflicted/Dropped + cite-only-Active;
       Abstain as typed transition; proof-standard grade names with the three EPYC gap closures;
-      reconcile with dashboard/freshness.py vocabulary — map, don't fork)
-- [ ] V2.13 State the pilot's security posture honestly (intent-frame forgery open in shadow mode;
-      pilot-exit check that intent frames match ratification artifacts)
-- [ ] V2.14 Add the operator-attention cost model (claims/batch sizing, anchor review, equivalence-
+      reconcile with dashboard/freshness.py vocabulary — map, don't fork) ✅ 2026-08-09
+- [x] V2.13 State the pilot's security posture honestly (intent-frame forgery open in shadow mode;
+      pilot-exit check that intent frames match ratification artifacts) ✅ 2026-08-09
+- [x] V2.14 Add the operator-attention cost model (claims/batch sizing, anchor review, equivalence-
       check rate as an explicit metric) and restrict obligation conditions to ≤4 predicate types,
-      one nesting level
-- [ ] V2.15 Run the nine-relation coverage check against the frame-type vocabulary (Use, Generate,
+      one nesting level ✅ 2026-08-09
+- [x] V2.15 Run the nine-relation coverage check against the frame-type vocabulary (Use, Generate,
       Derive + Support, Depend-on, Contradict, Invalidate, Trigger, Update — explicit
       adopt-or-decline for Trigger and Use/Generate) and score the design against the survey's
-      Table-6 six-column rubric; record both results in the spec (intake-1034 derived actionables)
+      Table-6 six-column rubric; record both results in the spec (intake-1034 derived actionables) ✅ 2026-08-09
 
 ### P0 — Pilot corpus (downscoped per audit; blocks P3–P5 evaluation)
 
-- [ ] P0.1 Gold corpus = 12–20 claims spanning statuses, seeded from REAL historical corrections
+- [x] P0.1 Gold corpus = 12–20 claims spanning statuses, seeded from REAL historical corrections
       (ngram 2.8× retraction; quality-NULL scorer artifact; 2026-07-25 fabricated citations;
       2026-08-09 renamed-kernel incident) — ground truth already recorded in dive_corrections/
-      incident logs
-- [ ] P0.2 Include one measurement-domain claim family (E8-era baseline slice) so era/frontier
-      machinery is tested where it bites
-- [ ] P0.3 Mutation classes introduced incrementally (start with source-edit + retraction; add
-      classes as the engine stabilizes); blind gold-review per v1 §18.4 retained
-- [ ] P0.4 Adopt HoH scoring (+1/0/−1 + A_C/A_O) and MemStrata protocol rules (marker-free
-      construction; forced-answer stale-fact-error) as the pilot's precommitted metrics
+      incident logs ✅ 2026-08-09
+- [x] P0.2 Include one measurement-domain claim family (E8-era baseline slice) so era/frontier
+      machinery is tested where it bites ✅ 2026-08-09
+- [x] P0.3 Mutation classes introduced incrementally (start with source-edit + retraction; add
+      classes as the engine stabilizes); blind gold-review per v1 §18.4 retained ✅ 2026-08-09
+- [x] P0.4 Adopt HoH scoring (+1/0/−1 + A_C/A_O) and MemStrata protocol rules (marker-free
+      construction; forced-answer stale-fact-error) as the pilot's precommitted metrics ✅ 2026-08-09
 
 ### P1–P5 — Pilot build (Python + SQLite, shadow mode; full detail lands in the V2.1 pilot spec)
 
