@@ -25,7 +25,8 @@ from canonical import content_hash  # noqa: E402
 from fold import Belief, FoldResult  # noqa: E402
 from lattice import Grade, satisfies_conjunctive  # noqa: E402
 
-__all__ = ["Outcome", "UsePolicy", "GateResult", "evaluate", "Standard"]
+__all__ = ["Outcome", "UsePolicy", "GateResult", "evaluate", "Standard",
+           "query_served_frame", "obligation_disposition_frame"]
 
 
 class Outcome:
@@ -274,4 +275,65 @@ def evaluate(
         claim_id=claim_id,
         reasons=[f"{policy.standard} met at {policy.floor}"],
         certificate=_build_certificate(belief, policy, fold_result, satisfying),
+    )
+
+
+# --------------------------------------------------------------------- R5b
+
+def query_served_frame(result: GateResult, policy: UsePolicy, *, frontier: int, at: str) -> dict:
+    """A frame recording that a query was served, and how.
+
+    **This is a write-time decision that cannot be undone by hindsight.** Reuse and abstention
+    rates are unobservable unless queries are recorded as they happen -- no amount of later
+    analysis reconstructs a query nobody logged. R5 stays unanswerable however long the pilot runs
+    without this, which is why it costs one append per authoritative query rather than being
+    deferred with the rest of the longitudinal work.
+
+    Deliberately records the OUTCOME, not just the hit: an abstention is the datum that tells you
+    the gate is refusing too much, and a log of successes only would hide exactly that.
+    """
+    from frames import make_frame  # noqa: PLC0415
+
+    return make_frame(
+        frame_type="epyc.vidya/frame/query_served/v1",
+        assertion={
+            "claim_id": result.claim_id,
+            "use": policy.use,
+            "outcome": result.outcome,
+            "usable_as_current": result.usable_as_current,
+            "certificate_hash": (result.certificate or {}).get("certificate_hash"),
+        },
+        provenance={
+            "method": "vidya.gate/evaluate",
+            "about": result.claim_id,
+            "policy_digest": policy.digest(),
+            "frontier": frontier,
+        },
+        actor="vidya.gate",
+        authority_scope="query-telemetry",
+        created_at=at,
+    )
+
+
+def obligation_disposition_frame(
+    obligation_id: str, disposition: str, *, actor: str, at: str, note: str = ""
+) -> dict:
+    """Record what a human actually did about a surfaced obligation.
+
+    Also write-time-only. The spec's auto-downgrade rule -- a class of obligations exceeding a
+    ratified no-action threshold stops interrupting people -- has no input without this, so an
+    obligation system without disposition recording can never learn that it is being ignored.
+    """
+    allowed = {"accepted", "acted", "deferred", "dismissed"}
+    if disposition not in allowed:
+        raise ValueError(f"disposition must be one of {sorted(allowed)}, got {disposition!r}")
+    from frames import make_frame  # noqa: PLC0415
+
+    return make_frame(
+        frame_type="epyc.vidya/frame/obligation_disposition/v1",
+        assertion={"obligation_id": obligation_id, "disposition": disposition, "note": note},
+        provenance={"method": "human-disposition", "about": obligation_id},
+        actor=actor,
+        authority_scope="obligation-disposition",
+        created_at=at,
     )

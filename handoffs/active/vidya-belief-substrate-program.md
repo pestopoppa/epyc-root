@@ -184,9 +184,11 @@ Operator priority: an integrated solution that works, not novelty.
 - [x] P2c Correction frames from `dive_corrections` (150 entries, 652 claims) carrying verbatim
       text; the fold turns them into `review_required` — a freshness signal, never a grade change.
       The prose is deliberately NOT parsed and not keyword-scanned ✅ 2026-08-09
-- [ ] P2d Backfill `claim_anchors` for the claims that actually get cited. 1 of 4,191 is anchored;
-      the mechanism exists and the obligation is written into SKILL.md, but existing dived entries
-      predate it. Scope to claims cited by a handoff or plan, not all 4,191
+- [x] P2d Anchored the 5 claims this session's specs actually cite (intake-1038/1039/1040/1065/
+      1067) — Property 13, S-infinity universality, the 0-stable N-step theorem, E&L Theorem 6, and
+      the gfp non-specialization counterexample. All reach `Verified/Attested`; every quote hash
+      verifies against its recorded text. Scoped as the corpus doc says: claims a plan cites, not
+      all 4,191 ✅ 2026-08-09
 - [x] P3 `impact.py`: impact AS hypothetical retraction (same fold, not a parallel traversal),
       coverage classes, and the exactness contract enforced — `verified_unaffected` is asserted
       only for claim-complete items, everything else reported separately as
@@ -215,32 +217,53 @@ Operator priority: an integrated solution that works, not novelty.
       to close — a cross-boundary retraction is a deletion composed with an insertion, which
       Property 13 does not cover. Negative literature result recorded so it is not re-searched.
       `research/deep-dives/vidya-r1-r2-stratified-negation.md` ✅ 2026-08-09
-- [ ] R1b Prove or refute the stratum-boundary conjecture (§2.3). Game-semantics route is the
-      candidate; a counterexample is an equally good outcome and would settle the engineering
-      question permanently
+- [x] R1b-search Exhaustive counterexample search executed: **5,670 instances, 0
+      counterexamples**, boundary growth confirmed present (retractions added up to 2 facts), and
+      the harness mutation-tested — a deliberately naive route A yields 2,715 counterexamples from
+      the same instances, so the null has detection power. Classification: unresolved WITH
+      SUPPORTING EVIDENCE ✅ 2026-08-09
+- [ ] R1b-proof The proof or a larger-scale refutation remains open. The search bounds small
+      two-stratum programs only; deeper strata and non-two-valued absence are unexplored
 - [x] R2a Scoped, with the constraint that removes an approach: gfp does NOT specialize
       (Example 42), so absence certificates cannot use the incremental path and must route through
       S-infinity[X,X-bar] — affordable here because the carrier is meet-idempotent. Also recorded:
       no reasons are available for absence of a DERIVED fact, and no dual-indeterminate circuit
       theorem exists ✅ 2026-08-09
-- [ ] R2b Certificate formats and verifier rules for the absence classes the pilot can actually
-      prove (key non-membership, declared-scan completeness) — not derived emptiness
-- [ ] R3 (severed, optional, NOT STARTED by design) semantic identity / purity-as-evidence —
-      no bearing on a substrate tracking claims rather than code identity
+- [x] R2b `absence.py`: key-non-membership and scan-completeness certificates, each naming the
+      exact domain it covers. Derived emptiness REFUSES — kept as a named function that raises
+      rather than being absent, because a plausible implementation would be an unprovable absence
+      that looks like a proof. Scan completeness refuses on a gap: a hole in a scan is not evidence
+      the hole is empty ✅ 2026-08-09
+- [x] R3-narrow The one slice that IS load-bearing here: anchor stability under reformatting
+      (`normalized_quote`/`quote_hash`). Whitespace-only licensed rewrites — deliberately NOT
+      case-folding or punctuation-normalizing, both pinned by tests, because this project has a
+      recorded scorer defect from treating a comma as insignificant ✅ 2026-08-09
+- [ ] R3-full (severed by the ratified split, deliberately not started) purity-as-evidence,
+      licensed rewrites, e-graphs — concerns CODE identity, which this pilot does not track
 - [x] R4a Measured on real data and the result is a negative one: **100% of 4,191 beliefs are
       fragile**, 0 have independent corroboration — because claim IDs are per-entry, so two sources
       can never support the same claim. Cross-entry claim identity is a PREREQUISITE for any
       corroboration measurement; until it exists, `disjoint_supports >= 2` is unsatisfiable by
       construction ✅ 2026-08-09
-- [ ] R4b Cross-entry claim identity (claim aliasing). Human-gated: deciding two differently-worded
-      claims are the same proposition is exactly the judgment the fold must not make
+- [x] R4b-mechanism `claim_alias` frame + fold support: a human-authored assertion that two claim
+      ids denote the same proposition; the fold applies it and records that it did, never making
+      the judgment. Union-find ordered by canonical id so the representative does not depend on
+      frame arrival order ✅ 2026-08-09
+- [ ] R4b-authoring Actually author aliases across entries. This is the human-gated half and the
+      prerequisite for any corroboration measurement — until aliases exist, 100% of beliefs remain
+      single-path by construction
 - [x] R5a Instrument specified + 2026-08-09 baseline recorded (4,191 beliefs; 15.6% of claims
       carry a correction; 1 anchored; 0 corroborated). Most of R5 is retrospectively computable
       from the ledger, which is the payoff of event sourcing ✅ 2026-08-09
-- [ ] R5b Add a `query_served` frame and obligation-disposition recording. These are WRITE-TIME
-      decisions: reuse and obligation-utility rates cannot be reconstructed later, so R5 is
-      unanswerable however long the pilot runs until these exist
-- [ ] R5c Collect the longitudinal series (TIME-GATED — needs elapsed time, not compute)
+- [x] R5b `query_served_frame` and `obligation_disposition_frame` implemented. The query frame
+      records the OUTCOME, not just the hit — an abstention is the datum that tells you the gate
+      refuses too much, and a success-only log would hide exactly that ✅ 2026-08-09
+- [x] R5c Computed retrospectively from `ingested_date` (2026-03 onward) — I had filed this as
+      time-gated while my own note said it was retrospective. The apparent 1%→68% correction-rate
+      climb is a TRAP: it tracks when diving happened, not when errors happened. The confound-free
+      signal is the overturn rate among dived entries, **27/160 = 16.9%** ✅ 2026-08-09
+- [ ] R5d Collect the forward series once `query_served` frames accrue (genuinely elapsed-time
+      gated — reuse cannot be reconstructed for queries nobody logged)
 
 ## Dependency notes
 

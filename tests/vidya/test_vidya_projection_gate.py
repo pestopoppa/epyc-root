@@ -255,3 +255,41 @@ class TestGate:
             assert res.usable_as_current == (res.outcome == Outcome.ALLOW)
             if res.outcome != Outcome.ALLOW:
                 assert res.certificate is None, "only an ALLOW may carry a certificate"
+
+
+class TestR5bTelemetry:
+    """The two write-time records that cannot be reconstructed later."""
+
+    def test_query_served_records_the_outcome_not_just_the_hit(self):
+        from gate import query_served_frame
+
+        r = fold([_sup("c", "e", "Judged", "Located")], as_of=NOW)
+        res = evaluate("c", r, UsePolicy(use="wiki-authoritative", floor=FLOOR))
+        f = query_served_frame(res, UsePolicy(use="wiki-authoritative", floor=FLOOR),
+                               frontier=r.frontier, at=NOW)
+        frames.validate_frame(f)
+        # An abstention is the datum that says the gate refuses too much; a success-only log hides it.
+        assert f["assertion"]["outcome"] == Outcome.ABSTAIN
+        assert f["assertion"]["usable_as_current"] is False
+
+    def test_query_served_carries_the_policy_digest(self):
+        from gate import query_served_frame
+
+        pol = UsePolicy(use="explore", floor=FLOOR)
+        r = fold([_sup("c", "e", "Verified", "Anchored")], as_of=NOW)
+        f = query_served_frame(evaluate("c", r, pol), pol, frontier=r.frontier, at=NOW)
+        assert f["provenance"]["policy_digest"] == pol.digest()
+
+    def test_obligation_disposition_rejects_an_unknown_value(self):
+        from gate import obligation_disposition_frame
+
+        with pytest.raises(ValueError, match="disposition must be one of"):
+            obligation_disposition_frame("obl-1", "sort-of-did-it", actor="op", at=NOW)
+
+    def test_obligation_disposition_frame_is_valid(self):
+        from gate import obligation_disposition_frame
+
+        f = obligation_disposition_frame("obl-1", "dismissed", actor="operator", at=NOW,
+                                         note="not relevant to this projection")
+        frames.validate_frame(f)
+        assert f["assertion"]["disposition"] == "dismissed"
