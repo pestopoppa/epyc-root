@@ -2251,3 +2251,29 @@ verified diagnostic and validation patterns._
   task set. Report valid-candidate rate, duplicate/oscillation rate, held-out lift, regressions, cost,
   and wall time. The upstream 25/100-step cadence is not a default; cadence is a declared experimental
   variable. No live AutoPilot resume or acceptance-policy change follows from this task.
+
+## 2026-08-09 — staged multi-tier T2 poison audit checkpoint
+
+AutoPilot remains stopped. The accepted immutable T1 artifact is
+`/mnt/raid0/llm/epyc-root/artifacts/operator/multitier_incumbent_t1_20260809.json`, SHA-256
+`a867dfd5a45c9f0822b41d0d9ce2b9b474458d5e50c0f0ba3439647faa2e10c3`.
+
+- [x] **AP-MT-1 — Audit the interrupted T2 batch and quarantine poisoned evidence. ✅ 2026-08-09**
+  Batch `evaltower-T2-1786306535911-d4ab132c-500q` was interrupted after audit. Its sidecar has 224
+  scored rows. Exactly two rows selected non-serving `plan_review` routes, at ordinals 229 and 233.
+  Therefore 222 rows are retainable and 278 rows require rerun. API telemetry completed 245 requests,
+  but 21 late completions have no collector rows. The current T2 top-five set contained `plan_review` 13
+  times and selected it twice. This batch is not a clean baseline and cannot support ratification.
+- [ ] **AP-MT-2 — Repair and regression-test `QScorer.score_external_result` namespace assignment.**
+  The audit found a hard-coded `routing` namespace for `plan_review*` records. The repaired path must
+  preserve the true action family and reject incompatible learning rows before any baseline recollection.
+- [ ] **AP-MT-3 — Validate HybridRouter role parsing against live serving roles.** The selector accepted
+  `role:mode` without checking that the role was live. Add negative coverage for non-serving
+  `plan_review`, and prove the eligible-action set excludes it in T1/T2/T3 collection.
+- [ ] **AP-MT-4 — Correct or quarantine the legacy episodic action labels before routing learning.** The
+  episodic database holds 682 `plan_review*` rows labelled `action_type=routing`. Preserve provenance,
+  repair only with deterministic evidence, and prevent those rows from contaminating learned routing.
+- [ ] **AP-MT-5 — Reconstruct a fully clean T2 baseline after the fixes.** Retain only the 222 verified
+  clean rows, rerun the required 278 rows, reconcile the 21 late-completion collector gap, and require a
+  clean 500-row terminal artifact. Collect the T3 baseline only after this gate. Prepare a consolidated
+  ratifier only after clean T1/T2/T3 evidence and a bug-free orchestrator are verified.

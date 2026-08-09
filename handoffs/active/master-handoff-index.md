@@ -2,12 +2,14 @@
 
 > **⛔ 2026-08-09 — AUTOPILOT IS INTENTIONALLY STOPPED; STAGED MULTI-TIER EVIDENCE IS BEING BUILT.**
 > Orchestrator `3f62f712` implements the approved T1 screen → matched T2 → matched T3 → fresh T1
-> promotion policy with exact runtime rollback and fail-closed startup. `83c8777a`/`f3b262b8` repair
-> batched episodic reseeding across the six-server embedder fleet. A 63,786-row atomic semantic rebuild
-> is in progress after the integrity gate found 4/60 bad self-matches; the live store will not swap until
-> the replacement passes its checks. Next: semantic gate, API-only dashboard reload, immutable incumbent
-> baselines T1=100/T2=500/T3=160, then one consolidated human ratifier. **Do not restart AutoPilot before
-> that bundle is ratified and the operator separately authorizes restart.** Detail:
+> promotion policy with exact runtime rollback and fail-closed startup. The semantic rebuild is now clean.
+> The accepted immutable T1 artifact is `artifacts/operator/multitier_incumbent_t1_20260809.json`
+> (SHA-256 `a867dfd5a45c9f0822b41d0d9ce2b9b474458d5e50c0f0ba3439647faa2e10c3`). The first T2 batch,
+> `evaltower-T2-1786306535911-d4ab132c-500q`, was interrupted after an audit found two poisoned
+> `plan_review` selections. Repair and test the scorer namespace, router role validation, and legacy
+> episodic labels before retaining the 222 clean rows and rerunning the required 278 rows. Do not prepare
+> any ratifier until T1/T2/T3 baselines are fully clean and the orchestrator is bug free. **Do not restart
+> AutoPilot before that bundle is ratified and the operator separately authorizes restart.** Detail:
 > [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) §2026-08-09.
 
 > **★ 2026-07-26 POST-v8 CAMPAIGN — THE ACTIVE LONG-HORIZON QUEUE (operator-launched, minimal-interaction contract).** Production is frozen `production-consolidated-v8` @ `67a433bf4` (E8 era fence + final freeze both operator-ratified; receipts in `artifacts/operator/`). Two lanes, **CPU and GPU run concurrently** (standing operator grant); lanes are internally sequential:
