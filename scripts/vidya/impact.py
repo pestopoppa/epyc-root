@@ -30,6 +30,7 @@ from lattice import Grade  # noqa: E402
 
 __all__ = [
     "Coverage", "ImpactItem", "ImpactReport", "impact_of_retracting",
+    "frames_carrying_evidence", "impact_of_retracting_evidence",
     "Obligation", "ObligationState", "derive_obligations",
 ]
 
@@ -188,6 +189,32 @@ def impact_of_retracting(
         unaffected_but_unmapped=unaffected_unmapped,
         as_of=as_of,
     )
+
+
+def frames_carrying_evidence(frames: Sequence[dict], evidence_id: str) -> list[str]:
+    """Every frame id asserting support/opposition from this evidence token.
+
+    Retraction operates on frames, but evidence lives in TOKENS, and one token routinely supports
+    several claims through several edges. Retracting the token means retracting all of them --
+    retracting a single edge would leave the same discredited evidence still supporting its other
+    claims, which is the shape of the real 2026-07-24 scorer artifact: one stale extractor
+    underpinning two separate conclusions.
+    """
+    return [
+        f["frame_id"]
+        for f in frames
+        if f.get("assertion", {}).get("evidence_id") == evidence_id and "frame_id" in f
+    ]
+
+
+def impact_of_retracting_evidence(
+    frames: Sequence[dict], evidence_id: str, *, as_of: str
+) -> ImpactReport:
+    """Impact of retracting an evidence TOKEN — every edge it supports."""
+    targets = frames_carrying_evidence(frames, evidence_id)
+    if not targets:
+        raise KeyError(f"no frame carries evidence token {evidence_id!r}")
+    return impact_of_retracting(frames, targets, as_of=as_of)
 
 
 # ---------------------------------------------------------------- obligations

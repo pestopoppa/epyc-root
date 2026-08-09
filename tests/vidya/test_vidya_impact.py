@@ -197,3 +197,58 @@ class TestObligations:
         original = self._ob()
         derive_obligations([original], res, floor=FLOOR)
         assert original.state == ObligationState.PROPOSED, "input must not be mutated"
+
+
+class TestEvidenceTokenRetraction:
+    """Retraction operates on frames; evidence lives in TOKENS.
+
+    One token routinely supports several claims through several edges. Retracting a single edge
+    leaves the same discredited evidence supporting its other claims -- which is the shape of the
+    real 2026-07-24 scorer artifact, where one stale extractor underpinned two conclusions. The
+    gold-corpus suite failed on exactly this before `impact_of_retracting_evidence` existed.
+    """
+
+    def _shared(self):
+        return [_sup("c1", "shared-token", "Verified", "Anchored"),
+                _sup("c2", "shared-token", "Verified", "Anchored"),
+                _sup("c3", "other-token", "Verified", "Anchored")]
+
+    def test_retracting_one_edge_leaves_the_sibling_supported(self):
+        from impact import frames_carrying_evidence
+        corpus = self._shared()
+        one_edge = frames_carrying_evidence(corpus, "shared-token")[0]
+        rep = impact_of_retracting(corpus, [one_edge], as_of=NOW)
+        assert {i.claim_id for i in rep.affected} == {"c1"}, "the sibling keeps stale support"
+
+    def test_retracting_the_token_reaches_every_claim_it_supports(self):
+        from impact import impact_of_retracting_evidence
+        rep = impact_of_retracting_evidence(self._shared(), "shared-token", as_of=NOW)
+        assert {i.claim_id for i in rep.affected} == {"c1", "c2"}
+        assert "c3" in rep.verified_unaffected
+
+    def test_unknown_token_raises_rather_than_silently_doing_nothing(self):
+        from impact import impact_of_retracting_evidence
+        with pytest.raises(KeyError):
+            impact_of_retracting_evidence(self._shared(), "no-such-token", as_of=NOW)
+
+
+class TestGoldCorpusSuite:
+    """P5c: the suite must keep scoring 28/28 with zero harmful outcomes."""
+
+    def test_full_suite_passes(self):
+        from evaluate import run_all
+        r = run_all()
+        assert r["harmful_outcomes"] == 0
+        assert r["invalidation_recall"] == 1.0 and r["discrimination"] == 1.0
+        assert r["score"] == r["max_score"] == 28
+
+    def test_the_corpus_still_contains_discrimination_cases(self):
+        # Guard the corpus: if every claim became `retracted`, recall would stay 1.00 while the
+        # suite stopped testing over-invalidation at all.
+        from gold_corpus import CORPUS
+        untouched = [c for f in CORPUS for c in f.claims if c.expect == "unaffected"]
+        assert len(untouched) >= 6, "corpus lost its untouched set -- discrimination is untested"
+
+    def test_evaluation_is_deterministic(self):
+        from evaluate import run_all
+        assert run_all()["score"] == run_all()["score"]

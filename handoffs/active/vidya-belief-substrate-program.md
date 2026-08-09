@@ -197,9 +197,13 @@ Operator priority: an integrated solution that works, not novelty.
 - [x] P5a `gate.py`: five honest outcomes, refusals that name the missing axis, advisory
       standards refused rather than downgraded, VSA-mapped certificates, and the invariant that
       only ALLOW is usable-as-current tested across every outcome ✅ 2026-08-09
-- [ ] P5c Run the P0 gold-corpus mutation suite and produce the promote/iterate/terminate decision
-      package. Needs the P0 corpus claims actually loaded as frames first (P0 defined them; they
-      are not yet ingested)
+- [x] P5c Gold corpus encoded as frames (`gold_corpus.py`), mutation suite run (`evaluate.py`):
+      **28/28, recall 1.00, discrimination 1.00, 0 harmful**. It scored 20/28 first time and every
+      failure was real — two engine bugs (retraction was per-frame when evidence is per-TOKEN, so a
+      discredited source kept supporting its other claims) and two gold-label errors (E2's shared
+      root cause modelled as independent; m-c5 given Witnessed warrant, making a downgrade
+      arithmetically impossible). Decision package: **ITERATE** —
+      `research/deep-dives/vidya-p5c-evaluation-and-decision.md` ✅ 2026-08-09
 - [x] P5b `tests/vidya/test_vidya_compliance.py`: governance invariants + deliberately-rejected
       postulates (Recovery, accrual, corrections-as-counter-evidence, model-reachability checked
       structurally against fold.py's source) ✅ 2026-08-09
