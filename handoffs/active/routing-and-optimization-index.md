@@ -78,11 +78,12 @@ When making a routing-architecture proposal, name which of these four (and which
 same-tier baselines, exact runtime rollback, and fail-closed startup. The semantic rebuild passed. The
 accepted T1 artifact is `artifacts/operator/multitier_incumbent_t1_20260809.json` (SHA-256
 `a867dfd5a45c9f0822b41d0d9ce2b9b474458d5e50c0f0ba3439647faa2e10c3`). The interrupted T2 batch
-`evaltower-T2-1786306535911-d4ab132c-500q` contains two poisoned `plan_review` selections. Repair and
-test `QScorer` namespace handling, live-role validation, and legacy episodic labels first. Then retain
-222 clean rows, rerun 278 rows, and collect clean T3 evidence. Prepare one consolidated ratifier only
-after the complete baseline and bug-free orchestrator exist. Do not restart AutoPilot without separate
-operator permission. Runtime and detailed evidence remain authoritative in
+`evaltower-T2-1786306535911-d4ab132c-500q` contains two poisoned `plan_review` selections. Orchestrator
+`26c5220c` now isolates action namespaces and validates live roles. Its backed-up repair receipt updated
+690 misnamespaced rows and three fallback vectors; the post-repair audit is clean. Then retain 222 clean
+rows, rerun 278 rows under a post-repair identity, and collect clean T3 evidence. Prepare one consolidated
+ratifier only after the complete baseline and bug-free orchestrator exist. Do not restart AutoPilot without
+separate operator permission. Runtime and detailed evidence remain authoritative in
 [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md); older PID/current-code
 claims below are historical.
 

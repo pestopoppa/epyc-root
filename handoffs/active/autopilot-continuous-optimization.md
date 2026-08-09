@@ -2264,16 +2264,20 @@ AutoPilot remains stopped. The accepted immutable T1 artifact is
   Therefore 222 rows are retainable and 278 rows require rerun. API telemetry completed 245 requests,
   but 21 late completions have no collector rows. The current T2 top-five set contained `plan_review` 13
   times and selected it twice. This batch is not a clean baseline and cannot support ratification.
-- [ ] **AP-MT-2 — Repair and regression-test `QScorer.score_external_result` namespace assignment.**
-  The audit found a hard-coded `routing` namespace for `plan_review*` records. The repaired path must
-  preserve the true action family and reject incompatible learning rows before any baseline recollection.
-- [ ] **AP-MT-3 — Validate HybridRouter role parsing against live serving roles.** The selector accepted
-  `role:mode` without checking that the role was live. Add negative coverage for non-serving
-  `plan_review`, and prove the eligible-action set excludes it in T1/T2/T3 collection.
-- [ ] **AP-MT-4 — Correct or quarantine the legacy episodic action labels before routing learning.** The
-  episodic database holds 682 `plan_review*` rows labelled `action_type=routing`. Preserve provenance,
-  repair only with deterministic evidence, and prevent those rows from contaminating learned routing.
+- [x] **AP-MT-2 — Repair and regression-test `QScorer.score_external_result` namespace assignment. ✅ 2026-08-09**
+  Orchestrator `26c5220c` takes the namespace as an explicit non-empty argument. It no longer hard-codes
+  `routing` for `plan_review*` records. Focused routing-memory coverage passed 309 tests.
+- [x] **AP-MT-3 — Validate HybridRouter role parsing against live serving roles. ✅ 2026-08-09**
+  Orchestrator `26c5220c` validates every stored route against the realized live-stack role set before
+  learned selection. Non-serving `plan_review` actions are excluded from T1/T2/T3 routing candidates.
+- [x] **AP-MT-4 — Correct or quarantine the legacy episodic action labels before routing learning. ✅ 2026-08-09**
+  The audit initially identified 682 `plan_review*` rows labelled `action_type=routing`. The narrow,
+  backed-up repair updated 690 misnamespaced rows in total and re-embedded three parallel hash-fallback
+  vectors. Receipt `artifacts/operator/episodic_routing_poison_repair_20260809.json` reports zero
+  remaining namespace updates or fallback vectors and consistent `63833` SQLite/FAISS/id-map rows.
+  Its status is `applied_for_validation_unratified`; this repairs contamination, not baseline evidence.
 - [ ] **AP-MT-5 — Reconstruct a fully clean T2 baseline after the fixes.** Retain only the 222 verified
   clean rows, rerun the required 278 rows, reconcile the 21 late-completion collector gap, and require a
-  clean 500-row terminal artifact. Collect the T3 baseline only after this gate. Prepare a consolidated
-  ratifier only after clean T1/T2/T3 evidence and a bug-free orchestrator are verified.
+  clean 500-row terminal artifact with a post-repair source identity. Collect the T3 baseline only after
+  this gate. Prepare a consolidated ratifier only after clean T1/T2/T3 evidence and a bug-free
+  orchestrator are verified.

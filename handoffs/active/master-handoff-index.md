@@ -6,10 +6,12 @@
 > The accepted immutable T1 artifact is `artifacts/operator/multitier_incumbent_t1_20260809.json`
 > (SHA-256 `a867dfd5a45c9f0822b41d0d9ce2b9b474458d5e50c0f0ba3439647faa2e10c3`). The first T2 batch,
 > `evaltower-T2-1786306535911-d4ab132c-500q`, was interrupted after an audit found two poisoned
-> `plan_review` selections. Repair and test the scorer namespace, router role validation, and legacy
-> episodic labels before retaining the 222 clean rows and rerunning the required 278 rows. Do not prepare
-> any ratifier until T1/T2/T3 baselines are fully clean and the orchestrator is bug free. **Do not restart
-> AutoPilot before that bundle is ratified and the operator separately authorizes restart.** Detail:
+> `plan_review` selections. Orchestrator `26c5220c` repairs the scorer namespace, live-role validation,
+> and episodic-store contamination. Its backed-up repair receipt records 690 namespace updates and three
+> re-embedded fallback vectors, with zero remaining defects. Retain the 222 clean rows and rerun the
+> required 278 rows only under a post-repair source identity. Do not prepare any ratifier until T1/T2/T3
+> baselines are fully clean and the orchestrator is bug free. **Do not restart AutoPilot before that bundle
+> is ratified and the operator separately authorizes restart.** Detail:
 > [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) §2026-08-09.
 
 > **★ 2026-07-26 POST-v8 CAMPAIGN — THE ACTIVE LONG-HORIZON QUEUE (operator-launched, minimal-interaction contract).** Production is frozen `production-consolidated-v8` @ `67a433bf4` (E8 era fence + final freeze both operator-ratified; receipts in `artifacts/operator/`). Two lanes, **CPU and GPU run concurrently** (standing operator grant); lanes are internally sequential:

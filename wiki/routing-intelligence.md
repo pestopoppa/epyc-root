@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-07-31 (corrects four throughput priors routing was deciding on — 32-40% low, an unmeasured `optimized_tps` silently indistinguishable from a measured one; records the operator directive that the cross-role contention matrix must become an optimizable surface rather than a mutual-exclusion veto; earlier 2026-07-14 note: planner spend-breaker hardening, PID-age-verified preflight gate, runtime-facts-backed stack-service truth)
-**Sources**: 68+ documents (added 2026-07-14 runtime-facts-backed stack-service truth; 2026-07-05 RI-10 decision-ready + hold_quality_unscored packet, N9 MLP rollout attestation bracket, episodic FAISS 95.7% repair; 2026-07-04 X-MAS enforce cutover, deterministic canary sampler, DAR-4b null sweep, A9 source-reward passthrough; prior 2026-07-04 RI-10 arm-attributed canary status refresh, 2026-07-03 RI-10 gate hardening and DAR-1 current replay, 2026-06-26 LRC P4.5 executed [null result])
+**Last compiled**: 2026-08-09 (adds routing-memory namespace isolation; retains the 2026-07-31 throughput-prior and contention-surface updates)
+**Sources**: 71+ documents (adds the 2026-08-09 measured repair receipt and campaign checkpoint; retains the 2026-07-31 throughput-prior, 2026-07-05 RI-10, and earlier routing evidence)
 
 ## Summary
 
@@ -16,6 +16,25 @@ The factual-risk scorer represents the most significant routing innovation in th
 The broader routing stack comprises 9 production subsystems that must coordinate without conflicting: RoutingClassifier MLP, GraphRouter+GAT, BindingRouter, FailureGraph veto, conformal prediction risk gate, think-harder in EscalationPolicy, cost-aware Q-scoring, plan review gate, and SkillAugmentedRouter. The conformal prediction gate operates on output uncertainty while factual-risk operates on input characteristics -- complementary signals that must not double-gate. The difficulty_signal.py classifier produces the first routing gate, determining whether a request can be handled by a cheap model (worker) or needs escalation to more capable tiers.
 
 The 13 intake entries tagged as routing_intelligence are predominantly `already_integrated` foundational papers from the mixture-of-experts (arXiv:2206.01855), speculative decoding (arXiv:2207.10342), and learned routing (arXiv:2305.05176, arXiv:2309.11495) literatures. These informed the original MemRL design. The one `worth_investigating` entry is Reason-ModernColBERT (intake-174), a 150M-parameter late-interaction retriever that outperforms 7B+ dense retrievers on reasoning-intensive BRIGHT benchmarks by +7.3 NDCG@10 using MaxSim scoring on a ModernBERT backbone. This could improve the classification retriever's embedding quality for routing decisions.
+
+### New (2026-08-09, routing-memory namespace isolation)
+
+- **Control-plane actions must never become learned routing candidates.** The interrupted T2 baseline found two
+  selected `plan_review` routes. Orchestrator `26c5220c` makes the QScorer action namespace explicit and
+  validates stored route labels against the realized live-stack roles before learned selection. Measured
+  review: the focused routing-memory suite passed 309 tests. Sources:
+  [AutoPilot handoff](../handoffs/active/autopilot-continuous-optimization.md),
+  [routing index](../handoffs/active/routing-and-optimization-index.md), and
+  [2026-08-09 progress](../progress/2026-08/2026-08-09.md).
+
+- **Repair receipts establish contamination containment, not a baseline.** The backed-up repair updated 690
+  misnamespaced rows and re-embedded three parallel hash-fallback vectors. Its post-repair audit reports
+  zero remaining namespace updates or fallback vectors and matching 63,833 SQLite/FAISS/id-map rows.
+  The receipt is `applied_for_validation_unratified`, so the T2 baseline remains incomplete: retain 222
+  verified clean rows, rerun 278 rows under the post-repair identity, then collect T3 before any
+  consolidated ratification. Sources: [AutoPilot handoff](../handoffs/active/autopilot-continuous-optimization.md),
+  [master index](../handoffs/active/master-handoff-index.md), and
+  [2026-08-09 progress](../progress/2026-08/2026-08-09.md).
 
 ### New (2026-07-08, planner-hint containment and stale-tap freshness)
 
