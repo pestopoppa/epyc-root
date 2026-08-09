@@ -1,0 +1,215 @@
+# R1 / R2 — Retraction and certified absence through stratified negation
+
+**Status:** research note. **R1 is UNRESOLVED**; this document states it precisely, records the
+partial results obtained, and names what would settle it. **R2 is scoped**, with one hard
+constraint that removes an entire implementation approach.
+**Date:** 2026-08-09
+**Owning handoff:** [`handoffs/active/vidya-belief-substrate-program.md`](../../handoffs/active/vidya-belief-substrate-program.md) §R1, §R2
+**Program spec:** [`docs/design/vidya-research-program.md`](../../docs/design/vidya-research-program.md)
+
+Nothing here may be cited as established. The pilot does not depend on any of it: its rule set is
+positive, where the published Deletion Property applies directly.
+
+---
+
+## 1. Why the v1 framing was wrong
+
+The v1 draft treated stratified negation as an *optimization* gap — zero-substitution was assumed
+correct, and the open question was whether an affected-set algorithm could avoid a full refold. The
+2026-08-09 audit inverted this.
+
+**Once absence is tracked, zero-substitution is not merely slow — it is wrong.** Grädel & Tannen
+(arXiv 1712.01980) §5 gives a worked counterexample: deleting facts from a model collapses the
+positive provenance polynomial to `0` while the updated model still satisfies the query. The
+polynomial said "no support survives"; the model says the claim holds. A system that trusted the
+substitution would have retracted a true belief.
+
+The correct primitive is **specialization** of a dual-indeterminate, model-compatible provenance
+object:
+
+- annotate absence with dual tokens under the contract `x · x̄ = 0` (a quotient, so no monomial
+  ever contains both);
+- compute provenance once over *both* polarities;
+- any update — insertion or deletion — is the specialization that zeroes the tokens of literals
+  that fail in the new model.
+
+The derivations a deletion *creates* are therefore pre-materialized as `x̄`-monomials and merely
+**activated**. Because the update map is a homomorphism, it commutes with provenance computation,
+which is what makes "compute the circuit once, update by substitution" sound rather than merely
+convenient.
+
+---
+
+## 2. R1 — the residual theorem, stated precisely
+
+### 2.1 What is already certified
+
+Grädel & Tannen, *Provenance Analysis for Logic and Games* (Moscow J. Comb. Number Theory
+9(3):203–228, 2020; arXiv 1907.08470v2) constructs the dual-indeterminate ω-continuous power-series
+semiring `N∞[[X, X̄]]` (Def 29) and proves its universality for ω-continuous targets (Prop 30).
+
+For **posLFP** — least fixed points over dual-annotated *input* literals, which is exactly the
+semipositive shape of one stratum — provenance is well-defined, Kleene-computable, and provably
+equal to the reachability-game valuation (Def 40, Prop 41, Cor 38).
+
+**Consequence for a single stratum:** retraction-as-specialization is sound, because least fixed
+points commute with the ω-continuous evaluation homomorphisms of Prop 30.
+
+### 2.2 What is not certified, in the sources' own words
+
+The same paper states (p.19) that its route is *"not available for important fixed-point formalism
+such as the modal μ-calculus, **stratified Datalog**, transitive closure logics"*.
+
+A bounded literature search on 2026-08-09 found **no dedicated semiring-provenance treatment of
+stratified Datalog at all**. The frontier stops at negated *input* predicates (semipositive) and at
+full LFP via `S∞[X, X̄]` (CSL 2021). *Recorded so a future session does not repeat the search.*
+
+### 2.3 The theorem EPYC would have to prove
+
+> **Conjecture (stratum-boundary re-tokenization).** Let `P` be a stratified program with strata
+> `P₁ … Pₙ`. Evaluate stratum `k` over `N∞[[Xₖ, X̄ₖ]]`, obtaining for each derived atom `a` a pair
+> `(π⁺(a), π⁻(a))` of presence and absence provenance. Freeze those pairs and re-tokenize each as a
+> fresh dual pair `(x_a, x̄_a)` in the indeterminate set of stratum `k+1`. Then:
+>
+> **(a) Agreement.** The object computed by evaluating `P` stratum-by-stratum under this
+> re-tokenization coincides with the provenance assigned by the perfect-model semantics of `P`.
+>
+> **(b) Exactness of retraction across the boundary.** For any retraction of a base fact, applying
+> specialization within each stratum bottom-up yields the same result as recomputing `P` from
+> scratch without that fact — *including* the case where the retraction flips a lower-stratum
+> greatest-fixed-point value and thereby flips a token of the stratum above.
+
+**What is already in hand:** the construction is **well-typed**. Derived `(presence, absence)`
+pairs again satisfy the dual-token contract — GT17 Prop 12 shows that if `π(L)·π(¬L) = 0` for all
+literals then `π⟦φ⟧·π⟦¬φ⟧ = 0` — and Prop 14 / Prop 30 universality then make substituting them for
+fresh indeterminates a well-formed homomorphism. So the object exists and is of the right shape.
+
+**What is missing is that the object is the *right* one** (part a), and that specialization stays
+exact across a boundary where a retraction can *add* higher-stratum facts (part b). Part (b) is the
+harder half and the one with no analogue in the positive fragment: within a stratum, deletion is
+monotone downward; across a boundary it is not.
+
+### 2.4 Attempted reduction, and why it fails
+
+The natural attempt is to reduce (b) to the positive case by treating each stratum's inputs as base
+facts and applying the Deletion Property per stratum, then composing by induction.
+
+**Where it breaks.** The Deletion Property (Bourgaux et al., KR 2022, Property 13) is stated for a
+*fixed* base-fact set with annotations set to `0`. Across a stratum boundary the base set of
+stratum `k+1` is not fixed under the retraction: zeroing a token in stratum `k` can make a negated
+condition true and thereby **introduce** an atom into stratum `k+1`'s input. That is an insertion,
+not a deletion, and Property 13 says nothing about it. Table 1 of the same paper does list an
+Insertion property — but it holds for a different (overlapping) set of semantics, and composing a
+deletion-at-stratum-`k` with an insertion-at-stratum-`k+1` is not covered by either result
+individually.
+
+So the induction has a genuine gap at exactly the step the conjecture is about. This is a partial
+result, not a proof: it establishes that the obvious route does not close, and localizes the
+difficulty.
+
+### 2.5 What would settle it
+
+1. Either a proof of (a) + (b), likely via the game semantics — the posLFP result is proved through
+   reachability games, and stratified negation corresponds to alternating reachability/safety, so
+   the game-theoretic route is the one with a shape that might extend.
+2. Or a counterexample: a two-stratum program and a base-fact retraction where stratum-wise
+   specialization disagrees with a from-scratch recomputation. **A counterexample is a perfectly
+   good outcome** and would immediately settle the engineering question — full refold across strata,
+   permanently.
+3. Either way: asymptotic and empirical boundary-growth measurement. A proof that does not bound
+   how many higher-stratum facts a single low-stratum retraction can add is not usable for
+   scheduling.
+
+### 2.6 What the pilot does meanwhile
+
+The pilot's rule set is **positive**. Where negation is eventually wanted, the spec requires the
+negated strata to be excluded from incremental retraction and handled by full refold, which is
+exact by definition relative to the ledger. **The unresolved theorem can therefore affect latency
+and nothing else** — which is the property that lets the pilot ship while the question stays open.
+
+---
+
+## 3. R2 — certified absence, and the constraint that removes an approach
+
+### 3.1 Grounding
+
+Absence is expressible in the same discipline: certified absence of `φ` is the provenance of
+`nnf(¬φ)` over dual tokens, and a value of `0` there is certified validity (GT17 Cor 21; CSL 2021
+Prop 20). An absence certificate is an absorption-dominant Falsifier-side strategy (CSL 2021
+Thm 23).
+
+### 3.2 The hard constraint
+
+**Greatest fixed points do not specialize.** GT17/1907.08470 Example 42 gives an explicit
+counterexample: gfp values fail to specialize correctly from `N∞[[s, t]]` down to `N∞`.
+
+Two binding consequences:
+
+1. Absence certificates **cannot** use the incremental specialization path that works for presence.
+   That is not a performance note — it removes an entire implementation approach.
+2. They must route through the absorptive, chain-positive generalized-polynomial semiring with dual
+   indeterminates, `S∞[X, X̄]`, where well-definedness (CSL 2021 Thm 6), closure ordinal ≤ ω
+   (Prop 19) and universality (Thm 17) are all proven for the class the carrier belongs to.
+
+**The good news is that this is affordable on EPYC's carrier.** `Q × T` is meet-idempotent, so
+`a^∞ = a`, and Naaf's closed form collapses to `gfp = F^N(F^N(1))` — roughly `2N` iterations, no
+fixpoint test. The expensive-sounding route is cheap here specifically because the carrier is a
+finite lattice.
+
+### 3.3 A second, sharper limitation
+
+For *derived* (fixed-point) facts, the base-case source is explicit (1907.08470 p.18): when
+`π⟦φ⟧ = 0` we get **no reason why**. Negation of a least-fixpoint formula is a *safety* game, not a
+reachability one, and the machinery that explains presence does not run backwards.
+
+So absence-of-a-derived-fact is strictly harder than absence-of-an-input-fact. **The pilot claims
+neither**, and any absence answer it gives must be scoped to the exact authenticated domain it can
+actually prove — key non-membership over a canonical key set, or completeness over a declared scan
+boundary — never "we looked and found nothing".
+
+### 3.4 Complexity: an unmeasured surface
+
+There are **no size or complexity bounds for both-polarity provenance under recursion**. The
+circuit results (Deutch et al. ICDT 2014; Fan–Koutris–Roy PODS 2025) are for the positive fragment.
+There is no dual-indeterminate circuit theorem — EPYC would be proving the first one. GT17's own toy
+example inflates 6 monomials to 34 before quotienting, and absorption (finite antichains, CSL 2021
+Prop 14) is the only stated mitigation.
+
+### 3.5 Application precedent
+
+Xu, Zhang, Alawini & Tannen, *Provenance analysis for missing answers and integrity repairs* (IEEE
+Data Eng. Bull. 41(1):39–50, 2018) is the only published application of the dual-indeterminate
+treatment to explaining *missing* query answers — the R2 use case. Cited as precedent, not
+foundation (operator decision 7, 2026-08-09).
+
+---
+
+## 4. Truth-preservation caveat for both tracks
+
+`N[X, X̄]` and `S∞[X, X̄]` are `+`-positive but **not positive** — they have zero divisors by
+construction, since that is what `x · x̄ = 0` means. So "value ≠ 0 iff true" holds only for the
+model-defining and model-compatible interpretation shapes (GT17 Props 9–13; CSL 2021 Prop 20).
+
+Any certifier built on this must check that its interpretations stay in that shape. A certifier
+that assumed positivity would silently accept a `0` as "false" when it actually means "these two
+tokens cancelled".
+
+---
+
+## 5. Status summary
+
+| Item | Status |
+|---|---|
+| Per-stratum specialization is sound | **Certified** (1907.08470 Def 29/Prop 30/Def 40/Prop 41/Cor 38) |
+| Cross-stratum re-tokenization is well-typed | **Established** (GT17 Prop 12 + Prop 14/Thm 17 universality) |
+| Cross-stratum agreement with perfect-model provenance | **UNRESOLVED** — conjecture §2.3(a) |
+| Cross-stratum retraction exactness | **UNRESOLVED** — conjecture §2.3(b); obvious reduction shown not to close (§2.4) |
+| Stratified-Datalog provenance in the literature | **Does not exist** (bounded search 2026-08-09) |
+| Certified absence via `nnf(¬φ)` over dual tokens | **Grounded**, scoped to input-level absence |
+| gfp specialization | **Refuted** (Example 42) — route through `S∞[X, X̄]` |
+| gfp cost on the `Q × T` carrier | **Cheap**: `F^N(F^N(1))`, ~2N iterations |
+| Reasons for absence of a *derived* fact | **Not available** in this framework |
+| Complexity of both-polarity provenance under recursion | **Unmeasured**; no dual-indeterminate circuit theorem exists |
+
+**Neither R1 nor R2 gates the pilot.** Both would gate a promotion that wanted incremental
+retraction over a rule set with negation, which is not what is being built.

@@ -8,9 +8,17 @@ proves only that the code agrees with itself. Running this same file unchanged o
 other target) is the cross-architecture check: if canonical serialization, hashing, sorting, or the
 fold's iteration order differ anywhere, a pinned value stops matching.
 
-**Honest status:** executed on x86-64 only so far. The fixture IS the contract; the second
-architecture is a matter of running it somewhere else, and until that happens the program handoff
-carries P1c as open with this file named as the instrument.
+**Status: VERIFIED on two architectures, 2026-08-09.** Generated on x86-64 Linux / CPython 3.11 and
+re-run unchanged on **aarch64** (CPython 3.11.15, under qemu-user via `docker --platform
+linux/arm64`), where every pinned value matched and the whole suite passed. Reproduce with:
+
+    tar cf - scripts/vidya tests/vidya | docker run --rm -i --platform linux/arm64 \
+      python:3.11-slim sh -c 'mkdir -p /w && cd /w && tar xf - && pip install -q pytest &&
+                              python -m pytest tests/vidya/ -q'
+
+(The host needs an arm64 binfmt handler: `docker run --privileged --rm tonistiigi/binfmt
+--install arm64`. A bind mount will not work in this devcontainer -- the daemon does not share
+its mount namespace -- hence the piped tarball.)
 
 Why the design should be architecture-independent in the first place, and where it could fail
 anyway: floats are rejected outright (the one genuinely hard part of JCS number formatting is
