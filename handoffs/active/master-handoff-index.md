@@ -1,17 +1,14 @@
 # EPYC Handoff — Master Index
 
-> **⛔ 2026-08-05 — AUTOPILOT IS DOWN AND MUST NOT BE RESTARTED YET.** Killed 2026-08-04
-> 18:08 by an external `SIGTERM` mid-eval (source unproven). **Named blocker**: the
-> orchestrator working tree carries an *uncommitted* `eval_tower.py` change adding a live
-> `_EvalResourceLane` concurrency subsystem (`_eval_resource_lanes(questions)` is called
-> unconditionally; `AUTOPILOT_EVAL_CONCURRENCY` is an override, not an enable gate). It
-> alters eval wall-clock — which since the 2026-08-04 W3 flip is the **denominator of the
-> live questions/hour objective**. Resuming would measure the objective on an instrument
-> changed by unreviewed, unattributed code. **Unblocks the moment the owning session lands
-> that change or it is reverted.** Related: 82 uncommitted orchestrator files span ≥3
-> concurrent sessions, including a verified **108→0** unit-test fix that cannot be committed
-> until ownership is settled. Detail:
-> [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) §2026-08-04/05.
+> **⛔ 2026-08-09 — AUTOPILOT IS INTENTIONALLY STOPPED; STAGED MULTI-TIER EVIDENCE IS BEING BUILT.**
+> Orchestrator `3f62f712` implements the approved T1 screen → matched T2 → matched T3 → fresh T1
+> promotion policy with exact runtime rollback and fail-closed startup. `83c8777a`/`f3b262b8` repair
+> batched episodic reseeding across the six-server embedder fleet. A 63,786-row atomic semantic rebuild
+> is in progress after the integrity gate found 4/60 bad self-matches; the live store will not swap until
+> the replacement passes its checks. Next: semantic gate, API-only dashboard reload, immutable incumbent
+> baselines T1=100/T2=500/T3=160, then one consolidated human ratifier. **Do not restart AutoPilot before
+> that bundle is ratified and the operator separately authorizes restart.** Detail:
+> [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) §2026-08-09.
 
 > **★ 2026-07-26 POST-v8 CAMPAIGN — THE ACTIVE LONG-HORIZON QUEUE (operator-launched, minimal-interaction contract).** Production is frozen `production-consolidated-v8` @ `67a433bf4` (E8 era fence + final freeze both operator-ratified; receipts in `artifacts/operator/`). Two lanes, **CPU and GPU run concurrently** (standing operator grant); lanes are internally sequential:
 > **CPU lane** — (1) **AutoPilot E8 baseline reseed IN PROGRESS (numeric `16/16/0` + speed-frontier terminalization COMPLETE 2026-07-27; clean v5 T1 evidence COMPLETE 2026-07-28; c1 coherence-admission and race-retry atomic-publication hardening COMPLETE; saved-output scorer repair + deterministic completion NEXT after reboot)** [GATES AutoPilot quality decisions and model-stack changes; owner: [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) §E8 RE-ARM]: AutoPilot exact-stopped after trial `1458`; the current-era journal fold reconstructs a three-point speed frontier. The v4 collection is historical after its deterministic fixed-vector context defect (`16` infeasible rows: `T1=1`, `T2=15`). Clean v5 T1/r1-r3 are each terminal `50/50`, `25` correct, zero final errors; T1/r3's ordinal-32 scorer timeout used the protocol's one deterministic tail replay, not regeneration. Final-C1 capacityfix generated ordinals `97` and `279` cleanly but did not admit them: deterministic completion attempts at `...T123150Z` and `...T124832Z` both failed closed. The latter exposed a saved-output BigCodeBench score mismatch from shared scorer working state. Integrate scorer isolation `79f3d2f3` first, then deterministic score replay `8bc6eaa9`, review the resulting sealed ledger, and only then re-run the bounded completion/finalizer path. No baseline is applied or published. → (2) **Laguna Q4_K_M quant-axis screen COMPLETE 2026-07-27**: Q4 `19/40` versus IQ2 `17/40`, paired `6:4`, `p=.754`; this screen does not resolve a difference, so LCB53 and broad CPU discovery stop for the current decision. Conditional L-Q4P reopens only for a concrete CPU role proposal.

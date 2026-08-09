@@ -74,3 +74,11 @@ coordination/session-bus/heartbeats/coordinator-daemon.json
 logs/bus_supervisor.out
 logs/bus_supervisor.pid
 logs/coordinator_daemon.log
+
+# AutoPilot operator runtime snapshots and diagnostic payloads stay local.
+# Human ratification receipts (`artifacts/operator/ratify_*.json`) remain tracked.
+artifacts/operator/*.lock
+artifacts/operator/autopilot_state.pre-*.json
+artifacts/operator/instrument_eras.pre-*.yaml
+artifacts/operator/*operational_diagnostic*.json
+artifacts/operator/*operational_baseline_candidate*.json

@@ -1,0 +1,17 @@
+{
+  "boundary": "2026-08-08T06:14:55.579260Z",
+  "eras": [
+    "E13-eval-long-context-guard-v4-quality",
+    "E13-autopilot-long-context-guard-v4-speed"
+  ],
+  "eras_candidate_sha256": "05d5a1b40ae706b940931404e62db093ff437a7862daa3c06459b8fec845b3c0",
+  "eras_preimage_sha256": "ba9bf4ce93147fb37c611946114c6f81fc0b67d41cc601f08dda717d1e49dbe4",
+  "execution_instrument_id": "resource_lanes_v4_long_context_guard",
+  "git_commit": "25f557cc7d94d10819c9a4a4123a37cd4764fe5e",
+  "objective_policy": "task_rate_4d_v4_long_context_guard",
+  "scoring_schedule_id": "model_judge_tail_v4_gpu_lifecycle_quiescence",
+  "state_candidate_sha256": "ba64ad1bd3fd897556331ed91f142c5225a2629f5549fe714e19ee6bdf085f29",
+  "state_preimage_sha256": "259e28a53223e7ea18b489f76418576cfa2438b9c8e1b7992d9ab603c6470b67",
+  "status": "ratified_and_applied",
+  "writes_performed": true
+}

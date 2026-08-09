@@ -1,0 +1,26 @@
+{
+  "autopilot_started": false,
+  "boundary": {
+    "epoch": 1785916559.0,
+    "iso": "2026-08-05T07:55:59Z"
+  },
+  "eras": {
+    "autopilot_speed": "E9-autopilot-resource-lanes-speed",
+    "eval_quality": "E9-eval-resource-lanes-quality"
+  },
+  "execution_instrument_id": "resource_lanes_v2_prompt_load",
+  "objective_policy": "task_rate_4d_v2_resource_lanes",
+  "operator_uid": 1000,
+  "ratified_at": "2026-08-05T08:46:07.559372Z",
+  "schema_version": "eval-resource-lanes-ratification.v1",
+  "scoring_schedule_id": "model_judge_tail_v1",
+  "sha256": {
+    "eras_applied": "968d462df13c5aa5a1dc492d1ebb2ab923c3eeeb184ee0955dddff0a0fbb8cb4",
+    "eras_preimage": "6aedacadc891bc58ff05971e8a1f949741ecbd99d6ebbe9965b7d3d7ba8709cc",
+    "ratifier": "20c5b13efca0761bca8dde913050e0f0ca0977d96883425a2a16ea36485f7f0e",
+    "state_applied": "6e340dc4b1282cfdcc9b95a28b074ad5d33a7290977ce359e147d9e4a217f049",
+    "state_preimage": "868a347a5c310193bf839038dfa521e3fc555b4d86e0feb7e9bf9b769a7c841b"
+  },
+  "state_backup": "/mnt/raid0/llm/epyc-root/artifacts/operator/autopilot_state.pre-resource-lanes-v2-20260805.json",
+  "status": "ratified_and_applied"
+}

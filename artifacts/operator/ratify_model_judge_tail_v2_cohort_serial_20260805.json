@@ -1,0 +1,23 @@
+{
+  "autopilot_started": false,
+  "eras": {
+    "autopilot_speed": "E10-autopilot-model-judge-tail-v2-speed",
+    "eval_quality": "E10-eval-model-judge-tail-v2-quality"
+  },
+  "execution_instrument_id": "resource_lanes_v2_prompt_load",
+  "old_scoring_schedule_id": "model_judge_tail_v1",
+  "operator_uid": 1000,
+  "policy": "task_rate_4d_v2_resource_lanes",
+  "ratified_at": "2026-08-06T09:56:30.876813Z",
+  "schema_version": "model-judge-tail-ratification.v2",
+  "scoring_schedule_id": "model_judge_tail_v2_cohort_serial",
+  "sha256": {
+    "eras_applied": "5e30ba3b22e675548a724fc7f2fa21881144a74494176861ed0b9510acf972f5",
+    "eras_preimage": "968d462df13c5aa5a1dc492d1ebb2ab923c3eeeb184ee0955dddff0a0fbb8cb4",
+    "ratifier": "063ce188b96d8a4dc2a4b977714ee59d3b7d6903e1b0f4579080efeb0cfe3007",
+    "state_applied": "f2623768888593f1e6e2efc857c5c3fe50f669659e11c3486dabf0c2787e81c7",
+    "state_preimage": "6e340dc4b1282cfdcc9b95a28b074ad5d33a7290977ce359e147d9e4a217f049"
+  },
+  "state_backup": "/mnt/raid0/llm/epyc-root/artifacts/operator/autopilot_state.pre-model-judge-tail-v2-20260805.json",
+  "status": "ratified_and_applied"
+}

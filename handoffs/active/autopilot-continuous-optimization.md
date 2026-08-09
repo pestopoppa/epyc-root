@@ -1,7 +1,16 @@
 # AutoPilot: Continuous Recursive Optimization
 
+> **Current checkpoint — 2026-08-09.** AutoPilot is intentionally stopped. Orchestrator `3f62f712`
+> implements staged T1 screen → matched T2 → matched T3 → fresh T1 promotion with exact runtime
+> rollback and a fail-closed startup gate. `83c8777a`/`f3b262b8` repair atomic episodic reseeding across
+> all six embedder servers; the 63,786-row replacement is currently building from the
+> `20260809T154014Z` backups. `545af011` prevents baseline collection while interrupted trial 1505 is
+> unresolved. Next: semantic integrity pass, append-only recovery of that non-mutating deep-eval trial,
+> API-only dashboard reload, immutable T1=100/T2=500/T3=160 baselines, and one consolidated human
+> ratifier. AutoPilot remains stopped after apply until the operator separately authorizes restart.
+
 **Resume-precondition — 2026-07-17 (non-inference session diagnosis)**: the ~28h stop on 2026-07-16 was a **DELIBERATE `SIGTERM`** to free the machine for v7 kernel work (`autopilot.log` `Shutdown requested (signal 15)` → `Controller failed (rc=143)`; `agent_audit.log` logs *"Audit experimental v7 kernel worktree … while AutoPilot remains stopped"* seconds later). It is **NOT** a `consecutive_failures` self-halt — `consecutive_failures=2 < safety_gate.MAX_CONSECUTIVE_FAILURES=3` (`safety_gate.py:107`); the persisted `_dispatch_deficiency='consecutive_failures'` marker is stale + self-clearing (`autopilot.py:8687` unconditional pop on `resume`). **No wedge to clear.** Before resuming:
-- [ ] Bring the `:8000` stack up + verify HEALTHY first (a resume against a dead stack fails every dispatch). Use `orchestrator_stack.py`; ensure the GLM-5.2 probe on port 19402 doesn't contend with the stack's servers.
+- [x] Bring the `:8000` stack up + verify HEALTHY first (a resume against a dead stack fails every dispatch). ✅ 2026-08-08 — E15 serving and API readiness were verified before the supervised run; subsequent work stops AutoPilot without tearing down the resident stack.
 - [x] Address the pre-stop THRASHING or it recurs ✅ 2026-07-28 — BOTH fixed and pushed (orchestrator `4d329002`: baselines with n<5 can no longer certify hard per-suite rollbacks, env-tunable `AUTOPILOT_PER_SUITE_BASELINE_MIN_N`; `24fa1399`: kv_compaction "Expected Attention compression failed" 500s reclassified as per-role uncompactable-skips — root cause was empty-slot preconditions on idle roles, never a real compaction fault; kv_compaction remains a live runtime lever). Resume is now gated only on the E8 baseline signature (`gpu-serving-tie-in-program.md` P0-1/P1-3). ORIGINAL: the loop hit ~10 consecutive-failure rollbacks on 2026-07-16 (trials 1404…1433) from a **small-sample `debugbench` regression** (`n_baseline=2` tripping the −1.5 hard threshold: debugbench 0.0 vs a 3.0 baseline measured on only n=2) + two `kv_compaction` trials hard-failing `500 "Expected Attention compression failed"`. Fix the tiny-n gate / the kv_compaction op before resuming, else it burns compute re-thrashing the same rollbacks. (This rhymes with the `real_suite_v1` small-sample instability the discriminability audit found — see master-index §cross-session (2).)
 
 **Current checkpoint — 2026-07-11T23:25Z**: AutoPilot is running under
@@ -2130,6 +2139,31 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       seven JavaScript-block parses, and repository gates. Trial 1502 was allowed to seal, AutoPilot was
       paused only at the boundary for an API-only reload, then resumed without an AutoPilot or model-server
       restart; live payloads report trial 1502 as outer lane T1 with equal-thirds target and 42/50 scored.
+- [x] **Implement staged T1/T2/T3 promotion with exact transactional rollback. ✅ 2026-08-09**
+      Orchestrator `3f62f712` adds `staged-multitier-v1`: every candidate must pass a T1 screen,
+      matched T2 and T3 validation, and a fresh T1 promotion confirmation. Higher-tier regression
+      vetoes; higher-tier improvement only tiebreaks; same-tier baselines are mandatory. Candidate
+      runtime preimages now preserve absent env variables and structural flags, rejection restores the
+      runtime config plus `production_best` routing intelligence, and acceptance checkpoints only after
+      the WAL in-flight marker clears. Startup fails closed until a human-ratified policy and matched
+      three-tier baseline bundle exist. The dashboard exposes the staged sequence and the new collector
+      seals each tier independently against source, state, config, terminal-result, and episodic semantic
+      integrity. Focused staged/config/sequential tests passed 110/110; dashboard 75/75; decision 7/7;
+      collector 3/3; wiring 5/5.
+- [x] **Repair episodic reseed throughput without weakening atomicity. ✅ 2026-08-09** Orchestrator
+      `83c8777a` and `f3b262b8` replace the maintenance tool's accidental serial embedding path with
+      batched, deterministic round-robin work over all six BGE servers. Reseed tests passed 15/15 and a
+      representative 24-row smoke completed in 1.27 seconds. The live store remains untouched until the
+      replacement DB/index/id-map set is complete and passes the existing swap checks.
+- [ ] **Finish the staged-policy evidence bundle and one consolidated ratifier.** The atomic semantic
+      rebuild is running from the `20260809T154014Z` backup set after the live gate found 4/60 bad
+      self-matches in an otherwise structurally healthy 63,786-row store. After rebuild: require
+      `check_episodic_integrity.py --semantic --require-semantic`; recover interrupted non-mutating
+      deep-eval trial 1505 append-only; deploy only the dashboard/API code with an API-only reload; collect
+      immutable incumbent baselines T1=100, T2=500, T3=160; then produce one human-only ratifier that
+      applies the policy/bundle and writes a clean `production_best` checkpoint. Orchestrator `545af011`
+      makes collector preflight fail closed until `in_flight_trial` is cleared (5/5 focused tests).
+      AutoPilot stays stopped throughout and after apply pending separate restart permission.
 - [ ] **AP-50 — Turn “what optimizes the orchestrator” into a decision cockpit.** Default to the current
       measurement era and distinguish proposed, executed, valid, kept, promoted, and currently-live
       states; “applied” alone is operationally ambiguous. Add current trial/intervention/falsifier,

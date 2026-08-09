@@ -1,0 +1,25 @@
+{
+  "autopilot_started": false,
+  "eras": {
+    "autopilot_speed": "E12-autopilot-mixed-role-split-v3-speed",
+    "eval_quality": "E12-eval-mixed-role-split-v3-quality"
+  },
+  "execution_instrument_id": "resource_lanes_v3_mixed_role_split",
+  "old_execution_instrument_id": "resource_lanes_v2_prompt_load",
+  "old_policy": "task_rate_4d_v2_resource_lanes",
+  "old_scoring_schedule_id": "model_judge_tail_v3_backend_drain",
+  "operator_uid": 1000,
+  "policy": "task_rate_4d_v3_mixed_role_split",
+  "ratified_at": "2026-08-07T12:32:51.554623Z",
+  "schema_version": "mixed-role-split-ratification.v3",
+  "scoring_schedule_id": "model_judge_tail_v4_gpu_lifecycle_quiescence",
+  "sha256": {
+    "eras_applied": "ba9bf4ce93147fb37c611946114c6f81fc0b67d41cc601f08dda717d1e49dbe4",
+    "eras_preimage": "6cdfb11096a3b428636bf069cb6eb01c4a00f223408372693c4a68ac063894a7",
+    "ratifier": "002212623fd9cc6f906deb9c2aeb0acd2b605ad6f9e0b57221a7744ece75b032",
+    "state_applied": "259e28a53223e7ea18b489f76418576cfa2438b9c8e1b7992d9ab603c6470b67",
+    "state_preimage": "245857d35a3c656168efd7578e09126d073f6975f8fe24eca0ec5d0485fbc990"
+  },
+  "state_backup": "/mnt/raid0/llm/epyc-root/artifacts/operator/autopilot_state.pre-mixed-role-split-v3-20260807.json",
+  "status": "ratified_and_applied"
+}

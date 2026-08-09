@@ -73,19 +73,16 @@ When making a routing-architecture proposal, name which of these four (and which
 
 ## Subsystem Status
 
-**Current AutoPilot checkpoint - 2026-07-14T00:00Z**: current runtime truth
-now lives in [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md)
-plus `uv run python scripts/autopilot/phase_health_report.py --json`, not in
-copied PID/trial prose in this index. Latest audited read (2026-07-14T00:00Z)
-reports AutoPilot back on current code (`code_stale=false`) at trial `1346`
-after the 2026-07-14 authority restart onto orchestrator `402e461b`
-(seq-fallback unblock; `177` tests passed), with
-`AUTOPILOT_PLANNER_SPEND_BREAKER=0` and retryable seq baseline-reference
-fallback selection active for infra-contaminated retry targets. Planner routing
-is local-first (`AUTOPILOT_PLANNER_PRIMARY=local_ingest`,
-`AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, fallback `claude`). Older live
-PID/current-code-clean claims below are historical checkpoints; agents should
-re-run the phase-health command before making a run/pause/restart claim.
+**Current AutoPilot checkpoint - 2026-08-09**: AutoPilot is intentionally stopped. Orchestrator
+`3f62f712` implements the staged T1 screen → matched T2 → matched T3 → fresh T1 promotion policy,
+same-tier baselines, exact runtime rollback, and fail-closed startup until a human-ratified three-tier
+bundle exists. `83c8777a`/`f3b262b8` repair batched episodic reseeding across all six embedder servers;
+an atomic 63,786-row semantic rebuild is in progress. After its semantic gate: API-only dashboard
+reload, immutable T1=100/T2=500/T3=160 incumbent baselines, then one consolidated human ratifier.
+Do not restart AutoPilot after ratification without separate operator permission. Runtime and detailed
+evidence remain authoritative in
+[`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md); older PID/current-code
+claims below are historical.
 
 **2026-07-06T06:36Z update**: orchestrator `f16a7bba` adds
 `autopilot_planner_provider_watch`, an active-safe deterministic lab job backed

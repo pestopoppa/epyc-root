@@ -1,0 +1,38 @@
+{
+  "autopilot_started": false,
+  "baseline_summary": {
+    "eval_concurrency": 4,
+    "eval_wall_s": 2128.0007615089417,
+    "n_questions": 100,
+    "quality": 1.5,
+    "reliability": 1.0,
+    "task_rate_qph": 169.17287179198564
+  },
+  "boundary": "2026-08-08T14:47:08.081912Z",
+  "collection_commit": "498675be744b991a60719b8ba19244e1131de6a0",
+  "eras": {
+    "autopilot_speed": "E15-autopilot-physical-cohort-v7-speed",
+    "eval_quality": "E15-eval-physical-cohort-v7-quality"
+  },
+  "eras_backup": "/mnt/raid0/llm/epyc-root/artifacts/operator/instrument_eras.pre-e15-physical-cohort-v7-20260808.yaml",
+  "evidence": {
+    "path": "/mnt/raid0/llm/epyc-root/artifacts/operator/e15_v7_operational_diagnostic_iter6_20260808.json",
+    "sha256": "e7e78849e37a16641711c9d6d6a0a8dff99cf406f6285ab3f21f99bf43cb86d9"
+  },
+  "execution_instrument_id": "resource_lanes_v7_physical_cohort_exclusion",
+  "objective_policy": "task_rate_4d_v7_physical_cohort_exclusion",
+  "ratification_commit": "d08bc9cf63af358b5644ff4e64bc1b265b1a7afa",
+  "ratified_at": "2026-08-08T17:28:07.061902Z",
+  "schema_version": "epyc.e15_physical_cohort_v7_ratification.v1",
+  "scoring_schedule_id": "model_judge_tail_v4_gpu_lifecycle_quiescence",
+  "sha256": {
+    "eras_candidate": "eb3b7390b0f1b196a2f72a914d6d9974ba4891f6cba706e12bea8f9a8aa1596d",
+    "eras_preimage": "d76213551a1d5cfdec8a13c06f55d0e2fdffc67edbb4320bf2148c3775de528a",
+    "ratifier": "a2be7b3620032cc0bc9fdb11c022c45c4b653ed3cbbaa9cbbc34ceba723170a5",
+    "state_candidate": "2ddd30c97347cf68685e5121ffc573b47befbb2eae3ff9b2d541dce9f983e037",
+    "state_preimage": "a547651c6e1da5564a10f6480494cc5f60d28ee0dff2da87c77616c679239747"
+  },
+  "state_backup": "/mnt/raid0/llm/epyc-root/artifacts/operator/autopilot_state.pre-e15-physical-cohort-v7-20260808.json",
+  "status": "ratified_and_applied",
+  "writes_performed": true
+}
