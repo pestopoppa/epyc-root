@@ -2048,6 +2048,15 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       2026-06-04 → 2026-07-25 window. Validation passed 216 focused dashboard/core tests, JavaScript parse,
       Ruff lint, and repository gates. API-only deployment launched commit `38f42470`; AutoPilot was not
       stopped or restarted.
+- [x] **Scrub uncertified task-rate telemetry from the all-era Pareto view. ✅ 2026-08-09**
+      Orchestrator `3b5ac37e` removes the invalid fallback that reconstructed questions/hour from legacy
+      request-speed fields. Only rows stamped with a certified task-rate objective policy and accepted by
+      the canonical sequential task-rate builder retain task-rate/goodput telemetry; legacy, unstamped, and
+      malformed rows remain visible on their honest historical axes but carry a null task rate plus an
+      explicit evidence status. Live verification retained 21 certified points at 38.45–228.94 q/h and
+      suppressed 908 uncertified points, including the trial-1302 scaling outlier. Validation passed 217
+      focused tests, dashboard JavaScript parsing, Ruff, and repository gates. The API-only deployment did
+      not stop or restart AutoPilot.
 - [ ] **AP-50 — Turn “what optimizes the orchestrator” into a decision cockpit.** Default to the current
       measurement era and distinguish proposed, executed, valid, kept, promoted, and currently-live
       states; “applied” alone is operationally ambiguous. Add current trial/intervention/falsifier,
