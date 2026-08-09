@@ -41,6 +41,26 @@ Use the canonical [repository map](../CLAUDE.md#repository-map) and dependency m
   [Act, Don't Defer](shared/OPERATING_CONSTRAINTS.md#act-dont-defer--the-admission-test-for-escalating-at-all).
 - Operator input requests that pass that test follow the canonical [decision-package contract](shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).
 
+## Operator-Facing Language
+
+Write all text for the operator in ASD-STE100 Simplified Technical English. This applies to
+chat replies, status reports, decision packages, handoff prose, and commit messages.
+
+- Use one approved meaning per word. Use the same word for the same thing every time.
+- Use short sentences: 20 words maximum for procedures, 25 for descriptive text.
+- Use the active voice. Name the agent of each action.
+- Use one topic in each sentence. Use one instruction in each step.
+- Write paragraphs of 6 sentences maximum.
+- Use articles (`the`, `a`) and full clauses. Do not write telegraphic text.
+- Use the simple verb tenses. Do not use `-ing` forms as nouns or as compound verbs.
+- Do not use synonyms, idioms, jargon, or metaphor when a plain word is available.
+- Keep technical names, command names, file paths, metric names, and quoted evidence exactly
+  as they are. STE controls the prose around them, not the identifiers in them.
+- Give warnings and cautions before the step that they apply to.
+
+STE controls the FORM of the text. It does not change the content rules: the claim grammar in
+`agents/shared/MEASUREMENT_POLICY.md` and the decision-package contract stay as they are.
+
 ## Output Contract
 
 Each substantial task should end with:
