@@ -163,8 +163,12 @@ def anchor_entry(entry: dict, *, document: str | None = None) -> list[dict]:
     if not isinstance(url, str) or not url.strip():
         return []
     have = {a.get("claim_index") for a in entry.get("claim_anchors") or []}
-    claims = [c for c in (entry.get("key_claims") or []) if isinstance(c, str)]
-    if not claims or all(i in have for i in range(len(claims))):
+    # Enumerate the ORIGINAL list and skip non-strings in place. Filtering first and enumerating
+    # the filtered list shifts every index after a non-string claim, which silently pins a quote
+    # hash to the WRONG claim -- measured on the 2026-08-10 bulk run as 1 anchor in 352, on
+    # intake-218. Seven entries in the index carry a non-string key_claim.
+    claims = [(i, c) for i, c in enumerate(entry.get("key_claims") or []) if isinstance(c, str)]
+    if not claims or all(i in have for i, _ in claims):
         return []
 
     doc = document if document is not None else fetch_text(url)
@@ -172,7 +176,7 @@ def anchor_entry(entry: dict, *, document: str | None = None) -> list[dict]:
         return []
 
     out = []
-    for i, claim in enumerate(claims):
+    for i, claim in claims:
         if i in have:
             continue
         hit = best_span(claim, doc)

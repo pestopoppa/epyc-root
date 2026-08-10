@@ -126,3 +126,22 @@ def test_a_non_numeric_claim_is_unaffected_by_the_guard():
     doc = ("The state-recomputation kernel is written to a fixed block dimension and the "
            "scheduler interleaves prefill with decode across the available devices.")
     assert best_span("The scheduler interleaves prefill with decode.", doc) is not None
+
+
+def test_a_non_string_claim_does_not_shift_the_indices_after_it():
+    """Filtering non-strings before enumerating pins the hash to the WRONG claim.
+
+    Measured on the 2026-08-10 bulk run: 1 anchor in 352 landed on intake-218 claim 0 when it
+    described a later claim. Seven index entries carry a non-string key_claim.
+    """
+    e = {
+        "id": "intake-902",
+        "url": "https://example.com/p",
+        "key_claims": [
+            {"structured": "not a string"},
+            "The state-recomputation kernel uses a fixed 64-wide block dimension.",
+        ],
+    }
+    got = anchor_entry(e, document=DOC)
+    assert len(got) == 1
+    assert got[0]["claim_index"] == 1, "index must refer to the original key_claims list"

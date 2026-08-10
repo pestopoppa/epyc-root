@@ -238,10 +238,17 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       appear in its span — and its own first version passed the contradiction anyway, because
       `MATH-500` contributed "500" to both sides: a shared NAME reading as a shared number.
       Identifiers are now excluded. 13 tests, negative control first ✅ 2026-08-10
-- [ ] PR1b-scale Run the pass over the remaining ~650 cited entries. Rate-limited at 3 s/fetch, so
-      roughly 35 minutes of wall clock; the hit rate on the first 12 was 20 of 48 claims (42%).
-      Hand-review the low-coverage tail of each batch before applying — that is what caught both
-      bad anchors, and it does not become optional at scale
+- [x] PR1b-scale **Run at scale: 351 anchors applied across 158 entries.** The T axis went from
+      **5 anchored claims in 4,191** this morning to **371 at `MachineLocated`** plus the 5 human
+      ones. Ledger grade distribution now carries `Hinted/MachineLocated: 371`, a level that had
+      zero occupants before today ✅ 2026-08-10
+- [x] PR1b-index-bug The hand-review found a third defect, and this one was silent: the anchorer
+      filtered non-string claims out of `key_claims` and then enumerated the FILTERED list, so every
+      index after a non-string claim shifted — pinning a quote hash to the wrong claim. Seven index
+      entries carry a non-string claim; 1 of the 352 proposals was affected. Fixed to enumerate the
+      original list, pinned by test, and intake-218 dropped from the batch rather than repaired —
+      re-running it under fixed code is cheap, guessing which claim it meant is not ✅ 2026-08-10
+- [ ] PR1b-218 Re-run the anchoring pass for intake-218 under the corrected indexing
 - [x] PR1b-verify-110 **Not a mis-anchor — the SOURCE was corrected upstream and our record aged
       into falsity.** Verified against full text of arXiv:2603.05433 v1 and v7. Our claim is a
       verbatim copy of the v1 abstract; the authors later found the "+9-16 points" was a SCORING
@@ -257,9 +264,12 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       intake-110 — the case that motivated it — alongside SkillsBench (v4), HiSpec (v2) and
       Speculative Speculative Decoding (v3). What it asserts is deliberately narrow and pinned by
       test: drift means the source moved and nobody has looked since, NOT that the entry is wrong ✅ 2026-08-10
-- [ ] PR1b-drift-triage Triage the drifted entries the full sweep returns. Each needs a human to
-      compare our recorded claims against the current version — the detector can find them and
-      cannot judge them
+- [ ] PR1b-drift-triage Triage the drifted entries. Full sweep: **68 of 617 arXiv entries (11%)
+      had their source revised after we recorded it**, and only **1 is a dived entry**
+      (intake-990, ingested 2026-08-03, source updated the next day). That ratio is the reassuring
+      part — our *verified* claims are mostly pinned to stable versions — but each still needs a
+      human to compare the record against the current text. The detector finds them and cannot
+      judge them
 - [ ] PR2c-remaining Backfill `claim_corrections` on the other 26 `dive-overturned` entries. Needs
       whoever dived each one to say which claims they actually touched; guessing on their behalf is
       the failure the field exists to prevent
