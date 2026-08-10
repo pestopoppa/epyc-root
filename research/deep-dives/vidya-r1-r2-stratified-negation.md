@@ -1,7 +1,8 @@
 # R1 / R2 — Retraction and certified absence through stratified negation
 
-**Status:** research note. **R1 is UNRESOLVED**; this document states it precisely, records the
-partial results obtained, and names what would settle it. **R2 is scoped**, with one hard
+**Status:** research note. **R1 is RESOLVED (2026-08-10)** — exact for a single negation
+boundary with a proof (§2.4f), refuted for composition with a three-rule counterexample, and the
+repair characterized including its cost. **R2 is scoped**, with one hard
 constraint that removes an entire implementation approach.
 **Date:** 2026-08-09
 **Owning handoff:** [`handoffs/active/vidya-belief-substrate-program.md`](../../handoffs/active/vidya-belief-substrate-program.md) §R1, §R2
@@ -254,6 +255,47 @@ level of a correction's whole blast radius.
 so `R1b-closure-size` becomes measurable on a real program rather than on toy sweeps — and the
 91.7% closure fraction that made the exact incremental route look pointless can finally be
 re-measured where it matters. It does not unblock `R1b-proof`; the theorem is unchanged.
+
+### 2.4f R1b RESOLVED — exact at one boundary, refuted across two (2026-08-10)
+
+The conjecture is settled. It is **true for a single negation boundary, with a proof**, and
+**false for composition, with a three-rule counterexample**.
+
+**One boundary: exact.** Stratum 1 is positive, so retraction is monotone downward —
+`lower_post ⊆ lower_pre`. The recorded set `S` is the least set with `r ∈ S` iff every positive
+body atom of `r` lies in `lower_pre ∪ heads(S)`, and that closure operator is monotone in its base,
+so the post-retraction closure satisfies `S' ⊆ S`. Every rule that can fire after the retraction is
+therefore already recorded, and re-evaluating `S` against the new lower stratum derives exactly what
+full re-evaluation derives. This is what the 5,670-instance depth-2 sweep was measuring.
+
+**Two boundaries: refuted.** The argument above uses monotonicity, and monotonicity is exactly what
+a negation boundary destroys: removing a base fact can make a guard true and **add** an atom at
+stratum 2, so `lower_post(2) ⊄ lower_pre(2)`. A stratum-3 rule whose positive body needs an atom
+that exists only *after* the retraction was never recorded, because the closure was seeded from the
+atoms stratum 2 derived *before* it.
+
+```
+stratum 1:  p :- a
+stratum 2:  r :- not p        # r exists only once `a` is retracted
+stratum 3:  t :- r            # positive body, needs that atom
+```
+
+Retract `a`: ground truth derives `{r, t}`; the dual-closed route derives `{r}`. The recorded
+stratum-3 circuit is empty, because at record time `r` was absent.
+(`scripts/vidya/r1_adversarial.py`.)
+
+**Why 40,500 swept instances found nothing.** The generator's stratum-3 rules never included a bare
+positive body over a stratum-2 negation head. *Exhaustive over a generator is not exhaustive*, and
+a null from a sweep bounds only the shapes the generator emits — which is a sharper statement of
+the caveat §2.4c already carried, now with an instance attached.
+
+**The repair, and its price.** Seed each stratum's closure with the heads the stratum below *could*
+derive, guards ignored, rather than the ones it did. That fixes the counterexample and gives 0
+counterexamples over the same 40,500 instances. It also keeps **88.4%** of stratum rules as circuit
+nodes, against 91.7% for the unrepaired route at depth 2 — so the corrected route saves 11.6% over
+full re-evaluation, and the conclusion of §2.4c stands unchanged: **not worth building.**
+
+R1b is therefore closed as a research question. What remains is engineering nobody currently wants.
 
 ### 2.5 What would settle it
 

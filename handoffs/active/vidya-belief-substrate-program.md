@@ -402,7 +402,17 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       single-pass stratum evaluator; the ground truth was wrong on both sides. A fully-formed
       spurious refutation, caught by suspecting the test method
       (`scripts/vidya/r1_depth3_sweep.py`, §2.4e) ✅ 2026-08-10
-- [ ] R1b-proof The proof remains open
+- [x] R1b-proof **RESOLVED — and the answer is both.** Exact for a SINGLE negation boundary, with
+      a proof: stratum 1 is positive so `lower_post ⊆ lower_pre`, the closure operator is monotone
+      in its base, hence `S' ⊆ S` and every rule that can fire is already recorded. **Refuted for
+      composition**, by a three-rule program built by reasoning about where that argument breaks —
+      monotonicity is exactly what a negation boundary destroys, so a stratum-3 rule needing a
+      post-retraction-only atom is never recorded (`p :- a`, `r :- not p`, `t :- r`; truth derives
+      `{r,t}`, the route derives `{r}`). The 40,500-instance null missed it because the generator
+      never emitted that shape — **exhaustive over a generator is not exhaustive**. The repair
+      (seed each closure with POSSIBLE heads) fixes it, 0 counterexamples over the same sweep, and
+      retains 88.4% of rules — so §2.4c's verdict is unchanged: not worth building.
+      `research/deep-dives/vidya-r1-r2-stratified-negation.md` §2.4f ✅ 2026-08-10
 - [x] R1b-closure-size **Closed as CONDITIONAL, not left open.** Measured what exists: the
       negation stratum is 4 `depends_on` edges with reach 1 each — 0.09% of the corpus — so a
       closure fraction over it describes 4 hand-authored edges, not a program. Growing it to a

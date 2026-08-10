@@ -99,3 +99,71 @@ def test_a_stratum_is_a_fixpoint_not_a_single_pass():
     assert R._eval_stratum2(ordered, lower, dict(lower)) == \
         R._eval_stratum2(reversed_, lower, dict(lower))
     assert "s" in R._eval_stratum2(ordered, lower, dict(lower))
+
+
+# ---------------------------------- R1b RESOLVED: exact at one boundary, refuted across two
+
+
+def _eval_all(strata, facts):
+    cur = {k: v for k, v in R._eval_positive(strata[0], facts).items() if v != R.BOTTOM}
+    for rules in strata[1:]:
+        cur = {k: v for k, v in R._eval_stratum2(rules, cur, dict(cur)).items() if v != R.BOTTOM}
+    return cur
+
+
+def _dual_closed(strata, base, retract):
+    pre = {k: v for k, v in R._eval_positive(strata[0], base).items() if v != R.BOTTOM}
+    circuits, cur = [], pre
+    for rules in strata[1:]:
+        circuits.append(R.stratum2_circuit_dual_closed(rules, cur))
+        cur = {k: v for k, v in R._eval_stratum2(rules, cur, dict(cur)).items() if v != R.BOTTOM}
+    post = {k: v for k, v in base.items() if k != retract}
+    cur = {k: v for k, v in R._eval_positive(strata[0], post).items() if v != R.BOTTOM}
+    for c in circuits:
+        cur = {k: v for k, v in R._eval_stratum2(c, cur, dict(cur)).items() if v != R.BOTTOM}
+    return cur
+
+
+ADVERSARIAL = [
+    [R.Rule("p", ("a",))],          # positive
+    [R.Rule("r", (), ("p",))],      # r exists only once `a` is retracted
+    [R.Rule("t", ("r",))],          # positive body needing that post-retraction-only atom
+]
+
+
+def test_dual_closed_is_REFUTED_across_two_negation_boundaries():
+    """Three rules settle what 40,500 swept instances missed.
+
+    The stratum-3 closure is seeded from the atoms stratum 2 DERIVED before the retraction, so a
+    rule whose body needs an atom appearing only AFTER it is never recorded. Constructed by
+    reasoning about where the single-boundary argument breaks, not found by searching.
+    """
+    truth = _eval_all(ADVERSARIAL, {})
+    got = _dual_closed(ADVERSARIAL, {"a": R.TOP_G}, "a")
+    assert "t" in truth, "ground truth derives t once a is gone"
+    assert "t" not in got, "the route misses it — that is the refutation"
+
+
+def test_seeding_the_closure_with_possible_heads_repairs_it():
+    """The repair: seed each closure with heads the stratum below COULD derive, not did."""
+    def closure_over(rules, available):
+        rules, recorded, avail, changed = list(rules), [], set(available), True
+        while changed:
+            changed = False
+            for r in rules:
+                if r not in recorded and all(b in avail for b in r.body):
+                    recorded.append(r)
+                    avail.add(r.head)
+                    changed = True
+        return recorded
+
+    pre = {k: v for k, v in R._eval_positive(ADVERSARIAL[0], {"a": R.TOP_G}).items()
+           if v != R.BOTTOM}
+    circuits, avail = [], set(pre)
+    for rules in ADVERSARIAL[1:]:
+        circuits.append(closure_over(rules, avail))
+        avail = avail | {r.head for r in rules}
+    cur = {}
+    for c in circuits:
+        cur = {k: v for k, v in R._eval_stratum2(c, cur, dict(cur)).items() if v != R.BOTTOM}
+    assert "t" in cur, "the repaired closure records the rule and derives t"
