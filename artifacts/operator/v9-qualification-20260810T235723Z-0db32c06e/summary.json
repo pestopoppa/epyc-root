@@ -1,0 +1,110 @@
+{
+  "schema": "epyc.kernel_promotion_qualification.v1",
+  "created_at": "2026-08-10T23:57:23Z",
+  "status": "preproduction_qualification_pass",
+  "production_mutated": false,
+  "candidate": {
+    "branch": "experimental-v9-dspark-promotion",
+    "commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+    "version": "10125",
+    "remote_ref": "fork/experimental-v9-dspark-promotion",
+    "remote_commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c"
+  },
+  "baseline": {
+    "branch": "production-consolidated-v8",
+    "commit": "67a433bf45a8a091d83b4ea0b32ff0735fd51800",
+    "version": "10107"
+  },
+  "operator_waivers": {
+    "uptime": "operator_20260810_current_boot_pass_stands_reboot_only_on_fail_or_gray"
+  },
+  "gates": {
+    "cpu_hip_build_and_linkage": {
+      "status": "pass",
+      "cpu_server_sha256": "8ebb1355593121a231735d7b58ad076f4539d2c5e3847fa09d2922fa8a980499",
+      "hip_server_sha256": "21cfb750dc0ba4b3add0674fcb9dd061d77b3604ebf8e1d063ba0e2c51902feb",
+      "candidate_local_ggml_linkage": true
+    },
+    "architecture_backend_loader_recurrent_sampler": {
+      "status": "pass",
+      "note": "CPU and HIP architecture, backend-op, loader-reshape, recurrent-state, sampler and IQK suites passed. Six HIP BF16 one-token LIGHTNING_INDEXER cases reproduced identically on v8 and are not a v9 regression."
+    },
+    "cpu_production_roles": {
+      "status": "pass",
+      "minimum_reps_per_arm": 10,
+      "exact_deterministic_response_parity": true,
+      "ratios": {
+        "architect_critic": 1.0147111653001422,
+        "frontdoor": 0.9938132953953569,
+        "ingest_long_context": 0.9844613397680132,
+        "worker_general": 0.9958253973505097
+      },
+      "evidence": {
+        "path": "/workspace/worktrees/v9-promotion-research/data/kernel-v9-candidate/promotion-plan-20260810/cpu-comparison.json",
+        "sha256": "b09ec4d839cf3501f305e165cecfdea95cba58148f356bbfb0f2dea45a4e5872"
+      }
+    },
+    "quality": {
+      "status": "pass",
+      "worker_general": {
+        "mmlu_pro": {"baseline": 0.365, "candidate": 0.36, "n": 200},
+        "gpqa": {"baseline": 0.24615384615384617, "candidate": 0.2512820512820513, "n": 195},
+        "errors": 0,
+        "evidence_sha256": "be02b8d26b5f7da33745b35df60516dc9805728011a23c3137c91fb85094cc07"
+      },
+      "architect_critic": {
+        "mmlu_pro": {"baseline": 0.635, "candidate": 0.635, "n": 200},
+        "gpqa": {"baseline": 0.5692307692307692, "candidate": 0.5692307692307692, "n": 195},
+        "errors": 0,
+        "evidence_sha256": "c2a4f7afe0d2e10ce24605fce3e5eb7c856e4e892d810ee696723e2bacc72694"
+      }
+    },
+    "dspark_q8_parity": {
+      "status": "pass",
+      "parallel_slots": 1,
+      "disabled_cap": 0,
+      "enabled_cap": 3,
+      "exact_token_parity": true,
+      "drafted": 18,
+      "accepted": 9,
+      "evidence": {
+        "path": "/workspace/worktrees/v9-promotion-research/data/kernel-v9-candidate/dspark-final-tip/run-20260810T223500Z-parity-gated/summary.json",
+        "sha256": "13f4a2a2f36fe5eb1639d6540bb3f5701cb43412a6516c4c29e62393e4a2fa0d"
+      }
+    },
+    "gpu_candidate_functional_observation": {
+      "status": "pass",
+      "decision_grade": false,
+      "reason": "P-GPU-1 requires a production-named kernel; certification follows cutover.",
+      "architect_native_mtp": {"drafted": 125, "accepted": 95, "decode_tps": 53.35936825842942},
+      "coder_request_cap_zero": {"request_cap": 0, "draft_activity_observed": false, "decode_tps": 30.267775223934244},
+      "worker_vision_decode_tps": 96.67082300856217,
+      "cleanup_failures": 0,
+      "evidence": {
+        "path": "/workspace/worktrees/v9-promotion-research/data/kernel-v9-candidate/promotion-plan-20260810/v9-gpu-smoke-run/summary.json",
+        "sha256": "db2b022da1d56cd6e8a89341a735a1873dc524bf3645a4ec0b332f7976b8dd45"
+      }
+    },
+    "topology_and_no_inference_promotion": {
+      "status": "pass",
+      "orchestrator_commit": "2ef332286d70ced03d123007865c89ce5d2fefd0",
+      "quarter_mode": true,
+      "promotion_tests": {"passed": 191, "failed": 0},
+      "routing_fallback": "fail_closed_to_frontdoor"
+    },
+    "relocatable_runtime": {
+      "status": "pass",
+      "evidence_sha256": "8c4f507a2072fdb170ad4ac7bfa9ca4867bd20023587615b5f960eab9e21580b"
+    },
+    "rollback_rehearsal": {
+      "status": "pass",
+      "evidence_sha256": "77f473946eeb551effb586d7516eb7654fbeb47003e7a3e5e4e48eecdb1e2a1d"
+    }
+  },
+  "evidence_commits": {
+    "research": "c5135deb25ece64b5f9efab3c99cb6010d916e59",
+    "orchestrator": "2ef332286d70ced03d123007865c89ce5d2fefd0",
+    "root_promotion_prep": "e24cbd9b12b092619726dec300cb91eeb74c09a5"
+  },
+  "cutover_disposition": "authorized_and_eligible"
+}
