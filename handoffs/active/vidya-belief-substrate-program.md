@@ -63,8 +63,14 @@ gate this program has already passed.
 
 ### Open work — start here
 
-The only outstanding tasks are in **Source coverage** below: `SC6-LIVE`, `SC10`, `SC11`, `SC7`, `SC6-HAZARD`.
-Every other track is complete and lives in the completed sibling linked under Completed Scope.
+Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC10`, `SC11`, `SC7`, `SC6-HAZARD`) and
+**Consumption** (`SC14`, `SC15`). Everything else is complete and lives in the completed sibling
+linked under Completed Scope.
+
+The write side is done and the read side now exists: `cli.py cite-check` gates citations,
+`cli.py corrections` ranks the adjudication backlog. The two open consumption items are the ones a
+machine must not do alone — `SC14` needs the session that owns `autopilot.py`, `SC15` needs a human
+reading dive text against claims.
 
 ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?)
 
@@ -197,6 +203,63 @@ Every other track is complete and lives in the completed sibling linked under Co
       locator**, so 2,605 separate result files measuring the same thing would read as 2,605
       independent witnesses. Same-harness runs are not independent evidence. A bulk adapter needs a
       run-level (not file-level) locator or it manufactures corroboration
+
+### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?)
+
+Audit finding that opened this section: **nothing outside `scripts/vidya/` read the fold.** A grep
+across `scripts/`, `repos/epyc-orchestrator/scripts/` and `.claude/` returned zero references, and
+the only projection on disk was a 2026-08-09 demo. The engine was complete and had no drivetrain.
+
+- [x] SC12 **Citation gate** — `scripts/vidya/citation_gate.py`, `cli.py cite-check`. Scans project
+      documents for `intake-NNN` citations, resolves them forward through the merge map, and applies
+      a use policy to what they actually rest on. Live result over **1,754 citations in 142
+      documents: 6 overturned, 3 conflicted, 144 resting on an unadjudicated correction.** Blocking
+      is exactly `{dangling, overturned, conflicted}` — the three states a citer can act on today;
+      `review` warns, per §10's auto-downgrade rule, because blocking on 571 review-required claims
+      would fail most of the repository on the first run and get the tool switched off. Precise
+      citations (`intake-896#03`) gate one claim and are the escape hatch ✅ 2026-08-10
+- [x] SC12-FIND **The gate found real damage on its first run.** `handoffs/active/intake-derived-work-2026-07-25.md`
+      and `wiki/knowledge-management.md` both rest on intake-896, whose claim 03 a dive found
+      **fabricated by a Stage-1 summariser**; three documents rest on intake-110 claim 04, a
+      "+9–16 points" figure the authors themselves revised away upstream ✅ 2026-08-10
+- [x] SC13 **Correction adjudication queue** — `scripts/vidya/correction_queue.py`,
+      `cli.py corrections`. The 103 `correction_reviewed` frames in the ledger came from a one-off
+      backfill and **no code path emitted them**, so 571 claims were permanently BLOCKed for
+      authoritative use. Now: `list` (ranked by how many documents cite the entry — a queue drained
+      in id order is a queue nobody finishes), `worksheet` (every decision `pending`, which emits
+      nothing), `emit` (writes `correction_reviewed` + the `claim_corrections` block for the index).
+      **129 distinct corrections blocking 571 claims; 81 are cited.** End-to-end verified on a ledger
+      copy: 6 claims BLOCK → ALLOW, pending rows untouched ✅ 2026-08-10
+- [x] SC13-DEFECT **Two silent defects found while building it.** (1) A correction recorded N times
+      — 485 correction frames carry **155 distinct corrections**, because `per_claim_effects` was
+      added as `{...} or None` and an explicit null changed the dedup key, re-emitting the corpus.
+      `fold` blocks while ANY copy is unreviewed, so reviewing 3 of 4 leaves the claim blocked with
+      nothing to show why; the queue now groups by content and emits one frame per copy, and
+      `_dedup_key` drops informationless nulls so the next additive field cannot repeat it. (2) The
+      queue read claim ids from the correction's own assertion and missed `clm_intake_374_03`, which
+      only matches after alias resolution — claim ids are now read back out of the fold ✅ 2026-08-10
+- [x] SC12-REGEX **Fixed a live defect in the shared citation scanner.** `citation_gate` reported a
+      dangling citation to `intake-2602`, an entry that does not exist. Source text:
+      `(intake-374/378/2602.11149 synthesis)` — the SC5 run-form pattern ate `/2602` out of an arXiv
+      id. The first fix then let the engine backtrack into the partial number `260`; a `\b` anchor
+      closes it. SC5's own numbers are unchanged (707 edges, 28 pages) — the bad citation was in a
+      handoff, not a wiki page ✅ 2026-08-10
+- [ ] SC14 **Planner read-side seam — the highest-value consumer, and not ours to wire.** AutoPilot's
+      planner has independently reinvented much of this kernel: a mandatory falsifier, an append-only
+      resolution ledger (confirmed/refuted/inconclusive), and `evidence_trial_ids: []` refused on a
+      prior because *"being the operator's idea is not new evidence"* (`operator_hypotheses.py`).
+      What it cannot do for itself: propagate a retraction when a trial that resolved a hypothesis is
+      later invalidated; distinguish "confirmed by one noisy run" from "confirmed by a sealed
+      measurement"; or share a negative with AutoKernel. **Wire at PROMOTION, never at generation** —
+      gating hypothesis generation would turn a discovery loop into a justification loop, and trials
+      are already born `CANDIDATE` (SC6), so the kernel's job is the CANDIDATE → BASELINE/OPTIMUM
+      transition. Cost is not the obstacle: fold is 0.08 s over 20,328 frames and a gate query is
+      0.001 ms. **Blocked**: `autopilot.py` is held by another session (`OPERATOR_HYPOTHESES_INTEGRATION.md`
+      pins its SHA-256 and says so). Hand this to whoever owns that file
+- [ ] SC15 **Drain the queue.** 129 corrections, 81 cited by project documents, top ones cited 5–7
+      times. Not startable by a summariser: each verdict needs the dive text read against the claim,
+      which is the exact failure intake-896 memorialises. Start with the cited head — `cli.py
+      corrections` ranks it — and record `effect` per claim, never per entry
 
 ## Dependency notes
 

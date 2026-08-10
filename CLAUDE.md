@@ -129,6 +129,12 @@ they can never gate a decision.
 and `claim_tuple.grade()` decides; the carrier is shared but each source class has exactly one
 ladder, and the registry refuses a second. Contract: `docs/design/vidya-pilot-spec.md` §4.7.
 
+**Citing an intake entry as rationale?** `python3 scripts/vidya/cli.py cite-check --as-of <ts>`
+gates `intake-NNN` citations in handoffs, wiki and docs (exit 3 on a refuted, conflicted, or
+dangling one). Cite the claim, not the entry — `intake-896#03` — because an entry-level citation
+inherits every defect of every claim in it. The consumer table is in
+[`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.md).
+
 ## Debugging
 
 - **Always confirm metric direction** (higher/lower=better) and correct baselines before proposing fixes; identify root cause, don't patch symptoms.
