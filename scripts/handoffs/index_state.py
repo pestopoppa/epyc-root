@@ -58,7 +58,7 @@ DOMAIN_INDICES = [
     "inference-research-index.md",
     "routing-and-optimization-index.md",
     "research-evaluation-index.md",
-    "hermes-agent-index.md",
+    "user-facing-harness-index.md",
     "pipeline-integration-index.md",
     "reviewer-control-plane-index.md",
 ]

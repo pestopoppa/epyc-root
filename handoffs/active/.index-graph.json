@@ -1,11 +1,11 @@
 {
   "domains": [
-    "hermes-agent",
     "inference-research",
     "pipeline-integration",
     "research-evaluation",
     "reviewer-control-plane",
-    "routing-and-optimization"
+    "routing-and-optimization",
+    "user-facing-harness"
   ],
   "edge_kinds": {
     "dep": "hand-authored Deps column \u2014 semantic: blocked on",
@@ -134,24 +134,6 @@
     {
       "from": "EVL-07",
       "kind": "ref",
-      "to": "HRM-03",
-      "weight": 2
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "HRM-04",
-      "weight": 4
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
-      "to": "HRM-05",
-      "weight": 7
-    },
-    {
-      "from": "EVL-07",
-      "kind": "ref",
       "to": "INF-07",
       "weight": 2
     },
@@ -232,6 +214,24 @@
       "kind": "ref",
       "to": "RTG-45",
       "weight": 4
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "UFH-03",
+      "weight": 2
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "UFH-04",
+      "weight": 4
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "UFH-05",
+      "weight": 7
     },
     {
       "from": "EVL-08",
@@ -542,18 +542,6 @@
     {
       "from": "EVL-29",
       "kind": "ref",
-      "to": "HRM-01",
-      "weight": 4
-    },
-    {
-      "from": "EVL-29",
-      "kind": "ref",
-      "to": "HRM-05",
-      "weight": 3
-    },
-    {
-      "from": "EVL-29",
-      "kind": "ref",
       "to": "INF-02",
       "weight": 2
     },
@@ -654,6 +642,18 @@
       "weight": 4
     },
     {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "UFH-01",
+      "weight": 4
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "UFH-05",
+      "weight": 3
+    },
+    {
       "from": "EVL-32",
       "kind": "ref",
       "to": "EVL-07",
@@ -722,12 +722,6 @@
     {
       "from": "EVL-37",
       "kind": "ref",
-      "to": "HRM-07",
-      "weight": 2
-    },
-    {
-      "from": "EVL-37",
-      "kind": "ref",
       "to": "PIP-04",
       "weight": 2
     },
@@ -735,6 +729,12 @@
       "from": "EVL-37",
       "kind": "ref",
       "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "EVL-37",
+      "kind": "ref",
+      "to": "UFH-07",
       "weight": 2
     },
     {
@@ -801,18 +801,6 @@
       "from": "EVL-44",
       "kind": "ref",
       "to": "EVL-43",
-      "weight": 1
-    },
-    {
-      "from": "EVL-44",
-      "kind": "ref",
-      "to": "HRM-04",
-      "weight": 1
-    },
-    {
-      "from": "EVL-44",
-      "kind": "ref",
-      "to": "HRM-06",
       "weight": 1
     },
     {
@@ -912,6 +900,18 @@
       "weight": 1
     },
     {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "UFH-04",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "UFH-06",
+      "weight": 1
+    },
+    {
       "from": "EVL-45",
       "kind": "ref",
       "to": "RTG-39",
@@ -948,114 +948,6 @@
       "weight": 2
     },
     {
-      "from": "HRM-01",
-      "kind": "ref",
-      "to": "EVL-29",
-      "weight": 6
-    },
-    {
-      "from": "HRM-01",
-      "kind": "ref",
-      "to": "EVL-32",
-      "weight": 4
-    },
-    {
-      "from": "HRM-01",
-      "kind": "ref",
-      "to": "HRM-02",
-      "weight": 11
-    },
-    {
-      "from": "HRM-01",
-      "kind": "ref",
-      "to": "HRM-07",
-      "weight": 4
-    },
-    {
-      "from": "HRM-02",
-      "kind": "ref",
-      "to": "HRM-01",
-      "weight": 4
-    },
-    {
-      "from": "HRM-02",
-      "kind": "ref",
-      "to": "PIP-04",
-      "weight": 2
-    },
-    {
-      "from": "HRM-02",
-      "kind": "ref",
-      "to": "RTG-14",
-      "weight": 2
-    },
-    {
-      "from": "HRM-02",
-      "kind": "ref",
-      "to": "RTG-33",
-      "weight": 2
-    },
-    {
-      "from": "HRM-03",
-      "kind": "ref",
-      "to": "INF-05",
-      "weight": 2
-    },
-    {
-      "from": "HRM-04",
-      "kind": "ref",
-      "to": "EVL-44",
-      "weight": 2
-    },
-    {
-      "from": "HRM-04",
-      "kind": "ref",
-      "to": "INF-19",
-      "weight": 2
-    },
-    {
-      "from": "HRM-05",
-      "kind": "ref",
-      "to": "EVL-29",
-      "weight": 2
-    },
-    {
-      "from": "HRM-05",
-      "kind": "ref",
-      "to": "HRM-04",
-      "weight": 2
-    },
-    {
-      "from": "HRM-05",
-      "kind": "ref",
-      "to": "INF-19",
-      "weight": 2
-    },
-    {
-      "from": "HRM-07",
-      "kind": "ref",
-      "to": "EVL-32",
-      "weight": 3
-    },
-    {
-      "from": "HRM-07",
-      "kind": "ref",
-      "to": "HRM-01",
-      "weight": 2
-    },
-    {
-      "from": "HRM-07",
-      "kind": "ref",
-      "to": "PIP-04",
-      "weight": 2
-    },
-    {
-      "from": "HRM-07",
-      "kind": "ref",
-      "to": "RTG-08",
-      "weight": 6
-    },
-    {
       "from": "INF-01",
       "kind": "ref",
       "to": "INF-46",
@@ -1076,12 +968,6 @@
     {
       "from": "INF-02",
       "kind": "ref",
-      "to": "HRM-01",
-      "weight": 2
-    },
-    {
-      "from": "INF-02",
-      "kind": "ref",
       "to": "INF-48",
       "weight": 2
     },
@@ -1095,6 +981,12 @@
       "from": "INF-02",
       "kind": "ref",
       "to": "RTG-39",
+      "weight": 2
+    },
+    {
+      "from": "INF-02",
+      "kind": "ref",
+      "to": "UFH-01",
       "weight": 2
     },
     {
@@ -1154,14 +1046,14 @@
     {
       "from": "INF-04",
       "kind": "ref",
-      "to": "HRM-05",
-      "weight": 2
+      "to": "INF-54",
+      "weight": 4
     },
     {
       "from": "INF-04",
       "kind": "ref",
-      "to": "INF-54",
-      "weight": 4
+      "to": "UFH-05",
+      "weight": 2
     },
     {
       "from": "INF-06",
@@ -2264,14 +2156,14 @@
     {
       "from": "PIP-04",
       "kind": "ref",
-      "to": "HRM-07",
-      "weight": 2
+      "to": "PIP-01",
+      "weight": 12
     },
     {
       "from": "PIP-04",
       "kind": "ref",
-      "to": "PIP-01",
-      "weight": 12
+      "to": "UFH-07",
+      "weight": 2
     },
     {
       "from": "PIP-05",
@@ -2390,7 +2282,7 @@
     {
       "from": "REV-05",
       "kind": "ref",
-      "to": "HRM-01",
+      "to": "UFH-01",
       "weight": 2
     },
     {
@@ -2468,12 +2360,6 @@
     {
       "from": "REV-09",
       "kind": "ref",
-      "to": "HRM-06",
-      "weight": 2
-    },
-    {
-      "from": "REV-09",
-      "kind": "ref",
       "to": "REV-04",
       "weight": 2
     },
@@ -2487,6 +2373,12 @@
       "from": "REV-09",
       "kind": "ref",
       "to": "RTG-40",
+      "weight": 2
+    },
+    {
+      "from": "REV-09",
+      "kind": "ref",
+      "to": "UFH-06",
       "weight": 2
     },
     {
@@ -2530,12 +2422,6 @@
       "kind": "ref",
       "to": "EVL-32",
       "weight": 5
-    },
-    {
-      "from": "RTG-02",
-      "kind": "ref",
-      "to": "HRM-01",
-      "weight": 2
     },
     {
       "from": "RTG-02",
@@ -2590,6 +2476,12 @@
       "kind": "ref",
       "to": "RTG-41",
       "weight": 3
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "UFH-01",
+      "weight": 2
     },
     {
       "from": "RTG-04",
@@ -2660,18 +2552,6 @@
     {
       "from": "RTG-08",
       "kind": "ref",
-      "to": "HRM-05",
-      "weight": 2
-    },
-    {
-      "from": "RTG-08",
-      "kind": "ref",
-      "to": "HRM-07",
-      "weight": 12
-    },
-    {
-      "from": "RTG-08",
-      "kind": "ref",
       "to": "RTG-02",
       "weight": 2
     },
@@ -2686,6 +2566,18 @@
       "kind": "ref",
       "to": "RTG-30",
       "weight": 2
+    },
+    {
+      "from": "RTG-08",
+      "kind": "ref",
+      "to": "UFH-05",
+      "weight": 2
+    },
+    {
+      "from": "RTG-08",
+      "kind": "ref",
+      "to": "UFH-07",
+      "weight": 12
     },
     {
       "from": "RTG-09",
@@ -2810,12 +2702,6 @@
     {
       "from": "RTG-14",
       "kind": "ref",
-      "to": "HRM-02",
-      "weight": 2
-    },
-    {
-      "from": "RTG-14",
-      "kind": "ref",
       "to": "RTG-10",
       "weight": 2
     },
@@ -2823,6 +2709,12 @@
       "from": "RTG-14",
       "kind": "ref",
       "to": "RTG-30",
+      "weight": 2
+    },
+    {
+      "from": "RTG-14",
+      "kind": "ref",
+      "to": "UFH-02",
       "weight": 2
     },
     {
@@ -3020,30 +2912,6 @@
     {
       "from": "RTG-22",
       "kind": "ref",
-      "to": "HRM-04",
-      "weight": 2
-    },
-    {
-      "from": "RTG-22",
-      "kind": "ref",
-      "to": "HRM-05",
-      "weight": 4
-    },
-    {
-      "from": "RTG-22",
-      "kind": "ref",
-      "to": "HRM-06",
-      "weight": 2
-    },
-    {
-      "from": "RTG-22",
-      "kind": "ref",
-      "to": "HRM-07",
-      "weight": 3
-    },
-    {
-      "from": "RTG-22",
-      "kind": "ref",
       "to": "INF-05",
       "weight": 2
     },
@@ -3138,6 +3006,30 @@
       "weight": 2
     },
     {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "UFH-04",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "UFH-05",
+      "weight": 4
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "UFH-06",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "UFH-07",
+      "weight": 3
+    },
+    {
       "from": "RTG-23",
       "kind": "ref",
       "to": "EVL-09",
@@ -3218,12 +3110,6 @@
     {
       "from": "RTG-30",
       "kind": "ref",
-      "to": "HRM-04",
-      "weight": 2
-    },
-    {
-      "from": "RTG-30",
-      "kind": "ref",
       "to": "RTG-14",
       "weight": 2
     },
@@ -3231,6 +3117,12 @@
       "from": "RTG-30",
       "kind": "ref",
       "to": "RTG-15",
+      "weight": 2
+    },
+    {
+      "from": "RTG-30",
+      "kind": "ref",
+      "to": "UFH-04",
       "weight": 2
     },
     {
@@ -3446,12 +3338,6 @@
     {
       "from": "RTG-41",
       "kind": "ref",
-      "to": "HRM-02",
-      "weight": 2
-    },
-    {
-      "from": "RTG-41",
-      "kind": "ref",
       "to": "RTG-02",
       "weight": 2
     },
@@ -3459,6 +3345,12 @@
       "from": "RTG-41",
       "kind": "ref",
       "to": "RTG-09",
+      "weight": 2
+    },
+    {
+      "from": "RTG-41",
+      "kind": "ref",
+      "to": "UFH-02",
       "weight": 2
     },
     {
@@ -3520,9 +3412,117 @@
       "kind": "ref",
       "to": "RTG-42",
       "weight": 2
+    },
+    {
+      "from": "UFH-01",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 6
+    },
+    {
+      "from": "UFH-01",
+      "kind": "ref",
+      "to": "EVL-32",
+      "weight": 4
+    },
+    {
+      "from": "UFH-01",
+      "kind": "ref",
+      "to": "UFH-02",
+      "weight": 11
+    },
+    {
+      "from": "UFH-01",
+      "kind": "ref",
+      "to": "UFH-07",
+      "weight": 4
+    },
+    {
+      "from": "UFH-02",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 2
+    },
+    {
+      "from": "UFH-02",
+      "kind": "ref",
+      "to": "RTG-14",
+      "weight": 2
+    },
+    {
+      "from": "UFH-02",
+      "kind": "ref",
+      "to": "RTG-33",
+      "weight": 2
+    },
+    {
+      "from": "UFH-02",
+      "kind": "ref",
+      "to": "UFH-01",
+      "weight": 4
+    },
+    {
+      "from": "UFH-03",
+      "kind": "ref",
+      "to": "INF-05",
+      "weight": 2
+    },
+    {
+      "from": "UFH-04",
+      "kind": "ref",
+      "to": "EVL-44",
+      "weight": 2
+    },
+    {
+      "from": "UFH-04",
+      "kind": "ref",
+      "to": "INF-19",
+      "weight": 2
+    },
+    {
+      "from": "UFH-05",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "UFH-05",
+      "kind": "ref",
+      "to": "INF-19",
+      "weight": 2
+    },
+    {
+      "from": "UFH-05",
+      "kind": "ref",
+      "to": "UFH-04",
+      "weight": 2
+    },
+    {
+      "from": "UFH-07",
+      "kind": "ref",
+      "to": "EVL-32",
+      "weight": 3
+    },
+    {
+      "from": "UFH-07",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 2
+    },
+    {
+      "from": "UFH-07",
+      "kind": "ref",
+      "to": "RTG-08",
+      "weight": 6
+    },
+    {
+      "from": "UFH-07",
+      "kind": "ref",
+      "to": "UFH-01",
+      "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T10:02:09Z",
+  "generated_at": "2026-08-10T10:41:00Z",
   "nodes": [
     {
       "age_days": 11,
@@ -4125,7 +4125,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 83,
+      "closed": 86,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
@@ -4147,97 +4147,6 @@
       "open": 19,
       "state": "active",
       "track": "fable5 window2 findings 05c mi210 lever cate"
-    },
-    {
-      "age_days": 11,
-      "blocked": 0,
-      "closed": 14,
-      "domain": "hermes-agent",
-      "handoff": "harness-selection-and-integration.md",
-      "id": "HRM-01",
-      "last_advanced": "2026-07-30",
-      "next_action": "HS-4 \u2014 Harness-selection decision gate: Hermes vs OpenCode vs an ACP-speaker, gated on HS-1 + HS-2. Default outcome preserved: (A) stays or\u2026",
-      "open": 2,
-      "state": "active",
-      "track": "harness selection and integration"
-    },
-    {
-      "age_days": 12,
-      "blocked": 0,
-      "closed": 19,
-      "domain": "hermes-agent",
-      "handoff": "hermes-outer-shell.md",
-      "id": "HRM-02",
-      "last_advanced": "2026-07-29",
-      "next_action": "Multi-turn context (references prior answer)",
-      "open": 11,
-      "state": "active",
-      "track": "hermes outer shell"
-    },
-    {
-      "age_days": 12,
-      "blocked": 0,
-      "closed": 1,
-      "domain": "hermes-agent",
-      "handoff": "memento-block-reasoning-compression.md",
-      "id": "HRM-03",
-      "last_advanced": "2026-07-29",
-      "next_action": "S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)",
-      "open": 5,
-      "state": "active",
-      "track": "memento block reasoning compression"
-    },
-    {
-      "age_days": 12,
-      "blocked": 0,
-      "closed": 3,
-      "domain": "hermes-agent",
-      "handoff": "minddr-deep-research-mode.md",
-      "id": "HRM-04",
-      "last_advanced": "2026-07-29",
-      "next_action": "Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) \u2014 BLOCKED 2026-07-29: GPU is id\u2026",
-      "open": 9,
-      "state": "active",
-      "track": "minddr deep research mode"
-    },
-    {
-      "age_days": 12,
-      "blocked": 0,
-      "closed": 23,
-      "domain": "hermes-agent",
-      "handoff": "reasoning-compression.md",
-      "id": "HRM-05",
-      "last_advanced": "2026-07-29",
-      "next_action": "If validated: implement enforce mode (route easy\u2192worker, hard\u2192architect)",
-      "open": 5,
-      "state": "active",
-      "track": "reasoning compression"
-    },
-    {
-      "age_days": 12,
-      "blocked": 0,
-      "closed": 2,
-      "domain": "hermes-agent",
-      "handoff": "security-review-skill.md",
-      "id": "HRM-06",
-      "last_advanced": "2026-07-29",
-      "next_action": "GATE-0 production-reachability, ordered BEFORE exploitability. CodeCrucible short-circuits on whether the code path is reachable in product\u2026",
-      "open": 6,
-      "state": "active",
-      "track": "security review skill"
-    },
-    {
-      "age_days": 12,
-      "blocked": 0,
-      "closed": 15,
-      "domain": "hermes-agent",
-      "handoff": "tool-output-compression.md",
-      "id": "HRM-07",
-      "last_advanced": "2026-07-29",
-      "next_action": "P4e \u2014 Decision gate: roll-out scope (no time estimate; data-driven). After 1 week of P4c data, decide per-command: (i) promote to default (\u2026",
-      "open": 4,
-      "state": "active",
-      "track": "tool output compression"
     },
     {
       "age_days": 12,
@@ -5759,6 +5668,97 @@
       "open": 1,
       "state": "active",
       "track": "x mas text routing"
+    },
+    {
+      "age_days": 11,
+      "blocked": 0,
+      "closed": 14,
+      "domain": "user-facing-harness",
+      "handoff": "harness-selection-and-integration.md",
+      "id": "UFH-01",
+      "last_advanced": "2026-07-30",
+      "next_action": "HS-4 \u2014 Harness-selection decision gate: Hermes vs OpenCode vs an ACP-speaker, gated on HS-1 + HS-2. Default outcome preserved: (A) stays or\u2026",
+      "open": 2,
+      "state": "active",
+      "track": "harness selection and integration"
+    },
+    {
+      "age_days": 12,
+      "blocked": 0,
+      "closed": 19,
+      "domain": "user-facing-harness",
+      "handoff": "hermes-outer-shell.md",
+      "id": "UFH-02",
+      "last_advanced": "2026-07-29",
+      "next_action": "Multi-turn context (references prior answer)",
+      "open": 11,
+      "state": "active",
+      "track": "hermes outer shell"
+    },
+    {
+      "age_days": 12,
+      "blocked": 0,
+      "closed": 1,
+      "domain": "user-facing-harness",
+      "handoff": "memento-block-reasoning-compression.md",
+      "id": "UFH-03",
+      "last_advanced": "2026-07-29",
+      "next_action": "S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)",
+      "open": 5,
+      "state": "active",
+      "track": "memento block reasoning compression"
+    },
+    {
+      "age_days": 12,
+      "blocked": 0,
+      "closed": 3,
+      "domain": "user-facing-harness",
+      "handoff": "minddr-deep-research-mode.md",
+      "id": "UFH-04",
+      "last_advanced": "2026-07-29",
+      "next_action": "Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) \u2014 BLOCKED 2026-07-29: GPU is id\u2026",
+      "open": 9,
+      "state": "active",
+      "track": "minddr deep research mode"
+    },
+    {
+      "age_days": 12,
+      "blocked": 0,
+      "closed": 23,
+      "domain": "user-facing-harness",
+      "handoff": "reasoning-compression.md",
+      "id": "UFH-05",
+      "last_advanced": "2026-07-29",
+      "next_action": "If validated: implement enforce mode (route easy\u2192worker, hard\u2192architect)",
+      "open": 5,
+      "state": "active",
+      "track": "reasoning compression"
+    },
+    {
+      "age_days": 12,
+      "blocked": 0,
+      "closed": 2,
+      "domain": "user-facing-harness",
+      "handoff": "security-review-skill.md",
+      "id": "UFH-06",
+      "last_advanced": "2026-07-29",
+      "next_action": "GATE-0 production-reachability, ordered BEFORE exploitability. CodeCrucible short-circuits on whether the code path is reachable in product\u2026",
+      "open": 6,
+      "state": "active",
+      "track": "security review skill"
+    },
+    {
+      "age_days": 12,
+      "blocked": 0,
+      "closed": 15,
+      "domain": "user-facing-harness",
+      "handoff": "tool-output-compression.md",
+      "id": "UFH-07",
+      "last_advanced": "2026-07-29",
+      "next_action": "P4e \u2014 Decision gate: roll-out scope (no time estimate; data-driven). After 1 week of P4c data, decide per-command: (i) promote to default (\u2026",
+      "open": 4,
+      "state": "active",
+      "track": "tool output compression"
     }
   ],
   "schema": "index_graph.v1"

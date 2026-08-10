@@ -373,8 +373,8 @@
       "owning_handoff": "handoffs/active/hermes-outer-shell.md",
       "checkbox": "G \u2014 Validate subagent + single-slot llama-server interaction",
       "also_flips": [
-        "handoffs/active/hermes-agent-index.md#Reference non-Hermes client",
-        "handoffs/active/hermes-agent-index.md#Live Hermes end-to-end smoke checklist"
+        "handoffs/active/user-facing-harness-index.md#Reference non-Hermes client",
+        "handoffs/active/user-facing-harness-index.md#Live Hermes end-to-end smoke checklist"
       ],
       "handoff_exists": true,
       "checkbox_line": null,

@@ -6,7 +6,7 @@
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)
-**Related**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`research-evaluation-index.md`](research-evaluation-index.md), [`pipeline-integration-index.md`](pipeline-integration-index.md), [`hermes-agent-index.md`](hermes-agent-index.md), [`inference-acceleration-index.md`](inference-acceleration-index.md), [`cross-role-nway-contention-matrix.md`](../completed/cross-role-nway-contention-matrix.md)
+**Related**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`research-evaluation-index.md`](research-evaluation-index.md), [`pipeline-integration-index.md`](pipeline-integration-index.md), [`user-facing-harness-index.md`](user-facing-harness-index.md), [`inference-acceleration-index.md`](inference-acceleration-index.md), [`cross-role-nway-contention-matrix.md`](../completed/cross-role-nway-contention-matrix.md)
 
 ---
 
@@ -113,7 +113,7 @@ Complete or overtaken by the Package J reprioritization. Full runbook detail (co
 | **B** | Instrumented seeding eval v2 — tool-compression +4pp, WS-3 fix validated (2026-04-10) | [`routing-intelligence.md`](routing-intelligence.md) |
 | **C** | Context-folding eval batch — 30B summarizer, L3 sweet spot, TALE deferred (2026-04-11) | [`context-folding-progressive.md`](context-folding-progressive.md) |
 | **D** | AR-3 relaunch + RI-10 canary (ran autonomously; canary live since 2026-04-06) | [`routing-and-optimization-index.md`](routing-and-optimization-index.md) · [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) |
-| **E** | Vision + Hermes multimodal validation — Hermes PASS, vision fixed 2026-04-08 | [`pipeline-integration-index.md`](pipeline-integration-index.md) · [`hermes-agent-index.md`](hermes-agent-index.md) |
+| **E** | Vision + Hermes multimodal validation — Hermes PASS, vision fixed 2026-04-08 | [`pipeline-integration-index.md`](pipeline-integration-index.md) · [`user-facing-harness-index.md`](user-facing-harness-index.md) |
 | **F** | llama.cpp v3 smoke tests + production binary swap (coder +101%, REAP +50%, 2026-04-10) | [`inference-acceleration-index.md`](inference-acceleration-index.md) |
 
 ---

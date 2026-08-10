@@ -708,7 +708,7 @@
     },
     {
       "evidence_files": [
-        "/workspace/handoffs/active/hermes-agent-index.md",
+        "/workspace/handoffs/active/user-facing-harness-index.md",
         "/workspace/handoffs/active/hermes-outer-shell.md"
       ],
       "id": "hotpot_hermes_outer_shell",
@@ -719,7 +719,7 @@
         "outer-shell"
       ],
       "resolved_evidence_files": [
-        "/workspace/handoffs/active/hermes-agent-index.md",
+        "/workspace/handoffs/active/user-facing-harness-index.md",
         "/workspace/handoffs/active/hermes-outer-shell.md"
       ]
     },

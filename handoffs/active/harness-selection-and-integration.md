@@ -3,7 +3,7 @@
 **Status**: active — strategy/selection index (harness UNCHOSEN; no implementation committed)
 **Created**: 2026-07-16 (operator question: keep the Orch orthogonal to its harness, or bake it in?)
 **Categories**: agent_architecture, inference_serving, tool_implementation, context_management
-**Related (down)**: [`hermes-outer-shell.md`](hermes-outer-shell.md) (Hermes candidate eval), [`hermes-agent-index.md`](hermes-agent-index.md) (Hermes/agent-UX dispatch), [`tool-output-compression.md`](tool-output-compression.md) (context-collision surface), [`meta-harness-optimization.md`](meta-harness-optimization.md) (RLM harness self-improvement lineage)
+**Related (down)**: [`hermes-outer-shell.md`](hermes-outer-shell.md) (Hermes candidate eval), [`user-facing-harness-index.md`](user-facing-harness-index.md) (Hermes/agent-UX dispatch), [`tool-output-compression.md`](tool-output-compression.md) (context-collision surface), [`meta-harness-optimization.md`](meta-harness-optimization.md) (RLM harness self-improvement lineage)
 **Related (precedent)**: [`../completed/orchestrator-conversation-management.md`](../completed/orchestrator-conversation-management.md) (backend-side session/compaction boundary), [`../archived/claude-code-local-constellation-routing.md`](../archived/claude-code-local-constellation-routing.md) (archived ACP-as-Path-B precedent)
 
 ## Objective
@@ -25,7 +25,7 @@ The Orch's value splits into two layers:
 
 | Candidate | Kind | Cooperation surface | Detailed track |
 |---|---|---|---|
-| **Hermes / OpenGauss** | open-source | `/v1` + `x_*` overrides; ACP adapter as "Path B" | [`hermes-outer-shell.md`](hermes-outer-shell.md) + [`hermes-agent-index.md`](hermes-agent-index.md) |
+| **Hermes / OpenGauss** | open-source | `/v1` + `x_*` overrides; ACP adapter as "Path B" | [`hermes-outer-shell.md`](hermes-outer-shell.md) + [`user-facing-harness-index.md`](user-facing-harness-index.md) |
 | **OpenCode** | open-source | TBD (no eval yet) | — (task HS-1 stands one up) |
 | **ACP-speaking open harnesses** | open-source | ACP (Agent Client Protocol) | contingent on ACP-ROI (task HS-2) |
 | ~~Claude Code / grok-build~~ | closed | none (can't be made to defer) | excluded — reference only (dev harness) |

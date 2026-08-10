@@ -625,7 +625,7 @@ After completing all phases, fill in this table:
 | Task ID | Source | Description |
 |---------|--------|-------------|
 | Vision P0 | [pipeline-integration-index](pipeline-integration-index.md) P0 | Live validation with VL model servers |
-| Hermes P2 | [hermes-agent-index](hermes-agent-index.md) P2 | Streaming + routing override param validation |
+| Hermes P2 | [user-facing-harness-index](user-facing-harness-index.md) P2 | Streaming + routing override param validation |
 
 ### Commands
 

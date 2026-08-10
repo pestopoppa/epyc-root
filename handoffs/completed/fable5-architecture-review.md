@@ -141,7 +141,7 @@ explicitly inviting you to refute the framing.**
 The full catalogue of implemented + backlogged capabilities lives in the handoff indices. Start
 at `handoffs/active/master-handoff-index.md`, which dispatches to five domain indices:
 `routing-and-optimization-index.md`, `inference-acceleration-index.md`,
-`cpu-inference-optimization-index.md`, `research-evaluation-index.md`, `hermes-agent-index.md`.
+`cpu-inference-optimization-index.md`, `research-evaluation-index.md`, `user-facing-harness-index.md`.
 
 **Use gitnexus first** to understand architecture, dependencies, and execution flows — it is far
 cheaper than reading raw source and is freshly relevant:

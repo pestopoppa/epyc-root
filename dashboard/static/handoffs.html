@@ -997,7 +997,7 @@ const IDX_COLOR = {
   "inference-research":       "#58a6ff",
   "routing-and-optimization": "#d29922",
   "research-evaluation":      "#3fb950",
-  "hermes-agent":             "#bc8cff",
+  "user-facing-harness":      "#bc8cff",
   "pipeline-integration":     "#f778ba",
   "reviewer-control-plane":   "#56d4dd",
 };
@@ -1010,12 +1010,19 @@ const SVGNS = "http://www.w3.org/2000/svg";
 const svgEl = (t,a={}) => { const n=document.createElementNS(SVGNS,t);
   for(const k in a) n.setAttribute(k,a[k]); return n; };
 const _hex = h => [1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
-const _mix = w => {                       // w: {domain: weight} -> css rgb
+// The OWNING index must stay recognisable; neighbours only tint. At an even mix
+// a blue+green blend lands on cyan and the band stops reading as its own domain,
+// so home is weighted 0.82 — measured to keep 170/172 node centres classifying to
+// their own index colour while hybrids remain visibly shifted.
+const HOME_W = 0.82;
+const _mix = (w, home) => {
   let t=0,r=0,g=0,b=0;
-  for(const d in w){ const c=IDX_COLOR[d]; if(!c) continue;
+  for(const d in w){ if(d===home) continue; const c=IDX_COLOR[d]; if(!c) continue;
     const [R,G,B]=_hex(c); r+=R*w[d]; g+=G*w[d]; b+=B*w[d]; t+=w[d]; }
-  if(!t) return "#8b949e";
-  return `rgb(${Math.round(r/t)},${Math.round(g/t)},${Math.round(b/t)})`;
+  const hc=_hex(IDX_COLOR[home]||"#8b949e");
+  if(!t) return `rgb(${hc[0]},${hc[1]},${hc[2]})`;
+  const nm=[r/t,g/t,b/t];
+  return `rgb(${hc.map((v,i)=>Math.round(v*HOME_W+nm[i]*(1-HOME_W))).join(",")})`;
 };
 
 async function loadGraph(){
@@ -1050,34 +1057,51 @@ async function loadGraph(){
   for(const e of edges){ (nbr[e.from]||=new Set()).add(e.to); (nbr[e.to]||=new Set()).add(e.from); }
   const domOf={}; for(const n of g.nodes) domOf[n.id]=n.domain;
 
-  // ---- geometry
-  const W=1200, TOP=64, BAND=150, PAD=26;
-  const colX={}; doms.forEach((d,i)=>{ colX[d]=PAD+ (W-2*PAD) * (i+0.5)/doms.length; });
+  // ---- geometry: proportional domain bands (with a floor) + force relaxation.
+  // Equal-sixths put 58 nodes and 5 nodes in the same width, cramming one end and
+  // emptying the other; a pure count split then gave the 5-node domain a 33px band
+  // whose label collided with its neighbours'. Floor first, share the rest by
+  // population. Relaxation replaces the old y-only beeswarm, which stacked equal-x
+  // nodes into vertical icicles.
+  const W=1200, TOP=64, BAND=158, PAD=26, MINW=118, ITER=260, SPRING=0.06, LIFT=0.55;
+  const doms2=doms.slice();
+  const counts={}; doms2.forEach(d=>counts[d]=g.nodes.filter(n=>n.domain===d).length);
+  const total=g.nodes.length||1, inner=W-2*PAD;
+  const slack=Math.max(0, inner-MINW*doms2.length);
+  const colX={}, half={};
+  let x0=PAD;
+  doms2.forEach(d=>{ const w=MINW+slack*counts[d]/total;
+    colX[d]=x0+w/2; half[d]=w/2; x0+=w; });
 
-  // x = own index pulled toward the domains it links into; y = beeswarm slot.
-  const placed=[];
-  const items=g.nodes.map(n=>{
-    const w={}; w[n.domain]=3;                       // own index dominates…
-    for(const m of (nbr[n.id]||[])){                 // …neighbours tug it
-      const d=domOf[m]; if(d) w[d]=(w[d]||0)+1; }
-    let tw=0,x=0; for(const d in w){ if(colX[d]===undefined) continue; x+=colX[d]*w[d]; tw+=w[d]; }
-    return {n, fill:_mix(w), x: tw?x/tw:colX[n.domain],
-            r: Math.max(3.5, Math.min(13, 3.2+1.75*Math.sqrt(n.open)))};
-  }).sort((a,b)=>a.x-b.x);
+  const items=g.nodes.map((n,i)=>{
+    const w={}; w[n.domain]=3;
+    for(const m of (nbr[n.id]||[])){ const d=domOf[m]; if(d) w[d]=(w[d]||0)+1; }
+    let tw=0,bx=0; for(const d in w){ if(colX[d]===undefined) continue; bx+=colX[d]*w[d]; tw+=w[d]; }
+    bx = tw?bx/tw:colX[n.domain];
+    const home=colX[n.domain], lean=half[n.domain]*0.45;
+    // Lean toward neighbours but STAY INSIDE the home band: position carries
+    // ownership, fill carries hybridness. Letting nodes cross boundaries put
+    // amber routing nodes inside the inference band.
+    const tx=home+Math.max(-lean, Math.min(lean, bx-home));
+    return {n, w, tx, x:tx, y:BAND+(i%11)*5,
+            fill:_mix(w, n.domain),
+            r:Math.max(3.6, Math.min(13, 3.2+1.75*Math.sqrt(n.open)))};
+  });
 
-  let maxY=BAND;
-  for(const it of items){
-    let y=BAND;
-    for(let guard=0; guard<4000; guard++){
-      const hit=placed.some(q=>{
-        const dx=q.x-it.x, dy=q.y-y, rr=q.r+it.r+2.5;
-        return dx*dx+dy*dy < rr*rr; });
-      if(!hit) break;
-      y+=3;
-    }
-    it.y=y; placed.push(it); if(y+it.r>maxY) maxY=y+it.r;
+  for(let k=0;k<ITER;k++){
+    for(const it of items){ it.x+=(it.tx-it.x)*SPRING; it.y-=LIFT; if(it.y<BAND) it.y=BAND; }
+    for(let a=0;a<items.length;a++){ const A=items[a];
+      for(let b=a+1;b<items.length;b++){ const B=items[b];
+        const dx=B.x-A.x, dy=B.y-A.y, md=A.r+B.r+2.2, d2=dx*dx+dy*dy;
+        if(d2===0){ B.x+=0.7; B.y+=0.7; continue; }
+        if(d2>=md*md) continue;
+        const dist=Math.sqrt(d2), push=(md-dist)/2, ux=dx/dist, uy=dy/dist;
+        A.x-=ux*push; A.y-=uy*push; B.x+=ux*push; B.y+=uy*push;
+        if(A.y<BAND) A.y=BAND; if(B.y<BAND) B.y=BAND; } }
+    for(const it of items){ const lo=PAD+it.r, hi=W-PAD-it.r;
+      if(it.x<lo) it.x=lo; if(it.x>hi) it.x=hi; }
   }
-  const H=Math.ceil(maxY+PAD);
+  const H=Math.ceil(Math.max(...items.map(it=>it.y+it.r))+PAD);
   svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
 
   const gOwn=svgEl("g",{}), gRef=svgEl("g",{}), gNode=svgEl("g",{}), gIdx=svgEl("g",{});
@@ -1108,7 +1132,7 @@ async function loadGraph(){
     const x=colX[d], n=g.nodes.filter(v=>v.domain===d).length;
     gIdx.appendChild(svgEl("circle",{cx:x,cy:TOP,r:11,fill:IDX_COLOR[d],
       stroke:"#0d1117","stroke-width":2}));
-    const t1=svgEl("text",{x,y:TOP-20,"text-anchor":"middle",class:"domlabel"});
+    const t1=svgEl("text",{x,y:TOP-(doms.indexOf(d)%2?34:20),"text-anchor":"middle",class:"domlabel"});
     t1.textContent=d; gIdx.appendChild(t1);
     const t2=svgEl("text",{x,y:TOP+30,"text-anchor":"middle",class:"domlabel"});
     t2.textContent=`${n}`; gIdx.appendChild(t2);
@@ -1118,11 +1142,16 @@ async function loadGraph(){
   const circles={};
   for(const it of items){
     const n=it.n;
-    const c=svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:it.fill,
-      stroke:RING(n.age_days),"stroke-width":2,class:"node"});
-    // Blocked work is waiting, not stalled: a dashed ring says so without
-    // spending the fill (domain) or the ring colour (liveness) channel.
-    if(n.state==="blocked") c.setAttribute("stroke-dasharray","3 2.5");
+    // Liveness is an OUTER halo, never an inset ring: measured, a flat 2px inset
+    // ring took ~50% of a mean disc's area, so the liveness colour swamped the
+    // domain fill and every band read amber regardless of ownership.
+    const halo=svgEl("circle",{cx:it.x,cy:it.y,r:it.r+1.4,fill:"none",
+      stroke:RING(n.age_days),"stroke-width":1.6});
+    // Blocked work is waiting, not stalled — dashed halo, no extra colour channel.
+    if(n.state==="blocked"){ halo.setAttribute("stroke-dasharray","3 2.5");
+      halo.setAttribute("stroke","#f0f6fc"); }
+    gNode.appendChild(halo);
+    const c=svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:it.fill,class:"node"});
     c.addEventListener("mouseenter",()=>{
       const keep=new Set([n.id,...(nbr[n.id]||[])]);
       for(const k in circles) circles[k].classList.toggle("dimmed",!keep.has(k));

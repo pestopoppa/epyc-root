@@ -99,9 +99,9 @@
   "priority": "P3",
   "provenance": {
     "also_flips": [
-      "handoffs/active/hermes-agent-index.md#Hermes upstream pin bump",
-      "handoffs/active/hermes-agent-index.md#Reference non-Hermes client",
-      "handoffs/active/hermes-agent-index.md#Live Hermes end-to-end smoke checklist"
+      "handoffs/active/user-facing-harness-index.md#Hermes upstream pin bump",
+      "handoffs/active/user-facing-harness-index.md#Reference non-Hermes client",
+      "handoffs/active/user-facing-harness-index.md#Live Hermes end-to-end smoke checklist"
     ],
     "checkbox": "G \u2014 Validate subagent + single-slot llama-server interaction",
     "coordination_note": "Bundled Hermes inference smokes gated behind a quiet window: (a) pin bump v2026.3.23 -> v2026.4.23 + breaking-change audit smoke (basic chat / tool use / streaming / override / multi-turn), (b) reference non-Hermes client live --send/streaming validation, (c) subagent + single-slot llama-server interaction (2+ parallel subagents, same endpoint). Static wiring (plugin bundle F, skills, drift check) already landed; only live validation remains.\n",

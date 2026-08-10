@@ -1,9 +1,9 @@
 # Hermes/OpenGauss as Outer Shell
 
 **Status**: in-progress (Phase 1 complete, Phase 2 routing API done, skills + static validation wired; live Hermes validation pending)
-**Created**: 2026-03-20 (split from hermes-agent-index.md)
+**Created**: 2026-03-20 (split from user-facing-harness-index.md)
 **Updated**: 2026-07-16
-**Parent**: [hermes-agent-index.md](hermes-agent-index.md)
+**Parent**: [user-facing-harness-index.md](user-facing-harness-index.md)
 **Repos**: https://github.com/NousResearch/hermes-agent, https://github.com/math-inc/OpenGauss
 **Decision**: Vanilla Hermes (not OpenGauss) — OpenGauss is Lean 4-specific; Hermes has first-class custom endpoint support
 
@@ -277,7 +277,7 @@ Source: [`research/deep-dives/veniceai-skills-cross-runtime-authoring.md`](../..
 
 #### Phase 2+ Enhancement (added 2026-04-24 from intake-454 deep-dive)
 
-Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Depends on Wave 1B item D (pin bump v2026.3.23 → v2026.4.23) — D lives in [`hermes-agent-index.md`](hermes-agent-index.md) P2.6.
+Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Depends on Wave 1B item D (pin bump v2026.3.23 → v2026.4.23) — D lives in [`user-facing-harness-index.md`](user-facing-harness-index.md) P2.6.
 
 - [x] **F — Re-express `x_*` overrides as a namespaced Hermes plugin bundle** (4–6 h, depends on D) — DONE 2026-07-06
   - Upstream Hermes plugin-command plumbing was repaired in `/mnt/raid0/llm/hermes-agent`: `PluginContext.register_command()` now registers `CommandDef` entries, tracks canonical command handlers/aliases, exposes `invoke_plugin_command()`, passes CLI/gateway session context into plugin handlers, displays command counts in `/plugins`, and invokes mutable `pre_llm_call` hooks from chat-completions request construction.

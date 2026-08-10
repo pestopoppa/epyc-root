@@ -63,7 +63,7 @@ From 14-paper literature sweep (intake-784 through intake-797), compiled into `r
 | rec-007 | HIGH | KernelBench: kernel-level benchmarking | [`mi210-speed-campaign-summary.md`](mi210-speed-campaign-summary.md), [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md), [`v6-iqk-promotion.md`](../completed/v6-iqk-promotion.md) | Integrate into experimental kernel validation pipeline |
 | rec-008 | MED | EvoScientist: autonomous research orchestration | [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) | Cross-reference memory module patterns |
 | rec-009 | MED | J-space interpretability for routing | [`routing-intelligence.md`](routing-intelligence.md) | Review integration points for learned-head routing |
-| rec-010 | MED | fast-rlm: RLM harness patterns | [`hermes-agent-index.md`](hermes-agent-index.md) | Harvest ACP/MCP/session management patterns |
+| rec-010 | MED | fast-rlm: RLM harness patterns | [`user-facing-harness-index.md`](user-facing-harness-index.md) | Harvest ACP/MCP/session management patterns |
 
 **Key synthesis**: 3 HIGH-priority actions (rec-001/002/007), 6 MED, 1 LOW. SkillsBench v3 caution (self-generated skills net-negative -1.3pp) applies to all self-improvement/self-generation recommendations.
 

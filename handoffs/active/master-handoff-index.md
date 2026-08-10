@@ -15,7 +15,7 @@ and `handoffs/completed|archived/`.
 | Inference research | [inference-research-index.md](inference-research-index.md) | Kernels, quantization, serving performance, models (CPU **and** GPU) |
 | Routing / autopilot / stack | [routing-and-optimization-index.md](routing-and-optimization-index.md) | Orchestrator, registry, stack lifecycle, autopilot, fleet coordination |
 | Research & evaluation | [research-evaluation-index.md](research-evaluation-index.md) | Benchmarks, scorers, audits, research programs |
-| Hermes / agent UX | [hermes-agent-index.md](hermes-agent-index.md) | REPL/UX, prompting, memory, output compression |
+| User-facing harness | [user-facing-harness-index.md](user-facing-harness-index.md) | REPL/UX, prompting, memory, output compression (surface, not an implementation commitment) |
 | Pipelines & integration | [pipeline-integration-index.md](pipeline-integration-index.md) | Ingestion, document/RAG pipelines, knowledge base |
 | Reviewer control plane | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | Reviewer roles, capability gates, control-plane policy |
 
@@ -60,12 +60,12 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| hermes-agent | 7 | 42 | 0 | 2026-07-29 |
 | inference-research | 58 | 484 | 3 | 2026-07-29 |
 | pipeline-integration | 5 | 51 | 0 | 2026-07-29 |
-| research-evaluation | 48 | 302 | 0 | 2026-07-29 |
+| research-evaluation | 48 | 300 | 0 | 2026-07-29 |
 | reviewer-control-plane | 9 | 41 | 1 | 2026-07-29 |
-| routing-and-optimization | 45 | 305 | 1 | 2026-07-11 |
+| routing-and-optimization | 45 | 308 | 1 | 2026-07-29 |
+| user-facing-harness | 7 | 42 | 0 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

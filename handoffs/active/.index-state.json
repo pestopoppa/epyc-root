@@ -1,11 +1,5 @@
 {
   "domains": {
-    "hermes-agent-index.md": {
-      "blocked": 0,
-      "handoffs": 7,
-      "oldest_advance": "2026-07-29",
-      "open": 42
-    },
     "inference-research-index.md": {
       "blocked": 3,
       "handoffs": 58,
@@ -35,6 +29,12 @@
       "handoffs": 45,
       "oldest_advance": "2026-07-29",
       "open": 308
+    },
+    "user-facing-harness-index.md": {
+      "blocked": 0,
+      "handoffs": 7,
+      "oldest_advance": "2026-07-29",
+      "open": 42
     }
   },
   "duplicates": {},
@@ -793,8 +793,8 @@
       "guarded": 0,
       "last_advanced": "2026-07-30",
       "open": 2,
-      "owner_index": "hermes-agent-index.md",
-      "row_id": "HRM-01",
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-01",
       "state": "active",
       "total": 16
     },
@@ -804,8 +804,8 @@
       "guarded": 0,
       "last_advanced": "2026-07-29",
       "open": 11,
-      "owner_index": "hermes-agent-index.md",
-      "row_id": "HRM-02",
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-02",
       "state": "active",
       "total": 30
     },
@@ -1013,8 +1013,8 @@
       "guarded": 0,
       "last_advanced": "2026-07-29",
       "open": 5,
-      "owner_index": "hermes-agent-index.md",
-      "row_id": "HRM-03",
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-03",
       "state": "active",
       "total": 6
     },
@@ -1090,8 +1090,8 @@
       "guarded": 0,
       "last_advanced": "2026-07-29",
       "open": 9,
-      "owner_index": "hermes-agent-index.md",
-      "row_id": "HRM-04",
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-04",
       "state": "active",
       "total": 12
     },
@@ -1365,8 +1365,8 @@
       "guarded": 0,
       "last_advanced": "2026-07-29",
       "open": 5,
-      "owner_index": "hermes-agent-index.md",
-      "row_id": "HRM-05",
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-05",
       "state": "active",
       "total": 28
     },
@@ -1618,8 +1618,8 @@
       "guarded": 0,
       "last_advanced": "2026-07-29",
       "open": 6,
-      "owner_index": "hermes-agent-index.md",
-      "row_id": "HRM-06",
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-06",
       "state": "active",
       "total": 8
     },
@@ -1772,8 +1772,8 @@
       "guarded": 0,
       "last_advanced": "2026-07-29",
       "open": 4,
-      "owner_index": "hermes-agent-index.md",
-      "row_id": "HRM-07",
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-07",
       "state": "active",
       "total": 19
     },
@@ -1867,14 +1867,14 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 83,
+      "closed": 86,
       "guarded": 0,
       "last_advanced": "2026-08-10",
       "open": 11,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 94
+      "total": 97
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -2364,69 +2364,6 @@
       "line": 60,
       "next_action": "L12 \u2014 n-gram/prompt-lookup on GPU: 27B-Q8 + fp16 over code/JSON/prose sets, sweeping the three ngram spec types",
       "track": "fable5 window2 findings 05c mi210 lever cate"
-    },
-    "HRM-01": {
-      "deps": [],
-      "handoff": "harness-selection-and-integration.md",
-      "id": "HRM-01",
-      "index": "hermes-agent-index.md",
-      "line": 13,
-      "next_action": "HS-4 \u2014 Harness-selection decision gate: Hermes vs OpenCode vs an ACP-speaker, gated on HS-1 + HS-2. Default outcome preserved: (A) stays or\u2026",
-      "track": "harness selection and integration"
-    },
-    "HRM-02": {
-      "deps": [],
-      "handoff": "hermes-outer-shell.md",
-      "id": "HRM-02",
-      "index": "hermes-agent-index.md",
-      "line": 14,
-      "next_action": "Multi-turn context (references prior answer)",
-      "track": "hermes outer shell"
-    },
-    "HRM-03": {
-      "deps": [],
-      "handoff": "memento-block-reasoning-compression.md",
-      "id": "HRM-03",
-      "index": "hermes-agent-index.md",
-      "line": 15,
-      "next_action": "S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)",
-      "track": "memento block reasoning compression"
-    },
-    "HRM-04": {
-      "deps": [],
-      "handoff": "minddr-deep-research-mode.md",
-      "id": "HRM-04",
-      "index": "hermes-agent-index.md",
-      "line": 16,
-      "next_action": "Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) \u2014 BLOCKED 2026-07-29: GPU is id\u2026",
-      "track": "minddr deep research mode"
-    },
-    "HRM-05": {
-      "deps": [],
-      "handoff": "reasoning-compression.md",
-      "id": "HRM-05",
-      "index": "hermes-agent-index.md",
-      "line": 17,
-      "next_action": "If validated: implement enforce mode (route easy\u2192worker, hard\u2192architect)",
-      "track": "reasoning compression"
-    },
-    "HRM-06": {
-      "deps": [],
-      "handoff": "security-review-skill.md",
-      "id": "HRM-06",
-      "index": "hermes-agent-index.md",
-      "line": 18,
-      "next_action": "GATE-0 production-reachability, ordered BEFORE exploitability. CodeCrucible short-circuits on whether the code path is reachable in product\u2026",
-      "track": "security review skill"
-    },
-    "HRM-07": {
-      "deps": [],
-      "handoff": "tool-output-compression.md",
-      "id": "HRM-07",
-      "index": "hermes-agent-index.md",
-      "line": 19,
-      "next_action": "P4e \u2014 Decision gate: roll-out scope (no time estimate; data-driven). After 1 week of P4c data, decide per-command: (i) promote to default (\u2026",
-      "track": "tool output compression"
     },
     "INF-01": {
       "deps": [],
@@ -3482,6 +3419,69 @@
       "line": 57,
       "next_action": "Monitor post-enable live telemetry for unexpected domain regressions, latency regressions, or guard bypasses; rollback is xmas_routing.mode\u2026",
       "track": "x mas text routing"
+    },
+    "UFH-01": {
+      "deps": [],
+      "handoff": "harness-selection-and-integration.md",
+      "id": "UFH-01",
+      "index": "user-facing-harness-index.md",
+      "line": 13,
+      "next_action": "HS-4 \u2014 Harness-selection decision gate: Hermes vs OpenCode vs an ACP-speaker, gated on HS-1 + HS-2. Default outcome preserved: (A) stays or\u2026",
+      "track": "harness selection and integration"
+    },
+    "UFH-02": {
+      "deps": [],
+      "handoff": "hermes-outer-shell.md",
+      "id": "UFH-02",
+      "index": "user-facing-harness-index.md",
+      "line": 14,
+      "next_action": "Multi-turn context (references prior answer)",
+      "track": "hermes outer shell"
+    },
+    "UFH-03": {
+      "deps": [],
+      "handoff": "memento-block-reasoning-compression.md",
+      "id": "UFH-03",
+      "index": "user-facing-harness-index.md",
+      "line": 15,
+      "next_action": "S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)",
+      "track": "memento block reasoning compression"
+    },
+    "UFH-04": {
+      "deps": [],
+      "handoff": "minddr-deep-research-mode.md",
+      "id": "UFH-04",
+      "index": "user-facing-harness-index.md",
+      "line": 16,
+      "next_action": "Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) \u2014 BLOCKED 2026-07-29: GPU is id\u2026",
+      "track": "minddr deep research mode"
+    },
+    "UFH-05": {
+      "deps": [],
+      "handoff": "reasoning-compression.md",
+      "id": "UFH-05",
+      "index": "user-facing-harness-index.md",
+      "line": 17,
+      "next_action": "If validated: implement enforce mode (route easy\u2192worker, hard\u2192architect)",
+      "track": "reasoning compression"
+    },
+    "UFH-06": {
+      "deps": [],
+      "handoff": "security-review-skill.md",
+      "id": "UFH-06",
+      "index": "user-facing-harness-index.md",
+      "line": 18,
+      "next_action": "GATE-0 production-reachability, ordered BEFORE exploitability. CodeCrucible short-circuits on whether the code path is reachable in product\u2026",
+      "track": "security review skill"
+    },
+    "UFH-07": {
+      "deps": [],
+      "handoff": "tool-output-compression.md",
+      "id": "UFH-07",
+      "index": "user-facing-harness-index.md",
+      "line": 19,
+      "next_action": "P4e \u2014 Decision gate: roll-out scope (no time estimate; data-driven). After 1 week of P4c data, decide per-command: (i) promote to default (\u2026",
+      "track": "tool output compression"
     }
   },
   "schema": "index_state.v1"

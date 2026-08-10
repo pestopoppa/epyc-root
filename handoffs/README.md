@@ -22,7 +22,7 @@ As of 2026-05-27, `handoffs/active/` contains 84 non-index active handoffs plus 
 | Routing, orchestration, autopilot, stack config | [active/routing-and-optimization-index.md](active/routing-and-optimization-index.md) |
 | Inference speed, benchmarks, model acceleration | [active/inference-acceleration-index.md](active/inference-acceleration-index.md) |
 | Single-instance CPU throughput, OpenMP, NUMA, kernel flags | [active/cpu-inference-optimization-index.md](active/cpu-inference-optimization-index.md) |
-| Agent UX, Hermes, conversation management | [active/hermes-agent-index.md](active/hermes-agent-index.md) |
+| Agent UX, Hermes, conversation management | [active/user-facing-harness-index.md](active/user-facing-harness-index.md) |
 | Research, evaluation, monitoring | [active/research-evaluation-index.md](active/research-evaluation-index.md) |
 | Capability pipelines: vision, PDF, Lean, TTS, KB-RAG | [active/pipeline-integration-index.md](active/pipeline-integration-index.md) |
 | Blocked work | [blocked/BLOCKED.md](blocked/BLOCKED.md) |

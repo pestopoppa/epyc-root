@@ -222,7 +222,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     anything fleet-wide.
   - **TRANCHE 2 READ-CERTIFIED 2026-07-29 (`auditor`) — 45 boxes, STRATIFIED multi-box sample**
     (one median-size file from each of the 2-3 / 4-8 / 9-20 / 21+ buckets:
-    `objective-task-rate-goodput` 2, `integration-test-coverage` 5, `hermes-agent-index` 11,
+    `objective-task-rate-goodput` 2, `integration-test-coverage` 5, `user-facing-harness-index` 11,
     `gpu-serving-tie-in-program` 27). Per-box verdicts recorded in the commit.
     | verdict | n | % |
     |---|---|---|
@@ -240,7 +240,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     boxes of which most are later-phase or operator-gated. So the caution was right but the arrow
     pointed the wrong way, and I am recording that rather than quietly dropping the earlier warning.
     **THIRD NEW CATEGORY: DUP-INDEX.** 6 of 45 (13%) are index-pointer rows duplicating the owning
-    handoff's row (`hermes-agent-index:99/101/107/108/109/111`). The collision map names several as
+    handoff's row (`user-facing-harness-index:99/101/107/108/109/111`). The collision map names several as
     C2 duplicates; this confirms they **inflate the open-box total**, since both copies count.
     **Combined: 64 of 982 boxes certified (6.5%), 22 LIVE (34%).** Both strata independently land
     near one-third live, which is the first evidence that the ~1/3 figure may be robust — but 6.5%

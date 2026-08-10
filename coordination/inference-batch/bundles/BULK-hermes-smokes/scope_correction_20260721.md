@@ -14,4 +14,4 @@ still contains stale pin-bump wording because it records the pre-correction
 compiled entry hash used by that run. The source entry was corrected after the
 checkpoint audit so future manifests describe this batch as a standalone smoke
 harness gate. The actual pin-bump target selection/fetch/checkout/setup remains
-open in `handoffs/active/hermes-agent-index.md`.
+open in `handoffs/active/user-facing-harness-index.md`.

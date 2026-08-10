@@ -61,7 +61,7 @@ as submission; an empty-normalised fragment matching every pane), 29 tests**; **
 | Routing/autopilot/stack | [routing-and-optimization-index.md](routing-and-optimization-index.md) | | Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) |
 |---|---|---|---|---|
 | CPU throughput | [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md) | | Research/eval | [research-evaluation-index.md](research-evaluation-index.md) |
-| Hermes/agent UX | [hermes-agent-index.md](hermes-agent-index.md) | | Pipelines | [pipeline-integration-index.md](pipeline-integration-index.md) |
+| Hermes/agent UX | [user-facing-harness-index.md](user-facing-harness-index.md) | | Pipelines | [pipeline-integration-index.md](pipeline-integration-index.md) |
 
 **Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: [fable5-findings-00-executive-summary.md](../completed/fable5-findings-00-executive-summary.md) — **the Fable 5 one-shot review is COMPLETE (2026-06-12)**; its 7 findings (-01..-07) + appendix are the standing reference, not an open row. The stale 2026-06-15 transient pickup was archived to [`../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md`](../archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md); resume from the domain indices and owning handoffs below.
 

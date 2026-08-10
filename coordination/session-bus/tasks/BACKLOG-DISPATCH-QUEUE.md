@@ -25,7 +25,7 @@ than only following links, so nothing reachable from `master-handoff-index.md` c
 
 Index tree traversed and confirmed: `master-handoff-index.md` → 6 domain sub-indices
 (`routing-and-optimization-index`, `inference-acceleration-index`, `cpu-inference-optimization-index`,
-`research-evaluation-index`, `hermes-agent-index`, `pipeline-integration-index`) + the 2 standalone
+`research-evaluation-index`, `user-facing-harness-index`, `pipeline-integration-index`) + the 2 standalone
 strategy indices (`harness-selection-and-integration`, `reviewer-control-plane-index`).
 
 **6 handoffs carry open tasks but are linked from NO index** (orphans — a coordinator would never find
@@ -41,7 +41,7 @@ them by navigation; they are included here):
 2. **~40 rows list `?` for files** because the handoff itself names no concrete target. Those need a
    scoping pass before they are truly "ready".
 3. **Index-pointer rows double-count.** `cpu-inference-optimization-index`, `research-evaluation-index`,
-   `routing-and-optimization-index`, `pipeline-integration-index`, `hermes-agent-index` and
+   `routing-and-optimization-index`, `pipeline-integration-index`, `user-facing-harness-index` and
    `inference-acceleration-index` contain rows that *point at* work owned elsewhere. Known duplicate
    pairs are named in the Collision Map. Dispatching both halves is wasted effort.
 4. **Some unchecked rows are already done in prose** (checkbox never flipped). Ten confirmed-stale rows
@@ -751,7 +751,7 @@ re-grep before assigning.
 - L147 | none | S | N | - | **CLOSED 2026-07-29** — standing 5k-25k LM-call cost line is recorded and cross-linked | handoffs/active/harness-selection-and-integration.md:160; wiki/llm-prompting.md:160-162
 - L148 | none | S | N | - | **CLOSED 2026-07-29** — corrected two-sided figure and observation-only boundary are recorded in handoff and both wiki references | handoffs/active/harness-selection-and-integration.md:161-164; wiki/agent-architecture.md:1055-1059; wiki/benchmark-methodology.md:1098-1101
 
-## hermes-agent-index.md (11) — index pointers into hermes-outer-shell / repl-turn-efficiency
+## user-facing-harness-index.md (11) — index pointers into hermes-outer-shell / repl-turn-efficiency
 - L99 | cpu | M | N | quiet window | Reference non-Hermes client live send/streaming validation | scripts/hermes/, src/api/
 - L101 | cpu | M | N | quiet window + orchestrator 8000 up | Orchestrator override-semantics validation | scripts/hermes/, src/api/
 - L102 | cpu | L | N | upstream target selection | Hermes upstream pin bump, breaking-change audit, smoke | /mnt/raid0/llm/hermes-agent
@@ -1590,7 +1590,7 @@ Nothing an agent does can clear these. They need the operator personally.
 Serialized behind the CPU lane. ~280 rows. The heaviest clusters:
 - **E5 NUMA×batch sweep** (`batched-decode-measurement.md:26,521,522` · `gpu-serving-…:65`) gates
   `heterogeneous-slot-fabric-residency.md:141` and, through it, most of the slot-fabric arc (L142–L148).
-- **Hermes live validation** — all 11 rows of `hermes-outer-shell.md` plus `hermes-agent-index.md:99,101,107,108,109,111,112,114`.
+- **Hermes live validation** — all 11 rows of `hermes-outer-shell.md` plus `user-facing-harness-index.md:99,101,107,108,109,111,112,114`.
 - **Eval-tower inference tails** — `eval-tower-verification.md:180,185,193,217,251,257,413,414,427,429,431,489,497,545,546`.
 - **Reviewer-plane windows** — `reviewer-model-ablations.md` (all 8), `reviewer-latency-…:20,23,28`, `reviewer-decision-plane.md:32`.
 
@@ -1674,8 +1674,8 @@ Two mains must never hold two rows from the same block at once.
 - `routing-and-optimization-index.md:25` — **STALE**: `learned-routing-controller.md:1608` already marks it `[x]`
 - `document-parser-table-bench.md:63,64` ≡ `opendataloader-…:613` (full-set ODL re-baseline) — spun out, both still open
 - `cpu-inference-optimization-index.md:120,121,122` ≡ `iqk-iquant-enablement.md:105,106,140` (index pointer vs owner)
-- `hermes-agent-index.md:99,101` ≡ `hermes-outer-shell.md:311,322` (reference client validation)
-- `hermes-agent-index.md:107` ≡ `repl-turn-efficiency.md:18` (S4 Omega A/B)
+- `user-facing-harness-index.md:99,101` ≡ `hermes-outer-shell.md:311,322` (reference client validation)
+- `user-facing-harness-index.md:107` ≡ `repl-turn-efficiency.md:18` (S4 Omega A/B)
 
 ## C3. Safe concurrent groups (verified disjoint file sets)
 These four bundles can run on four mains simultaneously:
