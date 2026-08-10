@@ -166,6 +166,12 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
 
 **Integration with existing C1-C6**: KernelBench maps to C3 (correctness) in our verification layer, complementing C4 (profiler-metric) and C6 (anti-reward-hacking). The seeded fuzzing approach is complementary to our GEAK-eval substrate.
 
+- [ ] **AK-RB-1** — adopt RE-Bench's SCORING PROTOCOL for gfx90a kernel-agent evaluation, not the
+      benchmark itself (intake-1072, filed 2026-08-10). Transferable: log-time scoring of
+      behaviour-preserving optimization, 0 = starting state / 1 = a strong reference solution, and
+      time-budget curves (2h/8h/32h) rather than pass-fail. NOT worth standing up as-is — only 1 of 7
+      environments is a kernel task, it is Triton on H100, and porting to gfx90a invalidates the
+      published human and model anchors that are the reason to use it.
 - [ ] **AK-KB-1** — integrate KernelBench into GEAK-eval verification loop as C3 correctness substrate
 - [ ] **AK-KB-2** — establish KernelBench baseline over current llama.cpp-HIP kernels
 

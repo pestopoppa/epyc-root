@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 484
+      "open": 485
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 300
+      "open": 299
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -88,11 +88,11 @@
       "closed": 4,
       "guarded": 0,
       "last_advanced": "2026-08-03",
-      "open": 13,
+      "open": 14,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 17
+      "total": 18
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 0,
@@ -791,7 +791,7 @@
       "blocked": 0,
       "closed": 4,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-08-10",
       "open": 5,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-46",
@@ -1878,14 +1878,14 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 86,
+      "closed": 89,
       "guarded": 0,
       "last_advanced": "2026-08-10",
-      "open": 11,
+      "open": 10,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 97
+      "total": 99
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -2364,7 +2364,7 @@
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
       "line": 59,
-      "next_action": "PR1b \u2014 build the machine anchoring pass: fetch cited sources, match claim terms, record",
+      "next_action": "PR2d-backfill \u2014 author `depends_on` on the 11 evidential citation edges the 60-edge sample found",
       "track": "vidya belief substrate program"
     },
     "EVL-48": {

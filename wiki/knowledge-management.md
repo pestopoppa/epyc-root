@@ -106,7 +106,7 @@ The 2026-06-19 manual wrap-up rerun confirmed the same evidence-based pruning ru
 
 The final same-day wrap-up applied the same rule to the acceleration dispatch surfaces. `cpu-inference-optimization-index.md` and `inference-acceleration-index.md` now stay live-work-only, while the pre-compaction benchmark narratives live in dated archive siblings. The important governance distinction is that high-fanout indices can be aggressively shortened only when archive recovery is explicit and the active replacement keeps queues, gates, dependency order, and reporting instructions intact. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md).
 
-A subsequent same-day wrap-up applied the rule to the two remaining large domain indices. `hermes-agent-index.md` and `research-evaluation-index.md` now function as 63-line dispatch surfaces rather than chronological ledgers. Their pre-compaction bodies are preserved in [`hermes-agent-index-history-through-2026-06-19.md`](../handoffs/archived/hermes-agent-index-history-through-2026-06-19.md) and [`research-evaluation-index-history-through-2026-06-19.md`](../handoffs/archived/research-evaluation-index-history-through-2026-06-19.md). This reinforces the active-index invariant: current queue, gates, dependencies, key files, and reporting rules stay active; completed checklist detail and research-intake narration move to dated history ledgers. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md).
+A subsequent same-day wrap-up applied the rule to the two remaining large domain indices. `user-facing-harness-index.md` and `research-evaluation-index.md` now function as 63-line dispatch surfaces rather than chronological ledgers. Their pre-compaction bodies are preserved in [`user-facing-harness-index-history-through-2026-06-19.md`](../handoffs/archived/user-facing-harness-index-history-through-2026-06-19.md) and [`research-evaluation-index-history-through-2026-06-19.md`](../handoffs/archived/research-evaluation-index-history-through-2026-06-19.md). This reinforces the active-index invariant: current queue, gates, dependencies, key files, and reporting rules stay active; completed checklist detail and research-intake narration move to dated history ledgers. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md).
 
 The final pass compacted `pipeline-integration-index.md` under the same rule. The active file now routes vision, image generation, PDF extraction, Lean proving, TTS, doc-to-LoRA, and KB-RAG work by current gate, while historical checklist detail lives in [`pipeline-integration-index-history-through-2026-06-19.md`](../handoffs/archived/pipeline-integration-index-history-through-2026-06-19.md). Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md).
 
@@ -193,7 +193,7 @@ Two operator-directed `/research-intake` batches ran on 2026-07-02 and grew `res
 - [`progress/2026-06/2026-06-15.md`](../progress/2026-06/2026-06-15.md) — wrap-up hygiene no-op decision plus later N11/N11a active/archive compaction after completed chronology started burying next actions
 - [`routing-and-optimization-index-history-through-2026-06-19.md`](../handoffs/archived/routing-and-optimization-index-history-through-2026-06-19.md) — routing-domain index pruning disposition and live-queue replacement policy
 - [`cpu-inference-optimization-index-history-through-2026-06-19.md`](../handoffs/archived/cpu-inference-optimization-index-history-through-2026-06-19.md), [`inference-acceleration-index-history-through-2026-06-19.md`](../handoffs/archived/inference-acceleration-index-history-through-2026-06-19.md) — acceleration-domain index compaction ledgers preserving historical benchmark narrative outside active dispatch files
-- [`hermes-agent-index-history-through-2026-06-19.md`](../handoffs/archived/hermes-agent-index-history-through-2026-06-19.md), [`research-evaluation-index-history-through-2026-06-19.md`](../handoffs/archived/research-evaluation-index-history-through-2026-06-19.md) — domain-index compaction ledgers preserving Hermes and research/eval completed checklist and research-intake chronology outside active dispatch files
+- [`user-facing-harness-index-history-through-2026-06-19.md`](../handoffs/archived/user-facing-harness-index-history-through-2026-06-19.md), [`research-evaluation-index-history-through-2026-06-19.md`](../handoffs/archived/research-evaluation-index-history-through-2026-06-19.md) — domain-index compaction ledgers preserving Hermes and research/eval completed checklist and research-intake chronology outside active dispatch files
 - [`handoffs/README.md`](../handoffs/README.md), [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md), [`BLOCKED.md`](../handoffs/blocked/BLOCKED.md) — current entry points, coverage ownership, and live blocked-work queue after the 2026-05-27 audit
 - [`progress/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — handoff-index audit verification metrics, six handoffs archived, and link/freshness validation results
 - [intake-453](https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m) Reason-mxbai-colbert-v0-32m — 32M edge-scale ColBERT, BRIGHT 19.00 (natural-language splits 20–44), Apache-2.0/CC-BY-NC-4.0 README license conflict, ONNX INT8 unvalidated, CPU-latency fallback candidate for KB-RAG K1
@@ -699,3 +699,90 @@ post-approval round, so the rest of the plan was authored without their findings
 - [`research/deep-dives/vidya-p5c-evaluation-and-decision.md`](../research/deep-dives/vidya-p5c-evaluation-and-decision.md) — 28/28, and the four failures found first; verdict ITERATE
 - [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) · [`vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md)
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — 58 done / 4 open
+
+## Compiled Update — 2026-08-10: a citation is not a dependency, and a check can be passed by deleting what it inspects
+
+> Model-compiled from an implementation session (vidya program + a full citation audit of the intake
+> index). Every number below is measured against the live index or ledger and is reproducible from
+> the cited artifact. **Retracts one claim from the 2026-08-09/10 section — see the first item.**
+
+- **RETRACTION: the "5,670 instances, 0 counterexamples" null recorded above is vacuous.** The two
+  routes it compared reduce to the same expression — specializing a base fact to ⊥ and then dropping
+  ⊥ entries *is* deleting that fact — so agreement was guaranteed by construction and measured
+  nothing. The mutation test was sound but showed only that the harness can detect disagreement; it
+  could not show the routes differed, which is how it was read. The lesson generalizes past this
+  instance: **a mutation test validates the detector, never the distinctness of the things being
+  compared.** Pin the distinctness separately, or a tautology passes as a result. Replaced by a real
+  finding — genuinely incremental retraction across a negation boundary is **refuted** (2,241 of
+  5,670), dual tokens cut it to 270, and only dual tokens plus intra-stratum dependency closure is
+  exact. Source: [vidya-r1-r2-stratified-negation.md](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4c.
+
+- **A citation is not a dependency, and the gap is measurable.** Hand-classifying a 20-edge uniform
+  sample of the intake citation graph suggested that citations from *dived* entries were evidential
+  at 4/6 precision. A **60-edge sample stratified over the 672 dived-source edges refuted it: 18%
+  evidential, 75% topical, 7% companion artifact.** The first figure was a small-sample artifact —
+  its edges happened to fall in one intake batch where citations really are foundational. Promoting
+  all 672 would have created ~550 false dependencies, and a false dependency is worse than a missing
+  one because it propagates invalidation into work that never depended on anything. Two mechanical
+  shortcuts were tried on the same sample and both failed (naming the target in the claim text:
+  precision 0.50, recall 0.09; verification-language keywords: 0.50/0.27). **Dependency has to be its
+  own edge, written when the dependency is real** — hence the `depends_on` field with a required
+  `why` and a counterfactual authoring test. Source:
+  [vidya-p5c-evaluation-and-decision.md](../research/deep-dives/vidya-p5c-evaluation-and-decision.md) §4d.
+
+- **A validation rule can be passed by omitting the field it inspects.** Duplicate `arxiv_id` was a
+  hard error. Exactly **3 entries in 1,067** carried an arXiv *URL* with a null `arxiv_id` — all three
+  `novelty: duplicate`, all three from one 2026-07-08 batch, and all three holding an id that already
+  existed elsewhere. Each would have failed validation had the field been filled in. Whether that was
+  deliberate is unknowable and irrelevant: the check could not see its own blind spot, because absence
+  of a field is indistinguishable from a source that genuinely has none. The fix looks at the *other*
+  field (the URL) rather than trusting the one being validated.
+
+- **Labelling a duplicate is not the same as refusing to create one.** Dedup was working — it
+  correctly marked collisions `novelty: duplicate` — and then persisted them as full entries anyway,
+  each with its own `key_claims`. **12 such entries existed and 10 were cited by other entries**, so
+  every one read downstream as an independent source. A classifier whose output is a label rather than
+  a control-flow branch does not prevent anything.
+
+- **Five sources were cited across the knowledge base and had never been ingested**, each carrying a
+  *neighbouring* entry's id — which reads as provenance and is not. All five turned out to be real
+  papers (ADAS, Hyperagents, Self-Harness, ACE, RE-Bench). The papers were never the problem: **two
+  headline claims resting on them were false.** "LLM-as-judge benchmark design is itself optimizable"
+  is supported by none of its three sources — all three optimize harness or context against a *fixed*
+  benchmark. "A trajectory toward fully autonomous task generation" is supported by none of the
+  ADAS → DGM → Hyperagents lineage; Hyperagents lists *"a fixed task and evaluation distribution"*
+  among its own limitations. A downstream scoping document had already taken *"only the
+  task-generation half"* of a system with no task-generation half.
+
+- **Verifying one clean fix is what finds the rest.** The audit began with two mis-stamps noticed by
+  accident while checking something unrelated. A naive label-vs-title checker over 271 files produced
+  **780 hits, almost all noise** (any prose before a parenthetical id). Tightened to name-like labels
+  in curated paths, it found 8 real mis-stamps — and separately revealed that **101 entries, the whole
+  2026-03 seed batch, had titles that were just their arXiv id**, which is why four *correct*
+  citations (YaRN, Sarathi-Serve, Cascade, SkillRL) had looked like mismatches. One batched arXiv
+  sweep (25 ids per request, 5 requests) resolved all 101.
+
+- **An identifier stops being cheap to change the moment something immutable references it.** Merging
+  four duplicate entries left permanent id gaps. Closing them would have renumbered 728 entries,
+  rewritten 5,565 references across 479 files, and changed 731 of the 1,067 intake ids embedded in
+  append-only ledger claim identifiers whose hash chain a checkpoint had already signed. The argument
+  that decides it holds even without the ledger: **a reused id makes an old reference resolve to the
+  wrong thing, silently; a removed id resolves to nothing, visibly.** But that defence is only valid
+  if the absence is *recoverable* — 44 references to absorbed ids sat in 20 files with no forward
+  pointer until a generated redirect map was published. **A redirect map must be generated from the
+  data, never hand-kept**, because one that drifts answers confidently and wrongly.
+
+- **Resolution is a lookup, not a rewrite.** The obvious follow-up — bulk-repoint every reference to a
+  merged id — would have corrupted records. Of 57 references, exactly **one** was mechanically safe to
+  rewrite; four would have been damaged, three of them because the dead id is named *precisely because
+  it was wrong* (a correction record), and one because it is a range endpoint. Historical records
+  naming a superseded identifier are correct as written.
+
+### Source References
+
+- [`research/intake_merge_map.md`](../research/intake_merge_map.md) — generated redirect table for merged ids
+- [`.claude/skills/research-intake/references/intake-schema.md`](../.claude/skills/research-intake/references/intake-schema.md) — `depends_on`, `merged_ids`, ID-sequencing rationale
+- [`research/deep-dives/vidya-p5c-evaluation-and-decision.md`](../research/deep-dives/vidya-p5c-evaluation-and-decision.md) §4b–4d — promotion status, live-ledger evaluation, the citation-edge samples
+- [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4c — the vacuity retraction and the four retraction routes
+- [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — alias candidate generation, source-identity defect
+- [`research/recommendations.md`](../research/recommendations.md) — rec-001 and rec-002 rewritten after their sources were read

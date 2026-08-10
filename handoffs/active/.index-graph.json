@@ -3522,7 +3522,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T10:56:01Z",
+  "generated_at": "2026-08-10T11:13:34Z",
   "nodes": [
     {
       "age_days": 11,
@@ -4125,13 +4125,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 86,
+      "closed": 89,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-10",
-      "next_action": "PR1b \u2014 build the machine anchoring pass: fetch cited sources, match claim terms, record",
-      "open": 11,
+      "next_action": "PR2d-backfill \u2014 author `depends_on` on the 11 evidential citation edges the 60-edge sample found",
+      "open": 10,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -4183,7 +4183,7 @@
       "id": "INF-03",
       "last_advanced": "2026-08-03",
       "next_action": "Integrate KernelBench into the GEAK-eval loop as the AK-KB-1 correctness substrate",
-      "open": 13,
+      "open": 14,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -5670,13 +5670,13 @@
       "track": "x mas text routing"
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 0,
       "closed": 4,
       "domain": "routing-and-optimization",
       "handoff": "handoff-index-and-backlog-graph.md",
       "id": "RTG-46",
-      "last_advanced": null,
+      "last_advanced": "2026-08-10",
       "next_action": "Decide whether .index-state.json / .index-graph.json are git-ignored \u2014 timeline artifact already is",
       "open": 5,
       "state": "active",
