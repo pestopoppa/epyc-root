@@ -611,3 +611,91 @@ post-approval round, so the rest of the plan was authored without their findings
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the resulting program: spec-amendment sheet, downscoped gold corpus, shadow pilot, research track, operator decision queue
 - [`progress/2026-08/2026-08-09.md`](../progress/2026-08/2026-08-09.md) — session record for the audit batch
 - [`research/intake_index.yaml`](../research/intake_index.yaml) — entries `intake-1031`–`intake-1067`, each carrying its verified claims, adoption extract, and dated `dive_corrections`
+
+## Compiled Update — 2026-08-09/10: what building the belief substrate actually taught
+
+> **Review flag (project-wiki writer-evidence policy):** model-compiled from an implementation
+> session that landed ~2,600 lines under `scripts/vidya/` with 156 tests passing on two
+> architectures. Every measurement below was produced by running the code against the real
+> 1,067-entry intake index, not estimated.
+
+- **A correction recorded only in narrative is not a correction — it is worse than none.** A
+  fabricated `/doctor` mechanism was reported "struck" on 2026-07-25 by three separate records (a
+  progress file, a governance handoff, and a later re-source note) and was **never removed from the
+  index**. It served as "CONFIRMED and understated" for fifteen days. The failure is worse than an
+  uncorrected entry because a reader who checks the record is told the problem was handled. The
+  generalizable rule: **verify a correction in the artifact it claims to change**, not in the prose
+  that claims to have changed it. Sources: [research/intake_index.yaml](../research/intake_index.yaml)
+  intake-896 `dive_corrections`, [vidya-pilot-corpus.md](../docs/design/vidya-pilot-corpus.md) §4.
+
+- **A validator that checks key presence does not check anything.** Two defects of the same shape
+  landed the same day: 538 entries carried duplicate `cross_references.intake_entries` keys (PyYAML
+  resolves duplicates last-one-wins, silently), and 9 entries satisfied the *required* `url` field
+  with a null. Both had passed every validation run for as long as they existed. The duplicate check
+  had to move to **parse time** — after `safe_load` the earlier value is already gone, so it is
+  undetectable by inspecting the parsed structure. The empty-field case resolved into a
+  **locatability** rule rather than a backfill: an entry needs a url, an arxiv_id, *or* a
+  `locator_note` explaining why neither exists, because all 9 were legitimate operator-supplied
+  inline material where inventing a URL would be strictly worse than leaving it blank. Sources:
+  [validate_intake.py](../.claude/skills/research-intake/scripts/validate_intake.py),
+  [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md).
+
+- **Recording where a claim was read costs seconds at dive time and is often impossible later.** A
+  pass over all 1,067 entries found **zero** claims anchored to a span — every entry identified a
+  *document*, so no claim could be cited as checkable at a location. That is now measurable as a
+  grade: claims without an anchor cap at "located", and a policy requiring an anchored claim was
+  satisfied by **0 of 4,191**. Recording the anchor while the source is open is now a Stage-2
+  obligation in the intake skill. This is the same failure as the renamed-kernel incident, priced.
+  Sources: [SKILL.md](../.claude/skills/research-intake/SKILL.md) Stage 2,
+  [vidya-belief-substrate-audit.md](../research/deep-dives/vidya-belief-substrate-audit.md).
+
+- **An evaluation that passes first time has not been tested.** The gold-corpus mutation suite
+  ultimately scored 28/28, but scored **20/28 on the first run**, and all four failures were real:
+  two engine bugs (retraction operated per-*frame* while evidence lives in per-*token*, so a
+  discredited source kept supporting its other claims) and two gold-label errors where the corpus
+  encoding was less faithful than reality. Four defects in a system its author had just written and
+  believed correct. Corollary observed twice more the same session: a negative control that does not
+  verify its own mutation took effect proves nothing, and a test asserting a value the code cannot
+  affect (`iterations >= 1` on frames that create no claims) passes against a broken implementation.
+  Sources: [vidya-p5c-evaluation-and-decision.md](../research/deep-dives/vidya-p5c-evaluation-and-decision.md).
+
+- **A rising correction rate can mean rising verification, not falling quality.** The monthly series
+  shows corrections climbing from 1% (March) to 68% (August), which reads as collapse. It is a
+  confound: corrections are recorded by dives, and dive activity went from ~0/month to 123 in August.
+  The series measures *when verification happened*. The confound-free figure is the overturn rate
+  among dived entries — **27 of 160 = 16.9%**, roughly one dived entry in six with a load-bearing
+  claim falsified. Any metric whose denominator is "everything" cannot distinguish an uncorrected
+  claim from an unexamined one. Sources:
+  [vidya-r4-r5-corroboration-and-decay.md](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md).
+
+- **Independence is unmeasurable when identity is per-source.** 100% of 4,191 beliefs rest on at most
+  one support path — not because the corroboration statistic is wrong, but because claim IDs are
+  minted per entry, so two sources can never support the *same* claim. The data model forecloses
+  independence before any statistic runs. Cross-entry claim identity is therefore a prerequisite, and
+  it is irreducibly human: deciding two differently-worded claims are the same proposition is exactly
+  the judgment a deterministic fold must not make.
+
+- **A refusal without a named next action is a shrug, and a one-way flag deadlocks the work it
+  protects.** The first live run of the freshness gate blocked 652 claims with no way to clear them,
+  because every dived entry carries a correction and the review flag had no counterpart. The fix was
+  a `correction_reviewed` frame, so the gate's named next action produces the thing that unblocks it.
+  Related: an unprovable absence is refused outright rather than approximated — "no rule can produce
+  X" is kept as a function that *raises*, because a plausible implementation would be an unprovable
+  absence that looks like a proof. Sources:
+  [vidya-pilot-spec.md](../docs/design/vidya-pilot-spec.md) §8, `scripts/vidya/absence.py`.
+
+- **A null result needs demonstrated detection power to mean anything.** An exhaustive search for a
+  counterexample to an open conjecture found none across 5,670 instances. On its own that is worth
+  little. Two things make it a result: boundary growth was confirmed present in the corpus (so the
+  search exercised the case at issue), and a mutation test replaced the implementation with a
+  plausible-but-wrong variant, which produced **2,715 counterexamples from the same instances**. The
+  comparison can see a wrong answer; it does not see one here. Sources:
+  [vidya-r1-r2-stratified-negation.md](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4b.
+
+### Source References
+
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) — the binding pilot contract, all §19 decisions ratified 2026-08-09
+- [`docs/design/vidya-pilot-corpus.md`](../docs/design/vidya-pilot-corpus.md) — 19 gold claims from four documented real corrections
+- [`research/deep-dives/vidya-p5c-evaluation-and-decision.md`](../research/deep-dives/vidya-p5c-evaluation-and-decision.md) — 28/28, and the four failures found first; verdict ITERATE
+- [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) · [`vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md)
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — 58 done / 4 open
