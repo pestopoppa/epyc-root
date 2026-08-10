@@ -76,10 +76,6 @@ if [[ -z "${HUB_PYTHON:-}" ]]; then
   fi
 fi
 
-# A precise pgrep pattern scoped to THIS hub's port so it can never match the
-# orchestrator API, an unrelated server, or this supervisor script itself.
-HUB_PATTERN="dashboard\\.server .*--port ${HUB_PORT}"
-
 mkdir -p "${LOG_DIR}"
 
 # --------------------------------------------------------------------------- #
@@ -117,17 +113,36 @@ wait_health() {
 # --------------------------------------------------------------------------- #
 # Clear a wedged :8100 instance (only called when /health is already failing)
 # --------------------------------------------------------------------------- #
-# Return only PIDs that are genuinely a python hub process (comm=python*),
-# filtering out any shell / grep / monitor whose command line merely echoes the
-# pattern — this makes the `pgrep -f` match self-match-proof.
+# Resolve the hub by the PORT IT OWNS, never by a name pattern.
+#
+# This used to be `pgrep -f "dashboard\.server .*--port 8100"`. Two reasons that
+# was wrong, and this function escalates to SIGKILL, so both mattered:
+#
+#   1. CLAUDE.md forbids pgrep/pkill on a name pattern on this shared host
+#      (INC-20260731-broad-process-pattern-kills). A pattern is a wildcard over
+#      every other session's processes, and a guard's own argv necessarily
+#      contains the string it guards — this script, an editor with the file open,
+#      or any shell running a command mentioning it, all match. `$$` was excluded;
+#      nothing else was.
+#   2. It answers a different question than the one being asked. The thing that
+#      must die is whatever OWNS :8100 — that is what "wedged" means. A process
+#      matching the pattern but bound to nothing is not wedged, and a process
+#      holding the port under a different argv is invisible to the pattern.
+#
+# `ss` first (no extra dependency), `lsof` as fallback. Both key on the port only.
 hub_pids() {
-  local pid comm
-  for pid in $(pgrep -f "${HUB_PATTERN}" 2>/dev/null || true); do
+  local pids=""
+  if command -v ss >/dev/null 2>&1; then
+    pids="$(ss -tlnpH "sport = :${HUB_PORT}" 2>/dev/null \
+            | grep -oE 'pid=[0-9]+' | cut -d= -f2 | sort -u || true)"
+  fi
+  if [[ -z "${pids}" ]] && command -v lsof >/dev/null 2>&1; then
+    pids="$(lsof -ti ":${HUB_PORT}" -sTCP:LISTEN 2>/dev/null || true)"
+  fi
+  local pid
+  for pid in ${pids}; do
     [[ "${pid}" == "$$" ]] && continue
-    comm="$(cat "/proc/${pid}/comm" 2>/dev/null || true)"
-    case "${comm}" in
-      [Pp]ython*) printf '%s ' "${pid}" ;;
-    esac
+    [[ -d "/proc/${pid}" ]] && printf '%s ' "${pid}"
   done
 }
 
@@ -180,9 +195,31 @@ start_hub() {
   setsid "${HUB_PYTHON}" -m dashboard.server \
       --host 0.0.0.0 --port "${HUB_PORT}" \
       >>"${HUB_LOG}" 2>&1 < /dev/null &
-  local pid=$!
+  # DO NOT record `$!` here. `setsid cmd &` backgrounds *setsid*, which forks and
+  # exits; `$!` is that transient wrapper, not the hub, so the pidfile was wrong
+  # from the instant it was written and pointed at a dead pid seconds later.
+  # Measured 2026-08-10: the file named 543937 (long gone) while :8100 was served
+  # by 3359733 — so nothing, including this supervisor, could identify the hub
+  # from its own pidfile.
+  #
+  # The truthful identity is whoever ends up OWNING the port, and that is only
+  # knowable once the listener exists — hence after wait_health, not here.
+  log "hub launch issued; waiting up to ${STARTUP_TIMEOUT}s for /health"
+}
+
+# Record the pid of whatever actually owns the port. Called after /health passes.
+record_hub_pid() {
+  local pids
+  pids="$(hub_pids)"; pids="${pids% }"
+  if [[ -z "${pids}" ]]; then
+    log "WARN: hub healthy but no listener resolved on :${HUB_PORT}; pidfile left stale"
+    return 1
+  fi
+  # First (lowest) pid; a multi-pid answer means a wedged leftover, which
+  # kill_wedged_hub clears on the next restart.
+  local pid="${pids%% *}"
   echo "${pid}" > "${HUB_PIDFILE}"
-  log "hub launched (pid=${pid}); waiting up to ${STARTUP_TIMEOUT}s for /health"
+  log "hub pid recorded: ${pid}"
 }
 
 restart_hub() {
@@ -190,6 +227,7 @@ restart_hub() {
   start_hub || return 1
   if wait_health "${STARTUP_TIMEOUT}"; then
     log "hub healthy after restart"
+    record_hub_pid || true
     return 0
   fi
   log "hub did NOT become healthy within ${STARTUP_TIMEOUT}s"
@@ -226,9 +264,27 @@ cmd_status() {
   fi
 }
 
+# Keep the pidfile truthful even when this supervisor did nothing. The hub is a
+# stack-managed aux service, so `orchestrator_stack.py reload handoff_dashboard`
+# can replace it without this process ever noticing — which is the OTHER way the
+# pidfile went stale on 2026-08-10. A watchdog whose recorded pid disagrees with
+# the port owner cannot do a targeted restart, so reconcile on every poll. Cheap:
+# one `ss` call, and it writes only on a real mismatch.
+reconcile_hub_pid() {
+  local live recorded
+  live="$(hub_pids)"; live="${live% }"; live="${live%% *}"
+  [[ -z "${live}" ]] && return 0
+  recorded="$(cat "${HUB_PIDFILE}" 2>/dev/null || true)"
+  if [[ "${recorded}" != "${live}" ]]; then
+    echo "${live}" > "${HUB_PIDFILE}"
+    log "pidfile reconciled: recorded=${recorded:-<none>} -> live=${live} (hub replaced out-of-band)"
+  fi
+}
+
 cmd_once() {
   acquire_lock
   if health_ok; then
+    reconcile_hub_pid
     log "once: hub healthy — no action"
     return 0
   fi
@@ -244,6 +300,7 @@ cmd_loop() {
   local backoff="${POLL_INTERVAL}"
   while true; do
     if health_ok; then
+      reconcile_hub_pid
       backoff="${POLL_INTERVAL}"
       sleep "${POLL_INTERVAL}"
       continue
