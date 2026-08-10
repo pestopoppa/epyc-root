@@ -284,13 +284,32 @@ Operator priority: an integrated solution that works, not novelty.
       progress prose. The bulk-ingest framing of SC6 is therefore REJECTED, not deferred.
       Correction: the original SC6 note cited `execution_manifest.jsonl`; no such file exists in
       the research repo ✅ 2026-08-12
-- [ ] SC6 **Rescoped — the gap is upstream, not a missing reader.** Only 6 of ~4,562 measurement
-      artifacts are sealed, and the sealed ones already reach `Witnessed/Attested` unaided. So the
-      leverage is on the WRITE: make an ordinary benchmark run emit the tuple it already knows
-      (protocol from the codified recipe, reps from the run config, date, and a hash of its own
-      output) via `scripts/vidya/measurement_record.py`. Needs an operator call on where to wire it
-      — see the decision queue. Note `data/benchmark_artifact_inventory.json` is EMPTY (0 rows),
-      which is its own finding
+- [x] SC6 **Wired into autopilot's result-write path** (operator chose this hook over the
+      llama-bench wrapper and a post-run sealing step, 2026-08-12). `ExperimentJournal.record()`
+      now captures the constitution's tuple via `measurement_tuple()` — protocol from the schema
+      versions plus the objective policy, reps from the scored denominator, date from the trial
+      timestamp, attestation from a sha256 over the entry's own content. Replayed over all **1,372
+      real historical rows: protocol_id 100%, date 100%, digest 100% (1,372 distinct), reps 86%**;
+      the remaining 197 are skipped/invalid/never-scored trials where absence is correct.
+      Read half: `scripts/vidya/adapters/autopilot_journal.py`. Grading stays in this repo next to
+      `MEASUREMENT.md` so there is no second implementation of the claim rule to drift
+      ✅ 2026-08-12
+- [x] SC6-REPS **The first extractor silently understated the corpus by 40 points.** It read only
+      the modern denominator keys and found reps on 46% of rows. Probing the gap — rather than
+      accepting it — found 545 older rows carrying the denominator under `details.total`.
+      Recovering it took coverage to 86%. Because `total` counts what was ATTEMPTED while
+      `quality_denominator` counts what SCORED, the tuple now records `reps_basis`, and the adapter
+      states it in the grade reasons: "n=55 attempted" and "n=55 scored" are different claims
+      ✅ 2026-08-12
+- [ ] SC6-LIVE The hook takes effect for trials written **after autopilot next restarts** — the
+      running process holds the pre-hook module. No restart was performed: reload ownership belongs
+      to the session that owns the inference, at its own boundary. Until then
+      `adapters/autopilot_journal.py` correctly reports 0 measured rows. Confirm non-zero after the
+      next autopilot cycle
+- [ ] SC7 Ingest autopilot trials into the ledger once SC6-LIVE confirms rows are landing. Deferred
+      deliberately: appending 1,372 retro-graded claims now would record provenance the original
+      runs never captured, and the corpus is worth ingesting only once it is born attested. Note
+      `data/benchmark_artifact_inventory.json` is EMPTY (0 rows), which is its own finding
 - [ ] SC6-HAZARD Before any bulk ingest is ever reconsidered: support is counted by **source
       locator**, so 2,605 separate result files measuring the same thing would read as 2,605
       independent witnesses. Same-harness runs are not independent evidence. A bulk adapter needs a

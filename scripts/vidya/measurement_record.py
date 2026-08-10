@@ -33,7 +33,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -99,12 +99,14 @@ def artifact_exists(record: dict) -> bool:
     path = art.get("path")
     if not path:
         return False
-    p = (REPO_ROOT / str(path)).resolve()
-    try:
-        p.relative_to(REPO_ROOT)
-    except ValueError:
+    rel = PurePosixPath(str(path))
+    # Containment is checked on the UNRESOLVED path: reject absolute paths and any `..` component.
+    # Resolving first would follow `repos/epyc-orchestrator` out to its real location under
+    # /mnt/raid0 (the working-tree symlink every repo here uses) and reject a legitimate sibling-repo
+    # artifact as an escape, while `../../etc/passwd` is still caught by the `..` test.
+    if rel.is_absolute() or ".." in rel.parts:
         return False
-    return p.is_file()
+    return (REPO_ROOT / rel).is_file()
 
 
 def grade(record: dict) -> tuple[str, str, list[str]]:
