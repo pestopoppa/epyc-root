@@ -366,9 +366,14 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       suppresses a group whose members all explain the sharing — a warning that keeps firing after
       the decision trains people to ignore it. Text surgery throughout, never a YAML round-trip
       (SKILL.md rule), verified field-by-field against the intended structure ✅ 2026-08-10
-- [x] D8 Merging leaves permanent id gaps, which tripped the sequential-id check. The allowance is
-      derived from `merge_history` rather than hardcoded, so a gap is forgiven only when some entry
-      states in writing that it absorbed that id ✅ 2026-08-10
+- [x] D8 Merging leaves permanent id gaps, which tripped the sequential-id check. A survivor now
+      declares what it absorbed in a structured `merged_ids` field, so a gap is forgiven only where
+      some entry names that exact id. The first version regexed the `merge_history` prose, which
+      made a validation rule depend on sentence wording; it also compared formatted strings, so a
+      zero-padded `intake-002` silently failed to match — invisible on the live index because every
+      current id is three digits. Six cases pinned in
+      `tests/skills/test_research_intake_id_sequencing.py`, including that declaring an id you did
+      not absorb buys no pass ✅ 2026-08-10
 - [x] D10 **Renumbering to close the gaps: assessed and declined**, rationale recorded in
       `intake-schema.md` § ID Sequencing so it is not re-litigated. Closing 4 gaps would renumber
       728 entries, rewrite 5,565 references across 479 files, and change 731 of the 1,067 intake

@@ -205,9 +205,22 @@ Two reasons that is a no, and the second holds even if the first ever stops appl
    reference anyone notices; it is a silent misdirection inside the citation graph. A gap is a
    benign absence.
 
-Gaps cost nothing operationally: `validate_intake.py` derives its sequencing allowance from
-`merge_history`, so a gap is accepted only where a surviving entry states in writing that it
-absorbed that id, and a genuinely skipped or duplicated id is still an error.
+Gaps cost nothing operationally, and the mechanism is one function in one file — the sequencing
+check is the ONLY place in the codebase that assumes contiguity; everything else iterates the entry
+list. A surviving entry declares what it absorbed:
+
+```yaml
+merged_ids:
+  - intake-785          # structured, for the validator
+merge_history:
+  - 'Merged intake-785 on 2026-08-10 (handoff D5): same locator; 4 claims folded in.'
+```
+
+`merged_ids` is what the allowance reads; `merge_history` is prose for the reader. Deriving the
+allowance from the prose — as the first version did — makes a validation rule depend on how
+somebody worded a sentence. A gap is accepted only where some entry names that exact id, so a
+genuine skip, a duplicated id, and a gap "excused" by declaring an unrelated id all remain errors
+(`tests/skills/test_research_intake_id_sequencing.py`).
 
 ## Deduplication
 

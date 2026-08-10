@@ -6430,6 +6430,8 @@
   integration_disposition: integrated
   disposition_evidence:
   - '2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.'
+  merged_ids:
+  - intake-784
   merge_history:
   - 'Merged intake-784 on 2026-08-10 (handoff D5): same locator; 4 claim(s) folded in, citations repointed.'
 - id: intake-245
@@ -9436,6 +9438,8 @@
   notes: 'Fascinating research direction but out of scope for EPYC. The CLIGen dataset (asciinema-based) could theoretically inform agent training, but training a model to simulate a terminal by rendering frames is the opposite of our approach (we use actual terminal execution via REPL). The CNC concept (neural network AS the computer) is a long-term research direction, not immediately actionable. Filed for reference.
 
     '
+  merged_ids:
+  - intake-336
   merge_history:
   - 'Merged intake-336 on 2026-08-10 (handoff D5): same locator; 4 claim(s) folded in, citations repointed.'
 - id: intake-316
@@ -14653,6 +14657,8 @@
   relevance_justification: 'The harness engineering framing directly maps to EPYC''s orchestrator architecture. The weights-to-context-to-harness progression is a useful lens for system design. The taxonomy could audit completeness of EPYC''s agent infrastructure coverage.
 
     '
+  merged_ids:
+  - intake-797
   merge_history:
   - 'Merged intake-797 on 2026-08-10 (handoff D5): same locator; 4 claim(s) folded in, citations repointed.'
 - id: intake-419
@@ -37863,6 +37869,8 @@
   relevance_justification: The canonical academic reference for the exact loop autopilot-continuous-optimization runs (4 species + 4D Pareto archive + eval-tower validation + code_mutation) and the meta-harness-optimization line. It directly stress-tests two of our design choices — Pareto pruning vs open-ended stepping-stone retention, and whether the meta-optimizer/species code should itself be self-mutable — and corroborates the frozen-model harness-evolution thesis of parent intake-753/244/271.
   verdict_justification: adopt_patterns (not adopt_component — the DGM codebase is a SWE-bench coding agent, not a drop-in for our orchestrator; not worth_investigating — the loop is already built and this is decision-shaping). Harvestable — (1) add a bounded open-ended stepping-stone lane to ParetoArchive that retains a diversity-sampled subset of dominated-but-novel configs as parents, testing DGM's local-optima-escape claim vs our greedy selection; (2) performance x fecundity parent sampling to bias PromptForge/StructuralLab toward productive lineages; (3) the two DGM ablations as an A/B template. Gate any keep-all-archive change on our resolution-aware/sequential-verdict machinery + single-host compute limits before promotion.
   notes: Autopilot-cluster expansion (expanded_from intake-753/Meta-Harness line, distinct from the LoRA cluster intake-765..771). ar5iv render failed; sourced from arXiv abstract + HTML full text.
+  merged_ids:
+  - intake-785
   merge_history:
   - 'Merged intake-785 on 2026-08-10 (handoff D5): same locator; 4 claim(s) folded in, citations repointed.'
 - id: intake-773

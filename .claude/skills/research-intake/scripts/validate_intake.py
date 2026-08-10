@@ -202,20 +202,26 @@ def validate_taxonomy(taxonomy: dict) -> list[str]:
     return errors
 
 
-_MERGED_RE = re.compile(r"\bMerged (intake-\d+)\b")
-
-
 def _absorbed_ids(entries: list[dict]) -> set[str]:
-    """Ids a surviving entry declares it absorbed, from its `merge_history` notes.
+    """Ids a surviving entry declares it absorbed, from its `merged_ids` field.
 
-    Merging a duplicate away leaves a hole in the id sequence forever. Deriving the allowance from
-    `merge_history` keeps the sequential check meaningful: a gap is forgiven only when some entry
-    takes responsibility for it in writing.
+    Merging a duplicate away leaves a hole in the id sequence forever, and renumbering to close it
+    is refused (schema § ID Sequencing). So the allowance is data: a gap is accepted only where a
+    surviving entry names the id it absorbed.
+
+    Read from a structured field rather than parsed out of the `merge_history` prose. The first
+    version regexed the note for "Merged intake-NNN", which quietly made a validation rule depend
+    on how a human worded a sentence -- reword the note and four entries become sequencing errors
+    with no hint why. The prose is still there for the reader; this is for the program.
     """
-    out: set[str] = set()
+    out: set[int] = set()
     for entry in entries:
-        for note in entry.get("merge_history") or []:
-            out.update(_MERGED_RE.findall(str(note)))
+        for mid in entry.get("merged_ids") or []:
+            if isinstance(mid, str) and mid.startswith("intake-"):
+                try:
+                    out.add(int(mid.split("-", 1)[1]))   # compare as ints: intake-002 == intake-2
+                except ValueError:
+                    continue
     return out
 
 
@@ -267,7 +273,7 @@ def validate_index(entries: list[dict], valid_categories: set[str],
                 # data rather than hardcoded -- a surviving entry has to SAY it absorbed that id
                 # in its `merge_history`, so a gap nobody explained is still an error.
                 expected = prev_num + 1
-                while f"intake-{expected}" in absorbed_ids:
+                while expected in absorbed_ids:
                     expected += 1
                 if num != expected:
                     errors.append(f"{eid}: ID not sequential (expected intake-{expected:03d})")
