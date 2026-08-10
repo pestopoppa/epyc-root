@@ -3581,7 +3581,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T23:11:28Z",
+  "generated_at": "2026-08-10T23:17:55Z",
   "nodes": [
     {
       "age_days": 11,
@@ -4275,13 +4275,13 @@
     {
       "age_days": 5,
       "blocked": 0,
-      "closed": 99,
+      "closed": 114,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-05",
       "next_action": "AK-TR-1 \u2014 add anchor_tier + transfer_ratio_to to the \u00a77.4 evaluation event now; free today, impossible to backfill",
-      "open": 96,
+      "open": 81,
       "state": "active",
       "track": "autokernel research loop"
     },
@@ -4808,13 +4808,13 @@
     {
       "age_days": 7,
       "blocked": 0,
-      "closed": 6,
+      "closed": 8,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-03",
-      "next_action": "RVP-T0-1 \u2014 MI210 saturation probe (60 s, read-only): if we never near the 300 W cap the clock-pinning branch closes free",
-      "open": 57,
+      "next_action": "RVP-C2-1 \u2014 seeded input generation; precondition for the whole C2 oracle. RVP-T0-1 HELD (needs a GPU-load window)",
+      "open": 55,
       "state": "active",
       "track": "rocm verify profile backend"
     },

@@ -3,10 +3,14 @@
 **Status**: SKELETON — design scaffold; substrate is now mostly *adopt AMD-native*, not build-from-scratch
 **Created**: 2026-06-03 · **Updated**: 2026-08-10 (C2/C6 task set + three zero-cost probes; see §2026-08-10)
 
-> **NEXT ACTION (2026-08-10): `RVP-T0-1`, then `RVP-T0-2`, then `RVP-T0-5` — all three are zero-GPU,
-> read-only or static, and two of them can close later branches for free.** `RVP-T0-1` (60 s power +
-> sclk log under a saturating GEMM) decides whether the entire clock-pinning branch — including the
-> operator-only `AK-OP-2` — is live at all. Do these before anything in §"Current sequence" below.
+> **NEXT ACTION (2026-08-10): `RVP-C2-1` (seeded input generation) — it is CPU-only and is the
+> precondition for every other C2 row.** The two static probes (`RVP-T0-2`, `RVP-T0-5`) are complete
+> and independently re-verified. **`RVP-T0-1` is HELD** — operator, 2026-08-10: *"do not run any
+> inference"*. It is the only one of the three that puts load on the card (a saturating GEMM at up to
+> the 300 W cap for 60 s), and it decides whether the whole clock-pinning branch — including the
+> operator-only `AK-OP-2` — is live at all. Reopen it when a GPU-load window is authorized; the probe
+> design is finished and needs nothing further. Everything else in §2026-08-10 is CPU-only or static
+> and runs today.
 >
 > **Correction carried with it (operator, 2026-08-10):** the phrase *"All runs operator-approved
 > (P-GPU-1)"* below is **wrong as a blanket statement**. P-GPU-1 governs the **class of claim** a GPU
@@ -261,7 +265,13 @@ job. It is a statement about **what a reward-bearing oracle needs that a regress
 
 ### Zero-cost probes — run these first; two of them can close later work for free
 
-- [ ] **RVP-T0-1 — MI210 saturation probe (row C3).** Drive a saturating gfx90a GEMM and log `power_w`
+- [ ] **RVP-T0-1 — MI210 saturation probe (row C3). HELD 2026-08-10 — operator: "do not run any
+  inference".** This is the one probe of the three that is not read-only: it drives a saturating GEMM
+  at up to the 300 W cap for 60 s on the shared card. Card state at the time of the hold was **idle**
+  (`rocm-smi`: 0% use, 0% VRAM, no KFD PIDs), so nothing was contended and nothing was started — the
+  hold is a scheduling decision, not a blocker discovered mid-run. **Reopen when a GPU-load window is
+  explicitly authorized**; the probe design below is complete and needs no further work first.
+  Drive a saturating gfx90a GEMM and log `power_w`
   and `sclk_mhz` at 250 ms intervals for 60 s. **If the card never approaches its 300 W cap, the entire
   clock-pinning branch closes for free** and OP-2 in [`autokernel-research-loop.md`](autokernel-research-loop.md)
   §21 is declined without spending anything. Facts verified on-box 2026-08-10 before designing the
@@ -270,17 +280,21 @@ job. It is a statement about **what a reward-bearing oracle needs that a regress
   so the probe is read-only and the *remedy*, not the measurement, is what needs root. **At idle the
   card was sitting on level 1 (800 MHz), not level 2**; a three-level DPM table with a wide idle step
   means the probe must record which level is *held under sustained load*, not just the peak touched.
-- [ ] **RVP-T0-2 — MFMA disassembly audit (row C3).** `roc-obj` + `llvm-objdump --disassemble
+- [x] **RVP-T0-2 — MFMA disassembly audit (row C3).** `roc-obj` + `llvm-objdump --disassemble
   -mcpu=gfx90a` over the hot `mul_mat` kernels in `libggml-hip.so`; grep for `v_mfma_*`. **Static
   only — no GPU time, no server.** If MFMA is absent from the paths this program cares about, that is
   a larger deflation of our standing baseline than any published-number dispute, and it is answerable
   today. Pair with the `mfma-decode-kernels-are-worth-zero` HARD_CONSTRAINT (`autokernel-research-loop.md`
   §19.2): that entry is about *decode arithmetic intensity*, so an MFMA absence in **prefill** paths
-  would not be covered by it.
-- [ ] **RVP-T0-5 — Static audit of `init_tensor_uniform` call sites (row C2).** Classify every call
+  would not be covered by it. ✅ 2026-08-10 — 57/134 gfx90a disassemblies contain MFMA and 38 of
+  those also contain `mul_mat`; MFMA-total-absence is falsified, without claiming runtime dispatch or
+  hotness. Evidence: [`artifacts/audit/autokernel-static-probes-20260810.md`](../../artifacts/audit/autokernel-static-probes-20260810.md).
+- [x] **RVP-T0-5 — Static audit of `init_tensor_uniform` call sites (row C2).** Classify every call
   site in `test-backend-ops.cpp` as one-sided (e.g. `(0.9, 1.1)`) or symmetric about zero. This
   decides where the negate transform in RVP-C2-3 is worth its runtime and where it is a provable
-  no-op, and it is the input to the degenerate-range screen in RVP-C2-7. Pure grep + read.
+  no-op, and it is the input to the degenerate-range screen in RVP-C2-7. Pure grep + read. ✅ 2026-08-10
+  — all 56 sites classified: 44 symmetric, 9 one-sided, 3 asymmetric across zero. Evidence:
+  [`artifacts/audit/autokernel-static-probes-20260810.md`](../../artifacts/audit/autokernel-static-probes-20260810.md).
 
 ### C2 — build the oracle the loop actually needs
 
