@@ -57193,7 +57193,8 @@
   url: https://arxiv.org/abs/2607.21273
   source_type: paper
   title: 'The Dark Room in the Reward Channel: dense prediction rewards collapse GRPO-trained agents - and why it does NOT threaten MemHarness'
-  authors: []
+  authors:
+  - Yu Wang
   categories:
   - training_distillation
   - agent_architecture
@@ -57240,7 +57241,17 @@
   - '[review candidate] USE the Proposition-2 safe/unsafe reward-shape classification as a design filter for any kernel-loop fitness function that adds shaping terms.'
   - '[review candidate] CARRY the 32-episode binomial noise floor (~8.8 points) as a caution on any small-n episodic comparison.'
   - '[review candidate] RECORD that this does NOT invalidate intake-938 - its reward shape is Dark Room own non-collapsing baseline.'
-  notes: 'credibility_score 3: no peer-reviewed venue +0; published 2026-07, within 12 months +1; independent group +1; commercial bias +0; independent corroboration +1 (its safe-class analysis independently reaches the same conclusion about MemHarness reward shape that a direct reading of MemHarness supports). Net 3. THE VALUE OF THIS ENTRY IS A NEGATIVE: it was queued as a potential threat to intake-938 and it is not one, for a stated mechanical reason. Recording the non-threat prevents the concern being re-raised.'
+  notes: 'credibility_score 3: no peer-reviewed venue +0; published 2026-07, within 12 months +1; independent group +1; commercial bias +0; independent corroboration +1 (its safe-class analysis independently reaches the same conclusion about MemHarness reward shape that a direct reading of MemHarness supports). Net 3. THE VALUE OF THIS ENTRY IS A NEGATIVE: it was queued as a potential threat to intake-938 and it is not one, for a stated mechanical reason. Recording the non-threat prevents the concern being re-raised. | 2026-08-10 DRIFT TRIAGE: dived 2026-08-03 against arXiv v1; source revised to v2 on 2026-08-04 (15 -> 35 pages, WebShop and HiddenRule-Gym added, seed replication and a 140-game unified evaluation delivered). Both versions read in full. Conclusion unchanged and better supported; claim 2 narrowed. contradicting_evidence ''the empirical arm is not decision-grade'' is now out of date, and reported_results still carries the unexplained-8B row that v2 resolved.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: v2 (2026-08-04) STRENGTHENS this. Appendix E states the failure regime in our own terms ('a dense policy-dependent shaping term whose spread dominates the within-group variance'), and a new knock-out matrix makes removing the signal one of three sufficient escapes. Verified against full text of v1 and v2, 2026-08-10.
+  - claim_index: 1
+    effect: unaffected
+    note: 'v2 STRENGTHENS this: the ALFWorld baseline matching MemHarness''s reward shape is unchanged at 49.5% and is upgraded from single-seed to seeds 0/42/96. v2 also analyses the invalid-action penalty at coefficient 0.1 that both carry, which v1 only mentioned in passing.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'NARROWED by v2. The ~8.8pt binomial noise floor at 32 episodes SURVIVES verbatim. The other two legs do not: v1''s blanket caveat that ''all cross-arm comparisons in this version are descriptive'' was scoped to v1 and is replaced by unified 140-game formal endpoints, and the unexplained 8B inversion (32.8 vs 4B 49.5) resolves to 45.0% [37.0, 53.3] — a worked example of the very noise floor this claim names. Keep the floor, drop the caveat and the inversion.'
 - id: intake-991
   arxiv_id: '2301.12987'
   url: https://arxiv.org/pdf/2301.12987v4

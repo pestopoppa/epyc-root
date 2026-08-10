@@ -274,8 +274,19 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       What the finding licenses instead is a Stage-2 rule — *dive the CURRENT version and record
       which one you read* — now written into the intake skill, which prevents the class rather than
       draining it ✅ 2026-08-10
-- [ ] PR1b-drift-990 The one drifted DIVED entry: intake-990, dived 2026-08-03, source updated to
-      v2 the next day. Verifying whether v2 changed anything bearing on its three claims
+- [x] PR1b-drift-990 **Triaged against both versions read in full — and the drift went the good
+      way.** v2 (15 → 35 pages, WebShop and HiddenRule-Gym added, three-seed replication and a
+      unified 140-game evaluation delivered) *strengthens* claims 0 and 1: the failure regime is
+      stated in our own terms and the baseline matching MemHarness's reward shape is upgraded from
+      single-seed. Claim 2 is **narrowed** — the ~8.8pt/32-episode noise floor survives verbatim,
+      but v1's blanket "all cross-arm comparisons in this version are descriptive" was scoped to v1
+      and replaced by formal endpoints, and the unexplained 8B inversion (32.8 vs 4B 49.5) resolved
+      to 45.0% [37.0, 53.3] — a worked example of the very floor the claim names. First real use of
+      the `narrowed` verdict, which is exactly what it was added for. `authors` backfilled ✅ 2026-08-10
+- [ ] PR1b-990-followups Two fields on intake-990 are now stale in the same direction the claims
+      were: `contradicting_evidence` still says "the empirical arm is not decision-grade" (v2 adds
+      two environments, seed replication, Wilson intervals at n=140, a group-size ablation and an
+      OOD pass), and `reported_results` still carries the unexplained-8B row v2 resolved
 - [x] PR2c-determinable **Measured how much of the backfill the record can support: 1 of 26.**
       intake-928 done — and reading it overruled the heuristic that found it. The correction
       inverts that entry's verdict_justification (the runtime gate it named is cleared upstream) and
