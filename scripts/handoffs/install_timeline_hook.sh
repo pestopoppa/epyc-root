@@ -34,6 +34,14 @@ regen_body() {
   if [ -n "$_repo" ] && [ -f "$_repo/scripts/handoffs/build_handoff_timeline.py" ]; then
     ( python3 "$_repo/scripts/handoffs/build_handoff_timeline.py" >/dev/null 2>&1 & ) || true
   fi
+  # Index liveness state + the dashboard graph artifact. Same change-guard (this
+  # only runs when handoffs/ moved), same detached best-effort contract. It takes
+  # ~8s because it asks git for each handoff's last checkbox change, which is why
+  # it is backgrounded and never awaited: a git hook that blocks for 8s on every
+  # commit would get uninstalled by the first person it annoyed.
+  if [ -n "$_repo" ] && [ -f "$_repo/scripts/handoffs/index_state.py" ]; then
+    ( python3 "$_repo/scripts/handoffs/index_state.py" >/dev/null 2>&1 & ) || true
+  fi
 EOF
 }
 

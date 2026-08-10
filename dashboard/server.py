@@ -15,6 +15,7 @@ GET /api/handoff_board       compact cards for all four columns + backlog ratios
                              flow (activity_today, activity_window) — live scan, TTL-cached
 GET /api/handoff_detail?id=  full card + scrubbed markdown body (lazy modal load)
 GET /api/handoff_timeline    the git-derived timeline artifact (+ freshness)
+GET /api/handoff_graph       the index dependency/liveness graph (+ freshness)
 GET /api/kernel              the kernel-R&D dashboard contract (+ freshness)
 GET /bus                     the session-bus page (static HTML, re-read per request)
 GET /api/bus                 roster, per-agent liveness, inbox depth, operator tokens (+ alarms)
@@ -70,11 +71,13 @@ from dashboard import handoff_parser, panels
 REPO = Path(__file__).resolve().parents[1]
 HANDOFF_DIR = REPO / "handoffs"
 TIMELINE_PATH = REPO / "data" / "handoff_timeline.json"
+GRAPH_PATH = REPO / "handoffs" / "active" / ".index-graph.json"
 _STATIC = Path(__file__).resolve().parent / "static"
 STATIC_HTML = _STATIC / "handoffs.html"
 KERNEL_HTML = _STATIC / "kernel.html"
 BUS_HTML = _STATIC / "bus.html"
 BENCHMARKS_HTML = _STATIC / "benchmarks.html"
+GRAPH_HTML = _STATIC / "graph.html"
 
 # Kernel-R&D dashboard contract — produced by the AutoKernel campaign driver in
 # epyc-inference-research (``autokernel.dashboard.export_terminal_entry`` after
@@ -1371,6 +1374,7 @@ def panel_envelopes() -> dict:
     outcome_present, outcome_data = _read_outcome_contract()
     timeline_present, timeline_data = _read_timeline_contract()
     bench_present, bench_data = _read_benchmark_inventory()
+    graph_present, graph_data = _read_graph_contract()
     readers = {
         # The REAL board envelope, not ``panels.live()``: the latter hardcodes
         # ``populated=True``, so the fold's board card claimed content regardless
@@ -1382,6 +1386,8 @@ def panel_envelopes() -> dict:
         "transport_probe": lambda: panels.live(),
         "timeline": lambda: _timeline_observation(
             timeline_data, artifact_present=timeline_present),
+        "handoff_graph": lambda: _graph_observation(
+            graph_data, artifact_present=graph_present),
         "kernel": lambda: _kernel_observation(
             kernel_data, artifact_present=kernel_present),
         "outcome": lambda: _outcome_observation(
@@ -1459,17 +1465,76 @@ def transport_probe_payload() -> dict:
 # With tables, ``panels.registry_gaps(server)`` reads the routes the hub ACTUALLY
 # dispatches on and fails when a route has no registered producer, or a registered
 # producer has no route, or a route is bound to the wrong payload function.
+
+#: What the graph panel looks like when no producer has reported. ``None``, not
+#: empty lists: an empty graph and a missing graph are different facts, and the
+#: page must be able to say which one it is looking at.
+_GRAPH_ABSENT = {
+    "nodes": None, "edges": None, "domains": None, "generated_at": None,
+    "degraded": True,
+    "observation_notice": (
+        "THIS PANEL IS UNSOURCED: index_state.py has not run in this checkout, so an "
+        "empty graph here means 'nobody is reporting', not 'the backlog is empty'."),
+}
+
+
+def _graph_observation(data: dict, *, artifact_present: bool = True) -> panels.Observation:
+    """Date the graph by the producer's own ``generated_at``, never by mtime.
+
+    A SPARSE graph is healthy and must not read as a fault: edges come only from
+    the hand-authored ``Deps`` column, so zero edges means Deps is unfilled, not
+    that the producer is broken. Node count is therefore the populated-ness
+    signal, and ``generated_at`` doubles as the watermark — a regeneration that
+    does not advance it means index_state.py ran but produced the same view.
+    """
+    if data.get(READER_ERROR_KEY):
+        return panels.Observation(
+            artifact_present=artifact_present, timestamp=None, source=None,
+            populated=None, detail=data[READER_ERROR_KEY])
+    nodes = data.get("nodes")
+    edges = data.get("edges") or []
+    return panels.Observation(
+        artifact_present=artifact_present,
+        timestamp=_parse_semantic_timestamp(data.get("generated_at")),
+        source="generated_at",
+        populated=None if nodes is None else bool(nodes),
+        detail=(None if not nodes else
+                f"{len(nodes)} index rows, {len(edges)} dependency edges"),
+        watermark=data.get("generated_at") if isinstance(data.get("generated_at"), str) else None,
+    )
+
+
+def _read_graph_contract() -> tuple:
+    present, data, err = _read_json_object(GRAPH_PATH, "index graph artifact")
+    if data is None:
+        out = dict(_GRAPH_ABSENT)
+        if err:
+            out["reader_error"] = err
+        return present, out
+    return present, data
+
+
+def graph_payload() -> dict:
+    """Read the index graph artifact, tolerating absence/corruption."""
+    present, data = _read_graph_contract()
+    data["_freshness"] = _panel_envelope(
+        "handoff_graph", _graph_observation(data, artifact_present=present))
+    return data
+
+
 HTML_ROUTES = {
     "/": STATIC_HTML,
     "/kernel": KERNEL_HTML,
     "/bus": BUS_HTML,
     "/benchmarks": BENCHMARKS_HTML,
+    "/graph": GRAPH_HTML,
 }
 
 #: ``route -> () -> dict``, answered 200.
 API_ROUTES = {
     "/api/handoff_board": board_payload,
     "/api/handoff_timeline": timeline_payload,
+    "/api/handoff_graph": graph_payload,
     "/api/kernel": kernel_payload,
     "/api/bus": bus_payload,
     "/api/queue": queue_payload,

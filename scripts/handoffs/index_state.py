@@ -40,11 +40,13 @@ import re
 import subprocess
 import sys
 from collections import defaultdict
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ACTIVE = REPO_ROOT / "handoffs" / "active"
 SIDECAR = ACTIVE / ".index-state.json"
+GRAPH = ACTIVE / ".index-graph.json"
 MASTER = ACTIVE / "master-handoff-index.md"
 
 BEGIN = "<!-- BEGIN GENERATED index_state -->"
@@ -216,6 +218,59 @@ def write_block(state: dict) -> bool:
     return False
 
 
+def build_graph(state: dict) -> dict:
+    """Node/edge view of the backlog for the dashboard's graph panel.
+
+    Nodes are index ROWS (not handoffs) so the graph and the indices share one
+    identity — an `INF-11` on the board is the `INF-11` in the file.
+
+    A NOTE ON EDGES, because an empty graph invites the wrong fix: edges come
+    only from the `Deps` column, which is hand-authored and currently near-empty.
+    A heuristic sweep over blocking language in the handoff bodies produced 253
+    candidate edges across 93 rows, and it was NOT used: the phrasing does not
+    disambiguate direction ("X gates Y" vs "gated by X"), so a bulk import would
+    have drawn arrows that look authoritative and point the wrong way. A sparse
+    true graph beats a dense invented one. Edges accrue as sessions fill `Deps`.
+
+    So the day-one value here is the LIVENESS MAP — node colour by how long since
+    a checkbox moved, size by open count — which is the signal indices never had.
+    """
+    now = datetime.now(timezone.utc)
+    nodes, edges = [], []
+    for rid, r in sorted(state["rows"].items()):
+        h = r.get("handoff")
+        st = state["handoffs"].get(h, {}) if h else {}
+        la = st.get("last_advanced")
+        age = None
+        if la:
+            try:
+                age = (now.date() - date.fromisoformat(la)).days
+            except ValueError:
+                age = None
+        nodes.append({
+            "id": rid,
+            "domain": (r["index"] or "").replace("-index.md", ""),
+            "track": r["track"],
+            "handoff": h,
+            "open": st.get("open", 0),
+            "closed": st.get("closed", 0),
+            "blocked": st.get("blocked", 0),
+            "last_advanced": la,
+            "age_days": age,
+        })
+        for dep in r["deps"]:
+            edges.append({"from": rid, "to": dep})
+    return {
+        "schema": "index_graph.v1",
+        "generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "nodes": nodes,
+        "edges": edges,
+        "domains": sorted({n["domain"] for n in nodes}),
+        "edge_note": ("edges come only from the hand-authored Deps column; a sparse graph means "
+                      "Deps is unfilled, NOT that the backlog is unconnected"),
+    }
+
+
 def check(state: dict) -> list[str]:
     errs = []
 
@@ -280,8 +335,12 @@ def main(argv: list[str] | None = None) -> int:
         return 1 if errs else 0
 
     SIDECAR.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    graph = build_graph(state)
+    GRAPH.write_text(json.dumps(graph, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     changed = write_block(state)
     print(f"wrote {SIDECAR.relative_to(REPO_ROOT)}")
+    print(f"wrote {GRAPH.relative_to(REPO_ROOT)} "
+          f"({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")
     print(f"master index block: {'updated' if changed else 'unchanged'}")
     print(render_block(state))
     return 0

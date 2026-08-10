@@ -1776,7 +1776,7 @@
       "id": "EVL-02",
       "index": "research-evaluation-index.md",
       "line": 14,
-      "next_action": "Confirm MMLU-Pro control re-runs under the hardened protocol (sidecar's n=50 run predates it).",
+      "next_action": "Re-run the MMLU-Pro control under the hardened protocol \u2014 the sidecar's n=50 run predates it",
       "track": "architect model selection bench"
     },
     "EVL-03": {
@@ -1794,7 +1794,7 @@
       "id": "EVL-04",
       "index": "research-evaluation-index.md",
       "line": 16,
-      "next_action": "SEQ-A \u2014 the refuted label is STICKY. state_name()",
+      "next_action": "SEQ-A: make the refuted label sticky in state_name() so re-adjudication cannot silently un-refute",
       "track": "autopilot sequential allocation"
     },
     "EVL-05": {
@@ -1821,7 +1821,7 @@
       "id": "EVL-07",
       "index": "research-evaluation-index.md",
       "line": 19,
-      "next_action": "K-LCM-1 \u2014 LongCoT-Mini calibration run (intake-386, audit RE-4, filed 2026-07-14): ~500-easy deterministic long-horizon reasoning suite on\u2026",
+      "next_action": "K-LCM-1 \u2014 LongCoT-Mini calibration run (~500-easy deterministic long-horizon suite)",
       "track": "bulk inference campaign"
     },
     "EVL-08": {
@@ -1830,7 +1830,7 @@
       "id": "EVL-08",
       "index": "research-evaluation-index.md",
       "line": 20,
-      "next_action": "CJ-1a. Acquire corpus \u2014 already cached (hendrydong/gpqa_diamond 198 rows + ankner/gpqa",
+      "next_action": "CJ-1a \u2014 corpus is already cached (gpqa_diamond 198 rows); build the judge slate from it",
       "track": "canonical judge suite revamp"
     },
     "EVL-09": {
@@ -1848,7 +1848,7 @@
       "id": "EVL-10",
       "index": "research-evaluation-index.md",
       "line": 22,
-      "next_action": "M-11a \u2014 First re-distil (INFERENCE \u2014 the teacher LLM writes the skills). DO NOT run",
+      "next_action": "M-11a \u2014 first re-distil; INFERENCE-gated, do not run without an approved window",
       "track": "episodic memory integrity"
     },
     "EVL-11": {
@@ -1884,7 +1884,7 @@
       "id": "EVL-14",
       "index": "research-evaluation-index.md",
       "line": 26,
-      "next_action": "EV-4 \u2014 Complete the decision-grade HE-R+ calibration baseline through the inference-batch loop after v7 contention-matrix recertification.\u2026",
+      "next_action": "EV-4 \u2014 decision-grade HE-R+ calibration baseline through the inference-batch loop, after contention recert",
       "track": "eval tower verification"
     },
     "EVL-15": {
@@ -2019,7 +2019,7 @@
       "id": "EVL-29",
       "index": "research-evaluation-index.md",
       "line": 41,
-      "next_action": "ID-2 \u2014 Decide the gepa dependency pin. Installed is 0.0.26 (2026-01-24), verified in /mnt/raid0/llm/epyc-orchestrator/.venv; import gepa.op\u2026",
+      "next_action": "ID-2 \u2014 pin the gepa dependency; installed is 0.0.26 and unpinned",
       "track": "intake derived work 2026 07 25"
     },
     "EVL-30": {
@@ -2037,7 +2037,7 @@
       "id": "EVL-31",
       "index": "research-evaluation-index.md",
       "line": 43,
-      "next_action": "If the repo exists but no GGUF is available, convert from HF weights: convert_hf_to_gguf.py + llama-quantize for Q4_K_M and Q8_0",
+      "next_action": "If no GGUF exists, convert from HF weights (convert_hf_to_gguf.py + llama-quantize, Q4_K_M and Q8_0)",
       "track": "mathsmith hc formalizer eval"
     },
     "EVL-32": {
@@ -2136,7 +2136,7 @@
       "id": "EVL-42",
       "index": "research-evaluation-index.md",
       "line": 54,
-      "next_action": "1b. Migrate research consumers to import the canonical lib; delete each duplicate extractor; test",
+      "next_action": "1b \u2014 migrate research consumers to the canonical lib and delete each duplicate extractor",
       "track": "scoring infra standardization"
     },
     "EVL-43": {
@@ -2181,7 +2181,7 @@
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
       "line": 59,
-      "next_action": "PR1b Build the machine anchoring pass itself: fetch cited sources, match claim terms, record",
+      "next_action": "PR1b \u2014 build the machine anchoring pass: fetch cited sources, match claim terms, record",
       "track": "vidya belief substrate program"
     },
     "EVL-48": {
@@ -2190,7 +2190,7 @@
       "id": "EVL-48",
       "index": "research-evaluation-index.md",
       "line": 60,
-      "next_action": "N-gram / prompt-lookup on GPU (L12) \u2014 27B-Q8 + fp16, code/JSON/prose sets, --spec-type ngram-simple\\|ngram-cache\\|ngram-map-k. (do-first, a\u2026",
+      "next_action": "L12 \u2014 n-gram/prompt-lookup on GPU: 27B-Q8 + fp16 over code/JSON/prose sets, sweeping the three ngram spec types",
       "track": "fable5 window2 findings 05c mi210 lever cate"
     },
     "HRM-01": {
@@ -2280,7 +2280,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "AK-KB-1 \u2014 integrate KernelBench into GEAK-eval verification loop as C3 correctness substrate",
+      "next_action": "Integrate KernelBench into the GEAK-eval loop as the AK-KB-1 correctness substrate",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {
@@ -2307,7 +2307,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "Fill P-AK-SEARCH-1's numeric bindings from the four controls \u2014 e-process threshold, per-backend",
+      "next_action": "Bind P-AK-SEARCH-1's four numeric controls (e-process threshold, per-backend limits) before any search run",
       "track": "autokernel research loop"
     },
     "INF-07": {
@@ -2316,7 +2316,7 @@
       "id": "INF-07",
       "index": "inference-research-index.md",
       "line": 19,
-      "next_action": "E5 \u2014 NUMA\u00d7batch interaction sweep (post-v7-promotion quiet window; the never-measured 2D cross). NUMA-split and -np batching have only ever\u2026",
+      "next_action": "E5 \u2014 the never-measured NUMA\u00d7batch 2D sweep; needs a post-promotion quiet window",
       "track": "batched decode measurement"
     },
     "INF-08": {
@@ -2343,7 +2343,7 @@
       "id": "INF-10",
       "index": "inference-research-index.md",
       "line": 22,
-      "next_action": "Measure tinyBLAS on/off first (new Phase 0 step per 2026-04-23 audit): ggml/src/ggml-cpu/llamafile/sgemm.cpp is already compiled under GGML\u2026",
+      "next_action": "Measure tinyBLAS on/off first (Phase 0) \u2014 sgemm.cpp is already compiled in, so it confounds every later A/B",
       "track": "cpu shape specialized gemv decode"
     },
     "INF-11": {
@@ -2370,7 +2370,7 @@
       "id": "INF-13",
       "index": "inference-research-index.md",
       "line": 25,
-      "next_action": "Rider on the k-parameter above: k must be BUDGET-CONDITIONAL, not fixed. intake-936 (independent, DeepSeek-V3.2 backbone) finds six of fift\u2026",
+      "next_action": "Make k budget-conditional rather than fixed (intake-936 rider)",
       "track": "engram conditional memory"
     },
     "INF-14": {
@@ -2397,7 +2397,7 @@
       "id": "INF-17",
       "index": "inference-research-index.md",
       "line": 28,
-      "next_action": "Full five-prompt short-context smoke set (greeting, code, reasoning, structured, tool-call); the first exact-output smoke is positive but n\u2026",
+      "next_action": "Run the five-prompt short-context smoke (greeting, code, reasoning, structured, tool-call) \u2014 one positive is not a set",
       "track": "glm51 reap cpu evaluation"
     },
     "INF-18": {
@@ -2406,7 +2406,7 @@
       "id": "INF-18",
       "index": "inference-research-index.md",
       "line": 29,
-      "next_action": "Explain the mechanism before this becomes a placement input. It is still bidirectional-only",
+      "next_action": "Explain the bidirectional-only mechanism before this becomes a placement input",
       "track": "gpu acceleration path"
     },
     "INF-19": {
@@ -2442,7 +2442,7 @@
       "id": "INF-22",
       "index": "inference-research-index.md",
       "line": 33,
-      "next_action": "P0-1 (operator) \u2014 run the E8 ratification when Codex presents the apply-ready bundle (D4). Wrapper review VERDICT (2026-07-28, independent\u2026",
+      "next_action": "P0-1 (operator) \u2014 run the E8 ratification once Codex presents the apply-ready D4 bundle",
       "track": "gpu serving tie in program"
     },
     "INF-23": {
@@ -2559,7 +2559,7 @@
       "id": "INF-35",
       "index": "inference-research-index.md",
       "line": 46,
-      "next_action": "Phase 2 the nightshift loop (outer planner/critic + inner sweep->kernel_eval.sh->Pareto)",
+      "next_action": "Phase 2 \u2014 build the nightshift loop (outer planner/critic + inner sweep \u2192 kernel_eval.sh \u2192 Pareto)",
       "track": "mi210 kernel rnd loop proposal"
     },
     "INF-36": {
@@ -2568,7 +2568,7 @@
       "id": "INF-36",
       "index": "inference-research-index.md",
       "line": 47,
-      "next_action": "DEFERRED (with data): reopen MFMA build only if a new compute-bound path appears (measurement gate failed both paths)",
+      "next_action": "DEFERRED with data \u2014 reopen the MFMA build only if a new compute-bound path appears",
       "track": "mi210 mfma compute bound paths"
     },
     "INF-37": {
@@ -2577,7 +2577,7 @@
       "id": "INF-37",
       "index": "inference-research-index.md",
       "line": 48,
-      "next_action": "SoA-repack lever (only if coalescing measured poor - currently deemed healthy)",
+      "next_action": "Apply the SoA-repack lever only if coalescing measures poor; currently deemed healthy",
       "track": "mi210 q8 dequant gemv roofline"
     },
     "INF-38": {
@@ -2613,7 +2613,7 @@
       "id": "INF-41",
       "index": "inference-research-index.md",
       "line": 52,
-      "next_action": "S-9 \u2014 wire start_tts() into orchestrator_stack.py (port 9002 reserved). Capability now exists; only the service wiring is missing. Blocked\u2026",
+      "next_action": "S-9 \u2014 wire start_tts() into orchestrator_stack.py (port 9002 reserved); capability exists, wiring does not",
       "track": "multimodal pipeline"
     },
     "INF-42": {
@@ -2649,7 +2649,7 @@
       "id": "INF-45",
       "index": "inference-research-index.md",
       "line": 56,
-      "next_action": "P0-1. Fix the 30 net-new breaking tests across 14 files, including the",
+      "next_action": "P0-1 \u2014 fix the 30 net-new breaking tests across 14 files; this blocks the commit",
       "track": "numa topology cutover resume"
     },
     "INF-46": {
@@ -2676,7 +2676,7 @@
       "id": "INF-48",
       "index": "inference-research-index.md",
       "line": 59,
-      "next_action": "MI210 bring-up (gated on card). Install ROCm + torch-ROCm; confirm gfx90a visible; reproduce GEAK-eval's MI250X numbers on the MI210 (sanit\u2026",
+      "next_action": "MI210 bring-up: install ROCm + torch-ROCm, confirm gfx90a, reproduce GEAK-eval numbers as a sanity check",
       "track": "rocm verify profile backend"
     },
     "INF-49": {
@@ -2730,7 +2730,7 @@
       "id": "INF-54",
       "index": "inference-research-index.md",
       "line": 65,
-      "next_action": "Prototype faithful ChunkKV only on a fresh llama.cpp-experimental tree after an",
+      "next_action": "Prototype faithful ChunkKV on a fresh llama.cpp-experimental tree",
       "track": "tq3 quantization evaluation"
     },
     "INF-55": {
@@ -2793,7 +2793,7 @@
       "id": "PIP-02",
       "index": "pipeline-integration-index.md",
       "line": 14,
-      "next_action": "Trigger PP-DocLayoutV3 weight resolution and record the cache path + size (a separate download from the GGUF, not yet performed).",
+      "next_action": "Resolve PP-DocLayoutV3 weights and record cache path + size \u2014 a separate download from the GGUF",
       "track": "document parser table bench"
     },
     "PIP-03": {
@@ -2820,7 +2820,7 @@
       "id": "PIP-05",
       "index": "pipeline-integration-index.md",
       "line": 17,
-      "next_action": "Parser-quality comparison: evaluate LightOnOCR-2-1B only as a structural/table/reading-order parser candidate against docling-fast; speed i\u2026",
+      "next_action": "Evaluate LightOnOCR-2-1B as a structural/table/reading-order parser against docling-fast",
       "track": "opendataloader pipeline integration"
     },
     "REV-01": {
@@ -2910,7 +2910,7 @@
       "id": "RTG-01",
       "index": "routing-and-optimization-index.md",
       "line": 13,
-      "next_action": "AW-6: 48h bootstrap discovery run (>=50 envs / >=500 tools / >=500 tasks) with incremental persistence",
+      "next_action": "Run the AW-6 48h bootstrap discovery (\u226550 envs / \u2265500 tools / \u2265500 tasks) with incremental persistence",
       "track": "agent world env synthesis"
     },
     "RTG-02": {
@@ -2919,7 +2919,7 @@
       "id": "RTG-02",
       "index": "routing-and-optimization-index.md",
       "line": 14,
-      "next_action": "AP-26: Test dspy.RLM for autopilot tasks \u2014 long-horizon benchmark analysis where metadata-first context exploration avoids context window l\u2026",
+      "next_action": "AP-26: evaluate dspy.RLM for long-horizon autopilot analysis where metadata-first exploration avoids context overflow",
       "track": "autopilot continuous optimization"
     },
     "RTG-03": {
@@ -2955,16 +2955,18 @@
       "id": "RTG-06",
       "index": "routing-and-optimization-index.md",
       "line": 18,
-      "next_action": "W3 \u2014 safe role-restart applicator (~2\u20133 days): config_applicator.restart_role(role, env_overrides, registry_overrides) per \u00a7C.2 \u2014 pause aut\u2026",
+      "next_action": "W3 \u2014 build config_applicator.restart_role() for safe role restarts (~2-3d, pauses autopilot)",
       "track": "capability registry and promotion"
     },
     "RTG-07": {
-      "deps": [],
+      "deps": [
+        "INF-07"
+      ],
       "handoff": "contention-model-device-and-load-axes-rider.md",
       "id": "RTG-07",
       "index": "routing-and-optimization-index.md",
       "line": 19,
-      "next_action": "Q4 \u2014 does the interference model need E5 (NUMA\u00d7batch) first? STILL OPEN, but the premise",
+      "next_action": "Q4 \u2014 decide whether the interference model needs INF-07's E5 NUMA\u00d7batch data first",
       "track": "contention model device and load axes rider"
     },
     "RTG-08": {
@@ -2982,7 +2984,7 @@
       "id": "RTG-09",
       "index": "routing-and-optimization-index.md",
       "line": 21,
-      "next_action": "Implement SPO+ (Smart Predict-then-Optimize) loss:",
+      "next_action": "Implement the SPO+ (Smart Predict-then-Optimize) loss",
       "track": "decision aware routing"
     },
     "RTG-10": {
@@ -3036,7 +3038,7 @@
       "id": "RTG-15",
       "index": "routing-and-optimization-index.md",
       "line": 27,
-      "next_action": "EP-5 \u2014 Re-run the probe only after the outcome label defects below are fixed. The current",
+      "next_action": "EP-5 \u2014 re-run the probe only after the outcome-label defects are fixed",
       "track": "learned routing controller"
     },
     "RTG-16": {
@@ -3108,7 +3110,7 @@
       "id": "RTG-23",
       "index": "routing-and-optimization-index.md",
       "line": 35,
-      "next_action": "W3d \u2014 the 2026-06-13 hold conditions were never satisfied; they were superseded.",
+      "next_action": "W3d \u2014 the 2026-06-13 hold conditions were superseded, not satisfied; close them out",
       "track": "objective task rate goodput"
     },
     "RTG-24": {
@@ -3153,7 +3155,7 @@
       "id": "RTG-28",
       "index": "routing-and-optimization-index.md",
       "line": 40,
-      "next_action": "TB-1 \u2014 Per-model budget curve. For each stack model, on a truncation-inducing suite",
+      "next_action": "TB-1 \u2014 per-model budget curve on a truncation-inducing suite",
       "track": "reasoning effort levels"
     },
     "RTG-29": {
@@ -3207,7 +3209,7 @@
       "id": "RTG-34",
       "index": "routing-and-optimization-index.md",
       "line": 46,
-      "next_action": "R1a \u2014 end-to-end bench claim never fired (open gap, inference-gated). The wiring is",
+      "next_action": "R1a \u2014 the end-to-end bench claim never fired; wiring exists but is inference-gated",
       "track": "session bus thin dispatcher"
     },
     "RTG-35": {
@@ -3216,7 +3218,7 @@
       "id": "RTG-35",
       "index": "routing-and-optimization-index.md",
       "line": 47,
-      "next_action": "BRIDGE RESIDUAL 1 \u2014 echo GateDecision into /chat response metadata (serving-path, small): admitted/waited_s/decision/candidate_topology_idx\u2026",
+      "next_action": "Echo GateDecision into /chat response metadata (admitted/waited_s/decision/topology_idx)",
       "track": "shape keyed contention gating"
     },
     "RTG-36": {

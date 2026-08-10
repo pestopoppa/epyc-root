@@ -11,19 +11,19 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | EVL-01 | agent file prose compression | [agent-file-prose-compression.md](agent-file-prose-compression.md) | AFC-P5.E3 — run the n=30 compliance campaign. READY but HELD (operator: "I will tell | — |
-| EVL-02 | architect model selection bench | [architect-model-selection-bench.md](architect-model-selection-bench.md) | Confirm MMLU-Pro control re-runs under the hardened protocol (sidecar's n=50 run predates it). | — |
+| EVL-02 | architect model selection bench | [architect-model-selection-bench.md](architect-model-selection-bench.md) | Re-run the MMLU-Pro control under the hardened protocol — the sidecar's n=50 run predates it | — |
 | EVL-03 | autopilot decision plane audit 2026 07 22 | [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) | E8 RE-ARM (2026-07-26) — AutoPilot E8 baseline reseed = the gating task of the post-v8 | — |
-| EVL-04 | autopilot sequential allocation | [autopilot-sequential-allocation.md](autopilot-sequential-allocation.md) | SEQ-A — the refuted label is STICKY. state_name() | — |
+| EVL-04 | autopilot sequential allocation | [autopilot-sequential-allocation.md](autopilot-sequential-allocation.md) | SEQ-A: make the refuted label sticky in state_name() so re-adjudication cannot silently un-refute | — |
 | EVL-05 | backlog roi audit 2026 07 14 | [backlog-roi-audit-2026-07-14.md](backlog-roi-audit-2026-07-14.md) | RE-1 · Math-Verify scoring flip + re-baseline (S, med-ROI; intake-377/379) — the math_verify scorer is landed in orchestrator but zero pool… | — |
 | EVL-06 | benchmark results dashboard | [benchmark-results-dashboard.md](benchmark-results-dashboard.md) | _no open dispatchable task — verify complete or file the next step_ | — |
-| EVL-07 | bulk inference campaign | [bulk-inference-campaign.md](bulk-inference-campaign.md) | K-LCM-1 — LongCoT-Mini calibration run (intake-386, audit RE-4, filed 2026-07-14): ~500-easy deterministic long-horizon reasoning suite on… | — |
-| EVL-08 | canonical judge suite revamp | [canonical-judge-suite-revamp.md](canonical-judge-suite-revamp.md) | CJ-1a. Acquire corpus — already cached (hendrydong/gpqa_diamond 198 rows + ankner/gpqa | — |
+| EVL-07 | bulk inference campaign | [bulk-inference-campaign.md](bulk-inference-campaign.md) | K-LCM-1 — LongCoT-Mini calibration run (~500-easy deterministic long-horizon suite) | — |
+| EVL-08 | canonical judge suite revamp | [canonical-judge-suite-revamp.md](canonical-judge-suite-revamp.md) | CJ-1a — corpus is already cached (gpqa_diamond 198 rows); build the judge slate from it | — |
 | EVL-09 | design backlog triage 2026 07 23 | [design-backlog-triage-2026-07-23.md](design-backlog-triage-2026-07-23.md) | _no open dispatchable task — verify complete or file the next step_ | — |
-| EVL-10 | episodic memory integrity | [episodic-memory-integrity.md](episodic-memory-integrity.md) | M-11a — First re-distil (INFERENCE — the teacher LLM writes the skills). DO NOT run | — |
+| EVL-10 | episodic memory integrity | [episodic-memory-integrity.md](episodic-memory-integrity.md) | M-11a — first re-distil; INFERENCE-gated, do not run without an approved window | — |
 | EVL-11 | eval benchmark cost reduction | [eval-benchmark-cost-reduction.md](eval-benchmark-cost-reduction.md) | BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies | — |
 | EVL-12 | eval tower architecture audit 2026 07 20 | [eval-tower-architecture-audit-2026-07-20.md](eval-tower-architecture-audit-2026-07-20.md) | A2 agent SCORE-02/XREPO-1/PATH-1 — make module identity deterministic. (PARTIAL ✅ 2026-07-20: the debug_scorer leg landed in 2a41c0bc — see… | — |
 | EVL-13 | eval tower loop robustness audit 2026 07 20 | [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md) | H2.v8 — remeasure the contention matrix under frozen v8 after E8 quality collection — live dashboard topology and region-lock payloads alre… | — |
-| EVL-14 | eval tower verification | [eval-tower-verification.md](eval-tower-verification.md) | EV-4 — Complete the decision-grade HE-R+ calibration baseline through the inference-batch loop after v7 contention-matrix recertification.… | — |
+| EVL-14 | eval tower verification | [eval-tower-verification.md](eval-tower-verification.md) | EV-4 — decision-grade HE-R+ calibration baseline through the inference-batch loop, after contention recert | — |
 | EVL-15 | evidence plane instrument repair | [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) | W5 — designed core_v2 (impl 2.1, 2–3 days + calibration): benchmarks/prompts/core_v2.jsonl (~40 items, per-item p∈0.2,0.8, stratified), ver… | — |
 | EVL-16 | evidence plane ledger and sequential verdict | [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) | W8b — live candidate evidence after guard deploy: continue W8 candidate attempts under the live selectable-action coordinator plus outcome-… | — |
 | EVL-17 | fable5 architecture review 2 | [fable5-architecture-review-2.md](fable5-architecture-review-2.md) | _no open dispatchable task — verify complete or file the next step_ | — |
@@ -38,9 +38,9 @@
 | EVL-26 | frontier f4 continuity backup | [frontier-f4-continuity-backup.md](frontier-f4-continuity-backup.md) | W2 — the job (half day): scripts/backup/backup_critical.sh — restic preferred (dedupe+encryption, open-source) or snapshot-copy fallback. T… | — |
 | EVL-27 | frontier f6 upstream publication | [frontier-f6-upstream-publication.md](frontier-f6-upstream-publication.md) | W1 — D2 PR spearhead (1–2 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-processing sparse path the PR author asked for help… | — |
 | EVL-28 | granite 97m r2 bench plan | [granite-97m-r2-bench-plan.md](granite-97m-r2-bench-plan.md) | _no open dispatchable task — verify complete or file the next step_ | — |
-| EVL-29 | intake derived work 2026 07 25 | [intake-derived-work-2026-07-25.md](intake-derived-work-2026-07-25.md) | ID-2 — Decide the gepa dependency pin. Installed is 0.0.26 (2026-01-24), verified in /mnt/raid0/llm/epyc-orchestrator/.venv; import gepa.op… | — |
+| EVL-29 | intake derived work 2026 07 25 | [intake-derived-work-2026-07-25.md](intake-derived-work-2026-07-25.md) | ID-2 — pin the gepa dependency; installed is 0.0.26 and unpinned | — |
 | EVL-30 | integration test coverage | [integration-test-coverage.md](integration-test-coverage.md) | _no open dispatchable task — verify complete or file the next step_ | — |
-| EVL-31 | mathsmith hc formalizer eval | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | If the repo exists but no GGUF is available, convert from HF weights: convert_hf_to_gguf.py + llama-quantize for Q4_K_M and Q8_0 | — |
+| EVL-31 | mathsmith hc formalizer eval | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | If no GGUF exists, convert from HF weights (convert_hf_to_gguf.py + llama-quantize, Q4_K_M and Q8_0) | — |
 | EVL-32 | meta harness optimization | [meta-harness-optimization.md](meta-harness-optimization.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | EVL-33 | per request reasoning budget | [per-request-reasoning-budget.md](per-request-reasoning-budget.md) | Step 3: implement fix (force </think> / suppress think scaffold at budget=0 for hybrid SSM), needs running server | — |
 | EVL-34 | rao redel substrate spike | [rao-redel-substrate-spike.md](rao-redel-substrate-spike.md) | Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation | — |
@@ -51,13 +51,13 @@
 | EVL-39 | rlm contested claims self evaluation | [rlm-contested-claims-self-evaluation.md](rlm-contested-claims-self-evaluation.md) | E1 — RESCOPED BY E0: measure Base vs Depth-1 first, not depth-1 vs depth-2. E0 showed | — |
 | EVL-40 | safetygate rlvr provenance audit 2026 07 22 | [safetygate-rlvr-provenance-audit-2026-07-22.md](safetygate-rlvr-provenance-audit-2026-07-22.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | EVL-41 | scorer fork drift audit 2026 07 22 | [scorer-fork-drift-audit-2026-07-22.md](scorer-fork-drift-audit-2026-07-22.md) | Unify the _inband_error_text / _forced_role_serving_mismatch local copies (seeding 3bfe2584) with eval_tower's originals into one shared mo… | — |
-| EVL-42 | scoring infra standardization | [scoring-infra-standardization.md](scoring-infra-standardization.md) | 1b. Migrate research consumers to import the canonical lib; delete each duplicate extractor; test | — |
+| EVL-42 | scoring infra standardization | [scoring-infra-standardization.md](scoring-infra-standardization.md) | 1b — migrate research consumers to the canonical lib and delete each duplicate extractor | — |
 | EVL-43 | sliders local validation | [sliders-local-validation.md](sliders-local-validation.md) | Operator decision: KB-RAG K7 precondition fired — evaluate SLIDERS DB+SQL alternative (Phase 0 falsification) now, or keep parked? | — |
 | EVL-44 | stale open audit 2026 07 18 | [stale-open-audit-2026-07-18.md](stale-open-audit-2026-07-18.md) | Re-anchor GEMV to its 2 live graph-fusion tasks; move the deprioritized SIMD Phase 0–5 plan to a closed appendix | — |
 | EVL-45 | strand rust coder rustevo2 verification | [strand-rust-coder-rustevo2-verification.md](strand-rust-coder-rustevo2-verification.md) | Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential | — |
 | EVL-46 | tool use eval contract | [tool-use-eval-contract.md](tool-use-eval-contract.md) | TU-DTAP-1 — Import a reviewed, bounded Apache-2.0 DTAP subset into a disposable local runner. | — |
-| EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | PR1b Build the machine anchoring pass itself: fetch cited sources, match claim terms, record | — |
-| EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | N-gram / prompt-lookup on GPU (L12) — 27B-Q8 + fp16, code/JSON/prose sets, --spec-type ngram-simple\|ngram-cache\|ngram-map-k. (do-first, a… | — |
+| EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | PR1b — build the machine anchoring pass: fetch cited sources, match claim terms, record | — |
+| EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | L12 — n-gram/prompt-lookup on GPU: 27B-Q8 + fp16 over code/JSON/prose sets, sweeping the three ngram spec types | — |
 
 ## Cross-domain
 

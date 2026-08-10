@@ -269,6 +269,29 @@ PANELS: Mapping[str, PanelSource] = _index((
               "producer, so it never becomes the freshness source.",
     ),
     PanelSource(
+        panel="handoff_graph",
+        kind=KIND_ARTIFACT,
+        payload_func="graph_payload",
+        route="/api/handoff_graph",
+        producer="scripts/handoffs/index_state.py (wrap-up, research-intake Stage 4, git hooks)",
+        producer_repo="epyc-root",
+        evidence="handoffs/active/.index-graph.json",
+        timestamp_field="generated_at",
+        absence_means=(
+            "index_state.py has never run in this checkout. The indices themselves are "
+            "unaffected — this panel is a VIEW of them — so the hub degrades to 'no graph' "
+            "rather than failing. A graph that stops advancing while handoffs change means "
+            "the regeneration hook died, and every liveness colour on the page is frozen."),
+        warn_s=6 * _HOUR,
+        stale_s=2 * _DAY,
+        silent_after_s=2 * _DAY,
+        watched=True,
+        gates_health=False,
+        absence_is_anomalous=False,  # regenerable; absent on a fresh checkout
+        notes="Sparse edges are HEALTHY, not a fault: edges come only from the hand-authored "
+              "Deps column. Node count is the populated-ness signal, never edge count.",
+    ),
+    PanelSource(
         panel="handoff_detail",
         kind=KIND_DERIVED,
         payload_func="detail_payload",

@@ -11,10 +11,10 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | PIP-01 | colbert reranker web research | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | S5: Implement reranker — HOLD as of 2026-06-12 gate analysis. Add reranking to research.py, gated behind web_research_rerank flag, only if… | — |
-| PIP-02 | document parser table bench | [document-parser-table-bench.md](document-parser-table-bench.md) | Trigger PP-DocLayoutV3 weight resolution and record the cache path + size (a separate download from the GGUF, not yet performed). | — |
+| PIP-02 | document parser table bench | [document-parser-table-bench.md](document-parser-table-bench.md) | Resolve PP-DocLayoutV3 weights and record cache path + size — a separate download from the GGUF | — |
 | PIP-03 | ernie image turbo evaluation | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs | — |
 | PIP-04 | internal kb rag | [internal-kb-rag.md](internal-kb-rag.md) | K8 (LOW priority, defer): wikilink learning-loop scorer (NEW 2026-04-28, from intake-492). Flywheel's auto-wikilink suggestion uses an acce… | — |
-| PIP-05 | opendataloader pipeline integration | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | Parser-quality comparison: evaluate LightOnOCR-2-1B only as a structural/table/reading-order parser candidate against docling-fast; speed i… | — |
+| PIP-05 | opendataloader pipeline integration | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | Evaluate LightOnOCR-2-1B as a structural/table/reading-order parser against docling-fast | — |
 
 ## Cross-domain
 
