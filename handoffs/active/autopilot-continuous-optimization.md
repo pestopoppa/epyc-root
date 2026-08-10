@@ -1,13 +1,12 @@
 # AutoPilot: Continuous Recursive Optimization
 
-> **Current checkpoint — 2026-08-09.** AutoPilot is intentionally stopped. Orchestrator `3f62f712`
-> implements staged T1 screen → matched T2 → matched T3 → fresh T1 promotion with exact runtime
-> rollback and a fail-closed startup gate. `83c8777a`/`f3b262b8` repair atomic episodic reseeding across
-> all six embedder servers; the 63,786-row replacement is currently building from the
-> `20260809T154014Z` backups. `545af011` prevents baseline collection while interrupted trial 1505 is
-> unresolved. Next: semantic integrity pass, append-only recovery of that non-mutating deep-eval trial,
-> API-only dashboard reload, immutable T1=100/T2=500/T3=160 baselines, and one consolidated human
-> ratifier. AutoPilot remains stopped after apply until the operator separately authorizes restart.
+> **Current checkpoint — 2026-08-10.** AutoPilot is intentionally stopped and inference resources have
+> been handed back to the operator. Clean execution-instrument-v10 incumbent evidence is sealed for
+> T1=100 (`q=1.500`), T2=500 (`q=1.356`), and T3=160 (`q=1.275`), each at reliability `1.000` and zero
+> error rows. Orchestrator `8e147213` contains the single human-gated, atomic ratifier; its no-write
+> prevalidation passes against exact artifact, source, recode, and state-preimage hashes. Next: the
+> operator runs that one final ratifier when convenient. It does not start AutoPilot or model servers;
+> any later AutoPilot restart still requires separate explicit permission.
 
 **Resume-precondition — 2026-07-17 (non-inference session diagnosis)**: the ~28h stop on 2026-07-16 was a **DELIBERATE `SIGTERM`** to free the machine for v7 kernel work (`autopilot.log` `Shutdown requested (signal 15)` → `Controller failed (rc=143)`; `agent_audit.log` logs *"Audit experimental v7 kernel worktree … while AutoPilot remains stopped"* seconds later). It is **NOT** a `consecutive_failures` self-halt — `consecutive_failures=2 < safety_gate.MAX_CONSECUTIVE_FAILURES=3` (`safety_gate.py:107`); the persisted `_dispatch_deficiency='consecutive_failures'` marker is stale + self-clearing (`autopilot.py:8687` unconditional pop on `resume`). **No wedge to clear.** Before resuming:
 - [x] Bring the `:8000` stack up + verify HEALTHY first (a resume against a dead stack fails every dispatch). ✅ 2026-08-08 — E15 serving and API readiness were verified before the supervised run; subsequent work stops AutoPilot without tearing down the resident stack.
@@ -2155,13 +2154,20 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       batched, deterministic round-robin work over all six BGE servers. Reseed tests passed 15/15 and a
       representative 24-row smoke completed in 1.27 seconds. The live store remains untouched until the
       replacement DB/index/id-map set is complete and passes the existing swap checks.
-- [ ] **Finish the staged-policy evidence bundle and one consolidated ratifier.** The atomic semantic
+- [x] **Finish the staged-policy evidence bundle and one consolidated ratifier. ✅ 2026-08-10** The atomic semantic
       rebuild is complete; recover interrupted non-mutating deep-eval trial 1505 append-only; deploy only
       the dashboard/API code with an API-only reload; collect
       immutable incumbent baselines T1=100, T2=500, T3=160; then produce one human-only ratifier that
       applies the policy/bundle and writes a clean `production_best` checkpoint. Orchestrator `545af011`
       makes collector preflight fail closed until `in_flight_trial` is cleared (5/5 focused tests).
-      AutoPilot stays stopped throughout and after apply pending separate restart permission.
+      AutoPilot stayed stopped throughout. Final artifacts are T1 SHA `2293f55a…`, T2 SHA `8d18534b…`,
+      and T3 SHA `012f2d99…`; orchestrator `8e147213` adds the atomic ratifier and focused tests.
+      `--prevalidate` performs no writes and passes. AutoPilot remains stopped after apply pending
+      separate restart permission.
+- [ ] **Apply the final consolidated v10 multi-tier ratifier.** Run
+      `scripts/autopilot/operator_candidates/ratify_and_apply_multitier_baseline_v10.py` once as the
+      normal operator. It atomically writes the E16 eras, T1/T2/T3 baseline bundle, and staged-promotion
+      policy while leaving AutoPilot and all model servers stopped.
 - [x] **Complete and certify the 63,786-row episodic semantic rebuild. ✅ 2026-08-09** Orchestrator
       `43323891` supports an explicit maintenance-only embedder fleet. Six temporary processes exposed
       96 slots with 16 compute threads each across all physical cores; the measured 96-row smoke reached
@@ -2276,8 +2282,10 @@ AutoPilot remains stopped. The accepted immutable T1 artifact is
   vectors. Receipt `artifacts/operator/episodic_routing_poison_repair_20260809.json` reports zero
   remaining namespace updates or fallback vectors and consistent `63833` SQLite/FAISS/id-map rows.
   Its status is `applied_for_validation_unratified`; this repairs contamination, not baseline evidence.
-- [ ] **AP-MT-5 — Reconstruct a fully clean T2 baseline after the fixes.** Retain only the 222 verified
+- [x] **AP-MT-5 — Reconstruct a fully clean T2 baseline after the fixes. ✅ 2026-08-10** Retain only the 222 verified
   clean rows, rerun the required 278 rows, reconcile the 21 late-completion collector gap, and require a
   clean 500-row terminal artifact with a post-repair source identity. Collect the T3 baseline only after
   this gate. Prepare a consolidated ratifier only after clean T1/T2/T3 evidence and a bug-free
-  orchestrator are verified.
+  orchestrator are verified. Completed evidence is T2 `500/500`, quality `1.356`, reliability `1.000`,
+  and T3 `160/160`, quality `1.275`, reliability `1.000`; both have zero error rows. The v10 recodes are
+  deterministic and attest that answers, scores, timing, and routing did not change.
