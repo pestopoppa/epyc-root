@@ -13,6 +13,11 @@
   },
   "edges": [
     {
+      "from": "INF-58",
+      "kind": "dep",
+      "to": "INF-11"
+    },
+    {
       "from": "RTG-07",
       "kind": "dep",
       "to": "INF-07"
@@ -3540,7 +3545,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T16:11:07Z",
+  "generated_at": "2026-08-10T23:55:44Z",
   "nodes": [
     {
       "age_days": 11,
@@ -4143,13 +4148,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 23,
+      "closed": 34,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-10",
-      "next_action": "SC6-LIVE \u2014 after autopilot next restarts, confirm `adapters/autopilot_journal.py` reports non-zero measured rows",
-      "open": 5,
+      "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
+      "open": 11,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -4299,13 +4304,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 6,
+      "closed": 13,
       "domain": "inference-research",
       "handoff": "deepseek-v4-flash-0731-dspark.md",
       "id": "INF-11",
       "last_advanced": "2026-08-10",
-      "next_action": "Claim-grade Q8 baseline on production v8 (canonical CPU protocol) before any DSpark kernel work",
-      "open": 19,
+      "next_action": "Run the complete v8-v9 promotion qualification; retain DSpark at validated `-np 1`",
+      "open": 14,
       "state": "active",
       "track": "deepseek v4 flash 0731 dspark"
     },
@@ -4895,15 +4900,15 @@
       "track": "v7 promotion"
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 0,
-      "closed": 0,
+      "closed": 5,
       "domain": "inference-research",
       "handoff": "v9-kernel-per-request-speculative-params.md",
       "id": "INF-58",
-      "last_advanced": null,
-      "next_action": "V9-1. Delete the #if 0 / #endif around the speculative block in",
-      "open": 5,
+      "last_advanced": "2026-08-10",
+      "next_action": "Qualify exact v9 candidate `2ac4b32a0` through every promotion gate before any v9 cutover",
+      "open": 3,
       "state": "active",
       "track": "v9 kernel per request speculative params"
     },
@@ -5116,15 +5121,15 @@
       "track": "agent world env synthesis"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
-      "closed": 127,
+      "closed": 130,
       "domain": "routing-and-optimization",
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",
-      "last_advanced": "2026-08-09",
-      "next_action": "AP-26: evaluate dspy.RLM for long-horizon autopilot analysis where metadata-first exploration avoids context overflow",
-      "open": 65,
+      "last_advanced": "2026-08-10",
+      "next_action": "Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped",
+      "open": 63,
       "state": "active",
       "track": "autopilot continuous optimization"
     },
@@ -5690,7 +5695,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 4,
+      "closed": 5,
       "domain": "routing-and-optimization",
       "handoff": "handoff-index-and-backlog-graph.md",
       "id": "RTG-46",

@@ -82,6 +82,12 @@ deliberately for the repetitive-context upside. With no runtime control:
 - [ ] **V9-7. Execute the authorized `production-consolidated-v9` cutover only if V9-6 passes**;
   then perform production-named P-GPU-1 and DFlash certification. DSpark remains limited to its
   validated `-np 1` path; failure retains v8 and requires repair plus a full candidate re-run.
+- [ ] **V9-8. Follow-up after the current qualification:** implement and prospectively ratify the
+  paired-resident promotion fast path in the
+  [research design](https://github.com/pestopoppa/epyc-inference-research/blob/v9-promotion-instrument-20260810/docs/design/kernel-promotion-resident-fast-path.md),
+  including the sealed candidate hot stack, broad exact-parity pack, per-request DSpark/DFlash
+  schedule, acceptance tests, and automatic fallback to the existing fresh-server instrument. This
+  task does not alter or regrade the in-flight v9 evidence.
 
 ## 3.1 Evidence
 
