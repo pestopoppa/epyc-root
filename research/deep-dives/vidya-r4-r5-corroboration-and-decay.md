@@ -70,6 +70,60 @@ the same claim. That is a claim-aliasing problem, it is human-gated (deciding tw
 claims are the same proposition is exactly the judgment the spec keeps out of the fold), and it is
 the prerequisite for everything else in R4.
 
+### Unblocking it — candidate generation, 2026-08-10
+
+"Human-gated" was doing too much work as a reason to stop. The judgment is human; **finding the
+pairs worth judging is not**, and nobody was ever going to hand-scan 4,191 claims for 8.8M pairs.
+`scripts/vidya/alias_candidates.py` proposes and ranks; a human decides. First run against the
+real ledger:
+
+| | |
+|---|---:|
+| Claims considered | 4,191 |
+| Pairs surviving rare-term blocking | 780,140 |
+| Pairs scored (≥2 shared rare terms) | 74,948 |
+| Candidates at score ≥ 0.35 | **45** |
+
+45 rows is an afternoon of review, not a research programme. Scoring is IDF-weighted Jaccard over
+stopword-stripped terms — deterministic, no model call, so a review can be resumed or audited. Two
+filters are load-bearing and both are tested: **same-entry pairs are never proposed** (two claims
+of one entry are one source, and aliasing them would manufacture the exact fake independence the
+statistic exists to detect), and every row starts `pending` with no pre-filled decision.
+
+The worksheet is `artifacts/operator/vidya-alias-worksheet-20260810.yaml`; approved rows become `claim_alias` frames via
+`vidya alias-emit`, which refuses any approval that does not name its reviewer.
+
+### What the first run found: source identity is per-entry too
+
+The generator's top candidates were near-verbatim pairs, which is a good sign for recall — and four
+of the 45 turned out to be **two entries for one source**. `source_id` in the ledger is minted per
+*entry* (`src_intake_418`), so this is the same structural defect as per-entry claim ids, one level
+up: intake-418 and intake-797 are both arXiv:2604.08224, and nothing in the ledger says so.
+
+Aliasing those claims is a *correct identity statement* and **not corroboration**. Had the rows
+been approved without the distinction, the corroboration statistic would have reported its first
+independent supports and every one of them would have been one paper counted twice — a fake
+positive strictly worse than the honest zero it replaced. Candidate rows now carry `same_source`,
+computed from a normalized locator rather than the ledger's `source_id`.
+
+An index-wide sweep with the same locator key found **5 duplicate-locator groups covering 11
+entries**:
+
+| Locator | Entries |
+|---|---|
+| `arxiv:2505.22954` | intake-772, intake-785 |
+| `arxiv:2603.28052` | intake-244, intake-784 |
+| `arxiv:2604.08224` | intake-418, intake-797 |
+| `url:github.com/avbiswas/fast-rlm` | intake-693, intake-783, intake-901 |
+| `url:metauto.ai/neuralcomputer` | intake-315, intake-336 |
+
+The intake validator already errored on duplicate `arxiv_id`; it could not see any of these,
+because one entry of each pair records the arXiv id and the other records only the URL.
+`check_duplicate_locators` now normalizes both forms to one key and **warns** — deliberately not a
+hard error, since a repository or project page can legitimately back two distinct artifacts, and
+this project has a recorded lesson against conflating a companion repo with the paper it
+accompanies. Reporting prevents the silent failure; a human decides the merge.
+
 ---
 
 ## R5 — Belief decay and obligation utility
@@ -103,7 +157,9 @@ recorded prospectively.
 
 1. **Query log.** Reuse is unobservable unless queries are recorded. A `query_served` frame
    (claim, policy digest, outcome, frontier) makes reuse and abstention rates measurable, and costs
-   one append per authoritative query.
+   one append per authoritative query. **Wired 2026-08-10** and deliberately **opt-out, not
+   opt-in**: the failure mode is silent and unrecoverable, so a default of "off" would have left
+   R5d blocked indefinitely while every command still appeared to work.
 2. **Obligation disposition.** Acceptance / action / dismissal must be recorded when it happens.
    An obligation whose outcome is not written down cannot be scored, and this is precisely the
    metric the spec's auto-downgrade rule depends on: a class of obligations exceeding a ratified
@@ -166,8 +222,8 @@ difference.
 | R5 deliverable | Status |
 |---|---|
 | Longitudinal survival / downgrade / expiry distribution | **Computed** (above) — retrospective from `ingested_date`; the 16.9% overturn-among-dived figure is the confound-free signal |
-| Time-to-first-reuse, reuse count | **Blocked on the query log** (write-time decision above) |
-| Obligation acceptance / action / dismissal rates | **Blocked on disposition recording** (write-time decision above) |
+| Time-to-first-reuse, reuse count | Instrument **live 2026-08-10**: `vidya query` appends a `query_served` frame by default (`--no-log` to suppress). The series accrues from here |
+| Obligation acceptance / action / dismissal rates | Instrument **live 2026-08-10**: `vidya disposition <id> accepted\|acted\|deferred\|dismissed` |
 | Context and labour savings from surviving beliefs | Downstream of the two above |
 | Releasable anonymized schema or synthetic benchmark | Not started; the frame schema is already public in-repo |
 

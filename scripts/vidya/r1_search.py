@@ -138,6 +138,142 @@ def route_a_incremental(prog: Program, base_values: dict[str, Grade], retract: s
     return _eval_stratum2(prog.stratum2, frozen, dict(frozen))
 
 
+# ------------------------------------------------------- route A', circuit specialization
+#
+# `route_a_incremental` above is NOT incremental, and the 5,670-instance null it produced on
+# 2026-08-09 is vacuous. Both it and `route_b_ground_truth` reduce to the same expression --
+# `_eval_stratum2(s2, nonbottom(_eval_positive(s1, base - retract)))` -- because specializing the
+# base by zeroing a token and then dropping BOTTOM entries yields exactly the base with that fact
+# deleted. Two names for one computation cannot disagree, so agreement measured nothing. (The
+# mutation test recorded alongside it is still sound: it showed the HARNESS detects disagreement.
+# It could not show the routes were distinct, which is the assumption it was read as supporting.)
+#
+# The conjecture only has content for a route that REUSES prior work. That is this one: freeze the
+# stratum-1 pairs, record the stratum-2 provenance circuit built over those frozen tokens, and on
+# retraction specialize the circuit -- re-evaluating the recorded nodes against the new lower
+# values without re-deriving which rules fire. Zero-substitution on the positive stratum is
+# licensed (Property 13); the open question is whether re-running it across the negation boundary
+# stays exact, and a recorded circuit is what makes that question answerable.
+
+
+def stratum2_circuit(rules: Iterable[Rule], lower: dict[str, Grade]) -> list[Rule]:
+    """The stratum-2 rules that actually fired, i.e. the provenance circuit's rule nodes.
+
+    A rule that never fired contributes no node, which is the whole point: an expression store
+    records what was derived, not what might be derived from different inputs.
+    """
+    fired: list[Rule] = []
+    out: dict[str, Grade] = dict(lower)
+    for rule in rules:
+        if any(b not in out and b not in lower for b in rule.body):
+            continue
+        value = TOP_G
+        for b in rule.body:
+            value = meet(value, out.get(b, lower.get(b, BOTTOM)))
+        for n in rule.negated:
+            value = meet(value, BOTTOM if lower.get(n, BOTTOM) != BOTTOM else TOP_G)
+        if value != BOTTOM:
+            out[rule.head] = join(out.get(rule.head, BOTTOM), value)
+            fired.append(rule)
+    return fired
+
+
+def route_a_circuit(prog: Program, base_values: dict[str, Grade], retract: str) -> dict:
+    """Specialize the recorded circuit rather than re-deriving the program."""
+    pre_lower = {
+        k: v for k, v in _eval_positive(prog.stratum1, base_values).items() if v != BOTTOM
+    }
+    circuit = stratum2_circuit(prog.stratum2, pre_lower)
+
+    specialized = {k: v for k, v in base_values.items() if k != retract}
+    post_lower = {
+        k: v for k, v in _eval_positive(prog.stratum1, specialized).items() if v != BOTTOM
+    }
+    return _eval_stratum2(circuit, post_lower, dict(post_lower))
+
+
+def stratum2_circuit_dual(rules: Iterable[Rule], lower: dict[str, Grade]) -> list[Rule]:
+    """Circuit nodes recorded with negation left INDETERMINATE.
+
+    The repair the refutation above points at, and the one R2 independently arrived at: record a
+    node for every rule whose POSITIVE body is derivable, whether or not its negative guard held
+    at record time, and re-evaluate the guard against the new lower stratum at substitution time.
+    A negated atom is then a dual token x-bar carried into the circuit rather than a decision baked
+    into it -- so the rule that starts firing because a retraction removed its blocker still has a
+    node to fire in.
+    """
+    fired: list[Rule] = []
+    out: dict[str, Grade] = dict(lower)
+    for rule in rules:
+        if any(b not in out and b not in lower for b in rule.body):
+            continue
+        value = TOP_G
+        for b in rule.body:
+            value = meet(value, out.get(b, lower.get(b, BOTTOM)))
+        if value == BOTTOM:
+            continue
+        fired.append(rule)
+        guarded = value
+        for n in rule.negated:
+            guarded = meet(guarded, BOTTOM if lower.get(n, BOTTOM) != BOTTOM else TOP_G)
+        if guarded != BOTTOM:
+            out[rule.head] = join(out.get(rule.head, BOTTOM), guarded)
+    return fired
+
+
+def route_a_circuit_dual(prog: Program, base_values: dict[str, Grade], retract: str) -> dict:
+    """Specialize a dual-token circuit: nodes recorded positively, guards evaluated on demand."""
+    pre_lower = {
+        k: v for k, v in _eval_positive(prog.stratum1, base_values).items() if v != BOTTOM
+    }
+    circuit = stratum2_circuit_dual(prog.stratum2, pre_lower)
+
+    specialized = {k: v for k, v in base_values.items() if k != retract}
+    post_lower = {
+        k: v for k, v in _eval_positive(prog.stratum1, specialized).items() if v != BOTTOM
+    }
+    return _eval_stratum2(circuit, post_lower, dict(post_lower))
+
+
+def stratum2_circuit_dual_closed(rules: Iterable[Rule], lower: dict[str, Grade]) -> list[Rule]:
+    """Dual-token circuit, additionally closed under the stratum's own positive dependencies.
+
+    The dual repair alone still misses `s :- r` when `r` is itself negation-derived and was absent
+    at record time: no node for `r` meant no derivable body for `s`, so `s` had no node either.
+    Closing the recorded set under intra-stratum positive dependency -- a rule earns a node if its
+    positive body atoms are in the lower stratum OR are heads of already-recorded rules -- is what
+    covers that, and it is the smallest closure that does.
+    """
+    rules = list(rules)
+    recorded: list[Rule] = []
+    available = set(lower)
+    changed = True
+    while changed:
+        changed = False
+        for rule in rules:
+            if rule in recorded:
+                continue
+            if all(b in available for b in rule.body):
+                recorded.append(rule)
+                available.add(rule.head)
+                changed = True
+    return recorded
+
+
+def route_a_circuit_dual_closed(prog: Program, base_values: dict[str, Grade], retract: str) -> dict:
+    """The candidate exact incremental route: dual tokens + intra-stratum dependency closure."""
+    pre_lower = {
+        k: v for k, v in _eval_positive(prog.stratum1, base_values).items() if v != BOTTOM
+    }
+    circuit = stratum2_circuit_dual_closed(prog.stratum2, pre_lower)
+
+    specialized = {k: v for k, v in base_values.items() if k != retract}
+    post_lower = {
+        k: v for k, v in _eval_positive(prog.stratum1, specialized).items() if v != BOTTOM
+    }
+    return _eval_stratum2(circuit, post_lower, dict(post_lower))
+
+
 @dataclass
 class SearchResult:
     checked: int

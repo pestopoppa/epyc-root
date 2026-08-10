@@ -105,6 +105,48 @@ Ordered by what the evidence says matters, not by implementation cost:
 4. **Re-run this suite against a corpus drawn from the live ledger**, not hand-built frames — the
    gap between 28/28 here and `0 verified unaffected` there is the whole remaining question.
 
+## 4b. Where the four requirements stand — reviewed 2026-08-10
+
+The verdict stands at ITERATE, but three of the four requirements moved, and the reason the fourth
+has not is now a priced decision rather than a vague one.
+
+| # | Requirement | Status 2026-08-10 |
+|---|---|---|
+| 1 | Anchor the claims that get cited (P2d) | **The gap, and it is large**: 667 entries are cited by active handoffs, design docs and deep dives; **5 are anchored**. 662 cited entries / 2,994 claims remain unanchored. Needs an operator decision on machine-located anchors — see below |
+| 2 | Cross-entry claim identity (R4b) | **Unblocked**: candidate generation reduced 4,191 claims to **45 reviewable pairs**. Awaiting the operator's `same`/`different` pass, which is a bounded afternoon, not a programme |
+| 3 | Query log + obligation disposition (R5b) | **Done**: the frames existed but nothing emitted them, so the clock had not started. `vidya query` now logs by default; `vidya disposition` records outcomes |
+| 4 | Re-run the suite against a live-ledger corpus | **Not started, and no longer blocked by anything.** This is the largest remaining evidence gap and the next executable step |
+
+Requirement 2's unblocking also re-priced requirement 1. The alias generator found that
+`source_id` is minted per entry, so two records of one paper read as two sources; four of the 45
+candidates are same-source, and an index sweep found 5 duplicate-locator groups over 11 entries.
+Corroboration measurement therefore needs source identity *and* claim identity, and both are now
+instrumented.
+
+### The decision requirement 1 needs
+
+Anchoring 2,994 claims by hand is not going to happen, so the real question is whether a
+**machine-located** anchor is admissible, and at what traceability level. A span found by matching
+the claim's distinctive terms against the fetched source is checkable — `quote_hash` pins the
+exact text — but it is not the same act as a person reading the passage and deciding it says what
+the claim says. Recording it at T2 Anchored alongside human anchors would make the T axis mean two
+different things; refusing it entirely leaves the axis permanently at 5 of 4,191.
+
+Three coherent positions, with what each costs:
+
+- **A — Machine anchors at T2, provenance-tagged.** Fastest path to a usable T axis; risk is that
+  a confident wrong match is indistinguishable from a right one at query time, which is the
+  fabrication shape this project has already been bitten by once.
+- **B — A distinct level between Located and Anchored** (machine-located, quote-pinned, unreviewed).
+  Keeps the axis honest and lets policies choose; costs a carrier change, which is a spec amendment.
+- **C — Human-only anchors, scoped hard.** Anchor only claims cited by *ratified* specs rather than
+  all cited claims — a few dozen, not 2,994. Slowest coverage growth, zero new trust surface.
+
+Recommendation: **B**, because it is the only one that lets the backlog shrink without redefining
+what an existing anchor means, and because the pilot's whole thesis is that a distinction worth
+acting on is worth recording. C is the right answer if the carrier change is judged too expensive
+for shadow mode.
+
 ## 5. What would justify termination
 
 Recorded now, while the answer is not yet known, so the bar cannot drift later:

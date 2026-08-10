@@ -325,8 +325,111 @@ def cmd_query(args) -> int:
     human += [f"  next:   {a}" for a in res.required_next_actions]
     if res.certificate:
         human.append(f"  certificate={res.certificate['certificate_hash']}")
-    _emit(res.as_dict(), args.json, "\n".join(human))
+
+    payload = res.as_dict()
+    # R5d: the forward reuse series only accrues if something writes the frames. Logging is on by
+    # default and opt-OUT, because the failure mode is silent and unrecoverable -- a query nobody
+    # logged cannot be reconstructed later, so a default of "off" would keep R5d blocked forever
+    # while every command still appeared to work.
+    if not args.no_log:
+        from gate import query_served_frame  # noqa: PLC0415
+
+        frame = query_served_frame(res, policy, frontier=result.frontier, at=args.as_of)
+        rec = led.append(frame)
+        payload["query_served_seq"] = rec.seq
+        human.append(f"  logged: seq={rec.seq} (query_served)")
+
+    _emit(payload, args.json, "\n".join(human))
     return 0 if res.usable_as_current else 3
+
+
+# ------------------------------------------------------------- disposition
+
+def cmd_disposition(args) -> int:
+    """Record what a human did about a surfaced obligation (R5b write-time input)."""
+    from gate import obligation_disposition_frame  # noqa: PLC0415
+
+    frame = obligation_disposition_frame(
+        args.obligation_id, args.disposition, actor=args.actor, at=args.at, note=args.note
+    )
+    rec = _ledger(args).append(frame)
+    return _emit(
+        {"seq": rec.seq, "obligation_id": args.obligation_id, "disposition": args.disposition},
+        args.json,
+        f"recorded {args.disposition} for {args.obligation_id} at seq={rec.seq}",
+    )
+
+
+# ------------------------------------------------------------------- alias
+
+def cmd_alias_candidates(args) -> int:
+    """Propose cross-entry claim aliases and write a human review worksheet (R4b-authoring)."""
+    import yaml  # noqa: PLC0415
+
+    from alias_candidates import (  # noqa: PLC0415
+        generate_candidates,
+        locator_map,
+        worksheet_from_candidates,
+    )
+
+    led = _ledger(args)
+    index_path = Path(args.index) if args.index else REPO_ROOT / "research" / "intake_index.yaml"
+    locators = locator_map(yaml.safe_load(index_path.read_text()) or [])
+    report = generate_candidates(
+        [r.frame for r in led.read_all()],
+        min_score=args.min_score,
+        limit=args.limit,
+        locators=locators,
+    )
+    worksheet = worksheet_from_candidates(report, generated_at=args.at)
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(yaml.safe_dump(worksheet, sort_keys=False, allow_unicode=True, width=100))
+    human = [
+        f"claims considered: {report['claims_considered']}",
+        f"pairs after blocking: {report.get('blocked_pairs', 0)}  scored: {report['pairs_scored']}",
+        f"candidates >= {args.min_score}: {report.get('candidates_above_threshold', 0)} "
+        f"(worksheet holds {len(worksheet['rows'])})",
+        f"worksheet: {out}  -- every row is 'pending' until a human decides",
+    ]
+    return _emit({k: v for k, v in report.items() if k != "candidates"}, args.json, "\n".join(human))
+
+
+def cmd_alias_emit(args) -> int:
+    """Turn approved worksheet rows into `claim_alias` frames."""
+    import yaml  # noqa: PLC0415
+
+    from alias_candidates import aliases_from_worksheet  # noqa: PLC0415
+    from frames import make_frame  # noqa: PLC0415
+
+    worksheet = yaml.safe_load(Path(args.worksheet).read_text())
+    groups = aliases_from_worksheet(worksheet)
+    led = _ledger(args)
+    emitted = []
+    for group in groups:
+        frame = make_frame(
+            frame_type="epyc.vidya/frame/claim_alias/v1",
+            assertion={"claim_ids": group["claim_ids"]},
+            provenance={
+                "method": "human-review/alias-worksheet",
+                "about": group["claim_ids"][0],
+                "reviewers": group["reviewers"],
+                "notes": group["notes"],
+                "worksheet_digest": content_hash(worksheet),
+            },
+            actor=args.actor,
+            authority_scope="claim-identity",
+            created_at=args.at,
+        )
+        if args.dry_run:
+            emitted.append({"claim_ids": group["claim_ids"], "seq": None})
+            continue
+        rec = led.append(frame)
+        emitted.append({"claim_ids": group["claim_ids"], "seq": rec.seq})
+    prefix = "(dry run) " if args.dry_run else ""
+    human = [f"{prefix}{len(emitted)} alias group(s) from {args.worksheet}"]
+    human += [f"  {' == '.join(g['claim_ids'])}" for g in emitted]
+    return _emit({"groups": emitted, "dry_run": args.dry_run}, args.json, "\n".join(human))
 
 
 # ------------------------------------------------------------------ ingest
@@ -403,7 +506,35 @@ def build_parser() -> argparse.ArgumentParser:
     q.add_argument("--allow-review-required", action="store_true")
     q.add_argument("--allow-labelled-stale", action="store_true")
     q.add_argument("--min-disjoint", type=int, default=1)
+    q.add_argument(
+        "--no-log",
+        action="store_true",
+        help="do NOT append a query_served frame (suppresses the R5 reuse series for this query)",
+    )
     q.set_defaults(func=cmd_query)
+
+    d = sub.add_parser("disposition", help="record a human disposition of a surfaced obligation")
+    d.add_argument("obligation_id")
+    d.add_argument("disposition", choices=["accepted", "acted", "deferred", "dismissed"])
+    d.add_argument("--actor", required=True)
+    d.add_argument("--at", required=True)
+    d.add_argument("--note", default="")
+    d.set_defaults(func=cmd_disposition)
+
+    ac = sub.add_parser("alias-candidates", help="propose cross-entry claim aliases for review")
+    ac.add_argument("--out", required=True, help="worksheet path to write")
+    ac.add_argument("--at", required=True, help="generation timestamp")
+    ac.add_argument("--index", help="path to intake_index.yaml (for source-locator identity)")
+    ac.add_argument("--min-score", type=float, default=0.35)
+    ac.add_argument("--limit", type=int, default=200)
+    ac.set_defaults(func=cmd_alias_candidates)
+
+    ae = sub.add_parser("alias-emit", help="emit claim_alias frames from an approved worksheet")
+    ae.add_argument("worksheet")
+    ae.add_argument("--actor", required=True)
+    ae.add_argument("--at", required=True)
+    ae.add_argument("--dry-run", action="store_true")
+    ae.set_defaults(func=cmd_alias_emit)
 
     i = sub.add_parser("ingest", help="run a source adapter")
     i.add_argument("adapter", choices=["intake"])

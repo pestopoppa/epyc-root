@@ -109,6 +109,10 @@ difficulty.
 
 ### 2.4b Counterexample search — executed 2026-08-09, no counterexample found
 
+> **⚠ Superseded by §2.4c (2026-08-10): this null is vacuous.** The two routes below are the same
+> computation, so their agreement is not evidence. Read §2.4c for the result that replaces it.
+> Retained unedited because how a vacuous comparison passed a mutation test is the useful part.
+
 The conjecture was not left as an assertion. Two independent evaluators were implemented
 (`scripts/vidya/r1_search.py`) and compared exhaustively over small two-stratum programs:
 
@@ -137,6 +141,50 @@ simple structural reason at this program size, and nothing more. Larger programs
 and non-two-valued absence remain unexplored. The honest classification is *unresolved, with
 supporting evidence* — which is a materially better position than *unresolved* and is exactly the
 kind of result the R-track was supposed to produce.
+
+### 2.4c Retraction — the 2026-08-09 null was vacuous, and the real result is a refutation plus an exact route
+
+**Correction to §2.4b.** Route A and Route B as implemented on 2026-08-09 are the same
+computation. Route A specialized the base by setting the retracted token to ⊥ and then dropped ⊥
+entries; that yields exactly Route B's "base with the fact deleted", after which both call the
+identical stratum-1 and stratum-2 evaluators. Two names for one expression cannot disagree, so
+5,670 agreements measured nothing. The mutation test recorded alongside it remains sound — it
+showed the *harness* detects disagreement — but it could not show the routes were distinct, which
+is how it was read. `test_reevaluation_route_is_ground_truth_by_construction` now pins the
+equivalence so the vacuity cannot be rediscovered as a result.
+
+The conjecture only has content for a route that **reuses prior work**. Three such routes were
+implemented and swept over the same 5,670 instances on 2026-08-10:
+
+| Route | What it reuses | Counterexamples / 5,670 |
+|---|---|---:|
+| Re-evaluate each stratum (the 2026-08-09 "route A") | nothing | 0 — *by construction; vacuous* |
+| **Circuit specialization** — record stratum-2's provenance circuit over frozen tokens, substitute new lower values | the recorded rule nodes | **2,241 (39.5%)** |
+| **+ dual tokens** — record a node whenever the *positive* body is derivable, evaluate the negative guard at substitution time | nodes + deferred guards | **270 (4.8%)** |
+| **+ intra-stratum closure** — additionally record any rule whose positive body atoms are heads of already-recorded rules | the closed node set | **0** |
+
+**The naive incremental route is refuted, with a two-rule counterexample**: `p :- a`, `r :- not p`,
+retract `a`. Before the retraction `p` holds, so `r :- not p` never fires and the circuit has no
+node for `r`; after it, `r` should hold and the circuit has nowhere to derive it. This is the
+"deletion composed with an insertion" that §2.4 predicted from Property 13's shape — now exhibited
+rather than argued.
+
+**The dual-token repair is the one R2 independently arrived at**, and it removes 88% of the
+failures: carrying a negated atom as a dual token x̄ into the circuit, instead of baking its
+record-time value into the decision to record a node at all, lets a rule that *starts* firing have
+a node to fire in. The 270 residual failures share one shape — intra-stratum chaining off a
+negation-derived atom, `s :- r` where `r` itself only becomes derivable after the retraction — and
+closing the recorded set under intra-stratum positive dependency covers exactly those.
+
+**The bounded positive result** is therefore sharper than the one it replaces: *dual tokens plus
+intra-stratum dependency closure is exact across a negation boundary over an exhaustive sweep of
+small two-stratum programs*, and the two weaker routes are refuted rather than unverified. The
+proof remains open, and so does the question that decides whether any of this is worth doing:
+
+> **The exact route retains 91.7% of stratum-2 rules (8,910 of 9,720) as circuit nodes.** At this
+> program size it saves 8.3% of the work versus full re-evaluation, which is not a reason to build
+> it. The closure is small only when a retraction's negation-reachable set is a small fraction of
+> the stratum, and whether real programs have that shape is **unmeasured**.
 
 ### 2.5 What would settle it
 

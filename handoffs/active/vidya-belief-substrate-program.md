@@ -210,6 +210,25 @@ Operator priority: an integrated solution that works, not novelty.
       postulates (Recovery, accrual, corrections-as-counter-evidence, model-reachability checked
       structurally against fold.py's source) ✅ 2026-08-09
 
+### Promotion track — opened 2026-08-10 after reviewing the ITERATE verdict
+
+Verdict stands at ITERATE. Requirement status and the anchoring decision package:
+[`research/deep-dives/vidya-p5c-evaluation-and-decision.md`](../../research/deep-dives/vidya-p5c-evaluation-and-decision.md) §4b.
+
+- [x] PR0 Reviewed the four promotion requirements against current state. Three moved this session
+      (R4b unblocked to 45 reviewable pairs; R5b emission wired; R4b surfaced source identity as a
+      second prerequisite); the fourth is unblocked and unstarted ✅ 2026-08-10
+- [ ] PR1 **OPERATOR DECISION** — machine-located anchors: (A) admit at T2 provenance-tagged,
+      (B) add a distinct level between Located and Anchored, (C) human-only, scoped to
+      ratified-spec citations. Recommendation **B**. Sizing measured 2026-08-10: 667 cited entries,
+      **5 anchored**, 662 / 2,994 claims unanchored — hand-anchoring is not a path
+- [ ] PR2 Re-run the P5c evaluation suite against a corpus drawn from the **live ledger** rather
+      than hand-built frames. Largest remaining evidence gap, blocked by nothing: 28/28 on 19
+      anchored gold claims versus `0 verified unaffected / 4,190 unmapped` on real data is the whole
+      remaining question, and only a live-drawn corpus can speak to it
+- [ ] PR3 Reconcile every `human_intent_recorded` frame against an actual ratification artifact
+      (spec §15 pilot-exit check) before any promotion proposal is written
+
 ### R — Research program (independent of pilot promotion)
 
 - [x] R1a Theorem stated precisely with the partial result recorded: the construction is
@@ -222,8 +241,27 @@ Operator priority: an integrated solution that works, not novelty.
       the harness mutation-tested — a deliberately naive route A yields 2,715 counterexamples from
       the same instances, so the null has detection power. Classification: unresolved WITH
       SUPPORTING EVIDENCE ✅ 2026-08-09
-- [ ] R1b-proof The proof or a larger-scale refutation remains open. The search bounds small
-      two-stratum programs only; deeper strata and non-two-valued absence are unexplored
+- [x] R1b-vacuity **The 2026-08-09 null was vacuous and is retracted.** Route A and Route B were
+      the same computation — specializing the base to ⊥ then dropping ⊥ entries *is* deleting the
+      fact — so 5,670 agreements measured nothing. The mutation test was sound but proved only that
+      the harness detects disagreement, not that the routes differed. Equivalence now pinned by
+      `test_reevaluation_route_is_ground_truth_by_construction` so it cannot be re-reported as a
+      result ✅ 2026-08-10
+- [x] R1b-refutation Genuinely incremental routes implemented and swept over the same 5,670
+      instances: **circuit specialization is REFUTED, 2,241 counterexamples (39.5%)**, minimal case
+      `p :- a`, `r :- not p`, retract `a` — a rule that did not fire has no circuit node to fire in
+      when the retraction makes it true. Dual tokens cut it to 270 (4.8%); the residue is entirely
+      intra-stratum chaining off a negation-derived atom ✅ 2026-08-10
+- [x] R1b-exact-route Dual tokens **+ intra-stratum dependency closure**: 0 counterexamples over
+      the full sweep — a sharper bounded result than the one it replaces, since the two weaker
+      routes are now refuted rather than unverified. Caveat recorded and load-bearing: the exact
+      route keeps **91.7% of stratum-2 rules** as circuit nodes, so it saves 8.3% over full
+      re-evaluation at this size and is not yet worth building ✅ 2026-08-10
+- [ ] R1b-proof The proof remains open — now for the *dual-closed* route, which is the one worth
+      proving. Deeper strata and non-two-valued absence are still unexplored
+- [ ] R1b-closure-size Measure the closure fraction on realistic programs. The exact route is only
+      worth implementing if a retraction's negation-reachable set is a small part of the stratum;
+      at sweep size it is 91.7%, which would make it pointless
 - [x] R2a Scoped, with the constraint that removes an approach: gfp does NOT specialize
       (Example 42), so absence certificates cannot use the incremental path and must route through
       S-infinity[X,X-bar] — affordable here because the carrier is meet-idempotent. Also recorded:
@@ -249,9 +287,30 @@ Operator priority: an integrated solution that works, not novelty.
       ids denote the same proposition; the fold applies it and records that it did, never making
       the judgment. Union-find ordered by canonical id so the representative does not depend on
       frame arrival order ✅ 2026-08-09
-- [ ] R4b-authoring Actually author aliases across entries. This is the human-gated half and the
-      prerequisite for any corroboration measurement — until aliases exist, 100% of beliefs remain
-      single-path by construction
+- [x] R4b-candidates `scripts/vidya/alias_candidates.py` + `vidya alias-candidates` /
+      `vidya alias-emit`. "Human-gated" was doing too much work as a reason to stop: the judgment
+      is human, finding the pairs to judge is not. First real run reduced 4,191 claims / 8.8M
+      possible pairs to **45 candidates** — an afternoon of review. Deterministic IDF-weighted
+      Jaccard, no model call; same-entry pairs never proposed; every row starts `pending`; an
+      approval without a named reviewer is refused ✅ 2026-08-10
+- [x] R4b-source-identity First run found the same defect one level up: `source_id` is minted per
+      *entry*, so two entries for one paper look like two sources. 4 of the 45 candidates are
+      same-source; approving them unexamined would have produced the statistic's first "independent
+      supports" and every one would have been one paper counted twice. Rows now carry `same_source`
+      from a normalized locator ✅ 2026-08-10
+- [x] D4 Intake validator gained `check_duplicate_locators`: normalizes `arxiv_id` and arXiv URLs
+      to one key, so the existing duplicate-`arxiv_id` error finally sees pairs recorded one way
+      each. **5 duplicate-locator groups over 11 entries** found. WARNING not error — a project page
+      can legitimately back two artifacts, and this project has a recorded lesson against
+      conflating a companion repo with its paper ✅ 2026-08-10
+- [ ] R4b-authoring Review the 45 candidates in `artifacts/operator/vidya-alias-worksheet-20260810.yaml` and set each
+      row `same`/`different`, then `vidya alias-emit`. **Operator-gated** — this is the proposition-
+      identity judgment the spec keeps out of the fold
+- [ ] R4b-remeasure Re-run the corroboration statistic once aliases land. First chance for
+      `disjoint_supports >= 2` to be satisfiable at all, and the first cost datapoint for the
+      leaf-disjoint packing algorithm, which is unmeasured because every circuit is currently one path
+- [ ] D5 Disposition the 5 duplicate-locator groups (intake-772/785, 244/784, 418/797,
+      693/783/901, 315/336): merge, or record why the entries differ
 - [x] R5a Instrument specified + 2026-08-09 baseline recorded (4,191 beliefs; 15.6% of claims
       carry a correction; 1 anchored; 0 corroborated). Most of R5 is retrospectively computable
       from the ledger, which is the payoff of event sourcing ✅ 2026-08-09
@@ -262,8 +321,14 @@ Operator priority: an integrated solution that works, not novelty.
       time-gated while my own note said it was retrospective. The apparent 1%→68% correction-rate
       climb is a TRAP: it tracks when diving happened, not when errors happened. The confound-free
       signal is the overturn rate among dived entries, **27/160 = 16.9%** ✅ 2026-08-09
-- [ ] R5d Collect the forward series once `query_served` frames accrue (genuinely elapsed-time
-      gated — reuse cannot be reconstructed for queries nobody logged)
+- [x] R5d-instrument The frames existed but nothing emitted them, so the clock had not started.
+      `vidya query` now appends a `query_served` frame **by default** (`--no-log` to suppress) and
+      `vidya disposition` records obligation outcomes. Opt-out rather than opt-in because the
+      failure is silent and unrecoverable: a default of "off" keeps R5d blocked forever while every
+      command still looks like it works ✅ 2026-08-10
+- [ ] R5d Collect the forward series now that emission is live (genuinely elapsed-time gated —
+      reuse cannot be reconstructed for queries nobody logged). Earliest useful read: ~30 days of
+      real query traffic
 
 ## Dependency notes
 

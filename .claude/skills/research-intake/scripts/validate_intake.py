@@ -369,6 +369,51 @@ def validate_index(entries: list[dict], valid_categories: set[str],
     return errors
 
 
+_ARXIV_URL_RE = re.compile(r"arxiv\.org/(?:abs|pdf)/([0-9v.]+)", re.I)
+
+
+def _locator_key(entry: dict) -> str:
+    """Normalized identity of the source an entry points at, or '' if it has no locator.
+
+    `arxiv_id: 2604.08224` and `url: https://arxiv.org/abs/2604.08224` name the same paper. The
+    existing duplicate-`arxiv_id` check cannot see that, which is how intake-418 and intake-797 —
+    the same arXiv paper, recorded once each way — both passed validation for months. Found on
+    2026-08-10 by the Vidya alias-candidate generator, not by the validator.
+    """
+    arxiv = entry.get("arxiv_id")
+    if isinstance(arxiv, str) and arxiv.strip():
+        return "arxiv:" + re.sub(r"v\d+$", "", arxiv.strip().lower().removesuffix(".pdf"))
+    url = entry.get("url")
+    if isinstance(url, str) and url.strip():
+        m = _ARXIV_URL_RE.search(url)
+        if m:
+            return "arxiv:" + re.sub(r"v\d+$", "", m.group(1).lower())
+        return "url:" + re.sub(r"^https?://(www\.)?", "", url.strip().lower().rstrip("/"))
+    return ""
+
+
+def check_duplicate_locators(entries: list[dict]) -> list[str]:
+    """WARNINGS (not errors) for entries pointing at an identical normalized locator.
+
+    Deliberately not fatal. A shared URL is strong evidence of a duplicate entry but not proof:
+    a repository or project page can legitimately back two distinct artifacts, and this project
+    has a recorded lesson against conflating a companion repo with the paper it accompanies. So
+    this reports and a human decides — the failure it prevents is the silent one, where nobody
+    ever learns the two entries exist.
+    """
+    groups: dict[str, list[str]] = {}
+    for entry in entries:
+        key = _locator_key(entry)
+        eid = entry.get("id")
+        if key and isinstance(eid, str):
+            groups.setdefault(key, []).append(eid)
+    return [
+        f"{len(ids)} entries share locator {key}: {sorted(ids)} — merge, or record why they differ"
+        for key, ids in sorted(groups.items())
+        if len(ids) > 1
+    ]
+
+
 def validate_cross_reference_map(map_path: Path, crossref_dirs: dict) -> list[str]:
     """Verify Markdown targets listed in the intake cross-reference map.
 
@@ -471,6 +516,8 @@ def main() -> int:
         print("WARNING: Index is empty")
     else:
         errors.extend(validate_index(entries, valid_categories, crossref_dirs))
+        for warning in check_duplicate_locators(entries):
+            print(f"WARNING: {warning}")
 
     if errors:
         print(f"FAILED: {len(errors)} error(s) found:")

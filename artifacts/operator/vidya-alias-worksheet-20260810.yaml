@@ -1,0 +1,744 @@
+schema: epyc.vidya/alias-worksheet/v1
+generated_at: '2026-08-10T00:00:00Z'
+generator: vidya.alias_candidates/generate_candidates
+min_score: 0.35
+claims_considered: 4191
+candidates_above_threshold: 45
+instructions: 'Set decision to ''same'' only if the two texts assert the same proposition about the same
+  subject -- not merely the same topic. Set ''different'' otherwise; leave ''pending'' if you did not
+  look. Fill ''reviewer''. Only ''same'' rows become claim_alias frames. A row with same_source: true
+  is two entries for ONE source -- aliasing it is a correct identity statement but it is NOT corroboration,
+  and it usually means the index carries a duplicate entry worth merging.'
+rows:
+- claim_a: clm_intake_374_03
+  claim_b: clm_intake_375_03
+  score: 0.9496
+  shared_terms:
+  - 2.5k
+  - 20k
+  - 640-step
+  - one-pass
+  - repeating
+  - exposure
+  same_source: false
+  text_a: 'Repeated exposure outperforms coverage: repeating 2.5k samples 8x beats one-pass 20k under
+    fixed 640-step budget'
+  text_b: 'Repeated exposure > coverage: repeating 2.5k samples 8x outperforms one-pass 20k under fixed
+    640-step budget'
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_418_04
+  claim_b: clm_intake_797_03
+  score: 0.7567
+  shared_terms:
+  - emerging
+  - self-evolving
+  - infrastructure
+  - directions
+  - harnesses
+  - shared
+  same_source: true
+  text_a: Emerging directions include self-evolving harnesses and shared agent infrastructure
+  text_b: 'Identifies emerging directions: self-evolving harnesses, shared agent infrastructure'
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_962_01
+  claim_b: clm_intake_966_03
+  score: 0.7031
+  shared_terms:
+  - '06'
+  - datapoint
+  - warp-specialized
+  - mojo
+  - dated
+  - matmul
+  same_source: false
+  text_a: 'HipKittens second blog supplies a DATED Mojo datapoint: Mojo "currently provides a warp-specialized
+    matmul kernel as of 11/06/2025".'
+  text_b: 'NEW: a DATED Mojo datapoint - Mojo "currently provides a warp-specialized matmul kernel as
+    of 11/06/2025".'
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_595_02
+  claim_b: clm_intake_596_02
+  score: 0.6561
+  shared_terms:
+  - mt-oriented
+  - pt
+  - general
+  - sft
+  - pipeline
+  - rl
+  same_source: false
+  text_a: 'Training pipeline: general PT → MT-oriented PT → SFT → RL + weak-to-strong RL'
+  text_b: 'Training pipeline: general PT + MT-oriented PT + SFT + on-policy distillation + RL'
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_315_04
+  claim_b: clm_intake_336_00
+  score: 0.6245
+  shared_terms:
+  - machine-native
+  - programmability
+  - turing
+  - completely
+  - computer
+  - completeness
+  same_source: true
+  text_a: Four conditions for Completely Neural Computer — Turing completeness, programmability, consistency,
+    machine-native semantics
+  text_b: 'Completely Neural Computer (CNC) requires: Turing completeness, universal programmability,
+    behavior consistency, machine-native semantics'
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_536_01
+  claim_b: clm_intake_541_01
+  score: 0.5752
+  shared_terms:
+  - trivial-spawn
+  - credit-assignment
+  - gpt-5-mini
+  - sum
+  - exploit
+  - solved
+  same_source: false
+  text_a: Credit-assignment solved via local node rewards from an LLM judge (gpt-5-mini), with delegation
+    bonus = MEAN child success (not sum) — explicitly prevents trivial-spawn exploit
+  text_b: 'Credit-assignment solved with local node rewards from an LLM judge (gpt-5-mini): each node
+    scored on (a) own sub-task success and (b) MEAN child success (mean — not sum — blocks trivial-spawn
+    exploit)'
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_737_04
+  claim_b: clm_intake_738_02
+  score: 0.5539
+  shared_terms:
+  - 14b.
+  - 16.3-18.4
+  - 26.7-30.9
+  - dflash
+  - eagle-3
+  - qwen3
+  same_source: false
+  text_a: Bundles DSpark (semi-autoregressive drafter) whose released numbers claim +26.7-30.9% acceptance
+    length over EAGLE-3 and +16.3-18.4% over DFlash on Qwen3 4B/8B/14B.
+  text_b: Reports +26.7-30.9% acceptance length over EAGLE-3 and +16.3-18.4% over DFlash on Qwen3 4B/8B/14B.
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_418_01
+  claim_b: clm_intake_797_00
+  score: 0.5512
+  shared_terms:
+  - externalize
+  - externalizes
+  - expertise
+  - protocols
+  - procedural
+  - structure
+  same_source: true
+  text_a: 'Three-dimensional externalization model: memory externalizes state, skills externalize procedural
+    expertise, protocols externalize interaction structure'
+  text_b: 'Reviews the shift from model weights to externalized infrastructure: memory externalizes state,
+    skills externalize procedural expertise, protocols externalize interaction structure'
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_268_01
+  claim_b: clm_intake_277_02
+  score: 0.5411
+  shared_terms:
+  - wiki
+  - three-layer
+  - sources
+  - schema
+  - raw
+  - architecture
+  same_source: false
+  text_a: Three-layer architecture (raw sources, LLM-maintained wiki, schema config) is essential
+  text_b: Three-layer architecture (raw sources / wiki pages / schema)
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_422_02
+  claim_b: clm_intake_423_02
+  score: 0.5393
+  shared_terms:
+  - '7.2'
+  - r1
+  - a100
+  - deepseek
+  - qwen3
+  - 8b
+  same_source: false
+  text_a: Achieves up to 7.2% prefill latency reduction and 8.1% throughput gain on A100 GPU (DeepSeek
+    R1 8B / Qwen3 8B)
+  text_b: 6.6-8.1% single-batch throughput improvement and 7.2% prefill latency reduction on A100 with
+    DeepSeek R1 8B and Qwen3 8B
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_536_03
+  claim_b: clm_intake_541_03
+  score: 0.5299
+  shared_terms:
+  - depth-level
+  - inverse-frequency
+  - leave-one-out
+  - loo
+  - multi-task
+  - depths
+  same_source: false
+  text_a: 'Three core training tricks: (1) multi-task objective across tree depths yields automatic curriculum;
+    (2) leave-one-out (LOO) baseline shared across rollout group reduces variance; (3) depth-level inverse-frequency
+    weighting prevents leaf-trajectory domination'
+  text_b: 'Training stack: (1) multi-task objective across depths (auto-curriculum); (2) leave-one-out
+    (LOO) baseline shared across rollout group; (3) depth-level inverse-frequency weighting'
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_279_01
+  claim_b: clm_intake_281_00
+  score: 0.5267
+  shared_terms:
+  - 40b
+  - '80'
+  - '256'
+  - experts
+  - active
+  - layers
+  same_source: false
+  text_a: 256 experts, 40B active params per token, 80 layers
+  text_b: 744B total / 40B active MoE with 256 experts, 80 layers
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_511_03
+  claim_b: clm_intake_512_02
+  score: 0.5165
+  shared_terms:
+  - '4.1'
+  - hot-swappable
+  - gpt-4.1
+  - '2.5'
+  - flash
+  - opus
+  same_source: false
+  text_a: The backend LLM is hot-swappable across GPT-4.1 / Claude Opus 4.1 / Gemini 2.5 Flash, allowing
+    per-task tradeoff of reasoning depth, cost, and speed.
+  text_b: Backend LLM is hot-swappable (GPT-4.1, Claude Opus 4.1, Gemini 2.5 Flash) so users can trade
+    reasoning depth, cost, and speed per task.
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_403_00
+  claim_b: clm_intake_404_00
+  score: 0.5018
+  shared_terms:
+  - p_old_i
+  - q_i
+  - u_i
+  - constructs
+  - eta
+  - exp
+  same_source: false
+  text_a: TPO decouples target distribution construction from parameter optimization — constructs closed-form
+    target q_i proportional to p_old_i * exp(u_i/eta), fits via cross-entropy loss
+  text_b: TPO separates target distribution construction from parameter optimization — given scored completions,
+    constructs q_i proportional to p_old_i * exp(u_i/eta) and fits via cross-entropy. Gradient is (p -
+    q), vanishing at convergence.
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_712_00
+  claim_b: clm_intake_714_00
+  score: 0.4835
+  shared_terms:
+  - compares
+  - answer.
+  - panel
+  - outer
+  - fusion
+  - answers
+  same_source: false
+  text_a: 'Fusion gives any model access to multi-model deliberation: the outer model invokes the tool,
+    a panel answers in parallel, a judge compares responses, and structured analysis returns for the final
+    answer.'
+  text_b: 'Fusion is a model-invoked server tool implementing Mixture-of-Agents: a panel answers in parallel,
+    a judge compares, structured analysis JSON returns to the outer model for the final answer.'
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_112_01
+  claim_b: clm_intake_462_04
+  score: 0.4729
+  shared_terms:
+  - tensor
+  - parallelism
+  - expert
+  - pipeline
+  - data
+  - context
+  same_source: false
+  text_a: Advanced parallelism (tensor, pipeline, data, expert, context)
+  text_b: Tensor / pipeline / data / expert / context parallelism with disaggregated prefill, decode,
+    encode
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_254_04
+  claim_b: clm_intake_411_04
+  score: 0.4669
+  shared_terms:
+  - integration
+  - server
+  - mcp
+  - tool
+  same_source: false
+  text_a: MCP server integration for tool extensibility
+  text_b: MCP server integration for extensible tool ecosystems
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_511_04
+  claim_b: clm_intake_512_04
+  score: 0.4581
+  shared_terms:
+  - icassp
+  - finetuning
+  - accepted
+  - released
+  - weights
+  - code
+  same_source: false
+  text_a: Accepted to ICASSP 2026; code, finetuning recipe, and weights released open-source.
+  text_b: Inference + finetuning code and model weights released; paper accepted to ICASSP 2026.
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_177_03
+  claim_b: clm_intake_179_01
+  score: 0.4561
+  shared_terms:
+  - 1.76h
+  - '2.10'
+  - 1.80h
+  - wall-clock
+  - speedup
+  same_source: false
+  text_a: 2.10% wall-clock speedup on nanochat GPT-2 training (1.76h vs 1.80h)
+  text_b: 1.76h time-to-GPT-2 (down from 1.80h baseline), 2.10% wall-clock speedup
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_186_02
+  claim_b: clm_intake_387_03
+  score: 0.4468
+  shared_terms:
+  - yarn
+  - 262k
+  - native
+  - context
+  same_source: false
+  text_a: 262K native context (1M with YaRN)
+  text_b: 262K native context, extensible to 1M+ with YaRN scaling
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_458_03
+  claim_b: clm_intake_567_04
+  score: 0.4392
+  shared_terms:
+  - integrated
+  - sglang
+  - vllm
+  same_source: false
+  text_a: Integrated as the attention backend in SGLang, vLLM, and MLC-Engine
+  text_b: Integrated into SGLang (not vLLM)
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_152_05
+  claim_b: clm_intake_387_03
+  score: 0.4363
+  shared_terms:
+  - yarn
+  - 262k
+  - native
+  - scaling
+  - context
+  same_source: false
+  text_a: 262K native context with YaRN RoPE scaling for longer sequences
+  text_b: 262K native context, extensible to 1M+ with YaRN scaling
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_591_03
+  claim_b: clm_intake_593_03
+  score: 0.4322
+  shared_terms:
+  - intake-590
+  - angelslim
+  - tencent
+  - repo
+  - code
+  same_source: false
+  text_a: 'Code in Tencent/AngelSlim repo (intake-590); STQ1_0 kernel upstreamed to llama.cpp PR #22836'
+  text_b: Code in Tencent/AngelSlim repo (intake-590)
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_433_03
+  claim_b: clm_intake_591_04
+  score: 0.4221
+  shared_terms:
+  - accepted
+  - '2026'
+  same_source: false
+  text_a: CVPR 2026 accepted
+  text_b: Accepted at ACL 2026
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_152_05
+  claim_b: clm_intake_186_02
+  score: 0.4217
+  shared_terms:
+  - yarn
+  - 262k
+  - native
+  - context
+  same_source: false
+  text_a: 262K native context with YaRN RoPE scaling for longer sequences
+  text_b: 262K native context (1M with YaRN)
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_1006_00
+  claim_b: clm_intake_1014_00
+  score: 0.4211
+  shared_terms:
+  - 072-token
+  - 2.69b
+  - '131'
+  - short-convolution
+  - eight
+  - gqa
+  same_source: false
+  text_a: Liquid releases a 2.69B dense hybrid with 22 short-convolution blocks, eight GQA blocks, a 128K
+    vocabulary, and 131,072-token context, post-trained for tool use and multi-turn agency.
+  text_b: The released 2.69B checkpoint declares 30 layers comprising 22 short-convolution blocks and
+    eight GQA blocks, a 128K vocabulary, and a 131,072-token context window.
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_633_01
+  claim_b: clm_intake_634_02
+  score: 0.421
+  shared_terms:
+  - 4.71x
+  - 5.91x
+  - sec
+  - ar
+  - reports
+  - baselines
+  same_source: false
+  text_a: Reports 4.71x speedup at 1.5B and 5.91x speedup at 8B in tokens/sec over standard AR baselines
+    while preserving competitive quality
+  text_b: Reports 4.71x–5.91x decoding tokens/sec vs AR baselines; ~2.5x over EAGLE-v3
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_587_00
+  claim_b: clm_intake_588_00
+  score: 0.415
+  shared_terms:
+  - 1.8b
+  - 30b-a3b
+  - 1.25-bit
+  - collection
+  - 7b
+  - 2-bit
+  same_source: false
+  text_a: ModelScope collection mirrors the HuggingFace tencent/hy-mt2 collection; same 3-size family
+    (1.8B dense, 7B dense, 30B-A3B MoE) + FP8 + GGUF (vanilla / 2-bit / 1.25-bit on 1.8B)
+  text_b: Collection of 10 model variants + IFMTBench dataset; 3-tier family (1.8B dense, 7B dense, 30B-A3B
+    MoE), each in BF16 + FP8; 1.8B additionally in vanilla GGUF, 2-bit GGUF, 1.25-bit GGUF
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_529_02
+  claim_b: clm_intake_530_04
+  score: 0.4147
+  shared_terms:
+  - repacks
+  - d2t
+  - pass.
+  - per-token
+  - remain
+  - sparsity
+  same_source: false
+  text_a: Architecture is a SwiGLU structural twin with σ=ReLU instead of σ=SiLU (gated-ReLU / ReGLU).
+    Sparsity is dynamic per-token — weights remain dense BF16; D2T repacks the post-activation hidden
+    every forward pass.
+  text_b: Sparsity is dynamic per-token, not static structured. Weights remain dense BF16 — the D2T pass
+    repacks the post-ReLU hidden vector every forward pass.
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_942_00
+  claim_b: clm_intake_955_01
+  score: 0.4144
+  shared_terms:
+  - 42-layer
+  - routed
+  - '256'
+  - '6'
+  - experts
+  - active
+  same_source: false
+  text_a: 'Sparse MoE multimodal model, 276B total / 12B active: 42-layer decoder, each token routed to
+    6 of 256 experts plus 2 shared experts.'
+  text_b: 42-layer decoder-only transformer, each token routed to 6 of 256 experts plus 2 shared experts
+    active on every token.
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_325_04
+  claim_b: clm_intake_654_03
+  score: 0.4143
+  shared_terms:
+  - auto-create
+  - csv
+  - docx
+  - pdf
+  - datasets
+  same_source: false
+  text_a: Auto-create datasets from PDF, CSV, DOCX
+  text_b: 'Data Recipes: graph-node visual workflow for dataset transformation; auto-create datasets from
+    PDF/CSV/DOCX with no dataset required'
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_112_01
+  claim_b: clm_intake_323_01
+  score: 0.4059
+  shared_terms:
+  - tensor
+  - parallelism
+  - expert
+  - pipeline
+  same_source: false
+  text_a: Advanced parallelism (tensor, pipeline, data, expert, context)
+  text_b: 3D parallelism (tensor, pipeline, expert) plus sequence parallelism
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_151_03
+  claim_b: clm_intake_270_00
+  score: 0.4017
+  shared_terms:
+  - full-text
+  - bm25
+  - combining
+  - semantic
+  - hybrid
+  - search
+  same_source: false
+  text_a: Hybrid search combining BM25 full-text and semantic retrieval with reciprocal rank fusion (RRF)
+  text_b: Hybrid search combining BM25 full-text, vector semantic, and LLM re-ranking
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_430_00
+  claim_b: clm_intake_431_00
+  score: 0.3899
+  shared_terms:
+  - beir
+  - break
+  - ndcg
+  - '10'
+  - first
+  - model
+  same_source: false
+  text_a: First ColBERT model to break 57 on BEIR (57.22 NDCG@10)
+  text_b: First sub-150M dense model to break 56 NDCG@10 on BEIR (56.20)
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_324_04
+  claim_b: clm_intake_567_04
+  score: 0.3887
+  shared_terms:
+  - sglang
+  - vllm
+  same_source: false
+  text_a: vLLM and SGLang integration
+  text_b: Integrated into SGLang (not vLLM)
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_144_03
+  claim_b: clm_intake_254_04
+  score: 0.3885
+  shared_terms:
+  - integration
+  - mcp
+  - tool
+  same_source: false
+  text_a: MCP adapter support for tool integration
+  text_b: MCP server integration for tool extensibility
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_186_03
+  claim_b: clm_intake_187_02
+  score: 0.3878
+  shared_terms:
+  - qwen3moe
+  - standard
+  - architecture
+  same_source: false
+  text_a: Standard qwen3moe architecture — no custom code needed
+  text_b: Standard qwen3moe architecture, drop-in compatible
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_775_01
+  claim_b: clm_intake_778_02
+  score: 0.3876
+  shared_terms:
+  - '401'
+  - inspected
+  - anonymous
+  - fetch
+  - http
+  - gated
+  same_source: false
+  text_a: Anonymous page fetch returns HTTP 401 on both /AliesTaha/fable-traces and the API endpoint -
+    repo is gated or auth-walled; card content could not be inspected directly.
+  text_b: Anonymous fetch returns HTTP 401 - gated; card content not directly inspected (all above from
+    HF search index).
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_536_02
+  claim_b: clm_intake_541_02
+  score: 0.3857
+  shared_terms:
+  - asyncio.gather
+  - objects
+  - children
+  - child
+  - first-class
+  - outputs
+  same_source: false
+  text_a: 'Inference uses REPL-based execution tree: child outputs are first-class Python objects, asyncio.gather
+    enables parallel children, child reasoning stays out of parent context (automatic context isolation)'
+  text_b: Inference uses a rooted execution tree on a Python REPL interface; delegation is async function
+    (asyncio.gather for parallel independent children); child outputs are first-class Python objects parent
+    inspects/slices BEFORE loading into context
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_381_00
+  claim_b: clm_intake_383_01
+  score: 0.3716
+  shared_terms:
+  - '600'
+  - '42'
+  - topics
+  - domains
+  - apache
+  - public
+  same_source: false
+  text_a: 'AA-Omniscience: 6,000-question hallucination benchmark (600 public, Apache 2.0) across 6 domains/42
+    topics — penalizes guessing, rewards abstention'
+  text_b: 6,000 questions across 6 domains/42 economically relevant topics with 600 public (Apache 2.0)
+    on HuggingFace
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_244_02
+  claim_b: clm_intake_784_00
+  score: 0.3701
+  shared_terms:
+  - proposer
+  - filesystem
+  - scores
+  - access
+  - source
+  - traces
+  same_source: true
+  text_a: Agentic proposer with filesystem access to source code, scores, and execution traces outperforms
+    text-only optimizers
+  text_b: Outer-loop system that searches over harness code for LLM applications using an agentic proposer
+    with filesystem access to source code, scores, and execution traces of all prior candidates
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_721_00
+  claim_b: clm_intake_722_00
+  score: 0.3701
+  shared_terms:
+  - bundles
+  - unsloth
+  - mtp
+  - head
+  - native
+  - ships
+  same_source: false
+  text_a: Qwen3.6-35B-A3B ships a native NEXTN/MTP head; unsloth bundles it in-GGUF (no separate draft
+    file).
+  text_b: Qwen3.5-122B-A10B ships a native MTP head; unsloth bundles a GGUF.
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_215_01
+  claim_b: clm_intake_555_02
+  score: 0.3676
+  shared_terms:
+  - training-free
+  - fine-tuning
+  - framework
+  same_source: false
+  text_a: Training-free framework matching fine-tuning performance
+  text_b: 'Training-free framework: no fine-tuning required on participating LLMs'
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_282_04
+  claim_b: clm_intake_283_03
+  score: 0.3609
+  shared_terms:
+  - conventions
+  - filesystem
+  - state
+  - shared
+  - via
+  same_source: false
+  text_a: Targets AI agent pipelines that need shared state via filesystem conventions
+  text_b: Shared state via standard filesystem conventions (subdirectories, files)
+  decision: pending
+  reviewer: ''
+  note: ''
+- claim_a: clm_intake_196_00
+  claim_b: clm_intake_197_00
+  score: 0.3596
+  shared_terms:
+  - stimuli
+  - emotional
+  - performance
+  - llm
+  same_source: false
+  text_a: EmotionPrompt combines emotional stimuli with task prompts for LLM performance gains
+  text_b: Negative emotional stimuli improve LLM performance
+  decision: pending
+  reviewer: ''
+  note: ''
