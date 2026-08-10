@@ -11,7 +11,15 @@
   arxiv_id: '1701.06538'
   url: https://arxiv.org/abs/1701.06538
   source_type: paper
-  title: arXiv:1701.06538
+  title: 'Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer'
+  authors:
+  - Noam Shazeer
+  - Azalia Mirhoseini
+  - Krzysztof Maziarz
+  - Andy Davis
+  - Quoc Le
+  - Geoffrey Hinton
+  - Jeff Dean
   categories:
   - moe_optimization
   novelty: low
@@ -27,7 +35,15 @@
   arxiv_id: '1803.05457'
   url: https://arxiv.org/abs/1803.05457
   source_type: paper
-  title: arXiv:1803.05457
+  title: Think you have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge
+  authors:
+  - Peter Clark
+  - Isaac Cowhey
+  - Oren Etzioni
+  - Tushar Khot
+  - Ashish Sabharwal
+  - Carissa Schoenick
+  - Oyvind Tafjord
   categories:
   - benchmark_methodology
   novelty: low
@@ -43,7 +59,17 @@
   arxiv_id: '2006.16668'
   url: https://arxiv.org/abs/2006.16668
   source_type: paper
-  title: arXiv:2006.16668
+  title: 'GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding'
+  authors:
+  - Dmitry Lepikhin
+  - HyoukJoong Lee
+  - Yuanzhong Xu
+  - Dehao Chen
+  - Orhan Firat
+  - Yanping Huang
+  - Maxim Krikun
+  - Noam Shazeer
+  - Zhifeng Chen
   categories:
   - moe_optimization
   novelty: low
@@ -59,7 +85,15 @@
   arxiv_id: '2009.03300'
   url: https://arxiv.org/abs/2009.03300
   source_type: paper
-  title: arXiv:2009.03300
+  title: Measuring Massive Multitask Language Understanding
+  authors:
+  - Dan Hendrycks
+  - Collin Burns
+  - Steven Basart
+  - Andy Zou
+  - Mantas Mazeika
+  - Dawn Song
+  - Jacob Steinhardt
   categories:
   - benchmark_methodology
   novelty: low
@@ -76,7 +110,11 @@
   arxiv_id: '2101.03961'
   url: https://arxiv.org/abs/2101.03961
   source_type: paper
-  title: arXiv:2101.03961
+  title: 'Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity'
+  authors:
+  - William Fedus
+  - Barret Zoph
+  - Noam Shazeer
   categories:
   - moe_optimization
   novelty: low
@@ -92,7 +130,16 @@
   arxiv_id: '2103.03874'
   url: https://arxiv.org/abs/2103.03874
   source_type: paper
-  title: arXiv:2103.03874
+  title: Measuring Mathematical Problem Solving With the MATH Dataset
+  authors:
+  - Dan Hendrycks
+  - Collin Burns
+  - Saurav Kadavath
+  - Akul Arora
+  - Steven Basart
+  - Eric Tang
+  - Dawn Song
+  - Jacob Steinhardt
   categories:
   - benchmark_methodology
   novelty: low
@@ -108,7 +155,66 @@
   arxiv_id: '2107.03374'
   url: https://arxiv.org/abs/2107.03374
   source_type: paper
-  title: arXiv:2107.03374
+  title: Evaluating Large Language Models Trained on Code
+  authors:
+  - Mark Chen
+  - Jerry Tworek
+  - Heewoo Jun
+  - Qiming Yuan
+  - Henrique Ponde de Oliveira Pinto
+  - Jared Kaplan
+  - Harri Edwards
+  - Yuri Burda
+  - Nicholas Joseph
+  - Greg Brockman
+  - Alex Ray
+  - Raul Puri
+  - Gretchen Krueger
+  - Michael Petrov
+  - Heidy Khlaaf
+  - Girish Sastry
+  - Pamela Mishkin
+  - Brooke Chan
+  - Scott Gray
+  - Nick Ryder
+  - Mikhail Pavlov
+  - Alethea Power
+  - Lukasz Kaiser
+  - Mohammad Bavarian
+  - Clemens Winter
+  - Philippe Tillet
+  - Felipe Petroski Such
+  - Dave Cummings
+  - Matthias Plappert
+  - Fotios Chantzis
+  - Elizabeth Barnes
+  - Ariel Herbert-Voss
+  - William Hebgen Guss
+  - Alex Nichol
+  - Alex Paino
+  - Nikolas Tezak
+  - Jie Tang
+  - Igor Babuschkin
+  - Suchir Balaji
+  - Shantanu Jain
+  - William Saunders
+  - Christopher Hesse
+  - Andrew N. Carr
+  - Jan Leike
+  - Josh Achiam
+  - Vedant Misra
+  - Evan Morikawa
+  - Alec Radford
+  - Matthew Knight
+  - Miles Brundage
+  - Mira Murati
+  - Katie Mayer
+  - Peter Welinder
+  - Bob McGrew
+  - Dario Amodei
+  - Sam McCandlish
+  - Ilya Sutskever
+  - Wojciech Zaremba
   categories:
   - benchmark_methodology
   novelty: low
@@ -125,7 +231,19 @@
   arxiv_id: '2108.07732'
   url: https://arxiv.org/abs/2108.07732
   source_type: paper
-  title: arXiv:2108.07732
+  title: Program Synthesis with Large Language Models
+  authors:
+  - Jacob Austin
+  - Augustus Odena
+  - Maxwell Nye
+  - Maarten Bosma
+  - Henryk Michalewski
+  - David Dohan
+  - Ellen Jiang
+  - Carrie Cai
+  - Michael Terry
+  - Quoc Le
+  - Charles Sutton
   categories:
   - benchmark_methodology
   novelty: low
@@ -141,7 +259,20 @@
   arxiv_id: '2110.14168'
   url: https://arxiv.org/abs/2110.14168
   source_type: paper
-  title: arXiv:2110.14168
+  title: Training Verifiers to Solve Math Word Problems
+  authors:
+  - Karl Cobbe
+  - Vineet Kosaraju
+  - Mohammad Bavarian
+  - Mark Chen
+  - Heewoo Jun
+  - Lukasz Kaiser
+  - Matthias Plappert
+  - Jerry Tworek
+  - Jacob Hilton
+  - Reiichiro Nakano
+  - Christopher Hesse
+  - John Schulman
   categories:
   - benchmark_methodology
   novelty: low
@@ -157,7 +288,16 @@
   arxiv_id: '2201.05596'
   url: https://arxiv.org/abs/2201.05596
   source_type: paper
-  title: arXiv:2201.05596
+  title: 'DeepSpeed-MoE: Advancing Mixture-of-Experts Inference and Training to Power Next-Generation AI Scale'
+  authors:
+  - Samyam Rajbhandari
+  - Conglong Li
+  - Zhewei Yao
+  - Minjia Zhang
+  - Reza Yazdani Aminabadi
+  - Ammar Ahmad Awan
+  - Jeff Rasley
+  - Yuxiong He
   categories:
   - moe_optimization
   novelty: low
@@ -173,7 +313,28 @@
   arxiv_id: '2203.02155'
   url: https://arxiv.org/abs/2203.02155
   source_type: paper
-  title: arXiv:2203.02155
+  title: Training language models to follow instructions with human feedback
+  authors:
+  - Long Ouyang
+  - Jeff Wu
+  - Xu Jiang
+  - Diogo Almeida
+  - Carroll L. Wainwright
+  - Pamela Mishkin
+  - Chong Zhang
+  - Sandhini Agarwal
+  - Katarina Slama
+  - Alex Ray
+  - John Schulman
+  - Jacob Hilton
+  - Fraser Kelton
+  - Luke Miller
+  - Maddie Simens
+  - Amanda Askell
+  - Peter Welinder
+  - Paul Christiano
+  - Jan Leike
+  - Ryan Lowe
   categories:
   - benchmark_methodology
   novelty: low
@@ -189,7 +350,15 @@
   arxiv_id: '2206.01855'
   url: https://arxiv.org/abs/2206.01855
   source_type: paper
-  title: arXiv:2206.01855
+  title: A possible surviving companion of the SN Ia in the Galactic SNR G272.2-3.2
+  authors:
+  - Pilar Ruiz-Lapuente
+  - Jonay I. González Hernández
+  - Régis Cartier
+  - Konstantina Boutsia
+  - Francesca Figueras
+  - Ramon Canal
+  - Lluis Galbany
   categories:
   - routing_intelligence
   novelty: low
@@ -205,7 +374,20 @@
   arxiv_id: '2207.10342'
   url: https://arxiv.org/abs/2207.10342
   source_type: paper
-  title: arXiv:2207.10342
+  title: Language Model Cascades
+  authors:
+  - David Dohan
+  - Winnie Xu
+  - Aitor Lewkowycz
+  - Jacob Austin
+  - David Bieber
+  - Raphael Gontijo Lopes
+  - Yuhuai Wu
+  - Henryk Michalewski
+  - Rif A. Saurous
+  - Jascha Sohl-dickstein
+  - Kevin Murphy
+  - Charles Sutton
   categories:
   - routing_intelligence
   novelty: low
@@ -222,7 +404,15 @@
   arxiv_id: '2210.03629'
   url: https://arxiv.org/abs/2210.03629
   source_type: paper
-  title: arXiv:2210.03629
+  title: 'ReAct: Synergizing Reasoning and Acting in Language Models'
+  authors:
+  - Shunyu Yao
+  - Jeffrey Zhao
+  - Dian Yu
+  - Nan Du
+  - Izhak Shafran
+  - Karthik Narasimhan
+  - Yuan Cao
   categories:
   - routing_intelligence
   novelty: low
@@ -238,7 +428,16 @@
   arxiv_id: '2211.10435'
   url: https://arxiv.org/abs/2211.10435
   source_type: paper
-  title: arXiv:2211.10435
+  title: 'PAL: Program-aided Language Models'
+  authors:
+  - Luyu Gao
+  - Aman Madaan
+  - Shuyan Zhou
+  - Uri Alon
+  - Pengfei Liu
+  - Yiming Yang
+  - Jamie Callan
+  - Graham Neubig
   categories:
   - routing_intelligence
   novelty: low
@@ -254,7 +453,11 @@
   arxiv_id: '2211.17192'
   url: https://arxiv.org/abs/2211.17192
   source_type: paper
-  title: arXiv:2211.17192
+  title: Fast Inference from Transformers via Speculative Decoding
+  authors:
+  - Yaniv Leviathan
+  - Matan Kalman
+  - Yossi Matias
   categories:
   - speculative_decoding
   novelty: low
@@ -270,7 +473,14 @@
   arxiv_id: '2302.01318'
   url: https://arxiv.org/abs/2302.01318
   source_type: paper
-  title: arXiv:2302.01318
+  title: Accelerating Large Language Model Decoding with Speculative Sampling
+  authors:
+  - Charlie Chen
+  - Sebastian Borgeaud
+  - Geoffrey Irving
+  - Jean-Baptiste Lespiau
+  - Laurent Sifre
+  - John Jumper
   categories:
   - speculative_decoding
   novelty: low
@@ -286,7 +496,16 @@
   arxiv_id: '2302.04761'
   url: https://arxiv.org/abs/2302.04761
   source_type: paper
-  title: arXiv:2302.04761
+  title: 'Toolformer: Language Models Can Teach Themselves to Use Tools'
+  authors:
+  - Timo Schick
+  - Jane Dwivedi-Yu
+  - Roberto Dessì
+  - Roberta Raileanu
+  - Maria Lomeli
+  - Luke Zettlemoyer
+  - Nicola Cancedda
+  - Thomas Scialom
   categories:
   - routing_intelligence
   novelty: low
@@ -302,7 +521,15 @@
   arxiv_id: '2302.07863'
   url: https://arxiv.org/abs/2302.07863
   source_type: paper
-  title: arXiv:2302.07863
+  title: Speculative Decoding with Big Little Decoder
+  authors:
+  - Sehoon Kim
+  - Karttikeya Mangalam
+  - Suhong Moon
+  - Jitendra Malik
+  - Michael W. Mahoney
+  - Amir Gholami
+  - Kurt Keutzer
   categories:
   - speculative_decoding
   novelty: low
@@ -318,7 +545,16 @@
   arxiv_id: '2304.04487'
   url: https://arxiv.org/abs/2304.04487
   source_type: paper
-  title: arXiv:2304.04487
+  title: 'Inference with Reference: Lossless Acceleration of Large Language Models'
+  authors:
+  - Nan Yang
+  - Tao Ge
+  - Liang Wang
+  - Binxing Jiao
+  - Daxin Jiang
+  - Linjun Yang
+  - Rangan Majumder
+  - Furu Wei
   categories:
   - speculative_decoding
   novelty: low
@@ -334,7 +570,11 @@
   arxiv_id: '2305.05176'
   url: https://arxiv.org/abs/2305.05176
   source_type: paper
-  title: arXiv:2305.05176
+  title: 'FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance'
+  authors:
+  - Lingjiao Chen
+  - Matei Zaharia
+  - James Zou
   categories:
   - cost_aware_routing
   - routing_intelligence
@@ -354,7 +594,23 @@
   arxiv_id: '2305.09781'
   url: https://arxiv.org/abs/2305.09781
   source_type: paper
-  title: arXiv:2305.09781
+  title: 'SpecInfer: Accelerating Generative Large Language Model Serving with Tree-based Speculative Inference and Verification'
+  authors:
+  - Xupeng Miao
+  - Gabriele Oliaro
+  - Zhihao Zhang
+  - Xinhao Cheng
+  - Zeyu Wang
+  - Zhengxin Zhang
+  - Rae Ying Yee Wong
+  - Alan Zhu
+  - Lijie Yang
+  - Xiaoxiang Shi
+  - Chunan Shi
+  - Zhuoming Chen
+  - Daiyaan Arfeen
+  - Reyna Abhyankar
+  - Zhihao Jia
   categories:
   - speculative_decoding
   novelty: low
@@ -370,7 +626,10 @@
   arxiv_id: '2305.11711'
   url: https://arxiv.org/abs/2305.11711
   source_type: paper
-  title: arXiv:2305.11711
+  title: Modified S-wave $ππ$ scattering amplitude for multiparticle PWA
+  authors:
+  - Igor Kachaev
+  - ' IHEP'
   categories:
   - routing_intelligence
   novelty: low
@@ -386,7 +645,17 @@
   arxiv_id: '2305.14387'
   url: https://arxiv.org/abs/2305.14387
   source_type: paper
-  title: arXiv:2305.14387
+  title: 'AlpacaFarm: A Simulation Framework for Methods that Learn from Human Feedback'
+  authors:
+  - Yann Dubois
+  - Xuechen Li
+  - Rohan Taori
+  - Tianyi Zhang
+  - Ishaan Gulrajani
+  - Jimmy Ba
+  - Carlos Guestrin
+  - Percy Liang
+  - Tatsunori B. Hashimoto
   categories:
   - benchmark_methodology
   novelty: low
@@ -402,7 +671,28 @@
   arxiv_id: '2305.14705'
   url: https://arxiv.org/abs/2305.14705
   source_type: paper
-  title: arXiv:2305.14705
+  title: Mixture-of-Experts Meets Instruction Tuning:A Winning Combination for Large Language Models
+  authors:
+  - Sheng Shen
+  - Le Hou
+  - Yanqi Zhou
+  - Nan Du
+  - Shayne Longpre
+  - Jason Wei
+  - Hyung Won Chung
+  - Barret Zoph
+  - William Fedus
+  - Xinyun Chen
+  - Tu Vu
+  - Yuexin Wu
+  - Wuyang Chen
+  - Albert Webson
+  - Yunxuan Li
+  - Vincent Zhao
+  - Hongkun Yu
+  - Kurt Keutzer
+  - Trevor Darrell
+  - Denny Zhou
   categories:
   - moe_optimization
   novelty: low
@@ -418,7 +708,12 @@
   arxiv_id: '2305.15334'
   url: https://arxiv.org/abs/2305.15334
   source_type: paper
-  title: arXiv:2305.15334
+  title: 'Gorilla: Large Language Model Connected with Massive APIs'
+  authors:
+  - Shishir G. Patil
+  - Tianjun Zhang
+  - Xin Wang
+  - Joseph E. Gonzalez
   categories:
   - benchmark_methodology
   novelty: low
@@ -435,7 +730,16 @@
   arxiv_id: '2305.17118'
   url: https://arxiv.org/abs/2305.17118
   source_type: paper
-  title: arXiv:2305.17118
+  title: 'Scissorhands: Exploiting the Persistence of Importance Hypothesis for LLM KV Cache Compression at Test Time'
+  authors:
+  - Zichang Liu
+  - Aditya Desai
+  - Fangshuo Liao
+  - Weitao Wang
+  - Victor Xie
+  - Zhaozhuo Xu
+  - Anastasios Kyrillidis
+  - Anshumali Shrivastava
   categories:
   - kv_cache
   novelty: low
@@ -451,7 +755,21 @@
   arxiv_id: '2306.05685'
   url: https://arxiv.org/abs/2306.05685
   source_type: paper
-  title: arXiv:2306.05685
+  title: Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena
+  authors:
+  - Lianmin Zheng
+  - Wei-Lin Chiang
+  - Ying Sheng
+  - Siyuan Zhuang
+  - Zhanghao Wu
+  - Yonghao Zhuang
+  - Zi Lin
+  - Zhuohan Li
+  - Dacheng Li
+  - Eric P. Xing
+  - Hao Zhang
+  - Joseph E. Gonzalez
+  - Ion Stoica
   categories:
   - benchmark_methodology
   novelty: low
@@ -467,7 +785,20 @@
   arxiv_id: '2306.14048'
   url: https://arxiv.org/abs/2306.14048
   source_type: paper
-  title: arXiv:2306.14048
+  title: 'H$_2$O: Heavy-Hitter Oracle for Efficient Generative Inference of Large Language Models'
+  authors:
+  - Zhenyu Zhang
+  - Ying Sheng
+  - Tianyi Zhou
+  - Tianlong Chen
+  - Lianmin Zheng
+  - Ruisi Cai
+  - Zhao Song
+  - Yuandong Tian
+  - Christopher Ré
+  - Clark Barrett
+  - Zhangyang Wang
+  - Beidi Chen
   categories:
   - kv_cache
   novelty: low
@@ -483,7 +814,15 @@
   arxiv_id: '2307.03172'
   url: https://arxiv.org/abs/2307.03172
   source_type: paper
-  title: arXiv:2307.03172
+  title: 'Lost in the Middle: How Language Models Use Long Contexts'
+  authors:
+  - Nelson F. Liu
+  - Kevin Lin
+  - John Hewitt
+  - Ashwin Paranjape
+  - Michele Bevilacqua
+  - Fabio Petroni
+  - Percy Liang
   categories:
   - benchmark_methodology
   novelty: low
@@ -499,7 +838,27 @@
   arxiv_id: '2307.16789'
   url: https://arxiv.org/abs/2307.16789
   source_type: paper
-  title: arXiv:2307.16789
+  title: 'ToolLLM: Facilitating Large Language Models to Master 16000+ Real-world APIs'
+  authors:
+  - Yujia Qin
+  - Shihao Liang
+  - Yining Ye
+  - Kunlun Zhu
+  - Lan Yan
+  - Yaxi Lu
+  - Yankai Lin
+  - Xin Cong
+  - Xiangru Tang
+  - Bill Qian
+  - Sihan Zhao
+  - Lauren Hong
+  - Runchu Tian
+  - Ruobing Xie
+  - Jie Zhou
+  - Mark Gerstein
+  - Dahai Li
+  - Zhiyuan Liu
+  - Maosong Sun
   categories:
   - benchmark_methodology
   novelty: low
@@ -515,7 +874,12 @@
   arxiv_id: '2309.00071'
   url: https://arxiv.org/abs/2309.00071
   source_type: paper
-  title: arXiv:2309.00071
+  title: 'YaRN: Efficient Context Window Extension of Large Language Models'
+  authors:
+  - Bowen Peng
+  - Jeffrey Quesnelle
+  - Honglu Fan
+  - Enrico Shippole
   categories:
   - context_extension
   novelty: low
@@ -531,7 +895,17 @@
   arxiv_id: '2309.06180'
   url: https://arxiv.org/abs/2309.06180
   source_type: paper
-  title: arXiv:2309.06180
+  title: Efficient Memory Management for Large Language Model Serving with PagedAttention
+  authors:
+  - Woosuk Kwon
+  - Zhuohan Li
+  - Siyuan Zhuang
+  - Ying Sheng
+  - Lianmin Zheng
+  - Cody Hao Yu
+  - Joseph E. Gonzalez
+  - Hao Zhang
+  - Ion Stoica
   categories:
   - kv_cache
   - speculative_decoding
@@ -550,7 +924,15 @@
   arxiv_id: '2309.11495'
   url: https://arxiv.org/abs/2309.11495
   source_type: paper
-  title: arXiv:2309.11495
+  title: Chain-of-Verification Reduces Hallucination in Large Language Models
+  authors:
+  - Shehzaad Dhuliawala
+  - Mojtaba Komeili
+  - Jing Xu
+  - Roberta Raileanu
+  - Xian Li
+  - Asli Celikyilmaz
+  - Jason Weston
   categories:
   - routing_intelligence
   novelty: low
@@ -567,7 +949,14 @@
   arxiv_id: '2310.01801'
   url: https://arxiv.org/abs/2310.01801
   source_type: paper
-  title: arXiv:2310.01801
+  title: 'Model Tells You What to Discard: Adaptive KV Cache Compression for LLMs'
+  authors:
+  - Suyu Ge
+  - Yunan Zhang
+  - Liyuan Liu
+  - Minjia Zhang
+  - Jiawei Han
+  - Jianfeng Gao
   categories:
   - kv_cache
   novelty: low
@@ -583,7 +972,13 @@
   arxiv_id: '2310.05736'
   url: https://arxiv.org/abs/2310.05736
   source_type: paper
-  title: arXiv:2310.05736
+  title: 'LLMLingua: Compressing Prompts for Accelerated Inference of Large Language Models'
+  authors:
+  - Huiqiang Jiang
+  - Qianhui Wu
+  - Chin-Yew Lin
+  - Yuqing Yang
+  - Lili Qiu
   categories:
   - speculative_decoding
   novelty: low
@@ -599,7 +994,14 @@
   arxiv_id: '2310.15141'
   url: https://arxiv.org/abs/2310.15141
   source_type: paper
-  title: arXiv:2310.15141
+  title: 'SpecTr: Fast Speculative Decoding via Optimal Transport'
+  authors:
+  - Ziteng Sun
+  - Ananda Theertha Suresh
+  - Jae Hun Ro
+  - Ahmad Beirami
+  - Himanshu Jain
+  - Felix Yu
   categories:
   - speculative_decoding
   novelty: low
@@ -615,7 +1017,16 @@
   arxiv_id: '2311.07911'
   url: https://arxiv.org/abs/2311.07911
   source_type: paper
-  title: arXiv:2311.07911
+  title: Instruction-Following Evaluation for Large Language Models
+  authors:
+  - Jeffrey Zhou
+  - Tianjian Lu
+  - Swaroop Mishra
+  - Siddhartha Brahma
+  - Sujoy Basu
+  - Yi Luan
+  - Denny Zhou
+  - Le Hou
   categories:
   - benchmark_methodology
   novelty: low
@@ -632,7 +1043,13 @@
   arxiv_id: '2311.08252'
   url: https://arxiv.org/abs/2311.08252
   source_type: paper
-  title: arXiv:2311.08252
+  title: 'REST: Retrieval-Based Speculative Decoding'
+  authors:
+  - Zhenyu He
+  - Zexuan Zhong
+  - Tianle Cai
+  - Jason D. Lee
+  - Di He
   categories:
   - speculative_decoding
   novelty: low
@@ -648,7 +1065,10 @@
   arxiv_id: '2312.00752'
   url: https://arxiv.org/abs/2312.00752
   source_type: paper
-  title: arXiv:2312.00752
+  title: 'Mamba: Linear-Time Sequence Modeling with Selective State Spaces'
+  authors:
+  - Albert Gu
+  - Tri Dao
   categories:
   - moe_optimization
   - speculative_decoding
@@ -666,7 +1086,20 @@
   arxiv_id: '2312.07104'
   url: https://arxiv.org/abs/2312.07104
   source_type: paper
-  title: arXiv:2312.07104
+  title: 'SGLang: Efficient Execution of Structured Language Model Programs'
+  authors:
+  - Lianmin Zheng
+  - Liangsheng Yin
+  - Zhiqiang Xie
+  - Chuyue Sun
+  - Jeff Huang
+  - Cody Hao Yu
+  - Shiyi Cao
+  - Christos Kozyrakis
+  - Ion Stoica
+  - Joseph E. Gonzalez
+  - Clark Barrett
+  - Ying Sheng
   categories:
   - kv_cache
   - speculative_decoding
@@ -686,7 +1119,14 @@
   arxiv_id: '2312.11462'
   url: https://arxiv.org/abs/2312.11462
   source_type: paper
-  title: arXiv:2312.11462
+  title: Cascade Speculative Drafting for Even Faster LLM Inference
+  authors:
+  - Ziyi Chen
+  - Xiaocong Yang
+  - Jiacheng Lin
+  - Chenkai Sun
+  - Kevin Chen-Chuan Chang
+  - Jie Huang
   categories:
   - speculative_decoding
   novelty: low
@@ -702,7 +1142,17 @@
   arxiv_id: '2401.07851'
   url: https://arxiv.org/abs/2401.07851
   source_type: paper
-  title: arXiv:2401.07851
+  title: 'Unlocking Efficiency in Large Language Model Inference: A Comprehensive Survey of Speculative Decoding'
+  authors:
+  - Heming Xia
+  - Zhe Yang
+  - Qingxiu Dong
+  - Peiyi Wang
+  - Yongqi Li
+  - Tao Ge
+  - Tianyu Liu
+  - Wenjie Li
+  - Zhifang Sui
   categories:
   - speculative_decoding
   novelty: low
@@ -718,7 +1168,15 @@
   arxiv_id: '2401.10774'
   url: https://arxiv.org/abs/2401.10774
   source_type: paper
-  title: arXiv:2401.10774
+  title: 'Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads'
+  authors:
+  - Tianle Cai
+  - Yuhong Li
+  - Zhengyang Geng
+  - Hongwu Peng
+  - Jason D. Lee
+  - Deming Chen
+  - Tri Dao
   categories:
   - speculative_decoding
   novelty: low
@@ -736,7 +1194,12 @@
   arxiv_id: '2401.15077'
   url: https://arxiv.org/abs/2401.15077
   source_type: paper
-  title: arXiv:2401.15077
+  title: 'EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty'
+  authors:
+  - Yuhui Li
+  - Fangyun Wei
+  - Chao Zhang
+  - Hongyang Zhang
   categories:
   - speculative_decoding
   novelty: low
@@ -752,7 +1215,12 @@
   arxiv_id: '2402.01771'
   url: https://arxiv.org/abs/2402.01771
   source_type: paper
-  title: arXiv:2402.01771
+  title: 'BlackMamba: Mixture of Experts for State-Space Models'
+  authors:
+  - Quentin Anthony
+  - Yury Tokpanov
+  - Paolo Glorioso
+  - Beren Millidge
   categories:
   - speculative_decoding
   novelty: low
@@ -768,7 +1236,15 @@
   arxiv_id: '2402.12374'
   url: https://arxiv.org/abs/2402.12374
   source_type: paper
-  title: arXiv:2402.12374
+  title: 'Sequoia: Scalable, Robust, and Hardware-aware Speculative Decoding'
+  authors:
+  - Zhuoming Chen
+  - Avner May
+  - Ruslan Svirschevski
+  - Yuhsun Huang
+  - Max Ryabinin
+  - Zhihao Jia
+  - Beidi Chen
   categories:
   - speculative_decoding
   novelty: low
@@ -784,7 +1260,16 @@
   arxiv_id: '2403.02310'
   url: https://arxiv.org/abs/2403.02310
   source_type: paper
-  title: arXiv:2403.02310
+  title: Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve
+  authors:
+  - Amey Agrawal
+  - Nitin Kedia
+  - Ashish Panwar
+  - Jayashree Mohan
+  - Nipun Kwatra
+  - Bhargav S. Gulavani
+  - Alexey Tumanov
+  - Ramachandran Ramjee
   categories:
   - kv_cache
   novelty: low
@@ -800,7 +1285,30 @@
   arxiv_id: '2403.19887'
   url: https://arxiv.org/abs/2403.19887
   source_type: paper
-  title: arXiv:2403.19887
+  title: 'Jamba: A Hybrid Transformer-Mamba Language Model'
+  authors:
+  - Opher Lieber
+  - Barak Lenz
+  - Hofit Bata
+  - Gal Cohen
+  - Jhonathan Osin
+  - Itay Dalmedigos
+  - Erez Safahi
+  - Shaked Meirom
+  - Yonatan Belinkov
+  - Shai Shalev-Shwartz
+  - Omri Abend
+  - Raz Alon
+  - Tomer Asida
+  - Amir Bergman
+  - Roman Glozman
+  - Michael Gokhman
+  - Avashalom Manevich
+  - Nir Ratner
+  - Noam Rozen
+  - Erez Shwartz
+  - Mor Zusman
+  - Yoav Shoham
   categories:
   - moe_optimization
   novelty: low
@@ -816,7 +1324,13 @@
   arxiv_id: '2404.09127'
   url: https://arxiv.org/abs/2404.09127
   source_type: paper
-  title: arXiv:2404.09127
+  title: Confidence Calibration and Rationalization for LLMs via Multi-Agent Deliberation
+  authors:
+  - Ruixin Yang
+  - Dheeraj Rajagopal
+  - Shirley Anugrah Hayati
+  - Bin Hu
+  - Dongyeop Kang
   categories:
   - speculative_decoding
   novelty: low
@@ -832,7 +1346,21 @@
   arxiv_id: '2404.16710'
   url: https://arxiv.org/abs/2404.16710
   source_type: paper
-  title: arXiv:2404.16710
+  title: 'LayerSkip: Enabling Early Exit Inference and Self-Speculative Decoding'
+  authors:
+  - Mostafa Elhoushi
+  - Akshat Shrivastava
+  - Diana Liskovich
+  - Basil Hosmer
+  - Bram Wasti
+  - Liangzhen Lai
+  - Anas Mahmoud
+  - Bilge Acun
+  - Saurabh Agarwal
+  - Ahmed Roman
+  - Ahmed A Aly
+  - Beidi Chen
+  - Carole-Jean Wu
   categories:
   - speculative_decoding
   novelty: low
@@ -849,7 +1377,15 @@
   arxiv_id: '2405.19261'
   url: https://arxiv.org/abs/2405.19261
   source_type: paper
-  title: arXiv:2405.19261
+  title: Faster Cascades via Speculative Decoding
+  authors:
+  - Harikrishna Narasimhan
+  - Wittawat Jitkrittum
+  - Ankit Singh Rawat
+  - Seungyeon Kim
+  - Neha Gupta
+  - Aditya Krishna Menon
+  - Sanjiv Kumar
   categories:
   - speculative_decoding
   novelty: low
@@ -865,7 +1401,13 @@
   arxiv_id: '2406.00430'
   url: https://arxiv.org/abs/2406.00430
   source_type: paper
-  title: arXiv:2406.00430
+  title: Evaluating Uncertainty-based Failure Detection for Closed-Loop LLM Planners
+  authors:
+  - Zhi Zheng
+  - Qian Feng
+  - Hang Li
+  - Alois Knoll
+  - Jianxiang Feng
   categories:
   - speculative_decoding
   novelty: low
@@ -881,7 +1423,14 @@
   arxiv_id: '2406.02532'
   url: https://arxiv.org/abs/2406.02532
   source_type: paper
-  title: arXiv:2406.02532
+  title: 'SpecExec: Massively Parallel Speculative Decoding for Interactive LLM Inference on Consumer Devices'
+  authors:
+  - Ruslan Svirschevski
+  - Avner May
+  - Zhuoming Chen
+  - Beidi Chen
+  - Zhihao Jia
+  - Max Ryabinin
   categories:
   - benchmark_methodology
   - speculative_decoding
@@ -900,7 +1449,12 @@
   arxiv_id: '2406.16858'
   url: https://arxiv.org/abs/2406.16858
   source_type: paper
-  title: arXiv:2406.16858
+  title: 'EAGLE-2: Faster Inference of Language Models with Dynamic Draft Trees'
+  authors:
+  - Yuhui Li
+  - Fangyun Wei
+  - Chao Zhang
+  - Hongyang Zhang
   categories:
   - speculative_decoding
   novelty: low
@@ -916,7 +1470,16 @@
   arxiv_id: '2406.17276'
   url: https://arxiv.org/abs/2406.17276
   source_type: paper
-  title: arXiv:2406.17276
+  title: 'OPT-Tree: Speculative Decoding with Adaptive Draft Tree Structure'
+  authors:
+  - Jikai Wang
+  - Yi Su
+  - Juntao Li
+  - Qingrong Xia
+  - Zi Ye
+  - Xinyu Duan
+  - Zhefeng Wang
+  - Min Zhang
   categories:
   - speculative_decoding
   novelty: low
@@ -932,7 +1495,16 @@
   arxiv_id: '2406.18665'
   url: https://arxiv.org/abs/2406.18665
   source_type: paper
-  title: arXiv:2406.18665
+  title: 'RouteLLM: Learning to Route LLMs with Preference Data'
+  authors:
+  - Isaac Ong
+  - Amjad Almahairi
+  - Vincent Wu
+  - Wei-Lin Chiang
+  - Tianhao Wu
+  - Joseph E. Gonzalez
+  - M Waleed Kadous
+  - Ion Stoica
   categories:
   - speculative_decoding
   novelty: low
@@ -948,7 +1520,15 @@
   arxiv_id: '2407.00088'
   url: https://arxiv.org/abs/2407.00088
   source_type: paper
-  title: arXiv:2407.00088
+  title: 'T-MAC: CPU Renaissance via Table Lookup for Low-Bit LLM Deployment on Edge'
+  authors:
+  - Jianyu Wei
+  - Shijie Cao
+  - Ting Cao
+  - Lingxiao Ma
+  - Lei Wang
+  - Yanyong Zhang
+  - Mao Yang
   categories:
   - speculative_decoding
   novelty: low
@@ -964,7 +1544,15 @@
   arxiv_id: '2408.11850'
   url: https://arxiv.org/abs/2408.11850
   source_type: paper
-  title: arXiv:2408.11850
+  title: 'PEARL: Parallel Speculative Decoding with Adaptive Draft Length'
+  authors:
+  - Tianyu Liu
+  - Yun Li
+  - Qitan Lv
+  - Kai Liu
+  - Jianchen Zhu
+  - Winston Hu
+  - Xiao Sun
   categories:
   - speculative_decoding
   novelty: low
@@ -980,7 +1568,11 @@
   arxiv_id: '2410.03834'
   url: https://arxiv.org/abs/2410.03834
   source_type: paper
-  title: arXiv:2410.03834
+  title: 'GraphRouter: A Graph-based Router for LLM Selections'
+  authors:
+  - Tao Feng
+  - Yanzhen Shen
+  - Jiaxuan You
   categories:
   - routing_intelligence
   - speculative_decoding
@@ -998,7 +1590,14 @@
   arxiv_id: '2410.05589'
   url: https://arxiv.org/abs/2410.05589
   source_type: paper
-  title: arXiv:2410.05589
+  title: 'ParallelSpec: Parallel Drafter for Efficient Speculative Decoding'
+  authors:
+  - Zilin Xiao
+  - Hongming Zhang
+  - Tao Ge
+  - Siru Ouyang
+  - Vicente Ordonez
+  - Dong Yu
   categories:
   - speculative_decoding
   novelty: low
@@ -1014,7 +1613,13 @@
   arxiv_id: '2410.06916'
   url: https://arxiv.org/abs/2410.06916
   source_type: paper
-  title: arXiv:2410.06916
+  title: 'SWIFT: On-the-Fly Self-Speculative Decoding for LLM Inference Acceleration'
+  authors:
+  - Heming Xia
+  - Yongqi Li
+  - Jun Zhang
+  - Cunxiao Du
+  - Wenjie Li
   categories:
   - speculative_decoding
   novelty: low
@@ -1030,7 +1635,13 @@
   arxiv_id: '2410.11744'
   url: https://arxiv.org/abs/2410.11744
   source_type: paper
-  title: arXiv:2410.11744
+  title: 'DySpec: Faster Speculative Decoding with Dynamic Token Tree Structure'
+  authors:
+  - Yunfan Xiong
+  - Ruoyu Zhang
+  - Yanzeng Li
+  - Tianhao Wu
+  - Lei Zou
   categories:
   - speculative_decoding
   novelty: low
@@ -1046,7 +1657,15 @@
   arxiv_id: '2410.13284'
   url: https://arxiv.org/abs/2410.13284
   source_type: paper
-  title: arXiv:2410.13284
+  title: Learning to Route LLMs with Confidence Tokens
+  authors:
+  - Yu-Neng Chuang
+  - Prathusha Kameswara Sarma
+  - Parikshit Gopalan
+  - John Boccio
+  - Sara Bolouki
+  - Xia Hu
+  - Helen Zhou
   categories:
   - cost_aware_routing
   novelty: low
@@ -1062,7 +1681,12 @@
   arxiv_id: '2411.05289'
   url: https://arxiv.org/abs/2411.05289
   source_type: paper
-  title: arXiv:2411.05289
+  title: 'SpecHub: Provable Acceleration to Multi-Draft Speculative Decoding'
+  authors:
+  - Ryan Sun
+  - Tianyi Zhou
+  - Xun Chen
+  - Lichao Sun
   categories:
   - speculative_decoding
   novelty: low
@@ -1078,7 +1702,52 @@
   arxiv_id: '2412.15115'
   url: https://arxiv.org/abs/2412.15115
   source_type: paper
-  title: arXiv:2412.15115
+  title: Qwen2.5 Technical Report
+  authors:
+  - ' Qwen'
+  - ' :'
+  - An Yang
+  - Baosong Yang
+  - Beichen Zhang
+  - Binyuan Hui
+  - Bo Zheng
+  - Bowen Yu
+  - Chengyuan Li
+  - Dayiheng Liu
+  - Fei Huang
+  - Haoran Wei
+  - Huan Lin
+  - Jian Yang
+  - Jianhong Tu
+  - Jianwei Zhang
+  - Jianxin Yang
+  - Jiaxi Yang
+  - Jingren Zhou
+  - Junyang Lin
+  - Kai Dang
+  - Keming Lu
+  - Keqin Bao
+  - Kexin Yang
+  - Le Yu
+  - Mei Li
+  - Mingfeng Xue
+  - Pei Zhang
+  - Qin Zhu
+  - Rui Men
+  - Runji Lin
+  - Tianhao Li
+  - Tianyi Tang
+  - Tingyu Xia
+  - Xingzhang Ren
+  - Xuancheng Ren
+  - Yang Fan
+  - Yang Su
+  - Yichang Zhang
+  - Yu Wan
+  - Yuqiong Liu
+  - Zeyu Cui
+  - Zhenru Zhang
+  - Zihan Qiu
   categories:
   - moe_optimization
   novelty: low
@@ -1094,7 +1763,15 @@
   arxiv_id: '2412.18934'
   url: https://arxiv.org/abs/2412.18934
   source_type: paper
-  title: arXiv:2412.18934
+  title: 'Dovetail: A CPU/GPU Heterogeneous Speculative Decoding for LLM inference'
+  authors:
+  - Libo Zhang
+  - Zhaoning Zhang
+  - Baizhou Xu
+  - Rui Li
+  - Zhiliang Tian
+  - Songzhu Mei
+  - Dongsheng Li
   categories:
   - speculative_decoding
   novelty: low
@@ -1110,7 +1787,14 @@
   arxiv_id: '2501.12388'
   url: https://arxiv.org/abs/2501.12388
   source_type: paper
-  title: arXiv:2501.12388
+  title: Accelerating End-Cloud Collaborative Inference via Near Bubble-free Pipeline Optimization
+  authors:
+  - Luyao Gao
+  - Jianchun Liu
+  - Hongli Xu
+  - Sun Xu
+  - Qianpiao Ma
+  - Liusheng Huang
   categories:
   - routing_intelligence
   novelty: low
@@ -1127,7 +1811,17 @@
   arxiv_id: '2502.12054'
   url: https://arxiv.org/abs/2502.12054
   source_type: paper
-  title: arXiv:2502.12054
+  title: 'PhysReason: A Comprehensive Benchmark towards Physics-Based Reasoning'
+  authors:
+  - Xinyu Zhang
+  - Yuxuan Dong
+  - Yanrui Wu
+  - Jiaxing Huang
+  - Chengyou Jia
+  - Basura Fernando
+  - Mike Zheng Shou
+  - Lingling Zhang
+  - Jun Liu
   categories:
   - benchmark_methodology
   novelty: low
@@ -1143,7 +1837,12 @@
   arxiv_id: '2503.01840'
   url: https://arxiv.org/abs/2503.01840
   source_type: paper
-  title: arXiv:2503.01840
+  title: 'EAGLE-3: Scaling up Inference Acceleration of Large Language Models via Training-Time Test'
+  authors:
+  - Yuhui Li
+  - Fangyun Wei
+  - Chao Zhang
+  - Hongyang Zhang
   categories:
   - speculative_decoding
   novelty: low
@@ -1159,7 +1858,14 @@
   arxiv_id: '2503.03434'
   url: https://arxiv.org/abs/2503.03434
   source_type: paper
-  title: arXiv:2503.03434
+  title: 'RASD: Retrieval-Augmented Speculative Decoding'
+  authors:
+  - Guofeng Quan
+  - Wenfeng Feng
+  - Chuzhan Hao
+  - Guochao Jiang
+  - Yuewei Zhang
+  - Hao Wang
   categories:
   - speculative_decoding
   novelty: low
@@ -1175,7 +1881,9 @@
   arxiv_id: '2504.12337'
   url: https://arxiv.org/abs/2504.12337
   source_type: paper
-  title: arXiv:2504.12337
+  title: '"It Listens Better Than My Therapist": Exploring Social Media Discourse on LLMs as Mental Health Tool'
+  authors:
+  - Anna-Carolina Haensch
   categories:
   - routing_intelligence
   novelty: low
@@ -1191,7 +1899,62 @@
   arxiv_id: '2504.16074'
   url: https://arxiv.org/abs/2504.16074
   source_type: paper
-  title: arXiv:2504.16074
+  title: 'PHYBench: Holistic Evaluation of Physical Perception and Reasoning in Large Language Models'
+  authors:
+  - Shi Qiu
+  - Shaoyang Guo
+  - Zhuo-Yang Song
+  - Yunbo Sun
+  - Zeyu Cai
+  - Jiashen Wei
+  - Tianyu Luo
+  - Yixuan Yin
+  - Haoxu Zhang
+  - Yi Hu
+  - Chenyang Wang
+  - Chencheng Tang
+  - Haoling Chang
+  - Qi Liu
+  - Ziheng Zhou
+  - Tianyu Zhang
+  - Jingtian Zhang
+  - Zhangyi Liu
+  - Minghao Li
+  - Yuku Zhang
+  - Boxuan Jing
+  - Xianqi Yin
+  - Yutong Ren
+  - Zizhuo Fu
+  - Jiaming Ji
+  - Weike Wang
+  - Xudong Tian
+  - Anqi Lv
+  - Laifu Man
+  - Jianxiang Li
+  - Feiyu Tao
+  - Qihua Sun
+  - Zhou Liang
+  - Yushu Mu
+  - Zhongxuan Li
+  - Jing-Jun Zhang
+  - Shutao Zhang
+  - Xiaotian Li
+  - Xingqi Xia
+  - Jiawei Lin
+  - Zheyu Shen
+  - Jiahang Chen
+  - Qiuhao Xiong
+  - Binran Wang
+  - Fengyuan Wang
+  - Ziyang Ni
+  - Bohan Zhang
+  - Fan Cui
+  - Changkun Shao
+  - Qing-Hong Cao
+  - Ming-xing Luo
+  - Yaodong Yang
+  - Muhan Zhang
+  - Hua Xing Zhu
   categories:
   - benchmark_methodology
   novelty: low
@@ -1207,7 +1970,68 @@
   arxiv_id: '2505.09388'
   url: https://arxiv.org/abs/2505.09388
   source_type: paper
-  title: arXiv:2505.09388
+  title: Qwen3 Technical Report
+  authors:
+  - An Yang
+  - Anfeng Li
+  - Baosong Yang
+  - Beichen Zhang
+  - Binyuan Hui
+  - Bo Zheng
+  - Bowen Yu
+  - Chang Gao
+  - Chengen Huang
+  - Chenxu Lv
+  - Chujie Zheng
+  - Dayiheng Liu
+  - Fan Zhou
+  - Fei Huang
+  - Feng Hu
+  - Hao Ge
+  - Haoran Wei
+  - Huan Lin
+  - Jialong Tang
+  - Jian Yang
+  - Jianhong Tu
+  - Jianwei Zhang
+  - Jianxin Yang
+  - Jiaxi Yang
+  - Jing Zhou
+  - Jingren Zhou
+  - Junyang Lin
+  - Kai Dang
+  - Keqin Bao
+  - Kexin Yang
+  - Le Yu
+  - Lianghao Deng
+  - Mei Li
+  - Mingfeng Xue
+  - Mingze Li
+  - Pei Zhang
+  - Peng Wang
+  - Qin Zhu
+  - Rui Men
+  - Ruize Gao
+  - Shixuan Liu
+  - Shuang Luo
+  - Tianhao Li
+  - Tianyi Tang
+  - Wenbiao Yin
+  - Xingzhang Ren
+  - Xinyu Wang
+  - Xinyu Zhang
+  - Xuancheng Ren
+  - Yang Fan
+  - Yang Su
+  - Yichang Zhang
+  - Yinger Zhang
+  - Yu Wan
+  - Yuqiong Liu
+  - Zekun Wang
+  - Zeyu Cui
+  - Zhenru Zhang
+  - Zhipeng Zhou
+  - Zihan Qiu
   categories:
   - moe_optimization
   novelty: low
@@ -1223,7 +2047,14 @@
   arxiv_id: '2505.23219'
   url: https://arxiv.org/abs/2505.23219
   source_type: paper
-  title: arXiv:2505.23219
+  title: 'Ghidorah: Fast LLM Inference on Edge with Speculative Decoding and Hetero-Core Parallelism'
+  authors:
+  - Jinhui Wei
+  - Ye Huang
+  - Yuhui Zhou
+  - Jiazhi Jiang
+  - Jiangsu Du
+  - Yutong Lu
   categories:
   - speculative_decoding
   novelty: low
@@ -1239,7 +2070,17 @@
   arxiv_id: '2505.24196'
   url: https://arxiv.org/abs/2505.24196
   source_type: paper
-  title: arXiv:2505.24196
+  title: 'CLaSp: In-Context Layer Skip for Self-Speculative Decoding'
+  authors:
+  - Longze Chen
+  - Renke Shan
+  - Huiming Wang
+  - Lu Wang
+  - Ziqiang Liu
+  - Run Luo
+  - Jiawei Wang
+  - Hamid Alinejad-Rokny
+  - Min Yang
   categories:
   - speculative_decoding
   novelty: low
@@ -1256,7 +2097,11 @@
   arxiv_id: '2506.09033'
   url: https://arxiv.org/abs/2506.09033
   source_type: paper
-  title: arXiv:2506.09033
+  title: 'Router-R1: Teaching LLMs Multi-Round Routing and Aggregation via Reinforcement Learning'
+  authors:
+  - Haozhen Zhang
+  - Tao Feng
+  - Jiaxuan You
   categories:
   - cost_aware_routing
   novelty: low
@@ -1272,7 +2117,12 @@
   arxiv_id: '2508.12491'
   url: https://arxiv.org/abs/2508.12491
   source_type: paper
-  title: arXiv:2508.12491
+  title: Cost-Aware Contrastive Routing for LLMs
+  authors:
+  - Reza Shirkavand
+  - Shangqian Gao
+  - Peiran Yu
+  - Heng Huang
   categories:
   - cost_aware_routing
   novelty: low
@@ -1288,7 +2138,10 @@
   arxiv_id: '2510.01234'
   url: https://arxiv.org/abs/2510.01234
   source_type: paper
-  title: arXiv:2510.01234
+  title: 'LLMRank: Understanding LLM Strengths for Model Routing'
+  authors:
+  - Shubham Agrawal
+  - Prasang Gupta
   categories:
   - cost_aware_routing
   novelty: low
@@ -1304,7 +2157,11 @@
   arxiv_id: '2510.01336'
   url: https://arxiv.org/abs/2510.01336
   source_type: paper
-  title: arXiv:2510.01336
+  title: 'HiSpec: Hierarchical Speculative Decoding for LLMs'
+  authors:
+  - Avinash Kumar
+  - Sujay Sanghavi
+  - Poulami Das
   categories:
   - speculative_decoding
   novelty: low
@@ -1320,7 +2177,15 @@
   arxiv_id: '2510.06557'
   url: https://arxiv.org/abs/2510.06557
   source_type: paper
-  title: arXiv:2510.06557
+  title: 'The Markovian Thinker: Architecture-Agnostic Linear Scaling of Reasoning'
+  authors:
+  - Milad Aghajohari
+  - Kamran Chitsaz
+  - Amirhossein Kazemnejad
+  - Sarath Chandar
+  - Alessandro Sordoni
+  - Aaron Courville
+  - Siva Reddy
   categories:
   - speculative_decoding
   novelty: low
@@ -1336,7 +2201,21 @@
   arxiv_id: '2510.08439'
   url: https://arxiv.org/abs/2510.08439
   source_type: paper
-  title: arXiv:2510.08439
+  title: 'xRouter: Training Cost-Aware LLMs Orchestration System via Reinforcement Learning'
+  authors:
+  - Cheng Qian
+  - Zuxin Liu
+  - Shirley Kokane
+  - Akshara Prabhakar
+  - Jielin Qiu
+  - Haolin Chen
+  - Zhiwei Liu
+  - Heng Ji
+  - Weiran Yao
+  - Shelby Heinecke
+  - Silvio Savarese
+  - Caiming Xiong
+  - Huan Wang
   categories:
   - cost_aware_routing
   novelty: low
@@ -1352,7 +2231,15 @@
   arxiv_id: '2510.26843'
   url: https://arxiv.org/abs/2510.26843
   source_type: paper
-  title: arXiv:2510.26843
+  title: 'CAS-Spec: Cascade Adaptive Self-Speculative Decoding for On-the-Fly Lossless Inference Acceleration of LLMs'
+  authors:
+  - Zhiyuan Ning
+  - Jiawei Shao
+  - Ruge Xu
+  - Xinfei Guo
+  - Jun Zhang
+  - Chi Zhang
+  - Xuelong Li
   categories:
   - speculative_decoding
   novelty: low
@@ -1368,7 +2255,17 @@
   arxiv_id: '2511.12281'
   url: https://arxiv.org/abs/2511.12281
   source_type: paper
-  title: arXiv:2511.12281
+  title: 'Cmprsr: Abstractive Token-Level Question-Agnostic Prompt Compressor'
+  authors:
+  - Ivan Zakazov
+  - Berke Argin
+  - Oussama Gabouj
+  - Kamel Charaf
+  - Alexander Sharipov
+  - Alexi Semiz
+  - Lorenzo Drudi
+  - Nicolas Baldwin
+  - Robert West
   categories:
   - speculative_decoding
   novelty: low
@@ -1384,7 +2281,21 @@
   arxiv_id: '2512.01278'
   url: https://arxiv.org/abs/2512.01278
   source_type: paper
-  title: arXiv:2512.01278
+  title: Accelerating Large-Scale Reasoning Model Inference with Sparse Self-Speculative Decoding
+  authors:
+  - Yilong Zhao
+  - Jiaming Tang
+  - Kan Zhu
+  - Zihao Ye
+  - Chi-Chih Chang
+  - Chaofan Lin
+  - Jongseok Park
+  - Guangxuan Xiao
+  - Mohamed S. Abdelfattah
+  - Mingyu Gao
+  - Baris Kasikci
+  - Song Han
+  - Ion Stoica
   categories:
   - speculative_decoding
   novelty: low
@@ -1400,7 +2311,14 @@
   arxiv_id: '2512.01457'
   url: https://arxiv.org/abs/2512.01457
   source_type: paper
-  title: arXiv:2512.01457
+  title: Zero-Overhead Introspection for Adaptive Test-Time Compute
+  authors:
+  - Rohin Manvi
+  - Joey Hong
+  - Tim Seyde
+  - Maxime Labonne
+  - Mathias Lechner
+  - Sergey Levine
   categories:
   - speculative_decoding
   novelty: low
@@ -1416,7 +2334,10 @@
   arxiv_id: '2512.20578'
   url: https://arxiv.org/abs/2512.20578
   source_type: paper
-  title: arXiv:2512.20578
+  title: Can LLMs Predict Their Own Failures? Self-Awareness via Internal Circuits
+  authors:
+  - Amirhosein Ghasemabadi
+  - Di Niu
   categories:
   - speculative_decoding
   novelty: low
@@ -1432,7 +2353,22 @@
   arxiv_id: '2512.23675'
   url: https://arxiv.org/abs/2512.23675
   source_type: paper
-  title: arXiv:2512.23675
+  title: End-to-End Test-Time Training for Long Context
+  authors:
+  - Arnuv Tandon
+  - Karan Dalal
+  - Xinhao Li
+  - Daniel Koceja
+  - Marcel Rød
+  - Sam Buchanan
+  - Xiaolong Wang
+  - Jure Leskovec
+  - Sanmi Koyejo
+  - Tatsunori Hashimoto
+  - Carlos Guestrin
+  - Jed McCaleb
+  - Yejin Choi
+  - Yu Sun
   categories:
   - context_extension
   - training_distillation
@@ -1449,7 +2385,22 @@
   arxiv_id: '2601.03192'
   url: https://arxiv.org/abs/2601.03192
   source_type: paper
-  title: arXiv:2601.03192
+  title: 'MemRL: Self-Evolving Agents via Runtime Reinforcement Learning on Episodic Memory'
+  authors:
+  - Shengtao Zhang
+  - Jiaqian Wang
+  - Ruiwen Zhou
+  - Junwei Liao
+  - Yuchen Feng
+  - Zhuo Li
+  - Yujie Zheng
+  - Weinan Zhang
+  - Ying Wen
+  - Zhiyu Li
+  - Feiyu Xiong
+  - Yutao Qi
+  - Bo Tang
+  - Muning Wen
   categories:
   - speculative_decoding
   novelty: low
@@ -1467,7 +2418,16 @@
   arxiv_id: '2601.05724'
   url: https://arxiv.org/abs/2601.05724
   source_type: paper
-  title: arXiv:2601.05724
+  title: Overcoming Joint Intractability with Lossless Hierarchical Speculative Decoding
+  authors:
+  - Yuxuan Zhou
+  - Fei Huang
+  - Heng Li
+  - Fengyi Wu
+  - Tianyu Wang
+  - Jianwei Zhang
+  - Junyang Lin
+  - Zhi-Qi Cheng
   categories:
   - speculative_decoding
   novelty: low
@@ -1483,7 +2443,24 @@
   arxiv_id: '2601.15621'
   url: https://arxiv.org/abs/2601.15621
   source_type: paper
-  title: arXiv:2601.15621
+  title: Qwen3-TTS Technical Report
+  authors:
+  - Hangrui Hu
+  - Xinfa Zhu
+  - Ting He
+  - Dake Guo
+  - Bin Zhang
+  - Xiong Wang
+  - Zhifang Guo
+  - Ziyue Jiang
+  - Hongkun Hao
+  - Zishan Guo
+  - Xinyu Zhang
+  - Pei Zhang
+  - Baosong Yang
+  - Jin Xu
+  - Jingren Zhou
+  - Junyang Lin
   categories:
   - speculative_decoding
   novelty: low
@@ -1499,7 +2476,21 @@
   arxiv_id: '2602.08234'
   url: https://arxiv.org/abs/2602.08234
   source_type: paper
-  title: arXiv:2602.08234
+  title: 'SkillRL: Evolving Agents via Recursive Skill-Augmented Reinforcement Learning'
+  authors:
+  - Peng Xia
+  - Jianwen Chen
+  - Hanyang Wang
+  - Jiaqi Liu
+  - Kaide Zeng
+  - Yu Wang
+  - Siwei Han
+  - Yiyang Zhou
+  - Xujiang Zhao
+  - Haifeng Chen
+  - Zeyu Zheng
+  - Cihang Xie
+  - Huaxiu Yao
   categories:
   - speculative_decoding
   novelty: low
@@ -1515,7 +2506,17 @@
   arxiv_id: '2602.08984'
   url: https://arxiv.org/abs/2602.08984
   source_type: paper
-  title: arXiv:2602.08984
+  title: Next Concept Prediction in Discrete Latent Space Leads to Stronger Language Models
+  authors:
+  - Yuliang Liu
+  - Yunchong Song
+  - Yixuan Wang
+  - Kewen Ge
+  - Alex Lamb
+  - Qipeng Guo
+  - Kai Chen
+  - Bowen Zhou
+  - Zhouhan Lin
   categories:
   - speculative_decoding
   novelty: low
@@ -1531,7 +2532,15 @@
   arxiv_id: '2602.10908'
   url: https://arxiv.org/abs/2602.10908
   source_type: paper
-  title: arXiv:2602.10908
+  title: 'SoftMatcha 2: A Fast and Soft Pattern Matcher for Trillion-Scale Corpora'
+  authors:
+  - Masataka Yoneda
+  - Yusuke Matsushita
+  - Go Kamoda
+  - Kohei Suenaga
+  - Takuya Akiba
+  - Masaki Waga
+  - Sho Yokoi
   categories:
   - speculative_decoding
   novelty: low
@@ -1547,7 +2556,14 @@
   arxiv_id: '2602.12005'
   url: https://arxiv.org/abs/2602.12005
   source_type: paper
-  title: arXiv:2602.12005
+  title: 'LaCy: What Small Language Models Can and Should Learn is Not Just a Question of Loss'
+  authors:
+  - Szilvia Ujváry
+  - Louis Béthune
+  - Pierre Ablin
+  - João Monteiro
+  - Marco Cuturi
+  - Michael Kirchhof
   categories:
   - routing_intelligence
   novelty: low
@@ -1648,7 +2664,9 @@
   arxiv_id: '2602.15257'
   url: https://arxiv.org/abs/2602.15257
   source_type: paper
-  title: arXiv:2602.15257
+  title: How to Train Your Long-Context Visual Document Model
+  authors:
+  - Austin Veselka
   categories:
   - multimodal
   novelty: low
@@ -1664,7 +2682,12 @@
   arxiv_id: '2602.15902'
   url: https://arxiv.org/abs/2602.15902
   source_type: paper
-  title: arXiv:2602.15902
+  title: 'Doc-to-LoRA: Learning to Instantly Internalize Contexts'
+  authors:
+  - Rujikorn Charakorn
+  - Edoardo Cetin
+  - Shinnosuke Uesaka
+  - Robert Tjarko Lange
   categories:
   - training_distillation
   novelty: low
@@ -1680,7 +2703,12 @@
   arxiv_id: '2602.16609'
   url: https://arxiv.org/abs/2602.16609
   source_type: paper
-  title: arXiv:2602.16609
+  title: 'ColBERT-Zero: To Pre-train Or Not To Pre-train ColBERT models'
+  authors:
+  - Antoine Chaffin
+  - Luca Arnaboldi
+  - Amélie Chatelain
+  - Florent Krzakala
   categories:
   - speculative_decoding
   novelty: low
@@ -1696,7 +2724,12 @@
   arxiv_id: '2602.16994'
   url: https://arxiv.org/abs/2602.16994
   source_type: paper
-  title: arXiv:2602.16994
+  title: Dynamic Delayed Tree Expansion For Improved Multi-Path Speculative Decoding
+  authors:
+  - Rahul Thomas
+  - Teo Kitanovski
+  - Micah Goldblum
+  - Arka Pal
   categories:
   - speculative_decoding
   novelty: low
@@ -1712,7 +2745,16 @@
   arxiv_id: '2602.19526'
   url: https://arxiv.org/abs/2602.19526
   source_type: paper
-  title: arXiv:2602.19526
+  title: How to Train Your Deep Research Agent? Prompt, Reward, and Policy Optimization in Search-R1
+  authors:
+  - Yinuo Xu
+  - Shuo Lu
+  - Jianjie Cheng
+  - Meng Wang
+  - Qianlong Xie
+  - Xingxing Wang
+  - Ran He
+  - Jian Liang
   categories:
   - speculative_decoding
   novelty: low
@@ -1728,7 +2770,11 @@
   arxiv_id: '2603.03251'
   url: https://arxiv.org/abs/2603.03251
   source_type: paper
-  title: arXiv:2603.03251
+  title: Speculative Speculative Decoding
+  authors:
+  - Tanishq Kumar
+  - Tri Dao
+  - Avner May
   categories:
   - speculative_decoding
   novelty: low
