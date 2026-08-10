@@ -280,3 +280,54 @@ which lineup, which flags, or which era it was measured under.
 write, do not parse the prose. A recorded measurement should cite its artifact the way a dive
 records `claim_anchors` and a dependency records `depends_on`. Until then a second adapter would
 add volume without adding warrant, which is the opposite of what the substrate is for.
+
+---
+
+## CORRECTION to the section above: the 2.2% figure measured the wrong layer (2026-08-12)
+
+The section above concluded: *"The gap is not a missing reader. It is that our own measurements are
+recorded as prose too."* **That conclusion is withdrawn.** The premise measured `progress/` markdown
+— the NARRATION layer — and generalized it to the organisation's measurement discipline. The
+operator challenged it directly: autopilot, autokernel and the kernel-freeze procedure follow an
+explicit measurement constitution. They do. None of them records anything in progress markdown, so
+a statistic over progress markdown carries no information about them.
+
+This is the wrong-sample error, committed by the session cataloguing wrong-sample errors, in a
+document whose subject is provenance. It is recorded here rather than edited away, because the
+corrected number is less interesting than the fact that the method failed where it was being taught.
+
+**What the structured corpus actually looks like** (verified 2026-08-12):
+
+| Corpus | Count | Attested |
+|---|---:|---:|
+| `artifacts/operator/*.json` (ratifications) | 47 | **34 carry a sha256** |
+| research repo, measurement-shaped tracked json/jsonl | 4,562 | — |
+| `artifacts/**/manifest.json` | 14 | 6 `SEALED_FOR_OFFICIAL_SCORING` |
+
+A sealed manifest carries the constitution's full claim tuple, field for field:
+
+| `MEASUREMENT_POLICY.md` § The claim rule | sealed manifest field |
+|---|---|
+| protocol-id | `capture_schema_version` / `schema_version` |
+| n/reps | `arms.*.counts` |
+| date | `observational_provenance.sealed_at_utc` |
+| attestation ref | `runner_sha256`, `hashes_json_sha256`, `authority/*.sha256` |
+
+So `Q4 Witnessed` was never unreachable in principle. It was unreachable because **nothing read
+this directory.** Ingesting the six sealed manifests took `Witnessed` from 0 to 6 — the first
+decision-gating evidence the substrate has ever held, and it required no new schema, only an
+adapter pointed at records that already complied.
+
+**The corrected finding is narrower, and it survives.** Results that live only in progress prose
+really are unattested — 105 of 4,687 cite anything durable — and a progress adapter really would add
+volume without warrant. But that is a statement about **narration**, not about measurement. The two
+were conflated, and the conflation produced a false ceiling on the whole program.
+
+**And the adapter reproduced the bug it exists to detect.** Its first version keyed claims on the
+manifest directory's basename. On the real tree `sealed_package` names two different runs and
+`input` names three different ARMS of one run, so six sealed manifests folded into three claims —
+three arms of one A/B silently merged into a single belief. Fake identity: the same failure already
+fixed twice this session at the intake layer, now committed by the instrument built to catch it. It
+surfaced only because the output count was checked against the input count (`6 manifests -> 3
+claims`) instead of being read as a result. `tests/vidya/test_sealed_manifest.py` pins the
+uniqueness property on paths shaped like the ones that broke.

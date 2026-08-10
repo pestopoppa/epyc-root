@@ -217,23 +217,47 @@ Operator priority: an integrated solution that works, not novelty.
       Witnessed**, because spec §4.5 reserves Q4 for a protocol-admissible measurement with durable
       attestation and the only adapter reads literature. A quarter of the carrier is unreachable
       for a reason that is purely about which door the data came through ✅ 2026-08-11
-- [x] SC2 **Priced the retrofit before writing it** (the P2 discipline). Outside the index there are
-      23,298 magnitude tokens across 624 curated documents. But over `progress/`: 4,951 lines carry
-      a magnitude, **4,687 state a result, and only 105 (2.2%) cite anything durable** — and most of
-      those name a source file, not a measurement artifact. A progress adapter would double the
+- [x] SC2 **Priced the retrofit before writing it** (the P2 discipline). Over `progress/`: 4,951
+      lines carry a magnitude, **4,687 state a result, and only 105 (2.2%) cite anything durable** —
+      most naming a source file, not a measurement artifact. A progress adapter would double the
       corpus and every claim would top out at `Verified/Located`, gating nothing ✅ 2026-08-11
-- [ ] SC3 Instrument the WRITE for measurements, as `claim_anchors` did for dives and `depends_on`
-      did for dependencies: a recorded result should cite the artifact it came from. This is the
-      prerequisite for Q4 Witnessed ever being non-empty — a second adapter without it adds volume
-      without warrant
-- [ ] SC4 Ingest the evidence plane directly once SC3 exists. `execution_manifest.jsonl` and the
-      benchmark artifacts are already machine-readable with durable hashes, which is exactly the
-      shape `Attested`/`Witnessed` require — unlike prose. Note
-      `data/benchmark_artifact_inventory.json` is currently EMPTY (0 rows), which is its own finding
-- [ ] SC5 Decide whether wiki pages are claims at all. A wiki page is compiled FROM sources the
-      index already holds, so ingesting it risks counting one source twice — the same
-      double-counting the locator-based support fix exists to prevent. Likely `depends_on` edges
-      into the intake claims rather than claims of its own
+- [x] SC2-C **Corrected SC2's conclusion — it measured the wrong layer.** SC2 generalized a
+      progress-markdown statistic into "our own measurements are recorded as prose too". Operator
+      challenge: autopilot, autokernel and the kernel-freeze procedure follow an explicit
+      measurement constitution. They do, and none of them writes to progress markdown, so the
+      statistic said nothing about them. Verified structured corpus: **47 tracked ratification JSONs
+      (34 carrying a sha256), 4,562 measurement-shaped tracked json/jsonl in the research repo, 14
+      `artifacts/**/manifest.json` of which 6 are `SEALED_FOR_OFFICIAL_SCORING`**. The narrow
+      finding (prose narration is unattested) survives; the generalization to the measurement layer
+      is withdrawn ✅ 2026-08-12
+- [x] SC3 **Instrumented the WRITE for measurements** — `scripts/vidya/measurement_record.py`
+      implements `MEASUREMENT_POLICY.md` § The claim rule as a grading function rather than
+      paraphrasing it: no protocol → `Judged` (the constitution's OBSERVATION, never
+      decision-gating); protocol without attestation → `Verified/Located`; artifact named but
+      unhashed → `Witnessed/Anchored`; full tuple with the artifact present and hashed →
+      `Witnessed/Attested`. Every downgrade names its own cause. Validation refuses a record it
+      cannot grade honestly (category must be exactly one of OPTIMUM/BASELINE/CANDIDATE) ✅ 2026-08-12
+- [x] SC4 **Ingested the sealed-manifest corpus** — `scripts/vidya/adapters/sealed_manifest.py`.
+      A sealed manifest already carries the constitution's full tuple (`capture_schema_version` →
+      protocol, `arms.*.counts` → reps, `observational_provenance.sealed_at_utc` → date,
+      `runner_sha256`/`authority/*.sha256` → attestation). **Q4 Witnessed: 0 → 6.** Two refusals are
+      deliberate: an unsealed manifest is a run in progress, not a result; and a manifest whose named
+      artifacts are absent grades DOWN rather than being skipped, because a hash over a missing file
+      proves nothing ✅ 2026-08-12
+- [x] SC4-BUG **The adapter reproduced the fake-identity bug it exists to detect.** v1 keyed claims
+      on the manifest directory basename; on the real tree `sealed_package` names two runs and
+      `input` names three ARMS of one run, so 6 manifests folded into 3 claims and three arms of one
+      A/B merged into a single belief. Caught by checking output count against input count, not by
+      reading the output. Fixed to a path-relative identity, 12 bad frames retracted (9 collided + 3
+      superseded), uniqueness pinned by `tests/vidya/test_sealed_manifest.py` ✅ 2026-08-12
+- [ ] SC5 Wiki pages become `depends_on` edges into the intake claims they were compiled from, not
+      claims of their own — operator agreed 2026-08-11. A wiki page is compiled FROM sources the
+      index already holds, so ingesting it as a claim would count one source twice, the exact
+      double-counting the locator-keyed support fix exists to prevent
+- [ ] SC6 Scale sealed-manifest ingestion beyond `artifacts/**/manifest.json`. Only 14 manifests
+      live there against 4,562 measurement-shaped tracked files in the research repo; the other
+      formats (`execution_manifest.jsonl`, benchmark result json) are unread. Note
+      `data/benchmark_artifact_inventory.json` is EMPTY (0 rows), which is its own finding
 
 ### Promotion track — opened 2026-08-10 after reviewing the ITERATE verdict
 
