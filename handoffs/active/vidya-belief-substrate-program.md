@@ -251,9 +251,15 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       where the current table shows **−1.2**. Title updated to the current one, claim[4] marked
       `overturned` with the reason, audit note appended. Nobody touched this record and it became
       false anyway — the freshness failure the substrate exists for, in its purest form ✅ 2026-08-10
-- [ ] PR1b-upstream-drift Detect this class generally: an entry ingested against arXiv vN while the
-      paper is now at vM. Cheap to check (the API returns the current version), and intake-110 shows
-      the failure is silent. Scope: 1,068 entries, ~700 with an arXiv id
+- [x] PR1b-upstream-drift **Detector built and validated.** `scripts/vidya/upstream_drift.py`
+      batches the arXiv API and flags any entry whose paper was updated after our `ingested_date`.
+      First sweep over 120 arXiv entries: **8 drifted (6.7%)**, and it independently re-found
+      intake-110 — the case that motivated it — alongside SkillsBench (v4), HiSpec (v2) and
+      Speculative Speculative Decoding (v3). What it asserts is deliberately narrow and pinned by
+      test: drift means the source moved and nobody has looked since, NOT that the entry is wrong ✅ 2026-08-10
+- [ ] PR1b-drift-triage Triage the drifted entries the full sweep returns. Each needs a human to
+      compare our recorded claims against the current version — the detector can find them and
+      cannot judge them
 - [ ] PR2c-remaining Backfill `claim_corrections` on the other 26 `dive-overturned` entries. Needs
       whoever dived each one to say which claims they actually touched; guessing on their behalf is
       the failure the field exists to prevent

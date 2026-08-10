@@ -1889,14 +1889,14 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 102,
+      "closed": 103,
       "guarded": 0,
       "last_advanced": "2026-08-10",
       "open": 6,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 108
+      "total": 109
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
