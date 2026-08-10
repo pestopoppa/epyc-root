@@ -401,13 +401,25 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       not. Same family as the D1 `/doctor` fabrication. Marked `NOT IN INDEX` rather than
       repointed; inventing a target would repeat the failure. All four sit in the 2026-07-08
       batch — the same batch that produced the duplicate entries ✅ 2026-08-10
-- [ ] D16 101 entries (intake-001..~101, the whole 2026-03 seed batch) have a placeholder title
-      that is just their arXiv id, so any citation naming them by paper name looks like a mismatch.
-      Locatable and correct, only unlabelled — lower severity than the mis-stamps, but it is why
-      the citation audit could not verify labels like YaRN or Sarathi-Serve. Needs 101 metadata
-      fetches
-- [ ] D13c Ingest ADAS, Hyperagents, Self-Harness and ACE, or drop the claims resting on them.
-      rec-001 and rec-002 currently cite unbacked sources
+- [x] D16 All 101 placeholder titles resolved in one batched arXiv sweep (25 ids per request,
+      5 requests, zero unresolved), with author lists added alongside. Cleared four false positives
+      from the citation audit — YaRN, Sarathi-Serve, Cascade and SkillRL were correct citations
+      with no title to match against ✅ 2026-08-10
+- [x] D13c **All five phantom-cited sources ingested; two headline claims overturned.**
+      intake-1068 ADAS (2408.08435), 1069 Hyperagents (2603.19461), 1070 Self-Harness (2606.09498),
+      1071 ACE (2510.04618), 1072 RE-Bench (2411.15114) — each identified by a parallel subagent and
+      verified against primary source. Every paper was real; the CLAIMS were wrong. rec-001's
+      "LLM-as-judge benchmark design is optimizable" is supported by none of its three sources (all
+      three optimize harness or context against a FIXED benchmark) and is rewritten. rec-002's
+      "trajectory toward fully autonomous task generation" is supported by none of the lineage —
+      Hyperagents lists "a fixed task and evaluation distribution" among its own limitations — and
+      is rewritten to metacognitive self-modification ✅ 2026-08-10
+- [x] D13d **`research/f1-dgm-scoping-2026-07.md` scoped F1 work on a capability DGM does not
+      have**, taking "only the task-generation half" of a system with no task-generation half.
+      Premise-correction banner added at the section head; the scoping itself is left to its owner
+      to re-cut ✅ 2026-08-10
+- [ ] D13e Re-cut the F1 scoping now that DGM's task-generation premise is withdrawn. Owner
+      decision: what, if anything, of the F1 corpus plan survives
 - [x] D14 `research/recommendations.yaml` had never been parseable YAML — markdown headers and
       prose wrapped around an embedded list. Renamed to `research/recommendations.md`, which is
       what it is; 5 live references repointed, historical ones in `progress/` and

@@ -2,6 +2,8 @@
 
 Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous research literature (intake-779 through intake-797).
 
+> **Citation audit 2026-08-10.** Every `source:` line below was checked against the entry it names. Eight ids were wrong and are corrected; five sources were cited but had never been ingested and now exist as intake-1068..1072; two headline claims (rec-001, rec-002) were not supported by their own sources and are rewritten. The range above is a historical batch label — intake-784 and intake-797 were merged away on 2026-08-10, see [`intake_merge_map.md`](intake_merge_map.md).
+
 ## Recommendations
 
 - id: rec-001
@@ -76,7 +78,7 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 
 - id: rec-005
   title: "RE-Bench (METR) — agentic ML-engineering benchmark, NOT a reasoning-quality eval"
-  source: RE-Bench (NOT IN INDEX - intake-794 is DeepCode/PaperBench; ingest pending)
+  source: RE-Bench (intake-1072)
   category: benchmark_methodology
   priority: low
   description: >
@@ -164,5 +166,5 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 
 ## Cross-References
 - Handoffs: meta-harness-optimization.md, eval-tower-verification.md, autopilot-continuous-optimization.md, reasoning-compression.md, mi210-speed-campaign-summary.md, routing-intelligence.md, tri-role-coordinator-architecture.md
-- Intake entries: intake-779 through intake-797
+- Intake entries: intake-779 through intake-797 (batch label; 784 and 797 since merged — see `intake_merge_map.md`)
 - Prior work: SkillsBench v3 (intake-096), SkillRL (intake-092), EvoScientist (intake-108)

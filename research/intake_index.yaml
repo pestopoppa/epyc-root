@@ -58964,3 +58964,59 @@
     intake_entries:
     - intake-244
     - intake-1070
+- id: intake-1072
+  arxiv_id: '2411.15114'
+  url: https://arxiv.org/abs/2411.15114
+  source_type: paper
+  title: 'RE-Bench: Evaluating frontier AI R&D capabilities of language model agents against human experts'
+  authors:
+  - Hjalmar Wijk
+  - Tao Lin
+  - Joel Becker
+  - Sami Jawhar
+  - Neev Parikh
+  - Thomas Broadley
+  - Lawrence Chan
+  - Michael Chen
+  - Josh Clymer
+  - Jai Dhyani
+  - Elena Ericheva
+  - Katharyn Garcia
+  - Brian Goodrich
+  - Nikola Jurkovic
+  - Holden Karnofsky
+  - Megan Kinniment
+  - Aron Lajko
+  - Seraphina Nix
+  - Lucas Sato
+  - William Saunders
+  - Maksym Taran
+  - Ben West
+  - Elizabeth Barnes
+  categories:
+  - benchmark_methodology
+  - autonomous_research
+  novelty: high
+  relevance: medium
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-08-10'
+  verification: dive-verified
+  credibility_score: 6
+  key_claims:
+  - RE-Bench v1 is 7 open-ended ML research-engineering environments plus 71 eight-hour attempts by 61 human experts.
+  - 82 percent of expert attempts scored non-zero and 24 percent matched or beat the authors' reference solutions.
+  - The best agents scored 4x higher than human experts when both were capped at 2 hours per environment.
+  - 'Humans have better returns to time: they narrowly exceed the top agent at 8 hours and reach 2x its score at 32 hours.'
+  - Scoring is normalized per environment so 0 is the starting score and 1 is the reference solution — the human comparison happens at analysis time, not in the score itself.
+  - One environment is GPU kernel optimization in Triton (prefix sum, log-time scored); an agent wrote a faster kernel than any human expert on it.
+  techniques:
+  - Log-time scoring for behaviour-preserving runtime optimization tasks
+  - Score calibration where 0 = starting state and 1 = a strong reference solution
+  - Time-budget scaling curves (2h / 8h / 32h) instead of a single pass-fail number
+  - Best-of-k across attempts with human-expert baseline data collected under matched budgets
+  dive_corrections: '2026-08-10: ingested because rec-005 cited it with intake-794''s id (DeepCode/PaperBench) attached — a neighbouring entry, not this paper. The row''s own 2026-07-22 correction is VERIFIED against primary source: RE-Bench is agentic ML-engineering, not a reasoning/CoT eval. One tightening: ''scored against human expert baselines'' is loose — the score is normalized to a REFERENCE SOLUTION (0 = start, 1 = reference), with the human comparison made at analysis time. ADOPTION SCOPE: only 1 of 7 environments is a kernel task, and it is Triton on H100; porting to gfx90a invalidates the published human/model anchors that are the main reason to use it. The transferable part is the scoring PROTOCOL, not the benchmark as executed.'
+  cross_references:
+    intake_entries:
+    - intake-664
+    - intake-794
