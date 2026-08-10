@@ -3540,7 +3540,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T14:35:10Z",
+  "generated_at": "2026-08-10T16:09:48Z",
   "nodes": [
     {
       "age_days": 11,
@@ -4143,13 +4143,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 121,
+      "closed": 23,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-10",
-      "next_action": "PR2d-backfill \u2014 author `depends_on` on the 11 evidential citation edges the 60-edge sample found",
-      "open": 3,
+      "next_action": "SC6-LIVE \u2014 after autopilot next restarts, confirm `adapters/autopilot_journal.py` reports non-zero measured rows",
+      "open": 5,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -5703,13 +5703,13 @@
     {
       "age_days": null,
       "blocked": 0,
-      "closed": 10,
+      "closed": 11,
       "domain": "routing-and-optimization",
       "handoff": "dashboard-architecture-restructure.md",
       "id": "RTG-47",
       "last_advanced": null,
-      "next_action": "Operator eyeball pass of live /machine + /autopilot, then run old+new in parallel toward the Phase 1b deprecation call",
-      "open": 12,
+      "next_action": "Land fix-10 retention overlay; re-eyeball live \u2191/\u2193 under real load; run old+new in parallel toward the Phase 1b call",
+      "open": 16,
       "state": "active",
       "track": "dashboard architecture restructure"
     },

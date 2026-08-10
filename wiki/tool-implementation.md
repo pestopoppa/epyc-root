@@ -2,7 +2,7 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-07-16 (harness cooperation is now part of the tool-surface contract)
+**Last compiled**: 2026-08-10 (the dashboard plane rule — data contracts with their subsystem, pages/nav/registry with the hub — **supersedes** the 2026-07-05 transport-rule boundary recorded below; plus the shared nav registry, the absence-is-loud rendering discipline, and the one-assembly-path rule)
 **Sources**: 40 documents (2026-07-06 focused pass: AutoPilot dashboard regions-lock coherence and local planner provider hardening; 2026-07-05 full pass: project dashboard hub :8100 + recency/Blocked-routing fixes, AutoPilot dashboard live-tps repair, loops-and-dashboards audit, repo-readiness portfolio-L5 milestone + passive pickup launcher wiring, and 2026-07-04 tool-sentinel activation telemetry; prior 2026-07-03 corpus-augmented prompt lookup revalidation and AutoPilot planner-turn tool-use hint rendering, 2026-06-22 DCP context-assembler and stack-change guard cross-refs, 2026-06-20 OpenRouter subagent/Fusion server-tool contract patterns)
 
 ## Summary
@@ -15,7 +15,7 @@ The key architectural insight from the integration assessment is that **context 
 
 The broader tool ecosystem includes the LLM-Wiki pattern (intake-269, intake-277) for maintaining compiled knowledge bases accessible to coding agents -- now integrated as the project's own wiki system. AST-based code review (intake-330) achieves 8.2x token reduction over full-file review by analyzing semantic diffs rather than raw text. Production agent skill engineering patterns (intake-337) document workflows for building and testing agent skills in production environments.
 
-A recurring 2026-07-05 finding cuts across the project's monitoring tool surfaces: **dashboards built as liveness instruments do not answer "is this loop producing value?"** The loops-and-dashboards audit found both the AutoPilot dashboard (:8000) and the new project hub (:8100) well-engineered on freshness/liveness but blind on outcome KPIs (promotions, keepable rate, wasted-eval rate) and offering zero steering affordances (28 GET endpoints, 0 POST). The remediation pattern — outcome KPI + escalation rule per telemetry addition — is now the design bar for any new monitoring surface. Separately, the project gained a second first-class dashboard tool: a dependency-free stdlib hub on :8100 (handoff kanban, git-seeded progress timeline, kernel-R&D results page) run as an `orchestrator_stack.py` managed service, with the boundary rule *live orchestrator in-process state → :8000; artifact/file-backed and project-wide → :8100*.
+A recurring 2026-07-05 finding cuts across the project's monitoring tool surfaces: **dashboards built as liveness instruments do not answer "is this loop producing value?"** The loops-and-dashboards audit found both the AutoPilot dashboard (:8000) and the new project hub (:8100) well-engineered on freshness/liveness but blind on outcome KPIs (promotions, keepable rate, wasted-eval rate) and offering zero steering affordances (28 GET endpoints, 0 POST). The remediation pattern — outcome KPI + escalation rule per telemetry addition — is now the design bar for any new monitoring surface. Separately, the project gained a second first-class dashboard tool: a dependency-free stdlib hub on :8100 (handoff kanban, git-seeded progress timeline, kernel-R&D results page) run as an `orchestrator_stack.py` managed service, with the boundary rule *live orchestrator in-process state → :8000; artifact/file-backed and project-wide → :8100*. **That transport-based boundary was superseded on 2026-08-10 by the plane rule** — data contracts live with their subsystem, pages/nav/registry live with the hub — see the 2026-08-10 compiled update at the end of this page.
 
 A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered content-type detector (ICSE 2025, Apache 2.0, PyPI magika 1.0.2). The model is a 1 MB shallow byte-embedding MLP — not a CNN as commonly described — using three 512-byte windows (beginning, middle, end), 128-dim byte embeddings, two dense GELU layers, and global max-pooling over 200+ content types. Per-class confidence thresholds are calibrated to fix precision at 99% and maximize recall; below-threshold predictions fall back to `txt` or `unknown`, which explains the 99% F1 headline while synthetic OOD classes score 84–94%. Live measurements on the EPYC host showed 225 ms cold-start (onnxruntime init) and 2.8 ms/file amortized, with a confirmed JSON→JSONL misclassification. The deep dive concluded Magika is **not_applicable** to EPYC: the document-ingestion pipeline operates on a five-format, already-labeled corpus (arXiv PDF, GitHub MD, HTML, HuggingFace MD, user-uploaded PDF) where format is declared by URL pattern, HTTP Content-Type, or extension. No existing pipeline stage requires generic filetype detection, and adding ~80 MB of onnxruntime dependencies for zero measurable accuracy gain is pure negative value. Magika is worth reconsidering only if the pipeline begins ingesting truly arbitrary binary corpora.
 
@@ -407,3 +407,99 @@ The root governance validators now reflect the split-repo layout instead of assu
 The wrap-up command and Codex wrap-up skill were updated together so handoff compaction behavior is consistent across Claude and Codex surfaces. The important tooling semantics: compaction is manual-wrap-up-only; the trigger is first-screen readability, not line count; partial splits create or extend a sibling while editing the active handoff in place; repeat compactions update the newest sibling's date stamp; and wrap-up output must include a `## Index pruning / handoff compaction` table when any split/prune/archive happened.
 
 Sources: [`scripts/validate/validate_doc_drift.py`](../scripts/validate/validate_doc_drift.py), [`scripts/validate/validate_agents_references.py`](../scripts/validate/validate_agents_references.py), [`wrap-up.md`](../.claude/commands/wrap-up.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).
+
+## Compiled Update — 2026-08-10: dashboards split by plane, not by transport
+
+> The settled architecture from the dashboard restructure. The fix list is still moving; the
+> decisions below are ratified and are what the next monitoring surface must be built against.
+
+- **The ownership rule compiled above is a *transport* rule, and its premise has eroded.** The recorded
+  boundary — *live orchestrator in-process state / SSE → the API's own page; artifact- or file-backed
+  and project-wide → the hub* — governs **which process serves bytes, not what shares a page**, which
+  is exactly how one page accreted into a 7,855-line route file plus a 7,649-line single HTML document
+  mixing three concerns (a global machine/live-inference monitor, the autopilot loop's planning and
+  governance surface, and orchestrator serving telemetry). The premise is now largely false as well:
+  the topology and region-lock builders are `/proc`/`ps` scans verified network-free, the taps tail
+  rotating event files, and the autopilot panels read journal and state files. What genuinely *is*
+  in-process is per-worker fragmented — i.e. the part a fidelity audit already says should not be
+  trusted as served. **Superseded by the plane rule below.**
+
+- **The plane rule (ratified 2026-08-10)**: *data contracts live with the subsystem they observe;
+  pages, navigation and the surface registry live with the governance hub; every new dashboard is a
+  registry entry plus a health probe plus a freshness envelope; no unregistered pages.* Repos own
+  **data endpoints and export contracts, not pages** — the exporter versions with the code it measures,
+  so schema authority stays where the numbers are made. The proof it works here is the kernel-R&D
+  split (a producer in the research repo exports schema'd JSON after fsync, the hub renders it, the
+  seam is tested, and the hub never imports producer code); the counter-proof is that the one repo
+  which owned a whole page grew the monolith. Cross-origin is the enabling detail: a hub page fetches
+  the API's JSON/SSE **directly from the browser** under a path-scoped CORS allowlist, so there is no
+  proxy, the hub stays stdlib, the processes stay independent, and when the API is down its panels go
+  honestly dead instead of the page vanishing.
+
+- **A global monitor whose data plane lives inside the most-restarted process on the host is an
+  architecture smell, not merely an information-architecture one.** Under the optimization loop the API
+  restarts every ~20–25 minutes per trial, so the machine monitor's delivery path blinks precisely when
+  the machine is busiest — and a transport watchdog existed to paper over it. Naming that is what
+  turned a layout question into an ownership decision. The matching discipline is that the standalone
+  exporter was **deferred** pending observed blink-out evidence: state the coupling, do not build ahead
+  of the evidence.
+
+- **A constraint, not a preference, chose the larger option.** The recommendation was the minimal split
+  (hub owns the global page; the process-specific page stays with its process). Full view-plane
+  consolidation won because the operator depends on the old page *right now*: the minimal option's
+  "slim the monolith in place" step surgically edits the live surface, while consolidation never
+  touches it — both replacement pages are built fresh alongside it and the old page is deleted wholesale
+  at operator-declared deprecation, with its data routes retained. **When the incumbent surface must
+  stay live, the option that never edits it can be cheaper than the option that does less work.**
+
+- **Navigation drift had one root cause and therefore one fix.** There was no shared nav component and
+  no machine-readable directory of dashboards, so every page hand-copied its own `<nav>` and cross-server
+  URLs were re-derived ad hoc in at least three places — one of them shipping a same-origin `href="/"`
+  rewritten by JS, which silently pointed at the wrong server whenever the script did not run. The fix
+  is a `registry.json` SSOT of surfaces (`id`, `title`, `port`, `path`, `owner_repo`, `health_path`,
+  `blurb`) served as an API with per-`(port, health_path)` loopback probes behind a short TTL cache,
+  plus **one generated nav asset with the registry inlined**, adopted by every page including the
+  cross-origin one — where a `<script>` bootstrap works precisely because script tags are CORS-exempt,
+  with an `onerror` fallback so the page never loses its one exit if the hub is down. Once the registry
+  exists, drift becomes a **testable property**: a bidirectional routes↔registry check, an assertion
+  that every page carries the nav, and a ban on the retired link patterns.
+  One deliberate exclusion: the probes stay **out of** the health fold, because a down neighbour must
+  not restart-loop the hub that reports on it.
+
+- **Absence must be loud, and the honest states are the deliverable.** Render "slots `?` = unknown, not
+  zero"; distinguish a lease held from decoding actually happening; keep stale panels **readable** with
+  a bold "no data — last seen …" pill instead of greying them out (greying makes an operator squint at
+  data that may still be true); surface a fan-out that answered 0/19 loudly as a machine-truth question
+  rather than rendering zeros; and when all-time and windowed KPIs disagree sharply, render **both**,
+  because choosing one would mislead. Staleness thresholds are set from the *observed* frame cadence
+  rather than a flat constant, or the honest state flaps against a slower producer.
+
+- **Two assembly paths for one payload is a defect class, not an incident.** A 32,851-token prefill
+  rendered no progress counter because the SSE stream ran its own parse-and-enrich while only the
+  unwatched polling endpoint attached the enrichment. Collapsing both onto one assembly function fixed
+  it and incidentally recovered off-window holder handling the stream had silently lacked. From the same
+  buildout, two honesty rules worth generalizing: attach live counters **only from fresh samples and
+  never to completed requests** (a completed request on a shared port was caught wearing a running
+  request's counters), and mark shared-port aggregates `ambiguous` rather than guessing.
+
+- **Derive substrate from process evidence, never from names.** GPU/CPU labelling comes from the server
+  binary path, `/proc` argv0, mapped HIP runtime libraries and a model-label hint — because a role named
+  `architect_general` is a GPU role and nothing in its name says so, and the image-generation server
+  turned out to be genuinely CPU-built on this host (no HIP libraries mapped, no `/dev/kfd`), contra the
+  obvious assumption. A service is never allowed to claim "CPU" from the mere absence of a marker, since
+  a Python wrapper's child process holds the evidence.
+
+- **Two divergent freshness grammars is a live cost, and merging the code is not the fix.** Both servers
+  independently grew panel→producer registries with freshness envelopes in different vocabularies
+  (`fresh/aging/stale/missing` with reporting/content axes versus `fresh/aging/stale/dead` with
+  gating/informational). Both are tested, so the proposal is to harmonize the **wire vocabulary only**
+  and leave the implementations separate — the actual cost today is that every new dashboard must pick
+  one of two grammars and the two health folds cannot be read uniformly.
+
+### Source References
+
+- [`handoffs/active/dashboard-architecture-restructure.md`](../handoffs/active/dashboard-architecture-restructure.md) — the audit, the ownership answer, and the ratified D1–D3 decision package
+- [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the buildout record, the deploy checks and the eyeball-pass findings
+- [`handoffs/active/autopilot-dashboard-fidelity-audit-2026-07-22.md`](../handoffs/active/autopilot-dashboard-fidelity-audit-2026-07-22.md) — the data-truth defects that remain owned separately from this information-architecture work
+- [`handoffs/active/loops-and-dashboards-audit-2026-07-05.md`](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md) — the liveness-vs-value instrument finding this plan builds on
+- [`handoffs/active/benchmark-results-dashboard.md`](../handoffs/active/benchmark-results-dashboard.md) — the producer/renderer contract used as the working precedent for the data-plane split

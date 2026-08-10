@@ -1,0 +1,2310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPYC — Machine</title>
+<style>
+  /* Palette + visual language mirror dashboard/static/handoffs.html — the hub
+     discipline: no frameworks, no CDN, hand-rolled JS/SVG, one self-contained file. */
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --dim:#6e7681; --accent:#60a5fa;
+    --good:#34d399; --warn:#d29922; --amber:#f0883e; --bad:#f85149; --none:#6e7681;
+    --gpu:#a855f7; --gpu2:#c084fc;   /* GPU substrate — the legacy page's purple */
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,BlinkMacSystemFont,
+    "Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  header{
+    position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;
+    padding:11px 20px;background:rgba(13,17,23,.94);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);flex-wrap:wrap;
+  }
+  header h1{font-size:16px;margin:0;font-weight:650;letter-spacing:.2px;white-space:nowrap}
+  header .sub{color:var(--muted);font-size:12px}
+  nav#epyc-nav{display:flex;gap:14px;align-items:center;font-size:13px;flex-wrap:wrap}
+  .hspacer{margin-left:auto}
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 8px;
+    border-radius:20px;border:1px solid var(--border);color:var(--muted);white-space:nowrap;
+    font-variant-numeric:tabular-nums;
+  }
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--dim);flex:none}
+  .badge.live{color:var(--good);border-color:#1f4d38} .badge.live .dot{background:var(--good);animation:pulse 1.6s ease-in-out infinite}
+  .badge.poll{color:var(--accent);border-color:#1f3a5a} .badge.poll .dot{background:var(--accent)}
+  .badge.warnb{color:var(--warn);border-color:#4d3f14} .badge.warnb .dot{background:var(--warn)}
+  .badge.deadb{color:var(--bad);border-color:#4d1f1c} .badge.deadb .dot{background:var(--bad)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.28}}
+
+  main{padding:16px 20px 60px;max-width:1700px;margin:0 auto}
+
+  /* global dead banner — absence must be loud (AK6) */
+  .deadbanner{
+    display:none;border:1px solid var(--bad);background:rgba(248,81,73,.09);
+    border-radius:9px;padding:11px 14px;margin-bottom:16px;font-size:12.5px;line-height:1.55;
+  }
+  .deadbanner.on{display:block}
+  .deadbanner b{color:var(--bad)}
+
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+  .col12{grid-column:span 12} .col8{grid-column:span 8} .col6{grid-column:span 6}
+  .col4{grid-column:span 4} .col5{grid-column:span 5} .col7{grid-column:span 7}
+  @media(max-width:1180px){.col8,.col6,.col4,.col5,.col7{grid-column:span 12}}
+
+  section.panel{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    display:flex;flex-direction:column;min-width:0;
+  }
+  section.panel > h2{
+    font-size:12px;margin:0;padding:9px 13px;border-bottom:1px solid var(--border);
+    color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;
+    display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  }
+  section.panel > h2 .pmeta{margin-left:auto;font-weight:400;text-transform:none;letter-spacing:0;
+    font-size:11px;color:var(--dim);font-family:var(--mono)}
+  .pbody{padding:11px 13px 13px;min-width:0}
+  /* banner (not dimming) when the panel's data is stale; never render clean over
+     a gap. Content stays fully readable (operator eyeball pass 2026-08-10: the
+     greying was the annoyance, the banner is the signal). */
+  section.panel.stale{border-color:#4d3320}
+  section.panel.dead{border-color:#4d1f1c}
+  .pbanner{display:none;font-size:11.5px;padding:7px 13px;border-bottom:1px solid var(--border);
+    font-family:var(--mono);line-height:1.5;font-weight:700}
+  .pbanner.on{display:block}
+  .pbanner.warn{color:var(--warn);background:rgba(210,153,34,.07)}
+  .pbanner.bad{color:var(--bad);background:rgba(248,81,73,.07)}
+  .pbanner .why{color:var(--dim)}
+
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .muted{color:var(--muted)} .dimtx{color:var(--dim)}
+  .good{color:var(--good)} .warn{color:var(--warn)} .bad{color:var(--bad)} .amber{color:var(--amber)}
+  .empty{color:var(--dim);font-size:12px;font-style:italic;padding:4px 0}
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;padding:1px 7px;border-radius:11px;
+    border:1px solid var(--border);color:var(--muted);white-space:nowrap;font-family:var(--mono)}
+  .chip.ok{color:var(--good);border-color:#1f4d38}
+  .chip.wr{color:var(--warn);border-color:#4d3f14}
+  .chip.bd{color:var(--bad);border-color:#4d1f1c}
+  .chip.ac{color:var(--accent);border-color:#1f3a5a}
+  .chiprow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+  .loud{border:1px solid var(--amber);background:rgba(240,136,62,.10);color:var(--amber);
+    border-radius:7px;padding:7px 10px;font-size:11.5px;font-family:var(--mono);margin-bottom:9px;line-height:1.55}
+  .loud b{color:var(--amber)}
+
+  /* topology — deliberately dense (operator eyeball pass 2026-08-10: "a lot of
+     dead space"). Tighter padding, a smaller model line and a narrower column
+     floor so a 33-node fleet reads as one board instead of a scroll. */
+  .nodes{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(176px,1fr))}
+  .node{border:1px solid var(--border);border-left-width:3px;border-radius:6px;background:var(--panel2);
+    padding:4px 7px 5px;min-width:0}
+  .node .nh{display:flex;align-items:baseline;gap:5px;min-width:0}
+  .node .nm{font-size:11.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .node .np{font-size:10px;color:var(--dim);font-family:var(--mono);margin-left:auto;flex:none}
+  .node .nmod{font-size:9.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    margin-top:0;line-height:1.35}
+  .node .nst{font-size:10px;font-family:var(--mono);margin-top:2px;display:flex;gap:6px;flex-wrap:wrap}
+  /* role-family cards (substrate → role grouping): one card per family, one
+     .irow per partition instance */
+  .node.fam{grid-column:span 1}
+  .node.fam .nh .chip{margin-left:auto}   /* family cards have no header port — the chip takes that slot */
+  .node .irow{font-size:10px;font-family:var(--mono);margin-top:2px;display:flex;gap:6px;
+    flex-wrap:wrap;align-items:baseline;border-top:1px dashed var(--border);padding-top:2px;line-height:1.4}
+  .node .irow:first-of-type{border-top:0}
+  .node .ishape{color:var(--accent);font-weight:600;min-width:34px}
+  section.panel[data-panel="topology"] .pbody{padding:8px 11px 10px}
+  section.panel[data-panel="topology"] .chiprow{margin-bottom:6px}
+  .node .irow .np{margin-left:0}
+  .node.st-up{border-left-color:var(--good)} .node.st-bad{border-left-color:var(--bad)}
+  .node.st-aux{border-left-color:#2d6a4f} .node.st-off{border-left-color:var(--none);opacity:.62}
+  .node.st-orch{border-left-color:var(--accent)}
+  .node.busy{box-shadow:inset 0 0 0 1px rgba(52,211,153,.35)}
+  /* GPU substrate — the legacy page's purple. Applies to model cards AND
+     service cards: substrate is a property of the node, not of its kind. */
+  .node.gpu{border-left-color:var(--gpu)}
+  .chip.gpu{color:var(--gpu2);border-color:#6b21a8}
+  .gputx{color:var(--gpu2)}
+  .grouplabel{font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;
+    margin:9px 0 4px;font-weight:600}
+  .grouplabel:first-child{margin-top:0}
+  .grouplabel.gpu{color:var(--gpu2)}
+
+  /* region locks */
+  table.lk{border-collapse:collapse;font-family:var(--mono);font-size:11px;width:auto;min-width:100%}
+  table.lk th,table.lk td{border:1px solid var(--border);padding:3px 7px;text-align:center;white-space:nowrap}
+  table.lk th{background:var(--panel2);color:var(--muted);font-weight:600}
+  table.lk th.rl{text-align:left;font-weight:600;color:var(--text)}
+  table.lk td.rl{text-align:left;color:var(--text)}
+  table.lk td.held{background:rgba(240,136,62,.16);color:var(--amber)}
+  table.lk td.free{color:var(--dim)}
+  table.lk td.na{color:#3d444d}
+  table.lk tr.glob td.rl,table.lk tr.glob th.rl{color:var(--accent)}
+  .scrollx{overflow-x:auto;max-width:100%}
+  .occ{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));margin-top:10px}
+  .occ .oc{border:1px solid var(--border);border-radius:6px;padding:5px 7px;background:var(--panel2);font-family:var(--mono);font-size:11px}
+  .occ .oc .r{font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .occ .oc.busy{border-color:#5a3a1a}
+  .occ .oc.gpu{border-left:3px solid var(--gpu)}
+  .occ .oc .np{font-size:10px;color:var(--dim);font-family:var(--mono)}
+  .seclabel.gpu{color:var(--gpu2)}
+  .subnote{font-size:10.5px;color:var(--dim);line-height:1.5;margin-top:5px}
+  .lines{font-family:var(--mono);font-size:11.5px;line-height:1.75}
+  .lines .k{color:var(--dim);display:inline-block;min-width:132px}
+
+  /* tap — the cards ARE the outcomes cards (.cards/.ocard); only the little
+     state dot and the demoted raw byte tail are local to this panel. */
+  .tmeta{font-size:10.5px;color:var(--dim);font-family:var(--mono);line-height:1.55;word-break:break-word}
+  .ldot{width:7px;height:7px;border-radius:50%;background:var(--dim);flex:none;display:inline-block}
+  .ldot.on{background:var(--good);animation:pulse 1.6s ease-in-out infinite}
+  .ldot.wr{background:var(--warn)} .ldot.bd{background:var(--bad)}
+  details.rawtap{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
+  details.rawtap>summary{cursor:pointer;font-size:11px;color:var(--muted);font-family:var(--mono)}
+  details.rawtap>summary:hover{color:var(--text)}
+  .tapwrap{position:relative;margin-top:8px}
+  pre.tap{
+    margin:0;background:#0a0d12;border:1px solid var(--border);border-radius:8px;
+    padding:9px 11px;height:330px;overflow:auto;font-family:var(--mono);font-size:11px;
+    line-height:1.5;white-space:pre-wrap;word-break:break-word;color:#a9b4c0;
+  }
+  pre.tap::-webkit-scrollbar{width:9px} pre.tap::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+  .unpin{position:absolute;right:14px;bottom:12px;display:none;background:var(--panel2);
+    color:var(--accent);border:1px solid var(--accent);border-radius:14px;padding:3px 11px;
+    font:11px var(--mono);cursor:pointer}
+  .unpin.on{display:block}
+
+  /* bars */
+  .barrow{display:flex;align-items:center;gap:7px;font-size:11px;margin:2px 0;font-family:var(--mono)}
+  .barrow .lb{min-width:126px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .barrow .bt{flex:1;height:8px;background:#0d1117;border:1px solid var(--border);border-radius:4px;overflow:hidden;min-width:40px}
+  .barrow .bt>i{display:block;height:100%;background:var(--accent)}
+  .barrow .bt>i.g{background:var(--good)} .barrow .bt>i.w{background:var(--warn)} .barrow .bt>i.b{background:var(--bad)}
+  .barrow .nv{min-width:64px;text-align:right;color:var(--muted)}
+  .seclabel{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin:9px 0 3px}
+  .seclabel:first-child{margin-top:0}
+
+  /* outcomes */
+  .cards{display:grid;gap:7px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+  .ocard{border:1px solid var(--border);border-left-width:3px;border-radius:7px;background:var(--panel2);padding:6px 9px}
+  .ocard.ok{border-left-color:var(--good)} .ocard.bad{border-left-color:var(--bad)} .ocard.mid{border-left-color:var(--warn)}
+  .ocard .t{font-family:var(--mono);font-size:11px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+  .ocard .o{font-size:11px;font-weight:600;margin-top:2px}
+  .ocard .obj{font-size:10.5px;color:var(--dim);margin-top:3px;max-height:32px;overflow:hidden}
+  /* per-role tap sub-rows inside a task card — the decode detail a task-level
+     card cannot carry */
+  .ocard .subs{margin-top:5px;border-top:1px dashed var(--border);padding-top:4px}
+  .ocard .srow{display:flex;gap:8px;align-items:baseline;font-family:var(--mono);font-size:10px;
+    padding:1px 0;border-radius:4px}
+  .ocard .srow.clickable:hover{background:#2a3240}
+  .ocard .srow .sr{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none;max-width:52%}
+  .ocard .srow .sv{color:var(--muted);margin-left:auto;text-align:right;white-space:nowrap}
+  /* ↑/↓ live progress: the arrow is dim, the number carries the signal */
+  .arwg{color:var(--dim)}
+  .arwv{color:var(--muted)}
+  /* clickable task cards — the affordance has to be visible or nobody clicks */
+  .ocard.clickable,.chip.clickable{cursor:pointer}
+  .ocard.clickable:hover{background:#232a34;border-color:var(--accent)}
+  .chip.clickable:hover{color:var(--text);border-color:var(--accent)}
+  footer.note{margin-top:22px;font-size:11px;color:var(--dim);line-height:1.7}
+
+  /* task-detail modal (same family as the hub's handoffs page) */
+  .modal{position:fixed;inset:0;z-index:50;display:none;align-items:flex-start;justify-content:center;
+    background:rgba(1,4,9,.72);padding:40px 16px;overflow-y:auto}
+  .modal.open{display:flex}
+  .modal-body{background:var(--panel);border:1px solid var(--border);border-radius:12px;position:relative;
+    width:min(980px,100%);max-height:calc(100vh - 80px);display:flex;flex-direction:column;
+    box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .modal-head{padding:14px 18px;border-bottom:1px solid var(--border);border-radius:12px 12px 0 0}
+  .modal-head h2{margin:0 0 8px;font-size:15px;line-height:1.35;padding-right:34px;font-family:var(--mono)}
+  .modal .close{position:absolute;top:9px;right:12px;background:none;border:none;color:var(--muted);
+    font-size:24px;line-height:1;cursor:pointer;padding:2px 8px;border-radius:6px}
+  .modal .close:hover{color:var(--text);background:var(--panel2)}
+  .modal-scroll{overflow-y:auto;padding:14px 18px 18px}
+  .dbox{background:#0a0d12;border:1px solid var(--border);border-radius:7px;padding:8px 10px;
+    font-family:var(--mono);font-size:11px;line-height:1.55;color:#a9b4c0;white-space:pre-wrap;
+    word-break:break-word;max-height:340px;overflow:auto}
+  .dbox.live{border-color:#1f4d38}
+  .dlab{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 4px}
+  .dlab:first-child{margin-top:0}
+  .evrow{font-family:var(--mono);font-size:10.5px;line-height:1.6;display:flex;gap:8px;
+    border-bottom:1px solid #1c2129;padding:2px 0}
+  .evrow .ts{color:var(--dim);flex:none} .evrow .ev{color:var(--accent);flex:none;min-width:132px}
+  .evrow .dt{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+</style>
+</head>
+<body>
+<header>
+  <h1>Machine — hardware + live inference</h1>
+  <span class="sub">global view · driver-agnostic · data plane <span class="mono">:8000</span></span>
+  <!-- Cross-dashboard links belong to the ONE shared nav (registry-driven, RTG-47);
+       this page deliberately hand-rolls none of them. -->
+  <nav id="epyc-nav"></nav>
+  <span class="hspacer"></span>
+  <span class="badge" id="conn-badge"><span class="dot"></span><span id="conn-text">connecting…</span></span>
+  <span class="badge" id="frame-badge"><span class="dot"></span><span id="frame-text">frame —</span></span>
+</header>
+<script defer src="/nav.js"></script>
+
+<main>
+  <div class="deadbanner" id="dead-banner">
+    <b>orchestrator API (:8000) unreachable from this page</b> — the API may be down
+    (llama servers can still be running), or CORS is not yet enabled
+    (pending API reload — RTG-47). The legacy page at
+    <a id="legacy-link2" href="#" target="_blank" rel="noopener">:8000/dashboard</a> is unaffected.
+    <div class="dimtx" id="dead-detail" style="margin-top:5px;font-family:var(--mono);font-size:11px"></div>
+  </div>
+
+  <!-- Panel order follows the operator's reading order (2026-08-10): what the
+       machine is doing RIGHT NOW first, then what it decided and produced, then
+       the fleet it did it on, then the scheduling substrate underneath. -->
+  <div class="grid">
+    <section class="panel col12" data-panel="tap">
+      <h2>Live inference tap
+        <span class="badge" id="tap-dot"><span class="dot"></span><span id="tap-dot-text">idle</span></span>
+        <span class="pmeta"></span></h2>
+      <div class="pbanner"></div>
+      <div class="pbody">
+        <div class="chiprow" id="tap-chips"></div>
+        <div id="tap-cards"><div class="empty">waiting for tap frames…</div></div>
+        <!-- The byte tail is a debugging instrument, not the panel's headline —
+             it stays, collapsed, under the cards. -->
+        <details class="rawtap" id="tap-raw">
+          <summary>raw stream (byte tail)</summary>
+          <div class="tapwrap">
+            <pre class="tap" id="tap-pre">waiting for tap frames…</pre>
+            <button class="unpin" id="tap-unpin" type="button">↓ follow live</button>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="panel col4" data-panel="decisions">
+      <h2>Routing decisions<span class="pmeta"></span></h2>
+      <div class="pbanner"></div>
+      <div class="pbody"><div class="empty">connecting to :8000…</div></div>
+    </section>
+
+    <section class="panel col4" data-panel="outcomes">
+      <h2>Recent outcomes<span class="pmeta"></span></h2>
+      <div class="pbanner"></div>
+      <div class="pbody"><div class="empty">connecting to :8000…</div></div>
+    </section>
+
+    <section class="panel col4" data-panel="process">
+      <h2>Process status — what drives the machine<span class="pmeta"></span></h2>
+      <div class="pbanner"></div>
+      <div class="pbody"><div class="empty">connecting to :8000…</div></div>
+    </section>
+
+    <section class="panel col12" data-panel="topology">
+      <h2>Topology — fleet nodes<span class="pmeta"></span></h2>
+      <div class="pbanner"></div>
+      <div class="pbody"><div class="empty">connecting to :8000…</div></div>
+    </section>
+
+    <section class="panel col7" data-panel="locks">
+      <h2>Region locks &amp; occupancy<span class="pmeta"></span></h2>
+      <div class="pbanner"></div>
+      <div class="pbody"><div class="empty">connecting to :8000…</div></div>
+    </section>
+
+    <section class="panel col5" data-panel="contention">
+      <h2>Contention gate<span class="pmeta"></span></h2>
+      <div class="pbanner"></div>
+      <div class="pbody"><div class="empty">connecting to :8000…</div></div>
+    </section>
+  </div>
+
+  <footer class="note">
+    Data plane: <span class="mono">:8000/dashboard/api/*</span> + <span class="mono">/dashboard/events/*</span>,
+    fetched cross-origin straight from the browser. This page renders only what those endpoints report —
+    a panel that cannot reach its producer says so rather than rendering an empty-but-clean state,
+    and "reported empty" is always distinguished from "no data".
+  </footer>
+</main>
+
+<div class="modal" id="task-modal" aria-hidden="true">
+  <div class="modal-body" role="dialog" aria-modal="true" aria-labelledby="tm-title">
+    <div class="modal-head">
+      <button class="close" id="tm-close" type="button" aria-label="close">×</button>
+      <h2 id="tm-title">task</h2>
+      <div class="chiprow" id="tm-meta" style="margin-bottom:0"></div>
+    </div>
+    <div class="modal-scroll" id="tm-body"><div class="empty">loading…</div></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ------------------------------------------------------------------ helpers */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const num = v => (typeof v === "number" && isFinite(v));
+function fmtAge(s) {
+  if (!num(s)) return "—";
+  s = Math.max(0, s);
+  if (s < 60) return Math.round(s) + "s";
+  if (s < 3600) return (s / 60).toFixed(1) + "m";
+  if (s < 86400) return (s / 3600).toFixed(1) + "h";
+  return (s / 86400).toFixed(1) + "d";
+}
+const trunc = (s, n) => { s = String(s == null ? "" : s); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
+
+/* --------------------------------------------------- substrate: CPU vs GPU */
+/* The producer derives node.substrate ("gpu" | "cpu") from the llama-server
+   binary path (build-hip ⇒ GPU), so it is the ONLY signal that gets a role like
+   architect_general right — nothing in its name or port says MI210. The old
+   port/name heuristic survives strictly as a fallback for frames (or node kinds)
+   that carry no substrate yet; it will read those as CPU, which is a known
+   transitional under-report, never an assertion. */
+function isGpuNode(n) {
+  if (!n || typeof n !== "object") return false;
+  const s = String(n.substrate == null ? "" : n.substrate).toLowerCase();
+  if (s === "gpu") return true;
+  if (s === "cpu") return false;
+  return n.port === 8802 || /gpu|mi210/i.test([n.kind, n.role, n.label, n.id].filter(Boolean).join(" "));
+}
+/* Role family: strip the partition suffix (".q0") and numeric clone suffix
+   ("_3") so embedder_1..5 collapse onto one family. */
+const famKey = r => String(r == null ? "" : r).replace(/\.q\d+$/, "").replace(/_\d+$/, "");
+const byPort = (a, c) => (((a && a.port) || 0) - ((c && c.port) || 0));
+/* A topology node's PARTITION SHAPE (full / half0 / half1 / qN). Role suffixes
+   still say ".qN" while the fleet actually runs halves, so the truth comes from
+   the lock frame's instance list, indexed by that suffix. Shared by the topology
+   cards and the locks table — both must name an instance the same way or the
+   two panels quietly disagree about which box is which. */
+function partShapeFor(n, byRole) {
+  const m = String((n && n.role) || "").match(/\.q(\d+)$/);
+  const inst = ((byRole || {})[famKey(n && n.role)] || {}).instances || [];
+  if (!m) return inst.length > 1 || inst.some(i => i.shape === "full") ? "full" : null;
+  const parts = inst.filter(i => i.shape && i.shape !== "full").map(i => i.shape);
+  return parts[Number(m[1])] || ("q" + m[1]);
+}
+
+/* role → shape → { port, active, total, known }: how much of each running
+   instance's allowed concurrency is in use, joined from the topology frame
+   (node.port) through display_activity. `known` is false whenever the /slots
+   fan-out did not answer for that port — an unanswered poll contributes "?" to
+   the aggregate and never a silent 0. */
+function fleetSlotsByRoleShape(byRole) {
+  const out = {};
+  const snap = latestSnap;
+  const nodes = (snap && snap.topology && Array.isArray(snap.topology.nodes)) ? snap.topology.nodes : [];
+  const act = (snap && (snap.display_activity || snap.activity)) || {};
+  const unans = new Set(Array.isArray((snap && snap.slots_poll_meta || {}).unanswered_ports)
+    ? snap.slots_poll_meta.unanswered_ports : []);
+  for (const n of nodes) {
+    if (!n || n.kind !== "llama-server" || !n.running) continue;
+    const shape = partShapeFor(n, byRole);
+    if (!shape) continue;
+    const fam = famKey(n.role);
+    const a = act[String(n.port)];
+    const known = !unans.has(n.port) && !!a && num(a.n_total);
+    if (!out[fam]) out[fam] = {};
+    out[fam][shape] = {
+      port: n.port,
+      active: (known && num(a.n_active)) ? a.n_active : null,
+      total: known ? a.n_total : null,
+      known: !!known,
+    };
+  }
+  return out;
+}
+/* "2/4", or "?" when that instance's port never answered. */
+function slotText(s) {
+  if (!s || !s.known) return "?";
+  return (s.active == null ? "?" : s.active) + "/" + s.total;
+}
+
+/* The orchestrator data plane. Same host, different port — cross-origin, so every
+   call here depends on :8000 serving CORS headers for this origin (RTG-47). */
+const API = location.protocol + "//" + location.hostname + ":8000";
+$("#legacy-link2").href = API + "/dashboard";
+
+/* The snapshot endpoint fans out to every llama-server /slots; when ports are
+   unreachable that fan-out burns its own timeout budget and the document has been
+   measured at ~10s. A 4s abort would kill every fallback poll, so the snapshot
+   gets its own budget while the small endpoints keep the tight one. */
+const T_SMALL = 4000, T_SNAPSHOT = 15000;
+
+async function getJSON(url, timeoutMs) {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), timeoutMs || T_SMALL);
+  try {
+    const r = await fetch(url, { cache: "no-store", mode: "cors", signal: ac.signal });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return await r.json();
+  } finally { clearTimeout(timer); }
+}
+
+/* ------------------------------------------------- per-panel liveness ledger */
+/* Every panel tracks its OWN last success. A panel is never allowed to keep
+   showing an old render silently: past its threshold it dims and says how old. */
+const PANELS = {};
+function reg(name, staleMs) {
+  const sec = document.querySelector(`section.panel[data-panel="${name}"]`);
+  PANELS[name] = {
+    name, sec, body: $(".pbody", sec), banner: $(".pbanner", sec), meta: $(".pmeta", sec),
+    staleMs, baseStale: staleMs, lastOk: 0, fails: 0, lastErr: "", everOk: false,
+  };
+  return PANELS[name];
+}
+["topology", "locks", "contention", "tap", "decisions", "outcomes", "process"].forEach(n => reg(n, 12000));
+PANELS.process.staleMs = PANELS.process.baseStale = 26000; // polled every 10s: flag after two missed polls
+PANELS.locks.staleMs = PANELS.locks.baseStale = 14000;     // polled every 5s
+PANELS.contention.staleMs = PANELS.contention.baseStale = 14000;
+
+let lastAnyOk = 0, anySeenFail = false, lastGlobalErr = "";
+function ok(name) {
+  const p = PANELS[name]; if (!p) return;
+  p.lastOk = Date.now(); p.fails = 0; p.lastErr = ""; p.everOk = true;
+  lastAnyOk = p.lastOk;
+}
+function fail(name, err) {
+  const p = PANELS[name]; if (!p) return;
+  p.fails++; p.lastErr = String((err && err.message) || err || "error");
+  anySeenFail = true; lastGlobalErr = p.name + ": " + p.lastErr;
+}
+function setMeta(name, txt) { const p = PANELS[name]; if (p) p.meta.textContent = txt || ""; }
+
+/* ---------------------------------------------------------- snapshot plane */
+/* Belt-and-suspenders, mirroring the legacy page: SSE first, timeout-bounded
+   polling whenever the stream is not delivering. */
+let es = null, esOpenedAt = 0, esRetryAt = 0, lastFrameMs = 0, frameSource = "";
+let snapInFlight = false, latestSnap = null;
+let cadenceMs = 0;                       // EMA of observed frame interval
+
+function applySnapshot(snap, source) {
+  if (!snap || typeof snap !== "object") return;
+  if (snap.error) { fail("topology", snap.error); return; }
+  const now = Date.now();
+  if (lastFrameMs) {
+    const dt = now - lastFrameMs;
+    if (dt > 200 && dt < 120000) cadenceMs = cadenceMs ? (cadenceMs * 0.7 + dt * 0.3) : dt;
+  }
+  lastFrameMs = now; frameSource = source; latestSnap = snap;
+  /* Frames are pushed at up to 2Hz, but the real cadence is whatever the snapshot
+     build costs (the /slots fan-out dominates). Widen the staleness threshold to
+     the OBSERVED cadence instead of flapping "no data" between healthy frames —
+     and say the widened threshold out loud in the panel meta. */
+  const widened = Math.min(60000, Math.max(12000, Math.round(cadenceMs * 2.5)));
+  for (const n of ["topology", "decisions", "outcomes"]) PANELS[n].staleMs = widened;
+
+  renderTopology(snap);
+  renderDecisions(snap);
+  renderOutcomes(snap);
+  if (snap.region_locks) { renderLocks(snap.region_locks, snap.placement_telemetry, "frame"); }
+  renderProcessApi(snap);          // api_lifecycle half of the process panel
+  ok("topology"); ok("decisions"); ok("outcomes");
+}
+
+function sseHealthy() {
+  return !!es && es.readyState === 1 && lastFrameMs > 0 &&
+    (Date.now() - lastFrameMs) < Math.max(20000, cadenceMs * 2.5);
+}
+function openStream() {
+  try { es = new EventSource(API + "/dashboard/events/stream"); }
+  catch (e) { es = null; fail("topology", e); return; }
+  esOpenedAt = Date.now();
+  es.onopen = () => { esRetryAt = 0; };
+  es.onmessage = ev => {
+    let snap = null;
+    try { snap = JSON.parse(ev.data); } catch (e) { fail("topology", "frame parse: " + e.message); return; }
+    applySnapshot(snap, "sse");
+  };
+  es.onerror = () => {
+    /* A CORS-rejected stream closes for good (readyState 2) and never retries on
+       its own — reopen on a slow timer and let polling carry the page meanwhile. */
+    if (es && es.readyState === 2) {
+      fail("topology", "SSE closed (CORS or API down)");
+      try { es.close(); } catch (e) { }
+      es = null; esRetryAt = Date.now() + 10000;
+    }
+    pollSnapshot();
+  };
+}
+async function pollSnapshot() {
+  if (snapInFlight) return;
+  snapInFlight = true;
+  try { applySnapshot(await getJSON(API + "/dashboard/api/snapshot", T_SNAPSHOT), "poll"); }
+  catch (e) { fail("topology", e); fail("decisions", e); fail("outcomes", e); }
+  finally { snapInFlight = false; }
+}
+
+/* ------------------------------------------------------------ 1. topology */
+function nodeState(n) {
+  if (n.kind === "orchestrator") return { cls: "st-orch", label: "orchestrator API" };
+  const exp = !!n.expected, run = !!n.running;
+  if (exp && run) return { cls: "st-up", label: "up" };
+  if (exp && !run) return { cls: "st-bad", label: "expected · NOT running" };
+  if (!exp && run) return n.kind === "llama-server"
+    ? { cls: "st-bad", label: "ROGUE · unexpected llama-server" }
+    : { cls: "st-aux", label: "aux · running" };
+  return { cls: "st-off", label: "aux · stopped" };
+}
+function renderTopology(snap) {
+  const b = PANELS.topology.body;
+  const nodes = (snap.topology && Array.isArray(snap.topology.nodes)) ? snap.topology.nodes : null;
+  if (!nodes) { b.innerHTML = '<div class="empty">payload carried no topology.nodes — reported empty</div>'; return; }
+
+  const prov = snap.stack_numa_mode_provenance || (snap.topology || {}).stack_numa_mode_provenance || {};
+  const mode = prov.mode || snap.stack_numa_mode || "?";
+  const dis = Array.isArray(prov.disagreements) ? prov.disagreements : [];
+  const poll = snap.slots_poll_meta || {};
+  const unanswered = new Set(Array.isArray(poll.unanswered_ports) ? poll.unanswered_ports : []);
+  const perRole = (snap.topology_activity && snap.topology_activity.per_role) || {};
+  const act = snap.display_activity || snap.activity || {};
+  const busyByRole = snap.live_busy_by_role || {};
+
+  let h = '<div class="chiprow">';
+  h += `<span class="chip ac">numa <b>${esc(mode)}</b></span>`;
+  h += `<span class="chip">source ${esc(prov.source || "?")}</span>`;
+  for (const k of ["realized", "manifest", "env"]) {
+    if (prov[k] == null) continue;
+    const differs = String(prov[k]) !== String(mode);
+    h += `<span class="chip ${differs ? "wr" : ""}">${k} ${esc(prov[k])}</span>`;
+  }
+  const ta = snap.topology_activity || {};
+  const fb = ta.fleet_slots_busy, ft = ta.fleet_slots_total;
+  h += (num(fb) && num(ft))
+    ? `<span class="chip ${fb > 0 ? "ok" : ""}">fleet slots ${fb}/${ft}</span>`
+    : `<span class="chip wr">fleet slots unobserved</span>`;
+  h += "</div>";
+
+  /* The env-derived mode once inverted the whole fleet picture — a disagreement
+     between manifest / realized / env is an incident, not a footnote. */
+  if (dis.length) {
+    h += `<div class="loud"><b>⚠ NUMA-mode provenance disagreement</b> — sources do not agree on the fleet's mode: ` +
+      dis.map(d => `<b>${esc(typeof d === "string" ? d : JSON.stringify(d))}</b>`).join(" · ") +
+      ` <span class="dimtx">(effective mode shown above is <b>${esc(mode)}</b> from <b>${esc(prov.source || "?")}</b>)</span></div>`;
+  }
+  const answered = poll.answered, ports = poll.ports;
+  if (num(answered) && num(ports)) {
+    const to = poll.timed_out || 0;
+    if (answered === 0 && ports > 0) {
+      h += `<div class="loud"><b>slots unobserved this frame</b> — 0/${ports} ports answered /slots (${to} timed out in ${poll.duration_s ?? "?"}s). ` +
+        `Per-node slot counts below are <b>unknown</b>, not zero.</div>`;
+    } else if (to > 0) {
+      h += `<div class="loud">slots fan-out partial — ${answered}/${ports} answered, ${to} timed out; ` +
+        `those nodes show <b>slots ?</b> rather than 0.</div>`;
+    }
+  }
+
+  const groups = { llama: [], service: [], expected: [], other: [] };
+  for (const n of nodes) {
+    if (n.kind === "llama-server") groups.llama.push(n);
+    else if (n.kind === "expected-stack-server") groups.expected.push(n);
+    else if (n.kind === "service") groups.service.push(n);
+    else groups.other.push(n);
+  }
+  const instBits = n => {
+    const a = act[String(n.port)] || null;
+    const base = String(n.role || "").split(".")[0];
+    const pr = perRole[base] || {};
+    const busy = busyByRole[n.role];
+    const bits = [];
+    if (unanswered.has(n.port) || !a) bits.push('<span class="warn">slots ?</span>');
+    else bits.push(`<span class="${a.n_active > 0 ? "good" : "dimtx"}">slots ${a.n_active}/${a.n_total}</span>`);
+    if (num(busy) && busy > 0) bits.push(`<span class="good">busy ${busy}</span>`);
+    if (num(pr.last_activity_age_s)) bits.push(`<span class="dimtx">last ${fmtAge(pr.last_activity_age_s)}</span>`);
+    /* tok/s is a STANDING field on every instance row — an absent rate has to
+       read as "— tps", not as a missing column, or a silent role looks the same
+       as a fast one. It is avg_tps_recent: a trailing per-ROLE average over
+       recent completions, so it is neither instantaneous nor per-instance, and
+       it deliberately does not distinguish prefill from decode. The tooltip
+       says so rather than letting the bare number imply more than it is. */
+    bits.push(num(pr.avg_tps_recent) && pr.avg_tps_recent > 0
+      ? `<span class="dimtx" title="role recent average (trailing, across completions) — not this instance's instantaneous rate">${pr.avg_tps_recent.toFixed(1)} tps</span>`
+      : `<span class="dimtx" title="no recent completed decode for this role — rate unknown, not zero">— tps</span>`);
+    return bits;
+  };
+  /* A GPU chip + purple left border, on model cards AND service cards — a
+     service can be GPU-resident too (whisper / tts / sd_server), and the
+     operator reads substrate off the colour before reading anything else. */
+  const gpuChip = '<span class="chip gpu">GPU</span>';
+  const card = n => {   // still used for expected/services/control-plane sections
+    const st = nodeState(n);
+    const busy = busyByRole[n.role];
+    const gpu = isGpuNode(n);
+    const bits = (n.kind === "llama-server" || n.kind === "expected-stack-server") ? instBits(n) : [];
+    const alias = Array.isArray(n.aliases) && n.aliases.length ? ` <span class="dimtx">+${esc(n.aliases.join(","))}</span>` : "";
+    return `<div class="node ${st.cls}${gpu ? " gpu" : ""}${num(busy) && busy > 0 ? " busy" : ""}" title="${esc(n.id || "")} · ${esc(n.model || "")}${gpu ? " · GPU substrate" : ""}">
+      <div class="nh"><span class="nm">${esc(n.label || n.role || n.id)}</span>${gpu ? gpuChip : ""}<span class="np">:${esc(n.port)}</span></div>
+      <div class="nmod">${esc(trunc(n.model || "—", 46))}${alias}</div>
+      <div class="nst"><span class="${st.cls === "st-bad" ? "bad" : st.cls === "st-up" ? "good" : "dimtx"}">${esc(st.label)}</span>${bits.join("")}</div>
+    </div>`;
+  };
+  const section = (label, list) => list.length
+    ? `<div class="grouplabel">${esc(label)} · ${list.length}</div><div class="nodes">${list.sort(byPort).map(card).join("")}</div>` : "";
+
+  /* llama fleet: substrate (CPU/GPU) → role-family cards (operator eyeball pass
+     2026-08-10). One card per role family; the model is named ONCE per card; the
+     partition instances (full / half0 / half1 — real shapes from region_locks
+     by_role, since role suffixes still say ".qN" while today's instances are
+     halves) are rows inside it; numeric clone roles (embedder_1..) collapse into
+     one card. Aliases are chips, never extra cards. */
+  const lockRoles = (snap.region_locks && snap.region_locks.by_role) || _lastByRole || {};
+  const partShapeOf = n => partShapeFor(n, lockRoles);
+  const familyCard = mem => {
+    mem.sort(byPort);
+    const lead = mem.find(n => !/\.q\d+$/.test(n.role || "")) || mem[0];
+    const fam = famKey(lead.role);
+    const gpu = mem.some(isGpuNode);
+    const aliases = Array.from(new Set(mem.flatMap(n => Array.isArray(n.aliases) ? n.aliases : [])));
+    const anyBusy = mem.some(n => num(busyByRole[n.role]) && busyByRole[n.role] > 0);
+    const worst = mem.map(nodeState).some(s => s.cls === "st-bad");
+    const rows = mem.map(n => {
+      const st = nodeState(n);
+      const shape = partShapeOf(n);
+      const sub = String(n.role || "").startsWith(fam) ? String(n.role).slice(fam.length) : n.role;
+      const label = shape || (sub ? sub.replace(/^[._]/, "") : "full");
+      return `<div class="irow" title="${esc(n.id || "")} · role ${esc(n.role)}">` +
+        `<span class="ishape">${esc(label)}</span><span class="np">:${esc(n.port)}</span>` +
+        `<span class="${st.cls === "st-bad" ? "bad" : st.cls === "st-up" ? "good" : "dimtx"}">${esc(st.label)}</span>` +
+        instBits(n).join("") + `</div>`;
+    }).join("");
+    return `<div class="node fam ${worst ? "st-bad" : "st-up"}${gpu ? " gpu" : ""}${anyBusy ? " busy" : ""}"${gpu ? ' title="GPU substrate"' : ""}>
+      <div class="nh"><span class="nm">${esc(fam)}${mem.length > 1 ? ` <span class="dimtx">×${mem.length}</span>` : ""}</span>${gpu ? gpuChip : ""}</div>
+      <div class="nmod">${esc(trunc(lead.model || "—", 52))}${aliases.length ? ` <span class="dimtx">+${esc(aliases.join(","))}</span>` : ""}</div>
+      ${rows}
+    </div>`;
+  };
+  const fams = { cpu: new Map(), gpu: new Map() };
+  for (const n of groups.llama) {
+    const side = isGpuNode(n) ? fams.gpu : fams.cpu;
+    const k = famKey(n.role);
+    if (!side.has(k)) side.set(k, []);
+    side.get(k).push(n);
+  }
+  const famSection = (label, m, gpu) => m.size
+    ? `<div class="grouplabel${gpu ? " gpu" : ""}">${esc(label)}</div><div class="nodes">` +
+      Array.from(m.keys()).sort().map(k => familyCard(m.get(k))).join("") + "</div>" : "";
+  const up = groups.llama.filter(n => n.running).length;
+  const rogue = groups.llama.filter(n => n.running && !n.expected).length;
+  const head = `llama fleet — ${up}/${groups.llama.length} running${rogue ? ` · ${rogue} ROGUE` : ""}`;
+  h += famSection(`${head} · CPU (${Array.from(fams.cpu.values()).flat().length})`, fams.cpu, false);
+  h += famSection(`GPU (${Array.from(fams.gpu.values()).flat().length})`, fams.gpu, true);
+  h += section("expected but not started", groups.expected);
+  h += section("services", groups.service);
+  h += section("control plane", groups.other);
+  b.innerHTML = h;
+
+  const missing = groups.expected.length;
+  setMeta("topology", `${nodes.length} nodes · ${up} llama up${missing ? ` · ${missing} missing` : ""} · via ${frameSource}`);
+}
+
+/* --------------------------------------------------- 2. region locks panel */
+let locksSource = "";
+/* Latest by_role from either locks source — the topology panel reads instance
+   SHAPES (full/half0/half1) from it so partition labels match machine truth. */
+let _lastByRole = null, _lastByRoleAt = 0;
+/* Map an instance's region span to its real shape name: today's lockable
+   regions are machine quarters, but INSTANCES are full/halves — the operator
+   thinks in instances, so quarters are detail (tooltips), never the axis. */
+function spanLabel(regions) {
+  const r = Array.isArray(regions) ? Array.from(new Set(regions)).sort() : [];
+  const j = r.join("+");
+  if (r.length === 4) return "full";
+  if (j === "q0+q1") return "half0";
+  if (j === "q2+q3") return "half1";
+  if (r.length === 1) return r[0] + " (quarter)";
+  return j || "?";
+}
+function renderLocks(rl, telemetry, source) {
+  const b = PANELS.locks.body;
+  if (!rl || typeof rl !== "object") { b.innerHTML = '<div class="empty">no region-lock payload</div>'; return; }
+  locksSource = source;
+  const entries = Array.isArray(rl.entries) ? rl.entries : [];
+  const byRole = (rl.by_role && typeof rl.by_role === "object") ? rl.by_role : {};
+  const occ = rl.occupancy || {};
+  const perRegion = occ.per_region || {};
+  const coh = rl.coherence || {};
+
+  let h = '<div class="chiprow">';
+  h += `<span class="chip ${rl.per_region_locks_enabled ? "ok" : "wr"}">per-region locks ${rl.per_region_locks_enabled ? "on" : "OFF"}</span>`;
+  h += `<span class="chip ${rl.matrix_loaded ? "ok" : "wr"}">matrix ${rl.matrix_loaded ? "loaded" : "not loaded"}</span>`;
+  const cstat = String(coh.status || "unknown");
+  h += `<span class="chip ${cstat === "coherent" ? "ok" : "bd"}">scan ${esc(cstat)}</span>`;
+  const lr = rl.lock_root || {};
+  if (lr.path) h += `<span class="chip ${lr.suspicious_test_root || lr.valid_for_production === false ? "bd" : ""}">root ${esc(lr.path)}</span>`;
+  h += "</div>";
+
+  if (lr.suspicious_test_root || lr.valid_for_production === false) {
+    h += `<div class="loud"><b>lock root not valid for production</b> — ${esc(lr.issue || "flagged by the producer")}</div>`;
+  }
+
+  /* holders that hold a lease without decoding = off-window / eval-lane holders */
+  const tel = telemetry || {};
+  const leaseRoles = Array.isArray(tel.lease_roles) ? tel.lease_roles : [];
+  const busyRoles = Array.isArray(tel.busy_roles) ? tel.busy_roles : [];
+  if (leaseRoles.length || busyRoles.length) {
+    const offWindow = leaseRoles.filter(r => !busyRoles.includes(r));
+    h += '<div class="chiprow">';
+    for (const r of busyRoles) h += `<span class="chip ok">decoding ${esc(r)}</span>`;
+    for (const r of offWindow) h += `<span class="chip wr">lease held, not decoding · ${esc(r)}</span>`;
+    h += "</div>";
+  }
+
+  if (Object.keys(byRole).length) { _lastByRole = byRole; _lastByRoleAt = Date.now(); }
+
+  /* INSTANCE-granularity table (operator eyeball pass 2026-08-10): columns are
+     the fleet's real instance shapes (full / half0 / half1 today), never the
+     lockable quarter-regions those instances span — quarters live in tooltips.
+     Falls back to the raw region axis only when by_role carries no instances. */
+  const roleNames = Object.keys(byRole).sort();
+  const hasInstances = roleNames.some(r => Array.isArray((byRole[r] || {}).instances)
+    && byRole[r].instances.length);
+  if (!entries.length && !hasInstances) {
+    h += '<div class="empty">reported empty — the producer returned zero lock entries</div>';
+  } else if (hasInstances) {
+    const shapeRank = s => s === "full" ? 0
+      : /^half\d+$/.test(s) ? 1 + Number(s.slice(4))
+      : /^q\d+$/.test(s) ? 10 + Number(s.slice(1)) : 99;
+    const shapes = Array.from(new Set(roleNames.flatMap(r =>
+      ((byRole[r] || {}).instances || []).map(i => i.shape).filter(Boolean))))
+      .sort((a, c) => shapeRank(a) - shapeRank(c));
+    const cellFor = {};
+    for (const e of entries) cellFor[e.role + "|" + e.region] = e;
+    let t = '<div class="scrollx"><table class="lk"><thead><tr><th class="rl">role</th>' +
+      shapes.map(s => `<th>${esc(s)}</th>`).join("") + '<th title="concurrency slots in use, summed over the role\'s running instances">slots</th></tr></thead><tbody>';
+    /* What the always-visible tail column reports is USE, not ownership: how
+       many of each instance's allowed concurrency slots are busy. Lock truth is
+       not deleted — held instances still show their pids in the cell, and the
+       row's holding count moves into this column's tooltip. */
+    const slotsIdx = fleetSlotsByRoleShape(byRole);
+    for (const role of roleNames) {
+      const br = byRole[role] || {};
+      const wired = br.wired !== false;
+      const inst = Array.isArray(br.instances) ? br.instances : [];
+      const active = new Set(br.active_instance_idxs || []);
+      let holding = 0, used = 0, tot = 0, unknown = 0, anyKnown = false;
+      let row = `<tr><td class="rl">${esc(role)}${wired ? "" : ' <span class="dimtx">(unwired)</span>'}</td>`;
+      for (const s of shapes) {
+        const i = inst.find(x => x.shape === s);
+        if (!i) { row += '<td class="na">—</td>'; continue; }
+        const span = Array.isArray(i.regions) ? i.regions : [];
+        const heldCells = span.map(rg => cellFor[role + "|" + rg])
+          .filter(e => e && e.held && (e.holder_instance_idxs || []).includes(i.idx));
+        const pids = Array.from(new Set(heldCells.flatMap(e => e.holder_pids || [])));
+        const tags = Array.from(new Set(heldCells.map(e =>
+          (e.lock_payload && e.lock_payload.request_tag) || "").filter(Boolean)));
+        const sl = (slotsIdx[role] || {})[s] || null;
+        const slTx = slotText(sl);
+        const slUsed = (sl && sl.known && num(sl.active)) ? sl.active : 0;
+        if (sl && sl.known) { used += slUsed; tot += sl.total; anyKnown = true; } else unknown++;
+        const tip = `spans ${span.join("+") || "?"}` +
+          ` · slots ${slTx}` + (sl && sl.port != null ? ` on :${sl.port}` : "") +
+          (heldCells.length ? ` · holds ${heldCells.length}/${span.length} regions` : "") +
+          (tags.length ? ` · tag ${tags.join(",")}` : "") +
+          (i.launch_selected ? " · launch-selected" : "");
+        if (heldCells.length) {
+          holding++;
+          row += `<td class="held" title="${esc(tip)}">${esc(pids.join(",") || "held")}` +
+            (heldCells.length < span.length ? ` <span class="warn">${heldCells.length}/${span.length}</span>` : "") + "</td>";
+        } else if (slUsed > 0) {
+          /* slots busy reads as activity far better than the word "active" */
+          row += `<td class="amber" title="${esc(tip)}">${esc(slTx)}</td>`;
+        } else if (active.has(i.idx)) {
+          row += `<td class="amber" title="${esc(tip)}">active</td>`;
+        } else {
+          row += `<td class="free" title="${esc(tip)}">${sl && !sl.known ? '<span class="warn">?</span>' : "·"}</td>`;
+        }
+      }
+      const aggTip = `${anyKnown ? used + " of " + tot + " concurrency slots in use" : "no instance answered /slots"}` +
+        (unknown ? ` · ${unknown} instance${unknown === 1 ? "" : "s"} unobserved` : "") +
+        ` · holds ${holding}/${inst.length} instance region lock${inst.length === 1 ? "" : "s"}`;
+      row += `<td class="${used > 0 ? "amber" : anyKnown ? "dimtx" : "warn"}" title="${esc(aggTip)}">` +
+        (anyKnown ? `${unknown ? "≥" : ""}${used}/${tot}` : "?") + "</td></tr>";
+      t += row;
+    }
+    t += "</tbody></table></div>";
+    const gl = (rl.global_lock && Array.isArray(rl.global_lock.regions)) ? rl.global_lock.regions : [];
+    const glHeld = gl.filter(g => g.held);
+    if (gl.length) {
+      t += glHeld.length
+        ? `<div class="lines"><span class="k">GLOBAL</span><span class="amber">${esc(spanLabel(glHeld.map(g => g.region)))}</span>` +
+          ` <span class="dimtx" title="regions ${esc(glHeld.map(g => g.region).join("+"))}">pids ${esc(Array.from(new Set(glHeld.flatMap(g => g.holder_pids || []))).join(",") || "?")}</span></div>`
+        : '<div class="lines dimtx"><span class="k">GLOBAL</span>free</div>';
+    }
+    h += t;
+  } else {
+    /* fallback: raw region axis (by_role carried no instance shapes) */
+    const regions = Array.from(new Set(entries.map(e => e.region))).sort();
+    const roles = Array.from(new Set(entries.map(e => e.role))).sort();
+    const cellFor = {};
+    for (const e of entries) cellFor[e.role + "|" + e.region] = e;
+    let t = '<div class="scrollx"><table class="lk"><thead><tr><th class="rl">role</th>' +
+      regions.map(r => `<th>${esc(r)}</th>`).join("") + "<th>held</th></tr></thead><tbody>";
+    for (const role of roles) {
+      let held = 0;
+      let row = `<tr><td class="rl">${esc(role)}</td>`;
+      for (const rg of regions) {
+        const e = cellFor[role + "|" + rg];
+        if (!e) { row += '<td class="na">—</td>'; continue; }
+        if (e.held) {
+          held++;
+          row += `<td class="held" title="${esc(e.lock_path || "")}">${esc((e.holder_pids || []).join(",") || "held")}</td>`;
+        } else row += '<td class="free">·</td>';
+      }
+      row += `<td class="${held ? "amber" : "dimtx"}">${held}/${regions.length}</td></tr>`;
+      t += row;
+    }
+    t += "</tbody></table></div>";
+    h += t;
+  }
+
+  /* GPU occupancy (operator eyeball pass 2026-08-10). GPU roles hold no CPU
+     region lock — they surface only in non_lock_roles — so this panel used to be
+     structurally blind to the MI210: the machine's fastest substrate was the one
+     thing the occupancy view could not see. The nodes come from the latest
+     topology frame, because the locks endpoint has no substrate view of its own;
+     when that frame is old the subsection says so rather than implying "now". */
+  const gpuNodes = ((latestSnap && latestSnap.topology && Array.isArray(latestSnap.topology.nodes))
+    ? latestSnap.topology.nodes : []).filter(isGpuNode).slice().sort(byPort);
+  if (gpuNodes.length) {
+    const gact = (latestSnap.display_activity || latestSnap.activity || {});
+    const gbusy = latestSnap.live_busy_by_role || {};
+    const gpoll = latestSnap.slots_poll_meta || {};
+    const unans = new Set(Array.isArray(gpoll.unanswered_ports) ? gpoll.unanswered_ports : []);
+    const frameAge = lastFrameMs ? (Date.now() - lastFrameMs) / 1000 : null;
+    h += `<div class="seclabel gpu">GPU occupancy · ${gpuNodes.length}` +
+      (num(frameAge) && frameAge > 30 ? ` <span class="dimtx">— topology frame ${esc(fmtAge(frameAge))} old</span>` : "") +
+      '</div><div class="occ">';
+    /* A GPU model has allowed concurrency slots exactly like a CPU one — that
+       occupancy is the reason this subsection exists, so it is the PRIMARY
+       figure, sitting next to the role rather than buried on the third line.
+       Same honesty rule as everywhere: an unanswered /slots poll is "?", never
+       a silent 0/0. */
+    for (const n of gpuNodes) {
+      const a = gact[String(n.port)];
+      const busy = gbusy[n.role];
+      const known = !unans.has(n.port) && !!a && num(a.n_total);
+      const used = (known && num(a.n_active)) ? a.n_active : null;
+      const slots = known
+        ? `<b class="${used > 0 ? "amber" : "dimtx"}">${used == null ? "?" : used}/${a.n_total}</b>`
+        : '<b class="warn">slots ?</b>';
+      const busyTx = num(busy)
+        ? `<span class="${busy > 0 ? "good" : "dimtx"}">busy ${busy}</span>`
+        : '<span class="dimtx">busy ?</span>';
+      const hot = (num(busy) && busy > 0) || (num(used) && used > 0);
+      h += `<div class="oc gpu${hot ? " busy" : ""}" title="${esc((n.id || n.role || "") + " · " + (n.model || n.kind || "") +
+        " · slots " + (known ? (used == null ? "?" : used) + "/" + a.n_total : "unobserved"))}">` +
+        `<div><b class="gputx">${esc(n.label || n.role || n.id || "?")}</b> ${slots} <span class="np">:${esc(n.port)}</span></div>` +
+        `<div class="r">${esc(trunc(n.model || (n.kind === "service" ? "service" : "—"), 34))}</div>` +
+        `<div class="r">${busyTx}</div></div>`;
+    }
+    h += "</div>";
+    h += '<div class="subnote">GPU roles hold no CPU region locks — shown here for occupancy only.</div>';
+  }
+
+  /* Device occupancy at INSTANCE granularity (operator eyeball pass
+     2026-08-10). The producer reports one row per lockable QUARTER, but four
+     identical quarter rows are ONE full-machine holder, not four holders —
+     rendering them separately quadruples the apparent occupancy. Regions that
+     carry an identical roles-set collapse into a single row labelled with the
+     instance shape they span; the quarter-level truth moves into the tooltip. */
+  const rkeys = Object.keys(perRegion).sort();
+  if (rkeys.length) {
+    const rgroups = new Map();
+    for (const k of rkeys) {
+      const o = perRegion[k] || {};
+      const roles = (Array.isArray(o.roles) ? o.roles.slice() : []).map(String).sort();
+      const gk = roles.join("|");
+      if (!rgroups.has(gk)) rgroups.set(gk, { roles, regions: [] });
+      rgroups.get(gk).regions.push(k);
+    }
+    h += '<div class="seclabel">device occupancy</div><div class="occ">';
+    const ordered = Array.from(rgroups.values())
+      .sort((a, c) => String(a.regions[0] || "").localeCompare(String(c.regions[0] || "")));
+    for (const g of ordered) {
+      let active = 0, cap = 0, capKnown = true;
+      const loads = [], tips = [];
+      for (const rg of g.regions) {
+        const o = perRegion[rg] || {};
+        const ra = num(o.active) ? o.active : 0;
+        active += ra;
+        if (num(o.capacity)) cap += o.capacity; else capKnown = false;
+        if (num(o.load)) loads.push(o.load);
+        tips.push(`${rg} ${ra}/${num(o.capacity) ? o.capacity : "?"}` + (num(o.load) ? ` load ${o.load.toFixed(2)}` : ""));
+      }
+      let loadTx = "";
+      if (loads.length) {
+        const lo = Math.min.apply(null, loads), hi = Math.max.apply(null, loads);
+        const mean = loads.reduce((s, v) => s + v, 0) / loads.length;
+        loadTx = ` <span class="dimtx">load ${hi - lo < 0.005 ? mean.toFixed(2) : lo.toFixed(2) + "–" + hi.toFixed(2)}</span>`;
+      }
+      h += `<div class="oc ${active > 0 ? "busy" : ""}" title="${esc(tips.join(" · "))}">` +
+        `<div><b class="${active > 0 ? "amber" : "dimtx"}">${esc(spanLabel(g.regions))}</b> ${active}/${capKnown ? cap : "?"}${loadTx}</div>` +
+        `<div class="r">${esc(g.roles.join(", ") || "free")}</div></div>`;
+    }
+    h += "</div>";
+  }
+
+  const oe = Array.isArray(occ.entries) ? occ.entries : [];
+  if (oe.length) {
+    const nowS = num(rl.now) ? rl.now : (Date.now() / 1000);
+    h += '<div class="seclabel">holders</div><div class="lines">';
+    for (const e of oe.slice(0, 8)) {
+      const age = num(e.started_at) ? fmtAge(nowS - e.started_at) : "?";
+      const tag = e.request_tag ? ` <span class="chip wr">tag ${esc(e.request_tag)}</span>` : "";
+      h += `<div><span class="k">${esc(e.role)}#${esc(e.instance_idx)}</span>pid ${esc(e.pid)} · ` +
+        `<span title="regions ${esc((e.regions || []).join("+"))}">${esc(spanLabel(e.regions))}</span>` +
+        ` · held ${esc(age)}${e.shared ? ' · <span class="dimtx">shared</span>' : ""}${tag}</div>`;
+    }
+    h += "</div>";
+  } else if (entries.length) {
+    h += '<div class="seclabel">holders</div><div class="empty">reported empty — no region is currently occupied</div>';
+  }
+
+  const nlr = rl.non_lock_roles || {};
+  const nlk = Object.keys(nlr).sort();
+  if (nlk.length) {
+    h += `<div class="seclabel">no lock domain (${nlk.length})</div><div class="lines dimtx">` +
+      nlk.map(k => `${esc(k)}<span class="dimtx">:${esc((nlr[k].ports || []).join(","))}</span>`).join(" · ") + "</div>";
+  }
+  b.innerHTML = h;
+  setMeta("locks", `via ${source}`);
+  ok("locks");
+}
+async function pollLocks() {
+  try {
+    const d = await getJSON(API + "/dashboard/api/region_locks", T_SMALL);
+    /* Lease/decoding chips come from the snapshot's placement telemetry, which is
+       a DIFFERENT producer on a different cadence — only fold it in while it is
+       genuinely current, so a fresh lock grid never carries a stale overlay. */
+    const telFresh = lastFrameMs && (Date.now() - lastFrameMs) < 30000;
+    renderLocks(d, telFresh ? (latestSnap && latestSnap.placement_telemetry) : null, "api");
+  } catch (e) { fail("locks", e); }
+}
+
+/* --------------------------------------------------------- 3. contention */
+async function pollContention() {
+  let d;
+  try { d = await getJSON(API + "/dashboard/api/contention", T_SMALL); }
+  catch (e) { fail("contention", e); return; }
+  const b = PANELS.contention.body;
+  const ms = String(d.matrix_status || "unavailable").toUpperCase();
+  const msCls = ms === "OK" ? "ok" : (ms === "UNAVAILABLE" ? "" : "bd");
+  const timeout = d.contention_timeout_count || 0;
+  const degraded = d.contention_degraded_allow_count || 0;
+  const unknown = d.contention_unknown_pair_count || 0;
+  const nway = d.contention_nway_restricted_count || 0;
+
+  let h = `<div class="chiprow"><span class="chip ${msCls}">matrix ${esc(ms)}</span></div>`;
+  if (ms !== "OK" && ms !== "UNAVAILABLE") {
+    h += `<div class="loud"><b>⚠ contention matrix ${esc(ms)}</b> — the admission gate is running degraded ` +
+      `(mispredicted pairs; unknown pairs block background work).</div>`;
+  }
+  const row = (k, v, cls) => `<div><span class="k">${esc(k)}</span><span class="${cls || ""}">${esc(v)}</span></div>`;
+  h += '<div class="lines">';
+  h += row("admitted", d.contention_admitted_count || 0, "good");
+  h += row("wait total", (d.contention_wait_seconds || 0).toFixed(2) + "s");
+  h += row("timeouts", timeout, timeout ? "warn" : "dimtx");
+  h += row("degraded allows", degraded, degraded ? "warn" : "dimtx");
+  h += row("unknown pairs", unknown, unknown ? "warn" : "dimtx");
+  h += row("n-way restricted", nway, nway ? "warn" : "dimtx");
+  h += "</div>";
+
+  const blocked = d.contention_blocked_count || {};
+  const bk = Object.keys(blocked).sort((a, c) => blocked[c] - blocked[a]);
+  h += '<div class="seclabel">blocked pairs</div>';
+  h += bk.length
+    ? '<div class="lines">' + bk.slice(0, 6).map(k => `<div><span class="k bad">${esc(k)}</span>×${blocked[k]}</div>`).join("") +
+    (bk.length > 6 ? `<div class="dimtx">+${bk.length - 6} more</div>` : "") + "</div>"
+    : '<div class="empty">reported empty — no pair was blocked</div>';
+
+  const ad = d.active_decodes_by_role || {}, ai = d.active_instances_by_role || {};
+  const adk = Object.keys(ad);
+  h += '<div class="seclabel">active now</div>';
+  h += adk.length
+    ? '<div class="lines">' + adk.sort().map(k => `<div><span class="k">${esc(k)}</span>${ad[k]} decode · ${ai[k] || 0} inst</div>`).join("") + "</div>"
+    : '<div class="empty">reported empty — the gate reports no active decode</div>';
+
+  const mig = d.migration_counters || {};
+  const dirs = mig.kv_migration_direction_total || {};
+  const dk = Object.keys(dirs);
+  const thrash = mig.kv_migration_thrash_skipped_total || {};
+  const perRole = d.per_role_scheduling || {};
+  let enabled = 0, failures = 0;
+  for (const r of Object.keys(perRole)) {
+    const rr = perRole[r] || {};
+    if ((rr.kv_migration || {}).enabled) enabled++;
+    failures += rr.migration_failures || 0;
+  }
+  h += '<div class="seclabel">kv migration</div><div class="lines">';
+  h += row("roles enabled", `${enabled}/${Object.keys(perRole).length}`);
+  h += row("failures", failures, failures ? "bad" : "dimtx");
+  h += dk.length
+    ? dk.map(k => row(k, dirs[k])).join("")
+    : '<div class="dimtx">no migration events recorded</div>';
+  const tk = Object.keys(thrash);
+  if (tk.length) h += tk.map(k => row("thrash-skip " + k, thrash[k], "warn")).join("");
+  h += "</div>";
+  b.innerHTML = h;
+  setMeta("contention", "api");
+  ok("contention");
+}
+
+/* -------------------------------------------------------- 4. inference tap */
+const TAP_MAX = 64 * 1024;
+const tapPre = $("#tap-pre"), tapUnpin = $("#tap-unpin");
+let tapPinned = true, tapBuf = "", tapSeen = new Set(), tapEs = null, tapRetryAt = 0;
+let tapLastFrame = 0, tapFrames = 0, tapFirstPaint = false;
+
+tapPre.addEventListener("scroll", () => {
+  const atBottom = tapPre.scrollHeight - tapPre.scrollTop - tapPre.clientHeight < 24;
+  tapPinned = atBottom;
+  tapUnpin.classList.toggle("on", !atBottom);
+});
+tapUnpin.addEventListener("click", () => { tapPinned = true; tapUnpin.classList.remove("on"); tapPre.scrollTop = tapPre.scrollHeight; });
+
+function tapAppend(text) {
+  if (!tapFirstPaint) { tapBuf = ""; tapFirstPaint = true; }
+  tapBuf += text;
+  if (tapBuf.length > TAP_MAX) {
+    const cut = tapBuf.length - TAP_MAX;
+    const nl = tapBuf.indexOf("\n", cut);
+    tapBuf = "…\n" + tapBuf.slice(nl > -1 ? nl + 1 : cut);
+  }
+  tapPre.textContent = tapBuf;
+  if (tapPinned) tapPre.scrollTop = tapPre.scrollHeight;
+}
+function tapSection(s) {
+  /* The stream re-emits the same window every couple of seconds; dedupe on the
+     identity of the section so the buffer reads like a log, not a loop. */
+  const key = [s.timestamp, s.role, s.prompt_len, s.response_len].join("|");
+  if (tapSeen.has(key)) return false;
+  tapSeen.add(key);
+  if (tapSeen.size > 400) tapSeen = new Set(Array.from(tapSeen).slice(-200));
+  const pl = s.prompt_len != null ? s.prompt_len : (s.prompt || "").length;
+  const rl = s.response_len != null ? s.response_len : (s.response || "").length;
+  let out = `\n── ${s.timestamp || "?"}  ${s.role || "?"}  (prompt ${pl} · response ${rl}) ──\n`;
+  const p = String(s.prompt || "");
+  if (p) out += "» " + (p.length > 420 ? "…" + p.slice(-420) : p).replace(/\n/g, "\n  ") + "\n";
+  const r = String(s.response || "");
+  out += r ? "« " + (r.length > 900 ? r.slice(0, 900) + "…" : r).replace(/\n/g, "\n  ") + "\n"
+    : "« (no response captured yet)\n";
+  tapAppend(out);
+  return true;
+}
+/* ---- tap request cards ---------------------------------------------------
+   Same card component as Recent outcomes (.cards / .ocard, same four-line
+   rhythm): id, role, one status word, one meta line, one clipped reason. The
+   card answers "what is this request doing and how big is it" and nothing more
+   — prompt, response and full metadata live one click away in the shared modal,
+   exactly as a task card works.
+
+   The state ladder below is a faithful port of the legacy dashboard's
+   structuredTapActivity() (src/api/routes/dashboard.html): same order, same
+   thresholds, same label strings, so a request reads identically on both pages.
+   Two of its branches need the region-lock frame — "prefill/decode pending" is
+   precisely "no output yet BUT this instance holds its CPU lock", and without
+   the lock index that request is indistinguishable from "queued". So the index
+   is rebuilt here from by_role, under the legacy's own 20s freshness gate. */
+const TAP_CARD_MAX = 12;
+const TAP_STALLED_S = 60;            // legacy _STRUCTURED_TAP_STALLED_S
+const REGION_LOCK_TAP_FRESH_S = 20;  // legacy _REGION_LOCK_TAP_FRESH_S
+const tapCardsEl = $("#tap-cards");
+const HEXCOL = /^#[0-9a-fA-F]{3,8}$/;
+/* Rebuilt in place, never rebound: the modal holds a key into this map across
+   frames, and swapping the Map out from under it would strand the open detail. */
+const tapRecords = new Map();        // key → normalized record for the live window
+/* Completed tap requests, parked for Recent outcomes to merge. Keyed by
+   task+role so the same finished request cannot be rendered twice when the tap
+   window and the outcomes snapshot both still carry it. */
+const tapDone = new Map();
+const TAP_DONE_MAX = 60;
+let tapDoneSig = "";
+let tapCardSrc = "", tapCardCount = 0, tapActiveN = 0, tapDoneN = 0;
+
+/* Role colour comes from the topology frame the fleet already publishes, so a
+   role reads the same colour here as on the legacy page. Anything that is not a
+   plain hex literal is dropped rather than interpolated into a style attribute. */
+function roleColorOf(role) {
+  const nodes = (latestSnap && latestSnap.topology && Array.isArray(latestSnap.topology.nodes))
+    ? latestSnap.topology.nodes : [];
+  const base = famKey(role);
+  const hit = nodes.find(n => n && (n.role === role || n.label === role))
+    || (base ? nodes.find(n => n && (famKey(n.role) === base || famKey(n.label) === base)) : null);
+  const c = hit && hit.color;
+  return (typeof c === "string" && HEXCOL.test(c)) ? c : "";
+}
+
+/* A lock frame older than the legacy's 20s window is not evidence about what
+   holds a region *now* — past it the ladder degrades to lock-free reasoning
+   (queued rather than prefill) instead of asserting from a stale frame. */
+function tapLockIndex() {
+  if (!_lastByRole || !_lastByRoleAt) return null;
+  if ((Date.now() - _lastByRoleAt) / 1000 > REGION_LOCK_TAP_FRESH_S) return null;
+  const idx = {};
+  for (const role of Object.keys(_lastByRole)) {
+    const info = _lastByRole[role] || {};
+    const regions = new Set(), holderPids = new Set(), pidsByIdx = new Map();
+    for (const e of (Array.isArray(info.regions) ? info.regions : [])) {
+      if (!e || !e.held) continue;
+      regions.add(String(e.region));
+      const pids = (Array.isArray(e.holder_pids) ? e.holder_pids : []).map(String);
+      for (const p of pids) holderPids.add(p);
+      for (const i of (Array.isArray(e.holder_instance_idxs) ? e.holder_instance_idxs : [])) {
+        const n = Number(i);
+        if (!pidsByIdx.has(n)) pidsByIdx.set(n, new Set());
+        for (const p of pids) pidsByIdx.get(n).add(p);
+      }
+    }
+    idx[role] = {
+      regions, holderPids, pidsByIdx,
+      instanceIdxs: new Set((Array.isArray(info.active_instance_idxs) ? info.active_instance_idxs : []).map(Number)),
+      instances: Array.isArray(info.instances) ? info.instances : [],
+    };
+  }
+  return idx;
+}
+function tapRequestedRegions(r, idx) {
+  const explicit = (Array.isArray(r.instance_regions) ? r.instance_regions : []).map(String).filter(Boolean);
+  if (explicit.length) return explicit;
+  if (!idx) return [];
+  const iidx = r.instance_idx != null ? Number(r.instance_idx) : null;
+  for (const role of [r.lock_role, r.topology_role, r.role, r.role ? famKey(r.role) : ""].filter(Boolean).map(String)) {
+    const a = idx[role];
+    const insts = (a && a.instances) || [];
+    if (!insts.length) continue;
+    const inst = iidx != null ? (insts.find(i => Number(i.idx) === iidx) || insts[0]) : insts[0];
+    if (inst && Array.isArray(inst.regions) && inst.regions.length) return inst.regions.map(String);
+  }
+  return [];
+}
+function tapHasActiveCpuLock(r, idx) {
+  if (!idx) return false;
+  const iidx = r.instance_idx;
+  const pid = r.pid != null ? String(r.pid) : "";
+  const needed = tapRequestedRegions(r, idx);
+  for (const role of [r.lock_role, r.topology_role, r.role].filter(Boolean).map(String)) {
+    const a = idx[role];
+    if (!a) continue;
+    if (iidx != null && a.instanceIdxs.has(Number(iidx))) return true;
+    if (needed.length && needed.every(q => a.regions.has(q))) return true;
+    if (pid) {
+      if (iidx != null) { const b = a.pidsByIdx.get(Number(iidx)); if (b && b.has(pid)) return true; }
+      if (a.holderPids.has(pid)) return true;
+    }
+  }
+  return false;
+}
+function tapCpuBlockers(r, idx) {
+  if (!idx) return [];
+  const needed = tapRequestedRegions(r, idx);
+  if (!needed.length) return [];
+  const ownPid = r.pid != null ? String(r.pid) : "";
+  const ownRoles = new Set([r.lock_role, r.topology_role, r.role, r.role ? famKey(r.role) : ""].filter(Boolean).map(String));
+  const iidx = r.instance_idx != null ? Number(r.instance_idx) : null;
+  const out = [];
+  for (const role of Object.keys(idx)) {
+    const a = idx[role];
+    if (!a || !a.regions) continue;
+    if (ownRoles.has(role)) {
+      if (iidx != null && a.instanceIdxs.has(iidx)) continue;
+      if (ownPid && a.holderPids.has(ownPid)) continue;
+      if (needed.every(q => a.regions.has(q))) continue;
+    }
+    const overlap = needed.filter(q => a.regions.has(q));
+    if (overlap.length) out.push({ role, regions: overlap });
+  }
+  return out;
+}
+
+/* Legacy structuredTapActivity(), branch for branch. `card` is the .ocard
+   modifier so the tap card borrows the outcomes card's own colour language. */
+function tapActivity(r, idx) {
+  if (!r) return { state: "unknown", label: "unknown", cls: "dimtx", card: "mid", live: false, show: false, terminal: false, reason: "" };
+  const tr = (r.timings_raw && typeof r.timings_raw === "object") ? r.timings_raw : {};
+  const tokens = num(tr.tokens) ? tr.tokens : 0;
+  const status = String(r.status ? r.status : "running");
+  const hasOutput = (num(r.chunk_count) && r.chunk_count > 0) ||
+    (num(r.response_len) && r.response_len > 0) || !!r.response;
+  const serverQuiet = num(r.quiet_s) ? r.quiet_s : 0;
+  const upEp = num(r.updated_at_epoch) ? r.updated_at_epoch : 0;
+  const clientQuiet = upEp > 0 ? Math.max(0, Date.now() / 1000 - upEp) : 0;
+  const quietS = Math.max(serverQuiet, clientQuiet);
+  const lockActive = tapHasActiveCpuLock(r, idx);
+  const blockers = (!lockActive && !hasOutput) ? tapCpuBlockers(r, idx) : [];
+  if (status === "complete") {
+    return tokens === 0
+      ? {
+        state: "empty_complete", label: "empty complete", cls: "bad", card: "bad", live: false, show: false, terminal: true,
+        reason: "request ended with timings but generated 0 tokens",
+      }
+      : { state: "complete", label: "complete", cls: "dimtx", card: "ok", live: false, show: false, terminal: true, reason: "" };
+  }
+  if (blockers.length) {
+    return {
+      state: "waiting_cpu_lock", label: "waiting for CPU lock", cls: "warn", card: "mid", live: false, show: true, terminal: false,
+      reason: "required CPU regions occupied by " +
+        blockers.map(b => b.role + " on " + b.regions.join(",")).join(" · "),
+    };
+  }
+  if (!hasOutput && lockActive) {
+    return {
+      state: "prefill_decode_pending", label: "prefill/decode pending", cls: "good", card: "ok", live: true, show: true, terminal: false,
+      reason: "CPU lock is held for this request; long prompt prefill may produce no tap chunks until the first token",
+    };
+  }
+  if (quietS >= TAP_STALLED_S) {
+    return {
+      state: "stalled", label: hasOutput ? "stalled after output" : "stalled", cls: "bad", card: "bad", live: false, show: true, terminal: false,
+      reason: lockActive
+        ? "CPU lock still appears held, but no tap output has arrived past the stall threshold"
+        : "no CPU lock observed and no tap output has arrived past the stall threshold",
+    };
+  }
+  if (status === "quiet") {
+    return {
+      state: "quiet", label: hasOutput ? "quiet after output" : "quiet", cls: "warn", card: "mid", live: false, show: true, terminal: false,
+      reason: r.status_reason || "tap stream is open but no event has arrived recently",
+    };
+  }
+  if (!hasOutput) {
+    return {
+      state: "queued", label: "queued", cls: "warn", card: "mid", live: false, show: true, terminal: false,
+      reason: "no CPU lock observed for this request yet; likely queued or pre-backend",
+    };
+  }
+  return { state: "streaming", label: "streaming", cls: "good", card: "ok", live: true, show: true, terminal: false, reason: "" };
+}
+
+/* 583816 → "584k": the card has one line for counts and a raw six-digit
+   character count would eat it. */
+function fmtCount(n) {
+  if (!num(n)) return "?";
+  if (n < 1000) return String(n);
+  if (n < 1e6) return (n / 1000).toFixed(n < 10000 ? 1 : 0) + "k";
+  return (n / 1e6).toFixed(1) + "M";
+}
+/* Token counts keep a decimal into the tens of thousands — prefill progress is
+   read as a moving fraction (48.4k/48.7k), and rounding both sides to "49k"
+   would make a live counter look frozen. */
+function fmtTok(n) {
+  if (!num(n)) return "?";
+  if (n < 10000) return String(Math.round(n));
+  if (n < 1e6) return (n / 1000).toFixed(1) + "k";
+  return (n / 1e6).toFixed(2) + "M";
+}
+
+/* ---- ↑/↓ progress, from slot_progress -----------------------------------
+   The producer may attach slot_progress to a structured request: llama-server's
+   own /slots view of the same work, sampled server-side. When present the card
+   shows real token progress (↑ prompt processed/total, ↓ decoded) instead of
+   character counts; when absent — older API, or a request the sampler could not
+   see — the character counts stand exactly as before, so the field can land
+   mid-run without a coordinated deploy.
+
+   ambiguous=true means the producer could NOT attribute a busy slot to this
+   request (several busy slots on the port). That number is port-level, so it is
+   rendered with a tilde and a "(port)" tag rather than silently claimed as this
+   request's own progress. */
+function slotProgressOf(r) {
+  const sp = (r && r.slot_progress && typeof r.slot_progress === "object") ? r.slot_progress : null;
+  if (!sp) return null;
+  return {
+    total: num(sp.n_prompt_tokens) ? sp.n_prompt_tokens : null,
+    done: num(sp.n_prompt_tokens_processed) ? sp.n_prompt_tokens_processed : null,
+    decoded: num(sp.n_decoded) ? sp.n_decoded : null,
+    processing: !!sp.is_processing,
+    ambiguous: !!sp.ambiguous,
+    sampledAt: num(sp.sampled_at) ? sp.sampled_at : null,
+  };
+}
+/* ---- slot_progress RETENTION --------------------------------------------
+   The producer attaches slot_progress only while it can still see a busy slot
+   belonging to the request, and deliberately NEVER on a `complete` record — by
+   then the busy slot on that port belongs to whatever is running now. So the
+   prefill figure exists for a handful of frames and is then gone forever unless
+   the page remembers it. This map is that memory: a 32.9k-token prefill the
+   operator watched must still be on the card after the request finishes.
+
+   Merge rule: processed and decoded only ever go UP (a frame that sampled
+   earlier in the request must not walk a counter backwards), total is the
+   latest declared, `ambiguous` is sticky (once port-level, never silently
+   promoted to request-level), sampled_at is the newest sample. */
+const spRetain = new Map();      // request key → merged observation
+const SP_RETAIN_MAX = 120;
+function retainSlotProgress(key, sp) {
+  if (!key || !sp) return;
+  const prev = spRetain.get(key);
+  const hi = (a, b) => {
+    const x = num(a) ? a : null, y = num(b) ? b : null;
+    if (x == null) return y;
+    if (y == null) return x;
+    return Math.max(x, y);
+  };
+  const merged = prev ? {
+    total: sp.total != null ? sp.total : prev.total,
+    done: hi(prev.done, sp.done),
+    decoded: hi(prev.decoded, sp.decoded),
+    processing: !!sp.processing,
+    ambiguous: !!(prev.ambiguous || sp.ambiguous),
+    sampledAt: hi(prev.sampledAt, sp.sampledAt),
+  } : {
+    total: sp.total, done: sp.done, decoded: sp.decoded,
+    processing: !!sp.processing, ambiguous: !!sp.ambiguous, sampledAt: sp.sampledAt,
+  };
+  spRetain.delete(key); spRetain.set(key, merged);   // insertion order = recency
+  if (spRetain.size > SP_RETAIN_MAX) {
+    for (const k of Array.from(spRetain.keys()).slice(0, spRetain.size - SP_RETAIN_MAX)) spRetain.delete(k);
+  }
+}
+
+const ARW_UP = '<span class="arwg">↑</span>', ARW_DN = '<span class="arwg">↓</span>';
+/* Returns pre-escaped HTML: every value here is numeric and generated locally,
+   so there is nothing to escape — but nothing untrusted may ever be added.
+   `terminal` suppresses the fraction: a finished request's prefill is finished,
+   and a retained mid-run "12.3k/32.9k" would misreport it as still climbing. */
+function progressBits(sp, gen, chunks, terminal) {
+  const up = [], down = [];
+  if (sp && sp.total != null) {
+    const frac = !terminal && sp.done != null && sp.done < sp.total;
+    up.push(ARW_UP + ' <span class="arwv">' + (sp.ambiguous ? "~" : "") +
+      (frac ? fmtTok(sp.done) + "/" + fmtTok(sp.total) : fmtTok(sp.total)) + " tok</span>" +
+      (sp.ambiguous ? ' <span class="dimtx">(port)</span>' : ""));
+  }
+  /* Mid-run the slot sample is fresher than timings (which do not exist yet);
+     at completion the final timings are authoritative and a retained mid-run
+     decode count would under-report the request. */
+  const dec = terminal
+    ? (num(gen) ? gen : ((sp && sp.decoded != null) ? sp.decoded : null))
+    : ((sp && sp.decoded != null) ? sp.decoded : gen);
+  if (num(dec)) down.push(ARW_DN + ' <span class="arwv">' + fmtTok(dec) + " tok</span>");
+  else if (num(chunks) && chunks > 0) down.push(ARW_DN + ' <span class="arwv">' + fmtTok(chunks) + " chunks</span>");
+  return { up, down, any: up.length > 0 || down.length > 0 };
+}
+
+function normTapReq(r, nowS, idx) {
+  const role = String(r.lock_role || r.topology_role || r.role || "?");
+  const act = tapActivity(r, idx);
+  const tr = (r.timings_raw && typeof r.timings_raw === "object") ? r.timings_raw : {};
+  const prompt = String(r.prompt == null ? "" : r.prompt);
+  const response = String(r.response == null ? "" : r.response);
+  const pl = num(r.prompt_len) ? r.prompt_len : prompt.length;
+  const rl = num(r.response_len) ? r.response_len : response.length;
+  /* The producer publishes GENERATED tokens (timings_raw.tokens) but no prompt
+     token count — only prompt_ms and a character length. So the card reports
+     prompt size in characters and generation in tokens, each labelled; it does
+     not invent a processed-token number the payload never carried. */
+  const gen = num(tr.tokens) ? tr.tokens : null;
+  const tps = (num(tr.tps) && tr.tps > 0) ? tr.tps
+    : ((num(r.tps_live) && r.tps_live > 0) ? r.tps_live : null);
+  const endEp = num(r.ended_at_epoch) ? r.ended_at_epoch : null;
+  const upEp = num(r.updated_at_epoch) ? r.updated_at_epoch : null;
+  const startEp = num(r.started_at_epoch) ? r.started_at_epoch : null;
+  /* identity first: retention, dedup and the modal all key off it */
+  const key = String(r.request_id || [role, r.started_at || "", pl, rl].join("|"));
+
+  /* ↑/↓ when the slot was ever sampled for this request, characters when it was
+     not. Both feeds (SSE and the poll fallback) land here, so the counter cannot
+     depend on which transport delivered the frame.
+
+     The frame's own field is merged into retention first, then the RETAINED
+     value is what renders. That ordering is the whole fix: a `complete` record
+     never carries the field, and an intermittent frame that omits it must not
+     wipe a counter the operator is watching. */
+  const spFresh = slotProgressOf(r);
+  if (spFresh) retainSlotProgress(key, spFresh);
+  const sp = spRetain.get(key) || spFresh || null;
+  const spStale = !spFresh && !!sp;      // rendering a remembered sample, not this frame's
+  const sampleAge = (spStale && sp && num(sp.sampledAt)) ? Math.max(0, nowS - sp.sampledAt) : null;
+  const prog = progressBits(sp, gen, r.chunk_count, act.terminal);
+  /* Say how old a remembered sample is, rather than presenting it as live. A
+     finished request needs no such caveat on the line — its figure is final by
+     definition — so it carries the explanation in the tooltip instead. */
+  if (prog.up.length && spStale && !act.terminal && sampleAge != null) {
+    prog.up[0] += ' <span class="dimtx">· ' + fmtAge(sampleAge) + " ago</span>";
+  }
+  const bits = [];
+  if (prog.up.length) bits.push(prog.up[0]);
+  else bits.push("prompt " + fmtCount(pl) + "c");
+  if (prog.down.length) bits.push(prog.down[0]);
+  else if (!prog.up.length) bits.push("gen " + (gen != null ? gen + " tok" : fmtCount(rl) + "c"));
+  if (num(tps)) bits.push(tps.toFixed(1) + " tps");
+  if (num(tr.total_s)) bits.push(tr.total_s.toFixed(1) + "s");
+  bits.push(act.terminal
+    ? (endEp != null ? "ended " + fmtAge(nowS - endEp) + " ago" : (num(r.age_s) ? fmtAge(r.age_s) + " old" : "age ?"))
+    : (num(r.age_s) ? fmtAge(r.age_s) + " old" : "age ?"));
+  const countsTitle = "prompt " + pl + " chars · response " + rl + " chars" +
+    (gen != null ? " · " + gen + " tokens generated" : "") +
+    (num(r.chunk_count) ? " · " + r.chunk_count + " chunks" : "") +
+    (sp ? " · slot" + (sp.ambiguous ? " (port-level, several busy slots)" : "") +
+      (sp.total != null ? " prompt " + (sp.done != null ? sp.done + "/" : "") + sp.total + " tok" : "") +
+      (sp.decoded != null ? " · decoded " + sp.decoded + " tok" : "") : "") +
+    (sp && act.terminal ? " · prompt tokens as observed mid-run (a completed record carries no slot sample)" : "") +
+    (sampleAge != null ? " · slot sampled " + fmtAge(sampleAge) + " ago" : "");
+
+  const meta = [];
+  if (r.request_id) meta.push("request " + String(r.request_id).slice(0, 18));
+  if (r.parent_request_id) meta.push("parent " + String(r.parent_request_id).slice(0, 18));
+  if (r.task_id) meta.push("task " + r.task_id);
+  if (r.trial_id != null) meta.push("trial " + r.trial_id);
+  if (r.batch_id != null) meta.push("batch " + r.batch_id);
+  if (r.role && r.role !== role) meta.push("logical " + r.role);
+  if (r.instance_shape) meta.push("shape " + r.instance_shape);
+  if (num(r.instance_idx)) meta.push("idx " + r.instance_idx);
+  if (Array.isArray(r.instance_regions) && r.instance_regions.length) meta.push("regions " + r.instance_regions.join(","));
+  if (r.port != null) meta.push("port " + r.port);
+  if (r.pid) meta.push("pid " + r.pid);
+  if (num(r.chunk_count)) meta.push(r.chunk_count + " chunks");
+  if (num(r.event_count)) meta.push(r.event_count + " events");
+
+  const taskId = r.task_id ? String(r.task_id) : "";
+  /* Sub-row for the Recent-outcomes card this request belongs to: the per-role
+     decode detail a task-level card cannot carry. */
+  const sub = [];
+  if (prog.up.length) sub.push(prog.up[0]);
+  if (prog.down.length) sub.push(prog.down[0]);
+  else if (gen != null) sub.push(gen + " tok");
+  if (num(tps)) sub.push(tps.toFixed(1) + " tps");
+  if (num(tr.total_s)) sub.push(tr.total_s.toFixed(1) + "s");
+  if (!sub.length) sub.push(fmtCount(rl) + "c resp");
+  return {
+    key,
+    kind: "request", role, act, taskId,
+    id: taskId || (r.request_id ? String(r.request_id).slice(0, 20) : role),
+    port: (r.port == null ? null : r.port),
+    sort: upEp != null ? upEp : (endEp != null ? endEp : (startEp != null ? startEp : (num(r.age_s) ? nowS - r.age_s : 0))),
+    endedAt: endEp != null ? endEp : (upEp != null ? upEp : (num(r.age_s) ? nowS - r.age_s : 0)),
+    /* task+role is the dedup identity across the two windows: the outcomes
+       snapshot and the tap can both carry the same request, and one task
+       legitimately has several roles (one sub-row each). */
+    doneKey: (taskId ? "t:" + taskId : "r:" + key) + "|" + role,
+    cardMeta: bits.join(" · "), countsTitle, subMeta: sub.join(" · "),
+    meta: meta.join(" · "),
+    timings: String(r.timings || ""),
+    prompt, response, promptTrunc: !!r.prompt_truncated, pl, rl, gen, tps, sp,
+    title: (r.request_id ? "request " + r.request_id + " · " : "") + role +
+      (r.port != null ? " :" + r.port : "") + " — click for prompt, response and full metadata",
+  };
+}
+
+/* Legacy sections carry no request identity, port or status — they are a parsed
+   window of the tap FILE. Say that plainly rather than inventing a live state. */
+function normTapSec(s, nowS) {
+  const role = String(s.role || "?");
+  const prompt = String(s.prompt == null ? "" : s.prompt);
+  const response = String(s.response == null ? "" : s.response);
+  const pl = num(s.prompt_len) ? s.prompt_len : prompt.length;
+  const rl = num(s.response_len) ? s.response_len : response.length;
+  const ts = String(s.timestamp == null ? "" : s.timestamp);
+  const parsed = ts ? Date.parse(ts.replace(" ", "T")) : NaN;
+  const epoch = (typeof parsed === "number" && isFinite(parsed)) ? parsed / 1000 : 0;
+  const bits = ["prompt " + fmtCount(pl) + "c", "gen " + fmtCount(rl) + "c"];
+  bits.push(epoch ? fmtAge(nowS - epoch) + " ago" : "age ?");
+  const key = [ts, role, pl, rl].join("|");
+  return {
+    key,
+    kind: "section", role, taskId: "",
+    /* A parsed tap-file window carries no completion semantics — it is not a
+       terminal state, so it never migrates to Recent outcomes. */
+    act: { state: "tap_section", label: "tap section", cls: "dimtx", card: "mid", live: false, show: true, terminal: false, reason: "" },
+    id: ts || role, port: null, sort: epoch, endedAt: epoch,
+    doneKey: "r:" + key + "|" + role,
+    cardMeta: bits.join(" · "),
+    countsTitle: "prompt " + pl + " chars · response " + rl + " chars",
+    subMeta: fmtCount(rl) + "c resp",
+    meta: "tap-file section" + (ts ? " · " + ts : "") + " · no request identity in this payload",
+    timings: "", prompt, response, promptTrunc: false, pl, rl, gen: null, tps: null, sp: null,
+    title: "tap-file section · click for prompt and response",
+  };
+}
+
+/* The tap card IS the outcomes card: same .cards grid, same .ocard element,
+   same four lines. Only the vocabulary differs. */
+function tapCardHtml(c) {
+  const col = roleColorOf(c.role);
+  const rstyle = col ? ` style="color:${col}"` : "";
+  const dot = c.act.live ? "on" : (c.act.card === "bad" ? "bd" : (c.act.card === "mid" ? "wr" : ""));
+  return `<div class="ocard ${c.act.card} clickable" data-tapk="${esc(c.key)}" title="${esc(c.title)}">
+      <div class="t"><b>${esc(trunc(c.id, 26))}</b><span class="dimtx"${rstyle}>${esc(c.role)}</span></div>
+      <div class="o ${c.act.cls}"><span class="ldot ${dot}"></span> ${esc(c.act.label)}</div>
+      <div class="t dimtx" title="${esc(c.countsTitle || "")}">${c.cardMeta}</div>` +
+    (c.act.reason ? `<div class="obj">${esc(trunc(c.act.reason, 120))}</div>` : "") + "</div>";
+}
+
+function renderTapCards(d) {
+  const el = tapCardsEl;
+  if (!el) return;
+  const nowS = num(d.now) ? d.now : Date.now() / 1000;
+  const hasKeys = ("structured_requests" in d) || ("inference_sections" in d);
+  const reqs = Array.isArray(d.structured_requests) ? d.structured_requests : [];
+  const secs = Array.isArray(d.inference_sections) ? d.inference_sections : [];
+  let cards, src;
+  if (reqs.length) {
+    const idx = tapLockIndex();
+    cards = reqs.filter(r => r && typeof r === "object").map(r => normTapReq(r, nowS, idx));
+    src = "requests";
+  } else if (secs.length) {
+    cards = secs.filter(s => s && typeof s === "object").map(s => normTapSec(s, nowS));
+    src = "tap-file sections";
+  } else {
+    tapCardSrc = ""; tapCardCount = 0; tapActiveN = 0; tapDoneN = 0; tapRecords.clear();
+    el.innerHTML = hasKeys
+      ? '<div class="empty">reported empty — the producer\'s tap window holds no request</div>'
+      : '<div class="empty">frame carried no <span class="mono">structured_requests</span> / <span class="mono">inference_sections</span> key — reported empty</div>';
+    return;
+  }
+  /* The stream re-emits the same window every couple of seconds and a poll can
+     overlap it — dedupe on request identity, the same spirit as the raw tail. */
+  const seen = new Set();
+  cards = cards.filter(c => { if (seen.has(c.key)) return false; seen.add(c.key); return true; });
+  cards.sort((a, b) => (b.sort || 0) - (a.sort || 0));   // newest first
+  tapRecords.clear();
+  for (const c of cards) tapRecords.set(c.key, c);
+
+  /* A LIVE tap shows live work. Finished requests are not live — they are
+     outcomes, and they go and live with the other outcomes (the legacy page
+     does the same). They are parked oldest-first so the bound below evicts by
+     age, and re-set so a re-observed request keeps its recency. */
+  const active = [], terminal = [];
+  for (const c of cards) (c.act.terminal ? terminal : active).push(c);
+  for (const c of terminal.slice().sort((a, b) => (a.sort || 0) - (b.sort || 0))) {
+    tapDone.delete(c.doneKey);
+    tapDone.set(c.doneKey, c);
+  }
+  if (tapDone.size > TAP_DONE_MAX) {
+    for (const k of Array.from(tapDone.keys()).slice(0, tapDone.size - TAP_DONE_MAX)) tapDone.delete(k);
+  }
+  /* Retained slot samples are only useful while something on screen can still
+     reference them — drop any whose request has left BOTH windows. (The size
+     bound in retainSlotProgress is the backstop; this is the real reclaim.) */
+  if (spRetain.size) {
+    const alive = new Set(tapRecords.keys());
+    for (const rec of tapDone.values()) alive.add(rec.key);
+    for (const k of Array.from(spRetain.keys())) if (!alive.has(k)) spRetain.delete(k);
+  }
+  tapCardSrc = src; tapCardCount = cards.length;
+  tapActiveN = active.length; tapDoneN = terminal.length;
+
+  const shown = active.slice(0, TAP_CARD_MAX);
+  if (!active.length) {
+    el.innerHTML = terminal.length
+      ? `<div class="empty">no active requests — ${terminal.length} recent completion${terminal.length === 1 ? "" : "s"} in Recent outcomes</div>`
+      : '<div class="empty">reported empty — the producer\'s tap window holds no request</div>';
+  } else {
+    el.innerHTML = `<div class="cards">${shown.map(tapCardHtml).join("")}</div>` +
+      (active.length > shown.length
+        ? `<div class="subnote">+${active.length - shown.length} older active ${esc(src)} in the window, not shown</div>` : "");
+  }
+
+  /* Hand the completions to Recent outcomes — but only when the parked set has
+     actually changed since that panel last drew it. A tap frame every couple of
+     seconds must not repaint a panel that has nothing new to say. */
+  if (latestSnap && Array.from(tapDone.keys()).join(",") !== tapDoneSig) renderOutcomes(latestSnap);
+}
+
+/* Runs AFTER renderTapCards so the counts describe the ladder's own split
+   (active vs terminal), not the raw `status` field — the panel's headline must
+   agree with the cards under it, including where the completed ones went. */
+function renderTapChips(d) {
+  const c = $("#tap-chips");
+  const reqs = Array.isArray(d.structured_requests) ? d.structured_requests : [];
+  const nowS = num(d.now) ? d.now : Date.now() / 1000;
+  let h = `<span class="chip ${d.tap_active ? "ok" : ""}">tap ${d.tap_active ? "active" : "idle"}</span>`;
+  h += `<span class="chip ${d.tap_sentinel_active ? "ok" : "wr"}">sentinel ${d.tap_sentinel_active ? "on" : "off"}</span>`;
+  if (num(d.structured_tap_mtime)) h += `<span class="chip">tap file ${esc(fmtAge(nowS - d.structured_tap_mtime))} old</span>`;
+  if (tapCardCount > 0) {
+    const noun = tapCardSrc === "requests" ? "requests" : "sections";
+    h += `<span class="chip ${tapActiveN ? "ac" : ""}">${noun} ${tapCardCount}: ${tapActiveN} active` +
+      (tapDoneN ? ` · ${tapDoneN} completed → recent outcomes` : "") + "</span>";
+  } else {
+    h += `<span class="chip">${reqs.length ? "requests" : "requests:"} reported empty</span>`;
+  }
+  c.innerHTML = h;
+}
+function applyTap(d, source) {
+  if (!d || typeof d !== "object") return;
+  tapLastFrame = Date.now(); tapFrames++;
+  renderTapCards(d);
+  renderTapChips(d);          // reads the split renderTapCards just computed
+  /* A modal showing a tap record follows the tap: each frame already carries the
+     whole request, so re-rendering is cheap. If the request has dropped out of
+     the producer's window the body is left standing and told it is frozen —
+     never silently stale, never blanked. */
+  if (openTapKey && tapModalOwnsBody) {
+    const rec = tapRecordFor(openTapKey);
+    if (rec) renderTapModalBody(rec);
+    else if (!tmBody.innerHTML.includes("left the producer")) {
+      tmBody.innerHTML = '<div class="loud"><b>request left the producer\'s tap window</b> — ' +
+        'the detail below is the last frame that carried it, not live.</div>' + tmBody.innerHTML;
+    }
+  }
+  const secs = Array.isArray(d.inference_sections) ? d.inference_sections : [];
+  for (const s of secs.slice().reverse()) tapSection(s);
+  if (!tapFirstPaint && !secs.length) tapPre.textContent = "tap connected — no inference sections in the window (reported empty)";
+  setMeta("tap", `${source} · ${tapFrames} frames` +
+    (tapCardSrc ? ` · ${tapCardCount} ${tapCardSrc}` : ""));
+  ok("tap");
+}
+function openTapStream() {
+  try { tapEs = new EventSource(API + "/dashboard/events/inference_tap"); }
+  catch (e) { tapEs = null; fail("tap", e); return; }
+  tapEs.onopen = () => { tapRetryAt = 0; };
+  tapEs.onmessage = ev => {
+    let d = null;
+    try { d = JSON.parse(ev.data); } catch (e) { fail("tap", "frame parse: " + e.message); return; }
+    applyTap(d, "sse");
+  };
+  tapEs.onerror = () => {
+    if (tapEs && tapEs.readyState === 2) {
+      fail("tap", "SSE closed (CORS or API down)");
+      try { tapEs.close(); } catch (e) { }
+      tapEs = null; tapRetryAt = Date.now() + 10000;
+    }
+  };
+}
+async function pollTap() {
+  try { applyTap(await getJSON(API + "/dashboard/api/inference_tap", T_SMALL), "poll"); }
+  catch (e) { fail("tap", e); }
+}
+function tapHealthy() { return !!tapEs && tapEs.readyState === 1 && (Date.now() - tapLastFrame) < 12000; }
+
+/* ------------------------------------------------------- 5. decisions panel */
+function barRow(label, n, total, cls) {
+  const pct = total > 0 ? (100 * n / total) : 0;
+  return `<div class="barrow"><span class="lb" title="${esc(label)}">${esc(label)}</span>` +
+    `<span class="bt"><i class="${cls || ""}" style="width:${pct.toFixed(1)}%"></i></span>` +
+    `<span class="nv">${n} · ${pct.toFixed(0)}%</span></div>`;
+}
+function renderDecisions(snap) {
+  const b = PANELS.decisions.body;
+  if (!("recent_decisions" in snap)) {
+    b.innerHTML = '<div class="empty">no decisions in frame — the snapshot carried no <span class="mono">recent_decisions</span> key</div>';
+    setMeta("decisions", "key absent"); return;
+  }
+  const ds = Array.isArray(snap.recent_decisions) ? snap.recent_decisions : [];
+  if (!ds.length) {
+    b.innerHTML = '<div class="empty">reported empty — 0 routing decisions in the producer\'s window</div>';
+    setMeta("decisions", "0 in window"); return;
+  }
+  const byAction = {}, bySource = {};
+  for (const d of ds) {
+    const a = d.chosen_action || "unknown"; byAction[a] = (byAction[a] || 0) + 1;
+    const s = d.source || "unknown"; bySource[s] = (bySource[s] || 0) + 1;
+  }
+  const total = ds.length;
+  const sortDesc = o => Object.entries(o).sort((a, c) => c[1] - a[1]);
+  const srcCls = s => ({ classifier: "g", learned: "g", rules: "w", forced: "b", fallback: "" }[s] || "");
+  let h = '<div class="seclabel">chosen action (window ' + total + ")</div>";
+  h += sortDesc(byAction).map(([k, n]) => barRow(k, n, total)).join("");
+  h += '<div class="seclabel">decision source</div>';
+  h += sortDesc(bySource).map(([k, n]) => barRow(k, n, total, srcCls(k))).join("");
+
+  const cum = snap.source_counts_cumulative || {};
+  const ck = Object.keys(cum);
+  if (ck.length) {
+    h += '<div class="seclabel">cumulative</div><div class="chiprow">' +
+      ck.sort().map(k => `<span class="chip">${esc(k)} ${esc(cum[k])}</span>`).join("") + "</div>";
+  }
+  /* Producer emits oldest-first — the live signal is the LAST element. */
+  const last = ds[ds.length - 1];
+  const conf = num(last.classifier_confidence) ? ` · conf ${last.classifier_confidence.toFixed(2)}` : "";
+  const verd = last.verifier_verdict ? ` · ${esc(last.verifier_verdict)}` : "";
+  h += '<div class="seclabel">last decision</div><div class="lines">' +
+    `<div><span class="k">${esc(last.chosen_action || "?")}</span>${esc(last.source || "?")}${conf}${verd}</div>` +
+    `<div><span class="k">${esc(last.task_id || "?")}</span><span class="dimtx">${esc(fmtAge(last.age_s))} ago</span></div></div>`;
+  b.innerHTML = h;
+  setMeta("decisions", `${total} in window`);
+}
+
+/* -------------------------------------------------------- 6. outcomes panel */
+/* Every rendered task row keeps its snapshot record here so the detail modal can
+   open with what the card already knows (role, routing, verifier) while the
+   /task fetch is still in flight — and can still say something useful if that
+   fetch fails. Keyed by task id; rebuilt each frame. */
+const taskSeeds = new Map();
+function renderOutcomes(snap) {
+  const b = PANELS.outcomes.body;
+  /* This panel is the one that renders tapDone, so it owns the "already shown"
+     marker. Keeping the marker on the tap side let it drift: outcomes could
+     repaint from a snapshot frame while the tap still believed it had told the
+     panel about a set the panel had never drawn. */
+  tapDoneSig = Array.from(tapDone.keys()).join(",");
+  const inflight = Array.isArray(snap.in_flight_tasks) ? snap.in_flight_tasks : null;
+  const done = Array.isArray(snap.recent_completed_tasks) ? snap.recent_completed_tasks : null;
+  setMeta("outcomes", inflight ? `${inflight.length} in flight` : "in-flight unknown");
+  if (!done) { b.innerHTML = '<div class="empty">no <span class="mono">recent_completed_tasks</span> key in frame</div>'; return; }
+  const seed = (t, liveFlag) => {
+    const id = t && (t.task_id || t.id);
+    if (!id) return "";
+    const rec = Object.assign({}, t); rec.__live = !!liveFlag;
+    taskSeeds.set(String(id), rec);
+    /* frames arrive at up to 2Hz forever — bound the map rather than let a
+       long-lived tab accumulate every task id the fleet ever ran */
+    if (taskSeeds.size > 200) {
+      for (const k of Array.from(taskSeeds.keys()).slice(0, 100)) taskSeeds.delete(k);
+    }
+    return String(id);
+  };
+
+  let h = "";
+  if (inflight && inflight.length) {
+    h += '<div class="chiprow">' + inflight.slice(0, 6).map(t => {
+      const id = seed(t, true);
+      return `<span class="chip ac${id ? " clickable" : ""}"${id ? ` data-task="${esc(id)}" title="open task detail"` : ""}>` +
+        `${esc(id || "task")} · ${esc((t && (t.role || t.chosen_action)) || "?")}</span>`;
+    }).join("") +
+      (inflight.length > 6 ? `<span class="chip">+${inflight.length - 6}</span>` : "") + "</div>";
+  } else if (inflight) {
+    h += '<div class="chiprow"><span class="chip">reported empty — nothing in flight</span></div>';
+  }
+
+  /* ---- merge in the tap's completed requests -----------------------------
+     Two producers, two windows, two clocks: recent_completed_tasks is the task
+     store's last-10-minutes; tapDone is whatever the tap's request window still
+     carries. A finished request routinely appears in BOTH, so the merge is a
+     join, not a concatenation:
+       · tap request WITH a task_id matching a card  → sub-row inside that card
+         (the per-role decode detail a task-level card cannot carry);
+       · tap request with no matching card           → its own card, role-marked.
+     Dedup identity is task+role, so one task with three roles contributes three
+     sub-rows and zero duplicates. */
+  const snapNow = num(snap.generated_at) ? snap.generated_at : Date.now() / 1000;
+  const subsByTask = new Map();
+  const orphanTap = [];
+  const doneIds = new Set(done.map(t => t && t.task_id).filter(Boolean).map(String));
+  for (const rec of tapDone.values()) {
+    if (rec.taskId && doneIds.has(rec.taskId)) {
+      if (!subsByTask.has(rec.taskId)) subsByTask.set(rec.taskId, []);
+      subsByTask.get(rec.taskId).push(rec);
+    } else {
+      orphanTap.push(rec);
+    }
+  }
+  for (const list of subsByTask.values()) list.sort((a, c) => (c.endedAt || 0) - (a.endedAt || 0));
+
+  const subRows = tid => {
+    const list = subsByTask.get(String(tid)) || [];
+    if (!list.length) return "";
+    return '<div class="subs">' + list.map(rec => {
+      const col = roleColorOf(rec.role);
+      return `<div class="srow clickable" data-tapk="${esc(rec.key)}" title="${esc(rec.title)}">` +
+        `<span class="sr"${col ? ` style="color:${col}"` : ""}>${esc(rec.role)}</span>` +
+        `<span class="sv" title="${esc(rec.countsTitle || "")}">${rec.subMeta}</span></div>`;
+    }).join("") + "</div>";
+  };
+
+  const taskCards = done.map(t => {
+    const out = String(t.outcome || "unknown");
+    const cls = /success|complete|ok/i.test(out) ? "ok" : /fail|error|abort/i.test(out) ? "bad" : "mid";
+    const role = t.final_role || t.role || t.chosen_action || "?";
+    const routed = t.chosen_action && t.chosen_action !== role ? ` <span class="dimtx">(routed ${esc(t.chosen_action)})</span>` : "";
+    const id = seed(t, false);
+    const html = `<div class="ocard ${cls}${id ? " clickable" : ""}"${id ? ` data-task="${esc(id)}" title="open task detail"` : ""}>
+      <div class="t"><b>${esc(t.task_id || "?")}</b><span class="dimtx">${esc(role)}${routed}</span></div>
+      <div class="o ${cls === "ok" ? "good" : cls === "bad" ? "bad" : "warn"}">${esc(out)}</div>
+      <div class="t dimtx">${num(t.duration_s) ? t.duration_s.toFixed(1) + "s" : "—"} · ended ${esc(fmtAge(t.end_age_s))} ago` +
+      (num(t.tps) ? ` · ${t.tps.toFixed(1)} tps` : "") + `</div>` +
+      (t.objective ? `<div class="obj">${esc(trunc(t.objective, 120))}</div>` : "") +
+      subRows(t.task_id) + "</div>";
+    return { at: num(t.end_age_s) ? snapNow - t.end_age_s : (num(t.age_s) ? snapNow - t.age_s : 0), html };
+  });
+
+  /* A completed tap request the task store never had (or has already evicted):
+     same component, marked with its role, clickable into the tap-seeded modal. */
+  const tapCards = orphanTap.map(rec => {
+    const col = roleColorOf(rec.role);
+    const cls = rec.act.card === "bad" ? "bad" : rec.act.card === "mid" ? "mid" : "ok";
+    return {
+      at: rec.endedAt || 0,
+      html: `<div class="ocard ${cls} clickable" data-tapk="${esc(rec.key)}" title="${esc(rec.title)}">
+        <div class="t"><b>${esc(trunc(rec.id, 26))}</b><span class="dimtx"${col ? ` style="color:${col}"` : ""}>${esc(rec.role)}</span>` +
+        `<span class="chip">tap</span></div>
+        <div class="o ${rec.act.cls}">${esc(rec.act.label)}</div>
+        <div class="t dimtx" title="${esc(rec.countsTitle || "")}">${rec.cardMeta}</div>` +
+        (rec.act.reason ? `<div class="obj">${esc(trunc(rec.act.reason, 120))}</div>` : "") + "</div>",
+    };
+  });
+
+  const merged = taskCards.concat(tapCards).sort((a, c) => (c.at || 0) - (a.at || 0));
+  if (!merged.length) {
+    h += '<div class="empty">reported empty — no completed task in the producer\'s window</div>';
+    b.innerHTML = h; return;
+  }
+  const shownN = 8;
+  h += '<div class="cards">' + merged.slice(0, shownN).map(x => x.html).join("") + "</div>";
+  if (merged.length > shownN) {
+    h += `<div class="subnote">+${merged.length - shownN} older in the window, not shown</div>`;
+  }
+  b.innerHTML = h;
+  const nSub = Array.from(subsByTask.values()).reduce((s, l) => s + l.length, 0);
+  setMeta("outcomes", (inflight ? `${inflight.length} in flight` : "in-flight unknown") +
+    (nSub || tapCards.length ? ` · ${nSub + tapCards.length} from tap` : ""));
+}
+
+/* -------------------------------------------------- 7. process status panel */
+let lastProcess = null;
+function renderProcessApi(snap) { lastApiLifecycle = snap.api_lifecycle || null; renderProcess(); }
+let lastApiLifecycle = null;
+async function pollProcess() {
+  try { lastProcess = await getJSON(API + "/dashboard/api/process_status", T_SMALL); ok("process"); }
+  catch (e) { fail("process", e); return; }
+  renderProcess();
+}
+function renderProcess() {
+  const b = PANELS.process.body;
+  const d = lastProcess;
+  if (!d && !lastApiLifecycle) return;
+  let h = "";
+  if (d) {
+    const ap = d.autopilot || {}, st = d.autopilot_state || {}, ph = d.autopilot_phase || {}, hh = d.autopilot_phase_health || {};
+    const running = !!ap.running;
+    h += '<div class="chiprow">';
+    h += `<span class="chip ${running ? "ok" : ""}">autopilot ${running ? "running" : "not running"}</span>`;
+    if (st.paused) h += `<span class="chip wr">paused${st.pause_reason ? " · " + esc(st.pause_reason) : ""}</span>`;
+    if (hh.status) h += `<span class="chip ${hh.ok ? "ok" : "bd"}">heartbeat ${esc(hh.status)}</span>`;
+    if (num(d.gepa_worker_count)) h += `<span class="chip">gepa workers ${d.gepa_worker_count}</span>`;
+    h += "</div>";
+    /* A phase file that keeps describing a dead pid is the classic stale-monitor
+       trap — name the pid and its liveness rather than echoing the phase. */
+    if (ph.pid != null && hh.pid_alive === false) {
+      h += `<div class="loud"><b>autopilot phase file is stale</b> — it still describes pid ${esc(ph.pid)}, which is not alive` +
+        (num(hh.heartbeat_age_s) ? ` (last heartbeat ${esc(fmtAge(hh.heartbeat_age_s))} ago)` : "") +
+        `. The phase shown below is the last thing it wrote, not what is running.</div>`;
+    }
+    const row = (k, v, cls) => `<div><span class="k">${esc(k)}</span><span class="${cls || ""}">${esc(v)}</span></div>`;
+    h += '<div class="lines">';
+    if (ph.phase) h += row("phase", `${ph.phase}${ph.action_type ? " · " + ph.action_type : ""}`);
+    if (ph.trial_id != null) h += row("trial", ph.trial_id + (st.trial_counter != null ? ` / counter ${st.trial_counter}` : ""));
+    if (ph.pid != null) h += row("pid", `${ph.pid} · ${hh.pid_alive === false ? "dead" : hh.pid_alive === true ? "alive" : "?"}`, hh.pid_alive === false ? "bad" : "");
+    if (num(ph.eval_total_questions)) {
+      h += row("eval", `${ph.eval_label || "?"} ${ph.eval_completed_questions || 0}/${ph.eval_total_questions}` +
+        (num(ph.eval_correct_pct) ? ` · ${ph.eval_correct_pct.toFixed(1)}% correct` : ""));
+    }
+    if (num(d.last_autopilot_log_age_s)) h += row("log age", fmtAge(d.last_autopilot_log_age_s), d.last_autopilot_log_age_s > 900 ? "warn" : "");
+    if (num(d.inference_tap_age_s)) h += row("tap file age", fmtAge(d.inference_tap_age_s), d.inference_tap_age_s > 600 ? "warn" : "");
+    h += "</div>";
+    const fr = d._freshness || {};
+    if (fr.staleness_class && fr.staleness_class !== "fresh" && fr.reason) {
+      h += `<div class="seclabel">producer freshness</div><div class="lines ${fr.staleness_class === "stale" ? "bad" : "warn"}">${esc(fr.reason)}</div>`;
+    }
+    const lines = Array.isArray(d.autopilot_recent_lines) ? d.autopilot_recent_lines : [];
+    if (lines.length) {
+      h += '<div class="seclabel">last log lines</div><div class="lines dimtx">' +
+        lines.slice(-3).map(l => `<div>${esc(trunc(l, 150))}</div>`).join("") + "</div>";
+    }
+  } else {
+    h += '<div class="empty">process_status not loaded yet</div>';
+  }
+
+  const al = lastApiLifecycle;
+  h += '<div class="seclabel">orchestrator API</div>';
+  if (!al) h += '<div class="empty">no api_lifecycle in the last frame</div>';
+  else {
+    if (al.degraded) {
+      h += `<div class="loud"><b>API reports DEGRADED</b> — aggregation across its ${esc((al.process_ids || []).length || "?")} workers ` +
+        `is not certificate-valid; counters below may under-report.` +
+        (num(al.overflow_critical) && al.overflow_critical > 0 ? ` ${al.overflow_critical} critical overflows.` : "") + "</div>";
+    }
+    const row = (k, v, cls) => `<div><span class="k">${esc(k)}</span><span class="${cls || ""}">${esc(v)}</span></div>`;
+    h += '<div class="lines">';
+    h += row("workers", (al.process_ids || []).length || "?");
+    h += row("certificate", al.certificate_valid ? "valid" : "INVALID", al.certificate_valid ? "good" : "bad");
+    if (al.event_sequence != null) h += row("event seq", al.event_sequence);
+    if (al.active_unresolved != null) h += row("unresolved", `${al.active_unresolved} active · ${al.queued_unresolved || 0} queued`);
+    if (num(al.history_evictions) && al.history_evictions > 0) h += row("history evictions", al.history_evictions, "warn");
+    h += "</div>";
+  }
+  b.innerHTML = h;
+  const d2 = lastProcess;
+  setMeta("process", d2 ? ((d2.autopilot || {}).running ? "autopilot up" : "autopilot down") : "api only");
+}
+
+/* ----------------------------------------------------- 8. task detail modal */
+/* Clicking a task card opens the same record the legacy page opens: the
+   orchestrator's /dashboard/api/task/{id} (slot → tap section → task_started
+   objective, in that order of authority) plus its event log, and — for a task
+   still running — the per-token SSE. The task store is a RING BUFFER, so an id
+   that has aged out comes back empty; that is a different fact from the API
+   being unreachable and the modal must not blur the two. */
+const tmodal = $("#task-modal"), tmTitle = $("#tm-title"), tmMeta = $("#tm-meta"), tmBody = $("#tm-body");
+let taskStream = null, openTaskId = null, taskStreamBuf = "";
+/* When the modal is showing a TAP record (rather than a fetched task record) it
+   can be refreshed straight from each new tap frame — cheap, since the frame
+   already carries the whole request. openTapKey names that record; the ownership
+   flag keeps a live refresh from overwriting a fetched task body. */
+let openTapKey = null, tapModalOwnsBody = false;
+
+function closeTaskModal() {
+  openTaskId = null; openTapKey = null; tapModalOwnsBody = false;
+  if (taskStream) { try { taskStream.close(); } catch (e) { } taskStream = null; }
+  taskStreamBuf = "";
+  tmodal.classList.remove("open");
+  if (typeof tmodal.setAttribute === "function") tmodal.setAttribute("aria-hidden", "true");
+}
+function taskChipsHtml(s, dd, tap, tps) {
+  const bits = [];
+  const push = (t, cls) => bits.push(`<span class="chip ${cls || ""}">${esc(t)}</span>`);
+  const outcome = s.outcome || dd.outcome || (s.__live ? "in flight" : "");
+  if (outcome) push(outcome, /success|complete|ok/i.test(outcome) ? "ok"
+    : /fail|error|abort/i.test(outcome) ? "bd" : "ac");
+  const role = s.final_role || s.role || dd.final_answer_role || dd.producer_role || (tap && tap.role) || "";
+  if (role) push("role " + role, "ac");
+  if (s.chosen_action && s.chosen_action !== role) push("routed " + s.chosen_action);
+  if (s.decision_source) push("source " + s.decision_source);
+  if (num(s.classifier_confidence)) push("conf " + s.classifier_confidence.toFixed(2));
+  if (s.verifier_verdict) push("verifier " + s.verifier_verdict, "wr");
+  if (num(s.verifier_p_success)) push("p(success) " + s.verifier_p_success.toFixed(2));
+  if (num(s.duration_s)) push(s.duration_s.toFixed(2) + "s");
+  if (num(tps)) push(tps.toFixed(1) + " t/s", "ok");
+  if (num(dd.tokens_generated)) push(dd.tokens_generated + " tok");
+  else if (num(s.tokens_generated)) push(s.tokens_generated + " tok");
+  if (num(s.end_age_s)) push("ended " + fmtAge(s.end_age_s) + " ago");
+  else if (num(s.age_s)) push(fmtAge(s.age_s) + " old");
+  for (const k of ["task_type", "priority", "difficulty_band"]) if (s[k]) push(String(s[k]));
+  if (tap && tap.instance_shape) push("shape " + tap.instance_shape);
+  if (tap && tap.port != null) push(":" + tap.port);
+  return bits.join("");
+}
+function taskEventRows(events) {
+  if (!events.length) return '<div class="empty">reported empty — the record carries no events</div>';
+  return events.map(e => {
+    const ts = String((e && e.timestamp) || "").replace("T", " ").slice(11, 19);
+    let dt = "";
+    try { dt = JSON.stringify(e && e.data); } catch (x) { dt = ""; }
+    return `<div class="evrow"><span class="ts">${esc(ts || "—")}</span>` +
+      `<span class="ev">${esc((e && e.event_type) || "?")}</span>` +
+      `<span class="dt" title="${esc(trunc(dt, 700))}">${esc(trunc(dt, 200))}</span></div>`;
+  }).join("");
+}
+/* ---- the tap half of the modal ------------------------------------------ */
+/* Everything the card no longer shows: the state's own reason, the full request
+   metadata, the prompt (with the producer's truncation stated, never hidden) and
+   the response tail. Rendered from the tap frame itself, so it works for
+   requests that never had an orchestrator task id. */
+function tapChipsHtml(rec) {
+  const bits = [];
+  const push = (t, cls) => bits.push(`<span class="chip ${cls || ""}">${esc(t)}</span>`);
+  push(rec.act.label, rec.act.card === "bad" ? "bd" : rec.act.card === "mid" ? "wr" : (rec.act.live ? "ok" : ""));
+  push("role " + rec.role, "ac");
+  if (rec.port != null) push(":" + rec.port);
+  if (rec.taskId) push("task " + rec.taskId);
+  push("prompt " + fmtCount(rec.pl) + "c");
+  push("gen " + (rec.gen != null ? rec.gen + " tok" : fmtCount(rec.rl) + "c"));
+  if (num(rec.tps)) push(rec.tps.toFixed(1) + " tps", "ok");
+  return bits.join("");
+}
+function renderTapModalBody(rec) {
+  tapModalOwnsBody = true;
+  tmMeta.innerHTML = tapChipsHtml(rec);
+  const promptTail = rec.prompt.length > 8000 ? rec.prompt.slice(0, 8000) + "\n…" : rec.prompt;
+  const respTail = rec.response.length > 8000 ? "…" + rec.response.slice(-8000) : rec.response;
+  let h = "";
+  if (rec.act.reason) h += `<div class="loud"><b>${esc(rec.act.label)}</b> — ${esc(rec.act.reason)}</div>`;
+  h += `<div class="dlab">source</div><div class="tmeta" style="font-size:11px">` +
+    `${rec.kind === "request" ? "structured tap request" : "inference_tap.log section"}` +
+    (rec.timings ? ` <span class="dimtx">· ${esc(rec.timings)}</span>` : "") + "</div>";
+  h += `<div class="dlab">metadata</div><div class="tmeta" style="font-size:11px;white-space:normal">${esc(rec.meta || "—")}</div>`;
+  h += `<div class="dlab">prompt · ${rec.pl}c${rec.promptTrunc ? " <span class=\"dimtx\">(truncated by the producer — the card shows what it published)</span>" : ""}</div>` +
+    `<div class="dbox">${promptTail ? esc(promptTail) : '<span class="dimtx">(no prompt captured)</span>'}</div>`;
+  h += `<div class="dlab">response · ${rec.rl}c${rec.response.length > 8000 ? " <span class=\"dimtx\">(tail)</span>" : ""}</div>` +
+    `<div class="dbox${rec.act.live ? " live" : ""}" id="tm-stream">${respTail ? esc(respTail) :
+      '<span class="dimtx">(no response captured yet)</span>'}</div>`;
+  if (!rec.taskId) {
+    h += `<div class="dlab">task events</div><div class="empty">this request carries no orchestrator task id — there is no task record to show</div>`;
+  }
+  tmBody.innerHTML = h;
+}
+/* A record may be in the live window, or parked as a completion that Recent
+   outcomes is still showing after it aged out of the tap. Both are openable. */
+function tapRecordFor(key) {
+  if (tapRecords.has(key)) return tapRecords.get(key);
+  for (const rec of tapDone.values()) if (rec.key === key) return rec;
+  return null;
+}
+function openTapCard(key) {
+  const rec = tapRecordFor(key);
+  if (!rec) return null;
+  if (rec.taskId) return openTaskModal(rec.taskId, rec);   // real task id ⇒ the full task record
+  closeTaskModal();
+  openTapKey = rec.key;
+  tmodal.classList.add("open");
+  if (typeof tmodal.setAttribute === "function") tmodal.setAttribute("aria-hidden", "false");
+  tmTitle.textContent = "tap request · " + rec.role;
+  renderTapModalBody(rec);
+  return null;
+}
+
+async function openTaskModal(id, tapRec) {
+  if (id == null || id === "" || id === "null") return;
+  closeTaskModal();                       // always tear the old stream down first
+  const tid = String(id);
+  openTaskId = tid;
+  if (tapRec) openTapKey = tapRec.key;
+  tmodal.classList.add("open");
+  if (typeof tmodal.setAttribute === "function") tmodal.setAttribute("aria-hidden", "false");
+  tmTitle.textContent = "task " + tid;
+  const s = taskSeeds.get(tid) || {};
+  tmMeta.innerHTML = tapRec ? tapChipsHtml(tapRec) : taskChipsHtml(s, {}, null, null);
+  tmBody.innerHTML = '<div class="empty">loading…</div>';
+
+  let d = null, err = null, status = 0;
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), T_SMALL * 2);
+  try {
+    const r = await fetch(API + "/dashboard/api/task/" + encodeURIComponent(tid),
+      { cache: "no-store", mode: "cors", signal: ac.signal });
+    status = r.status || 0;
+    if (!r.ok) throw new Error("HTTP " + status);
+    d = await r.json();
+  } catch (e) { err = e; } finally { clearTimeout(timer); }
+  if (openTaskId !== tid) return;         // operator closed or switched while we waited
+
+  if (err) {
+    /* A tap record is first-hand evidence about the same request — when the task
+       store cannot answer, show it rather than an apology. */
+    if (tapRec) {
+      renderTapModalBody(tapRec);
+      const why = status === 404
+        ? `<div class="loud"><b>task record no longer retained</b> — the task store is a ring buffer and ` +
+          `<span class="mono">${esc(tid)}</span> has aged out. Shown below: the tap's own record of the request.</div>`
+        : `<div class="loud"><b>task record unreachable</b> — ${esc((err && err.message) || err)}. ` +
+          `Shown below: the tap's own record of the request.</div>`;
+      tmBody.innerHTML = why + tmBody.innerHTML;
+      return;
+    }
+    tmBody.innerHTML = status === 404
+      ? `<div class="loud"><b>task no longer retained</b> — the task store is a ring buffer and ` +
+        `<span class="mono">${esc(tid)}</span> has aged out of it. This is a retention fact, not a transport failure.</div>` +
+        (Object.keys(s).length ? `<div class="dlab">what the frame still knows</div><div class="dbox">${esc(JSON.stringify(s, null, 2))}</div>` : "")
+      : `<div class="loud"><b>task detail unreachable</b> — ${esc((err && err.message) || err)}. ` +
+        `The API on :8000 may be down, or CORS is not enabled for this origin.</div>`;
+    return;
+  }
+
+  const events = Array.isArray(d.events) ? d.events : [];
+  const slot = (d.slot && typeof d.slot === "object") ? d.slot : null;
+  const tap = (d.tap_section && typeof d.tap_section === "object") ? d.tap_section : null;
+  let prompt = "", body = "", src = "", live = false;
+  if (slot) {
+    prompt = String(slot.prompt == null ? "" : slot.prompt);
+    body = String(slot.content == null ? "" : slot.content);
+    src = "live slot @ port " + (d.active_slot_port != null ? d.active_slot_port : "?");
+    live = true;
+  } else if (tap) {
+    prompt = String(tap.prompt == null ? "" : tap.prompt);
+    body = String(tap.response == null ? "" : tap.response);
+    src = "inference_tap section @ " + (tap.timestamp || tap.started_at || "?") + " · role " + (tap.role || "?");
+  } else {
+    const started = events.find(e => e && e.event_type === "task_started");
+    prompt = String((started && started.data && started.data.objective) || d.objective || s.objective || "");
+    src = events.length ? "task_started.objective — no live slot and no tap match"
+      : "no events, no slot, no tap match";
+  }
+  const doneEv = events.find(e => e && e.event_type === "task_completed");
+  const dd = (doneEv && doneEv.data && typeof doneEv.data === "object") ? doneEv.data : {};
+  let tps = null;
+  if (num(dd.tokens_generated) && num(dd.generation_ms) && dd.generation_ms > 0) {
+    tps = dd.tokens_generated / (dd.generation_ms / 1000);
+  }
+  if (tps == null && tap && tap.timings_raw && num(tap.timings_raw.tps) && tap.timings_raw.tps > 0) {
+    tps = tap.timings_raw.tps;
+  }
+  tmMeta.innerHTML = tapRec ? tapChipsHtml(tapRec) : taskChipsHtml(s, dd, tap, tps);
+
+  /* 200 with nothing in it is the ring buffer's way of saying "evicted" — the
+     endpoint does not 404 for an unknown id, so absence has to be read, not
+     assumed from a status code. */
+  const evicted = !events.length && !slot && !tap && !prompt;
+  if (evicted && tapRec) {   // the tap still holds the request first-hand
+    renderTapModalBody(tapRec);
+    tmBody.innerHTML = `<div class="loud"><b>task record no longer retained</b> — the API answered but ` +
+      `carries no events, slot or tap section for <span class="mono">${esc(tid)}</span>. ` +
+      `Shown below: the tap's own record of the request.</div>` + tmBody.innerHTML;
+    return;
+  }
+  let h = evicted
+    ? `<div class="loud"><b>task no longer retained</b> — the API answered, but carries no events, ` +
+      `no live slot and no tap section for <span class="mono">${esc(tid)}</span>. The task store is a ` +
+      `ring buffer; this id has aged out.</div>` : "";
+  h += `<div class="dlab">source</div><div class="tmeta" style="font-size:11px">${esc(src)}` +
+    (tap && tap.timings ? ` <span class="dimtx">· ${esc(tap.timings)}</span>` : "") + "</div>";
+  if (d.objective || s.objective) {
+    h += `<div class="dlab">objective</div><div class="dbox" style="max-height:120px">${esc(String(d.objective || s.objective))}</div>`;
+  }
+  h += `<div class="dlab">prompt${prompt ? ` · ${prompt.length}c` : ""}</div>` +
+    `<div class="dbox">${prompt ? esc(prompt) : '<span class="dimtx">(no prompt captured for this task)</span>'}</div>`;
+  h += `<div class="dlab">${live ? "live inference" : "inference"}${body ? ` · ${body.length}c` : ""}</div>` +
+    `<div class="dbox${live ? " live" : ""}" id="tm-stream">${body ? esc(body) :
+      '<span class="dimtx">(no model output captured — the task may be queued, in local work, or its tap section has not matched)</span>'}</div>`;
+  h += `<div class="dlab">task events · ${events.length} <span class="dimtx">(orchestrator-side)</span></div>${taskEventRows(events)}`;
+  tmBody.innerHTML = h;
+  tapModalOwnsBody = false;   // a fetched task body — tap frames must not overwrite it
+
+  /* Live tasks keep streaming into the same box. Anything else stays static —
+     an SSE left open behind a closed modal is a leak, so every exit path in
+     closeTaskModal() tears it down. */
+  if (live || s.__live) { taskStreamBuf = body; startTaskStream(tid); }
+}
+function startTaskStream(tid) {
+  if (typeof EventSource !== "function") return;
+  try { taskStream = new EventSource(API + "/dashboard/events/task/" + encodeURIComponent(tid)); }
+  catch (e) { taskStream = null; return; }
+  taskStream.onmessage = ev => {
+    if (openTaskId !== tid) return;
+    let u = null;
+    try { u = JSON.parse(ev.data); } catch (e) { return; }
+    const el = $("#tm-stream");
+    if (!el || !u) return;
+    if (u.done) {
+      el.classList.remove("live");
+      if (taskStream) { try { taskStream.close(); } catch (e) { } taskStream = null; }
+      return;
+    }
+    if (u.delta) {
+      if (u.reset) taskStreamBuf = "";
+      taskStreamBuf += u.delta;
+      el.textContent = taskStreamBuf;
+      el.scrollTop = el.scrollHeight;
+    }
+  };
+}
+/* Delegation on the panel body (not per-card handlers): renderOutcomes rebuilds
+   its innerHTML on every frame, so anything bound to a card dies with it. */
+if (typeof PANELS.outcomes.body.addEventListener === "function") {
+  PANELS.outcomes.body.addEventListener("click", ev => {
+    const t = ev && ev.target;
+    if (!t || typeof t.closest !== "function") return;
+    /* tap sub-rows sit INSIDE task cards — the innermost identity wins, so a
+       click on a role sub-row opens that request, not the whole task. */
+    const tk = t.closest("[data-tapk]");
+    if (tk && tk.getAttribute("data-tapk")) {
+      const p = openTapCard(tk.getAttribute("data-tapk"));
+      if (p && typeof p.catch === "function") {
+        p.catch(e => {
+          tmBody.innerHTML = `<div class="loud"><b>request detail failed to render</b> — ${esc((e && e.message) || e)}</div>`;
+        });
+      }
+      return;
+    }
+    const hit = t.closest("[data-task]");
+    if (!hit) return;
+    const id = hit.getAttribute("data-task");
+    if (!id) return;
+    /* a throw inside the async open must not leave a blank modal on screen */
+    const p = openTaskModal(id);
+    if (p && typeof p.catch === "function") {
+      p.catch(e => {
+        tmBody.innerHTML = `<div class="loud"><b>task detail failed to render</b> — ${esc((e && e.message) || e)}</div>`;
+      });
+    }
+  });
+}
+/* Same delegation for tap cards — they are the same component, so they get the
+   same click-through, keyed by request identity instead of task id. */
+if (typeof PANELS.tap.body.addEventListener === "function") {
+  PANELS.tap.body.addEventListener("click", ev => {
+    const t = ev && ev.target;
+    const hit = (t && typeof t.closest === "function") ? t.closest("[data-tapk]") : null;
+    if (!hit) return;
+    const k = hit.getAttribute("data-tapk");
+    if (!k) return;
+    const p = openTapCard(k);
+    if (p && typeof p.catch === "function") {
+      p.catch(e => {
+        tmBody.innerHTML = `<div class="loud"><b>request detail failed to render</b> — ${esc((e && e.message) || e)}</div>`;
+      });
+    }
+  });
+}
+if (typeof tmodal.addEventListener === "function") {
+  tmodal.addEventListener("click", ev => { if (ev && ev.target === tmodal) closeTaskModal(); });
+}
+if (typeof $("#tm-close").addEventListener === "function") {
+  $("#tm-close").addEventListener("click", closeTaskModal);
+}
+if (typeof document.addEventListener === "function") {
+  document.addEventListener("keydown", ev => { if (ev && ev.key === "Escape") closeTaskModal(); });
+}
+
+/* ------------------------------------------------------- liveness ticker */
+function paintPanel(p) {
+  const now = Date.now();
+  const age = p.lastOk ? (now - p.lastOk) : null;
+  p.sec.classList.remove("stale", "dead");
+  p.banner.classList.remove("on", "warn", "bad");
+  if (!p.everOk) {
+    if (p.fails > 0) {
+      p.sec.classList.add("dead");
+      p.banner.classList.add("on", "bad");
+      p.banner.innerHTML = `no data — never loaded · ${p.fails} failed attempt${p.fails === 1 ? "" : "s"} ` +
+        `<span class="why">(${esc(p.lastErr)})</span>`;
+    }
+    return;
+  }
+  if (age > p.staleMs) {
+    p.sec.classList.add(age > p.staleMs * 3 ? "dead" : "stale");
+    p.banner.classList.add("on", age > p.staleMs * 3 ? "bad" : "warn");
+    const why = p.lastErr ? ` <span class="why">(last error: ${esc(p.lastErr)})</span>`
+      : ` <span class="why">(threshold ${Math.round(p.staleMs / 1000)}s)</span>`;
+    p.banner.innerHTML = `no data — last seen ${esc(fmtAge(age / 1000))} ago${why}`;
+  }
+}
+function tick() {
+  const now = Date.now();
+  for (const k of Object.keys(PANELS)) paintPanel(PANELS[k]);
+
+  /* header: connection + generated_at age, ticking client-side every second */
+  const cb = $("#conn-badge"), ct = $("#conn-text");
+  cb.className = "badge";
+  if (sseHealthy()) { cb.classList.add("live"); ct.textContent = "live · SSE"; }
+  else if (lastAnyOk && (now - lastAnyOk) < 15000) { cb.classList.add("poll"); ct.textContent = "live · polling"; }
+  else if (lastAnyOk) { cb.classList.add("warnb"); ct.textContent = "reconnecting…"; }
+  else { cb.classList.add(anySeenFail ? "deadb" : "warnb"); ct.textContent = anySeenFail ? "dead" : "connecting…"; }
+
+  const fb = $("#frame-badge"), ft = $("#frame-text");
+  fb.className = "badge";
+  if (latestSnap && num(latestSnap.generated_at)) {
+    const genAge = (now / 1000) - latestSnap.generated_at;
+    const arrivedAge = (now - lastFrameMs) / 1000;
+    fb.classList.add(genAge > 30 ? "deadb" : genAge > 12 ? "warnb" : "live");
+    ft.textContent = `frame ${fmtAge(genAge)}` + (cadenceMs ? ` · cadence ${fmtAge(cadenceMs / 1000)}` : "") +
+      (arrivedAge > 30 ? ` · arrived ${fmtAge(arrivedAge)} ago` : "");
+  } else { fb.classList.add("warnb"); ft.textContent = "frame —"; }
+
+  /* global dead state: nothing on :8000 has answered */
+  const banner = $("#dead-banner");
+  const allDark = anySeenFail && (!lastAnyOk || (now - lastAnyOk) > 15000);
+  banner.classList.toggle("on", allDark);
+  if (allDark) {
+    $("#dead-detail").textContent =
+      `last successful :8000 read: ${lastAnyOk ? fmtAge((now - lastAnyOk) / 1000) + " ago" : "never"} · last error: ${lastGlobalErr || "n/a"}`;
+  }
+
+  /* tap live-dot: pulsing green while frames land, idle when the taps are quiet,
+     red once the tap panel itself has gone dark. */
+  const td = $("#tap-dot"), tdt = $("#tap-dot-text");
+  td.className = "badge";
+  const tapP = PANELS.tap, tapAge = tapP.lastOk ? now - tapP.lastOk : null;
+  if (tapLastFrame && (now - tapLastFrame) < 6000) { td.classList.add("live"); tdt.textContent = "receiving"; }
+  else if (tapAge != null && tapAge <= tapP.staleMs) { td.classList.add("poll"); tdt.textContent = "quiet"; }
+  else if (tapP.everOk) { td.classList.add("deadb"); tdt.textContent = "no data"; }
+  else { td.classList.add(tapP.fails ? "deadb" : "warnb"); tdt.textContent = tapP.fails ? "dead" : "connecting"; }
+
+  if (!tapHealthy() && tapRetryAt && now > tapRetryAt) { tapRetryAt = 0; openTapStream(); }
+  if (!es && esRetryAt && now > esRetryAt) { esRetryAt = 0; openStream(); }
+}
+
+/* ------------------------------------------------------------------- boot */
+openStream();
+openTapStream();
+pollSnapshot();          // first paint without waiting for the stream's first frame
+pollLocks(); pollContention(); pollProcess(); pollTap();
+
+setInterval(() => { if (!sseHealthy()) pollSnapshot(); }, 3000);
+setInterval(pollLocks, 5000);
+setInterval(pollContention, 5000);
+setInterval(pollProcess, 10000);
+setInterval(() => { if (!tapHealthy()) pollTap(); }, 5000);
+setInterval(tick, 1000);
+tick();
+</script>
+</body>
+</html>

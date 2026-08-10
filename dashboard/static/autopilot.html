@@ -1,0 +1,1547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPYC — Autopilot</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --dim:#6e7681; --accent:#60a5fa; --good:#34d399;
+    --p0:#f85149; --high:#f0883e; --medium:#d29922; --low:#3fb950; --none:#6e7681;
+    --warn:#fbbf24; --bad:#f87171; --frontier:#34d399; --dominated:#4a5568;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,BlinkMacSystemFont,
+    "Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .muted{color:var(--muted)} .mono{font-family:var(--mono)}
+  header{
+    position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;
+    padding:11px 20px;background:rgba(13,17,23,.93);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);flex-wrap:wrap;
+  }
+  header h1{font-size:16px;margin:0;font-weight:650;letter-spacing:.2px;white-space:nowrap}
+  header .sub{color:var(--muted);font-size:12px}
+  nav#epyc-nav{display:flex;gap:14px;align-items:center;font-size:13px;flex-wrap:wrap}
+  .hspacer{margin-left:auto}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 9px;
+    border-radius:20px;border:1px solid var(--border);color:var(--muted);white-space:nowrap;
+  }
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex:none}
+  .badge.ok{color:var(--good);border-color:#1f4d38} .badge.ok .dot{background:var(--good)}
+  .badge.warn{color:var(--warn);border-color:#4d3f14} .badge.warn .dot{background:var(--warn)}
+  .badge.bad{color:var(--p0);border-color:#4d1f1c} .badge.bad .dot{background:var(--p0)}
+  .badge.unknown{color:var(--dim);border-color:var(--border)} .badge.unknown .dot{background:var(--dim)}
+  .badge.live .dot{animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  .statechip{
+    display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:650;
+    padding:4px 12px;border-radius:20px;border:1px solid var(--border);
+    text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;
+  }
+  .statechip .dot{width:8px;height:8px;border-radius:50%;background:var(--dim);flex:none}
+  .statechip.running{color:var(--good);border-color:#1f4d38;background:rgba(52,211,153,.10)}
+  .statechip.running .dot{background:var(--good);animation:pulse 1.6s ease-in-out infinite}
+  .statechip.paused{color:var(--warn);border-color:#4d3f14;background:rgba(251,191,36,.10)}
+  .statechip.paused .dot{background:var(--warn)}
+  .statechip.stopped{color:var(--muted);border-color:var(--border);background:rgba(139,148,158,.08)}
+  .statechip.stopped .dot{background:var(--muted)}
+  .statechip.bad{color:var(--p0);border-color:#4d1f1c;background:rgba(248,81,73,.10)}
+  .statechip.bad .dot{background:var(--p0)}
+  .statechip.unknown{color:var(--dim)}
+
+  main{padding:16px 20px 70px;max-width:1600px;margin:0 auto}
+
+  #global-dead{
+    display:none;margin:0 0 16px;padding:11px 14px;border-radius:9px;
+    border:1px solid #4d1f1c;background:rgba(248,81,73,.09);color:var(--bad);font-size:12.5px;line-height:1.55;
+  }
+  #global-dead.show{display:block}
+  #global-dead b{color:#ffb4ae}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .grid.one{grid-template-columns:1fr}
+  @media(max-width:1080px){.grid{grid-template-columns:1fr}}
+
+  section.panel{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    padding:13px 16px 14px;margin-bottom:16px;transition:opacity .25s;
+  }
+  /* Stale/dead panels keep their content fully readable (operator eyeball pass
+     2026-08-10: the greying was the annoyance, the message is the signal). The
+     dead state announces itself via the header color, border and the stamp. */
+  section.panel.dead{border-color:#4d1f1c}
+  section.panel.dead .ph{color:var(--p0)}
+  .ph{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 10px;
+    font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;
+  }
+  .ph .stamp{margin-left:auto;font-size:10.5px;font-weight:400;letter-spacing:0;
+    text-transform:none;color:var(--dim);font-family:var(--mono);text-align:right}
+  .ph .stamp.stale{color:var(--warn);font-weight:700;background:rgba(210,153,34,.13);
+    padding:1px 8px;border-radius:9px;border:1px solid #4d3f14}
+  .ph .stamp.deadstamp{color:var(--p0);font-weight:700;background:rgba(248,81,73,.12);
+    padding:1px 8px;border-radius:9px;border:1px solid #4d1f1c}
+  .why{font-size:11.5px;color:var(--muted);margin:-4px 0 11px;line-height:1.5}
+
+  .stats{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end;margin:0 0 8px}
+  .stat{display:flex;flex-direction:column;gap:2px;min-width:74px}
+  .stat .n{font-size:22px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+  .stat .n.good{color:var(--good)} .stat .n.warn{color:var(--high)} .stat .n.bad{color:var(--p0)}
+  .stat .n.dimv{color:var(--dim);font-size:15px}
+  .stat .l{font-size:11px;color:var(--muted)}
+  .stat .s{font-size:10px;color:var(--dim);font-family:var(--mono)}
+
+  .kv{font-size:12px;color:var(--muted);line-height:1.7;font-family:var(--mono)}
+  .kv b{color:var(--text);font-weight:600}
+  .note{font-size:11px;color:var(--dim);line-height:1.55;margin-top:9px}
+  .warnline{font-size:11.5px;color:var(--warn);margin-top:7px;line-height:1.5}
+  .badline{font-size:11.5px;color:var(--bad);margin-top:7px;line-height:1.5}
+  .goodline{font-size:11.5px;color:var(--good);margin-top:7px;line-height:1.5}
+  ul.blockers{list-style:none;margin:9px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+  ul.blockers li{font-size:11.5px;color:var(--high);border-left:3px solid var(--high);padding:2px 0 2px 8px}
+  ul.blockers li.explained{color:var(--muted);border-left-color:var(--dim)}
+
+  button{
+    background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;
+    padding:5px 12px;font:inherit;font-size:12px;cursor:pointer;font-family:var(--mono);
+  }
+  button:hover:not(:disabled){border-color:var(--accent);color:#fff}
+  button:disabled{opacity:.38;cursor:not-allowed}
+  .controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:10px 0 4px}
+  #control-status{font-size:11.5px;font-family:var(--mono);color:var(--muted)}
+  #control-response{font-size:11px;font-family:var(--mono);color:var(--dim);margin-top:7px;
+    white-space:pre-wrap;word-break:break-word;max-height:96px;overflow:auto}
+
+  /* trial progress bar */
+  .tp-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    font-size:12px;font-family:var(--mono);margin-bottom:6px}
+  .tp-pct{color:var(--accent);font-weight:700}
+  .tp-wrap{position:relative;width:100%;height:11px;background:#0d1117;
+    border:1px solid var(--border);border-radius:4px;overflow:hidden}
+  .tp-bar{position:absolute;left:0;top:0;height:100%;width:0%;border-radius:3px;
+    background:linear-gradient(90deg,var(--accent),var(--good));transition:width .5s ease}
+  .tp-bar.mid{background:linear-gradient(90deg,var(--accent),var(--warn))}
+  .tp-bar.tail{background:linear-gradient(90deg,var(--warn),var(--bad))}
+  .tp-tick{position:absolute;top:0;width:1px;height:100%;background:rgba(201,209,217,.45)}
+  .tp-tick.major{background:rgba(201,209,217,.85);width:2px}
+  .tp-labels{position:relative;height:12px;margin-top:3px}
+  .tp-labels span{position:absolute;transform:translateX(-50%);font-size:9px;
+    color:var(--dim);font-family:var(--mono)}
+  .tp-labels span.major{color:var(--muted);font-weight:600}
+  .tp-labels span.p90{right:0;transform:none;color:var(--muted);font-weight:600}
+  .tp-meta{margin-top:6px;font-size:10.5px;color:var(--muted);font-family:var(--mono);line-height:1.6}
+
+  /* streams */
+  pre.stream{
+    background:#0b0e14;border:1px solid var(--border);border-radius:7px;padding:9px 11px;
+    margin:0;font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--text);
+    height:330px;overflow:auto;white-space:pre-wrap;word-break:break-word;
+  }
+  pre.stream.short{height:260px}
+  pre.stream::-webkit-scrollbar{width:9px}
+  pre.stream::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+  .streamfoot{display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+    font-size:10.5px;color:var(--dim);font-family:var(--mono);margin-top:6px}
+  .streamfoot .pin{color:var(--muted)}
+  .lg-err{color:var(--bad)} .lg-warn{color:var(--warn)} .lg-good{color:var(--good)}
+  .lg-act{color:var(--accent)} .lg-metric{color:#94a3b8} .lg-rule{color:#475569}
+  .pl-banner{display:block;margin:13px 0 2px;padding:5px 9px;background:#12283f;color:#7dd3fc;
+    font-weight:800;letter-spacing:.5px;text-align:center;border-top:2px solid #38bdf8;
+    border-bottom:2px solid #38bdf8}
+  .pl-sub{display:block;margin:4px 0 2px;padding:1px 8px;color:var(--warn);font-weight:600;
+    border-left:3px solid #f59e0b}
+
+  /* charts */
+  svg.chart{width:100%;height:auto;display:block;overflow:visible}
+  .chart-title{font-size:11.5px;color:var(--muted);margin:0 0 5px}
+  .legend{display:flex;gap:14px;font-size:10.5px;color:var(--muted);margin-top:7px;flex-wrap:wrap;align-items:center}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .legend i.sq{border-radius:2px}
+  .policy{font-size:11.5px;color:var(--muted);line-height:1.65;
+    border-left:3px solid var(--accent);padding:2px 0 2px 9px;margin:0 0 11px}
+  .policy b{color:var(--text)}
+
+  /* tables */
+  table.t{border-collapse:collapse;width:100%;font-size:11.5px;margin-top:8px;display:block;overflow-x:auto}
+  table.t th,table.t td{border-bottom:1px solid var(--border);padding:4px 9px 4px 0;text-align:left;vertical-align:top;white-space:nowrap}
+  table.t th{color:var(--muted);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px}
+  table.t td{font-family:var(--mono);color:var(--text)}
+  table.t td.wrap{white-space:normal;font-family:inherit;color:var(--muted);max-width:520px}
+  table.t tr.frontier td{color:var(--good)}
+  table.t tr.excl td{color:var(--dim)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}
+  .chip{font-size:10.5px;padding:2px 8px;border-radius:11px;border:1px solid var(--border);
+    color:var(--muted);white-space:nowrap;font-family:var(--mono)}
+  .chip.P0{color:var(--p0);border-color:#4d1f1c} .chip.P1{color:var(--high);border-color:#5a3a1a}
+  .chip.P2{color:var(--medium);border-color:#4d3f14} .chip.P3{color:var(--low);border-color:#1f4d24}
+  .chip.on{color:var(--good);border-color:#1f4d38} .chip.off{color:var(--dim)}
+
+  .list{display:flex;flex-direction:column;gap:7px;margin-top:9px;max-height:340px;overflow:auto}
+  .item{border:1px solid var(--border);background:var(--panel2);border-radius:7px;padding:7px 9px;
+    border-left:3px solid var(--none)}
+  .item.P0{border-left-color:var(--p0)} .item.P1{border-left-color:var(--high)}
+  .item.P2{border-left-color:var(--medium)} .item.P3{border-left-color:var(--low)}
+  .item .t{font-size:12px;font-weight:600;line-height:1.35}
+  .item .m{font-size:10.5px;color:var(--muted);font-family:var(--mono);margin-top:3px}
+  .item .d{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.45}
+
+  .simplified{font-size:11px;color:var(--warn);background:rgba(251,191,36,.08);
+    border:1px dashed #4d3f14;border-radius:6px;padding:6px 9px;margin:0 0 10px;line-height:1.5}
+  .brief-narr{font-size:13px;line-height:1.65;color:var(--text);margin:0 0 10px}
+  .brief-sec{margin-top:13px}
+  .brief-sec h3{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;
+    margin:0 0 6px;font-weight:600}
+  .empty{color:var(--dim);font-size:12px;padding:10px 0}
+  .deadbody{color:var(--muted);font-size:12px;line-height:1.6}
+  .deadbody b{color:var(--bad)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Autopilot</h1>
+  <span class="sub">loop, planning &amp; optimization</span>
+  <nav id="epyc-nav"></nav>
+  <span class="hspacer"></span>
+  <span class="statechip unknown" id="loop-chip"><span class="dot"></span><span id="loop-chip-text">state unknown</span></span>
+  <span class="badge unknown" id="conn-badge"><span class="dot"></span><span id="conn-text">:8000 — connecting</span></span>
+</header>
+
+<main>
+  <div id="global-dead"></div>
+
+  <!-- 1 · phase + control -->
+  <section class="panel" id="p-phase" data-panel="phase">
+    <div class="ph">phase &amp; dispatch control<span class="stamp" data-stamp="phase"></span></div>
+    <p class="why">The loop's declared posture. A stop the operator declared (dispatch paused, process
+      down on purpose) is an honest idle state — it is reported as such and separated from a producer
+      that simply went silent.</p>
+    <div id="phase-body"><span class="muted">loading…</span></div>
+    <div class="controls">
+      <button type="button" id="btn-pause" disabled>pause dispatch</button>
+      <button type="button" id="btn-resume" disabled>resume dispatch</button>
+      <span id="control-status">control state unknown</span>
+    </div>
+    <div id="control-response"></div>
+  </section>
+
+  <div class="grid">
+    <!-- 2 · trial progress -->
+    <section class="panel" id="p-progress" data-panel="progress">
+      <div class="ph">trial progress<span class="stamp" data-stamp="progress"></span></div>
+      <div id="progress-body"><span class="muted">loading…</span></div>
+    </section>
+
+    <!-- 6 · outcome KPIs -->
+    <section class="panel" id="p-kpi" data-panel="progress">
+      <div class="ph">outcome KPIs — is the loop producing value?<span class="stamp" data-stamp="progress"></span></div>
+      <div id="kpi-body"><span class="muted">loading…</span></div>
+    </section>
+  </div>
+
+  <!-- 3 · autopilot log -->
+  <section class="panel" id="p-log" data-panel="log">
+    <div class="ph">
+      <span class="badge unknown" id="log-live"><span class="dot"></span><span id="log-live-text">stream</span></span>
+      autopilot log<span class="stamp" data-stamp="log"></span>
+    </div>
+    <pre class="stream" id="log-pre">connecting…</pre>
+    <div class="streamfoot">
+      <span id="log-foot">—</span>
+      <span class="pin" id="log-pin">pinned to bottom</span>
+      <span>scroll up to release the pin · buffer capped at 128 KB</span>
+    </div>
+  </section>
+
+  <!-- 4 · planner tap -->
+  <section class="panel" id="p-planner" data-panel="planner">
+    <div class="ph">
+      <span class="badge unknown" id="plan-live"><span class="dot"></span><span id="plan-live-text">stream</span></span>
+      planner tap<span class="stamp" data-stamp="planner"></span>
+    </div>
+    <div id="plan-hint"></div>
+    <pre class="stream short" id="plan-pre">connecting…</pre>
+    <div class="streamfoot">
+      <span id="plan-foot">—</span>
+      <span class="pin" id="plan-pin">pinned to bottom</span>
+    </div>
+  </section>
+
+  <!-- 5 · GEPA + Pareto -->
+  <section class="panel" id="p-pareto" data-panel="pareto">
+    <div class="ph">GEPA + Pareto frontier<span class="stamp" data-stamp="pareto"></span></div>
+    <div id="pareto-policy" class="policy"><span class="muted">loading objective policy…</span></div>
+    <div class="grid">
+      <div>
+        <p class="chart-title" id="scatter-title">frontier scatter</p>
+        <svg class="chart" id="chart-scatter" viewBox="0 0 640 340" role="img" aria-label="quality versus speed scatter"></svg>
+        <div class="legend">
+          <span><i style="background:var(--frontier)"></i>frontier</span>
+          <span><i style="background:var(--dominated)"></i>dominated</span>
+          <span id="scatter-note" class="muted"></span>
+        </div>
+      </div>
+      <div>
+        <p class="chart-title" id="hv-title">hypervolume over trials</p>
+        <svg class="chart" id="chart-hv" viewBox="0 0 640 340" role="img" aria-label="hypervolume over trials"></svg>
+        <div class="legend"><span><i class="sq" style="background:var(--accent)"></i>hypervolume (canonical tier)</span>
+          <span id="hv-note" class="muted"></span></div>
+      </div>
+    </div>
+    <div id="pareto-tables"></div>
+  </section>
+
+  <section class="panel" id="p-gepa" data-panel="gepa">
+    <div class="ph">GEPA optimizer<span class="stamp" data-stamp="gepa"></span></div>
+    <div id="gepa-body"><span class="muted">loading…</span></div>
+  </section>
+
+  <!-- 7 · optimization brief -->
+  <section class="panel" id="p-brief" data-panel="brief">
+    <div class="ph">optimization brief <span class="chip">read-only</span><span class="stamp" data-stamp="brief"></span></div>
+    <div id="brief-body"><span class="muted">loading…</span></div>
+  </section>
+
+  <div class="grid">
+    <!-- 8 · insight graph -->
+    <section class="panel" id="p-insight" data-panel="insight">
+      <div class="ph">insight graph<span class="stamp" data-stamp="insight"></span></div>
+      <div class="simplified">simplified view — full interactive graph remains on the legacy page until
+        deprecation (RTG-47 Phase 1b). Layout here is a static circular projection; no zoom, pan, focus
+        search or expansion.</div>
+      <div id="insight-body"><span class="muted">loading…</span></div>
+    </section>
+
+    <!-- 9 · repo readiness -->
+    <section class="panel" id="p-readiness" data-panel="readiness">
+      <div class="ph">repo readiness<span class="stamp" data-stamp="readiness"></span></div>
+      <div id="readiness-body"><span class="muted">loading…</span></div>
+    </section>
+  </div>
+</main>
+
+<script defer src="/nav.js"></script>
+<script>
+"use strict";
+/* ============================================================================
+   EPYC hub — autopilot loop page (RTG-47 Phase 1a).
+   Self-contained: no framework, no CDN. Data plane is the ORCHESTRATOR API on
+   :8000, fetched cross-origin straight from the browser. Every panel owns its
+   own dead state; absence is loud, never a clean empty.
+   ========================================================================== */
+const API = location.protocol + '//' + location.hostname + ':8000';
+const FETCH_MS = 4000;          // AbortController budget per request
+const STALE_MS = 15000;         // panel goes dim past this without a success
+const LOG_CAP  = 128 * 1024;    // rolling stream buffer cap (chars)
+const MAX_RENDER_LINES = 1400;  // repaint ceiling, protects the main thread
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isNum = v => typeof v === 'number' && isFinite(v);
+const num = (v, d = 0) => isNum(v) ? v.toFixed(d) : '—';
+
+function fmtDur(s){
+  if (!isNum(s)) return '—';
+  if (s < 60) return s.toFixed(0) + 's';
+  if (s < 3600) return (s / 60).toFixed(1) + 'm';
+  if (s < 86400) return (s / 3600).toFixed(1) + 'h';
+  return (s / 86400).toFixed(1) + 'd';
+}
+function fmtRate(m){
+  if (!m || !isNum(m.rate) || !isNum(m.total) || m.total <= 0) return 'unknown';
+  return Math.round(m.rate * 100) + '%';
+}
+function fmtRateSub(m){
+  if (!m || !isNum(m.total) || m.total <= 0) return 'no denominator';
+  return m.count + '/' + m.total;
+}
+
+/* ---------------------------------------------------------------- transport */
+async function getJSON(path){
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), FETCH_MS);
+  try {
+    const r = await fetch(API + path, {cache:'no-store', mode:'cors', signal: ac.signal});
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } finally { clearTimeout(timer); }
+}
+/* A cross-origin fetch that CORS blocks surfaces as a TypeError with no status;
+   an API that is down looks the same from the browser. Say both, never guess. */
+function transportReason(err){
+  const m = (err && err.message) ? err.message : String(err);
+  if (/abort/i.test(m)) return 'timed out after ' + (FETCH_MS/1000) + 's';
+  if (/^HTTP /.test(m)) return m;
+  return 'blocked or unreachable (' + m + ')';
+}
+
+/* ------------------------------------------------------------ panel liveness */
+const PANEL = {};   // key -> {ok:ts|null, err:string|null, attempts:int, fails:int}
+function panelInit(k){ if (!PANEL[k]) PANEL[k] = {ok:null, err:null, attempts:0, fails:0}; return PANEL[k]; }
+function panelOk(k){ const p = panelInit(k); p.ok = Date.now(); p.err = null; p.attempts++; }
+function panelFail(k, err){
+  const p = panelInit(k); p.err = transportReason(err); p.attempts++; p.fails++;
+}
+function deadBody(k, what){
+  const p = panelInit(k);
+  const seen = p.ok ? 'last good payload ' + fmtDur((Date.now() - p.ok)/1000) + ' ago' : 'never reached this page';
+  return '<div class="deadbody"><b>no data</b> — ' + esc(what) + ' ' + esc(p.err || 'unavailable') +
+    '. ' + esc(seen) + '. The orchestrator API on :8000 either is down or has not yet reloaded with ' +
+    'the hub-origin CORS allowance (RTG-47). The legacy page at :8000/dashboard is unaffected.</div>';
+}
+/* 1 Hz ticker: ages the per-panel stamps and dims anything past STALE_MS. */
+function tickStamps(){
+  const now = Date.now();
+  for (const node of $$('[data-stamp]')){
+    const k = node.dataset.stamp, p = PANEL[k];
+    const sect = node.closest('section.panel');
+    if (!p || (!p.ok && !p.err)) { node.textContent = ''; continue; }
+    if (!p.ok){
+      node.textContent = 'never loaded · ' + p.err;
+      node.className = 'stamp deadstamp';
+      if (sect) sect.classList.add('dead');
+      continue;
+    }
+    const age = (now - p.ok) / 1000;
+    if (age * 1000 > STALE_MS){
+      node.textContent = 'no data — last seen ' + fmtDur(age) + ' ago' + (p.err ? ' · ' + p.err : '');
+      node.className = 'stamp ' + (age > 60 ? 'deadstamp' : 'stale');
+      if (sect) sect.classList.add('dead');
+    } else {
+      node.textContent = 'updated ' + Math.round(age) + 's ago';
+      node.className = 'stamp';
+      if (sect) sect.classList.remove('dead');
+    }
+  }
+  paintGlobal();
+}
+/* Page-top banner only when EVERY :8000 surface is failing — a single dead
+   panel is a panel problem, all of them is a transport problem. */
+function paintGlobal(){
+  const keys = Object.keys(PANEL);
+  const el = $('#global-dead');
+  const tried = keys.filter(k => PANEL[k].attempts > 0);
+  // "last attempt failed" is the transport fact; freshness decides how loud to
+  // be. Never-succeeded (the CORS-blocked case) shouts on the first poll; a
+  // panel that was fine a second ago waits out STALE_MS so one bad poll cannot
+  // flap the banner.
+  const errAll = tried.length >= 3 && tried.every(k => PANEL[k].err);
+  const allDown = errAll && tried.every(k => {
+    const p = PANEL[k];
+    return !p.ok || (Date.now() - p.ok) > STALE_MS;
+  });
+  if (allDown){
+    el.className = 'show';
+    el.innerHTML = '<b>orchestrator API (:8000) unreachable from this page</b> — API down, or CORS not ' +
+      'yet enabled (pending API reload — RTG-47). Legacy page at :8000/dashboard unaffected.' +
+      '<div style="color:var(--muted);margin-top:5px;font-size:11.5px;font-family:var(--mono)">' +
+      esc(tried.map(k => k + ': ' + PANEL[k].err).join(' · ')) + '</div>';
+    setConn('bad', ':8000 — unreachable');
+  } else {
+    el.className = '';
+    // The badge tracks the LAST attempt, not the last success: a page whose
+    // every fetch just failed must not keep reading "connected" for 15s.
+    const failing = tried.filter(k => PANEL[k].err).length;
+    const good = tried.filter(k => !PANEL[k].err && PANEL[k].ok &&
+      (Date.now() - PANEL[k].ok) <= STALE_MS).length;
+    if (!tried.length) setConn('unknown', ':8000 — connecting');
+    else if (errAll) setConn('bad', ':8000 — every fetch failing (' + failing + '/' + tried.length + ')');
+    else if (good === tried.length) setConn('ok', ':8000 — connected · ' + good + '/' + tried.length + ' panels');
+    else setConn('warn', ':8000 — partial · ' + good + '/' + tried.length + ' panels · ' + failing + ' failing');
+  }
+}
+function setConn(cls, text){
+  const b = $('#conn-badge');
+  b.className = 'badge ' + cls + (cls === 'ok' ? ' live' : '');
+  $('#conn-text').textContent = text;
+}
+function setLoopChip(cls, text, title){
+  const c = $('#loop-chip');
+  c.className = 'statechip ' + cls;
+  c.title = title || '';
+  $('#loop-chip-text').textContent = text;
+}
+
+/* ======================================================================
+   1 · PHASE + CONTROL   (/dashboard/api/process_status)
+   ====================================================================== */
+let PROC = null, PROG = null;
+
+/* The single most important derivation on this page: separate an operator-
+   declared stop from a producer that quietly died. Both look "idle". */
+function loopPosture(){
+  if (!PROC) return {cls:'unknown', label:'state unknown', declared:false,
+    detail:'process_status has not been read yet.'};
+  const running = !!(PROC.autopilot && PROC.autopilot.running);
+  const st = PROC.autopilot_state || {};
+  const paused = st.paused === true;
+  const inFlight = !!(PROG && PROG.in_flight);
+  if (running && paused)
+    return {cls:'paused', label:'paused', declared:true,
+      detail:'autopilot process is up but dispatch is paused' + (st.pause_reason ? ' — ' + st.pause_reason : '') + '.'};
+  if (running && inFlight)
+    return {cls:'running', label:'running', declared:false,
+      detail:'process up, trial ' + (PROG.trial_id != null ? '#' + PROG.trial_id : '?') + ' in flight.'};
+  if (running)
+    return {cls:'running', label:'running · idle', declared:false,
+      detail:'process up, dispatch enabled, no trial in flight right now.'};
+  if (!running && paused && st.exists)
+    return {cls:'stopped', label:'stopped (declared)', declared:true,
+      detail:'no autopilot process AND dispatch is explicitly paused in the state file — ' +
+             'this is a declared stop, not a silent producer.'};
+  if (!running && st.exists)
+    return {cls:'bad', label:'process down — not declared', declared:false,
+      detail:'no autopilot process, but dispatch is NOT paused: the loop stopped without a declared stop.'};
+  return {cls:'bad', label:'process down · no state', declared:false,
+    detail:'no autopilot process and no readable autopilot state file.'};
+}
+
+function renderPhase(){
+  const body = $('#phase-body');
+  if (!PROC){
+    // Controls must also fall back — leaving the last-known "resume enabled"
+    // button live against an unreadable state is a silent lie, not a no-op.
+    body.innerHTML = deadBody('phase', 'process_status');
+    setLoopChip('unknown', 'state unknown');
+    renderControls();
+    return;
+  }
+  const post = loopPosture();
+  setLoopChip(post.cls, post.label, post.detail);
+
+  const ph = PROC.autopilot_phase || {};
+  const health = PROC.autopilot_phase_health || {};
+  const st = PROC.autopilot_state || {};
+  const running = !!(PROC.autopilot && PROC.autopilot.running);
+  const phaseAge = isNum(PROC.autopilot_phase_age_s) ? PROC.autopilot_phase_age_s : null;
+
+  let h = '<div class="stats">';
+  h += stat(ph.phase || '—', running ? 'current phase' : 'last recorded phase',
+            running ? '' : 'dimv', ph.action_type ? String(ph.action_type) : '');
+  h += stat(ph.trial_id != null ? '#' + ph.trial_id : '—', 'trial', '', ph.eval_label || '');
+  h += stat(isNum(st.trial_counter) ? '#' + st.trial_counter : '—', 'state trial counter', 'dimv');
+  h += stat(fmtDur(PROC.last_autopilot_log_age_s), 'since last log line',
+            (PROC.last_autopilot_log_age_s > 900 ? 'warn' : ''), 'autopilot.log');
+  h += stat(isNum(PROC.gepa_worker_count) ? PROC.gepa_worker_count : '—', 'gepa workers', 'dimv');
+  h += '</div>';
+
+  h += '<div class="kv">' +
+    '<b>posture</b> · ' + esc(post.detail) + '<br>' +
+    '<b>phase marker</b> · ' + esc(ph.idle_reason || 'no idle reason') +
+    (phaseAge != null ? ' · file written ' + esc(fmtDur(phaseAge)) + ' ago' : '') +
+    (isNum(ph.phase_age_s) ? ' · ' + esc(fmtDur(ph.phase_age_s)) + ' recorded in phase' : '') + '<br>' +
+    '<b>heartbeat</b> · pid ' + esc(health.pid != null ? health.pid : '?') +
+    ' (' + (health.pid_alive ? 'alive' : 'not alive') + ') · age ' + esc(fmtDur(health.heartbeat_age_s)) +
+    ' · stale after ' + esc(fmtDur(health.stale_after_s)) +
+    (health.code_stale ? ' · <span style="color:var(--warn)">runtime code changed since start</span>' : '') +
+    '</div>';
+
+  if (isNum(ph.eval_total_questions) && ph.eval_total_questions > 0){
+    h += '<div class="note">last eval snapshot · ' + esc(ph.eval_label || 'T?') + ' ' +
+      esc(ph.eval_completed_questions) + '/' + esc(ph.eval_total_questions) + ' questions · ' +
+      esc(num(ph.eval_correct_pct, 1)) + '% correct · concurrency ' + esc(ph.eval_concurrency) + '</div>';
+  }
+
+  const blockers = Array.isArray(health.blockers) ? health.blockers : [];
+  if (blockers.length){
+    // A declared stop MAKES the phase heartbeat stale. Saying "stale heartbeat"
+    // without that context reads as a fault; it is an expected consequence.
+    const explained = post.declared && !running;
+    h += '<ul class="blockers">';
+    for (const b of blockers){
+      h += '<li class="' + (explained ? 'explained' : '') + '">' + esc(b) +
+        (explained ? ' <span style="color:var(--dim)">— expected while the loop is stopped by declaration</span>' : '') +
+        '</li>';
+    }
+    h += '</ul>';
+  }
+  if (PROC._freshness && PROC._freshness.reason){
+    h += '<div class="note">producer freshness (' + esc(PROC._freshness.staleness_class || '?') + '): ' +
+      esc(PROC._freshness.reason) + '</div>';
+  }
+  body.innerHTML = h;
+  renderControls();
+}
+function stat(n, l, cls, sub){
+  return '<div class="stat"><span class="n ' + (cls || '') + '">' + esc(n) + '</span>' +
+    '<span class="l">' + esc(l) + '</span>' +
+    (sub ? '<span class="s">' + esc(sub) + '</span>' : '') + '</div>';
+}
+
+function renderControls(){
+  const pause = $('#btn-pause'), resume = $('#btn-resume'), status = $('#control-status');
+  const st = (PROC && PROC.autopilot_state) || {};
+  if (!PROC){
+    pause.disabled = resume.disabled = true;
+    status.textContent = 'control state unknown — process_status unreachable';
+    status.style.color = 'var(--bad)';
+    return;
+  }
+  const errored = Boolean(st.error) || st.exists === false;
+  const paused = st.paused === true;
+  pause.disabled = errored || paused;
+  resume.disabled = errored || !paused;
+  if (errored){
+    status.textContent = 'control unavailable: ' + String(st.error || 'no autopilot state file').slice(0, 140);
+    status.style.color = 'var(--bad)';
+  } else if (paused){
+    status.textContent = 'dispatch PAUSED' + (st.pause_reason ? ' · ' + st.pause_reason : ' · no reason recorded');
+    status.style.color = 'var(--warn)';
+  } else {
+    status.textContent = 'dispatch enabled';
+    status.style.color = 'var(--muted)';
+  }
+  if (isNum(st.dispatch_deficiency) && st.dispatch_deficiency){
+    status.textContent += ' · deficiency ' + st.dispatch_deficiency;
+  }
+}
+
+/* The one write this page performs. Cross-origin POST triggers a CORS
+   preflight; if that fails the browser gives us a bare TypeError, so the
+   failure is spelled out rather than swallowed into a silent no-op. */
+async function control(action){
+  const status = $('#control-status'), out = $('#control-response');
+  $('#btn-pause').disabled = true; $('#btn-resume').disabled = true;
+  status.textContent = action + ' requested…'; status.style.color = 'var(--muted)';
+  out.textContent = '';
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), FETCH_MS * 2);
+  try {
+    const r = await fetch(API + '/dashboard/api/autopilot_control', {
+      method: 'POST', mode: 'cors', signal: ac.signal,
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({action, note: 'hub autopilot page ' + action}),
+    });
+    const text = await r.text();
+    let data = null; try { data = JSON.parse(text); } catch (_) { /* keep raw */ }
+    out.textContent = 'HTTP ' + r.status + ' · ' + text.slice(0, 900);
+    if (!r.ok || (data && data.status === 'error')){
+      throw new Error((data && data.error) || ('HTTP ' + r.status));
+    }
+    status.textContent = action + ' accepted by the API';
+    status.style.color = 'var(--good)';
+  } catch (err){
+    const m = (err && err.message) ? err.message : String(err);
+    const corsish = !/^HTTP /.test(m);
+    status.textContent = action + ' failed: ' + m +
+      (corsish ? ' — control unavailable: CORS pending or API down' : '');
+    status.style.color = 'var(--bad)';
+    if (!out.textContent){
+      out.textContent = corsish
+        ? 'no HTTP response reached the page. A cross-origin POST needs an OPTIONS preflight that ' +
+          'allows origin ' + location.origin + '; until the orchestrator API reloads with the hub ' +
+          'CORS allowance (RTG-47) this button cannot work from :8100. The legacy page at ' +
+          ':8000/dashboard performs the same control same-origin.'
+        : 'no response body.';
+    }
+  } finally {
+    clearTimeout(timer);
+    setTimeout(pollFast, 400);   // re-read the authoritative state either way
+  }
+}
+$('#btn-pause').addEventListener('click', () => control('pause'));
+$('#btn-resume').addEventListener('click', () => control('resume'));
+
+/* ======================================================================
+   2 · TRIAL PROGRESS   (/dashboard/api/autopilot_progress)
+   ====================================================================== */
+function renderProgress(){
+  const body = $('#progress-body');
+  if (!PROG){ body.innerHTML = deadBody('progress', 'autopilot_progress'); return; }
+
+  if (!PROG.in_flight){
+    const post = loopPosture();
+    const health = PROG.current_code_health || {};
+    let msg;
+    if (post.cls === 'stopped') msg = 'no trial in flight — loop stopped (declared)';
+    else if (post.cls === 'paused') msg = 'no trial in flight — dispatch paused (declared)';
+    else if (post.cls === 'bad') msg = 'no trial in flight — and the stop was NOT declared';
+    else msg = 'no trial in flight';
+    const cls = post.cls === 'bad' ? 'badline' : (post.cls === 'running' ? 'goodline' : 'warnline');
+    body.innerHTML =
+      '<div class="' + cls + '" style="font-size:13px;font-weight:600;margin:0 0 6px">' + esc(msg) + '</div>' +
+      '<div class="kv">' +
+        '<b>autopilot_alive</b> · ' + esc(String(PROG.autopilot_alive)) + '<br>' +
+        '<b>last trial recorded</b> · #' + esc(prom('latest_trial_id')) +
+        ' · last phase ' + esc((PROC && PROC.autopilot_phase && PROC.autopilot_phase.phase) || '—') +
+        ' (' + esc((PROC && PROC.autopilot_phase && PROC.autopilot_phase.action_type) || 'no action') + ')<br>' +
+        '<b>phase heartbeat</b> · ' + esc(health.status || '?') + ' · ' + esc(fmtDur(health.heartbeat_age_s)) + ' old' +
+      '</div>' +
+      '<div class="note">' + esc(post.detail) + ' Percentile ticks (p25/p50/p75) and the elapsed bar only ' +
+      'exist while a trial is running; they are hidden rather than drawn at zero.</div>';
+    return;
+  }
+
+  const d = PROG;
+  const distMode = (d.percent_source === 'action_p50' || d.percent_source === 'aggregate_p50');
+  const showTicks = distMode && isNum(d.recent_p90) && d.recent_p90 > 0;
+  const p = isNum(d.percent) ? d.percent : 0;
+  let barCls = '';
+  if (d.slow_tail) barCls = 'tail';
+  else if (distMode && isNum(d.recent_p75) && isNum(d.elapsed_s) && d.elapsed_s > d.recent_p75) barCls = 'mid';
+
+  let pctText;
+  if (distMode && isNum(d.now_percentile)){
+    const q = Math.round(d.now_percentile * 100);
+    pctText = d.slow_tail ? ('p' + q + ' · slow tail') : ('p' + q);
+  } else pctText = p.toFixed(0) + '%';
+
+  const label = 'trial #' + (d.trial_id != null ? d.trial_id : '?') +
+    ' (' + (d.action_type || '?') + (d.eval_label ? ', ' + d.eval_label : '') + ')';
+
+  let ticks = '', tickLabels = '';
+  if (showTicks){
+    const pos = v => Math.max(0, Math.min(100, (v / d.recent_p90) * 100));
+    const one = (v, major) => {
+      if (!isNum(v)) return '';
+      return '<div class="tp-tick' + (major ? ' major' : '') + '" style="left:' + pos(v).toFixed(2) + '%"></div>';
+    };
+    ticks = one(d.recent_p25, false) + one(d.recent_p50, true) + one(d.recent_p75, false);
+    const lab = (v, name, major) => isNum(v)
+      ? '<span class="' + (major ? 'major' : '') + '" style="left:' + pos(v).toFixed(2) + '%">' + name + '</span>' : '';
+    tickLabels = '<div class="tp-labels">' + lab(d.recent_p25,'p25',false) + lab(d.recent_p50,'p50',true) +
+      lab(d.recent_p75,'p75',false) + '<span class="p90">p90</span></div>';
+  }
+
+  const bits = ['elapsed ' + fmtDur(d.elapsed_s)];
+  if (d.percent_source === 'log_tail' && d.log_tail_progress){
+    const lp = d.log_tail_progress;
+    bits.push((d.eval_label || 'T?') + ' tower ' + lp.completed + '/' + lp.total);
+    bits.push('projected total ~' + fmtDur(d.expected_s));
+  } else if (d.percent_source === 'action_p50'){
+    bits.push(d.action_type + ' n=' + d.n_action_type_samples);
+    bits.push('p50 ~' + fmtDur(d.recent_p50), 'p90 ~' + fmtDur(d.recent_p90));
+  } else if (d.percent_source === 'aggregate_p50'){
+    bits.push('all-actions n=' + d.n_action_type_samples + ' — no same-type history');
+    bits.push('p50 ~' + fmtDur(d.recent_p50), 'p90 ~' + fmtDur(d.recent_p90));
+  } else if (d.percent_source === 'fallback'){
+    bits.push('expected ~' + fmtDur(d.expected_s) + ' — no journal data, hardcoded estimate');
+  } else {
+    bits.push('expected ~' + fmtDur(d.expected_s));
+  }
+  bits.push('source: ' + (d.percent_source || 'unknown'));
+
+  body.innerHTML =
+    '<div class="tp-head"><span>' + esc(label) + '</span><span class="tp-pct">' + esc(pctText) + '</span></div>' +
+    '<div class="tp-wrap"><div class="tp-bar ' + barCls + '" style="width:' + Math.min(100, p).toFixed(1) + '%"></div>' +
+      ticks + '</div>' + tickLabels +
+    '<div class="tp-meta">' + esc(bits.join(' · ')) + '</div>' +
+    (showTicks ? '' : '<div class="note">percentile ticks hidden — this progress source reports true X/Y ' +
+      'completion, so p25/p50/p75 of past durations would be meaningless here.</div>');
+}
+function prom(key){
+  const bp = (PROG && PROG.baseline_promotions) || {};
+  return bp[key] != null ? bp[key] : '?';
+}
+
+/* ======================================================================
+   6 · OUTCOME KPIs  (autopilot_progress.outcome_kpis + process_status
+       .autopilot_outcome_progress.rates — both live, all-time vs window)
+   ====================================================================== */
+function renderKPIs(){
+  const body = $('#kpi-body');
+  if (!PROG && !PROC){ body.innerHTML = deadBody('progress', 'autopilot_progress'); return; }
+  const k = (PROG && PROG.outcome_kpis) || {};
+  const op = (PROC && PROC.autopilot_outcome_progress) ||
+             (PROG && PROG.current_code_health && PROG.current_code_health.outcome_progress) || {};
+  const w = op.rates || {};
+  const health = (PROG && PROG.current_code_health) || (PROC && PROC.autopilot_phase_health) || {};
+
+  const kpiStat = (m, label, invert) => {
+    const bad = m && isNum(m.rate) && (invert ? m.rate > 0.25 : m.rate < 0.10);
+    return '<div class="stat"><span class="n ' + (bad ? 'warn' : 'good') + '">' + esc(fmtRate(m)) + '</span>' +
+      '<span class="l">' + esc(label) + '</span><span class="s">' + esc(fmtRateSub(m)) + '</span></div>';
+  };
+
+  let h = '<div class="stats">';
+  h += kpiStat(k.keepable_rate, 'keepable', false);
+  h += kpiStat(k.wasted_eval_rate, 'wasted-eval', true);
+  h += kpiStat(k.learning_excluded_rate, 'learning-excluded', true);
+  h += kpiStat(k.regression_per_active_trial, 'regression / active trial', true);
+  const per100 = k.promotions_per_100_active_trials || {};
+  h += '<div class="stat"><span class="n ' + (per100.per_100 > 0 ? 'good' : 'warn') + '">' +
+    esc(isNum(per100.per_100) ? per100.per_100.toFixed(2) : '—') + '</span>' +
+    '<span class="l">promotions / 100 trials</span><span class="s">' + esc(fmtRateSub(per100)) + '</span></div>';
+  h += '</div>';
+  h += '<div class="note">all-time scope · ' + esc(k.active_trial_count != null ? k.active_trial_count : '?') +
+    ' active trials counted (source: autopilot_progress.outcome_kpis).</div>';
+
+  if (op.status){
+    h += '<div style="margin-top:12px"><span class="chip ' +
+      (op.status === 'ok' ? 'on' : '') + '">outcome: ' + esc(op.status) + '</span>' +
+      '<span class="chip">recent window ' + esc(w.recent_window_trials != null ? w.recent_window_trials : '?') +
+      ' trials</span></div>';
+    h += '<div class="stats" style="margin-top:9px">';
+    h += kpiStat(w.keepable_rate, 'keepable (window)', false);
+    h += kpiStat(w.wasted_eval_rate, 'wasted-eval (window)', true);
+    h += kpiStat(w.learning_excluded_rate, 'learning-excluded (window)', true);
+    const overBudget = (v, max) => isNum(v) && isNum(max) && v > max;
+    const budget = (v, max) => v == null ? '—' : (v + ' / ' + (max != null ? max : 'no cap'));
+    h += stat(budget(op.trials_since_frontier, op.max_trials_since_frontier),
+      'trials since frontier',
+      overBudget(op.trials_since_frontier, op.max_trials_since_frontier) ? 'bad' : '');
+    h += stat(budget(op.trials_since_promotion, op.max_trials_since_promotion),
+      'trials since promotion',
+      overBudget(op.trials_since_promotion, op.max_trials_since_promotion) ? 'bad' : '');
+    h += stat(op.baseline_promotions != null ? op.baseline_promotions : '—', 'baseline promotions',
+      (op.baseline_promotions ? 'good' : 'warn'));
+    h += '</div>';
+    const bl = Array.isArray(op.blockers) ? op.blockers : [];
+    if (bl.length){
+      h += '<ul class="blockers">';
+      for (const b of bl) h += '<li>' + esc(b) + '</li>';
+      h += '</ul>';
+    }
+  }
+
+  // Current-code health: does the running loop match the code on disk?
+  const codeOk = health.ok === true && health.code_stale === false;
+  h += '<div class="' + (codeOk ? 'goodline' : 'warnline') + '">current-code health: ' +
+    esc(health.status || 'unknown') +
+    (health.code_stale ? ' · runtime source CHANGED since the loop started' : ' · runtime source matches disk') +
+    ' · heartbeat ' + esc(fmtDur(health.heartbeat_age_s)) + ' old' +
+    (health.require_current_code ? ' · required by policy' : ' · not gating') + '</div>';
+  if (Array.isArray(health.code_stale_paths) && health.code_stale_paths.length){
+    h += '<div class="note">changed: ' + esc(health.code_stale_paths.slice(0, 6).join(', ')) + '</div>';
+  }
+  body.innerHTML = h;
+}
+
+/* ======================================================================
+   3 & 4 · SSE STREAMS  (autopilot_log, planner_tap)
+   Reconnect with exponential backoff; keep the buffer across reconnects so a
+   failed reconnect never blanks the panel.
+   ====================================================================== */
+function makeStream(opts){
+  const s = {
+    buf: '', es: null, pinned: true, backoff: 1000, painting: false,
+    key: opts.key, path: opts.path, pre: $(opts.pre), foot: $(opts.foot),
+    pinEl: $(opts.pin), dot: $(opts.dot), dotText: $(opts.dotText), style: opts.style,
+  };
+  s.pre.addEventListener('scroll', () => {
+    s.pinned = (s.pre.scrollHeight - s.pre.scrollTop - s.pre.clientHeight) < 24;
+    s.pinEl.textContent = s.pinned ? 'pinned to bottom' : 'pin released (scroll to bottom to re-pin)';
+    s.pinEl.style.color = s.pinned ? 'var(--muted)' : 'var(--warn)';
+  });
+  s.setDot = (cls, text) => {
+    s.dot.className = 'badge ' + cls + (cls === 'ok' ? ' live' : '');
+    s.dotText.textContent = text;
+  };
+  s.paint = () => {
+    if (s.painting) return;
+    s.painting = true;
+    requestAnimationFrame(() => {
+      s.painting = false;
+      let lines = s.buf.split('\n');
+      let clipped = 0;
+      if (lines.length > MAX_RENDER_LINES){
+        clipped = lines.length - MAX_RENDER_LINES;
+        lines = lines.slice(-MAX_RENDER_LINES);
+      }
+      const head = clipped
+        ? '<span class="lg-rule">… ' + clipped + ' earlier line(s) in buffer, not rendered …</span>\n' : '';
+      s.pre.innerHTML = head + lines.map(s.style).join('\n');
+      if (s.pinned) s.pre.scrollTop = s.pre.scrollHeight;
+      const n = s.buf ? s.buf.split('\n').filter(Boolean).length : 0;
+      s.foot.textContent = n + ' lines · ' + (s.buf.length / 1024).toFixed(0) + ' KB buffered' +
+        (s.lastFrame ? ' · last frame ' + fmtDur((Date.now() - s.lastFrame) / 1000) + ' ago' : '');
+    });
+  };
+  s.apply = data => {
+    if (data && data.error){
+      s.setDot('bad', 'stream error');
+      s.foot.textContent = 'producer error: ' + data.error;
+      return;
+    }
+    if (!data) return;
+    if (data.initial) s.buf = data.chunk || '';
+    else {
+      s.buf += (data.chunk || '');
+      if (s.buf.length > LOG_CAP) s.buf = s.buf.slice(-LOG_CAP);
+    }
+    s.lastFrame = Date.now();
+    panelOk(s.key);
+    s.setDot('ok', 'streaming');
+    s.paint();
+  };
+  s.start = () => {
+    if (s.es){ try { s.es.close(); } catch (_) {} }
+    s.setDot('warn', 'connecting');
+    let es;
+    try { es = new EventSource(API + s.path); }
+    catch (err){ s.fail(err); return; }
+    s.es = es;
+    es.onopen = () => { s.backoff = 1000; s.setDot('ok', 'connected'); };
+    es.onmessage = e => { try { s.apply(JSON.parse(e.data)); } catch (err){ s.foot.textContent = 'frame parse error: ' + err.message; } };
+    es.onerror = () => {
+      if (es._scheduled) return;
+      es._scheduled = true;
+      s.fail(new Error('EventSource error'));
+      const wait = s.backoff;
+      s.backoff = Math.min(s.backoff * 2, 30000);
+      setTimeout(() => { if (s.es === es) s.start(); }, wait);
+    };
+  };
+  s.fail = err => {
+    panelFail(s.key, err);
+    s.setDot('bad', 'stream down');
+    if (!s.buf){
+      s.pre.innerHTML = '<span class="lg-err">stream unavailable</span>\n' +
+        'EventSource to ' + esc(API + s.path) + ' failed. Cross-origin SSE needs the same CORS\n' +
+        'allowance as the JSON endpoints — until the orchestrator API reloads (RTG-47) this\n' +
+        'stream cannot open from ' + esc(location.origin) + '. It may also simply be down.\n' +
+        'The legacy page at :8000/dashboard reads the same stream same-origin.';
+    }
+    s.foot.textContent = 'reconnecting in ' + (s.backoff / 1000) + 's' +
+      (s.buf ? ' · showing last buffered tail' : '');
+  };
+  return s;
+}
+
+function styleLogLine(line){
+  const e = esc(line);
+  if (/ERROR|FAIL|safety violation|Traceback/i.test(line)) return '<span class="lg-err">' + e + '</span>';
+  if (/WARNING/i.test(line)) return '<span class="lg-warn">' + e + '</span>';
+  if (/Trial \d+ complete|frontier|PASS\b|promoted/i.test(line)) return '<span class="lg-good">' + e + '</span>';
+  if (/Trial \d+:|Dispatching action|claude -p|seed_batch|gepa_optimize|structural_experiment|deep_eval/i.test(line))
+    return '<span class="lg-act">' + e + '</span>';
+  if (/METRIC /i.test(line)) return '<span class="lg-metric">' + e + '</span>';
+  return e;
+}
+function stylePlannerLine(line){
+  const e = esc(line);
+  const trial = line.match(/^=+\s*TRIAL\s+(\d+)[^=]*=+\s*$/i);
+  if (trial) return '<span class="pl-banner">▶ TRIAL ' + esc(trial[1]) + '</span>';
+  const hdr = line.match(/PLANNER\s+(?:provider=\S+\s+role=(\S+)|session)\s*start/i);
+  if (hdr){
+    const role = (hdr[1] || 'draft').toLowerCase();
+    if (role === 'draft'){
+      const ts = line.match(/\[([0-9T:\-]+)\]/);
+      return '<span class="pl-banner">▶ NEW PLANNING' + (ts ? '  ·  ' + esc(ts[1]) : '') + '</span>';
+    }
+    return '<span class="pl-sub">⤷ critique · ' + e + '</span>';
+  }
+  if (/^\[codex:[a-z._]+\]/i.test(line)) return '<span class="lg-act">' + e + '</span>';
+  if (/^=+$|^-+$/.test(line)) return '<span class="lg-rule">' + e + '</span>';
+  if (/ERROR|FAIL/i.test(line)) return '<span class="lg-err">' + e + '</span>';
+  return e;
+}
+
+const LOGS = makeStream({key:'log', path:'/dashboard/events/autopilot_log', pre:'#log-pre',
+  foot:'#log-foot', pin:'#log-pin', dot:'#log-live', dotText:'#log-live-text', style: styleLogLine});
+const PLAN = makeStream({key:'planner', path:'/dashboard/events/planner_tap', pre:'#plan-pre',
+  foot:'#plan-foot', pin:'#plan-pin', dot:'#plan-live', dotText:'#plan-live-text', style: stylePlannerLine});
+
+/* Planner-tap context: history from a previous daemon is not "live planning". */
+function renderPlannerHint(){
+  const el = $('#plan-hint');
+  if (!PROC){ el.innerHTML = ''; return; }
+  const age = PROC.planner_tap_age_s;
+  const running = !!(PROC.autopilot && PROC.autopilot.running);
+  const ph = PROC.autopilot_phase || {};
+  const ageText = isNum(age) ? 'last planner event ' + fmtDur(age) + ' ago' : 'planner event age unknown';
+  let cls = 'note', msg;
+  if (PROC.planner_tap_precedes_autopilot_start){
+    cls = 'warnline';
+    msg = 'stale planner history — this tap predates the current autopilot start. The current ' +
+      (ph.action_type || ph.phase || 'phase') + ' has no planner trace of its own; ' + ageText + '.';
+  } else if (!running){
+    cls = 'warnline';
+    msg = 'planner history · autopilot stopped — ' + ageText +
+      '. Nothing new will arrive until the loop restarts; the tail below is the last planning cycle.';
+  } else if (ph.phase === 'dispatch_action' && ph.action_type && ph.action_type !== 'planner_coordinator'){
+    msg = 'no planner trace for the current ' + ph.action_type + ' · ' + ageText + ' (history below).';
+  } else {
+    msg = 'planner tap · ' + ageText + '.';
+  }
+  el.innerHTML = '<div class="' + cls + '" style="margin:0 0 9px">' + esc(msg) + '</div>';
+}
+
+/* ======================================================================
+   5 · GEPA + PARETO   (/dashboard/api/pareto?scope=current, /api/gepa)
+   ====================================================================== */
+const SVGNS = 'http://www.w3.org/2000/svg';
+const sv = (t, a = {}) => { const n = document.createElementNS(SVGNS, t);
+  for (const k in a) n.setAttribute(k, a[k]); return n; };
+function svText(svg, x, y, txt, attrs){
+  const t = sv('text', Object.assign({x, y, fill:'#8b949e', 'font-size':9}, attrs || {}));
+  t.textContent = txt; svg.appendChild(t); return t;
+}
+function niceTicks(lo, hi, n){
+  if (!isFinite(lo) || !isFinite(hi) || hi <= lo) return [lo];
+  const raw = (hi - lo) / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const norm = raw / mag;
+  const step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
+  const out = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + step * 1e-9; v += step) out.push(v);
+  return out.length ? out : [lo, hi];
+}
+function tickFmt(v){
+  const a = Math.abs(v);
+  if (a >= 1000) return (v / 1000).toFixed(1) + 'k';
+  if (a >= 10) return v.toFixed(0);
+  if (a >= 1) return v.toFixed(1);
+  return v.toFixed(2);
+}
+
+function drawScatter(svg, pareto){
+  svg.innerHTML = '';
+  const W = 640, H = 340, pad = {l:52, r:14, t:12, b:46};
+  const axes = Array.isArray(pareto.objective_axes) ? pareto.objective_axes : [];
+  const axQ = axes.find(a => a.key === 'quality') || {index:0, label:'quality'};
+  const axR = axes.find(a => a.key === 'rate' || a.key === 'speed') || {index:1, label:'speed'};
+  const front = Array.isArray(pareto.frontier) ? pareto.frontier : [];
+  const dom = Array.isArray(pareto.dominated) ? pareto.dominated : [];
+  const get = (t, ax) => { const o = t.objectives; return Array.isArray(o) ? o[ax.index] : undefined; };
+  const pts = [];
+  for (const t of front) pts.push({t, x:get(t, axR), y:get(t, axQ), f:true});
+  for (const t of dom)   pts.push({t, x:get(t, axR), y:get(t, axQ), f:false});
+  const good = pts.filter(p => isNum(p.x) && isNum(p.y));
+  if (!good.length){ svText(svg, W/2, H/2, 'no plottable trials in this scope', {'text-anchor':'middle','font-size':12}); return; }
+
+  let x0 = Math.min(...good.map(p => p.x)), x1 = Math.max(...good.map(p => p.x));
+  let y0 = Math.min(...good.map(p => p.y)), y1 = Math.max(...good.map(p => p.y));
+  const padX = (x1 - x0) * 0.08 || Math.abs(x0 * 0.08) || 1;
+  const padY = (y1 - y0) * 0.10 || Math.abs(y0 * 0.10) || 0.1;
+  x0 -= padX; x1 += padX; y0 -= padY; y1 += padY;
+  const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+  const X = v => pad.l + iw * (v - x0) / (x1 - x0);
+  const Y = v => pad.t + ih - ih * (v - y0) / (y1 - y0);
+
+  for (const v of niceTicks(y0, y1, 4)){
+    const y = Y(v);
+    svg.appendChild(sv('line', {x1:pad.l, y1:y, x2:W - pad.r, y2:y, stroke:'#21262d', 'stroke-width':1}));
+    svText(svg, pad.l - 6, y + 3, tickFmt(v), {'text-anchor':'end'});
+  }
+  for (const v of niceTicks(x0, x1, 5)){
+    const x = X(v);
+    svg.appendChild(sv('line', {x1:x, y1:pad.t, x2:x, y2:pad.t + ih, stroke:'#1b2028', 'stroke-width':1}));
+    svText(svg, x, pad.t + ih + 14, tickFmt(v), {'text-anchor':'middle'});
+  }
+  svg.appendChild(sv('line', {x1:pad.l, y1:pad.t + ih, x2:W - pad.r, y2:pad.t + ih, stroke:'#30363d'}));
+  svg.appendChild(sv('line', {x1:pad.l, y1:pad.t, x2:pad.l, y2:pad.t + ih, stroke:'#30363d'}));
+  svText(svg, pad.l + iw / 2, H - 8, axR.label || 'speed', {'text-anchor':'middle', 'font-size':10.5, fill:'#c9d1d9'});
+  const yl = svText(svg, 13, pad.t + ih / 2, axQ.label || 'quality',
+    {'text-anchor':'middle', 'font-size':10.5, fill:'#c9d1d9'});
+  yl.setAttribute('transform', 'rotate(-90 13 ' + (pad.t + ih / 2) + ')');
+
+  // frontier staircase, drawn first so points sit above it
+  const fp = good.filter(p => p.f).sort((a, b) => a.x - b.x);
+  if (fp.length > 1){
+    svg.appendChild(sv('polyline', {
+      points: fp.map(p => X(p.x).toFixed(1) + ',' + Y(p.y).toFixed(1)).join(' '),
+      fill:'none', stroke:'var(--frontier)', 'stroke-width':1.4, 'stroke-dasharray':'4 3', opacity:.65}));
+  }
+  const era = (pareto.active_instrument_eras || {});
+  for (const p of good){
+    const c = sv('circle', {cx:X(p.x).toFixed(1), cy:Y(p.y).toFixed(1),
+      r: p.f ? 5.5 : 3,
+      fill: p.f ? 'var(--frontier)' : 'var(--dominated)',
+      stroke: p.f ? '#0d1117' : 'none', 'stroke-width': p.f ? 1.2 : 0,
+      opacity: p.f ? 1 : .5});
+    const o = p.t.objectives || [];
+    const tt = sv('title');
+    tt.textContent = 'trial ' + p.t.trial_id + ' · ' + (p.t.species || '?') +
+      ' · tier ' + (p.t.eval_tier != null ? p.t.eval_tier : '?') +
+      '\n' + (axQ.label || 'quality') + ' ' + num(o[axQ.index], 3) +
+      '\n' + (axR.label || 'speed') + ' ' + num(o[axR.index], 2) +
+      (isNum(p.t.goodput_qph) ? '\ngoodput ' + p.t.goodput_qph.toFixed(1) + ' q/h' : '') +
+      (isNum(o[2]) ? '\ncost ' + (-o[2]).toFixed(3) : '') +
+      (isNum(o[3]) ? '\nreliability ' + o[3].toFixed(3) : '') +
+      '\n' + (p.f ? 'FRONTIER' : 'dominated') +
+      (p.t.task_rate_status ? ' · rate ' + p.t.task_rate_status : '') +
+      (era.eval_quality ? '\nquality era ' + era.eval_quality : '') +
+      (era.autopilot_speed ? '\nspeed era ' + era.autopilot_speed : '');
+    c.appendChild(tt);
+    svg.appendChild(c);
+    if (p.f) svText(svg, X(p.x), Y(p.y) - 9, String(p.t.trial_id),
+      {'text-anchor':'middle', 'font-size':8.5, fill:'#34d399'});
+  }
+  // era label block, bottom-right inside the plot
+  const eraBits = [];
+  if (era.eval_quality) eraBits.push('quality era ' + era.eval_quality);
+  if (era.autopilot_speed) eraBits.push('speed era ' + era.autopilot_speed);
+  eraBits.forEach((t, i) => svText(svg, W - pad.r, pad.t + 11 + i * 12, t,
+    {'text-anchor':'end', 'font-size':8.5, fill:'#6e7681'}));
+}
+
+function drawHV(svg, pareto){
+  svg.innerHTML = '';
+  const W = 640, H = 340, pad = {l:60, r:14, t:12, b:46};
+  const hist = Array.isArray(pareto.hypervolume_history) ? pareto.hypervolume_history : [];
+  const pts = hist.filter(p => Array.isArray(p) && isNum(p[0]) && isNum(p[1]));
+  if (pts.length < 2){
+    svText(svg, W/2, H/2, pts.length ? 'only one hypervolume sample in this scope' : 'no hypervolume history',
+      {'text-anchor':'middle', 'font-size':12});
+    return;
+  }
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs);
+  let y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const spanY = (y1 - y0) || Math.abs(y1) || 1;
+  y0 -= spanY * 0.1; y1 += spanY * 0.1;
+  if (x1 === x0) x1 = x0 + 1;
+  const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+  const X = v => pad.l + iw * (v - x0) / (x1 - x0);
+  const Y = v => pad.t + ih - ih * (v - y0) / (y1 - y0);
+  for (const v of niceTicks(y0, y1, 4)){
+    const y = Y(v);
+    svg.appendChild(sv('line', {x1:pad.l, y1:y, x2:W - pad.r, y2:y, stroke:'#21262d', 'stroke-width':1}));
+    svText(svg, pad.l - 6, y + 3, tickFmt(v), {'text-anchor':'end'});
+  }
+  for (const v of niceTicks(x0, x1, 5)){
+    const x = X(v);
+    svg.appendChild(sv('line', {x1:x, y1:pad.t, x2:x, y2:pad.t + ih, stroke:'#1b2028', 'stroke-width':1}));
+    svText(svg, x, pad.t + ih + 14, String(Math.round(v)), {'text-anchor':'middle'});
+  }
+  svg.appendChild(sv('line', {x1:pad.l, y1:pad.t + ih, x2:W - pad.r, y2:pad.t + ih, stroke:'#30363d'}));
+  svg.appendChild(sv('line', {x1:pad.l, y1:pad.t, x2:pad.l, y2:pad.t + ih, stroke:'#30363d'}));
+  svText(svg, pad.l + iw / 2, H - 8, 'trial id', {'text-anchor':'middle', 'font-size':10.5, fill:'#c9d1d9'});
+  const yl = svText(svg, 15, pad.t + ih / 2, 'hypervolume', {'text-anchor':'middle', 'font-size':10.5, fill:'#c9d1d9'});
+  yl.setAttribute('transform', 'rotate(-90 15 ' + (pad.t + ih / 2) + ')');
+  svg.appendChild(sv('polyline', {points: pts.map(p => X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(' '),
+    fill:'none', stroke:'var(--accent)', 'stroke-width':1.9, 'stroke-linejoin':'round'}));
+  for (const p of pts){
+    const c = sv('circle', {cx:X(p[0]).toFixed(1), cy:Y(p[1]).toFixed(1), r:2.6, fill:'var(--accent)'});
+    const tt = sv('title'); tt.textContent = 'trial ' + p[0] + ' · HV ' + p[1];
+    c.appendChild(tt); svg.appendChild(c);
+  }
+  const last = pts[pts.length - 1], first = pts[0];
+  svText(svg, W - pad.r, pad.t + 11, 'HV ' + last[1].toFixed(2) + ' @ trial ' + last[0],
+    {'text-anchor':'end', 'font-size':9, fill:'#60a5fa'});
+  const delta = last[1] - first[1];
+  svText(svg, W - pad.r, pad.t + 24,
+    (delta >= 0 ? '+' : '') + delta.toFixed(2) + ' over ' + pts.length + ' samples',
+    {'text-anchor':'end', 'font-size':8.5, fill:'#6e7681'});
+}
+
+function renderPareto(d){
+  const pol = $('#pareto-policy'), tables = $('#pareto-tables');
+  if (!d){
+    pol.innerHTML = deadBody('pareto', 'pareto?scope=current');
+    tables.innerHTML = '';
+    $('#chart-scatter').innerHTML = ''; $('#chart-hv').innerHTML = '';
+    return;
+  }
+  if (d.available === false){
+    pol.innerHTML = '<span class="muted">pareto unavailable: ' + esc(d.source_reason || d.error || 'no reason given') + '</span>';
+    tables.innerHTML = ''; return;
+  }
+  const era = d.active_instrument_eras || {};
+  const cmp = d.objective_policy_comparison || {};
+  const tot = d.totals || {};
+  let h = '<b>objective policy</b> ' + esc(d.objective_policy || '?') +
+    ' <span class="muted">(' + esc(d.objective_policy_context || '?') + ')</span>' +
+    ' · decision-grade: <b>' + (d.decision_grade ? 'yes' : 'no') + '</b>' +
+    ' · scope <b>' + esc(d.scope || '?') + '</b> · canonical tier <b>' + esc(d.canonical_tier) + '</b>' +
+    ' · source ' + esc(d.source || '?') + '<br>';
+  h += '<span class="muted">instrument eras — quality ' + esc(era.eval_quality || '?') +
+    ' · speed ' + esc(era.autopilot_speed || '?') + ' · cpu-bench ' + esc(era.cpu_bench || '?') + '</span><br>';
+  h += '<span class="muted">' + esc(tot.frontier_size != null ? tot.frontier_size : '?') + ' frontier · ' +
+    esc(tot.all_entries != null ? tot.all_entries : '?') + ' entries in scope · ' +
+    esc(tot.hv_points != null ? tot.hv_points : '?') + ' hypervolume points · journal max trial ' +
+    esc(d.journal_max_trial_id) + '</span>';
+  if (cmp.active_policy){
+    h += '<br><span class="muted">vs ' + esc(cmp.legacy_policy) + ': ' +
+      (cmp.frontiers_differ ? 'frontiers DIFFER — ' + esc(cmp.dropped_legacy_count) + ' legacy point(s) dropped, ' +
+        esc(cmp.added_active_count) + ' added' : 'frontiers agree') + '</span>';
+  }
+  if (d.source_reason) h += '<br><span class="muted">' + esc(d.source_reason) + '</span>';
+  const excl = d.exclusions || {};
+  if (excl.before_ts || excl.bug_corrupted){
+    h += '<br><span class="muted">excluded from scope: ' +
+      esc((excl.bug_corrupted && excl.bug_corrupted.count) || 0) + ' bug-corrupted · ' +
+      esc((excl.before_ts && excl.before_ts.count) || 0) + ' pre-epoch</span>';
+  }
+  if (d.objective_policy_warning) h += '<br><span style="color:var(--warn)">' + esc(d.objective_policy_warning) + '</span>';
+  if (d.stale_state_warning) h += '<br><span style="color:var(--warn)">' + esc(d.stale_state_warning) + '</span>';
+  const rr = d.frontier_rerun_required || {};
+  if (rr.required) h += '<br><span style="color:var(--warn)">frontier rerun REQUIRED: ' + esc(rr.reason || '') + '</span>';
+  pol.innerHTML = h;
+
+  const axes = Array.isArray(d.objective_axes) ? d.objective_axes : [];
+  const axQ = axes.find(a => a.key === 'quality') || {label:'quality'};
+  const axR = axes.find(a => a.key === 'rate' || a.key === 'speed') || {label:'speed'};
+  $('#scatter-title').textContent = (axQ.label || 'quality') + ' × ' + (axR.label || 'speed') +
+    ' — tier ' + (d.canonical_tier != null ? d.canonical_tier : '?');
+  $('#scatter-note').textContent = 'objectives: ' + axes.map(a => a.label + ' (' + a.direction + ')').join(' · ');
+  $('#hv-title').textContent = 'hypervolume over trials — ' + (d.scope || '?') + ' scope';
+  $('#hv-note').textContent = Object.keys(d.hv_history_by_tier || {}).length
+    ? 'tiers with history: ' + Object.keys(d.hv_history_by_tier).join(', ') : '';
+  drawScatter($('#chart-scatter'), d);
+  drawHV($('#chart-hv'), d);
+
+  // frontier + recent dominated table
+  const rows = [];
+  for (const t of (d.frontier || [])) rows.push([t, true]);
+  for (const t of (d.dominated || []).slice(0, 10)) rows.push([t, false]);
+  let tb = '<table class="t"><thead><tr><th>trial</th><th>status</th><th>species</th><th>tier</th>' +
+    '<th>' + esc(axQ.label || 'quality') + '</th><th>' + esc(axR.label || 'rate') + '</th>' +
+    '<th>goodput q/h</th><th>tok/solved</th><th>rate status</th><th>when</th></tr></thead><tbody>';
+  for (const [t, isF] of rows){
+    const o = t.objectives || [];
+    tb += '<tr class="' + (isF ? 'frontier' : '') + '">' +
+      '<td>' + esc(t.trial_id) + '</td>' +
+      '<td>' + (isF ? 'frontier' : esc(t.pareto_status || 'dominated')) + '</td>' +
+      '<td>' + esc(t.species || '—') + '</td>' +
+      '<td>' + esc(t.eval_tier != null ? t.eval_tier : '—') + '</td>' +
+      '<td>' + esc(num(o[0], 3)) + '</td>' +
+      '<td>' + esc(num(o[1], 2)) + '</td>' +
+      '<td>' + esc(num(t.goodput_qph, 1)) + '</td>' +
+      '<td>' + esc(num(t.tokens_per_solved, 0)) + '</td>' +
+      '<td>' + esc(t.task_rate_status || '—') + '</td>' +
+      '<td>' + esc((t.timestamp || '').replace('T', ' ').slice(0, 16)) + '</td></tr>';
+  }
+  tb += '</tbody></table>';
+  const bp = d.baseline_promotions || {};
+  tb += '<div class="note">baseline promotions: ' + esc(bp.count != null ? bp.count : '?') +
+    ' · latest promotion at trial ' + esc(bp.latest_promotion_trial_id) +
+    ' · ' + esc(bp.trials_since_promotion) + ' trials since. Multi-tier promotion: ' +
+    esc((d.multitier_promotion && d.multitier_promotion.status) || 'unknown') + '.</div>';
+  tables.innerHTML = tb;
+}
+
+function renderGepa(d){
+  const body = $('#gepa-body');
+  if (!d){ body.innerHTML = deadBody('gepa', 'gepa'); return; }
+  const st = d.state || {};
+  const mix = d.current_decision_question_mix || {};
+  let h = '<div class="stats">';
+  h += stat(d.active ? 'active' : 'inactive', 'optimizer', d.active ? 'good' : 'dimv');
+  h += stat(st.current_trial != null ? '#' + st.current_trial : '—', 'current trial');
+  h += stat(st.current_action || '—', 'current action', 'dimv');
+  h += stat(isNum(st.sentinels_completed) ? st.sentinels_completed +
+    (st.baseline_sentinels_total != null ? '/' + st.baseline_sentinels_total : '') : '—', 'sentinels', 'dimv');
+  h += stat(isNum(PROC && PROC.gepa_worker_count) ? PROC.gepa_worker_count : '—', 'workers', 'dimv');
+  h += '</div>';
+  if (mix.policy){
+    h += '<div class="kv"><b>decision question mix</b> · ' + esc(mix.policy) + ' · target n=' +
+      esc(mix.target_n) + ' scored n=' + esc(mix.scored_n) + ' · rotation ' + esc(mix.rotation_index) +
+      '<br><span class="muted">' + esc(mix.core_id || '') + '</span></div>';
+  }
+  const rt = Array.isArray(d.recent_trials) ? d.recent_trials : [];
+  if (rt.length){
+    h += '<table class="t"><thead><tr><th>trial</th><th>species</th><th>tier</th><th>quality</th>' +
+      '<th>speed</th><th>cost</th><th>rel.</th><th>pareto</th><th>decision</th><th>when</th></tr></thead><tbody>';
+    for (const t of rt.slice().reverse()){
+      const excluded = !!t.learning_excluded_by || t.keep_revert_decision === 'excluded' || !!t.bug_corrupted_by;
+      h += '<tr class="' + (t.pareto_status === 'frontier' ? 'frontier' : (excluded ? 'excl' : '')) + '">' +
+        '<td>' + esc(t.trial_id) + '</td><td>' + esc(t.species || '—') + '</td>' +
+        '<td>' + esc(t.tier != null ? t.tier : '—') + '</td>' +
+        '<td>' + esc(num(t.quality, 3)) + '</td><td>' + esc(num(t.speed, 2)) + '</td>' +
+        '<td>' + esc(num(t.cost, 2)) + '</td><td>' + esc(num(t.reliability, 2)) + '</td>' +
+        '<td>' + esc(t.pareto_status || '—') + '</td>' +
+        '<td>' + esc(t.keep_revert_decision || '—') +
+          (excluded ? ' · ' + esc(t.learning_excluded_by || t.bug_corrupted_by || 'excluded') : '') + '</td>' +
+        '<td>' + esc((t.timestamp || '').replace('T', ' ').slice(0, 16)) + '</td></tr>';
+    }
+    h += '</tbody></table>';
+  }
+  const lines = Array.isArray(d.lines) ? d.lines : [];
+  h += '<div class="brief-sec"><h3>optimizer progress lines</h3>' +
+    (lines.length
+      ? '<pre class="stream short" style="height:190px">' +
+        lines.slice(-40).map(l => styleLogLine(String(l))).join('\n') + '</pre>'
+      : '<div class="empty">no optimizer lines in the payload</div>') + '</div>';
+  if (d._freshness && d._freshness.reason){
+    h += '<div class="note">producer freshness (' + esc(d._freshness.staleness_class || '?') + '): ' +
+      esc(d._freshness.reason) + '</div>';
+  }
+  body.innerHTML = h;
+}
+
+/* ======================================================================
+   7 · OPTIMIZATION BRIEF   (/dashboard/api/optimization_brief)
+   ====================================================================== */
+function renderBrief(d){
+  const body = $('#brief-body');
+  if (!d){ body.innerHTML = deadBody('brief', 'optimization_brief'); return; }
+  const auth = d.authority || {}, holds = auth.holds || {}, ck = d.checkpoint || {};
+  let h = '';
+  if (d.narrative) h += '<p class="brief-narr">' + esc(d.narrative) + '</p>';
+  if (auth.trust_note){
+    h += '<div class="' + (auth.decision_grade_possible ? 'goodline' : 'warnline') + '">' +
+      esc(auth.trust_note) + '</div>';
+  }
+  h += '<div class="chips">' +
+    '<span class="chip ' + (auth.baseline_authority_enabled ? 'on' : 'off') + '">baseline authority ' +
+      (auth.baseline_authority_enabled ? 'on' : 'off') + '</span>' +
+    '<span class="chip ' + (auth.sequential_authority_enabled ? 'on' : 'off') + '">sequential authority ' +
+      (auth.sequential_authority_enabled ? 'on' : 'off') + '</span>' +
+    '<span class="chip ' + (auth.authority_mechanism_enabled ? 'on' : 'off') + '">authority mechanism ' +
+      (auth.authority_mechanism_enabled ? 'on' : 'off') + '</span>' +
+    '<span class="chip ' + (auth.w6_gaming_alarm ? 'P0' : 'off') + '">gaming alarm ' +
+      (auth.w6_gaming_alarm ? 'RAISED' : 'clear') + '</span>' +
+    '<span class="chip">era audited trials ' + esc(auth.current_era_audited_trials) + '</span>' +
+    '<span class="chip">checkpoint trial ' + esc(ck.trial_counter) + '</span>' +
+    '</div>';
+  h += '<div class="kv" style="margin-top:9px">' +
+    '<b>quality authority</b> · ' + esc(holds.quality_authority || '—') + '<br>' +
+    '<b>speed authority</b> · ' + esc(holds.speed_authority || '—') + '<br>' +
+    '<b>holds active</b> · ' + (holds.any_hold_active ? '<span style="color:var(--warn)">yes</span>' : 'none') +
+    '</div>';
+
+  const bc = d.best_config || {};
+  h += '<div class="brief-sec"><h3>best config</h3>' +
+    (bc.available === false
+      ? '<div class="empty">no promotable best config — nothing has cleared authority in this era.</div>'
+      : '<div class="kv">' + esc(JSON.stringify(bc).slice(0, 900)) + '</div>') + '</div>';
+
+  const levers = Array.isArray(d.levers) ? d.levers : [];
+  h += '<div class="brief-sec"><h3>levers</h3>' +
+    (levers.length
+      ? '<div class="list">' + levers.slice(0, 8).map(l =>
+          '<div class="item"><div class="t">' + esc(l.label || l.name || l.id || 'lever') + '</div>' +
+          '<div class="d">' + esc(l.statement || l.detail || JSON.stringify(l).slice(0, 300)) + '</div></div>').join('') + '</div>'
+      : '<div class="empty">no lever importance data yet (NumericSwarm has not produced one).</div>') + '</div>';
+
+  const roe = d.ruled_out_experiments || {};
+  const fenced = Array.isArray(roe.fenced) ? roe.fenced : [];
+  if (fenced.length){
+    h += '<div class="brief-sec"><h3>fenced dead-ends (' + fenced.length + ' shown)</h3>' +
+      '<table class="t"><thead><tr><th>label</th><th>kind</th><th>×</th><th>last trial</th><th>era</th><th>why</th></tr></thead><tbody>';
+    for (const f of fenced.slice(0, 10)){
+      h += '<tr><td>' + esc(f.label) + '</td><td>' + esc(f.kind) + '</td><td>' + esc(f.count) + '</td>' +
+        '<td>' + esc(f.last_trial) + '</td><td>' + esc(f.era_tag || (f.pre_epoch ? 'pre-epoch' : '—')) + '</td>' +
+        '<td class="wrap">' + esc(String(f.why || '').slice(0, 220)) + '</td></tr>';
+    }
+    h += '</tbody></table></div>';
+  }
+
+  const sec = (title, arr, note) => {
+    const a = Array.isArray(arr) ? arr : [];
+    let s = '<div class="brief-sec"><h3>' + esc(title) + ' (' + a.length + ')</h3>';
+    if (note) s += '<div class="note" style="margin:0 0 6px">' + esc(note) + '</div>';
+    if (!a.length) s += '<div class="empty">none</div>';
+    else {
+      s += '<div class="list">';
+      for (const it of a.slice(0, 10)){
+        s += '<div class="item"><div class="t">' + esc(it.id || 'entry') + '</div>' +
+          '<div class="m">' + esc(it.species || '—') +
+          (it.bind_status ? ' · bind ' + esc(it.bind_status) : '') +
+          (it.source_handoff ? ' · ' + esc(it.source_handoff) : '') + '</div>' +
+          '<div class="d">' + esc(String(it.statement || '').slice(0, 340)) + '</div></div>';
+      }
+      s += '</div>';
+      if (a.length > 10) s += '<div class="note">' + (a.length - 10) + ' more not shown.</div>';
+    }
+    return s + '</div>';
+  };
+  h += sec('ruled out', d.ruled_out);
+  h += sec('exploring', d.exploring, d.exploring_note);
+
+  const pw = Array.isArray(d.gepa_provenance_windows) ? d.gepa_provenance_windows : [];
+  if (pw.length){
+    h += '<div class="brief-sec"><h3>gepa provenance windows</h3><div class="list">';
+    for (const w of pw){
+      h += '<div class="item P2"><div class="t">' + esc(w.label) + '</div><div class="m">' +
+        esc(new Date(w.from_ts * 1000).toISOString().slice(0, 16)) + ' → ' +
+        esc(new Date(w.until_ts * 1000).toISOString().slice(0, 16)) + '</div></div>';
+    }
+    h += '</div></div>';
+  }
+  const syn = d.synthesis || {};
+  if (syn.generated_at){
+    h += '<div class="note">synthesis generated ' + esc(fmtDur(syn.age_s)) + ' ago' +
+      (syn.stale ? ' — <span style="color:var(--warn)">stale</span>' : '') +
+      (syn.warning ? ' · ' + esc(syn.warning) : '') + '</div>';
+  }
+  body.innerHTML = h;
+}
+
+/* ======================================================================
+   8 · INSIGHT GRAPH (simplified)   (/dashboard/api/insight_graph)
+   ====================================================================== */
+const SAFE_COLOR = /^(#[0-9a-fA-F]{3,8}|var\(--[a-z0-9-]+(,\s*#[0-9a-fA-F]{3,8})?\))$/;
+function nodeColor(n){
+  if (typeof n.color === 'string' && SAFE_COLOR.test(n.color.trim())) return n.color.trim();
+  const s = String(n.state_group || n.state || '');
+  if (s === 'frontier') return 'var(--good)';
+  if (s === 'applied') return 'var(--accent)';
+  if (s === 'rejected') return 'var(--p0)';
+  return 'var(--muted)';
+}
+function drawInsight(svg, d){
+  svg.innerHTML = '';
+  const W = 640, H = 420, cx = W / 2, cy = H / 2;
+  const nodes = (Array.isArray(d.nodes) ? d.nodes : []).slice(0, 90);
+  if (!nodes.length){ svText(svg, cx, cy, 'no nodes', {'text-anchor':'middle', 'font-size':12}); return; }
+  // Circular projection, ordered by state group then kind so like sits with like.
+  const sorted = nodes.slice().sort((a, b) =>
+    String(a.state_group || '').localeCompare(String(b.state_group || '')) ||
+    String(a.kind || '').localeCompare(String(b.kind || '')) ||
+    String(a.label || '').localeCompare(String(b.label || '')));
+  const R = Math.min(W, H) / 2 - 58;
+  const pos = {};
+  sorted.forEach((n, i) => {
+    const a = (i / sorted.length) * Math.PI * 2 - Math.PI / 2;
+    pos[n.id] = {x: cx + R * Math.cos(a), y: cy + R * Math.sin(a), a, n};
+  });
+  for (const e of (Array.isArray(d.edges) ? d.edges : [])){
+    const s = pos[e.source], t = pos[e.target];
+    if (!s || !t) continue;
+    svg.appendChild(sv('line', {x1:s.x.toFixed(1), y1:s.y.toFixed(1), x2:t.x.toFixed(1), y2:t.y.toFixed(1),
+      stroke:'#30363d', 'stroke-width':1, opacity:.55}));
+  }
+  const focusId = (d.focus && d.focus.focus_node_id) || null;
+  for (const id in pos){
+    const {x, y, a, n} = pos[id];
+    const isFocus = id === focusId;
+    const r = Math.max(3.5, Math.min(9, 3.5 + (n.degree || 0) * 1.1));
+    const c = sv('circle', {cx:x.toFixed(1), cy:y.toFixed(1), r,
+      fill: nodeColor(n), stroke: isFocus ? '#fff' : '#0d1117', 'stroke-width': isFocus ? 2 : 1, opacity:.92});
+    const tt = sv('title');
+    tt.textContent = (n.label || n.id) + '\n' + (n.kind || '') + ' · ' + (n.state || '') +
+      '\n' + (n.subtitle || '') + '\n' + (n.summary || '') +
+      '\ndegree ' + (n.degree != null ? n.degree : '?') +
+      (n.source_trial_id != null ? ' · trial ' + n.source_trial_id : '');
+    c.appendChild(tt);
+    svg.appendChild(c);
+    // outer labels only where they will not collide (every other node past 40)
+    if (sorted.length <= 44 || Object.keys(pos).indexOf(id) % 2 === 0){
+      const lx = cx + (R + 13) * Math.cos(a), ly = cy + (R + 13) * Math.sin(a);
+      const anchor = Math.cos(a) > 0.15 ? 'start' : (Math.cos(a) < -0.15 ? 'end' : 'middle');
+      svText(svg, lx, ly + 3, String(n.label || n.id).slice(0, 18),
+        {'text-anchor':anchor, 'font-size':8, fill: isFocus ? '#fff' : '#6e7681'});
+    }
+  }
+}
+function renderInsight(d){
+  const body = $('#insight-body');
+  if (!d){ body.innerHTML = deadBody('insight', 'insight_graph'); return; }
+  if (d.available === false){
+    body.innerHTML = '<div class="empty">insight graph unavailable: ' + esc(d.error || 'producer reported unavailable') + '</div>';
+    return;
+  }
+  const s = d.summary || {}, f = d.focus || {}, src = d.source || {};
+  let h = '<div class="stats">';
+  h += stat(s.node_count != null ? s.node_count : '—', 'nodes');
+  h += stat(s.edge_count != null ? s.edge_count : '—', 'edges');
+  h += stat(s.strategy_rows != null ? s.strategy_rows : '—', 'strategy rows', 'dimv');
+  h += stat(s.journal_rows != null ? s.journal_rows : '—', 'journal rows', 'dimv');
+  h += stat(s.planner_hint_rows != null ? s.planner_hint_rows : '—', 'planner hints', 'dimv');
+  h += '</div>';
+  const chips = [];
+  for (const k in (s.state_counts || {})) chips.push('<span class="chip">' + esc(k) + ': ' + esc(s.state_counts[k]) + '</span>');
+  for (const k in (s.kind_counts || {})) chips.push('<span class="chip">' + esc(k) + ': ' + esc(s.kind_counts[k]) + '</span>');
+  if (chips.length) h += '<div class="chips">' + chips.join('') + '</div>';
+  h += '<div class="note">focus: <b>' + esc(f.focus_label || '—') + '</b> (' + esc(f.focus_kind || '?') + ') · ' +
+    esc(f.reason || '') + ' · graph source ' + esc(src.graph_source || '?') + '</div>';
+  h += '<svg class="chart" id="chart-insight" viewBox="0 0 640 420" role="img" aria-label="insight graph, simplified circular layout"></svg>';
+
+  const nodes = (Array.isArray(d.nodes) ? d.nodes : []).slice()
+    .sort((a, b) => (b.degree || 0) - (a.degree || 0) || (b.score || 0) - (a.score || 0));
+  h += '<table class="t"><thead><tr><th>node</th><th>kind</th><th>state</th><th>species</th>' +
+    '<th>trial</th><th>deg</th><th>summary</th></tr></thead><tbody>';
+  for (const n of nodes.slice(0, 12)){
+    h += '<tr><td>' + esc(String(n.label || n.id).slice(0, 34)) + '</td>' +
+      '<td>' + esc(n.kind || '—') + '</td><td>' + esc(n.state || '—') + '</td>' +
+      '<td>' + esc(n.species || '—') + '</td>' +
+      '<td>' + esc(n.source_trial_id != null ? n.source_trial_id : '—') + '</td>' +
+      '<td>' + esc(n.degree != null ? n.degree : '—') + '</td>' +
+      '<td class="wrap">' + esc(String(n.summary || n.subtitle || '').slice(0, 150)) + '</td></tr>';
+  }
+  h += '</tbody></table>';
+  if (nodes.length > 12) h += '<div class="note">' + (nodes.length - 12) + ' more nodes not listed.</div>';
+  body.innerHTML = h;
+  drawInsight($('#chart-insight'), d);
+}
+
+/* ======================================================================
+   9 · REPO READINESS   (/dashboard/api/repo_readiness)
+   ====================================================================== */
+function renderReadiness(d){
+  const body = $('#readiness-body');
+  if (!d){ body.innerHTML = deadBody('readiness', 'repo_readiness'); return; }
+  if (d.available === false){
+    body.innerHTML = '<div class="empty">repo readiness unavailable: ' + esc(d.error || 'producer reported unavailable') + '</div>';
+    return;
+  }
+  const pl = d.portfolio_level || {}, pc = d.priority_counts || {};
+  const open = isNum(d.item_count) ? d.item_count : Object.values(pc).reduce((a, b) => a + b, 0);
+  let h = '<div class="stats">';
+  h += stat(open, 'open items', open ? 'warn' : 'good');
+  h += stat(pc.P0 || 0, 'P0', (pc.P0 ? 'bad' : 'good'));
+  h += stat(pc.P1 || 0, 'P1', (pc.P1 ? 'warn' : ''));
+  h += stat(pc.P2 || 0, 'P2', 'dimv');
+  h += stat((pl.achieved_label || '?') + ' (L' + (pl.achieved_level != null ? pl.achieved_level : '?') + ')',
+    'portfolio level', 'dimv', 'next: ' + (pl.next_label || '?'));
+  h += '</div>';
+  h += '<div class="kv"><b>authority</b> · ' + esc(d.authority || '?') +
+    ' · autopilot gate: ' + (d.autopilot_gate ? '<span style="color:var(--warn)">ON</span>' : 'off') +
+    ' · generated ' + esc(String(d.generated_at || '').replace('T', ' ').slice(0, 16)) + '</div>';
+  const lv = d.repo_levels || {};
+  const chips = Object.keys(lv).map(k => '<span class="chip">' + esc(k) + ': ' +
+    esc(lv[k].achieved_label) + ' (L' + esc(lv[k].achieved_level) + ')</span>');
+  if (chips.length) h += '<div class="chips">' + chips.join('') + '</div>';
+  const items = Array.isArray(d.top_items) ? d.top_items : [];
+  h += '<div class="list">';
+  for (const it of items.slice(0, 12)){
+    h += '<div class="item ' + esc(it.priority || '') + '"><div class="t">' + esc(it.title || it.id) + '</div>' +
+      '<div class="m">' + esc(it.priority || '—') + ' · ' + esc(it.repo || '—') +
+      ' · ' + esc(it.criterion_id || '') + ' · L' + esc(it.level) + ' ' + esc(it.level_label || '') +
+      (it.blocking_next_gate ? ' · <span style="color:var(--warn)">blocks next gate</span>' : '') + '</div>' +
+      '<div class="d">' + esc(String(it.objective || '').slice(0, 220)) + '</div></div>';
+  }
+  h += '</div>';
+  if (!items.length) h += '<div class="empty">no open readiness items.</div>';
+  else if (items.length > 12) h += '<div class="note">' + (items.length - 12) + ' more not shown.</div>';
+  body.innerHTML = h;
+}
+
+/* ======================================================================
+   POLLERS
+   ====================================================================== */
+async function pollFast(){
+  const a = getJSON('/dashboard/api/process_status')
+    .then(d => { PROC = d; panelOk('phase'); })
+    .catch(e => { PROC = null; panelFail('phase', e); });
+  const b = getJSON('/dashboard/api/autopilot_progress')
+    .then(d => { PROG = d; panelOk('progress'); })
+    .catch(e => { PROG = null; panelFail('progress', e); });
+  await Promise.all([a, b]);
+  renderPhase(); renderProgress(); renderKPIs(); renderPlannerHint();
+}
+function slot(key, path, render){
+  return getJSON(path)
+    .then(d => { panelOk(key); render(d); })
+    .catch(e => { panelFail(key, e); render(null); });
+}
+async function pollSlow(){
+  await Promise.all([
+    slot('pareto',    '/dashboard/api/pareto?scope=current', renderPareto),
+    slot('gepa',      '/dashboard/api/gepa', renderGepa),
+    slot('brief',     '/dashboard/api/optimization_brief', renderBrief),
+    slot('insight',   '/dashboard/api/insight_graph', renderInsight),
+    slot('readiness', '/dashboard/api/repo_readiness', renderReadiness),
+  ]);
+}
+
+/* No cross-dashboard URL is hardcoded on this page: /nav.js renders the header
+   nav from dashboard/registry.json, and it fails quiet by contract (the loud
+   version of "the registry is missing" belongs to /api/dashboards, not to every
+   page header). The :8000 derivation above is a DATA-plane endpoint, not a
+   dashboard link. RTG-47 Phase 0. */
+
+/* boot */
+pollFast(); pollSlow();
+LOGS.start(); PLAN.start();
+setInterval(pollFast, 5000);
+setInterval(pollSlow, 30000);
+setInterval(tickStamps, 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden){ pollFast(); pollSlow(); } });
+</script>
+</body>
+</html>

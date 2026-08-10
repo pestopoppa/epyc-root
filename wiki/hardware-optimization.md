@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-09 (adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Last compiled**: 2026-08-10 (the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 93+ documents
 
 ## Compiled Update — 2026-08-03 (the AMD deficit is a QUANT deficit, not a device deficit; and the compute roofline, finally computed)
@@ -1791,3 +1791,99 @@ A v7-promotion guardrail chased apparent v7 CPU non-spec base-decode regressions
 - **A profiler-triage report layer can be separated from its trace parser, which is what makes a ROCm port cheap.** In the reference implementation the renderers take `rows: Sequence[dict]` with parsing delegated to sibling modules, so adopting the report contract (kernel / overlap-opportunity / fuse-pattern tables, rows at or above a 1.0% cumulative GPU-time share, source-backed matching explicitly *not* fuzzy, and a bounded `high`/`medium`/`low` confidence vocabulary) requires building only a `rocprofv2` row adapter. This also **de-risks by subtraction**: confining the model to a similarity note and a catalog comparison, rather than reading raw counters, shrinks the trusted surface of the highest-risk item in the profiler-backend plan. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md), intake-1026.
 
 - **A kernel-time-share table is structurally blind to an entire class of bottleneck.** The reference catalog excludes "host-only scheduler, event-loop, executor, offload, and load-path patterns" *by written policy*, so a host/device transfer cost has no row and cannot surface. Any analogue we build must widen that scope deliberately or pair it with a host-side catalog. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), intake-1029, intake-1027 (`stage1-unverified` — no figure from it may be cited).
+
+## Compiled Update — 2026-08-10: the gfx90a kernel-agent program re-aimed, and a claim compiled here retired
+
+> Freshness sweep of the agentic-kernel-authoring program (the sweep this handoff mandates at every
+> audit). Amends the 2026-06-03 section above; band figures are sizing estimates with stated
+> confidence, not measurements.
+
+- **RETRACTION of a claim compiled above.** The 2026-06-03 section records *"GEAK-v2 / GEAK-HIP /
+  AgentKernelArena are gfx942/CDNA3-only — a coverage regression vs GEAK-v1."* For GEAK proper that is
+  **unpublished coverage, not removed coverage**, and the difference decides whether the vendor's tree
+  is usable on our card. Verified in the v4 tree: `perf_knowledge/hardware/cdna2_mi200/` ships four
+  files (`arch`, `matrix_core`, `memory`, `occupancy`), all `gens: [gfx90a]`, all updated 2026-06-08,
+  titled for MI250X/MI210 — our exact card, named; the capability index carries **40 gfx90a entries**
+  (against 214 gfx942 / 225 gfx950 / 20 gfx908); and there is no arch gating or allowlist, the card is
+  auto-detected. The correct formulation to carry forward is: **GEAK v4 carries first-class gfx90a
+  hardware knowledge and publishes zero gfx90a numbers.** Two caveats travel with it — pin `v1.0.0 @
+  4ffba15a` for the paper's MI250X evidence (the v1 *release notes* name only MI300X; the gfx90a claim
+  traces to the paper), and the vendor KB is not error-free: its ridge-point figure is off by 2× from
+  confusing per-GCD with per-OAM. AMD's own consumption contract says the same thing we do — the KB is
+  reference material, and consumers must "decide by on-box measurement."
+
+- **The program was aimed at the wrong rung, and re-aiming doubled the prize.** Closing the measured
+  quantized-dequant gap (~33% Q4_K / ~47% Q8 attainment) is half of what is available: the **fp16 rung
+  at 62.6% attainment is demonstrated on our own device**, vLLM-ROCm reaches 69.2% on the same
+  silicon, and a GB10 reaches 77–80% at Q4_K_M dense across five models on the same engine. The
+  re-target is expressed as **bands with confidence, not point estimates**, so a campaign can be sized
+  before it is run: K1 Q4_K→Q8 rung **+38–43% (HIGH)**; K5 batched elementwise/norm fusion **+20–27%
+  (HIGH — 43% of B=128 time is non-GEMM while GEMM is only 37%)**; K2 Q4_K→fp16 +60–80% (MED); K3 MoE
+  expert-gather ~2.0× (MED); K6 fp16 batch-1 +11% (HIGH); K7 HIP graphs +5.9% (banked); K8 LDS
+  prefetch ~0 (CDNA2 ceiling); **K9 MFMA decode kernels 0 — DO NOT BUILD (certain, from arithmetic
+  rather than counters)**; K10 prefill +20–30% (MED); K11 closing the vLLM gap is not a kernel program
+  at all; K12 matching Blackwell prefill is unreachable behind a 5.6× int8 silicon deficit. A ceiling
+  table that names two levers as *zero* is doing more work than one that ranks everything positive.
+
+- **Prefill kernel quality is not the gap; prefill silicon is.** The MI210 converts 19–29% of matrix
+  peak, against A100 22.8%, RTX PRO 6000 22–44%, H100 15.3% and MI300X 12.3% — mid-pack, not an AMD
+  software problem. Attainment-vs-peers is the measurement that tells a kernel program where it cannot
+  win.
+
+- **A free compositional result: our frozen tile layout is already the state-of-the-art one.**
+  HipKittens' `rt_base` fragment is **bit-identical** to `ggml/src/ggml-cuda/mma.cuh`'s `tile<16,16>`
+  in production v8 (`get_i = tid%16`, `get_j = 4*(tid/16)+l`, `ne=4`), so every technique from that
+  library composes onto our existing fragments with **zero layout re-derivation** — which is exactly
+  why the right move is to harvest the lessons and *not* vendor the framework. A live gfx90a build arm
+  already exists on its `cdna3` branch (`GPU_TARGET=CDNA2` → `--offload-arch=gfx90a`), and across 67
+  headers exactly **one of six** `__builtin_amdgcn_*` intrinsics is unavailable on gfx90a (an fp8 MFMA
+  builtin needing an `#if` guard), with a ~3000-test correctness harness that would run on our
+  silicon. That makes declining the port an **economic** decision rather than a capability one — which
+  is the only kind of decline worth recording.
+
+- **Do not assume a CDNA3 microarchitectural constant transfers to CDNA2.** Whether gfx90a has 32 or
+  64 LDS banks decides whether the reference swizzle constants transfer *at all*; a runnable bank/phase
+  solver (a ~45-line kernel over rocprofv3 PMC counters, ~40 min of GPU) settles it on our own card
+  instead of inheriting the answer.
+
+- **The profiler blocker is closed, and how it was closed is the reusable part.** `rocprofv2`,
+  `rocprof` and `rocm-bandwidth-test` are now available version-matched to ROCm 6.2.0-66, **side-loaded
+  by extraction so nothing in the shared `/opt/rocm` bind mount changed** — the pattern for adding
+  tooling to a shared host without mutating state other sessions depend on. The gfx90a counter taxonomy
+  is proven on our own card: **465 counters across 12 blocks**, including every counter the program
+  cites. `omniperf` is deliberately deferred as an off-critical-path fallback.
+
+- **Two free operational levers, and one upgrade landmine to record before it bites.** From AMD's own
+  ROCm llama.cpp work: hipBLASLt grouped-GEMM plus tuning (**+29%**) and ~10× fewer `hipMemcpyAsync`
+  calls. Against that, llama.cpp issue #19984 reports an **LLVM loop-unroll regression in ROCm 7+
+  costing 3.7–5× on prefill**, workaround `-mllvm --amdgpu-unroll-threshold-local=600`. It does not
+  affect ROCm 6.2, which is precisely why it belongs on the build-flag checklist **now**, as a
+  precondition of any ROCm upgrade rather than a discovery made during one.
+
+- **New controller candidate worth an A/B slot**: ARGUS (arXiv 2604.18616) reports **99–104% of
+  hand-optimised assembly on MI300X** for GEMM / FlashAttention / MoE, 2–1543× over prior agentic
+  systems, 100% KernelBench L1 and 90% L2. CDNA3 evidence, so the numbers do not transfer — but the
+  claim that *does* transfer is what an agentic loop achieves against a vendor's own hand-tuned
+  assembly, which is the ceiling question the whole program is asking.
+
+- **A three-way citation conflation, corrected.** The "seeded fuzzing catches 9/9 buggy kernels,
+  passes 15/15 controls" finding attributed here to KernelBench belongs to a **separate seeded-fuzzing
+  paper** (arXiv 2606.20128). The real KernelBench is Stanford's arXiv:2502.10517 (kernel *generation*,
+  metric `fast_p`), and the third id in the tangle was never either paper. The correction had already
+  been verified in a sibling handoff on 2026-07-22 and never propagated — a corrected claim only counts
+  where the claim is read.
+
+- **Adopt a benchmark's scoring protocol without adopting the benchmark.** RE-Bench is worth taking for
+  its **protocol** — log-time scoring of behaviour-preserving optimization, 0 = starting state and
+  1 = a strong reference solution, and time-budget curves (2h/8h/32h) rather than pass/fail — and is
+  not worth standing up as-is: only 1 of 7 environments is a kernel task, it is Triton on H100, and
+  porting it to gfx90a invalidates the published human and model anchors that are the entire reason to
+  use it. The transferable asset of a benchmark is often its scoring rule, not its tasks.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — the amended GEAK scoping, the K1–K12 banded ceiling, and the 2026-08-03 index-backed leads
+- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — the side-loaded profiler toolchain, per-block collection limits and the counter taxonomy
+- [`handoffs/active/mi210-mfma-compute-bound-paths.md`](../handoffs/active/mi210-mfma-compute-bound-paths.md) — the fragment-layout identity, the arch-independent HipKittens lessons and the vendor ridge-point error
+- [`handoffs/active/mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the attainment ladder behind the fp16 re-target and its calibration caveat
+- [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) §9 — the freshness appendix this sweep executes

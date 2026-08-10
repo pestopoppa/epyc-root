@@ -1,6 +1,10 @@
 <!doctype html><meta charset="utf-8"><title>EPYC — Benchmark artifacts</title>
 <style>body{background:#0d1117;color:#c9d1d9;font:14px system-ui;margin:24px;max-width:1200px}a{color:#60a5fa}input{background:#161b22;color:#c9d1d9;border:1px solid #30363d;padding:8px;width:360px}table{border-collapse:collapse;width:100%;margin-top:14px}th,td{padding:8px;border-bottom:1px solid #30363d;text-align:left}th{color:#8b949e}.note{color:#f0c088;background:#2b1d12;padding:10px}details{max-width:460px;white-space:normal}code{font-size:11px}</style>
-<h1>Benchmark artifacts</h1><p><a href="/">Handoffs</a> · <a href="/kernel">Kernel R&amp;D</a></p>
+<h1>Benchmark artifacts</h1>
+<!-- RTG-47: the ONE shared nav, rendered from dashboard/registry.json. Do not
+     hand-add cross-dashboard links here; add a registry row. -->
+<nav id="epyc-nav"></nav>
+<script defer src="/nav.js"></script>
 <p class="note">Observation discipline: this is a read-only artifact index. Models attach only by an explicit saved model path; no role or campaign label is treated as model identity.</p>
 <input id=q placeholder="Filter model or quant"><p id=summary>Loading…</p><table><thead><tr><th>Model</th><th>Quant</th><th>Artifacts</th><th>Quality suites</th><th>Details</th></tr></thead><tbody id=rows></tbody></table>
 <script>

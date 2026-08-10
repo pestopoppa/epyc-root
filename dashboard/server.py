@@ -17,6 +17,12 @@ GET /api/handoff_detail?id=  full card + scrubbed markdown body (lazy modal load
 GET /api/handoff_timeline    the git-derived timeline artifact (+ freshness)
 GET /api/handoff_graph       the index dependency/liveness graph (+ freshness)
 GET /api/kernel              the kernel-R&D dashboard contract (+ freshness)
+GET /machine                 the machine / live-inference page (data plane: :8000 API)
+GET /autopilot               the autopilot-loop page (data plane: :8000 API)
+GET /nav.js                  the ONE shared cross-dashboard nav, with the registry
+                             injected ahead of it as ``window.__EPYC_DASHBOARDS``
+GET /api/dashboards          the dashboard directory (dashboard/registry.json) plus a
+                             live 127.0.0.1 transport probe per (port, health_path)
 GET /bus                     the session-bus page (static HTML, re-read per request)
 GET /api/bus                 roster, per-agent liveness, inbox depth, operator tokens (+ alarms)
 GET /api/queue               folded work queue (latest row per task_id) + invariant alarms
@@ -43,6 +49,7 @@ Run: ``python3 -m dashboard.server --port 8100``  (or ``python3 dashboard/server
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import json
 import os
 import re
@@ -50,6 +57,8 @@ import subprocess
 import sys
 import threading
 import time
+import urllib.error
+import urllib.request
 from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -77,6 +86,19 @@ STATIC_HTML = _STATIC / "handoffs.html"
 KERNEL_HTML = _STATIC / "kernel.html"
 BUS_HTML = _STATIC / "bus.html"
 BENCHMARKS_HTML = _STATIC / "benchmarks.html"
+MACHINE_HTML = _STATIC / "machine.html"
+AUTOPILOT_HTML = _STATIC / "autopilot.html"
+NAV_JS = _STATIC / "nav.js"
+
+# RTG-47 Phase 0. The MACHINE-READABLE dashboard directory: one file naming every
+# dashboard surface, its port, its path, its owning repo and its health probe.
+# It exists because navigation was per-page hand-rolled and drifted into a
+# five-by-five matrix with holes (audit 1.3): reaching AutoKernel required routing
+# through the handoff board, and cross-server URLs were re-derived ad hoc in three
+# places. One file, one nav, one probe list — a new page is a registry row, not a
+# fifth hand-copied ``<nav>``.
+DASHBOARD_REGISTRY_JSON = Path(__file__).resolve().parent / "registry.json"
+DASHBOARD_REGISTRY_SCHEMA = "epyc.dashboard.registry.v1"
 
 # Kernel-R&D dashboard contract — produced by the AutoKernel campaign driver in
 # epyc-inference-research (``autokernel.dashboard.export_terminal_entry`` after
@@ -1361,6 +1383,196 @@ def benchmark_artifacts_payload() -> dict:
     return data
 
 
+# --------------------------------------------------------- dashboard directory
+#
+# RTG-47 Phase 0. ``dashboard/registry.json`` is the SSOT list of dashboard
+# surfaces; this panel serves it with a live transport probe per unique
+# ``(port, health_path)``.
+#
+# THE PROBE IS NOT FOLDED INTO ``/api/health``. A down :8000 is a fact about the
+# orchestrator, and ``scripts/dashboard/hub_supervisor.sh`` restarts THIS hub on a
+# non-ok ``/health`` body — the same rule that keeps a dead AutoKernel loop from
+# putting the dashboard into a restart loop applies here, one process further out.
+_DASHBOARDS_TTL_S = 15.0
+_DASHBOARD_PROBE_TIMEOUT_S = 1.5
+_dashboards_lock = threading.Lock()
+_dashboards_cache: dict | None = None
+_dashboards_cache_ts = 0.0
+
+
+def _read_dashboard_registry() -> tuple:
+    """``(artifact_present, entries, reader_error)`` for ``dashboard/registry.json``.
+
+    Read through the ONE reader (:func:`_read_json_object`) so the absent-vs-corrupt
+    distinction is the same one every other file-backed panel makes. ``entries`` is
+    ``[]`` on any failure — and the failure always travels with it, because a
+    directory that renders empty over an unreadable registry is exactly the
+    "nothing is wrong" / "nobody is reporting" conflation this surface forbids.
+    """
+    present, data, err = _read_json_object(
+        DASHBOARD_REGISTRY_JSON, "dashboard registry")
+    if data is None:
+        return present, [], err
+    raw = data.get("dashboards")
+    if not isinstance(raw, list):
+        return True, [], ("dashboard registry malformed: 'dashboards' is not a "
+                          f"list (got {type(raw).__name__})")
+    return True, [dict(e) for e in raw if isinstance(e, dict)], None
+
+
+def registry_dashboards() -> list:
+    """The registry's entries, or ``[]`` when it cannot be read.
+
+    Deliberately NOT named ``*_payload``: this is the shared reader behind both
+    ``/api/dashboards`` and the ``/nav.js`` asset, not a panel of its own.
+    """
+    return _read_dashboard_registry()[1]
+
+
+def _probe_health(port: int, health_path: str) -> dict:
+    """One ``127.0.0.1`` transport probe → ``{ok, status_code, latency_ms, error}``.
+
+    LOOPBACK ONLY and stdlib-only. This says a server is answering, nothing about
+    whether its producers are reporting — the same boundary ``/health`` holds here.
+    """
+    url = f"http://127.0.0.1:{port}{health_path}"
+    started = time.monotonic()
+
+    def _ms() -> float:
+        return round((time.monotonic() - started) * 1000.0, 1)
+
+    try:
+        with urllib.request.urlopen(url, timeout=_DASHBOARD_PROBE_TIMEOUT_S) as resp:
+            resp.read(2048)
+            code = getattr(resp, "status", None)
+            if code is None:
+                code = resp.getcode()
+        return {"ok": 200 <= int(code) < 400, "status_code": int(code),
+                "latency_ms": _ms(), "error": None}
+    except urllib.error.HTTPError as exc:
+        return {"ok": False, "status_code": int(exc.code), "latency_ms": _ms(),
+                "error": f"HTTP {exc.code}"}
+    except Exception as exc:  # URLError, socket.timeout, OSError, …
+        return {"ok": False, "status_code": None, "latency_ms": _ms(),
+                "error": f"{type(exc).__name__}: {exc}"}
+
+
+def _probe_targets(entries: list) -> dict:
+    """Probe every UNIQUE ``(port, health_path)`` once, in parallel."""
+    targets = sorted({(int(e["port"]), str(e.get("health_path") or "/health"))
+                      for e in entries
+                      if isinstance(e.get("port"), int)
+                      and not isinstance(e.get("port"), bool)})
+    if not targets:
+        return {}
+    with concurrent.futures.ThreadPoolExecutor(
+            max_workers=min(8, len(targets)),
+            thread_name_prefix="dash-probe") as pool:
+        results = list(pool.map(lambda t: _probe_health(*t), targets))
+    return dict(zip(targets, results))
+
+
+def _build_dashboard_directory() -> dict:
+    """The directory body (entries + probes). Cached; ``_freshness`` is not."""
+    present, entries, err = _read_dashboard_registry()
+    probes = _probe_targets(entries)
+    rows = []
+    for entry in entries:
+        row = dict(entry)
+        port = entry.get("port")
+        key = ((int(port), str(entry.get("health_path") or "/health"))
+               if isinstance(port, int) and not isinstance(port, bool) else None)
+        # The LOOPBACK PROBE target, deliberately not a browser link: a page is
+        # reached at the viewer's own hostname (``/nav.js`` builds that from
+        # ``location``), and shipping a 127.0.0.1 URL under a name like ``url``
+        # would hand every remote viewer a link to their own machine.
+        row["probe_url"] = (f"http://127.0.0.1:{key[0]}{key[1]}"
+                            if key is not None else None)
+        row["probe"] = probes.get(key) or {
+            "ok": False, "status_code": None, "latency_ms": None,
+            "error": f"registry entry {entry.get('id')!r} declares no usable "
+                     f"integer port (got {port!r}) — unprobeable"}
+        rows.append(row)
+
+    body = {
+        "schema": "epyc.dashboard.directory.v1",
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "registry_path": str(DASHBOARD_REGISTRY_JSON),
+        "registry_present": bool(present),
+        "count": len(rows),
+        "dashboards": rows,
+        "probe_note": ("probes are LOOPBACK TRANSPORT readings of each server's "
+                       "health_path; they are cached with this payload for "
+                       f"{_DASHBOARDS_TTL_S:.0f}s and never enter /api/health"),
+        "error": None,
+    }
+    if err is not None:
+        # Something IS there and the hub could not read it — a different, more
+        # urgent fact than "no registry". Both are named; neither renders blank.
+        body["error"] = err
+        body[READER_ERROR_KEY] = err
+    elif not present:
+        body["error"] = (
+            f"dashboard registry not found at {DASHBOARD_REGISTRY_JSON} — the file "
+            "is tracked in this repo, so this is a broken working tree, not a cold "
+            "start. NO dashboard directory can be rendered.")
+    elif not rows:
+        body["error"] = ("dashboard registry parsed and declares NO dashboards — "
+                         "this hub serves pages that nothing can navigate to.")
+    return body
+
+
+def dashboards_payload() -> dict:
+    """The dashboard directory: ``dashboard/registry.json`` + live health probes.
+
+    TTL-cached with its probes (the ``_board_cache`` idiom): six chips refreshing
+    every 30s across every open dashboard tab would otherwise be a probe storm
+    against the orchestrator. The cache is a latency device, not a producer — the
+    envelope below is rebuilt per request, and the panel is ``KIND_LIVE`` because
+    the directory is assembled inside the request from a repo-tracked file.
+
+    NEVER AN EMPTY DIRECTORY. An absent or corrupt registry yields ``error`` (and
+    ``_reader_error`` when something unreadable is on disk), so the page can say
+    which of the two happened instead of drawing a nav with nothing in it.
+    """
+    global _dashboards_cache, _dashboards_cache_ts
+    with _dashboards_lock:
+        now = time.time()
+        if (_dashboards_cache is None
+                or (now - _dashboards_cache_ts) > _DASHBOARDS_TTL_S):
+            _dashboards_cache = _build_dashboard_directory()
+            _dashboards_cache_ts = now
+        payload = dict(_dashboards_cache)
+    payload["_freshness"] = _panel_envelope("dashboards", panels.Observation(
+        artifact_present=bool(payload.get("registry_present")),
+        timestamp=None,
+        source="live-scan",
+        populated=bool(payload.get("dashboards")),
+        detail=payload.get("error"),
+        evidence=f"{DASHBOARD_REGISTRY_JSON} + live 127.0.0.1 health probes",
+    ))
+    return payload
+
+
+def nav_asset() -> bytes:
+    """``/nav.js`` — the registry, then the ONE shared nav renderer.
+
+    NOT a panel and deliberately NOT named ``*_payload``: assets and HTML pages sit
+    outside the panel-registry universe (see ``ASSET_ROUTES``). The registry is
+    inlined ahead of the script so the nav renders on first paint with no fetch,
+    and so a page that fails to reach ``/api/dashboards`` still has its links.
+    """
+    prelude = ("window.__EPYC_DASHBOARDS = "
+               + json.dumps(registry_dashboards()) + ";\n")
+    try:
+        body = NAV_JS.read_text(encoding="utf-8")
+    except OSError as exc:
+        body = ("console.error("
+                + json.dumps(f"[epyc-nav] {NAV_JS} is unreadable: {exc}")
+                + ");\n")
+    return (prelude + body).encode("utf-8")
+
+
 def panel_envelopes() -> dict:
     """Every registered panel's freshness envelope, keyed by panel id.
 
@@ -1395,6 +1607,10 @@ def panel_envelopes() -> dict:
             bench_data, artifact_present=bench_present),
         "queue": lambda: queue_payload()["_freshness"],
         "bus": lambda: bus_payload()["_freshness"],
+        # Same rule as board/queue/bus: the payload already built its envelope
+        # (and holds the TTL cache the probes live in), so reuse it rather than
+        # letting the fold compute a second answer for one panel.
+        "dashboards": lambda: dashboards_payload()["_freshness"],
     }
     out: dict = {}
     for name in panels.PANELS:
@@ -1523,9 +1739,29 @@ def graph_payload() -> dict:
 
 HTML_ROUTES = {
     "/": STATIC_HTML,
+    "/machine": MACHINE_HTML,
+    "/autopilot": AUTOPILOT_HTML,
     "/kernel": KERNEL_HTML,
     "/bus": BUS_HTML,
     "/benchmarks": BENCHMARKS_HTML,
+}
+
+#: ``route -> (content_type, body_builder)`` for static ASSETS the hub generates.
+#:
+#: OUTSIDE THE PANEL REGISTRY UNIVERSE, on purpose, and it is the same exemption
+#: ``HTML_ROUTES`` already has. ``panels.registry_gaps`` folds ``API_ROUTES`` /
+#: ``API_ROUTES_WITH_STATUS`` / ``PROBE_ROUTES`` — the routes that serve a
+#: PRODUCER'S EVIDENCE — and a panel→producer registry is a claim about evidence,
+#: not about bytes. ``/nav.js`` has no producer to be silent: it is this hub's own
+#: rendering of ``dashboard/registry.json``, whose reporting IS the ``dashboards``
+#: panel at ``/api/dashboards``. Registering the asset too would give one fact two
+#: registry entries, which is the second-source-of-truth defect the registry
+#: exists to prevent. The builders are therefore named WITHOUT the ``_payload``
+#: suffix so ``discover_payload_functions`` does not count them, and the exemption
+#: is listed under "Known open items" in ``dashboard/README.md`` beside the
+#: ``HTML_ROUTES`` one rather than being silent.
+ASSET_ROUTES = {
+    "/nav.js": ("application/javascript; charset=utf-8", nav_asset),
 }
 
 #: ``route -> () -> dict``, answered 200.
@@ -1538,6 +1774,7 @@ API_ROUTES = {
     "/api/queue": queue_payload,
     "/api/outcome": outcome_payload,
     "/api/benchmark_artifacts": benchmark_artifacts_payload,
+    "/api/dashboards": dashboards_payload,
     "/api/health": health_payload,
 }
 
@@ -1587,6 +1824,15 @@ class _Handler(BaseHTTPRequestHandler):
         if self.command != "HEAD":
             self.wfile.write(body)
 
+    def _send_asset(self, content_type: str, body: bytes) -> None:
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        if self.command != "HEAD":
+            self.wfile.write(body)
+
     def do_GET(self) -> None:  # noqa: N802 (stdlib naming)
         parsed = urlparse(self.path)
         route = parsed.path.rstrip("/") or "/"
@@ -1595,6 +1841,9 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send_html(HTML_ROUTES[route])
             elif route == TRANSPORT_PROBE_ROUTE:
                 self._send_json(transport_probe_payload())
+            elif route in ASSET_ROUTES:
+                content_type, build = ASSET_ROUTES[route]
+                self._send_asset(content_type, build())
             elif route in API_ROUTES:
                 self._send_json(API_ROUTES[route]())
             elif route in API_ROUTES_WITH_STATUS:

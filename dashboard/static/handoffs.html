@@ -37,6 +37,20 @@
   .badge.missing .dot{background:var(--none)}
   main{padding:18px 20px 60px;max-width:1600px;margin:0 auto}
 
+  /* cross-dashboard directory strip (RTG-47) — same .badge visual language as
+     the freshness chips; the dot is a LIVE transport probe of that server. */
+  #dash-directory{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 16px}
+  #dash-directory .dir-label{color:var(--muted);font-size:10px;text-transform:uppercase;
+    letter-spacing:.6px;margin-right:2px}
+  #dash-directory a.badge{text-decoration:none;color:var(--muted)}
+  #dash-directory a.badge:hover{border-color:var(--accent);color:var(--text)}
+  #dash-directory a.badge.here{color:var(--text);border-color:var(--accent)}
+  #dash-directory .badge.up .dot{background:var(--good)}
+  #dash-directory .badge.down .dot{background:var(--p0)}
+  #dash-directory .badge .repo{color:var(--none);font-size:9px}
+  #dash-directory .dir-error{color:var(--p0);font-size:11px;border:1px solid #4d1f1c;
+    border-radius:6px;padding:2px 8px;background:rgba(248,81,73,.08)}
+
   /* timeline */
   .timeline{
     background:var(--panel);border:1px solid var(--border);border-radius:10px;
@@ -273,16 +287,19 @@
 <header>
   <h1>Handoff Progress</h1>
   <span class="sub" id="subline">project-wide work across active · blocked · completed · archived</span>
-  <nav>
-    <span class="badge" id="board-badge"><span class="dot"></span><span>board</span></span>
-    <a href="/kernel" title="MI210 kernel-R&D loop dashboard">Kernel-R&D</a>
-    <a href="/bus" title="Session-bus coordination view">Bus</a>
-    <a href="/benchmarks" title="Benchmark artifact inventory">Benchmarks</a>
-    <a id="autopilot-link" href="#" title="autopilot / live-inference dashboard">autopilot ↗</a>
-  </nav>
+  <span class="badge" id="board-badge"><span class="dot"></span><span>board</span></span>
+  <!-- RTG-47: the ONE shared nav, rendered from dashboard/registry.json. Do not
+       hand-add cross-dashboard links here; add a registry row. -->
+  <nav id="epyc-nav"></nav>
 </header>
+<script defer src="/nav.js"></script>
 
 <main>
+  <!-- Directory strip: every registered dashboard + a LIVE transport probe.
+       Not a nav duplicate — the nav says where things are, this says whether
+       they are answering, and it is explicit when it cannot say (RTG-47). -->
+  <div id="dash-directory"><span class="dir-label">dashboards</span><span class="muted">loading…</span></div>
+
   <section class="flow">
     <h2>Flow — is the backlog moving?</h2>
     <p class="why">Tasks closed vs newly filed, from handoff commits. Net = filed − closed;
@@ -394,8 +411,10 @@ const $ = (s,r=document)=>r.querySelector(s);
 const el = (t,cls,txt)=>{const e=document.createElement(t); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e;};
 const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-// autopilot dashboard lives on the orchestrator (:8000); same host, different port.
-$("#autopilot-link").href = `${location.protocol}//${location.hostname}:8000/dashboard`;
+// Cross-dashboard URLs are NOT derived here any more: /nav.js builds every header
+// link from dashboard/registry.json (RTG-47), and the directory strip below reads
+// the same registry through /api/dashboards. The old hand-rolled
+// `#autopilot-link` rewrite is gone.
 
 async function getJSON(url){
   const r = await fetch(url, {cache:"no-store"});
@@ -1264,12 +1283,70 @@ function installZoom(svg, W, H){
   fit();
 }
 
+/* ---------------- dashboard directory strip (RTG-47) ----------------
+   Every registered dashboard + a LIVE transport probe of its server. The strip
+   is NEVER silently empty: an unreachable /api/dashboards, an unreadable
+   registry and a registry that lists nothing each render their own sentence,
+   because "no chips" and "nothing to show" are different facts — the same rule
+   the panel envelopes enforce one level down. */
+function dirPort(){ return location.port || (location.protocol==="https:" ? "443" : "80"); }
+function dirNorm(p){ const s=String(p==null?"":p).replace(/\/+$/,""); return s===""?"/":s; }
+
+function dirError(text){
+  const e = el("span","dir-error",text);
+  return e;
+}
+
+function renderDirectory(d){
+  const host = $("#dash-directory");
+  if(!host) return;
+  host.textContent = "";
+  host.appendChild(el("span","dir-label","dashboards"));
+
+  const rows = Array.isArray(d && d.dashboards) ? d.dashboards : [];
+  const here = dirNorm(location.pathname), port = dirPort();
+  for(const e of rows){
+    if(!e || e.port==null || !e.path) continue;
+    const p = e.probe || {};
+    const a = el("a", "badge " + (p.ok ? "up" : "down"));
+    a.href = `${location.protocol}//${location.hostname}:${e.port}${e.path}`;
+    if(String(e.port)===port && dirNorm(e.path)===here) a.classList.add("here");
+    a.appendChild(el("span","dot"));
+    a.appendChild(el("span",null,String(e.title==null?e.id:e.title)));
+    if(e.owner_repo && e.owner_repo!=="epyc-root")
+      a.appendChild(el("span","repo",String(e.owner_repo)));
+    const probeTxt = p.ok
+      ? `up · HTTP ${p.status_code} · ${p.latency_ms}ms`
+      : `DOWN · ${p.error || "no response"}${p.status_code?` · HTTP ${p.status_code}`:""}`;
+    a.title = `${e.blurb || e.id}\n:${e.port}${e.health_path || "/health"} → ${probeTxt}`;
+    host.appendChild(a);
+  }
+  if(d && d.error) host.appendChild(dirError(String(d.error)));
+  else if(!rows.length)
+    host.appendChild(dirError("the dashboard directory came back with no entries "
+      + "and no reason — /api/dashboards is answering something this page cannot read."));
+}
+
+async function loadDirectory(){
+  try{ renderDirectory(await getJSON("/api/dashboards")); }
+  catch(e){
+    const host = $("#dash-directory");
+    if(!host) return;
+    host.textContent = "";
+    host.appendChild(el("span","dir-label","dashboards"));
+    host.appendChild(dirError("directory unavailable — /api/dashboards: " + e
+      + ". This says nothing about whether the other dashboards are up; it says "
+      + "this hub could not tell you."));
+  }
+}
+
 /* ---------------- boot ---------------- */
-loadBoard(); loadTimeline(); loadOutcome(); loadGraph();
+loadBoard(); loadTimeline(); loadOutcome(); loadGraph(); loadDirectory();
 setInterval(loadBoard, 45000);
 setInterval(loadTimeline, 120000);
 setInterval(loadOutcome, 60000);
 setInterval(loadGraph, 120000);
+setInterval(loadDirectory, 30000);
 </script>
 </body>
 </html>

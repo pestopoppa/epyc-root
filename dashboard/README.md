@@ -1,21 +1,34 @@
 # EPYC Project Dashboard Hub
 
 A tiny, dependency-free web server (Python **stdlib only**) owned by the
-governance repo (`epyc-root`). It surfaces **project-wide, file/artifact-backed
-progress**. Its first view is the **handoff progress board** — a kanban of
+governance repo (`epyc-root`). It is the project's **view plane**: every
+dashboard page, the shared nav, and the machine-readable dashboard directory
+live here. Its first view was the **handoff progress board** — a kanban of
 `handoffs/{active,blocked,completed,archived}` plus a git-derived
-progress-over-time chart.
+progress-over-time chart; it now also serves the machine monitor and the
+autopilot page.
 
-## The ownership boundary
+## The ownership boundary (plane rule — RTG-47, ratified 2026-08-10)
 
-> **Needs the orchestrator's live in-process state or SSE inference taps →**
-> the **orchestrator** serves it (`:8000/dashboard`).
-> **Artifact/file-backed & project-wide →** this **hub** serves it (`:8100`).
+> **Data plane** — JSON/SSE endpoints and exported file contracts — lives
+> **with the subsystem it observes** (orchestrator `:8000/dashboard/api|events/*`,
+> AutoKernel's exported contract, …). That repo owns the schema.
+> **View plane** — every page, `static/nav.js`, `dashboard/registry.json`, the
+> freshness grammar — lives on **this hub** (`:8100`).
+> A page served here fetches another process's data directly from the browser
+> (the orchestrator allows the hub origin via a path-scoped CORS layer,
+> `epyc-orchestrator/src/api/dashboard_cors.py`); nothing is proxied, the hub
+> stays stdlib, and a dead producer renders as an honestly-dead panel rather
+> than a dead page.
 
-The autopilot dashboard stays on the orchestrator (it reads live fleet state and
-streams running inference — those only exist inside that process). This hub is
-where non-autopilot, cross-repo progress views live and grow. The two link to
-each other; neither depends on the other's process.
+History: the boundary used to be a *transport* rule ("needs live in-process
+state → orchestrator serves the page"), which is how the 7.6k-line combined
+page on `:8000/dashboard` accreted. That page is **legacy, pending Phase-1b
+deprecation** (`handoffs/active/dashboard-architecture-restructure.md`) — its
+data routes stay; its page is superseded by `/machine` + `/autopilot` here.
+Adding a dashboard = one row in `dashboard/registry.json` (the shared nav and
+the directory strip render from it); hand-adding cross-dashboard links to a
+page is the drift this registry exists to end.
 
 ## Running
 
@@ -178,6 +191,15 @@ audits its own source to keep it that way.
   of the tables, so a *second* `PROBE_ROUTES` entry would be registered and
   enumerable but not served.
 * **`registry_gaps` does not include `HTML_ROUTES`** in its route universe.
+* **Nor `ASSET_ROUTES`** (RTG-47 Phase 0, `/nav.js`), and for the same reason:
+  pages and generated assets are not panels over a producer's evidence, so they
+  are deliberately outside the panel-registry universe. The nav asset's *content*
+  is `dashboard/registry.json`, whose reporting **is** a registered panel
+  (`dashboards` → `/api/dashboards`); registering the asset as well would give one
+  fact two registry entries. The asset builders are therefore named **without** the
+  `_payload` suffix so `discover_payload_functions` does not count them — which
+  means the exemption rests on a naming convention, and this bullet is where it is
+  declared rather than assumed.
 * **A `refused` section reads as `not_reported`.** The producer distinguishes a
   refusal (e.g. a champion record that failed validation) from silence; the hub
   folds both into `unreported` and its verdict sentence says "has no producer".

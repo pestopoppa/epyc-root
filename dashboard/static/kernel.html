@@ -65,13 +65,12 @@
 <body>
 <header>
   <h1>AutoKernel <span class="sub">· EPYC CPU / MI210 · one-candidate campaign loop</span></h1>
-  <nav>
-    <a href="/">Handoffs</a>
-    <a href="/kernel" class="active">Kernel-R&D</a>
-    <span class="badge" id="badge"><span class="dot"></span><span>contract</span></span>
-    <a id="autopilot-link" href="#" title="orchestrator autopilot dashboard">Autopilot ↗</a>
-  </nav>
+  <span class="badge" id="badge"><span class="dot"></span><span>contract</span></span>
+  <!-- RTG-47: the ONE shared nav, rendered from dashboard/registry.json. Do not
+       hand-add cross-dashboard links here; add a registry row. -->
+  <nav id="epyc-nav"></nav>
 </header>
+<script defer src="/nav.js"></script>
 
 <main>
   <div class="observation" id="observation">
@@ -114,7 +113,9 @@
 const $=(s,r=document)=>r.querySelector(s);
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;};
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-$("#autopilot-link").href=`${location.protocol}//${location.hostname}:8000/dashboard`;
+// Cross-dashboard URLs are NOT derived here any more: /nav.js builds every link
+// from dashboard/registry.json (RTG-47). The old hand-rolled `#autopilot-link`
+// rewrite is gone — three pages each re-deriving ":8000" was the drift.
 
 function setBadge(cls,fresh){
   const b=$("#badge");

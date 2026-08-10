@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 292
+      "open": 294
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -28,7 +28,7 @@
       "blocked": 1,
       "handoffs": 47,
       "oldest_advance": "2026-07-29",
-      "open": 325
+      "open": 329
     },
     "user-facing-harness-index.md": {
       "blocked": 0,
@@ -349,14 +349,14 @@
     },
     "dashboard-architecture-restructure.md": {
       "blocked": 0,
-      "closed": 10,
+      "closed": 11,
       "guarded": 0,
       "last_advanced": null,
-      "open": 12,
+      "open": 16,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-47",
       "state": "active",
-      "total": 22
+      "total": 27
     },
     "decision-aware-routing.md": {
       "blocked": 1,
@@ -1889,14 +1889,14 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 121,
+      "closed": 23,
       "guarded": 0,
       "last_advanced": "2026-08-10",
-      "open": 3,
+      "open": 5,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 124
+      "total": 28
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -2375,7 +2375,7 @@
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
       "line": 59,
-      "next_action": "PR2d-backfill \u2014 author `depends_on` on the 11 evidential citation edges the 60-edge sample found",
+      "next_action": "SC6-LIVE \u2014 after autopilot next restarts, confirm `adapters/autopilot_journal.py` reports non-zero measured rows",
       "track": "vidya belief substrate program"
     },
     "EVL-48": {
@@ -3457,7 +3457,7 @@
       "id": "RTG-47",
       "index": "routing-and-optimization-index.md",
       "line": 59,
-      "next_action": "Operator eyeball pass of live /machine + /autopilot, then run old+new in parallel toward the Phase 1b deprecation call",
+      "next_action": "Land fix-10 retention overlay; re-eyeball live \u2191/\u2193 under real load; run old+new in parallel toward the Phase 1b call",
       "track": "dashboard architecture restructure"
     },
     "UFH-01": {

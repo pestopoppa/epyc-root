@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-08
-**Sources**: 105+ documents
+**Last compiled**: 2026-08-10 (adds the generated-eval gate stack G1–G6 with human-curate as a hard node, the two-repo verifier-parity divergences incl. a vacuously-passing `code_execution` scorer, and the correction that the paper this expansion was scoped from generates no tasks)
+**Sources**: 108+ documents
 
 ## Compiled Update — 2026-08-08: evaluate the artifact and harness that actually execute
 
@@ -1723,3 +1723,74 @@ comparison frame, stopping rule, and objective identity therefore travel togethe
 - [Objective task-rate goodput](../handoffs/active/objective-task-rate-goodput.md)
 - [2026-08-05 progress](../progress/2026-08/2026-08-05.md)
 - Research intakes 999 and 1000 (control design and archive safeguards)
+
+## Compiled Update — 2026-08-10: generated eval content needs a gate stack, and the paper it was scoped from has no generator
+
+> Extends the F1 real-task-corpus entries above with the DGM-expansion scoping (2026-07-17), its
+> 2026-08-10 premise correction, and the trajectory-format dive. The corpus figures already compiled
+> above are unchanged; what follows is the *method* layer around them.
+
+- **The premise correction that matters most: the scoping document took "only the task-generation half"
+  of a system with no task-generation half.** DGM is self-code-modification plus an empirical
+  validation loop over *agent* variants; it does not generate evaluation tasks. What survives the
+  correction is a transposition rather than an adoption — archive-based evolution, branching parallel
+  exploration and empirical validation applied to **task** variants, with self-modification dropped
+  entirely. The lineage claim built on top of it ("ADAS → DGM → Hyperagents shows a trajectory toward
+  fully autonomous task generation") is supported by none of the three papers; one of them lists *"a
+  fixed task and evaluation distribution"* among its own limitations. Two of the three had never been
+  ingested at all — each was carrying a neighbouring index entry's id, which reads as provenance and is
+  not. **A scoping document inherits the truth value of its sources, and nobody had read them.**
+
+- **The gate stack for any self-generated eval content, in order**: G1 schema parity → G2 scoreability
+  (the tower's own `_is_scoreable_question`) → G3 two-repo verifier parity → G4 double-critic answer
+  validation → G5 baseline anchoring (class-share and complexity band against the human-curated suite)
+  → **G6 human-curate, a hard, non-overridable node**. Generated tasks are audit/promotion material
+  only until a human curates them, and the admission authority for the autopilot gate does not move.
+  The empirical warrant for making G6 unskippable rather than advisory is on record: self-generated
+  skills measured net-negative (−1.3pp average) without gates. Keep the generated suite **separate**
+  from the curated baseline rather than extending it in place, or the anchor stops being an anchor.
+
+- **Verifier parity is a real gate, because two copies of one scorer disagree.** Only six methods are
+  gate-admittable (`exact_match`, `multiple_choice`, `substring`, `f1`, `programmatic`,
+  `code_execution` with an oracle); `math_verify` exists in one repo's copy only and fails parity in
+  the other; judge/rubric methods stay in the audit lane. The sharpest finding is a **vacuous pass**:
+  one copy's `code_execution` scorer returns `returncode == 0`, so a row with no oracle passes by
+  running at all — meaning any generated `code_execution` row must carry a real assertion or unittest
+  oracle *and* clear the parity gate. `substring` digit-stripping and `f1` diacritic-folding diverge
+  across the same two copies. **A scorer duplicated across repos is two scorers**, and the divergence
+  table is the parity checklist.
+
+- **Difficulty stratification cannot gate anything until complexity is scored.** Elo-calibrated
+  complexity ranking is the design input for tiering generated tasks, and the utility does not exist
+  yet — so the interim rule is a per-class complexity cap enforced at the anchoring gate, with weak,
+  project-idiosyncratic classes restricted to human-curate-only. That is the weak-teacher caution
+  applied at the right layer: cap what the generator is allowed to reach for, rather than trusting a
+  critic that is weakest exactly where the class is hardest.
+
+- **A demand-side eval distribution is a weighting problem, not a volume problem.** Live progress rows,
+  benchmark/eval trials and archived operator conversations answer *different evidence questions* and
+  must be labelled and weighted rather than pooled — the mixed corpus carries an explicit weighted
+  source-family share plus a dominance gate for exactly this reason. Two structural disciplines travel
+  with it: **privacy is enforced by construction** (prompt-free, hash-ref-only rows by default, with
+  every committed artifact scanned to zero prompt-text and zero prompt-ref rows), and **subagent /
+  sidechain transcripts are excluded by default**, because a subagent transcript is harness traffic
+  wearing an operator's shape. The trap the whole corpus exists to avoid is visible in one number:
+  49,297 `task_started` events are harness pressure, not human demand.
+
+- **A trajectory format that structurally cannot carry outcomes is not a source of record.** The
+  evaluated format carries no tokens, latency, cost, outcome/reward, phase tag or executor-model-id,
+  and `additionalProperties: false` on all five of its definitions makes that exclusion **enforced
+  rather than incidental** — so it can never be upgraded into an evidence source by adding fields
+  downstream. The dependency was declined on independent grounds as well (not published to PyPI at
+  all; the Python package is a subprocess shim to a vendored Node CLI whose Node dependency is
+  undeclared, so installation succeeds and the first call fails), and the ~50 lines actually worth
+  having were reimplemented as a dependency-free read-only SQLite reader. **Judge a candidate
+  dependency by what its schema forbids, not by what its README offers.**
+
+### Source References
+
+- [`handoffs/active/frontier-f1-real-task-corpus.md`](../handoffs/active/frontier-f1-real-task-corpus.md) — the F1-DGM scoping row, its 2026-08-10 citation-audit banner, and the trajectory-format dive
+- [`research/f1-dgm-scoping-2026-07.md`](../research/f1-dgm-scoping-2026-07.md) — the G1–G6 gate stack, the verifier-compatibility matrix and the QC fold (carries its own premise-correction banner)
+- [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the citation audit that overturned the lineage claim and the two headline claims resting on it
+- [`wiki/knowledge-management.md`](knowledge-management.md) — the intake-side defects (phantom citations, laundered ids) that produced the wrong attributions
+- [`research/deep-dives/simula-synthetic-data-generation.md`](../research/deep-dives/simula-synthetic-data-generation.md) — the double-critic and Elo-complexity mechanisms folded into G4/G5

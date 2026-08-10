@@ -59,12 +59,11 @@
   <h1>Session Bus</h1>
   <span class="sub">coordinator-daemon &middot; coordinator-agent &middot; mains</span>
   <span id="fresh" class="badge missing"><span class="dot"></span><span id="freshtxt">…</span></span>
-  <nav>
-    <a href="/">Handoffs</a>
-    <a href="/kernel">Kernel</a>
-    <a href="/bus" class="active">Bus</a>
-  </nav>
+  <!-- RTG-47: the ONE shared nav, rendered from dashboard/registry.json. Do not
+       hand-add cross-dashboard links here; add a registry row. -->
+  <nav id="epyc-nav"></nav>
 </header>
+<script defer src="/nav.js"></script>
 
 <main>
   <section id="alarms-sec" hidden>

@@ -2,8 +2,8 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-09
-**Sources**: 30 documents
+**Last compiled**: 2026-08-10 (belief-substrate promotion track: corroboration counted by source locator, machine anchoring, dependency propagation, R1b closed)
+**Sources**: 36 documents
 
 ## Summary
 
@@ -842,3 +842,170 @@ independent evidence.
 - [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — implementer's guide and the live source register
 - [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — the withdrawn 2.2% ceiling and the corrected structured-corpus measurement
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC1–SC11 — the source-coverage track
+
+## Compiled Update — 2026-08-10 (promotion track): what it took to make one belief rest on two sources
+
+> Model-compiled from the belief-substrate promotion track and the R-program closeout. Every figure
+> below was produced by running the code against the live 4,181-belief ledger or the real 1,067-entry
+> intake index. **Two earlier compiled claims are amended here — see the corroboration and R1b items.**
+
+- **Corroboration was degenerate because support was counted by LABEL, not by SOURCE.** The earlier
+  section recorded "100% of 4,191 beliefs rest on at most one support path" and attributed it to
+  per-entry claim identity. That was half the cause. `_disjoint_supports` counted evidence *labels*,
+  which are minted per claim, so two records of the same paper produced two labels and would have
+  read as independent support the moment aliasing landed. Counting by **source locator**, and
+  collapsing alias groups the reviewer marked non-independent to one witness, produced the first
+  non-zero `disjoint_supports ≥ 2` in the program's history: over 4,181 beliefs the distribution is
+  **0 → 112, 1 → 4,066, 2 → 3**. Of the reviewer's ten "same" verdicts, the seven same-source or
+  linked ones correctly yield nothing and exactly the three genuinely independent ones count. Had the
+  aliases been emitted before the counting change, the statistic's first positive result would have
+  been one paper counted twice — strictly worse than the honest zero it replaced.
+
+- **"Human-gated" describes the judgment, not the search.** R4b sat blocked on the claim that deciding
+  two differently-worded claims are the same proposition is irreducibly human. True, and beside the
+  point: nobody was ever going to hand-scan 8.8M pairs. Deterministic IDF-weighted Jaccard over
+  stopword-stripped terms reduced **4,191 claims → 780,140 blocked pairs → 74,948 scored → 45
+  candidates** at threshold 0.35 — an afternoon of review, no model call, so a review can be paused,
+  resumed or audited. Two filters carry the design: same-entry pairs are never proposed (two claims of
+  one entry are one source, and aliasing them manufactures the exact fake independence the statistic
+  exists to detect), and every row starts `pending` with no pre-filled decision.
+
+- **A duplicate-id check cannot see a duplicate source.** The validator had errored on duplicate
+  `arxiv_id` for as long as it existed and was blind to **5 duplicate-locator groups covering 11
+  entries**, because one entry of each pair records the arXiv id and the other records only the URL.
+  Normalizing both forms to one key finds them; the check **warns rather than errors**, deliberately,
+  since a repository or project page can legitimately back two distinct artifacts and this project has
+  a standing lesson against conflating a companion repo with its paper.
+
+- **A longitudinal question is blocked by its instrument long before it is blocked by the clock.** R5
+  was filed elapsed-time-gated, which was true and concealed the real blocker: the `query_served` and
+  `obligation_disposition` frames existed and **nothing emitted them**, so no clock had started. Both
+  are now wired **opt-out rather than opt-in** (`--no-log` to suppress) on the principle that the
+  failure mode is silent and unrecoverable — a default of "off" leaves the series empty while every
+  command still appears to work.
+
+- **When a bar cannot be met by hand, add a rung — do not lower the bar.** Anchoring was the promotion
+  gap: 667 entries cited by active handoffs and design docs, **5 anchored**, and hand-anchoring 2,994
+  claims is not a path. The ratified answer inserts **`T2 MachineLocated` between Located and
+  Anchored** (carrier 25 elements) and caps `located_by: machine` there regardless of completeness, so
+  a machine anchor can never be mistaken for a human one. Ordinal-safe because grades serialize as
+  names, so no stored frame changed meaning — and the compliance test caught the carrier-size change,
+  which is what it is for. At scale: **351 anchors across 158 entries**, taking the T axis from 5
+  anchored claims to 371 at `MachineLocated` plus the 5 human ones.
+
+- **The review step on that pass earned itself three times, and each defect had a different shape.**
+  (1) Two anchors passed every threshold and were wrong — a WER claim pinned to a sentence that only
+  *named* the metric, and a token-reduction claim pinned to a span whose numbers **contradicted** it —
+  because term overlap is number-blind and this corpus is numeric. (2) The numeric guard added to fix
+  that passed the contradiction anyway on its first version, because `MATH-500` contributed "500" to
+  both sides: **a shared name reading as a shared number**; identifiers are now excluded. (3) A silent
+  index bug — the anchorer filtered non-string entries out of `key_claims` and then enumerated the
+  *filtered* list, shifting every index after a non-string claim and pinning a quote hash to the wrong
+  claim. The affected entry was dropped from the batch rather than repaired: re-running under fixed
+  code is cheap, guessing which claim it meant is not.
+
+- **A record nobody touched became false, which is the freshness failure in its purest form.** An
+  entry's claim is a verbatim copy of an arXiv v1 abstract; the authors later found the headline
+  "+9–16 points" was a **scoring artifact** (the base model split answers across two formats, so a
+  boxed-only grader undercounted it) and revised the paper — current table +0.0 and +3.3, and **−1.2**
+  on a benchmark where the entry claimed +10. This motivated a drift detector that batches the arXiv
+  API and flags any entry whose paper was updated after our `ingested_date`; it independently re-found
+  the case that motivated it. **Then the triage reframed the finding and dissolved 67 of 68 items**:
+  of 68 drifted entries in 617, 64 are `unverified` and 3 `stage1-unverified` — exactly one is dived.
+  For an unverified entry drift is not a correctness problem, because the record already says nobody
+  checked; reading 67 papers to confirm that unverified things are unverified is work with no
+  consumer. What the finding licenses is a Stage-2 rule — *dive the CURRENT version and record which
+  one you read* — which prevents the class instead of draining it.
+
+- **An entry-level correction is not evidence about any particular claim.** Blanket application of
+  `dive_corrections` produced 114 opposition frames. Reading the divers' own prose per claim — *the
+  prose the divers wrote IS the record; reading it is the method* — recovered verdicts for all 26
+  entries: of **106 claim verdicts, 68 unaffected, 25 narrowed, 6 uncertain, 3 reattributed, and 4
+  overturned**. Opposition output drops 114 → 6. A fifth verdict, `uncertain`, had to be invented to
+  separate "a reader examined the prose and it still does not say" from "nobody looked" — only the
+  second should make a future reader repeat the work. And emitting the right frame is not withdrawing
+  the wrong one: **204 superseded opposition edges retracted** (retracted, not deleted — an earlier
+  frontier must still fold to what we believed then) and **103 corrections marked reviewed**.
+
+- **An authored dependency edge the engine ignores does nothing, and only measurement could show it.**
+  After `depends_on` was adopted, the counterfactual authoring test (*if that entry's claim were
+  retracted tomorrow, would a claim in THIS entry have to change?*) admitted only **4 of the 11 edges**
+  the 60-edge sample had labelled evidential — and one runs **opposite** to the citation that suggested
+  it, since the cited work is older than the claim that transports its theorem. The propagation
+  evaluation then scored **0 of 4**: the fold listed `claim_depends_on` under `ignored_frame_types`.
+  Getting to 4/4 needed two closes and the second is the lesson: `impact_of_retracting` compared grades
+  and broken paths only, so a **review-only effect read as "unaffected"** — a report that cannot see
+  the one effect the ratified rule produces is not reporting impact. Ratified semantics: a dependency
+  whose source has lost all support flags its dependents `review_required` and **no grade moves** (we
+  know the ground shifted, not by how much), and a new dependency alert counts as impact even on an
+  already-flagged claim, because "my source was corrected" and "something I rest on was withdrawn" are
+  obligations cleared by different people.
+
+- **Re-ingest was not idempotent, and the fix that absorbed the damage was a different fix.** Because
+  `frame_id` hashes `created_at`, a fresh `--as-of` re-emitted the whole corpus: **9,599 → 19,270
+  frames with zero new information** (dedup is now keyed on `(frame_type, assertion)`). The
+  independent-support distribution was unchanged across the duplication *only because* support had
+  already moved to locator counting — under the old label counting every claim would have shown two
+  supports. A duplication bug and a fake-independence bug are the same bug seen from two directions.
+
+- **The wiki is a dependent, not a claimant.** Wiki citations were modelled as **707 dependency edges
+  from 28 pages into 477 distinct intake entries**, implemented as a *projection over the fold* that
+  writes nothing to the ledger: a page's citations are re-derivable from a file already in git, and
+  the alternative would have put 28 non-beliefs into the belief set. Result: 12 pages carry a stale
+  dependency (all unreviewed corrections) and **real decay is zero**. The first draft reported 16 —
+  **a coverage gap was being read as decay**, because nine entries flagged "lost all support" had never
+  had a claim ingested at all. That is a gap in the reader, not rot in the page; `uningested` and
+  `unsupported` are now distinct and only decay marks a page stale.
+
+- **Two denominators with one name understate a corpus by 40 points.** A reps extractor that read only
+  modern denominator keys found coverage of 46%; probing the gap rather than accepting it found 545
+  older rows carrying the denominator under `details.total`, taking coverage to **86%**. Because
+  `total` counts what was ATTEMPTED and `quality_denominator` counts what SCORED, the claim tuple now
+  records `reps_basis` and the grade reasons state it — "n=55 attempted" and "n=55 scored" are
+  different claims. A neighbouring trap from the same wiring: the optimizer declares
+  `directions=["maximize"]*4` over `(quality, speed, -cost, reliability)`, so the raw `cost` field is
+  **lower-better** and reading the maximize-list alone inverts it. Direction is now recorded, never
+  inferred.
+
+- **R1b RESOLVED — and "exhaustive over a generator is not exhaustive."** A depth-3 sweep over 40,500
+  instances found 0 counterexamples to the dual-token + intra-stratum-closure route while the
+  detection control (plain circuit specialization) produced 16,911, which is what made the null a
+  result rather than a shrug. An adversarial three-rule program then refuted composition anyway:
+  `p :- a` / `r :- not p` / `t :- r`, retract `a` — ground truth derives `{r, t}`, the route derives
+  `{r}`, because at record time `r` was absent and the stratum-3 circuit was therefore empty. The
+  generator had never emitted a stratum-3 rule with a bare positive body over a stratum-2 negation
+  head. The repair (seed each stratum's closure with the heads the stratum below *could* derive,
+  guards ignored) restores exactness over the same 40,500 instances and retains **88.4%** of stratum
+  rules — an 11.6% saving over full re-evaluation, so the conclusion is unchanged: **closed as a
+  research question, and the engineering is not worth building.** A bug found first matters more than
+  the number: the initial depth-3 run reported 1,836 counterexamples, every one shaped `s :- r` listed
+  *before* the rule deriving `r`, because the single-pass ground-truth evaluator made rule ORDER change
+  the meaning of a stratum — a fully-formed, completely spurious refutation, stopped only by suspecting
+  the test method before believing the result.
+
+- **Most rules that look like they need negation do not.** Naming the first rule that genuinely
+  requires stratified negation eliminated two of three candidates: "no unretracted opposition exists"
+  and "no fresher measurement supersedes this" are both *materialized then read* — ordinary evaluation
+  followed by a filter, not negation-as-failure. The qualifying rule is **correction discharge over the
+  transitive dependency closure** (*a correction is discharged when no claim that transitively depends
+  on it remains flagged*), where both halves are load-bearing: transitivity makes the relation
+  recursive, and "no dependent remains flagged" is negation over a relation derived in the same
+  program. It is wanted rather than hypothetical — **678 claims sit `review_required` with no closure
+  rule at all**, the one-way-ratchet shape reappearing at the level of a correction's whole blast
+  radius.
+
+- **A provenance program stamped 37 dates two days in the future.** Found during wrap-up across handoff
+  checkboxes, a spec section, code comments, a README and a memory entry; corrected across 15 files in
+  two repos. Ledger frames appended that day carry the wrong `created_at` and were verified **cosmetic,
+  not functional** — folding at the true date returns identical results, because the fold does not
+  exclude on `created_at`. Synthetic fixture dates were deliberately left alone: arbitrary literals are
+  not claims. In a system whose subject is provenance, the date on a record is part of the record.
+
+### Source References
+
+- [`handoffs/completed/vidya-belief-substrate-program-completed-through-2026-08-10.md`](../handoffs/completed/vidya-belief-substrate-program-completed-through-2026-08-10.md) — the promotion track (PR0–PR3), its ratifications and every defect found by hand-review
+- [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4e/§2.4f — the depth-3 sweep, the composition refutation, the repair and its price
+- [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — alias candidate generation, the duplicate-locator sweep, and the R5 instruments
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC5/SC6 — wiki-as-dependents, the autopilot write hook and `reps_basis`
+- [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) · [`progress/2026-08/2026-08-10-vidya.md`](../progress/2026-08/2026-08-10-vidya.md) — the session records for both halves
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.2 — the amended carrier with `T2 MachineLocated`

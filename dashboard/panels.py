@@ -452,6 +452,32 @@ PANELS: Mapping[str, PanelSource] = _index((
         absence_is_anomalous=False,
     ),
     PanelSource(
+        panel="dashboards",
+        kind=KIND_LIVE,
+        payload_func="dashboards_payload",
+        route="/api/dashboards",
+        producer="dashboard.server.dashboards_payload (this hub) over dashboard/registry.json",
+        producer_repo="epyc-root",
+        evidence="dashboard/registry.json + live 127.0.0.1 health probes",
+        timestamp_field="live-scan",
+        absence_means=(
+            "dashboard/registry.json is missing or unreadable, so the hub cannot say "
+            "which dashboards exist. The file is TRACKED IN THIS REPO, so its absence "
+            "is a broken working tree and never a cold start. The directory then "
+            "renders an EXPLICIT error entry — never an empty directory: a nav that "
+            "silently lists nothing is indistinguishable from a project that has no "
+            "dashboards, which is the absence-tolerant render this surface exists to "
+            "forbid, one level up from the panels it lists."),
+        gates_health=False,
+        absence_is_anomalous=True,
+        notes="The per-entry `probe` object is a LIVE transport reading of another "
+              "server's /health and is deliberately NOT folded into /api/health: a "
+              "down :8000 is a fact about the orchestrator, and letting it colour "
+              "this hub's verdict would restart the wrong process (see the "
+              "/health vs /api/health split in server.py). Payload + probes are "
+              "TTL-cached ~15s so the directory strip cannot become a probe storm.",
+    ),
+    PanelSource(
         panel="transport_probe",
         kind=KIND_LIVE,
         payload_func="transport_probe_payload",

@@ -1,0 +1,68 @@
+{
+  "schema": "epyc.dashboard.registry.v1",
+  "dashboards": [
+    {
+      "id": "machine",
+      "title": "Machine",
+      "port": 8100,
+      "path": "/machine",
+      "owner_repo": "epyc-root",
+      "health_path": "/health",
+      "blurb": "global hardware + live-inference monitor (data: :8000 API)"
+    },
+    {
+      "id": "autopilot",
+      "title": "Autopilot",
+      "port": 8100,
+      "path": "/autopilot",
+      "owner_repo": "epyc-root",
+      "health_path": "/health",
+      "blurb": "autopilot loop: phase, log, Pareto/GEPA, optimization (data: :8000 API)"
+    },
+    {
+      "id": "handoffs",
+      "title": "Handoffs",
+      "port": 8100,
+      "path": "/",
+      "owner_repo": "epyc-root",
+      "health_path": "/health",
+      "blurb": "handoff kanban + backlog flow"
+    },
+    {
+      "id": "kernel",
+      "title": "Kernel-R&D",
+      "port": 8100,
+      "path": "/kernel",
+      "owner_repo": "epyc-root",
+      "health_path": "/health",
+      "blurb": "AutoKernel MI210 loop (contract-backed)"
+    },
+    {
+      "id": "bus",
+      "title": "Bus",
+      "port": 8100,
+      "path": "/bus",
+      "owner_repo": "epyc-root",
+      "health_path": "/health",
+      "blurb": "session-bus roster, heartbeats, queue"
+    },
+    {
+      "id": "benchmarks",
+      "title": "Benchmarks",
+      "port": 8100,
+      "path": "/benchmarks",
+      "owner_repo": "epyc-root",
+      "health_path": "/health",
+      "blurb": "benchmark artifact inventory (read-only)"
+    },
+    {
+      "id": "orchestrator-legacy",
+      "title": "Legacy (:8000)",
+      "port": 8000,
+      "path": "/dashboard",
+      "owner_repo": "epyc-orchestrator",
+      "health_path": "/health",
+      "blurb": "legacy combined page — deprecation pending (RTG-47 Phase 1b); data APIs stay"
+    }
+  ]
+}
