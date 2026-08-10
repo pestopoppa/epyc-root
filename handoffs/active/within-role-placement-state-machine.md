@@ -366,7 +366,7 @@ Each phase ships behind an env flag, default-on after its gate passes. Rollback 
 - `handoffs/completed/cross-role-bw-aware-routing.md` — direct predecessor; Phases A-F shipped the contention matrix, the gate, and the per-region-locks dispatcher. The deferred "KV migration under PER_REGION_LOCKS=1" item is the seed of this handoff.
 - `handoffs/active/dynamic-stack-concurrency.md` — owns the KV save/restore mechanics and the DS-6/DS-7 quarter scheduler. This handoff reuses those primitives; it does not redefine them.
 - `handoffs/active/routing-and-optimization-index.md` § P7 — DS-5/DS-6/DS-7 sibling tasks. This handoff's WP-N tasks are nested under P7 in that index.
-- `handoffs/active/inference-acceleration-index.md` § Cross-Reference Map — within-role KV dispatcher registered alongside KVCOMM cross-instance KV sharing (different scope; this handoff is single-server within-role, KVCOMM is cross-server).
+- `handoffs/active/inference-research-index.md` § Cross-Reference Map — within-role KV dispatcher registered alongside KVCOMM cross-instance KV sharing (different scope; this handoff is single-server within-role, KVCOMM is cross-server).
 - `handoffs/active/master-handoff-index.md` § Cross-Index Dependencies — within-role placement affects autopilot throughput observed in inference-acceleration-index gates.
 - `handoffs/active/bulk-inference-campaign.md` **§ Package J** (added 2026-05-26) — wires this handoff's inference-gated WPs (J1=WP-2 gate, J2=WP-3 verification, J3=WP-4 verification, J4=WP-5 ratification observability, J5=WP-6 matrix re-bench, J6=WP-7 production rollout). J1-J3 are flagged priority-zero in Package J's execution order: enabling them first raises every downstream Package's effective concurrency.
 

@@ -2,7 +2,7 @@
 
 **Status**: active (created 2026-06-22 via operator-directed MTP review; v6 status correction added 2026-07-11)
 **Categories**: speculative_decoding, hardware_optimization, local_inference, moe_optimization
-**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
+**Parent index**: [`inference-research-index.md`](inference-research-index.md)
 **Related**: [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md), [`summary-token-attention-readiness.md`](summary-token-attention-readiness.md); completed: [`gemma4-mtp-drafter-evaluation.md`](../completed/gemma4-mtp-drafter-evaluation.md), [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md)
 
 ## Objective

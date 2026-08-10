@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-09
-**Sources**: 94+ documents
+**Last compiled**: 2026-08-10
+**Sources**: 98+ documents
 
 ## Summary
 
@@ -752,3 +752,27 @@ now typed inputs rather than ambient assumptions.
 - **Paper-vs-code disagreement on a load-bearing constant is the reusable caution.** The published parent-selection weights (`1.0/0.6/0.3`, appearing only in case-study prose) **ship nowhere**; the released configuration uses `1.0/0.4/0.25`, present in two places, and the island machinery the paper describes is inert in every shipped profile. Any port must take the shipped values, and the general rule is to read the config before porting a number from a paper's narrative. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), intake-1024, intake-940.
 
 - **An execution sandbox can be professionally built and still not be a sandbox.** A purpose-built distributed grading service — controller, dispatcher, router, containerized workers with CPU/memory/device limits — launches **every** worker with seccomp disabled, on containers whose entire job is running untrusted model-generated code; and a file in the same project named for a sandbox, documented as executing "inside the configured OS sandbox", performs an in-process module exec with no isolation at all. The durable lesson for our own harness-sandbox criteria is that *"runs in a container"* is not *"sandboxed"*, and acceptance criteria must name syscall confinement explicitly. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md), intake-1028.
+
+## Compiled Update — 2026-08-10: a baseline becomes an authority only at a deliberate promotion boundary
+
+**Confidence: verified.** The E16 AutoPilot baseline is three matched, clean evaluation lanes rather
+than a single T1 headline: T1 is 100/100 at quality 1.500, T2 is 500/500 at 1.356, and T3 is 160/160
+at 1.275; all have reliability 1.000 and zero error rows. The operator ratified the bundle, which
+installed its E16 quality/speed eras, the `staged-multitier-v1` policy, and a verified
+`production_best` routing-intelligence checkpoint. That is the useful autonomy rule: discovery can
+propose cheaply, but a result gains configuration or headline authority only after matched evidence,
+an immutable receipt, and a reversible publication step.
+
+The corresponding belief-kernel integration deliberately stays on the read side for now. The planner
+can consult settled negative evidence to avoid re-exploring rejected ground, but hypothesis generation
+is not gated. A genuine CANDIDATE → BASELINE/OPTIMUM belief gate remains open because it needs durable
+candidate attestation before production mutation plus retraction propagation across consumers. Treating
+an author's assertion as evidence, or treating a single noisy run as a sealed baseline, would collapse
+the distinction that the staged promotion path was built to protect.
+
+### Source References
+
+- [AutoPilot continuous optimization](../handoffs/active/autopilot-continuous-optimization.md) — E16 evidence, staged promotion, and the still-open promotion-gate work
+- [2026-08-10 progress](../progress/2026-08/2026-08-10.md) — ratification receipt, checkpoint identity, and stopped-state invariant
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC14's read-only planner bridge and the remaining promotion contract
+- [Ratification receipt](../artifacts/operator/ratify_multitier_baseline_v10_20260810.json) — exact applied boundary and no-start attestations

@@ -109,7 +109,7 @@ Tasks:
 - [`moe-spec-cpu-spec-dec-integration.md`](moe-spec-cpu-spec-dec-integration.md) — MoE spec-dec integration surface
 - [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) — sibling drafter work
 - [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) — adjacent upstream arch tracking
-- [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) · [`inference-acceleration-index.md`](inference-acceleration-index.md) — parent indices
+- [`inference-research-index.md`](inference-research-index.md) · [`inference-research-index.md`](inference-research-index.md) — parent indices
 
 ## Progress checklist
 

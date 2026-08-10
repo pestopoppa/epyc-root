@@ -5,13 +5,13 @@
 **Updated**: 2026-07-26
 **Priority**: MEDIUM when dormant; HIGH only after the reopen checklist passes
 **Categories**: hardware_optimization, inference_serving, local_inference
-**Parent index**: [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md), [inference-acceleration-index.md](inference-acceleration-index.md)
+**Parent index**: [inference-research-index.md](inference-research-index.md), [inference-research-index.md](inference-research-index.md)
 **Completed ledger**: [intra-process-tensor-parallel-decode-completed-through-2026-05-28.md](../completed/intra-process-tensor-parallel-decode-completed-through-2026-05-28.md)
 
 ## 2026-07-26 Staleness Review
 
 No topology or workload trigger has been established since compaction. The
-[inference-acceleration index](inference-acceleration-index.md) still makes
+[inference-acceleration index](inference-research-index.md) still makes
 fresh topology/workload proof a prerequisite, so this handoff remains a
 dormant reopen gate rather than an implementation queue.
 
@@ -59,10 +59,10 @@ This handoff is active as a reference and reopen gate, not as an implementation 
 
 - `/mnt/raid0/llm/llama.cpp/ggml/src/ggml-cpu/`
 - `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/`
-- [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md)
+- [inference-research-index.md](inference-research-index.md)
 - [single-instance-system-tuning.md](../completed/single-instance-system-tuning.md) (archived 2026-06-12)
 - [large-moe-expert-parallelism.md](large-moe-expert-parallelism.md)
 
 ## Reporting Instructions
 
-If reopened, update this file first with the trigger, baseline command, and bottleneck proof. Then update [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md), [inference-acceleration-index.md](inference-acceleration-index.md), and the progress log with the exact decision.
+If reopened, update this file first with the trigger, baseline command, and bottleneck proof. Then update [inference-research-index.md](inference-research-index.md), [inference-research-index.md](inference-research-index.md), and the progress log with the exact decision.

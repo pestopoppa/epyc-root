@@ -7,8 +7,8 @@ is repaired, while `GGML_CPU_CONCAT_DIM0_ROWS=1` remains default-off. This is
 not a default-on prefill claim; the remaining prefill-compute research stays
 active, and the preserved CPU matrix `promotion_decision=false` is not a veto
 of the operator freeze.
-**Owner handoff**: this file. **Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md);
-sibling of [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md).
+**Owner handoff**: this file. **Parent index**: [inference-research-index.md](inference-research-index.md);
+sibling of [inference-research-index.md](inference-research-index.md).
 
 **2026-07-19 checkpoint**: PC-0 first-cell profiling is positive from both the current
 experimental CPU build observation (`1.47` IPC) and the OP-2 quiet-window production-v6 profile

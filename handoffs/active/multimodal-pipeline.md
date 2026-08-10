@@ -667,7 +667,7 @@ Alibaba broke its Apache-2.0 tradition and released Qwen3.5-Omni on 2026-03-30 a
 **Cross-references**:
 - `/workspace/research/deep-dives/qwen35-omni-tts-unblock.md` (full analysis)
 - `/workspace/research/deep-dives/luxtts-cpu-tts-candidate.md` (Path D baseline)
-- `inference-acceleration-index.md` — Qwen3.5-Omni cross-ref row added 2026-04-22
+- `inference-research-index.md` — Qwen3.5-Omni cross-ref row added 2026-04-22
 
 ## Research Intake Update — 2026-04-30
 
