@@ -369,6 +369,14 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
 - [x] D8 Merging leaves permanent id gaps, which tripped the sequential-id check. The allowance is
       derived from `merge_history` rather than hardcoded, so a gap is forgiven only when some entry
       states in writing that it absorbed that id ✅ 2026-08-10
+- [x] D10 **Renumbering to close the gaps: assessed and declined**, rationale recorded in
+      `intake-schema.md` § ID Sequencing so it is not re-litigated. Closing 4 gaps would renumber
+      728 entries, rewrite 5,565 references across 479 files, and change 731 of the 1,067 intake
+      ids embedded in ledger claim/source identifiers — which the append-only log cannot absorb,
+      since changing frame content changes the content-addressed `frame_id` and breaks the chain
+      the published checkpoint attests to. The decisive argument is independent of the ledger: a
+      reused id resolves to the WRONG paper in older documents, which is a silent misdirection,
+      whereas a gap is a benign absence ✅ 2026-08-10
 - [x] D9 Repaired 84 dangling cross-refs left by commit b208d9ce, where another session's index
       consolidation removed `inference-acceleration-index.md` and
       `cpu-inference-optimization-index.md`. Repointed at `inference-research-index.md`; intake

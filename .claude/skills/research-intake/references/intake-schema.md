@@ -183,11 +183,39 @@ migration normalised every value to a bare ID and preserved all 458 annotations 
 
 IDs must be sequential: `intake-001`, `intake-002`, etc. The `seed_index.py` script assigns initial IDs. New entries appended by the skill continue the sequence.
 
+**Gaps left by a merge are permanent. Never renumber to close them.** An intake id is a stable
+identifier, not an index into an array, and it is load-bearing well outside this file. Measured
+2026-08-10, closing the four gaps the D5 merges created would have meant:
+
+| | |
+|---|---:|
+| Entries needing a new id | 728 (everything above the first gap) |
+| References to rewrite outside the index | 5,565, across 479 files |
+| Distinct ids embedded in Vidya ledger claim/source identifiers | 731 of 1,067 |
+
+Two reasons that is a no, and the second holds even if the first ever stops applying:
+
+1. **The ledger cannot be renumbered.** Claim ids are `clm_intake_939_00` and source ids are
+   `src_intake_939`, so changing an entry number changes the frame content, hence its
+   content-addressed `frame_id`, hence the hash chain the published checkpoint attests to.
+   Renumbering means rewriting an append-only log whose whole purpose is that it cannot be
+   rewritten.
+2. **A reused id is worse than a missing one.** If intake-940 becomes intake-936, then
+   "intake-939" in an older handoff still resolves — to a *different paper*. That is not a dangling
+   reference anyone notices; it is a silent misdirection inside the citation graph. A gap is a
+   benign absence.
+
+Gaps cost nothing operationally: `validate_intake.py` derives its sequencing allowance from
+`merge_history`, so a gap is accepted only where a surviving entry states in writing that it
+absorbed that id, and a genuinely skipped or duplicated id is still an error.
+
 ## Deduplication
 
-- Primary key: `arxiv_id` (exact match)
-- Secondary: `url` (exact match for non-arXiv)
-- Duplicate entries get `novelty: duplicate` and are not expanded
+- Primary key: `arxiv_id` (exact match), **normalized** — a bare id and an arXiv URL are the same
+  source, and `v2` suffixes do not distinguish papers
+- Secondary: `url` (normalized: scheme, `www.`, and trailing slash ignored)
+- **A duplicate is not persisted as an entry** — record the re-encounter on the existing entry and
+  stop. See SKILL.md §2b; `novelty: duplicate` is a label on pre-2026-08-10 history only
 
 ## Schema versioning & permissive consumption (added 2026-06-20, intake-710/711)
 
