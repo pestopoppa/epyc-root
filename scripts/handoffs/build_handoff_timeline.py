@@ -267,6 +267,25 @@ def build_timeline(repo: Path) -> dict:
                 rec["created"] = min(prev, created) if prev else created
                 rec.setdefault("terminal_date", None)
                 rec.setdefault("terminal_state", None)
+                if state not in _TERMINAL and rec.get("terminal_state"):
+                    # RE-ADD REOPENS. `setdefault` above cannot do this: it is a
+                    # no-op when the key already exists, so a record terminated by
+                    # an earlier delete stayed terminal forever even though the
+                    # path exists again. A file that is present is not deleted.
+                    #
+                    # Measured 2026-08-10: commit 24b06884 (2026-07-29) removed all
+                    # 442 handoffs and 2053b758 restored them minutes later ("fix:
+                    # restore full tree after malformed isolated index"). The series
+                    # took the delete and never took the restore, so `active` fell
+                    # 263 -> 6 and stayed there — the plot showed the repository
+                    # losing its entire backlog on a day nothing was completed.
+                    #
+                    # The rename branch below already reopens on a move back into
+                    # active/blocked; this is the same rule for the add path.
+                    # Note keys are state-qualified (`active/x` vs `completed/x`),
+                    # so a genuine active->completed move cannot be reopened here.
+                    rec["terminal_date"] = None
+                    rec["terminal_state"] = None
                 if key not in created_seen:
                     created_seen.add(key)
                     created_weekly[_iso_week(rec["created"])] += 1

@@ -77,7 +77,6 @@ STATIC_HTML = _STATIC / "handoffs.html"
 KERNEL_HTML = _STATIC / "kernel.html"
 BUS_HTML = _STATIC / "bus.html"
 BENCHMARKS_HTML = _STATIC / "benchmarks.html"
-GRAPH_HTML = _STATIC / "graph.html"
 
 # Kernel-R&D dashboard contract — produced by the AutoKernel campaign driver in
 # epyc-inference-research (``autokernel.dashboard.export_terminal_entry`` after
@@ -1527,7 +1526,6 @@ HTML_ROUTES = {
     "/kernel": KERNEL_HTML,
     "/bus": BUS_HTML,
     "/benchmarks": BENCHMARKS_HTML,
-    "/graph": GRAPH_HTML,
 }
 
 #: ``route -> () -> dict``, answered 200.
