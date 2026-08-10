@@ -401,6 +401,11 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       not. Same family as the D1 `/doctor` fabrication. Marked `NOT IN INDEX` rather than
       repointed; inventing a target would repeat the failure. All four sit in the 2026-07-08
       batch — the same batch that produced the duplicate entries ✅ 2026-08-10
+- [ ] D16 101 entries (intake-001..~101, the whole 2026-03 seed batch) have a placeholder title
+      that is just their arXiv id, so any citation naming them by paper name looks like a mismatch.
+      Locatable and correct, only unlabelled — lower severity than the mis-stamps, but it is why
+      the citation audit could not verify labels like YaRN or Sarathi-Serve. Needs 101 metadata
+      fetches
 - [ ] D13c Ingest ADAS, Hyperagents, Self-Harness and ACE, or drop the claims resting on them.
       rec-001 and rec-002 currently cite unbacked sources
 - [x] D14 `research/recommendations.yaml` had never been parseable YAML — markdown headers and
