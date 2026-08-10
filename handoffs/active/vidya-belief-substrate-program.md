@@ -306,6 +306,33 @@ Operator priority: an integrated solution that works, not novelty.
       to the session that owns the inference, at its own boundary. Until then
       `adapters/autopilot_journal.py` correctly reports 0 measured rows. Confirm non-zero after the
       next autopilot cycle
+- [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
+      said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
+      brought its own reading of the rule — and two were caught disagreeing on one input
+      (`Judged/T0` vs `Judged/Located`). Now: adapters PROJECT into a canonical `ClaimTuple` and
+      never grade; vocabulary is AutoKernel's `claim_grammar`; the carrier is shared but each
+      **source class** has exactly one ladder (`measurement` → `Witnessed`; `literature` → capped at
+      `Verified`, structurally). `register_ladder()` refuses a second, and a conformance test fails
+      any adapter returning a lattice level without declaring itself one ✅ 2026-08-12
+- [x] SC8-DOC **Persisted in the three places someone will actually look**: spec §4.7 (the
+      contract), `scripts/vidya/adapters/README.md` (implementer's guide + the live source
+      register), and `CLAUDE.md` → *Belief Kernel — wiring new sources*. Explainer artifact updated
+      with section B10 and the source register ✅ 2026-08-12
+- [x] SC9 **Standing practice adopted (operator, 2026-08-12): a process that produces measurements
+      or verified findings gets its wiring task filed the MOMENT it is noticed** — one row in the
+      source register, one task here. Rationale is an asymmetry, not tidiness: wiring the WRITE side
+      is cheap and permanent, retrofitting the READ side is impossible, because a tuple invented on
+      read claims warrant the original run never captured. `benchmarks/results` is the standing
+      proof — 4,562 files, no write hook, 0 of 200 sampled carrying a usable tuple, permanently
+      unable to gate a decision ✅ 2026-08-12
+- [ ] SC10 **AutoKernel `evaluation_event` — ready, unwritten.** Its schema already enforces the
+      claim rule as a REQUIRED block (stricter than the autopilot hook: `metric_direction`,
+      `reps` ≥ 1, `anchor.source_commit`, hex-sha256 `run_id`, INVALID runs journaled not
+      discarded). No adapter is needed until the loop emits records — **zero files on disk contain
+      `claim_grammar` today**. Wire the read side when the first evaluation_event lands
+- [ ] SC11 Survey the remaining candidate sources named in the register — llama-bench sweeps and the
+      speech-kernel (whisper/qwentts) runs. Both need a write-side hook before a reader is worth
+      anything; price each with the ~50-record sample before building
 - [ ] SC7 Ingest autopilot trials into the ledger once SC6-LIVE confirms rows are landing. Deferred
       deliberately: appending 1,372 retro-graded claims now would record provenance the original
       runs never captured, and the corpus is worth ingesting only once it is born attested. Note

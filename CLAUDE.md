@@ -112,6 +112,23 @@ The [measurement constitution](MEASUREMENT.md) is authoritative (protocol annexe
 
 - **Never dismiss a research source, model, or technique as "not applicable" without asking the user first** — existing infrastructure often makes things feasible. When in doubt, flag for review.
 
+## Belief Kernel — wiring new sources
+
+If a process you are working on produces **measurements or verified findings**, surface the wiring
+task *immediately*: add a row to the source table in
+[`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.md) and a task in
+[`handoffs/active/vidya-belief-substrate-program.md`](handoffs/active/vidya-belief-substrate-program.md).
+Not later, not "when the substrate is ready".
+
+Wiring the **write** side is cheap and permanent; retrofitting the **read** side is impossible — a
+tuple invented on read claims warrant the original run never captured. `benchmarks/results` is the
+standing proof: 4,562 files, no write-side hook, 0 of 200 sampled carry a usable claim tuple, so
+they can never gate a decision.
+
+**Do not write a new grading rule.** An adapter *projects* its native record into a `ClaimTuple`
+and `claim_tuple.grade()` decides; the carrier is shared but each source class has exactly one
+ladder, and the registry refuses a second. Contract: `docs/design/vidya-pilot-spec.md` §4.7.
+
 ## Debugging
 
 - **Always confirm metric direction** (higher/lower=better) and correct baselines before proposing fixes; identify root cause, don't patch symptoms.
