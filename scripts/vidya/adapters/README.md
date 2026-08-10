@@ -83,6 +83,29 @@ without warrant. That check is what killed the `benchmarks/results` row above.
 same thing read as N independent witnesses. Same-harness runs are not independent evidence — use a
 run-level locator, not a file-level one.
 
+## The other half: what CONSUMES a belief
+
+An adapter that nobody reads is a ledger with no drivetrain. Every write-side row above exists to
+serve one of these, and a new source is only worth wiring if it reaches at least one.
+
+| consumer | question it answers | command | writes frames? |
+|---|---|---|---|
+| use-policy gate | "may I rely on this claim, for THIS purpose?" | `cli.py query <claim_id> --floor …` | yes — `query_served` (opt out with `--no-log`) |
+| citation gate | "does anything in our documents rest on a refuted claim?" | `cli.py cite-check` | **no** — a lint pass is not a query |
+| correction queue | "which unadjudicated corrections are blocking the most-cited entries?" | `cli.py corrections` | on `emit` — `correction_reviewed` |
+| projection + freshness | "what did this artifact consume, and is it still current?" | `cli.py project --out …` | sidecar manifest |
+| counterfactual impact | "if this measurement is retracted, what changes?" | `cli.py impact <frame_id>` | no |
+| dependent staleness | "which compiled pages went stale?" | `wiki_dependents.py` | no |
+
+Two rules learned by getting them wrong:
+
+- **Set a consumer's default floor from measurement, not taste.** `cite-check` at
+  `Verified/Located` flags 1,520 of 1,754 live citations and buries the 9 actionable ones; at
+  `Hinted/Located` it flags 5. The strict floor is right when a citation is load-bearing and wrong
+  as a default, for the same reason §10 caps obligation surfacing. Measure the mix, then choose.
+- **A scan is not a query.** `cite-check` reads hundreds of claims nobody is relying on yet. Logging
+  those as `query_served` would drown the R5 reuse series in telemetry from a linter.
+
 ## Standing practice: surface the wiring task immediately
 
 If you are working on a process that produces measurements or verified findings, **file the

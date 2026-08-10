@@ -130,19 +130,47 @@ def _source_id(entry: dict) -> str:
     return f"src_{entry['id'].replace('-', '_')}"
 
 
+def _drop_nulls(value):
+    """Strip null-valued keys, recursively. See `_dedup_key`."""
+    if isinstance(value, dict):
+        return {k: _drop_nulls(v) for k, v in value.items() if v is not None}
+    if isinstance(value, list):
+        return [_drop_nulls(v) for v in value]
+    return value
+
+
 def _dedup_key(frame: dict) -> str:
     """Identity of what a frame ASSERTS, ignoring when it was written.
 
     Re-ingest has to be idempotent: the index is re-read routinely and a fresh `--as-of` must not
     mint a second copy of every claim. Content addressing is still what identifies a frame in the
     ledger; this is only the adapter's "have I already said this?" test.
+
+    **Nulls are dropped before hashing, and that is the whole point of `_drop_nulls`.** Adding an
+    optional assertion field changes this key for every frame that does not populate it, so a purely
+    additive schema change re-emits the entire corpus. It already happened: `per_claim_effects` is
+    computed as `{...} or None`, so every correction on an entry without per-claim verdicts started
+    carrying an explicit null, and re-ingest minted a second copy of each. Measured on the live
+    ledger 2026-08-10: **485 correction frames carrying 155 distinct corrections.**
+
+    That is not cosmetic. `fold` blocks a claim while ANY unreviewed correction names it, and each
+    copy is a separate frame_id needing its own `correction_reviewed`, so every re-ingest quietly
+    raised the cost of clearing a claim. `{"a": 1}` and `{"a": 1, "b": None}` assert the same thing;
+    this makes the dedup test agree.
     """
     from canonical import content_hash  # noqa: PLC0415
 
     return content_hash({
         "frame_type": frame.get("frame_type"),
-        "assertion": frame.get("assertion"),
+        "assertion": _drop_nulls(frame.get("assertion")),
     })
+
+
+#: The per-claim verdict vocabulary, defined ONCE here because `_frames_for_entry` below is what
+#: gives each value its meaning. `correction_queue` writes these values and imports this set rather
+#: than restating it -- a reviewer worksheet offering an `effect` this adapter does not recognise
+#: would silently fall through to "narrowed / reattributed" and quietly un-oppose a refuted claim.
+CORRECTION_EFFECTS = ("overturned", "narrowed", "reattributed", "unaffected", "uncertain")
 
 
 def _claim_corrections(entry: dict) -> dict[int, dict]:

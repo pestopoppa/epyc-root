@@ -37,22 +37,55 @@ REPO = Path(__file__).resolve().parents[2]
 WIKI = REPO / "wiki"
 INDEX = REPO / "research" / "intake_index.yaml"
 
-_CITE = re.compile(r"\bintake-(\d+)\b")
+# The `#NN` suffix is the PRECISE citation form (`intake-896#03` = claim 3 of that entry). It is
+# optional and rare today, and `citation_gate` exists partly to make it worth writing: an entry-level
+# citation inherits every defect of every claim in the entry, so precision is what buys a clean gate.
+_CITE = re.compile(r"\bintake-(\d+)(?:#(\d+))?\b")
 # `intake-710/711` is one citation naming two entries. Reading only the first silently halves the
 # graph, which would understate staleness -- the direction that hides problems.
-_RUN = re.compile(r"\bintake-(\d+)((?:/\d+)+)")
+#
+# The `(?!\.\d)` guard is load-bearing and was added 2026-08-10 after `citation_gate` reported a
+# dangling citation to `intake-2602`, an entry that does not exist. The source text was
+# `(intake-374/378/2602.11149 synthesis)` -- a two-entry run followed by an arXiv id -- and the
+# unguarded run pattern ate `/2602` out of `2602.11149`. A run member followed by `.<digit>` is the
+# head of an arXiv identifier, never an entry number.
+# The `\b` before the lookahead stops the engine backtracking into a PARTIAL number: without it,
+# `/2602.11149` fails on `2602` and then happily matches `260`, inventing a different bogus entry.
+_RUN = re.compile(r"\bintake-(\d+)((?:/\d+\b(?!\.\d))+)")
 
 
 def source_id(num: str) -> str:
     return f"src_intake_{int(num):03d}"
 
 
+def cited_refs(text: str) -> set[tuple[str, int | None]]:
+    """Every citation a document makes, as `(entry number, claim index or None)`.
+
+    ONE scanner for the whole program. `cited_ids` is a projection of this, and `citation_gate`
+    reads it directly rather than writing a second regex -- the two-graders defect of 2026-08-10
+    started exactly that way, with a rule reimplemented next to its original.
+
+    A claim index on the run form (`intake-710/711#02`) is ambiguous about which entry it indexes,
+    so the run members are recorded at entry granularity and the index is dropped rather than
+    guessed at.
+    """
+    refs: set[tuple[str, int | None]] = set()
+    run_members: set[str] = set()
+    for m in _RUN.finditer(text):
+        run_members.add(m.group(1))
+        run_members.update(part for part in m.group(2).split("/") if part)
+    for m in _CITE.finditer(text):
+        num = str(int(m.group(1)))
+        if num in {str(int(n)) for n in run_members}:
+            continue
+        refs.add((num, int(m.group(2)) if m.group(2) else None))
+    refs.update((str(int(n)), None) for n in run_members if n)
+    return refs
+
+
 def cited_ids(text: str) -> set[str]:
     """Every intake number a page names, including the `intake-710/711` run form."""
-    out = {m.group(1) for m in _CITE.finditer(text)}
-    for m in _RUN.finditer(text):
-        out.update(part for part in m.group(2).split("/") if part)
-    return {str(int(n)) for n in out if n}
+    return {num for num, _ in cited_refs(text)}
 
 
 def scan_wiki(root: Path = WIKI) -> dict[str, set[str]]:

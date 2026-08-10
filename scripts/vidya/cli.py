@@ -500,6 +500,47 @@ def cmd_ingest(args) -> int:
     return _emit(report, args.json, "\n".join(human))
 
 
+# ------------------------------------------------------------------ consume
+
+def cmd_cite_check(args) -> int:
+    """SC12: gate intake citations in project documents (exit 3 = a blocking citation)."""
+    from citation_gate import check_paths, summarize  # noqa: PLC0415
+    from gate import UsePolicy  # noqa: PLC0415
+
+    led = _ledger(args)
+    result = fold([r.frame for r in led.read_all()], as_of=args.as_of)
+    policy = UsePolicy(use=args.use, floor=parse_grade(args.floor), standard=args.standard)
+    verdicts = check_paths(args.paths or None, result, policy)
+    summary = summarize(verdicts)
+    human = [
+        f"{summary['citations']} citation(s) across {summary['documents']} document(s)",
+        "  " + "  ".join(f"{k}={v}" for k, v in summary["by_status"].items() if v),
+    ]
+    for v in verdicts:
+        if v.status in ("ok",):
+            continue
+        human.append(f"  [{v.status}] intake-{v.entry}  {v.path}")
+    _emit({"summary": summary, "verdicts": [v.as_dict() for v in verdicts]}, args.json,
+          "\n".join(human))
+    return 3 if summary["blocking"] else 0
+
+
+def cmd_corrections(args) -> int:
+    """SC13: the correction adjudication queue, ranked by how much cites the entry."""
+    from correction_queue import pending  # noqa: PLC0415
+
+    led = _ledger(args)
+    frames = [r.frame for r in led.read_all()]
+    rows = pending(frames, fold(frames, as_of=args.as_of))
+    human = [f"{len(rows)} unadjudicated correction(s) blocking "
+             f"{sum(len(r.claim_ids) for r in rows)} claim(s)"]
+    for r in rows[:args.limit]:
+        human.append(f"  {r.entry_id}  citations={r.citations}  claims={len(r.claim_ids)}"
+                     + (f"  copies={r.copies}" if r.copies > 1 else ""))
+    _emit({"pending": len(rows), "rows": [r.as_dict() for r in rows]}, args.json, "\n".join(human))
+    return 0
+
+
 # -------------------------------------------------------------------- main
 
 def build_parser() -> argparse.ArgumentParser:
@@ -595,6 +636,19 @@ def build_parser() -> argparse.ArgumentParser:
     i.add_argument("--as-of", required=True, help="explicit ingest timestamp")
     i.add_argument("--dry-run", action="store_true", help="report without appending")
     i.set_defaults(func=cmd_ingest)
+
+    cc = sub.add_parser("cite-check", help="gate intake citations in project documents")
+    cc.add_argument("paths", nargs="*", help="files or dirs (default: handoffs, wiki, docs)")
+    cc.add_argument("--as-of", required=True)
+    cc.add_argument("--floor", default="Hinted/Located")
+    cc.add_argument("--use", default="handoff-rationale")
+    cc.add_argument("--standard", default="DV")
+    cc.set_defaults(func=cmd_cite_check)
+
+    cq = sub.add_parser("corrections", help="the unadjudicated-correction queue")
+    cq.add_argument("--as-of", required=True)
+    cq.add_argument("--limit", type=int, default=20)
+    cq.set_defaults(func=cmd_corrections)
 
     return p
 

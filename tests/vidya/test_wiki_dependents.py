@@ -43,6 +43,27 @@ def test_leading_zeros_and_bare_numbers_normalise():
     assert wd.cited_ids("intake-007") == {"7"}
 
 
+def test_run_form_does_not_swallow_a_trailing_arxiv_id():
+    """Regression, found 2026-08-10 by `citation_gate` reporting a dangling `intake-2602`.
+
+    The live text is `(intake-374/378/2602.11149 synthesis)` -- a two-entry run followed by an arXiv
+    id. The unguarded run pattern ate `/2602` out of `2602.11149` and invented an entry; the first
+    fix then let the engine backtrack into the partial number `260` and invent a different one.
+    """
+    assert wd.cited_ids("(intake-374/378/2602.11149 synthesis)") == {"374", "378"}
+    assert wd.cited_ids("intake-141 (arxiv:2602.22402)") == {"141"}
+
+
+def test_precise_claim_citations_are_read_as_such():
+    assert sorted(wd.cited_refs("per intake-896#03 and intake-110")) == [("110", None), ("896", 3)]
+    assert wd.cited_ids("per intake-896#03") == {"896"}
+
+
+def test_claim_index_on_a_run_form_is_dropped_not_guessed():
+    """`intake-710/711#02` does not say WHICH entry it indexes."""
+    assert wd.cited_refs("intake-710/711#02") == {("710", None), ("711", None)}
+
+
 def test_unrelated_numbers_are_not_citations():
     assert wd.cited_ids("45.3 tok/s across 96 threads, issue 115") == set()
 
