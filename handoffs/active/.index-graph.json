@@ -1157,6 +1157,12 @@
       "weight": 4
     },
     {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "RTG-34",
+      "weight": 2
+    },
+    {
       "from": "INF-07",
       "kind": "ref",
       "to": "EVL-07",
@@ -3581,7 +3587,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T23:17:55Z",
+  "generated_at": "2026-08-10T23:23:17Z",
   "nodes": [
     {
       "age_days": 11,
@@ -4275,13 +4281,13 @@
     {
       "age_days": 5,
       "blocked": 0,
-      "closed": 114,
+      "closed": 116,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-05",
       "next_action": "AK-TR-1 \u2014 add anchor_tier + transfer_ratio_to to the \u00a77.4 evaluation event now; free today, impossible to backfill",
-      "open": 81,
+      "open": 80,
       "state": "active",
       "track": "autokernel research loop"
     },
@@ -4806,13 +4812,13 @@
       "track": "qwen36 27b cpu feasibility"
     },
     {
-      "age_days": 7,
+      "age_days": 0,
       "blocked": 0,
       "closed": 8,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
-      "last_advanced": "2026-08-03",
+      "last_advanced": "2026-08-10",
       "next_action": "RVP-C2-1 \u2014 seeded input generation; precondition for the whole C2 oracle. RVP-T0-1 HELD (needs a GPU-load window)",
       "open": 55,
       "state": "active",

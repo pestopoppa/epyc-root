@@ -485,6 +485,19 @@ AutoKernel discovers a missing coverage class it records `EVALUATOR_COVERAGE_GAP
 that lineage, continues unrelated research, and may draft an amendment bundle. It may not modify the
 live evaluator.
 
+**C6 candidate-execution acceptance criterion (2026-08-10).** A container name is not evidence of
+confinement. Before candidate code may run unattended, the evaluator must attest an active syscall
+policy (seccomp or a stricter equivalent), a non-root execution identity, no write mount outside the
+owned campaign tree, no host-PID signalling capability, resource ceilings, and fail-closed startup if
+any control is unavailable. `seccomp=unconfined` and in-process `exec_module` are explicit failures.
+
+**Comparator retained, stack declined.** The useful pattern in the reviewed external execution stack
+is the controller → dispatcher → router → owned worker split backed by a durable SQL job record whose
+idempotency key prevents a restart from executing the same submission twice. AutoKernel keeps its
+existing journal/resource plane and imports only that invariant: a resumed job with the same ID and
+fingerprint is a replay; the same ID with a different fingerprint is a hard conflict. External registry
+images, a cgroup-v1 reboot, and the foreign coordination plane are outside the adopted design.
+
 ### 3.7 Evidence durability
 
 `MEASUREMENT.md:146-156` (operator-ratified 2026-08-02) requires evidence behind any ratified or
@@ -503,12 +516,25 @@ Known exposure to clear before AK1 hashes anything:
   repo's evidence root, its new locator recorded, and its backing bundles tracked;
 - `epyc-inference-research/artifacts/np_context_study_20260723/` has **zero tracked files**; the v8
   sibling tracks only its 5 driver scripts;
-- `docs/design/p2-5j-host-thread-placement-sweep-protocol.md` — required by seed G1 — was **deleted
-  from git** by unrelated commit `27fbfce5`; all of `docs/design/` is untracked; a byte-identical copy
-  survives at `artifacts/audit/untracked-backup-20260729/design/`. Already logged at
-  `artifacts/audit/backlog-closure-correctness-20260729.md:78`;
+- ~~`docs/design/p2-5j-host-thread-placement-sweep-protocol.md` — required by seed G1 — was **deleted
+  from git** by unrelated commit `27fbfce5`; all of `docs/design/` is untracked~~ — **RESOLVED, verified
+  2026-08-10.** The doc is tracked again (restored by `047b5a40`) and the backup copy at
+  `artifacts/audit/untracked-backup-20260729/design/` is **byte-identical** to the live file, so the
+  backup is no longer load-bearing for it. *"All of `docs/design/` is untracked" is also no longer
+  true*: 5 of 7 files are tracked. **Seed G1's dependency is satisfied.** Logged at
+  `artifacts/audit/backlog-closure-correctness-20260729.md:78` — an artifact that was itself untracked
+  until 2026-08-10, which made it a sixth instance of the very defect it catalogues;
 - this handoff and its index rows are untracked while `master-handoff-index.md:459` (committed)
   already links them.
+
+- [ ] **AK-X-11 — Track the two remaining cited-but-untracked `docs/design/` files**, or record why not.
+  `agent-session-control-surface.md` is cited by
+  [`session-bus-thin-dispatcher.md`](session-bus-thin-dispatcher.md) and
+  `repl-s4-omega-multipaper-arm-20260729.md` is likewise cited from a tracked handoff, yet neither is
+  in git. **A citation to an untracked file is indistinguishable from a citation to a tracked one
+  until someone clones the repo and it resolves to nothing** — which is the general form of the defect
+  the 2026-07-29 audit catalogued and then reproduced on itself. Found 2026-08-10 while verifying the
+  P2-5j resolution above.
 
 **Required:** AK1 records a **durability class** per artifact — *carried-in-git*,
 *durable-untracked*, or *hash-and-provenance-only* — so a verifier can distinguish a defect from an
@@ -1844,6 +1870,7 @@ outright rather than degrading to it (§12).
 | Candidate silently falls back to CPU/reference | backend trace/op receipt and no-fallback assertions |
 | Faster but numerically wrong | correctness/quality/state gates before any speed ranking |
 | **Candidate silently changes determinism class** | same-seed repeat-run bitwise check in T0; class change is a declared release property (§4, invariant 12) |
+| **Profiler, timer, or host-state instrument is altered, missing, or replaced by candidate-controlled evidence** | emit `INSTRUMENT_TAMPERED`, invalidate the measurement (not the candidate), stop performance ranking, preserve the source result, and require a trusted recapture before resumption |
 | Optional baseline lets "coherent" pass | T1+ requires an explicit immutable anchor; no-baseline is `INVALID`, never correct. **Already realized in the current scaffold — see §2 and §14 AK1 quarantine task** |
 | PPL/output drift hidden by tail compare | full bounded output hashes/vectors plus task-appropriate PPL/numerical checks |
 | Warm-cache/repeated-prompt gaming | distinct prompts, cache-state receipts, fixed budgets, cache-disabled direct-kernel cells |
@@ -3300,12 +3327,12 @@ imports *the project's own* historical research. Neither gates against **upstrea
 that cannot tell "nobody has done this" from "this is mainline elsewhere and we simply do not have it"
 will spend kernel-authoring budget rediscovering ports.
 
-- [ ] **AK-CAT-1 — Add a four-way prior-art classification to §8.4 PROPOSE.** Before a finding may be
+- [x] **AK-CAT-1 — Add a four-way prior-art classification to §8.4 PROPOSE.** ✅ 2026-08-10. Before a finding may be
   called novel, classify it as exactly one of: (a) an existing path that should already apply here;
   (b) an existing path that appears disabled, unsupported or regressed in this trace; (c) a pattern
   mainline upstream but missing locally, or still open upstream; (d) genuinely new, only when no
   catalogue row fits. **Buckets a–c exit to a config, flag or port change**, not to a campaign.
-- [ ] **AK-CAT-2 — Build a gfx90a/llama.cpp prior-art catalogue (§19 corpus).** Copy the reference
+- [x] **AK-CAT-2 — Build a gfx90a/llama.cpp prior-art catalogue (§19 corpus).** ✅ 2026-08-10. Copy the reference
   five-column schema exactly: `| Pattern | Trace keywords | Primary code | Existing path | Reader
   should conclude |`, with trace keywords bound to `rocprofv2` kernel names and primary code to
   ggml/llama.cpp symbols. **The pre-written conclusion column is the load-bearing one** — it moves the
@@ -3313,19 +3340,19 @@ will spend kernel-authoring budget rediscovering ports.
   same move MEASUREMENT_POLICY's claim grammar makes for measurement claims. Partition rows **mainline
   vs in-flight**: a pattern merged upstream but absent from FROZEN `production-consolidated-v8` is a
   **PORT, not a research proposal**, and that distinction currently has no column anywhere.
-- [ ] **AK-CAT-3 — Build the expected-absence register BEFORE the catalogue rows.** The reference
+- [x] **AK-CAT-3 — Build the expected-absence register BEFORE the catalogue rows.** ✅ 2026-08-10. The reference
   carries a 15-row toggles table whose column is literally "effect on trace interpretation", including
   cases where a flag *intentionally* disables a fast path so split kernels are expected. Without it,
   every legitimately-disabled path reads as a missing optimization. Our substrate is
   [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md), which inventories flags
   without their expected trace consequence. This is the three-states-not-two discipline as data.
-- [ ] **AK-CAT-4 — Adopt the pinned-head refresh discipline.** The reference pins the upstream head of
+- [x] **AK-CAT-4 — Adopt the pinned-head refresh discipline.** ✅ 2026-08-10. The reference pins the upstream head of
   every scanned project with a dated note and ships the exact scan commands, making staleness
   *measurable* rather than asserted. Record the commit each scan was taken against.
-- [ ] **AK-CAT-5 — Add a cumulative GPU-time-share floor as a proposal-space pruner** (reference
+- [x] **AK-CAT-5 — Add a cumulative GPU-time-share floor as a proposal-space pruner** ✅ 2026-08-10 (reference
   default `1.0%`). §8.4's wall-share ceiling validates a candidate *after* it is generated; a floor
   prunes the space *before* generation. Complementary, and cheaper.
-- [ ] **AK-C6-1 — Name syscall confinement explicitly in C6's acceptance criteria.** intake-1028 is a
+- [x] **AK-C6-1 — Name syscall confinement explicitly in C6's acceptance criteria.** ✅ 2026-08-10. intake-1028 is a
   purpose-built, professionally structured distributed execution sandbox — controller, dispatcher,
   router, Docker workers with `--cpus`/`--memory`/`--gpus device=` limits — that nonetheless launches
   **every** worker with `--security-opt seccomp=unconfined`, on containers whose entire job is running
@@ -3333,12 +3360,12 @@ will spend kernel-authoring budget rediscovering ports.
   `openmle_gym/sandbox_exec.py` is named for a sandbox and documented as executing "inside the
   configured OS sandbox" while implementing `spec.loader.exec_module` in-process with no isolation —
   a live instance of the naming hazard this loop's C6 item exists to prevent.
-- [ ] **AK-C6-2 — Harvest the controller/dispatcher/router/worker + SQL job-store split as a design
-  comparator** for owned-scope candidate execution, specifically its **idempotency migration** — the
+- [x] **AK-C6-2 — Harvest the controller/dispatcher/router/worker + SQL job-store split as a design
+  comparator** ✅ 2026-08-10 for owned-scope candidate execution, specifically its **idempotency migration** — the
   mechanism for not double-running a submitted job after a controller restart. That is the same class
   of problem as autopilot rewind having to purge the strategy store. Comparator only; the stack itself
   is declined (external registry images, cgroup-v1 host reboot).
-- [ ] **AK-KM-1 — Record the model-tree-vs-kernel-tree search rule in the §19 corpus.** Verifying a
+- [x] **AK-KM-1 — Record the model-tree-vs-kernel-tree search rule in the §19 corpus.** ✅ 2026-08-10. Verifying a
   symbol's absence in a framework's *model* file alone produces a false negative; this session nearly
   reported a source as fabricated for exactly that reason before finding all four symbols in the
   *kernels* tree. Absence claims must name the trees searched.
@@ -3348,6 +3375,13 @@ will spend kernel-authoring budget rediscovering ports.
   they will — then generative capacity aimed at bucket (d) is aimed at the smallest slice of the
   space, and the cheaper win is a better catalogue. **This item exists to shrink scope, not to add
   machinery; it must be run before AK-CAT-2 is expanded past a seed set.**
+
+Implementation evidence for AK-CAT-1–5 and AK-KM-1 is
+`epyc-inference-research/scripts/kernel_rnd/autokernel/prior_art.py`, its reviewed JSON seed catalogue,
+and `test_prior_art.py`. The schema requires the expected-absence register, pinned commits, refresh
+commands, and both model/kernel tree classes; buckets a–c have deterministic non-campaign exits and
+`proposal_space` applies the 1% cumulative-share floor. AK-C6-1/2 are resolved in §3.6; they change the
+acceptance contract, not the deliberately retained execution plane.
 
 ---
 
@@ -3383,7 +3417,7 @@ Recorded because they are load-bearing and because I asserted the opposite earli
 
 ### AK-TR — the transfer machinery
 
-- [ ] **AK-TR-1 — Record a per-change-class transfer ratio on the evaluation event.** Add
+- [x] **AK-TR-1 — Record a per-change-class transfer ratio on the evaluation event.** ✅ 2026-08-10. Add
   `anchor_tier` and `transfer_ratio_to` to §7.4 `epyc.autokernel.evaluation_event.v2`, and populate
   them wherever a cheap cell and an expensive cell measure the same candidate. One mechanism, four
   uses: half → full partition, op → graph, T1 → T3, screen → verify. The ratio is **keyed by change
@@ -3391,7 +3425,7 @@ Recorded because they are load-bearing and because I asserted the opposite earli
   transfer alike, and a single pooled ratio would average them into uselessness. **Free to add now,
   impossible to backfill**: a ratio invented at read time claims a correspondence the original run
   never measured.
-- [ ] **AK-TR-2 — Print the self-spread noise floor adjacent to every per-case delta.** §9.2 already
+- [x] **AK-TR-2 — Print the self-spread noise floor adjacent to every per-case delta.** ✅ 2026-08-10. §9.2 already
   mandates MDE published with the result and §15.2 already runs A/A; the gap is **presentation**, not
   statistics — our machinery is stronger than the reference campaign's, and it is still possible to
   read a per-case table and not see which rows are inside the noise. Suppress or explicitly flag any
@@ -3422,11 +3456,15 @@ Recorded because they are load-bearing and because I asserted the opposite earli
   candidate-side caching of results is unprofitable **by construction**, which is cheaper and more
   durable than detecting it (complements RVP-C6-8 in
   [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md)).
-- [ ] **AK-TR-6 — Compile-only artifact-diff veto in T0 (§8.6).** Before spending any GPU wall-time,
+- [x] **AK-TR-6 — Compile-only artifact-diff veto in T0 (§8.6).** ✅ 2026-08-10. Before spending any GPU wall-time,
   diff per-kernel VGPR / SGPR / scratch usage and instruction mix between candidate and anchor via
   `roc-obj` / `llvm-objdump`. Register-pressure movement means the A/B is **unconfirmed**, not
   disproven — it fires as a veto on the *claim*, not on the candidate. **This buys back our scarcest
   resource**: it is a static check that can retire a candidate before it reaches T1.
+
+Implementation evidence: evaluation-event schema v4 and `evaluator/api.py` realize AK-TR-1/2;
+`artifact_diff.py` parses captured resource metadata/disassembly, and `campaign.py` refuses a GPU T0
+launch when the artifact is absent or movement is unconfirmed. The latter is a no-GPU pre-launch veto.
 
 ### AK-LN — screening lanes and partition depth
 
@@ -3434,34 +3472,40 @@ Enabled by corrections 2 and 3 above. The governing rule, from operator steering
 **lanes screen, the full instance verifies.** A lane may rank; only a full-instance measurement under
 the standing protocol may make a claim.
 
-- [ ] **AK-LN-1 — Lane registry.** Each lane declares its cost, its capacity, and **what it is a proxy
+- [x] **AK-LN-1 — Lane registry.** ✅ 2026-08-10. Each lane declares its cost, its capacity, and **what it is a proxy
   for**. Assignment is by change class to the cheapest lane whose *measured* rank fidelity clears a
-  declared threshold — never by convenience. Available today: one exclusive GPU device claim plus up
-  to four quarter-machine CPU region claims, i.e. up to five concurrent screening lanes.
+  declared threshold — never by convenience. Available today: one exclusive GPU device claim plus
+  historically exercised CPU shapes at 4×48t, 8×24t, 16×12t, 32×6t and 48×4t. Those records establish
+  fan-out feasibility, not rank fidelity.
 - [ ] **AK-LN-2 — Partition-depth calibration.** Run one fixed candidate set at full, half and quarter
   machine and measure **rank correlation** against the full-machine ordering. Needs no new candidates
   — reuse a banked set. **Pre-register the prediction** before running: bandwidth-bound changes lose
   fidelity fast as partitions shrink (they compete for the same memory system), instruction-level
   changes hold. Pre-registration is what makes a confirmation informative here rather than a
   post-hoc story.
-- [ ] **AK-LN-3 — Cross-lane A/A control — necessary, and NOT sufficient.** §15.2's A/A control run
+- [x] **AK-LN-3 — Cross-lane A/A control — necessary, and NOT sufficient.** ✅ 2026-08-10. §15.2's A/A control run
   per lane detects a per-lane-position offset. It **cannot** detect bias correlated with mechanism
   class, because that bias appears identically in every lane and cancels out of the A/A comparison.
   Pair it with AK-TR-1, which is the only thing that measures it. **Never apply a blanket haircut to
   lane results** to "correct" for partitioning — a uniform correction assumes the very
   class-independence that AK-LN-2 exists to test.
-- [ ] **AK-LN-4 — Op-level screening on profiled bottlenecks.** Operator steering, 2026-08-10: profile
+- [x] **AK-LN-4 — Op-level screening on profiled bottlenecks.** ✅ 2026-08-10. Operator steering: profile
   first, rank ops by wall share, then fan out **concurrent op-level experiments on the single
   bottleneck op** rather than serialising whole-graph runs. `test-backend-ops` is already an op-level
   harness, so the unit exists; what is missing is the fan-out and the §9.1 promotion rule applied per
   op. This is the unit that actually parallelises — a graph run does not.
-- [ ] **AK-LN-5 — Isolation requirement for concurrent CPU lanes.** Concurrent instances contend
+- [x] **AK-LN-5 — Isolation requirement for concurrent CPU lanes.** ✅ 2026-08-10. Concurrent instances contend
   invisibly unless each uses `--no-mmap` plus an explicit `membind`: `mmap` **shares NUMA placement
   across instances**, so two "independent" lanes can silently read one node's memory. A partitioned
   result may **screen but never gate** (§9.6 banking is unaffected; §9.7 T2 and §10 T3 remain
   full-instance). **The pre-bench CPU-frequency/throttle check stays mandatory at the verification
   tier** — operator, 2026-08-10: the screening/verification split does not relax it, it concentrates
   its importance onto the one measurement that carries the claim.
+
+Implementation evidence: `lanes.py` records each lane's physical-core-share cost, capacity, proxy,
+CPU set, memory binding and historical evidence reference. It refuses mmap and physical-core overlap,
+requires A/A plus class-specific rank calibration, falls back to full verification without it, and
+fans candidates over the measured highest-share op in waves. AK-LN-2 remains empirical.
 
 ### AK-BH — baseline honesty (needs a GPU window; sequence T0 probes first)
 
@@ -3534,16 +3578,18 @@ Neither of these may be executed by a session; both are decision packages for th
 _The analyst reports were recovered from the session transcript **after** the Stage-3 plan was written,
 so they carry derived actionables the plan predates._
 
-- [ ] **AK-X-1 — Add `INSTRUMENT_TAMPERED` to the §12 failure-and-abuse table.** RVP-C6-1 builds the
+- [x] **AK-X-1 — Add `INSTRUMENT_TAMPERED` to the §12 failure-and-abuse table.** ✅ 2026-08-10. RVP-C6-1 builds the
   detection; §12 has no row for the finding, so a detection today would have nowhere to land.
 - [ ] **AK-X-2 — Add a parsed `device_state` block to the §7.4 evaluation event**, populated from
   RVP-C3-3, with `throttle_observed`. A text blob no gate can read is not a gate input.
 - [ ] **AK-X-3 — Add `min_measurable_us` to the §9.3 T1a recipe, derived from OUR OWN A/A spread.**
   Below it a cell is `inconclusive` rather than a rank. Do not import a foreign floor — the published
   ones are NVIDIA-derived.
-- [ ] **AK-X-4 — Add `cache_state: warm | cold` to the §9.3 T1a recipe and hold it fixed across arms.**
+- [x] **AK-X-4 — Add `cache_state: warm | cold` to the §9.3 T1a recipe and hold it fixed across arms.** ✅ 2026-08-10.
   The warm/cold gap is workload-dependent (large for GEMV, negligible for GEMM), so an undeclared
-  cache state is a per-op confound rather than a constant one.
+  cache state is a per-op confound rather than a constant one. Every registered T1a recipe now records
+  a validated warm/cold parameter (explicitly cold by default) and binds it into the recipe receipt, so
+  an arm mismatch changes the evidence identity instead of remaining ambient state.
 - [ ] **AK-X-5 — Per-partition CPU frequency / package-power attestation in the §7.4 `host_receipt`.**
   Our throttle discipline operates at *session* granularity; with 2–4 concurrent CPU lanes sharing one
   dual-EPYC package power and boost budget there is **no per-lane frequency attestation at all**. This
