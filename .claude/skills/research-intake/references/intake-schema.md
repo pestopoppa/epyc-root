@@ -222,6 +222,34 @@ somebody worded a sentence. A gap is accepted only where some entry names that e
 genuine skip, a duplicated id, and a gap "excused" by declaring an unrelated id all remain errors
 (`tests/skills/test_research_intake_id_sequencing.py`).
 
+### The redirect map
+
+Refusing to renumber is only defensible if a removed id stays **recoverable**. A reference in a
+July progress log has to be answerable, or "resolves to nothing" is just a slower kind of broken.
+So every merge is published in [`research/intake_merge_map.md`](../../../../research/intake_merge_map.md):
+
+| Removed | Resolves to |
+|---|---|
+| `intake-797` | `intake-418` |
+
+The map is **generated** from `merged_ids`, never hand-kept — a redirect table that drifts is worse
+than none, because it answers confidently and wrongly:
+
+```bash
+.claude/skills/research-intake/scripts/resolve_intake_id.py intake-797     # one lookup
+.claude/skills/research-intake/scripts/resolve_intake_id.py --write-map    # regenerate
+.claude/skills/research-intake/scripts/resolve_intake_id.py --audit        # where each is still cited
+```
+
+`validate_intake.py` fails if an absorbed id is missing from the map, so a merge cannot quietly
+skip publication.
+
+**Resolution is a lookup, not a rewrite.** Do not bulk-repoint references to a merged id. Checked
+on 2026-08-10: `handoffs/active/mi210-speed-campaign-summary.md` cites `intake-797` inside a
+correction recording that intake-797 was a *mis-stamped* id, and `research/recommendations.yaml`
+uses "intake-779 through intake-797" as a range naming a historical ingest batch. Repointing either
+would have corrupted a correct record. A reference to a removed id is not automatically wrong.
+
 ## Deduplication
 
 - Primary key: `arxiv_id` (exact match), **normalized** — a bare id and an arXiv URL are the same

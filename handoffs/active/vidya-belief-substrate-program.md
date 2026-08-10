@@ -374,6 +374,15 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       current id is three digits. Six cases pinned in
       `tests/skills/test_research_intake_id_sequencing.py`, including that declaring an id you did
       not absorb buys no pass ✅ 2026-08-10
+- [x] D11 **The gap policy needed a forward pointer to be honest.** "A merged id resolves to
+      nothing rather than to the wrong paper" only holds if *nothing* is recoverable, and it was
+      not: 44 references to the 4 absorbed ids sit in 20 tracked files with no way to learn where
+      they went. Now published as a generated redirect map (`research/intake_merge_map.md`) plus
+      `resolve_intake_id.py` for single lookups and `--audit`; `validate_intake.py` fails if an
+      absorbed id is missing from the map. Deliberately NOT a bulk repointer — inspection found
+      that the live references must not be rewritten: the MI210 handoff cites intake-797 inside a
+      correction saying intake-797 was a mis-stamp, and `recommendations.yaml` uses it as a range
+      endpoint naming a historical batch ✅ 2026-08-10
 - [x] D10 **Renumbering to close the gaps: assessed and declined**, rationale recorded in
       `intake-schema.md` § ID Sequencing so it is not re-litigated. Closing 4 gaps would renumber
       728 entries, rewrite 5,565 references across 479 files, and change 731 of the 1,067 intake

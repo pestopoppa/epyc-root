@@ -512,6 +512,33 @@ def check_duplicate_locators(entries: list[dict]) -> list[str]:
     ]
 
 
+def check_merge_map(entries: list[dict]) -> list[str]:
+    """The redirect map must list every absorbed id.
+
+    A merged id resolves to nothing rather than to the wrong paper -- that is the whole reason
+    renumbering is refused -- but "nothing" is only acceptable if it is recoverable. The map is
+    what makes it recoverable, so a merge that does not reach the map re-creates exactly the
+    unresolvable reference the policy claims to avoid. Checked here rather than trusted to a
+    generation step somebody remembers to run.
+    """
+    absorbed = {mid for e in entries for mid in (e.get("merged_ids") or [])
+                if isinstance(mid, str)}
+    map_path = RESEARCH / "intake_merge_map.md"
+    if not absorbed:
+        return []
+    if not map_path.exists():
+        return [
+            f"{len(absorbed)} merged id(s) recorded but research/intake_merge_map.md is missing "
+            "— run resolve_intake_id.py --write-map"
+        ]
+    text = map_path.read_text()
+    missing = sorted(m for m in absorbed if m not in text)
+    return [
+        f"intake_merge_map.md is missing {len(missing)} absorbed id(s) ({', '.join(missing[:5])})"
+        " — run resolve_intake_id.py --write-map"
+    ] if missing else []
+
+
 def validate_cross_reference_map(map_path: Path, crossref_dirs: dict) -> list[str]:
     """Verify Markdown targets listed in the intake cross-reference map.
 
@@ -615,6 +642,7 @@ def main() -> int:
     else:
         errors.extend(validate_index(entries, valid_categories, crossref_dirs))
         errors.extend(check_laundered_arxiv_ids(entries))
+        errors.extend(check_merge_map(entries))
         for warning in check_duplicate_locators(entries):
             print(f"WARNING: {warning}")
 

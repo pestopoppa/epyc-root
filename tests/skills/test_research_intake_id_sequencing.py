@@ -73,3 +73,41 @@ def test_prose_alone_does_not_excuse_a_gap():
     """
     prose = ["Merged intake-002 on 2026-08-10: same locator."]
     assert seq_errors([entry(1, merge_history=prose), entry(3)])
+
+
+# ------------------------------------------------ merge map (redirect table, 2026-08-10)
+
+
+def test_no_merges_needs_no_map():
+    import validate_intake as vi
+
+    assert vi.check_merge_map([entry(1), entry(2)]) == []
+
+
+def test_merged_id_absent_from_the_map_is_an_error(tmp_path, monkeypatch):
+    """A merge that never reaches the map re-creates the unresolvable reference.
+
+    Refusing to renumber is only defensible because a removed id stays *recoverable*. If the map
+    silently misses one, the policy's own justification stops holding for that id.
+    """
+    import validate_intake as vi
+
+    research = tmp_path / "research"
+    research.mkdir()
+    (research / "intake_merge_map.md").write_text("| `intake-002` | `intake-001` |\n")
+    monkeypatch.setattr(vi, "RESEARCH", research)
+
+    assert vi.check_merge_map([entry(1, merged_ids=["intake-002"])]) == []
+
+    bad = vi.check_merge_map([entry(1, merged_ids=["intake-002", "intake-009"])])
+    assert bad and "intake-009" in bad[0]
+
+
+def test_missing_map_file_is_an_error(tmp_path, monkeypatch):
+    import validate_intake as vi
+
+    research = tmp_path / "research"
+    research.mkdir()
+    monkeypatch.setattr(vi, "RESEARCH", research)
+    errs = vi.check_merge_map([entry(1, merged_ids=["intake-002"])])
+    assert errs and "missing" in errs[0]
