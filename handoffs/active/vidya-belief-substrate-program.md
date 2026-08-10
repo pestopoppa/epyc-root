@@ -64,14 +64,16 @@ gate this program has already passed.
 ### Open work — start here
 
 Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC10`, `SC11`, `SC7`, `SC6-HAZARD`) and
-**Consumption** (`SC12-ENTRY`, `SC14`, `SC15`). Everything else is complete and lives in the completed sibling
+**Consumption** (`SC12-ENTRY`, `SC14-B`, `SC15`, `SC16`, `SC17`). Everything else is complete and lives in the completed sibling
 linked under Completed Scope.
 
 The write side is done and the read side now exists: `cli.py cite-check` gates citations,
-`cli.py corrections` ranks the adjudication backlog. The open consumption items are the ones a
-machine must not do alone — `SC14` needs the session that owns `autopilot.py`, `SC15` needs a human
-reading dive text against claims, and `SC12-ENTRY`'s two claim-04 hits on intake-110#record need a dive owner to
-amend the entry rather than a citation edit.
+`cli.py corrections` ranks the adjudication backlog, and `autopilot_settled.py` exposes settled
+ground to the planner (SC14-A). The open items are the ones a machine must not do alone —
+`SC15` needs a human reading dive text against claims; `SC12-ENTRY`'s two claim-04 hits on
+intake-110#record need a dive owner to amend the entry, not a citation edit; `SC14-B` waits on a
+durable current-trial attestation. `SC16` and `SC17` are inherited defaults nobody has chosen
+deliberately — decide them, do not just implement them.
 
 ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?)
 
@@ -312,6 +314,20 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       times. Not startable by a summariser: each verdict needs the dive text read against the claim,
       which is the exact failure intake-896#record memorialises. Start with the cited head — `cli.py
       corrections` ranks it — and record `effect` per claim, never per entry
+- [ ] SC16 **Is `uncertain` the right default for a per-claim verdict?** `apply_claim_verdict` keeps
+      the ENTRY-level verdict when a dive records `effect: uncertain`, so on a `dive-overturned`
+      entry an "a reader could not tell" verdict currently opposes the claim at `Verified` — the
+      dive's inability to decide is recorded as a dive-strength refutation. `clm_intake_922_01` is
+      the live instance. The conservative reading may still be right (an entry-level overturn is
+      evidence about the entry), but it was inherited, never chosen. Decide it deliberately and
+      write the reason into the docstring either way
+- [ ] SC17 **`fold` does not exclude frames dated after `as_of`.** A frame stamped in the future
+      takes effect immediately at any earlier `as_of`, which is how 895 future-stamped frames from
+      the 2026-08-10 date incident still fold in, and how a frame this session mis-stamped
+      `2026-08-11` applied on 2026-08-10 before being re-stamped. Two defensible designs — ignore
+      `created_at` entirely (it is publication metadata, and `as_of` ranges over the evidence
+      frontier) or refuse future frames at append time. What is NOT defensible is the current
+      accident of neither. Pick one; an append-time refusal is the cheaper guard
 
 ## Dependency notes
 

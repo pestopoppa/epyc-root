@@ -131,9 +131,11 @@ ladder, and the registry refuses a second. Contract: `docs/design/vidya-pilot-sp
 
 **Citing an intake entry as rationale?** `python3 scripts/vidya/cli.py cite-check --as-of <ts>`
 gates `intake-NNN` citations in handoffs, wiki and docs (exit 3 on a refuted, conflicted, or
-dangling one). Cite the claim, not the entry — `intake-896#03` — because an entry-level citation
-inherits every defect of every claim in it. The consumer table is in
-[`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.md).
+dangling one). Three forms: `intake-896` relies on the whole entry and **inherits every defect of
+every claim in it**; `intake-896#03` relies on one claim; `intake-896#record` *discusses* the record
+and asserts nothing. Prefer the precise forms — and note that writing *about* an entry in prose is
+itself a citation, so a findings write-up needs `#record` or it flags its own report. The consumer
+table is in [`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.md).
 
 ## Debugging
 

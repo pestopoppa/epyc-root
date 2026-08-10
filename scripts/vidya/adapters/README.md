@@ -97,7 +97,22 @@ serve one of these, and a new source is only worth wiring if it reaches at least
 | counterfactual impact | "if this measurement is retracted, what changes?" | `cli.py impact <frame_id>` | no |
 | dependent staleness | "which compiled pages went stale?" | `wiki_dependents.py` | no |
 
-Two rules learned by getting them wrong:
+**Citation forms** (`cite-check`), in increasing precision:
+
+| form | meaning | graded |
+|---|---|---|
+| `intake-896` | relies on the entry — **inherits every defect of every claim in it** | all claims |
+| `intake-896#03` | relies on claim 03 only | that claim |
+| `intake-896#record` | *discusses* the record; asserts none of its claims | not graded (still `dangling` if the entry does not exist) |
+
+Three rules learned by getting them wrong:
+
+- **Discussing a record is not relying on it.** The gate's first run reported the three documents that
+  *recorded* the intake-896 fabrication as resting on the fabricated claim — 50% of its headline
+  finding, and the fastest possible way to teach people to ignore it. `#record` exists for that.
+  Note the asymmetry: `#record` is a gate concept only. `cited_ids` still counts it as an SC5
+  dependency edge, because "which pages name this entry" and "which pages rest on its claims" are
+  different questions.
 
 - **Set a consumer's default floor from measurement, not taste.** `cite-check` at
   `Verified/Located` flags 1,520 of 1,754 live citations and buries the 9 actionable ones; at

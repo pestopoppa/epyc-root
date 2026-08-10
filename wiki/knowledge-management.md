@@ -1009,3 +1009,42 @@ independent evidence.
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC5/SC6 — wiki-as-dependents, the autopilot write hook and `reps_basis`
 - [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) · [`progress/2026-08/2026-08-10-vidya.md`](../progress/2026-08/2026-08-10-vidya.md) — the session records for both halves
 - [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.2 — the amended carrier with `T2 MachineLocated`
+
+## Discussing a record is not relying on it (2026-08-10)
+
+The first production run of a citation gate over this repository flagged six documents as resting on
+refuted claims. **Three of the six were the documents that recorded the refutation.** One of them
+literally reads "…was invented and has been struck"; another uses the incident as a worked example of
+a correction that never reached the artifact it claimed to change.
+
+The generalizable point is not about citations. **A checker that cannot distinguish a mention from a
+reliance will fire hardest on exactly the documents doing the right thing** — the corrections, the
+post-mortems, the audit notes — because those are where refuted material is named most often. The
+failure is self-reinforcing: the people most careful about provenance get the most false alarms, and
+they are the first to stop reading the output.
+
+Two design consequences, both cheap and both learned the hard way here:
+
+- **Give the author a way to say "I am naming this, not asserting it."** The gate gained
+  `intake-NNN#record`: non-blocking, but still reports a dangling reference, because an entry that
+  does not exist cannot be discussed either.
+- **Keep the distinction local to the consumer that needs it.** The dependency graph still counts a
+  record reference as an edge. "Which pages name this entry" and "which pages rest on its claims"
+  are different questions, and one answer cannot serve both. Verified by holding the graph at 707
+  edges across 13 annotations.
+
+A related trap, same shape: **a findings write-up trips its own gate**, because naming an entry in
+prose *is* a citation. Expect the audit note to flag itself, and say so in the contributor docs
+rather than letting each author rediscover it.
+
+**Set a checker's default threshold from measurement, not taste.** The same gate at floor
+`Verified/Located` flags 1,520 of 1,754 citations and buries the 9 actionable ones; at
+`Hinted/Located` it flags 5. Same tool, same corpus, opposite usefulness. Measure the mix on the real
+corpus before choosing the default, and reserve the strict floor for the load-bearing case.
+
+### Source References
+
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the consumer table and the three citation forms
+- [`scripts/vidya/citation_gate.py`](../scripts/vidya/citation_gate.py) — the gate, its blocking set, and why `review` only warns
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC12–SC17 — the consumption track
+- [`progress/2026-08/2026-08-10-vidya.md`](../progress/2026-08/2026-08-10-vidya.md) — the run that produced these numbers
