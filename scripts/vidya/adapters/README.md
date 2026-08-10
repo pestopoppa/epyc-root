@@ -74,6 +74,7 @@ Keep this table current. It is the answer to "has anyone already looked at this?
 | `benchmarks/results` (2,605 files) | measurement | **rejected on evidence** — 0/200 sampled carry the full tuple; would add ~4,500 claims that gate nothing | — |
 | llama-bench sweeps | measurement | candidate — needs a write-side hook first | — |
 | speech kernel (whisper/qwentts) runs | measurement | candidate — unexamined | — |
+| experimental kernel candidate validation receipts | measurement | candidate — first v9 DSpark receipt exists, but producer has no ClaimTuple write hook; do not retrofit on read | — |
 
 **Before adding a bulk adapter, price it** (the P2 discipline): sample ~50 records and count how many
 carry the full tuple. If the answer is near zero, the gap is upstream and an adapter adds volume

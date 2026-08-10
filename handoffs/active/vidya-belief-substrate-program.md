@@ -198,6 +198,13 @@ deliberately — decide them, do not just implement them.
 - [ ] SC11 Survey the remaining candidate sources named in the register — llama-bench sweeps and the
       speech-kernel (whisper/qwentts) runs. Both need a write-side hook before a reader is worth
       anything; price each with the ~50-record sample before building
+- [ ] SC12 **Experimental kernel candidate validation receipts need a write-side ClaimTuple hook.**
+      The first bounded receipt is
+      `artifacts/audit/v9-dspark-autokernel-base-20260810.json`; it truthfully identifies itself as
+      non-claim-grade and cannot be retrofitted into a gating measurement. Define the producer hook
+      before the next candidate run captures measurements: protocol id, scored reps/basis, date,
+      durable attestation locator+digest, category, and metric direction must be written at run time.
+      Only then price/build the read adapter
 - [ ] SC7 Ingest autopilot trials into the ledger once SC6-LIVE confirms rows are landing. Deferred
       deliberately: appending 1,372 retro-graded claims now would record provenance the original
       runs never captured, and the corpus is worth ingesting only once it is born attested. Note

@@ -1,0 +1,136 @@
+{
+  "schema": "epyc.kernel_candidate_validation.v1",
+  "recorded_at": "2026-08-10T21:30:00Z",
+  "status": "candidate_ready_for_autokernel",
+  "claim_status": "bounded engineering validation; not claim-grade performance evidence",
+  "candidate": {
+    "repository": "/mnt/raid0/llm/llama.cpp-experimental",
+    "branch": "experimental-v9-dspark-autokernel-base",
+    "commit": "2ac4b32a01a6d97af1c85889443472fbd4a1e12e",
+    "binary_version": 10123,
+    "base": "67a433bf45a8a091d83b4ea0b32ff0735fd51800",
+    "base_name": "production-consolidated-v8",
+    "production_modified": false
+  },
+  "forward_port_commits": [
+    "a8c6b57df2c8ec23290d5e302be322eb695d683a",
+    "12f27f26af2c2263ef8612b93c01c60c777f803e",
+    "4cdfe7a7ed2ff119a7ce4bcc9664058d486bf614",
+    "6c831a71516908d1e09bbf954468be9234aa264b",
+    "801496781618b9b58fbbee77047c53ddf10b0dd0",
+    "78f0f1b1011ef9ee6c4dce6f72a0460d4f828584",
+    "3ff0d985b938af0ca479b579b6b4a6aee37831eb",
+    "dd78adddd938ee79c1b19aa6a1dd54f3e76fc35e",
+    "a39d02d184dff4a68f6f6d6ea58ff699c1b5e7da",
+    "88815a7aba84e0a61b2226d2164c0631a132c043",
+    "cbdf7c00ab214d37e95acd922c1a1d2fc0c480c0",
+    "8911277bbfd612611fbf58f16fa130272948c9ea",
+    "cdcb2b341eb9f95f2cd381f4f7da8e6ffbf9e0ef",
+    "f2085719cb5cc54466675aa53a4ba2fa7df3352f"
+  ],
+  "local_commits": {
+    "per_request_speculative_n_max": "84c84fafe36c7e5deab7ff5301b1a7a1cde9b920",
+    "greedy_recurrent_dspark_parity": "2ac4b32a01a6d97af1c85889443472fbd4a1e12e"
+  },
+  "builds": {
+    "cpu": "/mnt/raid0/llm/llama.cpp-experimental/build-v9-cpu/bin/llama-server",
+    "hip": "/mnt/raid0/llm/llama.cpp-experimental/build-v9-hip/bin/llama-server",
+    "cpu_linkage": "pass: all llama/ggml libraries resolve under build-v9-cpu/bin",
+    "hip_linkage": "pass: all llama/ggml libraries, including libggml-hip.so.0, resolve under build-v9-hip/bin"
+  },
+  "validation": {
+    "focused_server_pytest": "2 passed in 56.14s",
+    "hip_backend_ops": "989/989 passed for TOP_K, SOFTPLUS, MUL_MAT_ID on AMD Instinct MI210",
+    "deepseek_v4_recurrent_rollback": "pass: checkpoint restored on the full Q8 target",
+    "target_loader_and_dflash_reshape": "pass: full five-shard Q8 target and Q8_0 sidecar initialized",
+    "multi_slot_guard": "pass: draft-dspark --parallel 2 exits 1 before model load",
+    "broad_synthetic_arch_harness": "not green: later aborts in pre-existing GLM-DSA dummy-model buft setup; DeepSeek4 and DFlash are not represented by this harness"
+  },
+  "bounded_smoke": {
+    "target": "/mnt/raid0/llm/models/deepseek-v4-flash-0731/UD-Q8_K_XL/DeepSeek-V4-Flash-0731-UD-Q8_K_XL-00001-of-00005.gguf",
+    "draft": "/mnt/raid0/llm/models/deepseek-v4-flash-0731/dspark-DeepSeek-V4-Flash-0731-Q8_0.gguf",
+    "launch": "--spec-type draft-dspark --spec-draft-n-max 3 --spec-draft-n-min 0 -np 1 -c 4096 -b 512 -ub 512 -t 24 -ngl 0 -ngld 0 --no-repack --no-warmup",
+    "request_common": {
+      "prompt": "The answer to 2 + 2 is",
+      "n_predict": 16,
+      "temperature": 0,
+      "top_k": 1,
+      "seed": 1234
+    },
+    "vanilla_effective_n_max": 0,
+    "dspark_effective_n_max": 3,
+    "parity": true,
+    "tokens": [223, 22, 64465, 361, 582, 21603, 3362, 223, 19, 201, 223, 1554, 63, 1718, 7958, 18499],
+    "drafted": 18,
+    "accepted": 7,
+    "raw_artifacts": [
+      {
+        "path": "/mnt/raid0/llm/tmp/v9-dspark-smoke-final-2ac4b32a0.log",
+        "sha256": "9dfac2797f871c5a79aeb152703f351b0b7ccb6a5bd6de5bc689cbddfa79a904"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/v9-dspark-vanilla-final-2ac4b32a0.json",
+        "sha256": "d8e160f5c6345da478c4cf453545ab2db14e36a51eb6b2cb9fc612f8e9605be7"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/v9-dspark-enabled-final-2ac4b32a0.json",
+        "sha256": "c96ff62addfb302679ed9f93b0258454bdec658827967ce5357359184f3b726c"
+      }
+    ]
+  },
+  "correctness_policy": {
+    "greedy_recurrent_dspark": "serial target verification fallback",
+    "reason": "upstream issue #25618 remains open and quantized parallel target verification is not batch-invariant",
+    "multi_slot": "hard-disabled pending upstream issue #26741",
+    "stochastic_dspark": "retains upstream parallel verification; not certified by this bounded parity gate"
+  },
+  "autokernel_seed_queue": [
+    {
+      "priority": 1,
+      "upstream_pr": 26171,
+      "state": "merged",
+      "disposition": "forward-port audit",
+      "reason": "transpose-free GEMV removes rocBLAS fallback for shared-expert gates; upstream measured 78.4 us to 3.8 us per instance on ROCm gfx1151"
+    },
+    {
+      "priority": 2,
+      "upstream_pr": 25532,
+      "state": "merged",
+      "disposition": "forward-port audit after DSpark correctness baseline",
+      "reason": "multi-output backend sampling directly targets speculative-decoding output overhead; upstream reports about 8% on Qwen3.6 CUDA"
+    },
+    {
+      "priority": 3,
+      "upstream_pr": 26731,
+      "state": "merged",
+      "disposition": "context-shift-only audit",
+      "reason": "bit-identical quantized copy launch fix; no token-generation uplift upstream"
+    },
+    {
+      "priority": 4,
+      "upstream_pr": 26767,
+      "state": "merged",
+      "disposition": "HIP portability check, not a blind port",
+      "reason": "concrete RMSNorm/MUL/RoPE fusion with about 1% upstream CUDA uplift"
+    },
+    {
+      "priority": 5,
+      "upstream_pr": 26812,
+      "state": "open",
+      "disposition": "monitor only",
+      "reason": "argmax microkernel is 1.5-2.2x faster but reported end-to-end DSpark uplift is only 0-1% and CUDA-only"
+    },
+    {
+      "priority": 0,
+      "upstream_pr": null,
+      "state": "local correctness debt",
+      "disposition": "autokernel invariant campaign",
+      "reason": "make quantized recurrent target kernels bitwise batch-invariant, then remove the serial verifier only after greedy token-parity proof"
+    }
+  ],
+  "belief_kernel": {
+    "write_hook_present": false,
+    "adapter_status": "candidate task filed; do not invent a ClaimTuple on read",
+    "source_class": "measurement"
+  }
+}
