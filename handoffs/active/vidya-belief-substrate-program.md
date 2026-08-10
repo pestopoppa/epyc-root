@@ -250,10 +250,23 @@ Operator priority: an integrated solution that works, not novelty.
       A/B merged into a single belief. Caught by checking output count against input count, not by
       reading the output. Fixed to a path-relative identity, 12 bad frames retracted (9 collided + 3
       superseded), uniqueness pinned by `tests/vidya/test_sealed_manifest.py` ✅ 2026-08-12
-- [ ] SC5 Wiki pages become `depends_on` edges into the intake claims they were compiled from, not
-      claims of their own — operator agreed 2026-08-11. A wiki page is compiled FROM sources the
-      index already holds, so ingesting it as a claim would count one source twice, the exact
-      double-counting the locator-keyed support fix exists to prevent
+- [x] SC5 **Wiki pages are dependents, not claims** — `scripts/vidya/wiki_dependents.py`.
+      **707 dependency edges from 28 pages into 477 distinct intake entries.** Implemented as a
+      PROJECTION over the fold, writing nothing to the ledger: a page's citations are re-derivable
+      from a file that is already in git, so appending them would have required either a new
+      source-level edge frame or one structural "claim" per page — and that second option would put
+      28 things in the belief set that are not beliefs. Result: **12 pages carry a stale dependency**
+      (all unreviewed corrections), **zero real decay** ✅ 2026-08-12
+- [x] SC5-BUG **A coverage gap was being reported as decay.** The first draft flagged intake-12,
+      intake-335, 303, 310, 48, 95, 16, 42, 98 as "lost all support". None has ever had a claim
+      ingested — the substrate has not read those papers, which is a gap in us, not rot in the page.
+      Now classified separately (`uningested` vs `unsupported`), and only decay marks a page stale.
+      This moved the headline from 16 stale pages to 12 ✅ 2026-08-12
+- [x] SC5-MERGE **Verified the merge redirects rather than trusting a zero.** The report showed 0
+      citations resolved through the merge map, which is the kind of silent negative that usually
+      means a broken parser. Checked against ground truth: all 4 redirects parse correctly
+      (784→244, 336→315, 797→418, 785→772) and the wiki cites none of them, because the merges
+      repointed citations at merge time. All 477 cited ids resolve; none dangle ✅ 2026-08-12
 - [ ] SC6 Scale sealed-manifest ingestion beyond `artifacts/**/manifest.json`. Only 14 manifests
       live there against 4,562 measurement-shaped tracked files in the research repo; the other
       formats (`execution_manifest.jsonl`, benchmark result json) are unread. Note
