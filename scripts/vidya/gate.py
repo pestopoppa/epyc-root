@@ -113,8 +113,13 @@ def _disjoint_supports(belief: Belief) -> int:
     independence in the system (spec §7.3), so a bound that binds must be reported as an
     under-approximation at the point of use rather than silently treated as the answer.
     """
-    labels = [label for label, _ in belief.pro_paths]
-    return min(len(set(labels)), 5)
+    # Counted by SOURCE, not by evidence label. Evidence tokens are minted per claim, so labels
+    # count edges: two index records of one paper produce two labels and would report as
+    # independent support. `pro_sources` is locator-normalized and already collapses alias groups
+    # their author marked non-independent, which is the only reason aliasing two records of one
+    # source is safe to do at all.
+    sources = belief.pro_sources or [label for label, _ in belief.pro_paths]
+    return min(len(set(sources)), 5)
 
 
 def _build_certificate(

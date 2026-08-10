@@ -395,5 +395,20 @@ def aliases_from_worksheet(worksheet: dict) -> list[dict]:
                 if find(r["claim_a"]) == root and (r.get("note") or "").strip()
             }
         )
-        out.append({"claim_ids": members, "reviewers": reviewers, "notes": notes})
+        # A group is independent only if EVERY approved row in it was between unrelated
+        # entries. same_source means one source recorded twice; linked means one entry cites the
+        # other, so one is plausibly a restatement. Either way the merged claim has one witness,
+        # and saying so here is what stops the alias from manufacturing the corroboration the
+        # statistic exists to measure.
+        related = any(
+            r.get("same_source") or r.get("linked")
+            for r in approved
+            if find(r["claim_a"]) == root
+        )
+        out.append({
+            "claim_ids": members,
+            "reviewers": reviewers,
+            "notes": notes,
+            "independent": not related,
+        })
     return out

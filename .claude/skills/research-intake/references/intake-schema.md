@@ -93,6 +93,38 @@ seconds; reconstructing it later costs a re-read, and often is not possible at a
 Anchors are optional and per-claim: record them for claims that will be cited, gate a decision, or
 enter an authoritative projection. Ordinary prose does not need one.
 
+## `depends_on` — the edge that actually propagates (added 2026-08-10)
+
+A `cross_references.intake_entries` pointer means "related reading". It does **not** mean this
+entry's claims rest on that entry's claims, and it must never be read that way — measured on
+2026-08-10 over a 60-edge sample stratified across the 672 citation edges from dived entries,
+**18% were evidential, 75% topical, 7% companion artifact**. Treating citation as dependency would
+have created roughly 550 false dependencies, and a false dependency is worse than a missing one: it
+propagates invalidation into work that never depended on anything.
+
+So dependency is its own edge, written only when it is real:
+
+```yaml
+depends_on:
+  - entry: intake-1039           # the entry this one's claims rest on
+    claim_index: 2               # optional: which of THIS entry's claims depends
+    why: 'Our Cor 4.7 restatement is only valid for semirings satisfying their Deletion Property.'
+```
+
+**Write it during Stage 2, while the dive is open.** The test is counterfactual and takes a second
+to apply:
+
+> If that entry's claim were retracted tomorrow, would a claim in this entry have to change?
+
+Yes → `depends_on`. No → leave it in `cross_references`. "Same topic", "cites it in related work",
+"we found this via that" are all **no**. A survey citing the work it surveys is **no**. A paper
+whose result is only valid under another paper's theorem is **yes**.
+
+Two mechanical shortcuts were tried against the same 60-edge sample and both failed — naming the
+target entry in the claim text (precision 0.50, recall 0.09) and verification-language keywords
+(0.50 / 0.27). There is no way to recover this later from what the index records, which is why it
+is a write-time field: seconds during the dive, unreconstructable afterwards.
+
 **`located_by: machine` (added 2026-08-10).** An anchor produced by matching a claim's terms
 against the fetched source — rather than by a person reading the passage — MUST carry
 `located_by: machine`. It then tops out at `T2 MachineLocated`, strictly below `T3 Anchored`,

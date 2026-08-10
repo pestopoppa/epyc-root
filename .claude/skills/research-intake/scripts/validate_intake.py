@@ -202,12 +202,30 @@ def validate_taxonomy(taxonomy: dict) -> list[str]:
     return errors
 
 
+_MERGED_RE = re.compile(r"\bMerged (intake-\d+)\b")
+
+
+def _absorbed_ids(entries: list[dict]) -> set[str]:
+    """Ids a surviving entry declares it absorbed, from its `merge_history` notes.
+
+    Merging a duplicate away leaves a hole in the id sequence forever. Deriving the allowance from
+    `merge_history` keeps the sequential check meaningful: a gap is forgiven only when some entry
+    takes responsibility for it in writing.
+    """
+    out: set[str] = set()
+    for entry in entries:
+        for note in entry.get("merge_history") or []:
+            out.update(_MERGED_RE.findall(str(note)))
+    return out
+
+
 def validate_index(entries: list[dict], valid_categories: set[str],
                    crossref_dirs: dict | None = None) -> list[str]:
     errors = []
     seen_ids = set()
     seen_arxiv = set()
     prev_num = 0
+    absorbed_ids = _absorbed_ids(entries)
 
     for i, entry in enumerate(entries):
         eid = entry.get("id", f"<missing at index {i}>")
@@ -244,8 +262,15 @@ def validate_index(entries: list[dict], valid_categories: set[str],
         if isinstance(eid, str) and eid.startswith("intake-"):
             try:
                 num = int(eid.split("-", 1)[1])
-                if num != prev_num + 1:
-                    errors.append(f"{eid}: ID not sequential (expected intake-{prev_num + 1:03d})")
+                # A merged-away id leaves a permanent gap: renumbering would break every
+                # reference, and the gap is not an accident. The allowance is derived from the
+                # data rather than hardcoded -- a surviving entry has to SAY it absorbed that id
+                # in its `merge_history`, so a gap nobody explained is still an error.
+                expected = prev_num + 1
+                while f"intake-{expected}" in absorbed_ids:
+                    expected += 1
+                if num != expected:
+                    errors.append(f"{eid}: ID not sequential (expected intake-{expected:03d})")
                 prev_num = num
             except ValueError:
                 errors.append(f"{eid}: malformed ID number")
@@ -344,6 +369,35 @@ def validate_index(entries: list[dict], valid_categories: set[str],
                 if cat not in valid_categories:
                     errors.append(f"{eid}: unknown category '{cat}'")
 
+        # depends_on: the evidential edge (schema § depends_on). Shape-checked here because a
+        # malformed dependency is worse than an absent one -- it looks like propagation coverage
+        # and provides none.
+        deps = entry.get("depends_on")
+        if deps is not None:
+            if not isinstance(deps, list):
+                errors.append(f"{eid}: depends_on must be a list")
+            else:
+                for j, dep in enumerate(deps):
+                    if not isinstance(dep, dict):
+                        errors.append(f"{eid}: depends_on[{j}] must be a mapping")
+                        continue
+                    target = dep.get("entry")
+                    if not isinstance(target, str) or not target.startswith("intake-"):
+                        errors.append(
+                            f"{eid}: depends_on[{j}].entry must be an intake id"
+                        )
+                    elif target == eid:
+                        errors.append(f"{eid}: depends_on[{j}] points at itself")
+                    if not str(dep.get("why") or "").strip():
+                        errors.append(
+                            f"{eid}: depends_on[{j}] needs a 'why' -- an unexplained dependency "
+                            "cannot be reviewed, and 18% of citations are dependencies, so the "
+                            "reason is the only thing separating this from a cross-reference"
+                        )
+                    ci = dep.get("claim_index")
+                    if ci is not None and not isinstance(ci, int):
+                        errors.append(f"{eid}: depends_on[{j}].claim_index must be an integer")
+
         # Cross-reference file existence (warn, don't error)
         xrefs = entry.get("cross_references", {})
         if isinstance(xrefs, dict) and crossref_dirs:
@@ -395,10 +449,9 @@ def _locator_key(entry: dict) -> str:
 def check_laundered_arxiv_ids(entries: list[dict]) -> list[str]:
     """Flags an entry with an arXiv URL and a null `arxiv_id`.
 
-    Reported as a WARNING only until the three known instances are dispositioned (handoff
-    D5). Filling the field in on any of them trips the hard duplicate-`arxiv_id` error, which
-    would leave the index un-validatable for every other session. Promote to an error once
-    D5 lands -- the tracking task says so explicitly.
+    A hard ERROR since 2026-08-10, when the D5 merges removed the last three instances. It was
+    a warning only while those existed, because filling the field in on any of them trips the
+    duplicate-`arxiv_id` error and would have left the index un-validatable for every session.
 
     The duplicate-`arxiv_id` rule above is a hard error, so an entry that fills the field in and
     collides cannot be saved. On 2026-08-10 a sweep found **exactly 3** entries in 1,067 with an
@@ -434,11 +487,18 @@ def check_duplicate_locators(entries: list[dict]) -> list[str]:
     ever learns the two entries exist.
     """
     groups: dict[str, list[str]] = {}
+    explained: dict[str, int] = {}
     for entry in entries:
         key = _locator_key(entry)
         eid = entry.get("id")
         if key and isinstance(eid, str):
             groups.setdefault(key, []).append(eid)
+            if str(entry.get("shared_locator_rationale") or "").strip():
+                explained[key] = explained.get(key, 0) + 1
+    # A group every member of which explains the sharing is a decided case, not an open one. The
+    # warning exists to surface undecided collisions; leaving it firing forever after the decision
+    # is how a check trains people to ignore it.
+    groups = {k: v for k, v in groups.items() if explained.get(k, 0) < len(v)}
     return [
         f"{len(ids)} entries share locator {key}: {sorted(ids)} — merge, or record why they differ"
         for key, ids in sorted(groups.items())
@@ -548,8 +608,7 @@ def main() -> int:
         print("WARNING: Index is empty")
     else:
         errors.extend(validate_index(entries, valid_categories, crossref_dirs))
-        for warning in check_laundered_arxiv_ids(entries):
-            print(f"WARNING: {warning}")
+        errors.extend(check_laundered_arxiv_ids(entries))
         for warning in check_duplicate_locators(entries):
             print(f"WARNING: {warning}")
 

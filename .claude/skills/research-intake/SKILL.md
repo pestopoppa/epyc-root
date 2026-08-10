@@ -291,6 +291,18 @@ Begins only when the operator names the intakes. Never self-trigger.
   renamed-kernel incident happened. Do not anchor ordinary prose; anchor what will be cited.
 - Append a dated `dive_corrections` field recording what the dive changed, so an overturned
   conclusion cannot be re-derived later.
+- **Record `depends_on` for every claim of this entry that rests on another entry's claim.**
+  Apply the counterfactual test to each cross-reference the dive touched: *if that entry's claim
+  were retracted tomorrow, would a claim in this entry have to change?* Yes → `depends_on`; no →
+  it stays an ordinary cross-reference. Schema and worked example:
+  [`references/intake-schema.md`](references/intake-schema.md) § `depends_on`.
+
+  **Why this is a Stage-2 obligation.** A citation is not a dependency: measured 2026-08-10 across
+  60 citation edges from dived entries, only **18%** were evidential (75% topical, 7% companion
+  artifact). Inferring dependency from citation would create ~550 false edges, and a false
+  dependency is worse than a missing one — it propagates invalidation into work that never
+  depended on anything. Two mechanical shortcuts were tried and both failed (precision 0.50 at
+  recall 0.09 and 0.27). Nothing recovers this after the dive closes.
 - Correct fabricated or cross-contaminated content immediately — do not carry it to Stage 3.
 - Persist the **Stage-2b** entries (below) as new index rows, already `dive-verified`/`dive-overturned`.
 

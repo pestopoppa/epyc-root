@@ -186,3 +186,27 @@ def test_machine_anchor_without_a_quote_hash_is_only_located():
 
     entry = {"url": "https://example.com/x"}
     assert _t_level(entry, {"quote": "s", "located_by": "machine"}) == "Located"
+
+
+# ------------------------------------- independence after aliasing (R4b, 2026-08-10)
+
+def test_alias_group_is_non_independent_when_any_row_is_related():
+    ws = {
+        "schema": "epyc.vidya/alias-worksheet/v1",
+        "rows": [
+            {"claim_a": "clm_a", "claim_b": "clm_b", "decision": "same", "reviewer": "op",
+             "same_source": False, "linked": True},
+        ],
+    }
+    assert aliases_from_worksheet(ws)[0]["independent"] is False
+
+
+def test_alias_group_is_independent_when_no_row_is_related():
+    ws = {
+        "schema": "epyc.vidya/alias-worksheet/v1",
+        "rows": [
+            {"claim_a": "clm_a", "claim_b": "clm_b", "decision": "same", "reviewer": "op",
+             "same_source": False, "linked": False},
+        ],
+    }
+    assert aliases_from_worksheet(ws)[0]["independent"] is True

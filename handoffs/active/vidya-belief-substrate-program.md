@@ -248,7 +248,16 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       companion**. The n=20 result was a small-sample artifact of the semiring-provenance intake.
       Two mechanical rules also failed on the same 60 (names-the-target: precision 0.50 / recall
       0.09; verification-language: 0.50 / 0.27) ✅ 2026-08-10
-- [ ] PR2d Adopt an explicit `depends_on` edge, authored at dive time. **Do NOT infer dependency
+- [x] PR2d **`depends_on` adopted 2026-08-10.** Schema field (`entry` / optional `claim_index` /
+      required `why`), validator shape-check that refuses an unexplained dependency, a
+      `claim_depends_on/v1` frame emitted by the adapter, and a Stage-2 obligation in the intake
+      skill carrying the counterfactual test: *if that entry's claim were retracted tomorrow, would
+      a claim in this entry have to change?* Citation edges are left untouched ✅ 2026-08-10
+- [ ] PR2d-backfill Author `depends_on` on dived entries whose dependencies are already known — the
+      11 evidential edges the 60-edge sample identified are the obvious first batch. Reasoning kept
+      below.
+
+      Adopt an explicit `depends_on` edge, authored at dive time. **Do NOT infer dependency
       from citation** — at 18% precision, promoting the 672 dived-source edges would create ~550
       false dependencies, which is worse than the uncoverable bucket it was meant to fix: a false
       dependency propagates invalidation into work that never depended on anything. Accepted cost:
@@ -339,16 +348,31 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       each. **5 duplicate-locator groups over 11 entries** found. WARNING not error — a project page
       can legitimately back two artifacts, and this project has a recorded lesson against
       conflating a companion repo with its paper ✅ 2026-08-10
-- [ ] R4b-authoring Review the 45 candidates in `artifacts/operator/vidya-alias-worksheet-20260810.yaml` and set each
-      row `same`/`different`, then `vidya alias-emit`. **Operator-gated** — this is the proposition-
-      identity judgment the spec keeps out of the fold
-- [ ] R4b-remeasure Re-run the corroboration statistic once aliases land. First chance for
-      `disjoint_supports >= 2` to be satisfiable at all, and the first cost datapoint for the
-      leaf-disjoint packing algorithm, which is unmeasured because every circuit is currently one path
-- [ ] D5 Disposition the 5 duplicate-locator groups. Tickable checklist with per-group evidence and
-      a recommendation: [`artifacts/operator/vidya-review-checklist-20260810.md`](../../artifacts/operator/vidya-review-checklist-20260810.md).
-      3 are self-declared duplicates (merge), 1 is a missed same-session collision (likely merge),
-      1 is the legitimate companion-artifact case (keep, record why)
+- [x] R4b-authoring Operator reviewed all 45 candidates 2026-08-10: **10 same, 35 different**
+      (19 judged by hand; 26 auto-classified as different on numeric mismatch or low similarity and
+      accepted). Frames emitted via `vidya alias-emit` ✅ 2026-08-10
+- [x] R4b-independence The 10 aliases would have manufactured corroboration without a second fix:
+      `_disjoint_supports` counted evidence LABELS, which are minted per claim. It now counts by
+      **source locator**, and alias groups their author marked non-independent collapse to one
+      witness. On the live ledger 7 of the 10 groups (same-source or linked) correctly produce no
+      corroboration and exactly the 3 genuinely-independent ones do ✅ 2026-08-10
+- [x] R4b-remeasure **The corroboration statistic is no longer degenerate.** Distribution over
+      4,181 beliefs: 0 supports → 112, 1 → 4,066, **2 → 3**. First non-zero `disjoint_supports ≥ 2`
+      in the program's history, and the 3 are real rather than double-counted records ✅ 2026-08-10
+- [x] D5 **All 5 groups dispositioned 2026-08-10** (operator checklist). Merged 785→772, 784→244,
+      797→418, 336→315: 16 claims folded into survivors, 13 citations repointed, index 1,067 →
+      1,063, each survivor carrying a `merge_history` note. The fast-rlm trio (693/783/901) stays
+      three entries with a `shared_locator_rationale` on each, and the duplicate-locator check now
+      suppresses a group whose members all explain the sharing — a warning that keeps firing after
+      the decision trains people to ignore it. Text surgery throughout, never a YAML round-trip
+      (SKILL.md rule), verified field-by-field against the intended structure ✅ 2026-08-10
+- [x] D8 Merging leaves permanent id gaps, which tripped the sequential-id check. The allowance is
+      derived from `merge_history` rather than hardcoded, so a gap is forgiven only when some entry
+      states in writing that it absorbed that id ✅ 2026-08-10
+- [x] D9 Repaired 84 dangling cross-refs left by commit b208d9ce, where another session's index
+      consolidation removed `inference-acceleration-index.md` and
+      `cpu-inference-optimization-index.md`. Repointed at `inference-research-index.md`; intake
+      validation had been failing for every session and is now exit 0 ✅ 2026-08-10
 - [x] D6 **Root-caused the duplicate entries — the intake skill needed fixing, and does now.**
       Dedup was working: it *labelled* the collisions `novelty: duplicate` and then persisted them
       as full entries anyway, each with its own `key_claims`, 12 in total and 10 cited by other
@@ -358,9 +382,8 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       SKILL.md §2/§2b/§2c now forbid minting an entry for a collision, require locator
       normalization before comparing, and forbid the null-`arxiv_id` shape;
       `check_laundered_arxiv_ids` warns on it ✅ 2026-08-10
-- [ ] D7 Promote `check_laundered_arxiv_ids` from WARNING to a hard error once D5.1–D5.3 land.
-      It cannot be an error today: filling the field in trips the duplicate-`arxiv_id` error, which
-      would leave the index un-validatable for every other session
+- [x] D7 `check_laundered_arxiv_ids` promoted from WARNING to a hard error — the D5 merges removed
+      the last three instances, so the blocker that kept it advisory is gone ✅ 2026-08-10
 - [x] R5a Instrument specified + 2026-08-09 baseline recorded (4,191 beliefs; 15.6% of claims
       carry a correction; 1 anchored; 0 corroborated). Most of R5 is retrospectively computable
       from the ledger, which is the payoff of event sourcing ✅ 2026-08-09

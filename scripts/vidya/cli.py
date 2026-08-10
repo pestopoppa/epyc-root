@@ -435,20 +435,30 @@ def cmd_alias_emit(args) -> int:
     from alias_candidates import aliases_from_worksheet  # noqa: PLC0415
     from frames import make_frame  # noqa: PLC0415
 
-    worksheet = yaml.safe_load(Path(args.worksheet).read_text())
+    import hashlib  # noqa: PLC0415
+
+    worksheet_bytes = Path(args.worksheet).read_bytes()
+    worksheet = yaml.safe_load(worksheet_bytes.decode())
+    # Digest the FILE, not the parsed structure: the worksheet carries float scores, which
+    # the certified canonicalizer rightly refuses. What the frame must pin is which reviewed
+    # document produced this decision, and that is the bytes.
+    worksheet_digest = "sha256:" + hashlib.sha256(worksheet_bytes).hexdigest()
     groups = aliases_from_worksheet(worksheet)
     led = _ledger(args)
     emitted = []
     for group in groups:
         frame = make_frame(
             frame_type="epyc.vidya/frame/claim_alias/v1",
-            assertion={"claim_ids": group["claim_ids"]},
+            assertion={
+                "claim_ids": group["claim_ids"],
+                "independent": group.get("independent", True),
+            },
             provenance={
                 "method": "human-review/alias-worksheet",
                 "about": group["claim_ids"][0],
                 "reviewers": group["reviewers"],
                 "notes": group["notes"],
-                "worksheet_digest": content_hash(worksheet),
+                "worksheet_digest": worksheet_digest,
             },
             actor=args.actor,
             authority_scope="claim-identity",

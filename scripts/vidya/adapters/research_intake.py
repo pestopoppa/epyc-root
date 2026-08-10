@@ -254,6 +254,54 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
     return out
 
 
+def _depends_frames(entry: dict, as_of: str) -> list[dict]:
+    """`depends_on` -> claim_depends_on frames.
+
+    Kept separate from `cross_references`, which is related reading and NOT a dependency: 18% of
+    citation edges are evidential (measured 2026-08-10 over 60 dived-source edges), so promoting
+    them wholesale would create roughly 550 false dependencies. Only the explicit, human-authored
+    edge reaches the ledger.
+    """
+    from frames import make_frame  # noqa: PLC0415
+
+    out: list[dict] = []
+    entry_id = entry["id"]
+    for dep in entry.get("depends_on") or []:
+        if not isinstance(dep, dict):
+            continue
+        target = dep.get("entry")
+        why = str(dep.get("why") or "").strip()
+        if not isinstance(target, str) or not why:
+            continue
+        ci = dep.get("claim_index")
+        dependents = (
+            [_claim_id(entry_id, ci)]
+            if isinstance(ci, int)
+            else [_claim_id(entry_id, i) for i in range(len(entry.get("key_claims") or []))]
+        )
+        for cid in dependents:
+            out.append(
+                make_frame(
+                    frame_type="epyc.vidya/frame/claim_depends_on/v1",
+                    assertion={
+                        "claim_id": cid,
+                        "depends_on_source": _source_id({"id": target}),
+                        "depends_on_entry": target,
+                        "rationale": why,
+                    },
+                    provenance={
+                        "about": cid,
+                        "method": "research-intake/stage2-depends-on",
+                        "authored_by": "human",
+                    },
+                    actor=ADAPTER_ID,
+                    authority_scope="research-verification",
+                    created_at=as_of,
+                )
+            )
+    return out
+
+
 def ingest_intake_index(
     ledger,
     *,
@@ -309,7 +357,7 @@ def ingest_intake_index(
         anchored_claims += sum(1 for i in range(n_claims) if i in anchors)
         if isinstance(entry.get("dive_corrections"), str) and entry["dive_corrections"].strip():
             corrections_emitted += 1
-        for frame in _frames_for_entry(entry, as_of):
+        for frame in _frames_for_entry(entry, as_of) + _depends_frames(entry, as_of):
             if frame.get("frame_id") in existing_ids:
                 skipped += 1
                 continue

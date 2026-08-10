@@ -21,6 +21,8 @@ client, and `fold` will refuse a judgment frame whose replay key is incomplete.
 
 from __future__ import annotations
 
+import re
+
 from dataclasses import dataclass, field
 from typing import Iterable, Sequence
 
@@ -49,6 +51,7 @@ FT_CORRECTION_REVIEWED = "epyc.vidya/frame/correction_reviewed/v1"
 # exactly the semantic call the substrate keeps out of the deterministic path (spec §4.2 boundary).
 # The fold only APPLIES an alias somebody else authored, and records that it did.
 FT_ALIAS = "epyc.vidya/frame/claim_alias/v1"
+FT_SOURCE = "epyc.vidya/frame/source_observed/v1"
 
 # A judgment frame must be keyed by what the judge saw AND the full decoder tuple, or replay is
 # provably inconsistent (spec §6). Greedy decoding does not exempt a frame from this: the
@@ -79,6 +82,11 @@ class Belief:
     pro_paths: list[tuple[str, Grade]] = field(default_factory=list)
     con_paths: list[tuple[str, Grade]] = field(default_factory=list)
     retracted_support: list[str] = field(default_factory=list)
+    # Distinct SOURCES behind the support edges, locator-normalized and collapsed for aliases the
+    # author marked non-independent. `pro_paths` counts edges; this counts witnesses, and only the
+    # second is a corroboration statistic.
+    pro_sources: list[str] = field(default_factory=list)
+    con_sources: list[str] = field(default_factory=list)
     # Corrections recorded against this claim's source entry. These do NOT change the grade -- what
     # a correction did to an individual claim is prose, and guessing at it is the failure this
     # substrate exists to prevent. They mark the belief as needing review, which is a freshness
@@ -180,6 +188,20 @@ def _check_judgment(frame: dict) -> None:
         )
 
 
+def _normalize_locator(url: str) -> str:
+    """Fold the spellings of one source to one key.
+
+    An arXiv id and an arXiv URL name the same paper; so do http/https, a trailing slash, and a
+    version suffix. This is the same normalization the intake validator uses, and it exists here
+    for the same reason: two records of one paper must not read as two witnesses.
+    """
+    u = url.strip().lower()
+    m = re.search(r"arxiv\.org/(?:abs|pdf)/([0-9v.]+)", u)
+    if m:
+        return "arxiv:" + re.sub(r"v\d+$", "", m.group(1).removesuffix(".pdf"))
+    return "url:" + re.sub(r"^https?://(www\.)?", "", u).rstrip("/")
+
+
 def fold(
     frames: Sequence[dict],
     *,
@@ -197,11 +219,17 @@ def fold(
     claims: set[str] = set()
     support: dict[str, list[tuple[str, Grade]]] = {}
     oppose: dict[str, list[tuple[str, Grade]]] = {}
+    pro_sources: dict[str, list[str]] = {}
+    con_sources: dict[str, list[str]] = {}
     retracted: set[str] = set()
     corrections_by_claim: dict[str, list[str]] = {}
     reviewed_corrections: set[str] = set()
     alias_of: dict[str, str] = {}          # claim_id -> canonical claim_id
     applied_aliases: list[str] = []
+    source_locator: dict[str, str] = {}    # source_id -> normalized locator
+    # Claims whose supports must NOT be counted as independent of each other, because a
+    # human said the two records are one source or one derived from the other.
+    dependent_group: dict[str, str] = {}   # claim_id -> group key
     judgment_votes: dict[str, str] = {}   # replay-key hash -> first frame_id that voted
     superseded_judgments: list[str] = []
     ignored: dict[str, int] = {}
@@ -218,6 +246,16 @@ def fold(
     # already reviewed never marks anything. Without this the review flag is a one-way ratchet: a
     # single `dive_corrections` field blocks every claim from its entry forever, and the gate
     # deadlocks the work it was meant to protect (spec risk §19.7).
+    # Source locators, so support can be counted by SOURCE rather than by evidence label.
+    # Evidence tokens are minted per claim, so counting labels counts edges, not witnesses:
+    # two records of one paper produce two labels and would read as independent support.
+    for frame in frames:
+        if frame.get("frame_type") == FT_SOURCE:
+            assertion = frame.get("assertion", {})
+            sid, loc = assertion.get("source_id"), assertion.get("locator")
+            if isinstance(sid, str) and isinstance(loc, str) and loc.strip():
+                source_locator[sid] = _normalize_locator(loc)
+
     for frame in frames:
         if frame.get("frame_type") == FT_CORRECTION_REVIEWED:
             target = frame.get("assertion", {}).get("reviewed")
@@ -240,6 +278,14 @@ def fold(
         for member in members[1:]:
             alias_of[member] = canonical
         applied_aliases.append(frame.get("frame_id", ""))
+        # `independent: false` means the human who authored the alias also said the two
+        # records are not separate witnesses -- one source recorded twice, or one derived
+        # from the other (a dataset card restating its own paper). Without this the merge
+        # would CREATE the corroboration it was supposed to let us measure.
+        if frame.get("assertion", {}).get("independent") is False:
+            group = "alias:" + canonical
+            for member in members:
+                dependent_group[member] = group
 
     def _canonical(cid: str) -> str:
         seen: set[str] = set()
@@ -280,8 +326,18 @@ def fold(
             claim_id = _canonical(claim_id)
             claims.add(claim_id)
             label = assertion.get("evidence_id") or fid or f"<frame {len(support)}>"
+            raw_claim = assertion.get("claim_id")
+            source_key = (
+                dependent_group.get(raw_claim)
+                or source_locator.get(assertion.get("source_id") or "")
+                or assertion.get("source_id")
+                or label
+            )
             bucket = support if ftype == FT_SUPPORT else oppose
             bucket.setdefault(claim_id, []).append((label, grade))
+            (pro_sources if ftype == FT_SUPPORT else con_sources).setdefault(
+                claim_id, []
+            ).append(source_key)
 
         elif ftype == FT_CORRECTION:
             assertion = frame.get("assertion", {})
@@ -348,6 +404,8 @@ def fold(
                     con_paths=con_paths,
                     retracted_support=sorted(retracted),
                     corrections=corrections,
+                    pro_sources=sorted(set(pro_sources.get(claim_id, []))),
+                    con_sources=sorted(set(con_sources.get(claim_id, []))),
                 )
                 changed = True
         if not changed:

@@ -27,7 +27,7 @@ them changes the answer to this question.
 
 > **B:** Repeated exposure > coverage: repeating 2.5k samples 8x outperforms one-pass 20k under fixed 640-step budget
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [X] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
 
 **2.**
 
@@ -35,7 +35,7 @@ them changes the answer to this question.
 
 > **B:** Identifies emerging directions: self-evolving harnesses, shared agent infrastructure
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [X] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
 
 **3.**
 
@@ -43,7 +43,7 @@ them changes the answer to this question.
 
 > **B:** NEW: a DATED Mojo datapoint - Mojo "currently provides a warp-specialized matmul kernel as of 11/06/2025".
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [X] **D**
 
 **4.**
 
@@ -51,7 +51,7 @@ them changes the answer to this question.
 
 > **B:** Training pipeline: general PT + MT-oriented PT + SFT + on-policy distillation + RL
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [X] **D**
 
 **5.**
 
@@ -59,7 +59,7 @@ them changes the answer to this question.
 
 > **B:** Completely Neural Computer (CNC) requires: Turing completeness, universal programmability, behavior consistency, machine-native semantics
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [X] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
 
 **6.**
 
@@ -67,7 +67,7 @@ them changes the answer to this question.
 
 > **B:** Credit-assignment solved with local node rewards from an LLM judge (gpt-5-mini): each node scored on (a) own sub-task success and (b) MEAN child success (mean — not sum — blocks trivial-spawn exploit)
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [X] **D**
 
 **7.**
 
@@ -75,7 +75,7 @@ them changes the answer to this question.
 
 > **B:** Reports +26.7-30.9% acceptance length over EAGLE-3 and +16.3-18.4% over DFlash on Qwen3 4B/8B/14B.
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [X] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
 
 **8.**
 
@@ -83,7 +83,7 @@ them changes the answer to this question.
 
 > **B:** Reviews the shift from model weights to externalized infrastructure: memory externalizes state, skills externalize procedural expertise, protocols externalize interaction structure
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [X] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
 
 **9.**
 
@@ -91,7 +91,7 @@ them changes the answer to this question.
 
 > **B:** Three-layer architecture (raw sources / wiki pages / schema)
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [X] **D**
 
 **10.**
 
@@ -99,7 +99,7 @@ them changes the answer to this question.
 
 > **B:** 6.6-8.1% single-batch throughput improvement and 7.2% prefill latency reduction on A100 with DeepSeek R1 8B and Qwen3 8B
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [X] **D**
 
 **11.**
 
@@ -107,7 +107,7 @@ them changes the answer to this question.
 
 > **B:** Training stack: (1) multi-task objective across depths (auto-curriculum); (2) leave-one-out (LOO) baseline shared across rollout group; (3) depth-level inverse-frequency weighting
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [X] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
 
 **12.**
 
@@ -115,7 +115,7 @@ them changes the answer to this question.
 
 > **B:** 744B total / 40B active MoE with 256 experts, 80 layers
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [X] **D**
 
 **13.**
 
@@ -123,7 +123,7 @@ them changes the answer to this question.
 
 > **B:** Backend LLM is hot-swappable (GPT-4.1, Claude Opus 4.1, Gemini 2.5 Flash) so users can trade reasoning depth, cost, and speed per task.
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [X] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
 
 **14.**
 
@@ -131,7 +131,7 @@ them changes the answer to this question.
 
 > **B:** TPO separates target distribution construction from parameter optimization — given scored completions, constructs q_i proportional to p_old_i * exp(u_i/eta) and fits via cross-entropy. Gradient is (p - q), vanishing at convergence.
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [X] **D**
 
 **15.**
 
@@ -139,7 +139,7 @@ them changes the answer to this question.
 
 > **B:** Fusion is a model-invoked server tool implementing Mixture-of-Agents: a panel answers in parallel, a judge compares, structured analysis JSON returns to the outer model for the final answer.
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [X] **D**
 
 **16.**
 
@@ -147,7 +147,7 @@ them changes the answer to this question.
 
 > **B:** Tensor / pipeline / data / expert / context parallelism with disaggregated prefill, decode, encode
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [X] **D**
 
 **17.**
 
@@ -155,7 +155,7 @@ them changes the answer to this question.
 
 > **B:** MCP server integration for extensible tool ecosystems
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [X] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
 
 **18.**
 
@@ -163,7 +163,7 @@ them changes the answer to this question.
 
 > **B:** Inference + finetuning code and model weights released; paper accepted to ICASSP 2026.
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [X] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
 
 **19.**
 
@@ -171,7 +171,7 @@ them changes the answer to this question.
 
 > **B:** 1.76h time-to-GPT-2 (down from 1.80h baseline), 2.10% wall-clock speedup
 
-- [ ] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
+- [X] **S**&nbsp;&nbsp;&nbsp;&nbsp;- [ ] **D**
 
 ---
 
@@ -182,11 +182,11 @@ intake pipeline and then saved as full entries anyway, so ticking those confirms
 already made. Merging repoints every citation to the surviving entry and folds in any claims
 the duplicate has that the original lacks; nothing is removed before its citations are rehomed.
 
-- [ ] **intake-785 → intake-772** · *Darwin Gödel Machine* · pipeline-labelled duplicate, 7 citations to repoint
-- [ ] **intake-784 → intake-244** · *Meta-Harness* · pipeline-labelled duplicate, 9 citations to repoint
-- [ ] **intake-797 → intake-418** · *Externalization in LLM Agents* · pipeline-labelled duplicate, 1 citation to repoint
-- [ ] **intake-336 → intake-315** · *Neural Computer* · same URL, same day, both saved as new; 336 has no citations
-- [ ] **keep intake-693 / 783 / 901 separate** · *fast-rlm* · one repo, three genuinely different readings; 901 is dive-verified and spawned 2 handoffs
+- [X] **intake-785 → intake-772** · *Darwin Gödel Machine* · pipeline-labelled duplicate, 7 citations to repoint
+- [X] **intake-784 → intake-244** · *Meta-Harness* · pipeline-labelled duplicate, 9 citations to repoint
+- [X] **intake-797 → intake-418** · *Externalization in LLM Agents* · pipeline-labelled duplicate, 1 citation to repoint
+- [X] **intake-336 → intake-315** · *Neural Computer* · same URL, same day, both saved as new; 336 has no citations
+- [X] **keep intake-693 / 783 / 901 separate** · *fast-rlm* · one repo, three genuinely different readings; 901 is dive-verified and spawned 2 handoffs
 
 ---
 

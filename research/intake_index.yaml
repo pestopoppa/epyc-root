@@ -6395,6 +6395,10 @@
   - Text optimizers (e.g. DSPy) compress feedback too aggressively for harness optimization
   - Agentic proposer with filesystem access to source code, scores, and execution traces outperforms text-only optimizers
   - Automated harness search surpasses hand-engineered baselines on multiple tasks
+  - Outer-loop system that searches over harness code for LLM applications using an agentic proposer with filesystem access to source code, scores, and execution traces of all prior candidates
+  - Improves over SOTA context management by 7.7 points on online text classification while using 4x fewer context tokens
+  - Single discovered harness improves accuracy on 200 IMO-level math problems by 4.7 points avg across five held-out models
+  - Discovered harnesses surpass best hand-engineered baselines on TerminalBench-2 agentic coding
   techniques:
   - Meta-Harness (outer-loop agentic harness search)
   - Filesystem-based experimental trace access for the proposer agent
@@ -6426,6 +6430,8 @@
   integration_disposition: integrated
   disposition_evidence:
   - '2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.'
+  merge_history:
+  - 'Merged intake-784 on 2026-08-10 (handoff D5): same locator; 4 claim(s) folded in, citations repointed.'
 - id: intake-245
   arxiv_id: '2603.23516'
   url: https://arxiv.org/abs/2603.23516
@@ -6484,7 +6490,7 @@
   ingested_date: '2026-04-01'
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - kv-cache-quantization.md
     intake:
     - intake-186 (bitnet.cpp — ternary quantization TQ1_0/TQ2_0)
@@ -8047,7 +8053,7 @@
     - intake-280
     - intake-184
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - kv-cache-quantization.md
   notes: 'Primary research paper for GLM-5/5.1 family. DEEP-DIVE 2026-04-07: THREE BLOCKING ISSUES for local deployment: (1) SIZE: Q4_K_M=456GB (full), REAP-50% Q4 est. ~230GB. Our RAM budget is ~250GB working set. Full model is out. REAP-50% is borderline but no GGUF exists. (2) DSA NOT IN LLAMA.CPP: PR#19460 merged dense-only. Indexer tensors preserved in GGUF but unused by C++ code. Without DSA, the model runs full O(L^2) attention on all tokens — 1.5-2x slower than designed. Follow-up PR for DSA indexer discussed but not yet submitted. This makes local llama.cpp inference impractical. (3) QUALITY UNKNOWN: REAP-50% variant (0xSero) has NO published benchmarks. The 50% expert pruning uses refusal_contrast_reap method. At 128/256 experts remaining, routing diversity is halved — quality impact on coding/agentic tasks is completely unknown. TECHNIQUE RELEVANCE REVISED: - DSA: NOT complementary to our Hadamard KV-cache work. DSA selects WHICH tokens to attend to (sparse selection); our Hadamard work compresses HOW KV values are stored (quantization). Different layers of the problem. DSA is relevant to context_extension, not kv_cache. Correcting original assessment. - MTP: Our completed/mtp-speculative-decoding.md found MTP NOT VIABLE on hybrid (0.56x). GLM-5 is pure MoE, not hybrid — different architecture class. Their MTP works because draft and target share the MoE backbone. This does NOT transfer to our hybrid (Mamba2+attention) models. - MLA: Similar to DeepSeek-V3.2''s approach. Our models don''t use MLA. - Baseten production insight: DSA has short-sequence bypass (skip indexer if seq < k). This means DSA overhead is negative for short contexts — only beneficial at long ctx. LOCAL DEPLOYMENT: unsloth/GLM-5-GGUF (32.6K downloads/month, MIT license). KTransformers CPU/GPU hybrid exists but NO benchmarks published. Single-GPU + 300GB RAM setup per KTransformers docs. 2-bit quantized ~241-281GB.
 
@@ -8980,7 +8986,7 @@
   - wave64 mode disables dual-issue, negating theoretical throughput advantage
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - llama-cpp-v3-upstream-rebuild.md
     - kv-cache-quantization.md
   notes: 'rocWMMA is AMD''s C++ header library for mixed-precision matrix multiply-accumulate (MMA) on CDNA (gfx908/90a/942/950) and RDNA (gfx1100-1201) GPUs. API-compatible with CUDA WMMA. Supports FP16/BF16/INT8/INT4 inputs, 16x16x16 tiles. In llama.cpp, enables flash attention acceleration via -DGGML_HIP_ROCWMMA_FATTN=ON — up to 2x prompt processing speedup. Latest release: v2.2.0 for ROCm 7.2.1 (2026-03-24). Repository now deprecated in favor of ROCm/rocm-libraries monorepo. CRITICAL CONTEXT: EPYC stack is currently CPU-only (192-thread NUMA, no GPU backend). rocWMMA only relevant if GPU acceleration path is pursued. The llama.cpp v3 rebuild (intake cross-ref) does not include HIP build flags.
@@ -9014,7 +9020,7 @@
   - INT8 performance not dramatically higher than FP16 on RDNA3 (same per CU/clock)
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
   notes: 'AMD GPUOpen technical guide for WMMA intrinsics on RDNA3. Covers compiler builtins (__builtin_amdgcn_wmma_*), data types (FP16/BF16/INT8/INT4), wave32 vs wave64 VGPR requirements (8 vs 4 per fragment). RX 7900 XTX achieves 512 FLOPS/clock/CU for FP16 (2x over RDNA2). rocWMMA provides portable C++ wrapper over these intrinsics. Key insight: wave32 preferred for throughput due to dual-issue support.
 
     '
@@ -9047,7 +9053,7 @@
   - No contradicting evidence found for raw throughput numbers — possible confirmation bias risk
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - llama-cpp-v3-upstream-rebuild.md
   notes: 'AMD official blog (Dec 2025) benchmarking llama.cpp on MI300X 8x vs NVIDIA H100. Key results: DeepSeek-V3-671B at 1650 tok/s (pp4096), Llama-3.1-70B at 4011 tok/s with flash attention. Claims 76% (DeepSeek) and 213% (Llama-70B) throughput advantage over H100. Introduces hipBLASLt grouped GEMM (USE_HIPBLASLT_GROUPED_GEMM=1/2/3) as alternative to rocBLAS batched GEMM. GEMM tuning yields 29% improvement on 8B model. Relevant to EPYC only if GPU path is pursued.
 
@@ -9080,7 +9086,7 @@
   - Benchmarks only on Llama 3.2 1B — unclear if gains hold for larger MoE/hybrid models
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - kv-cache-quantization.md
   notes: 'Community analysis of rocWMMA performance cliff on RDNA3. Root cause: decode path incorrectly forced WMMA where VEC/TILE ops were faster; FlashAttention LDS/block residency not tuned for AMD. Four fixes applied: adaptive KQ stride (D≤128→stride 128), __launch_bounds__ for 2+ blocks/SM, intelligent kernel selection (skip WMMA for decode), crash prevention fallbacks. Results on Llama 3.2 1B: prefill 360→706 tok/s (+96%), decode 27→65 tok/s (+136%) at 65K context. Critical finding: WMMA should ONLY be used for prefill/prompt processing, NOT decode — mirrors EPYC''s finding that decode is memory-bandwidth-bound. Flash attention KV cache interaction relevant to kv-cache-quantization handoff.
 
@@ -9115,7 +9121,7 @@
   - DeepSeek V3 specific optimizations may not generalize to other MoE architectures
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     intake:
     - intake-303
     - intake-305
@@ -9148,7 +9154,7 @@
   - Results on MI300X only — transferability to other GPU architectures unknown
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     intake:
     - intake-303
     - intake-305
@@ -9181,7 +9187,7 @@
   - No LLM-specific GEMM shape evaluation
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     intake:
     - intake-303
     - intake-308
@@ -9217,7 +9223,7 @@
   - PCIe bandwidth limits make GPU offload worthwhile only above batch threshold (~32 tokens)
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - llama-cpp-v3-upstream-rebuild.md
   notes: 'CRITICAL for EPYC GPU path. Expert offloading (-ot "exps=CPU") keeps attention + dense FFN on GPU while routing MoE experts to CPU. This is THE hybrid strategy for our stack: EPYC has massive CPU capacity (192 threads, 1.1TB RAM) that could handle expert compute while a GPU accelerates attention + dense layers. Key details: -ot uses regex tensor assignment, -ngl 999 offloads everything then -ot overrides specific tensors back to CPU. Batch sizing critical: -b 4096 -ub 4096 (our default is already well-tuned for CPU). NUMA considerations: numactl --interleave=all + --numa distribute for multi-socket. Flash attention: -fa on. For our Qwen3.5/Qwen3 MoE models (30B-A3B, 35B-A3B, 122B-A10B, 246B REAP), attention layers are small relative to expert FFNs — ideal for GPU offload of attention + shared expert while CPU handles routed experts. This could combine our existing NUMA 4-way strategy with GPU acceleration of the compute-bound attention path. hipBLASLt grouped GEMM (intake-305) would further accelerate the GPU-side MoE routing.
 
@@ -9246,7 +9252,7 @@
   - FP8 KV cache 2.1x boost assumes FP8 support in model — GGUF Q4_K_M is different quantization
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - kv-cache-quantization.md
     intake:
     - intake-305
@@ -9400,6 +9406,10 @@
   - 'CLIGen dataset: 823,989 asciinema video streams (~1,100 hours) for terminal simulation'
   - 'GUIWorld dataset: virtualized Ubuntu 22.04 with 7+ apps, 1,500+ hours of GUI interaction'
   - Four conditions for Completely Neural Computer — Turing completeness, programmability, consistency, machine-native semantics
+  - 'Completely Neural Computer (CNC) requires: Turing completeness, universal programmability, behavior consistency, machine-native semantics'
+  - Three experimental systems (CLIGen General, CLIGen Clean, GUIWorld)
+  - 'CLIGen: ~1,100 hours terminal data; GUIWorld: 1,500+ hours desktop interaction'
+  - Model 4 (internal action cross-attention) outperforms alternatives
   techniques:
   - Neural Computers (learned dynamical systems)
   - Latent video state as runtime state
@@ -9426,6 +9436,8 @@
   notes: 'Fascinating research direction but out of scope for EPYC. The CLIGen dataset (asciinema-based) could theoretically inform agent training, but training a model to simulate a terminal by rendering frames is the opposite of our approach (we use actual terminal execution via REPL). The CNC concept (neural network AS the computer) is a long-term research direction, not immediately actionable. Filed for reference.
 
     '
+  merge_history:
+  - 'Merged intake-336 on 2026-08-10 (handoff D5): same locator; 4 claim(s) folded in, citations repointed.'
 - id: intake-316
   arxiv_id: null
   url: https://x.com/chrysb/status/2043020014035570784
@@ -9938,7 +9950,7 @@
   - Self-evolution claims are vendor-reported without independent replication
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - autopilot-continuous-optimization.md
   notes: '229B model too large for local inference. However, the self-evolution workflow (analyze → plan → modify → evaluate → compare → decide) is directly relevant to our autopilot pattern. The 97% skill adherence across 40+ complex skills is impressive and validates the structured-skills approach we use in hermes-agent. The Modified-MIT license allows commercial use. The self-evolution training loop where the model participates in its own improvement mirrors our PromptForge species. Worth studying the self-evolution architecture for adoption patterns. DEEP-DIVE 2026-04-12: CORRECTION — 229B is SPARSE MoE (10B active per token, 256 experts, top-k routing, RoPE + QK RMSNorm, 200K context). GGUF available via unsloth/MiniMax-M2.7-GGUF — smallest usable: UD-IQ4_XS 108GB, Q4_K_M 140GB. DEPLOYMENT REASSESSMENT: 108GB model + ~4GB KV cache (32K context) = ~112GB total. Leaves ~140GB headroom on 256GB system — FEASIBLE as standalone heavyweight or alongside a small frontdoor model only. 10B active params on 192 threads should yield ~10-20 tok/s (comparable to our 30B-A3B). Worth benchmarking as high-quality reasoning/coding model. The SWE-Pro 56.22% and GDPval-AA 1495 (highest open-source) make it a serious contender. CAVEAT: UD-Q4_K_XL has 6.0pt accuracy drop + 22.8% more errors vs original — MoE quant quality degrades faster than dense. Test UD-IQ4_XS quality carefully. UPGRADE relevance medium→medium-high for deployment (must benchmark). Self-evolution pattern details: the model ran 100+ autonomous optimization rounds, achieving 30% scaffold performance improvement. MLE Bench Lite: 9 gold, 5 silver, 1 bronze in best run on single A30 over 24 hours per competition. The self-evolution loop (analyze failure trajectories → plan changes → modify scaffold code → run evaluations → compare → keep/revert) is structurally identical to our autopilot PromptForge species. Key diff: they evolve the harness CODE, we evolve prompts. Their approach is closer to our StructuralLab species. Actionable: the self-evolution workflow pattern is worth adopting for StructuralLab even though the model itself is impractical. The 97% skill compliance number sets a benchmark target.
 
@@ -10164,7 +10176,7 @@
   cross_references:
     handoffs:
     - multiscreen-attention-evaluation.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
   notes: 'Interesting attention mechanism from Google DeepMind (Manzil Zaheer). The cross-head communication idea is compelling — standard MHA wastes capacity through head independence. The RULER benchmark improvements (10-20%) are specifically on multi-key retrieval, which relates to our long-context needs. However, like Ouro, this requires architecture changes at pretraining. Relevant to our multiscreen-attention evaluation (alternative attention mechanisms). Worth tracking for when models with IHA become available. DEEP-DIVE 2026-04-12: Model trained at 2.4B params, 26 layers, 20 heads, hidden 2560, head dim 128, 240B tokens, 8192 context. IHA constructs P pseudo-heads per head via learned alpha matrices (R^HxHxP). Key advantage: mixes BEFORE attention computation, preserving compatibility with FlashAttention and RoPE (unlike Talking-Heads which mixes at logit level). Detailed results: RULER multi-key retrieval +27% at 4K, +32% at 8K, +112% at 16K. SFT results: GSM8K Maj@16 54.2% (+5.8 over baseline 48.4%), MATH-500 Maj@16 18.4% (+2.8). Average rank 1.4 across all tasks (best). Theoretical proof: MHA ⊂ IHA strictly — IHA achieves nonlinearity on repeated-token subspace that MHA cannot. Parameter efficiency: Θ(√k·n²) vs Θ(k·n²) for polynomial tasks. CRITICAL for EPYC: IHA requires pretraining. No models with IHA are currently available in GGUF. The +112% at 16K multi-key retrieval is dramatic — directly relevant to our long-context orchestrator sessions. The FlashAttention compatibility is important (our llama.cpp uses FlashAttention). If IHA models appear in GGUF format, they''d be strong candidates. Combined with intake-342 (Explicit MHA) and intake-343 (Knocking-Heads), forms a 2025-2026 cross-head attention cluster. IHA is the strongest candidate due to FlashAttention compatibility. Actionable: monitor for IHA-pretrained models; consider for multiscreen-attention evaluation handoff.
 
     '
@@ -10242,41 +10254,6 @@
     intake:
     - intake-240 (GEPA paper, same repo already referenced in notes)
   notes: 'Duplicate — the GEPA paper (intake-240) already references this GitHub repo in its notes. ICLR 2026 Oral. Available as DSPy optimizer (dspy.GEPA) and in DeepEval.
-
-    '
-- id: intake-336
-  arxiv_id: null
-  url: https://metauto.ai/neuralcomputer/
-  source_type: blog
-  title: 'Neural Computer: A New Machine Form Is Emerging (MetaAuto/Meta AI Research Essay)'
-  categories:
-  - multimodal
-  - autonomous_research
-  key_claims:
-  - 'Completely Neural Computer (CNC) requires: Turing completeness, universal programmability, behavior consistency, machine-native semantics'
-  - Three experimental systems (CLIGen General, CLIGen Clean, GUIWorld)
-  - 'CLIGen: ~1,100 hours terminal data; GUIWorld: 1,500+ hours desktop interaction'
-  - Model 4 (internal action cross-attention) outperforms alternatives
-  techniques:
-  - Neural Computer architecture
-  - CLIGen terminal rendering
-  - GUIWorld desktop control
-  - Action injection cross-attention
-  reported_results:
-  - Terminal rendering achieves visual fidelity for colors, cursors, text
-  - Supervised data significantly outperforms random data
-  novelty: high
-  relevance: low
-  credibility_score: 4
-  verdict: not_applicable
-  discovered_via: input
-  ingested_date: '2026-04-12'
-  cross_references:
-    intake:
-    - intake-315 (Neural Computers inline summary — same topic)
-    handoffs:
-    - multimodal-pipeline.md
-  notes: 'Project page for the Neural Computer research. Overlaps significantly with intake-315 (inline summary). Combined, these provide full coverage of the NC concept. Out of scope for EPYC but filed for reference. The CNC conditions (Turing completeness, programmability, consistency, machine-native) are useful taxonomic criteria.
 
     '
 - id: intake-337
@@ -12789,7 +12766,7 @@
   cross_references:
     handoffs:
     - dynamic-stack-concurrency.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
   handoffs_updated: []
   handoffs_created: []
   notes: 'Educational explainer of well-known techniques. llama.cpp server already implements continuous batching. Useful as reference for batching terminology. Part of HuggingFace blog series — next article covers paged attention.
@@ -12875,7 +12852,7 @@
   ingested_date: '2026-04-17'
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - log-linear-gated-deltanet-readiness.md
     - multiscreen-attention-evaluation.md
     - learned-routing-controller.md
@@ -12995,7 +12972,7 @@
   cross_references:
     handoffs:
     - gpu-acceleration-path.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
   handoffs_updated: []
   handoffs_created: []
   notes: 'AMD consumer GPU optimization (RDNA3.5 / gfx1151). Not applicable to our CPU-centric EPYC 9655 stack. We dont have RDNA3.5 hardware. The gpu-acceleration-path targets DGX Spark (NVIDIA GB10), not AMD consumer GPUs. PR is still open.
@@ -13030,7 +13007,7 @@
   ingested_date: '2026-04-17'
   cross_references:
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - qwen36-production-upgrade.md
   handoffs_updated:
   - inference-acceleration-index.md
@@ -14641,6 +14618,10 @@
   - 'Agent evolution follows three eras: weights era, context era, and harness era'
   - The harness layer provides orchestration, sandboxing, observability, governance, and context budget management
   - Emerging directions include self-evolving harnesses and shared agent infrastructure
+  - 'Reviews the shift from model weights to externalized infrastructure: memory externalizes state, skills externalize procedural expertise, protocols externalize interaction structure'
+  - Harness engineering serves as the unification layer that coordinates externalized modules into governed execution
+  - Traces historical progression from weights to context to harness
+  - 'Identifies emerging directions: self-evolving harnesses, shared agent infrastructure'
   techniques:
   - Hierarchical memory with extraction, consolidation, and forgetting operations
   - GraphRAG for structured memory retrieval
@@ -14672,6 +14653,8 @@
   relevance_justification: 'The harness engineering framing directly maps to EPYC''s orchestrator architecture. The weights-to-context-to-harness progression is a useful lens for system design. The taxonomy could audit completeness of EPYC''s agent infrastructure coverage.
 
     '
+  merge_history:
+  - 'Merged intake-797 on 2026-08-10 (handoff D5): same locator; 4 claim(s) folded in, citations repointed.'
 - id: intake-419
   url: https://github.com/ooples/token-optimizer-mcp
   arxiv_id: null
@@ -14769,7 +14752,7 @@
     - reasoning-compression.md
     - log-linear-gated-deltanet-readiness.md
     - per-request-reasoning-budget.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-332
@@ -14876,7 +14859,6 @@
     - self-speculation-benchmark.md
     - hispec-external-draft-benchmark.md
     intake_entries:
-    - intake-422
   handoffs_updated: []
   handoffs_created: []
   novelty_justification: 'Calibration-router approach (train tiny MLPs on cosine similarity, no base model fine-tuning) is a meaningful variant not directly covered in chapters. Chapter 10 covers HiSpec/SWIFT/LayerSkip but all require EE-head training or model fine-tuning. TIDE plug-and-play calibration is the missing variant documented as needed. However, early-exit concept is well-covered overall.
@@ -14986,7 +14968,7 @@
     - 02-moe-optimization.md
     handoffs:
     - gpu-acceleration-path.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - multimodal-pipeline.md
     experiments: []
     intake_entries: []
@@ -15216,7 +15198,7 @@
     chapters: []
     handoffs:
     - gpu-acceleration-path.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - dynamic-stack-concurrency.md
     - glm51-reap-cpu-evaluation.md
     experiments: []
@@ -16391,7 +16373,7 @@
     - 05-deprecated-approaches.md
     handoffs:
     - gpu-acceleration-path.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - dflash-block-diffusion-speculation.md
     - tree-speculation-numa-drafting.md
     - ssm-hybrid-acceleration.md
@@ -16959,7 +16941,7 @@
     handoffs:
     - gpu-acceleration-path.md
     - qwen36-production-upgrade.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries: []
   handoffs_updated:
@@ -17024,8 +17006,7 @@
     chapters: []
     handoffs:
     - intra-process-tensor-parallel-decode.md
-    - cpu-inference-optimization-index.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries: []
   handoffs_updated: []
@@ -17084,7 +17065,7 @@
   cross_references:
     chapters: []
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - learned-routing-controller.md
     experiments: []
     intake_entries:
@@ -17156,7 +17137,7 @@
     - 04-radix-attention.md
     handoffs:
     - gpu-acceleration-path.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - attention-matching-kv-compaction.md
     - triattention-kv-selection.md
     experiments: []
@@ -17383,7 +17364,7 @@
     chapters:
     - 04-radix-attention.md
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - gpu-acceleration-path.md
     - dynamic-stack-concurrency.md
     experiments: []
@@ -17460,8 +17441,7 @@
     - 01-speculative-decoding.md
     - 10-advanced-speculative-decoding.md
     handoffs:
-    - cpu-inference-optimization-index.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - intra-process-tensor-parallel-decode.md
     - gpu-acceleration-path.md
     experiments: []
@@ -17543,7 +17523,7 @@
     handoffs:
     - gpu-acceleration-path.md
     - intra-process-tensor-parallel-decode.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries: []
   handoffs_updated:
@@ -17670,7 +17650,7 @@
     handoffs:
     - gpu-acceleration-path.md
     - large-moe-expert-parallelism.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-305
@@ -17792,7 +17772,7 @@
     handoffs:
     - large-moe-expert-parallelism.md
     - gpu-acceleration-path.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-305
@@ -17854,7 +17834,7 @@
     - 06-benchmarking-framework.md
     handoffs:
     - dynamic-stack-concurrency.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-460
@@ -17918,7 +17898,7 @@
     - 10-advanced-speculative-decoding.md
     handoffs:
     - dynamic-stack-concurrency.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-048
@@ -18141,7 +18121,7 @@
     - 04-radix-attention.md
     handoffs:
     - dynamic-stack-concurrency.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - numa-prefill-decode-disaggregation.md
     experiments: []
     intake_entries:
@@ -18959,7 +18939,7 @@
     - 01-speculative-decoding.md
     - 10-advanced-speculative-decoding.md
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - moe-spec-cpu-spec-dec-integration.md
     experiments: []
     intake_entries: []
@@ -19087,7 +19067,7 @@
     handoffs:
     - log-linear-gated-deltanet-readiness.md
     - multiscreen-attention-evaluation.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries: []
     intake_entry_notes:
@@ -19254,7 +19234,7 @@
     - moe-spec-cpu-spec-dec-integration.md
     - log-linear-gated-deltanet-readiness.md
     - multiscreen-attention-evaluation.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments:
     - self-speculation-benchmark.md
     intake_entries: []
@@ -20420,7 +20400,7 @@
     - large-moe-expert-parallelism.md
     - moe-spec-cpu-spec-dec-integration.md
     - glm51-reap-cpu-evaluation.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - llama-cpp-fork-rebase.md
     experiments: []
     intake_entries:
@@ -21782,7 +21762,7 @@
     - 01-speculative-decoding.md
     - 10-advanced-speculative-decoding.md
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - mtp-speculative-decoding.md
     - multimodal-pipeline.md
     - moe-spec-cpu-spec-dec-integration.md
@@ -22021,8 +22001,7 @@
     - moe-dynamic-expert-selection.md
     - cpu-dynamic-moe-load-balancing.md
     - large-moe-expert-parallelism.md
-    - cpu-inference-optimization-index.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-528
@@ -22096,7 +22075,7 @@
     - cpu-shape-specialized-gemv-decode.md
     - cpu-dynamic-moe-load-balancing.md
     - llama-cpp-kernel-push-rebase.md
-    - cpu-inference-optimization-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-474
@@ -25096,7 +25075,7 @@
     - 01-speculative-decoding.md
     - 10-advanced-speculative-decoding.md
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - gpu-acceleration-path.md
     - gemma4-mtp-drafter-evaluation.md
     - llama-cpp-fork-rebase.md
@@ -25950,7 +25929,7 @@
     handoffs:
     - tq3-quantization-evaluation.md
     - llama-cpp-kernel-push-rebase.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - per-request-reasoning-budget.md
     experiments: []
     intake_entries:
@@ -26539,7 +26518,7 @@
     chapters: []
     handoffs:
     - engram-conditional-memory.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-504
@@ -27782,7 +27761,7 @@
     - gpu-drafter-mi200-investigation.md
     - gemma4-mtp-drafter-evaluation.md
     - peer-verifier-speculation-spike.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-042
@@ -28893,7 +28872,7 @@
     - 01-speculative-decoding.md
     - 10-advanced-speculative-decoding.md
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - gpu-acceleration-path.md
     - dflash-block-diffusion-speculation.md
     experiments: []
@@ -28962,7 +28941,7 @@
     chapters:
     - 10-advanced-speculative-decoding.md
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-633
@@ -29014,7 +28993,7 @@
   cross_references:
     chapters: []
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-633
@@ -29138,7 +29117,7 @@
     - 01-speculative-decoding.md
     - 10-advanced-speculative-decoding.md
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - large-moe-expert-parallelism.md
     - moe-spec-cpu-spec-dec-integration.md
     - engram-conditional-memory.md
@@ -29875,7 +29854,7 @@
     - 10-advanced-speculative-decoding.md
     handoffs:
     - dflash-block-diffusion-speculation.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-474
@@ -30850,7 +30829,7 @@
     - gpu-drafter-mi200-investigation.md
     - cpu-shape-specialized-gemv-decode.md
     - llama-cpp-dsa-contribution.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-660
@@ -30934,7 +30913,7 @@
     - gpu-drafter-mi200-investigation.md
     - llama-cpp-dsa-contribution.md
     - cpu-shape-specialized-gemv-decode.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-660
@@ -31181,7 +31160,7 @@
     - agentic-rocm-kernel-authoring.md
     - gpu-acceleration-path.md
     - gpu-drafter-mi200-investigation.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-664
@@ -31277,7 +31256,7 @@
     - agentic-rocm-kernel-authoring.md
     - gpu-drafter-mi200-investigation.md
     - gpu-acceleration-path.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-664
@@ -31535,7 +31514,7 @@
     - agentic-rocm-kernel-authoring.md
     - gpu-acceleration-path.md
     - gpu-drafter-mi200-investigation.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-667
@@ -31701,7 +31680,7 @@
     - rocm-verify-profile-backend.md
     - gpu-drafter-mi200-investigation.md
     - gpu-acceleration-path.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-666
@@ -31785,7 +31764,7 @@
     - rocm-verify-profile-backend.md
     - gpu-drafter-mi200-investigation.md
     - gpu-acceleration-path.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-660
@@ -31870,7 +31849,7 @@
     - rocm-verify-profile-backend.md
     - gpu-drafter-mi200-investigation.md
     - gpu-acceleration-path.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-660
@@ -32134,7 +32113,7 @@
     - gpu-acceleration-path.md
     - gpu-drafter-mi200-investigation.md
     - llama-cpp-dsa-contribution.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-674
@@ -32231,7 +32210,7 @@
     - gpu-drafter-mi200-investigation.md
     - gpu-acceleration-path.md
     - llama-cpp-dsa-contribution.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-674
@@ -33075,6 +33054,7 @@
   contradicting_evidence:
   - Single anecdotal example (one NarrativeQA sample), no systematic benchmark; the boolean-mask win may be sample-specific. The author is also the fast-rlm maintainer (mild promotional framing). Validate the pattern against a real eval before treating it as established.
   notes: 'User-provided input 2026-06-10 (pasted X post by @neural_avb, 2026-06-08). url points to the fast-rlm repo since the post has no canonical permalink; this is a SEPARATE later post from the already_integrated 2026-05-19 fast-rlm recap entry. Builds on RLM paper arxiv:2512.24601. DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-rlm-structured-output-contracts.md): parent half ALREADY shipped (final_schema_validation, 2026-05-20: contract-at-step-0 + validate-on-FINAL + retry). Real remaining gap = child/sub-LM return schema on batch_llm_query/llm_query (combined_ops.py:302, no schema=) ~30-40 LoC, Phase-1 REPL, default-off, orthogonal to ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT; land post-cutover, gate on a fan-out eval. CORRECTED 2026-07-27 (intake-901 Stage-2 dive D3): this remaining gap is CLOSED. src/repl_environment/combined_ops.py:338 now takes schema: dict | None, renders a child schema preamble (:33-41), validates via _validate_final_answer (:397) and RETRIES rather than restarts (:402-412, max_retries capped to 2 at :353), and emits schema/schema_validation telemetry (:435, :466). Do NOT re-derive this as open work. New from the same dive: fast-rlm ships ENABLE_STRUCTURED_IO as a built-in ABLATION flag (src/subagents.ts:177-179) that disables schema validation and the schema preamble — a ready-made A/B instrument we lack.'
+  shared_locator_rationale: 'Shares github.com/avbiswas/fast-rlm with intake-783 and intake-901 and is NOT a duplicate of either: this entry reads the repo for its structured-outputs pattern (schema-validated subagent returns). Operator decision, 2026-08-10.'
 - id: intake-694
   arxiv_id: null
   url: https://twitter.com/victormustar/status/1930000000000000000
@@ -33407,7 +33387,7 @@
     handoffs:
     - glm51-reap-cpu-evaluation.md
     - llama-cpp-dsa-contribution.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - cpu-shape-specialized-gemv-decode.md
     experiments: []
     intake_entries: []
@@ -33923,7 +33903,7 @@
     - summary-token-attention-readiness.md
     - triattention-kv-selection.md
     - streaming-llm-baseline.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments:
     - attention-matching-kv-compaction.md
     intake_entries:
@@ -34668,7 +34648,7 @@
     handoffs:
     - speculative-decoding-mtp-refresh.md
     - llama-cpp-dsa-contribution.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries: []
   novelty_justification: Native MTP head + bundled GGUF is new to us, but the pure-MoE-A3B target is the worst CPU-MTP case.
@@ -34814,7 +34794,7 @@
     handoffs:
     - speculative-decoding-mtp-refresh.md
     - llama-cpp-dsa-contribution.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries: []
   novelty_justification: The upstream MTP/EAGLE capability is genuinely new to our fork; the binding constraint is porting it, not the heads existing.
@@ -35833,7 +35813,7 @@
     - speculative-decoding-mtp-refresh.md
     - qwen-mtp-llamacpp-port.md
     - moe-spec-cpu-spec-dec-integration.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments:
     - draft-vs-target-time-analysis.md
     intake_entries:
@@ -36621,8 +36601,7 @@
     - 07-benchmark-suite-construction.md
     handoffs:
     - dynamic-stack-concurrency.md
-    - cpu-inference-optimization-index.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - kv-cache-quantization.md
     experiments: []
     intake_entries:
@@ -37131,7 +37110,7 @@
     - rocm-verify-profile-backend.md
     - agentic-rocm-kernel-authoring.md
     - gpu-drafter-mi200-investigation.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-307
@@ -37181,7 +37160,7 @@
     - agentic-rocm-kernel-authoring.md
     - rocm-verify-profile-backend.md
     - gpu-drafter-mi200-investigation.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-466
@@ -37844,6 +37823,10 @@
   - Maintains an open-ended archive that accumulates ALL generated agent variants as stepping stones (not just Pareto-optimal ones), growing a diverse tree that enables parallel exploration and escape from local optima ('many paths to innovation traverse lower-performing nodes').
   - Parent selection is ~proportional to each agent's score AND its number of edit-capable children (bias toward productive lineages while preserving diversity); self-improvement autonomously discovers concrete upgrades (better edit tools, long-context management, self-critique).
   - Both the self-modification AND the keep-all-stepping-stones archive are load-bearing — DGM beats 'w/o self-improvement' and 'w/o open-ended exploration' ablations; all runs used sandboxing + human oversight.
+  - Self-improving system that iteratively modifies its own code and empirically validates each change using coding benchmarks
+  - Maintains an archive of generated coding agents, growing it by sampling and creating new interesting versions
+  - Forms a growing tree of diverse, high-quality agents with parallel exploration of many search paths
+  - 'Automatically discovered improvements: better code editing tools, long-context window management, peer-review mechanisms'
   techniques:
   - Self-referential code self-modification loop (agent edits the codebase that performs the editing)
   - Open-ended growing-tree archive retaining all variants as stepping stones (quality-diversity vs greedy Pareto pruning)
@@ -37880,6 +37863,8 @@
   relevance_justification: The canonical academic reference for the exact loop autopilot-continuous-optimization runs (4 species + 4D Pareto archive + eval-tower validation + code_mutation) and the meta-harness-optimization line. It directly stress-tests two of our design choices — Pareto pruning vs open-ended stepping-stone retention, and whether the meta-optimizer/species code should itself be self-mutable — and corroborates the frozen-model harness-evolution thesis of parent intake-753/244/271.
   verdict_justification: adopt_patterns (not adopt_component — the DGM codebase is a SWE-bench coding agent, not a drop-in for our orchestrator; not worth_investigating — the loop is already built and this is decision-shaping). Harvestable — (1) add a bounded open-ended stepping-stone lane to ParetoArchive that retains a diversity-sampled subset of dominated-but-novel configs as parents, testing DGM's local-optima-escape claim vs our greedy selection; (2) performance x fecundity parent sampling to bias PromptForge/StructuralLab toward productive lineages; (3) the two DGM ablations as an A/B template. Gate any keep-all-archive change on our resolution-aware/sequential-verdict machinery + single-host compute limits before promotion.
   notes: Autopilot-cluster expansion (expanded_from intake-753/Meta-Harness line, distinct from the LoRA cluster intake-765..771). ar5iv render failed; sourced from arXiv abstract + HTML full text.
+  merge_history:
+  - 'Merged intake-785 on 2026-08-10 (handoff D5): same locator; 4 claim(s) folded in, citations repointed.'
 - id: intake-773
   arxiv_id: null
   url: https://github.com/Dhamodharan2006/fable5-qwen3-thinking-distillation
@@ -38556,103 +38541,7 @@
   - Agent Client Protocol (ACP) spec and other ACP-compatible tooling
   - Other MCP client implementations for agentic systems (langchain-mcp-adapters, mcp-agent frameworks)
   - RecursiveLM original RLM paper for baseline comparison
-- id: intake-784
-  arxiv_id: null
-  url: https://arxiv.org/abs/2603.28052
-  source_type: paper
-  title: 'Meta-Harness: End-to-End Optimization of Model Harnesses'
-  authors:
-  - Yoonho Lee
-  - Roshen Nair
-  - Qizheng Zhang
-  - Kangwook Lee
-  - Omar Khattab
-  - Chelsea Finn
-  categories:
-  - agent_architecture
-  - benchmark_methodology
-  - harness_optimization
-  key_claims:
-  - Outer-loop system that searches over harness code for LLM applications using an agentic proposer with filesystem access to source code, scores, and execution traces of all prior candidates
-  - Improves over SOTA context management by 7.7 points on online text classification while using 4x fewer context tokens
-  - Single discovered harness improves accuracy on 200 IMO-level math problems by 4.7 points avg across five held-out models
-  - Discovered harnesses surpass best hand-engineered baselines on TerminalBench-2 agentic coding
-  techniques:
-  - agentic_harness_proposer
-  - filesystem_experience_access
-  - outer_loop_harness_search
-  reported_results:
-  - +7.7 points on text classification, 4x fewer context tokens
-  - +4.7 points on IMO-level math (avg across 5 held-out models)
-  - Surpasses hand-engineered baselines on TerminalBench-2
-  novelty: duplicate
-  relevance: high
-  credibility_score: 4
-  discovered_via: expansion
-  verdict: already_integrated
-  ingested_date: '2026-07-08'
-  cross_references:
-    handoffs:
-    - meta-harness-optimization.md
-    - autopilot-continuous-optimization.md
-    intake_entries:
-    - intake-785
-    - intake-790
-  novelty_justification: Directly demonstrates that harness engineering can be automated end-to-end. Stanford team, submitted Mar 2026.
-  relevance_justification: 'High: EPYC orchestrator is itself a harness. Meta-Harness methodology could be applied to our own harness optimization, particularly for seeding strategies and model routing configurations.'
-  verdict_justification: 'adopt_selectively: the methodology of agentic harness search with filesystem experience access is applicable. The specific implementation is not a drop-in library.'
-  literature_expansion:
-  - SEAGym (2606.17546) — evaluation environment for self-evolving harnesses
-  - HarnessFix (2606.06324) — trace-grounded harness repair
-- id: intake-785
-  arxiv_id: null
-  url: https://arxiv.org/abs/2505.22954
-  source_type: paper
-  title: 'Darwin Godel Machine: Open-Ended Evolution of Self-Improving Agents'
-  authors:
-  - Jenny Zhang
-  - Shengran Hu
-  - Cong Lu
-  - Robert Lange
-  - Jeff Clune
-  categories:
-  - agent_architecture
-  - autonomous_research
-  - self_improvement
-  key_claims:
-  - Self-improving system that iteratively modifies its own code and empirically validates each change using coding benchmarks
-  - Maintains an archive of generated coding agents, growing it by sampling and creating new interesting versions
-  - Forms a growing tree of diverse, high-quality agents with parallel exploration of many search paths
-  - 'Automatically discovered improvements: better code editing tools, long-context window management, peer-review mechanisms'
-  techniques:
-  - darwinian_evolution_archive
-  - self_code_modification
-  - empirical_validation_gates
-  - open_ended_exploration_tree
-  reported_results:
-  - 'SWE-bench: 20.0% -> 50.0%'
-  - 'Polyglot: 14.2% -> 30.7%'
-  - Significantly outperforms baselines without self-improvement or open-ended exploration
-  novelty: duplicate
-  relevance: high
-  credibility_score: 4
-  discovered_via: expansion
-  verdict: already_integrated
-  ingested_date: '2026-07-08'
-  cross_references:
-    handoffs:
-    - autopilot-continuous-optimization.md
-    - agent-world-env-synthesis.md
-    intake_entries:
-    - intake-784
-    - intake-791
-    - intake-792
-  novelty_justification: Combines Godel machine theory (provably beneficial self-modification) with Darwinian evolution (empirical validation). Hu/Clune lineage from NeuroEvolution.
-  relevance_justification: 'High: archive-based open-ended exploration with empirical validation gates mirrors our autopilot optimization loop. The peer-review mechanism discovery is directly relevant to our critic architecture.'
-  verdict_justification: 'adopt_selectively: archive-based exploration + empirical validation gates are applicable. Full self-code-modification is beyond our safety constraints.'
-  literature_expansion:
-  - Foundation Model Self-Play (2507.06466) — Dharna, Lu, Clune
-  - SIA (2605.27276) — combined harness + weight updates
+  shared_locator_rationale: 'Shares github.com/avbiswas/fast-rlm with intake-693 and intake-901 and is NOT a duplicate of either: this entry is the feature-level re-read (ACP, MCP, sessions, structured IO). Operator decision, 2026-08-10.'
 - id: intake-786
   arxiv_id: '2310.02304'
   url: https://arxiv.org/abs/2310.02304
@@ -38690,8 +38579,8 @@
     - autopilot-continuous-optimization.md
     - meta-harness-optimization.md
     intake_entries:
-    - intake-784
-    - intake-785
+    - intake-244
+    - intake-772
   novelty_justification: Early (Oct 2023) demonstration of recursive scaffolding self-improvement. COLM 2024. Zelikman lineage (STaR, self-refine).
   relevance_justification: 'Medium: demonstrates that LLM scaffolds can be self-optimizing. The sandbox-evaluation concern is relevant to our safety considerations.'
   verdict_justification: 'worth_investigating: the methodology is sound but the specific implementation is GPT-4-era. Worth examining the proposed optimization strategies for our autopilot.'
@@ -38739,7 +38628,7 @@
     - meta-harness-optimization.md
     - prompt-construction-determinism.md
     intake_entries:
-    - intake-784
+    - intake-244
     - intake-788
   novelty_justification: Bi-level CE optimization with agentic crossover is a novel approach to context/prompt engineering. Jan 2026, preprint.
   relevance_justification: 'High: context engineering is central to our orchestrator. The bi-level optimization maps to our critic + seeder architecture.'
@@ -38790,7 +38679,7 @@
     handoffs:
     - meta-harness-optimization.md
     intake_entries:
-    - intake-784
+    - intake-244
     - intake-787
   novelty_justification: MCTS applied to agentic workflow generation is a novel search formulation. Oct 2024, Foundation Agents team.
   relevance_justification: 'Medium: workflow optimization via MCTS could inform our orchestrator task routing and delegation strategies.'
@@ -38844,8 +38733,8 @@
     - autopilot-continuous-optimization.md
     - 08-doc-to-lora-prototype.md
     intake_entries:
-    - intake-784
-    - intake-785
+    - intake-244
+    - intake-772
     - intake-786
   novelty_justification: First systematic combination of harness-level and weight-level self-improvement in a single loop. May 2026, preprint.
   relevance_justification: 'Medium: the combined approach is conceptually relevant. Weight updates not applicable to our CPU inference stack.'
@@ -38893,8 +38782,8 @@
     - eval-tower-verification.md
     - autopilot-continuous-optimization.md
     intake_entries:
-    - intake-784
-    - intake-785
+    - intake-244
+    - intake-772
   novelty_justification: Novel in providing a comprehensive evaluation environment specifically for self-evolving agent harnesses. Jun 2026, preprint.
   relevance_justification: 'High: the evaluation views (train/validation/test/replay/OOD) are directly applicable to our eval-tower verification.'
   verdict_justification: 'adopt_selectively: the evaluation methodology and metrics are harvestable.'
@@ -38937,8 +38826,8 @@
     - agent-world-env-synthesis.md
     - meta-harness-optimization.md
     intake_entries:
-    - intake-784
-    - intake-785
+    - intake-244
+    - intake-772
   novelty_justification: PSO applied to agentic system generation is novel. Explicitly benchmarks against ADAS. Jun 2025, preprint.
   relevance_justification: 'Medium: the population-based evolution approach could inform our orchestrator multi-model routing.'
   verdict_justification: 'worth_investigating: PSO-over-agents is an interesting search strategy. Not directly applicable but conceptually valuable.'
@@ -38979,7 +38868,7 @@
     handoffs:
     - agent-world-env-synthesis.md
     intake_entries:
-    - intake-785
+    - intake-772
   novelty_justification: Clune/Lu lineage (NeuroEvolution, DGM). Extends self-play from RL to foundation models. Jul 2025, preprint.
   relevance_justification: 'Medium: the self-play paradigm for strategy discovery could inform our adversarial benchmark generation.'
   verdict_justification: 'worth_investigating: conceptually interesting for adversarial evaluation. Not directly applicable to our inference stack.'
@@ -39027,7 +38916,7 @@
     - meta-harness-optimization.md
     - autopilot-continuous-optimization.md
     intake_entries:
-    - intake-784
+    - intake-244
     - intake-790
   novelty_justification: Novel in treating failed trajectories as structured evidence for harness diagnosis. HTIR is a new intermediate representation. Jun 2026, preprint.
   relevance_justification: 'High: failure attribution to specific harness artifacts is directly applicable to our autopilot critic and eval-tower.'
@@ -39162,66 +39051,6 @@
   novelty_justification: First systematic exposure of the "correctness illusion" in kernel benchmarks. Seeded fuzzing methodology is a significant improvement. Jun 2026, LNCS format.
   relevance_justification: 'High: directly relevant to our kernel validation pipeline for v7 candidate promotion. The seeded fuzzing could replace our current correctness checks.'
   verdict_justification: 'adopt_selectively: the seeded fuzzing methodology is harvestable for our experimental kernel validation.'
-- id: intake-797
-  arxiv_id: null
-  url: https://arxiv.org/abs/2604.08224
-  source_type: paper
-  title: 'Externalization in LLM Agents: A Unified Review of Memory, Skills, Protocols and Harness Engineering'
-  authors:
-  - Chenyu Zhou
-  - Huacan Chai
-  - Wenteng Chen
-  - Zihan Guo
-  - Rong Shan
-  - Yuanyi Song
-  - Tianyi Xu
-  - Yingxuan Yang
-  - Aofan Yu
-  - Weiming Zhang
-  - Congming Zheng
-  - Jiachen Zhu
-  - Zeyu Zheng
-  - Zhuosheng Zhang
-  - Xingyu Lou
-  - Changwang Zhang
-  - Zhihui Fu
-  - Jun Wang
-  - Weiwen Liu
-  - Jianghao Lin
-  - Weinan Zhang
-  categories:
-  - agent_architecture
-  - benchmark_methodology
-  - harness_optimization
-  key_claims:
-  - 'Reviews the shift from model weights to externalized infrastructure: memory externalizes state, skills externalize procedural expertise, protocols externalize interaction structure'
-  - Harness engineering serves as the unification layer that coordinates externalized modules into governed execution
-  - Traces historical progression from weights to context to harness
-  - 'Identifies emerging directions: self-evolving harnesses, shared agent infrastructure'
-  techniques:
-  - cognitive_artifacts_framework
-  - parametric_vs_externalized_capability
-  - harness_unification_layer
-  reported_results:
-  - 54-page comprehensive review covering memory, skills, protocols, and harness engineering
-  - Systems-level framework for agent infrastructure
-  novelty: duplicate
-  relevance: high
-  credibility_score: 3
-  discovered_via: expansion
-  verdict: already_integrated
-  ingested_date: '2026-07-08'
-  cross_references:
-    handoffs:
-    - meta-harness-optimization.md
-    - agent-world-env-synthesis.md
-    - hermes-agent-index.md
-    intake_entries:
-    - intake-784
-    - intake-785
-  novelty_justification: Comprehensive review/survey of the externalization trend. Apr 2026, tech report. Provides systems-level framing for the harness-engineering literature.
-  relevance_justification: 'High: provides the conceptual framework that unifies our own work (externalized memory, skills, protocols, harness). The "weights to context to harness" progression validates our architectural choices.'
-  verdict_justification: 'adopt_selectively: the conceptual framing and categorization are valuable for our own documentation and design decisions.'
 - id: intake-798
   arxiv_id: null
   url: https://huggingface.co/spaces/agent-collaborations/gemma-collab-lessons
@@ -39277,7 +39106,7 @@
     experiments: []
     intake_entries:
     - intake-796
-    - intake-797
+    - intake-418
   contradicting_evidence:
   - No direct contradiction of the operational lessons found; the external literature CORROBORATES them. SpecBench/TRACE/BenchJack (2026) document that proxy metrics are provably hackable and RL post-training raised exploit rates 0.6%->13.9% — independent support for the PPL-gaming / self-policing finding. Swarm-orchestration literature independently reports emergent convergence/collusion onto shared strategies and the need for explicit anti-convergence termination — support for the Agent Collapse finding.
   - 'CAVEAT on the numbers: the 5x / 491.8 TPS results are challenge-internal, single-configuration, GPU-hosted (E4B, not our CPU regime), and gated only by challenge-defined PPL/eval thresholds — OBSERVATION-grade per MEASUREMENT.md, not an independently reproduced benchmark. The lossy 491.8 result is explicitly quality-degrading; the decision-relevant number is the lossless 315 TPS.'
@@ -41142,7 +40971,7 @@
     handoffs:
     - tq3-quantization-evaluation.md
     - angelslim-techniques-evaluation.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - mi210-big-model-and-acceleration-roadmap.md
     - iqk-port.md
     - kv-cache-quantization.md
@@ -41338,7 +41167,7 @@
     handoffs:
     - mi210-big-model-and-acceleration-roadmap.md
     - fable5-window2-findings-05b-mi210-inference-architecture.md
-    - cpu-inference-optimization-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries: []
   handoffs_updated:
@@ -42469,7 +42298,7 @@
     handoffs:
     - architect-model-selection-bench.md
     - mi210-big-model-and-acceleration-roadmap.md
-    - cpu-inference-optimization-index.md
+    - inference-research-index.md
     experiments: []
     intake_entries:
     - intake-074
@@ -43994,7 +43823,7 @@
     - dflash-block-diffusion-speculation.md
     - speculative-decoding-mtp-refresh.md
     - deepseek-v4-flash-cpu-port.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - moe-spec-cpu-spec-dec-integration.md
     - tree-draft-forward-port-plan.md
     experiments: []
@@ -44072,7 +43901,7 @@
     handoffs:
     - speculative-decoding-mtp-refresh.md
     - deepseek-v4-flash-cpu-port.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - moe-spec-cpu-spec-dec-integration.md
     - tree-draft-forward-port-plan.md
     - dflash-block-diffusion-speculation.md
@@ -45612,6 +45441,7 @@
 
     OVERTURNED/CLOSED (D3): intake-693''s recorded remaining gap — "child/sub-LM return schema on batch_llm_query/llm_query (combined_ops.py:302, no schema=)" — is CLOSED in our tree. src/repl_environment/combined_ops.py:338 now takes schema: dict | None, renders a preamble (:33-41), validates via _validate_final_answer (:397) and RETRIES rather than restarts (:402-412, max_retries capped to 2 at :353), and emits schema/schema_validation telemetry (:435, :466). intake-693''s note is stale and should not be re-derived as an open task. NEW from D3: fast-rlm ships ENABLE_STRUCTURED_IO as a built-in ABLATION flag (src/subagents.ts:177-179) that disables schema validation and the schema preamble — a ready-made A/B instrument, and the pattern we lack. Also src/subagents.ts:235 enforces max_depth by THROWING "MAXIMUM DEPTH REACHED" at the child, not by degrading gracefully.'
   notes: 'User-provided 2026-07-27 (pasted X post by @neural_avb showing a Sherlock Holmes novel answered across multiple queries via persistent REPL variables, with a terminal TUI showing query timelines, code steps, and a memory view of saved variables). Operator steering this session: (1) "I know we''ve looked at this github many times already but it keeps getting updated with cool features"; (2) "the RLM project is at a more mature stage than ours showing significant capability at handling real workloads"; (3) "what can we learn from it to get our own architecture into a more mature state?" — steering (1) is PARTIALLY OVERTURNED by the API evidence above (no commits since 2026-07-07); steering (2) and (3) reframe this intake as a capability-gap comparison rather than a technique import, and are carried to Stage 3. DEDUP TRIPWIRE: do NOT open a new intake for this repo until GitHub /repos reports pushed_at later than 2026-07-07T22:36:54Z (HEAD f25f310b); three entries (693, 783, 901) already share this exact URL. Verified-at-Stage-1 sources: GitHub API /repos and /commits (2026-07-27), README.md, docs/guide/sessions.md, docs/development/benchmarks.md, git tree at f25f310b. NOT yet read: fast_rlm/_session.py, src/session.ts, tests/session_state_test.ts, benchmarks/_harness.py — a dive would read these.'
+  shared_locator_rationale: 'Shares github.com/avbiswas/fast-rlm with intake-693 and intake-783 and is NOT a duplicate of either: this entry covers the REPL-memory / resumable-session demo from an X post, and is separately dive-verified. Operator decision, 2026-08-10.'
 - id: intake-902
   arxiv_id: '1807.03819'
   url: https://arxiv.org/abs/1807.03819
@@ -49629,7 +49459,7 @@
     - multimodal-pipeline.md
     - mi210-big-model-and-acceleration-roadmap.md
     - speculative-decoding-mtp-refresh.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - llama-cpp-upstream-rebase.md
     experiments: []
     intake_entries:
@@ -49982,7 +49812,7 @@
     - glm51-reap-cpu-evaluation.md
     - gpu-serving-tie-in-program.md
     - mi210-big-model-and-acceleration-roadmap.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - kv-cache-quantization.md
     experiments: []
     intake_entries:
@@ -50076,7 +49906,7 @@
     - stack-lineup-dossier-2026-07-23.md
     - tq3-quantization-evaluation.md
     - architect-model-selection-bench.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - speculative-decoding-mtp-refresh.md
     - qwen-mtp-llamacpp-port.md
     - gpu-serving-tie-in-program.md
@@ -50415,7 +50245,7 @@
     handoffs:
     - architect-model-selection-bench.md
     - batched-decode-measurement.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - autokernel-research-loop.md
     - master-handoff-index.md
     experiments: []
@@ -50584,7 +50414,7 @@
     handoffs:
     - architect-model-selection-bench.md
     - eval-tower-verification.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - master-handoff-index.md
     experiments: []
     intake_entries:
@@ -50701,7 +50531,7 @@
     - 07-benchmark-suite-construction.md
     handoffs:
     - architect-model-selection-bench.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - master-handoff-index.md
     experiments: []
     intake_entries:
@@ -50952,7 +50782,7 @@
     - 07-benchmark-suite-construction.md
     handoffs:
     - architect-model-selection-bench.md
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - autokernel-research-loop.md
     - rocm-verify-profile-backend.md
     - master-handoff-index.md
@@ -51038,7 +50868,7 @@
   cross_references:
     chapters: []
     handoffs:
-    - inference-acceleration-index.md
+    - inference-research-index.md
     - tq3-quantization-evaluation.md
     - batched-decode-measurement.md
     - speculative-decoding-mtp-refresh.md
