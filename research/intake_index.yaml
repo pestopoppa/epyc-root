@@ -7476,6 +7476,15 @@
   ingested_date: '2026-03-28'
   cross_references: {}
   notes: NeurIPS 2025 Oral. SAE interpretability, not inference optimization.
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2409.14507
+    quote: However, we show that sparse decomposition and splitting of hierarchical features is not robust.
+    quote_sha256: 0bd95b68ed5b3fe3311cdc91cb608d4c0e6497a3b0b6700422109c6eba1ba97e
+    located_by: machine
+    match_coverage: '0.8'
+    verified_by: vidya/machine_anchor
 - id: intake-219
   arxiv_id: '2602.06801'
   url: https://arxiv.org/abs/2602.06801
@@ -52050,6 +52059,19 @@
     ADVERSARIAL — INDEPENDENT EVALUATION EXISTS, so the entry should no longer read as if Alibaba''s own arena is the only signal. Artificial Analysis Image Arena (independent blind pairwise human votes) called Z-Image-Turbo "the new #1 open weights Text to Image model" at launch (Dec 2025), but its CURRENT standing is ~rank 71 / Elo ~1103 — the "#1 open weights" line is 7 months stale and must not be quoted as current. LMArena text-to-image: rank 50, Elo 1082 +/-6, 19,864 votes. (Both leaderboard figures came via a summarizing fetch of JS-heavy pages — observation-grade, re-verify by eye before decision use.) OrbitQuant (arXiv 2607.02461, Cantina Labs / USC / UIUC, no Alibaba authorship) uses Z-Image-Turbo as a PTQ baseline and singles it out: "Z-Image-Turbo is the exception, where even OrbitQuant degrades sharply" — GenEval under W4A4: OrbitQuant 0.767 / AdaTSQ 0.762 / SVDQuant 0.718 / ViDiT-Q 0.668, with SVDQuant collapsing to 0.000 at W3A3. That independently corroborates the DIRECTION of our local Q4_K_M hazard (a distilled 6B DiT is unusually low-bit-brittle), though GenEval measures compositionality, not glyph fidelity. PromptEcho (2604.12652) is Alibaba-affiliated — EXCLUDED from the independent set. ROCm coverage: AMD''s own materials cover Z-Image on gfx1100/1150/1151/1152/1201 and gfx942/gfx950 — gfx90a (our MI210) appears in NEITHER; one independent datapoint (ojambo.com) ran Z-Image-Turbo Q3_K via sd.cpp+ROCm on an MI60/gfx906, confirming the path works on non-listed Instinct silicon but with no timings.
 
     NOTE: this analysis independently re-surfaced the intake-528 cross-reference defect (the ERNIE handoff and deep dive both cite intake-528, which is actually "Effort Engine: bucketMul"; no ERNIE intake row exists). Recorded, not propagated.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-10 audit: the 2026-07-29 correction inverts this entry''s verdict_justification (the runtime gate it named is cleared upstream), not this claim. The claim itself was never disputed by that dive.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-10 audit: the 2026-07-29 correction inverts this entry''s verdict_justification (the runtime gate it named is cleared upstream), not this claim. The claim itself was never disputed by that dive.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-10 audit: the 2026-07-29 correction inverts this entry''s verdict_justification (the runtime gate it named is cleared upstream), not this claim. The claim itself was never disputed by that dive.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-10 audit: the 2026-07-29 correction inverts this entry''s verdict_justification (the runtime gate it named is cleared upstream), not this claim. The claim itself was never disputed by that dive.'
 - id: intake-929
   arxiv_id: '2511.22677'
   url: https://arxiv.org/abs/2511.22677

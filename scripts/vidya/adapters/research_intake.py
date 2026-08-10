@@ -400,6 +400,13 @@ def ingest_intake_index(
                 continue
             n_claims += 1
             grade, is_opposition = grade_for_entry(entry, anchors.get(i))
+            # Apply the same per-claim override the frame emitter uses. Without it the report said
+            # 112 opposition while the adapter actually emitted 106 — a summary misstating the run
+            # it summarizes, which is this program's own subject matter showing up in its own
+            # reporting path.
+            _verdict = (_claim_corrections(entry) or {}).get(i)
+            if _verdict:
+                is_opposition = _verdict.get("effect") == "overturned"
             grade_counts[f"{grade}{' (opposition)' if is_opposition else ''}"] += 1
         claims_total += n_claims
         verification_counts[entry.get("verification", "<unset>")] += 1

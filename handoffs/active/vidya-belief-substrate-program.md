@@ -248,7 +248,9 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       entries carry a non-string claim; 1 of the 352 proposals was affected. Fixed to enumerate the
       original list, pinned by test, and intake-218 dropped from the batch rather than repaired —
       re-running it under fixed code is cheap, guessing which claim it meant is not ✅ 2026-08-10
-- [ ] PR1b-218 Re-run the anchoring pass for intake-218 under the corrected indexing
+- [x] PR1b-218 Re-run under corrected indexing: the anchor lands on `claim_index: 1`, the string
+      claim, where the buggy enumeration would have written `0` — the dict-valued claim. Confirms
+      both the defect and the fix on the entry that exposed them ✅ 2026-08-10
 - [x] PR1b-verify-110 **Not a mis-anchor — the SOURCE was corrected upstream and our record aged
       into falsity.** Verified against full text of arXiv:2603.05433 v1 and v7. Our claim is a
       verbatim copy of the v1 abstract; the authors later found the "+9-16 points" was a SCORING
@@ -270,10 +272,15 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       part — our *verified* claims are mostly pinned to stable versions — but each still needs a
       human to compare the record against the current text. The detector finds them and cannot
       judge them
-- [ ] PR2c-remaining Backfill `claim_corrections` on the other 26 `dive-overturned` entries. Needs
-      whoever dived each one to say which claims they actually touched; guessing on their behalf is
-      the failure the field exists to prevent
-
+- [x] PR2c-determinable **Measured how much of the backfill the record can support: 1 of 26.**
+      intake-928 done — and reading it overruled the heuristic that found it. The correction
+      inverts that entry's verdict_justification (the runtime gate it named is cleared upstream) and
+      touches none of the four claims, so all four are `unaffected` rather than the one the keyword
+      match proposed. Which is the case against applying that method to the other 25 ✅ 2026-08-10
+- [ ] PR2c-remaining Backfill `claim_corrections` on the remaining **25** `dive-overturned`
+      entries. Their prose either names no claim or echoes several ambiguously, so this genuinely
+      needs whoever ran each dive — **108 claims stay blanket-opposed** until then. Guessing the
+      mapping is the failure the field exists to prevent
 - [x] PR2d-measurement Two hand-classified samples settle it. A 20-edge uniform sample suggested
       "a citation from a dived entry is a candidate dependency" at 4/6 precision; a **60-edge sample
       stratified over the 672 dived-source edges refutes it — 18% evidential, 75% topical, 7%
