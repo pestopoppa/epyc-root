@@ -36,6 +36,13 @@ import json
 from pathlib import Path, PurePosixPath
 from typing import Any
 
+import sys as _sys
+
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from claim_tuple import ClaimTuple  # noqa: E402
+from claim_tuple import grade as _grade  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER_DIR = REPO_ROOT / "measurements"
 
@@ -109,44 +116,35 @@ def artifact_exists(record: dict) -> bool:
     return (REPO_ROOT / rel).is_file()
 
 
-def grade(record: dict) -> tuple[str, str, list[str]]:
-    """Return (Q, T, reasons) implementing the constitution's claim rule.
-
-    `reasons` names every element of the tuple that is missing, so a low grade is self-explaining
-    and nobody has to reverse-engineer why their measurement did not reach Witnessed.
-    """
-    reasons: list[str] = []
-
-    has_protocol = bool(str(record.get("protocol_id") or "").strip())
-    has_reps = record.get("reps") is not None
-    has_date = bool(str(record.get("date") or "").strip())
+def to_tuple(record: dict) -> ClaimTuple:
+    """Project a measurement record into the canonical tuple. Projection only — no grading."""
     art = record.get("attestation") or {}
-    has_ref = bool(art.get("path"))
-    hashed = bool(art.get("sha256")) and artifact_exists(record)
+    return ClaimTuple(
+        measurement_id=str(record["measurement_id"]),
+        metric=str(record["metric"]),
+        value=record["value"],
+        date=str(record.get("date") or ""),
+        category=str(record["category"]),
+        claim=str(record["claim"]),
+        metric_direction=str(record.get("metric_direction") or "higher_better"),
+        protocol_id=str(record.get("protocol_id") or ""),
+        reps=record.get("reps"),
+        reps_basis=str(record.get("reps_basis") or ""),
+        unit=str(record.get("unit") or ""),
+        attestation_path=str(art.get("path") or ""),
+        attestation_sha256=str(art.get("sha256") or ""),
+        attestation_locator=str(art.get("locator") or ""),
+    )
 
-    if not has_protocol:
-        reasons.append("no protocol citation — this is an OBSERVATION, never decision-gating "
-                       "(MEASUREMENT_POLICY.md § The claim rule)")
-        return "Judged", ("Located" if has_ref else "T0"), reasons
 
-    if not has_reps:
-        reasons.append("no n/reps recorded")
-    if not has_date:
-        reasons.append("no date recorded")
-    if not has_ref:
-        reasons.append("no attestation reference — a result, but not decision-gating")
-    elif not art.get("sha256"):
-        reasons.append("attestation named but not hashed")
-    elif not artifact_exists(record):
-        reasons.append("attestation hashed but the artifact is not on disk — a hash over a file "
-                       "that no longer exists proves nothing")
+def grade(record: dict) -> tuple[str, str, list[str]]:
+    """Return (Q, T, reasons) via the single ladder in `claim_tuple`.
 
-    full_tuple = has_protocol and has_reps and has_date and has_ref
-    if not full_tuple:
-        return "Verified", ("Located" if has_ref else "Located"), reasons
-    if hashed:
-        return "Witnessed", "Attested", reasons
-    return "Witnessed", "Anchored", reasons
+    The ladder used to live here AND in `adapters/sealed_manifest.py`, and the two were caught
+    disagreeing on 2026-08-12 (Judged/T0 vs Judged/Located for a protocol-less, attestation-less
+    record). One rule, one implementation — see `claim_tuple` for why that is not negotiable.
+    """
+    return _grade(to_tuple(record))
 
 
 def record_path(date: str) -> Path:

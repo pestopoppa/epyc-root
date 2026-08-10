@@ -336,6 +336,70 @@ verdict or retract another actor's evidence.
 ---
 
 
+### 4.7 The ingestion contract — one carrier, one ladder per source class
+
+Added 2026-08-12, after the gap it closes had already cost something.
+
+Heterogeneous producers write measurements in different shapes: an autopilot trial row, an
+AutoKernel `evaluation_event`, a sealed benchmark manifest, an intake entry. §4.5 says what the
+levels *mean*; until now nothing said how a producer *enters* the carrier. Each adapter therefore
+arrived with its own reading of the rule, and on 2026-08-12 two of them were caught disagreeing
+about the same input:
+
+| input | `measurement_record.grade()` | `sealed_manifest.grade()` |
+|---|---|---|
+| no protocol, no attestation | `Judged/T0` | `Judged/Located` |
+
+One constitution, one rule, two answers on the T axis. Neither reading is obviously wrong, which is
+the point — a rule reimplemented per source becomes N dialects of itself, and the divergence
+surfaces later as unexplainable grade differences between corpora, long after anyone remembers
+there were two functions. A substrate built to detect exactly this may not contain it.
+
+**The contract.** An adapter's only job is *projection*: map its native record into the canonical
+`ClaimTuple` (`scripts/vidya/claim_tuple.py`). It never grades, and it never invents an element it
+cannot find — a missing element is reported and grades the claim down, which is a true statement
+about the measurement rather than a hole in it.
+
+```
+native record  --project-->  ClaimTuple  --grade()-->  (Q, T, reasons)  --> frames
+```
+
+The tuple's vocabulary is not invented here. It is AutoKernel's `claim_grammar`
+(`epyc-inference-research` `scripts/kernel_rnd/autokernel/schemas.py`), which already enforces
+`MEASUREMENT.md:13` as a REQUIRED schema block — category ∈ {OPTIMUM, BASELINE, CANDIDATE},
+`protocol_id`, `metric`, `metric_direction` ∈ {higher_better, lower_better}, `reps` ≥ 1,
+`attestation_ref`. The strictest existing producer defines the shape; the newest adapter does not
+get to redefine it.
+
+**Source classes.** The carrier is shared. The grading rule is not, and pretending otherwise would
+be its own category error:
+
+| class | graded by | ceiling | ladder lives in |
+|---|---|---|---|
+| `measurement` | the constitution's claim rule (protocol / n / date / attestation) | `Witnessed` | `claim_tuple.py` |
+| `literature` | verification status (anchored, dive-verified, dive-overturned) | `Verified` | `adapters/research_intake.py` |
+
+The literature ceiling is structural, not a limitation to be lifted: an intake entry records what
+someone else reported, and no amount of careful reading turns it into a protocol-admissible
+measurement.
+
+**The invariant, and how it is enforced.** *Each source class has exactly one ladder.* A new class
+is a legitimate extension and registers via `register_ladder(class, module)`; a second
+implementation of an existing class's rule is a defect and the registry refuses it. A conformance
+test (`tests/vidya/test_claim_tuple.py`) fails if any adapter returns a lattice level without
+having declared itself a ladder — the check that would have caught the 2026-08-12 divergence on the
+day it was written instead of weeks later.
+
+Two structural properties follow from routing every source through one path, and both are pinned by
+tests because both have already failed in this program:
+
+* **Identity is derived once**, from `measurement_id`, so an adapter cannot quietly adopt its own
+  claim-id scheme. Two adapters previously collided distinct records into one belief — merging
+  three arms of a single A/B into one claim.
+* **Absence is recorded, never filled.** A row that predates a producer's provenance hook is
+  skipped rather than back-filled, because a tuple invented on read claims warrant the original run
+  never captured.
+
 ## 5. The fold
 
 ### 5.1 Determinism inputs

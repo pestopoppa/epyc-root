@@ -35,6 +35,8 @@ from typing import Iterable
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from claim_tuple import ClaimTuple  # noqa: E402
+from claim_tuple import grade as _grade  # noqa: E402
 from frames import make_frame  # noqa: E402
 
 ADAPTER_ID = "vidya.adapters.sealed_manifest/v1"
@@ -97,31 +99,47 @@ def sealed_at(manifest: dict) -> str | None:
     return None
 
 
-def grade(manifest: dict, *, artifacts_present: bool) -> tuple[str, str, list[str]]:
-    """Implements the constitution's claim rule against a manifest."""
-    reasons: list[str] = []
-    proto = protocol_id(manifest)
-    n = reps(manifest)
-    date = sealed_at(manifest)
+def project(manifest: dict, *, run_id: str = "run", locator: str = "",
+            artifacts_present: bool = True) -> ClaimTuple:
+    """Map a sealed manifest into the canonical claim tuple. Projection only — no grading.
+
+    `artifacts_present` is threaded into the tuple as a synthetic path rather than being graded
+    here, because presence is a property of the artifact and the ladder is the ladder's business.
+    """
     atts = attestations(manifest)
+    digest = next(iter(sorted(atts.values())), "")
+    return ClaimTuple(
+        measurement_id=f"seal_{run_id}",
+        metric="sealed_measurement_run",
+        value=str(manifest.get("status") or ""),
+        date=sealed_at(manifest) or "",
+        # A sealed scoring run is the ratified record for its scope, not a proposal under test.
+        category="BASELINE",
+        claim=(f"Sealed measurement run {run_id}: {manifest.get('status')} under "
+               f"{protocol_id(manifest)}"),
+        protocol_id=protocol_id(manifest) or "",
+        reps=reps(manifest),
+        reps_basis="scored:arms.counts" if reps(manifest) else "",
+        attestation_sha256=digest,
+        attestation_locator=locator or (f"manifest:{run_id}" if digest else ""),
+        # Presence is decided by the projector: a sealed manifest attests to its `authority/*`
+        # files, not to itself, so the ladder cannot derive it from a path.
+        attestation_present=artifacts_present,
+        source_kind="sealed-measurement",
+        extra={"attestations": sorted(atts)},
+    )
 
-    if not proto:
-        reasons.append("no schema/protocol version — an OBSERVATION, never decision-gating")
-        return "Judged", "Located", reasons
-    if not n:
-        reasons.append("no per-arm counts, so n/reps is unknown")
-    if not date:
-        reasons.append("no sealed-at timestamp in observational_provenance")
-    if not atts:
-        reasons.append("no attestation digest anywhere in the manifest")
 
-    if not (n and date and atts):
-        return "Verified", "Located", reasons
-    if not artifacts_present:
-        reasons.append("digests present but the named artifacts are not on disk — a hash over a "
-                       "missing file proves nothing")
-        return "Witnessed", "Anchored", reasons
-    return "Witnessed", "Attested", reasons
+def grade(manifest: dict, *, artifacts_present: bool) -> tuple[str, str, list[str]]:
+    """Kept as a thin shim over the single ladder in `claim_tuple`.
+
+    This function used to carry its OWN copy of the constitution's rule, and on 2026-08-12 it was
+    caught disagreeing with `measurement_record.grade()` on the same input (Judged/Located vs
+    Judged/T0 for a protocol-less, attestation-less record). Two implementations of one rule become
+    two dialects of it; the divergence then shows up as unexplainable grade differences between
+    corpora. Delegating is the fix, and this docstring is the reason it must stay delegated.
+    """
+    return _grade(project(manifest, artifacts_present=artifacts_present))
 
 
 def _artifacts_present(manifest_path: Path, manifest: dict) -> bool:

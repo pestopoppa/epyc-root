@@ -81,10 +81,13 @@ def as_record(shard: Path, row: dict) -> dict:
         "metric": "autopilot_trial_objectives",
         "value": row.get("quality", 0.0),
         "unit": "quality",
-        # An autopilot trial is a CANDIDATE by construction: it is a proposed change being
-        # measured, not a ratified optimum and not the standing baseline. Recording it as anything
-        # else is the conflation MEASUREMENT_POLICY.md names as the costliest recurring defect here.
-        "category": "CANDIDATE",
+        # Read from the tuple the trial recorded, not decided here — the writer owns the category,
+        # and re-deciding it downstream is how two sources of truth start. Falls back to CANDIDATE
+        # for rows written before the writer carried the field, which is what an autopilot trial
+        # always is: a proposed change being measured, never the baseline and never a ratified
+        # optimum. MEASUREMENT_POLICY.md names conflating those the costliest recurring defect here.
+        "category": meas.get("category") or "CANDIDATE",
+        "metric_direction": (meas.get("metric_directions") or {}).get("quality", "higher_better"),
         "claim": (f"autopilot trial {row['trial_id']} ({row.get('action_type') or 'trial'}, "
                   f"species={row.get('species') or '?'}): quality={row.get('quality')}, "
                   f"speed={row.get('speed')}, cost={row.get('cost')}"),
@@ -133,7 +136,8 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
             assertion={"claim_id": claim_id, "evidence_id": f"evd_ap_{ident}",
                        "grade": {"Q": q, "T": t}, "source_id": source_id,
                        "protocol_id": rec["protocol_id"], "reps": rec["reps"],
-                       "category": rec["category"]},
+                       "category": rec["category"],
+                       "metric_direction": rec["metric_direction"]},
             provenance={"evidence": f"evd_ap_{ident}", "about": claim_id, "method": ADAPTER_ID,
                         "grade_reasons": reasons, "reps_basis": rec["reps_basis"]},
             actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of,

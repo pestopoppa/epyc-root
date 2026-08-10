@@ -33,6 +33,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml  # noqa: E402
 
+from claim_tuple import register_ladder  # noqa: E402
 from frames import make_frame  # noqa: E402
 from lattice import Grade, parse_grade  # noqa: E402
 
@@ -109,8 +110,14 @@ def _q_level(entry: dict) -> tuple[str, bool]:
     return "Hinted", False
 
 
+@register_ladder("literature", "scripts/vidya/adapters/research_intake.py")
 def grade_for_entry(entry: dict, anchor: dict | None = None) -> tuple[Grade, bool]:
-    """The (Q x T) grade a claim inherits, and whether it is opposition."""
+    """The (Q x T) grade a claim inherits, and whether it is opposition.
+
+    THE ladder for the `literature` source class, declared as such so the conformance test can
+    tell a legitimate second class apart from an accidental second dialect of the measurement rule
+    — which is what `measurement_record` and `sealed_manifest` had become by 2026-08-12.
+    """
     q, is_opposition = _q_level(entry)
     return parse_grade({"Q": q, "T": _t_level(entry, anchor)}), is_opposition
 
