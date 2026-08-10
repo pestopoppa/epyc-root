@@ -4,7 +4,7 @@
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
-**Parent index:** [Inference Acceleration — Active Index](inference-acceleration-index.md)
+**Parent index:** [Inference Acceleration — Active Index](inference-research-index.md)
 **Source draft:** [`docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md`](../../docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md)
 (SHA-256 `af2fd586d3b1e3b58b038fcc0a0c7d5def22d70b45dbdc54bd64799b082e7b8b`; moved out of `tmp/` on
 2026-08-02 because `tmp/*` is gitignored and `MEASUREMENT.md:146-156` forbids scratch citations)
@@ -2833,7 +2833,7 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 
 1. Update this handoff's checkbox at the same commit that lands the work; append `✅ YYYY-MM-DD`.
 2. Put backend-specific evidence in the owning backend leaf; keep controller/release status here.
-3. Update [inference-acceleration-index.md](inference-acceleration-index.md) only when priority,
+3. Update [inference-research-index.md](inference-research-index.md) only when priority,
    dependency, or phase changes.
 4. Append `progress/YYYY-MM/YYYY-MM-DD.md` after each significant phase.
 5. Never record an observation as a release claim; cite the active protocol, category, reps, and
@@ -3106,7 +3106,7 @@ negatives so the planner cannot omit inconvenient history.
 **GPU families.** Current anchors: [MI210 speed-campaign summary](mi210-speed-campaign-summary.md),
 [Q8/GEMV roofline](mi210-q8-dequant-gemv-roofline.md),
 [graph techniques](gemma-challenge-kernel-techniques-v7.md),
-[acceleration index](inference-acceleration-index.md).
+[acceleration index](inference-research-index.md).
 
 | Draft family | Audit verdict | Seed disposition |
 |---|---|---|
@@ -3136,7 +3136,7 @@ calibration caveat are in [`mi210-q8-dequant-gemv-roofline.md`](mi210-q8-dequant
 | **G15 batched elementwise/norm fusion (GPU)** | **43% of B=128 decode time is non-GEMM elementwise/norm; GEMM is only 37%.** The finding has existed since 2026-07-04 in [`mi210-mfma-compute-bound-paths.md:11`](mi210-mfma-compute-bound-paths.md) and was **never made a seed** — a genuine gap in the G-family, not a duplicate. Distinct from CPU-family C2: different memory hierarchy, different fusion boundaries, different correctness surface | `READY_PROFILE_SELECTED`; seed exact operator clusters from a current B=64/128 wall-share map, not "fuse the tail" generically. Band +20–27%, HIGH confidence |
 | **G16 MoE expert-gather GEMV** | Our dense/MoE attainment ratio is **2.1×** (fp16 62.6 → MoE-Q8 21.3) against NVIDIA's **1.3×** (GB10 dense 77–80 → MoE-Q8 59.6) on the same engine. That excess ratio is the gather, not the quant — it is the one place where our sag is measurably worse than a comparison platform's rather than merely present | `MEASUREMENT_FIRST`; first artifact is an expert-token histogram plus gather wall share at the production routing skew, then one atomic gather experiment. Band ~2.0×, MEDIUM |
 
-**CPU families.** Current anchors: [CPU optimization index](cpu-inference-optimization-index.md),
+**CPU families.** Current anchors: [CPU optimization index](inference-research-index.md),
 [prefill compute](cpu-prefill-compute-large-models.md), and the research repository's preserved CPU
 optimization reports.
 
@@ -3220,6 +3220,30 @@ readiness, and two of them are cheaper than anything currently in the list:
 9b. **G14 architect MoE-IQ2** — last on purpose. Its kill-criterion probe runs first and may retire it
    at near-zero cost; funding a kernel before that probe is how a campaign gets spent on an
    architectural floor.
+
+**Inserted 2026-08-10 — v9 DSpark low-hanging upstream queue.** These are concrete merged patches or
+bounded monitors, not speculative research themes. Source state was rechecked on 2026-08-10; the
+candidate receipt is
+[`artifacts/audit/v9-dspark-autokernel-base-20260810.json`](../../artifacts/audit/v9-dspark-autokernel-base-20260810.json).
+
+1. **PR #26171, transpose-free GEMV — forward-port audit first.** Merged; removes a rocBLAS GEMM
+   fallback for shared-expert gates. Upstream measured ~78.4 us → ~3.8 us per instance on ROCm
+   gfx1151. This is the highest-priority concrete transfer check for our MoE shapes.
+2. **PR #25532, backend sampling multi-output — forward-port audit second.** Merged; directly enables
+   backend sampling during speculative verification and reports ~8% on Qwen3.6/RTX 5090. Gate on
+   exact token/acceptance parity and MI210 operator support; do not infer CUDA transfer.
+3. **PR #26731, quantized copy launch fix — context-shift-only audit.** Merged and bit-identical;
+   upstream shows large CPY microkernel gains but explicitly no token-generation uplift. Run only if
+   the selected long-context workload actually spends time in quantized KV context shifts.
+4. **PR #26767, RMSNorm/MUL/RoPE fusion — HIP portability check.** Merged CUDA patch with a concrete
+   ~1% end-to-end result. It enters the queue as a source/dispatch compatibility audit, not as an
+   assumed MI210 win.
+5. **PR #26812, split-block argmax — monitor only.** Open; 1.5–2.2x ARGMAX microkernel result but only
+   0–1% reported end-to-end DSpark uplift. Do not spend this work window on it.
+6. **Local batch-invariance seed — correctness before speed.** Quantized recurrent target verification
+   reproduced upstream #25618. Experimental v9 serializes greedy DSpark verification to preserve
+   parity. AutoKernel may attempt to recover parallel verification only when batched/grouped target
+   rows are bitwise equal to serial rows and the exact greedy token-parity gate passes.
 
 A bootstrap/acceptance sequence, not a permanent research priority. Fresh profiles and production
 workload exposure re-rank it.
@@ -3317,3 +3341,229 @@ will spend kernel-authoring budget rediscovering ports.
   they will — then generative capacity aimed at bucket (d) is aimed at the smallest slice of the
   space, and the cheaper win is a better catalogue. **This item exists to shrink scope, not to add
   machinery; it must be run before AK-CAT-2 is expanded past a seed set.**
+
+---
+
+## 21. Transfer ratios, screening lanes, and baseline honesty — 2026-08-10 (research-intake Stage-3)
+
+_Via `/research-intake` (8 URLs + 2 operator-supplied inline documents → 16 entries, 5 Stage-2 dives,
+13 Stage-2b ingest-and-dives). The operator's steering through the session reframed the batch from
+"what do these sources say" into one design question:_ **how does AutoKernel turn newly-recognised
+freedom — concurrent CPU and GPU campaigns, partitioned CPU screening, frontier-API planners, no
+per-run operator approval — into robust decision-making, rather than into more ways to be wrong faster?**
+
+**The answer the dives converged on, without any of them naming it: every cheap lane is a proxy with
+a measured transfer function to expensive ground truth.** Half-machine → full-machine, op → graph,
+T1 → T3, screen → verify are not four problems. They are one object, and it is **one field on the
+evaluation event that is free to record now and impossible to reconstruct later** — the same shape as
+the `claim_anchors` lesson from the intake index, where 1,067 entries turned out to have zero
+citable spans because nobody recorded the locator while the source was open.
+
+### Three corrections to this handoff's own premises, from operator steering
+
+Recorded because they are load-bearing and because I asserted the opposite earlier in the session:
+
+1. **AutoKernel experiments do not need per-run operator approval.** §1.3 and §4 already say it —
+   *"No autonomous freeze or cutover. AutoKernel produces a release package; a human executes it."*
+   P-GPU-1 governs the **class of claim** a result may carry, not permission to run. The human
+   boundary is freeze / cutover / promotion.
+2. **CPU and GPU campaigns can run concurrently.** §"Resource plane" already lists CPU region claims
+   and the exclusive GPU device claim as **separate resource types**; concurrency was never forbidden,
+   it was unexercised.
+3. **AutoKernel's objective is experiment churn, not aggregate throughput.** Deep CPU partitioning
+   costs aggregate tokens/s, which the orchestrator cares about and this loop does not. The only cost
+   that counts here is **rank inversion**, and that is measurable rather than assumed (AK-LN-2).
+
+### AK-TR — the transfer machinery
+
+- [ ] **AK-TR-1 — Record a per-change-class transfer ratio on the evaluation event.** Add
+  `anchor_tier` and `transfer_ratio_to` to §7.4 `epyc.autokernel.evaluation_event.v2`, and populate
+  them wherever a cheap cell and an expensive cell measure the same candidate. One mechanism, four
+  uses: half → full partition, op → graph, T1 → T3, screen → verify. The ratio is **keyed by change
+  class** (§9.5), not global — an instruction-level change and a bandwidth-bound change do not
+  transfer alike, and a single pooled ratio would average them into uselessness. **Free to add now,
+  impossible to backfill**: a ratio invented at read time claims a correspondence the original run
+  never measured.
+- [ ] **AK-TR-2 — Print the self-spread noise floor adjacent to every per-case delta.** §9.2 already
+  mandates MDE published with the result and §15.2 already runs A/A; the gap is **presentation**, not
+  statistics — our machinery is stronger than the reference campaign's, and it is still possible to
+  read a per-case table and not see which rows are inside the noise. Suppress or explicitly flag any
+  delta below the floor at the point of display.
+- [ ] **AK-TR-3 — Per-turn productivity accounting** — see
+  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md) §"Loop-engineering
+  experiments", which owns it. Referenced here because §8.8 POST_RUN_CRITIC is where the tuple gets
+  emitted.
+- [ ] **AK-TR-4 — Extend roofline utilisation (§8.3.1) to a per-quant surface, anchored on
+  state-of-the-art CUDA kernels.** Operator idea, 2026-08-10: give the loop a *defined* improvement
+  target by expressing decode throughput as a fraction of the theoretical roof and comparing that
+  fraction to what SOTA CUDA kernels reach on NVIDIA silicon — **and compute it independently per
+  quantisation**, because this card behaves very differently at 16-bit than at 4-bit.
+  - **This does not reopen AK-D3.** AK-D35 already ratifies utilisation as *diagnostic and routing
+    input, never a gate*; a target expressed in utilisation therefore cannot be peeked at by a
+    promotion gate, which is exactly the property AK-D3 removed the +25%/+20% trigger to obtain.
+  - **Per-quant is more correct, not merely richer.** `bytes_per_token` differs per quant by
+    construction, so a single pooled utilisation figure silently mixes denominators; and splitting it
+    **localises the headroom to the dequant path**, which is where the ladder collapse in §8.3.1(3)(b)
+    lives. This is the same measurement the "close the ladder gap" program needs.
+  - **Use the spec-basis ridge for the cross-vendor comparison** (§8.3.1's usage rule): converting our
+    figures to an achievable basis while a CUDA anchor stays on a spec basis shrinks the gap without
+    shrinking it. The **mixed-basis** row (spec FLOPS over measured bandwidth) is retired for this
+    purpose. Achievable-basis figures remain the honest ones for reasoning about *our own* headroom.
+- [ ] **AK-TR-5 — Fresh process per arm, and size the working set so memoization cannot pay.** Where a
+  variant is env-gated at import/init time, an in-process A/B measures the first arm twice; §9.3's
+  paired blocks do not protect against that. Separately, choose working-set sizes such that
+  candidate-side caching of results is unprofitable **by construction**, which is cheaper and more
+  durable than detecting it (complements RVP-C6-8 in
+  [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md)).
+- [ ] **AK-TR-6 — Compile-only artifact-diff veto in T0 (§8.6).** Before spending any GPU wall-time,
+  diff per-kernel VGPR / SGPR / scratch usage and instruction mix between candidate and anchor via
+  `roc-obj` / `llvm-objdump`. Register-pressure movement means the A/B is **unconfirmed**, not
+  disproven — it fires as a veto on the *claim*, not on the candidate. **This buys back our scarcest
+  resource**: it is a static check that can retire a candidate before it reaches T1.
+
+### AK-LN — screening lanes and partition depth
+
+Enabled by corrections 2 and 3 above. The governing rule, from operator steering:
+**lanes screen, the full instance verifies.** A lane may rank; only a full-instance measurement under
+the standing protocol may make a claim.
+
+- [ ] **AK-LN-1 — Lane registry.** Each lane declares its cost, its capacity, and **what it is a proxy
+  for**. Assignment is by change class to the cheapest lane whose *measured* rank fidelity clears a
+  declared threshold — never by convenience. Available today: one exclusive GPU device claim plus up
+  to four quarter-machine CPU region claims, i.e. up to five concurrent screening lanes.
+- [ ] **AK-LN-2 — Partition-depth calibration.** Run one fixed candidate set at full, half and quarter
+  machine and measure **rank correlation** against the full-machine ordering. Needs no new candidates
+  — reuse a banked set. **Pre-register the prediction** before running: bandwidth-bound changes lose
+  fidelity fast as partitions shrink (they compete for the same memory system), instruction-level
+  changes hold. Pre-registration is what makes a confirmation informative here rather than a
+  post-hoc story.
+- [ ] **AK-LN-3 — Cross-lane A/A control — necessary, and NOT sufficient.** §15.2's A/A control run
+  per lane detects a per-lane-position offset. It **cannot** detect bias correlated with mechanism
+  class, because that bias appears identically in every lane and cancels out of the A/A comparison.
+  Pair it with AK-TR-1, which is the only thing that measures it. **Never apply a blanket haircut to
+  lane results** to "correct" for partitioning — a uniform correction assumes the very
+  class-independence that AK-LN-2 exists to test.
+- [ ] **AK-LN-4 — Op-level screening on profiled bottlenecks.** Operator steering, 2026-08-10: profile
+  first, rank ops by wall share, then fan out **concurrent op-level experiments on the single
+  bottleneck op** rather than serialising whole-graph runs. `test-backend-ops` is already an op-level
+  harness, so the unit exists; what is missing is the fan-out and the §9.1 promotion rule applied per
+  op. This is the unit that actually parallelises — a graph run does not.
+- [ ] **AK-LN-5 — Isolation requirement for concurrent CPU lanes.** Concurrent instances contend
+  invisibly unless each uses `--no-mmap` plus an explicit `membind`: `mmap` **shares NUMA placement
+  across instances**, so two "independent" lanes can silently read one node's memory. A partitioned
+  result may **screen but never gate** (§9.6 banking is unaffected; §9.7 T2 and §10 T3 remain
+  full-instance). **The pre-bench CPU-frequency/throttle check stays mandatory at the verification
+  tier** — operator, 2026-08-10: the screening/verification split does not relax it, it concentrates
+  its importance onto the one measurement that carries the claim.
+
+### AK-BH — baseline honesty (needs a GPU window; sequence T0 probes first)
+
+Sequence **RVP-T0-1 → RVP-T0-2 → AK-BH-1 → AK-BH-2**, so two thirds of this block can falsify at zero
+GPU cost before any GPU claim is filed.
+
+- [ ] **AK-BH-1 — hipBLASLt vs rocBLAS microbench at our prefill shapes, standalone.** `libhipblaslt.so`
+  is installed on this host and **not linked** by our build. Measure the two libraries against each
+  other at our shapes *before* touching ggml, so the question "is our GPU baseline the honest one" is
+  answered by a 30-minute microbench rather than by a kernel campaign. This is the structural analogue
+  of the baseline-deflation finding this batch turned up: a result measured against a weaker-than-
+  available baseline overstates the win by the size of the gap, and the gap here is measurable today.
+  Complements the §"New index-backed leads" hipBLASLt grouped-GEMM lever.
+- [ ] **AK-BH-2 — Baseline-honesty factorial: `-fa 0|1` × `ROCWMMA_FATTN` × `MMQ_MFMA`.**
+  **Correction to a standing project assumption**: `llama-bench`'s `-fa` default is
+  `LLAMA_FLASH_ATTN_TYPE_AUTO`, not `0` — verified at `tools/llama-bench/llama-bench.cpp:389` in the
+  frozen v8 tree. **AUTO is worse for baseline honesty than a known-off default**, because it resolves
+  differently per model, quant and backend: two runs with *identical command lines* can silently
+  differ, manufacturing or hiding a speedup with no visible flag difference. Pin `-fa` explicitly on
+  every arm and **record what AUTO resolved to** when reading any historical number. 4 builds + 1
+  region claim.
+- [ ] **AK-BH-3 — CPU-lane baseline-honesty arm, run concurrently with AK-BH-2.** Different claim type,
+  different resource (correction 2 above), so it costs no additional wall-clock. Establishes whether
+  the CPU-side anchor carries the same class of unpinned-default exposure.
+
+### AK-OP — operator-only (measurement trust boundary is human-amendment-only)
+
+Neither of these may be executed by a session; both are decision packages for the operator.
+
+- [ ] **AK-OP-1 — P-GPU-1 `duty_cycle` amendment (operator decision).**
+  - **Observation.** P-GPU-1 field 4 specifies a fresh server per repetition. A fresh server per rep
+    necessarily inserts a multi-second gap between reps — i.e. the protocol measures the **bursty**
+    duty cycle, while production serves in the **sustained** one.
+  - **Why it matters.** The reference ablation this batch surfaced reports the bursty regime reading
+    meaningfully lower latency with substantially lower variance than sustained operation on the same
+    hardware. Both regimes are legitimate to measure; **conflating them is not**, and a protocol that
+    does not name its duty cycle cannot be compared against one that does.
+  - **Options.** (a) Add a `duty_cycle: bursty | sustained` field to P-GPU-1 and declare the current
+    protocol `bursty`, leaving every existing number valid and correctly labelled. (b) Additionally
+    author a sustained variant for claims about production-like load. (c) Decline and record that
+    P-GPU-1 numbers are bursty-regime by construction.
+  - **Recommendation: (a) now, (b) when a sustained claim is first needed.** (a) is a pure labelling
+    amendment that invalidates nothing and makes the limitation visible; (b) costs a protocol
+    authoring cycle and should be paid when there is a claim that needs it.
+  - **Requires a human amendment to `MEASUREMENT.md`** — AK-D10 and the constitution's trust boundary.
+    No session may self-apply it.
+- [ ] **AK-OP-2 — Root-side `--setperfdeterminism` capability (operator decision) — GATED on RVP-T0-1.**
+  Clock pinning would remove a variance source from every GPU measurement, but the `sysfs` control
+  nodes are root-owned and this container is not the right place to hold that capability. **Do not
+  bring this to the operator until RVP-T0-1 has run**: if the card never approaches its power cap
+  under a saturating GEMM, clock excursion is not a live variance source here and the correct outcome
+  is to decline and close this row at zero cost.
+
+### Recorded declines (so they are not re-derived)
+
+- **RL training methods (CPO, RIF-RFT, protected SFT) — declined for now.** They sit behind the
+  unverified gfx90a training gate and none of the batch's RL sources establishes that gate. The
+  *regime map* they produce is kept as reasoning (reachability — rollout pass-rate strictly inside
+  (0,1) — predicts whether RL can repair a policy at all), but no training campaign is proposed.
+- **Adopting an external coordination plane for the loop — declined.** It would replace working
+  internals (§5.7 resource plane, the session bus) with a foreign substrate; two patterns are worth
+  mining, the stack is not worth adopting.
+- **Cloning composable_kernel on the strength of a retrieval-augmented-kernel-generation result —
+  declined on that evidence.** The cited system uses **one fixed anchor example**, not a retrieved
+  corpus, so it does not support "clone the corpus". If we clone CK, justify it on the existing
+  `portable_source` classification in §6.5, which already stands on its own.
+
+### AK-X — additional actionables from the recovered Stage-2b reports (filed 2026-08-10, beyond the Stage-3 plan)
+
+_The analyst reports were recovered from the session transcript **after** the Stage-3 plan was written,
+so they carry derived actionables the plan predates._
+
+- [ ] **AK-X-1 — Add `INSTRUMENT_TAMPERED` to the §12 failure-and-abuse table.** RVP-C6-1 builds the
+  detection; §12 has no row for the finding, so a detection today would have nowhere to land.
+- [ ] **AK-X-2 — Add a parsed `device_state` block to the §7.4 evaluation event**, populated from
+  RVP-C3-3, with `throttle_observed`. A text blob no gate can read is not a gate input.
+- [ ] **AK-X-3 — Add `min_measurable_us` to the §9.3 T1a recipe, derived from OUR OWN A/A spread.**
+  Below it a cell is `inconclusive` rather than a rank. Do not import a foreign floor — the published
+  ones are NVIDIA-derived.
+- [ ] **AK-X-4 — Add `cache_state: warm | cold` to the §9.3 T1a recipe and hold it fixed across arms.**
+  The warm/cold gap is workload-dependent (large for GEMV, negligible for GEMM), so an undeclared
+  cache state is a per-op confound rather than a constant one.
+- [ ] **AK-X-5 — Per-partition CPU frequency / package-power attestation in the §7.4 `host_receipt`.**
+  Our throttle discipline operates at *session* granularity; with 2–4 concurrent CPU lanes sharing one
+  dual-EPYC package power and boost budget there is **no per-lane frequency attestation at all**. This
+  is the coupling channel that actually threatens the lane design (CPU→GPU contention is ~0.3 % on the
+  reference ablation; CPU-partition ↔ CPU-partition is unmeasured by anyone). AK-LN-3's cross-lane A/A
+  is its acceptance test.
+- [ ] **AK-X-6 — Turn-budget stopping rule driven by AK-PT-1.** Refine turns continue only while the
+  rescued-kernel speedup distribution overlaps the persistent-kernel distribution; once a turn admits
+  only rescued kernels below the contribution floor it is repair-only and does not advance the search.
+  Must use the §9.2 e-process, never a point comparison.
+- [ ] **AK-X-7 — Edit-type classifier over adjacent candidate diffs** (no-op / mask fix / delegated-op
+  / dtype-cast / optimization rewrite). §9.5 already keys behaviour off `proposal.change_class`; this
+  measures whether the **realised** edit matched the **declared** class, and flags a proposal that
+  promised an optimization and delivered repairs.
+- [ ] **AK-X-8 — Add an intent/targeting axis to §9.6 banking.** Classify each banked candidate as
+  right-target-good-perf / right-target-bad-perf / **wrong-target-good-perf** / wrong-target-bad-perf.
+  A wrong-target speedup is a "lucky win" — **quarantined, not banked**. This is a *mis-targeting*
+  check and is complementary to C6's exploit detection, which does not cover it.
+- [ ] **AK-X-9 — Require a task-level accuracy check before promotion for serving-path change classes**
+  (§9.5). Motivating case from the reports: a patch that hardcoded tensor dimensions passed every hard
+  performance metric while task accuracy collapsed 32% → 0%.
+- [ ] **AK-X-10 — Record external evidence that C4 is on the critical path**, not more refine turns:
+  refinement responds to explicit local error signals, while plan-level decisions (tiling, memory
+  layout, kernel boundaries) are "not recoverable from the feedback available in current iterative
+  pipelines". This strengthens an existing position rather than opening work.
+
+**Declined, recorded so they are not re-derived:** compilation-flag pinning across candidate and anchor
+(**already covered** by §7.3's candidate record, which binds compiler/toolchain/build command and
+logs); and adopting the reference campaigns' variance tolerances or scoring formulae, both of which are
+weaker than our sanctioned e-process machinery.

@@ -335,6 +335,19 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       `created_at` entirely (it is publication metadata, and `as_of` ranges over the evidence
       frontier) or refuse future frames at append time. What is NOT defensible is the current
       accident of neither. Pick one; an append-time refusal is the cheaper guard
+- [ ] SC18 **Wire the `test-backend-ops` property layer as a measurement source — write side FIRST**
+      (filed 2026-08-10 per CLAUDE.md's belief-kernel rule, at the layer's *design* time rather than
+      after it ships). The property layer specified as `RVP-C2-2` in
+      [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md) **produces measurements**:
+      a per-op, per-backend, per-shape property residual. Two things make it a good source and both
+      are cheap only right now — `RVP-C2-1` adds a deterministic `suite_seed`, which is what makes a
+      residual re-derivable rather than an anecdote; and the layer is reference-free, so its residual
+      is a claim about the candidate alone rather than about a candidate/reference pair. Add the
+      adapter row (already recorded in [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md))
+      and the `ClaimTuple` projection. **Do not write a new grading rule** — the adapter projects into
+      a `ClaimTuple` and `claim_tuple.grade()` decides; the `measurement` ladder already exists and the
+      registry refuses a second. This is the case `benchmarks/results` is the standing proof of: 4,562
+      files with no write-side hook can never gate a decision, and no read-side pass can repair that
 
 ## Dependency notes
 

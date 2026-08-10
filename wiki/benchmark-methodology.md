@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-10 (adds the generated-eval gate stack G1–G6 with human-curate as a hard node, the two-repo verifier-parity divergences incl. a vacuously-passing `code_execution` scorer, and the correction that the paper this expansion was scoped from generates no tasks)
-**Sources**: 108+ documents
+**Last compiled**: 2026-08-10 (adds the generated-eval gate stack G1–G6 with human-curate as a hard node, the two-repo verifier-parity divergences incl. a vacuously-passing `code_execution` scorer, the correction that the paper this expansion was scoped from generates no tasks, and — second pass — why a regression tester cannot serve as a reward-bearing oracle, the instrument-inside-the-candidate's-tree problem, and five generalisable evaluation rules)
+**Sources**: 110+ documents
 
 ## Compiled Update — 2026-08-08: evaluate the artifact and harness that actually execute
 
@@ -1794,3 +1794,74 @@ comparison frame, stopping rule, and objective identity therefore travel togethe
 - [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the citation audit that overturned the lineage claim and the two headline claims resting on it
 - [`wiki/knowledge-management.md`](knowledge-management.md) — the intake-side defects (phantom citations, laundered ids) that produced the wrong attributions
 - [`research/deep-dives/simula-synthetic-data-generation.md`](../research/deep-dives/simula-synthetic-data-generation.md) — the double-critic and Elo-complexity mechanisms folded into G4/G5
+
+## Compiled Update — 2026-08-10: an evaluator built from a regression tester grades the wrong thing, and the instrument is inside the candidate's tree
+
+**Confidence: verified — every `file:line` below was read directly in the frozen production tree
+`/mnt/raid0/llm/llama.cpp` @ `67a433bf45a8` (branch `production-consolidated-v8`) on 2026-08-10.
+These are citations of our own code, not of any external source.**
+
+**A regression tester and a reward-bearing oracle are different instruments, and reusing the first as
+the second fails in three independent ways.** `test-backend-ops` is good at its job — catching
+regressions against a trusted sibling — and that is exactly why it cannot grade a candidate that is
+trying to score:
+
+1. **The "reference" is a sibling, not an independent implementation.** `ggml/src/ggml-cpu/ggml-cpu.c:3041`
+   reads `if (ggml_cpu_disable_fusion || cplan->use_ref) { return 0; }` — `use_ref` disables fusion and
+   tiling, then runs the *same* type traits, the *same* dequantisers and the *same* vectorised inner
+   loops. A defect shared by both sides is invisible to an elementwise comparison **by construction**.
+   An oracle wanting independence must compute properties in host `double` from raw tensor data, or
+   implement dequantisation from the format spec rather than from the project's own quant code.
+2. **The tolerance can be enormous on the exact op class under optimization.**
+   `tests/test-backend-ops.cpp:5942` (`struct test_mul_mat_vec_fusion`) overrides `max_nmse_err()` at
+   `:6120-6121` to return `5e-3` — **≈ 7.1 % RMS relative error** — and dequant-GEMV is precisely the
+   family a low-bit kernel program targets.
+3. **Failures are unreproducible by construction.** `init_tensor_uniform` (`:54`) draws from
+   `thread_local std::default_random_engine gen(std::random_device{}())` (`:62`), and the tool exposes
+   **no seed flag**. A failing case cannot be re-run as the same case, so every historical failure is
+   an anecdote rather than a datum.
+
+**The timing instrument is compiled from the tree the candidate may edit.** A trusted-evaluator design
+that hash-pins the *evaluator* still leaves the *instrument* inside the candidate's own source. No
+event-based timer redesign fixes this — the candidate would compile the timer too. The fix is to hash-pin
+the measurement translation units (`tests/test-backend-ops.cpp`, `tests/test-quantize-perf.cpp`,
+`tools/llama-bench/llama-bench.cpp`) against the anchor and fail hard on any diff.
+
+**A stream-scoped synchronize is not a timing boundary.** T0 brackets `ggml_backend_graph_compute` with
+host wall clock (`tests/test-backend-ops.cpp:1621-1627`), and `ggml_backend_cuda_synchronize`
+(`ggml/src/ggml-cuda/ggml-cuda.cu:2512-2518`) calls `cudaStreamSynchronize(cuda_ctx->stream())` — **one
+stream**. Work issued on a second stream is never waited on and falls outside the timed region. Multi-stream
+is an ordinary in-tree idiom, so this needs no malice to fire.
+
+**A default that resolves differently per run is worse than a default that is off.** `llama-bench`'s `-fa`
+default is `LLAMA_FLASH_ATTN_TYPE_AUTO` (`tools/llama-bench/llama-bench.cpp:389`), not `0`. AUTO resolves
+per model, quant and backend, so two runs with *identical command lines* can silently differ — manufacturing
+or hiding a speedup with no visible flag difference. Pin `-fa` explicitly on every arm and record what AUTO
+resolved to when reading any historical number.
+
+### Five evaluation rules that generalise beyond kernels
+
+Derived from a 2026-08-10 source batch whose members converged independently on the same defect class:
+
+- **Gate contamination on the base model's TRAINING CUTOFF, not on a calendar year**, and record a
+  `source_released` date per question. A calendar gate passes contaminated items; the paper that motivated
+  this rule fails its own test, with 3 of 5 datasets predating its base model.
+- **Measure the trivial-agent floor.** Do-nothing, list-all-names, constant-answer and empty-string agents,
+  scored against the existing suites. **Zero inference — scorer-side only.** A suite whose floor is unknown
+  cannot report a model result as capability.
+- **Evaluate an iterated process at intermediate points**, or state that you compared endpoints and did not
+  sweep between them. A metric you optimize can improve monotonically while the metric you care about
+  degrades; a best intermediate state is invisible to an endpoint comparison.
+- **A reported correlation ships with its within-stratum values.** Worked case from this batch: a pooled
+  r = 0.52 (n = 18) that read as a refutation resolved to within-dataset r = 0.75 / 0.90 / 0.90 once
+  stratified — *bracketing* the figure it appeared to contradict. Pooling across strata whose predictor
+  spans ~1000× measures the stratification. Reporting the pooled number alone propagates a false deflation.
+- **`exact_match` over a multi-token sequence has a measure-zero success set** and will dominate any
+  cross-arm retention comparison it is used in.
+
+### Source References
+
+- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — §2026-08-10, the C2/C6 task set (RVP-C2-1…C2-9, RVP-C6-1…C6-8) these findings became
+- [`repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md`](../repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md) — §Methodology Rules Adopted 2026-08-10 (CH-1…CH-7) and the two zero-inference pilots
+- [`repos/epyc-inference-research/docs/chapters/07-benchmark-suite-construction.md`](../repos/epyc-inference-research/docs/chapters/07-benchmark-suite-construction.md) — quality gates 7 and 8 (source-release date; trivial-agent floor)
+- [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the research-intake session that produced them

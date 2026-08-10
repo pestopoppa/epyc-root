@@ -234,3 +234,37 @@ training experiment was a null result: orchestrator commits `688c6076` and `a404
 `orchestration/reports/p46_role_dropout/` found no arm clearing its adoption gate. The later audit
 explained why — label dropout did not expose an available-role input/contract — so it supports
 neither a randomization uplift claim nor further retuning of that training path.
+
+---
+
+## 2026-08-10 — Two defects in the `/v1` cooperation seam itself (research-intake Stage-3)
+
+_Found while auditing the OpenAI-compat surface during `/research-intake`; **independent of any
+research source**. Filed here because this handoff owns the cooperation contract — "a stable API
+(`/v1/chat/completions` + `x_*` overrides)" — and both defects live in exactly that seam, so any
+harness we later select inherits them. Verified by reading `epyc-orchestrator` on 2026-08-10._
+
+**Why this belongs to harness selection and not to a general bug list.** HS-1c/A4 established that
+every candidate harness cooperates by writing **body fields** on `/v1/chat/completions`, and that the
+API reads no headers other than the `x-task-id` tag. That makes the request model's field policy and
+its error path the whole contract. Both are currently wrong in a way that is silent.
+
+- [ ] **HS-OD-1 — Standard OpenAI body fields are silently dropped.** `response_format` and
+  `max_completion_tokens` have **zero occurrences anywhere under `src/api/`**, and
+  `OpenAIChatRequest` (`src/api/models/openai.py:39`) declares no `model_config` / `class Config` and
+  no `extra` policy — so pydantic v2's default `extra='ignore'` discards them without error.
+  **Consequence: any OpenAI-SDK client that uses JSON mode is silently broken against `:8000`** — it
+  gets prose where it asked for schema-constrained JSON, with a 200 and no diagnostic. This is not a
+  missing feature so much as a missing *refusal*: unknown fields that change output semantics must be
+  rejected, not ignored. Decide per field — implement, or reject with a 4xx naming the field — and add
+  a test that a body field the API does not honour cannot be accepted silently.
+- [ ] **HS-OD-2 — Backend failures are returned as assistant content with HTTP 200.**
+  `src/api/routes/openai_compat.py:776-777` catches **every** exception into
+  `response_text = f"[ERROR] Backend failed: {e}"`, then falls through to
+  `return OpenAIChatResponse(...)`. A downstream harness sees a successful completion whose text
+  happens to begin with `[ERROR]`; retry logic, error metrics and eval scorers all treat it as a
+  model answer. This is the fail-open shape that `feedback_fail_open_defaults_conceal_their_own_corruption`
+  covers, sitting on the seam every candidate harness talks to — and it also means any eval fan-out
+  through `:8000` has been scoring backend outages as low-quality generations. Map backend failures to
+  a real HTTP error status; if a soft-fail path is genuinely wanted, it must be opt-in and flagged in
+  the response, never the default.

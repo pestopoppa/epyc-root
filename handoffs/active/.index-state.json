@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 485
+      "open": 547
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 294
+      "open": 301
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -28,13 +28,13 @@
       "blocked": 1,
       "handoffs": 47,
       "oldest_advance": "2026-07-29",
-      "open": 328
+      "open": 326
     },
     "user-facing-harness-index.md": {
       "blocked": 0,
       "handoffs": 7,
       "oldest_advance": "2026-07-29",
-      "open": 42
+      "open": 44
     }
   },
   "duplicates": {},
@@ -88,11 +88,11 @@
       "closed": 4,
       "guarded": 0,
       "last_advanced": "2026-08-03",
-      "open": 14,
+      "open": 21,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 18
+      "total": 25
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 0,
@@ -132,22 +132,22 @@
       "closed": 99,
       "guarded": 0,
       "last_advanced": "2026-08-05",
-      "open": 70,
+      "open": 96,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 169
+      "total": 195
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
-      "closed": 127,
+      "closed": 130,
       "guarded": 0,
-      "last_advanced": "2026-08-09",
-      "open": 65,
+      "last_advanced": "2026-08-10",
+      "open": 63,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
       "state": "active",
-      "total": 192
+      "total": 193
     },
     "autopilot-control-plane-integration.md": {
       "blocked": 0,
@@ -371,14 +371,14 @@
     },
     "deepseek-v4-flash-0731-dspark.md": {
       "blocked": 0,
-      "closed": 6,
+      "closed": 13,
       "guarded": 0,
       "last_advanced": "2026-08-10",
-      "open": 19,
+      "open": 14,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-11",
       "state": "active",
-      "total": 25
+      "total": 27
     },
     "delegation-context-preassembly.md": {
       "blocked": 0,
@@ -800,25 +800,25 @@
     },
     "handoff-index-and-backlog-graph.md": {
       "blocked": 0,
-      "closed": 4,
+      "closed": 5,
       "guarded": 0,
       "last_advanced": "2026-08-10",
       "open": 5,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-46",
       "state": "active",
-      "total": 9
+      "total": 10
     },
     "harness-selection-and-integration.md": {
       "blocked": 0,
       "closed": 14,
       "guarded": 0,
       "last_advanced": "2026-07-30",
-      "open": 2,
+      "open": 4,
       "owner_index": "user-facing-harness-index.md",
       "row_id": "UFH-01",
       "state": "active",
-      "total": 16
+      "total": 18
     },
     "hermes-outer-shell.md": {
       "blocked": 0,
@@ -1199,11 +1199,11 @@
       "closed": 27,
       "guarded": 0,
       "last_advanced": "2026-08-03",
-      "open": 17,
+      "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-41",
       "state": "active",
-      "total": 44
+      "total": 49
     },
     "multiscreen-attention-evaluation.md": {
       "blocked": 0,
@@ -1540,11 +1540,11 @@
       "closed": 6,
       "guarded": 0,
       "last_advanced": "2026-08-03",
-      "open": 25,
+      "open": 57,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 31
+      "total": 63
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -1878,25 +1878,25 @@
     },
     "v9-kernel-per-request-speculative-params.md": {
       "blocked": 0,
-      "closed": 0,
+      "closed": 5,
       "guarded": 0,
-      "last_advanced": null,
-      "open": 5,
+      "last_advanced": "2026-08-10",
+      "open": 2,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-58",
       "state": "active",
-      "total": 5
+      "total": 7
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 23,
+      "closed": 34,
       "guarded": 0,
       "last_advanced": "2026-08-10",
-      "open": 5,
+      "open": 12,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 28
+      "total": 46
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -2375,7 +2375,7 @@
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
       "line": 59,
-      "next_action": "SC6-LIVE \u2014 after autopilot next restarts, confirm `adapters/autopilot_journal.py` reports non-zero measured rows",
+      "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
       "track": "vidya belief substrate program"
     },
     "EVL-48": {
@@ -2411,7 +2411,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Integrate KernelBench into the GEAK-eval loop as the AK-KB-1 correctness substrate",
+      "next_action": "AK-PL-1 \u2014 grep the assembled authoring prompt for test-backend-ops/max_nmse_err; guard must pass the compliant path",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {
@@ -2438,7 +2438,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "Bind P-AK-SEARCH-1's four numeric controls (e-process threshold, per-backend limits) before any search run",
+      "next_action": "AK-TR-1 \u2014 add anchor_tier + transfer_ratio_to to the \u00a77.4 evaluation event now; free today, impossible to backfill",
       "track": "autokernel research loop"
     },
     "INF-07": {
@@ -2483,7 +2483,7 @@
       "id": "INF-11",
       "index": "inference-research-index.md",
       "line": 23,
-      "next_action": "Claim-grade Q8 baseline on production v8 (canonical CPU protocol) before any DSpark kernel work",
+      "next_action": "Run the complete v8-v9 promotion qualification; retain DSpark at validated `-np 1`",
       "track": "deepseek v4 flash 0731 dspark"
     },
     "INF-12": {
@@ -2807,7 +2807,7 @@
       "id": "INF-48",
       "index": "inference-research-index.md",
       "line": 59,
-      "next_action": "MI210 bring-up: install ROCm + torch-ROCm, confirm gfx90a, reproduce GEAK-eval numbers as a sanity check",
+      "next_action": "RVP-T0-1 \u2014 MI210 saturation probe (60 s, read-only): if we never near the 300 W cap the clock-pinning branch closes free",
       "track": "rocm verify profile backend"
     },
     "INF-49": {
@@ -2892,12 +2892,14 @@
       "track": "v7 promotion"
     },
     "INF-58": {
-      "deps": [],
+      "deps": [
+        "INF-11"
+      ],
       "handoff": "v9-kernel-per-request-speculative-params.md",
       "id": "INF-58",
       "index": "inference-research-index.md",
       "line": 69,
-      "next_action": "V9-1. Delete the #if 0 / #endif around the speculative block in",
+      "next_action": "Qualify exact v9 candidate `2ac4b32a0` through every promotion gate before any v9 cutover",
       "track": "v9 kernel per request speculative params"
     },
     "INF-59": {
@@ -3050,7 +3052,7 @@
       "id": "RTG-02",
       "index": "routing-and-optimization-index.md",
       "line": 14,
-      "next_action": "AP-26: evaluate dspy.RLM for long-horizon autopilot analysis where metadata-first exploration avoids context overflow",
+      "next_action": "Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped",
       "track": "autopilot continuous optimization"
     },
     "RTG-03": {
@@ -3466,7 +3468,7 @@
       "id": "UFH-01",
       "index": "user-facing-harness-index.md",
       "line": 13,
-      "next_action": "HS-4 \u2014 Harness-selection decision gate: Hermes vs OpenCode vs an ACP-speaker, gated on HS-1 + HS-2. Default outcome preserved: (A) stays or\u2026",
+      "next_action": "HS-OD-2 \u2014 openai_compat.py:776-777 returns backend failures as HTTP 200 assistant content; map to a real error status",
       "track": "harness selection and integration"
     },
     "UFH-02": {

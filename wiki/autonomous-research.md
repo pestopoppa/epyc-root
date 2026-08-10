@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-10
-**Sources**: 98+ documents
+**Last compiled**: 2026-08-10 (adds the transfer-ratio synthesis — every cheap lane is a proxy whose transfer function is free to record now and impossible to backfill — plus lanes-screen/full-instance-verifies, the three false concurrency constraints, and the rescued-vs-persistent refinement split)
+**Sources**: 99+ documents
 
 ## Summary
 
@@ -776,3 +776,67 @@ the distinction that the staged promotion path was built to protect.
 - [2026-08-10 progress](../progress/2026-08/2026-08-10.md) — ratification receipt, checkpoint identity, and stopped-state invariant
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC14's read-only planner bridge and the remaining promotion contract
 - [Ratification receipt](../artifacts/operator/ratify_multitier_baseline_v10_20260810.json) — exact applied boundary and no-start attestations
+
+## Compiled Update — 2026-08-10: every cheap lane is a proxy with a measured transfer function, and that ratio is free today and impossible to backfill
+
+**Confidence: verified for the local-code claims (read directly in our own trees on 2026-08-10);
+`inferred` for the synthesis, which no single source states.**
+
+A research loop that wants throughput buys it by evaluating candidates somewhere cheaper than ground
+truth: a partition of the machine instead of the whole machine, an op instead of a graph, a fast tier
+instead of a release tier, a screen instead of a verification. **These are not four problems. They are
+one object — a proxy with a transfer function — and the loop is only as trustworthy as its estimate of
+that function.** The estimate has a hard property: it is **free to record while both cells are being
+measured, and impossible to reconstruct afterwards.** A ratio invented at read time asserts a
+correspondence the original run never measured. (Same shape as the citation-anchor lesson from the
+research index: 1,067 entries identified a *document*, so no claim could later be cited at a *location*.)
+
+**The governing rule that falls out of it: lanes screen, the full instance verifies.** A cheap lane may
+*rank* candidates; only a full-instance measurement under the standing protocol may carry a claim. This
+is what makes aggressive partitioning safe — the cost of a partitioned measurement is bounded to search
+efficiency, never to claim validity. Two corollaries worth stating because both were initially got wrong:
+
+- **Deep partitioning is not a cost for a research loop.** It costs aggregate throughput, which a serving
+  orchestrator optimizes and a kernel loop does not. The only cost that counts is **rank inversion**, and
+  that is measurable: run one fixed candidate set at full / half / quarter and measure rank correlation
+  against the full-machine ordering. Pre-register the prediction (bandwidth-bound changes should lose
+  fidelity fast; instruction-level changes should hold) so a confirmation is informative.
+- **A cross-lane A/A control is necessary and NOT sufficient.** It detects per-lane-position offset. It
+  cannot detect bias correlated with *mechanism class*, because that bias appears identically in every
+  lane and cancels out of the A/A. Only a per-change-class transfer ratio measures it. Never apply a
+  blanket haircut to lane results — a uniform correction assumes the very class-independence the
+  calibration exists to test.
+
+**Concurrency limits are often conventions rather than constraints, and the distinction is worth
+auditing before designing around them.** Three assumed limits on our own loop turned out to be false:
+per-run operator approval was never required (the protocol governs the *class of claim* a result may
+carry, not permission to run — the human boundary is freeze/cutover/promotion); CPU and GPU campaigns
+were always separately claimable resources and could run concurrently; and the loop's objective is
+experiment churn rather than aggregate tokens/s. Each error made the program look more constrained than
+it was, and together they would have justified a serial permission-gated campaign where a five-lane
+concurrent autonomous one was available. **Find the sentence that says you cannot, before asserting it.**
+
+**Refinement productivity must be decomposed, or a healthy loop looks like a dying one.** Measuring mean
+speedup over correct candidates across refine turns conflates two different things: individual candidates
+improving, and the *composition* of the correct set changing as previously-failing candidates get rescued
+in. Rescued candidates are systematically weaker, so the mean falls while every candidate is improving.
+Record `(turn, task, correct?, speedup)` and split **rescued** from **persistent**; a declining aggregate
+is not evidence that refinement stopped paying, and reading it that way truncates the loop exactly where
+it is still working.
+
+**Give the loop a normalising target, not a raw speedup.** Raw speedups do not transfer across hardware.
+Fraction of the theoretical roof actually achieved does — and it can be compared against what
+state-of-the-art kernels reach on other silicon. Two design constraints on doing it: compute it
+**per quantisation** (bytes-moved differs per quant, so a pooled figure silently mixes denominators, and
+splitting localises headroom to the dequant path); and hold the **basis** fixed across vendors — converting
+your own figures to a measured-achievable basis while a competitor's stay on spec basis shrinks a gap
+without shrinking it. Keep the metric diagnostic-only: a target any promotion gate can read re-introduces
+threshold peeking.
+
+### Source References
+
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — §21 (AK-TR-1…6 transfer machinery, AK-LN-1…5 screening lanes, AK-BH-1…3 baseline honesty, AK-OP-1/2 operator-only)
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — AK-PT-1 per-turn productivity accounting; AK-LE-1…5 loop-engineering experiments
+- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — the oracle and reward-integrity side of the same design
+- [`wiki/benchmark-methodology.md`](benchmark-methodology.md) — the instrument-integrity findings this rests on
+- [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the research-intake session record

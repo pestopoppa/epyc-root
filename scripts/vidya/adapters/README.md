@@ -75,6 +75,7 @@ Keep this table current. It is the answer to "has anyone already looked at this?
 | llama-bench sweeps | measurement | candidate — needs a write-side hook first | — |
 | speech kernel (whisper/qwentts) runs | measurement | candidate — unexamined | — |
 | experimental kernel candidate validation receipts | measurement | candidate — first v9 DSpark receipt exists, but producer has no ClaimTuple write hook; do not retrofit on read | — |
+| `test-backend-ops` property-layer residuals (RVP-C2-2) | measurement | **candidate — wire the write side BEFORE the layer ships** (2026-08-10). Emits a per-op, per-backend, per-shape property residual with a `suite_seed`; the seed is what makes a residual re-derivable, and RVP-C2-1 adds it. Filed at first design, not after — the read side cannot be retrofitted | — |
 
 **Before adding a bulk adapter, price it** (the P2 discipline): sample ~50 records and count how many
 carry the full tuple. If the answer is near zero, the gap is upstream and an adapter adds volume

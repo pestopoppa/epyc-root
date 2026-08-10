@@ -196,3 +196,94 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
 _Via /research-intake Stage-2 (intake-884 HyRA MI210 re-check). The loop AUTHORS gfx90a kernels — these are task specs, not port-or-decline artifacts._
 - [ ] Seed C5 with the HyRA sol_execbench kernels as reference specs the loop authors gfx90a kernels FROM (maps onto this handoff's "seed EPYC ops: attention / MoE-dispatch / dequant"): 5 bf16/fp16 Triton kernels directly (k138 mamba, k145 hyena, k154 chunk-gated-delta linear-attn, k175 MoE dispatch, k228 MLA paged-prefill); CUDA-lib-bound winners (k215 GEMM/flashinfer, k225/k227 GQA/MLA) as reference targets to re-author. All Hopper-autotuned + NVIDIA-only-attested -> loop re-authors + re-attests on gfx90a (wavefront-64/MFMA/LDS)
 - [ ] Add FP8 as an authoring datatype target: gfx90a has no native FP8 MFMA, but an FP8-weight -> bf16-MFMA upcast GEMV is buildable and potentially bandwidth-valuable for memory-bound decode (half the weight bytes of bf16; compute upcast to bf16) — an experimental-kernel investigation, NOT a hard wall. NVFP4 microscaling (per HyRA k185) is the harder end; scope after the FP8-upcast path
+
+---
+
+## Loop engineering — controller experiments and prompt hygiene (research-intake Stage-3, 2026-08-10)
+
+_Via `/research-intake`. Source: an operator-supplied field note on running a coding-agent research
+loop against a batched linear-algebra kernel to competitive results._
+
+**Provenance, stated once and carried by every item below.** The note's loop-engineering claims —
+that raising the planner's reasoning-effort knob lengthens search rather than deepening any single
+answer, and that a proximate numeric target changes what the agent proposes — have **zero primary
+backing**: the accompanying repository does not contain the loop, the transcripts, or any ablation.
+They are `[unverified]` **hypotheses** and no number from them may be quoted as evidence anywhere.
+
+**Operator steering, verbatim (2026-08-10):** *"zero primary backing doesn't mean we can't reason
+about the potential usefulness of this information from first principles."* That is the governing
+instruction for this section. The unverified contract governs **citation**, not **consideration** —
+so each hypothesis below is evaluated on our own stack and paired with the cheapest experiment that
+would settle it here. Nothing is blocked: frontier Anthropic/GPT models are available to our
+planners (operator, 2026-08-10 — we are not restricted to local models), and every experiment in this
+section costs **zero GPU and zero local inference**.
+
+- [ ] **AK-PL-1 — Prompt-leak guard on the assembled authoring prompt.** Grep the fully-rendered
+  planner/actor prompt for `test-backend-ops`, `max_nmse_err` and `init_tensor_uniform`. An agent that
+  can read the tolerance it must clear is being graded by a rubric it holds.
+  **Test the guard against the COMPLIANT path too** — a guard that also rejects the legitimate prompt
+  is a guard that will be disabled the first time it fires
+  (`feedback_guard_must_not_forbid_its_own_idiom`). Pairs with RVP-C6-7 in
+  [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md), which filters the *diagnostics*
+  half of the same channel.
+- [ ] **AK-PT-1 — Per-turn productivity accounting (this handoff owns it; emitted at
+  `autokernel-research-loop.md` §8.8).** Record `(turn, task, correct?, speedup)` per refine turn, and
+  split **rescued** (a turn that fixed a previously-failing candidate) from **persistent** (a turn
+  that improved an already-correct one). We currently measure **neither**. The reason the split is
+  load-bearing: mean speedup falls across turns as a **composition** effect — later turns admit
+  candidates that earlier turns could not fix, which are systematically worse — so a declining mean is
+  not evidence that refinement stopped working, and reading it that way would truncate the loop
+  exactly where it is still paying.
+- [ ] **AK-LE-1 — Reasoning-effort × search-persistence experiment.** Hold champion, retrieval context
+  and PROPOSE prompt fixed; sweep only the planner's effort knob. Measure **search** outcomes, not
+  answer quality: count of novel non-duplicate hypotheses, count of explicit "this is already
+  optimized" terminations, and how many proposals survive the pre-filter.
+  - **Why this is not already covered.** [`reasoning-effort-levels.md`](reasoning-effort-levels.md) is
+    a **stub**, and its entire measured evidence (the A4 / GPQA-Diamond ladder, +32.0 pp at 4.0×
+    tokens) is about *answer accuracy on a fixed question*. Nothing in it measures whether more effort
+    makes an agent keep looking. That is a different dependent variable.
+  - **Pre-register the direction before running.** Our own observed planner failure is the *opposite*
+    one — halting after a single critic "revise" — so the sign must be predicted in advance rather
+    than read off the result. Its per-model invariant applies here too: effort is a property of a
+    (model, quant) pair and is never inherited.
+- [ ] **AK-LE-2 — `proximate_target` arm, run as one extra arm on AK-LE-1.** Tests the effort × target
+  interaction jointly rather than as a second study. **Specify it as a rendered planner-context line
+  only — never a manifest field a gate can read** — regenerated each round and scoped **per cell**.
+  AK-D3 demoted a percentage figure from trigger to readiness signal for sound statistical reasons
+  (threshold peeking, winner's-curse inflation); a target that any gate can read re-introduces exactly
+  that, one layer up. The rendered-context form gives the planner the steer without giving the
+  evaluator the number.
+- [ ] **AK-LE-3 — Split *implement* from *exploit* as two prompt roles on the SAME model first,
+  budget-matched in wall-hours, before any multi-model A/B.** The note's four-role split
+  (explore / critique / implement / exploit) is a runnable design, but the delta from our current
+  two-role planner may be small, and a multi-model comparison would confound scaffold with model.
+  **Vary scaffold and model independently** — published evidence has identical models inverting rank
+  under different scaffolds.
+  - **What is already reusable (inventory, operator steering: "what could be repurposed of our current
+    design").** AutoPilot already runs a two-role draft + critique planner with a **binding** critic —
+    that is `explore` + `critique` in place, and it is the half that usually costs most to build.
+    [`architect-model-selection-bench.md`](architect-model-selection-bench.md) already selects a model
+    per role, but on **quality**, never on throughput — the per-role choice machinery exists and its
+    objective is the missing piece. AgentKernelArena's `@register_agent` adapter pattern (Decision
+    Snapshot item 2) is the substrate for registering the arms. So the increment is roles 3 and 4 plus
+    a throughput-aware selection objective, not a new controller.
+- [ ] **AK-LE-4 — Context discipline: a priced context budget and a reversible compaction protocol.**
+  (a) A per-round context-budget table with an explicit **never-bulk-read** rule, so the loop cannot
+  spend its window on a file it will not use. (b) A research-log compaction step that writes a
+  **what-was-kept / what-was-dropped header** — and, critically, **a git recovery recipe**. The source
+  note describes the compaction and omits the recovery half; compaction is only safe *because* it is
+  reversible, and a protocol that drops the reversibility keeps the risk and discards the mitigation.
+- [ ] **AK-LE-5 — Anti-fabrication clause for externally-sourced numbers.** Our invariants
+  (`autokernel-research-loop.md` §4) bind the loop's own measurements to a protocol, an anchor and a
+  receipt. **Nothing currently covers a number the loop claims came from outside itself** — a vendor
+  figure, a paper result, a leaderboard score quoted into a proposal. Require an external number to
+  carry a source, a retrieval date or commit, and a normalisation to roofline utilisation (§8.3.1)
+  before it may appear in a proposal at all; otherwise it is not admissible even as `design_prior`.
+  The source campaign logged this exact failure three times in its own write-up, which is the only
+  part of that document that is self-evidencing.
+
+**Declined here (recorded so it is not re-derived):** adopting the note's evaluation cadence. It rests
+on elastic external accelerator capacity and a free third-party adversarial verifier; we have one
+MI210 and a verifier we own. **The orchestration is reproducible almost fully; the cadence is not** —
+and per AK-LN-1/AK-LN-4 in [`autokernel-research-loop.md`](autokernel-research-loop.md) §21, our
+answer to cadence is concurrent screening lanes, not more devices.

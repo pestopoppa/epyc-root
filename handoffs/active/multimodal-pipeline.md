@@ -907,3 +907,45 @@ The vision/OCR path resolves `llama-mtmd-cli` in **three** places — `services/
 be invoked with its **own** directory on `LD_LIBRARY_PATH` or it fails with a symbol error that looks
 like a broken build. Four working trees were misdiagnosed as dead this session for exactly that reason.
 `_mtmd_subprocess_env` already does this at launch; any probe must mirror it.
+
+## 2026-08-10 — Vendor MM plugin suite: repoint at our own endpoint (research-intake Stage-3)
+
+_Via `/research-intake`, source dive-verified 2026-08-10._
+
+**Operator steering, verbatim (2026-08-10):** *"That makes one bounded experiment obvious — repoint it
+at our resident :8087 Qwen3-VL-30B-A3B and see how much of core survives without a key."* — *"interesting. I like it."*
+
+The plugin suite in question is a vendor-cloud multimodal toolset (vision chat, OCR, grounding, plus
+audio). The interesting question is not the vendor's product — it is **how much of it is actually
+cloud-bound versus merely cloud-defaulted**, because whatever is merely defaulted becomes free
+capability against the resident VL server.
+
+- [ ] **MM-1 — Repoint experiment.** Set `DASHSCOPE_BASE_URL` → `http://127.0.0.1:8087/v1`, supply **no
+  key**, and point `QWEN_MM_CONFIG_DIR` at a scratch dir. **Verified runnable, not assumed**: the
+  module docstring states the client targets any OpenAI-compatible endpoint, and the API-key guard is
+  scoped to the DashScope host only — so a non-DashScope base URL never reaches it.
+  **Scope: `vision_chat` (images), `ocr`, `grounding` — images only.** `transcribe_audio` is explicitly
+  out of scope (different modality, different server). Report per-tool: works / works-degraded /
+  cloud-bound, with the failing call for each.
+- [ ] **MM-4 — Run the `dry_run` payload preview FIRST.** It renders the request the tool would send
+  without issuing it — a zero-inference verification primitive, and therefore the correct first step of
+  MM-1 rather than a follow-up. It settles the base-URL and auth plumbing before any model time.
+- [ ] **MM-2 — Use a local checkout + manifest flip, not the `QMP_REF` env var.** **Verified: `QMP_REF`
+  is inert for our harness** — the checked-in manifests hardcode `@main`, so the variable is read but
+  cannot change what resolves. The repo's own `scripts/dev-plugin.sh` already performs a `file://`
+  flip, which is the supported path. **Note `uvx` is not installed on this host**, so any instruction
+  that assumes it needs a substitute before it will run.
+- [ ] **MM-3 — Security review BEFORE any install, and install the halves separately.** The repo ships
+  `CLAUDE.md`, `AGENTS.md` and a `skill/` directory — i.e. content that lands in **instruction
+  position** for an agent working in a tree that contains it. Treat all of it as data under the
+  external-content quarantine. Separately, its `core` skill mandates two paid tools that cannot work
+  here, so the skill half is unusable regardless. **Install policy: the `core` MCP server WITHOUT the
+  skill half.**
+- [ ] **MM-5 — Dynamic-resolution normalisation for our own VL path (independent of the above).**
+  **Verified gap**: `src/vision/analyzers/vl_describe.py:163` base64-encodes the raw file bytes with
+  **no resize at all** (`base64.b64encode(image_path.read_bytes())`; zero resize/thumbnail call sites
+  in the module). The only resize we have is a max-side clamp on a *different* path. A large screenshot
+  therefore consumes an unbounded number of vision tokens, and two runs on differently-sized copies of
+  the same image are not comparable. **Gate this on a zero-inference prompt-token probe** — measure
+  tokens-in as a function of input pixels first, before spending an MMMU-class evaluation window on a
+  normalisation whose magnitude we have not measured.

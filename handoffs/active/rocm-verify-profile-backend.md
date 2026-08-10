@@ -212,3 +212,219 @@ the upstream tooling parses torch-profiler Chrome traces and declares no ROCm pa
 shapes (prefill `4090`/`1`, decode `1`/`2048`) without re-deriving from our own production
 prompt-length distribution — a gate's scope must match the measured subset; (b) adopting the upstream
 analysis scripts as a component, since they parse torch Chrome traces and `rocprof` output is not one.
+
+---
+
+## 2026-08-10 — C2 correctness oracle, C6 reward integrity, and three zero-cost probes (research-intake Stage-3)
+
+_Via `/research-intake` (8 URLs + 2 operator-supplied inline documents → 16 entries, 5 Stage-2 dives,
+13 Stage-2b ingest-and-dives). Every `file:line` below was read directly in the FROZEN production tree
+`/mnt/raid0/llm/llama.cpp` @ `67a433bf45a8`, branch `production-consolidated-v8`, on 2026-08-10 —
+these are citations of **our own** code, not of any source. Nothing here modifies the frozen tree;
+C2/C6 work lands in `llama.cpp-experimental` and in the harness that drives it._
+
+### The finding that reorders this handoff's priorities
+
+The C2 row above says "ADOPT then HARDEN". The dives found that **the thing we planned to harden does
+not do what its name implies**, in three independent ways:
+
+1. **The reference is a sibling, not an independent implementation.** `ggml-cpu.c:3041` reads
+   `if (ggml_cpu_disable_fusion || cplan->use_ref) { return 0; }` — `use_ref` **disables fusion and
+   tiling**, and the "reference" then runs the *same* type traits, the *same* dequantisers, and the
+   *same* vectorised inner loops. A defect shared by both sides is invisible to an elementwise
+   comparison, by construction.
+2. **The tolerance admits large errors on exactly our target class.** `test-backend-ops.cpp:5942`
+   (`struct test_mul_mat_vec_fusion`) overrides `max_nmse_err()` at `:6120-6121` to return `5e-3`.
+   NMSE `5e-3` is **≈ 7.1 % RMS relative error** — and dequant-GEMV is the op family the MI210
+   program is actually aimed at.
+3. **Every T0 failure we have ever seen was unreproducible by construction.**
+   `init_tensor_uniform` (`test-backend-ops.cpp:54`) draws from
+   `thread_local std::default_random_engine gen(std::random_device{}())` (`:62`), and there is **no
+   seed flag anywhere** in the tool. A failing case cannot be re-run as the same case.
+
+None of that is an upstream criticism — `test-backend-ops` is a regression tester and is good at that
+job. It is a statement about **what a reward-bearing oracle needs that a regression tester does not**.
+
+### Zero-cost probes — run these first; two of them can close later work for free
+
+- [ ] **RVP-T0-1 — MI210 saturation probe (row C3).** Drive a saturating gfx90a GEMM and log `power_w`
+  and `sclk_mhz` at 250 ms intervals for 60 s. **If the card never approaches its 300 W cap, the entire
+  clock-pinning branch closes for free** and OP-2 in [`autokernel-research-loop.md`](autokernel-research-loop.md)
+  §21 is declined without spending anything. Facts verified on-box 2026-08-10 before designing the
+  probe: `power1_cap_max` = 300 W (`rocm-smi --showmaxpower` agrees), the card exposes only **three**
+  sclk levels — `pp_dpm_sclk` = 500 / 800 / 1700 MHz — and the `sysfs` control nodes are root-owned,
+  so the probe is read-only and the *remedy*, not the measurement, is what needs root. **At idle the
+  card was sitting on level 1 (800 MHz), not level 2**; a three-level DPM table with a wide idle step
+  means the probe must record which level is *held under sustained load*, not just the peak touched.
+- [ ] **RVP-T0-2 — MFMA disassembly audit (row C3).** `roc-obj` + `llvm-objdump --disassemble
+  -mcpu=gfx90a` over the hot `mul_mat` kernels in `libggml-hip.so`; grep for `v_mfma_*`. **Static
+  only — no GPU time, no server.** If MFMA is absent from the paths this program cares about, that is
+  a larger deflation of our standing baseline than any published-number dispute, and it is answerable
+  today. Pair with the `mfma-decode-kernels-are-worth-zero` HARD_CONSTRAINT (`autokernel-research-loop.md`
+  §19.2): that entry is about *decode arithmetic intensity*, so an MFMA absence in **prefill** paths
+  would not be covered by it.
+- [ ] **RVP-T0-5 — Static audit of `init_tensor_uniform` call sites (row C2).** Classify every call
+  site in `test-backend-ops.cpp` as one-sided (e.g. `(0.9, 1.1)`) or symmetric about zero. This
+  decides where the negate transform in RVP-C2-3 is worth its runtime and where it is a provable
+  no-op, and it is the input to the degenerate-range screen in RVP-C2-7. Pure grep + read.
+
+### C2 — build the oracle the loop actually needs
+
+Sequenced: **RVP-C2-1 is a precondition for every other row here.**
+
+- [ ] **RVP-C2-1 — Seeded input generation.** Derive each tensor's seed deterministically from
+  `(suite_seed, op, case_idx, tensor_idx)` and record `suite_seed` on the evaluation event
+  (`autokernel-research-loop.md` §7.4). Without this, a T0 failure is an anecdote: the RNG is
+  `std::random_device`-seeded per thread (`:54,:62`) and there is no flag to pin it. **Do this first.**
+- [ ] **RVP-C2-2 — Property layer (the only axis independent of the sibling).** Reference-free
+  structural checks computed in host `double` **directly from raw tensor data — never by building a
+  second ggml graph**, which would re-enter the shared implementation and re-create the problem.
+  Seed set: `SOLVE_TRI` residual bound, `ARGSORT` / `TOP_K` permutation validity (bit-exact — a
+  permutation check has no tolerance), `SOFT_MAX` sum-to-one. **Ship it with a seeded-defect gate**
+  (RVP-C6-6) or it inherits the same unquantified-sensitivity weakness it was built to fix.
+- [ ] **RVP-C2-3 — Value transforms.** identity / ×3 / ×0.01 / negate, floats only, structure
+  preserved, **fail-any** gating. Apply per RVP-T0-5 — negate is near-useless on symmetric ranges.
+  **Do not copy the fail-open-on-reference-exception branch** the upstream design carries: a
+  reference that throws must fail the case, not pass it (`feedback_fail_open_defaults_conceal_their_own_corruption`).
+- [ ] **RVP-C2-4 — Layout / stride axis, as a SEPARATE pass with its own flag.** Three probe families:
+  transpose (stride permutation), `as_strided`-equivalent (stride gap), offset base pointer
+  (alignment). **Kept separate from RVP-C2-3 deliberately**: the value-transform pass needs shapes
+  *fixed* to catch shape-locked hacks, while this pass needs layout *varied* to catch fragility —
+  merging them makes each weaker. `test-backend-ops` already has per-op view flags, but they are
+  opt-in and are not exercised on the paths we reward.
+- [ ] **RVP-C2-5 — Stateful-op triad.** (1) State is an explicit graph input; (2) byte-equality
+  assertion on input buffers across both runs; (3) **the final state is in the compared output set**.
+  Rule 3 is the one that gets forgotten, and it is the one that matters — a kernel that computes the
+  right outputs and corrupts the carried state passes rules 1 and 2. Targets `SSM_SCAN`, `SSM_CONV`,
+  flash-attention-with-cache, and the k28 chunked-GDN work
+  ([`k28-fused-chunked-gdn-kernel-research.md`](k28-fused-chunked-gdn-kernel-research.md)).
+- [ ] **RVP-C2-6 — fp64 CPU reference with a ratio gate.** `e_cand ≤ κ · max(e_ref, floor)`, κ = 1.5.
+  **Implement dequantisation from the GGUF format specification, not from `ggml-quants.c`** — sourcing
+  it from our own quant code reproduces the sibling problem one level down and the independence is
+  illusory. Cheap for us specifically: CPU is our abundant resource. Note the error budget: the
+  weight-quantisation error largely cancels between the two sides, so the tolerance is set by
+  **activation requantisation**, not by reduction order.
+- [ ] **RVP-C2-7 — Degenerate and insensitive-case screening.** Reference-only, 3 seeds × 4
+  transforms, run once per suite version, plus an input-*insensitivity* screen (does the output move
+  at all when the input does?) and a seed-invariance screen. **Audit our own `(0.9, 1.1)`-style ranges
+  first** (RVP-T0-5) — a case whose inputs cannot distinguish a correct kernel from a constant is a
+  case that grades nothing.
+- [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
+  the value distribution. This is the anti-shape-detection device, and it targets something we
+  actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can
+  learn to satisfy without being correct.
+- [ ] **RVP-C2-9 — Checker precision pinning.** The property and reference paths must not run through
+  `-fa`, MFMA-f16 accumulation, or `FORCE_MMQ`. A checker validated by the same fast path it is
+  checking corrupts **claims**, not merely screens — this is the "verify THE consumer, not A consumer"
+  discipline applied to the oracle itself.
+
+### C6 — reward integrity: close the instrument gap first
+
+- [ ] **RVP-C6-1 — Hash-pin the measurement translation units.** `tests/test-backend-ops.cpp`,
+  `tests/test-quantize-perf.cpp` and `tools/llama-bench/llama-bench.cpp` are hashed against the
+  production anchor before every measured round; **any diff is a hard fail, not a warning.**
+  **This is the highest-value single item in the batch.** C6 as designed pins the *evaluator*; but the
+  *instrument* is compiled from the very tree the candidate is allowed to edit. No timer redesign
+  fixes that — only pinning the sources does. The gate must also refuse to be satisfied by deleting
+  the file it inspects (`feedback_verify_integrity_not_presence_of_own_edit`).
+- [ ] **RVP-C6-2 — Stream-escape defence.** Verified: T0 timing brackets
+  `ggml_backend_graph_compute` with host wall clock (`tests/test-backend-ops.cpp:1621-1627`), and
+  `ggml_backend_cuda_synchronize` (`ggml/src/ggml-cuda/ggml-cuda.cu:2512-2518`) calls
+  `cudaStreamSynchronize(cuda_ctx->stream())` — **one stream**. Work issued on a second stream is not
+  waited on and falls outside the timed region. Add (a) a hybrid A/B that repeats the measurement
+  behind a full device synchronize and (b) a stream-creation audit in the source-integrity gate.
+  **A candidate need not look malicious to do this** — multi-stream is an ordinary in-tree idiom.
+- [ ] **RVP-C6-3 — Thread / async-escape check across the timed region.** The CPU-side analogue of
+  RVP-C6-2: assert no candidate-spawned thread or async handle outlives the bracket.
+- [ ] **RVP-C6-4 — Speed-of-light screen.** Flag any candidate faster than
+  `max(compute-bound, HBM-bound)` for its shape. Free, needs no reference execution, and catches the
+  whole "measured the wrong thing" family before a single verification rep is spent.
+- [ ] **RVP-C6-5 — Keep provenance detection in its own component.** Substitution / call-provenance
+  checks populate `integrity_flags`, **never `correct`** (interface contract, §"Interface contract").
+  The upstream reference built the merged version and reverted it within 30 minutes — **inherit the
+  placement, not the removal**: their stated reason was that their top-10 users are trusted, a
+  *social* control that does not exist for an autonomous loop.
+- [ ] **RVP-C6-6 — Red-team corpus with a stated sensitivity.** ~10 planted-bug and ~15 clean HIP
+  kernels; report sensitivity and specificity, not an assertion of coverage. Mine the published
+  exploit **taxonomy** (harness frame-hacking, pointer-keyed memoization, structured-input
+  short-circuit) — **do not vendor the 4.66 GB corpus**; it is NVIDIA-targeted Python with zero
+  executable value on gfx90a. This is what lets the §"C6 monitor design" FPR-budget row above be
+  stated as a number instead of a promise.
+- [ ] **RVP-C6-7 — Refine-prompt disclosure rule + PUBLIC/SEALED split.** Our loop is multi-turn, so
+  the failure diagnostics fed back into a repair turn are a channel into the oracle:
+  `test-backend-ops` prints `ERR = %.9f > %.9f` on failure, which hands the candidate the exact
+  tolerance it must clear. Filter `diagnostics` at the seam (interface contract), and hold a SEALED
+  case population the refine loop never sees.
+- [ ] **RVP-C6-8 — T1 output-invariance across repetitions, with buffer-address rotation.**
+  `llama-bench` repeats over the same input buffers with no output validation between reps — a live
+  pointer-keyed-cache hole. Assert outputs are invariant across reps **and rotate the input buffer
+  addresses between them**; address rotation is strictly stronger than a re-check, because it defeats
+  memoization keyed on the pointer rather than on the contents.
+
+### Recorded so it is not re-derived
+
+- **`torch.rand_mix` — declined.** It is dead code upstream (0 of 270 call sites), and the upstream
+  `randn` → `rand` switch that accompanies it is the *enabling condition* for a ReLU-identity hack, not
+  a defence against one. Keep the four transforms in RVP-C2-3.
+- **Peak-memory scoring, the upstream timing protocol, and a `speedup ≥ 1.0` pass clause — declined.**
+  Ours are stronger on all three; adopting them would be a regression.
+- **`KernelBenchX` / `ISO-Bench` / KernelBench task suites — declined as artifacts.** They are
+  torch/CUDA and hard-fail without CUDA; no torch-ROCm is installed here and our unit under test is a
+  C++ ggml op. This is a *technical* decline — per standing policy licences are not blockers for our
+  self-hosted personal use, and nothing here is gated on one.
+
+### Additional actionables from the recovered Stage-2b reports — filed 2026-08-10, beyond the Stage-3 plan
+
+_The Stage-2b analyst reports were recovered from the session transcript **after** the Stage-3 plan was
+written, so they carry derived actionables the plan predates. These are the survivors; the declines at
+the end are deliberate and recorded so they are not re-derived._
+
+- [ ] **RVP-C5-R — Mine a real-workload task class from our own repo history.** Keyword-filter merged
+  llama.cpp performance PRs (`optim`, `speed`, `latency`, `memory`) → classify → verify each is a
+  genuine optimization and not a refactor → extract the PR's own benchmark command and claimed numbers
+  → replay a candidate at the pre-optimization commit → **score against the human patch**. Row **C5**
+  lists only synthetic and ported suites today; this is the only identified path to **non-synthetic
+  tasks on our own stack**, at zero hardware-porting cost. **Two hard constraints**: (a) construct and
+  run on historical commits or `llama.cpp-experimental` — **never** against the frozen v8 tree; (b) our
+  PRs are public and in training data, so temporal filtering or held-out selection is mandatory, or the
+  suite measures memorization.
+- [ ] **RVP-C5-2 — Screen the C5 seed corpus for input-INSENSITIVE ops** (the `mean(softmax(x))` /
+  `relu(x-2)`-under-uniform-sampling class). Twin of the degenerate-output screen on a different axis:
+  constant output vs insensitivity to the input.
+- [ ] **RVP-C3-2 — Expert-reference ceiling alongside the honest-baseline floor.** Where a task derives
+  from a real merged optimization, report candidate-vs-human-patch delta as well as
+  candidate-vs-vendor-baseline. C3 currently fixes only the floor.
+- [ ] **RVP-C3-3 — Parse `rocm-smi` into numeric fields and add `throttle_observed`.** Capture is
+  already mandatory and implemented, but it is stored as a **text blob** and the completeness audit
+  only regex-checks that the word appeared — so a run that throttled 1700 → 800 MHz mid-window passes
+  every check we have. Upgrade the audit from word-presence to value-presence.
+- [ ] **RVP-C3-4 — 250 ms in-run device-state sampler** across the measurement window. Two endpoints
+  cannot see a mid-run excursion.
+- [ ] **RVP-C3-5 — Declare an absolute duration-window admission test** for any op-shape used to rank
+  variants, with the lower bound **measured on gfx90a**. Do not import a foreign floor.
+- [ ] **RVP-C2-10 — Add a non-power-of-2 extent to the standing shape set** (e.g. 4095). Near-zero
+  cost. Keep shape-variation-as-correctness-probe distinct from shape-variation-as-hack-detector —
+  different instruments, and merging them weakens both.
+- [ ] **RVP-C2-11 — Seed-invariance degeneracy screen**: an output that does not vary across input
+  seeds is cacheable and therefore unscoreable. Complements RVP-C2-7.
+- [ ] **RVP-C2-12 — A hard error on non-contiguous input must be a FAIL, never a skip.** The reference
+  suite converts these to skips in half its files; a kernel that cannot accept a strided ggml view is
+  not correct for llama.cpp, and a skip records that as neither pass nor fail.
+- [ ] **RVP-C6-9 — Build the two unbuilt detectors behind `AntiRewardHackingEvidence`**
+  (`timing_dependent_branch_findings`, `environment_probe_findings`). Until they exist, an empty list
+  must read **UNKNOWN, not PASS** — an empty result from a detector that was never built is exactly the
+  fail-open shape this row exists to prevent.
+- [ ] **RVP-C6-10 — Anti-short-circuit cases go in the RANKED set, not just the gate.** If the hard
+  cases only gate, a candidate can route easy inputs to a fast invalid path and never pay for the
+  accurate path's cost on the hard ones. Ranking them prices it.
+- [ ] **RVP-VIDYA-1 — Belief-kernel wiring, filed now per CLAUDE.md.** The property layer (RVP-C2-2)
+  **produces measurements** — per-op property residuals per backend per shape. Add a row to the source
+  table in [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) and a task in
+  [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md). The write side is cheap and
+  permanent; the read side cannot be retrofitted.
+
+**Declined, recorded so they are not re-derived:** lifting the 129 human-verified reference test files
+as a component (design reference only — and the reason is **technical**: torch/CUDA, will not run
+here); the `speedup >= 1.0` pass clause; the upstream `warmup=3, repeats=5` timing protocol, which is
+weaker than our canonical one; and citing any foreign-hardware correctness-overestimation magnitude as
+if it were ours — under P-GPU-1 the analogous magnitude is ours to derive on our own card.
