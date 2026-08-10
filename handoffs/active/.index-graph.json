@@ -3540,7 +3540,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T12:50:01Z",
+  "generated_at": "2026-08-10T12:53:51Z",
   "nodes": [
     {
       "age_days": 11,
@@ -4143,7 +4143,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 114,
+      "closed": 115,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",

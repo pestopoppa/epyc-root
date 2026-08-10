@@ -394,8 +394,15 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       routes are now refuted rather than unverified. Caveat recorded and load-bearing: the exact
       route keeps **91.7% of stratum-2 rules** as circuit nodes, so it saves 8.3% over full
       re-evaluation at this size and is not yet worth building ✅ 2026-08-10
-- [ ] R1b-proof The proof remains open — now for the *dual-closed* route, which is the one worth
-      proving. Deeper strata and non-two-valued absence are still unexplored
+- [x] R1b-depth3 **Bound extended to three strata: 0 counterexamples in 40,500 instances**, with
+      a detection control — plain circuit specialization, already refuted at depth 2, produces
+      **16,911** on the same sweep, so the harness can see a wrong answer at this depth. Boundary
+      growth of 3 confirms retractions add facts across both boundaries. Found a harness bug first:
+      the initial run reported 1,836 counterexamples that were all rule-ORDER artifacts of a
+      single-pass stratum evaluator; the ground truth was wrong on both sides. A fully-formed
+      spurious refutation, caught by suspecting the test method
+      (`scripts/vidya/r1_depth3_sweep.py`, §2.4e) ✅ 2026-08-10
+- [ ] R1b-proof The proof remains open
 - [ ] R1b-closure-size Measure the closure fraction on a realistic program. **Blocker narrowed
       again 2026-08-10**: the negation stratum now EXISTS (R1b-discharge) but holds only 4
       dependency edges, so a closure fraction over it would measure the fixture, not the program.

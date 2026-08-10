@@ -103,17 +103,31 @@ def _eval_stratum2(
     treatment, which is what makes the two routes comparable at all.
     """
     out = dict(carried)
-    for rule in rules:
-        if any(b not in out and b not in lower for b in rule.body):
-            continue
-        value = TOP_G
-        for b in rule.body:
-            value = meet(value, out.get(b, lower.get(b, BOTTOM)))
-        for n in rule.negated:
-            present = lower.get(n, BOTTOM)
-            value = meet(value, BOTTOM if present != BOTTOM else TOP_G)
-        if value != BOTTOM:
-            out[rule.head] = join(out.get(rule.head, BOTTOM), value)
+    rules = list(rules)
+    # Iterate to a fixpoint. A single pass makes rule ORDER change the meaning of a stratum: with
+    # `s :- r` listed before the rule deriving `r`, `s` is evaluated while `r` is still absent and
+    # never revisited. That produced 1,836 spurious "counterexamples" in the first three-stratum
+    # sweep before the evaluator itself was suspected. Negated atoms still read from `lower` only,
+    # which is what keeps the stratum semipositive and the iteration monotone.
+    for _ in range(len(rules) + 1):
+        changed = False
+        for rule in rules:
+            if any(b not in out and b not in lower for b in rule.body):
+                continue
+            value = TOP_G
+            for b in rule.body:
+                value = meet(value, out.get(b, lower.get(b, BOTTOM)))
+            for n in rule.negated:
+                present = lower.get(n, BOTTOM)
+                value = meet(value, BOTTOM if present != BOTTOM else TOP_G)
+            if value == BOTTOM:
+                continue
+            merged = join(out.get(rule.head, BOTTOM), value)
+            if merged != out.get(rule.head, BOTTOM):
+                out[rule.head] = merged
+                changed = True
+        if not changed:
+            break
     return out
 
 

@@ -82,3 +82,20 @@ def test_counterexample_counts_are_the_recorded_ones():
         if R.route_a_circuit_dual(prog, bv, retract) != truth:
             counts["dual"] += 1
     assert counts == {"circuit": 2241, "dual": 270}
+
+
+# ---------------------------------------- stratum evaluation must not depend on rule order
+
+def test_a_stratum_is_a_fixpoint_not_a_single_pass():
+    """`s :- r` listed BEFORE the rule deriving `r` must still derive `s`.
+
+    A single pass made rule order change the meaning of a stratum, which produced 1,836 spurious
+    "counterexamples" in the first three-stratum sweep. The evaluator was wrong, not the route —
+    caught by suspecting the test method before believing the refutation.
+    """
+    lower = {"a": R.TOP_G}
+    ordered = [R.Rule("s", ("r",)), R.Rule("r", ("a",))]
+    reversed_ = [R.Rule("r", ("a",)), R.Rule("s", ("r",))]
+    assert R._eval_stratum2(ordered, lower, dict(lower)) == \
+        R._eval_stratum2(reversed_, lower, dict(lower))
+    assert "s" in R._eval_stratum2(ordered, lower, dict(lower))

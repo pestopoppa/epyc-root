@@ -186,6 +186,37 @@ proof remains open, and so does the question that decides whether any of this is
 > it. The closure is small only when a retraction's negation-reachable set is a small fraction of
 > the stratum, and whether real programs have that shape is **unmeasured**.
 
+### 2.4e Depth 3 — the dual-closed route survives composition (2026-08-10)
+
+The §2.4c result bounded two-stratum programs. The obvious way an exact-at-one-boundary route can
+still fail is COMPOSITION: a re-tokenization that is exact once need not stay exact when its own
+output is re-tokenized again. So the sweep was extended to three strata —
+`scripts/vidya/r1_depth3_sweep.py`.
+
+| | |
+|---|---:|
+| (program × assignment × retraction) instances | **40,500** |
+| Counterexamples to dual tokens + intra-stratum closure | **0** |
+| Counterexamples to plain circuit specialization (*detection control*) | **16,911** |
+| Max facts added by a retraction (boundary growth across two boundaries) | **3** |
+
+The control is what makes this a result rather than a null. Plain circuit specialization was
+already refuted at depth 2, so running it here asks whether the harness can see a wrong answer at
+this depth: it sees 16,911 of them. Boundary growth of 3 confirms retractions genuinely add facts
+across both boundaries, so the composition case is exercised rather than skipped.
+
+**A bug found first, and it matters more than the number.** The initial depth-3 run reported 1,836
+counterexamples to the dual-closed route. Every one had the shape `s :- r` listed BEFORE the rule
+deriving `r` in the same stratum — `_eval_stratum2` was a single pass, so rule ORDER changed the
+meaning of a stratum and the *ground-truth* evaluator was wrong on both sides of the comparison. A
+refutation was sitting there, fully formed and completely spurious, and the only thing between it
+and the record was suspecting the test method before believing the result. The evaluator now
+iterates to a fixpoint; the two-stratum numbers are unchanged (those rule sets happened to be
+order-independent) and the property is pinned by test.
+
+Still not a proof, and the same caveat as §2.4c applies: the exact route retains most of the
+stratum, so this bounds the conjecture without making the route worth building.
+
 ### 2.4d R1b-usecase — the first rule that genuinely needs negation, named 2026-08-10
 
 R1b has been a paper track because the pilot's rule set is positive (spec §12), so there was no
