@@ -189,6 +189,54 @@ hitting: a leaked loop variable made every family retract the *last* candidate's
 still reporting a plausible per-family score. It was caught by the test that asserts *which*
 claims moved, not by the one that asserts a number came out.
 
+## 4d. PR2d — what a citation edge actually is, measured 2026-08-10
+
+Two hand-classified samples of the 2,007 `cross_references.intake_entries` edges.
+
+**Sample 1 — 20 edges, uniform stride over all edges.** 14 topical, 4 evidential, 2 companion
+artifact. All 4 evidential edges had a **dived** source entry; none of the 14 unverified-source
+edges was evidential. That suggested a rule — *treat a citation from a dived entry as a candidate
+dependency, leave Stage-1 expansion edges topical* — at an apparent 4/6 precision.
+
+**Sample 2 — 60 edges, stratified over the 672 dived-source edges. The rule does not survive.**
+
+| Class | Count | Share |
+|---|---:|---:|
+| Topical / related work | 45 | 75% |
+| **Evidential** | 11 | **18%** |
+| Companion artifact (same work, two records) | 4 | 7% |
+
+The n=20 figure was a small-sample artifact: its dived-source edges happened to fall in the
+semiring-provenance intake, where citations really are foundational. Across 60, the base rate is
+**18%**. Promoting all 672 dived-source edges to dependencies would create roughly 550 false ones —
+worse than the 272–527 uncoverable claims it was meant to fix, because a false dependency
+propagates invalidation into work that never depended on anything.
+
+Being dived still *predicts* something (18% against ~0% for unverified sources), just nowhere near
+enough to act on.
+
+**Two mechanical rules were tried on the same 60 and both failed.**
+
+| Rule | Fires | Precision | Recall |
+|---|---:|---:|---:|
+| Source's claim text names the target entry id | 2/60 | 0.50 | 0.09 |
+| Source's claims use verification language (*corroborat\*, contradict\*, overturn\*, faithful*, …) | 6/60 | 0.50 | 0.27 |
+
+Half wrong when they fire, and they miss three-quarters of what they are looking for. The
+evidential edges are recognizable to a reader — "intake-939's citation of it is FAITHFUL",
+"GENUINE INDEPENDENT CORROBORATION FOR ONE CLAIM ONLY" — but the recognition is semantic, and the
+surface features that carry it are not present in most of the true cases.
+
+**Conclusion: do not infer dependency from citation, at any confidence.** The remaining option is
+an explicit `depends_on` edge written when the dependency is real — which costs a line at dive
+time and is the only thing measured here that would be correct. Same write-time shape as the query
+log and per-claim correction labels: cheap in the moment, unreconstructable afterwards.
+
+The honest cost of that choice: uncoverable claims stay uncoverable until `depends_on` edges
+accumulate, so the live evaluation keeps reporting a large unscored bucket. That is the correct
+reading — the propagation structure genuinely does not exist yet, and a rule at 18% precision would
+have hidden that behind a number.
+
 ## 5. What would justify termination
 
 Recorded now, while the answer is not yet known, so the bar cannot drift later:

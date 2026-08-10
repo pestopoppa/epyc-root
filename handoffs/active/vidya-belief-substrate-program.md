@@ -242,9 +242,18 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       no claim index, so which claims a correction falsified is unreadable by any program — the
       same write-time shape as the query log: seconds at dive time, impossible afterwards. Until
       this exists the live suite cannot score corrections at all
-- [ ] PR2d Decide whether a citation edge should imply an evidential edge. Today it does not, which
-      is why 272–527 claims per draw are uncoverable. This is the propagation question the whole
-      substrate exists to answer, and no measurement can settle it — it is a modelling choice
+- [x] PR2d-measurement Two hand-classified samples settle it. A 20-edge uniform sample suggested
+      "a citation from a dived entry is a candidate dependency" at 4/6 precision; a **60-edge sample
+      stratified over the 672 dived-source edges refutes it — 18% evidential, 75% topical, 7%
+      companion**. The n=20 result was a small-sample artifact of the semiring-provenance intake.
+      Two mechanical rules also failed on the same 60 (names-the-target: precision 0.50 / recall
+      0.09; verification-language: 0.50 / 0.27) ✅ 2026-08-10
+- [ ] PR2d Adopt an explicit `depends_on` edge, authored at dive time. **Do NOT infer dependency
+      from citation** — at 18% precision, promoting the 672 dived-source edges would create ~550
+      false dependencies, which is worse than the uncoverable bucket it was meant to fix: a false
+      dependency propagates invalidation into work that never depended on anything. Accepted cost:
+      the live suite keeps reporting a large unscored bucket until `depends_on` edges accumulate,
+      which is the honest reading — the propagation structure does not exist yet
 - [ ] PR3 Reconcile every `human_intent_recorded` frame against an actual ratification artifact
       (spec §15 pilot-exit check) before any promotion proposal is written
 
