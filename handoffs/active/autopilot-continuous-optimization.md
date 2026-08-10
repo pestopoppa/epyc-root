@@ -2162,12 +2162,14 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       makes collector preflight fail closed until `in_flight_trial` is cleared (5/5 focused tests).
       AutoPilot stayed stopped throughout. Final artifacts are T1 SHA `2293f55a…`, T2 SHA `8d18534b…`,
       and T3 SHA `012f2d99…`; orchestrator `8e147213` adds the atomic ratifier and focused tests.
-      `--prevalidate` performs no writes and passes. AutoPilot remains stopped after apply pending
-      separate restart permission.
-- [ ] **Apply the final consolidated v10 multi-tier ratifier.** Run
-      `scripts/autopilot/operator_candidates/ratify_and_apply_multitier_baseline_v10.py` once as the
-      normal operator. It atomically writes the E16 eras, T1/T2/T3 baseline bundle, and staged-promotion
-      policy while leaving AutoPilot and all model servers stopped.
+      `--prevalidate` performs no writes and passes. The operator applied the consolidated ratifier;
+      receipt `ratify_multitier_baseline_v10_20260810.json` records `ratified_and_applied`, and AutoPilot
+      remains stopped pending separate restart permission.
+- [x] **Apply the final consolidated v10 multi-tier ratifier. ✅ 2026-08-10** The operator ran
+      `scripts/autopilot/operator_candidates/ratify_and_apply_multitier_baseline_v10.py`. It atomically
+      wrote the E16 eras, T1/T2/T3 baseline bundle, staged-promotion policy, and verified
+      `production_best` checkpoint while leaving AutoPilot and all model servers stopped. The checkpoint
+      SHA-256 is `c60364f1295a931a4b4e806d4dffd2138696537f49b15a3a6881c50737c02b19`.
 - [x] **Complete and certify the 63,786-row episodic semantic rebuild. ✅ 2026-08-09** Orchestrator
       `43323891` supports an explicit maintenance-only embedder fleet. Six temporary processes exposed
       96 slots with 16 compute threads each across all physical cores; the measured 96-row smoke reached

@@ -11,7 +11,7 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | RTG-01 | agent world env synthesis | [agent-world-env-synthesis.md](agent-world-env-synthesis.md) | Run the AW-6 48h bootstrap discovery (≥50 envs / ≥500 tools / ≥500 tasks) with incremental persistence | — |
-| RTG-02 | autopilot continuous optimization | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | Apply the final v10 T1/T2/T3 ratifier; keep AutoPilot stopped until a separate explicit restart authorization | — |
+| RTG-02 | autopilot continuous optimization | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped | — |
 | RTG-03 | autopilot dashboard fidelity audit 2026 07 2 | [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-dashboard-fidelity-audit-2026-07-22.md) | C1 fix #2 Manifest writer intent-not-realized gap — writer lives in | — |
 | RTG-04 | batched edit parallel apply | [batched-edit-parallel-apply.md](batched-edit-parallel-apply.md) | BEP-2 / J8 — CPU latency A/B for the legacy structured patchset path. Head-to-head bench: batch-edit mode vs interleaved Root LM loop on a… | — |
 | RTG-05 | bep dcp falsification harness | [bep-dcp-falsification-harness.md](bep-dcp-falsification-harness.md) | DCP-6 deploy attestation + inference gate: launch-code provenance is satisfied (server_launch_git_sha=eeb8cce, ancestor of 2e2e0d3 and 756c… | — |

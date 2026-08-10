@@ -1,0 +1,124 @@
+{
+  "autopilot_started": false,
+  "boundary": "2026-08-10T16:23:03.880697Z",
+  "eras": {
+    "autopilot_speed": "E16-autopilot-history-scoped-quiescence-v10-speed",
+    "eval_quality": "E16-eval-history-scoped-quiescence-v10-quality"
+  },
+  "eras_backup": "/mnt/raid0/llm/epyc-root/artifacts/operator/instrument_eras.pre-multitier-v10-20260810.yaml",
+  "evidence": {
+    "1": {
+      "n_questions": 100,
+      "path": "/mnt/raid0/llm/epyc-root/artifacts/operator/multitier_incumbent_t1_clean_v10_20260810.json",
+      "quality": 1.5,
+      "reliability": 1.0,
+      "sha256": "2293f55a6ab7ea442bc3d32093b0e3c3df7f0e842a0ba726af872eb8191c9e2f"
+    },
+    "2": {
+      "n_questions": 500,
+      "path": "/mnt/raid0/llm/epyc-root/artifacts/operator/multitier_incumbent_t2_clean_v10_20260810.json",
+      "quality": 1.356,
+      "reliability": 1.0,
+      "sha256": "8d18534b3bbb520bc097957093ec2ecb11f6eae6be018c6f4cc86a27c369c3ad"
+    },
+    "3": {
+      "n_questions": 160,
+      "path": "/mnt/raid0/llm/epyc-root/artifacts/operator/multitier_incumbent_t3_clean_v10_20260810.json",
+      "quality": 1.275,
+      "reliability": 1.0,
+      "sha256": "012f2d99de64efa2439aa76550c73b17011eb2386de5def1838f99d0eec4fac7"
+    }
+  },
+  "execution_instrument_id": "resource_lanes_v10_history_scoped_quiescence",
+  "model_servers_changed": false,
+  "multitier_policy_version": "staged-multitier-v1",
+  "objective_policy": "task_rate_4d_v7_physical_cohort_exclusion",
+  "production_checkpoint": {
+    "metadata": {
+      "checkpoint_sha256": "c60364f1295a931a4b4e806d4dffd2138696537f49b15a3a6881c50737c02b19",
+      "config_snapshot": {
+        "baseline_bundle_sha256": "6006061e66463bd59a9cc124a7191f0c1172575f75e0717fb2cb27b6e006492b",
+        "execution_instrument_id": "resource_lanes_v10_history_scoped_quiescence",
+        "multitier_policy_version": "staged-multitier-v1"
+      },
+      "feature_flags": {},
+      "file_sha256": {
+        "autopilot_short_term_memory.md": "44f176eeff87a5d8d27050d2e45cb873f16a8d2d37a82be8aa0dbeb083f76f77",
+        "autopilot_state.json": "0cbaa64770e510b3982bafbf7097d881eb94ad800191774d14693817e7bd1abf",
+        "classifier_config.yaml": "e408c615319607f50cb0bff3b734bb6a82d0caf5f4d38b61c24011b75008b37e",
+        "embeddings.faiss": "4537f9179b5a318da59ba4e1fc2bb709d0f13335a0ac6295e4f600f3fa09d8d3",
+        "episodic.db": "24cff0744a4ea47f316f5ed8781dc35ce8e843ce555234829c21e88f4a0ffa75",
+        "id_map.npy": "d6b791548b1d5c88c68a28c97e3cce8bc7f38496aa93cbb9daa98d446ceaffaf",
+        "prompts/architect_investigate.md": "82dcf9d0cdece2e22f621ba9fe181001e6524a11f7dc2bb7e23f7414da902090",
+        "prompts/architect_synthesis.md": "742a0f6b10a756b94cd565278e0d7544bce4f3cc8b608f4f16f062f8823fea46",
+        "prompts/compaction_index.md": "f6cfbd58a2aa8e6aca5e854319690b41d61c6731af3cc0869c86a3c4da923583",
+        "prompts/debugger_system.md": "d260548af8757c2f6c719bf27a47a081b21b638b37d731e3493b271e25d81113",
+        "prompts/deep_search_agent.md": "241d3e9d10168d73deea35cb65d840e74f9f15d544fb40fc605aa4f7d48e5c63",
+        "prompts/formalizer.md": "bb3f759b8c3f74b7b1121b977a40d4b209811befedee65ff7561e0bd882713f0",
+        "prompts/frontdoor.md": "537857deb461fd38a9aa6a9da36e8ff2086cb25a8bef81db4a4a2c5ff2b00aaf",
+        "prompts/meta_agent_reflect.md": "e14a0fbebc430f00e9a5a1de3a6389280243c9d9c87ede7c5d3d89a3d599d4e8",
+        "prompts/plan_review.md": "17def93c58e80daf7ed996b79a11f3cef03a7588f84dc58cf8f9db0cc48e3127",
+        "prompts/planning_agent.md": "043b0dc36f466e4552b1460c87927c14643ae45a1ba1939a3c32b1a0ad89e945",
+        "prompts/report_agent.md": "ecffa61257312d012dd32503b803b1bea2397625c598c2e3c27490e789008115",
+        "prompts/review_verdict.md": "38554a2709b146aed2377d503546d6905e4ea2caf128de45e2616e9f4b53a44d",
+        "prompts/revision.md": "19f530639be9d671cb75ed5b6aab50dbc0f660769e4f80533c80c4ad8930bc32",
+        "prompts/roles/architect_coding.md": "f11899b7b991388d947174253c6691b19025810fdb3c21f25b3d3398bba193ca",
+        "prompts/roles/architect_general.md": "7f2e05fe4a4fb8962d195e5033f52ae1858f6db956c7a5d6f3815fdf017fc6e6",
+        "prompts/roles/coder_escalation.md": "bcfb941cb15d254d97a03681fa5ccb3e8ef1ea639db30e9dee632a2846208bb4",
+        "prompts/roles/coder_primary.md": "ea5b9e54940ef4502d0640d9a0b656f9427d6f6e1104bebee15e677c06279379",
+        "prompts/roles/frontdoor.md": "2ba52a889f9c632c3d6baefceac2c895a0ca923cc948e5176800bbe60b87e234",
+        "prompts/roles/ingest_long_context.md": "a1e24bcd31eded6cc39eb9cee627d80f865ac02e845ab3355b7c7031145147db",
+        "prompts/roles/worker_explore.md": "a920272aa5333e1df5183b7d255443a1216863f3aa195a33358d04a04f41fbae",
+        "prompts/roles/worker_general.md": "ac3659ed7e31b6f001d1eeefe643db7640083a858f754c15064ac841bdc2c3af",
+        "prompts/roles/worker_math.md": "e0e4caa3ce8e65e61a7ea3837fca9afd210f314d20969a8b6e11577c23361b57",
+        "prompts/roles/worker_vision.md": "2930f9d621c0da606491d043e64146a74c20dcb8bd254df248be41184294004b",
+        "prompts/root_lm_system.md": "07ee95a143edde00cca053d86cdad80d2980729613c552adb7f15e8d54767628",
+        "prompts/rules.md": "b250c22770e999d5ef2092a3689247af8725f6cf1d5f01ed37b6296ea568456e",
+        "prompts/task_decomposition.md": "9b436cd0ca94027ba97718ff9292aeb6738c25d8cf3359775e2dc71792118c6a",
+        "prompts/tools.md": "39a9184faa54ea24035875c256395b69a409396e1ba123282b8b9f9b1dfe4c06",
+        "routing_classifier_weights.npz": "3e1e972c0eb2a953fdbd5c047fd0455ca202557a329ed14668338fc5c2a9beab",
+        "skills.db": "1a4f29f2e33d531bde3cdfb1c368c763b516208e527819b336121a842da78a44",
+        "strategy_store/strategies.db": "db586ddc7d01affc7cd2f712e75758ae18d43e17829a1a9ac880384420cc8d61",
+        "strategy_store/strategies.sqlite": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "strategy_store/strategy_embeddings.faiss": "e5585d05e63ea91bd1837ec34d27ad66286eff1f1518b8b0b62493ede74070aa",
+        "strategy_store/strategy_id_map.npy": "7b04feef6a410250a11806eb80e2877dd402880fa19c917b8ba88196ff8673a5"
+      },
+      "hypervolume": 0.0,
+      "is_production_best": true,
+      "memory_count": 63925,
+      "notes": "Operator-ratified clean T1/T2/T3 v10 incumbent baseline",
+      "schema_version": "epyc.autopilot_checkpoint.v2",
+      "timestamp": "multitier_v10_20260810",
+      "trial_id": 1506
+    },
+    "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/autopilot_checkpoints/multitier_v10_20260810",
+    "prepared": true,
+    "production_best_link": "/mnt/raid0/llm/epyc-orchestrator/orchestration/autopilot_checkpoints/production_best",
+    "source_plan": {
+      "autopilot_short_term_memory.md": "/mnt/raid0/llm/epyc-orchestrator/orchestration/autopilot_short_term_memory.md",
+      "classifier_config.yaml": "/mnt/raid0/llm/epyc-orchestrator/orchestration/classifier_config.yaml",
+      "embeddings.faiss": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/embeddings.faiss",
+      "episodic.db": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/episodic.db",
+      "id_map.npy": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/id_map.npy",
+      "prompts/": "/mnt/raid0/llm/epyc-orchestrator/orchestration/prompts",
+      "routing_classifier_weights.npz": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/routing_classifier_weights.npz",
+      "skills.db": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/skills.db",
+      "strategy_store/": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/strategies"
+    }
+  },
+  "ratification_commit": "8e147213d2e8f3d4b18e3a2103e7ec08e61c1d29",
+  "ratified_at": "2026-08-10T20:23:16.568058Z",
+  "schema_version": "epyc.multitier_baseline_v10_ratification.v1",
+  "scoring_schedule_id": "model_judge_tail_v4_gpu_lifecycle_quiescence",
+  "sha256": {
+    "baseline_bundle": "6006061e66463bd59a9cc124a7191f0c1172575f75e0717fb2cb27b6e006492b",
+    "eras_candidate": "3ebfa6cfdca7bd1b5298026a1cf515314fce33840e35a28c4313e46da2e7b42c",
+    "eras_preimage": "eb3b7390b0f1b196a2f72a914d6d9974ba4891f6cba706e12bea8f9a8aa1596d",
+    "ratifier": "0c4d9e9c9eb2dae2d3ae91bfe642fd311e99cf28912197d5d6974d7683a0e0f4",
+    "state_candidate": "0cbaa64770e510b3982bafbf7097d881eb94ad800191774d14693817e7bd1abf",
+    "state_preimage": "00c55ae69e185516d26153d957a724c61dcec5bef34d49a68108d13fc413766a"
+  },
+  "state_backup": "/mnt/raid0/llm/epyc-root/artifacts/operator/autopilot_state.pre-multitier-v10-20260810.json",
+  "status": "ratified_and_applied",
+  "writes_performed": true
+}
