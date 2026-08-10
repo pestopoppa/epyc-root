@@ -253,16 +253,34 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       `claim_depends_on/v1` frame emitted by the adapter, and a Stage-2 obligation in the intake
       skill carrying the counterfactual test: *if that entry's claim were retracted tomorrow, would
       a claim in this entry have to change?* Citation edges are left untouched ✅ 2026-08-10
-- [ ] PR2d-backfill Author `depends_on` on dived entries whose dependencies are already known — the
-      11 evidential edges the 60-edge sample identified are the obvious first batch. Reasoning kept
-      below.
+- [x] PR2d-backfill **4 edges authored, 7 declined — and the strict test is much narrower than the
+      sample's label.** Applying the counterfactual test (*would a claim in THIS entry have to
+      change?*) to the 11 edges the 60-edge sample called evidential, only 4 survive: 1062→1050
+      (an originality claim about what the 2007 paper does not contain), 1043→1067 (Theorem 17 is
+      transported by Gradel–Tannen's universal property), 976→972 (Mercury is in the measured
+      corpus), 982→939 (the claim is *about* 939's citation being faithful). One runs OPPOSITE to
+      the citation that suggested it — 1067 is 2020 and 1043 is 2021, so the dependency is the
+      reverse. All 7 declines are recorded with reasons in the authoring script ✅ 2026-08-10
+- [x] PR2d-eval `live_eval` now scores a `propagated` class: a claim that declares `depends_on` a
+      mutated entry MUST move, while a claim that merely cites it stays uncoverable. This is the
+      first scorable propagation the system has had ✅ 2026-08-10
+- [x] PR2d-finding **The result is 0 of 4.** The dependency frames are inert — the fold lists
+      `claim_depends_on` under `ignored_frame_types`, so nothing propagates along an authored edge.
+      The edges record a human judgment that the engine does not act on. That is the measurement
+      PR2d existed to produce, and it could not have been seen before the edges existed ✅ 2026-08-10
+- [ ] PR2d-semantics **OPERATOR DECISION (OP-11)** — what a retracted dependency should do to its
+      dependent. The spec's existing correction rule marks `review_required` and refuses to guess a
+      grade, because "what a correction did to an individual claim is prose". The conservative
+      analogue is to mark dependents `review_required` and change no grade. The alternative is to
+      propagate a downgrade, which guesses. This is a change to ratified fold semantics, so it is
+      not being made unilaterally
+- [x] PR2d-idempotence Re-ingest was not idempotent: `frame_id` hashes `created_at`, so a fresh
+      `--as-of` re-emitted the whole corpus — measured 9,599 → 19,270 frames with zero new
+      information. Adapter dedup is now keyed on (frame_type, assertion). Verified: re-ingest with a
+      new timestamp emits 0. **The locator-based support counting absorbed the damage** — the
+      independent-support distribution was unchanged at 0→112, 1→4,108, 2→3 across the duplicate;
+      under the old label-counting every claim would have shown 2 supports ✅ 2026-08-10
 
-      Adopt an explicit `depends_on` edge, authored at dive time. **Do NOT infer dependency
-      from citation** — at 18% precision, promoting the 672 dived-source edges would create ~550
-      false dependencies, which is worse than the uncoverable bucket it was meant to fix: a false
-      dependency propagates invalidation into work that never depended on anything. Accepted cost:
-      the live suite keeps reporting a large unscored bucket until `depends_on` edges accumulate,
-      which is the honest reading — the propagation structure does not exist yet
 - [ ] PR3 Reconcile every `human_intent_recorded` frame against an actual ratification artifact
       (spec §15 pilot-exit check) before any promotion proposal is written
 

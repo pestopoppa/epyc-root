@@ -18,9 +18,13 @@ explicitly **uncoverable** rather than quietly omitting them:
   Real, and it is the floor discipline the whole gate rests on.
 * `retracted` — retracting an entry's evidence token must move that entry's own claims.
 * `unaffected` — claims of entries with no evidential relationship to the mutated one.
-* **uncoverable** — claims of entries that CITE the mutated entry. The engine will report these
-  unaffected because the ledger holds no cross-entry evidential edge; whether that is *correct* is
-  the open question, so scoring it either way would manufacture an answer. Counted, never scored.
+* `propagated` — claims that `depends_on` a claim of the mutated entry. These MUST move: a human
+  applied the counterfactual test and wrote down that they would. This is the only scorable
+  propagation in the system, and it exists only where somebody authored the edge.
+* **uncoverable** — claims of entries that merely CITE the mutated entry with no `depends_on`. The
+  engine reports these unaffected because citation is not an evidential edge (measured: 18% of
+  dived-source citations are evidential, so inferring it would be wrong 4 times in 5). Scoring them
+  either way would manufacture an answer. Counted, never scored.
 
 That last bucket is the actual result this module produces. A suite that scored it would report a
 number; a suite that dropped it would look complete.
@@ -42,6 +46,7 @@ __all__ = ["draw_families", "score_live_family", "run_live"]
 
 FT_CLAIM = "epyc.vidya/frame/claim_proposed/v1"
 FT_SUPPORT = "epyc.vidya/frame/evidence_supports_claim/v1"
+FT_DEPENDS = "epyc.vidya/frame/claim_depends_on/v1"
 DEFAULT_FLOOR = "Verified/Anchored"
 
 # Evidence tokens are minted per CLAIM on live data (`evd_clm_intake_096_00`), not per source, so
@@ -79,6 +84,21 @@ def _index_claims(frames: list[dict]) -> tuple[dict[str, list[str]], dict[str, l
     return by_entry, by_source
 
 
+def _dependents(frames: list[dict]) -> dict[str, list[str]]:
+    """Entry id -> claim ids that declare a `depends_on` edge into it."""
+    out: dict[str, list[str]] = {}
+    for frame in frames:
+        if frame.get("frame_type") != FT_DEPENDS:
+            continue
+        a = frame.get("assertion") or {}
+        target, cid = a.get("depends_on_entry"), a.get("claim_id")
+        if isinstance(target, str) and isinstance(cid, str):
+            out.setdefault(target, []).append(cid)
+    for v in out.values():
+        v.sort()
+    return out
+
+
 def draw_families(
     frames: list[dict],
     index_entries: list[dict],
@@ -93,6 +113,7 @@ def draw_families(
     (citation count desc, entry id) — so a rerun scores the same corpus.
     """
     by_entry, by_source = _index_claims(frames)
+    dependents = _dependents(list(frames))
     entries = {e["id"]: e for e in index_entries if isinstance(e.get("id"), str)}
 
     cited_by: dict[str, set[str]] = {}
@@ -143,7 +164,9 @@ def draw_families(
                 "mutated_claims": by_entry[key],
                 "source_id": source_id,
                 "target_frames": sorted(by_source[source_id]),
-                "citing_claims": citing_claims,
+                "citing_claims": [c for c in citing_claims
+                                  if c not in set(dependents.get(entry_id, []))],
+                "dependent_claims": dependents.get(entry_id, []),
                 "citing_entries": n_citing,
                 "expect_never_believed": unverified,
             }
@@ -174,16 +197,26 @@ def score_live_family(family: dict, frames: list[dict], *, as_of: str, floor: st
         points.append(1 if correct else (-1 if harmful else 0))
         rows.append({"claim_id": cid, "expected": expected, "correct": correct})
 
+    # Declared dependents MUST move. This is the only scorable propagation the system has, and it
+    # exists exactly where a human wrote the edge — which is why authoring them is the unblock, not
+    # inferring them.
+    for cid in family.get("dependent_claims", []):
+        correct = cid in flagged
+        points.append(1 if correct else -1)
+        rows.append({"claim_id": cid, "expected": "propagated", "correct": correct})
+
     # Discrimination control: claims of entries with no evidential relationship at all. Drawn from
     # the fold rather than the index so a claim that exists only in the ledger is still eligible.
-    excluded = set(family["mutated_claims"]) | set(family["citing_claims"])
+    excluded = (set(family["mutated_claims"]) | set(family["citing_claims"])
+                | set(family.get("dependent_claims", [])))
     controls = [c for c in sorted(before.beliefs) if c not in excluded][:20]
     for cid in controls:
         correct = cid not in flagged
         points.append(1 if correct else 0)  # over-flagging is work, not danger (spec §17.2)
         rows.append({"claim_id": cid, "expected": "unaffected", "correct": correct})
 
-    scorable = [r for r in rows if r["expected"] in ("retracted", "never_believed")]
+    scorable = [r for r in rows
+                if r["expected"] in ("retracted", "never_believed", "propagated")]
     controls_rows = [r for r in rows if r["expected"] == "unaffected"]
     return {
         "family": family["family_id"],
@@ -199,6 +232,7 @@ def score_live_family(family: dict, frames: list[dict], *, as_of: str, floor: st
             else None
         ),
         "uncoverable_claims": len(family["citing_claims"]),
+        "propagation_claims": len(family.get("dependent_claims", [])),
         "citing_entries": family["citing_entries"],
         "verified_unaffected": len(report.verified_unaffected),
         "unaffected_but_unmapped": len(report.unaffected_but_unmapped),
@@ -222,7 +256,7 @@ def run_live(
     recalls = [r["invalidation_recall"] for r in results if r["invalidation_recall"] is not None]
     discs = [r["discrimination"] for r in results if r["discrimination"] is not None]
     harmful = sum(1 for r in results for row in r["rows"] if not row["correct"]
-                  and row["expected"] in ("retracted", "never_believed"))
+                  and row["expected"] in ("retracted", "never_believed", "propagated"))
     return {
         "corpus": "live-ledger",
         "as_of": as_of,
@@ -234,6 +268,7 @@ def run_live(
         "discrimination": sum(discs) / len(discs) if discs else None,
         "harmful_outcomes": harmful,
         "uncoverable_claims": sum(r["uncoverable_claims"] for r in results),
+        "propagation_claims": sum(r["propagation_claims"] for r in results),
         "coverage_note": (
             "Claims of entries that CITE a mutated entry are counted as uncoverable, never "
             "scored: the ledger holds no cross-entry evidential edge, so the engine reports them "

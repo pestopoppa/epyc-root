@@ -123,6 +123,21 @@ def _source_id(entry: dict) -> str:
     return f"src_{entry['id'].replace('-', '_')}"
 
 
+def _dedup_key(frame: dict) -> str:
+    """Identity of what a frame ASSERTS, ignoring when it was written.
+
+    Re-ingest has to be idempotent: the index is re-read routinely and a fresh `--as-of` must not
+    mint a second copy of every claim. Content addressing is still what identifies a frame in the
+    ledger; this is only the adapter's "have I already said this?" test.
+    """
+    from canonical import content_hash  # noqa: PLC0415
+
+    return content_hash({
+        "frame_type": frame.get("frame_type"),
+        "assertion": frame.get("assertion"),
+    })
+
+
 def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
     """Build the frame set for one index entry: one source, N claims, N support/oppose edges."""
     out: list[dict] = []
@@ -323,8 +338,13 @@ def ingest_intake_index(
     # keeps the ledger append-only across runs -- which matters because a rebuilt ledger silently
     # invalidates every prior checkpoint, making a legitimate regeneration indistinguishable from
     # tampering. Append-only across re-ingests keeps that distinction sharp.
+    # Keyed on (frame_type, assertion), NOT on frame_id. `frame_id` hashes the whole envelope
+    # including `created_at`, so re-ingesting the same index with a different `--as-of` produced a
+    # complete duplicate corpus: 2026-08-10 measured a ledger going 9,599 -> 19,270 frames with
+    # zero new information. What makes a frame redundant is that it asserts the same thing, not
+    # that it was written at the same moment.
     existing_ids = {
-        rec.frame.get("frame_id") for rec in ledger.read_all() if isinstance(rec.frame, dict)
+        _dedup_key(rec.frame) for rec in ledger.read_all() if isinstance(rec.frame, dict)
     }
     skipped = 0
 
@@ -358,13 +378,14 @@ def ingest_intake_index(
         if isinstance(entry.get("dive_corrections"), str) and entry["dive_corrections"].strip():
             corrections_emitted += 1
         for frame in _frames_for_entry(entry, as_of) + _depends_frames(entry, as_of):
-            if frame.get("frame_id") in existing_ids:
+            key = _dedup_key(frame)
+            if key in existing_ids:
                 skipped += 1
                 continue
             emitted += 1
             if not dry_run:
                 ledger.append(frame)
-                existing_ids.add(frame["frame_id"])
+                existing_ids.add(key)
 
     return {
         "adapter": ADAPTER_ID,

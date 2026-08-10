@@ -53268,6 +53268,10 @@
   - '[review candidate] CITE as the independent corroboration of intake-939 duration-spread claim - different group, different method, same conclusion.'
   - '[review candidate] DECLINE adding an efficiency axis over our sealed SWE40/LCB tasks. Original correctness tests clear the duration-spread gate for at most 3.8% of problems, and this paper independently measures 6.11% significance on reference implementations. Our sealed tasks physically cannot carry a timing signal.'
   notes: 'credibility_score 3: no peer-reviewed venue confirmed +0; recent +1; known contributors +1; commercial bias +0; independent corroboration +1 (converges with intake-939 by a fully disjoint method). Net 3. SURFACED VIA intake-974 Limitations section, which cites it - i.e. the authors of the paper we were auditing pointed us at the strongest evidence against the field they work in.'
+  depends_on:
+  - entry: intake-972
+    claim_index: 1
+    why: The 6.11% figure is computed across a named corpus of benchmarks that includes Mercury (intake-972). If Mercury's record is retracted or its results change, the denominator of this measurement changes with it.
 - id: intake-977
   arxiv_id: '2410.07095'
   url: https://arxiv.org/abs/2410.07095
@@ -53633,6 +53637,10 @@
   - '[review candidate] RECORD the scope limit: pairing does not remove environment drift. Adopt WITH intake-939 affine correction or not at all.'
   - '[review candidate] NEVER count this as independent corroboration of intake-939 - same lab, direct co-author.'
   notes: 'credibility_score 3: peer-reviewed venue +0; published 2025-12, within 12 months +1; FAIR at Meta, a major lab +1; commercial bias +0; independent corroboration +1 (Sec E internal cross-validation across three estimators is a genuine methodological check, though not external). Net 3. THE SAME-LAB FINDING IS THE LOAD-BEARING PART OF THIS ENTRY: it prevents a future pass from stacking this on top of intake-939 as a second independent leg.'
+  depends_on:
+  - entry: intake-939
+    claim_index: 1
+    why: This claim is ABOUT intake-939 — that its sqrt(2) citation is faithful and properly hedged, and that it does not itself over-claim. If intake-939's claims are retracted or restated, this assessment of them is no longer about anything.
 - id: intake-983
   arxiv_id: '2606.16062'
   url: https://arxiv.org/abs/2606.16062
@@ -57696,6 +57704,10 @@
     Dived 2026-08-09 during the Vidya-handoff audit (formal cluster). Companion to intake-1039
     (same Aachen group; uses its universality theorem).
 
+  depends_on:
+  - entry: intake-1067
+    claim_index: 2
+    why: 'Theorem 17 characterizes lfp/gfp as sums over derivation trees proved in S-infinity[A] and ''transported by universal property'' — that universal property is Proposition 30 of Gradel & Tannen (intake-1067). Retract the construction and the transport step has nothing to stand on. Note the direction: the citation edge runs 1067 -> 1043, but 1067 is 2020 and 1043 is 2021, so the dependency is the reverse.'
 - id: intake-1044
   arxiv_id: '2312.14063'
   url: https://arxiv.org/abs/2312.14063
@@ -58563,6 +58575,10 @@
     Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by intake-1050's
     Carneades dive, which had established the 2007 paper defines only three standards).
 
+  depends_on:
+  - entry: intake-1050
+    claim_index: 4
+    why: Our claim that the alpha/beta/gamma models of CCE and BRD are ORIGINAL to the 2009 chapter is an assertion about what the 2007 Carneades paper does NOT contain. If intake-1050's content record is wrong, this originality claim is wrong.
 - id: intake-1063
   arxiv_id: null
   url: https://github.com/C2SP/C2SP
