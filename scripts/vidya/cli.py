@@ -401,12 +401,18 @@ def cmd_alias_candidates(args) -> int:
 
     led = _ledger(args)
     index_path = Path(args.index) if args.index else REPO_ROOT / "research" / "intake_index.yaml"
-    locators = locator_map(yaml.safe_load(index_path.read_text()) or [])
+    index_entries = yaml.safe_load(index_path.read_text()) or []
+    locators = locator_map(index_entries)
+    citations = {}
+    for entry in index_entries:
+        refs = ((entry.get("cross_references") or {}).get("intake_entries")) or []
+        citations[entry.get("id")] = {r for r in refs if isinstance(r, str)}
     report = generate_candidates(
         [r.frame for r in led.read_all()],
         min_score=args.min_score,
         limit=args.limit,
         locators=locators,
+        citations=citations,
     )
     worksheet = worksheet_from_candidates(report, generated_at=args.at)
     out = Path(args.out)

@@ -105,6 +105,12 @@ def _entry_of(claim_id: str) -> str:
     return m.group(1) if m else claim_id
 
 
+def _index_entry_of(claim_id: str) -> str:
+    """`clm_intake_374_03` -> `intake-374`. Empty for ids this module was not built for."""
+    m = re.match(r"^clm_intake_(\d+)_\d+$", claim_id)
+    return f"intake-{m.group(1)}" if m else ""
+
+
 def _score(a: dict, b: dict, idf: dict[str, float]) -> tuple[float, list[str]]:
     """IDF-weighted Jaccard over normalized terms, in [0, 1].
 
@@ -177,6 +183,7 @@ def generate_candidates(
     min_score: float = 0.35,
     limit: int = 200,
     locators: dict[str, str] | None = None,
+    citations: dict[str, set] | None = None,
 ) -> dict[str, Any]:
     """Rank cross-entry claim pairs that may denote the same proposition.
 
@@ -231,6 +238,12 @@ def generate_candidates(
             continue
         loc_a = _locator_of(a, locators or {})
         loc_b = _locator_of(b, locators or {})
+        ent_a, ent_b = _index_entry_of(a), _index_entry_of(b)
+        cites = citations or {}
+        linked = bool(
+            ent_a and ent_b
+            and (ent_b in cites.get(ent_a, ()) or ent_a in cites.get(ent_b, ()))
+        )
         scored.append(
             {
                 "claim_a": a,
@@ -248,6 +261,12 @@ def generate_candidates(
                 # "two papers by one group", and because approving these silently would
                 # manufacture exactly the fake independence R4 exists to measure.
                 "same_source": bool(loc_a and loc_a == loc_b),
+                # One entry cites the other, so one is plausibly DERIVED from the other
+                # -- a dataset card restating its own paper, a homepage restating its own
+                # preprint. `same_source` cannot see this, because the locators genuinely
+                # differ; the distinction matters for the same reason it does there.
+                # Identity is correct, independence is not.
+                "linked": linked,
                 "locator_a": loc_a,
                 "locator_b": loc_b,
             }
@@ -281,6 +300,7 @@ def worksheet_from_candidates(report: dict, *, generated_at: str) -> dict:
                 "score": c["score"],
                 "shared_terms": list(c["shared_terms"]),
                 "same_source": c.get("same_source", False),
+                "linked": c.get("linked", False),
                 "text_a": c["text_a"],
                 "text_b": c["text_b"],
                 "decision": "pending",  # pending | same | different
@@ -301,7 +321,10 @@ def worksheet_from_candidates(report: dict, *, generated_at: str) -> dict:
             "if you did not look. Fill 'reviewer'. Only 'same' rows become claim_alias frames. "
             "A row with same_source: true is two entries for ONE source -- aliasing it is a "
             "correct identity statement but it is NOT corroboration, and it usually means the "
-            "index carries a duplicate entry worth merging."
+            "index carries a duplicate entry worth merging. A row with linked: true is "
+            "two entries that cite each other -- often a paper and its own dataset card "
+            "or homepage. Same proposition, but the second is a RESTATEMENT of the "
+            "first, not a second witness to it."
         ),
         "rows": rows,
     }
