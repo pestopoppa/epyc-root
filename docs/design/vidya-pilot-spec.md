@@ -189,13 +189,13 @@ Property's hypotheses.
 
 ```text
 Q  (warrant quality)     Q0 · Q1 Hinted · Q2 Judged · Q3 Verified · Q4 Witnessed
-T  (traceability)        T0 Unanchored · T1 Located · T2 Anchored · T3 Attested
+T  (traceability)        T0 Unanchored · T1 Located · T2 MachineLocated · T3 Anchored · T4 Attested
 
-L  = Q × T               20 elements
+L  = Q × T               25 elements
 a ⊕ b = (max Q, max T)   pointwise join   — alternative support
 a ⊗ b = (min Q, min T)   pointwise meet   — joint / chained support
 0 = (Q0, T0)             additive identity and annihilator for ⊗
-1 = (Q4, T3)             multiplicative identity
+1 = (Q4, T4)             multiplicative identity
 ```
 
 **Q — what epistemic act stands behind the claim**
@@ -222,12 +222,29 @@ id and durable evidence behind it.
 |---|---|
 | `T0 Unanchored` | no resolvable anchor |
 | `T1 Located` | correct document and revision; no span |
-| `T2 Anchored` | exact durable span — heading path + content hash, JSON pointer, trial id |
-| `T3 Attested` | durable in-repo artifact with an attestation reference per the measurement constitution |
+| `T2 MachineLocated` | a span found by machine and pinned by `quote_sha256`, **not read by a person** |
+| `T3 Anchored` | exact durable span a person located — heading path + content hash, JSON pointer, trial id |
+| `T4 Attested` | durable in-repo artifact with an attestation reference per the measurement constitution |
 
-`T3` is deliberately the constitution's own durable-evidence rule: a hash over an artifact that no
-longer exists proves nothing, so `T3` requires the artifact to be present and cited, while `T2`
+`T4` is deliberately the constitution's own durable-evidence rule: a hash over an artifact that no
+longer exists proves nothing, so `T4` requires the artifact to be present and cited, while `T3`
 requires only that the anchor resolves.
+
+**Amendment 2026-08-10 — `T2 MachineLocated` inserted (operator-ratified).** Measured on the live
+index: 667 entries are cited by active handoffs and design docs and **5** are anchored, so hand-
+anchoring the 2,994 cited claims is not a path, and leaving the axis at 5 of 4,191 makes every
+traceability policy inert. A span located by matching a claim's distinctive terms against the
+fetched source *is* checkable — `quote_sha256` pins the exact text — but it is not the act a human
+anchor records, which is a person reading the passage and judging that it says what the claim says.
+Recording both at one level would make `Anchored` mean two different things, and the axis exists
+precisely to keep that distinction. So machine location gets its own level: strictly above
+`Located` (a span, not just a document), strictly below `Anchored` (nobody read it), and policies
+choose their own bar rather than inheriting one.
+
+The insertion is ordinal-safe for stored data: grades serialize as **names**, never ordinals
+(`{"Q": "Verified", "T": "Anchored"}`), so no existing frame changes meaning. The algebra is
+unaffected — a product of two finite chains is still a bounded distributive lattice however many
+links a chain has, so every theorem in §4.3 survives the amendment unchanged.
 
 ### 4.3 The algebra still holds — every theorem, unchanged
 

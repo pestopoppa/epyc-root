@@ -195,8 +195,15 @@ class TestClaimVsWire:
     @pytest.mark.parametrize(
         "claim,check",
         [
-            ("the carrier is 20 elements",
-             lambda: len(lat.Q_LEVELS) * len(lat.T_LEVELS) == 20),
+            # 25 since the 2026-08-10 amendment inserted T2 MachineLocated (spec §4.2). This test
+            # caught the change, which is the point of it: the carrier size is a spec claim, and a
+            # silent edit to T_LEVELS is exactly what it exists to refuse.
+            ("the carrier is 25 elements",
+             lambda: len(lat.Q_LEVELS) * len(lat.T_LEVELS) == 25),
+            ("MachineLocated ranks between Located and Anchored",
+             lambda: lat.T_LEVELS.index("Located")
+             < lat.T_LEVELS.index("MachineLocated")
+             < lat.T_LEVELS.index("Anchored")),
             ("Corroborated is not in the carrier",
              lambda: "Corroborated" not in lat.Q_LEVELS and "Corroborated" not in lat.T_LEVELS),
             ("bottom is (Q0,T0) and top is (Witnessed,Attested)",

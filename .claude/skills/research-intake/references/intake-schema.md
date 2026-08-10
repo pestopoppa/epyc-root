@@ -93,6 +93,13 @@ seconds; reconstructing it later costs a re-read, and often is not possible at a
 Anchors are optional and per-claim: record them for claims that will be cited, gate a decision, or
 enter an authoritative projection. Ordinary prose does not need one.
 
+**`located_by: machine` (added 2026-08-10).** An anchor produced by matching a claim's terms
+against the fetched source — rather than by a person reading the passage — MUST carry
+`located_by: machine`. It then tops out at `T2 MachineLocated`, strictly below `T3 Anchored`,
+however complete the rest of the record is (spec §4.2 amendment). A quote hash and a revision make
+a machine match *checkable*; they do not make it *read*, and the level above records a person's
+judgment that the passage says what the claim says. Omit the field for human anchors.
+
 ## Integration disposition lifecycle (added 2026-08-05)
 
 Actionable verdicts (`worth_investigating` and `new_opportunity`) need an explicit

@@ -156,3 +156,33 @@ def test_generation_is_deterministic():
     a = generate_candidates(frames, min_score=0.3)
     b = generate_candidates(list(reversed(frames)), min_score=0.3)
     assert a["candidates"] == b["candidates"]
+
+
+# ------------------------------------------------- T2 MachineLocated (spec §4.2, 2026-08-10)
+
+def test_machine_anchor_cannot_reach_anchored():
+    """A machine anchor caps at MachineLocated however complete it is.
+
+    Revision and quote hash make it checkable, not read. Capping in the adapter rather than at the
+    policy layer means a well-formed machine anchor cannot be promoted by looking thorough.
+    """
+    from adapters.research_intake import _t_level  # noqa: PLC0415
+
+    entry = {"url": "https://arxiv.org/abs/2604.08224"}
+    machine = {
+        "quote": "some span",
+        "quote_sha256": "ab" * 32,
+        "source_revision": "v2",
+        "located_by": "machine",
+    }
+    human = {"quote": "some span", "quote_sha256": "ab" * 32, "source_revision": "v2"}
+    assert _t_level(entry, machine) == "MachineLocated"
+    assert _t_level(entry, human) == "Attested"
+
+
+def test_machine_anchor_without_a_quote_hash_is_only_located():
+    """An unpinned machine match is not a span anybody can check, so it earns nothing."""
+    from adapters.research_intake import _t_level  # noqa: PLC0415
+
+    entry = {"url": "https://example.com/x"}
+    assert _t_level(entry, {"quote": "s", "located_by": "machine"}) == "Located"

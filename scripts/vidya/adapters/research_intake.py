@@ -65,15 +65,25 @@ def _t_level(entry: dict, anchor: dict | None = None) -> str:
     `locator_note` explains *why* the material cannot be retrieved, which is honest but is still
     not a locator.
 
-    With a `claim_anchors` entry (P2b) the claim reaches `T2 Anchored`, and `T3 Attested` when the
+    With a `claim_anchors` entry (P2b) the claim reaches `Anchored`, and `Attested` when the
     anchor also pins the source revision it was read at AND carries a hash of the quoted span --
     the pair is what makes the anchor checkable later rather than merely specific.
+
+    An anchor marked `located_by: machine` tops out at `MachineLocated` (spec §4.2 amendment,
+    2026-08-10) however complete it is. Revision and quote hash make a machine anchor *checkable*;
+    they do not make it *read*, and the level above records a person's judgment that the passage
+    says what the claim says. Capping here rather than at the policy layer means a machine anchor
+    cannot reach `Anchored` by being unusually well-formed.
     """
     if anchor:
         has_span = bool(anchor.get("quote") or anchor.get("locator"))
-        if has_span and anchor.get("quote_sha256") and anchor.get("source_revision"):
+        if not has_span:
+            pass
+        elif anchor.get("located_by") == "machine":
+            return "MachineLocated" if anchor.get("quote_sha256") else "Located"
+        elif anchor.get("quote_sha256") and anchor.get("source_revision"):
             return "Attested"
-        if has_span:
+        else:
             return "Anchored"
     if entry.get("url") or entry.get("arxiv_id"):
         return "Located"

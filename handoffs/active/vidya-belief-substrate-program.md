@@ -218,10 +218,15 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
 - [x] PR0 Reviewed the four promotion requirements against current state. Three moved this session
       (R4b unblocked to 45 reviewable pairs; R5b emission wired; R4b surfaced source identity as a
       second prerequisite); the fourth is unblocked and unstarted ✅ 2026-08-10
-- [ ] PR1 **OPERATOR DECISION** — machine-located anchors: (A) admit at T2 provenance-tagged,
-      (B) add a distinct level between Located and Anchored, (C) human-only, scoped to
-      ratified-spec citations. Recommendation **B**. Sizing measured 2026-08-10: 667 cited entries,
-      **5 anchored**, 662 / 2,994 claims unanchored — hand-anchoring is not a path
+- [x] PR1 **OPERATOR DECISION: option B, ratified 2026-08-10.** `T2 MachineLocated` inserted
+      between Located and Anchored; carrier is now 25 elements. Spec §4.2 amended, `lattice.py`
+      T_LEVELS extended, adapter caps `located_by: machine` anchors at the new level regardless of
+      completeness, intake schema documents the field. Ordinal-safe: grades serialize as names, so
+      no stored frame changed meaning. The compliance test caught the carrier-size change, which is
+      what it is for ✅ 2026-08-10
+- [ ] PR1b Build the machine anchoring pass itself: fetch cited sources, match claim terms, record
+      `located_by: machine` anchors with `quote_sha256`. Sizing: 662 cited entries / 2,994 claims.
+      The level now exists to receive them
 - [ ] PR2 Re-run the P5c evaluation suite against a corpus drawn from the **live ledger** rather
       than hand-built frames. Largest remaining evidence gap, blocked by nothing: 28/28 on 19
       anchored gold claims versus `0 verified unaffected / 4,190 unmapped` on real data is the whole

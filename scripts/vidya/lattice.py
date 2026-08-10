@@ -3,7 +3,7 @@
 Spec: docs/design/vidya-pilot-spec.md §4 (ratified 2026-08-09).
 
     Q (warrant quality)  Q0 . Hinted . Judged . Verified . Witnessed
-    T (traceability)     T0 . Located . Anchored . Attested
+    T (traceability)     T0 . Located . MachineLocated . Anchored . Attested
 
     join = pointwise max (alternative support)
     meet = pointwise min (joint / chained support)
@@ -37,7 +37,11 @@ __all__ = [
 # -- it means "would be admissible as a decision-gating measurement claim", and the measurement
 # constitution is the arbiter of that, not this module.
 Q_LEVELS: Sequence[str] = ("Q0", "Hinted", "Judged", "Verified", "Witnessed")
-T_LEVELS: Sequence[str] = ("T0", "Located", "Anchored", "Attested")
+# `MachineLocated` (spec §4.2 amendment, 2026-08-10) sits between Located and Anchored: a span
+# found by machine and pinned by a quote hash, which nobody has read. Above Located because it is a
+# span rather than a document; below Anchored because an anchor records a person's judgment that
+# the passage says what the claim says, and a term match is not that judgment.
+T_LEVELS: Sequence[str] = ("T0", "Located", "MachineLocated", "Anchored", "Attested")
 
 _Q_INDEX = {name: i for i, name in enumerate(Q_LEVELS)}
 _T_INDEX = {name: i for i, name in enumerate(T_LEVELS)}
