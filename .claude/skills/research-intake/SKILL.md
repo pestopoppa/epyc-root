@@ -291,6 +291,16 @@ Begins only when the operator names the intakes. Never self-trigger.
   renamed-kernel incident happened. Do not anchor ordinary prose; anchor what will be cited.
 - Append a dated `dive_corrections` field recording what the dive changed, so an overturned
   conclusion cannot be re-derived later.
+- **Record `claim_corrections` alongside it — which claims the correction actually touched**, one
+  row per claim examined, with `effect: overturned | narrowed | reattributed | unaffected` and a
+  required `note`. Schema: [`references/intake-schema.md`](references/intake-schema.md)
+  § `claim_corrections`.
+
+  **Why this is a Stage-2 obligation.** Without it a correction blankets its entry: measured
+  2026-08-10, 27 `dive-overturned` entries opposed **114 claims** and 155 prose corrections flagged
+  **681**, most of which no dive ever disputed. intake-896 had four claims, one fabricated, and all
+  four were marked wrong. Recording `unaffected` on the siblings you checked is the whole point —
+  it is the difference between "examined and cleared" and "nobody looked".
 - **Record `depends_on` for every claim of this entry that rests on another entry's claim.**
   Apply the counterfactual test to each cross-reference the dive touched: *if that entry's claim
   were retracted tomorrow, would a claim in this entry have to change?* Yes → `depends_on`; no →

@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 297
+      "open": 295
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -26,9 +26,9 @@
     },
     "routing-and-optimization-index.md": {
       "blocked": 1,
-      "handoffs": 46,
+      "handoffs": 47,
       "oldest_advance": "2026-07-29",
-      "open": 313
+      "open": 329
     },
     "user-facing-harness-index.md": {
       "blocked": 0,
@@ -346,6 +346,17 @@
       "row_id": "INF-10",
       "state": "active",
       "total": 42
+    },
+    "dashboard-architecture-restructure.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 16,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-47",
+      "state": "active",
+      "total": 16
     },
     "decision-aware-routing.md": {
       "blocked": 1,
@@ -1878,14 +1889,14 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 97,
+      "closed": 101,
       "guarded": 0,
       "last_advanced": "2026-08-10",
-      "open": 8,
+      "open": 6,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 105
+      "total": 107
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -3439,6 +3450,15 @@
       "line": 58,
       "next_action": "Decide whether .index-state.json / .index-graph.json are git-ignored \u2014 timeline artifact already is",
       "track": "handoff index and backlog graph"
+    },
+    "RTG-47": {
+      "deps": [],
+      "handoff": "dashboard-architecture-restructure.md",
+      "id": "RTG-47",
+      "index": "routing-and-optimization-index.md",
+      "line": 59,
+      "next_action": "Operator picks D1\u2013D3 (recommendation: C1); then Phase 0 nav registry + shared include",
+      "track": "dashboard architecture restructure"
     },
     "UFH-01": {
       "deps": [],

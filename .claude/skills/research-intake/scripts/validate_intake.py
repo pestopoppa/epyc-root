@@ -33,6 +33,9 @@ VERDICT_VALUES = {
     "new_opportunity", "already_integrated", "worth_investigating",
     "not_applicable", "superseded", "adopt_patterns", "adopt_component",
 }
+# What a dive found a correction did to ONE claim. `unaffected` is the load-bearing member:
+# without a way to say "this sibling survived", the only expressible verdict is blanket doubt.
+CORRECTION_EFFECTS = {"overturned", "narrowed", "reattributed", "unaffected"}
 INTEGRATION_DISPOSITION_VALUES = {
     "integrated", "knowledge_only", "monitor", "declined", "awaiting_dive",
 }
@@ -374,6 +377,36 @@ def validate_index(entries: list[dict], valid_categories: set[str],
             for cat in cats:
                 if cat not in valid_categories:
                     errors.append(f"{eid}: unknown category '{cat}'")
+
+        # claim_corrections: which claims a dive's correction actually touched (schema
+        # § claim_corrections). Shape-checked because a malformed record is worse than none: it
+        # looks like per-claim precision and silently reverts to blanketing the entry.
+        corr = entry.get("claim_corrections")
+        if corr is not None:
+            n_claims = len(entry.get("key_claims") or [])
+            if not isinstance(corr, list):
+                errors.append(f"{eid}: claim_corrections must be a list")
+            else:
+                for j, rec in enumerate(corr):
+                    if not isinstance(rec, dict):
+                        errors.append(f"{eid}: claim_corrections[{j}] must be a mapping")
+                        continue
+                    ci = rec.get("claim_index")
+                    if not isinstance(ci, int) or not (0 <= ci < n_claims):
+                        errors.append(
+                            f"{eid}: claim_corrections[{j}].claim_index must index key_claims "
+                            f"(0..{n_claims - 1})"
+                        )
+                    if rec.get("effect") not in CORRECTION_EFFECTS:
+                        errors.append(
+                            f"{eid}: claim_corrections[{j}].effect must be one of "
+                            f"{sorted(CORRECTION_EFFECTS)}"
+                        )
+                    if not str(rec.get("note") or "").strip():
+                        errors.append(
+                            f"{eid}: claim_corrections[{j}] needs a 'note' — an unexplained "
+                            "per-claim verdict cannot be reviewed or overturned later"
+                        )
 
         # depends_on: the evidential edge (schema § depends_on). Shape-checked here because a
         # malformed dependency is worse than an absent one -- it looks like propagation coverage

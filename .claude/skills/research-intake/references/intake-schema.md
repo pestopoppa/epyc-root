@@ -93,6 +93,43 @@ seconds; reconstructing it later costs a re-read, and often is not possible at a
 Anchors are optional and per-claim: record them for claims that will be cited, gate a decision, or
 enter an authoritative projection. Ordinary prose does not need one.
 
+## `claim_corrections` — which claims a correction actually touched (added 2026-08-10)
+
+`dive_corrections` is prose. It says a dive changed *something* about the entry, and no program can
+read which claim. The consequence was measured on 2026-08-10: **27 `dive-overturned` entries
+blanket-opposed 114 claims**, and **155 prose corrections blanket-flagged 681**. intake-896 is the
+case — four claims, one fabricated, all four opposed for fifteen days.
+
+Record the verdict per claim while the dive is open:
+
+```yaml
+claim_corrections:
+  - claim_index: 3
+    effect: overturned          # overturned | narrowed | reattributed | unaffected
+    note: 'FABRICATED. The four-step /doctor description does not exist in the product.'
+  - claim_index: 0
+    effect: unaffected
+    note: 'The 80% system-prompt figure was never disputed; the retraction covers claim 3 only.'
+```
+
+**`unaffected` is the load-bearing member.** Without a way to say "this sibling survived", the only
+expressible position is blanket doubt, and blanket doubt is what makes a correction destroy good
+work next to bad. Recording it is also what separates *examined and cleared* from *nobody looked* —
+only the first should stop a future dive re-litigating the claim.
+
+What each effect does:
+
+| Effect | Ledger consequence |
+|---|---|
+| `overturned` | opposition edge on that claim alone |
+| `narrowed` / `reattributed` | review-required; **not** opposition — a narrowed claim is not a false one |
+| `unaffected` | support stands; the claim is excluded from the correction's `claim_ids` |
+| *(no record)* | falls back to blanketing every claim, which stays the honest default for unindexed prose |
+
+`note` is required on every row. An unexplained per-claim verdict cannot be reviewed or overturned
+later, and the adapter still refuses to PARSE `dive_corrections` prose — keyword-scanning for
+"OVERTURNED" would be deterministic, plausible, and sometimes wrong.
+
 ## `depends_on` — the edge that actually propagates (added 2026-08-10)
 
 A `cross_references.intake_entries` pointer means "related reading". It does **not** mean this

@@ -138,6 +138,15 @@ def _dedup_key(frame: dict) -> str:
     })
 
 
+def _claim_corrections(entry: dict) -> dict[int, dict]:
+    """Per-claim correction verdicts, indexed by claim. Empty when the dive recorded none."""
+    out: dict[int, dict] = {}
+    for rec in entry.get("claim_corrections") or []:
+        if isinstance(rec, dict) and isinstance(rec.get("claim_index"), int):
+            out[rec["claim_index"]] = rec
+    return out
+
+
 def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
     """Build the frame set for one index entry: one source, N claims, N support/oppose edges."""
     out: list[dict] = []
@@ -172,12 +181,26 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
 
     claims = entry.get("key_claims") or []
     anchors = _anchors_by_claim(entry)
+    claim_verdicts = _claim_corrections(entry)
     for i, text in enumerate(claims):
         if not isinstance(text, str):
             continue
         cid = _claim_id(entry_id, i)
         anchor = anchors.get(i)
         grade, is_opposition = grade_for_entry(entry, anchor)
+        # A per-claim verdict overrides the entry-level one. Without it, `dive-overturned` opposes
+        # EVERY claim of the entry -- measured 2026-08-10 as 114 claims across 27 entries, most of
+        # which no dive ever disputed. intake-896 is the case that motivated it: four claims, one
+        # fabricated, all four opposed.
+        per_claim = claim_verdicts.get(i)
+        if per_claim:
+            effect = per_claim.get("effect")
+            if effect == "unaffected":
+                is_opposition = False
+            elif effect == "overturned":
+                is_opposition = True
+            else:
+                is_opposition = False   # narrowed / reattributed: review, not refutation
         out.append(
             make_frame(
                 frame_type=FT_CLAIM,
@@ -242,11 +265,20 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
                 frame_type=FT_CORRECTION,
                 assertion={
                     "entry_id": entry_id,
-                    "claim_ids": [
-                        _claim_id(entry_id, i)
-                        for i, c in enumerate(claims)
-                        if isinstance(c, str)
-                    ],
+                    # Only the claims a dive actually implicated. Falls back to every claim
+                    # when no per-claim record exists, because blanket doubt is the honest default
+                    # for an unindexed prose correction -- but it is now a fallback, not the rule.
+                    "claim_ids": (
+                        [_claim_id(entry_id, i) for i in sorted(claim_verdicts)
+                         if claim_verdicts[i].get("effect") != "unaffected"]
+                        if claim_verdicts else
+                        [_claim_id(entry_id, i) for i, c in enumerate(claims)
+                         if isinstance(c, str)]
+                    ),
+                    "per_claim_effects": (
+                        {_claim_id(entry_id, i): claim_verdicts[i].get("effect")
+                         for i in sorted(claim_verdicts)} or None
+                    ),
                     "correction_text": correction.strip(),
                     "classification": None,
                 },

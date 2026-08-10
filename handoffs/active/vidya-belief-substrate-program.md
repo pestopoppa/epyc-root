@@ -238,10 +238,21 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       (`evd_clm_intake_096_00`), so the gold corpus's sharpest family (E2 — one stale extractor
       under several conclusions) is not expressible against live data via token retraction. Source-
       level mutation is the workaround ✅ 2026-08-10
-- [ ] PR2c Record per-claim correction labels at dive time. `dive_corrections` is free prose with
-      no claim index, so which claims a correction falsified is unreadable by any program — the
-      same write-time shape as the query log: seconds at dive time, impossible afterwards. Until
-      this exists the live suite cannot score corrections at all
+- [x] PR2c **`claim_corrections` implemented, and it fixes a live over-propagation defect.**
+      Measured first: 27 `dive-overturned` entries blanket-opposed **114 claims** and 155 prose
+      corrections blanket-flagged **681**, with zero per-claim records anywhere. Field added
+      (`claim_index` / `effect` ∈ {overturned, narrowed, reattributed, unaffected} / required
+      `note`), validator shape-checks it, adapter lets a per-claim verdict override the entry-level
+      one, Stage-2 obligation written into the skill. `unaffected` is the load-bearing member —
+      without it the only expressible position is blanket doubt ✅ 2026-08-10
+- [x] PR2c-backfill intake-896 backfilled from documented ground truth: 3 claims `unaffected`,
+      1 `overturned`. The 6 superseded opposition edges were **retracted** rather than edited away,
+      so an earlier frontier still folds to what we believed then. The entry now reads exactly like
+      the E3 gold family — fabrication refuted, three innocent siblings restored ✅ 2026-08-10
+- [ ] PR2c-remaining Backfill `claim_corrections` on the other 26 `dive-overturned` entries. Needs
+      whoever dived each one to say which claims they actually touched; guessing on their behalf is
+      the failure the field exists to prevent
+
 - [x] PR2d-measurement Two hand-classified samples settle it. A 20-edge uniform sample suggested
       "a citation from a dived entry is a candidate dependency" at 4/6 precision; a **60-edge sample
       stratified over the 672 dived-source edges refutes it — 18% evidential, 75% topical, 7%
@@ -292,8 +303,14 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       independent-support distribution was unchanged at 0→112, 1→4,108, 2→3 across the duplicate;
       under the old label-counting every claim would have shown 2 supports ✅ 2026-08-10
 
-- [ ] PR3 Reconcile every `human_intent_recorded` frame against an actual ratification artifact
-      (spec §15 pilot-exit check) before any promotion proposal is written
+- [x] PR3 **Reconciliation implemented as a STANDING check, not a pilot-exit one.**
+      `scripts/vidya/intent_reconcile.py` resolves every `human_intent_recorded` frame to a real
+      ratification artifact on disk. It passes today because the ledger holds **zero** intent frames
+      and nothing emits them — which is worth nothing on its own, so the check is wired to fail the
+      moment an unbacked frame appears rather than waiting to be remembered at promotion time. Six
+      tests exercise the paths that matter on a synthetic ledger (real artifact / missing file / no
+      reference / path escaping the repo), because a suite that only asserted the vacuum would lock
+      it in ✅ 2026-08-10
 
 ### R — Research program (independent of pilot promotion)
 
@@ -350,8 +367,12 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       (`normalized_quote`/`quote_hash`). Whitespace-only licensed rewrites — deliberately NOT
       case-folding or punctuation-normalizing, both pinned by tests, because this project has a
       recorded scorer defect from treating a comma as insignificant ✅ 2026-08-09
-- [ ] R3-full (severed by the ratified split, deliberately not started) purity-as-evidence,
-      licensed rewrites, e-graphs — concerns CODE identity, which this pilot does not track
+- [x] R3-full **DECLINED, not pending** — severed by the ratified V2 split and closed as a
+      decision rather than left as an open box. Purity-as-evidence, licensed rewrites and e-graphs
+      concern CODE identity, which this pilot does not track. The one slice that was load-bearing
+      (anchor stability under reformatting) shipped as R3-narrow. Recorded position if ever
+      resumed: the directed normalizer, with equality saturation earning its place only on measured
+      need. Re-open by filing a new item with a use case, not by un-ticking this ✅ 2026-08-10
 - [x] R4a Measured on real data and the result is a negative one: **100% of 4,191 beliefs are
       fragile**, 0 have independent corroboration — because claim IDs are per-entry, so two sources
       can never support the same claim. Cross-entry claim identity is a PREREQUISITE for any

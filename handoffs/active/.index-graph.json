@@ -3414,6 +3414,24 @@
       "weight": 2
     },
     {
+      "from": "RTG-47",
+      "kind": "ref",
+      "to": "EVL-06",
+      "weight": 2
+    },
+    {
+      "from": "RTG-47",
+      "kind": "ref",
+      "to": "RTG-03",
+      "weight": 4
+    },
+    {
+      "from": "RTG-47",
+      "kind": "ref",
+      "to": "RTG-16",
+      "weight": 2
+    },
+    {
       "from": "UFH-01",
       "kind": "ref",
       "to": "EVL-29",
@@ -3522,7 +3540,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T11:43:08Z",
+  "generated_at": "2026-08-10T11:54:06Z",
   "nodes": [
     {
       "age_days": 11,
@@ -4125,13 +4143,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 97,
+      "closed": 101,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-10",
       "next_action": "PR2d-backfill \u2014 author `depends_on` on the 11 evidential citation edges the 60-edge sample found",
-      "open": 8,
+      "open": 6,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -5681,6 +5699,19 @@
       "open": 5,
       "state": "active",
       "track": "handoff index and backlog graph"
+    },
+    {
+      "age_days": null,
+      "blocked": 0,
+      "closed": 0,
+      "domain": "routing-and-optimization",
+      "handoff": "dashboard-architecture-restructure.md",
+      "id": "RTG-47",
+      "last_advanced": null,
+      "next_action": "Operator picks D1\u2013D3 (recommendation: C1); then Phase 0 nav registry + shared include",
+      "open": 16,
+      "state": "active",
+      "track": "dashboard architecture restructure"
     },
     {
       "age_days": 11,
