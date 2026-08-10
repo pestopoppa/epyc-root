@@ -224,31 +224,29 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       completeness, intake schema documents the field. Ordinal-safe: grades serialize as names, so
       no stored frame changed meaning. The compliance test caught the carrier-size change, which is
       what it is for ✅ 2026-08-10
-- [ ] PR1b Build the machine anchoring pass itself: fetch cited sources, match claim terms, record
-      `located_by: machine` anchors with `quote_sha256`. Sizing: 662 cited entries / 2,994 claims.
-      The level now exists to receive them
-- [x] PR2 `live_eval.py` + `vidya eval-live`: 148/148 on a citation-drawn corpus and 149/149 on a
-      dived-entry draw, recall and discrimination 1.00, 0 harmful. **The score is not the result.**
-      Of the 60 most-cited entries 50 are unverified, so the naturally-drawn corpus never exercises
-      retraction at all — 148/148 is floor discipline plus controls, and `--verified-only` exists
-      because of it. **Uncoverable claims outnumber scored ones 2–4× (527 and 272)**: they belong
-      to entries that *cite* the mutated one, and citation is not an evidential edge, so scoring
-      them would manufacture an answer ✅ 2026-08-10
-- [x] PR2b Third instance of per-record identity found: evidence tokens are per *claim*
-      (`evd_clm_intake_096_00`), so the gold corpus's sharpest family (E2 — one stale extractor
-      under several conclusions) is not expressible against live data via token retraction. Source-
-      level mutation is the workaround ✅ 2026-08-10
-- [x] PR2c **`claim_corrections` implemented, and it fixes a live over-propagation defect.**
-      Measured first: 27 `dive-overturned` entries blanket-opposed **114 claims** and 155 prose
-      corrections blanket-flagged **681**, with zero per-claim records anywhere. Field added
-      (`claim_index` / `effect` ∈ {overturned, narrowed, reattributed, unaffected} / required
-      `note`), validator shape-checks it, adapter lets a per-claim verdict override the entry-level
-      one, Stage-2 obligation written into the skill. `unaffected` is the load-bearing member —
-      without it the only expressible position is blanket doubt ✅ 2026-08-10
-- [x] PR2c-backfill intake-896 backfilled from documented ground truth: 3 claims `unaffected`,
-      1 `overturned`. The 6 superseded opposition edges were **retracted** rather than edited away,
-      so an earlier frontier still folds to what we believed then. The entry now reads exactly like
-      the E3 gold family — fabrication refuted, three innocent siblings restored ✅ 2026-08-10
+- [x] PR1b **Machine anchoring pass built and run; `T2 MachineLocated` is populated.**
+      `scripts/vidya/machine_anchor.py` fetches a cited source, finds the sentence-span whose
+      distinctive terms match a claim, pins it with `quote_sha256` and stamps `located_by: machine`
+      so the adapter caps it below a human anchor. First run over 12 cited entries produced **20
+      anchors across 9 entries**, and the ledger now shows `Hinted/MachineLocated: 20` where the
+      level had zero occupants this morning ✅ 2026-08-10
+- [x] PR1b-guards The review step earned itself twice. Hand-checking the low-coverage tail of the
+      first run found **two wrong anchors that had passed every threshold**: a WER claim pinned to
+      a sentence that only NAMED the metric, and a token-reduction claim pinned to a span whose
+      numbers CONTRADICTED it (claim 57-59% / 9-16 points, span 56% / 3.3 points). Term overlap is
+      number-blind and this corpus is numeric. A numeric guard now requires a claim's magnitudes to
+      appear in its span — and its own first version passed the contradiction anyway, because
+      `MATH-500` contributed "500" to both sides: a shared NAME reading as a shared number.
+      Identifiers are now excluded. 13 tests, negative control first ✅ 2026-08-10
+- [ ] PR1b-scale Run the pass over the remaining ~650 cited entries. Rate-limited at 3 s/fetch, so
+      roughly 35 minutes of wall clock; the hit rate on the first 12 was 20 of 48 claims (42%).
+      Hand-review the low-coverage tail of each batch before applying — that is what caught both
+      bad anchors, and it does not become optional at scale
+- [ ] PR1b-verify-110 intake-110 claim[4] says "57-59% token reduction on MATH-500 while improving
+      accuracy by 9-16 points"; the paper's abstract says "up to 56%" and "up to 3.3 points". Either
+      our claim overstates the source or the figures come from a table the abstract does not carry.
+      Needs a read of the full paper — flagging, not asserting, since I only saw the abstract
+
 - [ ] PR2c-remaining Backfill `claim_corrections` on the other 26 `dive-overturned` entries. Needs
       whoever dived each one to say which claims they actually touched; guessing on their behalf is
       the failure the field exists to prevent

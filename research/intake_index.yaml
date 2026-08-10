@@ -2830,6 +2830,31 @@
   integration_disposition: integrated
   disposition_evidence:
   - '2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.09906
+    match_coverage: '0.6'
+    quote: Nevertheless, we find that enabling reasoning substantially expands the capability boundary of the model's parametric knowledge recall, unlocking correct answers that are otherwise effectively unreachable.
+    quote_sha256: 939dd083daa50706afa9ff0c9544445cc23ee8f392e0970bde4a204f091bcfb0
+    verified_by: vidya/machine_anchor
+  - claim_index: 1
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.09906
+    match_coverage: '0.583'
+    quote: 'To answer this, we design a series of hypothesis-driven controlled experiments, and identify two key driving mechanisms: (1) a computational buffer effect, where the model uses the generated reasoning tokens to perform latent computation independent of their semantic content; and (2) factual priming, where generating topically related facts acts as a semantic bridge that facilitates correct answer retrieval.'
+    quote_sha256: 4ff4b46de19022fbc16fc678706e36c84e4f9927db28caed7370e9e7115ebd37
+    verified_by: vidya/machine_anchor
+  - claim_index: 2
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.09906
+    match_coverage: '0.556'
+    quote: 'Importantly, this latter generative self-retrieval mechanism carries inherent risks: we demonstrate that hallucinating intermediate facts during reasoning increases the likelihood of hallucinations in the final answer.'
+    quote_sha256: d45587ae4279aa9912c8f046de64017142ef891cca8717a8d3c6995969066567
+    verified_by: vidya/machine_anchor
 - id: intake-104
   arxiv_id: '2603.07980'
   url: https://arxiv.org/abs/2603.07980
@@ -2854,6 +2879,15 @@
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.07980
+    match_coverage: '1.0'
+    quote: To this end, we introduce \$OneMillion-Bench \$OneMillion-Bench, a benchmark of 400 expert-curated tasks spanning Law, Finance, Industry, Healthcare, and Natural Science, built to evaluate agents across economically consequential scenarios.
+    quote_sha256: e21ade303c81d57e90fb67fd30944125978d359b240ab89e48978c77b7cc4334
+    verified_by: vidya/machine_anchor
 - id: intake-105
   arxiv_id: '2603.08640'
   url: https://arxiv.org/abs/2603.08640
@@ -2987,6 +3021,39 @@
     - autopilot-continuous-optimization.md
   handoffs_updated:
   - autopilot-continuous-optimization.md
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.08127
+    match_coverage: '0.636'
+    quote: 'EvoScientist comprises three specialized agents: a Researcher Agent (RA) for scientific idea generation, an Engineer Agent (EA) for experiment implementation and execution, and an Evolution Manager Agent (EMA) that distills insights from prior interactions into reusable knowledge.'
+    quote_sha256: 5a3afa5719aeef693fb48d57f529b01c070878fbf3df4a8a7d0677379e6e25f2
+    verified_by: vidya/machine_anchor
+  - claim_index: 1
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.08127
+    match_coverage: '0.625'
+    quote: 'EvoScientist contains two persistent memory modules: (i) an ideation memory, which summarizes feasible research directions from top-ranked ideas while recording previously unsuccessful directions; and (ii) an experimentation memory, which captures effective data processing and model training strategies derived from code search trajectories and best-performing implementations.'
+    quote_sha256: e24e036ce915e5d89093d19d1ad0c32fa7e709f0f6b47ab2f51745ab128aa0e7
+    verified_by: vidya/machine_anchor
+  - claim_index: 2
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.08127
+    match_coverage: '0.857'
+    quote: Experiments show that EvoScientist outperforms 7 open-source and commercial state-of-the-art systems in scientific idea generation, achieving higher novelty, feasibility, relevance, and clarity via automatic and human evaluation.
+    quote_sha256: b2bb691213c9a13064d4ed026d80154b32ecb47999fb3d1456ade9941c302ab4
+    verified_by: vidya/machine_anchor
+  - claim_index: 3
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.08127
+    match_coverage: '0.889'
+    quote: EvoScientist also substantially improves code execution success rates through multi-agent evolution, demonstrating persistent memory's effectiveness for end-to-end scientific discovery.
+    quote_sha256: 0f398fd0f8cf86501a06dcfad423ec68fcc37845682b92bb7710a93003d864a7
+    verified_by: vidya/machine_anchor
 - id: intake-109
   arxiv_id: '2603.04379'
   url: https://arxiv.org/abs/2603.04379
@@ -3009,6 +3076,23 @@
   discovered_via: input
   verdict: not_applicable
   ingested_date: '2026-03-14'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.04379
+    match_coverage: '0.833'
+    quote: 'We make breakthroughs along three key dimensions: (1) robustness to long-video drifting without commonly used anti-drifting heuristics such as self-forcing, error-banks, or keyframe sampling; (2) real-time generation without standard acceleration techniques such as KV-cache, sparse/linear attention, or quantization; and (3) training without parallelism or sharding frameworks, enabling image-diffusion-scale batch sizes while fitting up to four 14B models within 80 GB of GPU memory.'
+    quote_sha256: 3c30f37a620b1bf7c582d19a9c4f74e5f3905679255311f8f65d2224841fe1a7
+    verified_by: vidya/machine_anchor
+  - claim_index: 2
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.04379
+    match_coverage: '0.833'
+    quote: Specifically, Helios is a 14B autoregressive diffusion model with a unified input representation that natively supports T2V, I2V, and V2V tasks.
+    quote_sha256: cec0c4f4fb2790387ed054b54438cc4808b39c8a1ed9c15b6e73bbc0fd9c3221
+    verified_by: vidya/machine_anchor
 - id: intake-110
   arxiv_id: '2603.05433'
   url: https://arxiv.org/abs/2603.05433
@@ -3046,6 +3130,23 @@
     - routing-intelligence.md
   handoffs_created:
   - reasoning-compression.md
+  claim_anchors:
+  - claim_index: 2
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.05433
+    match_coverage: '0.857'
+    quote: It requires no ground-truth answers, no token budgets, and no difficulty estimators.
+    quote_sha256: 63ef1cbffc08459ace838c4b2eb3920ee355d5052f1dd86e1fc68649a902d16c
+    verified_by: vidya/machine_anchor
+  - claim_index: 3
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://arxiv.org/abs/2603.05433
+    match_coverage: '0.7'
+    quote: 'The reverse-KL objective is naturally difficulty-adaptive: it compresses easy problems aggressively while preserving the reasoning steps that hard problems require.'
+    quote_sha256: 7786b747ad1009b67a35800fb09b37f2cddbf5ba2358c636a3962b315c25531c
+    verified_by: vidya/machine_anchor
 - id: intake-111
   arxiv_id: null
   url: https://github.com/inclusionAI/AReaL
@@ -3157,6 +3258,15 @@
   integration_disposition: awaiting_dive
   disposition_evidence:
   - '2026-08-05 audit: no durable handoff route or repository-grounded closure was found; a primary-source Stage-2 dive is required before task creation. Wiki citation(s): wiki/agent-architecture.md.'
+  claim_anchors:
+  - claim_index: 2
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://github.com/paperclipai/paperclip
+    match_coverage: '0.625'
+    quote: Full tool-call tracing and immutable audit log. 🛡️ Governance Approve hires, override strategy, pause or terminate any agent — at any time. 📊 Org Chart Hierarchies, roles, reporting lines.
+    quote_sha256: e72b409b0bf3ea14ff2b414398a808372597a649babbc0f890de90f5715bdaf0
+    verified_by: vidya/machine_anchor
 - id: intake-116
   arxiv_id: null
   url: https://github.com/elder-plinius/OBLITERATUS
@@ -3254,6 +3364,15 @@
   integration_disposition: integrated
   disposition_evidence:
   - '2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://github.com/AlexsJones/llmfit
+    match_coverage: '0.5'
+    quote: Supports multi-GPU setups, MoE architectures, dynamic quantization selection, speed estimation, and local runtime providers (Ollama, llama.cpp, MLX, Docker Model Runner, LM Studio).
+    quote_sha256: 18bd5950250766e4a50833397d8b3d87e49848097975d03461cdcb3560581756
+    verified_by: vidya/machine_anchor
 - id: intake-120
   arxiv_id: '2603.05706'
   url: https://openai.com/index/reasoning-models-chain-of-thought-controllability/
@@ -3279,6 +3398,23 @@
     - routing-intelligence.md
   handoffs_updated:
   - routing-intelligence.md
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://openai.com/index/reasoning-models-chain-of-thought-controllability/
+    match_coverage: '0.7'
+    quote: Across frontier models, CoT controllability scores are low, ranging from 0.1% and not exceeding 15.4% for any current frontier model we tested.
+    quote_sha256: 76b8216111cfe00df80e5b08ae474f37f8e66e5c51fbb7d411e074aab4f0dbcc
+    verified_by: vidya/machine_anchor
+  - claim_index: 1
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://openai.com/index/reasoning-models-chain-of-thought-controllability/
+    match_coverage: '0.571'
+    quote: Lower CoT controllability is associated with higher monitorability and, therefore, higher safety.
+    quote_sha256: b33bb56dc90d10fb05ce54592cc5ecebb03c0f64928edd5e205058ddb875e281
+    verified_by: vidya/machine_anchor
 - id: intake-121
   arxiv_id: null
   url: https://huggingface.co/moondream/moondream3-preview
@@ -3308,6 +3444,39 @@
     - 02-moe-optimization.md
   handoffs_updated:
   - multimodal-pipeline.md
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://huggingface.co/moondream/moondream3-preview
+    match_coverage: '0.8'
+    quote: Architecture Usage Query Caption Point Detect Caching image encodings (advanced) Moondream 3 (Preview) is an vision language model with a mixture-of-experts architecture (9B total parameters, 2B active).
+    quote_sha256: 3c4b00fc6ae04920946b238f1fa43b08d95bf4a8e0ecd716a55ee604e7b60767
+    verified_by: vidya/machine_anchor
+  - claim_index: 1
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://huggingface.co/moondream/moondream3-preview
+    match_coverage: '1.0'
+    quote: This model makes no compromises, delivering state-of-the-art visual reasoning while still retaining our efficient and deployment-friendly ethos. ✨ Demo · ☁️ Cloud API · 📝 Release notes Architecture 24 layers; the first four are dense, the rest have MoE FFNs with 64 experts, 8 activated per token MoE FFNs have GeGLU architecture, with inner/gate dim of 1024.
+    quote_sha256: 1ee6d59b6ebab0ebd14bbb2821fc802e3b64936d48d23d47aa0e02e5a7dc0b03
+    verified_by: vidya/machine_anchor
+  - claim_index: 2
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://huggingface.co/moondream/moondream3-preview
+    match_coverage: '1.0'
+    quote: Usable context length increased to 32K, with a custom efficient SuperBPE tokenizer Multi-headed attention with learned position- and data-dependent temperature scaling SigLIP-based vision encoder, with multi-crop channel concatenation for token-efficient high resolution image processing For more details, please refer to the release notes .
+    quote_sha256: ece61836dcc8eafb4cc4e03a9456069ae9590bef5a8c7f69c078a5717b5cdce7
+    verified_by: vidya/machine_anchor
+  - claim_index: 3
+    kind: page-and-quote
+    located_by: machine
+    locator: matched span in https://huggingface.co/moondream/moondream3-preview
+    match_coverage: '1.0'
+    quote: This model makes no compromises, delivering state-of-the-art visual reasoning while still retaining our efficient and deployment-friendly ethos. ✨ Demo · ☁️ Cloud API · 📝 Release notes Architecture 24 layers; the first four are dense, the rest have MoE FFNs with 64 experts, 8 activated per token MoE FFNs have GeGLU architecture, with inner/gate dim of 1024.
+    quote_sha256: 1ee6d59b6ebab0ebd14bbb2821fc802e3b64936d48d23d47aa0e02e5a7dc0b03
+    verified_by: vidya/machine_anchor
 - id: intake-122
   arxiv_id: null
   url: https://huggingface.co/datasets/paperbd/paper-cited-chunks-v1
