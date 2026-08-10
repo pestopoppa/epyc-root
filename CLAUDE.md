@@ -59,10 +59,11 @@ Coupling edges: `.claude/dependency-map.json`.
 ## Handoff Workflow
 
 - `handoffs/active/` — In-progress · `handoffs/blocked/` — Waiting · `handoffs/completed/` — Done · `handoffs/archived/` — Historical
-- **Start here**: [`handoffs/active/master-handoff-index.md`](handoffs/active/master-handoff-index.md) — single entry point; dispatches to 6 domain sub-indices plus standalone strategy indices.
+- **Start here**: [`handoffs/active/master-handoff-index.md`](handoffs/active/master-handoff-index.md) — **router only** (~70 lines): a domain table, the operator decision queue, and a generated backlog rollup. It owns no backlog rows. Live campaign posture is in [`handoffs/active/CURRENT-CAMPAIGN.md`](handoffs/active/CURRENT-CAMPAIGN.md).
+- **Six domain indices** carry the work, one thin row per handoff (`ID | Track | Handoff | Next action | Deps`). **Every active handoff is owned by exactly one index** — a second row is a defect. Liveness (`open`, `last_advanced`, blocked) is **generated**, never hand-written: `python3 scripts/handoffs/index_state.py` writes `handoffs/active/.index-state.json` + the master rollup; `--check` gates coverage/schema/freshness and must exit 0 before committing.
 - Standing strategic assessment (2026-06-12): `handoffs/completed/fable5-findings-*`, start at the executive summary.
 - **Checkbox discipline**: the dashboard counts checkbox state ONLY — any edit recording completed work flips `- [ ]` → `- [x]` (append `✅ YYYY-MM-DD`); mid-flight discoveries get their own task line. Full axioms: `agents/shared/SESSION_LIFECYCLE.md`.
-- Authoring a coordination index: `docs/guides/agent-workflows/handoff-index-authoring.md`. On completion, extract findings to docs, move to `completed/`.
+- Authoring/editing an index: `docs/guides/agent-workflows/handoff-index-authoring.md` — the thin-row contract. Rows carry a pointer and a next step; **status, evidence and history never go in a row**. On completion, extract findings to docs, move to `completed/`, and delete the row.
 
 ## Progress Tracking
 

@@ -42,15 +42,36 @@ Watch for the three failure shapes that audit found: a conclusion stated in pros
 
 ### 3. Handoff Index Updates
 
-- Update relevant domain index files linked from `handoffs/active/master-handoff-index.md`
-- Update the master index priority queue if item status changed (completed, priority shift, new items)
-- Strikethrough completed items with checkmark and date
+**Indices follow the thin-row contract (rewritten 2026-08-10)** — read
+`docs/guides/agent-workflows/handoff-index-authoring.md` before editing one. Rows are
+`| ID | Track | Handoff | Next action | Deps |`; a row carries a pointer and a next step, never status,
+evidence, or history. The master index owns **no backlog rows** — it is a router plus the operator
+decision queue. Do not re-add a "master index priority queue".
+
+- Update the `Next action` cell of any row this session advanced (one imperative line, ≤140 chars).
+- **Do not strike through completed items** — delete the row. Terminal rows do not stay in the queue.
+- Each handoff belongs to **exactly one** index. Never add a second row in another domain; use `Deps`.
+- **New handoff created this session → it needs a row**, or it is invisible to dispatch (measured: 7
+  orphaned handoffs before this contract, one of them a whole v9 kernel item).
+- **Operator decisions** go in the master index's operator queue with an `Open since` date. A form-screen
+  cannot detect "needs a human choice"; a decision left in a handoff body gets missed (measured: G9-disk,
+  two weeks unnoticed, governing 227 GB).
+
+**Required gate — run it and report the result:**
+
+```bash
+python3 scripts/handoffs/index_state.py          # refresh generated state
+python3 scripts/handoffs/index_state.py --check   # coverage/schema/freshness; non-zero on failure
+```
+
+`--check` must exit 0 before committing. It fails on duplicate ownership, orphans, dead handoff links,
+malformed rows, over-long `Next action`, unresolved `Deps`, and a stale generated block.
 
 **Index hygiene — prune at wrap-up only (never mid-campaign).** Indices track *outstanding TODOs*, not completed-work narration. Do this pruning only here, at wrap-up, so completed work is reviewed on a controlled cadence rather than vanishing ad-hoc while an agent works:
 
-- **Genuinely complete** handoff/section → archive it (`git mv` to `handoffs/completed/` + a completion banner; repoint its sibling links to `../active/`) and remove its index reference.
-- **Not complete, but the index entry has accreted stale completed-narration** → keep the handoff active, trim the index entry to its open items only. Chronology belongs in the progress log, not the index cell (don't append "Update (date):" into index cells).
-- Point handoff *status* at the machine-readable source of truth (`execution_manifest.jsonl`, test names) instead of re-narrating it in prose, so the index can't drift.
+- **Genuinely complete** handoff/section → archive it (`git mv` to `handoffs/completed/` + a completion banner; repoint its sibling links to `../active/`) and delete its index row.
+- **Not complete, but the row's `Next action` is stale** → keep the handoff active and rewrite that one cell. Chronology belongs in the progress log; superseded narration belongs in `handoffs/archived/<index>-history-through-YYYY-MM-DD.md`, never in a cell.
+- Point handoff *status* at the machine-readable source of truth (`.index-state.json`, `execution_manifest.jsonl`, test names) instead of re-narrating it in prose, so the index can't drift.
 - **Always archive, never delete.** **List everything you pruned/archived in the wrap-up output** under the `## Index pruning / handoff compaction` heading defined in Output Format below so the operator can review it before it leaves the active tree.
 
 **Handoff compaction — split completed scope out of oversized active handoffs.** Active handoffs should optimize for the next implementer. If completed detail now hides the live task, compact the handoff during this wrap-up step:

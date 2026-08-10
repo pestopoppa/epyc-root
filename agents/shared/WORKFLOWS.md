@@ -38,7 +38,7 @@ changes the master table.
 
 1. Reconcile handoff checklist against real code/tests before marking complete.
 2. Extract durable findings into docs and agent playbooks; keep handoff as execution log, not the only source of truth.
-3. Update the master index (`handoffs/active/master-handoff-index.md`): **delete** the completed row — terminal rows do not stay in the queue. Update `handoffs/blocked/BLOCKED.md` if a blocker changed.
+3. Update the **owning domain index** (the master index is a router and owns no backlog rows): **delete** the completed row — terminal rows do not stay in the queue. Then `python3 scripts/handoffs/index_state.py` + `--check`. Update `handoffs/blocked/BLOCKED.md` if a blocker changed.
 4. Record evidence in `CHANGELOG.md` and progress log (`progress/YYYY-MM/`) with exact commands/tests used; performance/quality numbers use the claim grammar (`agents/shared/MEASUREMENT_POLICY.md`).
 5. Move handoff from `handoffs/active/` to `handoffs/completed/` only after docs + trackers + evidence are in place.
 

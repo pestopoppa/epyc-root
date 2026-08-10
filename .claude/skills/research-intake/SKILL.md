@@ -341,8 +341,15 @@ ledger, then build ONE plan covering:
 1. **Handoff edits** — per target file, the exact section and verbatim task lines to append, including
    `- [x] … ✅ YYYY-MM-DD` for anything a dive already settled.
 2. **New stubs** — full stub content (template below), so the operator reviews the actual text.
-3. **Index rows** — domain index + master-index placement for anything priority-worthy or
-   time-sensitive. A task buried at line 1400 of a long handoff is filed, not discoverable.
+3. **Index rows** — **exactly one** domain-index row per handoff, in the thin-row schema
+   `| ID | Track | Handoff | Next action | Deps |` (contract:
+   `docs/guides/agent-workflows/handoff-index-authoring.md`). A task buried at line 1400 of a long
+   handoff is filed, not discoverable — but a *second* row in another domain is a defect, not extra
+   discoverability; cross-domain relevance is a `Deps` edge.
+   - **Every new stub from item 2 needs a row**, or it lands orphaned and invisible to dispatch.
+   - `Next action` is one imperative line, ≤140 chars — never the dive's findings or rationale.
+   - The **master index takes no backlog rows**. It takes a row only when the item is a genuine
+     *operator decision*, which goes in its operator queue with an `Open since` date.
 4. **Explicit declines** — every ledger item not being filed, with its reason.
 5. **Intake-entry updates** — which entries get `handoffs_updated`/`handoffs_created` filled, and
    what `dive_corrections` land.
@@ -470,6 +477,11 @@ require global coordination and run after collection).
 - **Stage 2 writes ONLY intake-entry verification/correction fields, plus the Stage-2b entries.**
 - **Stage 3 writes ONLY the plan file.**
 - **Stage 4 writes what the approved plan names — nothing more.**
+- **Stage 4 must end with `python3 scripts/handoffs/index_state.py` then `--check` exiting 0.**
+  Intake is the main source of *new* handoffs, so it is the main source of orphans: a stub written
+  without an index row is invisible to every session and to the dashboard. `--check` is what catches
+  that, plus duplicate ownership if a row was filed in two domains. Regenerating also refreshes the
+  master rollup, so the new handoff's open-task count appears immediately.
 - **APPEND to `research/intake_index.yaml` as TEXT; never round-trip the whole document.**
   `yaml.safe_load` + `yaml.safe_dump` looks convenient and is destructive: it strips every comment
   in the file and reflows all 49k lines, so a 24-entry append lands as ~19k lines of churn that no
@@ -503,8 +515,9 @@ still clean.
 pass (Stage-1 actionables, dive ledger, steering ledger, no-unverified-quotes, dive-surfaced sources);
 every named owning handoff checked for frozen/pointer status.
 
-**Stage 4** — diff matches the approved plan; `validate_intake.sh` exit 0; checkbox counts reported;
-only own files staged.
+**Stage 4** — diff matches the approved plan; `validate_intake.sh` exit 0;
+**`python3 scripts/handoffs/index_state.py --check` exit 0** (every new stub owned by exactly one index
+row, no orphans, no duplicates, generated block fresh); checkbox counts reported; only own files staged.
 
 ## Anti-Rationalization
 
