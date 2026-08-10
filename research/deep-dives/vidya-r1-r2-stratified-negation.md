@@ -186,6 +186,44 @@ proof remains open, and so does the question that decides whether any of this is
 > it. The closure is small only when a retraction's negation-reachable set is a small fraction of
 > the stratum, and whether real programs have that shape is **unmeasured**.
 
+### 2.4d R1b-usecase — the first rule that genuinely needs negation, named 2026-08-10
+
+R1b has been a paper track because the pilot's rule set is positive (spec §12), so there was no
+negation stratum to measure a closure fraction on. Naming the rule that creates one is the
+prerequisite, and it turns out **two of the three candidates on the shortlist do not need negation
+at all**:
+
+| Candidate rule | Needs stratified negation? |
+|---|---|
+| "no unretracted opposition exists" | **No.** The fold materializes opposition, so the gate tests it positively after the fixpoint closes (`con_ok`). |
+| "no fresher measurement supersedes this" | **No.** Same shape — supersession is materialized, then read. |
+| "this correction is discharged" | **Yes**, and it is the first one that is. |
+
+Negation-as-failure is only *needed* when a derived fact depends on the non-derivability of another
+fact **inside the same fixpoint**. Testing a materialized relation afterwards is not that; it is
+ordinary evaluation followed by a filter, which is what the gate does today.
+
+**The rule that qualifies: correction discharge over the transitive dependency closure.**
+
+> A correction is DISCHARGED when no claim that transitively depends on it remains flagged.
+
+Both halves are load-bearing. *Transitively* makes the dependent relation recursive — `depends_on`
+edges compose, so a claim can inherit a flag through a chain. *No claim remains flagged* is
+negation over a relation derived in the same program: whether a dependent is still flagged is
+itself computed from corrections, dependency alerts, and their reviews. That is a genuine
+stratified-negation rule, not a post-hoc filter.
+
+It is also wanted rather than hypothetical. **678 claims currently sit `review_required` with no
+closure rule at all** — the flag is set by corrections and dependency alerts, and nothing in the
+system can ever say a correction is finished. That is the same one-way-ratchet shape the
+`correction_reviewed` frame was introduced to break at the single-claim level, reappearing at the
+level of a correction's whole blast radius.
+
+**What this unblocks, and what it does not.** With this rule the pilot acquires a negation stratum,
+so `R1b-closure-size` becomes measurable on a real program rather than on toy sweeps — and the
+91.7% closure fraction that made the exact incremental route look pointless can finally be
+re-measured where it matters. It does not unblock `R1b-proof`; the theorem is unchanged.
+
 ### 2.5 What would settle it
 
 1. Either a proof of (a) + (b), likely via the game semantics — the posLFP result is proved through

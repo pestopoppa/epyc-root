@@ -242,11 +242,18 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       roughly 35 minutes of wall clock; the hit rate on the first 12 was 20 of 48 claims (42%).
       Hand-review the low-coverage tail of each batch before applying — that is what caught both
       bad anchors, and it does not become optional at scale
-- [ ] PR1b-verify-110 intake-110 claim[4] says "57-59% token reduction on MATH-500 while improving
-      accuracy by 9-16 points"; the paper's abstract says "up to 56%" and "up to 3.3 points". Either
-      our claim overstates the source or the figures come from a table the abstract does not carry.
-      Needs a read of the full paper — flagging, not asserting, since I only saw the abstract
-
+- [x] PR1b-verify-110 **Not a mis-anchor — the SOURCE was corrected upstream and our record aged
+      into falsity.** Verified against full text of arXiv:2603.05433 v1 and v7. Our claim is a
+      verbatim copy of the v1 abstract; the authors later found the "+9-16 points" was a SCORING
+      ARTIFACT (the base model split answers across two formats, so a boxed-only grader undercounted
+      it) and revised the paper. Current Table 2: Qwen3-8B 95.7 → 95.7 (+0.0) and Qwen3-14B
+      93.0 → 96.3 (+3.3), against a claimed +9-16. The entry also claimed +10 points on AIME 2024
+      where the current table shows **−1.2**. Title updated to the current one, claim[4] marked
+      `overturned` with the reason, audit note appended. Nobody touched this record and it became
+      false anyway — the freshness failure the substrate exists for, in its purest form ✅ 2026-08-10
+- [ ] PR1b-upstream-drift Detect this class generally: an entry ingested against arXiv vN while the
+      paper is now at vM. Cheap to check (the API returns the current version), and intake-110 shows
+      the failure is silent. Scope: 1,068 entries, ~700 with an arXiv id
 - [ ] PR2c-remaining Backfill `claim_corrections` on the other 26 `dive-overturned` entries. Needs
       whoever dived each one to say which claims they actually touched; guessing on their behalf is
       the failure the field exists to prevent
@@ -340,17 +347,31 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       re-evaluation at this size and is not yet worth building ✅ 2026-08-10
 - [ ] R1b-proof The proof remains open — now for the *dual-closed* route, which is the one worth
       proving. Deeper strata and non-two-valued absence are still unexplored
-- [ ] R1b-closure-size Measure the closure fraction on realistic programs. The exact route is only
-      worth implementing if a retraction's negation-reachable set is a small part of the stratum;
-      at sweep size it is 91.7%, which would make it pointless. **BLOCKED, and correctly so: the
-      pilot has no negation stratum to measure.** Spec §12 requires the rule set to be positive, or
-      to exclude negated strata from incremental retraction and full-refold them. So there are no
-      realistic programs — the prerequisite is a USE CASE that needs negation (§R1b-usecase), not
-      more compute
-- [ ] R1b-usecase Name the first rule that genuinely needs negation. Candidates worth weighing:
-      "no unretracted opposition exists", "no fresher measurement supersedes this", "no obligation
-      is outstanding on this claim". Until one of these is wanted, R1b is a paper track and the
-      exact route should stay unbuilt
+- [ ] R1b-closure-size Measure the closure fraction on a realistic program. **Blocker narrowed
+      again 2026-08-10**: the negation stratum now EXISTS (R1b-discharge) but holds only 4
+      dependency edges, so a closure fraction over it would measure the fixture, not the program.
+      Needs PR2d-backfill at scale — perhaps 50+ authored `depends_on` edges — before the number
+      means anything
+- [x] R1b-usecase **Named: correction discharge over the transitive dependency closure.** Two of
+      the three shortlisted candidates turned out NOT to need negation — "no unretracted opposition"
+      and "no fresher measurement supersedes this" are both materialized by the fold and then tested
+      positively, which is evaluation plus a filter, not negation-as-failure. The rule that
+      qualifies is *a correction is DISCHARGED when no claim transitively depending on it remains
+      flagged*: the dependent relation is recursive (`depends_on` composes) and the flag is derived
+      in the same program. It is wanted, not hypothetical — **678 claims sit `review_required`
+      today with no closure rule**, the same one-way ratchet the `correction_reviewed` frame broke
+      at single-claim level, reappearing over a correction's whole blast radius.
+      `research/deep-dives/vidya-r1-r2-stratified-negation.md` §2.4d ✅ 2026-08-10
+- [x] R1b-discharge **Implemented — the pilot has its first negation stratum.** A correction is
+      DISCHARGED when no claim transitively depending on it remains flagged; computed after the
+      positive fixpoint closes, which is exactly what stratification licenses. On the live ledger:
+      **2 discharged** (intake-939, intake-972) and **2 held open** by dependents still flagged from
+      their own corrections. Seven tests, the load-bearing one being transitivity — discharging on
+      direct dependents alone would call a correction finished while its reach was still flagged.
+      Two bugs found on the way: the closure walked `claim → what it depends on` instead of
+      `claim → what it belongs to`, and `sorted()` on (label, Grade) pairs crashed on the live
+      ledger whenever two labels tied, a latent defect that needed the duplicate ingest to reach
+      and that every test still passed through ✅ 2026-08-10
 - [x] R2a Scoped, with the constraint that removes an approach: gfp does NOT specialize
       (Example 42), so absence certificates cannot use the incremental path and must route through
       S-infinity[X,X-bar] — affordable here because the carrier is meet-idempotent. Also recorded:

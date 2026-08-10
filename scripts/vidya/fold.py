@@ -103,6 +103,11 @@ class Belief:
     def review_required(self) -> bool:
         return bool(self.corrections or self.dependency_alerts)
 
+    @property
+    def flagged(self) -> bool:
+        """Alias for readability inside the discharge rule; same condition, different question."""
+        return self.review_required
+
     def verdict(self, floor: Grade, *, conjunctive: bool = True) -> str:
         """Four-valued verdict against a policy floor.
 
@@ -159,6 +164,10 @@ class FoldResult:
     reviewed_corrections: list[str] = field(default_factory=list)
     applied_aliases: list[str] = field(default_factory=list)
     alias_map: dict[str, str] = field(default_factory=dict)
+    # R1b negation stratum: entries whose transitive dependents are all clear, and those still
+    # holding at least one flagged claim. An entry appears in exactly one of the two.
+    discharged: dict[str, list[str]] = field(default_factory=dict)
+    undischarged: dict[str, list[str]] = field(default_factory=dict)
 
     def state_hash(self) -> str:
         """A content hash over the derived state -- the determinism-suite anchor."""
@@ -235,6 +244,7 @@ def fold(
     source_locator: dict[str, str] = {}    # source_id -> normalized locator
     depends_edges: list[tuple[str, str, str]] = []   # (claim_id, source_id, entry)
     supported_sources: set[str] = set()              # sources with surviving support
+    claim_source: dict[str, str] = {}                # claim_id -> the source that proposed it
     # Claims whose supports must NOT be counted as independent of each other, because a
     # human said the two records are one source or one derived from the other.
     dependent_group: dict[str, str] = {}   # claim_id -> group key
@@ -317,10 +327,14 @@ def fold(
             continue
 
         if ftype == FT_CLAIM:
-            claim_id = frame.get("assertion", {}).get("claim_id")
+            assertion = frame.get("assertion", {})
+            claim_id = assertion.get("claim_id")
             if not claim_id:
                 raise FoldError(f"claim frame {fid} has no assertion.claim_id")
-            claims.add(_canonical(claim_id))
+            claim_id = _canonical(claim_id)
+            claims.add(claim_id)
+            if assertion.get("source_id"):
+                claim_source[claim_id] = assertion["source_id"]
 
         elif ftype in (FT_SUPPORT, FT_OPPOSE):
             assertion = frame.get("assertion", {})
@@ -411,8 +425,13 @@ def fold(
     while True:
         changed = False
         for claim_id in sorted(claims):
-            pro_paths = sorted(support.get(claim_id, []))
-            con_paths = sorted(oppose.get(claim_id, []))
+            # Sort on the LABEL only. A bare `sorted()` on (label, Grade) pairs falls through to
+            # comparing Grades whenever two labels tie, and Grade is not orderable -- a latent
+            # crash that needs duplicate evidence ids to reach. The duplicate ingest of 2026-08-10
+            # produced exactly that, so the fold raised TypeError on the live ledger while every
+            # test still passed. Determinism is unaffected: equal labels are interchangeable.
+            pro_paths = sorted(support.get(claim_id, []), key=lambda t: t[0])
+            con_paths = sorted(oppose.get(claim_id, []), key=lambda t: t[0])
             pro, pro_w = join_with_witnesses(pro_paths)
             con, con_w = join_with_witnesses(con_paths)
             corrections = sorted(corrections_by_claim.get(claim_id, []))
@@ -449,6 +468,49 @@ def fold(
                 "so this is an implementation bug, not a slow case."
             )
 
+    # ---------------------------------------------------------------- discharge (R1b)
+    #
+    # STRATUM 2. Everything above is the positive fixpoint; this is the one rule whose body needs
+    # the ABSENCE of a derived fact. Computed after the fixpoint closes, which is exactly what
+    # stratification licenses: a negated stratum reads a lower stratum that is already complete.
+    #
+    # `depends_on` composes, so the dependents of a correction are its transitive closure — a claim
+    # three edges away still inherits the doubt, and discharging on direct dependents only would
+    # declare a correction finished while its reach was still flagged.
+    # Keyed by SOURCE, not by entry name. The first version walked `claim -> what it depends on`,
+    # which is the wrong direction: to continue a chain you need `claim -> what it BELONGS to`, so
+    # you can find whatever depends on that. Keying everything by source_id makes both directions
+    # available without the fold having to know the adapter's entry-naming convention.
+    dependents_of_source: dict[str, set[str]] = {}
+    entry_of_source: dict[str, str] = {}
+    for claim_id, src, entry in depends_edges:
+        dependents_of_source.setdefault(src, set()).add(claim_id)
+        entry_of_source[src] = entry
+
+    def _closure(source_id: str) -> set[str]:
+        """Every claim reachable from this source through `depends_on`, transitively."""
+        seen: set[str] = set()
+        stack = list(dependents_of_source.get(source_id, ()))
+        while stack:
+            cid = stack.pop()
+            if cid in seen:
+                continue
+            seen.add(cid)
+            # continue through the source this dependent itself belongs to
+            own_source = claim_source.get(cid)
+            if own_source:
+                stack.extend(dependents_of_source.get(own_source, ()))
+        return seen
+
+    discharged: dict[str, list[str]] = {}
+    undischarged: dict[str, list[str]] = {}
+    for source_id in sorted(dependents_of_source):
+        label = entry_of_source.get(source_id, source_id)
+        reach = sorted(_closure(source_id))
+        still_flagged = [c for c in reach
+                         if c in beliefs and beliefs[c].review_required]
+        (undischarged if still_flagged else discharged)[label] = still_flagged or reach
+
     return FoldResult(
         beliefs=beliefs,
         iterations=iterations,
@@ -460,6 +522,8 @@ def fold(
         reviewed_corrections=sorted(reviewed_corrections),
         applied_aliases=sorted(a for a in applied_aliases if a),
         alias_map=dict(sorted(alias_of.items())),
+        discharged=discharged,
+        undischarged=undischarged,
     )
 
 

@@ -3097,7 +3097,7 @@
   arxiv_id: '2603.05433'
   url: https://arxiv.org/abs/2603.05433
   source_type: paper
-  title: On-Policy Self-Distillation for Reasoning Compression (OPSDC)
+  title: 'CRISP: Compressed Reasoning via Iterative Self-Policy Distillation'
   authors:
   - Hejian Sang
   - Yuanda Xu
@@ -3147,6 +3147,10 @@
     quote: 'The reverse-KL objective is naturally difficulty-adaptive: it compresses easy problems aggressively while preserving the reasoning steps that hard problems require.'
     quote_sha256: 7786b747ad1009b67a35800fb09b37f2cddbf5ba2358c636a3962b315c25531c
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 4
+    effect: overturned
+    note: 'SUPERSEDED UPSTREAM. Verbatim from the v1 abstract of arXiv:2603.05433, which the authors revised away. Current Table 2: Qwen3-8B MATH-500 95.7 -> 95.7 (+0.0, 56.9% reduction) and Qwen3-14B 93.0 -> 96.3 (+3.3, 56.3%). The v1 ''+9-16 points'' was the BASE model being mis-scored by a boxed-only grader, per the authors'' own Appendix D. Verified against full text of v1 and v7 on 2026-08-10.'
 - id: intake-111
   arxiv_id: null
   url: https://github.com/inclusionAI/AReaL
