@@ -245,6 +245,8 @@
 
   section.graph .glegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:2px 0 8px;font-size:12px;color:var(--muted)}
   section.graph .gsw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  section.graph .gsw.ring{background:transparent;border:2.5px solid;border-radius:50%}
+  section.graph .gsw.dot{border-radius:50%}
   section.graph .gnote{font-size:12px;margin:0 0 8px;max-width:88ch}
   section.graph .gwrap{position:relative}
   section.graph svg{width:100%;height:auto;display:block;background:rgba(0,0,0,.12);border:1px solid var(--line,#2a2f3a);border-radius:6px}
@@ -341,12 +343,14 @@
     <h2>Backlog graph — how handoffs relate
       <span class="badge" id="graph-badge" style="text-transform:none;font-weight:400;margin-left:8px"><span class="dot"></span><span>graph</span></span>
     </h2>
+    <div class="glegend" id="graph-legend"></div>
     <div class="glegend">
-      <span><i class="gsw" style="background:#3fb950"></i>advanced &le;7d</span>
-      <span><i class="gsw" style="background:#d29922"></i>8&ndash;30d</span>
-      <span><i class="gsw" style="background:#e5534b"></i>&gt;30d</span>
-      <span><i class="gsw" style="background:#6e7681"></i>never</span>
-      <span class="muted">size &prop; open tasks &middot; clustered by domain &middot; hover a node to isolate its links</span>
+      <span class="muted">ring = liveness:</span>
+      <span><i class="gsw ring" style="border-color:#3fb950"></i>&le;7d</span>
+      <span><i class="gsw ring" style="border-color:#d29922"></i>8&ndash;30d</span>
+      <span><i class="gsw ring" style="border-color:#e5534b"></i>&gt;30d</span>
+      <span><i class="gsw ring" style="border-color:#6e7681"></i>never</span>
+      <span class="muted">size &prop; open tasks &middot; fill = owning index (blended when a handoff links across domains) &middot; hover to reveal its links</span>
     </div>
     <p class="gnote muted" id="graph-note"></p>
     <div class="gwrap">
@@ -972,15 +976,46 @@ async function loadTimeline(){
 
 
 
-/* ---------------- backlog graph (embedded, under the kanban) ---------------- */
-const GAGE = d => (d===null||d===undefined) ? '#6e7681'
-               : d<=7 ? '#3fb950' : d<=30 ? '#d29922' : '#e5534b';
+/* ---------------- backlog graph (embedded, under the kanban) ----------------
+   Layered, not clustered: the six core indices sit in a row at the top and
+   ownership flows DOWNWARD to the handoffs they track.
+
+   Two colour channels, because two independent facts matter and one channel
+   cannot carry both:
+     fill   = which index owns it, BLENDED toward the domains it links into, so a
+              handoff that straddles two areas reads as straddling them.
+     ring   = liveness (days since a checkbox moved) — the signal indices never had.
+
+   The previous version packed each domain into a phyllotaxis disc sized
+   `cellR/sqrt(n)*1.55`, which puts the outermost node at 1.55x the cell radius —
+   so the biggest domain spilled out of its cell and over the section text. Nodes
+   are now placed by an explicit beeswarm that cannot leave the canvas: x comes
+   from the domain blend, y is the first non-colliding slot, and the viewBox is
+   sized to whatever that produces.                                              */
+const IDX_COLOR = {
+  "inference-research":       "#58a6ff",
+  "routing-and-optimization": "#d29922",
+  "research-evaluation":      "#3fb950",
+  "hermes-agent":             "#bc8cff",
+  "pipeline-integration":     "#f778ba",
+  "reviewer-control-plane":   "#56d4dd",
+};
+const RING = d => (d===null||d===undefined) ? '#6e7681'
+              : d<=7 ? '#3fb950' : d<=30 ? '#d29922' : '#e5534b';
 const SVGNS = "http://www.w3.org/2000/svg";
 // `el` is already taken by the HTML helper at the top of this file; a second
 // top-level `const el` is a SyntaxError that kills the WHOLE script block, not
-// just this section. Named distinctly on purpose.
+// just this section. Named distinctly on purpose (see tests/test_dashboard_static_js.py).
 const svgEl = (t,a={}) => { const n=document.createElementNS(SVGNS,t);
   for(const k in a) n.setAttribute(k,a[k]); return n; };
+const _hex = h => [1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const _mix = w => {                       // w: {domain: weight} -> css rgb
+  let t=0,r=0,g=0,b=0;
+  for(const d in w){ const c=IDX_COLOR[d]; if(!c) continue;
+    const [R,G,B]=_hex(c); r+=R*w[d]; g+=G*w[d]; b+=B*w[d]; t+=w[d]; }
+  if(!t) return "#8b949e";
+  return `rgb(${Math.round(r/t)},${Math.round(g/t)},${Math.round(b/t)})`;
+};
 
 async function loadGraph(){
   let g;
@@ -993,70 +1028,104 @@ async function loadGraph(){
     $("#graph-note").textContent = g.observation_notice || "no producer reported";
     return;
   }
-  const edges=(g.edges||[]);
+  const edges=g.edges||[];
   const refs=edges.filter(e=>e.kind!=="dep"), deps=edges.filter(e=>e.kind==="dep");
   $("#graph-note").textContent =
-    `${g.nodes.length} handoffs · ${refs.length} reference links (one handoff's markdown cites another) · `
-    + `${deps.length} declared dependenc${deps.length===1?"y":"ies"} (hand-authored Deps — drawn thicker, with an arrow). `
-    + `A reference is NOT a dependency claim.`;
+    `${g.nodes.length} handoffs under ${Object.keys(IDX_COLOR).length} core indices · `
+    + `${refs.length} reference links (one handoff's markdown cites another) · `
+    + `${deps.length} declared dependenc${deps.length===1?"y":"ies"} (hand-authored Deps). `
+    + `A reference is NOT a dependency claim. Links are hidden until you hover a node.`;
 
-  // ---- layout: one phyllotaxis disc per domain, laid out on a 3x2 grid.
-  // Deterministic (no simulation), so the picture is stable between reloads —
-  // a graph that reshuffles every refresh cannot be learned.
-  const W=1200,H=780,COLS=3;
-  const doms={}; for(const n of g.nodes) (doms[n.domain]||=[]).push(n);
-  const names=Object.keys(doms).sort((a,b)=>doms[b].length-doms[a].length);
-  const rows=Math.ceil(names.length/COLS), cw=W/COLS, ch=H/rows;
-  const pos={};
-  names.forEach((dom,di)=>{
-    const cx=(di%COLS)*cw+cw/2, cy=Math.floor(di/COLS)*ch+ch/2;
-    const list=doms[dom].slice().sort((a,b)=>b.open-a.open);
-    const cellR=Math.min(cw,ch)/2-34;
-    const spacing=Math.min(34, cellR/Math.sqrt(list.length||1)*1.55);
-    list.forEach((n,i)=>{
-      const r=spacing*Math.sqrt(i+0.5), th=i*2.399963229728653;
-      pos[n.id]={x:cx+r*Math.cos(th), y:cy+r*Math.sin(th), n,
-                 rad:Math.max(3.2, Math.min(spacing*0.46, 3+1.9*Math.sqrt(n.open)))};
-    });
-    const lbl=svgEl("text",{x:cx,y:cy+ch/2-12,class:"domlabel"});
-    lbl.textContent=`${dom} · ${list.length}`;
-    svg.appendChild(lbl);
+  // ---- domain colour key
+  const doms=Object.keys(IDX_COLOR).filter(d=>g.nodes.some(n=>n.domain===d));
+  const key=$("#graph-legend"); key.innerHTML="";
+  doms.forEach(d=>{ const sp=document.createElement("span");
+    sp.innerHTML=`<i class="gsw dot" style="background:${IDX_COLOR[d]}"></i>${d}`;
+    key.appendChild(sp); });
+
+  // ---- neighbour map (reference edges, undirected for colour + hover)
+  const nbr={};
+  for(const e of edges){ (nbr[e.from]||=new Set()).add(e.to); (nbr[e.to]||=new Set()).add(e.from); }
+  const domOf={}; for(const n of g.nodes) domOf[n.id]=n.domain;
+
+  // ---- geometry
+  const W=1200, TOP=64, BAND=150, PAD=26;
+  const colX={}; doms.forEach((d,i)=>{ colX[d]=PAD+ (W-2*PAD) * (i+0.5)/doms.length; });
+
+  // x = own index pulled toward the domains it links into; y = beeswarm slot.
+  const placed=[];
+  const items=g.nodes.map(n=>{
+    const w={}; w[n.domain]=3;                       // own index dominates…
+    for(const m of (nbr[n.id]||[])){                 // …neighbours tug it
+      const d=domOf[m]; if(d) w[d]=(w[d]||0)+1; }
+    let tw=0,x=0; for(const d in w){ if(colX[d]===undefined) continue; x+=colX[d]*w[d]; tw+=w[d]; }
+    return {n, fill:_mix(w), x: tw?x/tw:colX[n.domain],
+            r: Math.max(3.5, Math.min(13, 3.2+1.75*Math.sqrt(n.open)))};
+  }).sort((a,b)=>a.x-b.x);
+
+  let maxY=BAND;
+  for(const it of items){
+    let y=BAND;
+    for(let guard=0; guard<4000; guard++){
+      const hit=placed.some(q=>{
+        const dx=q.x-it.x, dy=q.y-y, rr=q.r+it.r+2.5;
+        return dx*dx+dy*dy < rr*rr; });
+      if(!hit) break;
+      y+=3;
+    }
+    it.y=y; placed.push(it); if(y+it.r>maxY) maxY=y+it.r;
+  }
+  const H=Math.ceil(maxY+PAD);
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+
+  const gOwn=svgEl("g",{}), gRef=svgEl("g",{}), gNode=svgEl("g",{}), gIdx=svgEl("g",{});
+  svg.append(gOwn,gRef,gNode,gIdx);
+
+  // ---- ownership: index (top) -> handoff, flowing downward
+  const pos={}; items.forEach(it=>pos[it.n.id]=it);
+  for(const it of items){
+    const sx=colX[it.n.domain]; if(sx===undefined) continue;
+    gOwn.appendChild(svgEl("path",{
+      d:`M ${sx} ${TOP+16} C ${sx} ${(TOP+it.y)/2}, ${it.x} ${(TOP+it.y)/2}, ${it.x} ${it.y}`,
+      fill:"none", stroke:it.fill, "stroke-width":0.7, "stroke-opacity":0.22}));
+  }
+
+  // ---- reference edges: built once, hidden until hover (749 visible lines is a hairball)
+  const lines=[];
+  for(const e of edges){
+    const a=pos[e.from], b=pos[e.to]; if(!a||!b) continue;
+    const isDep=e.kind==="dep";
+    const ln=svgEl("line",{x1:a.x,y1:a.y,x2:b.x,y2:b.y,
+      stroke:isDep?"#f0f6fc":"#8b949e", "stroke-width":isDep?2:1,
+      "stroke-opacity":isDep?0.85:0});      // deps always faintly visible
+    gRef.appendChild(ln); lines.push({ln,from:e.from,to:e.to,isDep});
+  }
+
+  // ---- index nodes on top
+  doms.forEach(d=>{
+    const x=colX[d], n=g.nodes.filter(v=>v.domain===d).length;
+    gIdx.appendChild(svgEl("circle",{cx:x,cy:TOP,r:11,fill:IDX_COLOR[d],
+      stroke:"#0d1117","stroke-width":2}));
+    const t1=svgEl("text",{x,y:TOP-20,"text-anchor":"middle",class:"domlabel"});
+    t1.textContent=d; gIdx.appendChild(t1);
+    const t2=svgEl("text",{x,y:TOP+30,"text-anchor":"middle",class:"domlabel"});
+    t2.textContent=`${n}`; gIdx.appendChild(t2);
   });
 
-  // ---- edges under nodes
-  const gEdges=svgEl("g",{}), gNodes=svgEl("g",{});
-  svg.append(gEdges,gNodes);
-  const nbr={}, lines=[];
-  const addLine=(e,isDep)=>{
-    const a=pos[e.from], b=pos[e.to]; if(!a||!b) return;
-    const ln=svgEl("line",{x1:a.x,y1:a.y,x2:b.x,y2:b.y,
-      stroke:isDep?"#58a6ff":"#8b949e",
-      "stroke-width":isDep?2:Math.min(1.6,0.5+(e.weight||1)*0.18),
-      "stroke-opacity":isDep?0.9:0.16});
-    if(isDep) ln.setAttribute("marker-end","url(#garrow)");
-    gEdges.appendChild(ln);
-    lines.push({ln,from:e.from,to:e.to});
-    (nbr[e.from]||=new Set()).add(e.to); (nbr[e.to]||=new Set()).add(e.from);
-  };
-  const defs=svgEl("defs",{});
-  const mk=svgEl("marker",{id:"garrow",viewBox:"0 0 10 10",refX:"18",refY:"5",
-    markerWidth:"6",markerHeight:"6",orient:"auto-start-reverse"});
-  mk.appendChild(svgEl("path",{d:"M 0 0 L 10 5 L 0 10 z",fill:"#58a6ff"}));
-  defs.appendChild(mk); svg.appendChild(defs);
-  refs.forEach(e=>addLine(e,false)); deps.forEach(e=>addLine(e,true));
-
-  // ---- nodes
+  // ---- handoff nodes
   const circles={};
-  for(const id in pos){
-    const {x,y,n,rad}=pos[id];
-    const c=svgEl("circle",{cx:x,cy:y,r:rad,fill:GAGE(n.age_days),
-      stroke:"#0d1117","stroke-width":1,class:"node"});
-    c.addEventListener("mouseenter",ev=>{
-      const keep=new Set([id,...(nbr[id]||[])]);
-      for(const k in circles) circles[k].classList.toggle("dimmed", !keep.has(k));
-      lines.forEach(l=>l.ln.classList.toggle("dimmed", l.from!==id && l.to!==id));
-      lines.forEach(l=>{ if(l.from===id||l.to===id) l.ln.setAttribute("stroke-opacity","0.85"); });
-      const linked=[...(nbr[id]||[])];
+  for(const it of items){
+    const n=it.n;
+    const c=svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:it.fill,
+      stroke:RING(n.age_days),"stroke-width":2,class:"node"});
+    c.addEventListener("mouseenter",()=>{
+      const keep=new Set([n.id,...(nbr[n.id]||[])]);
+      for(const k in circles) circles[k].classList.toggle("dimmed",!keep.has(k));
+      lines.forEach(l=>{
+        const on = l.from===n.id||l.to===n.id;
+        l.ln.setAttribute("stroke-opacity", on?(l.isDep?1:0.6):0);
+      });
+      const linked=[...(nbr[n.id]||[])];
       tip.innerHTML =
         `<span class="tid">${n.id} · ${n.domain}</span><br><b>${n.track}</b>`
         + (n.next_action?`<div class="tna">${n.next_action}</div>`:"")
@@ -1064,23 +1133,22 @@ async function loadGraph(){
         + (n.blocked?` · ${n.blocked} blocked`:"")
         + `<br>last advanced ${n.last_advanced||"never"}`
         + `<br>${linked.length} linked handoff${linked.length===1?"":"s"}`
-        + (linked.length?`: ${linked.slice(0,10).join(", ")}${linked.length>10?"…":""}`:"")
+        + (linked.length?`: ${linked.slice(0,12).join(", ")}${linked.length>12?"…":""}`:"")
         + `</div>`;
       tip.hidden=false;
     });
     c.addEventListener("mousemove",ev=>{
-      const w=$("#graph-svg").getBoundingClientRect();
-      tip.style.left=Math.min(ev.clientX-w.left+14, w.width-350)+"px";
-      tip.style.top=(ev.clientY-w.top+14)+"px";
+      const b=svg.getBoundingClientRect();
+      tip.style.left=Math.max(0,Math.min(ev.clientX-b.left+14, b.width-352))+"px";
+      tip.style.top=(ev.clientY-b.top+14)+"px";
     });
     c.addEventListener("mouseleave",()=>{
       tip.hidden=true;
       for(const k in circles) circles[k].classList.remove("dimmed");
-      lines.forEach(l=>{ l.ln.classList.remove("dimmed");
-        l.ln.setAttribute("stroke-opacity", l.ln.getAttribute("stroke-width")>="2"?"0.9":"0.16"); });
+      lines.forEach(l=>l.ln.setAttribute("stroke-opacity", l.isDep?0.85:0));
     });
     c.addEventListener("click",()=>{ if(n.handoff) loadDetail(n.handoff.replace(/\.md$/,"")); });
-    gNodes.appendChild(c); circles[id]=c;
+    gNode.appendChild(c); circles[n.id]=c;
   }
   setBadge("#graph-badge",(g._freshness&&g._freshness.staleness_class)||"fresh");
 }
