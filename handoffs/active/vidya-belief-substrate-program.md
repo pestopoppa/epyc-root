@@ -210,6 +210,31 @@ Operator priority: an integrated solution that works, not novelty.
       postulates (Recovery, accrual, corrections-as-counter-evidence, model-reachability checked
       structurally against fold.py's source) ✅ 2026-08-09
 
+### Source coverage — opened 2026-08-11 (operator question: what about wiki/logs/progress?)
+
+- [x] SC1 **Measured the gap rather than assuming it.** The substrate models only what we READ:
+      across 4,224 beliefs the Q axis is `Hinted 3,503 · Verified 709 · Q0 12` and **zero at
+      Witnessed**, because spec §4.5 reserves Q4 for a protocol-admissible measurement with durable
+      attestation and the only adapter reads literature. A quarter of the carrier is unreachable
+      for a reason that is purely about which door the data came through ✅ 2026-08-11
+- [x] SC2 **Priced the retrofit before writing it** (the P2 discipline). Outside the index there are
+      23,298 magnitude tokens across 624 curated documents. But over `progress/`: 4,951 lines carry
+      a magnitude, **4,687 state a result, and only 105 (2.2%) cite anything durable** — and most of
+      those name a source file, not a measurement artifact. A progress adapter would double the
+      corpus and every claim would top out at `Verified/Located`, gating nothing ✅ 2026-08-11
+- [ ] SC3 Instrument the WRITE for measurements, as `claim_anchors` did for dives and `depends_on`
+      did for dependencies: a recorded result should cite the artifact it came from. This is the
+      prerequisite for Q4 Witnessed ever being non-empty — a second adapter without it adds volume
+      without warrant
+- [ ] SC4 Ingest the evidence plane directly once SC3 exists. `execution_manifest.jsonl` and the
+      benchmark artifacts are already machine-readable with durable hashes, which is exactly the
+      shape `Attested`/`Witnessed` require — unlike prose. Note
+      `data/benchmark_artifact_inventory.json` is currently EMPTY (0 rows), which is its own finding
+- [ ] SC5 Decide whether wiki pages are claims at all. A wiki page is compiled FROM sources the
+      index already holds, so ingesting it risks counting one source twice — the same
+      double-counting the locator-based support fix exists to prevent. Likely `depends_on` edges
+      into the intake claims rather than claims of its own
+
 ### Promotion track — opened 2026-08-10 after reviewing the ITERATE verdict
 
 Verdict stands at ITERATE. Requirement status and the anchoring decision package:

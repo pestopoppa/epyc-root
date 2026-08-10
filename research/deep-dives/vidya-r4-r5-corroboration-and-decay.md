@@ -236,3 +236,47 @@ on a substrate that tracks research claims and wiki prose rather than code ident
 position if it is ever resumed is the directed normalizer, with equality saturation earning its
 place only on measured need. See
 [`docs/design/vidya-research-program.md`](../../docs/design/vidya-research-program.md) §R3.
+
+---
+
+## The substrate models what we READ, never what we MEASURED (2026-08-11)
+
+The pilot was built around `research/intake_index.yaml`, so every belief in it descends from a
+literature record. That was the right first target — it is the corpus with the worst provenance
+discipline — but it leaves a hole shaped like the organisation's actual work.
+
+**Q4 Witnessed is empty, and cannot be otherwise.** Across 4,224 beliefs the Q axis reads
+`Hinted 3,503 · Verified 709 · Q0 12` and **zero at Witnessed**. Spec §4.5 reserves Q4 for "a
+protocol-admissible measurement with durable attestation", and an intake entry is a literature
+record by construction, so the only adapter that exists cannot reach the top of its own carrier.
+A quarter of the warrant axis is unreachable, and the reason is which door the data came through.
+
+**There is no shortage of material.** Outside the index, in curated tracked documents:
+
+| Source | Files | Files carrying magnitudes | Magnitude tokens |
+|---|---:|---:|---:|
+| `progress/` | 272 | 216 | 9,776 |
+| `handoffs/active/` | 180 | 159 | 6,229 |
+| `wiki/` | 31 | 29 | 3,885 |
+| `research/deep-dives/` | 141 | 131 | 3,408 |
+
+**But the ceiling measurement says an adapter is not the bottleneck.** Applying the P2 discipline —
+price the retrofit before writing it — over the 272 progress files: **4,951 lines carry a
+magnitude, 4,687 state a result rather than a plan, and 105 (2.2%) cite anything durable.** Reading
+those 105, most name a *source file* (`orchestration/task_ir.schema.json`, 249 lines), not a
+measurement artifact. The genuinely attested fraction rounds to zero.
+
+So a progress adapter would roughly double the corpus — 4,687 new claims against 4,224 — and every
+one of them would top out at `Verified/Located`, gating nothing. **The gap is not a missing reader.
+It is that our own measurements are recorded as prose too**, and worse than the literature: a
+literature claim at least names a retrievable paper, while
+
+> `**Model Stack:** Qwen3-Coder-30B-A3B-Instruct (45.3 t/s with MoE 4 experts)`
+
+names nothing at all. Nobody can re-derive 45.3 from that line, and in a month nobody will remember
+which lineup, which flags, or which era it was measured under.
+
+**What follows.** The fix is the one that has worked twice already in this program — instrument the
+write, do not parse the prose. A recorded measurement should cite its artifact the way a dive
+records `claim_anchors` and a dependency records `depends_on`. Until then a second adapter would
+add volume without adding warrant, which is the opposite of what the substrate is for.
