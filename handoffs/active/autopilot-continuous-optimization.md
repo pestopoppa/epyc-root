@@ -2196,7 +2196,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
 
 ## 2026-08-05 — Research intake: least-commitment diagnostics and compression safety
 
-_Via `/research-intake` Stage-4 (intake-991 through intake-1002). The submitted weakness result is not
+_Via `/research-intake` Stage-4 (intake-991#record through intake-1002#record). The submitted weakness result is not
 adopted as a selector: its original proof and empirical comparison are not decision-grade, and the later
 results remain conditional on a declared representation and demand law. The tasks below adopt only the
 verified diagnostic and validation patterns._

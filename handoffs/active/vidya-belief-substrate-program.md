@@ -64,13 +64,13 @@ gate this program has already passed.
 ### Open work — start here
 
 Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC10`, `SC11`, `SC7`, `SC6-HAZARD`) and
-**Consumption** (`SC12-REMAIN`, `SC14`, `SC15`). Everything else is complete and lives in the completed sibling
+**Consumption** (`SC12-ENTRY`, `SC14`, `SC15`). Everything else is complete and lives in the completed sibling
 linked under Completed Scope.
 
 The write side is done and the read side now exists: `cli.py cite-check` gates citations,
 `cli.py corrections` ranks the adjudication backlog. The open consumption items are the ones a
 machine must not do alone — `SC14` needs the session that owns `autopilot.py`, `SC15` needs a human
-reading dive text against claims, and `SC12-REMAIN`'s two `intake-110#04` hits need a dive owner to
+reading dive text against claims, and `SC12-ENTRY`'s two claim-04 hits on intake-110#record need a dive owner to
 amend the entry rather than a citation edit.
 
 ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?)
@@ -260,10 +260,10 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
 - [x] SC12-FIX **Fixed the citations the gate flagged, and the grading defect underneath one.**
       Documents: `reasoning-compression.md` and `wiki/cost-aware-routing.md` now state the revised
       OPSDC figures (~56–59% compression at **+0.0 to +3.3pp**, not "+9–16 points"); the three
-      intake-896 hits and eight identifier-style cross-references became `#record`; two genuine
-      content citations became `intake-110#04`. Blocking citations **10 → 5**, and intake-896 is
+      intake-896#record hits and eight identifier-style cross-references became `#record`; two
+      genuine content citations were made precise against claim 04 of intake-110#record. Blocking citations **10 → 5**, and intake-896#record is
       fully clear ✅ 2026-08-10
-- [x] SC12-GRADE **A per-claim `overturned` was inheriting the entry's warrant.** intake-110 was the
+- [x] SC12-GRADE **A per-claim `overturned` was inheriting the entry's warrant.** intake-110#record was the
       only conflicted claim in 4,233 beliefs and the only entry carrying a per-claim overturn with
       no entry-level `dive-overturned`: the override flipped the DIRECTION but kept `Hinted`, so a
       dive-established refutation tied with the stage-1 support it refutes. `apply_claim_verdict()`
@@ -276,12 +276,23 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       date and the future-dated frame retracted — a false `created_at` on a provenance frame is the
       defect this program exists to catch. (The 895 other future-stamped frames are the earlier
       session's known, documented, fold-neutral set; untouched) ✅ 2026-08-10
-- [ ] SC12-REMAIN **Five blocking citations left, none in the operator's 896/110 scope.** Three
-      overturned (`intake-991` in `autopilot-continuous-optimization.md`, `intake-922` in
-      `context-folding-progressive.md`, `intake-346` in `wiki/memory-augmented.md`) and two
-      `intake-110#04` that are **correct and self-clearing**: the entry's `key_claims` still records
-      the stage-1 text while its `claim_corrections` refutes it, which is the design. Resolving
-      those two means amending the entry — a dive-owner call, not a citation fix
+- [x] SC12-REMAIN **Cleared the remaining three.** All three citing documents were already careful
+      in prose and none rested on the overturned claim, so two were provenance references and became
+      `#record`: `intake-991#record` in `autopilot-continuous-optimization.md` (which states outright
+      that the weakness result "is not adopted as a selector: its original proof and empirical
+      comparison are not decision-grade") and three `intake-922#record` refs in
+      `context-folding-progressive.md` (one of which is the line recording AREX's +11.8pt ACU figure
+      as NON-CITABLE). The third was a **real correction**: `wiki/memory-augmented.md` called Mem0 a
+      "$24M cloud memory platform", and the 2026-08-07 dive overturned exactly that — the Apache-2.0
+      repo self-hosts via Ollama/LiteLLM/local vector stores, so the $249/mo managed tier is one
+      option, not the only path. That mattered beyond wording: "cloud-only" would have disqualified
+      Mem0 under the self-hosted-only sourcing policy ✅ 2026-08-10
+- [ ] SC12-ENTRY **Two precise claim-04 citations of intake-110#record remain blocking, and they
+      are correct.** The entry's
+      `key_claims` still records the stage-1 "+9–16 points" text while its `claim_corrections`
+      refutes it — support at `Hinted`, opposition at `Verified`, which is exactly what the record
+      says. Clearing them means amending the entry, a dive-owner call, not a citation fix. Until
+      then `cite-check` exits 3 on a true finding
 - [ ] SC14 **Planner read-side seam — the highest-value consumer, and not ours to wire.** AutoPilot's
       planner has independently reinvented much of this kernel: a mandatory falsifier, an append-only
       resolution ledger (confirmed/refuted/inconclusive), and `evidence_trial_ids: []` refused on a
