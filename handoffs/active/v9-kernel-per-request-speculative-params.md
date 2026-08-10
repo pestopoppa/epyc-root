@@ -1,6 +1,6 @@
 # v9 kernel candidate — expose per-request speculative parameters
 
-**Filed** 2026-07-31 · **Owner** operator (kernel promotion) · **Status** IMPLEMENTED on experimental v9; promotion intentionally not started
+**Filed** 2026-07-31 · **Owner** operator (kernel promotion) · **Status** IMPLEMENTED on experimental v9; full promotion qualification authorized and started 2026-08-10
 **Candidate** `experimental-v9-dspark-autokernel-base` @ `2ac4b32a01a6d97af1c85889443472fbd4a1e12e` (binary 10123), exact v8 base `67a433bf45a8a091d83b4ea0b32ff0735fd51800`
 
 ---
@@ -76,6 +76,12 @@ deliberately for the repetitive-context upside. With no runtime control:
 - [x] **V9-5. Regression-check ordinary speculative requests.** Focused server tests pass on the
   final candidate (`2 passed in 56.14s`), and the real DSpark smoke reports effective caps 0 and 3
   independently on one reused slot ✅ 2026-08-10
+- [ ] **V9-6. Complete the kernel-promotion qualification procedure** against frozen v8: rebuild CPU
+  and HIP from this exact tip, validate linkage/functionality, reboot before measurement, then run
+  every incumbent-role, correctness, quality, topology, rollback, and measurement gate.
+- [ ] **V9-7. Execute the authorized `production-consolidated-v9` cutover only if V9-6 passes**;
+  then perform production-named P-GPU-1 and DFlash certification. DSpark remains limited to its
+  validated `-np 1` path; failure retains v8 and requires repair plus a full candidate re-run.
 
 ## 3.1 Evidence
 
@@ -84,6 +90,14 @@ deliberately for the repetitive-context upside. With no runtime control:
 - Final bounded Q8 smoke: vanilla and DSpark produced identical 16-token arrays; DSpark drafted 18
   and accepted 7 tokens at effective `n_max=3`.
 - Durable receipt: [`artifacts/audit/v9-dspark-autokernel-base-20260810.json`](../../artifacts/audit/v9-dspark-autokernel-base-20260810.json).
+
+## 3.2 Promotion boundary (authorized, no new gate passed)
+
+The operator authorized the complete v9 promotion procedure on 2026-08-10. It begins from this exact
+candidate and treats v8 as immutable. The bounded smoke and build checks above are candidate evidence,
+not completion of any promotion gate. AutoKernel initialization and its hypothesis queue are explicitly
+outside this promotion goal; they require a separately authorized follow-on after a successful v9
+release boundary.
 
 ## 4. NOT in scope here — draft-max tuning is a TODAY task
 

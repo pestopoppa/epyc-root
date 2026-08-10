@@ -20,7 +20,7 @@
 | INF-08 | cpu kernel env flags inventory | [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md) | Add an "effect on trace interpretation" column to the flag inventory. This file records which | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
 | INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Measure tinyBLAS on/off first (Phase 0) — sgemm.cpp is already compiled in, so it confounds every later A/B | — |
-| INF-11 | deepseek v4 flash 0731 dspark | [deepseek-v4-flash-0731-dspark.md](deepseek-v4-flash-0731-dspark.md) | Start AutoKernel from v9 candidate `2ac4b32a0`; first seed is quantized recurrent batch invariance, preserving the greedy parity gate | INF-06 |
+| INF-11 | deepseek v4 flash 0731 dspark | [deepseek-v4-flash-0731-dspark.md](deepseek-v4-flash-0731-dspark.md) | Run the complete v8-v9 promotion qualification; retain DSpark at validated `-np 1` | — |
 | INF-12 | delta mem reproduction | [delta-mem-reproduction.md](delta-mem-reproduction.md) | Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible) | — |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |
 | INF-14 | fable5 window2 findings 05b mi210 inference  | [fable5-window2-findings-05b-mi210-inference-architecture.md](fable5-window2-findings-05b-mi210-inference-architecture.md) | _no open dispatchable task — verify complete or file the next step_ | — |
@@ -66,7 +66,7 @@
 | INF-55 | tree draft forward port plan | [tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | INF-56 | triattention kv selection | [triattention-kv-selection.md](triattention-kv-selection.md) | S8 autopilot exploration: sweep keep_ratio and layer_weights per production role; persist Pareto profiles with quality, speed, cost, and re… | — |
 | INF-57 | v7 promotion | [v7-promotion.md](v7-promotion.md) | _no open dispatchable task — verify complete or file the next step_ | — |
-| INF-58 | v9 kernel per request speculative params | [v9-kernel-per-request-speculative-params.md](v9-kernel-per-request-speculative-params.md) | Implemented in v9 candidate; retain as promotion evidence until the AutoKernel candidate is finalized | INF-11 |
+| INF-58 | v9 kernel per request speculative params | [v9-kernel-per-request-speculative-params.md](v9-kernel-per-request-speculative-params.md) | Qualify exact v9 candidate `2ac4b32a0` through every promotion gate before any v9 cutover | INF-11 |
 | INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss | — |
 
 ## Cross-domain
