@@ -280,7 +280,15 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       proving. Deeper strata and non-two-valued absence are still unexplored
 - [ ] R1b-closure-size Measure the closure fraction on realistic programs. The exact route is only
       worth implementing if a retraction's negation-reachable set is a small part of the stratum;
-      at sweep size it is 91.7%, which would make it pointless
+      at sweep size it is 91.7%, which would make it pointless. **BLOCKED, and correctly so: the
+      pilot has no negation stratum to measure.** Spec §12 requires the rule set to be positive, or
+      to exclude negated strata from incremental retraction and full-refold them. So there are no
+      realistic programs — the prerequisite is a USE CASE that needs negation (§R1b-usecase), not
+      more compute
+- [ ] R1b-usecase Name the first rule that genuinely needs negation. Candidates worth weighing:
+      "no unretracted opposition exists", "no fresher measurement supersedes this", "no obligation
+      is outstanding on this claim". Until one of these is wanted, R1b is a paper track and the
+      exact route should stay unbuilt
 - [x] R2a Scoped, with the constraint that removes an approach: gfp does NOT specialize
       (Example 42), so absence certificates cannot use the incremental path and must route through
       S-infinity[X,X-bar] — affordable here because the carrier is meet-idempotent. Also recorded:
@@ -328,8 +336,22 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
 - [ ] R4b-remeasure Re-run the corroboration statistic once aliases land. First chance for
       `disjoint_supports >= 2` to be satisfiable at all, and the first cost datapoint for the
       leaf-disjoint packing algorithm, which is unmeasured because every circuit is currently one path
-- [ ] D5 Disposition the 5 duplicate-locator groups (intake-772/785, 244/784, 418/797,
-      693/783/901, 315/336): merge, or record why the entries differ
+- [ ] D5 Disposition the 5 duplicate-locator groups. Tickable checklist with per-group evidence and
+      a recommendation: [`artifacts/operator/vidya-review-checklist-20260810.md`](../../artifacts/operator/vidya-review-checklist-20260810.md).
+      3 are self-declared duplicates (merge), 1 is a missed same-session collision (likely merge),
+      1 is the legitimate companion-artifact case (keep, record why)
+- [x] D6 **Root-caused the duplicate entries — the intake skill needed fixing, and does now.**
+      Dedup was working: it *labelled* the collisions `novelty: duplicate` and then persisted them
+      as full entries anyway, each with its own `key_claims`, 12 in total and 10 cited by other
+      entries. Worse, all 3 arXiv cases carry a null `arxiv_id` despite an arXiv URL — exactly 3
+      such entries exist in 1,067, all 3 collide with an existing id, so **each would have failed
+      validation had the field been filled in**. The check was passed by deleting what it inspects.
+      SKILL.md §2/§2b/§2c now forbid minting an entry for a collision, require locator
+      normalization before comparing, and forbid the null-`arxiv_id` shape;
+      `check_laundered_arxiv_ids` warns on it ✅ 2026-08-10
+- [ ] D7 Promote `check_laundered_arxiv_ids` from WARNING to a hard error once D5.1–D5.3 land.
+      It cannot be an error today: filling the field in trips the duplicate-`arxiv_id` error, which
+      would leave the index un-validatable for every other session
 - [x] R5a Instrument specified + 2026-08-09 baseline recorded (4,191 beliefs; 15.6% of claims
       carry a correction; 1 anchored; 0 corroborated). Most of R5 is retrospectively computable
       from the ledger, which is the payoff of event sourcing ✅ 2026-08-09

@@ -96,6 +96,26 @@ For each URL:
    or any truncating filter: a 2026-07-25 sweep missed a genuine URL collision because the check was
    `head -20`-truncated, and the colliding entry was 10,000 lines further down.
 
+   **Normalize before comparing.** `arxiv_id: 2604.08224`, `https://arxiv.org/abs/2604.08224`,
+   `.../abs/2604.08224v2` and `.../pdf/2604.08224` are one source. A raw string compare treats them
+   as four, which is how intake-418 and intake-797 both entered the index as the same paper.
+
+2b. **A duplicate is NOT persisted as an entry.** On finding an exact collision, do not mint a new
+   `intake-NNNN`. Record the re-encounter on the **existing** entry (a line in its notes naming the
+   date and how it resurfaced) and move on. Minting one anyway is the defect that produced 12
+   `novelty: duplicate` entries — each a fully-formed record with its own `key_claims`, 10 of them
+   cited by other entries, every one of which reads downstream as an independent source.
+
+   `novelty: duplicate` therefore survives **only** for entries that predate this rule. It is a
+   label on history, not an outcome Stage 1 may produce.
+
+2c. **Never omit `arxiv_id` for an arXiv URL.** Duplicate `arxiv_id` is a hard validation error, so
+   an entry that leaves the field null when its URL is an arXiv link passes a check it should have
+   failed. Exactly 3 entries in 1,067 do this; all 3 are `novelty: duplicate`, all 3 from one
+   2026-07-08 batch, and all 3 carry an id that already exists elsewhere. Whether that was
+   deliberate or incidental, the effect is the same: **the check was passed by deleting what it
+   inspects.** `validate_intake.py` now warns on the shape.
+
 3. **Companion artifacts are DISTINCT sources.** A repo, weights collection, dataset card, or project
    page is **not** a duplicate of the paper it accompanies. `novelty: duplicate` requires an **exact
    `arxiv_id` or `url` collision**. Being *referenced in another entry's notes* is not a collision.
@@ -387,7 +407,8 @@ silently into the diff. Then:
 
 ## Scoring rubrics
 
-**novelty**: `duplicate` (exact `arxiv_id`/`url` already in index) · `low` (well-covered in chapters) ·
+**novelty**: `duplicate` (exact `arxiv_id`/`url` already in index — **legacy only; Stage 1 must not
+mint a new entry for a collision, see §2b**) · `low` (well-covered in chapters) ·
 `medium` (related work exists, this adds a new perspective/results) · `high` (novel technique or
 significant new results).
 

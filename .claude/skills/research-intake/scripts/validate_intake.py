@@ -392,6 +392,38 @@ def _locator_key(entry: dict) -> str:
     return ""
 
 
+def check_laundered_arxiv_ids(entries: list[dict]) -> list[str]:
+    """Flags an entry with an arXiv URL and a null `arxiv_id`.
+
+    Reported as a WARNING only until the three known instances are dispositioned (handoff
+    D5). Filling the field in on any of them trips the hard duplicate-`arxiv_id` error, which
+    would leave the index un-validatable for every other session. Promote to an error once
+    D5 lands -- the tracking task says so explicitly.
+
+    The duplicate-`arxiv_id` rule above is a hard error, so an entry that fills the field in and
+    collides cannot be saved. On 2026-08-10 a sweep found **exactly 3** entries in 1,067 with an
+    arXiv URL and no `arxiv_id` — all three `novelty: duplicate`, all three from one 2026-07-08
+    batch, and all three carrying an id that already existed on another entry. Every one of them
+    would have failed validation had the field been present.
+
+    That is the "can I pass this check by deleting what it inspects?" failure, and the check cannot
+    see it by construction: absence of a field is indistinguishable from a source that has no
+    arXiv id, unless you look at the URL. So this looks at the URL.
+    """
+    out = []
+    for entry in entries:
+        url = entry.get("url")
+        if not isinstance(url, str) or entry.get("arxiv_id"):
+            continue
+        m = _ARXIV_URL_RE.search(url)
+        if m:
+            out.append(
+                f"{entry.get('id')}: url is an arXiv link ({m.group(1)}) but arxiv_id is empty — "
+                "fill it in; an omitted identifier silently bypasses the duplicate-arxiv_id check"
+            )
+    return out
+
+
 def check_duplicate_locators(entries: list[dict]) -> list[str]:
     """WARNINGS (not errors) for entries pointing at an identical normalized locator.
 
@@ -516,6 +548,8 @@ def main() -> int:
         print("WARNING: Index is empty")
     else:
         errors.extend(validate_index(entries, valid_categories, crossref_dirs))
+        for warning in check_laundered_arxiv_ids(entries):
+            print(f"WARNING: {warning}")
         for warning in check_duplicate_locators(entries):
             print(f"WARNING: {warning}")
 
