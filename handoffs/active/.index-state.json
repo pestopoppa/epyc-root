@@ -28,7 +28,7 @@
       "blocked": 1,
       "handoffs": 47,
       "oldest_advance": "2026-07-29",
-      "open": 329
+      "open": 328
     },
     "user-facing-harness-index.md": {
       "blocked": 0,
@@ -349,10 +349,10 @@
     },
     "dashboard-architecture-restructure.md": {
       "blocked": 0,
-      "closed": 11,
+      "closed": 12,
       "guarded": 0,
-      "last_advanced": null,
-      "open": 16,
+      "last_advanced": "2026-08-10",
+      "open": 15,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-47",
       "state": "active",

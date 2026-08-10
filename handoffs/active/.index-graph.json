@@ -3540,7 +3540,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T16:09:48Z",
+  "generated_at": "2026-08-10T16:11:07Z",
   "nodes": [
     {
       "age_days": 11,
@@ -5701,15 +5701,15 @@
       "track": "handoff index and backlog graph"
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 0,
-      "closed": 11,
+      "closed": 12,
       "domain": "routing-and-optimization",
       "handoff": "dashboard-architecture-restructure.md",
       "id": "RTG-47",
-      "last_advanced": null,
+      "last_advanced": "2026-08-10",
       "next_action": "Land fix-10 retention overlay; re-eyeball live \u2191/\u2193 under real load; run old+new in parallel toward the Phase 1b call",
-      "open": 16,
+      "open": 15,
       "state": "active",
       "track": "dashboard architecture restructure"
     },

@@ -306,9 +306,10 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
       rendering no ↑ counter: the stream ran its own parse+enrich while only the (unwatched) poll
       endpoint attached progress. Stream now uses `_structured_tap_requests_for_dashboard` (one
       assembly path, also gaining offwindow-holder recovery). ✅ 2026-08-10
-- [ ] Page retention overlay (fix 10, agent in flight): retain live-observed slot_progress per
-      request so completed cards show `↑ N tok` (terminal records never carry the field by design)
-      and a fresh-gap frame cannot wipe a shown counter.
+- [x] Page retention overlay (fix 10): live-observed slot_progress retained per request
+      (max-merge, sticky ambiguity, direction-dependent ↓ source — slot mid-run, final timings at
+      completion), so completed cards show `↑ N tok` and a fresh-gap frame cannot wipe a shown
+      counter; SSE gained server-epoch `now`. Harness 81→88, 0 fail. ✅ 2026-08-10
 - [ ] Re-eyeball the tap's ACTIVE/streaming card path + live ↑/↓ counters once inference actually
       runs (`slot_progress` verified attaching live on poll + now on SSE; full live render still
       unobserved by a human).
