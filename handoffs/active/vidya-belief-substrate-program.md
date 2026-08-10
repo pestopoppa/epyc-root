@@ -293,18 +293,21 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       refutes it — support at `Hinted`, opposition at `Verified`, which is exactly what the record
       says. Clearing them means amending the entry, a dive-owner call, not a citation fix. Until
       then `cite-check` exits 3 on a true finding
-- [ ] SC14 **Planner read-side seam — the highest-value consumer, and not ours to wire.** AutoPilot's
+- [x] SC14-A **Planner read-side seam.** AutoPilot's
       planner has independently reinvented much of this kernel: a mandatory falsifier, an append-only
       resolution ledger (confirmed/refuted/inconclusive), and `evidence_trial_ids: []` refused on a
       prior because *"being the operator's idea is not new evidence"* (`operator_hypotheses.py`).
-      What it cannot do for itself: propagate a retraction when a trial that resolved a hypothesis is
-      later invalidated; distinguish "confirmed by one noisy run" from "confirmed by a sealed
-      measurement"; or share a negative with AutoKernel. **Wire at PROMOTION, never at generation** —
-      gating hypothesis generation would turn a discovery loop into a justification loop, and trials
-      are already born `CANDIDATE` (SC6), so the kernel's job is the CANDIDATE → BASELINE/OPTIMUM
-      transition. Cost is not the obstacle: fold is 0.08 s over 20,328 frames and a gate query is
-      0.001 ms. **Blocked**: `autopilot.py` is held by another session (`OPERATOR_HYPOTHESES_INTEGRATION.md`
-      pins its SHA-256 and says so). Hand this to whoever owns that file
+      The stale file-ownership marker was cleared after confirming AutoPilot was stopped. The inbound
+      operator-hypothesis channel is now wired into every planner turn and records resolutions only
+      after the cited trial is durable. `scripts/vidya/autopilot_settled.py` folds AutoPilot
+      supersessions, grades the cited measurement tuple with Vidya's canonical ladder, fails explicit
+      on ambiguous recycled trial ids, and renders sealed/provisional/review-required ground through
+      `vidya_planner_bridge.py`. This is advisory for proposal selection and never gates generation
+      ✅ 2026-08-10
+- [ ] SC14-B **Promotion gate and shared resolution frames.** Gate only the CANDIDATE →
+      BASELINE/OPTIMUM transition with `gate.evaluate`; append resolution/evidence links so AutoKernel
+      sees the same negative, and use `impact_of_retracting` to reopen downstream promotions. Do not
+      activate until the pre-promotion journal ordering supplies a durable current-trial attestation
 - [ ] SC15 **Drain the queue.** 129 corrections, 81 cited by project documents, top ones cited 5–7
       times. Not startable by a summariser: each verdict needs the dive text read against the claim,
       which is the exact failure intake-896#record memorialises. Start with the cited head — `cli.py
