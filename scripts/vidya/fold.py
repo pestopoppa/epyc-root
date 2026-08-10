@@ -52,6 +52,7 @@ FT_CORRECTION_REVIEWED = "epyc.vidya/frame/correction_reviewed/v1"
 # The fold only APPLIES an alias somebody else authored, and records that it did.
 FT_ALIAS = "epyc.vidya/frame/claim_alias/v1"
 FT_SOURCE = "epyc.vidya/frame/source_observed/v1"
+FT_DEPENDS = "epyc.vidya/frame/claim_depends_on/v1"
 
 # A judgment frame must be keyed by what the judge saw AND the full decoder tuple, or replay is
 # provably inconsistent (spec §6). Greedy decoding does not exempt a frame from this: the
@@ -92,10 +93,15 @@ class Belief:
     # substrate exists to prevent. They mark the belief as needing review, which is a freshness
     # question, not a support question.
     corrections: list[str] = field(default_factory=list)
+    # Entries this claim declared a `depends_on` edge into whose source has lost all support.
+    # Separate from `corrections` so the REASON a claim needs review stays legible -- "its own
+    # source was corrected" and "something it rests on was withdrawn" are different problems and
+    # get cleared by different people.
+    dependency_alerts: list[str] = field(default_factory=list)
 
     @property
     def review_required(self) -> bool:
-        return bool(self.corrections)
+        return bool(self.corrections or self.dependency_alerts)
 
     def verdict(self, floor: Grade, *, conjunctive: bool = True) -> str:
         """Four-valued verdict against a policy floor.
@@ -227,6 +233,8 @@ def fold(
     alias_of: dict[str, str] = {}          # claim_id -> canonical claim_id
     applied_aliases: list[str] = []
     source_locator: dict[str, str] = {}    # source_id -> normalized locator
+    depends_edges: list[tuple[str, str, str]] = []   # (claim_id, source_id, entry)
+    supported_sources: set[str] = set()              # sources with surviving support
     # Claims whose supports must NOT be counted as independent of each other, because a
     # human said the two records are one source or one derived from the other.
     dependent_group: dict[str, str] = {}   # claim_id -> group key
@@ -338,6 +346,8 @@ def fold(
             (pro_sources if ftype == FT_SUPPORT else con_sources).setdefault(
                 claim_id, []
             ).append(source_key)
+            if ftype == FT_SUPPORT and assertion.get("source_id"):
+                supported_sources.add(assertion["source_id"])
 
         elif ftype == FT_CORRECTION:
             assertion = frame.get("assertion", {})
@@ -348,6 +358,15 @@ def fold(
                     claims.add(claim_id)
                     if not already_reviewed:
                         corrections_by_claim.setdefault(claim_id, []).append(fid)
+
+        elif ftype == FT_DEPENDS:
+            assertion = frame.get("assertion", {})
+            cid = assertion.get("claim_id")
+            src = assertion.get("depends_on_source")
+            ent = assertion.get("depends_on_entry") or src or ""
+            if isinstance(cid, str) and isinstance(src, str):
+                depends_edges.append((_canonical(cid), src, ent))
+            continue
 
         elif ftype in (FT_CORRECTION_REVIEWED, FT_ALIAS):
             continue
@@ -378,6 +397,16 @@ def fold(
     # pass that observes stability is not one of them, and must not be charged against the budget:
     # the theorem bounds how many times a value can strictly increase, not how many times you look.
     # (Same off-by-one as the spec's "N+1" = N Kleene steps plus the zero-init layer.)
+    # OP-11 (operator-ratified 2026-08-10): a dependency whose source has lost all support marks
+    # its dependents for review. No grade moves -- we know the ground shifted, not by how much,
+    # and the correction rule already established that guessing the magnitude is the failure mode.
+    dependency_alerts: dict[str, list[str]] = {}
+    for claim_id, src, entry in depends_edges:
+        if src not in supported_sources:
+            dependency_alerts.setdefault(claim_id, []).append(entry)
+    for v in dependency_alerts.values():
+        v.sort()
+
     iterations = 0
     while True:
         changed = False
@@ -393,6 +422,7 @@ def fold(
                 or prev.pro != pro
                 or prev.con != con
                 or prev.corrections != corrections
+                or prev.dependency_alerts != dependency_alerts.get(claim_id, [])
             ):
                 beliefs[claim_id] = Belief(
                     claim_id=claim_id,
@@ -406,6 +436,7 @@ def fold(
                     corrections=corrections,
                     pro_sources=sorted(set(pro_sources.get(claim_id, []))),
                     con_sources=sorted(set(con_sources.get(claim_id, []))),
+                    dependency_alerts=dependency_alerts.get(claim_id, []),
                 )
                 changed = True
         if not changed:

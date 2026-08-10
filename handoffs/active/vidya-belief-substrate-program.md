@@ -268,12 +268,23 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       `claim_depends_on` under `ignored_frame_types`, so nothing propagates along an authored edge.
       The edges record a human judgment that the engine does not act on. That is the measurement
       PR2d existed to produce, and it could not have been seen before the edges existed ✅ 2026-08-10
-- [ ] PR2d-semantics **OPERATOR DECISION (OP-11)** — what a retracted dependency should do to its
-      dependent. The spec's existing correction rule marks `review_required` and refuses to guess a
-      grade, because "what a correction did to an individual claim is prose". The conservative
-      analogue is to mark dependents `review_required` and change no grade. The alternative is to
-      propagate a downgrade, which guesses. This is a change to ratified fold semantics, so it is
-      not being made unilaterally
+- [x] PR2d-semantics **OP-11 ratified 2026-08-10: `review_required`, no grade change.** A dependency
+      whose source has lost all support flags its dependents; no grade moves. Mirrors the correction
+      rule — we know the ground shifted, not by how much. Not cosmetic: `allow_review_required`
+      defaults False and the gate refuses on it. Alerts are tracked separately from `corrections` so
+      the REASON stays legible ✅ 2026-08-10
+- [x] PR2d-propagation **The propagation test now scores 4/4, up from 0/4.** Two engine gaps had to
+      close, and the second is the interesting one. (1) The fold set the flag correctly but
+      `impact_of_retracting` compared grades and broken paths only, so a review-only effect read as
+      "unaffected" — a report that cannot see the one effect the ratified rule produces is not
+      reporting impact. (2) Two of the four dependents were ALREADY `review_required` from their own
+      `dive_corrections`, so the flag could not flip; a NEW dependency alert now counts as impact in
+      its own right, because "my source was corrected" and "something I rest on was withdrawn" are
+      two obligations cleared by different people ✅ 2026-08-10
+- [x] PR2d-tests Six regression tests pin both halves of the ratified rule (flag set / no grade
+      moved / dependent reaches the impact report / already-flagged claims still register a new
+      alert / an undeclared citation propagates nothing) ✅ 2026-08-10
+
 - [x] PR2d-idempotence Re-ingest was not idempotent: `frame_id` hashes `created_at`, so a fresh
       `--as-of` re-emitted the whole corpus — measured 9,599 → 19,270 frames with zero new
       information. Adapter dedup is now keyed on (frame_type, assertion). Verified: re-ingest with a
@@ -436,8 +447,15 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       have**, taking "only the task-generation half" of a system with no task-generation half.
       Premise-correction banner added at the section head; the scoping itself is left to its owner
       to re-cut ✅ 2026-08-10
-- [ ] D13e Re-cut the F1 scoping now that DGM's task-generation premise is withdrawn. Owner
-      decision: what, if anything, of the F1 corpus plan survives
+- [x] D13e **OP-10 ratified 2026-08-10: re-attribute, keep the pipeline.** Only §1 was affected —
+      §2 (verifier matrix) and §3 (Simula QC) come from our own code and a different source. The
+      three patterns F1 borrows (archive, branching, empirical validation) ARE in DGM; DGM applies
+      them to agent variants and F1 transposes them to task variants, which F1 owns as an analogy
+      rather than inherits as precedent. Pipeline unchanged — it was always seeded from our W3
+      ledger and workload taxonomy. `dgm_provenance` renamed to `genprov` (the old name asserted a
+      provenance those rows do not have), and the F1-DGM-1 completion note in
+      `frontier-f1-real-task-corpus.md` corrected. Recorded as still needing its own justification:
+      nothing in the index shows archive-based evolution works for generating TASKS ✅ 2026-08-10
 - [x] D14 `research/recommendations.yaml` had never been parseable YAML — markdown headers and
       prose wrapped around an embedded list. Renamed to `research/recommendations.md`, which is
       what it is; 5 live references repointed, historical ones in `progress/` and

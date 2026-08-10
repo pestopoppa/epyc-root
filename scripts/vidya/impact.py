@@ -75,6 +75,16 @@ class ImpactItem:
     coverage: str
     broken_paths: list[str] = field(default_factory=list)
     surviving_paths: list[str] = field(default_factory=list)
+    # OP-11: a withdrawn dependency changes review state and nothing else. Tracked separately from
+    # the grade so a reader can tell "this claim got worse" from "the ground under it moved".
+    review_before: bool = False
+    review_after: bool = False
+    dependency_alerts: list[str] = field(default_factory=list)
+
+    @property
+    def review_changed(self) -> bool:
+        """Newly needs review. A claim already flagged before the retraction is not news."""
+        return self.review_after and not self.review_before
 
     @property
     def changed(self) -> bool:
@@ -174,8 +184,16 @@ def impact_of_retracting(
             coverage=coverage_of(b),
             broken_paths=sorted(before_labels - after_labels),
             surviving_paths=sorted(after_labels),
+            review_before=b.review_required,
+            review_after=a.review_required,
+            dependency_alerts=sorted(set(a.dependency_alerts) - set(b.dependency_alerts)),
         )
-        if item.changed or item.broken_paths:
+        # A NEW dependency alert is impact even on a claim already under review for its own
+        # correction. "My source was corrected" and "something I rest on was withdrawn" are two
+        # obligations cleared by different people; collapsing them lets the second hide behind
+        # the first, which is how the propagation test scored 0 while the semantics worked.
+        if (item.changed or item.broken_paths or item.review_changed
+                or item.dependency_alerts):
             affected.append(item)
         elif item.coverage == Coverage.CLAIM_COMPLETE:
             verified_unaffected.append(claim_id)

@@ -38,8 +38,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-7 | `HF_TOKEN` provisioning — downloads run unauthenticated at ~9 MB/s (~5.5 h per 170 GB) | [deepseek-v4-flash-0731-dspark.md](deepseek-v4-flash-0731-dspark.md) | 2026-08-09 |
 | OP-8 | GLM-5.2 GO/WAIT/KILL verdict — also governs **222 GB** of disk | [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | 2026-08-10 |
 | OP-9 | Nothing restarts `hub_supervisor.sh` if it dies — cron `once` form vs leave as-is (host-level) | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |
-| OP-10 | F1 corpus re-cut — DGM's task-generation premise is withdrawn (it has none); decide what of the F1 plan survives | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | 2026-08-10 |
-| OP-11 | `depends_on` propagation semantics — mark dependents `review_required` (no grade guess) vs propagate a downgrade; changes ratified fold semantics | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | 2026-08-10 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
@@ -65,7 +63,7 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 58 | 485 | 3 | 2026-07-29 |
 | pipeline-integration | 5 | 51 | 0 | 2026-07-29 |
-| research-evaluation | 48 | 299 | 0 | 2026-07-29 |
+| research-evaluation | 48 | 297 | 0 | 2026-07-29 |
 | reviewer-control-plane | 9 | 41 | 1 | 2026-07-29 |
 | routing-and-optimization | 46 | 313 | 1 | 2026-07-29 |
 | user-facing-harness | 7 | 42 | 0 | 2026-07-29 |

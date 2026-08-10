@@ -27,22 +27,34 @@ No automated path skips the human-curate node. The eval-tower `SafetyGate` remai
 
 ## 1. F1-DGM-1 — DGM task-generation methodology for W4+ corpus expansion
 
-### 1.1 What DGM contributes, and what we deliberately drop
+### 1.1 What F1 borrows from DGM, what it transposes, and what it drops
 
-> **⚠ PREMISE CORRECTION 2026-08-10 — read before using this section.** The sentence below says
-> DGM is a loop in which "an agent generates tasks", and section 1.1 then takes "only the
-> task-generation half". **DGM has no task-generation half.** It self-modifies its own code and is
-> evaluated on given coding benchmarks; the same holds for ADAS (intake-1068) and Hyperagents
-> (intake-1069), which lists "a fixed task and evaluation distribution" among its own limitations.
-> Verified against primary source when those two papers were finally ingested (they had been cited
-> here with other entries' ids attached). What the lineage actually contributes is metacognitive
-> self-modification. Any F1 scoping that inherits task generation from DGM rests on a capability
-> that is not in the paper.
+> **⚠ ATTRIBUTION CORRECTED 2026-08-10 (operator-ratified, OP-10) — read before using this section.**
+> The original text said F1 takes "only the task-generation half" of DGM. **DGM has no
+> task-generation half**: it self-modifies its own code and is evaluated on given coding
+> benchmarks, and the same holds for ADAS (intake-1068) and Hyperagents (intake-1069), which lists
+> "a fixed task and evaluation distribution" among its own limitations. Verified against primary
+> source when those papers were finally ingested — they had been cited here with other entries' ids
+> attached.
+>
+> **What survives, and it is most of this section.** The three patterns F1 borrows — archive-based
+> evolution, parallel variant branching, empirical validate-and-keep — are genuinely in DGM. DGM
+> applies them to *agent* variants; F1 applies them to *task* variants. That is a transposition F1
+> **owns as an analogy**, not a capability it inherits, and the pipeline in §1.2 is in any case
+> seeded entirely from our own artifacts (W3 `real_suite_v1`, `workload_model.yaml`) with our own
+> G1–G6 gates. Nothing in the design changes.
+>
+> **What the analogy still needs.** No source in the index demonstrates that archive-based
+> evolution works for generating *tasks*. Treat §1 as an unvalidated design until one exists or
+> until the G1–G6 gates produce evidence on our own data. Do not cite DGM as precedent for the
+> task-generation claim.
 
 
 DGM (Darwin-Gödel-Machine; Hu/Lu/Clune/Zhang lineage, ADAS → DGM → Hyperagents; handoff cites arxiv 2505.22954) is a **self-code-modification + empirical-validation loop**: an agent generates tasks, executes them, validates results, and iteratively improves both tasks and its own capability, using **archive-based evolution over a parallel exploration tree**.
 
-For F1 we take **only the task-generation half** and drop self-modification:
+For F1 we borrow DGM's **search patterns** and apply them to a different object —
+task variants rather than agent variants — and drop self-modification. The mapping
+below is a transposition F1 owns, not a capability DGM demonstrates for tasks:
 
 | DGM element | F1 adoption |
 |---|---|
@@ -58,8 +70,8 @@ Seed from what F1 already measured, not from public benchmarks:
 
 1. **Seed set** = the curated W3 ledger (`real_suite_v1`, 50 rows) + the measured workload taxonomy (`orchestration/workload_model.yaml`, 7 task classes with 30-day volume shares).
 2. **Per-class branching**: for each of the 7 observed classes — `benchmark_eval_measurement`, `code_implementation`, `debug_root_cause`, `governance_docs_handoff`, `ops_deploy_process`, `planning_architecture_review`, `research_intake_deep_dive` — branch candidate tasks that (a) match the class's observed prompt shape and (b) carry a **complete, W3-schema-identical row**.
-3. **Row schema (must match `real_suite_v1` exactly)**: `{id, tier, prompt, expected, scoring_method, scoring_config, source_suite, source_question_id, real_task_class, real_task_outcome}` plus a new provenance stamp `dgm_provenance: {generator, seed_node, critic_verdict, elo_complexity, curated_by, curated_at}`. A DGM row without a determinate `(expected, scoring_method, scoring_config)` triple is **not a candidate** — it is a rubric/judge item and diverts to the audit-only lane.
-4. **Coverage-gap targeting** (Simula §8.3): map existing curated rows to the 7 classes, generate preferentially for under-covered classes/tiers. The W3 ledger is already class-balanced (8/7/7/7/7/7/7); DGM expansion must **preserve per-class balance and report per-class, never pooled** (existing F1 gate rule).
+3. **Row schema (must match `real_suite_v1` exactly)**: `{id, tier, prompt, expected, scoring_method, scoring_config, source_suite, source_question_id, real_task_class, real_task_outcome}` plus a new provenance stamp `genprov: {generator, seed_node, critic_verdict, elo_complexity, curated_by, curated_at}` (renamed from `dgm_provenance` on 2026-08-10 — the rows are not DGM's and the old name asserted a provenance they do not have). A generated row without a determinate `(expected, scoring_method, scoring_config)` triple is **not a candidate** — it is a rubric/judge item and diverts to the audit-only lane.
+4. **Coverage-gap targeting** (Simula §8.3): map existing curated rows to the 7 classes, generate preferentially for under-covered classes/tiers. The W3 ledger is already class-balanced (8/7/7/7/7/7/7); Generated expansion must **preserve per-class balance and report per-class, never pooled** (existing F1 gate rule).
 
 ### 1.3 W3 curated-baseline validation gates (MANDATORY — the whole point)
 
@@ -79,7 +91,7 @@ Only rows that clear **G1–G6** become corpus rows eligible for the autopilot g
 ### 1.4 Staged corpus lifecycle
 
 ```
-generated (dgm_provenance stamped)
+generated (genprov stamped)
   → G1–G5 automated gates  → [fail] reject / audit-only lane
   → G6 human curate         → [reject] discard or revise
   → curated corpus (audit/promotion material)
@@ -184,7 +196,7 @@ The W3 ledger already has a `tier` field (1/2/3). Today tiers are assigned by so
 ```
 
 - **New build**: `complexity_scorer.py` does **not** exist yet (Simula §8.2 proposes it under `epyc-inference-research/scripts/benchmark/`). F1-DGM-3 scopes it; it is a Wave-later build, not part of this design pass.
-- Use: assign `tier` + `dgm_provenance.elo_complexity` to each generated row; drive coverage-gap generation by tier band; feed adaptive evaluation (start medium, escalate/de-escalate) to cut eval tokens.
+- Use: assign `tier` + `genprov.elo_complexity` to each generated row; drive coverage-gap generation by tier band; feed adaptive evaluation (start medium, escalate/de-escalate) to cut eval tokens.
 - Validation precedent: Simula reports model-Elo aligns with human difficulty labels on MATH/Global-MMLU, and rejected samples carry systematically higher Elo — i.e. the critic filters what the model finds hard.
 
 ### 3.3 Weak-teacher caution → the hard limit on complexity per class (enforced at G5)
@@ -218,7 +230,7 @@ This is the mechanistic reason SkillsBench-v3's −1.3pp shows up and why G5 bou
 - Verifier-parity (G3) canonicalizes on the orchestrator scorer; the two-repo divergence table is the G3 checklist.
 
 **Needs a later build (implementation session, inference/code):**
-1. A DGM generator harness (offline/batch) emitting W3-schema rows with `dgm_provenance`. NEW code, not in this pass.
+1. A task-generator harness (offline/batch) emitting W3-schema rows with `genprov`. NEW code, not in this pass.
 2. `complexity_scorer.py` (Simula §8.2) — does not exist; batch-wise pairwise Elo utility in `epyc-inference-research/scripts/benchmark/`.
 3. A shared double-critic module (Simula §2 / §8.1) factored out of / into `q_scorer.py`, callable as G4.
 4. Verifier-parity reconciliation between the two `debug_scorer.py` copies (or a single canonical scorer + thin shims) — closes G3 mechanically. Overlaps EV-13 `review_f1` clean-room scorer + `iq2_parity_eval` precedent.
