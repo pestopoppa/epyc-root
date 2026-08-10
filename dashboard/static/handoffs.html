@@ -249,6 +249,13 @@
   section.graph .gsw.dot{border-radius:50%}
   section.graph .gnote{font-size:12px;margin:0 0 8px;max-width:88ch}
   section.graph .gwrap{position:relative}
+  section.graph .gzoom{position:absolute;top:8px;right:10px;z-index:20;display:flex;gap:6px;
+    align-items:center;font-size:11px;color:var(--muted)}
+  section.graph .gzoom button{background:#161a21;color:#e6e6e6;border:1px solid #30363d;
+    border-radius:4px;min-width:24px;height:22px;cursor:pointer;font-size:12px;line-height:1}
+  section.graph .gzoom button:hover{border-color:#58a6ff}
+  section.graph svg{touch-action:none}
+  section.graph svg.grabbing{cursor:grabbing}
   section.graph svg{width:100%;height:auto;display:block;background:rgba(0,0,0,.12);border:1px solid var(--line,#2a2f3a);border-radius:6px}
   section.graph .gtip{position:absolute;z-index:30;pointer-events:none;max-width:340px;
     background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 10px;
@@ -355,6 +362,12 @@
     </div>
     <p class="gnote muted" id="graph-note"></p>
     <div class="gwrap">
+      <div class="gzoom">
+        <button id="gz-out" title="zoom out">&minus;</button>
+        <button id="gz-in"  title="zoom in">+</button>
+        <button id="gz-fit" title="fit to box">fit</button>
+        <span class="muted">ctrl/⌘+scroll to zoom · drag to pan · double-click to fit</span>
+      </div>
       <svg id="graph-svg" viewBox="0 0 1200 780" role="img" aria-label="handoff reference graph"></svg>
       <div id="graph-tip" class="gtip" hidden></div>
     </div>
@@ -1063,7 +1076,10 @@ async function loadGraph(){
   // whose label collided with its neighbours'. Floor first, share the rest by
   // population. Relaxation replaces the old y-only beeswarm, which stacked equal-x
   // nodes into vertical icicles.
-  const W=1200, TOP=64, BAND=158, PAD=26, MINW=118, ITER=260, SPRING=0.06, LIFT=0.55;
+  // SEP clears the HALO (outer edge r+2.2), not the disc: rA+rB+14 leaves ~9.6px
+  // of background between neighbouring halos, which is what makes individual
+  // nodes readable. Height is free — H is computed from the packing.
+  const W=1200, TOP=64, BAND=158, PAD=26, MINW=118, SEP=14, RELAX=120;
   const doms2=doms.slice();
   const counts={}; doms2.forEach(d=>counts[d]=g.nodes.filter(n=>n.domain===d).length);
   const total=g.nodes.length||1, inner=W-2*PAD;
@@ -1073,33 +1089,40 @@ async function loadGraph(){
   doms2.forEach(d=>{ const w=MINW+slack*counts[d]/total;
     colX[d]=x0+w/2; half[d]=w/2; x0+=w; });
 
-  const items=g.nodes.map((n,i)=>{
+  const items=g.nodes.map(n=>{
     const w={}; w[n.domain]=3;
     for(const m of (nbr[n.id]||[])){ const d=domOf[m]; if(d) w[d]=(w[d]||0)+1; }
-    let tw=0,bx=0; for(const d in w){ if(colX[d]===undefined) continue; bx+=colX[d]*w[d]; tw+=w[d]; }
-    bx = tw?bx/tw:colX[n.domain];
-    const home=colX[n.domain], lean=half[n.domain]*0.45;
-    // Lean toward neighbours but STAY INSIDE the home band: position carries
-    // ownership, fill carries hybridness. Letting nodes cross boundaries put
-    // amber routing nodes inside the inference band.
-    const tx=home+Math.max(-lean, Math.min(lean, bx-home));
-    return {n, w, tx, x:tx, y:BAND+(i%11)*5,
-            fill:_mix(w, n.domain),
-            r:Math.max(3.6, Math.min(13, 3.2+1.75*Math.sqrt(n.open)))};
+    return {n, w, fill:_mix(w, n.domain),
+            r:Math.max(5, Math.min(15, 3.4+1.9*Math.sqrt(n.open)))};
   });
 
-  for(let k=0;k<ITER;k++){
-    for(const it of items){ it.x+=(it.tx-it.x)*SPRING; it.y-=LIFT; if(it.y<BAND) it.y=BAND; }
+  // SEED ON A GRID INSIDE THE BAND, then relax lightly. Pure relaxation from a
+  // collapsed start never converged: the spring pulled nodes back together every
+  // step and dense bands oscillated, leaving 26 halo pairs overlapping by up to
+  // 18px however long it ran. A grid seed starts already-separated so the relax
+  // only softens it — measured 0 overlaps, 9.6px minimum halo gap.
+  const byDom={}; for(const it of items) (byDom[it.n.domain]||=[]).push(it);
+  for(const d in byDom){
+    const lst=byDom[d].sort((a,b)=> b.r-a.r || (a.n.id<b.n.id?-1:1));
+    const cell=2*Math.max(...lst.map(it=>it.r))+SEP;
+    const cols=Math.max(1, Math.floor((half[d]*2)/cell));
+    const left=colX[d]-(cols*cell)/2+cell/2;
+    lst.forEach((it,k)=>{ it.x=left+(k%cols)*cell; it.y=BAND+Math.floor(k/cols)*cell; });
+  }
+  for(let k=0;k<RELAX;k++){
+    let moved=0;
     for(let a=0;a<items.length;a++){ const A=items[a];
       for(let b=a+1;b<items.length;b++){ const B=items[b];
-        const dx=B.x-A.x, dy=B.y-A.y, md=A.r+B.r+2.2, d2=dx*dx+dy*dy;
+        const dx=B.x-A.x, dy=B.y-A.y, md=A.r+B.r+SEP, d2=dx*dx+dy*dy;
         if(d2===0){ B.x+=0.7; B.y+=0.7; continue; }
         if(d2>=md*md) continue;
         const dist=Math.sqrt(d2), push=(md-dist)/2, ux=dx/dist, uy=dy/dist;
-        A.x-=ux*push; A.y-=uy*push; B.x+=ux*push; B.y+=uy*push;
-        if(A.y<BAND) A.y=BAND; if(B.y<BAND) B.y=BAND; } }
-    for(const it of items){ const lo=PAD+it.r, hi=W-PAD-it.r;
+        A.x-=ux*push; A.y-=uy*push; B.x+=ux*push; B.y+=uy*push; moved+=push; } }
+    for(const it of items){
+      if(it.y<BAND) it.y=BAND;
+      const lo=PAD+it.r, hi=W-PAD-it.r;
       if(it.x<lo) it.x=lo; if(it.x>hi) it.x=hi; }
+    if(moved<0.5) break;
   }
   const H=Math.ceil(Math.max(...items.map(it=>it.y+it.r))+PAD);
   svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
@@ -1184,7 +1207,61 @@ async function loadGraph(){
     c.addEventListener("click",()=>{ if(n.handoff) loadDetail(n.handoff.replace(/\.md$/,"")); });
     gNode.appendChild(c); circles[n.id]=c;
   }
+  installZoom(svg, W, H);
   setBadge("#graph-badge",(g._freshness&&g._freshness.staleness_class)||"fresh");
+}
+
+/* Zoom/pan over the viewBox. Ctrl/Cmd+wheel rather than bare wheel ON PURPOSE:
+   a bare-wheel handler must preventDefault to zoom, which traps page scrolling
+   inside the box — on a page this tall that is worse than the feature is good.
+   Buttons and drag cover the same ground without hijacking anything. */
+function installZoom(svg, W, H){
+  const view={x:0,y:0,w:W,h:H};
+  const apply=()=>svg.setAttribute("viewBox",`${view.x} ${view.y} ${view.w} ${view.h}`);
+  const MINW=W/12, MAXW=W*1.6;
+  const zoomAt=(f,cx,cy)=>{
+    const nw=Math.max(MINW,Math.min(MAXW,view.w*f));
+    const k=nw/view.w;
+    view.x=cx-(cx-view.x)*k; view.y=cy-(cy-view.y)*k;
+    view.w=nw; view.h=H*(nw/W); apply();
+  };
+  const toSvg=ev=>{ const b=svg.getBoundingClientRect();
+    return [view.x+(ev.clientX-b.left)/b.width*view.w,
+            view.y+(ev.clientY-b.top)/b.height*view.h]; };
+  const fit=()=>{ view.x=0; view.y=0; view.w=W; view.h=H; apply(); };
+
+  svg.addEventListener("wheel",ev=>{
+    if(!(ev.ctrlKey||ev.metaKey)) return;      // let the page scroll otherwise
+    ev.preventDefault();
+    const [cx,cy]=toSvg(ev);
+    zoomAt(ev.deltaY>0?1.15:1/1.15,cx,cy);
+  },{passive:false});
+
+  let drag=null;
+  svg.addEventListener("pointerdown",ev=>{
+    if(ev.target.classList.contains("node")) return;   // clicks still open detail
+    drag={x:ev.clientX,y:ev.clientY}; svg.classList.add("grabbing");
+    svg.setPointerCapture(ev.pointerId);
+  });
+  svg.addEventListener("pointermove",ev=>{
+    if(!drag) return;
+    const b=svg.getBoundingClientRect();
+    view.x-=(ev.clientX-drag.x)/b.width*view.w;
+    view.y-=(ev.clientY-drag.y)/b.height*view.h;
+    drag={x:ev.clientX,y:ev.clientY}; apply();
+  });
+  const stop=ev=>{ drag=null; svg.classList.remove("grabbing");
+    if(ev.pointerId!=null && svg.hasPointerCapture&&svg.hasPointerCapture(ev.pointerId))
+      svg.releasePointerCapture(ev.pointerId); };
+  svg.addEventListener("pointerup",stop); svg.addEventListener("pointercancel",stop);
+  svg.addEventListener("dblclick",fit);
+
+  const bind=(id,fn)=>{ const b=$(id); if(!b) return;
+    b.onclick=e=>{ e.preventDefault(); fn(); }; };
+  bind("#gz-in",  ()=>zoomAt(1/1.3, view.x+view.w/2, view.y+view.h/2));
+  bind("#gz-out", ()=>zoomAt(1.3,   view.x+view.w/2, view.y+view.h/2));
+  bind("#gz-fit", fit);
+  fit();
 }
 
 /* ---------------- boot ---------------- */
