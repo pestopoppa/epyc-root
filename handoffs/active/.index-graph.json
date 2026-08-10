@@ -3540,7 +3540,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T12:28:31Z",
+  "generated_at": "2026-08-10T12:30:07Z",
   "nodes": [
     {
       "age_days": 11,
@@ -4143,7 +4143,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 107,
+      "closed": 108,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
@@ -5703,13 +5703,13 @@
     {
       "age_days": null,
       "blocked": 0,
-      "closed": 0,
+      "closed": 10,
       "domain": "routing-and-optimization",
       "handoff": "dashboard-architecture-restructure.md",
       "id": "RTG-47",
       "last_advanced": null,
-      "next_action": "Operator picks D1\u2013D3 (recommendation: C1); then Phase 0 nav registry + shared include",
-      "open": 20,
+      "next_action": "Operator eyeball pass of live /machine + /autopilot, then run old+new in parallel toward the Phase 1b deprecation call",
+      "open": 12,
       "state": "active",
       "track": "dashboard architecture restructure"
     },

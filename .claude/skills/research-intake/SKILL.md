@@ -291,6 +291,18 @@ Begins only when the operator names the intakes. Never self-trigger.
   renamed-kernel incident happened. Do not anchor ordinary prose; anchor what will be cited.
 - Append a dated `dive_corrections` field recording what the dive changed, so an overturned
   conclusion cannot be re-derived later.
+- **Dive the CURRENT version, and record which one you read.** Check the source's version before
+  extracting anything: arXiv reports it in the same query that returns the title. If the paper has
+  been revised since the entry was ingested, the recorded claims describe a version that no longer
+  exists, and re-verifying against the old one certifies a document nobody can now read.
+
+  **Why this is a Stage-2 obligation.** intake-110 was ingested 2026-03-14 against arXiv v1 of a
+  paper now at v7. The authors had found their headline accuracy gain was a scoring artifact and
+  revised it away; our entry kept quoting the v1 abstract verbatim. Nobody touched the record and
+  it became false. A 2026-08-10 sweep of 617 arXiv entries found **68 (11%) whose source moved
+  after we recorded it** — detector: `scripts/vidya/upstream_drift.py`. Only one of the 68 was a
+  dived entry, which is exactly the ratio this rule is meant to preserve.
+
 - **Record `claim_corrections` alongside it — which claims the correction actually touched**, one
   row per claim examined, with `effect: overturned | narrowed | reattributed | unaffected` and a
   required `note`. Schema: [`references/intake-schema.md`](references/intake-schema.md)

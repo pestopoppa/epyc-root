@@ -266,12 +266,16 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       intake-110 — the case that motivated it — alongside SkillsBench (v4), HiSpec (v2) and
       Speculative Speculative Decoding (v3). What it asserts is deliberately narrow and pinned by
       test: drift means the source moved and nobody has looked since, NOT that the entry is wrong ✅ 2026-08-10
-- [ ] PR1b-drift-triage Triage the drifted entries. Full sweep: **68 of 617 arXiv entries (11%)
-      had their source revised after we recorded it**, and only **1 is a dived entry**
-      (intake-990, ingested 2026-08-03, source updated the next day). That ratio is the reassuring
-      part — our *verified* claims are mostly pinned to stable versions — but each still needs a
-      human to compare the record against the current text. The detector finds them and cannot
-      judge them
+- [x] PR1b-drift-triage **Reframed after measuring the split, and 67 of the 68 dissolve.** The
+      sweep found 68 of 617 arXiv entries (11%) whose source was revised after we recorded them —
+      but **64 are `unverified` and 3 `stage1-unverified`; exactly ONE is dived.** For an unverified
+      entry drift is not a correctness problem: the record already says nobody checked it, so
+      reading 67 papers to confirm that unverified things are unverified is work with no consumer.
+      What the finding licenses instead is a Stage-2 rule — *dive the CURRENT version and record
+      which one you read* — now written into the intake skill, which prevents the class rather than
+      draining it ✅ 2026-08-10
+- [ ] PR1b-drift-990 The one drifted DIVED entry: intake-990, dived 2026-08-03, source updated to
+      v2 the next day. Verifying whether v2 changed anything bearing on its three claims
 - [x] PR2c-determinable **Measured how much of the backfill the record can support: 1 of 26.**
       intake-928 done — and reading it overruled the heuristic that found it. The correction
       inverts that entry's verdict_justification (the runtime gate it named is cleared upstream) and

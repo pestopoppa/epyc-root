@@ -28,7 +28,7 @@
       "blocked": 1,
       "handoffs": 47,
       "oldest_advance": "2026-07-29",
-      "open": 333
+      "open": 325
     },
     "user-facing-harness-index.md": {
       "blocked": 0,
@@ -349,14 +349,14 @@
     },
     "dashboard-architecture-restructure.md": {
       "blocked": 0,
-      "closed": 0,
+      "closed": 10,
       "guarded": 0,
       "last_advanced": null,
-      "open": 20,
+      "open": 12,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-47",
       "state": "active",
-      "total": 20
+      "total": 22
     },
     "decision-aware-routing.md": {
       "blocked": 1,
@@ -1889,14 +1889,14 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 107,
+      "closed": 108,
       "guarded": 0,
       "last_advanced": "2026-08-10",
       "open": 5,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 112
+      "total": 113
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -3457,7 +3457,7 @@
       "id": "RTG-47",
       "index": "routing-and-optimization-index.md",
       "line": 59,
-      "next_action": "Operator picks D1\u2013D3 (recommendation: C1); then Phase 0 nav registry + shared include",
+      "next_action": "Operator eyeball pass of live /machine + /autopilot, then run old+new in parallel toward the Phase 1b deprecation call",
       "track": "dashboard architecture restructure"
     },
     "UFH-01": {
