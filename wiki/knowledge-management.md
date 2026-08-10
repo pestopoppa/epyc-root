@@ -786,3 +786,59 @@ post-approval round, so the rest of the plan was authored without their findings
 - [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4c — the vacuity retraction and the four retraction routes
 - [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — alias candidate generation, source-identity defect
 - [`research/recommendations.md`](../research/recommendations.md) — rec-001 and rec-002 rewritten after their sources were read
+
+## Belief-kernel ingestion contract — one carrier, one ladder per source class (2026-08-10)
+
+Heterogeneous producers write measurements in different shapes: an autopilot trial row, an
+AutoKernel `evaluation_event`, a sealed benchmark manifest, an intake entry. The Vidya spec defined
+what the carrier's grade levels *mean* (§4.5) but never how a producer *enters* the carrier, so each
+adapter arrived with its own reading of the measurement constitution. Two were then caught
+disagreeing on the same input — a record with no protocol and no attestation graded `Judged/T0` by
+one and `Judged/Located` by the other. Neither reading is wrong on its face, which is the hazard: a
+rule reimplemented per source becomes N dialects of itself, and the drift surfaces later as
+unexplainable grade differences between corpora.
+
+**The contract (spec §4.7).** An adapter *projects* its native record into a canonical `ClaimTuple`
+and never grades:
+
+```
+native record  --project-->  ClaimTuple  --grade()-->  (Q, T, reasons)  --> frames
+```
+
+The tuple's vocabulary is AutoKernel's `claim_grammar`, which already enforces `MEASUREMENT.md:13`
+as a REQUIRED schema block (category ∈ OPTIMUM/BASELINE/CANDIDATE, `protocol_id`, `metric`,
+`metric_direction`, `reps` ≥ 1, `attestation_ref`). The strictest existing producer defines the
+shape rather than the newest adapter redefining it.
+
+**Source classes are the generalisation.** The carrier is shared; the grading rule is not.
+
+| class | graded by | ceiling |
+|---|---|---|
+| `measurement` | the claim rule — protocol / n / date / attestation | `Witnessed` |
+| `literature` | verification status — anchored, dive-verified, dive-overturned | `Verified` |
+
+The literature ceiling is structural, not a limitation to lift: an intake entry records what someone
+else reported. Each class registers exactly one ladder; `register_ladder()` refuses a second, and a
+conformance test fails any adapter that returns a lattice level without declaring itself one.
+
+**The standing practice this exists to support.** A process that produces measurements or verified
+findings gets its wiring task filed the moment it is noticed, because the asymmetry is total:
+instrumenting the WRITE side is cheap and permanent, while retrofitting the READ side is impossible
+— a tuple invented on read claims warrant the original run never captured. Measured proof:
+`benchmarks/results` holds 2,605 files and the wider research repo 4,562 measurement-shaped files,
+but **0 of 200 sampled carry the constitution's full tuple** (`reps` essentially never recorded,
+`sha256` absent from three of four areas). Those numbers can never gate a decision, and no adapter
+can repair that. By contrast the 6 sealed manifests, which carry the tuple by construction, reached
+`Witnessed/Attested` the first time anything read them.
+
+Two further traps are recorded with the contract: price a bulk adapter before writing it (sample ~50
+records, count full tuples), and watch the locator — support is counted by *source locator*, so N
+result files measuring one thing read as N independent witnesses, and same-harness runs are not
+independent evidence.
+
+### Source References
+
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.7 — the normative contract
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — implementer's guide and the live source register
+- [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — the withdrawn 2.2% ceiling and the corrected structured-corpus measurement
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC1–SC11 — the source-coverage track

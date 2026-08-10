@@ -46,7 +46,7 @@ def row(trial_id=1, **over):
 # --- what is read, and what is refused ----------------------------------------------------
 
 def test_a_row_without_a_tuple_is_skipped_not_backfilled(tmp_path):
-    """Every trial before 2026-08-12 predates the hook; inventing provenance for them is the bug."""
+    """Every trial before 2026-08-10 predates the hook; inventing provenance for them is the bug."""
     r = row()
     del r["measurement"]
     assert list(apj.iter_measured_rows(write_journal(tmp_path, [r]))) == []

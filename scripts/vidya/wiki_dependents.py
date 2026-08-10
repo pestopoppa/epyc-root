@@ -191,7 +191,7 @@ def main() -> int:
     from ledger import Ledger
 
     frames = [r.frame for r in Ledger(str(REPO / ".vidya" / "ledger.jsonl")).read_all()]
-    res = fold(frames, as_of="2026-08-12T02:00:00Z")
+    res = fold(frames, as_of="2026-08-10T16:00:00Z")
     rep = report(res)
 
     print(f"wiki pages citing intake entries : {rep['pages']}")

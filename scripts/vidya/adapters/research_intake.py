@@ -116,7 +116,7 @@ def grade_for_entry(entry: dict, anchor: dict | None = None) -> tuple[Grade, boo
 
     THE ladder for the `literature` source class, declared as such so the conformance test can
     tell a legitimate second class apart from an accidental second dialect of the measurement rule
-    — which is what `measurement_record` and `sealed_manifest` had become by 2026-08-12.
+    — which is what `measurement_record` and `sealed_manifest` had become by 2026-08-10.
     """
     q, is_opposition = _q_level(entry)
     return parse_grade({"Q": q, "T": _t_level(entry, anchor)}), is_opposition

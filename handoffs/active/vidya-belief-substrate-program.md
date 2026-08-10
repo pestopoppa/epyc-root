@@ -229,44 +229,44 @@ Operator priority: an integrated solution that works, not novelty.
       (34 carrying a sha256), 4,562 measurement-shaped tracked json/jsonl in the research repo, 14
       `artifacts/**/manifest.json` of which 6 are `SEALED_FOR_OFFICIAL_SCORING`**. The narrow
       finding (prose narration is unattested) survives; the generalization to the measurement layer
-      is withdrawn ✅ 2026-08-12
+      is withdrawn ✅ 2026-08-10
 - [x] SC3 **Instrumented the WRITE for measurements** — `scripts/vidya/measurement_record.py`
       implements `MEASUREMENT_POLICY.md` § The claim rule as a grading function rather than
       paraphrasing it: no protocol → `Judged` (the constitution's OBSERVATION, never
       decision-gating); protocol without attestation → `Verified/Located`; artifact named but
       unhashed → `Witnessed/Anchored`; full tuple with the artifact present and hashed →
       `Witnessed/Attested`. Every downgrade names its own cause. Validation refuses a record it
-      cannot grade honestly (category must be exactly one of OPTIMUM/BASELINE/CANDIDATE) ✅ 2026-08-12
+      cannot grade honestly (category must be exactly one of OPTIMUM/BASELINE/CANDIDATE) ✅ 2026-08-10
 - [x] SC4 **Ingested the sealed-manifest corpus** — `scripts/vidya/adapters/sealed_manifest.py`.
       A sealed manifest already carries the constitution's full tuple (`capture_schema_version` →
       protocol, `arms.*.counts` → reps, `observational_provenance.sealed_at_utc` → date,
       `runner_sha256`/`authority/*.sha256` → attestation). **Q4 Witnessed: 0 → 6.** Two refusals are
       deliberate: an unsealed manifest is a run in progress, not a result; and a manifest whose named
       artifacts are absent grades DOWN rather than being skipped, because a hash over a missing file
-      proves nothing ✅ 2026-08-12
+      proves nothing ✅ 2026-08-10
 - [x] SC4-BUG **The adapter reproduced the fake-identity bug it exists to detect.** v1 keyed claims
       on the manifest directory basename; on the real tree `sealed_package` names two runs and
       `input` names three ARMS of one run, so 6 manifests folded into 3 claims and three arms of one
       A/B merged into a single belief. Caught by checking output count against input count, not by
       reading the output. Fixed to a path-relative identity, 12 bad frames retracted (9 collided + 3
-      superseded), uniqueness pinned by `tests/vidya/test_sealed_manifest.py` ✅ 2026-08-12
+      superseded), uniqueness pinned by `tests/vidya/test_sealed_manifest.py` ✅ 2026-08-10
 - [x] SC5 **Wiki pages are dependents, not claims** — `scripts/vidya/wiki_dependents.py`.
       **707 dependency edges from 28 pages into 477 distinct intake entries.** Implemented as a
       PROJECTION over the fold, writing nothing to the ledger: a page's citations are re-derivable
       from a file that is already in git, so appending them would have required either a new
       source-level edge frame or one structural "claim" per page — and that second option would put
       28 things in the belief set that are not beliefs. Result: **12 pages carry a stale dependency**
-      (all unreviewed corrections), **zero real decay** ✅ 2026-08-12
+      (all unreviewed corrections), **zero real decay** ✅ 2026-08-10
 - [x] SC5-BUG **A coverage gap was being reported as decay.** The first draft flagged intake-12,
       intake-335, 303, 310, 48, 95, 16, 42, 98 as "lost all support". None has ever had a claim
       ingested — the substrate has not read those papers, which is a gap in us, not rot in the page.
       Now classified separately (`uningested` vs `unsupported`), and only decay marks a page stale.
-      This moved the headline from 16 stale pages to 12 ✅ 2026-08-12
+      This moved the headline from 16 stale pages to 12 ✅ 2026-08-10
 - [x] SC5-MERGE **Verified the merge redirects rather than trusting a zero.** The report showed 0
       citations resolved through the merge map, which is the kind of silent negative that usually
       means a broken parser. Checked against ground truth: all 4 redirects parse correctly
       (784→244, 336→315, 797→418, 785→772) and the wiki cites none of them, because the merges
-      repointed citations at merge time. All 477 cited ids resolve; none dangle ✅ 2026-08-12
+      repointed citations at merge time. All 477 cited ids resolve; none dangle ✅ 2026-08-10
 - [x] SC6-PRICE **Priced the bulk adapter before writing it, and it does not pay.** Sampled 50
       files from each of the four largest measurement areas (200 total) for the constitution's
       tuple:
@@ -283,9 +283,9 @@ Operator priority: an integrated solution that works, not novelty.
       out at `Verified/Located`, gating nothing — the identical trap SC2 correctly identified for
       progress prose. The bulk-ingest framing of SC6 is therefore REJECTED, not deferred.
       Correction: the original SC6 note cited `execution_manifest.jsonl`; no such file exists in
-      the research repo ✅ 2026-08-12
+      the research repo ✅ 2026-08-10
 - [x] SC6 **Wired into autopilot's result-write path** (operator chose this hook over the
-      llama-bench wrapper and a post-run sealing step, 2026-08-12). `ExperimentJournal.record()`
+      llama-bench wrapper and a post-run sealing step, 2026-08-10). `ExperimentJournal.record()`
       now captures the constitution's tuple via `measurement_tuple()` — protocol from the schema
       versions plus the objective policy, reps from the scored denominator, date from the trial
       timestamp, attestation from a sha256 over the entry's own content. Replayed over all **1,372
@@ -293,14 +293,14 @@ Operator priority: an integrated solution that works, not novelty.
       the remaining 197 are skipped/invalid/never-scored trials where absence is correct.
       Read half: `scripts/vidya/adapters/autopilot_journal.py`. Grading stays in this repo next to
       `MEASUREMENT.md` so there is no second implementation of the claim rule to drift
-      ✅ 2026-08-12
+      ✅ 2026-08-10
 - [x] SC6-REPS **The first extractor silently understated the corpus by 40 points.** It read only
       the modern denominator keys and found reps on 46% of rows. Probing the gap — rather than
       accepting it — found 545 older rows carrying the denominator under `details.total`.
       Recovering it took coverage to 86%. Because `total` counts what was ATTEMPTED while
       `quality_denominator` counts what SCORED, the tuple now records `reps_basis`, and the adapter
       states it in the grade reasons: "n=55 attempted" and "n=55 scored" are different claims
-      ✅ 2026-08-12
+      ✅ 2026-08-10
 - [ ] SC6-LIVE The hook takes effect for trials written **after autopilot next restarts** — the
       running process holds the pre-hook module. No restart was performed: reload ownership belongs
       to the session that owns the inference, at its own boundary. Until then
@@ -313,18 +313,18 @@ Operator priority: an integrated solution that works, not novelty.
       never grade; vocabulary is AutoKernel's `claim_grammar`; the carrier is shared but each
       **source class** has exactly one ladder (`measurement` → `Witnessed`; `literature` → capped at
       `Verified`, structurally). `register_ladder()` refuses a second, and a conformance test fails
-      any adapter returning a lattice level without declaring itself one ✅ 2026-08-12
+      any adapter returning a lattice level without declaring itself one ✅ 2026-08-10
 - [x] SC8-DOC **Persisted in the three places someone will actually look**: spec §4.7 (the
       contract), `scripts/vidya/adapters/README.md` (implementer's guide + the live source
       register), and `CLAUDE.md` → *Belief Kernel — wiring new sources*. Explainer artifact updated
-      with section B10 and the source register ✅ 2026-08-12
-- [x] SC9 **Standing practice adopted (operator, 2026-08-12): a process that produces measurements
+      with section B10 and the source register ✅ 2026-08-10
+- [x] SC9 **Standing practice adopted (operator, 2026-08-10): a process that produces measurements
       or verified findings gets its wiring task filed the MOMENT it is noticed** — one row in the
       source register, one task here. Rationale is an asymmetry, not tidiness: wiring the WRITE side
       is cheap and permanent, retrofitting the READ side is impossible, because a tuple invented on
       read claims warrant the original run never captured. `benchmarks/results` is the standing
       proof — 4,562 files, no write hook, 0 of 200 sampled carrying a usable tuple, permanently
-      unable to gate a decision ✅ 2026-08-12
+      unable to gate a decision ✅ 2026-08-10
 - [ ] SC10 **AutoKernel `evaluation_event` — ready, unwritten.** Its schema already enforces the
       claim rule as a REQUIRED block (stricter than the autopilot hook: `metric_direction`,
       `reps` ≥ 1, `anchor.source_commit`, hex-sha256 `run_id`, INVALID runs journaled not

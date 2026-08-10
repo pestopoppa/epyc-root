@@ -14,7 +14,7 @@ the single place that decides what warrant a number carries.
 
 Two properties matter and are pinned by tests:
 
-* **A row with no tuple is skipped, not back-filled.** Every trial before 2026-08-12 predates the
+* **A row with no tuple is skipped, not back-filled.** Every trial before 2026-08-10 predates the
   hook. Inventing a protocol id for them would manufacture exactly the warrant this program exists
   to detect the absence of.
 * **One claim per trial, keyed by shard and trial id.** Trial ids restart per shard file, so the

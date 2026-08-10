@@ -338,12 +338,12 @@ verdict or retract another actor's evidence.
 
 ### 4.7 The ingestion contract — one carrier, one ladder per source class
 
-Added 2026-08-12, after the gap it closes had already cost something.
+Added 2026-08-10, after the gap it closes had already cost something.
 
 Heterogeneous producers write measurements in different shapes: an autopilot trial row, an
 AutoKernel `evaluation_event`, a sealed benchmark manifest, an intake entry. §4.5 says what the
 levels *mean*; until now nothing said how a producer *enters* the carrier. Each adapter therefore
-arrived with its own reading of the rule, and on 2026-08-12 two of them were caught disagreeing
+arrived with its own reading of the rule, and on 2026-08-10 two of them were caught disagreeing
 about the same input:
 
 | input | `measurement_record.grade()` | `sealed_manifest.grade()` |
@@ -387,7 +387,7 @@ measurement.
 is a legitimate extension and registers via `register_ladder(class, module)`; a second
 implementation of an existing class's rule is a defect and the registry refuses it. A conformance
 test (`tests/vidya/test_claim_tuple.py`) fails if any adapter returns a lattice level without
-having declared itself a ladder — the check that would have caught the 2026-08-12 divergence on the
+having declared itself a ladder — the check that would have caught the 2026-08-10 divergence on the
 day it was written instead of weeks later.
 
 Two structural properties follow from routing every source through one path, and both are pinned by

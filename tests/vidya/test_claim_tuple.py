@@ -147,7 +147,7 @@ def test_only_a_declared_ladder_may_decide_a_grade(path):
     Verified by construction, which is a different rule, not a drifted copy of the measurement one.
     A second implementation of ONE class's rule is the defect. So the check is not "nobody grades"
     but "only a module that declared itself the ladder for a class grades", which is precisely the
-    line `measurement_record` and `sealed_manifest` crossed on 2026-08-12.
+    line `measurement_record` and `sealed_manifest` crossed on 2026-08-10.
     """
     if path.name in _declared_ladder_files():
         return

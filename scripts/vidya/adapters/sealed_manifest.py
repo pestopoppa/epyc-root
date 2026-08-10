@@ -133,7 +133,7 @@ def project(manifest: dict, *, run_id: str = "run", locator: str = "",
 def grade(manifest: dict, *, artifacts_present: bool) -> tuple[str, str, list[str]]:
     """Kept as a thin shim over the single ladder in `claim_tuple`.
 
-    This function used to carry its OWN copy of the constitution's rule, and on 2026-08-12 it was
+    This function used to carry its OWN copy of the constitution's rule, and on 2026-08-10 it was
     caught disagreeing with `measurement_record.grade()` on the same input (Judged/Located vs
     Judged/T0 for a protocol-less, attestation-less record). Two implementations of one rule become
     two dialects of it; the divergence then shows up as unexplainable grade differences between

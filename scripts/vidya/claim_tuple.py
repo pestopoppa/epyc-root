@@ -2,7 +2,7 @@
 
 WHY THIS EXISTS. Different loops record measurements in different shapes — an autopilot trial row,
 an AutoKernel `evaluation_event`, a sealed benchmark manifest, a llama-bench sweep. Each adapter
-that arrived was written with its own reading of `MEASUREMENT_POLICY.md`, and on 2026-08-12 two of
+that arrived was written with its own reading of `MEASUREMENT_POLICY.md`, and on 2026-08-10 two of
 them were caught disagreeing about the same case:
 
     record with no protocol and no attestation
@@ -185,7 +185,7 @@ def grade(tup: ClaimTuple) -> tuple[str, str, list[str]]:
 # What must be unified across classes is the lattice vocabulary, the projection discipline, the
 # identity scheme and frame emission. What must NOT be unified is the ladder. So each class
 # registers exactly one, and a conformance test fails if a second appears — the check that would
-# have caught `measurement_record` and `sealed_manifest` drifting apart on 2026-08-12.
+# have caught `measurement_record` and `sealed_manifest` drifting apart on 2026-08-10.
 
 Ladder = Callable[..., tuple]
 _LADDERS: dict[str, tuple[str, Ladder]] = {}

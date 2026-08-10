@@ -141,7 +141,7 @@ def grade(record: dict) -> tuple[str, str, list[str]]:
     """Return (Q, T, reasons) via the single ladder in `claim_tuple`.
 
     The ladder used to live here AND in `adapters/sealed_manifest.py`, and the two were caught
-    disagreeing on 2026-08-12 (Judged/T0 vs Judged/Located for a protocol-less, attestation-less
+    disagreeing on 2026-08-10 (Judged/T0 vs Judged/Located for a protocol-less, attestation-less
     record). One rule, one implementation — see `claim_tuple` for why that is not negotiable.
     """
     return _grade(to_tuple(record))

@@ -283,7 +283,7 @@ add volume without adding warrant, which is the opposite of what the substrate i
 
 ---
 
-## CORRECTION to the section above: the 2.2% figure measured the wrong layer (2026-08-12)
+## CORRECTION to the section above: the 2.2% figure measured the wrong layer (2026-08-10)
 
 The section above concluded: *"The gap is not a missing reader. It is that our own measurements are
 recorded as prose too."* **That conclusion is withdrawn.** The premise measured `progress/` markdown
@@ -296,7 +296,7 @@ This is the wrong-sample error, committed by the session cataloguing wrong-sampl
 document whose subject is provenance. It is recorded here rather than edited away, because the
 corrected number is less interesting than the fact that the method failed where it was being taught.
 
-**What the structured corpus actually looks like** (verified 2026-08-12):
+**What the structured corpus actually looks like** (verified 2026-08-10):
 
 | Corpus | Count | Attested |
 |---|---:|---:|
