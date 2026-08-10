@@ -283,19 +283,30 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       and replaced by formal endpoints, and the unexplained 8B inversion (32.8 vs 4B 49.5) resolved
       to 45.0% [37.0, 53.3] — a worked example of the very floor the claim names. First real use of
       the `narrowed` verdict, which is exactly what it was added for. `authors` backfilled ✅ 2026-08-10
-- [ ] PR1b-990-followups Two fields on intake-990 are now stale in the same direction the claims
-      were: `contradicting_evidence` still says "the empirical arm is not decision-grade" (v2 adds
-      two environments, seed replication, Wilson intervals at n=140, a group-size ablation and an
-      OOD pass), and `reported_results` still carries the unexplained-8B row v2 resolved
+- [x] PR1b-990-followups Both fields updated from the v2 quotes I already had — filing this as
+      "needs a reader with the tables open" was deferring something I could do.
+      `contradicting_evidence` now records that v2 replaced the descriptive caveat with 140-game
+      formal endpoints and resolved the 8B inversion, keeping only the narrower live limit;
+      `reported_results` carries the resolution and v2's additions ✅ 2026-08-10
 - [x] PR2c-determinable **Measured how much of the backfill the record can support: 1 of 26.**
       intake-928 done — and reading it overruled the heuristic that found it. The correction
       inverts that entry's verdict_justification (the runtime gate it named is cleared upstream) and
       touches none of the four claims, so all four are `unaffected` rather than the one the keyword
       match proposed. Which is the case against applying that method to the other 25 ✅ 2026-08-10
-- [ ] PR2c-remaining Backfill `claim_corrections` on the remaining **25** `dive-overturned`
-      entries. Their prose either names no claim or echoes several ambiguously, so this genuinely
-      needs whoever ran each dive — **108 claims stay blanket-opposed** until then. Guessing the
-      mapping is the failure the field exists to prevent
+- [x] PR2c-remaining **All 25 recovered — and I was wrong to call it blocked.** The prose the
+      divers wrote IS the record; reading it is the method. Three readers recovered per-claim
+      verdicts for every remaining entry, each verdict quoting the phrase it rests on. **Of 106
+      claim verdicts: 68 unaffected, 25 narrowed, 6 uncertain, 3 reattributed, and only 4
+      OVERTURNED.** The blanket was marking 114 claims wrong where 4 were; adapter opposition
+      output drops from 114 frames to 6 ✅ 2026-08-10
+- [x] PR2c-uncertain Recovery needed a fifth effect. `uncertain` records that a reader examined the
+      prose and it still does not say — intake-971's `dive_corrections` is empty entirely. Distinct
+      from an absent record, which means nobody looked; only the first should stop a future reader
+      repeating the work. It clears nothing and keeps the entry-level verdict ✅ 2026-08-10
+- [x] PR2c-supersede Emitting the right frame is not withdrawing the wrong one: **204 superseded
+      opposition edges retracted** (not deleted — an earlier frontier still folds to what we
+      believed then) and **103 correction frames marked reviewed**, which is what
+      `correction_reviewed` exists for and which a per-claim record is the strongest form of ✅ 2026-08-10
 - [x] PR2d-measurement Two hand-classified samples settle it. A 20-edge uniform sample suggested
       "a citation from a dived entry is a candidate dependency" at 4/6 precision; a **60-edge sample
       stratified over the 672 dived-source edges refutes it — 18% evidential, 75% topical, 7%
@@ -581,9 +592,16 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       `vidya disposition` records obligation outcomes. Opt-out rather than opt-in because the
       failure is silent and unrecoverable: a default of "off" keeps R5d blocked forever while every
       command still looks like it works ✅ 2026-08-10
+- [x] R5d-baseline **t=0 reading taken rather than waiting for it.** The longitudinal series does
+      need elapsed time, but the instrument's behaviour does not: the gate was exercised over all
+      4,223 claims under four policies. That produced the chain of binding constraints — T bound
+      first (615 claims cleared Verified, 5 cleared Anchored, and the anchoring and verification
+      passes had hit DISJOINT sets), then after anchoring the 26 dive-verified entries 52 claims
+      cleared both axes, and then `review_required` bound, which PR2c cleared. **Strict
+      Verified/MachineLocated now allows 9 claims, up from 0** ✅ 2026-08-10
 - [ ] R5d Collect the forward series now that emission is live (genuinely elapsed-time gated —
-      reuse cannot be reconstructed for queries nobody logged). Earliest useful read: ~30 days of
-      real query traffic
+      reuse cannot be reconstructed for queries nobody logged). The t=0 baseline above is what it
+      gets compared against; earliest useful read ~30 days of real query traffic
 
 ## Dependency notes
 

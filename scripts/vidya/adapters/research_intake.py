@@ -199,6 +199,8 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
                 is_opposition = False
             elif effect == "overturned":
                 is_opposition = True
+            elif effect == "uncertain":
+                pass                    # a reader could not tell: keep the entry-level verdict
             else:
                 is_opposition = False   # narrowed / reattributed: review, not refutation
         out.append(

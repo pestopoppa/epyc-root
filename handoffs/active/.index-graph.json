@@ -3540,7 +3540,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T12:34:45Z",
+  "generated_at": "2026-08-10T12:50:01Z",
   "nodes": [
     {
       "age_days": 11,
@@ -4143,13 +4143,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 109,
+      "closed": 114,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-10",
       "next_action": "PR2d-backfill \u2014 author `depends_on` on the 11 evidential citation edges the 60-edge sample found",
-      "open": 5,
+      "open": 3,
       "state": "active",
       "track": "vidya belief substrate program"
     },

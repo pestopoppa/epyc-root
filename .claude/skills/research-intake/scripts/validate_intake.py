@@ -35,7 +35,9 @@ VERDICT_VALUES = {
 }
 # What a dive found a correction did to ONE claim. `unaffected` is the load-bearing member:
 # without a way to say "this sibling survived", the only expressible verdict is blanket doubt.
-CORRECTION_EFFECTS = {"overturned", "narrowed", "reattributed", "unaffected"}
+# `uncertain` = a reader examined the correction prose and it still does not say what happened
+# to this claim. Distinct from an absent record, which means nobody looked. Clears nothing.
+CORRECTION_EFFECTS = {"overturned", "narrowed", "reattributed", "unaffected", "uncertain"}
 INTEGRATION_DISPOSITION_VALUES = {
     "integrated", "knowledge_only", "monitor", "declined", "awaiting_dive",
 }

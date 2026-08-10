@@ -124,7 +124,12 @@ What each effect does:
 | `overturned` | opposition edge on that claim alone |
 | `narrowed` / `reattributed` | review-required; **not** opposition — a narrowed claim is not a false one |
 | `unaffected` | support stands; the claim is excluded from the correction's `claim_ids` |
+| `uncertain` | a reader examined the prose and it still does not say; keeps the entry-level verdict and clears nothing |
 | *(no record)* | falls back to blanketing every claim, which stays the honest default for unindexed prose |
+
+`uncertain` and *no record* are not the same thing, and the difference is worth the field. One says
+somebody looked and the prose was silent; the other says nobody looked. Only the first should stop
+a future reader repeating the work.
 
 `note` is required on every row. An unexplained per-claim verdict cannot be reviewed or overturned
 later, and the adapter still refuses to PARSE `dive_corrections` prose — keyword-scanning for

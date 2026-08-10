@@ -13509,6 +13509,16 @@
   integration_disposition: knowledge_only
   disposition_evidence:
   - 'The 2026 blog remains comparison context because its managed-platform metrics do not transfer to the OSS SDK; implementation-relevant paper and repository evidence is tracked separately under intake-1022.'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: '''The managed platform and its proprietary optimizations remain distinct from the open-source SDK'' — funding and LongMemEval stand, but ''cloud memory platform'' describes only the managed tier.'
+  - claim_index: 1
+    effect: narrowed
+    note: LLM extraction stands, but the current April-2026 default extraction path is ADD-only and does not reproduce the older paper's ADD/UPDATE/DELETE/NOOP algorithm.
+  - claim_index: 2
+    effect: overturned
+    note: 'The dive''s single OVERTURNED proposition: ''Mem0 is cloud-only and has no local-inference path'' — it supports self-hosting, Ollama and LiteLLM. The $249/mo managed tier survives only as one option.'
 - id: intake-347
   arxiv_id: '2603.07670'
   url: https://arxiv.org/abs/2603.07670
@@ -27404,6 +27414,15 @@
   relevance_justification: RLM/RAO patterns are on EPYC roadmap (rlm-orchestrator-roadmap.md + halo-trace-loop-spike). The 96x cost blow-up at depth-2 is a hard constraint for CPU inference where every token costs ~10-40 t/s budget — recursion depth must be capped or learned, not heuristic.
   verdict_justification: 'Worth_investigating as cautionary evidence: cap recursion depth at 1 by default in any RLM/RAO-style orchestrator integration on EPYC unless we explicitly train a depth-controller.'
   expanded_from: intake-536 (RAO)
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2603.02615
+    quote: While depth-1 RLMs effectively boost accuracy on complex reasoning tasks, applying deeper recursion (depth=2) or using RLMs on simple retrieval tasks paradoxically degrades performance and exponentially inflates execution time (e.g., from 3.6s to 344.5s) and token costs.
+    quote_sha256: 997422009ed7436311d9ab4f46e7052ee27acb85cd641d310b73674933fcc3d7
+    located_by: machine
+    match_coverage: '0.636'
+    verified_by: vidya/machine_anchor
 - id: intake-548
   arxiv_id: '2605.02801'
   url: https://arxiv.org/abs/2605.02801
@@ -43592,6 +43611,15 @@
   notes: 'already_integrated: core RLM paradigm is tracked via intake-153 (arxiv:2512.24601, ~80% implemented in EPYC REPL sandbox). This is an independent Prime Intellect implementation in verifiers, not fast-rlm; the shared arXiv ancestor does not establish a direct lineage. One forward item worth operator flag (not auto-adopt): Prime Intellect RL-train-the-scaffold direction, complementary to autopilot-continuous-optimization and intake-154 FoldGRPO.'
   dive_corrections: '2026-07-29 conflation-audit recovery. The earlier promotional summary omitted operational negatives: the RLM converts mainly compute-bound long-context prefill into bandwidth-bound decode because it writes code to solve and again to emit the answer, adverse on EPYC''s bandwidth-saturated decode plane; the post says RLM increases wall-clock time significantly in every reported environment. Its largest Oolong synth-with-labels win used zero sub-LM calls (regular expressions over the context variable), evidence for deterministic data-by-reference rather than recursive fan-out. Mechanism constants: depth 1, 8,192-character REPL output cap, 120-second sub-call timeout (300/600 seconds did not help), tools available only to sub-LLMs, and state-variable termination. Main Model Token Efficiency (mean reward / mean main-model trajectory tokens, normalized to no scaffold) is the portable accounting metric needed to prevent hidden sub-call cost. The DeepDive almost-doubling claim is GLM-4.6-only and reverses under tips; GPT-5-mini was worse with RLM absent tips. Oolong''s margin is real-subset-specific while synth loses, and plain-LLM API rejections were counted as zero tokens. The source has plot images only: n=50 prompts × one rollout, one shared seed, untuned defaults, and no confidence intervals. These are observation-grade claims, not decision gates.'
   ingested_date: '2026-07-11'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://www.primeintellect.ai/blog/rlm
+    quote: 'The details are as follows: The sub-LLM calls can be parallelized The model has an llm_batch function available in the REPL, through which it can process a batch of prompts in parallel The sub-LLMs can be given tools In fact, any tools you give the environment will only be usable by the sub-LLMs This decision was made because many tools produce a lot of tokens.'
+    quote_sha256: 730b1c04664770632f117fdff48612959f1c8fec130234fc361f6bd1a3bc8556
+    located_by: machine
+    match_coverage: '0.462'
+    verified_by: vidya/machine_anchor
 - id: intake-804
   arxiv_id: '2607.05391'
   url: https://arxiv.org/html/2607.05391v2
@@ -49288,6 +49316,15 @@
   - claim_index: 3
     effect: overturned
     note: FABRICATED. The four-step /doctor description does not exist in the product. Reported struck on 2026-07-25 by three separate records and never removed from this file; it served as CONFIRMED for 15 days. Retracted 2026-08-09.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models
+    quote: We removed over 80% of Claude Code’s system prompt for models like Claude Opus 5 and Claude Fable 5 with no measurable loss on our coding evaluations.
+    quote_sha256: bd19a27a4d6a976fcbf176e1d2f4b191a370a5aff184f76f2ccba37adb24c1f8
+    located_by: machine
+    match_coverage: '0.5'
+    verified_by: vidya/machine_anchor
 - id: intake-897
   arxiv_id: '2509.13237'
   url: https://arxiv.org/abs/2509.13237
@@ -50140,6 +50177,22 @@
   verdict_justification: 'worth_investigating (WATCH-ONLY after dive): in-domain and architecturally genuine, but the Stage-1 smoke-test path is DEAD — the claimed HF preview weights and vllm-loopie/megatron code links return 404/401 as of 2026-07-28 (see dive_corrections). Nothing is runnable; gate all follow-up on artifacts actually appearing. Operator overview (intake-909) identity claim for this ID — "Loopie, layer-wise looping + MoE reinvestment" — remains independently CONFIRMED by fetch (overview''s generic A-A-A-B-B-B pattern is R=2 in the paper).'
   dive_corrections: '2026-07-28 Stage-2 dive (primary read of BOTH arXiv versions + artifact recon + lab identity). Architecture claims CONFIRMED (Sec 2.1 layer-loop R=2; 27/18 stored layers; Qwen3-MoE backbone, Megatron; Table 3 AIME rows exact). SIX FINDINGS: (1) OVERTURNED — "open preview weights" do NOT exist: HF IQuestLab/Loopie-20B-A2B-preview and -6B-A0.6B-preview return 401 (nonexistent-or-private), org listing (22 models) has no Loopie, HF search 0 hits; code links github.com/IQuestLab/loopie/{megatron,vllm} are malformed subpaths of a 404 repo. All three artifact links dead at publication +11 days. The Stage-1 #1 actionable (CPU smoke test) is DEAD until release. (2) SILENT RETRACTION — v1 (Jul 17) claimed abstract-level IMO 2025 + IPhO 2025 gold (IMO 35 = EXACTLY the gold threshold, scored by GPT-5.5 LLM-as-judge, 64x64 generate-verify-refine TTS pipeline); v2 (Jul 20) removed all 22 IMO/IPhO mentions and replaced the abstract sentence with "frontier-level reasoning performance", no explanation. Newsletters restate the retracted v1 claim. (3) "Compute-matched" = WALL-CLOCK/optimizer-step-time matched on the authors'' Megatron stack, explicitly NOT FLOP-matched (Sec 2.4 verbatim); baseline is the authors'' OWN Qwen3-30B-A3B-like reproduction trained only 800B tokens, never validated against real Qwen3. Per-token inference FLOPs remain ~2x and inference-time compute matching is deferred to future work — so the overview-doc thesis holds at most for pre-training wall-clock on memory-constrained training stacks, NOT for inference (the axis that matters for EPYC). (4) R=2 "sweet spot" carries the paper''s own caveat that Figure 6 is not compute-matched (0.25B-active scale, 250B tokens). (5) MMLU attribution RESOLVED: 82.70 = Ouro-2.6B-Thinking, 78.36 = Loopie-6B-A0.6B; Loopie-6B loses MMLU and HumanEval (84.15 vs 95.12) to Ouro-2.6B while winning AIME24 by ~18pp; and in the paper''s OWN Table 3 Nemotron Cascade 2 30B-A3B beats Loopie on AIME24 (93.33 vs 92.09) and AIME25 (91.25 vs 83.75) — "frontier-level" means top-2, not top-1. (6) NO contamination/decontamination statement anywhere despite 2T tokens of SFT-style SPT + synthetic-reasoning annealing; AIME avg@8 via EvalScope; internal token-count inconsistency (Sec 3 "3T" vs Sec 3.4 2.28T vs Table 3 "3.5T"). Lab identity: IQuestLab = AI research arm of Ubiquant (Beijing quant fund, ~$10B AUM) — real and funded, prior releases incl. IQuest-Coder-V1 (with "40B-Loop" variants) and a hype track record; lead author states he trained/implemented/wrote single-handedly, two authors interns. Adversarial: ZERO independent evidence; all coverage is restatement of (partly retracted) claims. Credibility stays 1. CPU-decode hypothesis recorded (NOT a task): R=2 consecutive reuse of ~37MB Q4 active-expert working set might hit EPYC L3 for 2x effective FLOPs at ~1x weight traffic — contingent on per-iteration router agreement, unobservable without weights.'
   notes: 'Batch 2026-07-28. IQuestLab (unestablished; external reviewers from CMU/Tsinghua acknowledged — not corroboration). arXiv 2026-07. Stage-1 fetch: arxiv abs + full HTML (v1 and v2 passes); one Table 4 MMLU attribution conflict across passes flagged inline. Referenced IDs mapped from cite keys. Credibility 1: preprint +0, <=12mo +1, lab +0, corroboration +0.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Architecture claims CONFIRMED (Sec 2.1 layer-loop R=2; 27/18 stored layers; Qwen3-MoE backbone, Megatron).
+  - claim_index: 1
+    effect: narrowed
+    note: '''Compute-matched'' means WALL-CLOCK and explicitly NOT FLOP-matched; the baseline is the authors'' own Qwen3-30B-A3B-like reproduction trained only 800B tokens, never validated against real Qwen3.'
+  - claim_index: 2
+    effect: narrowed
+    note: The R=2 sweet spot carries the paper's own caveat that Figure 6 is not compute-matched (0.25B-active scale, 250B tokens).
+  - claim_index: 3
+    effect: narrowed
+    note: '''Frontier-level'' means top-2, not top-1 (Nemotron beats Loopie on AIME24/25); token scale is inconsistent (3T vs 2.28T vs 3.5T) and there is no decontamination statement.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Confirmed by finding (3): inference-time compute matching is deferred to future work.'
 - id: intake-909
   arxiv_id: null
   url: operator-submitted://looped-transformers-overview-2026-07-28
@@ -50253,6 +50306,15 @@
   verdict_justification: 'worth_investigating as evidence, not as technique: its role is inside the Huginn dive (Stage 2), not as a standalone effort. Filed so the contradiction cannot be lost in prose.'
   dive_corrections: '2026-07-28 Stage-2 dive (primary full-text read, v2). All qualitative claims CONFIRMED verbatim (limited latent-CoT evidence; probing inconsistencies — logit lens interpretable at R1-R3 but not R4, coda lens exactly reversed). CORRECTIONS: (1) provisional figures were GSM8K (8-shot, CoT suppressed by system prompt), NOT the arithmetic probe task; arithmetic number added (0.19 on 2k one-digit composite). (2) "Falls well short of models that externalize reasoning" is Huginn-with-CoT vs Huginn-without — a SELF-comparison, not cross-model. (3) Authors explicitly concede lens methods only detect token-DECODABLE computation and "do not definitively rule out the presence of latent CoT... may be more subtle or distributed than our employed tools can detect" — the probe does NOT touch Huginn''s compute-scaling claim (measured WITH standard prompting) nor non-math benchmarks; their own Fig 3 (R1-R3 decode numeric prefixes) weakly evidences numeric latent content with block-role specialization as an alternative reading. Net: the probe supports the NARROW claim (recurrence depth is not a CoT substitute at 3.5B) well, the broad claim (no useful latent computation) not at all. Weight against intake-905 narrowed accordingly (905 contradicting_evidence reworded this date). Code verified: github.com/wenquanlu/huginn-latent-cot (probing scripts, dataset, modified variants). No Huginn-author rebuttal found; venue confirmed COLM 2025 workshop (student-led, 5 authors).'
   notes: 'Expansion entry, discovered via Tier-2b contradiction search on intake-905 claims. Venue: 1st Workshop on Application of LLM Explainability to Reasoning and Planning, COLM 2025. Stage-1 fetch: arxiv abs page only (title/authors/abstract/venue verified); numeric figures seen only in search summaries and marked provisional. Credibility 3: workshop peer review +2 (light), ~13mo +0, academic group +0, aligns with independent MoDr-line observations +1.'
+  claim_anchors:
+  - claim_index: 3
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2507.02199
+    quote: Finally, we empirically show that increasing recurrence depth yields only marginal gains and falls well short of models that explicitly externalize reasoning steps.
+    quote_sha256: cef9853db9a97f703fd86453903a4506adaa710bf1c548d6bd7150c3ed7a01cf
+    located_by: machine
+    match_coverage: '0.875'
+    verified_by: vidya/machine_anchor
 - id: intake-911
   arxiv_id: '2511.07384'
   url: https://arxiv.org/abs/2511.07384
@@ -50309,6 +50371,23 @@
   verdict_justification: 'worth_investigating: the claim addresses the load-bearing objection gating the whole lineage, is from the Huginn group (competent but NOT independent of intake-905''s claims), and Stage-1 saw only the abstract. A dive should extract model scales, conversion token budgets, and whether released checkpoints are within EPYC-servable formats.'
   dive_corrections: '2026-07-28 Stage-2 dive (primary full-text read + artifact verification; Stage 1 had abstract only). Recipe CONFIRMED: delete a contiguous middle-layer band from a pretrained ~1B decoder (TinyLlama 22L -> (4,8,4) prelude/core/coda by removing layers 4-9), init everything from pretrained weights (beats random decisively), uptrain with Huginn-style sampled recurrence whose MEAN linearly ramps to 32 — the curriculum is the genuinely new piece. Test-time knob CONFIRMED: num_steps monotone r=1..32, GSM8K 26.5 -> 51.2, MATH 9.7 -> 14.2 (TinyLlama two-phase); extrapolation beyond trained mean depth conceded open. FOUR CORRECTIONS: (1) OVERTURNED — conversion cost is NOT within a non-pretraining shop''s reach: 26-52B uptraining tokens (some ablations 120B) on AMD MI300A cluster; the bridge is consumable (Apache-2.0 checkpoints), not reproducible on EPYC. (2) "Equivalent compute budgets" = matched TRAINING FLOPs only; the win needs ~32x more inference FLOPs, and at r=1 the converted model is WORSE than the non-recurrent post-trained baseline (GSM8K 26.5 vs 45.2); gains at r=32 are +6.0pp GSM8K / +1.4pp MATH. (3) Novelty HIGH -> MEDIUM: not the first pretrained-to-recursive bridge — RRT (intake-904, 2410.20672) precedes it with init-strategy conversion; new parts are the recurrence curriculum + test-time-compute knob on converted models. (4) Credibility 2 -> 3: full artifact release verified (github.com/mcleish7/retrofitting-recurrence, ~20 HF checkpoints incl. a non-recurrent post-trained control, Apache-2.0, runs in transformers with trust_remote_code; NOT llama.cpp-servable). Venue: OpenReview PDF exists (Oq3Xblt0x1) but decision unverifiable — treat as under-review preprint. Scale ceiling 1B (authors concede). Same-group-as-Huginn caveat re-confirmed: self-corroboration, not independent evidence for intake-905.'
   notes: 'Expansion entry, surfaced in the Tier-2b/follow-up search sweep (2026-07-28). arXiv 2025-11-10, no venue stated. Stage-1 fetch: arxiv abs page only. Credibility 2: preprint +0, <=12mo +1, established group +1, no independent corroboration; NOTE same-group as Huginn — supporting statements about recurrence are not independent evidence for intake-905.'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2511.07384
+    quote: We find that using a curriculum of recurrences to increase the effective depth of the model over the course of training preserves performance while reducing total computational cost.
+    quote_sha256: 1c248b797cc3b238b2def764c7df431cfd629c7496a52600bc2a969057cd558e
+    located_by: machine
+    match_coverage: '0.643'
+    verified_by: vidya/machine_anchor
+  - claim_index: 3
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2511.07384
+    quote: 'Bartoldson , Bhavya Kailkhura , Avi Schwarzschild , Jonas Geiping , Tom Goldstein , Micah Goldblum View a PDF of the paper titled Teaching Pretrained Language Models to Think Deeper with Retrofitted Recurrence, by Sean McLeish and 9 other authors View PDF HTML (experimental) Abstract: Recent advances in depth-recurrent language models show that recurrence can decouple train-time compute and parameter count from test-time compute.'
+    quote_sha256: eb931e8359308874780341431ffda38f2831661ab455fee220611e5ced094f3e
+    located_by: machine
+    match_coverage: '0.625'
+    verified_by: vidya/machine_anchor
 - id: intake-912
   arxiv_id: '2404.02258'
   url: https://arxiv.org/abs/2404.02258
@@ -50462,6 +50541,31 @@
     ADVERSARIAL: no independent replication (v1, six days old — vacuous absence, unverified-in-stage1). The direction of claim 2 is closer to published consensus (2604.10079, 2510.10197, AdaMEM 2606.05684) than contested, so this LOWERS dive priority rather than raising it.
 
     EPYC: the training step is ordinary SFT with no teacher co-residency and no logit tensors; the binding constraint is SEQUENCE LENGTH (branch-packed 80-130k contexts), not parameters. Teacher generation is pure long-context inference and needs no GPU. Cost envelope CANNOT be sized from the paper.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2607.21051
+    quote: In-context learning offers a highly sample-efficient way for agents to learn from their own interaction histories, but its gains disappear once that experience is removed from the context.
+    quote_sha256: ba7f9c33fb1a781ca555aa49cb535b35200f817cbc9809b955a9d1045568cf58
+    located_by: machine
+    match_coverage: '0.615'
+    verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The premise is nowhere disputed; the dive's load-bearing correction is that the 3.8%-vs-64.8% gap measures DATA CONSTRUCTION, not objective choice.
+  - claim_index: 1
+    effect: unaffected
+    note: 'CLAIM 4 CONFIRMED — mechanism fully recovered: k=1 branched rollout, teacher = same checkpoint differing only by experience context; zero-extra-env-interaction upheld.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'CLAIM 1 PARTIAL: 64.8% is the minimum over DOMAINS (SWE weaker; TaleSuite 93.4%) and measures SAME-TASK retention; OOD transfer is only +4.22pp.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'CLAIM 2 PARTIAL: 3.8% is the BETTER of two domains and under pass@10 the same SFT model recovers ~14.5%; true of NAIVE trajectory SFT only, with no rejection-filtered comparator.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'CLAIM 3 CONFIRMED and understated: ''environment sample'' = one complete trial/rollout; GRPO on TaleSuite is 57.2x there.'
 - id: intake-914
   arxiv_id: '2607.23809'
   url: https://arxiv.org/html/2607.23809v1
@@ -50882,6 +50986,22 @@
     FURTHER CORRECTIONS: Terminal-Bench 2.1 41.02 is NOT "harness terminus-2" — it is the AVERAGE of two harnesses, 32.60 (Terminus-2) / 49.44 (Claude Code). Scicode''s harness IS specified (pass@k=1, T=0.6, top_p=1.0, 256k ctx, no agent harness). The repo ships NO LICENSE file (raw/main/LICENSE -> 404); Apache-2.0 is declared via metadata only.
 
     SCOPE MISMATCH: the entry routes this to architect-model-selection-bench.md, which governs the ARCHITECT role (A1-A4 = 122B arms). This is a 35B CODER candidate; the coder-role owners are multi-file-coding-completion-capability.md / completed/qwen36-production-upgrade.md.'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Architecture identity confirmed (tokenizer byte-identical, config differs in one field), but the repo ships NO LICENSE file (raw/main/LICENSE -> 404); Apache-2.0 is declared via metadata only.
+  - claim_index: 1
+    effect: unaffected
+    note: The dive audits benchmarks, tokenizer, MTP, vision, GGUF and licence; the SFT-127K / RL-10-epoch recipe is never disputed.
+  - claim_index: 2
+    effect: unaffected
+    note: The 100,000+ executable-environment training figure is not addressed by the dive; it remains explicitly vendor-attributed.
+  - claim_index: 3
+    effect: unaffected
+    note: The named RL techniques are not examined; the correction targets the benchmark table, tokenizer, MTP head, vision tower and GGUF sizes.
+  - claim_index: 4
+    effect: unaffected
+    note: 'Confirmed: NO vision tower in the weights (0 vision/visual/patch_embed/merger/video tensors); vision_config and preprocessor configs are inherited base artifacts, vestigial.'
 - id: intake-918
   arxiv_id: null
   url: https://huggingface.co/Comfy-Org/z_image_turbo
@@ -51325,6 +51445,31 @@
     FURTHER CONSTRAINTS: arXiv 2605.23950 quantifies the swing (HV 18.48 vs MV 2.37 pp^2 = 7.80x; harness changes move GLM-5.1 by 13.0pp vs model changes 3.0pp; six ranking reversals in nine comparisons) and demands a Harness Card over a seven-layer taxonomy. arXiv 2605.27922 Harness-Bench (5,194 trajectories) reports a 23.8-point aggregate spread and the gradient that WEAKER backbones show LARGER cross-harness variance — MemoHarness''s r=-0.16 does NOT exhibit the effect the literature predicts, which weakens the portable-execution-policy reading of Table 3. MemoHarness''s baselines are undisclosed product harnesses (Codex, Claude Code, OpenCode), exactly the unattributable comparison 2605.23950 forbids; the paper half-concedes this ("necessarily system-level comparisons").
 
     NOTE: our own randomized-pool robustness experiment returned NULL (learned-routing-controller.md P4.6, 10 runs, no arm cleared +1pp), consistent with 2607.12227''s +0.6pt held-out finding. Converging evidence that harness-level gains are small and hard to measure; any future local harness experiment must be POWERED and BUDGET-MATCHED before it is run.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/html/2607.14159v1
+    quote: While harness design strongly affects agent behavior, most automatic improvement methods optimize narrower artifacts such as prompts, pipelines, or workflows, and deployed agents usually reuse a single global harness for all cases.
+    quote_sha256: dea8b62aa0ce3e016ee3f496092c05396da5ad7eafd8c65568cca9b79e9ddf7e
+    located_by: machine
+    match_coverage: '0.471'
+    verified_by: vidya/machine_anchor
+  - claim_index: 2
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/html/2607.14159v1
+    quote: We decompose the harness along the temporal flow of inference into six editable control surfaces (context, tool, generation, orchestration, memory, output), turning harness search into structured editing over separable dimensions rather than over a single opaque prompt (§ 2.3 ). (2) Dual-layer experience bank.
+    quote_sha256: 6a8cbf5094034fd7079cdc1ecf2346272cc75e3bc70a9fbd7fb1e0d41de5ee5a
+    located_by: machine
+    match_coverage: '0.571'
+    verified_by: vidya/machine_anchor
+  - claim_index: 4
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/html/2607.14159v1
+    quote: Framework Input (M) Cached (M) Non-cached (M) Output (M) Cost ($) Codex 8.23 4.33 3.90 0.19 10.28 Terminus 3.96 0.94 3.03 0.09 6.68 Claude Code 7.32 3.11 4.21 0.11 9.51 OpenCode 5.48 5.07 0.41 0.05 2.34 MemoHarness 14.18 13.32 0.86 0.22 6.89 MemoHarness uses more raw input tokens because it retrieves from the experience bank, but most of that context is cached in our evaluation ( 13.32 13.32 M of 14.18 14.18 M input tokens).
+    quote_sha256: 738a8aebd7e0dcde3aee6e692c4aa6aca55136fb70953d5f226ceabb3404d255
+    located_by: machine
+    match_coverage: '0.6'
+    verified_by: vidya/machine_anchor
 - id: intake-922
   arxiv_id: '2607.21461'
   url: https://arxiv.org/html/2607.21461v2
@@ -51435,6 +51580,31 @@
     CLAIM 14 PARTIAL — GOOD AND BAD FOR US. The released tool CONTRACT is vendor-neutral and SearxNG-compatible: `search` returns "the top 10 results for each query in one call", plus `visit` (URL + goal) and `google_scholar`; inference/README.md states "The example intentionally leaves tool execution to the caller". Nothing is bound to a vendor SDK. BUT the EVALUATION backend is undisclosed, so no web-search number is reproducible and intake-877''s search-time contamination (up to ~78% on this benchmark class) cannot be bounded. Note also `google_scholar` appears in the released BROWSECOMP_TOOLS but not in §5.1''s four-tool interface description — a five-tool release vs a four-tool description, unexplained.
 
     REUSABLE LESSON: verifying a fine-tune''s architecture from config.json is UNSOUND. Capability claims about any HF fine-tune must be checked against model.safetensors.index.json.'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/html/2607.21461v2
+    quote: AREX alternates between an inner research loop that gathers evidence and constructs a provisional answer, and an outer self-improvement loop that audits the answer constraint-wise, identifies unresolved claims, and launches targeted follow-up research.
+    quote_sha256: 68d7ca25b29b515fcc20e22147a25b65e927003e00a380c178b9ec3fa9d9da94
+    located_by: machine
+    match_coverage: '0.591'
+    verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The discovery-verification asymmetry premise is never contested; the dive's targets are the MTP tensor index, the ACU ablation, the tables and the tool release.
+  - claim_index: 1
+    effect: uncertain
+    note: The prose reports no arm isolating the bi-level loop — the only ablation described varies ACU with the loop present in both arms. A reader cannot decide from the record.
+  - claim_index: 2
+    effect: narrowed
+    note: 'Learned invocation stands (trained key-step supervision) but not as summarizer replacement: at the 128K limit the agent MUST invoke update_context, and the +11.8pt gain is NON-CITABLE.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Cited without dispute: §5.4/Fig 4 make ''key context-update'' one of three key-step supervision categories, average step loss 0.300 vs 0.232 ordinary.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Both scales verified as real checkpoints: the 5B/123B discrepancy is bf16 byte-count rounding (4.54B / 122.56B including the vision tower) — no discrepancy.'
 - id: intake-923
   arxiv_id: null
   url: https://github.com/kvcache-ai/AgentENV
@@ -51555,6 +51725,23 @@
     BENCHMARK FIGURES CORRECTED: 54.21/8.73 and 65.14/10.303 are BOTH SINGLE-socket (8-expert and 6-expert). The real V0.2 table is dual-socket 6exp 97.32 prefill / 13.69 decode; dual 8exp 82.94/12.208; single 6exp 65.14/10.303; single 8exp 54.21/8.73; llama.cpp baseline 10.31/4.51. Hardware confirmed: Xeon Gold 6454S, 1T DRAM, 2 NUMA nodes, ONE 4090D 24G, DeepSeek-V3/R1 671B q4km, 382GB DRAM + 14GB VRAM. Method: "We test after enough warm up" — no n, no reps, no seed. SOSP''25 paper CONFIRMED peer-reviewed (DOI 10.1145/3731569.3764843), claiming 4.62-19.74x prefill / 1.25-4.09x decode plus an Expert Deferral mechanism. Repo: Apache-2.0, 19,091 stars, created 2024-07-26 — a two-year-old heavily-used project.
 
     WORTH AGAINST OUR v8 KERNEL — OBSERVATION-GRADE, AND THE HEADLINE LARGELY WILL NOT TRANSFER. (1) AMX IS THE ENGINE AND WE DO NOT HAVE IT: the SOSP paper credits "AMX-specialized kernels"; AMX is Intel-only and EPYC 9655 is Zen 5. The tree confirms the tiering — kt-kernel/operators/ has an `amx/` family (~45 files) and an `avx2/` fallback (~13), with NO AVX-512-native MoE operator family. (2) The llama.cpp baseline is unspecified (no version, flags, thread count or NUMA policy) against our taskset 0-95 -t 96 -fa 1 + mandatory OMP stack on a kernel with iqk AVX-512 GEMM. (3) The GPU half is CUDA/4090D; ROCm support is headed "(Beta)" and was developed on gfx1100, not our gfx90a. (4) KTransformers VENDORS llamafile''s iqk kernels (iqk_mul_mat_amd_zen4.cpp), the same family our v8 carries — so on CPU GEMM we are peers, not behind. GENUINELY NOTABLE and independent of all four discounts: the SOSP''25 peer review, and SGLang adopting KTransformers as a CPU-kernel backend (sgl-project/sglang#11425) — third-party production adoption is real corroboration in a way the tutorial numbers are not. The realistic transferable delta is the Expert-Deferral scheduling idea, evaluable as a technique without adopting the runtime.'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://github.com/kvcache-ai/AgentENV
+    quote: 'Make idle environments inexpensive : Snapshot-backed environments boot or resume in under 50 ms and pause in under 100 ms.'
+    quote_sha256: 4aca993d0fec4bce1693c4427c5b59f28463b0b11af216fc42769088f58189a0
+    located_by: machine
+    match_coverage: '0.727'
+    verified_by: vidya/machine_anchor
+  - claim_index: 3
+    kind: page-and-quote
+    locator: matched span in https://github.com/kvcache-ai/AgentENV
+    quote: 'Preserve performance and density over time : AENV delivers high-performance I/O via ublk while sharing the host page cache across storage and memory-snapshot data.'
+    quote_sha256: e3391cd4d85d552462645b9906af47b65d9d5f6468954971b7c299109b218e38
+    located_by: machine
+    match_coverage: '0.529'
+    verified_by: vidya/machine_anchor
 - id: intake-924
   arxiv_id: null
   url: https://huggingface.co/KyleHessling1/Qwopus3.6-27B-Fusion-GGUF
@@ -51762,6 +51949,31 @@
     CLAIM 14 NOT-FOUND (confirms Stage 1): §5.4 reports ONLY dollars per query. No seconds, minutes, turn counts or wall-clock anywhere; the only timing statement is qualitative and about the excluded arm. CRITICAL FOR US: their cost ranking is an API-PRICE ranking and can INVERT on a CPU-first stack — the agentic arm issues many small prefills (grep results, file slices) which our stack handles well, whereas the full-context arm''s single 200k prefill is our worst case.
 
     CODE: github.com/weilicao/Coding_Agents_are_Effective_Long_Context_Processors — public, 10 stars, last push 2026-05-05, and ALSO NO LICENSE (API license:null, /license -> 404). Same importability blocker as intake-919.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2603.20432
+    quote: In this work, we study whether long-context processing can be externalized from latent attention into explicit, executable interactions, by allowing coding agents to organize text in file systems and manipulate it using its native tools.
+    quote_sha256: ac52f315cfcdb13c0645d434677eb9680701eb437869eae464c787015426aea0
+    located_by: machine
+    match_coverage: '0.467'
+    verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: No correction disputes the file-system paradigm; the dive's targets are the 17.3% headline arithmetic, the misread retriever metric and the RLM row attribution.
+  - claim_index: 1
+    effect: narrowed
+    note: 'Beats SOTA on 4 of 5: LongBench -1.264% (the regression IS retained); the headline MIXES BACKBONES, and 3 of 5 ''Best Published'' cells are full-set versus our n=200.'
+  - claim_index: 2
+    effect: narrowed
+    note: THE ACTUAL QUALITY EVIDENCE IS MIXED — Table 2 shows the dense retriever WINS, and the 14.92/9.84/8.33 'native search score' was really average counts of shell invocations.
+  - claim_index: 3
+    effect: narrowed
+    note: 'CONFIRMED with a scope correction: the layout ablation is n=100, not the n=200 main set; and BM25 is layout-INSENSITIVE (82.0/82.0).'
+  - claim_index: 4
+    effect: unaffected
+    note: Nothing addresses per-task-type strategy choice; the behavioural findings (rg 31.05->18.46, sed +634% under folders) support adaptivity rather than dispute it.
 - id: intake-926
   arxiv_id: '2603.25723'
   url: https://arxiv.org/abs/2603.25723
@@ -51873,6 +52085,31 @@
     ADVERSARIAL: 31 citing papers, ALL citing the FRAMING only — none re-runs it. Three third-party repos are decoys: Wescome/NLAH and impartshadow/nlah are name collisions that never cite the paper, and ASSERT-KTH/reimpl-ihr cites arXiv:2603.25723 but describes a FUZZ-DRIVER generation system with fabricated authors and title — an LLM-hallucinated artifact, not evidence. At four months old with 31 citations the absence of replication is mildly informative: the community adopted the vocabulary without re-testing the results.
 
     PROCESS FLAG: the failure mode here is CONFIDENT FABRICATION OF A FULL RESULTS TABLE, not partial extraction. Sibling entries from the same Stage-1 batch should be audited for the same mode before Stage 3 relies on them.'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2603.25723
+    quote: We introduce Natural-Language Agent Harnesses (NLAHs), editable documents that describe run-level harness policy, and Intelligent Harness Runtime (IHR), a shared runtime that interprets these documents into agent calls, handoffs, state updates, validation gates, and artifact contracts.
+    quote_sha256: 050ec3700d067490f8fcdd909e468f1de240245dc1d5eb48c53a0ee24791e408
+    located_by: machine
+    match_coverage: '0.8'
+    verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Framing untouched: the verdict worth_investigating is RETAINED because the real paper is genuinely worth investigating.'
+  - claim_index: 1
+    effect: unaffected
+    note: Mechanism confirmed (the MIT repo ships runtime-policy/, Table 4 scores IHR); the dive only undercuts its practical case — Information Handoff Recall collapses from 1.00 (Prompt) to 0.32.
+  - claim_index: 2
+    effect: unaffected
+    note: 'Fair reading: this does not contradict the stated claim (comparable task outcomes, not superiority); Table 2 gives roughly 21x / 13x / 34x.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'The dive establishes exactly this: RQ3 is ADDITIVE, each row adding one module to a benchmark-specific Basic condition. Caveat: at n=36 OSWorld nothing is resolvable.'
+  - claim_index: 4
+    effect: unaffected
+    note: CONFIRMED verbatim (Appendix G); Appendix A's division of labour matches the claim term for term.
 - id: intake-927
   arxiv_id: '2310.03714'
   url: https://arxiv.org/abs/2310.03714
@@ -51964,6 +52201,15 @@
     CLAIM 6 REFUTED: the DSPy paper does NOT address intake-244''s "compresses feedback too aggressively" caution. v1 has NO Limitations section; §4 Stage 2 selects candidates by "optimizing average quality using the metric with cross-validation", i.e. a SCALAR score is the optimizer''s entire feedback channel — but this is never named as a limitation. The caution is nonetheless CORRECT and is independently confirmed by the SUCCESSOR paper: GEPA argues "the interpretable nature of language often provides a much richer learning medium for LLMs, compared to policy gradients derived from sparse, scalar rewards." That is INDEPENDENT EVIDENCE (DSPy''s own authors'' later work), not restatement.
 
     MODERN-MODEL HEADROOM — the genuinely new finding, and it re-targets the verdict. GEPA (arXiv 2507.19457, our intake-240) supplies the missing 2025-era baselines on the same task family. Qwen3 8B (open, self-hostable) aggregate over 6 tasks: baseline 45.23 -> MIPROv2 47.84 (+2.61) -> GEPA 54.85 (+9.62); HotpotQA alone 42.33 -> 55.33 -> 62.33. GPT-4.1 Mini: 53.03 -> 58.67 (+5.64) -> 65.22 (+12.19). COUNTER-SIGNAL: MIPROv2 — the direct descendant of DSPy''s 2023 BootstrapFewShotWithRandomSearch — REGRESSES BELOW the unoptimized baseline on two Qwen3-8B tasks (AIME-2025 27.33 -> 20.00; LiveBench-Math 48.70 -> 46.60). So bootstrapped-demonstration search has largely spent its headroom on modern instruct models, while INSTRUCTION/REFLECTION optimization has not (+9.6 to +13.3 aggregate, +20 to +31pp on multi-hop QA). CONSEQUENCE: `relevance: medium` and `adopt_patterns` both survive, but the adopt target must be NAMED — adopt the DSPy ABSTRACTION (signatures, modules, compiler-as-optimizer) compiled by a GEPA-class reflective optimizer, and do NOT adopt BootstrapFewShot/BootstrapFewShotWithRandomSearch as the optimizer of record. intake-927 is correctly filed as the foundational citation beneath intake-240/327, not as independent work-opening evidence.'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2310.03714
+    quote: DSPy modules are parameterized, meaning they can learn (by creating and collecting demonstrations) how to apply compositions of prompting, finetuning, augmentation, and reasoning techniques.
+    quote_sha256: 17dc29dccd8627802ec3f27f36f7382f73fcaa5844cfc92ad82ea3a80ee797f9
+    located_by: machine
+    match_coverage: '0.538'
+    verified_by: vidya/machine_anchor
 - id: intake-928
   arxiv_id: '2511.22699'
   url: https://arxiv.org/abs/2511.22699
@@ -52155,6 +52401,23 @@
     NUMERIC MISLABEL IN THE ENTRY (must be fixed): reported_results reads "Table 1 DPG-Global/HPSv2.1/HPSv3: Coupled-Shared 80.22/83.90/10.34 ... Decoupled-Hybrid 91.40/85.85/11.59". The MIDDLE value is DPG-**Overall**, not HPS v2.1, and HPS v2.1 is OMITTED. Correct Table 1: Coupled-Shared Global 80.22 / Overall 83.90 / HPSv2.1 30.61 / HPSv3 10.34; Decoupled-Hybrid Global 91.40 / Overall 85.85 / HPSv2.1 32.29 / HPSv3 11.59. Reference row "Original (50 steps)" = 87.20 / 30.20 / 9.62.
 
     FURTHER: "code license: NOT-FOUND-IN-SOURCE" — the paper is under the arXiv nonexclusive-distrib licence (NOT CC BY, unlike 2511.22699); code is at github.com/Tongyi-MAI/Z-Image. §3.2''s alternative regularizers (mean/variance KL, GAN discriminator) are confirmed. Table 2 vs DMD2 is confirmed exactly as the entry states (FID 17.80 vs 18.95, CLIP-S 33.62 vs 33.14, ImageReward 78.61 vs 71.01, HPSv2.1 30.34 vs 30.64) — NOTE the proposed method LOSES on HPSv2.1, which the entry reproduces but does not flag.'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2511.22677
+    quote: Through a rigorous decomposition of the DMD training objective, we reveal that in complex tasks like text-to-image generation, where CFG is typically required for desirable few-step performance, the primary driver of few-step distillation is not distribution matching, but a previously overlooked component we identify as CFG Augmentation (CA).
+    quote_sha256: f27b4c61575e5624509bad25f14a581f04b2b1a835605c42a0863838295fce1d
+    located_by: machine
+    match_coverage: '0.5'
+    verified_by: vidya/machine_anchor
+  - claim_index: 4
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2511.22677
+    quote: This new understanding further enables us to propose principled modifications to the distillation process, such as decoupling the noise schedules for the engine and the regularizer, leading to further performance gains.
+    quote_sha256: fd550638bf5c52e35f01fde9b7f063b55c02fdc6e72c45134ee181cfb33da961
+    located_by: machine
+    match_coverage: '0.625'
+    verified_by: vidya/machine_anchor
 - id: intake-930
   arxiv_id: '2509.25140'
   url: https://arxiv.org/abs/2509.25140
@@ -52264,6 +52527,19 @@
     INDEPENDENT EVIDENCE, BOTH DIRECTIONS: (a) DISCONFIRMATION — Trace2Skill (above), plus its "+Combined outperforms ReasoningBank by +13.8pp Vrf for the 122B model; +9.2pp Vrf for 35B". (b) CORROBORATION / CORRECTION — EvoMemBench (arXiv 2605.18421), a third-party benchmark on a unified open-weight DeepSeek-V3.2 backbone, ranks ReasoningBank best **among memory methods** on In-Episode Execution at 16K (43.0), 32K (49.5) and 128K (48.0), while long-context baselines beat all fifteen methods. On Cross-Episode Knowledge Easy, ReasoningBank is last of 13 (42.7) and ACE is ninth (44.8); it is second to ACE only on Medium. (c) OpenReview forum jL7fwchScm exists but both API endpoints and the web forum return a bot-challenge 403, so "no reviewer criticism found" is UNVERIFIED, not absent.
 
     SUPERSESSION TESTED AND REJECTED FOR OUR CONSTRAINTS: SkillOS (arXiv 2605.06614, NOT in our index) beats it — "improves the average success rate from 55.7 to 61.2 over the strongest baseline ReasoningBank with Qwen3-8B" and elsewhere "+7.1 points over ReasoningBank (66.0%)" — and diagnoses it exactly as we do ("relies on FIXED, HEURISTIC POLICIES for deciding what to write or discard"). BUT its winning arm requires an RL-TRAINED 8B curator, and its prompt-only variant "SkillOS-base reaches only 63.6% — barely above No Memory", i.e. BELOW ReasoningBank''s 66.0% on that ALFWorld/Qwen3-8B comparison. On WebShop, SkillOS-base beats ReasoningBank, so no family-wide gradient-free ranking follows. SkillOS also independently corroborates intake-899: its MemP arm, the one WITH "consolidation, forgetting, and re-indexing", scores 58.6% — below No-Memory''s 61.2%.'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Solid in-paper (WebArena 40.5->48.8, p=0.002) but Trace2Skill at 35B barely exceeds No Skill (20.50% vs 19.00%), and EvoMemBench ranks it last of 13 on cross-episode knowledge.
+  - claim_index: 1
+    effect: narrowed
+    note: 'Pipeline stands but the judge is nearly NON-LOAD-BEARING: measured 72.7%, and a random (50%) judge still retains 47.6 vs 39.0 no-memory — the label is worth ~4.8pp of 13.4pp.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'Matched-compute baselines EXIST: isolated coupling is +2.7pp (parallel) / +2.6pp (sequential), not the +5.4pp quoted; v2 also cut its own 34.2% headline to 20%.'
+  - claim_index: 3
+    effect: unaffected
+    note: Gradient-free operation is never disputed; if anything understated — v2 App. C.4 adds an open-weight arm (Gemma-3-12B, 17.1 -> 24.1) beyond the three closed backbones.
 - id: intake-931
   arxiv_id: '2605.05138'
   url: https://arxiv.org/abs/2605.05138
@@ -52350,6 +52626,28 @@
     OPEN-WEIGHT: NOT-FOUND-IN-SOURCE in either paper. Both are 100% Codex CLI + closed OpenAI; codex_runner.py passes only model and model_reasoning_effort, and the proxy container allowlists OpenAI endpoints exclusively. Mechanically a local OpenAI-compatible server could be substituted, but nothing tests it, and the agent-facing prompt is ~600 lines WITH VISION (PNG frame rendering) — per PRO-LONG, "WorldModeler is also the only agent evaluated that uses vision", which rules out our text-only local coder fleet without a port.
 
     REFERENCED IDS RECOVERED (entry had []): 2603.24621, 2402.12275, 2405.15383, 2006.08381, 2310.19791, 2506.11058, math/0406077, 1803.10122 — plus the author''s own uningested follow-up 2607.15439.'
+  claim_anchors:
+  - claim_index: 2
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2605.05138
+    quote: 'The system is intentionally direct: it uses a scripted controller, predefined world-model interfaces, verifier programs, and a plan executor, but no hand-coded game-specific logic.'
+    quote_sha256: 777b2598d5bf2b829e1d8bab1f17b5a1ac58aedb5c255204ef9bca70dee3837c
+    located_by: machine
+    match_coverage: '0.75'
+    verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: reattributed
+    note: 'FALSIFIED AS STATED per the intake-934 dive: the mechanism claim MOVES from executability to an externally-specified interface plus exact-replay falsification; textual won both gpt-5.5 settings.'
+  - claim_index: 1
+    effect: narrowed
+    note: CONFIRMED unmeasured IN THIS PAPER; the follow-up measures it weakly and inconsistently positive (+3.39 to +8.38 in three settings, -2.94 in the weakest) — demoted from mechanism.
+  - claim_index: 2
+    effect: unaffected
+    note: 'The intake-934 dive: the game-agnostic controller finding is UPHELD and strengthened; the only qualifier is the paper''s own scope, game-general within ARC-AGI-3.'
+  - claim_index: 3
+    effect: reattributed
+    note: 'Direction holds but not on this paper: the 15-vs-8 swing is n=1 per cell, bimodal, confounded by the 10-vs-7 interrupted imbalance; it survives on INDEPENDENT evidence from 2607.15439.'
 - id: intake-932
   arxiv_id: '2510.18779'
   url: https://arxiv.org/abs/2510.18779
@@ -52435,6 +52733,28 @@
     CONTAMINATION CHECK PASSED for the three-artifact lineage: intake-916 (V2.5 paper, proprietary) SWE-Bench Pro 65.2 / KAT Code Bench 53.1 / PinchBench 94.9 / KAT Claw Bench 85.5 / Terminal-Bench 2.1 60.7 / SciCode 50.3; intake-917 (-Dev open weights) Verified 69.40 / Multilingual 63.00 / Pro 45.96 / Terminal-Bench 2.1 41.02 (=32.60 Terminus-2 and 49.44 Claude Code averaged) / PinchBench 93.43 / Scicode 44.20 / KAT-Code-Bench 46.21; intake-932 (V1 paper, flagship) Verified 73.4 / IFEval 86.0 / TAU2 62.3 / AIME25 72.5 / LCB V6 48.2 / HumanEval 96.3 / GPQA-D 68.2, with open siblings KAT-Dev 62.4 and KAT-Dev-72B-Exp 74.6 from HF cards, not the paper. The ~19pp gap between the flagship''s SWE-bench Pro 65.2 and the downloadable weights'' 45.96 HOLDS — paper numbers must never attach to the GGUF.
 
     NEW COLLISION HAZARD: Qwen3.6-35B-A3B''s OFFICIAL SWE-bench Verified is 73.4 — the IDENTICAL digits to KAT-Coder V1''s flagship 73.4. Different artifacts, different vendors, different harnesses; pure coincidence. Anyone grepping "73.4" across these entries will conflate the deployed base model with a proprietary Kuaishou model.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2510.18779
+    quote: In this technical report, we present KAT-Coder, a large-scale agentic code model trained through a multi-stage curriculum encompassing Mid-Term Training, Supervised Fine-Tuning (SFT), Reinforcement Fine-Tuning (RFT), and Reinforcement-to-Deployment Adaptation.
+    quote_sha256: f8da6c55c8a8cd47d45a77ce5c29da65dc38791e1f72d8a71ac10e73ff083bd3
+    located_by: machine
+    match_coverage: '0.846'
+    verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Corrections concern Table 1 attribution, the open KAT-Dev-72B-Exp and lineage; the four-stage curriculum is nowhere disputed.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Quoted as described-but-unablated: ''selectively mask gradients from erroneous tool calls''. Ablation occurs zero times — provenance value only, as the entry already records.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Quoted verbatim and confirmed qualitative-only: decompose multi-branch trajectories into locally coherent subtrees defined by context compression boundaries.'
+  - claim_index: 3
+    effect: unaffected
+    note: Not disputed; the dive's scaffold findings (evaluated under Claude Code vs 72B-Exp's SWE-agent 74.6) are consistent with harness-coupled training.
 - id: intake-933
   arxiv_id: '2603.27703'
   url: https://arxiv.org/abs/2603.27703
@@ -52643,6 +52963,22 @@
     n=1 CONFIRMED, but the SELECTION BIAS intake-931 disclosed IS fixed: the all-or-nothing block policy discards and reruns an ENTIRE 25-game block on any irrecoverable failure (triggered once, by a host reboot), and a recovery supervisor keeps ordinary interruptions inside the original trajectory. So intake-931''s ''10/25 and 7/25 interrupted'' contamination does not recur — but per-cell noise remains unquantified.
 
     PUBLIC SET ONLY — all 21 blocks. The paper quotes the ARC authors'' disclaimer itself and scopes around it rather than violating it.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'This claim IS the dive''s headline: the requirement moves RHAE by -0.62/+4.05/-7.69/-2.81 (mean -1.77), losing in 3 of 4 settings and worst at the stronger model.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'RATIO CORRECTED — the parent session''s ~6x is wrong: model swap is ~3.6x, and the reasoning budget (~14 points) is only comparable to the widest architecture spread (14.48).'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Restated, not disputed: demoted from mechanism to modest conditional effect and confounded with the executable representation — the claim already says both.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Restated by the dive: what survives is the COMPLETE verification treatment, first in 4/4 but never decomposed and 1.8-3.3x the cost.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Scoping confirmed: PUBLIC SET ONLY, all 21 blocks. The paper quotes the ARC authors'' disclaimer and scopes around it rather than violating it.'
 - id: intake-935
   arxiv_id: '2605.06614'
   url: https://arxiv.org/abs/2605.06614
@@ -52867,6 +53203,22 @@
 
     Q6 PER-WINDOW DECAY INSTRUMENT — ABSENT, and this is the paper''s most important negative for us. Despite the ''Evo'' name and the budget sweep there is NO success-rate-vs-store-size and NO per-episode-index curve anywhere. After ReasoningBank, CORE and now EvoMemBench, NO paper in the set reports it. The measurement that would settle whether append-only trace memory decays as our store grows does not exist in the literature and remains an EPYC-original deliverable. Building it is not blocked on anyone.'
 
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed verbatim: Gemini-3-Flash beats every memory method at every budget, so the whole memory family loses to a long-context baseline by 7.5-16.5pp.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'The 128K half is VERIFIED with the exact roster, but the 64K term dies: Vehicle-Control-64K duplicates Gorilla-File-System-64K (17/18 cells byte-identical), invalidating the paper''s own 64K conclusions.'
+  - claim_index: 2
+    effect: narrowed
+    note: Easy-side harm stands; hard-side help is fragile — CrossEp-Know Overall is an unweighted mean where one 9-sample domain carries 25% weight, making 'ACE best on hard' a one-episode result.
+  - claim_index: 3
+    effect: unaffected
+    note: No correction addresses per-domain winners; the only domain-level defect found (the Vehicle-Control-64K duplication) names no different winner.
+  - claim_index: 4
+    effect: unaffected
+    note: Not disputed; the below-baseline roster work covers 128K (versus 3/4/3 at lower budgets) and all cells are observation-grade — n/REPS/SEEDS absent throughout.
 - id: intake-937
   arxiv_id: null
   url: https://huggingface.co/unsloth/ERNIE-Image-Turbo-GGUF
@@ -53141,6 +53493,22 @@
     reports - on Qwen2.5-3B, principle distillation + retrieval with RL DISABLED scores 0.357, BEATING
     RL-only at 0.325 and reaching 93.5% of the full system's 0.382. See intake-988.
 
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Verbatim-replay harm tracks ENTITY-BEARING memory — WebShop's entity-free memories yield no benefit; the adapt-before-inject remedy is only +2.2pp, z ~ 1.94, NOT significant.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Supported: there is NO critique step and NO <EMPTY> criterion, which is also why it fails zero-shot — all discrimination lives in the weights; <EMPTY> is a learned state-comparison.'
+  - claim_index: 2
+    effect: unaffected
+    note: The control fix targets the reconstruction arm and the EvolveR row, not the Mem0/SimpleMem cells; negative transfer (+6.25pp, z=4.39) does survive sampling noise.
+  - claim_index: 3
+    effect: unaffected
+    note: 'Quantified and confirmed dominant: of the +8.8/+9.5 over GRPO, +6.6/+7.5 is a TRAINING effect (83.0 vs 76.4, both memory-free at test), z=5.20.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Strengthened: THERE IS NO GRADIENT-FREE WIN ANYWHERE IN THE PAPER (untrained reconstructor 77.7 vs 83.0 without memory). EvolveR''s gradient-free win is a different mechanism.'
 - id: intake-939
   arxiv_id: '2607.25970'
   url: https://arxiv.org/pdf/2607.25970
@@ -53518,6 +53886,15 @@
 
     CREDIBILITY 1 UNCHANGED. VERDICT adopt_patterns UNCHANGED.
 
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/pdf/2607.28568
+    quote: 'On this stack we post-train Frontis-MA1 (35B) as a meta-evolution agent for MLE, aligning post-training and inference around four atomic program-evolution operators (Draft, Improve, Debug, Crossover): the same operators are trained via execution-grounded SFT and RL on data deduplicated against all evaluation benchmarks, then composed into long-horizon search, coupling learning and evolution in a single loop.'
+    quote_sha256: 7e76cb3af7d71996847cc0124577b9682bec1e8eeec3ce37466c801b04d2d2a2
+    located_by: machine
+    match_coverage: '0.526'
+    verified_by: vidya/machine_anchor
 - id: intake-941
   arxiv_id: null
   url: https://unsloth.ai/docs/models/inkling
@@ -53626,6 +54003,31 @@
     (7) The page instructs users to `gh pr checkout 25731` and build from source - i.e. THE VENDOR ITSELF DOCUMENTS THAT MAINLINE llama.cpp DOES NOT SUPPORT THIS MODEL.
     (8) ROLE VERDICT: NOT a worker_general candidate, decisively. Against our roofline (gemma4 ~2.0 GB active-bytes/token -> 48.5 t/s CPU), Inkling-Small reads 3.58 GB/tok at UD-IQ2_M and 5.52 at UD-IQ4_XS, projecting to roughly 13-28 t/s - 2-4x SLOWER before novel-architecture overhead, with our own DeepSeek-V4 port as the calibrating precedent (active-param extrapolation predicted 18-23 t/s; actual was 9.13). worker_general is additionally aliased by worker_math and toolrunner and runs multi-instance, so a 16 GB -> 82-127 GB swap in the most replicated lane is categorically wrong. NOT an architect_critic candidate either: active bytes are at PARITY with the Qwen3.5-122B-A10B incumbent (5.52 vs 5.66 GB/tok), so there is no speed win, and adopting it would PERMANENTLY CLOSE that role's best upgrade path because the 122B has a measured, eval-parity-passed fully-GPU-resident IQ2 path at 43.7 t/s single / 148.7 aggregate on the MI210 while Inkling's smallest quant (82.4 GB) cannot fit 64 GB of VRAM.
 
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://unsloth.ai/docs/models/inkling
+    quote: 'Inkling by Thinking Machines Labs are open-weight multimodal models consisting of: Inkling-Small the new 276B (12B active) model and the earlier 975B (41B) parameter model.'
+    quote_sha256: 99f760514603f06e37d9756557f069721beae94f4a7b19d753ea6a45fdbb9669
+    located_by: machine
+    match_coverage: '0.467'
+    verified_by: vidya/machine_anchor
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://unsloth.ai/docs/models/inkling
+    quote: Licensed under Apache 2.0, the models support a 1M token context window, native multimodal input for text , image , and audio , and generates text as the output.
+    quote_sha256: c6d218d3fed90b506f15ae829b3f5ebd2e99e9d088fb7c9e1becb226eaa91eac
+    located_by: machine
+    match_coverage: '0.5'
+    verified_by: vidya/machine_anchor
+  - claim_index: 3
+    kind: page-and-quote
+    locator: matched span in https://unsloth.ai/docs/models/inkling
+    quote: It also supports reasoning efforts where reasoning_effort can be none = 0, low = 0.2, medium = 0.7, high = 0.9, xhigh = 0.99 and max = 0.99.
+    quote_sha256: df0e1de3706522b47d5081665536a47fe059d74115611099ad3cbb475573c1d7
+    located_by: machine
+    match_coverage: '0.611'
+    verified_by: vidya/machine_anchor
 - id: intake-942
   arxiv_id: null
   url: https://huggingface.co/unsloth/Inkling-Small-GGUF
@@ -53734,6 +54136,23 @@
     (8) CONTEXT DISPUTED: config.json says model_max_length 1048576, but Artificial Analysis states 256K for Inkling-Small. Do not file 1M as settled.
     (9) THIRD-PARTY QUALITY EVIDENCE (genuinely independent, unlike the vendor pages): Artificial Analysis Intelligence Index 40 for Inkling-Small against 41 for the flagship, DeepSeek V4 Flash 40, MiniMax-M3 44 at 23B active and GLM-5.2 51 at 40B active; AA-Briefcase 917 Elo vs the flagship's 839; ~24K output tokens per task, notably terse.
 
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://huggingface.co/unsloth/Inkling-Small-GGUF
+    quote: 'Model Properties Model type Multimodal autoregressive transformer Architecture type A 42-layer decoder-only transformer with a sparse Mixture-of-Experts (MoE) feed-forward backbone: each token is routed to 6 of 256 experts, plus 2 shared experts active on every token.'
+    quote_sha256: a28bcd0f5a59c8355a72760f988e98343e68514ae5e444ff6396a08761a1ff81
+    located_by: machine
+    match_coverage: '0.722'
+    verified_by: vidya/machine_anchor
+  - claim_index: 3
+    kind: page-and-quote
+    locator: matched span in https://huggingface.co/unsloth/Inkling-Small-GGUF
+    quote: 'See below for example of 1-bit UD-IQ1_S GGUF running in Unsloth: Inkling BF16 | NVFP4 | Playground | Tinker Cookbook | Acceptable Use 1.'
+    quote_sha256: 944927562421cd9f1d6b6fb80cc7ef34fa449bea03447473b09ccb12dd151b61
+    located_by: machine
+    match_coverage: '0.6'
+    verified_by: vidya/machine_anchor
 - id: intake-943
   arxiv_id: null
   url: https://engineering.block.xyz/blog/codecrucible-a-blueprint-for-llm-driven-sast
@@ -53846,6 +54265,55 @@
     (7) CORRECT the prompt-set count: FOURTEEN sets ship, not three - default, carlini, carlini-curated, exploit-proof plus seven language variants, and nano-analyzer. cwe_deep_analysis.yaml is 58 KB covering 30 CWEs on a uniform {title, analysis_prompt, validation_checks[], false_positive_indicators[]} schema spliced per finding at audit time, whose header records the calibration lesson that the previous FP indicators "were too exotic to fire ... while the actual FPs were mundane".
     (8) DEDUP: the (fileURI, startLine, CWE) highest-severity-wins keying and its ordering BEFORE the LLM audit are both CONFIRMED (postprocess.go:63-98; scan.go:784 -> 787 -> 815), but the key is anchored on startLine EQUALITY with no range overlap and no CWE-equivalence, so findings at 88-166 and 90-166 with the same CWE both survive. LIFT THE ORDERING FROM HERE AND THE KEY FROM intake-948's matcher.
 
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://engineering.block.xyz/blog/codecrucible-a-blueprint-for-llm-driven-sast
+    quote: 'What will last longer is the blueprint: the design choices, tradeoffs, and reference codebase that let other teams adapt the approach to their own pipelines and keep iterating on it.'
+    quote_sha256: b7d0ea3a64612493a20a0f12da4e9de9f9ce1795dec01beaa74565d78435111a
+    located_by: machine
+    match_coverage: '0.625'
+    verified_by: vidya/machine_anchor
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://engineering.block.xyz/blog/codecrucible-a-blueprint-for-llm-driven-sast
+    quote: 'How we approached the problem The design space We believe that LLM-driven SAST tools have to answer four questions, and those answers usually matter more than the choice of model: Compaction.'
+    quote_sha256: 8c2dea5e56fef23d658e56ae6a3a59b313434c2537bbe9e8ef4fd6123e4a6a81
+    located_by: machine
+    match_coverage: '0.5'
+    verified_by: vidya/machine_anchor
+  - claim_index: 3
+    kind: page-and-quote
+    locator: matched span in https://engineering.block.xyz/blog/codecrucible-a-blueprint-for-llm-driven-sast
+    quote: If no rule fires, or the engine fails to trace the path, the LLM never sees the code.
+    quote_sha256: 35c39a135a2d5fd0a34263575d2ed8045b1d82e24c07e182135f9435fbcb65c8
+    located_by: machine
+    match_coverage: '0.636'
+    verified_by: vidya/machine_anchor
+  - claim_index: 4
+    kind: page-and-quote
+    locator: matched span in https://engineering.block.xyz/blog/codecrucible-a-blueprint-for-llm-driven-sast
+    quote: In recent experiments, our heavily steered prompt sets did not materially outperform a much shorter Carlini-style CTF prompt that frames the task as a direct "find the bugs" security challenge.
+    quote_sha256: a9a0f3d82afa0a08a762040212c40e25fb9f59535e12e2eeeb2657963b0e630e
+    located_by: machine
+    match_coverage: '0.611'
+    verified_by: vidya/machine_anchor
+  - claim_index: 5
+    kind: page-and-quote
+    locator: matched span in https://engineering.block.xyz/blog/codecrucible-a-blueprint-for-llm-driven-sast
+    quote: Chunking Our chunking strategy is to chunk as late as possible and as semantically as possible.
+    quote_sha256: 577cfa57f3ab0edc0ea21c000b27234239b83d1a56df1da518f24b016c608951
+    located_by: machine
+    match_coverage: '0.556'
+    verified_by: vidya/machine_anchor
+  - claim_index: 6
+    kind: page-and-quote
+    locator: matched span in https://engineering.block.xyz/blog/codecrucible-a-blueprint-for-llm-driven-sast
+    quote: If you are adapting this pattern for your own environment, the most promising place to improve precision is probably not a more elaborate discovery prompt, but better audit-time context from the systems that actually enforce those controls.
+    quote_sha256: e948db101799895614e65f4aebb923bebf97eeab9b36448ced8c7728ae1404ef
+    located_by: machine
+    match_coverage: '0.667'
+    verified_by: vidya/machine_anchor
 - id: intake-944
   arxiv_id: null
   url: https://github.com/QuixiAI/QuixiCore
@@ -53988,6 +54456,15 @@
     QuixiFlow's main is likewise zero-delta with three stale branches (intake-958). The real work is in
     QuixiCore-ROCm (intake-959), which declares cdna2 in four manifests and implements it in ZERO FILES.
 
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://github.com/QuixiAI/QuixiCore
+    quote: 'It contains: Backend registry metadata Kernel and quant format registries Correctness and benchmarking specifications Coverage and architecture support matrices Release and naming policy Test-vector organization It intentionally does not contain backend implementation code, shared kernel code, platform bindings, or build systems.'
+    quote_sha256: 82a6880586610e9e13e2117eaf56e8aabc5ad60b937cf635bbcf50bb4e06bc17
+    located_by: machine
+    match_coverage: '0.789'
+    verified_by: vidya/machine_anchor
 - id: intake-945
   arxiv_id: null
   url: https://www.eschalabs.com/
@@ -54188,6 +54665,39 @@
     (9) ROLE VERDICT. worker_general: CONDITIONAL - no to Escha's artifact, yes to the experiment it motivates. architect_critic: NO, and closed by OUR OWN decision-grade evidence rather than Escha's - Qwen3.5-122B at UD-IQ2_M reached FR 58.3% on the C-CRAB reviewer slice against the incumbent UD-Q4_K_M's FA 45.8% / FR 41.7%, and Qwen3.6-27B dense Q8_0 with ZERO quantization damage over-approved at FA 54.2% / AUC 0.503. Low-bit does not preserve critic CALIBRATION, and Escha measured no calibration metric of any kind.
     (10) CORROBORATION THAT IS OURS, NOT THEIRS: intake-861 / arXiv 2505.02390 already records that 2-bit erodes REASONING while KNOWLEDGE holds ~99%, and Escha's six-axis ordering independently matches that shape (knowledge 98.3, commonsense ~101, long-context 100.5, tool-use 100.8, CODE 93.4). It does not establish that a 2-bit 35B-A3B is good; it establishes where to look first.
 
+  claim_anchors:
+  - claim_index: 4
+    kind: page-and-quote
+    locator: matched span in https://huggingface.co/EschaLabs/Qwen3.6-35B-A3B-Escha-W2
+    quote: 'The dense (non-expert) layers here are int8; that is lossless against an fp16-dense build of the same weights (boolq 88.38 vs 88.04), so the size saving costs nothing measurable. [^math]: MATH-500 is served with a thinking-budget cap — the correct protocol for a reasoning model (0 non-terminations; uncapped, the model over-thinks and truncates, which the cap fixes without changing answer quality).'
+    quote_sha256: 55504f2f77ae9a0cb11fca9a5a589f12a01eecba2d432c21009afca081e03377
+    located_by: machine
+    match_coverage: '0.714'
+    verified_by: vidya/machine_anchor
+  - claim_index: 5
+    kind: page-and-quote
+    locator: matched span in https://huggingface.co/EschaLabs/Qwen3.6-35B-A3B-Escha-W2
+    quote: 'Toggle it per request via chat_template_kwargs — a top-level enable_thinking field is ignored: { "model" : "escha-qwen36-35b-a3b-w2" , "messages" : [ { "role" : "user" , "content" : "..." } ] , "chat_template_kwargs" : { "enable_thinking" : true } } With thinking on , the reasoning arrives in reasoning_content and the answer in content — read both.'
+    quote_sha256: 5683ad7a84c27f9d4baa8870fa7f74f72a1ead08c1695958140afa8df9977e6e
+    located_by: machine
+    match_coverage: '0.545'
+    verified_by: vidya/machine_anchor
+  - claim_index: 6
+    kind: page-and-quote
+    locator: matched span in https://huggingface.co/EschaLabs/Qwen3.6-35B-A3B-Escha-W2
+    quote: The mtp.* tensors (next-token-prediction head) are present in the checkpoint but not served ; speculative decoding additionally needs a separate draft export that is not part of this release.
+    quote_sha256: ec1d2e79b0434c57b11d253ff0d9d6b4bdefc29e4eeda078cfbccb5608015049
+    located_by: machine
+    match_coverage: '0.857'
+    verified_by: vidya/machine_anchor
+  - claim_index: 8
+    kind: page-and-quote
+    locator: matched span in https://huggingface.co/EschaLabs/Qwen3.6-35B-A3B-Escha-W2
+    quote: This checkpoint is text-only (the qwen3_5_moe config declares a vision tower, but the quantized weights contain none — vision is in the quant ignore list); serve.sh sets SGLANG_VLM_TEXT_ONLY=1 by default so the tower is never instantiated.
+    quote_sha256: 4586bd21bb7a44a7bcf936d93042f1390859f203d7076714b723580afeef1f36
+    located_by: machine
+    match_coverage: '0.818'
+    verified_by: vidya/machine_anchor
 - id: intake-947
   arxiv_id: '2511.08083'
   url: https://github.com/HazyResearch/HipKittens
@@ -54415,6 +54925,15 @@
     (7) ADD an undersold asset: examples/vulnerability-coverage/ai-annotation-prompt.md is a complete LLM-ASSISTED GROUND-TRUTH AUTHORING PROMPT - one-bug-many-evidence modelling, CWE-set population, criticality assignment, and an explicit instruction to author status:"invalid" decoys. It is the recipe for building the corpus benchmrk does not ship.
     (8) Coverage-overlap analysis (coverage.go) answers the multi-reviewer question directly: union recall vs best-single recall, per-scanner marginal contribution, blind spots caught by nobody, and flaky coverage - computed over VALID vulns only, because "an 'invalid' decoy caught by all scanners isn't coverage, it's a shared false positive".
 
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://github.com/block/benchmrk
+    quote: A caveat on public benchmark corpora and AI-based scanners Juice Shop, WebGoat, and OWASP Benchmark are in the training data of every large language model.
+    quote_sha256: 9445bd9df416379ce732f374756ff4ed897d99e2f2a447169eb3cd57001f621c
+    located_by: machine
+    match_coverage: '0.583'
+    verified_by: vidya/machine_anchor
 - id: intake-949
   arxiv_id: '2505.23387'
   url: https://arxiv.org/abs/2505.23387
@@ -54696,6 +55215,36 @@
     Jinjian Liu (GSO, Berkeley). The "Liu et al., 2024" ambiguity is precisely how the original
     misattribution became plausible.
 
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2507.12415
+    quote: To address this gap, we introduce SWE-Perf, the first benchmark specifically designed to systematically evaluate LLMs on code performance optimization tasks within authentic repository contexts.
+    quote_sha256: b8e2bca38655de8d5d25cc1f5be23e06676c89fe6fa548697d3f436f5573e30d
+    located_by: machine
+    match_coverage: '1.0'
+    verified_by: vidya/machine_anchor
+  - claim_index: 2
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2507.12415
+    quote: Through a comprehensive evaluation of representative methods that span file-level and repo-level approaches (e.g., Agentless and OpenHands), we reveal a substantial capability gap between existing LLMs and expert-level optimization performance, highlighting critical research opportunities in this emerging field.
+    quote_sha256: fa2438c53f0bbdc9e4fae5fc5cd355092a6383c942d805e0a4a095b8dfe1417a
+    located_by: machine
+    match_coverage: '0.7'
+    verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The only framing correction is that the THIRD-AXIS FRAMING IS OVERTURNED (it is already correctness-gated); repository-context priority is never disputed.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed while deleting a bogus defect: enumerating all 140 instances gives exactly nine repositories. Only the container pinning is weaker than described (nano_cpus, 10.0 CPUs).'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Survives the dive''s own re-scoping: the per-method Performance_pass ceiling (8.3/8.8/11.4) leaves it robust to subset normalisation at 6.8% versus 25.4%.'
+  - claim_index: 3
+    effect: unaffected
+    note: No correction touches the patch-content analysis; the dive's targets are licence, repo count, third-axis framing, pinning, cross-hardware delta, supply chain and author linkage.
 - id: intake-952
   arxiv_id: '2505.13004'
   url: https://arxiv.org/abs/2505.13004
@@ -54814,6 +55363,39 @@
     Jinjian Liu (GSO, Berkeley). The "Liu et al., 2024" ambiguity is precisely how the original
     misattribution became plausible.
 
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2505.13004
+    quote: To address this gap, we introduce EffiBench-X, the first multi-language benchmark designed to measure the efficiency of LLM-generated code.
+    quote_sha256: 7354475926ffc92d9e9b888008b09782a330f7be17071be5334f965fde3edba0
+    located_by: machine
+    match_coverage: '1.0'
+    verified_by: vidya/machine_anchor
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2505.13004
+    quote: Evaluating state-of-the-art LLMs on EffiBench-X reveals that while models generate functionally correct code, they consistently underperform human experts in efficiency.
+    quote_sha256: 93022339ac675e0a27c99d97693b2bd11eaee0265fc7ebabb21d232b24c157cd
+    located_by: machine
+    match_coverage: '0.667'
+    verified_by: vidya/machine_anchor
+  - claim_index: 2
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2505.13004
+    quote: Even the most efficient LLM-generated solutions (Qwen3-32B) achieve only around \textbf{62\%} of human efficiency on average, with significant language-specific variations.
+    quote_sha256: 48532ca46b8b90ddc7f985661f6d9f06010c70adb663004ca726e88e1cb4415c
+    located_by: machine
+    match_coverage: '0.5'
+    verified_by: vidya/machine_anchor
+  - claim_index: 3
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2505.13004
+    quote: LLMs show better efficiency in Python, Ruby, and JavaScript than in Java, C++, and Golang.
+    quote_sha256: f304ebbc36873f398354380addb55903b7fb4e17bef6bf65bbf7caaa410b7f22
+    located_by: machine
+    match_coverage: '0.643'
+    verified_by: vidya/machine_anchor
 - id: intake-953
   arxiv_id: '2511.06090'
   url: https://arxiv.org/abs/2511.06090
@@ -54955,6 +55537,31 @@
     => OUR DECLINE TO AMEND THE MEASUREMENT CONSTITUTION STANDS, on STRONGER grounds than the ones we
     declined on. This citation trail is recorded so the item cannot reopen.
 
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://arxiv.org/abs/2511.06090
+    quote: However, most benchmarks emphasize what to fix rather than how to fix code.
+    quote_sha256: 478fc7c2a34ede2a56c9a1dd39fde0fad29b73e850ac4e2485e93f7a5bcc0914
+    located_by: machine
+    match_coverage: '0.5'
+    verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Nothing in the correction disputes the WHAT-vs-HOW framing; the dive's targets are the citation trail, the aggregator, the harness licence, and the noise-filter mechanism.
+  - claim_index: 1
+    effect: overturned
+    note: 'A STALE FIGURE SURVIVES INSIDE v3: prose in Sec 4.1 says GPT-5-mini 0.019x while v3 Tables 2 and 6 both say 0.039x. QUOTE v3 NUMBERS FROM TABLES ONLY. The non-transfer thrust survives at 0.039x.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'The correction leaves patch outcomes intact and cites them as evidence: its Table 3 patch-outcome row is byte-identical in both versions (19% / 5% / 44% / 33%).'
+  - claim_index: 3
+    effect: unaffected
+    note: No sentence of the correction mentions trajectories, action counts, or the 100-action cap; the satisficing claim is never disputed.
+  - claim_index: 4
+    effect: overturned
+    note: 'The ''expert-normalized ratios are their own noise filter'' claim is OVERTURNED and the mechanism misattributed: dividing by it is a per-instance rescaling that is variance-neutral by construction. The real mechanism is the paired within-container ratio.'
 - id: intake-954
   arxiv_id: '2502.02827'
   url: https://arxiv.org/abs/2502.02827
@@ -55134,6 +55741,31 @@
     (7) ADD genuinely third-party evidence, distinguishing it from the vendor pages which merely restate Thinking Machines' own figures: Artificial Analysis Intelligence Index 40 for Inkling-Small against 41 for the flagship, DeepSeek V4 Flash 40, MiniMax-M3 44 at 23B active, GLM-5.2 51 at 40B active; AA-Briefcase 917 Elo against the flagship's 839; roughly 24K output tokens per task, notably terse against DeepSeek V4 Flash's ~45K.
     (8) ROLE-CANDIDATE CONTEXT (operator's framing): a v9 port would cost THREE new subsystems, not one - a content-dependent relative attention bias replacing RoPE, a per-layer short-convolution state cache alongside KV, and shared-expert-sink MoE routing - and the upstream PR carrying them is rejected in its current form. See intake-941 and intake-942 for the port-cost and role verdicts.
 
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: matched span in https://huggingface.co/thinkingmachines/Inkling-Small
+    quote: 'Parameters 276B total, 12B active Numerics support BF16 and NVFP4 Input modalities Inkling-Small accepts text, image, and audio inputs: Text: UTF-8 encoded text Image: Any pixel-based image input.'
+    quote_sha256: 7e5c7171070419e3d8c7cafab5873332e2f3cda5dd99fc7bac1af5ac2d81b1ab
+    located_by: machine
+    match_coverage: '0.8'
+    verified_by: vidya/machine_anchor
+  - claim_index: 1
+    kind: page-and-quote
+    locator: matched span in https://huggingface.co/thinkingmachines/Inkling-Small
+    quote: 'Model Properties Model type Multimodal autoregressive transformer Architecture type A 42-layer decoder-only transformer with a sparse Mixture-of-Experts (MoE) feed-forward backbone: each token is routed to 6 of 256 experts, plus 2 shared experts active on every token.'
+    quote_sha256: a28bcd0f5a59c8355a72760f988e98343e68514ae5e444ff6396a08761a1ff81
+    located_by: machine
+    match_coverage: '1.0'
+    verified_by: vidya/machine_anchor
+  - claim_index: 2
+    kind: page-and-quote
+    locator: matched span in https://huggingface.co/thinkingmachines/Inkling-Small
+    quote: The model is natively multimodal — images are encoded via a hierarchical patch encoder, and audio via discrete token encoding — with all modalities projected into a shared hidden space and processed jointly by the decoder.
+    quote_sha256: da56a76fda409ba25d72298fba7959ea555a983208a63bf5698bc6da2a0b05e3
+    located_by: machine
+    match_coverage: '1.0'
+    verified_by: vidya/machine_anchor
 - id: intake-956
   arxiv_id: null
   url: https://huggingface.co/KaedeTai/Qwen3.6-35B-A3B-Escha-W2-Codebook-Ref
@@ -56116,6 +56748,22 @@
   - '[review candidate] RUN EvalPerf against our local endpoint - lowest friction in the cluster, ~15 min/model.'
   - '[review candidate] DO NOT prototype instruction counting for our inference kernels - bandwidth-bound, and already falsified in-session.'
   notes: 'credibility_score 4: peer-reviewed venue COLM 2024 +2; published 2024-08, over 12 months +0; UIUC EvalPlus team, known contributors +1; commercial bias +0; independent corroboration +1 (GSO Appendix D, a disjoint Berkeley group, independently states the same same-environment control principle). Net 4. THIRD-PARTY CORROBORATION OF OUR DERIVED MECHANISM, verbatim from GSO Appendix D: "Our metric controls for machine-specific variation by comparing generated optimizations against expert developer implementations in the same environment, rather than measuring absolute speedups." THREE DISTINCT LIUS, DO NOT MERGE: Jiawei Liu (EvalPerf, UIUC), Qian Liu (Mercury/SWE-Perf, Sea AI Lab), Jinjian Liu (GSO, Berkeley). The "Liu et al., 2024" ambiguity is precisely how the original misattribution became plausible.'
+  claim_corrections:
+  - claim_index: 0
+    effect: uncertain
+    note: dive_corrections is empty. Only external corroboration exists (intake-953's closure resolves the citation to arXiv 2408.06450 = EvalPerf), not a correction recorded on this entry.
+  - claim_index: 1
+    effect: uncertain
+    note: dive_corrections is empty. intake-953 repeats this Sec A.2 quote approvingly, but no correction text exists here to establish any effect.
+  - claim_index: 2
+    effect: uncertain
+    note: dive_corrections is empty. intake-953 states the same mechanism (hardware performance counters, selecting large computations), but this entry carries no correction.
+  - claim_index: 3
+    effect: uncertain
+    note: dive_corrections is empty. No prose anywhere discusses DPS clustering or the delta > bias + sqrt(w/t_bar) threshold, so no verdict is recoverable.
+  - claim_index: 4
+    effect: uncertain
+    note: dive_corrections is empty. No prose discusses DPS ordinality or the m >= 4 cluster-resolution cap, so no verdict is recoverable.
 - id: intake-972
   arxiv_id: '2402.07844'
   url: https://arxiv.org/abs/2402.07844
@@ -57216,8 +57864,9 @@
   - GRPO collapse characterization
   - within-group variance diagnostics
   reported_results:
-  - 32-episode binomial noise floor roughly 8.8 points.
-  - 'Unexplained inversion: 8B model 32.8 vs 4B model 49.5.'
+  - 32-episode binomial noise floor roughly 8.8 points (survives verbatim in v2; last-6 SE ±3.4 from a measured single-point σ of 8.4).
+  - 'RESOLVED IN v2: the v1 ''unexplained inversion'' (8B 32.8 vs 4B 49.5) was substantially a 32-game-window artifact. Formal 140-game endpoint puts the 8B baseline at 45.0% [37.0, 53.3], inside the 4B seed band, and the scale-ordering caveats tied to it are lifted.'
+  - 'v2 additions bearing on decision-grade status: WebShop and HiddenRule-Gym as second and third environments, three-seed replication on the headline arm and the ALFWorld baseline, a group-size ablation (collapse at every group size, non-monotone timing 85/135/80), and a 134-game out-of-distribution split where every headline structure survives and every magnitude compresses.'
   referenced_arxiv_ids: []
   handoffs_created: []
   handoffs_updated:
@@ -57233,7 +57882,8 @@
     - intake-988
     - intake-989
   contradicting_evidence:
-  - Its own cross-arm comparisons are declared DESCRIPTIVE by the authors, and an unexplained model-size inversion sits in the results. The theoretical result (the Proposition-2 safe class) is the durable part; the empirical arm is not decision-grade.
+  - 'SUPERSEDED BY v2 (checked 2026-08-10). The v1 objection was that cross-arm comparisons were author-declared DESCRIPTIVE and an unexplained model-size inversion sat in the results. v2 removes both: every arm entering a cross-arm ordering claim now carries a formal 140-game endpoint, and the 8B baseline evaluates at 45.0% [37.0, 53.3] — inside the 4B seed band. The residual caution is narrower: last-6 training-caliber means remain adequate for shape and large qualitative gaps but not for cross-arm ordering.'
+  - 'Residual scope limit, still live: Proposition 2 is demoted in v2 to the SATURATION-ENDPOINT case of a variance-trajectory criterion, and its dominance premise is explicitly not inherited. Design filters should cite the v2 variance-trajectory criterion (§3.3), not Proposition 2 alone.'
   novelty_justification: high. A formal safe/unsafe classification of reward shapes is something the corpus lacks entirely, and it is directly usable as a design filter rather than a finding to remember.
   relevance_justification: medium. We do not train, so the collapse mechanism does not bite us directly; the classification is useful as a design filter for any reward we author for the kernel loop, and the noise-floor observation is a transferable measurement caution.
   verdict_justification: 'worth_investigating: the theory is adoptable as a filter but the empirical arm is self-declared descriptive, and our own use case (a search loop, not a trained policy) sits outside its scope.'
@@ -57332,6 +57982,19 @@
     2026-08-05 STAGE-2B GATE CLOSED BY OPERATOR OVERRIDE. The operator selected all recommended and previously declined artifacts. Dispositions: The Wrong Razor -> intake-996; Regret Is Weighted Forgetting -> intake-997; Abstraction Ladder -> intake-998; IJCAI summary -> intake-1001. The additional intake-994 surfaced sources are intake-999, intake-1000, and intake-1002; the citation-graph false positive is intake-1003; the machine-review artifact is intake-1004. No surfaced bearing source remains unresolved.
 
     2026-08-05 STAGE-3/4 DISPOSITION. A2 landed as AP-WM-1 and AK-WM-1; A3 landed as AP-29d. A1 is declined because no local selector decision relies on the defective toy headline. A4 is declined as live fitness, promotion authority, or component adoption.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED: the paper defines weakness as extension cardinality inside a finite embodied language; the claim is stated inside the paper''s own formalism.'
+  - claim_index: 1
+    effect: overturned
+    note: 'OVERTURNED: the original sufficiency and necessity proofs are not authoritative — intake-992 records a task-count miscount and an omitted distribution dependency, and its replacement necessity argument remains incomplete.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'CONFIRMED: description length and extension size can rank correct statements differently. The empirical overturn hits the head-to-head experiment, not this conceptual distinction.'
+  - claim_index: 3
+    effect: reattributed
+    note: 'NOT-FOUND-IN-SOURCE: the AutoPilot/AutoKernel interpretation is an EPYC transfer hypothesis, not a result of this paper. The content survives (landed as AP-WM-1/AK-WM-1) but is not the paper''s.'
 - id: intake-992
   arxiv_id: null
   url: https://osf.io/qf8tw_v2/
@@ -57402,6 +58065,16 @@
     DIVE-SURFACED SOURCE: The Wrong Razor, latest Zenodo record 20509265, directly replaces the fragile necessity argument with finite exchangeable-demand and measured-language statements; recommend ingest-and-dive before any Stage-3 transfer.
 
     2026-08-05 STAGE-3/4 DISPOSITION. B2 and B3 landed through AP-WM-1 and AK-WM-1 as empirical-demand, common-frame, and recoding gates. B1 remains a citation constraint, not a task: Proposition 2 is not treated as a settled necessity theorem.
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Materially improves the sufficiency argument, but Proposition 2 does not prove its stated necessity conclusion — replacements are supplied, yet the necessity replacement does not stand.
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED: the follow-up explicitly reports three problems including a parent-task miscount and an unstated task-distribution dependency, and assumes uniformly distributed v-tasks.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'CONFIRMED: it remains restricted to policies already correct for one child task in one embodied language.'
 - id: intake-993
   arxiv_id: null
   url: https://github.com/ViscousLemming/Technical-Appendices
@@ -57694,6 +58367,19 @@
     DIVE-SURFACED SOURCES: all materially bearing sources are intake-991 through intake-1004; no additional unresolved source passed the bearing threshold.
 
     2026-08-05 STAGE-3/4 DISPOSITION. E1 and E2 landed through AP-WM-1 and AK-WM-1 as an explicit outer representation contract and an observe-only demand-weighted diagnostic. E3 is declined: no Bagi/Unagi component, PAC-Bayes justification, exponential guarantee, or live promotion signal is adopted.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED: Proposition A.5 follows by Shannon-style code lengths and Kraft-McMillan; the normalized code prior lies between one-half and twice any positive finite prior.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED: Theorem A.12 gives the exact conditional survival ratio, so weakest-correct is optimal under the stated finite exchangeability law.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'The claim only reports what the paper proposes; the dive disputes evidence and adoption (NOT-FOUND: no Bagi/Unagi implementation or autonomous-loop experiment), not the proposal.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'The correction corroborates this caveat: Corollary A.33 silently substitutes one space for the other, and the continuous minimax result says nothing beyond that selected uncertainty class.'
 - id: intake-997
   arxiv_id: null
   url: https://www.preprints.org/manuscript/202603.1546
@@ -57770,6 +58456,19 @@
     DIVE-SURFACED SOURCES: no additional materially bearing source beyond the selected intake set.
 
     2026-08-05 STAGE-3/4 DISPOSITION. F1 and F2 landed through AP-WM-1 and AK-WM-1 as an offline K-rho/weighted-minority-mass aliasing diagnostic with a raw-impurity baseline. F3 is declined: no paper result, auxiliary loss, or generalization probability enters a live gate.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED: cellwise minimization gives sum_C min(A_C,B_C); verify_reduction.py passed the toy example and 200 randomized identities.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED: the policy-wise affine decomposition follows exactly — the aliasing-plus-misreporting split is verified algebra, not part of the overturned empirical package.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'CONFIRMED: the weighted-weakness equality is explicitly limited to a lifted per-cell product construction, and weighted weakness is conditional on the adopted prior.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Corroborated: the paper appropriately narrows normalized-regret, lifted-task and non-neural scope; NOT-FOUND covers a neural weakness implementation.'
 - id: intake-998
   arxiv_id: null
   url: https://www.researchgate.net/publication/398711288_The_Abstraction_Ladder_Problem_in_Weakness_Maximization_W-maxing_for_Artificial_General_Intelligence_systems
@@ -57843,6 +58542,16 @@
     DIVE-SURFACED SOURCES: all proposed resolutions are broad background literatures rather than sources that materially adjudicate the selected weakness mechanism; no additional intake is warranted for this gate.
 
     2026-08-05 STAGE-3/4 DISPOSITION. G1 landed through AP-WM-1 and AK-WM-1 as mandatory vocabulary/search-space provenance and construction-cost accounting. G2 landed as AW-10, mapping active falsifier search and environment synthesis to hypothesis-boundary acquisition. G3 is declined: no numerical factor, new component, or formal circularity claim is adopted.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED near-verbatim: within-vocabulary weakness selection does not by itself construct a useful vocabulary. The SUPERSEDED note (intake-996 supplies an outer loop) does not contradict it.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'OVERTURNED in part: no theorem establishes circularity or a sample-complexity lower bound, and the conversion of 110-500 percent to 2.1-6.0 times is arithmetically wrong. Only the qualitative accounting survives.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'CONFIRMED: the source proposes bootstrapping, priors, active learning and self-organization.'
 - id: intake-999
   arxiv_id: '1912.02178'
   url: https://arxiv.org/abs/1912.02178
@@ -58071,6 +58780,16 @@
     DIVE-SURFACED SOURCES: all cited load-bearing Bennett sources are already represented in intake-991 through intake-998; no additional gate item remains.
 
     2026-08-05 STAGE-3/4 DISPOSITION. J1 is declined and J2 is retained as provenance only. No handoff task is created; substantive claims continue to route to intakes 992 and 996, and empirical claims to intake 993.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED: the artifact is IJCAI-25 Doctoral Consortium pages 10967-10968 and explicitly summarizes thesis results.'
+  - claim_index: 1
+    effect: narrowed
+    note: CONFIRMED as a restatement ('it repeats the weakness/MDL experiment and 110-500 percent claim') but 'the necessity theorem and empirical comparator are not decision-grade' — true as restatement, not as evidence.
+  - claim_index: 2
+    effect: unaffected
+    note: 'NOT-FOUND: proof bodies, new experimental methods, new raw results, an independent evaluation, or energy measurements — which confirms the claim.'
 - id: intake-1002
   arxiv_id: null
   url: https://proceedings.mlr.press/v70/dinh17b.html
@@ -58227,6 +58946,19 @@
     DIVE-SURFACED SOURCES: the OSF appendix was ingested as part of this paper's artifact set; no additional unresolved bearing source remains.
 
     2026-08-05 STAGE-3/4 DISPOSITION. L1 landed as RM-10, a mindfulness-only metacognitive prompt ablation with matched controls and independently owned scoring. L2 remains a hard trust-boundary rejection. L3 is declined: no AutoKernel task, weakness connection, superalignment claim, or reuse of the reported effect sizes.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED: the four proposed principles and implementation menu appear in the source.'
+  - claim_index: 1
+    effect: narrowed
+    note: Group means and effect sizes appear in the appendix, but the statistics are OVERTURNED (wrong ANOVA) and the PD gain violates the stated own-score objective.
+  - claim_index: 2
+    effect: unaffected
+    note: 'Dive endorses it: neither paper nor appendix contains Bennett, weakness, or 2301.12987 — the citation-graph edge is spurious.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'NOT-FOUND: evidence at autonomous or superintelligent scale, or persistent behavior after prompts — matches the claim''s own scope limitation.'
 - id: intake-1004
   arxiv_id: null
   url: https://www.pith.science/paper/L57ULFW7
@@ -58302,6 +59034,19 @@
     DIVE-SURFACED SOURCES: Pith's related/aggregator links were inspected but add no independent evidence; the machine-review-pages gate is closed with this canonical artifact.
 
     2026-08-05 STAGE-3/4 DISPOSITION. M1, M2, and M3 landed as RA-12: an immutable review envelope, source-update invalidation, and an unverified-lead evidence label. M4 is declined: no paper-level action is taken beyond intake-994's current-primary audit.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED: the live page labels Tier 0 / deepseek-v4-flash and renders five major objections. Page composition is not disputed.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED: bundle event sha256:dee622... stores a 2026-05-15 grok-4.3 verdict while the live page carries the DeepSeek label — exactly this claim.'
+  - claim_index: 2
+    effect: unaffected
+    note: The dive's OVERTURNED targets the PAGE's objection ('the claimed unresolved v2 abstract/body mismatch is stale'), which is the version-splice this claim asserts.
+  - claim_index: 3
+    effect: unaffected
+    note: 'Endorsed and operationalized: M1/M2/M3 landed as RA-12 — an immutable review envelope, source-update invalidation, and an unverified-lead evidence label.'
 - id: intake-1005
   arxiv_id: '2607.28611'
   url: https://www.arxiv.org/pdf/2607.28611
@@ -58447,6 +59192,16 @@
     DERIVED-ACTIONABLES LEDGER. (D1, verified package gate) explicit data_files, stale exclusion, manifest closure, per-config identity, and loader smoke. (D2, verified split gate) prompt/template/dedup group isolation. (D3, contamination gate) exclude all source families in the mixture from evaluation with denominator-bearing reports. (D4, clean-room patterns) provenance/tokenizer/mask artifacts only after semantic mask audit. (D5, decline) no current corpus ingestion or training. Proposed owners swarm-dataset-distillation.md, eval-tower-verification.md, and frontier-f3-data-flywheel.md; Stage 2 made no handoff edits.
 
     DIVE-SURFACED SOURCES: the legacy 51,389-row and Qwen-only predecessor repositories explain lineage/stale artifacts; current Alibaba Model Studio terms bear on service-output authority. None outranks the consolidated Stage-2b research-source selections, so no standalone dive is recommended now.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED: the intended canonical corpus has 57,937 rows (48,283 Qwen, 5,307 GLM, 4,347 Kimi); ''OVERTURNED: 24 distinct loadable configs'' confirms the claim''s second half.'
+  - claim_index: 1
+    effect: unaffected
+    note: Each maps to an identical 953,708-row union; the D1 gate names explicit data_files and stale exclusion as the fix — the cause this claim states.
+  - claim_index: 2
+    effect: narrowed
+    note: 'Leakage and authority halves confirmed, but metadata usefulness shrinks: 26.1% have unknown license labels and semantic assistant-only masking was not independently rerendered.'
 - id: intake-1008
   arxiv_id: '2508.13171'
   url: https://arxiv.org/pdf/2508.13171
