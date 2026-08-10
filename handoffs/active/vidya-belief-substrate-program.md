@@ -621,9 +621,20 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       passes had hit DISJOINT sets), then after anchoring the 26 dive-verified entries 52 claims
       cleared both axes, and then `review_required` bound, which PR2c cleared. **Strict
       Verified/MachineLocated now allows 9 claims, up from 0** ✅ 2026-08-10
-- [ ] R5d Collect the forward series now that emission is live (genuinely elapsed-time gated —
-      reuse cannot be reconstructed for queries nobody logged). The t=0 baseline above is what it
-      gets compared against; earliest useful read ~30 days of real query traffic
+- [x] R5d **Delivered as a computation, not a diary entry.** "Collect the forward series" is a
+      standing obligation wearing a checkbox, and this repo has the scar from the last one:
+      `readme-refresh.md` was legitimately completed, archived, and left a recurring alarm firing at
+      a routing target that no longer existed, after which both READMEs drifted to 66 days.
+      `scripts/vidya/r5_series.py` computes the whole series from whatever the ledger holds — claim
+      age and grade trajectory by folding at successive frontiers, query volume and outcome mix,
+      abstention rate by day, time-to-first-reuse, obligation dispositions. Run today it reports the
+      t=0 shape and NAMES the panels with no data; run in a month the same command reports the
+      series. Nobody has to remember a procedure and no checkbox has to lie meanwhile ✅ 2026-08-10
+- [x] R5d-honesty The reuse panels are empty and stay empty: **synthesizing `query_served` frames
+      to fill them would fabricate the exact measurement they exist to report.** The 16,892 gate
+      evaluations run for the t=0 baseline deliberately used `evaluate()` rather than `vidya query`
+      for that reason. A test asserts the panel stays empty on a query-free corpus, so any future
+      convenience that seeds it has to delete that test to pass ✅ 2026-08-10
 
 ## Dependency notes
 
