@@ -24,6 +24,13 @@ explicitly required fresh permission before any further inference; no live work 
 handoff alone. Offline AK-WM-1 plumbing is complete, while AK-WM-2 remains empirical and requires a
 real matched completed-proposal archive produced by those future candidates.
 
+**Do `AK-TR-1` (§21) BEFORE Step 3, not after.** It adds `anchor_tier` and `transfer_ratio_to` to the
+§7.4 evaluation event. It is a schema field, costs nothing today, and is **impossible to backfill** —
+a transfer ratio invented at read time claims a correspondence the original run never measured. Every
+candidate evaluated before it exists is a candidate whose cheap-lane-to-ground-truth relationship can
+never be recovered. §21 also carries three corrections to this handoff's own premises (per-run
+approval, CPU/GPU concurrency, churn-not-throughput) that widen what Step 3 may do.
+
 ---
 
 ## 0. Purpose and outcome

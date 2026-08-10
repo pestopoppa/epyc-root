@@ -1,7 +1,18 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
 **Status**: SKELETON — design scaffold; substrate is now mostly *adopt AMD-native*, not build-from-scratch
-**Created**: 2026-06-03 · **Updated**: 2026-06-03 (GEAK keystone reversal + AgentKernelArena)
+**Created**: 2026-06-03 · **Updated**: 2026-08-10 (C2/C6 task set + three zero-cost probes; see §2026-08-10)
+
+> **NEXT ACTION (2026-08-10): `RVP-T0-1`, then `RVP-T0-2`, then `RVP-T0-5` — all three are zero-GPU,
+> read-only or static, and two of them can close later branches for free.** `RVP-T0-1` (60 s power +
+> sclk log under a saturating GEMM) decides whether the entire clock-pinning branch — including the
+> operator-only `AK-OP-2` — is live at all. Do these before anything in §"Current sequence" below.
+>
+> **Correction carried with it (operator, 2026-08-10):** the phrase *"All runs operator-approved
+> (P-GPU-1)"* below is **wrong as a blanket statement**. P-GPU-1 governs the **class of claim** a GPU
+> result may carry, not permission to run; the human boundary is **freeze / cutover / promotion**.
+> What remains true and unchanged: profiling or benching a **live server** is owned by whoever owns
+> that inference, and co-residency is theirs to schedule.
 **Categories**: hardware_optimization, benchmark_methodology, tool_implementation, inference_serving
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked; ROCm 6.2 bind-mounted; llama.cpp HIP build verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`). This backend is now **ACTIVE** (priority MEDIUM). Runnable first tasks: (1) install/pin `pytorch-triton-rocm` matched to ROCm 6.2 + verify gfx90a matmul (intake-760); (2) stand up `rocprof-compute` gfx90a metric subset (C4); (3) the honest-vendor-baseline candidates that are gfx90a-*reachable* — **BitBLAS/TileLang low-bit GEMM** (intake-497/tilelang-puzzles), **NOT AITER** (gfx942-only, intake-759). All runs operator-approved (P-GPU-1). [was: "~July 2026; nothing executes until the card racks" — stale]
 **Priority**: MEDIUM (the substrate for [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md))
@@ -112,8 +123,11 @@ from `$ROCM_PATH`, so the prefix needs a mirrored `.info/version`. Both are hand
   fallback, not the critical path. Reopen if the raw-counter path fails
 - [ ] **Standing caveat unchanged by any of this**: `rocprof` v1's SQ/TA counters read ZERO on this box and
   it aborts at init on graph-enabled builds. Use `rocprofv2`
-- [ ] Having the tool does **not** authorize profiling a live server. GPU runs remain operator-approved and
-  co-residency is owned by whoever owns the inference
+- [ ] Having the tool does **not** authorize profiling a live server — co-residency is owned by whoever
+  owns that inference. **Corrected 2026-08-10 (operator):** the rest of this line used to read "GPU runs
+  remain operator-approved", which is wrong as a blanket. P-GPU-1 governs the **class of claim**, not
+  permission to run; an AutoKernel experiment on an idle card needs no per-run approval. The live-server
+  clause is the part that survives
 - [ ] **Apply the "does the caller propagate this check's answer?" screen to the whole probe family.** The
   bandwidth probe shipped with `hipcc … 2>&1 | tail -20`, which takes its exit status from `tail`, so a
   failed build exited 0 and the script walked on to the reporting path — a non-compiling probe was
