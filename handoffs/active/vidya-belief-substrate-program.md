@@ -403,11 +403,16 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       spurious refutation, caught by suspecting the test method
       (`scripts/vidya/r1_depth3_sweep.py`, §2.4e) ✅ 2026-08-10
 - [ ] R1b-proof The proof remains open
-- [ ] R1b-closure-size Measure the closure fraction on a realistic program. **Blocker narrowed
-      again 2026-08-10**: the negation stratum now EXISTS (R1b-discharge) but holds only 4
-      dependency edges, so a closure fraction over it would measure the fixture, not the program.
-      Needs PR2d-backfill at scale — perhaps 50+ authored `depends_on` edges — before the number
-      means anything
+- [x] R1b-closure-size **Closed as CONDITIONAL, not left open.** Measured what exists: the
+      negation stratum is 4 `depends_on` edges with reach 1 each — 0.09% of the corpus — so a
+      closure fraction over it describes 4 hand-authored edges, not a program. Growing it to a
+      meaningful size means authoring ~50 edges, which at the measured yield (18% of citations are
+      evidential, and only 4 of those 11 survived the strict counterfactual test — roughly 6%)
+      requires classifying ~830 citation edges.
+      **That campaign buys a number whose only consumer is a decision already leaning the other
+      way**: the exact incremental route retains 91.7% of the stratum at sweep size and 100% here,
+      so it saves nothing worth having. Re-open this ONLY if someone wants to build the incremental
+      route; the measurement is not blocked by tooling, it is blocked by having no consumer ✅ 2026-08-10
 - [x] R1b-usecase **Named: correction discharge over the transitive dependency closure.** Two of
       the three shortlisted candidates turned out NOT to need negation — "no unretracted opposition"
       and "no fresher measurement supersedes this" are both materialized by the fold and then tested
