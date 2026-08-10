@@ -3522,7 +3522,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T10:41:00Z",
+  "generated_at": "2026-08-10T10:56:01Z",
   "nodes": [
     {
       "age_days": 11,
@@ -5668,6 +5668,19 @@
       "open": 1,
       "state": "active",
       "track": "x mas text routing"
+    },
+    {
+      "age_days": null,
+      "blocked": 0,
+      "closed": 4,
+      "domain": "routing-and-optimization",
+      "handoff": "handoff-index-and-backlog-graph.md",
+      "id": "RTG-46",
+      "last_advanced": null,
+      "next_action": "Decide whether .index-state.json / .index-graph.json are git-ignored \u2014 timeline artifact already is",
+      "open": 5,
+      "state": "active",
+      "track": "handoff index and backlog graph"
     },
     {
       "age_days": 11,

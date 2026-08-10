@@ -26,9 +26,9 @@
     },
     "routing-and-optimization-index.md": {
       "blocked": 1,
-      "handoffs": 45,
+      "handoffs": 46,
       "oldest_advance": "2026-07-29",
-      "open": 308
+      "open": 313
     },
     "user-facing-harness-index.md": {
       "blocked": 0,
@@ -786,6 +786,17 @@
       "row_id": "EVL-28",
       "state": "active",
       "total": 5
+    },
+    "handoff-index-and-backlog-graph.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 5,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-46",
+      "state": "active",
+      "total": 9
     },
     "harness-selection-and-integration.md": {
       "blocked": 0,
@@ -3419,6 +3430,15 @@
       "line": 57,
       "next_action": "Monitor post-enable live telemetry for unexpected domain regressions, latency regressions, or guard bypasses; rollback is xmas_routing.mode\u2026",
       "track": "x mas text routing"
+    },
+    "RTG-46": {
+      "deps": [],
+      "handoff": "handoff-index-and-backlog-graph.md",
+      "id": "RTG-46",
+      "index": "routing-and-optimization-index.md",
+      "line": 58,
+      "next_action": "Decide whether .index-state.json / .index-graph.json are git-ignored \u2014 timeline artifact already is",
+      "track": "handoff index and backlog graph"
     },
     "UFH-01": {
       "deps": [],
