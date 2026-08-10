@@ -166,3 +166,14 @@ def test_real_wiki_parses_and_every_edge_is_classified_exactly_once():
             resolved, how = wd.resolve(num, redirects, live)
             assert how in {"direct", "merged", "dangling"}
             assert (resolved is None) == (how == "dangling")
+
+
+def test_record_reference_is_still_a_dependency_edge():
+    """SC5 asks which pages NAME an entry; the gate asks which pages REST on its claims.
+
+    Collapsing the two would silently shrink the dependency graph, so `cited_ids` keeps counting a
+    record reference while `cited_refs` marks it for the gate.
+    """
+    assert wd.cited_ids("struck from intake-896#record") == {"896"}
+    assert wd.cited_refs("struck from intake-896#record") == {("896", wd.RECORD_REF)}
+    assert wd.RECORD_REF not in (None, 0), "must not collide with claim index 0"

@@ -48,7 +48,7 @@ A 2026-07 addition to the category's conclusions: the "offload reasoning to a ch
 
 - **Failed outputs are consistently longer than successful ones**: SEER confirms across 7B, 14B, and 32B scales. On HumanEval/129 with DeepSeek-Qwen-7B, failed cases had median 9,489 tokens versus 8,296 for successes. Length is a negative quality signal, motivating reasoning length alarms. [reasoning-compression-s3cot-adaptive.md](../research/deep-dives/reasoning-compression-s3cot-adaptive.md)
 
-- **Easy problems tolerate aggressive compression; hard problems resist it**: OPSDC achieves 56-59% compression on easy problems with accuracy parity or improvement. Hard problems tolerate only 35% compression with 3.4-5.4pp accuracy drops on AIME-class tasks. This validates difficulty-adaptive budgets. [intake-110](https://arxiv.org/abs/2603.05433)
+- **Easy problems tolerate aggressive compression; hard problems resist it**: OPSDC achieves 56-59% compression on easy problems with accuracy parity or improvement. Hard problems tolerate only 35% compression with 3.4-5.4pp accuracy drops on AIME-class tasks. This validates difficulty-adaptive budgets. [intake-110#03](https://arxiv.org/abs/2603.05433)
 
 - **SimPO with FCS+Reflection achieves 37-48% token reduction**: Across difficulty levels, accuracy is preserved (only -0.2% on MATH500). For fine-tuning scenarios, this is the empirically validated recipe: shortest correct response as positive, longest correct response as negative. [overthinking-info-bottleneck.md](../research/deep-dives/overthinking-info-bottleneck.md)
 
@@ -62,7 +62,7 @@ A 2026-07 addition to the category's conclusions: the "offload reasoning to a ch
 
 - **Risk signal does not predict escalation need**: Package B risk distribution analysis (2,433 decisions) found low-risk prompts escalate MORE (64.4%) than high-risk prompts (50.0%), counterintuitively. However, the high-risk sample was tiny (n=16), too small for reliable conclusions. The RI-10 canary window has been extended to 2026-04-27 to accumulate at least 50 high-risk samples. [bulk-inference-campaign.md]
 
-- **OPSDC's length ratio is a free difficulty signal**: Comparing output length with and without a conciseness prompt yields a difficulty estimate at zero additional cost. Large ratio = easy (compressible); small ratio = hard (reasoning is load-bearing). Alternatively, just add a conciseness instruction: short output = easy, long output = hard. [intake-110](https://arxiv.org/abs/2603.05433)
+- **OPSDC's length ratio is a free difficulty signal**: Comparing output length with and without a conciseness prompt yields a difficulty estimate at zero additional cost. Large ratio = easy (compressible); small ratio = hard (reasoning is load-bearing). Alternatively, just add a conciseness instruction: short output = easy, long output = hard. [intake-110#03](https://arxiv.org/abs/2603.05433)
 
 - **Explicit word limits outperform vague conciseness**: intake-276 deep-dive revealed that "be concise" prompts are the weakest tested form. Explicit numeric limits (e.g., "answer in under 15 words for factual questions") based on CCoT's 30-60 word sweet spot significantly outperform open-ended brevity instructions. Worker prompts have been upgraded accordingly. [reasoning-compression handoff]
 
@@ -353,7 +353,7 @@ The framing above predicted a `{nothink → think-budget → single-shot scaffol
 - [CoLaR Latent Compression](../research/deep-dives/colar-latent-compression.md) -- Latent compression trade-offs, not-actionable assessment
 - [Reasoning Compression handoff](../handoffs/active/reasoning-compression.md) -- OPSDC analysis, 3-tier approach taxonomy, TrimR/Omega evaluation results, all action items
 - [Autopilot Continuous Optimization handoff](../handoffs/active/autopilot-continuous-optimization.md) -- 4D Pareto archive, species-based optimization, GEPA integration, safety gates
-- [intake-110](https://arxiv.org/abs/2603.05433) OPSDC -- 57-59% compression with accuracy gains; difficulty adaptation is emergent; length-ratio routing signal
+- [intake-110#04](https://arxiv.org/abs/2603.05433) OPSDC -- 57-59% compression at accuracy parity (+0.0 to +3.3pp); difficulty adaptation is emergent; length-ratio routing signal. **The v1 abstract's "+9-16 points" was revised away by the authors** (their Appendix D: the base model was mis-scored by a boxed-only grader) — do not cite an accuracy uplift from this entry
 - [intake-125](https://arxiv.org/abs/2602.01982) S3-CoT -- Self-sampled activation steering; progressive curriculum; VL-D in residual stream
 - [intake-126](https://arxiv.org/abs/2602.05539) FlowSteer -- Nonlinear activation steering; SEAL linear baseline; +6% accuracy at 14.5% reduction
 - [intake-127](https://arxiv.org/abs/2505.17155) TrimR -- Verifier-based inference-time pruning; valuable on hard tasks, irrelevant on easy

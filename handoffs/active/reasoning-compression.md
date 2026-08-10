@@ -14,7 +14,7 @@ Explore reasoning token compression techniques that can reduce inference cost fo
 
 | Intake ID | Title | Relevance | Verdict |
 |-----------|-------|-----------|---------|
-| intake-110 | OPSDC: On-Policy Self-Distillation for Reasoning Compression | high | new_opportunity |
+| intake-110#record | OPSDC: On-Policy Self-Distillation for Reasoning Compression | high | new_opportunity |
 | intake-126 | FlowSteer: Concise Reasoning via Flow Matching | high | new_opportunity |
 | intake-127 | TrimR: Verifier-based Training-Free Thinking Compression | high | new_opportunity |
 | intake-129 | short-m@k: Shorter Thinking Chains for Improved Reasoning | high | new_opportunity |
@@ -53,7 +53,8 @@ Four families of techniques, ordered by implementation effort:
 - **S3-CoT** (intake-125): Self-sampled activation steering for shorter CoT. No teacher model required.
 
 ### Tier 3 — Training required
-- **OPSDC** (intake-110): Self-distillation, 8x H200 for ~100 steps. Best results (57-59% compression + accuracy gains). Requires GPU access.
+- **OPSDC** (intake-110#04): Self-distillation, 8x H200 for ~100 steps. Best results (57-59% compression at accuracy parity to +3.3pp). Requires GPU access.
+  - **Corrected 2026-08-10** — the earlier "+ accuracy gains (9-16 points)" figure came from the v1 abstract and **the authors revised it away**. Current Table 2: Qwen3-8B MATH-500 95.7 → 95.7 (**+0.0**, 56.9% reduction); Qwen3-14B 93.0 → 96.3 (**+3.3**, 56.3%). Per the authors' own Appendix D the "+9-16" was the *base* model being mis-scored by a boxed-only grader. The **compression** result stands; treat accuracy as parity, not uplift. Source: `intake-110#record` `claim_corrections` claim_index 4.
 - **CoLaR** (intake-134): Latent-space reasoning compression. 53.3% chain reduction, 4.8% performance loss. Bypasses KV cache entirely. Longer-term.
 
 ## Open Questions
@@ -269,10 +270,10 @@ This is the most active research front discovered during the 2026-03-14 intake r
   - Relevance: Simplest possible self-distillation — temperature-sample own outputs, SFT on them. No verifier, teacher, or RL needed.
   - Key technique: Simple Self-Distillation (SSD) — resolves precision-exploration conflict by reshaping token distributions contextually
   - Reported results: Qwen3-30B 42.4% → 55.3% pass@1 on LiveCodeBench v6 (+12.9pp); generalizes across 4B-30B scale
-  - Delta from current approach: Our Tier 3 (OPSDC, intake-110) requires RL + reward model. SSD achieves meaningful gains with just SFT on self-generated data. The finding that self-generated data beats curated data challenges Doc-to-LoRA data curation assumptions.
+  - Delta from current approach: Our Tier 3 (OPSDC, intake-110#record) requires RL + reward model. SSD achieves meaningful gains with just SFT on self-generated data. The finding that self-generated data beats curated data challenges Doc-to-LoRA data curation assumptions.
 
 - **[intake-266] "A Survey of On-Policy Distillation for Large Language Models"** (arxiv:2604.00626)
-  - Relevance: First unified taxonomy of on-policy distillation — contextualizes OPSDC (intake-110) and SSD (intake-264) within f-divergence framework
+  - Relevance: First unified taxonomy of on-policy distillation — contextualizes OPSDC (intake-110#record) and SSD (intake-264) within f-divergence framework
   - Key technique: Three-axis OPD taxonomy (feedback signal × teacher access × loss granularity)
   - Delta from current approach: Explains why off-policy (static teacher data) causes exposure bias → compounding errors. Validates our Tier 3 direction but suggests teacher-free approaches (SSD) may be underweighted.
 
@@ -288,7 +289,7 @@ This is the most active research front discovered during the 2026-03-14 intake r
   - Relevance: Extends the OPSDC/SSD distillation line — combines self-distillation for token-level magnitude with RLVR for update direction
   - Key technique: RLSD separates environment-anchored update direction (RLVR/GRPO) from self-distilled update magnitude (token-level policy differences). Stop-gradient + clipping on teacher signal.
   - Reported results: Claims higher convergence ceiling and superior training stability vs pure RLVR or pure OPSD
-  - Delta from current approach: Extends our Tier 3 understanding (OPSDC, intake-110). Addresses the known OPSD instability (information leakage → progressive collapse) by limiting distillation to magnitude only. Still requires training infrastructure (8x GPU) — not actionable for inference-only stack.
+  - Delta from current approach: Extends our Tier 3 understanding (OPSDC, intake-110#record). Addresses the known OPSD instability (information leakage → progressive collapse) by limiting distillation to magnitude only. Still requires training infrastructure (8x GPU) — not actionable for inference-only stack.
   - Known limitations: OPSD component has structural information leakage risk even with clipping; GRPO's sequence-level credit assignment remains a bottleneck; hyperparameter sensitivity to clipping bounds not fully ablated.
   - Status: MONITOR ONLY — training method, same actionability caveat as intake-264/266.
 
@@ -469,7 +470,7 @@ Our Action 12-15 conciseness work and Action 9 reasoning-length-alarm operate at
   - Relevance: theoretical successor to the OPD survey already tracked here (intake-266). Unifies SFT, SeqKD, RKLD/MiniLLM, and JSD/GKD as a single token-level reweighted log-likelihood objective parameterized by the choice of weighting estimator. Proposes HPD: token-level fusion of FKL guidance on under-estimated expert tokens with RKL suppression on over-estimated student-sampled tokens via Schulman's negative-K1 estimator. No additional hyperparameters.
   - Key technique: gating sign of K1 estimator selects FKL vs RKL per token; uses both off-policy and lightweight on-policy samples; Reinforce-on-suppression redirects suppressed mass to expert tokens.
   - Reported results: Qwen2.5 7B→1.5B reasoning avg 39.83 (HPD off-policy) vs 36.61 (JSD), 32.67 (SFT), 35.55 (SeqKD); on-policy HPD+OPD 33.41 vs SFT+OPD 29.56 (+13% rel.); LLaMA3 8B→1B HPD+OPD +20% rel. Coding HumanEval+MBPP: HPD 66.35 avg (DS-Coder 6.7B→1.3B) vs SFT 61.45.
-  - Delta from current approach: relevant only if EPYC ever acquires training-capable GPUs (DGX Spark not yet acquired per memory) — strictly better default than SFT+OPD if/when the cloud-rental option opens. Until then, monitor as the canonical reference for the post-OPD-survey unification view; useful pedagogy when interpreting OPSDC (intake-110), Self-Distilled RLVR (intake-286), and Embarrassingly Simple Self-Distillation (intake-264).
+  - Delta from current approach: relevant only if EPYC ever acquires training-capable GPUs (DGX Spark not yet acquired per memory) — strictly better default than SFT+OPD if/when the cloud-rental option opens. Until then, monitor as the canonical reference for the post-OPD-survey unification view; useful pedagogy when interpreting OPSDC (intake-110#record), Self-Distilled RLVR (intake-286), and Embarrassingly Simple Self-Distillation (intake-264).
   - **Tier 2b — contradicting evidence found**: arxiv:2603.25562 ("Revisiting On-Policy Distillation: Empirical Failure Modes and Simple Fixes") + arxiv:2604.13016 ("Rethinking On-Policy Distillation") + Thinking Machines Lab analysis identify three OPD failure modes that HPD only partially addresses: (1) imbalanced one-token signal — sampled-token variant reduces matching to a single token, becomes unreliable as rollouts drift from teacher-common prefixes; (2) unreliable teacher guidance on student-generated prefixes — stronger teacher can fail to improve a student where weaker teacher succeeds; (3) tokenizer/special-token mismatch distortions. Self-distillation specifically can suppress alternative-hypothesis exploration, dropping OOD accuracy up to 40% — reinforces our existing intake-441 diversity-collapse stance. **Action**: do not assume HPD is a free win; if/when adopted, gate on OOD/diversity metrics, not just in-distribution reasoning benchmarks. Capacity-gap caveat applies — HPD's reported gains are at 7B→1.5B and may invert at larger gaps.
   - Verdict: `worth_investigating` — relevance medium (no immediate action without GPUs).
 
@@ -572,18 +573,18 @@ Full analysis at [`research/deep-dives/2026-05-21-recursive-reasoning-routing.md
 ### New Related Research (OPD reference set — training-side, no executable EPYC task today)
 
 - **[intake-639] "Unmasking On-Policy Distillation: Where It Helps, Where It Hurts, and Why"** (arxiv:2605.10889) — verdict: **worth_investigating**
-  - Relevance: Per-token gradient-alignment diagnostic for OPD. Complements intake-110 (OPSDC), intake-266 (OPD survey), intake-286 (HPD) by providing the "when does OPD help" answer the survey flagged as open.
+  - Relevance: Per-token gradient-alignment diagnostic for OPD. Complements intake-110#record (OPSDC), intake-266 (OPD survey), intake-286 (HPD) by providing the "when does OPD help" answer the survey flagged as open.
   - Key technique: Training-free diagnostic framework with token/question/teacher granularity; "ideal per-node gradient" derivation (maximizes student success probability); targeted-rollout algorithm.
   - Reported results: Qualitative — teacher gradients align with ideal more on incorrect-rollout tokens than correct ones; motivates asymmetric distillation guidance.
   - Delta from current approach: Diagnostic, not an objective. Requires per-token gradient access — inference-only stack does not provide. Cross-reference here as the canonical OPD when-to-apply diagnostic; revisit if/when cloud-GPU rental opens.
 
 - **[intake-641] "SDAR: Self-Distilled Agentic Reinforcement Learning"** (arxiv:2605.15155) — verdict: **not_applicable**
-  - Relevance: Sigmoid-gated auxiliary OPSD on top of GRPO for multi-turn agent RL. Same OPSD primitive as intake-110.
+  - Relevance: Sigmoid-gated auxiliary OPSD on top of GRPO for multi-turn agent RL. Same OPSD primitive as intake-110#record.
   - Reported results: +9.4% ALFWorld, +7.0% Search-QA, +10.2% WebShop-Acc over GRPO baseline (Qwen2.5/3).
   - Delta: Training-only; we have no in-house RL pipeline. Documented for future agent-training initiative.
 
 - **[intake-642] "TIP: Token Importance in On-Policy Distillation"** (arxiv:2604.14084) — verdict: **worth_investigating**
-  - Relevance: Same Sang/Xu/Zhou cluster as OPSDC (intake-110). Direct successor to the intake-266 OPD-survey caveat that flagged token-importance as the open frontier.
+  - Relevance: Same Sang/Xu/Zhou cluster as OPSDC (intake-110#record). Direct successor to the intake-266 OPD-survey caveat that flagged token-importance as the open frontier.
   - Key technique: Two-axis (entropy × teacher-student divergence) token taxonomy; parameter-free Soft-OR token scoring; top-K deterministic retention.
   - Reported results: Qwen3-8B→4B MATH-500 76.7% → 79.1% at 50% retention; up to 47% peak training-memory reduction.
   - Delta: Canonical post-OPSDC token-selection refinement. Gradient-time-only — cannot apply to inference stack. Note also for `research-evaluation-index.md`.

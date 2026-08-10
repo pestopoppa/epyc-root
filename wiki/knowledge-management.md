@@ -626,7 +626,7 @@ post-approval round, so the rest of the plan was authored without their findings
   uncorrected entry because a reader who checks the record is told the problem was handled. The
   generalizable rule: **verify a correction in the artifact it claims to change**, not in the prose
   that claims to have changed it. Sources: [research/intake_index.yaml](../research/intake_index.yaml)
-  intake-896 `dive_corrections`, [vidya-pilot-corpus.md](../docs/design/vidya-pilot-corpus.md) §4.
+  intake-896#record `dive_corrections`, [vidya-pilot-corpus.md](../docs/design/vidya-pilot-corpus.md) §4.
 
 - **A validator that checks key presence does not check anything.** Two defects of the same shape
   landed the same day: 538 entries carried duplicate `cross_references.intake_entries` keys (PyYAML

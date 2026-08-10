@@ -64,13 +64,14 @@ gate this program has already passed.
 ### Open work — start here
 
 Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC10`, `SC11`, `SC7`, `SC6-HAZARD`) and
-**Consumption** (`SC14`, `SC15`). Everything else is complete and lives in the completed sibling
+**Consumption** (`SC12-REMAIN`, `SC14`, `SC15`). Everything else is complete and lives in the completed sibling
 linked under Completed Scope.
 
 The write side is done and the read side now exists: `cli.py cite-check` gates citations,
-`cli.py corrections` ranks the adjudication backlog. The two open consumption items are the ones a
+`cli.py corrections` ranks the adjudication backlog. The open consumption items are the ones a
 machine must not do alone — `SC14` needs the session that owns `autopilot.py`, `SC15` needs a human
-reading dive text against claims.
+reading dive text against claims, and `SC12-REMAIN`'s two `intake-110#04` hits need a dive owner to
+amend the entry rather than a citation edit.
 
 ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?)
 
@@ -217,11 +218,22 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       is exactly `{dangling, overturned, conflicted}` — the three states a citer can act on today;
       `review` warns, per §10's auto-downgrade rule, because blocking on 571 review-required claims
       would fail most of the repository on the first run and get the tool switched off. Precise
-      citations (`intake-896#03`) gate one claim and are the escape hatch ✅ 2026-08-10
-- [x] SC12-FIND **The gate found real damage on its first run.** `handoffs/active/intake-derived-work-2026-07-25.md`
-      and `wiki/knowledge-management.md` both rest on intake-896, whose claim 03 a dive found
-      **fabricated by a Stage-1 summariser**; three documents rest on intake-110 claim 04, a
-      "+9–16 points" figure the authors themselves revised away upstream ✅ 2026-08-10
+      citations (`intake-NNN#03`) gate one claim and are the escape hatch ✅ 2026-08-10
+- [x] SC12-FIND **The gate found one real defect and three false positives, and the false positives
+      were the more useful finding.** Real: **three documents asserted intake-110#record's
+      "+9–16 points" accuracy uplift**, which the authors revised away upstream (their Appendix D —
+      the base model was mis-scored by a boxed-only grader; current Table 2 is +0.0 and +3.3pp at
+      ~56% compression). Corrected in `reasoning-compression.md` and `wiki/cost-aware-routing.md`.
+      **Not real:** the three intake-896#record hits were the documents that *recorded* the fabrication —
+      `intake-derived-work-2026-07-25.md` literally says the description "was invented and has been
+      struck". The gate could not tell *relying on* a claim from *discussing* the record, which is
+      50% of its headline finding, so `#record` was added ✅ 2026-08-10
+- [x] SC12-RECORD **`intake-NNN#record` — a reference that discusses the index record rather than
+      asserting its claims.** Non-blocking by construction, and deliberately still reports
+      `dangling`, because an entry that does not exist cannot be discussed either. The distinction is
+      the GATE's, not SC5's: `cited_ids` still counts a record reference as a dependency edge,
+      because "which pages name this entry" and "which pages rest on its claims" are different
+      questions and collapsing them would silently shrink the graph ✅ 2026-08-10
 - [x] SC13 **Correction adjudication queue** — `scripts/vidya/correction_queue.py`,
       `cli.py corrections`. The 103 `correction_reviewed` frames in the ledger came from a one-off
       backfill and **no code path emitted them**, so 571 claims were permanently BLOCKed for
@@ -239,11 +251,37 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       queue read claim ids from the correction's own assertion and missed `clm_intake_374_03`, which
       only matches after alias resolution — claim ids are now read back out of the fold ✅ 2026-08-10
 - [x] SC12-REGEX **Fixed a live defect in the shared citation scanner.** `citation_gate` reported a
-      dangling citation to `intake-2602`, an entry that does not exist. Source text:
-      `(intake-374/378/2602.11149 synthesis)` — the SC5 run-form pattern ate `/2602` out of an arXiv
+      dangling citation to entry 2602, which does not exist. Source text (hyphen removed here so
+      this line does not itself mint a citation): `(intake‑374/378/2602.11149 synthesis)` — the SC5
+      run-form pattern ate `/2602` out of an arXiv
       id. The first fix then let the engine backtrack into the partial number `260`; a `\b` anchor
       closes it. SC5's own numbers are unchanged (707 edges, 28 pages) — the bad citation was in a
       handoff, not a wiki page ✅ 2026-08-10
+- [x] SC12-FIX **Fixed the citations the gate flagged, and the grading defect underneath one.**
+      Documents: `reasoning-compression.md` and `wiki/cost-aware-routing.md` now state the revised
+      OPSDC figures (~56–59% compression at **+0.0 to +3.3pp**, not "+9–16 points"); the three
+      intake-896 hits and eight identifier-style cross-references became `#record`; two genuine
+      content citations became `intake-110#04`. Blocking citations **10 → 5**, and intake-896 is
+      fully clear ✅ 2026-08-10
+- [x] SC12-GRADE **A per-claim `overturned` was inheriting the entry's warrant.** intake-110 was the
+      only conflicted claim in 4,233 beliefs and the only entry carrying a per-claim overturn with
+      no entry-level `dive-overturned`: the override flipped the DIRECTION but kept `Hinted`, so a
+      dive-established refutation tied with the stage-1 support it refutes. `apply_claim_verdict()`
+      now raises an overturn to at least `Verified` (never touching T, never downgrading a stronger
+      entry-level verdict) and is called by **both** the emitter and the run report, which had
+      already drifted apart once. One frame re-ingested; `clm_intake_110_04` is now
+      `pro=Hinted/Located con=Verified/Located` ✅ 2026-08-10
+- [x] SC12-DATE **Re-stamped my own frame.** That ingest ran `--as-of 2026-08-11` on 2026-08-10.
+      Append-only means it could not be removed, so the same assertion was re-appended at the true
+      date and the future-dated frame retracted — a false `created_at` on a provenance frame is the
+      defect this program exists to catch. (The 895 other future-stamped frames are the earlier
+      session's known, documented, fold-neutral set; untouched) ✅ 2026-08-10
+- [ ] SC12-REMAIN **Five blocking citations left, none in the operator's 896/110 scope.** Three
+      overturned (`intake-991` in `autopilot-continuous-optimization.md`, `intake-922` in
+      `context-folding-progressive.md`, `intake-346` in `wiki/memory-augmented.md`) and two
+      `intake-110#04` that are **correct and self-clearing**: the entry's `key_claims` still records
+      the stage-1 text while its `claim_corrections` refutes it, which is the design. Resolving
+      those two means amending the entry — a dive-owner call, not a citation fix
 - [ ] SC14 **Planner read-side seam — the highest-value consumer, and not ours to wire.** AutoPilot's
       planner has independently reinvented much of this kernel: a mandatory falsifier, an append-only
       resolution ledger (confirmed/refuted/inconclusive), and `evidence_trial_ids: []` refused on a
@@ -258,7 +296,7 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       pins its SHA-256 and says so). Hand this to whoever owns that file
 - [ ] SC15 **Drain the queue.** 129 corrections, 81 cited by project documents, top ones cited 5–7
       times. Not startable by a summariser: each verdict needs the dive text read against the claim,
-      which is the exact failure intake-896 memorialises. Start with the cited head — `cli.py
+      which is the exact failure intake-896#record memorialises. Start with the cited head — `cli.py
       corrections` ranks it — and record `effect` per claim, never per entry
 
 ## Dependency notes

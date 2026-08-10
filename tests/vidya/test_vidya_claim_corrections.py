@@ -103,3 +103,55 @@ def test_prose_only_correction_still_blankets_the_entry():
 def test_records_are_indexed_by_claim():
     e = entry(claim_corrections=[{"claim_index": 2, "effect": "overturned", "note": "n"}])
     assert set(_claim_corrections(e)) == {2}
+
+
+# --- a per-claim overturn carries DIVE warrant, not the entry's ---------------------------
+
+def test_per_claim_overturn_is_graded_verified_even_without_an_entry_level_verdict():
+    """intake-110 claim 4: the only conflicted claim in 4,233 beliefs, and it was an artifact.
+
+    A `claim_corrections` record is written by a Stage-2 dive -- the same authority whose
+    entry-level form (`verification: dive-overturned`) maps to Verified opposition. Flipping only
+    the DIRECTION left the refutation at `Hinted`, tied with the stage-1 support it refutes, so the
+    fold reported settled history as a live disagreement.
+    """
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "vidya"))
+    from adapters.research_intake import apply_claim_verdict
+    from lattice import parse_grade
+
+    entry_level = parse_grade({"Q": "Hinted", "T": "Located"})
+    grade, opposes = apply_claim_verdict(entry_level, False, {"effect": "overturned"})
+    assert opposes is True
+    assert grade.q_name == "Verified"
+    assert grade.t_name == "Located", "a dive establishes warrant quality, not where the span is"
+
+
+def test_overturn_never_downgrades_a_stronger_entry_level_grade():
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "vidya"))
+    from adapters.research_intake import apply_claim_verdict
+    from lattice import parse_grade
+
+    grade, opposes = apply_claim_verdict(
+        parse_grade({"Q": "Witnessed", "T": "Attested"}), True, {"effect": "overturned"})
+    assert (grade.q_name, grade.t_name, opposes) == ("Witnessed", "Attested", True)
+
+
+def test_uncertain_keeps_the_entry_verdict_while_others_clear_opposition():
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "vidya"))
+    from adapters.research_intake import apply_claim_verdict
+    from lattice import parse_grade
+
+    g = parse_grade({"Q": "Verified", "T": "Located"})
+    assert apply_claim_verdict(g, True, {"effect": "uncertain"})[1] is True
+    for effect in ("unaffected", "narrowed", "reattributed"):
+        assert apply_claim_verdict(g, True, {"effect": effect})[1] is False, effect
+    assert apply_claim_verdict(g, True, None)[1] is True

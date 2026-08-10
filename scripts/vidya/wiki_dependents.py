@@ -37,10 +37,17 @@ REPO = Path(__file__).resolve().parents[2]
 WIKI = REPO / "wiki"
 INDEX = REPO / "research" / "intake_index.yaml"
 
+#: `intake-896#record` marks a reference that DISCUSSES the index record rather than relying on any
+#: of its claims -- a governance note about a fabricated citation, a corpus listing, a wiki lesson
+#: whose whole subject is the correction. Without this, the three documents that recorded the
+#: intake-896 strike were themselves reported as resting on the fabricated claim, which is both
+#: wrong and the fastest way to teach people to ignore the gate.
+RECORD_REF = -1
+
 # The `#NN` suffix is the PRECISE citation form (`intake-896#03` = claim 3 of that entry). It is
 # optional and rare today, and `citation_gate` exists partly to make it worth writing: an entry-level
 # citation inherits every defect of every claim in the entry, so precision is what buys a clean gate.
-_CITE = re.compile(r"\bintake-(\d+)(?:#(\d+))?\b")
+_CITE = re.compile(r"\bintake-(\d+)(?:#(\d+|record))?\b")
 # `intake-710/711` is one citation naming two entries. Reading only the first silently halves the
 # graph, which would understate staleness -- the direction that hides problems.
 #
@@ -68,6 +75,11 @@ def cited_refs(text: str) -> set[tuple[str, int | None]]:
     A claim index on the run form (`intake-710/711#02`) is ambiguous about which entry it indexes,
     so the run members are recorded at entry granularity and the index is dropped rather than
     guessed at.
+
+    `#record` yields `RECORD_REF`. That distinction belongs to the GATE, not to this graph:
+    `cited_ids` still counts a record reference as an edge, because SC5 asks "which pages name this
+    entry" while `citation_gate` asks "which pages rest on its claims". Two different questions, and
+    collapsing them would silently shrink the dependency graph.
     """
     refs: set[tuple[str, int | None]] = set()
     run_members: set[str] = set()
@@ -78,7 +90,14 @@ def cited_refs(text: str) -> set[tuple[str, int | None]]:
         num = str(int(m.group(1)))
         if num in {str(int(n)) for n in run_members}:
             continue
-        refs.add((num, int(m.group(2)) if m.group(2) else None))
+        suffix = m.group(2)
+        if suffix is None:
+            ref = None
+        elif suffix == "record":
+            ref = RECORD_REF
+        else:
+            ref = int(suffix)
+        refs.add((num, ref))
     refs.update((str(int(n)), None) for n in run_members if n)
     return refs
 

@@ -42,7 +42,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fold import FoldResult  # noqa: E402
 from gate import Outcome, UsePolicy, evaluate  # noqa: E402
 from lattice import parse_grade  # noqa: E402
-from wiki_dependents import cited_refs, live_entry_ids, merge_redirects, resolve  # noqa: E402
+from wiki_dependents import (  # noqa: E402
+    RECORD_REF, cited_refs, live_entry_ids, merge_redirects, resolve,
+)
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -54,8 +56,9 @@ DEFAULT_PATHS = ("handoffs/active", "handoffs/blocked", "wiki", "docs")
 _CLAIM_ID = re.compile(r"^clm_intake_(\d+)_(\d+)$")
 
 # Ordered worst-first. `dangling` outranks `overturned` because a citation that resolves to nothing
-# cannot even be argued about.
-SEVERITY = ("dangling", "overturned", "conflicted", "review", "weak", "unknown", "ok")
+# cannot even be argued about. `record` sits with `ok`: it is a deliberate, verified statement that
+# the document does not rely on the entry's claims.
+SEVERITY = ("dangling", "overturned", "conflicted", "review", "weak", "unknown", "ok", "record")
 
 #: Statuses that make the gate exit non-zero. See the module docstring for why `review` is not here.
 BLOCKING = frozenset({"dangling", "overturned", "conflicted"})
@@ -123,12 +126,26 @@ def check_text(
 
     verdicts: list[CitationVerdict] = []
     for num, claim_index in sorted(cited_refs(text), key=lambda r: (int(r[0]), r[1] or -1)):
-        label = num if claim_index is None else f"{num}#{claim_index:02d}"
+        if claim_index is None:
+            label = num
+        elif claim_index == RECORD_REF:
+            label = f"{num}#record"
+        else:
+            label = f"{num}#{claim_index:02d}"
         resolved, how = resolve(num, redirects, live)
         if resolved is None:
             verdicts.append(CitationVerdict(
                 path=path, entry=label, resolved=None, how=how, status="dangling",
                 notes=["cited entry resolves to no live index entry, and to no merge survivor"]))
+            continue
+
+        if claim_index == RECORD_REF:
+            # Deliberately not graded. The author has asserted this reference is about the record,
+            # and a dangling `#record` is still reported above -- an entry that does not exist
+            # cannot be discussed either.
+            verdicts.append(CitationVerdict(
+                path=path, entry=label, resolved=resolved, how=how, status="record",
+                notes=["reference discusses the index record, not its claims"]))
             continue
 
         candidates = by_entry.get(resolved, [])
@@ -266,7 +283,8 @@ def main(argv=None) -> int:
             for a in row["next_actions"][:2]:
                 print(f"        next:   {a}")
 
-    advisory = [v for v in verdicts if v.status not in BLOCKING and v.status != "ok"]
+    advisory = [v for v in verdicts
+                if v.status not in BLOCKING and v.status not in ("ok", "record")]
     if advisory and not args.all:
         print(f"  --- {len(advisory)} advisory (not blocking); --all for detail ---")
         for v in advisory[:12]:

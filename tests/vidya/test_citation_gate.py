@@ -170,3 +170,27 @@ def test_citation_forms_are_all_gated(text, expected):
     frames = build("110", {0: ("Hinted", "Located", False)})
     frames += build("896", {0: ("Hinted", "Located", False)})
     assert len(gate_text(text, frames)) == expected
+
+
+# --- #record: discussing an entry is not relying on it -------------------------------------
+
+def test_record_reference_is_not_graded_and_never_blocks():
+    """The 3 documents that RECORDED the intake-896 fabrication were reported as resting on it."""
+    frames = build("896", {0: ("Hinted", "Located", False), 3: ("Verified", "Located", True)})
+    (v,) = gate_text("the description was struck from intake-896#record", frames)
+    assert v.status == "record"
+    assert v.status not in cg.BLOCKING
+    assert v.claims == []
+
+
+def test_a_record_reference_to_a_nonexistent_entry_is_still_dangling():
+    """An entry that does not exist cannot be discussed either."""
+    (v,) = gate_text("see intake-2602#record", build("110", {0: ("Hinted", "Located", False)}))
+    assert v.status == "dangling"
+
+
+def test_record_and_precise_forms_coexist_in_one_document():
+    frames = build("896", {0: ("Hinted", "Located", False), 3: ("Verified", "Located", True)})
+    got = {v.entry: v.status for v in
+           gate_text("intake-896#record explains why intake-896#03 was struck", frames)}
+    assert got == {"896#record": "record", "896#03": "overturned"}

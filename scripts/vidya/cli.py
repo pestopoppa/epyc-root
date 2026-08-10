@@ -517,7 +517,7 @@ def cmd_cite_check(args) -> int:
         "  " + "  ".join(f"{k}={v}" for k, v in summary["by_status"].items() if v),
     ]
     for v in verdicts:
-        if v.status in ("ok",):
+        if v.status in ("ok", "record"):
             continue
         human.append(f"  [{v.status}] intake-{v.entry}  {v.path}")
     _emit({"summary": summary, "verdicts": [v.as_dict() for v in verdicts]}, args.json,

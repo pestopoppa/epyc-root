@@ -104,7 +104,7 @@ supersession of a superseding claim without erasing either.
 ## 4. E3 — Fabricated citations (2026-07-25) — including one that was still wrong at HEAD
 
 **Record:** progress `2026-07-25.md:53-58, :90-96, :269-273` · `intake-derived-work-2026-07-25.md:81`
-(ID-10b) · `research/intake_index.yaml` intake-888 / intake-895 / intake-896 · commit `c942728e`
+(ID-10b) · `research/intake_index.yaml` intake-888#record / intake-895#record / intake-896#record · commit `c942728e`
 
 **What happened.** Two Stage-1 summariser agents invented specifics that were persisted to the index
 and read as evidence. One was an ablation table that does not exist in its paper — and which had

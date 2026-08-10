@@ -35,7 +35,7 @@ import yaml  # noqa: E402
 
 from claim_tuple import register_ladder  # noqa: E402
 from frames import make_frame  # noqa: E402
-from lattice import Grade, parse_grade  # noqa: E402
+from lattice import Grade, Q_LEVELS, parse_grade  # noqa: E402
 
 __all__ = ["ingest_intake_index", "grade_for_entry", "ADAPTER_ID"]
 
@@ -173,6 +173,36 @@ def _dedup_key(frame: dict) -> str:
 CORRECTION_EFFECTS = ("overturned", "narrowed", "reattributed", "unaffected", "uncertain")
 
 
+def apply_claim_verdict(grade: Grade, is_opposition: bool, per_claim: dict | None
+                        ) -> tuple[Grade, bool]:
+    """Fold a per-claim `claim_corrections` verdict into the entry-level grade.
+
+    **A per-claim `overturned` is dive-established, so it carries dive warrant.** The entry-level
+    path already knows this: `verification: dive-overturned` maps to *Verified* opposition. The
+    per-claim path used to flip only the DIRECTION and inherit the entry's Q, so on an entry with no
+    entry-level verdict a refutation was recorded at `Hinted` — the same grade as the stage-1 support
+    it refutes — and the fold reported the claim `conflicted` rather than overturned.
+
+    intake-110 claim 4 was the live instance and the only conflicted claim in 4,233 beliefs: it is
+    the only entry in the corpus carrying a per-claim overturn without an entry-level one. The
+    substance is not in dispute — the authors revised the "+9-16 points" figure away themselves — so
+    "conflicted" was the adapter mis-recording settled history as a live disagreement.
+
+    Used by BOTH the emitter and the run report, because those two drifted apart once before (the
+    report claimed 112 opposition while the adapter emitted 106).
+    """
+    if not per_claim:
+        return grade, is_opposition
+    effect = per_claim.get("effect")
+    if effect == "overturned":
+        # max on the ORDINAL: never downgrade an entry-level dive-overturned, and never move T --
+        # a dive establishes warrant quality, not where the span is.
+        return Grade(q=max(Q_LEVELS.index("Verified"), grade.q), t=grade.t), True
+    if effect == "uncertain":
+        return grade, is_opposition      # a reader could not tell: keep the entry-level verdict
+    return grade, False                  # unaffected / narrowed / reattributed: review, not refutation
+
+
 def _claim_corrections(entry: dict) -> dict[int, dict]:
     """Per-claim correction verdicts, indexed by claim. Empty when the dive recorded none."""
     out: dict[int, dict] = {}
@@ -227,17 +257,7 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
         # EVERY claim of the entry -- measured 2026-08-10 as 114 claims across 27 entries, most of
         # which no dive ever disputed. intake-896 is the case that motivated it: four claims, one
         # fabricated, all four opposed.
-        per_claim = claim_verdicts.get(i)
-        if per_claim:
-            effect = per_claim.get("effect")
-            if effect == "unaffected":
-                is_opposition = False
-            elif effect == "overturned":
-                is_opposition = True
-            elif effect == "uncertain":
-                pass                    # a reader could not tell: keep the entry-level verdict
-            else:
-                is_opposition = False   # narrowed / reattributed: review, not refutation
+        grade, is_opposition = apply_claim_verdict(grade, is_opposition, claim_verdicts.get(i))
         out.append(
             make_frame(
                 frame_type=FT_CLAIM,
@@ -437,13 +457,12 @@ def ingest_intake_index(
                 continue
             n_claims += 1
             grade, is_opposition = grade_for_entry(entry, anchors.get(i))
-            # Apply the same per-claim override the frame emitter uses. Without it the report said
-            # 112 opposition while the adapter actually emitted 106 — a summary misstating the run
-            # it summarizes, which is this program's own subject matter showing up in its own
-            # reporting path.
-            _verdict = (_claim_corrections(entry) or {}).get(i)
-            if _verdict:
-                is_opposition = _verdict.get("effect") == "overturned"
+            # The SAME helper the frame emitter uses, not a second reading of it. These two drifted
+            # before — the report said 112 opposition while the adapter emitted 106, a summary
+            # misstating the run it summarizes, which is this program's own subject matter showing
+            # up in its own reporting path.
+            grade, is_opposition = apply_claim_verdict(
+                grade, is_opposition, (_claim_corrections(entry) or {}).get(i))
             grade_counts[f"{grade}{' (opposition)' if is_opposition else ''}"] += 1
         claims_total += n_claims
         verification_counts[entry.get("verification", "<unset>")] += 1
