@@ -66732,73 +66732,80 @@
     - intake-668
     - intake-673
   recommended_actions:
-  - 'Add a reference-free PROPERTY LAYER to test-backend-ops as a third gate alongside NaN/inf and NMSE
-    (a virtual check_properties on test_case defaulting to true, plus per-op overrides), seeded with SOLVE_TRI
-    (residual), ARGSORT/TOP_K (permutation histogram), SOFT_MAX (sum-to-1 + shift-invariance) and RMS_NORM/L2_NORM
-    (unit norm + scale-invariance). Owner: rocm-verify-profile-backend.md row C2 and the open checkbox
-    "Harden oracle + integrity (C2 + C6)". Tier SCREEN — a property failure is a hard stop; a property
-    pass is NOT a claim of correctness. Needs no MI210 time and no torch-ROCm, so it is not gated on the
-    C1/bring-up chain; runs on the experimental branch only, production 67a433bf4 untouched. ~150-250
-    LoC, LOW-to-MED.'
-  - 'Add METAMORPHIC INVARIANTS as a second reference-free axis — scale-invariance (RMS_NORM), shift-invariance
-    (SOFT_MAX), causality (FLASH_ATTN_EXT), round-trip (ROPE/rope_back), chunk-size self-consistency (SSM_SCAN
-    / GDN). Each is "run the op twice with a transformed input and require the documented relation", reusing
-    the existing harness. Owner: rocm-verify-profile-backend.md row C2. LOW cost.'
-  - 'Add a SECOND, HOSTILE input distribution at IDENTICAL shapes (rank-deficient, near-zero-variance
-    rows, saturated activations, all-masked attention rows, denormals) and require every runtime-gated
-    lever to pass under it. Today our correctness inputs and benchmark inputs come from the same generator.
-    Owner: rocm-verify-profile-backend.md rows C2/C6; cross-ref mi210-speed-campaign-summary.md (the test-backend-ops
-    gate cited for every landed lever). LOW cost; directly targets the submission_063 exploit class, which
-    our shape-gated levers structurally share.'
-  - 'Assert the CHECKER''S OWN PRECISION is not the op''s precision — property and reference paths must
-    not run through -fa / MFMA-f16 / FORCE_MMQ. Owner: rocm-verify-profile-backend.md row C2. Tier VERIFY
-    (a checker that validates itself corrupts claims, not just screens). LOW effort, high leverage.'
-  - 'Assert ENGAGEMENT of runtime-gated kernel paths, not merely absence of failure — the submission_063
-    failure (validation whitelists a (batch, n) key after the first call, so later calls are never checked)
-    has a direct analogue in our default-off levers (GGML_CUDA_Q8_PREFETCH, GGML_CUDA_GDN_STATE_BF16),
-    which engage only for certain shapes; a lever that never fires must not report PASS. Owner: mi210-speed-campaign-summary.md
-    (owns the gated levers) + rocm-verify-profile-backend.md row C6. Extends the ARGSORT silent-skip lesson
-    at multimodal-pipeline.md:298.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Add a reference-free PROPERTY LAYER to test-backend-ops
+    as a third gate alongside NaN/inf and NMSE (a virtual check_properties on test_case defaulting to
+    true, plus per-op overrides), seeded with SOLVE_TRI (residual), ARGSORT/TOP_K (permutation histogram),
+    SOFT_MAX (sum-to-1 + shift-invariance) and RMS_NORM/L2_NORM (unit norm + scale-invariance). Owner:
+    rocm-verify-profile-backend.md row C2 and the open checkbox "Harden oracle + integrity (C2 + C6)".
+    Tier SCREEN — a property failure is a hard stop; a property pass is NOT a claim of correctness. Needs
+    no MI210 time and no torch-ROCm, so it is not gated on the C1/bring-up chain; runs on the experimental
+    branch only, production 67a433bf4 untouched. ~150-250 LoC, LOW-to-MED.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Add METAMORPHIC INVARIANTS as a second reference-free
+    axis — scale-invariance (RMS_NORM), shift-invariance (SOFT_MAX), causality (FLASH_ATTN_EXT), round-trip
+    (ROPE/rope_back), chunk-size self-consistency (SSM_SCAN / GDN). Each is "run the op twice with a transformed
+    input and require the documented relation", reusing the existing harness. Owner: rocm-verify-profile-backend.md
+    row C2. LOW cost.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Add a SECOND, HOSTILE input distribution at IDENTICAL
+    shapes (rank-deficient, near-zero-variance rows, saturated activations, all-masked attention rows,
+    denormals) and require every runtime-gated lever to pass under it. Today our correctness inputs and
+    benchmark inputs come from the same generator. Owner: rocm-verify-profile-backend.md rows C2/C6; cross-ref
+    mi210-speed-campaign-summary.md (the test-backend-ops gate cited for every landed lever). LOW cost;
+    directly targets the submission_063 exploit class, which our shape-gated levers structurally share.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Assert the CHECKER''S OWN PRECISION is not the
+    op''s precision — property and reference paths must not run through -fa / MFMA-f16 / FORCE_MMQ. Owner:
+    rocm-verify-profile-backend.md row C2. Tier VERIFY (a checker that validates itself corrupts claims,
+    not just screens). LOW effort, high leverage.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Assert ENGAGEMENT of runtime-gated kernel paths,
+    not merely absence of failure — the submission_063 failure (validation whitelists a (batch, n) key
+    after the first call, so later calls are never checked) has a direct analogue in our default-off levers
+    (GGML_CUDA_Q8_PREFETCH, GGML_CUDA_GDN_STATE_BF16), which engage only for certain shapes; a lever that
+    never fires must not report PASS. Owner: mi210-speed-campaign-summary.md (owns the gated levers) +
+    rocm-verify-profile-backend.md row C6. Extends the ARGSORT silent-skip lesson at multimodal-pipeline.md:298.'
   - 'Keep PROVENANCE / ANTI-SUBSTITUTION detection in a SEPARATE component from the correctness oracle
     — populate integrity_flags, never correct. Owner: rocm-verify-profile-backend.md "Interface contract".
     Upstream built the merged version and reverted it in 30 minutes, so adopt their conclusion and skip
     the experiment — but inherit the PLACEMENT, not the REMOVAL: their stated reason (top-10 users are
     trusted) is a social control that does not exist for an autonomous loop whose candidate authors are
     agents.'
-  - 'Add a BACKEND-PROVENANCE assertion at the evaluate() seam — assert which backend actually executed
-    each node (ggml_backend_sched assignment) rather than trusting the kernel not to have silently fallen
-    back to the CPU or to rocBLAS. The C++ analogue of upstream''s deleted _route gate. Owner: rocm-verify-profile-backend.md
-    row C6 + "Interface contract" (integrity_flags). MED cost.'
-  - 'Record the LICENCE DIVERGENCE as a governance FACT: this repo is not Apache-2.0/MIT, and verbatim
-    reuse would carry an Attachment A pass-through obligation. It is not a blocker under standing policy;
-    the operative reason to re-implement in C++ is technical (torch/CUDA, no torch-ROCm, C++ ggml unit
-    under test). Owner: rocm-verify-profile-backend.md, the source-pin/licence paragraph in "Current sequence"
-    (which already tracks GEAK-eval''s unresolved licence).'
-  - Cross-link the TWO TF32 FAILURE MODES — intake-1085 (TF32 in the BASELINE inflates speedups) versus
-    here (TF32 in the CHECKER inflates apparent correctness) — as two different failure modes of the same
-    knob, with no cross-citation in either direction. Add the checker-side mode to the C3 honest-baseline
-    note and derive the gfx90a equivalent knob on our own card.
+  - 'PROPOSAL (dive-derived, operator-review candidate): Add a BACKEND-PROVENANCE assertion at the evaluate()
+    seam — assert which backend actually executed each node (ggml_backend_sched assignment) rather than
+    trusting the kernel not to have silently fallen back to the CPU or to rocBLAS. The C++ analogue of
+    upstream''s deleted _route gate. Owner: rocm-verify-profile-backend.md row C6 + "Interface contract"
+    (integrity_flags). MED cost.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Record the LICENCE DIVERGENCE as a governance
+    FACT: this repo is not Apache-2.0/MIT, and verbatim reuse would carry an Attachment A pass-through
+    obligation. It is not a blocker under standing policy; the operative reason to re-implement in C++
+    is technical (torch/CUDA, no torch-ROCm, C++ ggml unit under test). Owner: rocm-verify-profile-backend.md,
+    the source-pin/licence paragraph in "Current sequence" (which already tracks GEAK-eval''s unresolved
+    licence).'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Cross-link the TWO TF32 FAILURE MODES — intake-1085
+    (TF32 in the BASELINE inflates speedups) versus here (TF32 in the CHECKER inflates apparent correctness)
+    — as two different failure modes of the same knob, with no cross-citation in either direction. Add
+    the checker-side mode to the C3 honest-baseline note and derive the gfx90a equivalent knob on our
+    own card.'
   - 'Correct intake-1075 with: byte-verified verbatim copy (one trailing newline), the deleted provenance
     layer, the three sibling linalg oracles, the upstream licence, the "rank-48 is emergent from SAMPLES
     = 48" attribution, and the two-checkers/two-norms correction to any text describing Layer 1 as "Frobenius
     residual with size-scaled tolerance". Index-only; needs operator approval per CLAUDE.md ("No intake
     entries… via sub-agents without explicit user approval").'
-  - 'Belief-kernel wiring: DECLINE for the source itself — a problem-definition repo produces no measurements
-    of ours and there is no ClaimTuple to project. FILE IT NOW for the property layer, which WILL produce
-    measurements (per-op property residuals per backend per shape): add the row to scripts/vidya/adapters/README.md
-    and the task to vidya-belief-substrate-program.md when C2-P1 is implemented, per CLAUDE.md — the write
-    side is cheap and the read side cannot be retrofitted.'
-  - DECLINE — do NOT port upstream's timing protocol. warmup=3 / repeats=5 / median is materially weaker
-    than our canonical taskset/OMP stack with a pre-run throttle check; adopting it would be a regression.
-    Also decline the speedup >= 1.0 pass clause, which fuses correctness and speed into one boolean.
-  - DECLINE — do NOT copy upstream code into our tree. It is not runnable here (torch, CUDA-gated, B200-targeted);
-    re-implement the idiom in C++. The Attachment A reciprocity condition is recorded as a fact alongside
-    the technical reason, not as the reason.
-  - DECLINE (batch-level, shared with intake-1090) — do NOT vendor the 4.66 GB linalg_submissions.parquet
-    corpus from GPUMODE/kernelbot-data. Mine the exploit TAXONOMY only (harness frame-hacking, pointer-keyed
-    memoization, structured-input short-circuit); the corpus is NVIDIA/B200-targeted Python with zero
-    executable value on gfx90a and violates "import the minimum from upstream; gitignore heavy data".
-    Recorded so it is not re-derived.
+  - 'PROPOSAL (dive-derived, operator-review candidate): Belief-kernel wiring: DECLINE for the source
+    itself — a problem-definition repo produces no measurements of ours and there is no ClaimTuple to
+    project. FILE IT NOW for the property layer, which WILL produce measurements (per-op property residuals
+    per backend per shape): add the row to scripts/vidya/adapters/README.md and the task to vidya-belief-substrate-program.md
+    when C2-P1 is implemented, per CLAUDE.md — the write side is cheap and the read side cannot be retrofitted.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE — do NOT port upstream''s timing protocol.
+    warmup=3 / repeats=5 / median is materially weaker than our canonical taskset/OMP stack with a pre-run
+    throttle check; adopting it would be a regression. Also decline the speedup >= 1.0 pass clause, which
+    fuses correctness and speed into one boolean.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE — do NOT copy upstream code into our
+    tree. It is not runnable here (torch, CUDA-gated, B200-targeted); re-implement the idiom in C++. The
+    Attachment A reciprocity condition is recorded as a fact alongside the technical reason, not as the
+    reason.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE (batch-level, shared with intake-1090)
+    — do NOT vendor the 4.66 GB linalg_submissions.parquet corpus from GPUMODE/kernelbot-data. Mine the
+    exploit TAXONOMY only (harness frame-hacking, pointer-keyed memoization, structured-input short-circuit);
+    the corpus is NVIDIA/B200-targeted Python with zero executable value on gfx90a and violates "import
+    the minimum from upstream; gitignore heavy data". Recorded so it is not re-derived.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. Authored from two recovered
     passes over the SAME source: rec0977_10 (the later, fuller pass, authoritative on every conflict)
@@ -67137,45 +67144,49 @@
     - intake-1085
     - intake-673
   recommended_actions:
-  - 'DECLINE VENDORING THE DATASET — do not download linalg_submissions.parquet. 4.66 GB (2.2× the briefed
-    size) of B200 CUDA Python with zero executable value on gfx90a; it violates "import the minimum from
-    upstream; gitignore heavy data". The value is the TAXONOMY, and the taxonomy is now extracted into
-    this entry at no storage cost. Owner: rocm-verify-profile-backend.md row C6. Recorded so it is not
-    re-derived.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE VENDORING THE DATASET — do not download
+    linalg_submissions.parquet. 4.66 GB (2.2× the briefed size) of B200 CUDA Python with zero executable
+    value on gfx90a; it violates "import the minimum from upstream; gitignore heavy data". The value is
+    the TAXONOMY, and the taxonomy is now extracted into this entry at no storage cost. Owner: rocm-verify-profile-backend.md
+    row C6. Recorded so it is not re-derived.'
   - 'Add a T1 OUTPUT-INVARIANCE CHECK ACROSS REPETITIONS — hash the candidate output per rep in llama-bench
     and fail on rep-to-rep divergence AND on suspiciously-free reps 2..N. This closes the one CONFIRMED
     LIVE Class-B hole: T1 has no correctness recheck across repetitions. Owner: rocm-verify-profile-backend.md
     §C6 / autokernel-research-loop.md §5.4 Evaluation plane. LOW cost.'
-  - 'ROTATE INPUT BUFFER ADDRESSES BETWEEN TIMED REPETITIONS (reallocate or offset) so data_ptr-keyed
-    caches miss. Strictly STRONGER than upstream''s recheck, which this dive shows is incomplete — address
-    rotation defeats memoization keyed on the pointer rather than on the contents. Owner: same as the
-    T1 recheck. LOW cost.'
-  - 'Add an ADVERSARIAL OP-SUITE PROFILE — widen the [0.9,1.1] / [-0.9,1.1] / [50,100] init bands and
-    add heterogeneous per-case ranges, with re-derived tolerances. Note that the narrow bands exist for
-    real numerical reasons, so this is a SECOND profile, not a replacement. Owner: rocm-verify-profile-backend.md
-    §C6, T0 op-suite (t0_provider.py OpSuitePlan). MED cost, Class C.'
-  - 'Adopt "ANTI-SHORT-CIRCUIT CASES GO IN THE RANKED SET, NOT JUST THE GATE" as a C6 design rule, citing
-    leaderboards.parquet row 774 — heterogeneous `mixed` batches belong in the benchmark set so the accurate
-    path''s runtime cost on hard inputs is priced rather than merely gated. The single most liftable idea
-    in the source; we have no analogue. Owner: rocm-verify-profile-backend.md §C6. MED cost.'
-  - 'Build the two UNBUILT DETECTORS behind AntiRewardHackingEvidence (timing_dependent_branch_findings,
-    environment_probe_findings) and, until they exist, make an empty list read as UNKNOWN rather than
-    PASS — t0_provider.py:305-319 records empty tuples from detectors that were never built, which is
-    exactly the fail_open_defaults_conceal_their_own_corruption pattern, and Classes B and C are precisely
-    what those detectors would catch. Owner: autokernel-research-loop.md §threat table :1836.'
-  - 'Record the `hacked`-versus-`failed` STATUS DISTINCTION in the AutoKernel journal schema — an integrity
-    rejection is not a correctness failure. Cheap, and integrity_flags already exists as the carrier.
-    Owner: autokernel-research-loop.md §5.4 / rocm-verify-profile-backend.md:43 integrity_flags.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): ROTATE INPUT BUFFER ADDRESSES BETWEEN TIMED REPETITIONS
+    (reallocate or offset) so data_ptr-keyed caches miss. Strictly STRONGER than upstream''s recheck,
+    which this dive shows is incomplete — address rotation defeats memoization keyed on the pointer rather
+    than on the contents. Owner: same as the T1 recheck. LOW cost.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Add an ADVERSARIAL OP-SUITE PROFILE — widen the
+    [0.9,1.1] / [-0.9,1.1] / [50,100] init bands and add heterogeneous per-case ranges, with re-derived
+    tolerances. Note that the narrow bands exist for real numerical reasons, so this is a SECOND profile,
+    not a replacement. Owner: rocm-verify-profile-backend.md §C6, T0 op-suite (t0_provider.py OpSuitePlan).
+    MED cost, Class C.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Adopt "ANTI-SHORT-CIRCUIT CASES GO IN THE RANKED
+    SET, NOT JUST THE GATE" as a C6 design rule, citing leaderboards.parquet row 774 — heterogeneous `mixed`
+    batches belong in the benchmark set so the accurate path''s runtime cost on hard inputs is priced
+    rather than merely gated. The single most liftable idea in the source; we have no analogue. Owner:
+    rocm-verify-profile-backend.md §C6. MED cost.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Build the two UNBUILT DETECTORS behind AntiRewardHackingEvidence
+    (timing_dependent_branch_findings, environment_probe_findings) and, until they exist, make an empty
+    list read as UNKNOWN rather than PASS — t0_provider.py:305-319 records empty tuples from detectors
+    that were never built, which is exactly the fail_open_defaults_conceal_their_own_corruption pattern,
+    and Classes B and C are precisely what those detectors would catch. Owner: autokernel-research-loop.md
+    §threat table :1836.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Record the `hacked`-versus-`failed` STATUS DISTINCTION
+    in the AutoKernel journal schema — an integrity rejection is not a correctness failure. Cheap, and
+    integrity_flags already exists as the carrier. Owner: autokernel-research-loop.md §5.4 / rocm-verify-profile-backend.md:43
+    integrity_flags.'
   - Upgrade intake-1075's output-caching claim from "NOT located in the repo artifacts (provisional)"
     to CORROBORATED-IN-CLASS, citing the qr_v2/eval.py recheck comment — a different primary source on
     the sibling leaderboard. Index-only; index edits need operator approval per CLAUDE.md.
-  - 'BELIEF-KERNEL WIRING: DECLINE — this source produces no measurements of ours. Third-party leaderboard
-    scores on B200 are not an EPYC measurement source and there is no ClaimTuple to project, so no adapter
-    row is warranted in scripts/vidya/adapters/README.md.'
-  - DECLINE the corpus as EXECUTABLE red-team fixtures, and the 774/775/776 kernels and their FP32 batched-linalg
-    problem shapes as portable work — nothing in them runs against ggml/HIP, and sys._getframe / calculate_stats
-    patching does not transfer as a literal fixture. Only the taxonomy and the countermeasure design patterns
-    are adopted.
+  - 'PROPOSAL (dive-derived, operator-review candidate): BELIEF-KERNEL WIRING: DECLINE — this source produces
+    no measurements of ours. Third-party leaderboard scores on B200 are not an EPYC measurement source
+    and there is no ClaimTuple to project, so no adapter row is warranted in scripts/vidya/adapters/README.md.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE the corpus as EXECUTABLE red-team fixtures,
+    and the 774/775/776 kernels and their FP32 batched-linalg problem shapes as portable work — nothing
+    in them runs against ggml/HIP, and sys._getframe / calculate_stats patching does not transfer as a
+    literal fixture. Only the taxonomy and the countermeasure design patterns are adopted.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. COMPANION PAPER NOT READ
     THIS PASS: OpenReview bq9U4dmuyJ (ICML25 CODEML workshop) — it backs the +2 venue term in the credibility
@@ -67442,35 +67453,40 @@
     tools/llama-bench/*, and the ggml timing/synchronize call sites) against the anchor tree and fail
     the candidate hard on any diff, exactly as autokernel-research-loop.md §8.5.1 already does for symbol/registration
     tables. Owner: autokernel-research-loop.md §8.5.1 + a new §12 row. Highest-value item in this report.'
-  - 'A-2 — Add INSTRUMENT_TAMPERED to the §12 failure/abuse table. Owner: autokernel-research-loop.md
-    §12.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-2 — Add INSTRUMENT_TAMPERED to the §12 failure/abuse
+    table. Owner: autokernel-research-loop.md §12.'
   - 'A-3 — Hybrid A/B device-sync timing check (time the candidate once normally and once with a full
     hipDeviceSynchronize() before the stop timestamp; large divergence is an integrity flag, not a measurement)
     plus a stream-creation / non-current-stream-launch audit in the source-integrity gate. Owner: rocm-verify-profile-backend.md
     C3 and C6.'
-  - 'A-4 — Thread/async-escape delta check: record thread count and outstanding-async-op count across
-    the timed region; a delta is an integrity flag. Owner: rocm-verify-profile-backend.md C6.'
-  - 'A-5 — Lift validate_tensor (5 checks) and verify_no_monkey_patch verbatim from the Ornith blog into
-    the Triton/torch-ROCm arm (~20 lines each, dependency-free). Owner: rocm-verify-profile-backend.md
-    C2 + C6.'
-  - 'A-6 — Add a timing-attack negative (a correct kernel on a private stream) and an instrument-tamper
-    negative (a correct kernel plus a one-line timer edit) to the fixed control set; without these, A-1/A-3
-    have nothing that proves they work. Owner: autokernel-research-loop.md §15.2.'
-  - 'A-7 — Adopt the three-class boundary (timing / semantic / benign) as C6''s top-level integrity_flags
-    namespace; feeds autokernel-research-loop.md §7.4 integrity_flags. Owner: rocm-verify-profile-backend.md
-    C6.'
-  - 'A-8 — Record precision-downgrade as a stated residual risk with an FPR budget, not a solved class.
-    Owner: rocm-verify-profile-backend.md C6 monitor design (existing FPR-budget bullet).'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-4 — Thread/async-escape delta check: record
+    thread count and outstanding-async-op count across the timed region; a delta is an integrity flag.
+    Owner: rocm-verify-profile-backend.md C6.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-5 — Lift validate_tensor (5 checks) and verify_no_monkey_patch
+    verbatim from the Ornith blog into the Triton/torch-ROCm arm (~20 lines each, dependency-free). Owner:
+    rocm-verify-profile-backend.md C2 + C6.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-6 — Add a timing-attack negative (a correct
+    kernel on a private stream) and an instrument-tamper negative (a correct kernel plus a one-line timer
+    edit) to the fixed control set; without these, A-1/A-3 have nothing that proves they work. Owner:
+    autokernel-research-loop.md §15.2.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-7 — Adopt the three-class boundary (timing
+    / semantic / benign) as C6''s top-level integrity_flags namespace; feeds autokernel-research-loop.md
+    §7.4 integrity_flags. Owner: rocm-verify-profile-backend.md C6.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-8 — Record precision-downgrade as a stated
+    residual risk with an FPR budget, not a solved class. Owner: rocm-verify-profile-backend.md C6 monitor
+    design (existing FPR-budget bullet).'
   - A-9 — File the companion Ornith/DeepReinforce blog as its own intake entry (the report drafted it
     under the working id intake-1091, which this entry now occupies; the companion needs its own id).
     Requires operator approval — no intake entries via sub-agents.
-  - 'A-10 — Audit our C5 EPYC-op seed set for algebraically-constant outputs. Owner: rocm-verify-profile-backend.md
-    C5.'
-  - 'A-11 — Disambiguate KernelArena (Wafer) from AgentKernelArena (AMD, intake-679) in this entry''s
-    title and in any citing row. Owner: research/intake_index.yaml; agentic-rocm-kernel-authoring.md.'
-  - DECLINE (recorded so it is not re-derived) — process injection (contexts do not cross processes here),
-    their scoring formula and eager baseline, their ±5–10 % variance tolerance, and lazy evaluation on
-    the ggml/HIP arm are all INAPPLICABLE to our stack.
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-10 — Audit our C5 EPYC-op seed set for algebraically-constant
+    outputs. Owner: rocm-verify-profile-backend.md C5.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-11 — Disambiguate KernelArena (Wafer) from
+    AgentKernelArena (AMD, intake-679) in this entry''s title and in any citing row. Owner: research/intake_index.yaml;
+    agentic-rocm-kernel-authoring.md.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE (recorded so it is not re-derived) —
+    process injection (contexts do not cross processes here), their scoring formula and eager baseline,
+    their ±5–10 % variance tolerance, and lazy evaluation on the ggml/HIP arm are all INAPPLICABLE to
+    our stack.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. Additional URLs for the
     same source: https://www.kernelarena.ai/methodology and https://github.com/wafer-ai/kernel-arena (no
@@ -67744,36 +67760,39 @@
     experiments: []
     intake_entries: []
   recommended_actions:
-  - 'B-5 — RUN THIS FIRST, before any other Source-B work: the 20-minute saturation probe. Saturating
-    gfx90a GEMM, log power_w and sclk_mhz at 250 ms for 60 s. If frac_samples_ge_95pct_cap ≈ 0 we never
-    approach 300 W and the entire clock/power-pinning branch closes for free. Owner: rocm-verify-profile-backend.md,
-    new row under C3.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-5 — RUN THIS FIRST, before any other Source-B
+    work: the 20-minute saturation probe. Saturating gfx90a GEMM, log power_w and sclk_mhz at 250 ms for
+    60 s. If frac_samples_ge_95pct_cap ≈ 0 we never approach 300 W and the entire clock/power-pinning
+    branch closes for free. Owner: rocm-verify-profile-backend.md, new row under C3.'
   - 'B-1 — Declare duty_cycle (continuous vs bursty) per arm, require arms to match, and state which regime
     a P-GPU-1 claim describes. Owner: measurement/protocols/gpu-cross-device.md P-GPU-1 field 4. This
     crosses the HUMAN-AMENDMENT-ONLY trust boundary: draft an amendment proposal for the operator and
     do NOT self-apply. Highest-value item for this source.'
-  - 'B-2 — Add the parsed device_state block to the evaluation event. Owner: autokernel-research-loop.md
-    §7.4.'
-  - 'B-3 — Parse rocm-smi into numeric fields and add throttle_observed; upgrade the completeness audit
-    from word-presence to value-presence. Today laguna_pgpu1_dflash_runner.py:184-193 stores raw stdout
-    and pgpu1_artifact_completeness_audit.py:42-56 only regex-checks that the word appeared, so a run
-    that throttled from 1700 to 800 MHz mid-window passes every check we have. Owner: rocm-verify-profile-backend.md
-    C3 + research scripts/benchmark/pgpu1_artifact_completeness_audit.py.'
-  - 'B-4 — Add a 250 ms in-run sampler for the measurement window; two endpoints cannot see a mid-run
-    excursion. Owner: rocm-verify-profile-backend.md C3.'
-  - 'B-6 — Cross-lane A/A control: run A/A in lane L while lane M carries a load and require the A/A to
-    remain null at the declared rate. Reuses existing machinery (§15.2 already voids the measurement window
-    on an A/A failure) and needs no new statistics, only a second lane. This is the acceptance test for
-    the multi-lane screening tier. Owner: autokernel-research-loop.md §9.2 and §15.2.'
-  - 'B-7 — Per-partition CPU frequency / package-power attestation in the host receipt (/proc/cpuinfo
-    MHz or RAPL package power), because 2–4 concurrent CPU partitions share one dual-EPYC package power
-    and boost budget and feedback_host_throttle_check plus bench-cpu.md:19 operate only at session granularity.
-    Owner: autokernel-research-loop.md §7.4 host_receipt; measurement/protocols/bench-cpu.md:19.'
-  - 'B-8 — Declare min_measurable_us in the T1a recipe; below it a cell is inconclusive rather than a
-    rank. Derive the value from OUR own A/A spread — do not import their NVIDIA-derived 10 µs. Owner:
-    autokernel-research-loop.md §9.3.'
-  - 'B-9 — Declare cache_state (warm|cold) and hold it fixed across arms; the warm/cold gap is workload-dependent
-    (large for GEMV, negligible for GEMM/Conv2D). Owner: autokernel-research-loop.md §9.3.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-2 — Add the parsed device_state block to the
+    evaluation event. Owner: autokernel-research-loop.md §7.4.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-3 — Parse rocm-smi into numeric fields and
+    add throttle_observed; upgrade the completeness audit from word-presence to value-presence. Today
+    laguna_pgpu1_dflash_runner.py:184-193 stores raw stdout and pgpu1_artifact_completeness_audit.py:42-56
+    only regex-checks that the word appeared, so a run that throttled from 1700 to 800 MHz mid-window
+    passes every check we have. Owner: rocm-verify-profile-backend.md C3 + research scripts/benchmark/pgpu1_artifact_completeness_audit.py.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-4 — Add a 250 ms in-run sampler for the measurement
+    window; two endpoints cannot see a mid-run excursion. Owner: rocm-verify-profile-backend.md C3.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-6 — Cross-lane A/A control: run A/A in lane
+    L while lane M carries a load and require the A/A to remain null at the declared rate. Reuses existing
+    machinery (§15.2 already voids the measurement window on an A/A failure) and needs no new statistics,
+    only a second lane. This is the acceptance test for the multi-lane screening tier. Owner: autokernel-research-loop.md
+    §9.2 and §15.2.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-7 — Per-partition CPU frequency / package-power
+    attestation in the host receipt (/proc/cpuinfo MHz or RAPL package power), because 2–4 concurrent
+    CPU partitions share one dual-EPYC package power and boost budget and feedback_host_throttle_check
+    plus bench-cpu.md:19 operate only at session granularity. Owner: autokernel-research-loop.md §7.4
+    host_receipt; measurement/protocols/bench-cpu.md:19.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-8 — Declare min_measurable_us in the T1a recipe;
+    below it a cell is inconclusive rather than a rank. Derive the value from OUR own A/A spread — do
+    not import their NVIDIA-derived 10 µs. Owner: autokernel-research-loop.md §9.3.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-9 — Declare cache_state (warm|cold) and hold
+    it fixed across arms; the warm/cold gap is workload-dependent (large for GEMV, negligible for GEMM/Conv2D).
+    Owner: autokernel-research-loop.md §9.3.'
   - 'B-10 — Operator decision package, GATED ON B-5: enable a root-side --setperfdeterminism capability
     for the bench harness? If B-5 shows no saturation, decline and close. Price the throughput cost and
     remember the 3-level sclk ladder makes --setsclk a blunt instrument. Owner: rocm-verify-profile-backend.md
@@ -67781,12 +67800,12 @@
   - 'B-11 — DECLINE, already covered: compilation-flag pinning across candidate and anchor is already
     bound in autokernel-research-loop.md §7.3 (compiler/toolchain/build command and logs, binary/library
     hashes and linkage proof). Recorded so it is not re-derived.'
-  - 'DECLINE as INAPPLICABLE (recorded so they are not re-derived): all nvidia-smi invocations, CUDA-graph
-    capture semantics, ncu and PyTorch-profiler/Kineto guidance (our path is rocprofv2, and rocprof v1
-    aborts at init on graph-enabled builds per rocm-verify-profile-backend.md:113); cloud-provider SKU
-    variance (single owned card); persistent mode (an NVIDIA driver concept with no per-run ROCm equivalent
-    here); ECC toggling (no effect found by them, and our card''s ECC is host policy, not a bench parameter);
-    and every absolute number in the post.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE as INAPPLICABLE (recorded so they are
+    not re-derived): all nvidia-smi invocations, CUDA-graph capture semantics, ncu and PyTorch-profiler/Kineto
+    guidance (our path is rocprofv2, and rocprof v1 aborts at init on graph-enabled builds per rocm-verify-profile-backend.md:113);
+    cloud-provider SKU variance (single owned card); persistent mode (an NVIDIA driver concept with no
+    per-run ROCm equivalent here); ECC toggling (no effect found by them, and our card''s ECC is host
+    policy, not a bench parameter); and every absolute number in the post.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. authors is empty because
     the post carries no byline — NOT-FOUND-IN-SOURCE; the org is Standard Kernel Co. (hi@standardkernel.com,
@@ -68189,22 +68208,24 @@
     flash-attn-with-cache, k28 chunked-GDN. Owner: rocm-verify-profile-backend.md row C2. Evidence: v0.1
     fixed 8/10 recurrent problems'' inputs but only 2/10 outputs; 35_LSTM.py:33-36,52 is still non-deterministic.
     LANDED as RVP-C2-5.'
-  - 'Add a DEFAULT-INPUT-DISTRIBUTION AUDIT to the seeded-generation precondition: no strictly-non-negative
-    default for a sign-branching op, and record the distribution per tensor in the run manifest. Owner:
-    rocm-verify-profile-backend.md row C2 (precondition tier). Evidence: 100/100 Level-1 files use torch.rand
-    and 19_ReLU.py is the identity on its own test inputs.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Add a DEFAULT-INPUT-DISTRIBUTION AUDIT to the
+    seeded-generation precondition: no strictly-non-negative default for a sign-branching op, and record
+    the distribution per tensor in the run manifest. Owner: rocm-verify-profile-backend.md row C2 (precondition
+    tier). Evidence: 100/100 Level-1 files use torch.rand and 19_ReLU.py is the identity on its own test
+    inputs.'
   - 'Add a SPEED-OF-LIGHT ROOFLINE SCREEN as an automatic admission gate on any candidate''s measured
     time. Owner: rocm-verify-profile-backend.md row C6 / the C6 monitor design. It composes with the existing
     OpenHyra trusted-evaluator design and needs no reference execution. LANDED as RVP-C6-4.'
-  - 'Add an ABSOLUTE DURATION-WINDOW ADMISSION TEST for any op-shape used to rank variants, with the lower
-    bound MEASURED ON gfx90a, not lifted from H100. Owner: rocm-verify-profile-backend.md row C3. Explicitly
-    note: do NOT import the 1-15 ms window.'
-  - 'Add a NON-POWER-OF-2 EXTENT (e.g. 4095) to the standing T1 shape set, keeping shape-variation-as-correctness-probe
-    separate from intake-1085''s argument against shape-variation-as-hack-detector. Owner: rocm-verify-profile-backend.md
-    row C2 (shape variation, T1).'
-  - 'Add METR''s SEED-INVARIANCE criterion to degenerate-case screening: an output that does not vary
-    across input seeds is cacheable and therefore unscoreable. Owner: rocm-verify-profile-backend.md row
-    C2 / degenerate-task screen.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Add an ABSOLUTE DURATION-WINDOW ADMISSION TEST
+    for any op-shape used to rank variants, with the lower bound MEASURED ON gfx90a, not lifted from H100.
+    Owner: rocm-verify-profile-backend.md row C3. Explicitly note: do NOT import the 1-15 ms window.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Add a NON-POWER-OF-2 EXTENT (e.g. 4095) to the
+    standing T1 shape set, keeping shape-variation-as-correctness-probe separate from intake-1085''s argument
+    against shape-variation-as-hack-detector. Owner: rocm-verify-profile-backend.md row C2 (shape variation,
+    T1).'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Add METR''s SEED-INVARIANCE criterion to degenerate-case
+    screening: an output that does not vary across input seeds is cacheable and therefore unscoreable.
+    Owner: rocm-verify-profile-backend.md row C2 / degenerate-task screen.'
   - 'CORRECT intake-664 on five points: (a) upstream lineage is v0 → v0.1 → v0.2, there is no "v1"; (b)
     270 problems across 4 levels, not 250 across 3 — level4 predates the paper (400074e, 2024-11-17);
     (c) the library default is num_correct_trials=1 while the scripts pass 5, and tolerance moved 1e-2
@@ -68215,26 +68236,28 @@
     MultiKernelBench to get a HIP backend" is no longer the only path — but upstream gates on gfx942/gfx950
     plus ROCm >= 7.1 (utils.py:43, README.md:129), so NEITHER path is open on our box today. C5 primacy
     stays with GEAK-eval (intake-674). Same operator-approval caveat as the intake-664 correction.'
-  - 'FIX the AK-KB-1 row''s tier label in agentic-rocm-kernel-authoring.md (line 175): it reads "as C3
-    correctness substrate", but in rocm-verify-profile-backend.md C2 is the correctness oracle and C3
-    is the timing/speedup reward. The row also inherits the unresolved three-way conflation flagged at
-    lines 165-167 — the "seeded fuzzing 9/9" finding belongs to arXiv 2606.20128, NOT Stanford KernelBench
-    — so the row must name WHICH KernelBench it means.'
-  - 'RECORD the gfx90a / ROCm-6.2 blocker on upstream KernelBench-HIP as a standing fact with its two
-    exact anchors so it is not re-litigated: AMD_ARCHS = ["gfx942","gfx950"] (utils.py:43) and ROCm >=
-    7.1 (README.md:90,100,129). Note the option-set change: adding gfx90a upstream is a ~1-line patch,
-    far smaller than the previously scoped MultiKernelBench fork. Owner: agentic-rocm-kernel-authoring.md,
-    GEAK-scoping section / row AK-KB-2.'
-  - 'ADOPT THE SHAPE of test_eval_adversarial.py (result-cache reuse, input modification, non-default-stream
-    timing) as the template for C6''s already-planned "red-team with deliberately cheating kernels" gate.
-    Patterns only — the code is torch/CUDA-bound. Owner: rocm-verify-profile-backend.md row C6.'
-  - 'DECLINE — adopt torch.rand_mix as a testing mechanism. Reasons: it is DEAD CODE UPSTREAM (0 of 270
-    call sites; reverted out of the problems by 6b1cea2, 19 minutes before the v0.1 PR merged); it is
-    torch-only on a box with no torch installed at all; pool coverage is 3.84% at 5 trials; 2 of its 5
-    families are strictly positive; it destroys structured inputs; and it supersedes nothing. Critically,
-    the randn → rand switch that shipped ALONGSIDE it is the ENABLING CONDITION for a ReLU-identity reward
-    hack (19_ReLU.py becomes a mathematical identity on its own test inputs), NOT a defence against one.
-    Superseded for the T0 role by intake-1085''s D1-D4, which post-dates it by 11 months.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): FIX the AK-KB-1 row''s tier label in agentic-rocm-kernel-authoring.md
+    (line 175): it reads "as C3 correctness substrate", but in rocm-verify-profile-backend.md C2 is the
+    correctness oracle and C3 is the timing/speedup reward. The row also inherits the unresolved three-way
+    conflation flagged at lines 165-167 — the "seeded fuzzing 9/9" finding belongs to arXiv 2606.20128,
+    NOT Stanford KernelBench — so the row must name WHICH KernelBench it means.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): RECORD the gfx90a / ROCm-6.2 blocker on upstream
+    KernelBench-HIP as a standing fact with its two exact anchors so it is not re-litigated: AMD_ARCHS
+    = ["gfx942","gfx950"] (utils.py:43) and ROCm >= 7.1 (README.md:90,100,129). Note the option-set change:
+    adding gfx90a upstream is a ~1-line patch, far smaller than the previously scoped MultiKernelBench
+    fork. Owner: agentic-rocm-kernel-authoring.md, GEAK-scoping section / row AK-KB-2.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): ADOPT THE SHAPE of test_eval_adversarial.py (result-cache
+    reuse, input modification, non-default-stream timing) as the template for C6''s already-planned "red-team
+    with deliberately cheating kernels" gate. Patterns only — the code is torch/CUDA-bound. Owner: rocm-verify-profile-backend.md
+    row C6.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE — adopt torch.rand_mix as a testing mechanism.
+    Reasons: it is DEAD CODE UPSTREAM (0 of 270 call sites; reverted out of the problems by 6b1cea2, 19
+    minutes before the v0.1 PR merged); it is torch-only on a box with no torch installed at all; pool
+    coverage is 3.84% at 5 trials; 2 of its 5 families are strictly positive; it destroys structured inputs;
+    and it supersedes nothing. Critically, the randn → rand switch that shipped ALONGSIDE it is the ENABLING
+    CONDITION for a ReLU-identity reward hack (19_ReLU.py becomes a mathematical identity on its own test
+    inputs), NOT a defence against one. Superseded for the T0 role by intake-1085''s D1-D4, which post-dates
+    it by 11 months.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. METHODOLOGY EXTRACTION
     — ALREADY HAVE, ours stronger (report these plainly, they are not gaps): value-transform correctness
@@ -68711,63 +68734,71 @@
     - intake-796
     - intake-1085
   recommended_actions:
-  - 'ADD A LAYOUT AXIS to the correctness oracle, separate from the shape axis. C2 today reads "multi/unseen
-    shapes … + AgentKernelArena unseen-shape generator" and contains zero occurrences of contiguous/stride/permute.
-    Three probe families: stride permutation (transpose), stride gap (as_strided over an oversized buffer),
-    and offset base pointer (alignment). Owner: rocm-verify-profile-backend.md, component table row C2.
-    LANDED as RVP-C2-4.'
-  - 'KEEP THE LAYOUT PASS AND THE VALUE-TRANSFORM PASS AS SEPARATE PASSES with separate integrity_flags.
-    intake-1085 requires shapes FIXED to catch shape-locked hacks; this paper requires layout VARIED to
-    catch fragility. A merged generator satisfies neither and conflates two verdict meanings. Owner: rocm-verify-profile-backend.md
-    rows C2 and C6, plus the interface contract (integrity_flags).'
-  - 'ADD "non-contiguous/strided layout" to the T0 gate line "unseen/boundary shapes for dispatch changes",
-    and to the Arithmetic-kernel and Layout/repack cheap-correctness cells. Owner: autokernel-research-loop.md
-    §8.6 T0_GATE and §9.5.'
-  - 'MAKE llama.cpp''s EXISTING VIEW COVERAGE SYSTEMATIC RATHER THAN OPT-IN. test-backend-ops.cpp already
-    has the idiom (14 op structs with v/permuted, ~41 true instantiations) but a newly authored op inherits
-    nothing; require any AutoKernel-authored op to instantiate its non-contiguous variant. Owner: autokernel-research-loop.md
-    §8.6 and agentic-rocm-kernel-authoring.md row AK-KB-1.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): ADD A LAYOUT AXIS to the correctness oracle,
+    separate from the shape axis. C2 today reads "multi/unseen shapes … + AgentKernelArena unseen-shape
+    generator" and contains zero occurrences of contiguous/stride/permute. Three probe families: stride
+    permutation (transpose), stride gap (as_strided over an oversized buffer), and offset base pointer
+    (alignment). Owner: rocm-verify-profile-backend.md, component table row C2. LANDED as RVP-C2-4.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): KEEP THE LAYOUT PASS AND THE VALUE-TRANSFORM
+    PASS AS SEPARATE PASSES with separate integrity_flags. intake-1085 requires shapes FIXED to catch
+    shape-locked hacks; this paper requires layout VARIED to catch fragility. A merged generator satisfies
+    neither and conflates two verdict meanings. Owner: rocm-verify-profile-backend.md rows C2 and C6,
+    plus the interface contract (integrity_flags).'
+  - 'PROPOSAL (dive-derived, operator-review candidate): ADD "non-contiguous/strided layout" to the T0
+    gate line "unseen/boundary shapes for dispatch changes", and to the Arithmetic-kernel and Layout/repack
+    cheap-correctness cells. Owner: autokernel-research-loop.md §8.6 T0_GATE and §9.5.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): MAKE llama.cpp''s EXISTING VIEW COVERAGE SYSTEMATIC
+    RATHER THAN OPT-IN. test-backend-ops.cpp already has the idiom (14 op structs with v/permuted, ~41
+    true instantiations) but a newly authored op inherits nothing; require any AutoKernel-authored op
+    to instantiate its non-contiguous variant. Owner: autokernel-research-loop.md §8.6 and agentic-rocm-kernel-authoring.md
+    row AK-KB-1.'
   - 'ADOPT CODE-AWARE ADVERSARIAL TEST SYNTHESIS as a C6 layer — the planner reads the candidate source
     plus the reference and emits one executable test per suspected flaw, with a human-verify gate budgeted
     for ~87% rejection. It composes with intake-1085''s dual-judge audit (judges flag; this emits a test).
     Owner: rocm-verify-profile-backend.md row C6 / the C6 monitor design.'
-  - 'SCREEN THE C5 SEED CORPUS FOR INPUT-INSENSITIVE OPS (mean(softmax(x)), relu(x-2) under uniform sampling)
-    — the twin of intake-1085''s degenerate-task screen on a different axis (O.e.3 input sensitivity vs
-    constant output). Owner: rocm-verify-profile-backend.md row C5 and agentic-rocm-kernel-authoring.md
-    row AK-KB-2.'
-  - 'DO NOT LET A HARD ERROR ON NON-CONTIGUOUS INPUT BECOME A SKIP. 50.4% of the reference suite''s files
-    skip on RuntimeError; our verdict must be `fail`, not `skip` — a kernel that cannot accept a strided
-    ggml view is not correct for llama.cpp. Owner: rocm-verify-profile-backend.md row C2 and autokernel-research-loop.md
-    §8.6.'
-  - 'RECORD THE ABC CHECKLIST AS THE AUDIT RUBRIC for our own suites, using camera-ready T/O/R numbering
-    (never the repo''s ABC.md), with the audit above as the first pass. Owner: chapter 06 (new section)
-    and chapter 07 §Quality Gates for New Questions.'
-  - 'BUILD A TRIVIAL-AGENT BASELINE HARNESS (R.14): do-nothing, list-all-function-names, constant-"B",
-    empty-string; report the floor alongside every suite score. ZERO-INFERENCE, so it runs in-session.
-    Owner: chapter 06 §Paired Significance Testing (reporting contract) and handoffs/active/eval-benchmark-cost-reduction.md
-    (scoring path). LANDED as chapter 06''s CH-P2 pilot.'
-  - 'ADD THE PAIRED NEGATIVE CHECK to the agentic substring scorer (assert that competing function names
-    are ABSENT) — the principle is already written in chapter 07 §Verifier Robustness; the instance is
-    missing. Owner: chapter 07 §Verifier Robustness and debug_scorer.py.'
-  - 'CLOSE THE llm_judge FAIL-OPEN: stamp the fallback into the result record and refuse to aggregate
-    mixed-method runs. Owner: chapter 07 §Scoring Methods → llm_judge.'
-  - 'ADD CONTAMINATION AND UPDATE-CADENCE SECTIONS (R.3/R.4) to the chapters'' design principles — the
-    pools are the most-contaminated public sets and they gate role placement. Owner: chapter 07 §Design
-    Principles and chapter 06 §Benchmark Hardening.'
-  - 'ADD A STALENESS CADENCE FOR web_research (T.6) — live-data questions with no re-validation reproduce
-    OSWorld''s 28% underestimation as a fake model regression. Owner: chapter 07 §Web Research Suite.'
-  - 'CLASSIFY code_execution TIMEOUTS SEPARATELY from wrong answers (O.f.2) on a shared 192-thread box.
-    Owner: chapter 07 §Scoring Methods → code_execution.'
-  - 'DECLINE — reuse the paper''s four benchmark case studies (tau-bench, SWE-Lancer, WebArena, OSWorld)
-    as ready-made red-team fixtures. Reason: none has a kernel or CPU/GPU-serving surface; the transferable
-    content is the checklist item, which is already captured above.'
-  - 'DECLINE — lift the 129 verified pytest files as a component. Reason: the repo carries no licence
-    at any commit (license: null at head ae112475, no LICENSE file across 12,549 tree entries), which
-    is the same posture already taken for GEAK-eval; and independently the tests are torch-gated on a
-    box with no torch. Design reference only.'
-  - 'DECLINE — cite the 31% as a magnitude for gfx90a. Reason: it is a CUDA / H100 / wavefront-32 measurement,
-    and several failure modes in the artifact are wavefront-width-dependent; under P-GPU-1 the analogous
-    magnitude is OURS TO DERIVE on our own card, or not cited at all.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): SCREEN THE C5 SEED CORPUS FOR INPUT-INSENSITIVE
+    OPS (mean(softmax(x)), relu(x-2) under uniform sampling) — the twin of intake-1085''s degenerate-task
+    screen on a different axis (O.e.3 input sensitivity vs constant output). Owner: rocm-verify-profile-backend.md
+    row C5 and agentic-rocm-kernel-authoring.md row AK-KB-2.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DO NOT LET A HARD ERROR ON NON-CONTIGUOUS INPUT
+    BECOME A SKIP. 50.4% of the reference suite''s files skip on RuntimeError; our verdict must be `fail`,
+    not `skip` — a kernel that cannot accept a strided ggml view is not correct for llama.cpp. Owner:
+    rocm-verify-profile-backend.md row C2 and autokernel-research-loop.md §8.6.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): RECORD THE ABC CHECKLIST AS THE AUDIT RUBRIC
+    for our own suites, using camera-ready T/O/R numbering (never the repo''s ABC.md), with the audit
+    above as the first pass. Owner: chapter 06 (new section) and chapter 07 §Quality Gates for New Questions.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): BUILD A TRIVIAL-AGENT BASELINE HARNESS (R.14):
+    do-nothing, list-all-function-names, constant-"B", empty-string; report the floor alongside every
+    suite score. ZERO-INFERENCE, so it runs in-session. Owner: chapter 06 §Paired Significance Testing
+    (reporting contract) and handoffs/active/eval-benchmark-cost-reduction.md (scoring path). LANDED as
+    chapter 06''s CH-P2 pilot.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): ADD THE PAIRED NEGATIVE CHECK to the agentic
+    substring scorer (assert that competing function names are ABSENT) — the principle is already written
+    in chapter 07 §Verifier Robustness; the instance is missing. Owner: chapter 07 §Verifier Robustness
+    and debug_scorer.py.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): CLOSE THE llm_judge FAIL-OPEN: stamp the fallback
+    into the result record and refuse to aggregate mixed-method runs. Owner: chapter 07 §Scoring Methods
+    → llm_judge.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): ADD CONTAMINATION AND UPDATE-CADENCE SECTIONS
+    (R.3/R.4) to the chapters'' design principles — the pools are the most-contaminated public sets and
+    they gate role placement. Owner: chapter 07 §Design Principles and chapter 06 §Benchmark Hardening.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): ADD A STALENESS CADENCE FOR web_research (T.6)
+    — live-data questions with no re-validation reproduce OSWorld''s 28% underestimation as a fake model
+    regression. Owner: chapter 07 §Web Research Suite.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): CLASSIFY code_execution TIMEOUTS SEPARATELY from
+    wrong answers (O.f.2) on a shared 192-thread box. Owner: chapter 07 §Scoring Methods → code_execution.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE — reuse the paper''s four benchmark case
+    studies (tau-bench, SWE-Lancer, WebArena, OSWorld) as ready-made red-team fixtures. Reason: none has
+    a kernel or CPU/GPU-serving surface; the transferable content is the checklist item, which is already
+    captured above.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE — lift the 129 verified pytest files
+    as a component. Reason: the repo carries no licence at any commit (license: null at head ae112475,
+    no LICENSE file across 12,549 tree entries), which is the same posture already taken for GEAK-eval;
+    and independently the tests are torch-gated on a box with no torch. Design reference only.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE — cite the 31% as a magnitude for gfx90a.
+    Reason: it is a CUDA / H100 / wavefront-32 measurement, and several failure modes in the artifact
+    are wavefront-width-dependent; under P-GPU-1 the analogous magnitude is OURS TO DERIVE on our own
+    card, or not cited at all.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. CITATION HYGIENE, the
     durable part of this entry: cite the NeurIPS 2025 Datasets & Benchmarks camera-ready (14 R-items,
@@ -69149,15 +69180,17 @@
     - intake-1085
     - intake-1096
   recommended_actions:
-  - 'A-1 (LANDED THIS SESSION as AK-PT-1): instrument the refine loop with a per-turn 4-tuple (turn, task_id,
-    correct?, speedup_vs_honest_baseline) and a refine_turn_productivity reducer computing compile rate,
-    correct rate, mean speedup over correct AND the rescued-vs-persistent split -- agentic-rocm-kernel-authoring.md,
-    the generate -> compile -> verify -> profile -> refine loop at line 19. Write-side hook is cheap and
-    permanent; per CLAUDE.md''s belief-kernel rule it had to be wired now, not retrofitted.'
-  - 'A-2: add a turn-budget stopping rule driven by A-1 to autokernel-research-loop.md §9.1 (cheap-evaluation
-    rules) + §9.6 (banking) -- refine turns continue only while the rescued-kernel speedup distribution
-    overlaps the persistent-kernel distribution; otherwise the turn is repair-only and does not advance
-    the search. Must use the §9.2 e-process, not a point comparison.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-1 (LANDED THIS SESSION as AK-PT-1): instrument
+    the refine loop with a per-turn 4-tuple (turn, task_id, correct?, speedup_vs_honest_baseline) and
+    a refine_turn_productivity reducer computing compile rate, correct rate, mean speedup over correct
+    AND the rescued-vs-persistent split -- agentic-rocm-kernel-authoring.md, the generate -> compile ->
+    verify -> profile -> refine loop at line 19. Write-side hook is cheap and permanent; per CLAUDE.md''s
+    belief-kernel rule it had to be wired now, not retrofitted.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-2: add a turn-budget stopping rule driven by
+    A-1 to autokernel-research-loop.md §9.1 (cheap-evaluation rules) + §9.6 (banking) -- refine turns
+    continue only while the rescued-kernel speedup distribution overlaps the persistent-kernel distribution;
+    otherwise the turn is repair-only and does not advance the search. Must use the §9.2 e-process, not
+    a point comparison.'
   - 'A-3: add the edit-type classifier over adjacent candidate diffs to autokernel-research-loop.md §9.5
     (the change-class table already keys behaviour off proposal.change_class) -- flag a proposal whose
     REALISED edits are dominated by repair classes while its DECLARED change_class promised an optimization.'
@@ -69165,18 +69198,18 @@
     row C2 -- outlier-mode injection (p~0.1%, scale~50) plus a gate requiring cosine, L1-rel and RMSE
     simultaneously. This MERGES with intake-1085''s existing C2 recommendation: it is now corroborated
     by an independent source, not a second competing proposal.'
-  - 'A-5: record the ceiling finding on rocm-verify-profile-backend.md row C4 and agentic-rocm-kernel-authoring.md
-    line 27 -- refinement cannot fix plan-level decisions (tiling, memory layout, kernel boundaries) because
-    that information "is not recoverable from the feedback available in current iterative pipelines",
-    so C4 (the profiler-metric feed) is the unlock, not more turns. Strengthens an existing position rather
-    than opening new work.'
-  - 'A-6 DECLINE: do not fork or adopt the 176-task KernelBenchX suite. Triton-on-NVIDIA, golden timings
-    per NVIDIA SKU, no torch-ROCm on the box, and C5 already has two gfx90a-proven primaries (GEAK-eval
-    intake-674, AgentKernelArena intake-679). Adopting would add porting cost and invalidate the published
-    anchors that are the only reason to use it.'
-  - 'A-7: re-pin intake-1085''s source_revision for 2607.16241 (its local render omitted the appendix
-    Related Work). Draft note only -- NO index edit made, per CLAUDE.md''s ban on index modification via
-    sub-agents without approval.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-5: record the ceiling finding on rocm-verify-profile-backend.md
+    row C4 and agentic-rocm-kernel-authoring.md line 27 -- refinement cannot fix plan-level decisions
+    (tiling, memory layout, kernel boundaries) because that information "is not recoverable from the feedback
+    available in current iterative pipelines", so C4 (the profiler-metric feed) is the unlock, not more
+    turns. Strengthens an existing position rather than opening new work.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-6 DECLINE: do not fork or adopt the 176-task
+    KernelBenchX suite. Triton-on-NVIDIA, golden timings per NVIDIA SKU, no torch-ROCm on the box, and
+    C5 already has two gfx90a-proven primaries (GEAK-eval intake-674, AgentKernelArena intake-679). Adopting
+    would add porting cost and invalidate the published anchors that are the only reason to use it.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-7: re-pin intake-1085''s source_revision for
+    2607.16241 (its local render omitted the appendix Related Work). Draft note only -- NO index edit
+    made, per CLAUDE.md''s ban on index modification via sub-agents without approval.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. METHODOLOGY EXTRACTION
     against our own handoffs. ALREADY HAVE AND OURS IS STRONGER: statistical rigor (autokernel-research-loop.md
@@ -69489,12 +69522,12 @@
     - intake-1085
     - intake-1095
   recommended_actions:
-  - 'B-5 (LANDED THIS SESSION as part of AK-LE-3): vary SCAFFOLD and BASE MODEL independently in the planned
-    controller A/B in agentic-rocm-kernel-authoring.md (''Register controllers (Claude+Codex, EvoEngineer,
-    KernelFoundry, K-Search, Xe-Forge, GEAK) ... and A/B on gfx90a''). ISO-Bench is published evidence
-    that identical models under different scaffolds INVERT rank (Claude Sonnet 4.5: 46.2 vs 28.2 on one
-    codebase, 26.7 vs 80.0 on the other), so an A/B that does not separate the two factors measures the
-    wrong one.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-5 (LANDED THIS SESSION as part of AK-LE-3):
+    vary SCAFFOLD and BASE MODEL independently in the planned controller A/B in agentic-rocm-kernel-authoring.md
+    (''Register controllers (Claude+Codex, EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK) ... and
+    A/B on gfx90a''). ISO-Bench is published evidence that identical models under different scaffolds
+    INVERT rank (Claude Sonnet 4.5: 46.2 vs 28.2 on one codebase, 26.7 vs 80.0 on the other), so an A/B
+    that does not separate the two factors measures the wrong one.'
   - 'B-1: add a real-workload task class (C5-R) to rocm-verify-profile-backend.md row C5, mined from llama.cpp
     merged performance PRs with ISO-Bench''s curation recipe (keyword filter -> LLM classify -> manually
     verify the commit is a genuine optimization not a refactor -> extract the benchmark command and claimed
@@ -69512,16 +69545,17 @@
   - 'B-3: add an expert-reference CEILING to the timing reward (rocm-verify-profile-backend.md row C3)
     alongside C3''s honest-baseline FLOOR -- where a task derives from a real merged optimization, report
     candidate-vs-human-patch delta in addition to candidate-vs-honest-baseline.'
-  - 'B-4: add an end-to-end quality gate for serving-path change classes (autokernel-research-loop.md
-    §9.5 / T2 in §9) -- a task-level accuracy check (baseline vs patched) before promotion, not just kernel-level
-    allclose. Motivating evidence: the Bamba-9B case, 32% -> 0% accuracy under a PASSING hard metric.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-4: add an end-to-end quality gate for serving-path
+    change classes (autokernel-research-loop.md §9.5 / T2 in §9) -- a task-level accuracy check (baseline
+    vs patched) before promotion, not just kernel-level allclose. Motivating evidence: the Bamba-9B case,
+    32% -> 0% accuracy under a PASSING hard metric.'
   - 'B-6 DECLINE: do not run the ISO-Bench benchmark itself. vLLM/SGLang on H100; our stack is llama.cpp
     on gfx90a with no torch-ROCm. The tasks do not run here and porting them would invalidate the human-patch
     anchors that are the entire reason to use it. Methodology only.'
-  - 'B-7: surface arXiv 2607.20468 (InferenceBench) for Stage-2b ingest -- it is closer to AutoKernel''s
-    target than ISO-Bench (whole serving stack, not <=10-file patches) and carries a direct falsifier
-    for the premise that an agentic loop beats cheaper automated search. FLAGGED, NOT FILED (CLAUDE.md:
-    no intake entries via sub-agents without approval).'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-7: surface arXiv 2607.20468 (InferenceBench)
+    for Stage-2b ingest -- it is closer to AutoKernel''s target than ISO-Bench (whole serving stack, not
+    <=10-file patches) and carries a direct falsifier for the premise that an agentic loop beats cheaper
+    automated search. FLAGGED, NOT FILED (CLAUDE.md: no intake entries via sub-agents without approval).'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. METHODOLOGY EXTRACTION
     against our own handoffs. ALREADY HAVE AND OURS IS CLEARLY STRONGER: measurement statistics -- autokernel-research-loop.md
@@ -69927,21 +69961,22 @@
   - 'Amend intake-1084''s contradicting_evidence "CANDIDATE RECONCILERS" bullet: its strongest nominated
     reconciler (distance from the base policy) is NOT untested - it is a named result in this paper, Appendix
     A.1 p.13 (anchor 4). Replace "none tested by either paper" with the citation.'
-  - 'Amend intake-1083''s contradicting_evidence: add the Appendix A.5 r = 0.52 datum WITH the stratification
-    finding attached (within-dataset r = 0.75 / 0.90 / 0.90; SFT-variants-only r = 0.373; 4 of 6 pairs
-    invert). Do NOT record it as a bare refutation. Keep intake-1083''s credibility at 4.'
-  - 'Add a base-reachability pre-check to W3''s acceptance criteria in handoffs/active/frontier-f3-data-flywheel.md
-    (line 33, alongside the existing MEASUREMENT.md-protocol-per-fine-tune requirement): before any fine-tune
-    arm is scoped, record base pass@5 on the target task with the task verifier; a target at pass@5 =
-    0 is the regime where this paper predicts RL loses its retention advantage. Inference-only, runs BEFORE
-    the gfx90a smoke.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Amend intake-1083''s contradicting_evidence:
+    add the Appendix A.5 r = 0.52 datum WITH the stratification finding attached (within-dataset r = 0.75
+    / 0.90 / 0.90; SFT-variants-only r = 0.373; 4 of 6 pairs invert). Do NOT record it as a bare refutation.
+    Keep intake-1083''s credibility at 4.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Add a base-reachability pre-check to W3''s acceptance
+    criteria in handoffs/active/frontier-f3-data-flywheel.md (line 33, alongside the existing MEASUREMENT.md-protocol-per-fine-tune
+    requirement): before any fine-tune arm is scoped, record base pass@5 on the target task with the task
+    verifier; a target at pass@5 = 0 is the regime where this paper predicts RL loses its retention advantage.
+    Inference-only, runs BEFORE the gfx90a smoke.'
   - Record in handoffs/active/agent-world-env-synthesis.md AW-9 (line 98, and the checklist row at line
     302) that multi-environment GRPO's retention depends on per-environment distance from the base policy,
     and that the environment set should be split by base pass@5 into near/far tiers before any Phase-2
     reproduction. Complements intake-1084's already-proposed general-capability panel.
-  - 'Record next to the intake-565 off-task-KL guardrail in handoffs/active/learned-routing-controller.md
-    (~line 997) that forward KL to base is a WITHIN-TASK predictor: report it per evaluation slice, never
-    pooled. Cites Appendix A.5 plus the recomputation.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Record next to the intake-565 off-task-KL guardrail
+    in handoffs/active/learned-routing-controller.md (~line 997) that forward KL to base is a WITHIN-TASK
+    predictor: report it per evaluation slice, never pooled. Cites Appendix A.5 plus the recomputation.'
   - Add to repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md a stratified-correlation
     rule (a reported correlation ships with its within-stratum values) and a factorial-completeness rule
     for "neither X nor Y" ablation conclusions. Outside the measurement trust boundary, so no operator
@@ -69950,11 +69985,13 @@
     in chapters/07-benchmark-suite-construction.md as a candidate high-sensitivity probe for MERGED/QUANTIZED
     checkpoints; cross-ref intake-924. Scope it as a checkpoint-modification probe, NOT a forgetting probe
     - we do not fine-tune.'
-  - DECLINE - belief-kernel wiring. This source produces no measurement on our stack; there is nothing
-    to project into a ClaimTuple. The base-reachability pre-check, IF it runs, does produce measurements
-    (base pass@5 per task) and would need a wiring row at that point, not now.
-  - 'DECLINE - adopt the code. No LICENSE (GitHub API license: null), CUDA/H100-assumed, head six months
-    older than the camera-ready. Reference only; the operative blocker is technical, not licensing.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE - belief-kernel wiring. This source produces
+    no measurement on our stack; there is nothing to project into a ClaimTuple. The base-reachability
+    pre-check, IF it runs, does produce measurements (base pass@5 per task) and would need a wiring row
+    at that point, not now.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE - adopt the code. No LICENSE (GitHub
+    API license: null), CUDA/H100-assumed, head six months older than the camera-ready. Reference only;
+    the operative blocker is technical, not licensing.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. DEPENDENCY CHECK (counterfactual,
     all four negative - recorded so they are not re-derived): if intake-1083 were retracted, no claim
@@ -70391,33 +70428,37 @@
     - intake-1074
     - intake-368
   recommended_actions:
-  - 'Add an EQUAL-SCORE-CONDITIONED KL divergence axis to quant A/B in repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md,
-    section "Paired Significance Testing (Quant A/B)" (line 347): alongside the McNemar p-value, report
-    Mean KLD +/- unc and the P90/P95/P99 ladder computed over the subset where both arms score identically.
-    A quant passing McNemar with a heavy KLD tail is scoped to the eval slice, not a general parity claim.
-    The chapter currently contains ZERO KL/divergence/perplexity/fidelity terms (verified by grep).'
-  - 'Pilot the instrument end-to-end on P3 (Qwen3-1.7B Q4_K_M vs Q8_0): sample N = 8 per prompt at temp
-    0.6 with recorded per-rollout seeds and pinned affinity, keep max-score completions, run the two llama-perplexity
-    invocations, record Mean KLD plus the ladder, and report unconditioned versus conditioned KLD side
-    by side. About 1-2 h, CPU-only, no GPU, no ROCm, no training.'
-  - Promote to P2 (gemma-4-26B-A4B-it-ORIG Q4_K_M vs Q8_0), the production worker family, only after the
-    P3 pilot validates the pipeline.
-  - File the v7 -> v8 KERNEL-FIDELITY measurement as a DISTINCT item, explicitly labelled numerical fidelity
-    (same weights, different arithmetic) and NOT checkpoint drift. Owner is the kernel-lineage / v8-freeze
-    handoff, not chapter 06 section 347 (which is about quants). Read-only inference with two binaries;
-    must not modify either frozen tree.
-  - Record next to the intake-565 off-task-KL guardrail at handoffs/active/learned-routing-controller.md:997
-    that a MIRRORED ZERO-REWARD intervention on drift moves forgetting in OPPOSITE directions - the only
-    interventional evidence in this cluster - with its limits stated inline (single run, figure-only,
-    no significance test).
-  - 'Record the THREE-WAY KL ADJUDICATION: intake-1083 says measure KL on the NEW-TASK data; intake-1084
-    says on PRIOR-TASK distributions; this paper measures NEW-TASK ROLLOUTS AGAINST THE PRIOR-TASK POLICY
-    - a third position that is neither, and the only one with a causal arm. Relates to intake-1083''s
-    existing "measure both, it costs nothing" recommended action.'
-  - DECLINE - adopt RaPO / CTAN as a training method. No RL post-training, no torch-ROCm, gfx90a training
-    viability unverified, frozen GGUFs. It would be a dead handoff row.
-  - DECLINE - reproduce any CIL/DIL benchmark number. All results are 8xH100 training runs and we run
-    no continual-learning evaluation.
+  - 'PROPOSAL (dive-derived, operator-review candidate): Add an EQUAL-SCORE-CONDITIONED KL divergence
+    axis to quant A/B in repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md, section
+    "Paired Significance Testing (Quant A/B)" (line 347): alongside the McNemar p-value, report Mean KLD
+    +/- unc and the P90/P95/P99 ladder computed over the subset where both arms score identically. A quant
+    passing McNemar with a heavy KLD tail is scoped to the eval slice, not a general parity claim. The
+    chapter currently contains ZERO KL/divergence/perplexity/fidelity terms (verified by grep).'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Pilot the instrument end-to-end on P3 (Qwen3-1.7B
+    Q4_K_M vs Q8_0): sample N = 8 per prompt at temp 0.6 with recorded per-rollout seeds and pinned affinity,
+    keep max-score completions, run the two llama-perplexity invocations, record Mean KLD plus the ladder,
+    and report unconditioned versus conditioned KLD side by side. About 1-2 h, CPU-only, no GPU, no ROCm,
+    no training.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Promote to P2 (gemma-4-26B-A4B-it-ORIG Q4_K_M
+    vs Q8_0), the production worker family, only after the P3 pilot validates the pipeline.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): File the v7 -> v8 KERNEL-FIDELITY measurement
+    as a DISTINCT item, explicitly labelled numerical fidelity (same weights, different arithmetic) and
+    NOT checkpoint drift. Owner is the kernel-lineage / v8-freeze handoff, not chapter 06 section 347
+    (which is about quants). Read-only inference with two binaries; must not modify either frozen tree.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Record next to the intake-565 off-task-KL guardrail
+    at handoffs/active/learned-routing-controller.md:997 that a MIRRORED ZERO-REWARD intervention on drift
+    moves forgetting in OPPOSITE directions - the only interventional evidence in this cluster - with
+    its limits stated inline (single run, figure-only, no significance test).'
+  - 'PROPOSAL (dive-derived, operator-review candidate): Record the THREE-WAY KL ADJUDICATION: intake-1083
+    says measure KL on the NEW-TASK data; intake-1084 says on PRIOR-TASK distributions; this paper measures
+    NEW-TASK ROLLOUTS AGAINST THE PRIOR-TASK POLICY - a third position that is neither, and the only one
+    with a causal arm. Relates to intake-1083''s existing "measure both, it costs nothing" recommended
+    action.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE - adopt RaPO / CTAN as a training method.
+    No RL post-training, no torch-ROCm, gfx90a training viability unverified, frozen GGUFs. It would be
+    a dead handoff row.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE - reproduce any CIL/DIL benchmark number.
+    All results are 8xH100 training runs and we run no continual-learning evaluation.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. THE COMPANION REPO IS
     A PLACEHOLDER: github.com/LMMMEng/RaPO is README-only with 2 commits and no training code, so every
@@ -70783,28 +70824,31 @@
     - intake-1074
     - intake-1100
   recommended_actions:
-  - 'A-1 [draft-task] Add a provenance/recency field to the benchmark suite schema (ch07 "Required Fields",
-    line 62) recording each question''s source-dataset release date, plus a seventh Quality Gate: "record
-    source-dataset release date; flag any question whose source predates the evaluated model''s release."
-    Note in the rationale that the rule is imported from intake-1084''s MRCL control and VERIFIED AGAINST
-    LAI AS ITS NAMED DEFENDANT. Coordinate with intake-1084''s pending action of the same shape - one
-    rule, not two. Verified gap: ch07''s six Quality Gates (lines 627-643) cover duplicate IDs, near-duplicates,
-    answer ambiguity, scoring-method fit, manual verification and tier, and none touch provenance or age;
-    the only recency artifact in the whole 716-line chapter is the single row "| post_cutoff | 10 | Facts
-    after model training cutoff |" (line 530), scoped to the Web Research Suite.'
-  - A-2 [draft-task] Record in frontier-f3-data-flywheel.md W3 (line 33) that a retention/stability acceptance
-    number must ship with a PAIRED ACQUISITION NUMBER on the same tasks, with Lai's FM as the worked failure
-    (FM ~ 0 is obtainable by not learning).
-  - 'A-3 [draft-task] Record the REACHABILITY CAUTION against W3(a) and the W3 on-policy self-distillation
-    variant: on the one task where Lai''s base model was weak (PathVQA, base 21.8), RFT underperformed
-    SFT by 20.9 points. A planner-distill is by construction teaching something the base does not already
-    do - exactly the regime where Lai''s headline does not hold.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-1 [draft-task] Add a provenance/recency field
+    to the benchmark suite schema (ch07 "Required Fields", line 62) recording each question''s source-dataset
+    release date, plus a seventh Quality Gate: "record source-dataset release date; flag any question
+    whose source predates the evaluated model''s release." Note in the rationale that the rule is imported
+    from intake-1084''s MRCL control and VERIFIED AGAINST LAI AS ITS NAMED DEFENDANT. Coordinate with
+    intake-1084''s pending action of the same shape - one rule, not two. Verified gap: ch07''s six Quality
+    Gates (lines 627-643) cover duplicate IDs, near-duplicates, answer ambiguity, scoring-method fit,
+    manual verification and tier, and none touch provenance or age; the only recency artifact in the whole
+    716-line chapter is the single row "| post_cutoff | 10 | Facts after model training cutoff |" (line
+    530), scoped to the Web Research Suite.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-2 [draft-task] Record in frontier-f3-data-flywheel.md
+    W3 (line 33) that a retention/stability acceptance number must ship with a PAIRED ACQUISITION NUMBER
+    on the same tasks, with Lai''s FM as the worked failure (FM ~ 0 is obtainable by not learning).'
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-3 [draft-task] Record the REACHABILITY CAUTION
+    against W3(a) and the W3 on-policy self-distillation variant: on the one task where Lai''s base model
+    was weak (PathVQA, base 21.8), RFT underperformed SFT by 20.9 points. A planner-distill is by construction
+    teaching something the base does not already do - exactly the regime where Lai''s headline does not
+    hold.'
   - A-4 [draft-task, NOT PERFORMED] Correct the KL category error wherever the index treats "explicit
     KL penalty removed -> retention unchanged" as evidence against intake-1083. Affects intake-1084 contradicting_evidence
     and any Stage-3 text inheriting it. Index edit - requires operator approval per CLAUDE.md "Agents
     & Automation".
-  - A-5 DECLINE - adopting RIF-RFT / GRPO configs. Training-side, gfx90a gate [unverified], ~150 GPU-h
-    per sequence on 8xH800. Recorded so it is not re-derived.
+  - 'PROPOSAL (dive-derived, operator-review candidate): A-5 DECLINE - adopting RIF-RFT / GRPO configs.
+    Training-side, gfx90a gate [unverified], ~150 GPU-h per sequence on 8xH800. Recorded so it is not
+    re-derived.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. This entry is Source
     A of a two-source report; Source B is intake-1100 (Jin et al. 2509.12235), dived in the same pass.
@@ -71143,36 +71187,39 @@
     - intake-564
     - intake-565
   recommended_actions:
-  - 'B-1 [draft-task, highest-value item in the report] Add a TRAJECTORY-EVALUATION RULE to repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-1 [draft-task, highest-value item in the report]
+    Add a TRAJECTORY-EVALUATION RULE to repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md
     (protocol layer), cross-referenced from ch07: any iterated/multi-stage process whose intermediate
     states are discardable must be evaluated at intermediate points, not only at its endpoint, and an
     endpoint-vs-endpoint comparison must state that it did not sweep between them. Worked example: Jin
     7B, best OOD (55.26) occurs at NEITHER compared endpoint. Costs evaluation time only; needs no training
     path. (This rule landed as CH-3.)'
-  - 'B-2 [draft-task] Amend frontier-f3-data-flywheel.md W3(a) acceptance ("shadow-draft mode with >=80%
-    cloud-critic approval over 100 trials"): evaluate at MULTIPLE CHECKPOINTS and promote the best, not
-    the last; and add a SECOND ACCEPTANCE PANEL of tasks the fine-tune was not trained on, since the >=80%
-    critic gate scores only the trained distribution. Cite Jin 7B/3B (85.1% / 36.3% partial recovery)
-    as evidence that late-stage damage is not fully repairable downstream.'
-  - 'B-3 [draft-task] Record against the W3 on-policy self-distillation variant: an RL/on-policy stage
-    applied to a policy that cannot already reach the target is NOT NEUTRAL, IT IS DESTRUCTIVE - Qwen-2.5-7B
-    cold-start GRPO drove Safety 74.50 -> 6.50 and GPQA 33.93 -> 15.18. Any such stage needs a pass-rate
-    PRECONDITION and a safety/general panel, not just an arena or critic score.'
-  - 'B-4 [draft-task] Record at the intake-565 guardrail in learned-routing-controller.md (~line 997):
-    capability tracks singular-VECTOR rotation while singular VALUES are near-inert (anchor B7). Design
-    note for the ESSA LoRA-SVD ES path in the same section - value-only restriction has little leverage;
-    vector rotation has leverage AND off-task drift risk, which is the same quantity intake-565''s guardrail
-    already instruments.'
-  - 'B-5 [draft-task, merge with intake-1099 A-1 into ONE ch07 edit] Add CONTAMINATION-ROBUST-BY-CONSTRUCTION
-    as a preferred authoring pattern in 07-benchmark-suite-construction.md: where a question''s OOD variant
-    can be defined as a controlled perturbation of its ID form, prefer that phrasing - it defeats contamination
-    without release-date bookkeeping. Sits naturally beside the existing "Verifier Robustness: Structure-Derived
-    Assertions" section.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-2 [draft-task] Amend frontier-f3-data-flywheel.md
+    W3(a) acceptance ("shadow-draft mode with >=80% cloud-critic approval over 100 trials"): evaluate
+    at MULTIPLE CHECKPOINTS and promote the best, not the last; and add a SECOND ACCEPTANCE PANEL of tasks
+    the fine-tune was not trained on, since the >=80% critic gate scores only the trained distribution.
+    Cite Jin 7B/3B (85.1% / 36.3% partial recovery) as evidence that late-stage damage is not fully repairable
+    downstream.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-3 [draft-task] Record against the W3 on-policy
+    self-distillation variant: an RL/on-policy stage applied to a policy that cannot already reach the
+    target is NOT NEUTRAL, IT IS DESTRUCTIVE - Qwen-2.5-7B cold-start GRPO drove Safety 74.50 -> 6.50
+    and GPQA 33.93 -> 15.18. Any such stage needs a pass-rate PRECONDITION and a safety/general panel,
+    not just an arena or critic score.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-4 [draft-task] Record at the intake-565 guardrail
+    in learned-routing-controller.md (~line 997): capability tracks singular-VECTOR rotation while singular
+    VALUES are near-inert (anchor B7). Design note for the ESSA LoRA-SVD ES path in the same section -
+    value-only restriction has little leverage; vector rotation has leverage AND off-task drift risk,
+    which is the same quantity intake-565''s guardrail already instruments.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-5 [draft-task, merge with intake-1099 A-1 into
+    ONE ch07 edit] Add CONTAMINATION-ROBUST-BY-CONSTRUCTION as a preferred authoring pattern in 07-benchmark-suite-construction.md:
+    where a question''s OOD variant can be defined as a controlled perturbation of its ID form, prefer
+    that phrasing - it defeats contamination without release-date bookkeeping. Sits naturally beside the
+    existing "Verifier Robustness: Structure-Derived Assertions" section.'
   - B-6 [draft-task, NOT PERFORMED] Correct the index's filing of Jin as pro-RL counter-evidence in intake-1084
     contradicting_evidence; it is regime-split and its cold-start cell is strongly anti-RL. Index edit
     - requires operator approval per CLAUDE.md "Agents & Automation".
-  - B-7 DECLINE - adopting protected-SFT / PPO-DAPO configs. Training-side; gfx90a gate [unverified];
-    4xH100 x 24 h per cell. Recorded so it is not re-derived.
+  - 'PROPOSAL (dive-derived, operator-review candidate): B-7 DECLINE - adopting protected-SFT / PPO-DAPO
+    configs. Training-side; gfx90a gate [unverified]; 4xH100 x 24 h per cell. Recorded so it is not re-derived.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. This entry is Source
     B of a two-source report; Source A is intake-1099 (Lai et al. 2507.05386), dived in the same pass.
@@ -71479,11 +71526,11 @@
     - intake-1076
     - intake-869
   recommended_actions:
-  - 'MM-2 [LANDED this session in handoffs/active/multimodal-pipeline.md section 1 Vision Pipeline] Replace
-    the QMP_REF-SHA mitigation with a local-checkout + manifest-flip install for the repoint experiment:
-    clone at f4e02952, run scripts/dev-plugin.sh core, verify core/.mcp.json --from starts with file://,
-    and drop --refresh (call the _flip_mcp.py equivalent with FLIP_ADD_REFRESH unset) so there is no PyPI
-    round-trip per spawn. Record that the uvx shim is absent on this host.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): MM-2 [LANDED this session in handoffs/active/multimodal-pipeline.md
+    section 1 Vision Pipeline] Replace the QMP_REF-SHA mitigation with a local-checkout + manifest-flip
+    install for the repoint experiment: clone at f4e02952, run scripts/dev-plugin.sh core, verify core/.mcp.json
+    --from starts with file://, and drop --refresh (call the _flip_mcp.py equivalent with FLIP_ADD_REFRESH
+    unset) so there is no PyPI round-trip per spawn. Record that the uvx shim is absent on this host.'
   - 'MM-3 [LANDED this session in handoffs/active/multimodal-pipeline.md section 1] Security review before
     any install: install the core MCP server WITHOUT the skill half. Concrete inputs from this pass: install.sh:441
     nested curl|bash (confirm-gated and short-circuited when uvx is present) and the @main-welded manifests.'
@@ -71492,16 +71539,17 @@
   - '[draft-task, NOT PERFORMED - needs operator approval, index modification] Amend intake-1076 contradicting_evidence:
     issue #7 is independent third-party corroboration of the Serper blocker, and record the maintainer''s
     stated plan to move search out of core.'
-  - '[draft-task, disposition monitor] Monitor issue #7 from the searxng-search-backend.md Research Context
-    table. TRIGGER: a commit lands on main that either (a) introduces a search-backend selection seam
-    in qwen_mm_plugins_core, or (b) creates the qwen-mm-plugins-search capability / removes Serper from
-    core. On (b), re-run the core-tool census - expect 12/12 key-free. On (a), evaluate a SearXNG adapter
-    against port 8888.'
-  - '[draft-task, disposition monitor] Monitor PR #6 from multimodal-pipeline.md section 1. TRIGGER: PR
-    closed or merged, or scripts/_flip_mcp.py appears on main. Do NOT wait on it - MM-2 supersedes it.'
-  - DECLINE (now) - building a searxng backend for qwen_mm_plugins_core. The interface does not exist
-    upstream, the enum is closed, and the maintainer has signalled a restructure that may moot it. Revisit
-    on the issue-#7 trigger above.
+  - 'PROPOSAL (dive-derived, operator-review candidate): [draft-task, disposition monitor] Monitor issue
+    #7 from the searxng-search-backend.md Research Context table. TRIGGER: a commit lands on main that
+    either (a) introduces a search-backend selection seam in qwen_mm_plugins_core, or (b) creates the
+    qwen-mm-plugins-search capability / removes Serper from core. On (b), re-run the core-tool census
+    - expect 12/12 key-free. On (a), evaluate a SearXNG adapter against port 8888.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): [draft-task, disposition monitor] Monitor PR
+    #6 from multimodal-pipeline.md section 1. TRIGGER: PR closed or merged, or scripts/_flip_mcp.py appears
+    on main. Do NOT wait on it - MM-2 supersedes it.'
+  - 'PROPOSAL (dive-derived, operator-review candidate): DECLINE (now) - building a searxng backend for
+    qwen_mm_plugins_core. The interface does not exist upstream, the enum is closed, and the maintainer
+    has signalled a restructure that may moot it. Revisit on the issue-#7 trigger above.'
   notes: 'Stage-2b combined ingest-and-dive, 2026-08-10, via /research-intake. Report recovered from the
     session transcript and persisted 2026-08-10; the dive itself ran 2026-08-10. Covers TWO upstream URLs:
     issue https://github.com/QwenLM/Qwen-MM-Plugins/issues/7 (the url field) and pull request https://github.com/QwenLM/Qwen-MM-Plugins/pull/6.
