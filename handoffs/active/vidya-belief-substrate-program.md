@@ -267,10 +267,34 @@ Operator priority: an integrated solution that works, not novelty.
       means a broken parser. Checked against ground truth: all 4 redirects parse correctly
       (784→244, 336→315, 797→418, 785→772) and the wiki cites none of them, because the merges
       repointed citations at merge time. All 477 cited ids resolve; none dangle ✅ 2026-08-12
-- [ ] SC6 Scale sealed-manifest ingestion beyond `artifacts/**/manifest.json`. Only 14 manifests
-      live there against 4,562 measurement-shaped tracked files in the research repo; the other
-      formats (`execution_manifest.jsonl`, benchmark result json) are unread. Note
-      `data/benchmark_artifact_inventory.json` is EMPTY (0 rows), which is its own finding
+- [x] SC6-PRICE **Priced the bulk adapter before writing it, and it does not pay.** Sampled 50
+      files from each of the four largest measurement areas (200 total) for the constitution's
+      tuple:
+
+      | Area | Files | protocol | reps | date | sha256 | **full tuple** |
+      |---|---:|---:|---:|---:|---:|---:|
+      | `benchmarks/results` | 2,605 | 12% | 0% | 96% | 0% | **0%** |
+      | `benchmarks/root_workload` | 1,156 | 40% | 0% | 40% | 0% | **0%** |
+      | `data/batched_decode` | 387 | 88% | 10% | 70% | 0% | **0%** |
+      | `artifacts/np_context_study_v8_20260727` | 659 | 42% | 0% | 22% | 64% | **0%** |
+
+      **Zero of 200 carry the full tuple; `reps` is essentially never recorded and `sha256` is
+      absent from three of four areas.** An adapter over these would add ~4,500 claims that all top
+      out at `Verified/Located`, gating nothing — the identical trap SC2 correctly identified for
+      progress prose. The bulk-ingest framing of SC6 is therefore REJECTED, not deferred.
+      Correction: the original SC6 note cited `execution_manifest.jsonl`; no such file exists in
+      the research repo ✅ 2026-08-12
+- [ ] SC6 **Rescoped — the gap is upstream, not a missing reader.** Only 6 of ~4,562 measurement
+      artifacts are sealed, and the sealed ones already reach `Witnessed/Attested` unaided. So the
+      leverage is on the WRITE: make an ordinary benchmark run emit the tuple it already knows
+      (protocol from the codified recipe, reps from the run config, date, and a hash of its own
+      output) via `scripts/vidya/measurement_record.py`. Needs an operator call on where to wire it
+      — see the decision queue. Note `data/benchmark_artifact_inventory.json` is EMPTY (0 rows),
+      which is its own finding
+- [ ] SC6-HAZARD Before any bulk ingest is ever reconsidered: support is counted by **source
+      locator**, so 2,605 separate result files measuring the same thing would read as 2,605
+      independent witnesses. Same-harness runs are not independent evidence. A bulk adapter needs a
+      run-level (not file-level) locator or it manufactures corroboration
 
 ### Promotion track — opened 2026-08-10 after reviewing the ITERATE verdict
 
