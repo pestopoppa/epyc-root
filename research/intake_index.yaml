@@ -3967,7 +3967,7 @@
     - src/graph/helpers.py (session_compaction — parallel to their context summarization)
     - src/graph/helpers.py (_spill_if_truncated — parallel to their file-based output storage)
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
   notes: 'Architectural parallel to our REPL + escalation pipeline. Key patterns that mirror ours: sub-agent delegation (our escalation), context summarization (our session_compaction), file-based output storage (our output spill). Their approach is more opinionated/turnkey; ours is more sophisticated (multi-tier routing, MemRL Q-values, difficulty-adaptive budgets). The write_todos planning tool is interesting — lightweight task decomposition that could inform our workspace_state blackboard.
 
     '
@@ -4007,7 +4007,7 @@
     - src/session/ (session persistence — maps to Threads)
     - orchestration/repl_memory/ (episodic + strategy store — maps to Store)
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
   notes: 'Framework-agnostic API standard that maps cleanly to our existing primitives: Runs → task execution, Threads → session persistence, Store → episodic memory. LangGraph Platform implements a superset. If we ever expose the orchestrator as an agent server (beyond the current /chat endpoint), this spec is the interop standard to follow. The agent introspection pattern (advertising capabilities via JSON Schema) could inform our role/model registry API.
 
     '
@@ -4047,7 +4047,7 @@
     - src/graph/approval_gate.py (human-in-the-loop at escalation boundaries)
     - orchestration/repl_memory/ (episodic memory — persistent across sessions)
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
   notes: 'Most architecturally relevant LangChain project — our orchestrator uses the same graph-based execution paradigm (pydantic_graph with nodes, edges, typed TaskState). Key differences: LangGraph is a generic framework, we have a purpose-built orchestrator with domain-specific features (multi-tier model routing, speculative decoding control, MemRL Q-values). LangGraph''s durable execution (checkpoint/resume from failure) is more mature than our resume_tokens feature. Their human-in-the-loop (inspect/modify state at any point) is more general than our approval_gates (escalation boundaries only).
 
     '
@@ -5140,7 +5140,7 @@
     intake:
     - intake-170
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
   notes: 'New benchmark for Lean 4 autoformalization at graduate math level. Interesting agent evaluation methodology (comparator-based verification, multi-harness comparison). Not directly applicable to EPYC inference optimization, but the agent harness patterns (MCP vs Skills vs bash-only) and cost/time metrics are informative for orchestrator agent design. References SorryDB (2603.02668).
 
     '
@@ -5172,7 +5172,7 @@
     intake:
     - intake-171
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
   notes: 'Open-source multi-agent harness for Lean 4. Relevance to EPYC: (1) forked from hermes-agent which we are evaluating for integration, (2) parallel subagent coordination patterns may inform orchestrator design, (3) MCP/LSP integration approach. Not directly applicable to inference optimization but the agent architecture patterns are worth tracking.
 
     '
@@ -5217,7 +5217,7 @@
     intake:
     - intake-172
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
   notes: '156 stars, 13 forks. Forked from nousresearch/hermes-agent. Key architectural patterns: project-scoped config (.gauss/project.yaml), managed backend spawning, swarm coordination for parallel agents. Supports both claude and codex backends. MIT licensed. The child process isolation and swarm management patterns are relevant to our orchestrator multi-agent work.
 
     '
@@ -7423,7 +7423,7 @@
   ingested_date: '2026-04-01'
   cross_references:
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
   notes: 'DEEP-DIVE REVISION (was: worth_investigating). Python side is scaffolding — 66 .py files but ~30 are __init__.py stubs loading JSON metadata. Tools (184 entries) and commands (207) are catalogued names, not implementations. query_engine.py counts chars, never calls an LLM. Rust side (conversation.rs, compact.rs) has real but incomplete implementations. OmX orchestration is mentioned but not documented. Adds zero value beyond the leak analysis (intake-249). The 93K stars are hype-driven, not quality-driven.
 
     '
@@ -7663,7 +7663,7 @@
   locator_note: 'Operator-supplied inline material: a third-party repo-leak analysis relayed via session, attributed in-title to @neural_avb; no canonical URL was captured at intake.'
   cross_references:
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - orchestrator-conversation-management.md
     - context-folding-progressive.md
     codebase:
@@ -8238,7 +8238,7 @@
   cross_references:
     handoffs:
     - claude-code-local-constellation-routing.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     research:
     - opengauss-architecture-analysis.md
   notes: 'ACP is the open standard for AI agent-editor integration (launched Sep 2025, JetBrains co-lead maintainer Feb 2026). This repo is a thin adapter — not novel architecturally, but demonstrates the ACP ecosystem maturing. Our claude-code-local-constellation-routing handoff already evaluates ACP as Path B for external API surface. This confirms ACP tooling exists but does not change our MCP-first integration strategy. Monitor for when ACP becomes first-class in Claude Code itself (currently via community adapters only).
@@ -8512,7 +8512,7 @@
   cross_references:
     handoffs:
     - context-folding-progressive.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - knowledge-base-governance-improvements.md
     intake:
     - intake-268 (Karpathy LLM Wiki concept)
@@ -8898,7 +8898,7 @@
     - intake-269 (nvk/llm-wiki implementation)
     handoffs:
     - knowledge-base-governance-improvements.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - hermes-outer-shell.md
   handoffs_updated:
   - knowledge-base-governance-improvements.md
@@ -9558,7 +9558,7 @@
   contradicting_evidence: null
   cross_references:
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - langgraph-migration.md
     - open_source_orchestrator.md
   notes: 'Y Combinator S24 company. Interesting as a reference implementation for knowledge-graph- backed agent memory — relevant to our orchestrator''s context management and the hermes-agent frontend integration. Their Markdown+backlinks approach to knowledge persistence is simpler than our session compaction pipeline but may inform human-readable memory design. MCP integration patterns are directly relevant to hermes-outer-shell. Not directly applicable to inference optimization but worth tracking for agent architecture patterns.
@@ -10403,7 +10403,7 @@
   locator_note: 'Operator-supplied inline material summarizing a course lecture; no canonical URL was captured at intake.'
   cross_references:
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - routing-intelligence.md
     - context-folding-progressive.md
   notes: 'Survey lecture — all techniques covered in existing handoffs. The prompting → RAG → agents escalation ladder matches our architecture. MCP integration already tracked via hermes-agent-index.md. No new techniques for EPYC. The 20-60% time savings number is useful for business case framing.
@@ -10529,7 +10529,7 @@
     - intake-326 (MemPalace)
     handoffs:
     - context-folding-progressive.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - tool-output-compression.md
   notes: 'Excellent design-space taxonomy. The nine-axis framework (write triggers, storage backend, retrieval mode, curation, forgetting, timing) maps directly to our context-folding design decisions. Our approach: derived storage (session_compaction), hook-driven retrieval (worker index injection), harness curation (session_compaction trigger at 60%), append-only forgetting (context is lost when compacted). The essay highlights our key weakness: derivation drift from repeated summarization. Our L1-L4 compression ladder (Phase 2b) attempts to address this with tiered compression levels. The raw vs derived tradeoff is exactly the tension in Phase 2c (ByteRover enhancement) — adding hash-based dedup to preserve some raw segments. Actionable insight: implement provenance tracking so we can trace derived summaries back to their source turns and detect drift. DEEP-DIVE 2026-04-12: Author confirmed as Chrys Bader (Twitter/X @chrysb), CTO/co-founder of Dot (personal AI companion app). The nine-axis framework applied to our stack: (1) Write triggers: we use heuristic (60% context fill), essay suggests LLM-as-curator is terrible at predicting what matters later — validates our threshold-based approach. (2) Storage: we use derived (session summaries), MemPalace uses raw verbatim (96.6% recall), Mem0 uses derived ($249/mo, ~85%). Our derivation drift risk is real. (3) Retrieval: we use hook-driven (worker index injection at session start). Essay warns hook-driven is expensive and "makes the model perform memory rather than truly have it." (4) Curation: harness-based (deterministic session_compaction trigger). Essay confirms this is cheapest but sloppiest. (5) Forgetting: append-only (context lost when compacted). Essay warns contradictions accumulate — we should implement supersession. (6) Timing: synchronous (compaction runs in-conversation). Essay recommends async background for expensive derivations — our worker_fast summarizer already does this. Key gap analysis: our weakest axis is FORGETTING (append-only, no provenance, no contradiction detection). MemPalace has temporal KG with validity windows (closer to ideal). Actionable: (1) Add validity timestamps to session compaction segments. (2) Implement supersession detection (when new info contradicts old compacted info). (3) Consider hybrid raw+derived approach for Phase 2c: keep raw segments for recent turns, derive only older ones.
 
@@ -10621,7 +10621,7 @@
     - intake-248 (SiliconSwarm)
     handoffs:
     - autopilot-continuous-optimization.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
   notes: 'Interesting architectural parallel to our autopilot. Key differences: they use Docker sandboxes (we use git worktrees), they use A2A protocol (we use Claude Code native sub-agents), they implement vRLM (we implement RLM concepts via context-folding). The "Kubernetes for agents" metaphor is apt — load balancing, fault tolerance, service discovery all translate. TypeScript/Node.js, MIT licensed. Worth monitoring. DEEP-DIVE 2026-04-12: vRLM Three-Phase model: (1) Plan — root "Tech Lead" (Gemini 2.5 Pro) explores repo via shell, dynamically invents specialist roles (fully emergent, no hardcoded teams). (2) Execute — workers spawn concurrently in Docker/Firecracker with repo at /workspace, Promise.allSettled() for fault tolerance. (3) Synthesize — root aggregates worker summaries. TWO-TOOL MCP STRATEGY: every agent gets exactly search() + execute(), achieving ~1000 token footprint. Context lives in sandbox filesystem, not prompt. This is the key extractable pattern for EPYC — constraining sub-agent tool surfaces to reduce prompt overhead. A2A Agent Cards: JSON with name/description/ capabilities/skills[] for inter-agent discovery. SSE typed events for monitoring. Config: maxWorkers=6, maxStepsPerAgent=20. LIMITATIONS: Gemini API locked (no local inference), no benchmarks, no persistent memory. ACTIONABLE: (1) Extract two-tool pattern for our sub-agent dispatch — constrain each model''s tool set. (2) Adopt SSE event typing for autopilot monitoring. (3) The emergent role assignment validates our project_autopilot_stack_assembly.md goal of dynamic stack assembly.
 
     '
@@ -10904,7 +10904,7 @@
     - intake-316 (LTM Unsolved essay — MemPalace partially addresses the design space)
     handoffs:
     - context-folding-progressive.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - tool-output-compression.md
   notes: 'Strong memory system with published benchmark results. Key architectural insight: they search RAW unsummarized text (avoiding derivation drift from intake-316) but organize it hierarchically (avoiding the flat-search problem). This is a middle ground between raw and derived that our context-folding should consider. The four-layer stack (L0 identity → L3 deep search) parallels our L1-L4 compression ladder. The AAAK compression dialect is novel — lossy abbreviation that any LLM can read without special decoders. The 19 MCP tools make it plug-and-play with Claude Code. MIT license. Worth deep-diving for context-folding Phase 2c integration ideas. DEEP-DIVE 2026-04-12: CRITICAL finding — GitHub issue #214 flags "benchmarks do not exercise MemPalace — headline 96.6% is a ChromaDB score." The palace architecture (wings/rooms/drawers) is NOT tested by LongMemEval. The 96.6% is ChromaDB vector search on raw text with metadata filtering, not the palace hierarchy. The +34% retrieval boost from wing/room filtering is their own internal measurement, not LongMemEval-validated. AAAK compression details: regex-based entity abbreviation system (not reversible compression). AAAK overhead costs MORE than it saves on short conversations — only amortizes at scale (hundreds of repeated entity mentions). 84.2% AAAK vs 96.6% raw = 12.4pp regression, but 84.2% still beats Mem0 (~85%) and Zep (~82%) at zero cost. Architecture: L0 (identity, ~170 tokens always injected) → L1 (critical facts from temporal KG) → L2 (room-filtered ChromaDB search) → L3 (full deep search). Temporal KG uses SQLite with validity windows per entity-relationship triple. 19 MCP tools enable direct Claude Code integration. DOWNGRADE novelty: the 96.6% headline is misleading — it''s standard ChromaDB performance, not a palace architecture breakthrough. However, the hierarchical metadata filtering (wings/rooms) IS genuinely useful for our context-folding — adding topic-based filtering to our session compaction index could improve retrieval precision. The L0-L3 stack design is the real contribution. Actionable: (1) Evaluate adding wing/room-style metadata tags to our session compaction worker_explore index. (2) The temporal KG (entity + validity window) pattern could inform our user modeling (hermes B1). (3) Test raw-storage approach for session segments (keep some verbatim segments alongside compressed summaries) in Phase 2c.
 
@@ -10951,7 +10951,7 @@
     - intake-240 (GEPA paper — same algorithm used here)
     - intake-244 (Meta-Harness — same optimization target, different approach)
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - autopilot-continuous-optimization.md
     - meta-harness-optimization.md
   notes: 'Directly applicable to our PromptForge species in autopilot. Key differences from our approach: they use GEPA (evolutionary, Pareto-optimal), we use LLM-guided mutation. Their execution trace analysis goes beyond our score-only feedback — aligns with Meta-Harness finding (intake-244) that full traces provide +15 points. The $2-10 per run is for API models; adapting to local models would eliminate cost but require our inference stack. The guardrails (test validation + human review) are more conservative than our autopilot safety gates. Nous Research backing adds credibility. MIT license. Should explore integrating GEPA algorithm into our PromptForge species. DEEP-DIVE 2026-04-12: 6-stage optimization loop (SELECT→BUILD EVAL→WRAP DSPy→RUN OPTIMIZER→EVALUATE→DEPLOY via PR). GEPA reads EXECUTION TRACES to understand WHY variants fail (not just that they fail) — this is "Actionable Side Information (ASI)", the text-optimization analogue of gradients. 4 improvement tiers in risk order: (1) skill files, (2) tool descriptions, (3) system prompts, (4) tool code. Phase 1 (skills) is implemented; 2-4 are planned. 5 mandatory constraint gates: 100% test pass, size limits (skills ≤15KB, tools ≤500 chars, +20% max growth), caching compatibility, semantic preservation, human review gate. Fitness = LLM-as-judge (correctness + conciseness + procedure adherence) + cost/latency penalties. CRITICAL for EPYC: GEPA''s reflective trace analysis directly upgrades PromptForge. Integration path: (1) Wrap EPYC prompt templates as DSPy signatures, (2) Collect orchestrator session trajectories in ShareGPT format, (3) Run GEPA externally with our benchmark suite as evaluator, (4) Gate on USACO/skill_transfer/web_research. Cost: ~250-500 local inference calls per optimization run (~2-4 hrs on our stack). The 3-example minimum means bootstrapping is feasible for any new target. Darwinian Evolver is AGPL v3 — use GEPA (MIT) only. UPGRADE verdict → new_opportunity. This is the #1 priority integration target per cross-cutting analysis: directly upgrades PromptForge, no GPU needed, MIT licensed.
@@ -11338,7 +11338,7 @@
     intake:
     - intake-277 (Hermes Agent LLM Wiki Skill — skill architecture patterns)
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - hermes-outer-shell.md
   notes: 'Addy Osmani (Google Chrome team) brings production engineering rigor to agent skills. Key takeaway: the anti-rationalization tables are a novel pattern we don''t use — explicitly countering common excuses for skipping quality gates. Our skill system uses structured workflows but lacks this adversarial self-check. The 7-phase lifecycle (spec through ship) is more comprehensive than our current skill set. The process-not-prose philosophy aligns with our agent governance approach. MIT license. Worth reviewing for skill design patterns, especially the anti-rationalization tables and evidence-based verification gates. DEEP-DIVE 2026-04-12: Full inventory — 20 skills in 6-phase lifecycle (DEFINE→PLAN→ BUILD→VERIFY→REVIEW→SHIP) + 1 meta-skill. 7 slash commands: /spec, /plan, /build, /test, /review, /code-simplify, /ship. Skills: idea-refine, spec-driven-development, planning-and-task-breakdown, incremental-implementation, test-driven-development, context-engineering, source-driven-development, frontend-ui-engineering, api-and- interface-design, browser-testing-with-devtools, debugging-and-error-recovery, code-review-and-quality, code-simplification, security-and-hardening, performance- optimization, git-workflow-and-versioning, ci-cd-and-automation, deprecation-and- migration, documentation-and-adrs, shipping-and-launch. Anti-rationalization tables: each SKILL.md has "Rationalizations" section with excuse|rebuttal format. Evidence- based gates: tests, build logs, runtime observations — never "seems right." Skill file format: frontmatter (name, description) → Overview → When to Use → Process → Rationalizations → Red Flags → Verification. GAP ANALYSIS vs our .claude/skills/: We LACK: (1) anti-rationalization tables (agents skip validation), (2) explicit verification gates with evidence types, (3) phase-based lifecycle activation, (4) reviewer personas (code-reviewer, test-engineer, security-auditor). Content is web-dev oriented (not applicable to inference). UPGRADE relevance medium→high for SKILL DESIGN PATTERNS. Actionable: (1) Add anti-rationalization tables to research- intake and agent-file-architecture skills. (2) Add verification gates with evidence types to all skills. (3) Consider phase-based composition for benchmark/new-model workflows.
 
@@ -11739,7 +11739,7 @@
     - intake-326 (MemPalace)
     handoffs:
     - context-folding-progressive.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
   notes: 'Academic survey complementing the Chrys Bader essay (intake-316). Confirms that cross-session coherence, parametric-nonparametric balance, and application-level evaluation are genuinely unsolved. The parametric-nonparametric framing is useful: our context-folding is non-parametric (external memory), while Doc-to-LoRA (intake handoff) is parametric (baking knowledge into weights). This survey provides the academic foundation for our design decisions. DEEP-DIVE 2026-04-12: Three-dimensional taxonomy: temporal scope (working/episodic/ semantic/procedural), representational substrate (context-resident/vector/structured/ executable/hybrid), control policy (heuristic/prompted/learned). Five mechanism families: (1) context-resident compression (pathology: summarization drift after 3+ passes — directly relevant to our context-folding), (2) retrieval-augmented stores (key issue: user input is poor retrieval query), (3) reflective self-improvement (Reflexion 91% HumanEval; risk: self-reinforcing errors), (4) hierarchical virtual context (MemGPT paging; achilles heel: paging wrong things), (5) policy-learned management (AgeMem discovers preemptive summarization via RL). CRITICAL FINDING: "Long context is NOT memory" — MemoryArena drops from 80%→45% with long-context-only. Generative Agents degenerate within 48 simulated hours without reflection. Voyager 15.3x slower without skill library. Unsolved: continual consolidation (when do episodes become semantic knowledge?), causally-grounded retrieval, trustworthy reflection, learned forgetting, evaluation with cost. FOR EPYC: (1) MemGPT-style three-tier pattern (working context / recall DB / archival store) should be evaluated for orchestrator multi-session management. (2) The "summarization drift after 3+" finding directly warns about our multi-tier compression. (3) Policy-learned memory management (AgeMem) could be a future autopilot species target.
 
     '
@@ -13946,11 +13946,11 @@
   ingested_date: '2026-04-17'
   cross_references:
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - hermes-outer-shell.md
     - reasoning-compression.md
   handoffs_updated:
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   handoffs_created: []
   notes: 'Directly relevant to Hermes Agent integration. Real tool execution traces from production harness. Could fine-tune local models on agentic tool use. Quality varies — filtered version (intake-393) recommended for training. 8+ derived models already trained.
 
@@ -14138,9 +14138,9 @@
   ingested_date: '2026-04-17'
   cross_references:
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
   handoffs_updated:
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   handoffs_created: []
   notes: 'Higher quality subset of intake-388. If we pursue fine-tuning local models for agentic tool use, this filtered version is preferable. Filtering methodology (reasoning depth, self-correction) aligns with reasoning compression principles.
 
@@ -14186,7 +14186,7 @@
   cross_references:
     handoffs:
     - autopilot-continuous-optimization.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - meta-harness-optimization.md
     intake_entries:
     - intake-327
@@ -14195,7 +14195,7 @@
     - evomap-evolver-gep-protocol.md
   handoffs_updated:
   - autopilot-continuous-optimization.md
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   - meta-harness-optimization.md
   handoffs_created: []
   novelty_justification: Downgraded medium→low after deep dive (2026-04-17). GEP schema is concrete only at the 7-field Gene-record level; Capsule and EvolutionEvent stores ship empty. Algorithmic core is below PromptForge+GEPA. Novelty is purely at the governance-schema layer, not a new optimization technique.
@@ -14247,7 +14247,7 @@
     handoffs:
     - context-folding-progressive.md
     - tool-output-compression.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     intake_entries:
     - intake-135
     - intake-268
@@ -14261,7 +14261,7 @@
   handoffs_updated:
   - context-folding-progressive.md
   - tool-output-compression.md
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   handoffs_created: []
   novelty_justification: Downgraded medium→low after deep dive (2026-04-17). Core idea heavily overlaps intake-135/268-270/277. "3-layer" is a client-side convention, "10x savings" is an arithmetic ratio not a measurement, "biomimetic" is marketing. Contribution is productized Claude-Code-specific engineering on well-covered ground.
   relevance_justification: Five concretely adoptable patterns (A-E below) against context-folding-progressive.md Phase 2 and tool-output-compression.md. Confirms our direction rather than unlocking new capability — EPYC already has ~80% of this direction planned. AGPL-3.0 precludes code adoption.
@@ -14358,7 +14358,7 @@
   cross_references:
     handoffs:
     - hermes-outer-shell.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - meta-harness-optimization.md
     - repl-turn-efficiency.md
     - tool-output-compression.md
@@ -14369,7 +14369,7 @@
     - vercel-open-agents-durable-workflow.md
   handoffs_updated:
   - hermes-outer-shell.md
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   - meta-harness-optimization.md
   - repl-turn-efficiency.md
   - tool-output-compression.md
@@ -14472,7 +14472,7 @@
   cross_references:
     handoffs:
     - meta-harness-optimization.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - context-folding-progressive.md
     - tool-output-compression.md
     - repl-turn-efficiency.md
@@ -14483,7 +14483,7 @@
     - intake-393
   handoffs_updated:
   - meta-harness-optimization.md
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   - context-folding-progressive.md
   - tool-output-compression.md
   - repl-turn-efficiency.md
@@ -15197,14 +15197,14 @@
     chapters:
     - 08-cost-aware-rewards.md
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - hermes-outer-shell.md
     - eval-tower-verification.md
     - bulk-inference-campaign.md
     experiments: []
     intake_entries: []
   handoffs_updated:
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   handoffs_created: []
   contradicting_evidence:
   - Qwen models show inconsistent performance especially when debugging existing code
@@ -15287,7 +15287,7 @@
     intake_entries:
     - intake-411
   handoffs_updated:
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   - autopilot-continuous-optimization.md
   handoffs_created: []
   contradicting_evidence:
@@ -16173,7 +16173,7 @@
     handoffs:
     - context-folding-progressive.md
     - hermes-outer-shell.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - routing-intelligence.md
     - meta-harness-optimization.md
     - reasoning-compression.md
@@ -17619,7 +17619,7 @@
   cross_references:
     chapters: []
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - hermes-outer-shell.md
     - meta-harness-optimization.md
     - repl-turn-efficiency.md
@@ -17630,7 +17630,7 @@
     - intake-277
     - intake-327
   handoffs_updated:
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   - hermes-outer-shell.md
   - meta-harness-optimization.md
   - repl-turn-efficiency.md
@@ -17695,7 +17695,7 @@
     - meta-harness-optimization.md
     - autopilot-continuous-optimization.md
     - repl-turn-efficiency.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     experiments: []
     intake_entries:
     - intake-244
@@ -17704,7 +17704,7 @@
   - meta-harness-optimization.md
   - autopilot-continuous-optimization.md
   - repl-turn-efficiency.md
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   handoffs_created: []
   deep_dive: research/deep-dives/meta-harness-official-reference-code.md
   novelty_justification: 'Companion code repo for already-indexed intake-244. README explicit that this is ''a cleaned up version of the code we used for the paper'' with no additional experiments or ablations. Value is purely in making the framework runnable — ONBOARDING.md, domain_spec template, claude_wrapper examples, and two reference experiment scaffolds.
@@ -17907,7 +17907,7 @@
   cross_references:
     chapters: []
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - hermes-outer-shell.md
     - tool-output-compression.md
     - context-folding-progressive.md
@@ -17921,7 +17921,7 @@
     - intake-388
     - intake-393
   handoffs_updated:
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   - hermes-outer-shell.md
   - tool-output-compression.md
   - context-folding-progressive.md
@@ -19250,7 +19250,7 @@
   - repl-turn-efficiency.md
   - tool-output-compression.md
   - context-folding-progressive.md
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   handoffs_created: []
   novelty_justification: 'Initial scoring (novelty=low) was based on README-only reading and assumed the patterns were undifferentiated from Vercel AI SDK / OpenAI Agents SDK / deepagents. Source-level review shows the *named primitive set* is more crisply factored than any of those — specifically (a) the explicit transformContext + convertToLlm two-stage pipeline with declaration-merging custom message types, (b) the steering vs follow-up split as named API with one-at-a-time vs all queue modes, (c) afterToolCall field-replace semantics with throw-isolation per CHANGELOG #3084, (d) terminate-unanimous-batch rule. None are research-novel, but the documentation-and-architecture novelty is genuinely above the comparator set.
 
@@ -21607,7 +21607,7 @@
     chapters:
     - 09-claude-debugger.md
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - hermes-outer-shell.md
     - meta-harness-optimization.md
     - repl-turn-efficiency.md
@@ -21665,7 +21665,7 @@
     chapters: []
     handoffs:
     - meta-harness-optimization.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - hermes-outer-shell.md
     - tool-output-compression.md
     - repl-turn-efficiency.md
@@ -21679,7 +21679,7 @@
     - 'intake-473 (pi-agent-core — also lands UX/agent-shell patterns; Pocock''s collection is upstream of the agent loop, pi-agent-core is the runtime)'
   handoffs_updated:
   - meta-harness-optimization.md
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   - hermes-outer-shell.md
   - tool-output-compression.md
   - repl-turn-efficiency.md
@@ -22061,7 +22061,7 @@
     - eval-tower-verification.md
     - tool-output-compression.md
     - research-evaluation-index.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     experiments: []
     intake_entries:
     - intake-517
@@ -23752,7 +23752,7 @@
     chapters: []
     handoffs:
     - dynamic-stack-concurrency.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - multimodal-pipeline.md
     experiments: []
     intake_entries: []
@@ -23806,7 +23806,7 @@
     chapters: []
     handoffs:
     - meta-harness-optimization.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - hermes-outer-shell.md
     - outer-coordinator-learned-head.md
     - tri-role-coordinator-architecture.md
@@ -24169,7 +24169,7 @@
     handoffs:
     - meta-harness-optimization.md
     - agent-world-env-synthesis.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - 08-doc-to-lora-prototype.md
     - routing-intelligence.md
     experiments: []
@@ -24299,7 +24299,7 @@
     - routing-and-optimization-index.md
     - routing-intelligence.md
     - decision-aware-routing.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - dynamic-stack-concurrency.md
     experiments: []
     intake_entries:
@@ -24423,7 +24423,7 @@
     handoffs:
     - rlm-orchestrator-roadmap.md
     - halo-trace-loop-spike.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - tri-role-coordinator-architecture.md
     - dynamic-stack-concurrency.md
     experiments: []
@@ -25848,7 +25848,7 @@
     handoffs:
     - agent-world-env-synthesis.md
     - hermes-outer-shell.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - internal-kb-rag.md
     experiments: []
     intake_entries:
@@ -25861,7 +25861,7 @@
     - 'intake-444 (Agent-World ETD — public-MCP-ecosystem tool discovery; mirage is the kind of connector ETD could exercise)'
   handoffs_updated:
   - hermes-outer-shell.md
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   - internal-kb-rag.md
   handoffs_created: []
   novelty_justification: The component primitives (FUSE, S3FS-style multi-backend mounts, RAM+Redis cache layers) are all well-trodden territory; the novel contribution is packaging them with first-class agent-framework adapters (7+ frameworks) and a deliberate "agents-already-know-bash" UX framing. Distinct from intake-520 (markdownfs) which is markdown-only with Git-style VCS and an MCP surface but no multi-cloud-connector breadth. Distinct from intake-444's MCP-tool-ecosystem frame in that mirage chooses filesystem semantics over JSON-RPC tool calls. Combination is genuinely novel packaging; no underlying mechanism is new.
@@ -30175,7 +30175,7 @@
     - engram-conditional-memory.md
     - llama-cpp-dsa-contribution.md
     - hermes-outer-shell.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     experiments: []
     intake_entries:
     - intake-506
@@ -31250,7 +31250,7 @@
     - 07-benchmark-suite-construction.md
     handoffs:
     - 08-doc-to-lora-prototype.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     experiments: []
     intake_entries:
     - intake-325
@@ -31300,7 +31300,7 @@
     chapters: []
     handoffs:
     - hermes-outer-shell.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - internal-interaction-lifecycle.md
     experiments: []
     intake_entries:
@@ -31309,7 +31309,7 @@
     - intake-145
   handoffs_updated:
   - hermes-outer-shell.md
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   - internal-interaction-lifecycle.md
   - delegation-context-preassembly.md
   - routing-intelligence.md
@@ -34712,7 +34712,7 @@
     chapters: []
     handoffs:
     - autopilot-continuous-optimization.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - repo-readiness-scorer.md
     experiments: []
     intake_entries:
@@ -34784,7 +34784,7 @@
   ingested_date: '2026-06-19'
   handoffs_updated:
   - tool-use-eval-contract.md
-  - hermes-agent-index.md
+  - user-facing-harness-index.md
   handoffs_created: []
 - id: intake-706
   arxiv_id: null
@@ -41868,7 +41868,7 @@
   cross_references:
     chapters: []
     handoffs:
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - tool-use-eval-contract.md
     - tool-output-compression.md
     experiments: []
@@ -42267,7 +42267,7 @@
     chapters: []
     handoffs:
     - dynamic-stack-concurrency.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     - model-stack-single-source-update-pipeline.md
     experiments: []
     intake_entries:
@@ -43747,7 +43747,7 @@
     - context-folding-progressive.md
     - repl-turn-efficiency.md
     - tool-use-eval-contract.md
-    - hermes-agent-index.md
+    - user-facing-harness-index.md
     experiments: []
     intake_entries:
     - intake-153
@@ -58828,3 +58828,139 @@
     dive as the missing link in the R1/R2 citation chain). Also contains strategy-valued game
     provenance (counting strategies/plays, cost, confidence) and the impossibility of counting
     positional strategies via semiring valuations (Prop 19).
+- id: intake-1068
+  arxiv_id: '2408.08435'
+  url: https://arxiv.org/abs/2408.08435
+  source_type: paper
+  title: Automated Design of Agentic Systems
+  authors:
+  - Shengran Hu
+  - Cong Lu
+  - Jeff Clune
+  categories:
+  - agent_architecture
+  - autonomous_research
+  novelty: high
+  relevance: medium
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-08-10'
+  verification: dive-verified
+  key_claims:
+  - 'Defines Automated Design of Agentic Systems (ADAS): automatically inventing agentic building blocks and their composition rather than hand-designing them.'
+  - Agents are defined in code so a meta agent can discover new agents by programming them; Turing-completeness is the argument that any agentic system is reachable in principle.
+  - Introduces Meta Agent Search, in which a meta agent iteratively programs new agents against a growing archive of prior discoveries.
+  - Reports discovered agents outperforming state-of-the-art hand-designed agents across coding, science and math domains.
+  - Reports that discovered agents transfer across domains and across underlying foundation models.
+  dive_corrections: '2026-08-10: ingested because it was cited in rec-002 and frontier-f1-real-task-corpus.md with intake-791 (SwarmAgentic) attached to it -- a neighbouring entry''s id, not this paper. CLAIM CORRECTION: it was cited as evidence for a trajectory toward ''fully autonomous task generation''. ADAS does NOT generate tasks; it is evaluated on given benchmarks. What ADAS automates is agent DESIGN. Verified 2026-08-10 against primary source (arXiv abs/HTML) during the citation audit that found this paper cited but never ingested.'
+  cross_references:
+    intake_entries:
+    - intake-772
+    - intake-1069
+- id: intake-1069
+  arxiv_id: '2603.19461'
+  url: https://arxiv.org/abs/2603.19461
+  source_type: paper
+  title: Hyperagents
+  authors:
+  - Jenny Zhang
+  - Bingchen Zhao
+  - Wannan Yang
+  - Jakob Foerster
+  - Jeff Clune
+  - Minqi Jiang
+  - Sam Devlin
+  - Tatiana Shavrina
+  categories:
+  - agent_architecture
+  - autonomous_research
+  novelty: high
+  relevance: medium
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-08-10'
+  verification: dive-verified
+  key_claims:
+  - Existing self-improving systems rely on fixed handcrafted meta-level mechanisms, which bounds how fast they can improve.
+  - Darwin Godel Machine's open-ended self-improvement works in coding only because evaluation and self-modification are themselves coding tasks, an alignment that does not hold in other domains.
+  - A hyperagent integrates task agent and meta agent into one editable program in which the meta-level modification procedure is itself editable.
+  - DGM-Hyperagents beats non-self-improving baselines across coding, paper review, robotics reward design and Olympiad math grading (Polyglot pass@1 0.084 to 0.267 on test).
+  - Meta-level improvements such as persistent memory and performance tracking transfer across domains and accumulate across runs.
+  dive_corrections: '2026-08-10: ingested because it was cited with intake-787 (MCE) attached to it -- a neighbouring entry''s id, not this paper. Note intake-229 ''HyperAgents 2025 workshop'' is a DIFFERENT thing and is not this. CLAIM CORRECTION: cited as evidence for a trajectory toward ''fully autonomous task generation''; the paper lists ''a fixed task and evaluation distribution'' among its own limitations. The real trajectory is toward domain-general metacognitive self-modification. Verified 2026-08-10 against primary source (arXiv abs/HTML) during the citation audit that found this paper cited but never ingested.'
+  cross_references:
+    intake_entries:
+    - intake-772
+    - intake-1068
+- id: intake-1070
+  arxiv_id: '2606.09498'
+  url: https://arxiv.org/abs/2606.09498
+  source_type: paper
+  title: 'Self-Harness: Harnesses That Improve Themselves'
+  authors:
+  - Hangfan Zhang
+  - Shao Zhang
+  - Kangcong Li
+  - Chen Zhang
+  - Yang Chen
+  - Yiqun Zhang
+  - Lei Bai
+  - Shuyue Hu
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-08-10'
+  verification: dive-verified
+  key_claims:
+  - Agent performance is jointly determined by the base model and the harness mediating its interaction with the environment, so effective harness design is model-specific.
+  - Self-Harness is a paradigm in which an LLM agent improves its own operating harness without human engineers or a stronger external agent.
+  - 'The loop has three stages: Weakness Mining from execution traces, Harness Proposal as minimal targeted edits, and Proposal Validation gated on regression testing.'
+  - On Terminal-Bench-2.0 from a minimal initial harness, held-out pass rates rose 40.5 to 61.9 percent (MiniMax M2.5), 23.8 to 38.1 (Qwen3.5-35B-A3B) and 42.9 to 57.1 (GLM-5).
+  - Proposal Validation accepts a candidate on pass-rate deltas against deterministic task verifiers, not on model-based grading.
+  dive_corrections: '2026-08-10: ingested because rec-001 cited it with intake-785''s id (Darwin Godel Machine) attached. The paper is real and correctly named. CLAIM CORRECTION: rec-001 cites it for ''LLM-as-judge benchmark design is itself optimizable''. NOT SUPPORTED -- the term LLM-as-judge does not appear in the paper, validation uses deterministic verifiers, and the benchmark is a fixed target rather than the object of optimization. What it does support is that agent HARNESS design is automatically optimizable. Verified 2026-08-10 against primary source (arXiv abs/HTML) during the citation audit that found this paper cited but never ingested.'
+  cross_references:
+    intake_entries:
+    - intake-244
+    - intake-1071
+- id: intake-1071
+  arxiv_id: '2510.04618'
+  url: https://arxiv.org/abs/2510.04618
+  source_type: paper
+  title: 'Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models'
+  authors:
+  - Qizheng Zhang
+  - Changran Hu
+  - Shubhangi Upasani
+  - Boyuan Ma
+  - Fenglu Hong
+  - Vamsidhar Kamanuru
+  - Jay Rainton
+  - Chen Wu
+  - Mengmeng Ji
+  - Hanchen Li
+  - Urmish Thakker
+  - James Zou
+  - Kunle Olukotun
+  categories:
+  - agent_architecture
+  - context_management
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-08-10'
+  verification: dive-verified
+  key_claims:
+  - LLM applications increasingly adapt by modifying context (instructions, strategies, evidence) rather than by updating weights.
+  - Prior context-adaptation methods suffer from brevity bias and from context collapse, where iterative rewriting erodes detail over time.
+  - ACE treats context as an evolving playbook maintained by a generation / reflection / curation loop using structured incremental updates instead of full rewrites.
+  - Reports +10.6 percent on agent benchmarks and +8.6 percent on finance benchmarks over strong baselines, with lower adaptation latency and rollout cost.
+  - Can adapt without labeled supervision by using naturally available execution feedback.
+  dive_corrections: '2026-08-10: ingested because rec-001 cited ''ACE'' with intake-788''s id (AFlow) attached. ACE expands to Agentic Context Engineering. CLAIM CORRECTION: rec-001 cites it for ''LLM-as-judge benchmark design is itself optimizable''. NOT SUPPORTED -- ACE optimizes the CONTEXT fed to an agent, not benchmarks or judges; its single LLM-as-judge mention is an off-the-shelf metric. LINEAGE CORRECTION: the note ''Meta-Harness -> ACE'' points the wrong way; ACE (2025-10) predates Meta-Harness (2026-03) by ~6 months. The link is shared authorship (Qizheng Zhang), not descent. Verified 2026-08-10 against primary source (arXiv abs/HTML) during the citation audit that found this paper cited but never ingested.'
+  cross_references:
+    intake_entries:
+    - intake-244
+    - intake-1070

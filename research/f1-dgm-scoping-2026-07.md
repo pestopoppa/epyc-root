@@ -29,6 +29,17 @@ No automated path skips the human-curate node. The eval-tower `SafetyGate` remai
 
 ### 1.1 What DGM contributes, and what we deliberately drop
 
+> **⚠ PREMISE CORRECTION 2026-08-10 — read before using this section.** The sentence below says
+> DGM is a loop in which "an agent generates tasks", and section 1.1 then takes "only the
+> task-generation half". **DGM has no task-generation half.** It self-modifies its own code and is
+> evaluated on given coding benchmarks; the same holds for ADAS (intake-1068) and Hyperagents
+> (intake-1069), which lists "a fixed task and evaluation distribution" among its own limitations.
+> Verified against primary source when those two papers were finally ingested (they had been cited
+> here with other entries' ids attached). What the lineage actually contributes is metacognitive
+> self-modification. Any F1 scoping that inherits task generation from DGM rests on a capability
+> that is not in the paper.
+
+
 DGM (Darwin-Gödel-Machine; Hu/Lu/Clune/Zhang lineage, ADAS → DGM → Hyperagents; handoff cites arxiv 2505.22954) is a **self-code-modification + empirical-validation loop**: an agent generates tasks, executes them, validates results, and iteratively improves both tasks and its own capability, using **archive-based evolution over a parallel exploration tree**.
 
 For F1 we take **only the task-generation half** and drop self-modification:

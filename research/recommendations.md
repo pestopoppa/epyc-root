@@ -5,39 +5,52 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 ## Recommendations
 
 - id: rec-001
-  title: "Meta-harness optimization: automated benchmark design for LLM evaluation"
+  title: "Harness and context optimization: the non-weight inputs to an agent are automatically optimizable"
   # 2026-08-10 citation audit: intake-784 was merged into intake-244 (same arXiv id).
   # Self-Harness and ACE were never ingested and had been given neighbouring entries' ids.
-  source: Meta-Harness (intake-784 -> now intake-244), Self-Harness (**NOT IN INDEX** — intake-785 was Darwin Godel Machine, now intake-772), ACE (**NOT IN INDEX** — intake-788 is AFlow)
+  source: Meta-Harness (intake-244), Self-Harness (intake-1070), ACE (intake-1071)
   category: benchmark_methodology
   priority: high
   description: >
-    Multiple papers (Meta-Harness, Self-Harness, ACE) converge on the same insight: LLM-as-judge benchmark
-    design is itself optimizable. Our eval-tower and seeding infrastructure could benefit from a meta-optimization
-    loop that automatically generates/adapts evaluation tasks rather than maintaining a static question corpus.
-  action: "Review meta-harness-optimization.md handoff — consider integrating automated task generation into seeding pipeline"
+    CORRECTED 2026-08-10 after ingesting the two sources this row cited but never held.
+    The original claim was "LLM-as-judge benchmark design is itself optimizable". That is NOT supported by
+    any of the three papers. Self-Harness (intake-1070) never mentions LLM-as-judge and validates against
+    deterministic task verifiers; ACE (intake-1071) optimizes the CONTEXT fed to an agent; Meta-Harness
+    (intake-244) searches over harness CODE. In all three the benchmark is a fixed evaluation target, not the
+    object of optimization.
+    What they do converge on, and what this row now claims: the non-weight inputs to an agent — harness code,
+    system prompt, memory, context — are automatically optimizable against execution feedback, and the useful
+    configuration is model-specific.
+  action: "Review meta-harness-optimization.md handoff — the transferable pattern is automatic harness/context
+    optimization gated on regression testing, NOT automated task generation, which none of these papers do." 
   status: open
   created: '2026-07-08'
 
 - id: rec-002
-  title: "Dynamic generation of evaluation tasks (DGM / Hyperagents lineage)"
+  title: "Metacognitive self-modification (ADAS -> DGM -> Hyperagents lineage)"
   # 2026-08-10 citation audit: DGM repointed (786 was STOP); the other two name papers that
   # were never ingested and had been given neighbouring entries' ids.
-  source: DGM (intake-772), Hyperagents (NOT IN INDEX; intake-787 is MCE), ADAS (NOT IN INDEX; intake-791 is SwarmAgentic)
+  source: DGM (intake-772), Hyperagents (intake-1069), ADAS (intake-1068)
   category: benchmark_methodology
   priority: high
   description: >
-    The Hu/Lu/Clune/Zhang author lineage (ADAS → DGM → Hyperagents) shows a clear trajectory from static
-    benchmark suites to fully autonomous task generation + agent execution. DGM's approach of generating
-    evaluation tasks on-the-fly based on model capabilities is directly relevant to our Frontier seed corpus
-    and continuous eval pipeline.
-  action: "Evaluate DGM task-generation methodology for Frontier-F1/F2 corpus expansion. Check compatibility with our verifier infrastructure."
+    CORRECTED 2026-08-10 after ingesting the two sources this row cited but never held.
+    The lineage is real: ADAS (intake-1068) -> DGM (intake-772) -> Hyperagents (intake-1069), and Hyperagents
+    names DGM as the system it extends. Two corrections. (1) The author through-line is Jeff Clune alone;
+    Hu and Lu drop out at Hyperagents and Zhang is absent from ADAS, so "Hu/Lu/Clune/Zhang lineage" overstates
+    it. (2) NONE of the three generates tasks. All are evaluated on given benchmarks, and Hyperagents lists
+    "a fixed task and evaluation distribution" among its own limitations. The trajectory is toward
+    domain-general METACOGNITIVE SELF-MODIFICATION — ADAS automates agent design, DGM modifies its own code,
+    Hyperagents makes the self-modification procedure itself editable — not toward autonomous task generation.
+  action: "Do NOT scope task generation from this lineage; the capability is not there. If self-modification
+    of our own harness is wanted, Hyperagents (intake-1069) is the closest prior art. See the correction in
+    research/f1-dgm-scoping-2026-07.md, which was scoped on the task-generation premise." 
   status: open
   created: '2026-07-08'
 
 - id: rec-003
   title: "Agent-as-judge calibration and multi-agent consensus"
-  source: MCE (intake-787), AFlow (intake-788), STOP (intake-792)
+  source: MCE (intake-787), AFlow (intake-788), STOP (intake-786)
   category: evaluation
   priority: medium
   description: >
@@ -63,7 +76,7 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 
 - id: rec-005
   title: "RE-Bench (METR) — agentic ML-engineering benchmark, NOT a reasoning-quality eval"
-  source: RE-Bench (intake-794)
+  source: RE-Bench (NOT IN INDEX - intake-794 is DeepCode/PaperBench; ingest pending)
   category: benchmark_methodology
   priority: low
   description: >
@@ -93,7 +106,7 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 
 - id: rec-007
   title: "Kernel-level benchmarking (KernelBench) for CPU inference"
-  source: KernelBench (intake-797)
+  source: KernelBench (intake-664)
   category: hardware_optimization
   priority: high
   description: >
