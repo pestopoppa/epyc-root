@@ -147,6 +147,48 @@ what an existing anchor means, and because the pilot's whole thesis is that a di
 acting on is worth recording. C is the right answer if the carrier change is judged too expensive
 for shadow mode.
 
+## 4c. PR2 — the live-ledger evaluation, run 2026-08-10
+
+`scripts/vidya/live_eval.py`, `vidya eval-live`. Two draws over the 9,599-frame ledger, six
+mutation families each; the mutation is a **source retraction** (every support frame carrying an
+entry's `source_id`), which is the "this source is discredited" event the gold corpus models.
+
+| Draw | Score | Recall | Discrimination | Harmful | Retraction rows | **Uncoverable** |
+|---|---:|---:|---:|---:|---:|---:|
+| By citation count (most-cited entries) | 148/148 | 1.00 | 1.00 | 0 | **0** | **527** |
+| Dived entries only (`--verified-only`) | 149/149 | 1.00 | 1.00 | 0 | 29 | **272** |
+
+**The engine is correct on everything the live corpus can score. The finding is how little that
+is.** Three results, none of them the score:
+
+**The naturally-drawn corpus does not exercise retraction at all.** Of the 60 most-cited live
+entries, 50 carry no verification and 9 are dived, so every family drawn by citation count comes
+back `never_believed` and 148/148 measures floor discipline plus controls — not invalidation. The
+retraction path only gets tested by deliberately drawing the other stratum, which is why
+`--verified-only` exists. A suite reporting the first row alone would have looked like a pass.
+
+**Uncoverable claims outnumber scored ones 2–4×.** 527 and 272 claims belong to entries that
+*cite* the mutated entry. The engine reports them unaffected because the ledger holds no
+cross-entry evidential edge — citation is not support — so scoring them either way would
+manufacture an answer to the open question. They are counted and excluded. This is the honest
+version of the 28/28-versus-real-data gap: the live graph has no propagation structure to test.
+
+**Per-claim correction labels are not derivable at all.** `dive_corrections` is free prose with no
+claim index, so which of an entry's claims a correction actually falsified is recorded nowhere a
+program can read. That is a write-time gap of the same family as the query log: cheap at dive
+time, impossible afterwards.
+
+**A third instance of per-record identity.** Evidence tokens are minted per *claim*
+(`evd_clm_intake_096_00`), so a token retraction reaches exactly one claim and the gold corpus's
+sharpest family — E2, one stale extractor underpinning several conclusions — is not expressible
+against live data through a token retraction. Claim identity, source identity, and now evidence
+identity are all per-record. The source-level mutation is the workaround, not a fix.
+
+A bug found while building it is worth recording, because it is the shape this project keeps
+hitting: a leaked loop variable made every family retract the *last* candidate's source while
+still reporting a plausible per-family score. It was caught by the test that asserts *which*
+claims moved, not by the one that asserts a number came out.
+
 ## 5. What would justify termination
 
 Recorded now, while the answer is not yet known, so the bar cannot drift later:

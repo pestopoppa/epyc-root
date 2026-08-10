@@ -360,6 +360,33 @@ def cmd_disposition(args) -> int:
     )
 
 
+# -------------------------------------------------------------- live eval
+
+def cmd_eval_live(args) -> int:
+    """PR2: score the engine against a corpus drawn from the live ledger."""
+    import yaml  # noqa: PLC0415
+
+    from live_eval import run_live  # noqa: PLC0415
+
+    led = _ledger(args)
+    index_path = Path(args.index) if args.index else REPO_ROOT / "research" / "intake_index.yaml"
+    res = run_live(
+        [r.frame for r in led.read_all()],
+        yaml.safe_load(index_path.read_text()) or [],
+        as_of=args.as_of,
+        count=args.count,
+        floor=args.floor,
+        require_verified=args.verified_only,
+    )
+    human = [
+        f"live corpus: {len(res['families'])} families  score={res['score']}/{res['max_score']}",
+        f"  invalidation_recall={res['invalidation_recall']}  "
+        f"discrimination={res['discrimination']}  harmful={res['harmful_outcomes']}",
+        f"  UNCOVERABLE claims (citing entries, never scored): {res['uncoverable_claims']}",
+    ]
+    return _emit(res, args.json, "\n".join(human))
+
+
 # ------------------------------------------------------------------- alias
 
 def cmd_alias_candidates(args) -> int:
@@ -520,6 +547,15 @@ def build_parser() -> argparse.ArgumentParser:
     d.add_argument("--at", required=True)
     d.add_argument("--note", default="")
     d.set_defaults(func=cmd_disposition)
+
+    el = sub.add_parser("eval-live", help="score the engine against a live-ledger corpus (PR2)")
+    el.add_argument("--as-of", required=True)
+    el.add_argument("--index", help="path to intake_index.yaml")
+    el.add_argument("--count", type=int, default=6, help="mutation families to draw")
+    el.add_argument("--floor", default="Verified/Anchored")
+    el.add_argument("--verified-only", action="store_true",
+                    help="draw only dived entries, so the retraction path is exercised")
+    el.set_defaults(func=cmd_eval_live)
 
     ac = sub.add_parser("alias-candidates", help="propose cross-entry claim aliases for review")
     ac.add_argument("--out", required=True, help="worksheet path to write")

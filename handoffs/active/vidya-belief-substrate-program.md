@@ -227,10 +227,24 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
 - [ ] PR1b Build the machine anchoring pass itself: fetch cited sources, match claim terms, record
       `located_by: machine` anchors with `quote_sha256`. Sizing: 662 cited entries / 2,994 claims.
       The level now exists to receive them
-- [ ] PR2 Re-run the P5c evaluation suite against a corpus drawn from the **live ledger** rather
-      than hand-built frames. Largest remaining evidence gap, blocked by nothing: 28/28 on 19
-      anchored gold claims versus `0 verified unaffected / 4,190 unmapped` on real data is the whole
-      remaining question, and only a live-drawn corpus can speak to it
+- [x] PR2 `live_eval.py` + `vidya eval-live`: 148/148 on a citation-drawn corpus and 149/149 on a
+      dived-entry draw, recall and discrimination 1.00, 0 harmful. **The score is not the result.**
+      Of the 60 most-cited entries 50 are unverified, so the naturally-drawn corpus never exercises
+      retraction at all — 148/148 is floor discipline plus controls, and `--verified-only` exists
+      because of it. **Uncoverable claims outnumber scored ones 2–4× (527 and 272)**: they belong
+      to entries that *cite* the mutated one, and citation is not an evidential edge, so scoring
+      them would manufacture an answer ✅ 2026-08-10
+- [x] PR2b Third instance of per-record identity found: evidence tokens are per *claim*
+      (`evd_clm_intake_096_00`), so the gold corpus's sharpest family (E2 — one stale extractor
+      under several conclusions) is not expressible against live data via token retraction. Source-
+      level mutation is the workaround ✅ 2026-08-10
+- [ ] PR2c Record per-claim correction labels at dive time. `dive_corrections` is free prose with
+      no claim index, so which claims a correction falsified is unreadable by any program — the
+      same write-time shape as the query log: seconds at dive time, impossible afterwards. Until
+      this exists the live suite cannot score corrections at all
+- [ ] PR2d Decide whether a citation edge should imply an evidential edge. Today it does not, which
+      is why 272–527 claims per draw are uncoverable. This is the propagation question the whole
+      substrate exists to answer, and no measurement can settle it — it is a modelling choice
 - [ ] PR3 Reconcile every `human_intent_recorded` frame against an actual ratification artifact
       (spec §15 pilot-exit check) before any promotion proposal is written
 
