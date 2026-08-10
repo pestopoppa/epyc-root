@@ -151,6 +151,15 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
 
 **Source**: KernelBench (intake-797, arxiv 2606.20128)
 
+> **⚠ CORRECTION 2026-08-10 — this attribution is wrong, and was already corrected elsewhere.**
+> The identical line in [`mi210-speed-campaign-summary.md`](mi210-speed-campaign-summary.md)
+> carries a verified 2026-07-22 correction that never propagated here: this is a **three-way
+> conflation**. The real **KernelBench** is Stanford ScalingIntelligence **arXiv:2502.10517**
+> (kernel *generation*, metric `fast_p`), confirmed via intake-660/661. `arXiv:2606.20128` is a
+> separate seeded-fuzzing paper, and `intake-797` was never either of them — it was
+> "Externalization in LLM Agents" (now merged into intake-418). The 9/9 seeded-fuzzing finding
+> below belongs to the 2606.20128 paper. Surfaced while auditing references to merged intake ids.
+
 **Key finding**: Seeded fuzzing for kernel correctness catches 9/9 buggy kernels, passes 15/15 controls. Provides fine-grained kernel-level benchmarking substrate.
 
 **Applicability to EPYC**: Directly applicable to the agentic kernel-authoring loop — serves as the C3 correctness verification substrate in the generate→compile→verify→profile→refine loop. KernelBench's seeded fuzzing methodology can catch correctness regressions in agent-generated kernels before they enter the profiling stage.

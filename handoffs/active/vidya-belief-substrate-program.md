@@ -383,6 +383,24 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       that the live references must not be rewritten: the MI210 handoff cites intake-797 inside a
       correction saying intake-797 was a mis-stamp, and `recommendations.yaml` uses it as a range
       endpoint naming a historical batch ✅ 2026-08-10
+- [x] D12 **Classified all 57 references to absorbed ids to test whether editing beats mapping.**
+      13 are the mechanism itself, 29 record the merge, 7 are historical narration, 8 are live
+      citations — and of those 8, exactly **one** is mechanically safe to rewrite. Four would be
+      corrupted by a naive repoint (three are the KernelBench mis-stamp where intake-797 is named
+      *because* it was wrong; one pair is a `intake-779 through intake-797` range endpoint).
+      Editing is not the cheaper path; it is the path that requires per-site judgment ✅ 2026-08-10
+- [ ] D13 `rec-001` in `research/recommendations.yaml` carries two pre-existing citation
+      mis-stamps, surfaced by that audit: `Self-Harness (intake-785)` is Darwin Gödel Machine, and
+      `ACE (intake-788)` is AFlow. Annotated as unverified rather than guessed. Needs whoever knows
+      what rec-001 meant
+- [ ] D14 `research/recommendations.yaml` is not parseable YAML and never has been (markdown
+      headers plus prose above an embedded list). Pre-existing, unrelated to this session — but any
+      tool that tries to consume it by extension will fail
+- [x] D15 Propagated a verified 2026-07-22 KernelBench correction from
+      `mi210-speed-campaign-summary.md` to `agentic-rocm-kernel-authoring.md`, where the identical
+      mis-stamped `**Source**: KernelBench (intake-797, arxiv 2606.20128)` line was still live and
+      uncorrected. Same failure this program was created over: a correction recorded in one place
+      is not a correction ✅ 2026-08-10
 - [x] D10 **Renumbering to close the gaps: assessed and declined**, rationale recorded in
       `intake-schema.md` § ID Sequencing so it is not re-litigated. Closing 4 gaps would renumber
       728 entries, rewrite 5,565 references across 479 files, and change 731 of the 1,067 intake

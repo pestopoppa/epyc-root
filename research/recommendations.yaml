@@ -6,7 +6,10 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 
 - id: rec-001
   title: "Meta-harness optimization: automated benchmark design for LLM evaluation"
-  source: Meta-Harness (intake-784), Self-Harness (intake-785), ACE (intake-788)
+  # 2026-08-10: intake-784 was merged into intake-244 (same arXiv id). The other two ids
+  # do NOT match their labels and are left untouched pending verification -- intake-785
+  # is 'Darwin Godel Machine', not Self-Harness, and intake-788 is 'AFlow', not ACE.
+  source: Meta-Harness (intake-784 -> now intake-244), Self-Harness (intake-785 -> now intake-772; LABEL MISMATCH, unverified), ACE (intake-788; LABEL MISMATCH, unverified)
   category: benchmark_methodology
   priority: high
   description: >
