@@ -243,22 +243,21 @@
   .task-summary .t .box{color:var(--muted);margin-right:5px} .task-summary .t.done .box{color:var(--good)}
   .loading{color:var(--muted);padding:20px;text-align:center}
 
-  section.graph .glegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:2px 0 10px;font-size:12px;color:var(--muted)}
+  section.graph .glegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:2px 0 8px;font-size:12px;color:var(--muted)}
   section.graph .gsw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-  section.graph .gnote{font-size:12px;margin:0 0 10px;max-width:80ch}
-  section.graph .gdom{margin:0 0 16px}
-  section.graph .gdom h3{font-size:12px;font-weight:600;margin:0 0 6px;text-transform:none;letter-spacing:0}
-  section.graph .gdom h3 span{font-weight:400;color:var(--muted)}
-  section.graph .ggrid{display:flex;flex-wrap:wrap;gap:5px}
-  section.graph a.gnode{display:block;text-decoration:none;color:inherit;background:var(--card,#161a21);
-    border:1px solid var(--line,#2a2f3a);border-left-width:4px;border-radius:4px;padding:4px 7px;
-    min-width:126px;max-width:230px}
-  section.graph a.gnode:hover{outline:1px solid #3d4756}
-  section.graph .gid{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
-  section.graph .gtrack{display:block;font-size:12px;margin-top:1px;overflow:hidden;
-    text-overflow:ellipsis;white-space:nowrap}
-  section.graph .gmeta{font-size:11px;color:var(--muted);margin-top:2px}
-  section.graph .gdep{font:11px ui-monospace,monospace;margin-top:4px}
+  section.graph .gnote{font-size:12px;margin:0 0 8px;max-width:88ch}
+  section.graph .gwrap{position:relative}
+  section.graph svg{width:100%;height:auto;display:block;background:rgba(0,0,0,.12);border:1px solid var(--line,#2a2f3a);border-radius:6px}
+  section.graph .gtip{position:absolute;z-index:30;pointer-events:none;max-width:340px;
+    background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 10px;
+    box-shadow:0 6px 22px rgba(0,0,0,.55);font-size:12px;line-height:1.45}
+  section.graph .gtip b{font-size:12px}
+  section.graph .gtip .tid{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+  section.graph .gtip .tna{margin-top:5px;color:#c9d1d9}
+  section.graph .gtip .tmeta{margin-top:5px;color:var(--muted)}
+  section.graph .node{cursor:pointer}
+  section.graph .dimmed{opacity:.08}
+  section.graph .domlabel{font-size:11px;fill:var(--muted);text-anchor:middle;letter-spacing:.04em}
 </style>
 </head>
 <body>
@@ -330,20 +329,6 @@
     </div>
   </section>
 
-  <section class="graph">
-    <h2>Backlog graph — what is actually moving?
-      <span class="badge" id="graph-badge" style="text-transform:none;font-weight:400;margin-left:8px"><span class="dot"></span><span>graph</span></span>
-    </h2>
-    <div class="glegend">
-      <span><i class="gsw" style="background:#3fb950"></i>advanced ≤7d</span>
-      <span><i class="gsw" style="background:#d29922"></i>8–30d</span>
-      <span><i class="gsw" style="background:#e5534b"></i>&gt;30d</span>
-      <span><i class="gsw" style="background:#6e7681"></i>never</span>
-      <span class="muted">width ∝ open tasks · one row per handoff, stalest first</span>
-    </div>
-    <p class="gnote muted" id="graph-note"></p>
-    <div id="graph-out"><span class="muted">loading…</span></div>
-  </section>
 
   <div class="kanban" id="kanban">
     <div class="column" data-state="active"><h3><span class="swatch"></span>Active<span class="count"></span></h3><div class="cards"></div></div>
@@ -351,6 +336,24 @@
     <div class="column" data-state="completed"><h3><span class="swatch"></span>Completed<span class="count"></span></h3><div class="cards"></div></div>
     <div class="column" data-state="archived"><h3><span class="swatch"></span>Archived<span class="count"></span></h3><div class="cards"></div></div>
   </div>
+
+  <section class="graph">
+    <h2>Backlog graph — how handoffs relate
+      <span class="badge" id="graph-badge" style="text-transform:none;font-weight:400;margin-left:8px"><span class="dot"></span><span>graph</span></span>
+    </h2>
+    <div class="glegend">
+      <span><i class="gsw" style="background:#3fb950"></i>advanced &le;7d</span>
+      <span><i class="gsw" style="background:#d29922"></i>8&ndash;30d</span>
+      <span><i class="gsw" style="background:#e5534b"></i>&gt;30d</span>
+      <span><i class="gsw" style="background:#6e7681"></i>never</span>
+      <span class="muted">size &prop; open tasks &middot; clustered by domain &middot; hover a node to isolate its links</span>
+    </div>
+    <p class="gnote muted" id="graph-note"></p>
+    <div class="gwrap">
+      <svg id="graph-svg" viewBox="0 0 1200 780" role="img" aria-label="handoff reference graph"></svg>
+      <div id="graph-tip" class="gtip" hidden></div>
+    </div>
+  </section>
 </main>
 
 <div class="modal" id="modal" aria-hidden="true">
@@ -968,57 +971,116 @@ async function loadTimeline(){
 }
 
 
-/* ---------------- backlog graph (embedded) ---------------- */
+
+/* ---------------- backlog graph (embedded, under the kanban) ---------------- */
 const GAGE = d => (d===null||d===undefined) ? '#6e7681'
                : d<=7 ? '#3fb950' : d<=30 ? '#d29922' : '#e5534b';
+const SVGNS = "http://www.w3.org/2000/svg";
+// `el` is already taken by the HTML helper at the top of this file; a second
+// top-level `const el` is a SyntaxError that kills the WHOLE script block, not
+// just this section. Named distinctly on purpose.
+const svgEl = (t,a={}) => { const n=document.createElementNS(SVGNS,t);
+  for(const k in a) n.setAttribute(k,a[k]); return n; };
 
 async function loadGraph(){
   let g;
   try{ g = await getJSON("/api/handoff_graph"); }
-  catch(e){ setBadge("#graph-badge","stale");
-            $("#graph-out").innerHTML='<span class="muted">graph unavailable</span>'; return; }
-  const out=$("#graph-out"); out.innerHTML="";
-  if(!g.nodes){
+  catch(e){ setBadge("#graph-badge","stale"); return; }
+  const svg=$("#graph-svg"), tip=$("#graph-tip");
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+  if(!g.nodes||!g.nodes.length){
     setBadge("#graph-badge","stale");
-    out.innerHTML='<span class="muted">'+(g.observation_notice||"no producer reported")+'</span>';
+    $("#graph-note").textContent = g.observation_notice || "no producer reported";
     return;
   }
-  const edges=g.edges||[];
-  $("#graph-note").textContent = edges.length===0
-    ? "No dependency edges yet — edges come only from the hand-authored Deps column, so this is an "
-      + "unfilled column, not an unconnected backlog. Colour still shows liveness."
-    : (g.edge_note||"");
-  const inc={}; for(const e of edges) (inc[e.from]||=[]).push(e.to);
-  const by={}; for(const n of g.nodes) (by[n.domain]||=[]).push(n);
-  for(const dom of Object.keys(by).sort()){
-    const list=by[dom].sort((a,b)=>(b.age_days??1e9)-(a.age_days??1e9)||b.open-a.open);
-    const open=list.reduce((s,n)=>s+n.open,0);
-    const max=Math.max(1,...list.map(n=>n.open));
-    const sec=document.createElement("div"); sec.className="gdom";
-    const h=document.createElement("h3");
-    h.textContent=dom+" ";
-    const sp=document.createElement("span"); sp.textContent=`· ${list.length} rows · ${open} open`;
-    h.appendChild(sp); sec.appendChild(h);
-    const grid=document.createElement("div"); grid.className="ggrid";
-    for(const n of list){
-      const a=document.createElement("a");
-      a.className="gnode";
-      a.style.borderLeftColor=GAGE(n.age_days);
-      a.style.flexGrow=String(1+3*(n.open/max));
-      a.href="#"; a.dataset.id=(n.handoff||"").replace(/\.md$/,"");
-      a.title=`${n.handoff}\nopen ${n.open} · closed ${n.closed} · blocked ${n.blocked}\n`
-             +`last advanced ${n.last_advanced||"never"}`;
-      const id=document.createElement("span"); id.className="gid"; id.textContent=n.id;
-      const tr=document.createElement("span"); tr.className="gtrack"; tr.textContent=n.track;
-      const me=document.createElement("div"); me.className="gmeta";
-      me.textContent=`${n.open} open · ${n.last_advanced||"never"}`;
-      a.append(id,tr,me);
-      if(inc[n.id]){ const d=document.createElement("div"); d.className="gdep";
-                     d.textContent="→ "+inc[n.id].join(", "); a.appendChild(d); }
-      a.addEventListener("click",ev=>{ev.preventDefault(); if(a.dataset.id) loadDetail(a.dataset.id);});
-      grid.appendChild(a);
-    }
-    sec.appendChild(grid); out.appendChild(sec);
+  const edges=(g.edges||[]);
+  const refs=edges.filter(e=>e.kind!=="dep"), deps=edges.filter(e=>e.kind==="dep");
+  $("#graph-note").textContent =
+    `${g.nodes.length} handoffs · ${refs.length} reference links (one handoff's markdown cites another) · `
+    + `${deps.length} declared dependenc${deps.length===1?"y":"ies"} (hand-authored Deps — drawn thicker, with an arrow). `
+    + `A reference is NOT a dependency claim.`;
+
+  // ---- layout: one phyllotaxis disc per domain, laid out on a 3x2 grid.
+  // Deterministic (no simulation), so the picture is stable between reloads —
+  // a graph that reshuffles every refresh cannot be learned.
+  const W=1200,H=780,COLS=3;
+  const doms={}; for(const n of g.nodes) (doms[n.domain]||=[]).push(n);
+  const names=Object.keys(doms).sort((a,b)=>doms[b].length-doms[a].length);
+  const rows=Math.ceil(names.length/COLS), cw=W/COLS, ch=H/rows;
+  const pos={};
+  names.forEach((dom,di)=>{
+    const cx=(di%COLS)*cw+cw/2, cy=Math.floor(di/COLS)*ch+ch/2;
+    const list=doms[dom].slice().sort((a,b)=>b.open-a.open);
+    const cellR=Math.min(cw,ch)/2-34;
+    const spacing=Math.min(34, cellR/Math.sqrt(list.length||1)*1.55);
+    list.forEach((n,i)=>{
+      const r=spacing*Math.sqrt(i+0.5), th=i*2.399963229728653;
+      pos[n.id]={x:cx+r*Math.cos(th), y:cy+r*Math.sin(th), n,
+                 rad:Math.max(3.2, Math.min(spacing*0.46, 3+1.9*Math.sqrt(n.open)))};
+    });
+    const lbl=svgEl("text",{x:cx,y:cy+ch/2-12,class:"domlabel"});
+    lbl.textContent=`${dom} · ${list.length}`;
+    svg.appendChild(lbl);
+  });
+
+  // ---- edges under nodes
+  const gEdges=svgEl("g",{}), gNodes=svgEl("g",{});
+  svg.append(gEdges,gNodes);
+  const nbr={}, lines=[];
+  const addLine=(e,isDep)=>{
+    const a=pos[e.from], b=pos[e.to]; if(!a||!b) return;
+    const ln=svgEl("line",{x1:a.x,y1:a.y,x2:b.x,y2:b.y,
+      stroke:isDep?"#58a6ff":"#8b949e",
+      "stroke-width":isDep?2:Math.min(1.6,0.5+(e.weight||1)*0.18),
+      "stroke-opacity":isDep?0.9:0.16});
+    if(isDep) ln.setAttribute("marker-end","url(#garrow)");
+    gEdges.appendChild(ln);
+    lines.push({ln,from:e.from,to:e.to});
+    (nbr[e.from]||=new Set()).add(e.to); (nbr[e.to]||=new Set()).add(e.from);
+  };
+  const defs=svgEl("defs",{});
+  const mk=svgEl("marker",{id:"garrow",viewBox:"0 0 10 10",refX:"18",refY:"5",
+    markerWidth:"6",markerHeight:"6",orient:"auto-start-reverse"});
+  mk.appendChild(svgEl("path",{d:"M 0 0 L 10 5 L 0 10 z",fill:"#58a6ff"}));
+  defs.appendChild(mk); svg.appendChild(defs);
+  refs.forEach(e=>addLine(e,false)); deps.forEach(e=>addLine(e,true));
+
+  // ---- nodes
+  const circles={};
+  for(const id in pos){
+    const {x,y,n,rad}=pos[id];
+    const c=svgEl("circle",{cx:x,cy:y,r:rad,fill:GAGE(n.age_days),
+      stroke:"#0d1117","stroke-width":1,class:"node"});
+    c.addEventListener("mouseenter",ev=>{
+      const keep=new Set([id,...(nbr[id]||[])]);
+      for(const k in circles) circles[k].classList.toggle("dimmed", !keep.has(k));
+      lines.forEach(l=>l.ln.classList.toggle("dimmed", l.from!==id && l.to!==id));
+      lines.forEach(l=>{ if(l.from===id||l.to===id) l.ln.setAttribute("stroke-opacity","0.85"); });
+      const linked=[...(nbr[id]||[])];
+      tip.innerHTML =
+        `<span class="tid">${n.id} · ${n.domain}</span><br><b>${n.track}</b>`
+        + (n.next_action?`<div class="tna">${n.next_action}</div>`:"")
+        + `<div class="tmeta">${n.open} open · ${n.closed} closed`
+        + (n.blocked?` · ${n.blocked} blocked`:"")
+        + `<br>last advanced ${n.last_advanced||"never"}`
+        + `<br>${linked.length} linked handoff${linked.length===1?"":"s"}`
+        + (linked.length?`: ${linked.slice(0,10).join(", ")}${linked.length>10?"…":""}`:"")
+        + `</div>`;
+      tip.hidden=false;
+    });
+    c.addEventListener("mousemove",ev=>{
+      const w=$("#graph-svg").getBoundingClientRect();
+      tip.style.left=Math.min(ev.clientX-w.left+14, w.width-350)+"px";
+      tip.style.top=(ev.clientY-w.top+14)+"px";
+    });
+    c.addEventListener("mouseleave",()=>{
+      tip.hidden=true;
+      for(const k in circles) circles[k].classList.remove("dimmed");
+      lines.forEach(l=>{ l.ln.classList.remove("dimmed");
+        l.ln.setAttribute("stroke-opacity", l.ln.getAttribute("stroke-width")>="2"?"0.9":"0.16"); });
+    });
+    c.addEventListener("click",()=>{ if(n.handoff) loadDetail(n.handoff.replace(/\.md$/,"")); });
+    gNodes.appendChild(c); circles[id]=c;
   }
   setBadge("#graph-badge",(g._freshness&&g._freshness.staleness_class)||"fresh");
 }

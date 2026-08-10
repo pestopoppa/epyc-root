@@ -224,16 +224,23 @@ def build_graph(state: dict) -> dict:
     Nodes are index ROWS (not handoffs) so the graph and the indices share one
     identity — an `INF-11` on the board is the `INF-11` in the file.
 
-    A NOTE ON EDGES, because an empty graph invites the wrong fix: edges come
-    only from the `Deps` column, which is hand-authored and currently near-empty.
-    A heuristic sweep over blocking language in the handoff bodies produced 253
-    candidate edges across 93 rows, and it was NOT used: the phrasing does not
-    disambiguate direction ("X gates Y" vs "gated by X"), so a bulk import would
-    have drawn arrows that look authoritative and point the wrong way. A sparse
-    true graph beats a dense invented one. Edges accrue as sessions fill `Deps`.
+    TWO EDGE KINDS, deliberately never merged:
 
-    So the day-one value here is the LIVENESS MAP — node colour by how long since
-    a checkbox moved, size by open count — which is the signal indices never had.
+    * `dep`  — from the hand-authored `Deps` column. Semantic: "this is blocked on
+      that". Few, strong, and a human wrote each one.
+    * `ref`  — derived: handoff A's markdown contains a link to handoff B. Factual
+      and checkable ("A cites B"), with `weight` = how many times.
+
+    Keeping them apart is the whole point. A heuristic sweep over *blocking
+    language* produced 253 candidate edges and was rejected, because the phrasing
+    does not disambiguate direction ("X gates Y" vs "gated by X") and a bulk import
+    would have drawn authoritative-looking arrows pointing the wrong way. A link,
+    by contrast, claims nothing about dependency or ordering — only that one
+    document references another — so it can be derived without inventing meaning.
+    Render them differently; never let a `ref` read as a `dep`.
+
+    The other day-one signal is the LIVENESS MAP — colour by how long since a
+    checkbox moved, size by open count — which the indices never carried.
     """
     now = datetime.now(timezone.utc)
     nodes, edges = [], []
@@ -252,6 +259,9 @@ def build_graph(state: dict) -> dict:
             "domain": (r["index"] or "").replace("-index.md", ""),
             "track": r["track"],
             "handoff": h,
+            # Carried into the node so a hover answers "what do I do next?" without
+            # a second request. It is already the one-line contract-bounded cell.
+            "next_action": r["next_action"],
             "open": st.get("open", 0),
             "closed": st.get("closed", 0),
             "blocked": st.get("blocked", 0),
@@ -259,15 +269,35 @@ def build_graph(state: dict) -> dict:
             "age_days": age,
         })
         for dep in r["deps"]:
-            edges.append({"from": rid, "to": dep})
+            edges.append({"from": rid, "to": dep, "kind": "dep"})
+
+    # Reference edges: a link in A's markdown to B's file. Derived, but not
+    # inferred — the link either exists or it does not.
+    by_handoff = {n["handoff"]: n["id"] for n in nodes if n["handoff"]}
+    seen: dict[tuple[str, str], int] = {}
+    for handoff, src in by_handoff.items():
+        try:
+            text = (ACTIVE / handoff).read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for target in set(_LINK.findall(text)):
+            name = Path(target).name
+            dst = by_handoff.get(name)
+            if dst and dst != src:
+                seen[(src, dst)] = text.count(name)
+    for (src, dst), weight in sorted(seen.items()):
+        edges.append({"from": src, "to": dst, "kind": "ref", "weight": weight})
+
     return {
         "schema": "index_graph.v1",
         "generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "nodes": nodes,
         "edges": edges,
         "domains": sorted({n["domain"] for n in nodes}),
-        "edge_note": ("edges come only from the hand-authored Deps column; a sparse graph means "
-                      "Deps is unfilled, NOT that the backlog is unconnected"),
+        "edge_kinds": {
+            "dep": "hand-authored Deps column — semantic: blocked on",
+            "ref": "derived: this handoff's markdown links to that one — no dependency claim",
+        },
     }
 
 

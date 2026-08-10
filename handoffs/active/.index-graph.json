@@ -7,14 +7,3480 @@
     "reviewer-control-plane",
     "routing-and-optimization"
   ],
-  "edge_note": "edges come only from the hand-authored Deps column; a sparse graph means Deps is unfilled, NOT that the backlog is unconnected",
+  "edge_kinds": {
+    "dep": "hand-authored Deps column \u2014 semantic: blocked on",
+    "ref": "derived: this handoff's markdown links to that one \u2014 no dependency claim"
+  },
   "edges": [
     {
       "from": "RTG-07",
+      "kind": "dep",
       "to": "INF-07"
+    },
+    {
+      "from": "EVL-02",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "EVL-02",
+      "kind": "ref",
+      "to": "EVL-42",
+      "weight": 2
+    },
+    {
+      "from": "EVL-02",
+      "kind": "ref",
+      "to": "INF-19",
+      "weight": 2
+    },
+    {
+      "from": "EVL-02",
+      "kind": "ref",
+      "to": "INF-23",
+      "weight": 2
+    },
+    {
+      "from": "EVL-02",
+      "kind": "ref",
+      "to": "INF-24",
+      "weight": 5
+    },
+    {
+      "from": "EVL-02",
+      "kind": "ref",
+      "to": "INF-34",
+      "weight": 3
+    },
+    {
+      "from": "EVL-02",
+      "kind": "ref",
+      "to": "INF-54",
+      "weight": 2
+    },
+    {
+      "from": "EVL-02",
+      "kind": "ref",
+      "to": "INF-57",
+      "weight": 4
+    },
+    {
+      "from": "EVL-02",
+      "kind": "ref",
+      "to": "REV-07",
+      "weight": 2
+    },
+    {
+      "from": "EVL-02",
+      "kind": "ref",
+      "to": "RTG-28",
+      "weight": 10
+    },
+    {
+      "from": "EVL-04",
+      "kind": "ref",
+      "to": "EVL-10",
+      "weight": 2
+    },
+    {
+      "from": "EVL-05",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "EVL-05",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 7
+    },
+    {
+      "from": "EVL-05",
+      "kind": "ref",
+      "to": "EVL-23",
+      "weight": 2
+    },
+    {
+      "from": "EVL-06",
+      "kind": "ref",
+      "to": "RTG-16",
+      "weight": 2
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 12
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "EVL-16",
+      "weight": 4
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "EVL-23",
+      "weight": 2
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "EVL-32",
+      "weight": 6
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "HRM-03",
+      "weight": 2
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "HRM-04",
+      "weight": 4
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "HRM-05",
+      "weight": 7
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "INF-07",
+      "weight": 2
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "INF-56",
+      "weight": 4
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "PIP-01",
+      "weight": 2
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "PIP-05",
+      "weight": 2
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 20
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "RTG-04",
+      "weight": 2
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "RTG-08",
+      "weight": 2
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "RTG-09",
+      "weight": 8
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "RTG-10",
+      "weight": 2
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "RTG-14",
+      "weight": 4
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "RTG-30",
+      "weight": 11
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "RTG-33",
+      "weight": 2
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "RTG-42",
+      "weight": 10
+    },
+    {
+      "from": "EVL-07",
+      "kind": "ref",
+      "to": "RTG-45",
+      "weight": 4
+    },
+    {
+      "from": "EVL-08",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 4
+    },
+    {
+      "from": "EVL-08",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 3
+    },
+    {
+      "from": "EVL-08",
+      "kind": "ref",
+      "to": "EVL-42",
+      "weight": 8
+    },
+    {
+      "from": "EVL-09",
+      "kind": "ref",
+      "to": "INF-11",
+      "weight": 2
+    },
+    {
+      "from": "EVL-10",
+      "kind": "ref",
+      "to": "EVL-36",
+      "weight": 2
+    },
+    {
+      "from": "EVL-10",
+      "kind": "ref",
+      "to": "RTG-15",
+      "weight": 2
+    },
+    {
+      "from": "EVL-10",
+      "kind": "ref",
+      "to": "RTG-38",
+      "weight": 3
+    },
+    {
+      "from": "EVL-11",
+      "kind": "ref",
+      "to": "INF-24",
+      "weight": 2
+    },
+    {
+      "from": "EVL-12",
+      "kind": "ref",
+      "to": "EVL-13",
+      "weight": 2
+    },
+    {
+      "from": "EVL-12",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 6
+    },
+    {
+      "from": "EVL-12",
+      "kind": "ref",
+      "to": "EVL-40",
+      "weight": 2
+    },
+    {
+      "from": "EVL-12",
+      "kind": "ref",
+      "to": "INF-24",
+      "weight": 2
+    },
+    {
+      "from": "EVL-13",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 6
+    },
+    {
+      "from": "EVL-13",
+      "kind": "ref",
+      "to": "INF-24",
+      "weight": 3
+    },
+    {
+      "from": "EVL-13",
+      "kind": "ref",
+      "to": "INF-57",
+      "weight": 5
+    },
+    {
+      "from": "EVL-13",
+      "kind": "ref",
+      "to": "RTG-42",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "EVL-05",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "EVL-12",
+      "weight": 4
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "EVL-13",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "EVL-23",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "INF-07",
+      "weight": 1
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "INF-50",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "REV-03",
+      "weight": 3
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "RTG-09",
+      "weight": 2
+    },
+    {
+      "from": "EVL-14",
+      "kind": "ref",
+      "to": "RTG-21",
+      "weight": 2
+    },
+    {
+      "from": "EVL-15",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 2
+    },
+    {
+      "from": "EVL-15",
+      "kind": "ref",
+      "to": "EVL-16",
+      "weight": 4
+    },
+    {
+      "from": "EVL-15",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "EVL-16",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "EVL-16",
+      "kind": "ref",
+      "to": "EVL-15",
+      "weight": 2
+    },
+    {
+      "from": "EVL-16",
+      "kind": "ref",
+      "to": "REV-03",
+      "weight": 2
+    },
+    {
+      "from": "EVL-16",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "EVL-21",
+      "kind": "ref",
+      "to": "EVL-22",
+      "weight": 1
+    },
+    {
+      "from": "EVL-23",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "EVL-23",
+      "kind": "ref",
+      "to": "RTG-41",
+      "weight": 2
+    },
+    {
+      "from": "EVL-24",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 2
+    },
+    {
+      "from": "EVL-24",
+      "kind": "ref",
+      "to": "RTG-10",
+      "weight": 2
+    },
+    {
+      "from": "EVL-25",
+      "kind": "ref",
+      "to": "EVL-24",
+      "weight": 2
+    },
+    {
+      "from": "EVL-25",
+      "kind": "ref",
+      "to": "INF-21",
+      "weight": 2
+    },
+    {
+      "from": "EVL-25",
+      "kind": "ref",
+      "to": "RTG-29",
+      "weight": 2
+    },
+    {
+      "from": "EVL-27",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 4
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "EVL-01",
+      "weight": 7
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 5
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 5
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "EVL-23",
+      "weight": 2
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "EVL-37",
+      "weight": 10
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "EVL-42",
+      "weight": 3
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "EVL-46",
+      "weight": 2
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "HRM-01",
+      "weight": 4
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "HRM-05",
+      "weight": 3
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "INF-02",
+      "weight": 2
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "INF-18",
+      "weight": 5
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "INF-28",
+      "weight": 5
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "INF-35",
+      "weight": 2
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "INF-47",
+      "weight": 2
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "INF-50",
+      "weight": 16
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "INF-54",
+      "weight": 4
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 5
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "PIP-05",
+      "weight": 5
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "REV-03",
+      "weight": 4
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "REV-08",
+      "weight": 2
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "RTG-01",
+      "weight": 2
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 13
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "RTG-03",
+      "weight": 1
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "RTG-08",
+      "weight": 2
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "RTG-33",
+      "weight": 2
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
+      "to": "RTG-41",
+      "weight": 4
+    },
+    {
+      "from": "EVL-32",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "EVL-32",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 2
+    },
+    {
+      "from": "EVL-32",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "EVL-32",
+      "kind": "ref",
+      "to": "RTG-09",
+      "weight": 2
+    },
+    {
+      "from": "EVL-32",
+      "kind": "ref",
+      "to": "RTG-41",
+      "weight": 2
+    },
+    {
+      "from": "EVL-33",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "EVL-36",
+      "kind": "ref",
+      "to": "EVL-37",
+      "weight": 2
+    },
+    {
+      "from": "EVL-36",
+      "kind": "ref",
+      "to": "EVL-39",
+      "weight": 2
+    },
+    {
+      "from": "EVL-36",
+      "kind": "ref",
+      "to": "RTG-14",
+      "weight": 2
+    },
+    {
+      "from": "EVL-37",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "EVL-37",
+      "kind": "ref",
+      "to": "EVL-32",
+      "weight": 2
+    },
+    {
+      "from": "EVL-37",
+      "kind": "ref",
+      "to": "HRM-07",
+      "weight": 2
+    },
+    {
+      "from": "EVL-37",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 2
+    },
+    {
+      "from": "EVL-37",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "EVL-39",
+      "kind": "ref",
+      "to": "EVL-34",
+      "weight": 3
+    },
+    {
+      "from": "EVL-39",
+      "kind": "ref",
+      "to": "EVL-36",
+      "weight": 4
+    },
+    {
+      "from": "EVL-39",
+      "kind": "ref",
+      "to": "EVL-37",
+      "weight": 2
+    },
+    {
+      "from": "EVL-42",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "EVL-43",
+      "kind": "ref",
+      "to": "EVL-44",
+      "weight": 2
+    },
+    {
+      "from": "EVL-43",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 5
+    },
+    {
+      "from": "EVL-43",
+      "kind": "ref",
+      "to": "RTG-08",
+      "weight": 2
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "EVL-01",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "EVL-24",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "EVL-33",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "EVL-43",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "HRM-04",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "HRM-06",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "INF-10",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "INF-16",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "INF-17",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "INF-21",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "INF-32",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "INF-47",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "INF-49",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "PIP-01",
+      "weight": 2
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "RTG-09",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "RTG-15",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "RTG-19",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "RTG-38",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "RTG-41",
+      "weight": 1
+    },
+    {
+      "from": "EVL-44",
+      "kind": "ref",
+      "to": "RTG-45",
+      "weight": 1
+    },
+    {
+      "from": "EVL-45",
+      "kind": "ref",
+      "to": "RTG-39",
+      "weight": 16
+    },
+    {
+      "from": "EVL-46",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 2
+    },
+    {
+      "from": "EVL-47",
+      "kind": "ref",
+      "to": "EVL-16",
+      "weight": 3
+    },
+    {
+      "from": "EVL-48",
+      "kind": "ref",
+      "to": "INF-37",
+      "weight": 2
+    },
+    {
+      "from": "EVL-48",
+      "kind": "ref",
+      "to": "INF-39",
+      "weight": 2
+    },
+    {
+      "from": "EVL-48",
+      "kind": "ref",
+      "to": "INF-55",
+      "weight": 2
+    },
+    {
+      "from": "HRM-01",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 6
+    },
+    {
+      "from": "HRM-01",
+      "kind": "ref",
+      "to": "EVL-32",
+      "weight": 4
+    },
+    {
+      "from": "HRM-01",
+      "kind": "ref",
+      "to": "HRM-02",
+      "weight": 11
+    },
+    {
+      "from": "HRM-01",
+      "kind": "ref",
+      "to": "HRM-07",
+      "weight": 4
+    },
+    {
+      "from": "HRM-02",
+      "kind": "ref",
+      "to": "HRM-01",
+      "weight": 4
+    },
+    {
+      "from": "HRM-02",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 2
+    },
+    {
+      "from": "HRM-02",
+      "kind": "ref",
+      "to": "RTG-14",
+      "weight": 2
+    },
+    {
+      "from": "HRM-02",
+      "kind": "ref",
+      "to": "RTG-33",
+      "weight": 2
+    },
+    {
+      "from": "HRM-03",
+      "kind": "ref",
+      "to": "INF-05",
+      "weight": 2
+    },
+    {
+      "from": "HRM-04",
+      "kind": "ref",
+      "to": "EVL-44",
+      "weight": 2
+    },
+    {
+      "from": "HRM-04",
+      "kind": "ref",
+      "to": "INF-19",
+      "weight": 2
+    },
+    {
+      "from": "HRM-05",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "HRM-05",
+      "kind": "ref",
+      "to": "HRM-04",
+      "weight": 2
+    },
+    {
+      "from": "HRM-05",
+      "kind": "ref",
+      "to": "INF-19",
+      "weight": 2
+    },
+    {
+      "from": "HRM-07",
+      "kind": "ref",
+      "to": "EVL-32",
+      "weight": 3
+    },
+    {
+      "from": "HRM-07",
+      "kind": "ref",
+      "to": "HRM-01",
+      "weight": 2
+    },
+    {
+      "from": "HRM-07",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 2
+    },
+    {
+      "from": "HRM-07",
+      "kind": "ref",
+      "to": "RTG-08",
+      "weight": 6
+    },
+    {
+      "from": "INF-01",
+      "kind": "ref",
+      "to": "INF-46",
+      "weight": 2
+    },
+    {
+      "from": "INF-01",
+      "kind": "ref",
+      "to": "INF-50",
+      "weight": 6
+    },
+    {
+      "from": "INF-02",
+      "kind": "ref",
+      "to": "EVL-32",
+      "weight": 3
+    },
+    {
+      "from": "INF-02",
+      "kind": "ref",
+      "to": "HRM-01",
+      "weight": 2
+    },
+    {
+      "from": "INF-02",
+      "kind": "ref",
+      "to": "INF-48",
+      "weight": 2
+    },
+    {
+      "from": "INF-02",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-02",
+      "kind": "ref",
+      "to": "RTG-39",
+      "weight": 2
+    },
+    {
+      "from": "INF-03",
+      "kind": "ref",
+      "to": "INF-10",
+      "weight": 2
+    },
+    {
+      "from": "INF-03",
+      "kind": "ref",
+      "to": "INF-18",
+      "weight": 2
+    },
+    {
+      "from": "INF-03",
+      "kind": "ref",
+      "to": "INF-21",
+      "weight": 2
+    },
+    {
+      "from": "INF-03",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 3
+    },
+    {
+      "from": "INF-03",
+      "kind": "ref",
+      "to": "INF-36",
+      "weight": 4
+    },
+    {
+      "from": "INF-03",
+      "kind": "ref",
+      "to": "INF-37",
+      "weight": 2
+    },
+    {
+      "from": "INF-03",
+      "kind": "ref",
+      "to": "INF-48",
+      "weight": 4
+    },
+    {
+      "from": "INF-04",
+      "kind": "ref",
+      "to": "EVL-33",
+      "weight": 2
+    },
+    {
+      "from": "INF-04",
+      "kind": "ref",
+      "to": "HRM-05",
+      "weight": 2
+    },
+    {
+      "from": "INF-04",
+      "kind": "ref",
+      "to": "INF-54",
+      "weight": 4
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-03",
+      "weight": 2
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-08",
+      "weight": 2
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-09",
+      "weight": 3
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-16",
+      "weight": 1
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-18",
+      "weight": 2
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-27",
+      "weight": 2
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-35",
+      "weight": 2
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-36",
+      "weight": 4
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-37",
+      "weight": 3
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-38",
+      "weight": 1
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
+      "to": "INF-48",
+      "weight": 2
+    },
+    {
+      "from": "INF-07",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "INF-07",
+      "kind": "ref",
+      "to": "INF-10",
+      "weight": 2
+    },
+    {
+      "from": "INF-07",
+      "kind": "ref",
+      "to": "INF-23",
+      "weight": 4
+    },
+    {
+      "from": "INF-07",
+      "kind": "ref",
+      "to": "INF-49",
+      "weight": 2
+    },
+    {
+      "from": "INF-07",
+      "kind": "ref",
+      "to": "RTG-42",
+      "weight": 8
+    },
+    {
+      "from": "INF-07",
+      "kind": "ref",
+      "to": "RTG-43",
+      "weight": 2
+    },
+    {
+      "from": "INF-08",
+      "kind": "ref",
+      "to": "INF-06",
+      "weight": 2
+    },
+    {
+      "from": "INF-08",
+      "kind": "ref",
+      "to": "INF-29",
+      "weight": 3
+    },
+    {
+      "from": "INF-09",
+      "kind": "ref",
+      "to": "INF-10",
+      "weight": 4
+    },
+    {
+      "from": "INF-09",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 2
+    },
+    {
+      "from": "INF-09",
+      "kind": "ref",
+      "to": "INF-34",
+      "weight": 2
+    },
+    {
+      "from": "INF-10",
+      "kind": "ref",
+      "to": "INF-05",
+      "weight": 4
+    },
+    {
+      "from": "INF-10",
+      "kind": "ref",
+      "to": "INF-07",
+      "weight": 2
+    },
+    {
+      "from": "INF-10",
+      "kind": "ref",
+      "to": "INF-08",
+      "weight": 6
+    },
+    {
+      "from": "INF-10",
+      "kind": "ref",
+      "to": "INF-18",
+      "weight": 7
+    },
+    {
+      "from": "INF-10",
+      "kind": "ref",
+      "to": "INF-29",
+      "weight": 4
+    },
+    {
+      "from": "INF-10",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 3
+    },
+    {
+      "from": "INF-11",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 2
+    },
+    {
+      "from": "INF-11",
+      "kind": "ref",
+      "to": "INF-40",
+      "weight": 2
+    },
+    {
+      "from": "INF-11",
+      "kind": "ref",
+      "to": "INF-50",
+      "weight": 2
+    },
+    {
+      "from": "INF-13",
+      "kind": "ref",
+      "to": "RTG-41",
+      "weight": 2
+    },
+    {
+      "from": "INF-14",
+      "kind": "ref",
+      "to": "EVL-20",
+      "weight": 1
+    },
+    {
+      "from": "INF-14",
+      "kind": "ref",
+      "to": "INF-36",
+      "weight": 2
+    },
+    {
+      "from": "INF-14",
+      "kind": "ref",
+      "to": "INF-37",
+      "weight": 2
+    },
+    {
+      "from": "INF-16",
+      "kind": "ref",
+      "to": "INF-21",
+      "weight": 5
+    },
+    {
+      "from": "INF-16",
+      "kind": "ref",
+      "to": "INF-27",
+      "weight": 2
+    },
+    {
+      "from": "INF-16",
+      "kind": "ref",
+      "to": "INF-34",
+      "weight": 2
+    },
+    {
+      "from": "INF-16",
+      "kind": "ref",
+      "to": "INF-50",
+      "weight": 3
+    },
+    {
+      "from": "INF-16",
+      "kind": "ref",
+      "to": "INF-54",
+      "weight": 2
+    },
+    {
+      "from": "INF-17",
+      "kind": "ref",
+      "to": "INF-16",
+      "weight": 2
+    },
+    {
+      "from": "INF-17",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 6
+    },
+    {
+      "from": "INF-17",
+      "kind": "ref",
+      "to": "INF-34",
+      "weight": 4
+    },
+    {
+      "from": "INF-17",
+      "kind": "ref",
+      "to": "INF-55",
+      "weight": 4
+    },
+    {
+      "from": "INF-17",
+      "kind": "ref",
+      "to": "REV-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-18",
+      "kind": "ref",
+      "to": "EVL-20",
+      "weight": 2
+    },
+    {
+      "from": "INF-18",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "INF-18",
+      "kind": "ref",
+      "to": "INF-03",
+      "weight": 2
+    },
+    {
+      "from": "INF-18",
+      "kind": "ref",
+      "to": "INF-17",
+      "weight": 2
+    },
+    {
+      "from": "INF-18",
+      "kind": "ref",
+      "to": "INF-21",
+      "weight": 3
+    },
+    {
+      "from": "INF-18",
+      "kind": "ref",
+      "to": "INF-48",
+      "weight": 2
+    },
+    {
+      "from": "INF-18",
+      "kind": "ref",
+      "to": "PIP-03",
+      "weight": 2
+    },
+    {
+      "from": "INF-19",
+      "kind": "ref",
+      "to": "RTG-32",
+      "weight": 4
+    },
+    {
+      "from": "INF-20",
+      "kind": "ref",
+      "to": "INF-21",
+      "weight": 4
+    },
+    {
+      "from": "INF-20",
+      "kind": "ref",
+      "to": "INF-34",
+      "weight": 4
+    },
+    {
+      "from": "INF-20",
+      "kind": "ref",
+      "to": "INF-55",
+      "weight": 2
+    },
+    {
+      "from": "INF-21",
+      "kind": "ref",
+      "to": "EVL-44",
+      "weight": 2
+    },
+    {
+      "from": "INF-21",
+      "kind": "ref",
+      "to": "INF-03",
+      "weight": 5
+    },
+    {
+      "from": "INF-21",
+      "kind": "ref",
+      "to": "INF-48",
+      "weight": 2
+    },
+    {
+      "from": "INF-21",
+      "kind": "ref",
+      "to": "REV-06",
+      "weight": 2
+    },
+    {
+      "from": "INF-22",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-22",
+      "kind": "ref",
+      "to": "EVL-23",
+      "weight": 2
+    },
+    {
+      "from": "INF-22",
+      "kind": "ref",
+      "to": "INF-07",
+      "weight": 4
+    },
+    {
+      "from": "INF-22",
+      "kind": "ref",
+      "to": "INF-23",
+      "weight": 5
+    },
+    {
+      "from": "INF-22",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-23",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-23",
+      "kind": "ref",
+      "to": "INF-07",
+      "weight": 3
+    },
+    {
+      "from": "INF-23",
+      "kind": "ref",
+      "to": "INF-34",
+      "weight": 2
+    },
+    {
+      "from": "INF-23",
+      "kind": "ref",
+      "to": "RTG-34",
+      "weight": 2
+    },
+    {
+      "from": "INF-23",
+      "kind": "ref",
+      "to": "RTG-42",
+      "weight": 5
+    },
+    {
+      "from": "INF-24",
+      "kind": "ref",
+      "to": "EVL-13",
+      "weight": 4
+    },
+    {
+      "from": "INF-24",
+      "kind": "ref",
+      "to": "INF-26",
+      "weight": 2
+    },
+    {
+      "from": "INF-24",
+      "kind": "ref",
+      "to": "INF-57",
+      "weight": 2
+    },
+    {
+      "from": "INF-25",
+      "kind": "ref",
+      "to": "INF-29",
+      "weight": 2
+    },
+    {
+      "from": "INF-26",
+      "kind": "ref",
+      "to": "INF-28",
+      "weight": 2
+    },
+    {
+      "from": "INF-26",
+      "kind": "ref",
+      "to": "INF-54",
+      "weight": 5
+    },
+    {
+      "from": "INF-26",
+      "kind": "ref",
+      "to": "INF-57",
+      "weight": 2
+    },
+    {
+      "from": "INF-26",
+      "kind": "ref",
+      "to": "REV-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-27",
+      "kind": "ref",
+      "to": "INF-33",
+      "weight": 2
+    },
+    {
+      "from": "INF-27",
+      "kind": "ref",
+      "to": "INF-34",
+      "weight": 5
+    },
+    {
+      "from": "INF-28",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-28",
+      "kind": "ref",
+      "to": "INF-26",
+      "weight": 2
+    },
+    {
+      "from": "INF-28",
+      "kind": "ref",
+      "to": "INF-50",
+      "weight": 3
+    },
+    {
+      "from": "INF-29",
+      "kind": "ref",
+      "to": "INF-08",
+      "weight": 3
+    },
+    {
+      "from": "INF-30",
+      "kind": "ref",
+      "to": "EVL-09",
+      "weight": 1
+    },
+    {
+      "from": "INF-30",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 2
+    },
+    {
+      "from": "INF-30",
+      "kind": "ref",
+      "to": "INF-33",
+      "weight": 2
+    },
+    {
+      "from": "INF-30",
+      "kind": "ref",
+      "to": "INF-42",
+      "weight": 2
+    },
+    {
+      "from": "INF-30",
+      "kind": "ref",
+      "to": "INF-47",
+      "weight": 2
+    },
+    {
+      "from": "INF-31",
+      "kind": "ref",
+      "to": "EVL-44",
+      "weight": 2
+    },
+    {
+      "from": "INF-31",
+      "kind": "ref",
+      "to": "INF-10",
+      "weight": 3
+    },
+    {
+      "from": "INF-31",
+      "kind": "ref",
+      "to": "INF-11",
+      "weight": 2
+    },
+    {
+      "from": "INF-31",
+      "kind": "ref",
+      "to": "INF-17",
+      "weight": 10
+    },
+    {
+      "from": "INF-31",
+      "kind": "ref",
+      "to": "INF-42",
+      "weight": 2
+    },
+    {
+      "from": "INF-31",
+      "kind": "ref",
+      "to": "INF-56",
+      "weight": 3
+    },
+    {
+      "from": "INF-31",
+      "kind": "ref",
+      "to": "REV-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-33",
+      "kind": "ref",
+      "to": "EVL-09",
+      "weight": 1
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "EVL-20",
+      "weight": 2
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "EVL-48",
+      "weight": 1
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "INF-04",
+      "weight": 2
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "INF-09",
+      "weight": 2
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "INF-14",
+      "weight": 1
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "INF-17",
+      "weight": 2
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "INF-18",
+      "weight": 2
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "INF-19",
+      "weight": 4
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "INF-27",
+      "weight": 4
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "INF-38",
+      "weight": 2
+    },
+    {
+      "from": "INF-34",
+      "kind": "ref",
+      "to": "INF-48",
+      "weight": 2
+    },
+    {
+      "from": "INF-35",
+      "kind": "ref",
+      "to": "INF-06",
+      "weight": 2
+    },
+    {
+      "from": "INF-38",
+      "kind": "ref",
+      "to": "EVL-20",
+      "weight": 1
+    },
+    {
+      "from": "INF-38",
+      "kind": "ref",
+      "to": "EVL-48",
+      "weight": 1
+    },
+    {
+      "from": "INF-38",
+      "kind": "ref",
+      "to": "INF-14",
+      "weight": 1
+    },
+    {
+      "from": "INF-38",
+      "kind": "ref",
+      "to": "INF-35",
+      "weight": 2
+    },
+    {
+      "from": "INF-38",
+      "kind": "ref",
+      "to": "INF-39",
+      "weight": 2
+    },
+    {
+      "from": "INF-40",
+      "kind": "ref",
+      "to": "INF-10",
+      "weight": 4
+    },
+    {
+      "from": "INF-40",
+      "kind": "ref",
+      "to": "INF-11",
+      "weight": 2
+    },
+    {
+      "from": "INF-40",
+      "kind": "ref",
+      "to": "INF-29",
+      "weight": 2
+    },
+    {
+      "from": "INF-41",
+      "kind": "ref",
+      "to": "INF-45",
+      "weight": 4
+    },
+    {
+      "from": "INF-41",
+      "kind": "ref",
+      "to": "PIP-03",
+      "weight": 2
+    },
+    {
+      "from": "INF-42",
+      "kind": "ref",
+      "to": "INF-30",
+      "weight": 4
+    },
+    {
+      "from": "INF-42",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 4
+    },
+    {
+      "from": "INF-42",
+      "kind": "ref",
+      "to": "INF-33",
+      "weight": 8
+    },
+    {
+      "from": "INF-42",
+      "kind": "ref",
+      "to": "INF-52",
+      "weight": 6
+    },
+    {
+      "from": "INF-42",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 2
+    },
+    {
+      "from": "INF-43",
+      "kind": "ref",
+      "to": "INF-07",
+      "weight": 12
+    },
+    {
+      "from": "INF-43",
+      "kind": "ref",
+      "to": "INF-22",
+      "weight": 4
+    },
+    {
+      "from": "INF-43",
+      "kind": "ref",
+      "to": "INF-23",
+      "weight": 3
+    },
+    {
+      "from": "INF-43",
+      "kind": "ref",
+      "to": "INF-45",
+      "weight": 8
+    },
+    {
+      "from": "INF-43",
+      "kind": "ref",
+      "to": "INF-50",
+      "weight": 4
+    },
+    {
+      "from": "INF-43",
+      "kind": "ref",
+      "to": "RTG-42",
+      "weight": 3
+    },
+    {
+      "from": "INF-44",
+      "kind": "ref",
+      "to": "RTG-11",
+      "weight": 4
+    },
+    {
+      "from": "INF-45",
+      "kind": "ref",
+      "to": "INF-07",
+      "weight": 6
+    },
+    {
+      "from": "INF-45",
+      "kind": "ref",
+      "to": "INF-41",
+      "weight": 10
+    },
+    {
+      "from": "INF-45",
+      "kind": "ref",
+      "to": "INF-43",
+      "weight": 5
+    },
+    {
+      "from": "INF-45",
+      "kind": "ref",
+      "to": "RTG-22",
+      "weight": 2
+    },
+    {
+      "from": "INF-45",
+      "kind": "ref",
+      "to": "RTG-35",
+      "weight": 2
+    },
+    {
+      "from": "INF-45",
+      "kind": "ref",
+      "to": "RTG-42",
+      "weight": 2
+    },
+    {
+      "from": "INF-46",
+      "kind": "ref",
+      "to": "INF-50",
+      "weight": 2
+    },
+    {
+      "from": "INF-46",
+      "kind": "ref",
+      "to": "INF-57",
+      "weight": 2
+    },
+    {
+      "from": "INF-47",
+      "kind": "ref",
+      "to": "EVL-44",
+      "weight": 2
+    },
+    {
+      "from": "INF-47",
+      "kind": "ref",
+      "to": "INF-18",
+      "weight": 5
+    },
+    {
+      "from": "INF-47",
+      "kind": "ref",
+      "to": "INF-38",
+      "weight": 2
+    },
+    {
+      "from": "INF-48",
+      "kind": "ref",
+      "to": "INF-03",
+      "weight": 6
+    },
+    {
+      "from": "INF-48",
+      "kind": "ref",
+      "to": "INF-27",
+      "weight": 2
+    },
+    {
+      "from": "INF-48",
+      "kind": "ref",
+      "to": "INF-34",
+      "weight": 2
+    },
+    {
+      "from": "INF-49",
+      "kind": "ref",
+      "to": "EVL-44",
+      "weight": 2
+    },
+    {
+      "from": "INF-49",
+      "kind": "ref",
+      "to": "INF-07",
+      "weight": 4
+    },
+    {
+      "from": "INF-49",
+      "kind": "ref",
+      "to": "INF-44",
+      "weight": 2
+    },
+    {
+      "from": "INF-49",
+      "kind": "ref",
+      "to": "RTG-11",
+      "weight": 2
+    },
+    {
+      "from": "INF-50",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 2
+    },
+    {
+      "from": "INF-50",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 3
+    },
+    {
+      "from": "INF-50",
+      "kind": "ref",
+      "to": "INF-28",
+      "weight": 2
+    },
+    {
+      "from": "INF-50",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 2
+    },
+    {
+      "from": "INF-50",
+      "kind": "ref",
+      "to": "INF-43",
+      "weight": 2
+    },
+    {
+      "from": "INF-50",
+      "kind": "ref",
+      "to": "INF-46",
+      "weight": 11
+    },
+    {
+      "from": "INF-50",
+      "kind": "ref",
+      "to": "INF-52",
+      "weight": 2
+    },
+    {
+      "from": "INF-50",
+      "kind": "ref",
+      "to": "INF-57",
+      "weight": 2
+    },
+    {
+      "from": "INF-50",
+      "kind": "ref",
+      "to": "REV-02",
+      "weight": 1
+    },
+    {
+      "from": "INF-52",
+      "kind": "ref",
+      "to": "EVL-09",
+      "weight": 1
+    },
+    {
+      "from": "INF-52",
+      "kind": "ref",
+      "to": "INF-05",
+      "weight": 2
+    },
+    {
+      "from": "INF-52",
+      "kind": "ref",
+      "to": "INF-30",
+      "weight": 2
+    },
+    {
+      "from": "INF-52",
+      "kind": "ref",
+      "to": "INF-33",
+      "weight": 3
+    },
+    {
+      "from": "INF-52",
+      "kind": "ref",
+      "to": "INF-42",
+      "weight": 3
+    },
+    {
+      "from": "INF-52",
+      "kind": "ref",
+      "to": "INF-56",
+      "weight": 2
+    },
+    {
+      "from": "INF-54",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
+    },
+    {
+      "from": "INF-54",
+      "kind": "ref",
+      "to": "INF-04",
+      "weight": 2
+    },
+    {
+      "from": "INF-54",
+      "kind": "ref",
+      "to": "INF-26",
+      "weight": 2
+    },
+    {
+      "from": "INF-55",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 2
+    },
+    {
+      "from": "INF-55",
+      "kind": "ref",
+      "to": "INF-57",
+      "weight": 4
+    },
+    {
+      "from": "INF-56",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 1
+    },
+    {
+      "from": "INF-57",
+      "kind": "ref",
+      "to": "EVL-13",
+      "weight": 2
+    },
+    {
+      "from": "INF-57",
+      "kind": "ref",
+      "to": "INF-16",
+      "weight": 4
+    },
+    {
+      "from": "INF-57",
+      "kind": "ref",
+      "to": "INF-55",
+      "weight": 2
+    },
+    {
+      "from": "INF-57",
+      "kind": "ref",
+      "to": "REV-02",
+      "weight": 4
+    },
+    {
+      "from": "PIP-01",
+      "kind": "ref",
+      "to": "EVL-28",
+      "weight": 2
+    },
+    {
+      "from": "PIP-01",
+      "kind": "ref",
+      "to": "RTG-33",
+      "weight": 4
+    },
+    {
+      "from": "PIP-02",
+      "kind": "ref",
+      "to": "INF-16",
+      "weight": 2
+    },
+    {
+      "from": "PIP-02",
+      "kind": "ref",
+      "to": "INF-50",
+      "weight": 2
+    },
+    {
+      "from": "PIP-02",
+      "kind": "ref",
+      "to": "PIP-05",
+      "weight": 5
+    },
+    {
+      "from": "PIP-04",
+      "kind": "ref",
+      "to": "EVL-28",
+      "weight": 2
+    },
+    {
+      "from": "PIP-04",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "PIP-04",
+      "kind": "ref",
+      "to": "HRM-07",
+      "weight": 2
+    },
+    {
+      "from": "PIP-04",
+      "kind": "ref",
+      "to": "PIP-01",
+      "weight": 12
+    },
+    {
+      "from": "PIP-05",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "PIP-05",
+      "kind": "ref",
+      "to": "PIP-02",
+      "weight": 2
+    },
+    {
+      "from": "REV-01",
+      "kind": "ref",
+      "to": "INF-56",
+      "weight": 2
+    },
+    {
+      "from": "REV-01",
+      "kind": "ref",
+      "to": "REV-07",
+      "weight": 2
+    },
+    {
+      "from": "REV-01",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "REV-01",
+      "kind": "ref",
+      "to": "RTG-32",
+      "weight": 2
+    },
+    {
+      "from": "REV-02",
+      "kind": "ref",
+      "to": "INF-16",
+      "weight": 2
+    },
+    {
+      "from": "REV-02",
+      "kind": "ref",
+      "to": "INF-17",
+      "weight": 3
+    },
+    {
+      "from": "REV-02",
+      "kind": "ref",
+      "to": "INF-31",
+      "weight": 4
+    },
+    {
+      "from": "REV-02",
+      "kind": "ref",
+      "to": "INF-55",
+      "weight": 2
+    },
+    {
+      "from": "REV-02",
+      "kind": "ref",
+      "to": "INF-57",
+      "weight": 2
+    },
+    {
+      "from": "REV-02",
+      "kind": "ref",
+      "to": "REV-07",
+      "weight": 2
+    },
+    {
+      "from": "REV-03",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 3
+    },
+    {
+      "from": "REV-03",
+      "kind": "ref",
+      "to": "EVL-16",
+      "weight": 2
+    },
+    {
+      "from": "REV-03",
+      "kind": "ref",
+      "to": "REV-07",
+      "weight": 2
+    },
+    {
+      "from": "REV-04",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 2
+    },
+    {
+      "from": "REV-04",
+      "kind": "ref",
+      "to": "REV-06",
+      "weight": 2
+    },
+    {
+      "from": "REV-04",
+      "kind": "ref",
+      "to": "REV-09",
+      "weight": 2
+    },
+    {
+      "from": "REV-04",
+      "kind": "ref",
+      "to": "RTG-40",
+      "weight": 3
+    },
+    {
+      "from": "REV-05",
+      "kind": "ref",
+      "to": "HRM-01",
+      "weight": 2
+    },
+    {
+      "from": "REV-06",
+      "kind": "ref",
+      "to": "REV-01",
+      "weight": 2
+    },
+    {
+      "from": "REV-06",
+      "kind": "ref",
+      "to": "REV-04",
+      "weight": 2
+    },
+    {
+      "from": "REV-07",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 2
+    },
+    {
+      "from": "REV-07",
+      "kind": "ref",
+      "to": "INF-11",
+      "weight": 2
+    },
+    {
+      "from": "REV-07",
+      "kind": "ref",
+      "to": "INF-19",
+      "weight": 2
+    },
+    {
+      "from": "REV-07",
+      "kind": "ref",
+      "to": "INF-34",
+      "weight": 2
+    },
+    {
+      "from": "REV-07",
+      "kind": "ref",
+      "to": "REV-01",
+      "weight": 2
+    },
+    {
+      "from": "REV-07",
+      "kind": "ref",
+      "to": "REV-02",
+      "weight": 4
+    },
+    {
+      "from": "REV-07",
+      "kind": "ref",
+      "to": "REV-03",
+      "weight": 2
+    },
+    {
+      "from": "REV-08",
+      "kind": "ref",
+      "to": "REV-03",
+      "weight": 2
+    },
+    {
+      "from": "REV-08",
+      "kind": "ref",
+      "to": "REV-09",
+      "weight": 2
+    },
+    {
+      "from": "REV-08",
+      "kind": "ref",
+      "to": "RTG-13",
+      "weight": 3
+    },
+    {
+      "from": "REV-09",
+      "kind": "ref",
+      "to": "HRM-06",
+      "weight": 2
+    },
+    {
+      "from": "REV-09",
+      "kind": "ref",
+      "to": "REV-04",
+      "weight": 2
+    },
+    {
+      "from": "REV-09",
+      "kind": "ref",
+      "to": "REV-08",
+      "weight": 2
+    },
+    {
+      "from": "REV-09",
+      "kind": "ref",
+      "to": "RTG-40",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "EVL-04",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 5
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "EVL-15",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "EVL-16",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "EVL-32",
+      "weight": 5
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "HRM-01",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "RTG-01",
+      "weight": 4
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "RTG-09",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "RTG-11",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "RTG-12",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "RTG-13",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "RTG-23",
+      "weight": 4
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "RTG-26",
+      "weight": 4
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "RTG-39",
+      "weight": 6
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "RTG-41",
+      "weight": 3
+    },
+    {
+      "from": "RTG-04",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "RTG-04",
+      "kind": "ref",
+      "to": "RTG-05",
+      "weight": 2
+    },
+    {
+      "from": "RTG-05",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 4
+    },
+    {
+      "from": "RTG-05",
+      "kind": "ref",
+      "to": "RTG-04",
+      "weight": 2
+    },
+    {
+      "from": "RTG-05",
+      "kind": "ref",
+      "to": "RTG-10",
+      "weight": 6
+    },
+    {
+      "from": "RTG-05",
+      "kind": "ref",
+      "to": "RTG-21",
+      "weight": 4
+    },
+    {
+      "from": "RTG-06",
+      "kind": "ref",
+      "to": "INF-40",
+      "weight": 2
+    },
+    {
+      "from": "RTG-06",
+      "kind": "ref",
+      "to": "RTG-21",
+      "weight": 4
+    },
+    {
+      "from": "RTG-07",
+      "kind": "ref",
+      "to": "INF-07",
+      "weight": 4
+    },
+    {
+      "from": "RTG-07",
+      "kind": "ref",
+      "to": "INF-45",
+      "weight": 2
+    },
+    {
+      "from": "RTG-07",
+      "kind": "ref",
+      "to": "RTG-35",
+      "weight": 2
+    },
+    {
+      "from": "RTG-08",
+      "kind": "ref",
+      "to": "HRM-05",
+      "weight": 2
+    },
+    {
+      "from": "RTG-08",
+      "kind": "ref",
+      "to": "HRM-07",
+      "weight": 12
+    },
+    {
+      "from": "RTG-08",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "RTG-08",
+      "kind": "ref",
+      "to": "RTG-22",
+      "weight": 4
+    },
+    {
+      "from": "RTG-08",
+      "kind": "ref",
+      "to": "RTG-30",
+      "weight": 2
+    },
+    {
+      "from": "RTG-09",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 3
+    },
+    {
+      "from": "RTG-09",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 2
+    },
+    {
+      "from": "RTG-09",
+      "kind": "ref",
+      "to": "EVL-33",
+      "weight": 2
+    },
+    {
+      "from": "RTG-09",
+      "kind": "ref",
+      "to": "RTG-11",
+      "weight": 3
+    },
+    {
+      "from": "RTG-09",
+      "kind": "ref",
+      "to": "RTG-15",
+      "weight": 4
+    },
+    {
+      "from": "RTG-09",
+      "kind": "ref",
+      "to": "RTG-30",
+      "weight": 4
+    },
+    {
+      "from": "RTG-09",
+      "kind": "ref",
+      "to": "RTG-31",
+      "weight": 2
+    },
+    {
+      "from": "RTG-09",
+      "kind": "ref",
+      "to": "RTG-39",
+      "weight": 2
+    },
+    {
+      "from": "RTG-09",
+      "kind": "ref",
+      "to": "RTG-41",
+      "weight": 4
+    },
+    {
+      "from": "RTG-10",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "RTG-10",
+      "kind": "ref",
+      "to": "RTG-05",
+      "weight": 2
+    },
+    {
+      "from": "RTG-10",
+      "kind": "ref",
+      "to": "RTG-08",
+      "weight": 2
+    },
+    {
+      "from": "RTG-10",
+      "kind": "ref",
+      "to": "RTG-14",
+      "weight": 2
+    },
+    {
+      "from": "RTG-11",
+      "kind": "ref",
+      "to": "INF-05",
+      "weight": 4
+    },
+    {
+      "from": "RTG-11",
+      "kind": "ref",
+      "to": "INF-44",
+      "weight": 2
+    },
+    {
+      "from": "RTG-12",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 3
+    },
+    {
+      "from": "RTG-13",
+      "kind": "ref",
+      "to": "EVL-15",
+      "weight": 2
+    },
+    {
+      "from": "RTG-13",
+      "kind": "ref",
+      "to": "EVL-16",
+      "weight": 2
+    },
+    {
+      "from": "RTG-13",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "RTG-14",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "RTG-14",
+      "kind": "ref",
+      "to": "HRM-02",
+      "weight": 2
+    },
+    {
+      "from": "RTG-14",
+      "kind": "ref",
+      "to": "RTG-10",
+      "weight": 2
+    },
+    {
+      "from": "RTG-14",
+      "kind": "ref",
+      "to": "RTG-30",
+      "weight": 2
+    },
+    {
+      "from": "RTG-15",
+      "kind": "ref",
+      "to": "EVL-10",
+      "weight": 2
+    },
+    {
+      "from": "RTG-15",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "RTG-15",
+      "kind": "ref",
+      "to": "RTG-09",
+      "weight": 12
+    },
+    {
+      "from": "RTG-15",
+      "kind": "ref",
+      "to": "RTG-29",
+      "weight": 7
+    },
+    {
+      "from": "RTG-15",
+      "kind": "ref",
+      "to": "RTG-30",
+      "weight": 3
+    },
+    {
+      "from": "RTG-16",
+      "kind": "ref",
+      "to": "INF-35",
+      "weight": 3
+    },
+    {
+      "from": "RTG-17",
+      "kind": "ref",
+      "to": "EVL-09",
+      "weight": 1
+    },
+    {
+      "from": "RTG-17",
+      "kind": "ref",
+      "to": "RTG-29",
+      "weight": 2
+    },
+    {
+      "from": "RTG-17",
+      "kind": "ref",
+      "to": "RTG-31",
+      "weight": 2
+    },
+    {
+      "from": "RTG-18",
+      "kind": "ref",
+      "to": "EVL-44",
+      "weight": 2
+    },
+    {
+      "from": "RTG-18",
+      "kind": "ref",
+      "to": "RTG-17",
+      "weight": 2
+    },
+    {
+      "from": "RTG-18",
+      "kind": "ref",
+      "to": "RTG-19",
+      "weight": 2
+    },
+    {
+      "from": "RTG-18",
+      "kind": "ref",
+      "to": "RTG-20",
+      "weight": 5
+    },
+    {
+      "from": "RTG-18",
+      "kind": "ref",
+      "to": "RTG-36",
+      "weight": 6
+    },
+    {
+      "from": "RTG-19",
+      "kind": "ref",
+      "to": "RTG-17",
+      "weight": 2
+    },
+    {
+      "from": "RTG-19",
+      "kind": "ref",
+      "to": "RTG-18",
+      "weight": 2
+    },
+    {
+      "from": "RTG-19",
+      "kind": "ref",
+      "to": "RTG-20",
+      "weight": 2
+    },
+    {
+      "from": "RTG-19",
+      "kind": "ref",
+      "to": "RTG-36",
+      "weight": 2
+    },
+    {
+      "from": "RTG-19",
+      "kind": "ref",
+      "to": "RTG-38",
+      "weight": 2
+    },
+    {
+      "from": "RTG-20",
+      "kind": "ref",
+      "to": "EVL-44",
+      "weight": 2
+    },
+    {
+      "from": "RTG-20",
+      "kind": "ref",
+      "to": "RTG-17",
+      "weight": 3
+    },
+    {
+      "from": "RTG-20",
+      "kind": "ref",
+      "to": "RTG-19",
+      "weight": 4
+    },
+    {
+      "from": "RTG-20",
+      "kind": "ref",
+      "to": "RTG-31",
+      "weight": 2
+    },
+    {
+      "from": "RTG-20",
+      "kind": "ref",
+      "to": "RTG-36",
+      "weight": 4
+    },
+    {
+      "from": "RTG-20",
+      "kind": "ref",
+      "to": "RTG-37",
+      "weight": 2
+    },
+    {
+      "from": "RTG-21",
+      "kind": "ref",
+      "to": "RTG-06",
+      "weight": 3
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 3
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 6
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "EVL-31",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "EVL-33",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "EVL-34",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "EVL-38",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "HRM-04",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "HRM-05",
+      "weight": 4
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "HRM-06",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "HRM-07",
+      "weight": 3
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "INF-05",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "INF-12",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "INF-41",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "INF-51",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "PIP-01",
+      "weight": 4
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 3
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "PIP-05",
+      "weight": 4
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "RTG-01",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "RTG-08",
+      "weight": 4
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "RTG-09",
+      "weight": 6
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "RTG-11",
+      "weight": 3
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "RTG-15",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "RTG-30",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "RTG-33",
+      "weight": 2
+    },
+    {
+      "from": "RTG-22",
+      "kind": "ref",
+      "to": "RTG-45",
+      "weight": 2
+    },
+    {
+      "from": "RTG-23",
+      "kind": "ref",
+      "to": "EVL-09",
+      "weight": 1
+    },
+    {
+      "from": "RTG-23",
+      "kind": "ref",
+      "to": "EVL-15",
+      "weight": 2
+    },
+    {
+      "from": "RTG-23",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "RTG-24",
+      "kind": "ref",
+      "to": "EVL-32",
+      "weight": 2
+    },
+    {
+      "from": "RTG-24",
+      "kind": "ref",
+      "to": "INF-16",
+      "weight": 2
+    },
+    {
+      "from": "RTG-24",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 3
+    },
+    {
+      "from": "RTG-24",
+      "kind": "ref",
+      "to": "RTG-16",
+      "weight": 2
+    },
+    {
+      "from": "RTG-24",
+      "kind": "ref",
+      "to": "RTG-19",
+      "weight": 2
+    },
+    {
+      "from": "RTG-26",
+      "kind": "ref",
+      "to": "EVL-32",
+      "weight": 4
+    },
+    {
+      "from": "RTG-26",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 3
+    },
+    {
+      "from": "RTG-26",
+      "kind": "ref",
+      "to": "RTG-40",
+      "weight": 4
+    },
+    {
+      "from": "RTG-28",
+      "kind": "ref",
+      "to": "EVL-02",
+      "weight": 3
+    },
+    {
+      "from": "RTG-30",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 3
+    },
+    {
+      "from": "RTG-30",
+      "kind": "ref",
+      "to": "HRM-04",
+      "weight": 2
+    },
+    {
+      "from": "RTG-30",
+      "kind": "ref",
+      "to": "RTG-14",
+      "weight": 2
+    },
+    {
+      "from": "RTG-30",
+      "kind": "ref",
+      "to": "RTG-15",
+      "weight": 2
+    },
+    {
+      "from": "RTG-31",
+      "kind": "ref",
+      "to": "RTG-09",
+      "weight": 2
+    },
+    {
+      "from": "RTG-31",
+      "kind": "ref",
+      "to": "RTG-15",
+      "weight": 2
+    },
+    {
+      "from": "RTG-31",
+      "kind": "ref",
+      "to": "RTG-17",
+      "weight": 2
+    },
+    {
+      "from": "RTG-33",
+      "kind": "ref",
+      "to": "EVL-28",
+      "weight": 2
+    },
+    {
+      "from": "RTG-33",
+      "kind": "ref",
+      "to": "EVL-29",
+      "weight": 2
+    },
+    {
+      "from": "RTG-34",
+      "kind": "ref",
+      "to": "INF-23",
+      "weight": 4
+    },
+    {
+      "from": "RTG-35",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "RTG-35",
+      "kind": "ref",
+      "to": "RTG-07",
+      "weight": 2
+    },
+    {
+      "from": "RTG-36",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 2
+    },
+    {
+      "from": "RTG-36",
+      "kind": "ref",
+      "to": "EVL-09",
+      "weight": 1
+    },
+    {
+      "from": "RTG-36",
+      "kind": "ref",
+      "to": "RTG-11",
+      "weight": 2
+    },
+    {
+      "from": "RTG-36",
+      "kind": "ref",
+      "to": "RTG-17",
+      "weight": 4
+    },
+    {
+      "from": "RTG-36",
+      "kind": "ref",
+      "to": "RTG-31",
+      "weight": 2
+    },
+    {
+      "from": "RTG-36",
+      "kind": "ref",
+      "to": "RTG-38",
+      "weight": 4
+    },
+    {
+      "from": "RTG-38",
+      "kind": "ref",
+      "to": "EVL-44",
+      "weight": 2
+    },
+    {
+      "from": "RTG-38",
+      "kind": "ref",
+      "to": "RTG-17",
+      "weight": 2
+    },
+    {
+      "from": "RTG-38",
+      "kind": "ref",
+      "to": "RTG-18",
+      "weight": 2
+    },
+    {
+      "from": "RTG-38",
+      "kind": "ref",
+      "to": "RTG-19",
+      "weight": 4
+    },
+    {
+      "from": "RTG-38",
+      "kind": "ref",
+      "to": "RTG-20",
+      "weight": 2
+    },
+    {
+      "from": "RTG-38",
+      "kind": "ref",
+      "to": "RTG-31",
+      "weight": 2
+    },
+    {
+      "from": "RTG-38",
+      "kind": "ref",
+      "to": "RTG-36",
+      "weight": 4
+    },
+    {
+      "from": "RTG-39",
+      "kind": "ref",
+      "to": "EVL-45",
+      "weight": 2
+    },
+    {
+      "from": "RTG-40",
+      "kind": "ref",
+      "to": "REV-04",
+      "weight": 2
+    },
+    {
+      "from": "RTG-40",
+      "kind": "ref",
+      "to": "RTG-09",
+      "weight": 4
+    },
+    {
+      "from": "RTG-40",
+      "kind": "ref",
+      "to": "RTG-15",
+      "weight": 5
+    },
+    {
+      "from": "RTG-40",
+      "kind": "ref",
+      "to": "RTG-30",
+      "weight": 4
+    },
+    {
+      "from": "RTG-40",
+      "kind": "ref",
+      "to": "RTG-31",
+      "weight": 2
+    },
+    {
+      "from": "RTG-41",
+      "kind": "ref",
+      "to": "EVL-16",
+      "weight": 2
+    },
+    {
+      "from": "RTG-41",
+      "kind": "ref",
+      "to": "EVL-23",
+      "weight": 2
+    },
+    {
+      "from": "RTG-41",
+      "kind": "ref",
+      "to": "HRM-02",
+      "weight": 2
+    },
+    {
+      "from": "RTG-41",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "RTG-41",
+      "kind": "ref",
+      "to": "RTG-09",
+      "weight": 2
+    },
+    {
+      "from": "RTG-42",
+      "kind": "ref",
+      "to": "INF-07",
+      "weight": 4
+    },
+    {
+      "from": "RTG-42",
+      "kind": "ref",
+      "to": "INF-23",
+      "weight": 2
+    },
+    {
+      "from": "RTG-42",
+      "kind": "ref",
+      "to": "RTG-12",
+      "weight": 2
+    },
+    {
+      "from": "RTG-42",
+      "kind": "ref",
+      "to": "RTG-37",
+      "weight": 2
+    },
+    {
+      "from": "RTG-42",
+      "kind": "ref",
+      "to": "RTG-43",
+      "weight": 2
+    },
+    {
+      "from": "RTG-42",
+      "kind": "ref",
+      "to": "RTG-44",
+      "weight": 2
+    },
+    {
+      "from": "RTG-43",
+      "kind": "ref",
+      "to": "INF-23",
+      "weight": 2
+    },
+    {
+      "from": "RTG-43",
+      "kind": "ref",
+      "to": "RTG-37",
+      "weight": 2
+    },
+    {
+      "from": "RTG-44",
+      "kind": "ref",
+      "to": "EVL-13",
+      "weight": 2
+    },
+    {
+      "from": "RTG-44",
+      "kind": "ref",
+      "to": "RTG-42",
+      "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T09:13:28Z",
+  "generated_at": "2026-08-10T09:45:54Z",
   "nodes": [
     {
       "age_days": 11,
@@ -24,6 +3490,7 @@
       "handoff": "agent-file-prose-compression.md",
       "id": "EVL-01",
       "last_advanced": "2026-07-30",
+      "next_action": "AFC-P5.E3 \u2014 run the n=30 compliance campaign. READY but HELD (operator: \"I will tell",
       "open": 2,
       "track": "agent file prose compression"
     },
@@ -35,6 +3502,7 @@
       "handoff": "architect-model-selection-bench.md",
       "id": "EVL-02",
       "last_advanced": "2026-08-03",
+      "next_action": "Re-run the MMLU-Pro control under the hardened protocol \u2014 the sidecar's n=50 run predates it",
       "open": 24,
       "track": "architect model selection bench"
     },
@@ -46,6 +3514,7 @@
       "handoff": "autopilot-decision-plane-audit-2026-07-22.md",
       "id": "EVL-03",
       "last_advanced": "2026-07-30",
+      "next_action": "E8 RE-ARM (2026-07-26) \u2014 AutoPilot E8 baseline reseed = the gating task of the post-v8",
       "open": 9,
       "track": "autopilot decision plane audit 2026 07 22"
     },
@@ -57,6 +3526,7 @@
       "handoff": "autopilot-sequential-allocation.md",
       "id": "EVL-04",
       "last_advanced": "2026-08-04",
+      "next_action": "SEQ-A: make the refuted label sticky in state_name() so re-adjudication cannot silently un-refute",
       "open": 12,
       "track": "autopilot sequential allocation"
     },
@@ -68,6 +3538,7 @@
       "handoff": "backlog-roi-audit-2026-07-14.md",
       "id": "EVL-05",
       "last_advanced": "2026-07-30",
+      "next_action": "RE-1 \u00b7 Math-Verify scoring flip + re-baseline (S, med-ROI; intake-377/379) \u2014 the math_verify scorer is landed in orchestrator but zero pool\u2026",
       "open": 4,
       "track": "backlog roi audit 2026 07 14"
     },
@@ -79,6 +3550,7 @@
       "handoff": "benchmark-results-dashboard.md",
       "id": "EVL-06",
       "last_advanced": "2026-07-30",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "benchmark results dashboard"
     },
@@ -90,6 +3562,7 @@
       "handoff": "bulk-inference-campaign.md",
       "id": "EVL-07",
       "last_advanced": "2026-08-09",
+      "next_action": "K-LCM-1 \u2014 LongCoT-Mini calibration run (~500-easy deterministic long-horizon suite)",
       "open": 4,
       "track": "bulk inference campaign"
     },
@@ -101,6 +3574,7 @@
       "handoff": "canonical-judge-suite-revamp.md",
       "id": "EVL-08",
       "last_advanced": "2026-08-03",
+      "next_action": "CJ-1a \u2014 corpus is already cached (gpqa_diamond 198 rows); build the judge slate from it",
       "open": 24,
       "track": "canonical judge suite revamp"
     },
@@ -112,6 +3586,7 @@
       "handoff": "design-backlog-triage-2026-07-23.md",
       "id": "EVL-09",
       "last_advanced": null,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "design backlog triage 2026 07 23"
     },
@@ -123,6 +3598,7 @@
       "handoff": "episodic-memory-integrity.md",
       "id": "EVL-10",
       "last_advanced": "2026-08-04",
+      "next_action": "M-11a \u2014 first re-distil; INFERENCE-gated, do not run without an approved window",
       "open": 5,
       "track": "episodic memory integrity"
     },
@@ -134,6 +3610,7 @@
       "handoff": "eval-benchmark-cost-reduction.md",
       "id": "EVL-11",
       "last_advanced": "2026-07-29",
+      "next_action": "BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies",
       "open": 2,
       "track": "eval benchmark cost reduction"
     },
@@ -145,6 +3622,7 @@
       "handoff": "eval-tower-architecture-audit-2026-07-20.md",
       "id": "EVL-12",
       "last_advanced": "2026-07-29",
+      "next_action": "A2 agent SCORE-02/XREPO-1/PATH-1 \u2014 make module identity deterministic. (PARTIAL \u2705 2026-07-20: the debug_scorer leg landed in 2a41c0bc \u2014 see\u2026",
       "open": 5,
       "track": "eval tower architecture audit 2026 07 20"
     },
@@ -156,6 +3634,7 @@
       "handoff": "eval-tower-loop-robustness-audit-2026-07-20.md",
       "id": "EVL-13",
       "last_advanced": "2026-07-29",
+      "next_action": "H2.v8 \u2014 remeasure the contention matrix under frozen v8 after E8 quality collection \u2014 live dashboard topology and region-lock payloads alre\u2026",
       "open": 2,
       "track": "eval tower loop robustness audit 2026 07 20"
     },
@@ -167,6 +3646,7 @@
       "handoff": "eval-tower-verification.md",
       "id": "EVL-14",
       "last_advanced": "2026-07-29",
+      "next_action": "EV-4 \u2014 decision-grade HE-R+ calibration baseline through the inference-batch loop, after contention recert",
       "open": 27,
       "track": "eval tower verification"
     },
@@ -178,6 +3658,7 @@
       "handoff": "evidence-plane-instrument-repair.md",
       "id": "EVL-15",
       "last_advanced": "2026-07-29",
+      "next_action": "W5 \u2014 designed core_v2 (impl 2.1, 2\u20133 days + calibration): benchmarks/prompts/core_v2.jsonl (~40 items, per-item p\u22080.2,0.8, stratified), ver\u2026",
       "open": 3,
       "track": "evidence plane instrument repair"
     },
@@ -189,6 +3670,7 @@
       "handoff": "evidence-plane-ledger-and-sequential-verdicts.md",
       "id": "EVL-16",
       "last_advanced": "2026-07-29",
+      "next_action": "W8b \u2014 live candidate evidence after guard deploy: continue W8 candidate attempts under the live selectable-action coordinator plus outcome-\u2026",
       "open": 1,
       "track": "evidence plane ledger and sequential verdict"
     },
@@ -200,6 +3682,7 @@
       "handoff": "fable5-architecture-review-2.md",
       "id": "EVL-17",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "fable5 architecture review 2"
     },
@@ -211,6 +3694,7 @@
       "handoff": "fable5-window2-findings-00-executive-summary.md",
       "id": "EVL-18",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "fable5 window2 findings 00 executive summary"
     },
@@ -222,6 +3706,7 @@
       "handoff": "fable5-window2-findings-01-optimizer-integrity.md",
       "id": "EVL-19",
       "last_advanced": "2026-07-29",
+      "next_action": "R2-current \u2014 accrue a current-era, trusted per-question ledger sufficient for a reproducible \u226540-item core selection. Do not promote the Ju\u2026",
       "open": 1,
       "track": "fable5 window2 findings 01 optimizer integri"
     },
@@ -233,6 +3718,7 @@
       "handoff": "fable5-window2-findings-02-heterogeneous-gpu.md",
       "id": "EVL-20",
       "last_advanced": "2026-07-29",
+      "next_action": "F1 \u2014 per-split GPU/CPU timing under static -cmoe on one MoE model; report",
       "open": 7,
       "track": "fable5 window2 findings 02 heterogeneous gpu"
     },
@@ -244,6 +3730,7 @@
       "handoff": "fable5-window2-findings-03-portfolio-and-master-queue.md",
       "id": "EVL-21",
       "last_advanced": "2026-07-29",
+      "next_action": "G1 \u00b7 Ratify P-GPU-1 (operator; measurement trust boundary \u2014 human-amendment-only). findings-02 \u00a75",
       "open": 13,
       "track": "fable5 window2 findings 03 portfolio and mas"
     },
@@ -255,6 +3742,7 @@
       "handoff": "fable5-window2-findings-05-intake-sweep-and-roofline.md",
       "id": "EVL-22",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "fable5 window2 findings 05 intake sweep and"
     },
@@ -266,6 +3754,7 @@
       "handoff": "frontier-f1-real-task-corpus.md",
       "id": "EVL-23",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "frontier f1 real task corpus"
     },
@@ -277,6 +3766,7 @@
       "handoff": "frontier-f2-self-running-lab.md",
       "id": "EVL-24",
       "last_advanced": "2026-07-29",
+      "next_action": "W3 \u2014 reliability ladder (ongoing): scripts/lab/promote_job.py enforcing shadow \u2192 reviewed \u2192 autonomous from logged stats (shadow \u226510 runs s\u2026",
       "open": 2,
       "track": "frontier f2 self running lab"
     },
@@ -288,6 +3778,7 @@
       "handoff": "frontier-f3-data-flywheel.md",
       "id": "EVL-25",
       "last_advanced": "2026-07-30",
+      "next_action": "W3 \u2014 GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate is now satisfied by 100 trusted reviewed triage\u2026",
       "open": 1,
       "track": "frontier f3 data flywheel"
     },
@@ -299,6 +3790,7 @@
       "handoff": "frontier-f4-continuity-backup.md",
       "id": "EVL-26",
       "last_advanced": "2026-07-29",
+      "next_action": "W2 \u2014 the job (half day): scripts/backup/backup_critical.sh \u2014 restic preferred (dedupe+encryption, open-source) or snapshot-copy fallback. T\u2026",
       "open": 2,
       "track": "frontier f4 continuity backup"
     },
@@ -310,6 +3802,7 @@
       "handoff": "frontier-f6-upstream-publication.md",
       "id": "EVL-27",
       "last_advanced": "2026-07-29",
+      "next_action": "W1 \u2014 D2 PR spearhead (1\u20132 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-processing sparse path the PR author asked for help\u2026",
       "open": 4,
       "track": "frontier f6 upstream publication"
     },
@@ -321,6 +3814,7 @@
       "handoff": "granite-97m-r2-bench-plan.md",
       "id": "EVL-28",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "granite 97m r2 bench plan"
     },
@@ -332,6 +3826,7 @@
       "handoff": "intake-derived-work-2026-07-25.md",
       "id": "EVL-29",
       "last_advanced": "2026-07-30",
+      "next_action": "ID-2 \u2014 pin the gepa dependency; installed is 0.0.26 and unpinned",
       "open": 19,
       "track": "intake derived work 2026 07 25"
     },
@@ -343,6 +3838,7 @@
       "handoff": "integration-test-coverage.md",
       "id": "EVL-30",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "integration test coverage"
     },
@@ -354,6 +3850,7 @@
       "handoff": "mathsmith-hc-formalizer-eval.md",
       "id": "EVL-31",
       "last_advanced": "2026-07-29",
+      "next_action": "If no GGUF exists, convert from HF weights (convert_hf_to_gguf.py + llama-quantize, Q4_K_M and Q8_0)",
       "open": 15,
       "track": "mathsmith hc formalizer eval"
     },
@@ -365,6 +3862,7 @@
       "handoff": "meta-harness-optimization.md",
       "id": "EVL-32",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "meta harness optimization"
     },
@@ -376,6 +3874,7 @@
       "handoff": "per-request-reasoning-budget.md",
       "id": "EVL-33",
       "last_advanced": "2026-07-29",
+      "next_action": "Step 3: implement fix (force </think> / suppress think scaffold at budget=0 for hybrid SSM), needs running server",
       "open": 3,
       "track": "per request reasoning budget"
     },
@@ -387,6 +3886,7 @@
       "handoff": "rao-redel-substrate-spike.md",
       "id": "EVL-34",
       "last_advanced": "2026-07-29",
+      "next_action": "Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation",
       "open": 6,
       "track": "rao redel substrate spike"
     },
@@ -398,6 +3898,7 @@
       "handoff": "re4-protocol-redesign.md",
       "id": "EVL-35",
       "last_advanced": "2026-07-29",
+      "next_action": "RE-4.2 \u2014 non-saturation probe (operator quiet-window, current v8 topology re-attested, autopilot stopped): frontdoor-only, two-phase, R=409\u2026",
       "open": 4,
       "track": "re4 protocol redesign"
     },
@@ -409,6 +3910,7 @@
       "handoff": "repl-session-memory-maturity.md",
       "id": "EVL-36",
       "last_advanced": "2026-07-29",
+      "next_action": "D-a5 \u2014 If DataFrame persistence is ever wanted, use a typed columnar codec, not the",
       "open": 8,
       "track": "repl session memory maturity"
     },
@@ -420,6 +3922,7 @@
       "handoff": "repl-turn-efficiency.md",
       "id": "EVL-37",
       "last_advanced": "2026-07-29",
+      "next_action": "S4 Omega A/B: measure turns per task, token cost per task, and accuracy delta. This gates suggestion, verbosity, and any extra tool-surface\u2026",
       "open": 13,
       "track": "repl turn efficiency"
     },
@@ -431,6 +3934,7 @@
       "handoff": "repo-readiness-scorer.md",
       "id": "EVL-38",
       "last_advanced": "2026-07-29",
+      "next_action": "Close remaining root L5.self_optimizing_loop gap (13-item queue)",
       "open": 2,
       "track": "repo readiness scorer"
     },
@@ -442,6 +3946,7 @@
       "handoff": "rlm-contested-claims-self-evaluation.md",
       "id": "EVL-39",
       "last_advanced": "2026-07-30",
+      "next_action": "E1 \u2014 RESCOPED BY E0: measure Base vs Depth-1 first, not depth-1 vs depth-2. E0 showed",
       "open": 5,
       "track": "rlm contested claims self evaluation"
     },
@@ -453,6 +3958,7 @@
       "handoff": "safetygate-rlvr-provenance-audit-2026-07-22.md",
       "id": "EVL-40",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "safetygate rlvr provenance audit 2026 07 22"
     },
@@ -464,6 +3970,7 @@
       "handoff": "scorer-fork-drift-audit-2026-07-22.md",
       "id": "EVL-41",
       "last_advanced": "2026-07-29",
+      "next_action": "Unify the _inband_error_text / _forced_role_serving_mismatch local copies (seeding 3bfe2584) with eval_tower's originals into one shared mo\u2026",
       "open": 3,
       "track": "scorer fork drift audit 2026 07 22"
     },
@@ -475,6 +3982,7 @@
       "handoff": "scoring-infra-standardization.md",
       "id": "EVL-42",
       "last_advanced": "2026-07-29",
+      "next_action": "1b \u2014 migrate research consumers to the canonical lib and delete each duplicate extractor",
       "open": 18,
       "track": "scoring infra standardization"
     },
@@ -486,6 +3994,7 @@
       "handoff": "sliders-local-validation.md",
       "id": "EVL-43",
       "last_advanced": "2026-07-29",
+      "next_action": "Operator decision: KB-RAG K7 precondition fired \u2014 evaluate SLIDERS DB+SQL alternative (Phase 0 falsification) now, or keep parked?",
       "open": 9,
       "track": "sliders local validation"
     },
@@ -497,6 +4006,7 @@
       "handoff": "stale-open-audit-2026-07-18.md",
       "id": "EVL-44",
       "last_advanced": "2026-07-29",
+      "next_action": "Re-anchor GEMV to its 2 live graph-fusion tasks; move the deprioritized SIMD Phase 0\u20135 plan to a closed appendix",
       "open": 6,
       "track": "stale open audit 2026 07 18"
     },
@@ -508,6 +4018,7 @@
       "handoff": "strand-rust-coder-rustevo2-verification.md",
       "id": "EVL-45",
       "last_advanced": "2026-07-29",
+      "next_action": "Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential",
       "open": 3,
       "track": "strand rust coder rustevo2 verification"
     },
@@ -519,18 +4030,20 @@
       "handoff": "tool-use-eval-contract.md",
       "id": "EVL-46",
       "last_advanced": "2026-07-29",
+      "next_action": "TU-DTAP-1 \u2014 Import a reviewed, bounded Apache-2.0 DTAP subset into a disposable local runner.",
       "open": 2,
       "track": "tool use eval contract"
     },
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 71,
+      "closed": 80,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-10",
-      "open": 13,
+      "next_action": "PR1b \u2014 build the machine anchoring pass: fetch cited sources, match claim terms, record",
+      "open": 9,
       "track": "vidya belief substrate program"
     },
     {
@@ -541,6 +4054,7 @@
       "handoff": "fable5-window2-findings-05c-mi210-lever-category-matrix.md",
       "id": "EVL-48",
       "last_advanced": "2026-07-29",
+      "next_action": "L12 \u2014 n-gram/prompt-lookup on GPU: 27B-Q8 + fp16 over code/JSON/prose sets, sweeping the three ngram spec types",
       "open": 19,
       "track": "fable5 window2 findings 05c mi210 lever cate"
     },
@@ -552,6 +4066,7 @@
       "handoff": "harness-selection-and-integration.md",
       "id": "HRM-01",
       "last_advanced": "2026-07-30",
+      "next_action": "HS-4 \u2014 Harness-selection decision gate: Hermes vs OpenCode vs an ACP-speaker, gated on HS-1 + HS-2. Default outcome preserved: (A) stays or\u2026",
       "open": 2,
       "track": "harness selection and integration"
     },
@@ -563,6 +4078,7 @@
       "handoff": "hermes-outer-shell.md",
       "id": "HRM-02",
       "last_advanced": "2026-07-29",
+      "next_action": "Multi-turn context (references prior answer)",
       "open": 11,
       "track": "hermes outer shell"
     },
@@ -574,6 +4090,7 @@
       "handoff": "memento-block-reasoning-compression.md",
       "id": "HRM-03",
       "last_advanced": "2026-07-29",
+      "next_action": "S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)",
       "open": 5,
       "track": "memento block reasoning compression"
     },
@@ -585,6 +4102,7 @@
       "handoff": "minddr-deep-research-mode.md",
       "id": "HRM-04",
       "last_advanced": "2026-07-29",
+      "next_action": "Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) \u2014 BLOCKED 2026-07-29: GPU is id\u2026",
       "open": 9,
       "track": "minddr deep research mode"
     },
@@ -596,6 +4114,7 @@
       "handoff": "reasoning-compression.md",
       "id": "HRM-05",
       "last_advanced": "2026-07-29",
+      "next_action": "If validated: implement enforce mode (route easy\u2192worker, hard\u2192architect)",
       "open": 5,
       "track": "reasoning compression"
     },
@@ -607,6 +4126,7 @@
       "handoff": "security-review-skill.md",
       "id": "HRM-06",
       "last_advanced": "2026-07-29",
+      "next_action": "GATE-0 production-reachability, ordered BEFORE exploitability. CodeCrucible short-circuits on whether the code path is reachable in product\u2026",
       "open": 6,
       "track": "security review skill"
     },
@@ -618,6 +4138,7 @@
       "handoff": "tool-output-compression.md",
       "id": "HRM-07",
       "last_advanced": "2026-07-29",
+      "next_action": "P4e \u2014 Decision gate: roll-out scope (no time estimate; data-driven). After 1 week of P4c data, decide per-command: (i) promote to default (\u2026",
       "open": 4,
       "track": "tool output compression"
     },
@@ -629,6 +4150,7 @@
       "handoff": "01-speculative-decoding.md",
       "id": "INF-01",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "01 speculative decoding"
     },
@@ -640,6 +4162,7 @@
       "handoff": "agent-collab-rnd-harness.md",
       "id": "INF-02",
       "last_advanced": "2026-07-29",
+      "next_action": "(Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (--backend local, custo\u2026",
       "open": 2,
       "track": "agent collab rnd harness"
     },
@@ -651,6 +4174,7 @@
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-03",
+      "next_action": "Integrate KernelBench into the GEAK-eval loop as the AK-KB-1 correctness substrate",
       "open": 13,
       "track": "agentic rocm kernel authoring"
     },
@@ -662,6 +4186,7 @@
       "handoff": "angelslim-techniques-evaluation.md",
       "id": "INF-04",
       "last_advanced": "2026-07-29",
+      "next_action": "BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist",
       "open": 3,
       "track": "angelslim techniques evaluation"
     },
@@ -673,6 +4198,7 @@
       "handoff": "attention-matching-kv-compaction.md",
       "id": "INF-05",
       "last_advanced": "2026-07-29",
+      "next_action": "P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated",
       "open": 4,
       "track": "attention matching kv compaction"
     },
@@ -684,6 +4210,7 @@
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-05",
+      "next_action": "Bind P-AK-SEARCH-1's four numeric controls (e-process threshold, per-backend limits) before any search run",
       "open": 70,
       "track": "autokernel research loop"
     },
@@ -695,6 +4222,7 @@
       "handoff": "batched-decode-measurement.md",
       "id": "INF-07",
       "last_advanced": "2026-07-30",
+      "next_action": "E5 \u2014 the never-measured NUMA\u00d7batch 2D sweep; needs a post-promotion quiet window",
       "open": 15,
       "track": "batched decode measurement"
     },
@@ -706,6 +4234,7 @@
       "handoff": "cpu-kernel-env-flags-inventory.md",
       "id": "INF-08",
       "last_advanced": "2026-07-29",
+      "next_action": "Add an \"effect on trace interpretation\" column to the flag inventory. This file records which",
       "open": 1,
       "track": "cpu kernel env flags inventory"
     },
@@ -717,6 +4246,7 @@
       "handoff": "cpu-prefill-compute-large-models.md",
       "id": "INF-09",
       "last_advanced": "2026-07-29",
+      "next_action": "PC-4 \u2014 experimental qwen35 prefill barrier/graph-fusion prototype:",
       "open": 1,
       "track": "cpu prefill compute large models"
     },
@@ -728,6 +4258,7 @@
       "handoff": "cpu-shape-specialized-gemv-decode.md",
       "id": "INF-10",
       "last_advanced": "2026-07-30",
+      "next_action": "Measure tinyBLAS on/off first (Phase 0) \u2014 sgemm.cpp is already compiled in, so it confounds every later A/B",
       "open": 26,
       "track": "cpu shape specialized gemv decode"
     },
@@ -739,6 +4270,7 @@
       "handoff": "deepseek-v4-flash-0731-dspark.md",
       "id": "INF-11",
       "last_advanced": "2026-08-10",
+      "next_action": "Claim-grade Q8 baseline on production v8 (canonical CPU protocol) before any DSpark kernel work",
       "open": 19,
       "track": "deepseek v4 flash 0731 dspark"
     },
@@ -750,6 +4282,7 @@
       "handoff": "delta-mem-reproduction.md",
       "id": "INF-12",
       "last_advanced": "2026-07-29",
+      "next_action": "Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible)",
       "open": 4,
       "track": "delta mem reproduction"
     },
@@ -761,6 +4294,7 @@
       "handoff": "engram-conditional-memory.md",
       "id": "INF-13",
       "last_advanced": "2026-08-03",
+      "next_action": "Make k budget-conditional rather than fixed (intake-936 rider)",
       "open": 7,
       "track": "engram conditional memory"
     },
@@ -772,6 +4306,7 @@
       "handoff": "fable5-window2-findings-05b-mi210-inference-architecture.md",
       "id": "INF-14",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "fable5 window2 findings 05b mi210 inference"
     },
@@ -783,6 +4318,7 @@
       "handoff": "gemma-challenge-kernel-techniques-v7.md",
       "id": "INF-16",
       "last_advanced": "2026-07-29",
+      "next_action": "K10 \u2014 (follow-up) Lever A quiet-host re-eval: on a quiesced host (fresh-server/run, fprintf(stderr) keylog to confirm the nodes0 collision\u2026",
       "open": 9,
       "track": "gemma challenge kernel techniques v7"
     },
@@ -794,6 +4330,7 @@
       "handoff": "glm51-reap-cpu-evaluation.md",
       "id": "INF-17",
       "last_advanced": "2026-07-29",
+      "next_action": "Run the five-prompt short-context smoke (greeting, code, reasoning, structured, tool-call) \u2014 one positive is not a set",
       "open": 11,
       "track": "glm51 reap cpu evaluation"
     },
@@ -805,6 +4342,7 @@
       "handoff": "gpu-acceleration-path.md",
       "id": "INF-18",
       "last_advanced": "2026-08-03",
+      "next_action": "Explain the bidirectional-only mechanism before this becomes a placement input",
       "open": 8,
       "track": "gpu acceleration path"
     },
@@ -816,6 +4354,7 @@
       "handoff": "gpu-cot-scaffold-sidecar.md",
       "id": "INF-19",
       "last_advanced": "2026-07-29",
+      "next_action": "G3-4 \u2014 future decision instrument (separate from G3-3). Select and run a decision-grade,",
       "open": 1,
       "track": "gpu cot scaffold sidecar"
     },
@@ -827,6 +4366,7 @@
       "handoff": "gpu-drafter-control-redesign.md",
       "id": "INF-20",
       "last_advanced": "2026-07-29",
+      "next_action": "DR-3 \u2014 broader K2 admission runner/package: build the dry-run-first K2",
       "open": 2,
       "track": "gpu drafter control redesign"
     },
@@ -838,6 +4378,7 @@
       "handoff": "gpu-drafter-mi200-investigation.md",
       "id": "INF-21",
       "last_advanced": "2026-07-29",
+      "next_action": "Re-anchor to the live next step: Stage-1 end-to-end speedup / co-residency redesign (Stage 4 stays blocked on failed Stages 1\u20133)",
       "open": 2,
       "track": "gpu drafter mi200 investigation"
     },
@@ -849,6 +4390,7 @@
       "handoff": "gpu-serving-tie-in-program.md",
       "id": "INF-22",
       "last_advanced": "2026-07-31",
+      "next_action": "P0-1 (operator) \u2014 run the E8 ratification once Codex presents the apply-ready D4 bundle",
       "open": 24,
       "track": "gpu serving tie in program"
     },
@@ -860,6 +4402,7 @@
       "handoff": "heterogeneous-slot-fabric-residency.md",
       "id": "INF-23",
       "last_advanced": "2026-07-29",
+      "next_action": "Model GPU host threads as a fabric slot (gpu-host) \u2014 design only, gated on the residency verdict",
       "open": 10,
       "track": "heterogeneous slot fabric residency"
     },
@@ -871,6 +4414,7 @@
       "handoff": "inference-batch-loop.md",
       "id": "INF-24",
       "last_advanced": "2026-07-29",
+      "next_action": "P0 RCP prologue \u2014 RCP-W1 (reference relaunch + preflight), RCP-W2 (ledger materialize), RCP-W3 (calibration smoke) \u2014 gated OP-6a/6b + OP-st\u2026",
       "open": 13,
       "track": "inference batch loop"
     },
@@ -882,6 +4426,7 @@
       "handoff": "intra-process-tensor-parallel-decode.md",
       "id": "INF-25",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "intra process tensor parallel decode"
     },
@@ -893,6 +4438,7 @@
       "handoff": "iqk-iquant-enablement.md",
       "id": "INF-26",
       "last_advanced": "2026-07-30",
+      "next_action": "T2 \u2014 Gate trellis in ik_llama.cpp, not in our tree. /mnt/raid0/llm/ik_llama.cpp is already on disk and is the reference implementation. Bui\u2026",
       "open": 3,
       "track": "iqk iquant enablement"
     },
@@ -904,6 +4450,7 @@
       "handoff": "k28-fused-chunked-gdn-kernel-research.md",
       "id": "INF-27",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "k28 fused chunked gdn kernel research"
     },
@@ -915,6 +4462,7 @@
       "handoff": "laguna-s21-cpu-port.md",
       "id": "INF-28",
       "last_advanced": "2026-07-30",
+      "next_action": "L-9P \u2014 conditional CPU throughput/config discovery. The prepared",
       "open": 1,
       "track": "laguna s21 cpu port"
     },
@@ -926,6 +4474,7 @@
       "handoff": "large-moe-expert-parallelism.md",
       "id": "INF-29",
       "last_advanced": "2026-07-29",
+      "next_action": "CPU15-REVAL \u2014 Fresh canonical matrix if reopening: before enabling EP anywhere, run:",
       "open": 3,
       "track": "large moe expert parallelism"
     },
@@ -937,6 +4486,7 @@
       "handoff": "lightning-attention-port.md",
       "id": "INF-30",
       "last_advanced": "2026-07-29",
+      "next_action": "LQ-2 broader quality eval: if keeping a math/reasoning role, run a focused AIME/MATH/GPQA-style bundle with reasoning_budget=0, exact promp\u2026",
       "open": 3,
       "track": "lightning attention port"
     },
@@ -948,6 +4498,7 @@
       "handoff": "llama-cpp-dsa-contribution.md",
       "id": "INF-31",
       "last_advanced": "2026-07-29",
+      "next_action": "D4 \u2014 root-cause the HIP bf16 LIGHTNING_INDEXER numerical failure (flaky, ERR\u22481.0,",
       "open": 4,
       "track": "llama cpp dsa contribution"
     },
@@ -959,6 +4510,7 @@
       "handoff": "llamacpp-v6-consolidation.md",
       "id": "INF-32",
       "last_advanced": "2026-07-29",
+      "next_action": "SWA slot-reuse fixes (d1c72d7fc / 603702769) \u2014 verify vs upstream SWA before drop.",
       "open": 5,
       "track": "llamacpp v6 consolidation"
     },
@@ -970,6 +4522,7 @@
       "handoff": "log-linear-gated-deltanet-readiness.md",
       "id": "INF-33",
       "last_advanced": "2026-07-29",
+      "next_action": "Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size)",
       "open": 3,
       "track": "log linear gated deltanet readiness"
     },
@@ -981,6 +4534,7 @@
       "handoff": "mi210-big-model-and-acceleration-roadmap.md",
       "id": "INF-34",
       "last_advanced": "2026-07-29",
+      "next_action": "DR-3 broader K2 admission runner/package: implement the dry-run-first K2",
       "open": 10,
       "track": "mi210 big model and acceleration roadmap"
     },
@@ -992,6 +4546,7 @@
       "handoff": "mi210-kernel-rnd-loop-proposal.md",
       "id": "INF-35",
       "last_advanced": "2026-08-03",
+      "next_action": "Phase 2 \u2014 build the nightshift loop (outer planner/critic + inner sweep \u2192 kernel_eval.sh \u2192 Pareto)",
       "open": 3,
       "track": "mi210 kernel rnd loop proposal"
     },
@@ -1003,6 +4558,7 @@
       "handoff": "mi210-mfma-compute-bound-paths.md",
       "id": "INF-36",
       "last_advanced": "2026-08-03",
+      "next_action": "DEFERRED with data \u2014 reopen the MFMA build only if a new compute-bound path appears",
       "open": 3,
       "track": "mi210 mfma compute bound paths"
     },
@@ -1014,6 +4570,7 @@
       "handoff": "mi210-q8-dequant-gemv-roofline.md",
       "id": "INF-37",
       "last_advanced": "2026-08-03",
+      "next_action": "Apply the SoA-repack lever only if coalescing measures poor; currently deemed healthy",
       "open": 7,
       "track": "mi210 q8 dequant gemv roofline"
     },
@@ -1025,6 +4582,7 @@
       "handoff": "mi210-speed-campaign-summary.md",
       "id": "INF-38",
       "last_advanced": "2026-07-29",
+      "next_action": "MI-KB-2 \u2014 run KernelBench over current v6 production kernel to establish baseline",
       "open": 1,
       "track": "mi210 speed campaign summary"
     },
@@ -1036,6 +4594,7 @@
       "handoff": "moe-aggregate-deployment-wins-brief.md",
       "id": "INF-39",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "moe aggregate deployment wins brief"
     },
@@ -1047,6 +4606,7 @@
       "handoff": "moe-spec-cpu-spec-dec-integration.md",
       "id": "INF-40",
       "last_advanced": "2026-07-29",
+      "next_action": "Current live-MTP MoE verifier B-sweep: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bi\u2026",
       "open": 1,
       "track": "moe spec cpu spec dec integration"
     },
@@ -1058,6 +4618,7 @@
       "handoff": "multimodal-pipeline.md",
       "id": "INF-41",
       "last_advanced": "2026-08-03",
+      "next_action": "S-9 \u2014 wire start_tts() into orchestrator_stack.py (port 9002 reserved); capability exists, wiring does not",
       "open": 17,
       "track": "multimodal pipeline"
     },
@@ -1069,6 +4630,7 @@
       "handoff": "multiscreen-attention-evaluation.md",
       "id": "INF-42",
       "last_advanced": "2026-07-29",
+      "next_action": "HRM-1: Pull huggingface.co/sapientinc/HRM-Text-1B and run a fair head-to-head against Qwen3.5-1.7B-Instruct on our benchmark suite (MMLU, A\u2026",
       "open": 4,
       "track": "multiscreen attention evaluation"
     },
@@ -1080,6 +4642,7 @@
       "handoff": "numa-placement-defect-20260730.md",
       "id": "INF-43",
       "last_advanced": "2026-07-30",
+      "next_action": "T3 \u2014 Re-run the 27 confounded E5 cells on declared placement. Per model the grid must",
       "open": 7,
       "track": "numa placement defect"
     },
@@ -1091,6 +4654,7 @@
       "handoff": "numa-prefill-decode-disaggregation.md",
       "id": "INF-44",
       "last_advanced": "2026-07-29",
+      "next_action": "BLOCKED: feasibility-gated (xGMI KV-transfer falsification); reopen on multi-tenant shift",
       "open": 1,
       "track": "numa prefill decode disaggregation"
     },
@@ -1102,6 +4666,7 @@
       "handoff": "numa-topology-cutover-resume-20260730.md",
       "id": "INF-45",
       "last_advanced": "2026-08-01",
+      "next_action": "P0-1 \u2014 fix the 30 net-new breaking tests across 14 files; this blocks the commit",
       "open": 84,
       "track": "numa topology cutover resume"
     },
@@ -1113,6 +4678,7 @@
       "handoff": "qwen-mtp-llamacpp-port.md",
       "id": "INF-46",
       "last_advanced": "2026-07-29",
+      "next_action": "P6b Operator-gated fresh-v8-experimental model-load + gate bench on unsloth/Qwen3.6-35B-A3B-MTP-GGUF, with matched Q4 no-spec vs Q4-MTP art\u2026",
       "open": 2,
       "track": "qwen mtp llamacpp port"
     },
@@ -1124,6 +4690,7 @@
       "handoff": "qwen36-27b-cpu-feasibility.md",
       "id": "INF-47",
       "last_advanced": "2026-07-29",
+      "next_action": "P1 CPU throughput probe (single-instance + NUMA-4-way) on Qwen3.6-27B Q4_K_M - inference-blocked; PARKED 2026-07-14, reopen only if 27B bec\u2026",
       "open": 4,
       "track": "qwen36 27b cpu feasibility"
     },
@@ -1135,6 +4702,7 @@
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-03",
+      "next_action": "MI210 bring-up: install ROCm + torch-ROCm, confirm gfx90a, reproduce GEAK-eval numbers as a sanity check",
       "open": 25,
       "track": "rocm verify profile backend"
     },
@@ -1146,6 +4714,7 @@
       "handoff": "sarathi-serve-cpu-evaluation.md",
       "id": "INF-49",
       "last_advanced": "2026-07-29",
+      "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (batched-decode E2 keep-candidate = the fired multi-tenant trigg\u2026",
       "open": 2,
       "track": "sarathi serve cpu evaluation"
     },
@@ -1157,6 +4726,7 @@
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "last_advanced": "2026-07-31",
+      "next_action": "SW-2 \u2014 confirm SW-1 against a live server when a lane is free and no protected bench region is held: POST a completion carrying speculative\u2026",
       "open": 12,
       "track": "speculative decoding mtp refresh"
     },
@@ -1168,6 +4738,7 @@
       "handoff": "streaming-llm-baseline.md",
       "id": "INF-51",
       "last_advanced": "2026-07-29",
+      "next_action": "Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models",
       "open": 4,
       "track": "streaming llm baseline"
     },
@@ -1179,6 +4750,7 @@
       "handoff": "summary-token-attention-readiness.md",
       "id": "INF-52",
       "last_advanced": "2026-07-29",
+      "next_action": "Gate A \u2014 Pretrained checkpoint of a model we serve (Qwen2.5/3.5/3.6 family, or any base we already deploy) released with KSA-style summary\u2026",
       "open": 4,
       "track": "summary token attention readiness"
     },
@@ -1190,6 +4762,7 @@
       "handoff": "tidar-one-pass-variant-b.md",
       "id": "INF-53",
       "last_advanced": "2026-07-29",
+      "next_action": "W2 \u2014 checkpoint gate + Q4 quality validation (bench-only when gate fires): watch for a Q4_K_M-quantizable TiDAR-class checkpoint (none exis\u2026",
       "open": 3,
       "track": "tidar one pass variant b"
     },
@@ -1201,6 +4774,7 @@
       "handoff": "tq3-quantization-evaluation.md",
       "id": "INF-54",
       "last_advanced": "2026-08-03",
+      "next_action": "Prototype faithful ChunkKV on a fresh llama.cpp-experimental tree",
       "open": 13,
       "track": "tq3 quantization evaluation"
     },
@@ -1212,6 +4786,7 @@
       "handoff": "tree-draft-forward-port-plan.md",
       "id": "INF-55",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "tree draft forward port plan"
     },
@@ -1223,6 +4798,7 @@
       "handoff": "triattention-kv-selection.md",
       "id": "INF-56",
       "last_advanced": "2026-07-29",
+      "next_action": "S8 autopilot exploration: sweep keep_ratio and layer_weights per production role; persist Pareto profiles with quality, speed, cost, and re\u2026",
       "open": 4,
       "track": "triattention kv selection"
     },
@@ -1234,6 +4810,7 @@
       "handoff": "v7-promotion.md",
       "id": "INF-57",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "v7 promotion"
     },
@@ -1245,6 +4822,7 @@
       "handoff": "v9-kernel-per-request-speculative-params.md",
       "id": "INF-58",
       "last_advanced": null,
+      "next_action": "V9-1. Delete the #if 0 / #endif around the speculative block in",
       "open": 5,
       "track": "v9 kernel per request speculative params"
     },
@@ -1256,6 +4834,7 @@
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
       "last_advanced": "2026-07-29",
+      "next_action": "QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss",
       "open": 1,
       "track": "yarn context extension research"
     },
@@ -1267,6 +4846,7 @@
       "handoff": "colbert-reranker-web-research.md",
       "id": "PIP-01",
       "last_advanced": "2026-07-30",
+      "next_action": "S5: Implement reranker \u2014 HOLD as of 2026-06-12 gate analysis. Add reranking to research.py, gated behind web_research_rerank flag, only if\u2026",
       "open": 9,
       "track": "colbert reranker web research"
     },
@@ -1278,6 +4858,7 @@
       "handoff": "document-parser-table-bench.md",
       "id": "PIP-02",
       "last_advanced": "2026-07-30",
+      "next_action": "Resolve PP-DocLayoutV3 weights and record cache path + size \u2014 a separate download from the GGUF",
       "open": 15,
       "track": "document parser table bench"
     },
@@ -1289,6 +4870,7 @@
       "handoff": "ernie-image-turbo-evaluation.md",
       "id": "PIP-03",
       "last_advanced": "2026-07-29",
+      "next_action": "Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs",
       "open": 4,
       "track": "ernie image turbo evaluation"
     },
@@ -1300,6 +4882,7 @@
       "handoff": "internal-kb-rag.md",
       "id": "PIP-04",
       "last_advanced": "2026-07-30",
+      "next_action": "K8 (LOW priority, defer): wikilink learning-loop scorer (NEW 2026-04-28, from intake-492). Flywheel's auto-wikilink suggestion uses an acce\u2026",
       "open": 7,
       "track": "internal kb rag"
     },
@@ -1311,6 +4894,7 @@
       "handoff": "opendataloader-pipeline-integration.md",
       "id": "PIP-05",
       "last_advanced": "2026-07-30",
+      "next_action": "Evaluate LightOnOCR-2-1B as a structural/table/reading-order parser against docling-fast",
       "open": 16,
       "track": "opendataloader pipeline integration"
     },
@@ -1322,6 +4906,7 @@
       "handoff": "autopilot-control-plane-integration.md",
       "id": "REV-01",
       "last_advanced": "2026-07-30",
+      "next_action": "AP-3 \u2014 Classes 2/4 (spec-dec composition; per-role KV config): restart-scoped launch-arg knobs (--spec-type set, --spec-draft-n-max, tree w\u2026",
       "open": 2,
       "track": "autopilot control plane integration"
     },
@@ -1333,6 +4918,7 @@
       "handoff": "glm52-reviewer-capability-gates.md",
       "id": "REV-02",
       "last_advanced": "2026-07-29",
+      "next_action": "GC-1a \u2014 Strict-IF / typed-emission claim-grade gate (P-REV-1): rerun on the approved claim-grade reviewer corpus/K-of-M protocol after the\u2026",
       "open": 5,
       "track": "glm52 reviewer capability gates"
     },
@@ -1344,6 +4930,7 @@
       "handoff": "reviewer-calibration-accounting.md",
       "id": "REV-03",
       "last_advanced": "2026-07-30",
+      "next_action": "RC-6a \u2014 operator PR + sign-off (human-amendment-only): land the drafted P-REV-1 blocks into MEASUREMENT.md \u00a71/\u00a72/\u00a73 via PR-reviewed amendme\u2026",
       "open": 4,
       "track": "reviewer calibration accounting"
     },
@@ -1355,6 +4942,7 @@
       "handoff": "reviewer-decision-plane.md",
       "id": "REV-04",
       "last_advanced": "2026-07-29",
+      "next_action": "RD-12 \u2014 Per-decision latency_ms + token accounting in artifact + trace (feeds H-LB); tests incl. parse-failure fallback counting; 50-questi\u2026",
       "open": 1,
       "track": "reviewer decision plane"
     },
@@ -1366,6 +4954,7 @@
       "handoff": "reviewer-escalation-and-human-gate-policy.md",
       "id": "REV-05",
       "last_advanced": "2026-07-29",
+      "next_action": "HG-1 \u2014 Threshold policy from H4/H5 reliability-by-confidence-bucket curves (per-domain).",
       "open": 8,
       "track": "reviewer escalation and human gate policy"
     },
@@ -1377,6 +4966,7 @@
       "handoff": "reviewer-latency-and-sampling-budget.md",
       "id": "REV-06",
       "last_advanced": "2026-07-29",
+      "next_action": "LB-1 \u2014 Reproduce + attribute the regression: which calls dominate (plan-review prompt count vs prompt length vs architect queueing) on the\u2026",
       "open": 7,
       "track": "reviewer latency and sampling budget"
     },
@@ -1388,6 +4978,7 @@
       "handoff": "reviewer-model-ablations.md",
       "id": "REV-07",
       "last_advanced": "2026-07-29",
+      "next_action": "RM-2 \u2014 Anchor arms (guaranteed confirmation-tier): A0 gates-only (objective-verifier floor); A1 self-review (status quo alias); A3 same-fam\u2026",
       "open": 9,
       "track": "reviewer model ablations"
     },
@@ -1399,6 +4990,7 @@
       "handoff": "reviewer-trace-materialization.md",
       "id": "REV-08",
       "last_advanced": "2026-07-29",
+      "next_action": "TM-8 \u2014 Coverage gate: % of review invocations producing trace rows over a 50-question replay \u2014 must be ~100% before H4 starts. Also verify\u2026",
       "open": 1,
       "track": "reviewer trace materialization"
     },
@@ -1410,6 +5002,7 @@
       "handoff": "reviewer-typed-artifacts.md",
       "id": "REV-09",
       "last_advanced": "2026-07-29",
+      "next_action": "Adopt benchmrk's annotation envelope as the dual-gold schema. Its status:\"invalid\" decoys give us a negative-control axis we do not have an\u2026",
       "open": 4,
       "track": "reviewer typed artifacts"
     },
@@ -1421,6 +5014,7 @@
       "handoff": "agent-world-env-synthesis.md",
       "id": "RTG-01",
       "last_advanced": "2026-08-05",
+      "next_action": "Run the AW-6 48h bootstrap discovery (\u226550 envs / \u2265500 tools / \u2265500 tasks) with incremental persistence",
       "open": 5,
       "track": "agent world env synthesis"
     },
@@ -1432,6 +5026,7 @@
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",
       "last_advanced": "2026-08-09",
+      "next_action": "AP-26: evaluate dspy.RLM for long-horizon autopilot analysis where metadata-first exploration avoids context overflow",
       "open": 65,
       "track": "autopilot continuous optimization"
     },
@@ -1443,6 +5038,7 @@
       "handoff": "autopilot-dashboard-fidelity-audit-2026-07-22.md",
       "id": "RTG-03",
       "last_advanced": "2026-07-30",
+      "next_action": "C1 fix #2 Manifest writer intent-not-realized gap \u2014 writer lives in",
       "open": 8,
       "track": "autopilot dashboard fidelity audit 2026 07 2"
     },
@@ -1454,6 +5050,7 @@
       "handoff": "batched-edit-parallel-apply.md",
       "id": "RTG-04",
       "last_advanced": "2026-07-29",
+      "next_action": "BEP-2 / J8 \u2014 CPU latency A/B for the legacy structured patchset path. Head-to-head bench: batch-edit mode vs interleaved Root LM loop on a\u2026",
       "open": 4,
       "track": "batched edit parallel apply"
     },
@@ -1465,6 +5062,7 @@
       "handoff": "bep-dcp-falsification-harness.md",
       "id": "RTG-05",
       "last_advanced": "2026-07-30",
+      "next_action": "DCP-6 deploy attestation + inference gate: launch-code provenance is satisfied (server_launch_git_sha=eeb8cce, ancestor of 2e2e0d3 and 756c\u2026",
       "open": 2,
       "track": "bep dcp falsification harness"
     },
@@ -1476,6 +5074,7 @@
       "handoff": "capability-registry-and-promotion.md",
       "id": "RTG-06",
       "last_advanced": "2026-08-05",
+      "next_action": "W3 \u2014 build config_applicator.restart_role() for safe role restarts (~2-3d, pauses autopilot)",
       "open": 2,
       "track": "capability registry and promotion"
     },
@@ -1487,6 +5086,7 @@
       "handoff": "contention-model-device-and-load-axes-rider.md",
       "id": "RTG-07",
       "last_advanced": "2026-08-03",
+      "next_action": "Q4 \u2014 decide whether the interference model needs INF-07's E5 NUMA\u00d7batch data first",
       "open": 1,
       "track": "contention model device and load axes rider"
     },
@@ -1498,6 +5098,7 @@
       "handoff": "context-folding-progressive.md",
       "id": "RTG-08",
       "last_advanced": "2026-07-29",
+      "next_action": "CF-L5 maximum-compression validation: run the L5 single-sentence-per-segment compression check only if it answers a current production ques\u2026",
       "open": 14,
       "track": "context folding progressive"
     },
@@ -1509,6 +5110,7 @@
       "handoff": "decision-aware-routing.md",
       "id": "RTG-09",
       "last_advanced": "2026-07-29",
+      "next_action": "Implement the SPO+ (Smart Predict-then-Optimize) loss",
       "open": 32,
       "track": "decision aware routing"
     },
@@ -1520,6 +5122,7 @@
       "handoff": "delegation-context-preassembly.md",
       "id": "RTG-10",
       "last_advanced": "2026-07-29",
+      "next_action": "DCP-6 \u2014 Eval. Measure on a delegation-heavy workload: prefill tokens, end-to-end latency, top-up count, bundle-build latency, downstream an\u2026",
       "open": 2,
       "track": "delegation context preassembly"
     },
@@ -1531,6 +5134,7 @@
       "handoff": "dynamic-stack-concurrency.md",
       "id": "RTG-11",
       "last_advanced": "2026-07-29",
+      "next_action": "DS-6-live \u2014 QuarterScheduler revalidation gate: parked. Only implement dynamic quarter reassignment if future DS-E1-equivalent evidence sho\u2026",
       "open": 6,
       "track": "dynamic stack concurrency"
     },
@@ -1542,6 +5146,7 @@
       "handoff": "esc8-stack-restart-landmine-audit-2026-07-22.md",
       "id": "RTG-12",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "esc8 stack restart landmine audit 2026 07 22"
     },
@@ -1553,6 +5158,7 @@
       "handoff": "evidence-plane-event-sourcing-and-narrative.md",
       "id": "RTG-13",
       "last_advanced": "2026-07-29",
+      "next_action": "W3 \u2014 rotation snapshots (impl 3.2, ~1 day): journal segments per 1000 trials chained with a snapshot row (full reconstructed view + policy\u2026",
       "open": 2,
       "track": "evidence plane event sourcing and narrative"
     },
@@ -1564,6 +5170,7 @@
       "handoff": "internal-interaction-lifecycle.md",
       "id": "RTG-14",
       "last_advanced": "2026-07-29",
+      "next_action": "P3-3. Shadow/optimization calibration: use consult_gate_probe on T2/T3 hard workflow slices to compare always-consult vs targeted-gate beha\u2026",
       "open": 5,
       "track": "internal interaction lifecycle"
     },
@@ -1575,6 +5182,7 @@
       "handoff": "learned-routing-controller.md",
       "id": "RTG-15",
       "last_advanced": "2026-07-30",
+      "next_action": "EP-5 \u2014 re-run the probe only after the outcome-label defects are fixed",
       "open": 20,
       "track": "learned routing controller"
     },
@@ -1586,6 +5194,7 @@
       "handoff": "loops-and-dashboards-audit-2026-07-05.md",
       "id": "RTG-16",
       "last_advanced": "2026-07-29",
+      "next_action": "Fix real_suite_v1 discriminability BEFORE certifying OP-1 (forward work from the audit above) \u2014 root-cause the run-instability first (two r\u2026",
       "open": 1,
       "track": "loops and dashboards audit 2026 07 05"
     },
@@ -1597,6 +5206,7 @@
       "handoff": "model-capability-descriptors.md",
       "id": "RTG-17",
       "last_advanced": "2026-07-29",
+      "next_action": "W5 \u2014 GATED tail: unified cascade (Phase 3) (2\u20133 weeks IF ever opened): one calibrated bilinear P(success \\| task_features, model_descriptor\u2026",
       "open": 1,
       "track": "model capability descriptors"
     },
@@ -1608,6 +5218,7 @@
       "handoff": "model-stack-change-standardization-audit.md",
       "id": "RTG-18",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "model stack change standardization audit"
     },
@@ -1619,6 +5230,7 @@
       "handoff": "model-stack-single-source-update-pipeline.md",
       "id": "RTG-19",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "model stack single source update pipeline"
     },
@@ -1630,6 +5242,7 @@
       "handoff": "model-stack-update-pipeline-audit.md",
       "id": "RTG-20",
       "last_advanced": "2026-07-29",
+      "next_action": "Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient",
       "open": 3,
       "track": "model stack update pipeline audit"
     },
@@ -1641,6 +5254,7 @@
       "handoff": "multi-file-coding-completion-capability.md",
       "id": "RTG-21",
       "last_advanced": "2026-07-29",
+      "next_action": "If a coder-role A/B is authorized, use bartowski's Q8_0 (34.38 GB) for a quant-matched run against the incumbent 35.21 GB frontdoor. This a\u2026",
       "open": 4,
       "track": "multi file coding completion capability"
     },
@@ -1652,6 +5266,7 @@
       "handoff": "non-inference-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-07-31",
+      "next_action": "NIB2-18: DS-6 QuarterScheduler revalidation gate \u2014 dynamic-stack-concurrency.md(dynamic-stack-concurrency.md) DS-6-live. Do not treat as co\u2026",
       "open": 9,
       "track": "non inference backlog"
     },
@@ -1663,6 +5278,7 @@
       "handoff": "objective-task-rate-goodput.md",
       "id": "RTG-23",
       "last_advanced": "2026-08-04",
+      "next_action": "W3d \u2014 the 2026-06-13 hold conditions were superseded, not satisfied; close them out",
       "open": 6,
       "track": "objective task rate goodput"
     },
@@ -1674,6 +5290,7 @@
       "handoff": "orchestration-robustness-audit-2026-07-11.md",
       "id": "RTG-24",
       "last_advanced": "2026-07-29",
+      "next_action": "P0.1 operator run/pause decision on autopilot candidate species",
       "open": 5,
       "track": "orchestration robustness audit 2026 07 11"
     },
@@ -1685,6 +5302,7 @@
       "handoff": "orchestrator-nps4-48x4-notes.md",
       "id": "RTG-25",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "orchestrator nps4 48x4 notes"
     },
@@ -1696,6 +5314,7 @@
       "handoff": "outer-coordinator-learned-head.md",
       "id": "RTG-26",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "outer coordinator learned head"
     },
@@ -1707,6 +5326,7 @@
       "handoff": "prompt-construction-determinism.md",
       "id": "RTG-27",
       "last_advanced": "2026-07-29",
+      "next_action": "D3 \u2014 manual canonical bench (sampling quality cert) (clean window; certifies #1\u20133). Greedy\u2192sampled(0.1\u20130.3)+seed shifts output behavior. Ce\u2026",
       "open": 2,
       "track": "prompt construction determinism"
     },
@@ -1718,6 +5338,7 @@
       "handoff": "reasoning-effort-levels.md",
       "id": "RTG-28",
       "last_advanced": "2026-07-30",
+      "next_action": "TB-1 \u2014 per-model budget curve on a truncation-inducing suite",
       "open": 18,
       "track": "reasoning effort levels"
     },
@@ -1729,6 +5350,7 @@
       "handoff": "retrain-routing-models.md",
       "id": "RTG-29",
       "last_advanced": "2026-07-29",
+      "next_action": "Operator decision: run a --keep-enabled bracket to actually enable live routing",
       "open": 3,
       "track": "retrain routing models"
     },
@@ -1740,6 +5362,7 @@
       "handoff": "routing-intelligence.md",
       "id": "RTG-30",
       "last_advanced": "2026-07-29",
+      "next_action": "RI-10 \u2014 Shadow-to-enforce canary decision: current canary is configured as 25% enforce / 75% shadow on frontdoor, worker_general, and worke\u2026",
       "open": 9,
       "track": "routing intelligence"
     },
@@ -1751,6 +5374,7 @@
       "handoff": "routing-truth-restoration.md",
       "id": "RTG-31",
       "last_advanced": "2026-07-29",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "routing truth restoration"
     },
@@ -1762,6 +5386,7 @@
       "handoff": "scaffold-autopilot-cost-lever-deployment.md",
       "id": "RTG-32",
       "last_advanced": "2026-07-29",
+      "next_action": "T0.1 \u2014 Coordinate with the live autopilot agent. Confirm the daemon is idle/handed-back before any scripts/autopilot/ or registry edit. Get\u2026",
       "open": 12,
       "track": "scaffold autopilot cost lever deployment"
     },
@@ -1773,6 +5398,7 @@
       "handoff": "searxng-search-backend.md",
       "id": "RTG-33",
       "last_advanced": "2026-07-29",
+      "next_action": "SX-5: Load test \u2014 Folded into AR-3 Package D. Web_research sentinel suite (50q) provides realistic load validation. Post-AR-3: analyze engi\u2026",
       "open": 4,
       "track": "searxng search backend"
     },
@@ -1784,6 +5410,7 @@
       "handoff": "session-bus-thin-dispatcher.md",
       "id": "RTG-34",
       "last_advanced": "2026-07-29",
+      "next_action": "R1a \u2014 the end-to-end bench claim never fired; wiring exists but is inference-gated",
       "open": 24,
       "track": "session bus thin dispatcher"
     },
@@ -1795,6 +5422,7 @@
       "handoff": "shape-keyed-contention-gating.md",
       "id": "RTG-35",
       "last_advanced": "2026-08-01",
+      "next_action": "Echo GateDecision into /chat response metadata (admitted/waited_s/decision/topology_idx)",
       "open": 8,
       "track": "shape keyed contention gating"
     },
@@ -1806,6 +5434,7 @@
       "handoff": "stack-change-governance-pipeline.md",
       "id": "RTG-36",
       "last_advanced": "2026-07-29",
+      "next_action": "W4 - Consumer migration: continue migrating remaining stack-sensitive consumers to generated stack priors or explicit degraded fallbacks. U\u2026",
       "open": 1,
       "track": "stack change governance pipeline"
     },
@@ -1817,6 +5446,7 @@
       "handoff": "stack-lineup-dossier-2026-07-23.md",
       "id": "RTG-37",
       "last_advanced": null,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "stack lineup dossier 2026 07 23"
     },
@@ -1828,6 +5458,7 @@
       "handoff": "standardized-stack-update-pipeline-finalization.md",
       "id": "RTG-38",
       "last_advanced": "2026-07-29",
+      "next_action": "SS-BENCH-GATE \u2014 a stack reload must check for a running CPU bench, not just autopilot.",
       "open": 2,
       "track": "standardized stack update pipeline finalizat"
     },
@@ -1839,6 +5470,7 @@
       "handoff": "swarm-dataset-distillation.md",
       "id": "RTG-39",
       "last_advanced": "2026-07-11",
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "swarm dataset distillation"
     },
@@ -1850,6 +5482,7 @@
       "handoff": "tri-role-coordinator-architecture.md",
       "id": "RTG-40",
       "last_advanced": "2026-07-30",
+      "next_action": "TR-4.1 In routing.py, compose role with model selection: per-role model-affinity table OR independent role+model softmax (per TR-1.3 decisi\u2026",
       "open": 7,
       "track": "tri role coordinator architecture"
     },
@@ -1861,6 +5494,7 @@
       "handoff": "unified-trace-memory-service.md",
       "id": "RTG-41",
       "last_advanced": "2026-07-30",
+      "next_action": "T7 (optional): Hermes session ingest \u2014 Walk ~/.hermes/sessions/.json if present, normalize into events. Gated on whether Hermes goes into p\u2026",
       "open": 10,
       "track": "unified trace memory service"
     },
@@ -1872,6 +5506,7 @@
       "handoff": "within-role-placement-state-machine.md",
       "id": "RTG-42",
       "last_advanced": "2026-07-30",
+      "next_action": "WP-6 / WP-7 full ratification - inference-gated, awaiting operator approval + measurement",
       "open": 6,
       "track": "within role placement state machine"
     },
@@ -1883,6 +5518,7 @@
       "handoff": "wp12-fleet-layer-design.md",
       "id": "RTG-43",
       "last_advanced": "2026-07-29",
+      "next_action": "Post-soak \u00a75 cleanup (code + tests as ONE change): retire the legacy per-role build path \u2014 ServerURLsConfig URL ownership, Fix-A delegation\u2026",
       "open": 1,
       "track": "wp12 fleet layer design"
     },
@@ -1894,6 +5530,7 @@
       "handoff": "wp9-wp10-lineup-event-prep.md",
       "id": "RTG-44",
       "last_advanced": null,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
       "track": "wp9 wp10 lineup event prep"
     },
@@ -1905,6 +5542,7 @@
       "handoff": "x-mas-text-routing.md",
       "id": "RTG-45",
       "last_advanced": "2026-07-29",
+      "next_action": "Monitor post-enable live telemetry for unexpected domain regressions, latency regressions, or guard bypasses; rollback is xmas_routing.mode\u2026",
       "open": 1,
       "track": "x mas text routing"
     }
