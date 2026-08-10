@@ -53,7 +53,7 @@ The smoke-tests map the card; the payoff is hosting the big models. Two axes:
 
 ## Research Intake Update — 2026-07-08: KernelBench Seeded Fuzzing (rec-007)
 
-**Source**: KernelBench (intake-797, arxiv 2606.20128)
+**Source**: KernelBench (**intake-664**, arXiv:2502.10517) — id corrected 2026-08-10; see the correction below for what the original citation conflated
 
 > **⚠ CORRECTION 2026-07-22 (MI-KB-1 scoping, verified vs intake index):** This row is a THREE-WAY conflation. The real **KernelBench** is Stanford ScalingIntelligence **arxiv:2502.10517** — a kernel-*generation* benchmark (LLM writes CUDA/DSL kernels for PyTorch programs; metric `fast_p`), confirmed via intake-660/661. It is NOT `arxiv 2606.20128` (a separate seeded-fuzzing / "correctness-illusion" kernel paper) and NOT `intake-797` (the unrelated "Externalization in LLM Agents" review, arxiv 2604.08224). The "9/9 seeded-fuzzing" headline below belongs to the 2606.20128 paper, not KernelBench. MI-KB-1 was scoped against the REAL KernelBench: no CPU backend + gfx942/950-only AMD path (not our gfx90a) → decline the harness; methodology already covered by `test-backend-ops` + `kernel_eval.sh`. Full analysis: `epyc-inference-research/docs/design/kernelbench-step3-regression-guard-scoping.md`.
 

@@ -220,7 +220,7 @@ All builds are inference-gated and route through the operator's long-horizon `/l
 
 ## 5. Open questions for the implementation session
 
-1. **Intake-ID discrepancy**: the F1 handoff + `recommendations.yaml` cite DGM as `intake-786` / arxiv `2505.22954`, but `intake_index.yaml` row `intake-786` is **STOP** (arxiv `2310.02304`). Reconcile the canonical DGM intake ID before wiring provenance. (Does not block the methodology; the DGM description in the handoff stands.)
+1. **Intake-ID discrepancy**: the F1 handoff + `recommendations.md` cite DGM as `intake-786` / arxiv `2505.22954`, but `intake_index.yaml` row `intake-786` is **STOP** (arxiv `2310.02304`). Reconcile the canonical DGM intake ID before wiring provenance. (Does not block the methodology; the DGM description in the handoff stands.)
 2. **G3 canonicalization**: reconcile the two `debug_scorer.py` copies now (single canonical scorer) or gate-time-assert parity per task? A single scorer is cleaner but touches two repos' import surfaces.
 3. **Double-critic judge model**: which local role is competent enough per class to satisfy `p(y) > p(y_corrupt)`? Weak classes (governance/ops/planning) may have **no** viable local critic → those classes may be human-curate-only from generation, not just at G6.
 4. **Elo batch budget**: K-appearances × batch size × pairwise calls is the dominant inference cost. What K/batch gives stable tiers at F1's few-hundred-row scale?

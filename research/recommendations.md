@@ -6,10 +6,9 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 
 - id: rec-001
   title: "Meta-harness optimization: automated benchmark design for LLM evaluation"
-  # 2026-08-10: intake-784 was merged into intake-244 (same arXiv id). The other two ids
-  # do NOT match their labels and are left untouched pending verification -- intake-785
-  # is 'Darwin Godel Machine', not Self-Harness, and intake-788 is 'AFlow', not ACE.
-  source: Meta-Harness (intake-784 -> now intake-244), Self-Harness (intake-785 -> now intake-772; LABEL MISMATCH, unverified), ACE (intake-788; LABEL MISMATCH, unverified)
+  # 2026-08-10 citation audit: intake-784 was merged into intake-244 (same arXiv id).
+  # Self-Harness and ACE were never ingested and had been given neighbouring entries' ids.
+  source: Meta-Harness (intake-784 -> now intake-244), Self-Harness (**NOT IN INDEX** — intake-785 was Darwin Godel Machine, now intake-772), ACE (**NOT IN INDEX** — intake-788 is AFlow)
   category: benchmark_methodology
   priority: high
   description: >
@@ -22,7 +21,9 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 
 - id: rec-002
   title: "Dynamic generation of evaluation tasks (DGM / Hyperagents lineage)"
-  source: DGM (intake-786), Hyperagents (intake-787), ADAS (intake-791)
+  # 2026-08-10 citation audit: DGM repointed (786 was STOP); the other two name papers that
+  # were never ingested and had been given neighbouring entries' ids.
+  source: DGM (intake-772), Hyperagents (NOT IN INDEX; intake-787 is MCE), ADAS (NOT IN INDEX; intake-791 is SwarmAgentic)
   category: benchmark_methodology
   priority: high
   description: >
@@ -36,7 +37,7 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 
 - id: rec-003
   title: "Agent-as-judge calibration and multi-agent consensus"
-  source: MCE (intake-789), AFlow (intake-790), STOP (intake-792)
+  source: MCE (intake-787), AFlow (intake-788), STOP (intake-792)
   category: evaluation
   priority: medium
   description: >
@@ -49,7 +50,7 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 
 - id: rec-004
   title: "Self-improvement agent architectures (SIA / ShinkaEvolve)"
-  source: SIA (intake-793), ShinkaEvolve (intake-779), SkillRL (intake-092)
+  source: SIA (intake-789), ShinkaEvolve (intake-779), SkillRL (intake-092)
   category: agent_architecture
   priority: medium
   description: >
@@ -79,7 +80,7 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 
 - id: rec-006
   title: "Paper-level benchmarking (PaperBench) — methodology transfer"
-  source: PaperBench (intake-795)
+  source: PaperBench (intake-794)
   category: benchmark_methodology
   priority: low
   description: >
@@ -112,7 +113,7 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
     EvoScientist's three-agent architecture (Researcher, Engineer, Evolution Manager) with persistent
     memory modules mirrors our tri-role coordinator architecture. The Nature-published AI Scientist
     provides validation that fully autonomous research pipelines are viable.
-  action: "Cross-reference with tri-role-coordinator-architecture.md and hermes-agent-index.md. Assess EvoScientist memory module patterns for our persistent memory work."
+  action: "Cross-reference with tri-role-coordinator-architecture.md and user-facing-harness-index.md. Assess EvoScientist memory module patterns for our persistent memory work."
   status: open
   created: '2026-07-08'
 

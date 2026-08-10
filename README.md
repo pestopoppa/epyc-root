@@ -78,7 +78,7 @@ epyc-root/
 │   ├── intake_index.yaml          #   triaged paper/repo list (936 entries)
 │   ├── deep-dives/                #   long-form analyses (138 files)
 │   ├── taxonomy.yaml              #   research taxonomy
-│   ├── recommendations.yaml       #   standing recommendations
+│   ├── recommendations.md       #   standing recommendations
 │   └── fixtures/                  #   per-thread experiment data
 │
 ├── handoffs/                      # ★ Cross-repo work tracking
@@ -90,7 +90,7 @@ epyc-root/
 │   │   ├── pipeline-integration-index.md
 │   │   ├── research-evaluation-index.md
 │   │   ├── reviewer-control-plane-index.md
-│   │   └── hermes-agent-index.md
+│   │   └── user-facing-harness-index.md
 │   ├── completed/                 #   finished (154 entries)
 │   └── blocked/                   #   waiting on dependencies
 │

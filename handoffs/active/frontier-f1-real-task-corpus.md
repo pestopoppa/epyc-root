@@ -44,7 +44,12 @@ quality gains *felt*.
 
 ## Research Intake Update — 2026-07-08: DGM Dynamic Task Generation (rec-002)
 
-**Source**: DGM (intake-786, arxiv 2505.22954), Hyperagents (intake-787), ADAS (intake-791)
+**Source**: DGM (intake-772, arXiv:2505.22954), Hyperagents (**NOT IN INDEX** — intake-787 is MCE, a different paper), ADAS (**NOT IN INDEX** — intake-791 is SwarmAgentic)
+
+> **⚠ CITATION AUDIT 2026-08-10.** Two source ids on this row were wrong and are corrected above.
+> Papers marked **NOT IN INDEX** were never ingested — each had been given a neighbouring entry's
+> id, which reads as provenance and is not. Do not repoint them to those ids; ingest the paper or
+> drop the claim.
 
 **Key finding**: The Hu/Lu/Clune/Zhang author lineage (ADAS → DGM → Hyperagents) shows a clear trajectory from static benchmarks to fully autonomous task generation + agent execution. DGM's approach of generating evaluation tasks on-the-fly based on model capabilities is directly relevant to our real-task corpus expansion.
 

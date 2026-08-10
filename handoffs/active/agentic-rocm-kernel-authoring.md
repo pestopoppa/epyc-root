@@ -149,7 +149,7 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
 
 ## Research Intake Update — 2026-07-08: KernelBench (rec-007)
 
-**Source**: KernelBench (intake-797, arxiv 2606.20128)
+**Source**: KernelBench (**intake-664**, arXiv:2502.10517)
 
 > **⚠ CORRECTION 2026-08-10 — this attribution is wrong, and was already corrected elsewhere.**
 > The identical line in [`mi210-speed-campaign-summary.md`](mi210-speed-campaign-summary.md)

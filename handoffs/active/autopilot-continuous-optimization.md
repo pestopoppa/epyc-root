@@ -614,7 +614,7 @@ Three "Research Intake Update" sections have surfaced **scoring-mechanism** upgr
 
 ## Research Intake Update — 2026-07-08: Self-Improvement Architectures (rec-004)
 
-**Source**: SIA (intake-793, arxiv 2605.27276), ShinkaEvolve (intake-779), SkillRL (intake-092)
+**Source**: SIA (intake-789, arXiv:2605.27276), ShinkaEvolve (intake-779), SkillRL (intake-092)
 
 **Key finding**: SIA and ShinkaEvolve explore recursive self-improvement loops for agents. Combined with SkillRL's recursive skill-augmented RL, these suggest a pathway for our autopilot to move beyond trial-and-error optimization toward structured self-improvement with skill accumulation.
 

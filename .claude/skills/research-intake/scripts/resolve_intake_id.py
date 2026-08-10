@@ -16,7 +16,7 @@ the direction the question is actually asked in.
 Deliberately NOT a rewriter. On 2026-08-10 the live references to absorbed ids were inspected and
 several turned out to be things that must not be repointed: `handoffs/active/mi210-speed-campaign-
 summary.md` cites intake-797 inside a correction recording that intake-797 was a *mis-stamped* id,
-and `research/recommendations.yaml` uses "intake-779 through intake-797" as a range naming a
+and `research/recommendations.md` uses "intake-779 through intake-797" as a range naming a
 historical ingest batch. A bulk repoint would have corrupted both. Resolution is a lookup a reader
 performs, not an edit a script applies.
 """

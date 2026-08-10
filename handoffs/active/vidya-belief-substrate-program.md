@@ -381,7 +381,7 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       `resolve_intake_id.py` for single lookups and `--audit`; `validate_intake.py` fails if an
       absorbed id is missing from the map. Deliberately NOT a bulk repointer — inspection found
       that the live references must not be rewritten: the MI210 handoff cites intake-797 inside a
-      correction saying intake-797 was a mis-stamp, and `recommendations.yaml` uses it as a range
+      correction saying intake-797 was a mis-stamp, and `recommendations.md` uses it as a range
       endpoint naming a historical batch ✅ 2026-08-10
 - [x] D12 **Classified all 57 references to absorbed ids to test whether editing beats mapping.**
       13 are the mechanism itself, 29 record the merge, 7 are historical narration, 8 are live
@@ -389,13 +389,24 @@ Verdict stands at ITERATE. Requirement status and the anchoring decision package
       corrupted by a naive repoint (three are the KernelBench mis-stamp where intake-797 is named
       *because* it was wrong; one pair is a `intake-779 through intake-797` range endpoint).
       Editing is not the cheaper path; it is the path that requires per-site judgment ✅ 2026-08-10
-- [ ] D13 `rec-001` in `research/recommendations.yaml` carries two pre-existing citation
-      mis-stamps, surfaced by that audit: `Self-Harness (intake-785)` is Darwin Gödel Machine, and
-      `ACE (intake-788)` is AFlow. Annotated as unverified rather than guessed. Needs whoever knows
-      what rec-001 meant
-- [ ] D14 `research/recommendations.yaml` is not parseable YAML and never has been (markdown
-      headers plus prose above an embedded list). Pre-existing, unrelated to this session — but any
-      tool that tries to consume it by extension will fail
+- [x] D13 **Citation audit across all curated paths; 8 mis-stamps repaired.** Built a
+      label-vs-title checker (271 files; the naive version produced 780 hits, almost all prose
+      before a parenthetical, so it was tightened to name-like labels in curated paths only).
+      Repointed with arXiv-id confirmation: KernelBench 797 to **664** (3 files), SIA 793 to
+      **789**, DGM 786 to **772**, MCE 789 to **787**, AFlow 790 to **788**, PaperBench 795 to
+      **794**. In the SIA and DGM cases the citation's own arXiv id already named the right entry
+      — the intake id was the only wrong part ✅ 2026-08-10
+- [x] D13b **Four citations name papers that were never ingested** — ADAS, Hyperagents,
+      Self-Harness, ACE — each given a *neighbouring* entry's id, which reads as provenance and is
+      not. Same family as the D1 `/doctor` fabrication. Marked `NOT IN INDEX` rather than
+      repointed; inventing a target would repeat the failure. All four sit in the 2026-07-08
+      batch — the same batch that produced the duplicate entries ✅ 2026-08-10
+- [ ] D13c Ingest ADAS, Hyperagents, Self-Harness and ACE, or drop the claims resting on them.
+      rec-001 and rec-002 currently cite unbacked sources
+- [x] D14 `research/recommendations.yaml` had never been parseable YAML — markdown headers and
+      prose wrapped around an embedded list. Renamed to `research/recommendations.md`, which is
+      what it is; 5 live references repointed, historical ones in `progress/` and
+      `handoffs/archived/` left as written ✅ 2026-08-10
 - [x] D15 Propagated a verified 2026-07-22 KernelBench correction from
       `mi210-speed-campaign-summary.md` to `agentic-rocm-kernel-authoring.md`, where the identical
       mis-stamped `**Source**: KernelBench (intake-797, arxiv 2606.20128)` line was still live and

@@ -246,7 +246,7 @@ skip publication.
 
 **Resolution is a lookup, not a rewrite.** Do not bulk-repoint references to a merged id. Checked
 on 2026-08-10: `handoffs/active/mi210-speed-campaign-summary.md` cites `intake-797` inside a
-correction recording that intake-797 was a *mis-stamped* id, and `research/recommendations.yaml`
+correction recording that intake-797 was a *mis-stamped* id, and `research/recommendations.md`
 uses "intake-779 through intake-797" as a range naming a historical ingest batch. Repointing either
 would have corrupted a correct record. A reference to a removed id is not automatically wrong.
 

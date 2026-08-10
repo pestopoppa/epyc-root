@@ -165,7 +165,7 @@ Before committing to Phase 2 training recipe, run WebSearch for "MindDeepResearc
 
 ## Research Intake Update — 2026-07-08: PaperBench Source-Fidelity (rec-006)
 
-**Source**: PaperBench (intake-795)
+**Source**: PaperBench (intake-794)
 
 **Key finding**: PaperBench benchmarks model ability to understand and reproduce research papers. Methodology may be transferable to our deep-research pipeline for validating that our agent-generated research artifacts are faithful to source material.
 
