@@ -45,6 +45,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ACTIVE = REPO_ROOT / "handoffs" / "active"
+BLOCKED = REPO_ROOT / "handoffs" / "blocked"
 SIDECAR = ACTIVE / ".index-state.json"
 GRAPH = ACTIVE / ".index-graph.json"
 MASTER = ACTIVE / "master-handoff-index.md"
@@ -62,6 +63,9 @@ DOMAIN_INDICES = [
     "reviewer-control-plane-index.md",
 ]
 ALL_INDICES = DOMAIN_INDICES + [MASTER.name, "CURRENT-CAMPAIGN.md"]
+
+#: Registers, not work items: they list handoffs rather than being one.
+REGISTERS = set(ALL_INDICES) | {"BLOCKED.md", "README.md"}
 
 MAX_NEXT_ACTION = 140
 
@@ -84,9 +88,33 @@ _SPLIT = re.compile(r"(?<!\\)\|")
 _LINK = re.compile(r"\(([A-Za-z0-9._/-]+\.md)\)")
 
 
+def handoff_paths() -> dict[str, Path]:
+    """`{filename: path}` for every live handoff — `active/` **and** `blocked/`.
+
+    Completed and archived are deliberately absent: this is a picture of work in
+    flight, and a graph that also plots 261 finished handoffs buries the ~180 that
+    still need someone.
+
+    WHEN A STEM EXISTS IN BOTH DIRECTORIES the blocked copy wins. That is not a
+    tie-break, it is the repo's own convention: `active/swarm-dataset-distillation.md`
+    is a 725-byte *compatibility pointer* ("retained so older active-handoff links
+    stay stable. Do not add standalone work here") whose real 17.5 KB ledger lives
+    in `blocked/`. Scanning `active/` alone therefore showed that row as having
+    zero open tasks while the ledger it points at had three — the pointer is
+    infrastructure, like an index, not a work item.
+    """
+    out: dict[str, Path] = {}
+    for p in sorted(ACTIVE.glob("*.md")):
+        if p.name not in REGISTERS:
+            out[p.name] = p
+    for p in sorted(BLOCKED.glob("*.md")):
+        if p.name not in REGISTERS:
+            out[p.name] = p          # blocked wins over an active pointer
+    return out
+
+
 def handoff_files() -> list[Path]:
-    """Active handoffs, excluding the indices and the campaign file themselves."""
-    return sorted(p for p in ACTIVE.glob("*.md") if p.name not in ALL_INDICES)
+    return sorted(handoff_paths().values())
 
 
 def last_advanced(path: Path) -> str | None:
@@ -164,13 +192,14 @@ def collect() -> dict:
         owner.setdefault(r["handoff"], r)
 
     handoffs = {}
-    for p in handoff_files():
+    for name, p in sorted(handoff_paths().items()):
         st = scan_handoff(p)
-        row = owner.get(p.name)
+        row = owner.get(name)
         st["last_advanced"] = last_advanced(p)
+        st["state"] = "blocked" if p.parent == BLOCKED else "active"
         st["owner_index"] = row["index"] if row else None
         st["row_id"] = row["id"] if row else None
-        handoffs[p.name] = st
+        handoffs[name] = st
 
     domains = defaultdict(lambda: {"handoffs": 0, "open": 0, "blocked": 0, "oldest_advance": None})
     for name, st in handoffs.items():
@@ -262,6 +291,7 @@ def build_graph(state: dict) -> dict:
             # Carried into the node so a hover answers "what do I do next?" without
             # a second request. It is already the one-line contract-bounded cell.
             "next_action": r["next_action"],
+            "state": st.get("state", "active"),
             "open": st.get("open", 0),
             "closed": st.get("closed", 0),
             "blocked": st.get("blocked", 0),
@@ -274,10 +304,14 @@ def build_graph(state: dict) -> dict:
     # Reference edges: a link in A's markdown to B's file. Derived, but not
     # inferred — the link either exists or it does not.
     by_handoff = {n["handoff"]: n["id"] for n in nodes if n["handoff"]}
+    paths = handoff_paths()
     seen: dict[tuple[str, str], int] = {}
     for handoff, src in by_handoff.items():
+        path = paths.get(handoff)
+        if path is None:
+            continue
         try:
-            text = (ACTIVE / handoff).read_text(encoding="utf-8", errors="replace")
+            text = path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
         for target in set(_LINK.findall(text)):
@@ -303,6 +337,7 @@ def build_graph(state: dict) -> dict:
 
 def check(state: dict) -> list[str]:
     errs = []
+    paths = handoff_paths()
 
     for h, idxs in sorted(state["duplicates"].items()):
         errs.append(f"DUPLICATE: {h} has rows in {len(idxs)} indices: {', '.join(sorted(set(idxs)))}")
@@ -317,8 +352,9 @@ def check(state: dict) -> list[str]:
                         f"expected 5 — an unescaped pipe in a cell will do this")
         elif not r["handoff"]:
             errs.append(f"SCHEMA: row {rid} ({r['index']}:{r['line']}) has no handoff link")
-        elif not (ACTIVE / r["handoff"]).exists():
-            errs.append(f"DEAD LINK: row {rid} -> {r['handoff']} does not exist in handoffs/active/")
+        elif r["handoff"] not in paths:
+            errs.append(f"DEAD LINK: row {rid} -> {r['handoff']} is in neither "
+                        f"handoffs/active/ nor handoffs/blocked/")
         if len(r["next_action"]) > MAX_NEXT_ACTION:
             errs.append(f"PROSE: row {rid} next-action is {len(r['next_action'])} chars "
                         f"(max {MAX_NEXT_ACTION}) — status belongs in the handoff, not the index")

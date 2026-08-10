@@ -1136,6 +1136,12 @@
     {
       "from": "INF-03",
       "kind": "ref",
+      "to": "INF-38",
+      "weight": 2
+    },
+    {
+      "from": "INF-03",
+      "kind": "ref",
       "to": "INF-48",
       "weight": 4
     },
@@ -3356,7 +3362,43 @@
     {
       "from": "RTG-39",
       "kind": "ref",
+      "to": "EVL-01",
+      "weight": 2
+    },
+    {
+      "from": "RTG-39",
+      "kind": "ref",
+      "to": "EVL-07",
+      "weight": 6
+    },
+    {
+      "from": "RTG-39",
+      "kind": "ref",
+      "to": "EVL-14",
+      "weight": 4
+    },
+    {
+      "from": "RTG-39",
+      "kind": "ref",
       "to": "EVL-45",
+      "weight": 9
+    },
+    {
+      "from": "RTG-39",
+      "kind": "ref",
+      "to": "RTG-01",
+      "weight": 3
+    },
+    {
+      "from": "RTG-39",
+      "kind": "ref",
+      "to": "RTG-02",
+      "weight": 2
+    },
+    {
+      "from": "RTG-39",
+      "kind": "ref",
+      "to": "RTG-09",
       "weight": 2
     },
     {
@@ -3480,7 +3522,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-10T09:45:54Z",
+  "generated_at": "2026-08-10T10:02:09Z",
   "nodes": [
     {
       "age_days": 11,
@@ -3492,6 +3534,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "AFC-P5.E3 \u2014 run the n=30 compliance campaign. READY but HELD (operator: \"I will tell",
       "open": 2,
+      "state": "active",
       "track": "agent file prose compression"
     },
     {
@@ -3504,6 +3547,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "Re-run the MMLU-Pro control under the hardened protocol \u2014 the sidecar's n=50 run predates it",
       "open": 24,
+      "state": "active",
       "track": "architect model selection bench"
     },
     {
@@ -3516,6 +3560,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "E8 RE-ARM (2026-07-26) \u2014 AutoPilot E8 baseline reseed = the gating task of the post-v8",
       "open": 9,
+      "state": "active",
       "track": "autopilot decision plane audit 2026 07 22"
     },
     {
@@ -3528,6 +3573,7 @@
       "last_advanced": "2026-08-04",
       "next_action": "SEQ-A: make the refuted label sticky in state_name() so re-adjudication cannot silently un-refute",
       "open": 12,
+      "state": "active",
       "track": "autopilot sequential allocation"
     },
     {
@@ -3540,6 +3586,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "RE-1 \u00b7 Math-Verify scoring flip + re-baseline (S, med-ROI; intake-377/379) \u2014 the math_verify scorer is landed in orchestrator but zero pool\u2026",
       "open": 4,
+      "state": "active",
       "track": "backlog roi audit 2026 07 14"
     },
     {
@@ -3552,6 +3599,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "benchmark results dashboard"
     },
     {
@@ -3564,6 +3612,7 @@
       "last_advanced": "2026-08-09",
       "next_action": "K-LCM-1 \u2014 LongCoT-Mini calibration run (~500-easy deterministic long-horizon suite)",
       "open": 4,
+      "state": "active",
       "track": "bulk inference campaign"
     },
     {
@@ -3576,6 +3625,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "CJ-1a \u2014 corpus is already cached (gpqa_diamond 198 rows); build the judge slate from it",
       "open": 24,
+      "state": "active",
       "track": "canonical judge suite revamp"
     },
     {
@@ -3588,6 +3638,7 @@
       "last_advanced": null,
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "design backlog triage 2026 07 23"
     },
     {
@@ -3600,6 +3651,7 @@
       "last_advanced": "2026-08-04",
       "next_action": "M-11a \u2014 first re-distil; INFERENCE-gated, do not run without an approved window",
       "open": 5,
+      "state": "active",
       "track": "episodic memory integrity"
     },
     {
@@ -3612,6 +3664,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies",
       "open": 2,
+      "state": "active",
       "track": "eval benchmark cost reduction"
     },
     {
@@ -3624,6 +3677,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "A2 agent SCORE-02/XREPO-1/PATH-1 \u2014 make module identity deterministic. (PARTIAL \u2705 2026-07-20: the debug_scorer leg landed in 2a41c0bc \u2014 see\u2026",
       "open": 5,
+      "state": "active",
       "track": "eval tower architecture audit 2026 07 20"
     },
     {
@@ -3636,6 +3690,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "H2.v8 \u2014 remeasure the contention matrix under frozen v8 after E8 quality collection \u2014 live dashboard topology and region-lock payloads alre\u2026",
       "open": 2,
+      "state": "active",
       "track": "eval tower loop robustness audit 2026 07 20"
     },
     {
@@ -3648,6 +3703,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "EV-4 \u2014 decision-grade HE-R+ calibration baseline through the inference-batch loop, after contention recert",
       "open": 27,
+      "state": "active",
       "track": "eval tower verification"
     },
     {
@@ -3660,6 +3716,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "W5 \u2014 designed core_v2 (impl 2.1, 2\u20133 days + calibration): benchmarks/prompts/core_v2.jsonl (~40 items, per-item p\u22080.2,0.8, stratified), ver\u2026",
       "open": 3,
+      "state": "active",
       "track": "evidence plane instrument repair"
     },
     {
@@ -3672,6 +3729,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "W8b \u2014 live candidate evidence after guard deploy: continue W8 candidate attempts under the live selectable-action coordinator plus outcome-\u2026",
       "open": 1,
+      "state": "active",
       "track": "evidence plane ledger and sequential verdict"
     },
     {
@@ -3684,6 +3742,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "fable5 architecture review 2"
     },
     {
@@ -3696,6 +3755,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "fable5 window2 findings 00 executive summary"
     },
     {
@@ -3708,6 +3768,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "R2-current \u2014 accrue a current-era, trusted per-question ledger sufficient for a reproducible \u226540-item core selection. Do not promote the Ju\u2026",
       "open": 1,
+      "state": "active",
       "track": "fable5 window2 findings 01 optimizer integri"
     },
     {
@@ -3720,6 +3781,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "F1 \u2014 per-split GPU/CPU timing under static -cmoe on one MoE model; report",
       "open": 7,
+      "state": "active",
       "track": "fable5 window2 findings 02 heterogeneous gpu"
     },
     {
@@ -3732,6 +3794,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "G1 \u00b7 Ratify P-GPU-1 (operator; measurement trust boundary \u2014 human-amendment-only). findings-02 \u00a75",
       "open": 13,
+      "state": "active",
       "track": "fable5 window2 findings 03 portfolio and mas"
     },
     {
@@ -3744,6 +3807,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "fable5 window2 findings 05 intake sweep and"
     },
     {
@@ -3756,6 +3820,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "frontier f1 real task corpus"
     },
     {
@@ -3768,6 +3833,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "W3 \u2014 reliability ladder (ongoing): scripts/lab/promote_job.py enforcing shadow \u2192 reviewed \u2192 autonomous from logged stats (shadow \u226510 runs s\u2026",
       "open": 2,
+      "state": "active",
       "track": "frontier f2 self running lab"
     },
     {
@@ -3780,6 +3846,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "W3 \u2014 GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate is now satisfied by 100 trusted reviewed triage\u2026",
       "open": 1,
+      "state": "active",
       "track": "frontier f3 data flywheel"
     },
     {
@@ -3792,6 +3859,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "W2 \u2014 the job (half day): scripts/backup/backup_critical.sh \u2014 restic preferred (dedupe+encryption, open-source) or snapshot-copy fallback. T\u2026",
       "open": 2,
+      "state": "active",
       "track": "frontier f4 continuity backup"
     },
     {
@@ -3804,6 +3872,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "W1 \u2014 D2 PR spearhead (1\u20132 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-processing sparse path the PR author asked for help\u2026",
       "open": 4,
+      "state": "active",
       "track": "frontier f6 upstream publication"
     },
     {
@@ -3816,6 +3885,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "granite 97m r2 bench plan"
     },
     {
@@ -3828,6 +3898,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "ID-2 \u2014 pin the gepa dependency; installed is 0.0.26 and unpinned",
       "open": 19,
+      "state": "active",
       "track": "intake derived work 2026 07 25"
     },
     {
@@ -3840,6 +3911,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "integration test coverage"
     },
     {
@@ -3852,6 +3924,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "If no GGUF exists, convert from HF weights (convert_hf_to_gguf.py + llama-quantize, Q4_K_M and Q8_0)",
       "open": 15,
+      "state": "active",
       "track": "mathsmith hc formalizer eval"
     },
     {
@@ -3864,6 +3937,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "meta harness optimization"
     },
     {
@@ -3876,6 +3950,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Step 3: implement fix (force </think> / suppress think scaffold at budget=0 for hybrid SSM), needs running server",
       "open": 3,
+      "state": "active",
       "track": "per request reasoning budget"
     },
     {
@@ -3888,6 +3963,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation",
       "open": 6,
+      "state": "active",
       "track": "rao redel substrate spike"
     },
     {
@@ -3900,6 +3976,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "RE-4.2 \u2014 non-saturation probe (operator quiet-window, current v8 topology re-attested, autopilot stopped): frontdoor-only, two-phase, R=409\u2026",
       "open": 4,
+      "state": "active",
       "track": "re4 protocol redesign"
     },
     {
@@ -3912,6 +3989,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "D-a5 \u2014 If DataFrame persistence is ever wanted, use a typed columnar codec, not the",
       "open": 8,
+      "state": "active",
       "track": "repl session memory maturity"
     },
     {
@@ -3924,6 +4002,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "S4 Omega A/B: measure turns per task, token cost per task, and accuracy delta. This gates suggestion, verbosity, and any extra tool-surface\u2026",
       "open": 13,
+      "state": "active",
       "track": "repl turn efficiency"
     },
     {
@@ -3936,6 +4015,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Close remaining root L5.self_optimizing_loop gap (13-item queue)",
       "open": 2,
+      "state": "active",
       "track": "repo readiness scorer"
     },
     {
@@ -3948,6 +4028,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "E1 \u2014 RESCOPED BY E0: measure Base vs Depth-1 first, not depth-1 vs depth-2. E0 showed",
       "open": 5,
+      "state": "active",
       "track": "rlm contested claims self evaluation"
     },
     {
@@ -3960,6 +4041,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "safetygate rlvr provenance audit 2026 07 22"
     },
     {
@@ -3972,6 +4054,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Unify the _inband_error_text / _forced_role_serving_mismatch local copies (seeding 3bfe2584) with eval_tower's originals into one shared mo\u2026",
       "open": 3,
+      "state": "active",
       "track": "scorer fork drift audit 2026 07 22"
     },
     {
@@ -3984,6 +4067,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "1b \u2014 migrate research consumers to the canonical lib and delete each duplicate extractor",
       "open": 18,
+      "state": "active",
       "track": "scoring infra standardization"
     },
     {
@@ -3996,6 +4080,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Operator decision: KB-RAG K7 precondition fired \u2014 evaluate SLIDERS DB+SQL alternative (Phase 0 falsification) now, or keep parked?",
       "open": 9,
+      "state": "active",
       "track": "sliders local validation"
     },
     {
@@ -4008,6 +4093,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Re-anchor GEMV to its 2 live graph-fusion tasks; move the deprioritized SIMD Phase 0\u20135 plan to a closed appendix",
       "open": 6,
+      "state": "active",
       "track": "stale open audit 2026 07 18"
     },
     {
@@ -4020,6 +4106,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential",
       "open": 3,
+      "state": "active",
       "track": "strand rust coder rustevo2 verification"
     },
     {
@@ -4032,18 +4119,20 @@
       "last_advanced": "2026-07-29",
       "next_action": "TU-DTAP-1 \u2014 Import a reviewed, bounded Apache-2.0 DTAP subset into a disposable local runner.",
       "open": 2,
+      "state": "active",
       "track": "tool use eval contract"
     },
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 80,
+      "closed": 83,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-10",
       "next_action": "PR1b \u2014 build the machine anchoring pass: fetch cited sources, match claim terms, record",
-      "open": 9,
+      "open": 11,
+      "state": "active",
       "track": "vidya belief substrate program"
     },
     {
@@ -4056,6 +4145,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "L12 \u2014 n-gram/prompt-lookup on GPU: 27B-Q8 + fp16 over code/JSON/prose sets, sweeping the three ngram spec types",
       "open": 19,
+      "state": "active",
       "track": "fable5 window2 findings 05c mi210 lever cate"
     },
     {
@@ -4068,6 +4158,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "HS-4 \u2014 Harness-selection decision gate: Hermes vs OpenCode vs an ACP-speaker, gated on HS-1 + HS-2. Default outcome preserved: (A) stays or\u2026",
       "open": 2,
+      "state": "active",
       "track": "harness selection and integration"
     },
     {
@@ -4080,6 +4171,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Multi-turn context (references prior answer)",
       "open": 11,
+      "state": "active",
       "track": "hermes outer shell"
     },
     {
@@ -4092,6 +4184,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)",
       "open": 5,
+      "state": "active",
       "track": "memento block reasoning compression"
     },
     {
@@ -4104,6 +4197,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) \u2014 BLOCKED 2026-07-29: GPU is id\u2026",
       "open": 9,
+      "state": "active",
       "track": "minddr deep research mode"
     },
     {
@@ -4116,6 +4210,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "If validated: implement enforce mode (route easy\u2192worker, hard\u2192architect)",
       "open": 5,
+      "state": "active",
       "track": "reasoning compression"
     },
     {
@@ -4128,6 +4223,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "GATE-0 production-reachability, ordered BEFORE exploitability. CodeCrucible short-circuits on whether the code path is reachable in product\u2026",
       "open": 6,
+      "state": "active",
       "track": "security review skill"
     },
     {
@@ -4140,6 +4236,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "P4e \u2014 Decision gate: roll-out scope (no time estimate; data-driven). After 1 week of P4c data, decide per-command: (i) promote to default (\u2026",
       "open": 4,
+      "state": "active",
       "track": "tool output compression"
     },
     {
@@ -4152,6 +4249,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "01 speculative decoding"
     },
     {
@@ -4164,6 +4262,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "(Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (--backend local, custo\u2026",
       "open": 2,
+      "state": "active",
       "track": "agent collab rnd harness"
     },
     {
@@ -4176,6 +4275,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "Integrate KernelBench into the GEAK-eval loop as the AK-KB-1 correctness substrate",
       "open": 13,
+      "state": "active",
       "track": "agentic rocm kernel authoring"
     },
     {
@@ -4188,6 +4288,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist",
       "open": 3,
+      "state": "active",
       "track": "angelslim techniques evaluation"
     },
     {
@@ -4200,6 +4301,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated",
       "open": 4,
+      "state": "active",
       "track": "attention matching kv compaction"
     },
     {
@@ -4212,6 +4314,7 @@
       "last_advanced": "2026-08-05",
       "next_action": "Bind P-AK-SEARCH-1's four numeric controls (e-process threshold, per-backend limits) before any search run",
       "open": 70,
+      "state": "active",
       "track": "autokernel research loop"
     },
     {
@@ -4224,6 +4327,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "E5 \u2014 the never-measured NUMA\u00d7batch 2D sweep; needs a post-promotion quiet window",
       "open": 15,
+      "state": "active",
       "track": "batched decode measurement"
     },
     {
@@ -4236,6 +4340,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Add an \"effect on trace interpretation\" column to the flag inventory. This file records which",
       "open": 1,
+      "state": "active",
       "track": "cpu kernel env flags inventory"
     },
     {
@@ -4248,6 +4353,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "PC-4 \u2014 experimental qwen35 prefill barrier/graph-fusion prototype:",
       "open": 1,
+      "state": "active",
       "track": "cpu prefill compute large models"
     },
     {
@@ -4260,6 +4366,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "Measure tinyBLAS on/off first (Phase 0) \u2014 sgemm.cpp is already compiled in, so it confounds every later A/B",
       "open": 26,
+      "state": "active",
       "track": "cpu shape specialized gemv decode"
     },
     {
@@ -4272,6 +4379,7 @@
       "last_advanced": "2026-08-10",
       "next_action": "Claim-grade Q8 baseline on production v8 (canonical CPU protocol) before any DSpark kernel work",
       "open": 19,
+      "state": "active",
       "track": "deepseek v4 flash 0731 dspark"
     },
     {
@@ -4284,6 +4392,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible)",
       "open": 4,
+      "state": "active",
       "track": "delta mem reproduction"
     },
     {
@@ -4296,6 +4405,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "Make k budget-conditional rather than fixed (intake-936 rider)",
       "open": 7,
+      "state": "active",
       "track": "engram conditional memory"
     },
     {
@@ -4308,6 +4418,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "fable5 window2 findings 05b mi210 inference"
     },
     {
@@ -4320,6 +4431,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "K10 \u2014 (follow-up) Lever A quiet-host re-eval: on a quiesced host (fresh-server/run, fprintf(stderr) keylog to confirm the nodes0 collision\u2026",
       "open": 9,
+      "state": "active",
       "track": "gemma challenge kernel techniques v7"
     },
     {
@@ -4332,6 +4444,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Run the five-prompt short-context smoke (greeting, code, reasoning, structured, tool-call) \u2014 one positive is not a set",
       "open": 11,
+      "state": "active",
       "track": "glm51 reap cpu evaluation"
     },
     {
@@ -4344,6 +4457,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "Explain the bidirectional-only mechanism before this becomes a placement input",
       "open": 8,
+      "state": "active",
       "track": "gpu acceleration path"
     },
     {
@@ -4356,6 +4470,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "G3-4 \u2014 future decision instrument (separate from G3-3). Select and run a decision-grade,",
       "open": 1,
+      "state": "active",
       "track": "gpu cot scaffold sidecar"
     },
     {
@@ -4368,6 +4483,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "DR-3 \u2014 broader K2 admission runner/package: build the dry-run-first K2",
       "open": 2,
+      "state": "active",
       "track": "gpu drafter control redesign"
     },
     {
@@ -4380,6 +4496,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Re-anchor to the live next step: Stage-1 end-to-end speedup / co-residency redesign (Stage 4 stays blocked on failed Stages 1\u20133)",
       "open": 2,
+      "state": "active",
       "track": "gpu drafter mi200 investigation"
     },
     {
@@ -4392,6 +4509,7 @@
       "last_advanced": "2026-07-31",
       "next_action": "P0-1 (operator) \u2014 run the E8 ratification once Codex presents the apply-ready D4 bundle",
       "open": 24,
+      "state": "active",
       "track": "gpu serving tie in program"
     },
     {
@@ -4404,6 +4522,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Model GPU host threads as a fabric slot (gpu-host) \u2014 design only, gated on the residency verdict",
       "open": 10,
+      "state": "active",
       "track": "heterogeneous slot fabric residency"
     },
     {
@@ -4416,6 +4535,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "P0 RCP prologue \u2014 RCP-W1 (reference relaunch + preflight), RCP-W2 (ledger materialize), RCP-W3 (calibration smoke) \u2014 gated OP-6a/6b + OP-st\u2026",
       "open": 13,
+      "state": "active",
       "track": "inference batch loop"
     },
     {
@@ -4428,6 +4548,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "intra process tensor parallel decode"
     },
     {
@@ -4440,6 +4561,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "T2 \u2014 Gate trellis in ik_llama.cpp, not in our tree. /mnt/raid0/llm/ik_llama.cpp is already on disk and is the reference implementation. Bui\u2026",
       "open": 3,
+      "state": "active",
       "track": "iqk iquant enablement"
     },
     {
@@ -4452,6 +4574,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "k28 fused chunked gdn kernel research"
     },
     {
@@ -4464,6 +4587,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "L-9P \u2014 conditional CPU throughput/config discovery. The prepared",
       "open": 1,
+      "state": "active",
       "track": "laguna s21 cpu port"
     },
     {
@@ -4476,6 +4600,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "CPU15-REVAL \u2014 Fresh canonical matrix if reopening: before enabling EP anywhere, run:",
       "open": 3,
+      "state": "active",
       "track": "large moe expert parallelism"
     },
     {
@@ -4488,6 +4613,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "LQ-2 broader quality eval: if keeping a math/reasoning role, run a focused AIME/MATH/GPQA-style bundle with reasoning_budget=0, exact promp\u2026",
       "open": 3,
+      "state": "active",
       "track": "lightning attention port"
     },
     {
@@ -4500,6 +4626,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "D4 \u2014 root-cause the HIP bf16 LIGHTNING_INDEXER numerical failure (flaky, ERR\u22481.0,",
       "open": 4,
+      "state": "active",
       "track": "llama cpp dsa contribution"
     },
     {
@@ -4512,6 +4639,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "SWA slot-reuse fixes (d1c72d7fc / 603702769) \u2014 verify vs upstream SWA before drop.",
       "open": 5,
+      "state": "active",
       "track": "llamacpp v6 consolidation"
     },
     {
@@ -4524,6 +4652,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size)",
       "open": 3,
+      "state": "active",
       "track": "log linear gated deltanet readiness"
     },
     {
@@ -4536,6 +4665,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "DR-3 broader K2 admission runner/package: implement the dry-run-first K2",
       "open": 10,
+      "state": "active",
       "track": "mi210 big model and acceleration roadmap"
     },
     {
@@ -4548,6 +4678,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "Phase 2 \u2014 build the nightshift loop (outer planner/critic + inner sweep \u2192 kernel_eval.sh \u2192 Pareto)",
       "open": 3,
+      "state": "active",
       "track": "mi210 kernel rnd loop proposal"
     },
     {
@@ -4560,6 +4691,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "DEFERRED with data \u2014 reopen the MFMA build only if a new compute-bound path appears",
       "open": 3,
+      "state": "active",
       "track": "mi210 mfma compute bound paths"
     },
     {
@@ -4572,6 +4704,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "Apply the SoA-repack lever only if coalescing measures poor; currently deemed healthy",
       "open": 7,
+      "state": "active",
       "track": "mi210 q8 dequant gemv roofline"
     },
     {
@@ -4584,6 +4717,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "MI-KB-2 \u2014 run KernelBench over current v6 production kernel to establish baseline",
       "open": 1,
+      "state": "active",
       "track": "mi210 speed campaign summary"
     },
     {
@@ -4596,6 +4730,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "moe aggregate deployment wins brief"
     },
     {
@@ -4608,6 +4743,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Current live-MTP MoE verifier B-sweep: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bi\u2026",
       "open": 1,
+      "state": "active",
       "track": "moe spec cpu spec dec integration"
     },
     {
@@ -4620,6 +4756,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "S-9 \u2014 wire start_tts() into orchestrator_stack.py (port 9002 reserved); capability exists, wiring does not",
       "open": 17,
+      "state": "active",
       "track": "multimodal pipeline"
     },
     {
@@ -4632,6 +4769,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "HRM-1: Pull huggingface.co/sapientinc/HRM-Text-1B and run a fair head-to-head against Qwen3.5-1.7B-Instruct on our benchmark suite (MMLU, A\u2026",
       "open": 4,
+      "state": "active",
       "track": "multiscreen attention evaluation"
     },
     {
@@ -4644,6 +4782,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "T3 \u2014 Re-run the 27 confounded E5 cells on declared placement. Per model the grid must",
       "open": 7,
+      "state": "active",
       "track": "numa placement defect"
     },
     {
@@ -4656,6 +4795,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "BLOCKED: feasibility-gated (xGMI KV-transfer falsification); reopen on multi-tenant shift",
       "open": 1,
+      "state": "active",
       "track": "numa prefill decode disaggregation"
     },
     {
@@ -4668,6 +4808,7 @@
       "last_advanced": "2026-08-01",
       "next_action": "P0-1 \u2014 fix the 30 net-new breaking tests across 14 files; this blocks the commit",
       "open": 84,
+      "state": "active",
       "track": "numa topology cutover resume"
     },
     {
@@ -4680,6 +4821,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "P6b Operator-gated fresh-v8-experimental model-load + gate bench on unsloth/Qwen3.6-35B-A3B-MTP-GGUF, with matched Q4 no-spec vs Q4-MTP art\u2026",
       "open": 2,
+      "state": "active",
       "track": "qwen mtp llamacpp port"
     },
     {
@@ -4692,6 +4834,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "P1 CPU throughput probe (single-instance + NUMA-4-way) on Qwen3.6-27B Q4_K_M - inference-blocked; PARKED 2026-07-14, reopen only if 27B bec\u2026",
       "open": 4,
+      "state": "active",
       "track": "qwen36 27b cpu feasibility"
     },
     {
@@ -4704,6 +4847,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "MI210 bring-up: install ROCm + torch-ROCm, confirm gfx90a, reproduce GEAK-eval numbers as a sanity check",
       "open": 25,
+      "state": "active",
       "track": "rocm verify profile backend"
     },
     {
@@ -4716,6 +4860,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (batched-decode E2 keep-candidate = the fired multi-tenant trigg\u2026",
       "open": 2,
+      "state": "active",
       "track": "sarathi serve cpu evaluation"
     },
     {
@@ -4728,6 +4873,7 @@
       "last_advanced": "2026-07-31",
       "next_action": "SW-2 \u2014 confirm SW-1 against a live server when a lane is free and no protected bench region is held: POST a completion carrying speculative\u2026",
       "open": 12,
+      "state": "active",
       "track": "speculative decoding mtp refresh"
     },
     {
@@ -4740,6 +4886,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models",
       "open": 4,
+      "state": "active",
       "track": "streaming llm baseline"
     },
     {
@@ -4752,6 +4899,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Gate A \u2014 Pretrained checkpoint of a model we serve (Qwen2.5/3.5/3.6 family, or any base we already deploy) released with KSA-style summary\u2026",
       "open": 4,
+      "state": "active",
       "track": "summary token attention readiness"
     },
     {
@@ -4764,6 +4912,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "W2 \u2014 checkpoint gate + Q4 quality validation (bench-only when gate fires): watch for a Q4_K_M-quantizable TiDAR-class checkpoint (none exis\u2026",
       "open": 3,
+      "state": "active",
       "track": "tidar one pass variant b"
     },
     {
@@ -4776,6 +4925,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "Prototype faithful ChunkKV on a fresh llama.cpp-experimental tree",
       "open": 13,
+      "state": "active",
       "track": "tq3 quantization evaluation"
     },
     {
@@ -4788,6 +4938,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "tree draft forward port plan"
     },
     {
@@ -4800,6 +4951,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "S8 autopilot exploration: sweep keep_ratio and layer_weights per production role; persist Pareto profiles with quality, speed, cost, and re\u2026",
       "open": 4,
+      "state": "active",
       "track": "triattention kv selection"
     },
     {
@@ -4812,6 +4964,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "v7 promotion"
     },
     {
@@ -4824,6 +4977,7 @@
       "last_advanced": null,
       "next_action": "V9-1. Delete the #if 0 / #endif around the speculative block in",
       "open": 5,
+      "state": "active",
       "track": "v9 kernel per request speculative params"
     },
     {
@@ -4836,6 +4990,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss",
       "open": 1,
+      "state": "active",
       "track": "yarn context extension research"
     },
     {
@@ -4848,6 +5003,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "S5: Implement reranker \u2014 HOLD as of 2026-06-12 gate analysis. Add reranking to research.py, gated behind web_research_rerank flag, only if\u2026",
       "open": 9,
+      "state": "active",
       "track": "colbert reranker web research"
     },
     {
@@ -4860,6 +5016,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "Resolve PP-DocLayoutV3 weights and record cache path + size \u2014 a separate download from the GGUF",
       "open": 15,
+      "state": "active",
       "track": "document parser table bench"
     },
     {
@@ -4872,6 +5029,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs",
       "open": 4,
+      "state": "active",
       "track": "ernie image turbo evaluation"
     },
     {
@@ -4884,6 +5042,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "K8 (LOW priority, defer): wikilink learning-loop scorer (NEW 2026-04-28, from intake-492). Flywheel's auto-wikilink suggestion uses an acce\u2026",
       "open": 7,
+      "state": "active",
       "track": "internal kb rag"
     },
     {
@@ -4896,6 +5055,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "Evaluate LightOnOCR-2-1B as a structural/table/reading-order parser against docling-fast",
       "open": 16,
+      "state": "active",
       "track": "opendataloader pipeline integration"
     },
     {
@@ -4908,6 +5068,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "AP-3 \u2014 Classes 2/4 (spec-dec composition; per-role KV config): restart-scoped launch-arg knobs (--spec-type set, --spec-draft-n-max, tree w\u2026",
       "open": 2,
+      "state": "active",
       "track": "autopilot control plane integration"
     },
     {
@@ -4920,6 +5081,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "GC-1a \u2014 Strict-IF / typed-emission claim-grade gate (P-REV-1): rerun on the approved claim-grade reviewer corpus/K-of-M protocol after the\u2026",
       "open": 5,
+      "state": "active",
       "track": "glm52 reviewer capability gates"
     },
     {
@@ -4932,6 +5094,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "RC-6a \u2014 operator PR + sign-off (human-amendment-only): land the drafted P-REV-1 blocks into MEASUREMENT.md \u00a71/\u00a72/\u00a73 via PR-reviewed amendme\u2026",
       "open": 4,
+      "state": "active",
       "track": "reviewer calibration accounting"
     },
     {
@@ -4944,6 +5107,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "RD-12 \u2014 Per-decision latency_ms + token accounting in artifact + trace (feeds H-LB); tests incl. parse-failure fallback counting; 50-questi\u2026",
       "open": 1,
+      "state": "active",
       "track": "reviewer decision plane"
     },
     {
@@ -4956,6 +5120,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "HG-1 \u2014 Threshold policy from H4/H5 reliability-by-confidence-bucket curves (per-domain).",
       "open": 8,
+      "state": "active",
       "track": "reviewer escalation and human gate policy"
     },
     {
@@ -4968,6 +5133,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "LB-1 \u2014 Reproduce + attribute the regression: which calls dominate (plan-review prompt count vs prompt length vs architect queueing) on the\u2026",
       "open": 7,
+      "state": "active",
       "track": "reviewer latency and sampling budget"
     },
     {
@@ -4980,6 +5146,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "RM-2 \u2014 Anchor arms (guaranteed confirmation-tier): A0 gates-only (objective-verifier floor); A1 self-review (status quo alias); A3 same-fam\u2026",
       "open": 9,
+      "state": "active",
       "track": "reviewer model ablations"
     },
     {
@@ -4992,6 +5159,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "TM-8 \u2014 Coverage gate: % of review invocations producing trace rows over a 50-question replay \u2014 must be ~100% before H4 starts. Also verify\u2026",
       "open": 1,
+      "state": "active",
       "track": "reviewer trace materialization"
     },
     {
@@ -5004,6 +5172,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Adopt benchmrk's annotation envelope as the dual-gold schema. Its status:\"invalid\" decoys give us a negative-control axis we do not have an\u2026",
       "open": 4,
+      "state": "active",
       "track": "reviewer typed artifacts"
     },
     {
@@ -5016,6 +5185,7 @@
       "last_advanced": "2026-08-05",
       "next_action": "Run the AW-6 48h bootstrap discovery (\u226550 envs / \u2265500 tools / \u2265500 tasks) with incremental persistence",
       "open": 5,
+      "state": "active",
       "track": "agent world env synthesis"
     },
     {
@@ -5028,6 +5198,7 @@
       "last_advanced": "2026-08-09",
       "next_action": "AP-26: evaluate dspy.RLM for long-horizon autopilot analysis where metadata-first exploration avoids context overflow",
       "open": 65,
+      "state": "active",
       "track": "autopilot continuous optimization"
     },
     {
@@ -5040,6 +5211,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "C1 fix #2 Manifest writer intent-not-realized gap \u2014 writer lives in",
       "open": 8,
+      "state": "active",
       "track": "autopilot dashboard fidelity audit 2026 07 2"
     },
     {
@@ -5052,6 +5224,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "BEP-2 / J8 \u2014 CPU latency A/B for the legacy structured patchset path. Head-to-head bench: batch-edit mode vs interleaved Root LM loop on a\u2026",
       "open": 4,
+      "state": "active",
       "track": "batched edit parallel apply"
     },
     {
@@ -5064,6 +5237,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "DCP-6 deploy attestation + inference gate: launch-code provenance is satisfied (server_launch_git_sha=eeb8cce, ancestor of 2e2e0d3 and 756c\u2026",
       "open": 2,
+      "state": "active",
       "track": "bep dcp falsification harness"
     },
     {
@@ -5076,6 +5250,7 @@
       "last_advanced": "2026-08-05",
       "next_action": "W3 \u2014 build config_applicator.restart_role() for safe role restarts (~2-3d, pauses autopilot)",
       "open": 2,
+      "state": "active",
       "track": "capability registry and promotion"
     },
     {
@@ -5088,6 +5263,7 @@
       "last_advanced": "2026-08-03",
       "next_action": "Q4 \u2014 decide whether the interference model needs INF-07's E5 NUMA\u00d7batch data first",
       "open": 1,
+      "state": "active",
       "track": "contention model device and load axes rider"
     },
     {
@@ -5100,6 +5276,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "CF-L5 maximum-compression validation: run the L5 single-sentence-per-segment compression check only if it answers a current production ques\u2026",
       "open": 14,
+      "state": "active",
       "track": "context folding progressive"
     },
     {
@@ -5112,6 +5289,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Implement the SPO+ (Smart Predict-then-Optimize) loss",
       "open": 32,
+      "state": "active",
       "track": "decision aware routing"
     },
     {
@@ -5124,6 +5302,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "DCP-6 \u2014 Eval. Measure on a delegation-heavy workload: prefill tokens, end-to-end latency, top-up count, bundle-build latency, downstream an\u2026",
       "open": 2,
+      "state": "active",
       "track": "delegation context preassembly"
     },
     {
@@ -5136,6 +5315,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "DS-6-live \u2014 QuarterScheduler revalidation gate: parked. Only implement dynamic quarter reassignment if future DS-E1-equivalent evidence sho\u2026",
       "open": 6,
+      "state": "active",
       "track": "dynamic stack concurrency"
     },
     {
@@ -5148,6 +5328,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "esc8 stack restart landmine audit 2026 07 22"
     },
     {
@@ -5160,6 +5341,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "W3 \u2014 rotation snapshots (impl 3.2, ~1 day): journal segments per 1000 trials chained with a snapshot row (full reconstructed view + policy\u2026",
       "open": 2,
+      "state": "active",
       "track": "evidence plane event sourcing and narrative"
     },
     {
@@ -5172,6 +5354,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "P3-3. Shadow/optimization calibration: use consult_gate_probe on T2/T3 hard workflow slices to compare always-consult vs targeted-gate beha\u2026",
       "open": 5,
+      "state": "active",
       "track": "internal interaction lifecycle"
     },
     {
@@ -5184,6 +5367,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "EP-5 \u2014 re-run the probe only after the outcome-label defects are fixed",
       "open": 20,
+      "state": "active",
       "track": "learned routing controller"
     },
     {
@@ -5196,6 +5380,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Fix real_suite_v1 discriminability BEFORE certifying OP-1 (forward work from the audit above) \u2014 root-cause the run-instability first (two r\u2026",
       "open": 1,
+      "state": "active",
       "track": "loops and dashboards audit 2026 07 05"
     },
     {
@@ -5208,6 +5393,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "W5 \u2014 GATED tail: unified cascade (Phase 3) (2\u20133 weeks IF ever opened): one calibrated bilinear P(success \\| task_features, model_descriptor\u2026",
       "open": 1,
+      "state": "active",
       "track": "model capability descriptors"
     },
     {
@@ -5220,6 +5406,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "model stack change standardization audit"
     },
     {
@@ -5232,6 +5419,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "model stack single source update pipeline"
     },
     {
@@ -5244,6 +5432,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient",
       "open": 3,
+      "state": "active",
       "track": "model stack update pipeline audit"
     },
     {
@@ -5256,6 +5445,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "If a coder-role A/B is authorized, use bartowski's Q8_0 (34.38 GB) for a quant-matched run against the incumbent 35.21 GB frontdoor. This a\u2026",
       "open": 4,
+      "state": "active",
       "track": "multi file coding completion capability"
     },
     {
@@ -5268,6 +5458,7 @@
       "last_advanced": "2026-07-31",
       "next_action": "NIB2-18: DS-6 QuarterScheduler revalidation gate \u2014 dynamic-stack-concurrency.md(dynamic-stack-concurrency.md) DS-6-live. Do not treat as co\u2026",
       "open": 9,
+      "state": "active",
       "track": "non inference backlog"
     },
     {
@@ -5280,6 +5471,7 @@
       "last_advanced": "2026-08-04",
       "next_action": "W3d \u2014 the 2026-06-13 hold conditions were superseded, not satisfied; close them out",
       "open": 6,
+      "state": "active",
       "track": "objective task rate goodput"
     },
     {
@@ -5292,6 +5484,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "P0.1 operator run/pause decision on autopilot candidate species",
       "open": 5,
+      "state": "active",
       "track": "orchestration robustness audit 2026 07 11"
     },
     {
@@ -5304,6 +5497,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "orchestrator nps4 48x4 notes"
     },
     {
@@ -5316,6 +5510,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "outer coordinator learned head"
     },
     {
@@ -5328,6 +5523,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "D3 \u2014 manual canonical bench (sampling quality cert) (clean window; certifies #1\u20133). Greedy\u2192sampled(0.1\u20130.3)+seed shifts output behavior. Ce\u2026",
       "open": 2,
+      "state": "active",
       "track": "prompt construction determinism"
     },
     {
@@ -5340,6 +5536,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "TB-1 \u2014 per-model budget curve on a truncation-inducing suite",
       "open": 18,
+      "state": "active",
       "track": "reasoning effort levels"
     },
     {
@@ -5352,6 +5549,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Operator decision: run a --keep-enabled bracket to actually enable live routing",
       "open": 3,
+      "state": "active",
       "track": "retrain routing models"
     },
     {
@@ -5364,6 +5562,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "RI-10 \u2014 Shadow-to-enforce canary decision: current canary is configured as 25% enforce / 75% shadow on frontdoor, worker_general, and worke\u2026",
       "open": 9,
+      "state": "active",
       "track": "routing intelligence"
     },
     {
@@ -5376,6 +5575,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "routing truth restoration"
     },
     {
@@ -5388,6 +5588,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "T0.1 \u2014 Coordinate with the live autopilot agent. Confirm the daemon is idle/handed-back before any scripts/autopilot/ or registry edit. Get\u2026",
       "open": 12,
+      "state": "active",
       "track": "scaffold autopilot cost lever deployment"
     },
     {
@@ -5400,6 +5601,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "SX-5: Load test \u2014 Folded into AR-3 Package D. Web_research sentinel suite (50q) provides realistic load validation. Post-AR-3: analyze engi\u2026",
       "open": 4,
+      "state": "active",
       "track": "searxng search backend"
     },
     {
@@ -5412,6 +5614,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "R1a \u2014 the end-to-end bench claim never fired; wiring exists but is inference-gated",
       "open": 24,
+      "state": "active",
       "track": "session bus thin dispatcher"
     },
     {
@@ -5424,6 +5627,7 @@
       "last_advanced": "2026-08-01",
       "next_action": "Echo GateDecision into /chat response metadata (admitted/waited_s/decision/topology_idx)",
       "open": 8,
+      "state": "active",
       "track": "shape keyed contention gating"
     },
     {
@@ -5436,6 +5640,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "W4 - Consumer migration: continue migrating remaining stack-sensitive consumers to generated stack priors or explicit degraded fallbacks. U\u2026",
       "open": 1,
+      "state": "active",
       "track": "stack change governance pipeline"
     },
     {
@@ -5448,6 +5653,7 @@
       "last_advanced": null,
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "stack lineup dossier 2026 07 23"
     },
     {
@@ -5460,18 +5666,20 @@
       "last_advanced": "2026-07-29",
       "next_action": "SS-BENCH-GATE \u2014 a stack reload must check for a running CPU bench, not just autopilot.",
       "open": 2,
+      "state": "active",
       "track": "standardized stack update pipeline finalizat"
     },
     {
-      "age_days": 30,
+      "age_days": 12,
       "blocked": 0,
       "closed": 0,
       "domain": "routing-and-optimization",
       "handoff": "swarm-dataset-distillation.md",
       "id": "RTG-39",
-      "last_advanced": "2026-07-11",
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
-      "open": 0,
+      "last_advanced": "2026-07-29",
+      "next_action": "BLOCKED on strand Phase B \u2014 correct the premise first: distillation objective is ~2pp, the teacher-prompting change is ~38pp",
+      "open": 3,
+      "state": "blocked",
       "track": "swarm dataset distillation"
     },
     {
@@ -5484,6 +5692,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "TR-4.1 In routing.py, compose role with model selection: per-role model-affinity table OR independent role+model softmax (per TR-1.3 decisi\u2026",
       "open": 7,
+      "state": "active",
       "track": "tri role coordinator architecture"
     },
     {
@@ -5496,6 +5705,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "T7 (optional): Hermes session ingest \u2014 Walk ~/.hermes/sessions/.json if present, normalize into events. Gated on whether Hermes goes into p\u2026",
       "open": 10,
+      "state": "active",
       "track": "unified trace memory service"
     },
     {
@@ -5508,6 +5718,7 @@
       "last_advanced": "2026-07-30",
       "next_action": "WP-6 / WP-7 full ratification - inference-gated, awaiting operator approval + measurement",
       "open": 6,
+      "state": "active",
       "track": "within role placement state machine"
     },
     {
@@ -5520,6 +5731,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Post-soak \u00a75 cleanup (code + tests as ONE change): retire the legacy per-role build path \u2014 ServerURLsConfig URL ownership, Fix-A delegation\u2026",
       "open": 1,
+      "state": "active",
       "track": "wp12 fleet layer design"
     },
     {
@@ -5532,6 +5744,7 @@
       "last_advanced": null,
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "open": 0,
+      "state": "active",
       "track": "wp9 wp10 lineup event prep"
     },
     {
@@ -5544,6 +5757,7 @@
       "last_advanced": "2026-07-29",
       "next_action": "Monitor post-enable live telemetry for unexpected domain regressions, latency regressions, or guard bypasses; rollback is xmas_routing.mode\u2026",
       "open": 1,
+      "state": "active",
       "track": "x mas text routing"
     }
   ],

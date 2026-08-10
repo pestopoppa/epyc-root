@@ -350,6 +350,7 @@
       <span><i class="gsw ring" style="border-color:#d29922"></i>8&ndash;30d</span>
       <span><i class="gsw ring" style="border-color:#e5534b"></i>&gt;30d</span>
       <span><i class="gsw ring" style="border-color:#6e7681"></i>never</span>
+      <span><i class="gsw ring" style="border-color:#8b949e;border-style:dashed"></i>blocked</span>
       <span class="muted">size &prop; open tasks &middot; fill = owning index (blended when a handoff links across domains) &middot; hover to reveal its links</span>
     </div>
     <p class="gnote muted" id="graph-note"></p>
@@ -1034,7 +1035,8 @@ async function loadGraph(){
     `${g.nodes.length} handoffs under ${Object.keys(IDX_COLOR).length} core indices · `
     + `${refs.length} reference links (one handoff's markdown cites another) · `
     + `${deps.length} declared dependenc${deps.length===1?"y":"ies"} (hand-authored Deps). `
-    + `A reference is NOT a dependency claim. Links are hidden until you hover a node.`;
+    + `A reference is NOT a dependency claim. Links are hidden until you hover a node.`
+    + ` Active and blocked work only — completed and archived handoffs are not plotted.`;
 
   // ---- domain colour key
   const doms=Object.keys(IDX_COLOR).filter(d=>g.nodes.some(n=>n.domain===d));
@@ -1118,6 +1120,9 @@ async function loadGraph(){
     const n=it.n;
     const c=svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:it.fill,
       stroke:RING(n.age_days),"stroke-width":2,class:"node"});
+    // Blocked work is waiting, not stalled: a dashed ring says so without
+    // spending the fill (domain) or the ring colour (liveness) channel.
+    if(n.state==="blocked") c.setAttribute("stroke-dasharray","3 2.5");
     c.addEventListener("mouseenter",()=>{
       const keep=new Set([n.id,...(nbr[n.id]||[])]);
       for(const k in circles) circles[k].classList.toggle("dimmed",!keep.has(k));
