@@ -238,6 +238,25 @@ vision quarter-preference — pre-exist at the base commit, verified by stash-ru
 - [x] Both boundary commits pushed to origin ✅ 2026-07-23
 - **DELIBERATE SCOPE DEVIATION (flagged in `a172d2dd`)**: the §5 WP-13 interim deletion did NOT execute at this boundary. Reasoning chain: instant-rollback requirement ⇒ the legacy per-role build stays ⇒ Fix-A delegations + generator alias-ports inheritance are its substrate (deleting them breaks rollback after any priors regeneration: toolrunner KeyError degraded, worker_math single-quarter re-serialization) ⇒ their guard tests stay with the code they guard. Fleet-wins-at-runtime resolves the two-descriptions concern the §5 atomicity clause guarded against. The permission classifier independently blocked live-tree test deletion, converging on the same outcome.
 - [ ] **Post-soak §5 cleanup (code + tests as ONE change)**: retire the legacy per-role build path — ServerURLsConfig URL ownership, Fix-A delegations, `_LEGACY_SERVER_URL_FALLBACKS`, generator alias-ports inheritance, and their guard tests (4 in `test_full_slot_demotion.py` + convergence test in `test_stack_priors_compiler.py`) — once the fleet layer survives its soak and the operator retires the flag-off rollback
+  **2026-08-11 (`mainB`) — PRECONDITION CHECKED AND IT DOES NOT HOLD. Do not start this row.**
+  The gate on this row is *"the operator retires the flag-off rollback"*. Verified against the tree,
+  three ways, all negative:
+  1. **The flag still exists and still defaults OFF.** `src/fleet.py:40` defines
+     `FLEET_LAYER_ENV = "ORCHESTRATOR_FLEET_LAYER"`; `src/fleet.py:23` states the module is *"inert
+     unless `ORCHESTRATOR_FLEET_LAYER=1`"*; `src/llm_primitives/backend.py:177` still branches on
+     `os.environ.get("ORCHESTRATOR_FLEET_LAYER") == "1"`, default off.
+  2. **No operator receipt retires it** — nothing under `artifacts/operator/` mentions
+     `FLEET_LAYER`, and the runtime-flags store carries no fleet entry at all.
+  3. **The rollback substrate is intact and still referenced** — `_LEGACY_SERVER_URL_FALLBACKS`
+     lives at `src/config/models.py:282` with live referents (e.g.
+     `src/api/routes/vision_serving.py:25`).
+  So deleting the interim now would remove the rollback path for a flag that is **still default-off**
+  — the precise reasoning chain the 2026-07-23 scope deviation (`a172d2dd`) recorded when it
+  declined the same deletion. **The condition has not moved in the 19 days since.** That is a
+  recurrence, not a fresh finding: the row is gated on an operator action nobody has taken, so it
+  will keep being picked up and re-declined until the operator either retires the rollback or the
+  gate is rewritten. Surfaced to `coordinator-agent` as an operator item rather than re-declined
+  silently a third time.
 - [x] §6 case 10 live gate — **PASS** ✅ 2026-07-23 (operator inference grant same day; evidence bundle `coordination/inference-batch/bundles/WP12-case10-live-gate/` + terminal ledger row `WP12-case10-live-gate`): worker_math 4-wide burst → **4 disjoint busy quarters** (8082/8182/8282/8382, all four simultaneously decoding, peak /slots sample all-busy), fleet identity on every dispatch (tap `topology_role=worker_general`), zero same-fleet fallback, zero phantom-full, migration counters 0→0. J2/J3 replay executed faithfully (identical params, `--workers 1` API-only reload, 12/12 OK, n_aborted=0) — verdict INCONCLUSIVE is **structurally correct**: both fleets are quarters-only (no full endpoint), so the full↔quarter migration surface is dormant (C10-F2). Two findings, neither a fleet-layer defect:
   - **C10-F1**: `live_warm_worker_slots()` returns `{}` (filters `tier=="warm"`; every live role is `hot`) → `get_role_max_concurrency()==1` for ALL roles → `_acquire_role` `Semaphore(1)` per role **per API worker process**. Within-role concurrency in production exists ONLY via the 6 uvicorn processes (cross-process disjointness from region flocks). On a `--workers 1` API every role serializes fully — the first burst attempt landed 4/4 on port 8082 back-to-back (staircase 19.7/34.9/49.6/64.1s). Also reinterprets the 2026-07-21 J2/J3 pass: its committed migrations (forward=6/reverse=4) are consistent with fully serial traffic (full-idle KV handovers), not overlap-driven displacement.
   - **C10-F2** (wording corrected 2026-07-23 per [stack-lineup-dossier-2026-07-23.md](stack-lineup-dossier-2026-07-23.md) §5.1): WP-3/WP-4 migration surface dormant in the quarters-only **realized/launched** lineup — the full/half instances remain **declared-dormant** in NUMA_CONFIG (worker full 8072 `placement_policy: full_disabled` by DISPATCH-A `99dd6c92`; frontdoor 8070 / ingest 8085 halves undisabled-but-unlaunched since the v7 quarter-mode cutover `ff4b3766`). SM stays unit-verified; the live surface returns only if the operator redeploys a big instance.
