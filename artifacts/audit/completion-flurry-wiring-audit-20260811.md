@@ -446,7 +446,35 @@ autopilot/instrument commit exists today in orchestrator — the era amendment w
 tonight and committed by this audit (`53fc3250`); and `scripts/autopilot/system_card.md` is
 stale on BOTH era fields (generated artifact, regeneration → autopilot resume checklist).
 
-**Root (29 commits):** *(subagent results pending review)*
+**Root (48 commits — the day ran past the brief's 29; 12 landed during the audit itself):**
+45 verified state 1 (including test-count claims *re-run*, orchestrator cross-citations
+resolved, and the operator's freeze-sha byte-checked). Findings:
+
+1. **HEADLINE — `2e01d5dd` + `b763112e` (C28/C38): undisclosed committed-not-live on the
+   daemon tick path.** `load_relay_state`/`save_relay_state` called at
+   `session_bus_coordinator.py:2449/2604` inside the relay tick; daemon pid 496387 unrestarted
+   since 08:48. Unlike the same author's exemplary C39 disclosure, **no "NOT YET LIVE" caveat
+   exists anywhere** (verified: one such string in the whole handoff, C39's), and the C28 box is
+   `[x]` closed with before/after numbers while the live daemon still burns ~29.5% of a core
+   re-parsing 1 GB of advisory.jsonl per 45 s tick and remains C28-vulnerable. The exact
+   pattern this audit was commissioned to find. Routed to mainD (annotate, owner flips);
+   restart urgency to coordinator now covers C39 **and** C28/C38.
+2. **My own `ebce92a2` was 3-adjacent** — three receipt-index pointers asserted `ratified`
+   over receipts that existed only on disk (untracked since 07-29); my conformance check
+   only stat'ed the filesystem. **Closed**: receipts committed (`ea2c8381`), check extended to
+   verify git-tracking of every index target (`2b60bbba`). Filesystem presence is not
+   provenance.
+3. `a17ba974` (mainD) claims "54 tests"; actual collected count is **47** (sequence 37→45→47
+   reconstructed; feature itself real and wired). Citation defect routed to mainD for the
+   handoff record.
+4. **L339 finally resolved my way, by its owner**: `8ec84f67` (mainC, 21:49Z) reversed its
+   own adjudication ("C41's docstring had it right"), restored the box to open, and corrected
+   the banner SIX→SEVEN — the banner was the document defect after all. The loss-mode claim
+   survived every layer of this exchange; the two-step correction trail above stands as
+   history, not error.
+5. `c629b33b` broke "Parent index" links across ~34 handoffs (bad global replace);
+   self-corrected one minute later by `1317060a`; clean at HEAD. Recorded as an instance of
+   the author-side-unvalidated-change class, no action.
 
 ## Bus filings
 
