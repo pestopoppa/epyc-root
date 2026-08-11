@@ -1,8 +1,8 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-11)**: reproduce the GEAK-eval compile/correctness/timing round-trip on gfx90a; the C4 report, capture path, and evaluator bridge are now built.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-06-03 (GEAK keystone + AgentKernelArena)
+**Next action (2026-08-11)**: run the matched MI210 controller-authoring A/B across the seven registered AgentKernelArena arms; the gfx90a substrate gate is complete.
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-11 (gfx90a GEAK/Arena + LDS gates)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -25,7 +25,7 @@ The path *today* (supersedes any earlier "EvoEngineer/CudaForge-first" framing):
 2. **Controller-A/B = register adapters, don't build a harness.** AgentKernelArena (679) already ships Claude Code / Codex / Cursor / GEAK adapters with a `@register_agent` pattern — **register our controllers (Claude+Codex actor-critic, EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK) as adapters and A/B them on gfx90a.** It compares whole agents at task level, complementing each controller's inner loop.
 3. **Agent backend = Claude+Codex actor-critic** (reuse the autopilot planner's infra); local coder role is the self-hosted fallback. `opensource_only` governs deployed services, not build-time tooling — the authored kernel is the artifact, not the LLM. Empirically favored: CudaForge's best result was a cross-model coder/judge split; AgentKernelArena's best results are Claude Code / Cursor / Codex.
 4. **Triton first (on-ramp), HIP second (endgame).** GEAK-eval (Triton, gfx90a-proven) → then the HIP arm via GEAK-HIP patterns (678) + AgentKernelArena's Torch2HIP suite (679) + our own HIP oracle. Pairs with `llama-cpp-dsa-contribution.md`.
-5. **Differentiators we own: C6 (anti-reward-hacking) + C4 (gfx90a profiler-metric).** Both now have an AutoKernel implementation. C4's live scope is presently op-level: paired `rocprofv2` works for Q4_K/Q8_0, while whole-model and IQ2_XXS captures crash inside the profiler and are retained as failed evidence rather than treated as empty profiles.
+5. **Differentiators we own: C6 (anti-reward-hacking) + C4 (gfx90a profiler-metric).** Both now have an AutoKernel implementation. Paired `rocprofv2` is the op-level Q4_K/Q8_0 path; direct timestamp-only `rocprof` v1 is the governed whole-model fallback and completed K28 attribution. IQ2_XXS still requires the seeded Omniperf fallback after OP-11 gives its producer a durable identity.
 
 **Why this is the decision (one paragraph):** the entire cluster was NVIDIA-bound at the toolchain, so a from-scratch ROCm backend looked like the long pole — until GEAK/Apex/AgentKernelArena turned out to be AMD-native, permissively licensed, and (for GEAK-v1) demonstrated on **gfx90a, the MI210's exact ISA family**. That predicts *compile compatibility* on our card (not performance — single-GCD bandwidth, ROCm version, autotune space, and harness details still need reproduction), which shrinks the program to "adopt + reproduce + add C4/C6." Full reasoning, alternatives, and the rejected paths: see the [deep dive](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md).
 
@@ -139,7 +139,9 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
 
 ## Open questions (decided ones live in the deep dive §5)
 - Which controller wins on gfx90a? Unknown until the AgentKernelArena A/B runs on the MI210 with EPYC ops.
-- Does GEAK-eval's MI250X result reproduce on the single-GCD MI210 (expected yes, lower absolute speedup)? **First thing to verify when the card racks.**
+- Does GEAK-eval's published MI250X speedup reproduce on the single-GCD MI210? The substrate-level
+  compile/correctness/timing round-trip now passes on physical gfx90a; the published task suite and
+  matched controller-performance comparison remain separate empirical questions.
 - Does C4's cheapest path give a usable signal on CDNA2? **Answered 2026-08-11: yes at op level,
   not as a whole-model `rocprofv2` capture on this host.** The deterministic report resolves the
   Q4_K/Q8_0 fill → requantize → matvec sequence and emits 1%-floor wall shares. Whole-model Qwen
@@ -183,21 +185,44 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
 
 ## Progress checklist
 
-- [ ] Reproduce GEAK-eval (intake-674) on gfx90a MI210 - compile+correctness+timing round-trip (first sanity gate)
+- [x] Reproduce the GEAK/AgentKernelArena compile+correctness+timing round-trip on gfx90a MI210
+  (first sanity gate) ✅ 2026-08-11 — the exact-pinned adapter refused gfx90a spoofing, compiled the
+  live add-kernel arm under Torch 2.5.1+ROCm 6.2 / Triton 3.1.0, passed correctness 3/3 and timing
+  harness 5/5 on the physical MI210, and released its device claim. Receipts:
+  `/mnt/raid0/llm/autokernel/probes/inf03-geak-arena-gfx90a-preflight-20260811/receipt.json`
+  (SHA-256 `256a4c60a416828a1299a35d8399609c3c5ad2541272ab41de40dd00f2f297a4`) and
+  `/mnt/raid0/llm/autokernel/probes/inf03-geak-arena-add-roundtrip-20260811/receipt.json`
+  (SHA-256 `aee866ee3ebd2fe88b37185f4226c3c20a5b439c60a40fac57ef1bb42898be8c`). This closes compatibility,
+  not the published-suite speedup reproduction.
 - [x] Write P-GPU-1 measurement protocol before any GPU runs ✅ 2026-07-29 — human amendment ratified the canonical MI210 GPU protocol in [`MEASUREMENT.md`](../../MEASUREMENT.md#p-gpu-1--mi210-gpu-canonical-throughput-ratified-2026-07-19) on 2026-07-19; this closes protocol authoring only, not any GPU run or decision claim.
-- [ ] Register controllers (Claude+Codex, EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK) as AgentKernelArena adapters and A/B on gfx90a
+- [ ] Run the matched controller-authoring A/B on gfx90a across the registered Claude+Codex,
+  EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK, and baseline arms. Registration, exact vendor
+  pin/license checks, C4 prompt-hygiene binding, and the three-argument `@register_agent` bridge are
+  complete in research commit `48350b24`; only the matched authoring comparison remains.
 - [x] Build C4 gfx90a profiler-metric analyzer (GEAK-v2 raw-rocprof path first) ✅ 2026-08-11 —
   `profile_report.py` implements the deterministic paired mapping/formal report; the live single-process
   Q4_K/Q8_0 captures prove it on gfx90a. `profile_context.py` binds the report hash into a priced
   AutoKernel discovery block and a framework-neutral `c4_evaluator_observation.v1` seam for GEAK /
   AgentKernelArena adapters. The seam is diagnostic-only and cannot write a verdict or rank.
-- [ ] Build C6 anti-reward-hacking layer (robust-kbench + AgentKernelArena unseen-shape)
+- [x] Build C6 anti-reward-hacking layer (robust-kbench + AgentKernelArena unseen-shape) ✅ 2026-08-11
+  — the immutable external scorer, search-tree monitor, unseen/hostile-shape cases, stream/thread
+  escape checks, planted red-team corpus, prompt disclosure guard, and ranked-set short-circuit cases
+  are implemented and covered by the AutoKernel suite. Live candidate sensitivity remains governed by
+  the producer-dependent RVP-C2 rows, not by reopening the C6 implementation task.
 - [x] **GEAK-family freshness sweep completed ✅ 2026-08-03** (research-intake Stage-2b): GEAK v4 retains a current gfx90a KB (`perf_knowledge/hardware/cdna2_mi200/`, `updated: 2026-06-08`) and 40 gfx90a capability entries; all published evaluation remains gfx942. Scoping caveat amended above; "677/678/679 are a coverage regression" **retired** — for GEAK proper it is unpublished coverage. `v1.0.0 @ 4ffba15a` pinned.
 - [x] Re-target the program objective from the Q8 rung to the fp16 rung, with a banded per-lever ceiling (K1–K12) ✅ 2026-08-03
-- [ ] Register **ARGUS** (arXiv 2604.18616, 99–104% of hand-optimised assembly on MI300X) as a controller candidate alongside EvoEngineer / KernelFoundry / K-Search / Xe-Forge / GEAK
+- [x] Register **ARGUS** (arXiv 2604.18616) as a controller candidate alongside EvoEngineer /
+  KernelFoundry / K-Search / Xe-Forge / GEAK ✅ 2026-08-11 — `arena_adapter.py` registers the
+  `argus` controller id under the same exact three-argument bridge and prompt-hygiene contract as
+  the other arms. This records registration only; the cited MI300X result remains vendor evidence.
 - [ ] Read GEAK's `landscape/` + `languages/` sections as an external check on our seven-school taxonomy (vendor-maintained, covers hipkittens/tilelang/mojo/cutlass/flydsl)
 - [x] Resolve the profiler-tooling blocker on the host (rocprofv2/rocprof/omniperf/rocm-bandwidth-test) — C4 and the LDS bank/phase solver are both gated on it ✅ 2026-08-11 — version-matched ROCm 6.2 tools are side-loaded; `rocprofv2` is the working op-level path, with its whole-model/IQ2 crash boundary now measured and receipted. Omniperf is runnable and has a fail-closed governed fallback; seeded evidence waits on OP-11.
-- [ ] Run HipKittens' LDS bank/phase solver method on gfx90a (~40 min GPU) to establish whether our silicon is 32 or 64 banks — decides whether HK's swizzle constants transfer at all
+- [x] Run HipKittens' LDS bank/phase solver method on gfx90a ✅ 2026-08-11 — 372 bank and 6,048 phase
+  dispatches across three repetitions measured **32 LDS banks and eight phase cliques of eight lanes**.
+  HipKittens' CDNA3 64-bank/two-phase swizzle topology therefore does not transfer to gfx90a;
+  `swizzle_transfer_class=retune_required`. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/inf03-lds-gfx90a-20260811-r4/receipt.json`, SHA-256
+  `ae1d833c704bdae9a78767d0fc0b927298d6d1dfdb31a0ea11c34058dc525987`.
 - [ ] Add `-mllvm --amdgpu-unroll-threshold-local=600` to the build-flag checklist as a **precondition of any ROCm 7+ upgrade** (llama.cpp #19984, 3.7–5× prefill regression; does not affect our ROCm 6.2 today)
 - [x] **GEAK-family freshness sweep completed ✅ 2026-07-29**: refreshed the deep-dive appendix from AMD's current AgentKernelArena/GEAKv3 reports. AKA now publishes 214 tasks and a 44-task MI300X comparison; this is vendor/CDNA3 evidence only and does not close the MI210/gfx90a reproduction gap. [Freshness appendix](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md#9-freshness-appendix-sweep-at-each-handoff-audit--when-the-mi210-racks).
 

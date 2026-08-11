@@ -368,6 +368,22 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       rows into the single measurement ladder and explicitly yields nothing for older events. This
       row remains open until the experimental `test-backend-ops` producer is committed and its first
       real event proves the write path.
+- [x] SC19 **Wire the new AutoKernel ROCm auxiliary receipts prospectively — write side FIRST.**
+      ✅ 2026-08-11 — the rocprof-v1 attribution, HipKittens LDS solver, and Omniperf fallback
+      producers now emit explicit `belief_measurements` only on successful future runs. Root
+      `autokernel_aux_receipt.py` projects those rows into the one measurement ladder, binds the
+      native schema as protocol id, and returns zero rows for receipts predating the hook. Current
+      2026-08-11 receipts are deliberately not retrofitted. The adapter's GEAK round-trip schema seam
+      is ready, but no round-trip producer vector is claimed by this closure.
+- [ ] SC20 **Add the write-side `belief_measurements` vector to the GEAK/Arena round-trip producer
+      before the matched controller A/B.** Emit correctness pass rate and timing-harness validity as
+      separate directional rows with scored-repetition bases. Do not infer them later from the
+      completed 2026-08-11 receipt; that record predates the hook.
+- [ ] SC21 **Classify GEAK/Arena preflight findings deliberately.** Source pin/license, physical
+      gfx90a identity, registry shape and spoof refusal are verified findings, not ordinal
+      measurements and not literature. Either declare one shared `verification` source-class ladder
+      with a documented ceiling or retain preflight solely as dependency evidence; never invent a
+      metric direction to force it through `ClaimTuple`.
 
 ## Dependency notes
 
