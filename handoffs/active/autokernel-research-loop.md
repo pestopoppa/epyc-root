@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** C2 FP64 ORACLE LIVE / STOCK Q4_K BASELINE FAILURES OPEN / V9 CONTROLS REQUIRED — updated 2026-08-11
+**Status:** AK-BH-1/2 COMPLETE / Q4_K MMQ FAILURES OPEN / V9 CONTROLS REQUIRED — updated 2026-08-11
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -56,11 +56,18 @@ completed its authorized 60-second gfx90a saturation probe: 242 device samples h
 and AK-OP-2 is declined. RVP-C2-6 now also has an independent host-double reference that decodes
 Q4_0, Q8_0, Q4_K, and Q6_K directly from GGUF wire bytes and emits
 `fp64_error_ratio/host-double-gguf-wire/v1`. Five representative CPU cases, the broadcast regression,
-31 real parser tests, and the 5/5 planted plus 5/5 clean property self-test passed. The full stock ROCm
-Q4_K matrix then found genuine baseline failures of the predeclared κ=1.5 ratio gate. That is a
-correctness finding, not an oracle defect: keep the gate fixed and characterize the baseline failures
-before this surface can rank candidates. The experimental implementation remains uncommitted under its
-per-commit approval rule. The next live action is the v9/hardened control block,
+31 real parser tests, and the 5/5 planted plus 5/5 clean property self-test passed. A subsequent audit
+fixed a non-contiguous-row coverage bug in that oracle; the corrected forced-dispatch matrix then
+passed all **43/43** force-rocBLAS cases but only **18/43** force-MMQ cases. The retained failures are
+therefore MMQ-specific stock correctness failures, not an oracle defect; κ remains 1.5 and this surface
+cannot rank candidates until MMQ is corrected. AK-BH-1 also measured best-available rocBLAS against
+hipBLASLt heuristics at nine prefill shapes: hipBLASLt won three, with ratios spanning 0.734×–1.322×,
+so the honest vendor baseline is shape-specific rather than one global library. AK-BH-2 completed all
+eight explicitly pinned `-fa` × `ROCWMMA_FATTN` × `MMQ_MFMA` arms on one Q4_K_M model; `-fa on` won
+each paired comparison, `MMQ_MFMA` was materially slower on this surface, and the winning arm was
+`r1m0-fa-on` at 24,647.316788 t/s. Those single-surface observations do not authorize a global build
+default. The experimental implementation remains uncommitted under its per-commit approval rule. The
+next live action is the v9/hardened control block,
 followed by §AK6.5 Step 3's known-real CPU candidate.
 The run-specific CPU/GPU authorizations do not extend to producer commits, promotion, or freeze
 actions. Offline AK-WM-1 plumbing is
@@ -3715,24 +3722,39 @@ fans candidates over the measured highest-share op in waves. AK-LN-2 remains emp
 Sequence **RVP-T0-1 → RVP-T0-2 → AK-BH-1 → AK-BH-2**, so two thirds of this block can falsify at zero
 GPU cost before any GPU claim is filed.
 
-- [ ] **AK-BH-1 — hipBLASLt vs rocBLAS microbench at our prefill shapes, standalone.** `libhipblaslt.so`
+- [x] **AK-BH-1 — hipBLASLt vs rocBLAS microbench at our prefill shapes, standalone.** ✅ 2026-08-11 —
+  `libhipblaslt.so`
   is installed on this host and **not linked** by our build. Measure the two libraries against each
   other at our shapes *before* touching ggml, so the question "is our GPU baseline the honest one" is
   answered by a 30-minute microbench rather than by a kernel campaign. This is the structural analogue
   of the baseline-deflation finding this batch turned up: a result measured against a weaker-than-
   available baseline overstates the win by the size of the gap, and the gap here is measurable today.
-  Complements the §"New index-backed leads" hipBLASLt grouped-GEMM lever.
-- [ ] **AK-BH-2 — Baseline-honesty factorial: `-fa 0|1` × `ROCWMMA_FATTN` × `MMQ_MFMA`.**
+  Complements the §"New index-backed leads" hipBLASLt grouped-GEMM lever. The best-heuristic live
+  receipt covered nine shapes: hipBLASLt won three, while its ratio to rocBLAS ranged from 0.734× to
+  1.322×. A universal library replacement is explicitly declined; the strongest baseline is
+  shape-specific. Receipt: `/mnt/raid0/llm/autokernel/probes/ak-bh-1-best-of-heuristics-20260811T0948Z/receipt.json`,
+  SHA-256 `aca0dc59dbea9745008e00f3958a767dfb07b4c9e2e21f8946239ec981762cfc`. Research runner:
+  `scripts/benchmark/run_rocm_gemm_baseline_compare.py`; comparator source:
+  `scripts/benchmark/rocm_gemm_baseline_compare.cpp`.
+- [x] **AK-BH-2 — Baseline-honesty factorial: `-fa 0|1` × `ROCWMMA_FATTN` × `MMQ_MFMA`.** ✅ 2026-08-11
   **Correction to a standing project assumption**: `llama-bench`'s `-fa` default is
   `LLAMA_FLASH_ATTN_TYPE_AUTO`, not `0` — verified at `tools/llama-bench/llama-bench.cpp:389` in the
   frozen v8 tree. **AUTO is worse for baseline honesty than a known-off default**, because it resolves
   differently per model, quant and backend: two runs with *identical command lines* can silently
   differ, manufacturing or hiding a speedup with no visible flag difference. Pin `-fa` explicitly on
-  every arm and **record what AUTO resolved to** when reading any historical number. 4 builds + 1
-  region claim.
+  every arm and **record what AUTO resolved to** when reading any historical number. All eight live
+  arms completed with 30 retained repetitions. On the tested Qwen2.5-Coder-0.5B Q4_K_M prefill
+  surface, `-fa on` beat off in all four build pairs, `MMQ_MFMA` was slower, and `r1m0-fa-on` won at
+  24,647.316788 t/s. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/ak-bh-2-factorial-20260811T0952Z/receipt.json`, SHA-256
+  `2a53cee2d8513737eca894e0f34152549932b75f3e04ef541cdee1848472cfdf`. Research runner:
+  `scripts/benchmark/run_autokernel_gpu_factorial.py`.
 - [ ] **AK-BH-3 — CPU-lane baseline-honesty arm, run concurrently with AK-BH-2.** Different claim type,
   different resource (correction 2 above), so it costs no additional wall-clock. Establishes whether
   the CPU-side anchor carries the same class of unpinned-default exposure.
+- [ ] **AK-BH-4 — Encode strongest-baseline selection by exact measured surface.** Prefill GEMM cells
+  must compare against the stronger of rocBLAS and hipBLASLt for that shape; factorial flags must be
+  explicit, and the single 0.5B result must not transfer to another model/quant without recalibration.
 
 ### AK-OP — operator-only (measurement trust boundary is human-amendment-only)
 
