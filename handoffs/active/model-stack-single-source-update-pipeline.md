@@ -317,13 +317,19 @@ Any future stack update should be accepted only when these hold:
 
 ## Outstanding Work
 
-> **⚠ THESE SIX BOXES ARE STANDING CONSTRAINTS, NOT TASKS — DO NOT DISPATCH OR FLIP THEM.**
+> **⚠ THESE SEVEN BOXES ARE STANDING CONSTRAINTS, NOT TASKS — DO NOT DISPATCH OR FLIP THEM.**
 > Every open box in this section is a rule with no completion state: *"Preserve … **whenever**
-> migrating"*, *"Continue … **only where**"*, *"Keep production routing default-off **until** an
-> explicit operator decision"*, *"Keep … **under review**"*, *"Keep completed logs out of active
-> indices"*, *"Broaden … **opportunistically as** consumers create new surfaces"*. Checking one
-> asserts that an ongoing constraint has been permanently satisfied, after which the constraint
-> stops being applied.
+> migrating"*, *"Continue … **only where**"*, *"Treat … **as** re-audited surfaces … **do not churn
+> unless**"*, *"Keep production routing default-off **until** an explicit operator decision"*,
+> *"Keep … **under review**"*, *"Keep completed logs out of active indices"*, *"Broaden …
+> **opportunistically as** consumers create new surfaces"*. Checking one asserts that an ongoing
+> constraint has been permanently satisfied, after which the constraint stops being applied.
+>
+> **Count corrected SIX → SEVEN, 2026-08-11 (`mainC`).** The *"Treat … as re-audited surfaces"* rule
+> was a standing constraint the enumeration never counted, and it had been flipped `[x]` — the exact
+> false-permit C41 predicts, *"a guard that trusts an enumeration is passed by not being
+> enumerated."* The banner is the scope, so an undercount silently un-guards a real rule; the repair
+> belongs here rather than in a widened predicate.
 >
 > Noted 2026-07-29 by `auditor`. **The heading gives no warning** — "Outstanding Work" reads like a
 > task list, and three of these rows (`:320`, and the two now at `:353`/`:355`) are offered as
@@ -336,14 +342,17 @@ Any future stack update should be accepted only when these hold:
 - [ ] Continue migrating remaining high-risk P2 consumers only where a concrete
   duplicated model/role/serving fact or duplicated stack-prior traversal still
   exists; avoid broad renderer rewrites unless there is a narrow helper seam.
-- [x] Treat `scripts.benchmark.seeding_rewards`,
+- [ ] Treat `scripts.benchmark.seeding_rewards`,
   `scripts.benchmark.corpus_quality_gate`, and `scripts.autopilot.kv_compress`
   as re-audited surfaces: the current implementations already keep generated
   stack priors primary with explicit degraded fallback. Do not churn them unless
-  a concrete duplicated live fact reappears. ✅ 2026-07-29 — current audit
-  confirms each imports generated stack-prior helpers for normal operation;
-  each fallback remains explicitly marked degraded and derives from the
-  manifest rather than copied live model/endpoint facts.
+  a concrete duplicated live fact reappears.
+  *(Last audited 2026-07-29: each imports generated stack-prior helpers for normal
+  operation; each fallback remains explicitly marked degraded and derives from the
+  manifest rather than copied live model/endpoint facts. Restored to `- [ ]`
+  2026-08-11 by `mainC` — this is a standing constraint, so the audit RESULT is
+  dated here while the rule itself stays open. It had been flipped closed, which
+  asserts "do not churn these" is permanently satisfied and retires the rule.)*
 - [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
   consumer to prove. Latest re-audits: the simulated vision swap already covers
