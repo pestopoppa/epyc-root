@@ -1819,3 +1819,57 @@ def test_c36_runtime_never_overrides_the_OTHER_guards(
     assert any("codex_sendkeys is off" in b for b in p["blockers"]), p["blockers"]
     assert any("refusing" in b.lower() or "resolve" in b.lower() for b in p["blockers"]), \
         f"an unresolvable target must still block: {p['blockers']}"
+
+
+def test_the_rate_limit_is_per_agent_not_fleet_wide(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Reported 2026-08-11 by `coordinator-agent` as a HIGH-severity correctness bug:
+    "--min-interval-s is enforced GLOBALLY across the fleet". It is NOT, and this test
+    is why the question should not need re-litigating.
+
+    The report reconciled to per-agent behaviour on inspection. Both cited numbers are
+    the age of the refused agent's OWN most recent nudge:
+      * "probe --agent mainA at 09:02Z showed 127s, the age of the mainD nudge" —
+        mainA's own nudge was 09:00:29, and 09:00:29 + 127s = 09:02:36. The mainD
+        nudge (08:57:42) would have read 258s at that moment, not 127s.
+      * "mainC refused with 594s, the age of the auditor nudge" — mainC's own nudge
+        was 09:00:31, and 09:00:31 + 594s = 09:10:25; mainC was successfully nudged at
+        09:10:39, 14s later. The auditor's nudge reaches 594s at 09:07:47.
+    What made it LOOK fleet-wide is real and worth keeping in mind: all five agents
+    were nudged inside two seconds (09:00:29-09:00:31), so they came off the 600s
+    limit together and every refusal in between quoted a near-identical age.
+
+    `probe` filters ledger rows on `r.get("agent") != agent`, and `cmd_nudge` reads
+    the rate limit from `probe`'s result — one code path, no second limit anywhere.
+    """
+    other_nudged_recently = [
+        {"ts": _iso_ago(60), "kind": "nudge", "agent": "someone-else", "detail": "not us"},
+        {"ts": _iso_ago(30), "kind": "nudge", "agent": "third-agent", "detail": "also not us"},
+        {"ts": _iso_ago(3600), "kind": "spawn", "agent": "new-main", "detail": "our window"},
+    ]
+    p = _c31_probe("fleet_wide", monkeypatch, tmp_path, other_nudged_recently)
+    assert p["seconds_since_last_nudge"] is None, \
+        "another agent's nudge must not rate-limit this one"
+    assert p["nudges_this_window_instance"] == 0
+    assert not any("rate limit" in b for b in p["blockers"])
+
+
+def test_the_rate_limit_still_fires_for_the_agent_that_was_nudged(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The compliant path, and the reason the test above cannot pass by cheating.
+
+    "Other agents do not rate-limit me" is trivially satisfied by deleting the rate
+    limit, which is exactly the failure the coordinator's ask warned about. So the
+    same ledger that leaves a bystander unblocked must still block the agent whose
+    own nudge is inside the interval.
+    """
+    rows = [
+        {"ts": _iso_ago(3600), "kind": "spawn", "agent": "new-main", "detail": "our window"},
+        {"ts": _iso_ago(60), "kind": "nudge", "agent": "someone-else", "detail": "not us"},
+        {"ts": _iso_ago(45), "kind": "nudge", "agent": "new-main", "detail": "OURS"},
+    ]
+    p = _c31_probe("own_nudge", monkeypatch, tmp_path, rows)
+    assert p["seconds_since_last_nudge"] is not None
+    assert 40 <= p["seconds_since_last_nudge"] <= 60, \
+        "must be OUR 45s nudge, not the other agent's 60s one"
+    assert p["nudges_this_window_instance"] == 1
