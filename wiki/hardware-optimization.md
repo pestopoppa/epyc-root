@@ -2,8 +2,29 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds AutoKernel CPU baseline honesty, lane-calibration rejection, and Q4_K repair diagnostics; prior C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-11 (adds AutoKernel two-axis input-sensitivity instrumentation and its non-evidence boundary; prior baseline-honesty, C4, correctness, clock, roofline, topology, and quant-path findings retained)
 **Sources**: 96+ documents
+
+## Compiled Update — 2026-08-11 (AutoKernel input-sensitivity boundary)
+
+**Confidence: verified implementation; live smoke is non-evidence until the producer has a durable
+commit identity.**
+
+AutoKernel now screens task populations on two independent axes before treating correctness cases as
+meaningful: materialized inputs and reference outputs must vary across at least three seeds, and they
+must also respond to identity, ×3, ×0.01, and negate transforms. Missing coverage, mixed suite
+versions, a non-reference population, or an untrusted producer fails closed. The research reducer and
+claim-aware runner are durable in research commit `000a2686` / `main` merge `f3c6b24a`.
+
+A `SOFT_MAX` smoke returned PASS over 2,544 observations and 1,484 units with no unscoreable units,
+while holding and releasing the CPU claim. It does **not** support a correctness or corpus-quality
+claim: its `0db32c06e` suite identity names the committed parent while the materialized `AK_SENS_V1`
+producer remains uncommitted. Producer-dependent rows stay open until an operator-approved producer
+commit and fresh matched replay. This is the practical rule: an internally consistent receipt cannot
+be durable evidence when the code that produced it is absent from the identity it cites.
+
+The same audit invalidated promotion of the old RVP-C5-R observation: exact 2026-07-04 argv and raw
+matched parent/human-patch evidence are gone, so a fresh retained replay is required.
 
 ## Compiled Update — 2026-08-11 (AutoKernel live correctness controls)
 

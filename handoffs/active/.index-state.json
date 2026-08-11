@@ -1504,14 +1504,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 45,
+      "closed": 46,
       "guarded": 0,
       "last_advanced": "2026-08-11",
       "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 67
+      "total": 68
     },
     "routing-intelligence.md": {
       "blocked": 0,
