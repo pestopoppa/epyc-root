@@ -794,7 +794,13 @@ nobody re-reads:
   categorised.** `htop` and `btop` are live operator-owned windows in the `agent` session. Per
   `live_mains`' matching rules they are never counted and never cause a refusal, so they are a
   different CATEGORY, not an undercount. Surface them as informational; never refuse on them.
-- [x] **C18a — `codex-bus-tests` carries `role: retired` with a stale heartbeat.** ✅ 2026-07-29 —
+- [x] **C18a — `codex-bus-tests` carries `role: retired` with a stale heartbeat.** *Re-verified
+  2026-08-11 by `mainD`: roster row is `role: retired`, `lanes: []`; heartbeat `idle`, now 14.2 days
+  old. Still cosmetic.* **Recommendation on the still-open C18(a) DECISION — keep the row, retired.**
+  Removing it would convert `codex-bus-tests`'s four files (inbox holds 23 delivered rows of real
+  history) into **non-roster residue**, i.e. manufacture exactly the problem filed as brief item 10.
+  `role == "retired"` already makes the relay treat it as unreachable and nothing nudges it, so the
+  row costs nothing where it is and removing it costs history. ✅ 2026-07-29 —
   **bookkeeping, confirmed, no delivery risk.** Heartbeat `idle`, age ~21 h. `role == "retired"`
   already makes the relay treat it as an unreachable routing recipient
   (`session_bus_coordinator.py:1937`), so the staleness is cosmetic. Note this is distinct from the
@@ -1501,7 +1507,28 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   row is invalid forever. Measured: 249 distinct shapes re-emitted per tick, **~20,000 advisory
   rows/hour**, 33,074 `defect` rows in a **38.5 MiB** `advisory.jsonl` that `already_flagged` then
   re-reads IN FULL every tick, on the daemon's hot path. 4 tests.
-  - [ ] **OPEN — make the two sides agree, and unstick the 217 rows.** Two coupled contract calls,
+  - [x] **DISPOSITION of the 151 residual rows — recommendation, 2026-08-11 `mainD`.**
+    Re-measured after the fix: **151 of 1251 outbox rows (12%)**, down from 368/32%. The operator's
+    368 is the pre-fix number. Three facts decide it:
+    (1) **The leak is already stopped. ZERO invalid rows were authored after the authoring gate
+    landed** (`035dfecf`, ~09:15Z); the newest is 08:59Z and the oldest 2026-07-29. So
+    *gate-new-writes-only* is **already done and needs no operator decision**.
+    (2) **All 151 were never delivered** — they are lost communications, not cosmetic lint.
+    (3) Repairability splits 114 mechanical (extra top-level keys that belong in `payload`) / 20
+    with genuinely missing content / 17 whose `kind` is outside the enum and needs a human choice.
+    **RECOMMENDED: triage-by-value, not repair-all, and NOT quarantine.** An outbox is append-only,
+    so "repair" can only mean re-authoring a corrected copy as a NEW row citing the original id —
+    and re-filing 151 rows aged 13 days would recreate **C40** exactly: a burst of stale mail that
+    reads as fresh instructions, which is what cost `mainA` and `mainB` their first hour today.
+    So: each owner re-files only what is *still live*, citing the original id; the rest stays as the
+    historical record it is. Per-owner counts: `mainB` 81, `mainD` 49, `coordinator-agent` 19,
+    `mainA` 1, `mainC` 1. **Mine are all 2026-07-29, from a previous `mainD` session, on unrelated
+    tasks (RC-9, HG-3, DAR-5.5, …) — none is still live, so my 49 need no re-filing and I am not
+    manufacturing 49 stale messages to prove a point.** Quarantine is rejected for the same reason
+    deletion was rejected in the non-roster residue: I only knew those messages mattered because
+    they were still readable.
+  - [x] **OPEN — make the two sides agree, and unstick the 217 rows.** ✅ Both done 2026-08-11;
+    see the C34 body above. Two coupled contract calls,
     escalated with options: (i) which interpreter is authoritative for authoring (pin the venv in the
     documented command, install jsonschema for the system python, or ship a wrapper); (ii) whether
     `_renamed_from` should be permitted by the schema (it is provenance the rename deliberately
