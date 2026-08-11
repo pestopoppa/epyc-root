@@ -205,9 +205,10 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
   not the published-suite speedup reproduction.
 - [x] Write P-GPU-1 measurement protocol before any GPU runs ✅ 2026-07-29 — human amendment ratified the canonical MI210 GPU protocol in [`MEASUREMENT.md`](../../MEASUREMENT.md#p-gpu-1--mi210-gpu-canonical-throughput-ratified-2026-07-19) on 2026-07-19; this closes protocol authoring only, not any GPU run or decision claim.
 - [ ] Run the matched controller-authoring A/B on gfx90a across the registered Claude+Codex,
-  EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK, and baseline arms. Registration, exact vendor
-  pin/license checks, C4 prompt-hygiene binding, and the three-argument `@register_agent` bridge are
-  complete in research commit `48350b24`; only the matched authoring comparison remains.
+  EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK, ARGUS, and baseline arms. Registration,
+  C4 prompt-hygiene binding, and the three-argument `@register_agent` bridge are complete in
+  research commit `48350b24`; campaign binding/audit and the two unavailable licensed source
+  releases remain before the matched authoring comparison can start.
   - [x] **Build the governed eight-arm campaign driver and audit executable coverage.** ✅ 2026-08-11
     — baseline plus Claude/Codex actor-critic, EvoEngineer, KernelFoundry, K-Search, Xe-Forge,
     GEAK-v1, and ARGUS are serialized on one MI210 at exact 2h/8h/32h checkpoints with source,
@@ -225,9 +226,34 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     admits exactly **2/8** arms (baseline plus this controller); the other six refusal rows remain
     verbatim. Implementation `dcdc2311`, binding `084b8be1`, research main `9947f805`; 409
     controller tests and 17 AutoKernel README tests pass. Neither CLI was invoked during
-    implementation or audit. Populate the six
-    remaining controller executables/configs, then run the already-fixed panel; do not collapse it
-    back to a seven-arm comparison.
+    implementation or audit.
+  - [x] **Build the governed Arena cell runner.** ✅ 2026-08-11 — research `36ed94a8` and
+    `cffd3b02` provide direct belief receipts, process-group teardown, workspace confinement, and
+    a no-inference test surface for upstream controllers; the original validation passed 129 tests
+    plus eight subtests.
+  - [x] **Port and bind K-Search without replacing its search policy.** ✅ 2026-08-11 — research
+    `866855a3`, `832f6833`, and `2ceb2878` retain the exact upstream source pin
+    `53c8fab9a5e8fab2c86610d24fbec5067f90e115` and put the governed adapter on the fixed campaign path.
+  - [x] **Port and bind GEAK-v1 without replacing its evolutionary loop.** ✅ 2026-08-11 —
+    research `38b8e07e` and `60cae5bf` retain exact upstream source pin
+    `4ffba15a55f250816598b4e27eb56ca40a699cea`, safe cleanup, and direction-preserving receipts on
+    the fixed campaign path.
+  - [x] **Port, bind, and repair Xe-Forge.** ✅ 2026-08-11 — research `d76fe4b9`, `af5d026a`,
+    `1bd5ec75`, and wrap repair `e31cc8c8` retain exact source pin
+    `4dcb5080b0f56d0b655ec8c8c9509b8e3ba0382c`; the real-upstream regression proves AMD-only
+    prompts, refuses fabricated shapes, and closes the executor cleanly.
+  - [x] **Port KernelFoundry and preserve its governed MAP-Elites/QD behavior.** ✅ 2026-08-11 —
+    research `7654383c` plus wrap repair `e31cc8c8` retain exact upstream source pin
+    `1c053e02383d12937f144923bcc1faa82fa7788f`, activate 159 missing Triton regexes, and prove a real
+    inherited 2x2 fixture with two occupied cells, four programs, two QD transitions, and one
+    direction without model, GPU, or inference.
+    The selected AutoKernel suite passes 538 tests plus 202 subtests at the repaired tip.
+  - [ ] Bind the pushed KernelFoundry adapter into the fixed campaign and produce a fresh
+    no-execution physical audit; do not claim **6/8** before that receipt exists. The latest durable
+    committed audit remains **5/8** and predates both KernelFoundry binding and the Xe repair.
+  - [ ] Obtain exact licensed source releases for EvoEngineer and ARGUS, then port their real
+    controller policies through the same governed adapter contract; namesake substitutes are not
+    admissible.
 - [x] Build C4 gfx90a profiler-metric analyzer (GEAK-v2 raw-rocprof path first) ✅ 2026-08-11 —
   `profile_report.py` implements the deterministic paired mapping/formal report; the live single-process
   Q4_K/Q8_0 captures prove it on gfx90a. `profile_context.py` binds the report hash into a priced
