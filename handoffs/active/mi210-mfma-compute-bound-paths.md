@@ -12,7 +12,7 @@ Kernel-thread `a8afd338` ran the decisive pre-build rocprofv2 measurement. **Nei
 - **Prefill** (`-p 1024`): dominant GEMM is ALREADY rocBLAS/Tensile fp16 **MFMA** HGEMM (`MI32x32x8`, AccVGPR=208). VALUBusy **3.55%** (vector ALU near-idle), MemUnitBusy **78.5%** → memory-bound, MFMA already the workhorse. No idle matrix cores.
 - **High-batch decode** (`-npl 128`): batched GEMM is `mul_mat_q` MMQ **int8-MFMA** (AccVGPR=128). VALUBusy **16.8%** (not compute-bound), MemUnitBusy 48%; and **43% of batch-128 time is non-GEMM elementwise/norm** + 20% memory-bound GEMV.
 
-→ MFMA kernel-authoring **DEFERRED** — matrix cores are already engaged on both. **Higher-value orthogonal levers surfaced instead (NOT MFMA kernels):** (a) prefill could skip the Q8→f16 dequant/convert (~15%) via a direct int8-MFMA GEMM — a *dispatch-tuning* change, not a new kernel; (b) high-batch could fuse the elementwise/norm tail (43% of B=128 time). **Reopen the MFMA build only if a NEW compute-bound path appears** (a diffusion/DiT serving path — `ernie-image-turbo`; or gfx90a training [unverified]); the measure-first gate below still stands. Original objective kept for the record.
+→ MFMA kernel-authoring **DEFERRED** — matrix cores are already engaged on both. The 2026-07-04 profile also suggested an orthogonal high-batch elementwise/norm fusion lever, but the strict frozen-v9 refresh on 2026-08-11 **falsified it**: actual norm + activation + elementwise share is 1.490% at B=128, not the coarse 43% non-GEMM remainder. **Reopen the MFMA build only if a NEW compute-bound path appears** (a diffusion/DiT serving path — `ernie-image-turbo`; or gfx90a training [unverified]); the measure-first gate below still stands. Original objective kept for the record.
 
 ## Compute roofline — the blank spot, closed by arithmetic (2026-08-03, research-intake)
 
@@ -155,4 +155,13 @@ Acceptance to proceed to kernel work: a candidate path shows **high VALUBusy + l
   `af57d087f307d2ec423c3168bb0ad66efc22a81ef613877e805db105331a8cec`, counters
   `0dc3d4d01aba790f7b0f1035771d929f940661f29334fdf2db59a4b2ba8a8adf`. The trace-period
   counter pilot aborted and is excluded; the successful counter-only captures are admitted.
-- [ ] Elementwise/norm fusion for batched decode remains the live orthogonal lever (43% of B=128 time is non-GEMM vs 37% GEMM) — now seeded in `autokernel-research-loop.md` §19.6/§19.8 rather than only noted here
+- [x] **Profile-select the B=64/128 elementwise/norm fusion lever through AutoKernel.** ✅ 2026-08-11 —
+  `run_autokernel_g15_profile.py` captured clean frozen-v9 `rocprof` v1 timestamp maps with exact
+  kernel/family/adjacent-cluster tables. The strict verdict-bearing share (norm + activation +
+  elementwise only) is **1.837% at B=64 and 1.490% at B=128**, so both cells mechanically return
+  `FALSIFIED_PROFILE_TARGET` against the predeclared 20% floor. B=128 is instead matrix 54.881%,
+  gather/scatter 18.631%, recurrent 17.464%, and copy/convert 4.726%. The top actual fusion cluster,
+  `op_add -> rms_norm_f32<1024>`, is only **0.491%**. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/inf36-g15-profile-v9-20260811-r4/receipt.json`, SHA-256
+  `d7a0c8c257c2a59435b95c39b988485a8283d709d83ef7397b3c67ee7ec8cca9`. G15 is closed no-go;
+  gather/scatter and recurrent work remain distinct mechanisms and must not be relabelled as fusion.

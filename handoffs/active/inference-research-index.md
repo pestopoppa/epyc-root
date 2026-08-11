@@ -41,7 +41,7 @@
 | INF-32 | llamacpp v6 consolidation | [llamacpp-v6-consolidation.md](llamacpp-v6-consolidation.md) | SWA slot-reuse fixes (d1c72d7fc / 603702769) — verify vs upstream SWA before drop. | — |
 | INF-33 | log linear gated deltanet readiness | [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size) | — |
 | INF-34 | mi210 big model and acceleration roadmap | [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) | DR-3 broader K2 admission runner/package: implement the dry-run-first K2 | — |
-| INF-36 | mi210 mfma compute bound paths | [mi210-mfma-compute-bound-paths.md](mi210-mfma-compute-bound-paths.md) | Profile-select and seed the B=128 elementwise/norm fusion lever through AutoKernel | INF-48 |
+| INF-36 | mi210 mfma compute bound paths | [mi210-mfma-compute-bound-paths.md](mi210-mfma-compute-bound-paths.md) | Retain no-go; reopen only if a current profile shows an actual fusion cluster above 20% | INF-48 |
 | INF-37 | mi210 q8 dequant gemv roofline | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) | Instrument production-shape Q4_K vs Q8_0 inside mul_mat_vec_q; then rerun IQ2 after OP-11 | INF-48 |
 | INF-39 | moe aggregate deployment wins brief | [moe-aggregate-deployment-wins-brief.md](moe-aggregate-deployment-wins-brief.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | INF-40 | moe spec cpu spec dec integration | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | Current live-MTP MoE verifier B-sweep: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bi… | — |
