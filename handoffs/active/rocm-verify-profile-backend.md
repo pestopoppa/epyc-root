@@ -151,6 +151,16 @@ from `$ROCM_PATH`, so the prefix needs a mirrored `.info/version`. Both are hand
   `/mnt/raid0/llm/autokernel/probes/k28-rocprofv1-attribution-20260811-r3/receipt.json`, SHA-256
   `981306080a674f89f5ac7f9c7631feef1d31071dacd46329aa983db72e74c5a0`; research integration
   commit `48350b24`.
+- [x] **RVP-C4-2 — Add a governed batched-decode target selector for AutoKernel G15.** ✅ 2026-08-11 —
+  `run_autokernel_g15_profile.py` binds clean source/binary/model/profiler/linkage identities, exact
+  B=64/128 cells, the runner hash, a device claim, and a 250 ms trace. Its deterministic taxonomy
+  keeps gather/scatter, recurrent, quantization, layout, position, and runtime copies out of the
+  verdict-bearing norm + activation + elementwise share; exact kernel and adjacent-cluster tables
+  remain available diagnostically. The admitted r4 receipt passes with 1,035 samples and a maximum
+  0.250060 s gap, and falsifies G15 at **1.837% / 1.490%** against its 20% floor. Receipt SHA-256:
+  `d7a0c8c257c2a59435b95c39b988485a8283d709d83ef7397b3c67ee7ec8cca9`. Research `0674df51`
+  preserves the exact receipt-bound runner SHA; follow-up `4b738fb5` corrects only the per-cell
+  hypothesis question label so B=64 no longer says B=128.
 - `omniperf` 2.0.1 is now runnable through a sealed Python environment and `rocprof` v1. A manual
   IQ2_XXS smoke produced 260 dispatch rows, proving fallback reachability, but is non-evidence. The
   governed fallback runner fails closed because frozen v9 lacks its seeded/repeated producer flags;

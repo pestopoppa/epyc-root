@@ -87,7 +87,7 @@ and its calibration caveat live in
 | Lever | Band | Confidence |
 |---|---|---|
 | **K1 Q4_K → Q8 rung** | **+38–43%** | HIGH |
-| **K5 batched elementwise/norm fusion** | **+20–27%** | HIGH — 43% of B=128 time is non-GEMM; GEMM only 37% |
+| **K5 batched elementwise/norm fusion** | **0 — CLOSED_NO_GO** | CERTAIN for frozen-v9 target selection: strict B=64/128 norm + activation + elementwise share is 1.837% / 1.490%, far below the predeclared 20% floor; the old 43% bucket conflated gather/recurrent/copy work |
 | K2 Q4_K → fp16 rung | +60–80% | MEDIUM |
 | K3 MoE expert-gather | ~2.0× | MEDIUM |
 | K4 architect IQ2 | +2–3× | MED-LOW — attach the gfx906 kill-criterion first |

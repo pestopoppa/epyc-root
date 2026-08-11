@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 401
+      "open": 400
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1042,10 +1042,10 @@
     },
     "mi210-mfma-compute-bound-paths.md": {
       "blocked": 0,
-      "closed": 9,
+      "closed": 10,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 2,
+      "open": 1,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-36",
       "state": "active",
@@ -1493,14 +1493,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 56,
+      "closed": 57,
       "guarded": 0,
       "last_advanced": "2026-08-11",
       "open": 18,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 74
+      "total": 75
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -2635,7 +2635,7 @@
       "id": "INF-36",
       "index": "inference-research-index.md",
       "line": 44,
-      "next_action": "Profile-select and seed the B=128 elementwise/norm fusion lever through AutoKernel",
+      "next_action": "Retain no-go; reopen only if a current profile shows an actual fusion cluster above 20%",
       "track": "mi210 mfma compute bound paths"
     },
     "INF-37": {
