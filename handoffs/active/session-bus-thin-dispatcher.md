@@ -1509,8 +1509,19 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     including both C27 gates, remain un-relayable to any inbox.** Note the C27a/C27c fixes DO still
     present the two gates to `token-queue.md` — `relay_tokens` reads outboxes directly and does not
     validate — so the operator path is unblocked even while the inbox path is not. Verified.
-- [ ] **C28 — relay is tracked by destination FILE, not by message identity, so moving an inbox
-  re-floods it.** *Observed 2026-07-29 during the roster rename.* Renaming the roster ids meant
+- [x] **C28 — relay is tracked by destination FILE, not by message identity, so moving an inbox
+  re-floods it.** ✅ 2026-08-11 — `mainD`, commit `2e01d5dd`. Fixed together with **C38**, because
+  they are the same defect asked twice: both ask *"what has this daemon already done"* and both
+  answered by re-reading the thing it had acted on. Delivery is now keyed on message identity in a
+  daemon-owned `relay_state.json` — the C18 rule each of them half-applied. Measured: **104 KiB,
+  0 ms steady-state read**, exact round-trip. Bootstrap (no ledger on disk) rebuilds from the
+  inboxes plus a STREAMED advisory pass in **0.54s**, paid once per ledger lifetime rather than
+  every 45s. **Fail-safe direction is deliberate:** a missing or corrupt ledger degrades to
+  bootstrap — today's semantics, reading what is actually there — never to an empty set that would
+  re-deliver everything; pinned by a test over empty / torn / unknown-schema files. The save
+  happens AFTER the relay pass, so a crash loses at most one tick of ledger updates, never a
+  delivery. Test reproduces the exact trigger: an inbox emptied after delivery is NOT re-flooded,
+  and a second tick over the same outbox is a no-op while the first still delivers. *Observed 2026-07-29 during the roster rename.* Renaming the roster ids meant
   `git mv inbox/<old>.jsonl inbox/<new>.jsonl`; the running daemon then re-delivered its **entire
   relay history** into freshly recreated old-id inboxes. Measured in the preserved copies under
   `coordination/session-bus/archive/pre-rename-20260729/`: 16 / 13 / 22 / 17 rows across the four
@@ -1762,7 +1773,17 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   still printed verbatim — evidence, annotated, never overwritten. Verified **both directions on the
   live bus**: HEALTHY/exit 0 for running pid 496387, DEAD/exit 1 for the reconstructed heartbeat.
   22 tests.
-  - [ ] **OPERATOR — nothing polls this, which is the actual reason the outage lasted 243 hours.**
+  - [x] **The pull-only gap is closed IN-BAND, with no host change.** ✅ 2026-08-11 — `mainD`,
+    commit `2e01d5dd`. `session_bus.py drain` now checks daemon liveness itself — dead pid, recycled
+    pid, or wedged-and-not-ticking — and warns on stderr. **Every agent drains at every task
+    boundary**, so the outage becomes visible within ONE boundary instead of ten days, with no cron,
+    no host change and no new daemon to supervise. It fires on the EMPTY drain especially, because
+    `(no new messages)` is exactly what a dead relay looks like from inside an agent: an all-clear
+    that is really a silence. The check is duplicated rather than imported from the coordinator
+    module on purpose — a check that imports the thing it is checking on fails exactly when it is
+    needed. Silent when healthy. 5 tests.
+  - [ ] **OPERATOR (still open, now a belt-and-braces item rather than the only line of defence) —
+    nothing AUTOMATICALLY RESTARTS the daemon.**
     The report was correct-once-asked and pull-only, and **the supervisor was dead too**, so "the
     supervisor will catch it" is not an answer — nothing watched the watcher. `status` now takes
     `--exit-nonzero-if-unhealthy` (default exit stays 0, so no existing reader changes) precisely so
@@ -1781,11 +1802,13 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   **29.5% of a core doing nothing else**. ✅ The `cmd_status` half is fixed: it called `_read_jsonl`
   on the whole file to print five lines and a count, and now does a bounded byte-count plus a
   backwards tail walk — identical output, **~9s → 0.4s**.
-  - [ ] **OPEN — the tick-path read.** Do not fix it by trimming the file: the ledger is the
-    record. `already_flagged` needs only a set of `(relayed_src, reason)` pairs, so it wants
-    daemon-owned durable state that is appended to as flags are raised, not re-derived from a 1 GiB
-    scan — the same "derive it from what the thing itself leaves behind" rule **C28** already states
-    for relay idempotency. Worth doing together with C28; they want the same ledger.
+  - [x] **The tick-path read.** ✅ 2026-08-11 — `mainD`, commit `2e01d5dd`. Done together with
+    **C28** exactly as this row predicted: they wanted the same ledger, so they got one.
+    `already_flagged` now comes from `relay_state.json`. **Measured before: 3,001,866 rows parsed
+    every 45s to rebuild a set of 637 pairs.** After: one 104 KiB read, 0 ms. The advisory is never
+    fully read again except on a one-time bootstrap, and even that is streamed rather than parsed
+    whole — at 1 GiB the parse-everything form is itself the defect. Nothing was trimmed: the
+    ledger is still the record.
   - [ ] **OPEN — rotation.** Nothing rotates `advisory.jsonl`. Note the interaction with **C28**
     before acting: *any* operation that moves, truncates or rotates a bus file is exactly what C28
     says re-floods it. Rotation must land after C28's identity-keyed relay tracking, not before.
