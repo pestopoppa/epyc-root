@@ -2067,7 +2067,20 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     `--heartbeat-max-age`" — the very tunable a human had to set to 86400 to rescue the fleet.
     Rewritten to the corrected contract; its real intent (every other guard survives independently)
     kept, authorisation half untouched.
-  - [ ] **R2, also mine, not started:** a daemon-side progress-log-stale defect routed to the
+  - [x] **R2 — daemon-side progress-log currency check.** ✅ 2026-08-11 — `mainD`. Built
+    fail-closed as the report demanded, because it named this the proposal most at risk of
+    fail-open. All three silent-pass paths emit a `defect` instead of returning clean: unreadable
+    git (which is NOT "no commits"), a missing `progress/` directory (a louder defect than a stale
+    file, not a quieter one), and a missing file for today when commits exist (the absent file IS
+    the defect). **Exactly ONE clean exit** — no commits landed today — and it is keyed on positive
+    evidence, a commit timestamp older than today, never on something being unreadable; a test pins
+    that distinction because it is the difference between "nothing was owed" and "I could not tell".
+    Kind is `defect` deliberately: it is already in `_OPERATOR_ITEM_KINDS`, so an unpresented one
+    reaches `token-queue.md` on the C20 timer with **no new escalation code**. It never writes the
+    log it checks — a checker that repairs what it checks for cannot be trusted to report. 8 tests;
+    450 green. Verified against the live repo: clean, because the log is current.
+    *(Original filing below, kept for the record.)*
+  - [x] **R2, filed:** a daemon-side progress-log-stale defect routed to the
     operator through the existing C20 bypass. The report flags it as the proposal MOST at risk of
     fail-open (three silent-pass paths) and names the in-repo fail-closed pattern to copy. **Build
     it fail-closed or not at all.** Source: `/workspace/tmp/coord-coldstart/coordinator-config-repair.md`.
