@@ -75,6 +75,23 @@ outcome.
       | `85c3dcf25823c537` | 15 | **2.7448** |
 
       Reported by `readjudicate_sequential_candidates.py` under *SEQ-A: STICKY REFUTED LABELS*.
+  - [x] **SEQ-A0 — the mechanism, built NEUTRAL so SEQ-A1 is a one-line switch** ✅ 2026-08-11
+        (`mainB`, orchestrator `43108014`). `SequentialPolicy.sticky_refuted`, **default `False`** —
+        seq-v1 semantics reproduced byte-for-byte, the 3 candidates below still flip exactly as
+        before, 75 passed across every sequential-verdict consumer. Plus `EProcessState
+        .first_refuted_k`, recorded unconditionally as the process folds forward: **observing that a
+        stop happened is free, and is not the same as deciding it is permanent** — capturing it now
+        is what lets SEQ-A1 be settled from data rather than by re-running `core_v1`, which is over
+        (era E8). Persisted trial state untouched; the field defaults to `None` so a state rebuilt
+        from an older record behaves identically (pinned by test).
+        **Numbers re-derived, not inherited**: against `readjudicate_sequential_20260728.json`,
+        exactly 3 candidates flip `refuted`→`accumulating` — `70902e4b665474e7` (k=40),
+        `dd793a6ee43ce718` (k=24), `85c3dcf25823c537` (k=15). Confirms the figures above.
+        **Deliberately takes no side.** A lane brief phrased SEQ-A as "the function silently
+        un-refutes — make it sticky", i.e. the inverse of this handoff's framing. Both readings are
+        true: the FUNCTION is non-sticky (`state_name()` has no memory), the PERSISTED LABEL is
+        sticky (never recomputed). So "make it sticky" is not a bug fix — it is SEQ-A1 horn 2, and
+        deciding it silently would settle a human-amendment-only question on a phrasing.
   - [ ] SEQ-A1 — **OPERATOR DECISION**: recompute the verdict label per trial from `state_name()`
         (restoring the policy's own pure-function semantics), or keep stickiness and document it as
         "a stop decision is final". Either is defensible — a stopped e-process arguably *should*
