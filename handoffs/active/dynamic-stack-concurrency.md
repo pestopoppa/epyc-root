@@ -134,7 +134,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
 ## Reporting Instructions
 
 - Update [`routing-and-optimization-index.md`](routing-and-optimization-index.md) for DS-E1/DS-6/DS-7 status changes.
-- Update [`inference-research-index.md`](inference-research-index.md) only for Phase F KVCOMM status.
+- Update [`inference-acceleration-index.md`](inference-acceleration-index.md) only for Phase F KVCOMM status.
 - If DS-E1 blocks on missing evidence, update the source handoff for the missing evidence rather than expanding this file.
 - If Phase F is abandoned or deferred, record the reason here and in [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md).
 

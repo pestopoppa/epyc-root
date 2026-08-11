@@ -4,7 +4,7 @@
 **Created**: 2026-06-12
 **Priority**: GATED — on a Q4_K_M-quantizable TiDAR-class checkpoint existing (quality risk under Q4 is unmeasured); rank 4 in the findings-06 table: highest-ceiling, highest-variance kernel work remaining
 **Spec**: [fable5-findings-06-kernel-and-concurrency.md](../completed/fable5-findings-06-kernel-and-concurrency.md) §1.1 + [nemotron-labs-diffusion-tri-mode.md](../../research/deep-dives/nemotron-labs-diffusion-tri-mode.md) §10.3 (Variant B) / §10.5 (decision sequence) / §10.6 (roofline promotion + caveats) — read before claiming any waypoint
-**Related**: roofline findings at `data/cpu_optimization/2026-05-28-decode-roofline/findings.md` in epyc-inference-research (plain-text path); [inference-research-index.md](inference-research-index.md)
+**Related**: roofline findings at `data/cpu_optimization/2026-05-28-decode-roofline/findings.md` in epyc-inference-research (plain-text path); [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md)
 
 ## Why
 

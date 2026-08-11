@@ -1434,13 +1434,29 @@ def test_c35_the_override_touches_only_the_working_blocker(
         monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Every other guard must survive the override independently. Without this the
     change could quietly become 'a quiet pane is always nudgeable'."""
-    # staleness: independent, and deliberately NOT overridden — it is already
-    # tunable with --heartbeat-max-age, whereas state was not tunable at all.
+    # R1 (2026-08-11) CORRECTS THIS BLOCK. It used to assert that staleness is never
+    # overridden, on the reasoning that it "is already tunable with
+    # --heartbeat-max-age". That tunable is exactly what a human had to set to 86400
+    # by hand to rescue the fleet: the daemon calls a heartbeat >3600s STUCK and the
+    # adapter refused >900s, so past 3600s the detector said stuck and the guard said
+    # unreachable — the guard hardened as the condition worsened, and 1,903 refusals
+    # accumulated while nothing escalated. A live, quiet pane is now reachable
+    # regardless of heartbeat age, on the SAME pane evidence C35 already trusts.
     stale = _c35_probe("stale", monkeypatch, tmp_path, state="working",
                        quiet_for=300.0, hb_age_s=4000.0)
     assert stale["heartbeat_override_applied"] is True
-    assert any("stale" in b for b in stale["blockers"])
-    assert not stale["nudge_ok"], "an overridden state must not also waive staleness"
+    assert stale["heartbeat_stale_override_applied"] is True
+    assert not any("stale" in b for b in stale["blockers"]), \
+        "a live pane quiet well past the spinner interval must be reachable (R1)"
+
+    # THE COMPLIANT PATH, and the one that keeps this a re-scoping rather than a
+    # waiver: a stale heartbeat on a pane that looks MID-GENERATION still refuses.
+    # A fix that made everything nudgeable would be worse than the deadlock.
+    busy = _c35_probe("stale_busy", monkeypatch, tmp_path, state="working",
+                      quiet_for=3.0, hb_age_s=4000.0)
+    assert busy["heartbeat_stale_override_applied"] is False
+    assert any("stale" in b for b in busy["blockers"])
+    assert not busy["nudge_ok"], "typing into a mid-generation pane is the hazard"
 
     # authorisation flag
     adapter = _load("c35_flagoff")
@@ -1873,3 +1889,67 @@ def test_the_rate_limit_still_fires_for_the_agent_that_was_nudged(
     assert 40 <= p["seconds_since_last_nudge"] <= 60, \
         "must be OUR 45s nudge, not the other agent's 60s one"
     assert p["nudges_this_window_instance"] == 1
+
+
+# ------------------------------------------------------------------------- R1
+#
+# THE GUARD HARDENED AS THE CONDITION WORSENED. The daemon calls a heartbeat older
+# than 3600s STUCK and tries to nudge; the adapter refused every nudge past 900s.
+# Between 900s and 3600s nobody has decided you are stuck; past 3600s somebody has
+# and can no longer reach you. Measured 2026-08-11: every main crossed 900s at
+# ~10:14-10:22Z and the entire fleet — coordinator included — became permanently
+# unreachable, 1,903 stuck-nudge-refused rows, recovered only by a human passing
+# --heartbeat-max-age 86400 by hand. Neither escape hatch reaches it: C35 lifts only
+# the `working` blocker, and C36 is codex-only (0% availability on an all-Claude
+# fleet).
+
+@pytest.mark.parametrize("dead,quiet,override,expected,why", [
+    (False, 300.0, 120.0, True,  "live pane, quiet past the spinner interval"),
+    (False, 3.0,   120.0, False, "pane looks mid-generation — the hazard case"),
+    (False, 120.0, 120.0, True,  "exactly at the bound counts as quiet"),
+    (True,  300.0, 120.0, False, "pane dead — fail closed"),
+    (None,  300.0, 120.0, False, "pane state unreadable — fail closed"),
+    (False, None,  120.0, False, "window activity unreadable — fail closed"),
+    (False, 300.0, 0.0,   False, "override disabled — fail closed"),
+])
+def test_stale_override_fires_only_on_positive_pane_evidence(
+        dead, quiet, override, expected, why) -> None:
+    """Every unknown must fail CLOSED. The override exists to reach a demonstrably
+    alive, demonstrably settled pane — not to reach anything whose state we cannot
+    read."""
+    adapter = _load("r1_pred")
+    assert adapter.hb_stale_override_ok(dead, quiet, override) is expected, why
+
+
+def test_a_stale_heartbeat_on_a_quiet_live_pane_is_reachable(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The deadlock itself: an idle agent whose heartbeat simply stopped being
+    written. A heartbeat that stopped is not a reason to stop trying to reach a live
+    idle pane — it is the reason to try."""
+    p = _c35_probe("r1_idle_stale", monkeypatch, tmp_path, state="idle",
+                   quiet_for=1200.0, hb_age_s=40_000.0)
+    assert p["heartbeat_stale_override_applied"] is True
+    assert not any("stale" in b for b in p["blockers"])
+    assert "reachable" in p["heartbeat_stale_override_reason"]
+
+
+def test_the_stale_override_reason_is_reported_even_when_it_does_not_fire(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The whole R1 defect was a refusal whose reason nobody could see. Reported
+    either way, like C35's."""
+    p = _c35_probe("r1_reason", monkeypatch, tmp_path, state="idle",
+                   quiet_for=2.0, hb_age_s=40_000.0)
+    assert p["heartbeat_stale_override_applied"] is False
+    assert "mid-generation" in p["heartbeat_stale_override_reason"]
+    assert any("stale" in b for b in p["blockers"])
+
+
+def test_a_fresh_heartbeat_never_consults_the_stale_override(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The ordinary case must be untouched — this is a re-scoping of one refusal,
+    not a new pathway into nudging."""
+    p = _c35_probe("r1_fresh", monkeypatch, tmp_path, state="idle",
+                   quiet_for=1200.0, hb_age_s=30.0)
+    assert p["heartbeat_stale_override_applied"] is False
+    assert "not evaluated" in p["heartbeat_stale_override_reason"]
+    assert not any("stale" in b for b in p["blockers"])

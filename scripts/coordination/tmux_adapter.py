@@ -931,6 +931,44 @@ def record(kind: str, agent: str, detail: str, **fields: object) -> None:
         fh.write(json.dumps(row, sort_keys=True) + "\n")
 
 
+def hb_stale_override_ok(pane_dead: bool | None, quiet_for: float | None,
+                         override_quiet_s: float) -> bool:
+    """May a STALE heartbeat be overruled? Only on positive pane evidence.
+
+    R1. Deliberately the same predicate C35 uses for a `working` heartbeat, and
+    deliberately fail-closed on every unknown: a disabled override, an unreadable or
+    dead pane, or unreadable window activity all mean NO. The one case that says yes
+    is a live pane that has been quiet longer than the spinner interval — both TUIs
+    redraw about once a second while generating, so quiet at that scale means settled
+    at the prompt, not thinking.
+
+    Note what this does NOT do: it never makes a mid-generation pane nudgeable. That
+    is the compliant path, and a fix that made everything reachable would be worse
+    than the deadlock it replaces.
+    """
+    if override_quiet_s <= 0:
+        return False
+    if pane_dead is not False:
+        return False
+    if quiet_for is None:
+        return False
+    return quiet_for >= override_quiet_s
+
+
+def _stale_override_refusal(pane_dead: bool | None, quiet_for: float | None,
+                            override_quiet_s: float) -> str:
+    """Why the stale-heartbeat override did NOT fire. Said out loud, because the
+    whole R1 defect was a refusal whose reason nobody could see."""
+    if override_quiet_s <= 0:
+        return f"stale-override disabled (--heartbeat-override-quiet-s {override_quiet_s:.0f})"
+    if pane_dead is not False:
+        return "pane state unreadable or dead — fail closed, no override"
+    if quiet_for is None:
+        return "window_activity unreadable — fail closed, no override"
+    return (f"window was active {quiet_for:.0f}s ago (< {override_quiet_s:.0f}s) — the pane "
+            f"looks mid-generation, so the stale heartbeat is NOT overruled")
+
+
 def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
           hb_override_quiet_s: float = DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S,
           runtime_fn=None) -> dict:
@@ -1087,6 +1125,8 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
     # one of them was a fail-OPEN. A non-positive threshold disables the override
     # entirely rather than meaning "override always", so a mis-set 0 is inert.
     hb_override_applied = False
+    hb_stale_override_applied = False
+    hb_stale_override_reason = "not evaluated (heartbeat not stale)"
     hb_override_reason: str | None = None
 
     # ---- C36: when the runtime has an answer, it DECIDES and the heartbeat corroborates ----
@@ -1138,7 +1178,41 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
             if not hb_override_applied:
                 blockers.append(f"heartbeat says working (task {hb.get('task_id')})")
         if hb_age is not None and hb_age > hb_max_age:
-            blockers.append(f"heartbeat is {hb_age:.0f}s stale (> {hb_max_age:.0f}s)")
+            # R1 (2026-08-11): THE GUARD USED TO HARDEN AS THE CONDITION WORSENED.
+            #
+            # Three-way deadlock, measured today across the whole fleet. The daemon
+            # calls a heartbeat older than 3600s STUCK and tries to nudge; this line
+            # refused every nudge past 900s. So between 900s and 3600s nobody has
+            # decided you are stuck, and past 3600s somebody has and can no longer
+            # reach you. Every main crossed 900s at ~10:14-10:22Z and the entire
+            # fleet — the coordinator included — became permanently unreachable:
+            # 1,903 stuck-nudge-refused rows in advisory.jsonl. The only way back was
+            # a human passing --heartbeat-max-age 86400 by hand.
+            #
+            # Neither existing escape hatch reaches this. C35 lifts the `working`
+            # blocker and never staleness. C36 is codex-rollout-only, so on an
+            # all-Claude fleet its availability is exactly 0%.
+            #
+            # The fix is NOT to raise the default: that trades a deadlock for typing
+            # into a pane that is genuinely mid-generation. Staleness is a TIMER, and
+            # a timer cannot tell "wedged" from "quietly waiting". The pane can:
+            # `pane_dead` says the window still exists, and quiescence says the TUI is
+            # settled at its prompt rather than redrawing a spinner. So the same
+            # evidence C35 already trusts to overrule a `working` self-report — and
+            # only that evidence — overrules an OLD one. A heartbeat that stopped
+            # being written is not a reason to stop trying to reach a demonstrably
+            # alive, demonstrably idle pane; it is the reason to try.
+            if hb_stale_override_ok(dead, quiet_for, hb_override_quiet_s):
+                hb_stale_override_applied = True
+                hb_stale_override_reason = (
+                    f"heartbeat {hb_age:.0f}s stale (> {hb_max_age:.0f}s) BUT the pane is alive "
+                    f"and quiet {quiet_for:.0f}s (>= {hb_override_quiet_s:.0f}s) — settled at its "
+                    f"prompt, so it is reachable; refusing here is the R1 deadlock")
+            else:
+                hb_stale_override_reason = _stale_override_refusal(
+                    dead, quiet_for, hb_override_quiet_s)
+                blockers.append(f"heartbeat is {hb_age:.0f}s stale (> {hb_max_age:.0f}s)"
+                                f" — {hb_stale_override_reason}")
 
     return {"agent": agent, "target": target, "target_reason": why,
             "authorised": authorised, "spawn_cap": spawn_cap, "spawn_cap_reason": cap_reason,
@@ -1156,6 +1230,11 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
             "heartbeat_override_quiet_s": hb_override_quiet_s,
             "heartbeat_override_applied": hb_override_applied,
             "heartbeat_override_reason": hb_override_reason,
+            # R1: reported ALWAYS, fired or not, for the same reason C35's is — a
+            # reader must be able to tell "reachable despite a stale heartbeat" from
+            # "refused, and here is the pane evidence that refused it".
+            "heartbeat_stale_override_applied": hb_stale_override_applied,
+            "heartbeat_stale_override_reason": hb_stale_override_reason,
             # C36: reported ALWAYS, including when the runtime had no answer, so a
             # reader can tell "the runtime cleared this main" from "the runtime was
             # unavailable and the heartbeat decided" — and can see which mains are

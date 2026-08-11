@@ -2,13 +2,13 @@
 
 **Status**: COMPACTED 2026-05-28. Phase 0-3 implementation/evidence history moved to the completed ledger. Current state: EP machinery is bit-correct and useful as default-off experimental infrastructure, but the production throughput claim was downgraded after canonical-baseline correction. Do not enable EP in production without a fresh CPU20-compliant canonical matrix.
 **Priority**: MEDIUM as a guarded reopen target; not an active production rollout.
-**Parent index**: [`inference-research-index.md`](inference-research-index.md)
+**Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
 **Completed ledger**: [`../completed/large-moe-expert-parallelism-completed-through-2026-05-28.md`](../completed/large-moe-expert-parallelism-completed-through-2026-05-28.md)
 **Updated**: 2026-07-26
 
 ## 2026-07-26 Staleness Review
 
-The [CPU optimization index](inference-research-index.md) still treats
+The [CPU optimization index](cpu-inference-optimization-index.md) still treats
 evaluation batching as a possible reason to re-evaluate expert parallelism,
 not as authorization to deploy it. No fresh CPU20 canonical EP matrix is
 recorded, so the EP flags remain default-off and CPU15-REVAL remains the
@@ -103,6 +103,6 @@ MoE-Spec Phase 0
 
 ## Reporting Instructions
 
-- Update this file and [`inference-research-index.md`](inference-research-index.md) after any CPU15 revalidation.
+- Update this file and [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) after any CPU15 revalidation.
 - If EP is left default-off after a re-run, record the negative result explicitly; do not leave stale "candidate production route" text in indices.
 - If a `GGML_EP_*` flag disposition changes, update [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) in the same commit.

@@ -1895,10 +1895,57 @@ def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
         else:
             # A guard said no. That is the system working; record the divergence
             # between "detected stuck" and "resolved" and try again later.
+            #
+            # R1 (2026-08-11): IT WAS NOT THE SYSTEM WORKING, AND NOTHING SAID SO.
+            # `last_nudge_ts`/`last_nudge_sig` are written ONLY on rc == 0, and the
+            # stuck-refusing-drain escalation above is gated on `last_nudge_sig` —
+            # so an agent whose nudges are ALWAYS refused could never escalate, no
+            # matter how long it stayed unreachable. The one path that reported it
+            # was an advisory row, and advisory.jsonl has no reader. Measured today:
+            # 1,903 `stuck-nudge-refused` rows accumulated while the whole fleet sat
+            # unreachable and nothing escalated. That is the C3/C6/C8 fail-open shape
+            # sitting inside the escalation path itself.
+            #
+            # So refusal now carries its own clock. A guard saying no ONCE is the
+            # system working; a guard saying no for longer than the escalation
+            # interval is the guard and the detector disagreeing about the same
+            # agent, and that disagreement is the thing a human has to see.
             rec["last_refusal_ts"] = now
+            rec["refusals"] = int(rec.get("refusals") or 0) + 1
+            rec.setdefault("first_refusal_ts", now)
             row("stuck-nudge-refused", aid, unread=unread, exit_code=rc,
                 detail=out[-500:] or "adapter refused with no output",
                 action="guard refusal respected; retried on a later tick")
+            stuck_for = now - float(rec["first_refusal_ts"])
+            last_esc = rec.get("last_unreachable_escalation_ts")
+            if (stuck_for >= _STUCK_ESCALATION_INTERVAL_S
+                    and (last_esc is None
+                         or now - float(last_esc) >= _STUCK_ESCALATION_INTERVAL_S)):
+                rec["last_unreachable_escalation_ts"] = now
+                row("stuck-unreachable", aid, unread=unread, exit_code=rc,
+                    refusals=rec["refusals"], refused_for_s=round(stuck_for),
+                    detail=f"{aid} has been detected STUCK and UNREACHABLE for "
+                           f"{stuck_for / 3600.0:.1f}h across {rec['refusals']} refused nudges. "
+                           f"The detector and the guard disagree about the same agent and "
+                           f"neither can resolve it. Last adapter output: "
+                           f"{(out[-300:] or 'no output')}",
+                    action="operator/coordinator: an agent the daemon cannot reach never "
+                           "recovers on its own")
+                # C33's lesson: an escalation delivered only to advisory.jsonl is a
+                # second unread sink one level up from the defect it reports. This one
+                # goes to a queue somebody drains.
+                if COORDINATOR_AGENT in {r.get("id") for r in roster if isinstance(r, dict)}:
+                    _append_inbox(bus_root, [{
+                        "to": COORDINATOR_AGENT, "kind": "defect",
+                        "payload": {"event": "stuck-unreachable", "agent": aid,
+                                    "refusals": rec["refusals"],
+                                    "refused_for_h": round(stuck_for / 3600.0, 1),
+                                    "detail": (out[-300:] or "adapter refused with no output"),
+                                    "action": f"{aid} is detected stuck AND cannot be nudged. "
+                                              f"Check the pane directly; if it is alive and "
+                                              f"idle this is the R1 deadlock and the adapter "
+                                              f"guard needs looking at, not the agent."}}],
+                        epoch)
         new_state[aid] = rec
 
     if new_state != prev:

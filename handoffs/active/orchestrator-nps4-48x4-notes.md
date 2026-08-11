@@ -4,7 +4,7 @@
 **Created**: 2026-04-24 post-NPS4-reboot session
 **Updated**: 2026-05-28 (executor gate clarified; large-MoE topology contention cross-linked)
 **Owner**: follow-up after CPU1 Phase 1.3 evaluation completes
-**Parent**: [`inference-research-index.md`](inference-research-index.md)
+**Parent**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 

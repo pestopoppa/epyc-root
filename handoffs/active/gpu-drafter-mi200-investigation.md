@@ -360,8 +360,8 @@ Key corrections to apply to this handoff from the deep-dive (in order of materia
 5. **Cascade (intake-042) consideration for Stage 2+** — Qwen3-0.6B → Qwen3-1.7B → Qwen3.6 stack is structurally net-positive on MI200 *only* if a validated heterogeneous-vocab or retrofitted qwen35-compatible Qwen3-1.7B path measures $\alpha_{1.7 \to 3.6} \geq 0.7$. The current 2026-06-14 Qwen3-1.7B crash artifact, Qwen3.5-0.8B compatibility-control smoke, aligned M-RoPE failures, and fail-closed server fallback cannot supply that alpha.
 
 ### Related handoffs (potential intake cross-link targets)
-- `inference-research-index.md` — CPU stack baseline this handoff layers on top of
-- `inference-research-index.md` — spec-dec lineage including the v1 dispatcher experiment
+- `cpu-inference-optimization-index.md` — CPU stack baseline this handoff layers on top of
+- `inference-acceleration-index.md` — spec-dec lineage including the v1 dispatcher experiment
 - `moe-spec-cpu-spec-dec-integration.md` — MoE-specific spec-dec lever still live
 
 ---
@@ -409,7 +409,7 @@ Companion `/research-intake` run completed in this session against the 7-paper r
   - Relevance: Adaptive draft-length predictor is the right control surface for a GPU drafter where PCIe round-trip cost is non-trivial. Fixed γ over-drafts (wasted PCIe) or under-drafts (idle GPU). SpecDec++'s acceptance-prediction head + MDP threshold stop is the principled controller.
   - Key technique: train a lightweight binary classifier on the draft model's hidden states to predict per-token acceptance probability; stop drafting when cumulative rejection probability exceeds a learned threshold.
   - Reported results: 2.04× Alpaca / 2.26× GSM8K / 2.23× HumanEval (each 7-11pp over fixed-γ baseline).
-  - Delta: directly applicable to Stage 1 of this handoff — once frontdoor+drafter co-locate on MI200, SpecDec++ replaces fixed-γ in llama.cpp's spec-dec loop. Independently corroborates `inference-research-index.md` "adaptive γ" line item.
+  - Delta: directly applicable to Stage 1 of this handoff — once frontdoor+drafter co-locate on MI200, SpecDec++ replaces fixed-γ in llama.cpp's spec-dec loop. Independently corroborates `cpu-inference-optimization-index.md` "adaptive γ" line item.
   - Caveat (from Tier 2b): training the acceptance head has known class-imbalance and signal-sparsity issues — see contradicting_evidence on the intake entry.
 
 - **[intake-621] "DeepSeek-V3 Technical Report" (MTP section)** (arxiv:2412.19437, Dec 2024) — scoped to MTP contribution only per session brief.

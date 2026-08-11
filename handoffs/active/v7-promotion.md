@@ -52,7 +52,7 @@ The operator previously elected to **hold v7 promotion until GLM optimized decod
 - Kernel audit + banked wins: [`gemma-challenge-kernel-techniques-v7.md`](gemma-challenge-kernel-techniques-v7.md)
 - Promotion template + shared canonical-bench gate (Phase J): [`v6-iqk-promotion.md`](../completed/v6-iqk-promotion.md)
 - GLM role/quality gate: [`glm52-reviewer-capability-gates.md`](glm52-reviewer-capability-gates.md); native GLM-MTP: [`tree-draft-forward-port-plan.md`](tree-draft-forward-port-plan.md)
-- Domain index: [`inference-research-index.md`](inference-research-index.md)
+- Domain index: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 
 ## Reporting
 This cutover is complete. Keep future updates limited to post-promotion certification follow-ups (`P-GPU-1`, any era-registry/attestation deltas) or explicit rollback records. Do not attach post-candidate research commits to frozen `production-consolidated-v7` without a new exact-tip promotion gate.

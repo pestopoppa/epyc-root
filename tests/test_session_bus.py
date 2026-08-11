@@ -3061,3 +3061,75 @@ def test_a_recycled_pid_is_not_a_serving_daemon(
     ok, why = bus.daemon_is_serving(bus_root)
     if Path("/proc/1/cmdline").exists():
         assert ok is False and "recycled" in why
+
+
+def test_an_always_refused_nudge_eventually_escalates(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """R1's second half, and the fail-open that hid the first. `last_nudge_ts` and
+    `last_nudge_sig` are written ONLY on rc == 0, and the stuck-refusing-drain
+    escalation is gated on `last_nudge_sig` — so an agent whose nudges are ALWAYS
+    refused could never escalate, however long it stayed unreachable. The one path
+    that reported it was an advisory row, and advisory.jsonl has no reader. Measured
+    2026-08-11: 1,903 refusals accumulated while the whole fleet sat unreachable and
+    nothing escalated. That is the C3/C6/C8 shape inside the escalation path itself.
+    """
+    _provision(bus_root, "alice", "coordinator-agent")
+    _append(bus_root / "inbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T120000Z-1-bob",
+        "ts": "2026-08-11T12:00:00+00:00", "from": "bob", "to": "alice", "kind": "status",
+        "payload": {"x": 1}})
+    _heartbeat(bus_root, "alice", "idle")
+    roster = [{"id": "alice", "role": "main", "endpoint": "tmux:agent:alice"},
+              {"id": "coordinator-agent", "role": "coordinator",
+               "endpoint": "tmux:agent:coordinator-agent"}]
+    monkeypatch.setattr(coordinator, "_STUCK_ESCALATION_INTERVAL_S", 1.0)
+    monkeypatch.setattr(coordinator, "_STUCK_REFUSAL_RETRY_S", 0.0)
+
+    refused = lambda *_a, **_k: (2, "REFUSING: heartbeat is 40000s stale (> 900s)")
+    # pane_fn -> (active, detail); False means "not generating", so proceed.
+    alive = lambda *_a, **_k: (False, "pane quiet 1200s, settled at its prompt")
+
+    # The clock must ADVANCE between ticks: escalation is gated on how long the
+    # agent has been unreachable, which is the property under test.
+    base = time.time() + 7200
+    seen = []
+    for tick in range(3):
+        seen += coordinator.resolve_stuck_agents(
+            bus_root, roster, 14, nudge_fn=refused, pane_fn=alive,
+            now=base + tick * 60)
+
+    kinds = [r.get("kind") for r in seen]
+    assert "stuck-nudge-refused" in kinds, "the refusal itself is still recorded"
+    assert "stuck-unreachable" in kinds, \
+        "a guard refusing forever must ESCALATE — refusal is not the system working"
+
+    notice = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+              if (r.get("payload") or {}).get("event") == "stuck-unreachable"]
+    assert notice, "advisory.jsonl has no reader — the escalation must reach an inbox"
+    assert notice[0]["payload"]["agent"] == "alice"
+    assert "R1 deadlock" in notice[0]["payload"]["action"]
+
+
+def test_a_successful_nudge_does_not_escalate(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The compliant path. Escalating on a nudge that worked would train the
+    coordinator to ignore the notice, which is how the real one gets missed."""
+    _provision(bus_root, "alice", "coordinator-agent")
+    _append(bus_root / "inbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T120000Z-1-bob",
+        "ts": "2026-08-11T12:00:00+00:00", "from": "bob", "to": "alice", "kind": "status",
+        "payload": {"x": 1}})
+    _heartbeat(bus_root, "alice", "idle")
+    roster = [{"id": "alice", "role": "main", "endpoint": "tmux:agent:alice"},
+              {"id": "coordinator-agent", "role": "coordinator",
+               "endpoint": "tmux:agent:coordinator-agent"}]
+
+    seen = coordinator.resolve_stuck_agents(
+        bus_root, roster, 14, nudge_fn=lambda *_a, **_k: (0, "sent"),
+        pane_fn=lambda *_a, **_k: (False, "pane quiet, settled at its prompt"),
+        now=time.time() + 7200)
+
+    assert "stuck-nudged" in [r.get("kind") for r in seen]
+    assert "stuck-unreachable" not in [r.get("kind") for r in seen]
+    assert not [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+                if (r.get("payload") or {}).get("event") == "stuck-unreachable"]

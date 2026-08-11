@@ -782,7 +782,7 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
 
 - [x] `master-handoff-index.md` **N26 rewritten as a retraction**; N25's P2-debt deploy sentence cancelled ✅
 - [x] `speculative-decoding-mtp-refresh.md` — ⛔ banner added; **NG1–NG4 cancelled**, NG5 re-scoped ✅
-- [x] `inference-research-index.md` — retraction banner above the stale row ✅
+- [x] `inference-acceleration-index.md` — retraction banner above the stale row ✅
 - [x] `numa-topology-cutover-resume-20260730.md` **P2-5 cancelled**; §1.4 in-flight banner corrected ✅
 - [ ] `numa-placement-defect-20260730.md:25-27` and its ngram section still carry the 2.80×. That file is
   **append-only by its own rule** — add a dated superseding note at the end, do **not** edit in place.
