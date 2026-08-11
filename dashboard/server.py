@@ -928,6 +928,74 @@ def _autokernel_journal_inventory(root: Path) -> dict:
     }
 
 
+def _autokernel_probe_receipts(root: Path, *, limit: int = 20) -> dict:
+    """Inventory durable probe receipts without turning the hub into an evaluator.
+
+    Probe producers use different schemas and verdict vocabularies. The hub
+    passes through only string labels already written by a producer; it never
+    infers PASS/FAIL from measurements. Oversized or malformed JSON remains
+    visible as a receipt with no producer label rather than disappearing.
+    """
+    probes_root = root / "probes"
+    candidates = []
+    try:
+        paths = list(probes_root.glob("*/receipt.json"))
+    except OSError:
+        paths = []
+    for path in paths:
+        try:
+            stat = path.stat()
+        except OSError:
+            continue
+        candidates.append((stat.st_mtime, path, stat.st_size))
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    receipts = []
+    for mtime, path, size in candidates[:limit]:
+        payload = None
+        parse_state = "not_parsed"
+        if size <= 4 * 1024 * 1024:
+            try:
+                value = json.loads(path.read_text(encoding="utf-8"))
+                if isinstance(value, dict):
+                    payload = value
+                    parse_state = "parsed"
+                else:
+                    parse_state = "non_object"
+            except (OSError, UnicodeError, json.JSONDecodeError):
+                parse_state = "invalid_json"
+        else:
+            parse_state = "oversized"
+        producer_label = None
+        schema = None
+        campaign_id = None
+        if payload is not None:
+            schema = payload.get("schema") if isinstance(payload.get("schema"), str) else None
+            campaign_id = (payload.get("campaign_id")
+                           if isinstance(payload.get("campaign_id"), str) else None)
+            nested = payload.get("result")
+            nested_verdict = (nested.get("verdict") if isinstance(nested, dict) else None)
+            for value in (nested_verdict, payload.get("verdict"), payload.get("status")):
+                if isinstance(value, str) and value:
+                    producer_label = value
+                    break
+        receipts.append({
+            "probe": path.parent.name,
+            "path": str(path),
+            "updated_at": datetime.fromtimestamp(mtime, timezone.utc).isoformat(),
+            "bytes": size,
+            "parse_state": parse_state,
+            "schema": schema,
+            "campaign_id": campaign_id,
+            "producer_label": producer_label,
+        })
+    return {
+        "root": str(probes_root),
+        "role": ("receipt presence and producer-authored labels only; the dashboard "
+                 "does not grade probe evidence"),
+        "receipts": receipts,
+    }
+
+
 def autokernel_activity(repo: Path | None = None,
                         state_root: Path | None = None) -> dict:
     """Live implementation/research context that cannot affect runtime health."""
@@ -941,6 +1009,7 @@ def autokernel_activity(repo: Path | None = None,
         "implementation": _autokernel_git_activity(repo),
         "work_bundles": _autokernel_work_bundles(repo),
         "durable_state": _autokernel_journal_inventory(state_root),
+        "probe_receipts": _autokernel_probe_receipts(state_root),
     }
 
 

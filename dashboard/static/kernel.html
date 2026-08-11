@@ -56,7 +56,7 @@
   .reporting b{color:inherit}
   .sec-observed{color:var(--good)} .sec-silent{color:var(--bad)} .sec-refused{color:var(--warn)}
   .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:10px;border:1px solid var(--amber);color:var(--amber);margin-left:6px}
-  .activity-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:18px}
+  .activity-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
   .activity-grid h3{font-size:12px;color:var(--muted);margin:0 0 8px}
   .activity-list{margin:0;padding-left:18px}.activity-list li{margin:5px 0}
   @media(max-width:760px){.activity-grid{grid-template-columns:1fr}}
@@ -218,6 +218,7 @@ function renderActivity(d){
   const box=$("#activity"), a=d._activity||{};
   const impl=a.implementation||{}, commits=impl.recent_commits||[];
   const bundles=a.work_bundles||[], journals=((a.durable_state||{}).journals||[]);
+  const probeState=a.probe_receipts||{}, probes=probeState.receipts||[];
   let h='<div class="activity-grid"><div><h3>Implementation</h3>';
   if(commits.length){
     const head=commits[0];
@@ -240,6 +241,17 @@ function renderActivity(d){
     h+='</tbody></table>';
   }
   h+='<div class="muted" style="margin-top:8px">runtime journals visible under <code>'+esc((a.durable_state||{}).state_root||"—")+'</code>: '+journals.length+'. '+esc((a.durable_state||{}).discovery_scope||"")+'</div>';
+  h+='</div><div><h3>Durable probe receipts</h3>';
+  if(!probes.length) h+='<div class="muted">no receipts below <code>'+esc(probeState.root||"—")+'</code></div>';
+  else{
+    h+='<table><thead><tr><th>probe</th><th>producer label</th><th>latest activity</th></tr></thead><tbody>';
+    for(const p of probes){
+      const label=p.producer_label||p.parse_state||"unlabelled";
+      h+='<tr><td><code>'+esc(p.probe||"")+'</code><div class="muted">'+esc(p.schema||"")+'</div></td><td>'+esc(label)+'</td><td>'+esc(shortAge(p.updated_at))+'</td></tr>';
+    }
+    h+='</tbody></table>';
+  }
+  h+='<div class="muted" style="margin-top:8px">'+esc(probeState.role||"")+'</div>';
   h+='</div></div><div class="muted" style="margin-top:10px">'+esc(a.role||"")+'</div>';
   box.innerHTML=h;
 }

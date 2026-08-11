@@ -697,6 +697,35 @@ class KernelActivityContextTest(unittest.TestCase):
                          [str(journal)])
         self.assertIn("--journal-root", inventory["discovery_scope"])
 
+    def test_probe_receipts_pass_through_producer_labels_without_grading(self):
+        with tempfile.TemporaryDirectory() as td:
+            state = Path(td)
+            receipt = state / "probes" / "g15-r4" / "receipt.json"
+            receipt.parent.mkdir(parents=True)
+            receipt.write_text(json.dumps({
+                "schema": "epyc.autokernel.g15_profile.v1",
+                "campaign_id": "g15-r4",
+                "result": {"verdict": "FALSIFIED_PROFILE_TARGET"},
+            }) + "\n", encoding="utf-8")
+            inventory = server._autokernel_probe_receipts(state)
+        self.assertEqual(len(inventory["receipts"]), 1)
+        row = inventory["receipts"][0]
+        self.assertEqual(row["probe"], "g15-r4")
+        self.assertEqual(row["producer_label"], "FALSIFIED_PROFILE_TARGET")
+        self.assertEqual(row["parse_state"], "parsed")
+        self.assertIn("does not grade", inventory["role"])
+
+    def test_malformed_probe_receipt_stays_visible(self):
+        with tempfile.TemporaryDirectory() as td:
+            state = Path(td)
+            receipt = state / "probes" / "interrupted" / "receipt.json"
+            receipt.parent.mkdir(parents=True)
+            receipt.write_text("{broken", encoding="utf-8")
+            row = server._autokernel_probe_receipts(state)["receipts"][0]
+        self.assertEqual(row["probe"], "interrupted")
+        self.assertEqual(row["parse_state"], "invalid_json")
+        self.assertIsNone(row["producer_label"])
+
 
 # --------------------------------------------------------------------------- #
 # 5. The /health fold
