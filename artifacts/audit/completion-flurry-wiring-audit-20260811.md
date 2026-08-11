@@ -397,8 +397,34 @@ by consumers not files:** C39 fired five `looks-spent` defect notices into the c
 inbox at 22:18:14 — one per receipted gate in the queue, including the era-advance signed
 three minutes earlier; no gate re-appended (1 block each). C28/C38: `relay_state.json` EXISTS
 (the mirror of mainD's absence-proof), fresh mtime, 641 flagged / 8 delivered and growing.
-R1 (autonomous wake path) and R2 (progress-log staleness check) live by the same restart;
-R2 returns CLEAN against the live repo — correct, the log was written as we went.
+R1 (autonomous wake path) live by the same restart. **CORRECTION (22:45Z, from the
+tonight-commits audit): R2's daemon-side check is NOT live** — `48ad4dfb` landed 22:21:25Z,
+three minutes AFTER the restart, so pid 921178 predates it. Four gaps live, not five; R2
+enforces as CLI (returns CLEAN, correctly) and its tick-path half awaits the next restart.
+No false claim by mainD (its wrap-up worded the verification as repo-state, not
+daemon-state); the over-claim was mine and is corrected here.
+
+### Tonight-commits audit (22 root + 1 orchestrator since 22:00Z) — folded 22:45Z
+
+20 of 23 verified state 1, including: the operator's "26 green stale-override tests"
+reconciled exactly; mainD's archive-sweep recovery verified **byte-exact zero-loss** (the
+aborted commit's snapshot of every live outbox is an exact prefix of the current file; the
+"13 swept files" premise corrects to 14 unrelated live-file diffs over the same 24 archives);
+mainA's Token 2 Block A queued additive and unsigned; every sha in mainB's progress entry
+resolves. Findings:
+
+1. **`48ad4dfb` state 2** — R2 daemon-side check committed post-restart (above).
+2. **`b41af9d7` mislabeled / `c384c4a8` dangling citation** — the R1 nudge-guard fix landed
+   under a verbatim copy of an UNRELATED commit's message ("A16+A18 gepa framing") after an
+   amend, with 31 index-regeneration files riding along; the handoff and progress log cite
+   `b1222b6e`, which is a **dangling commit unreachable from any clone**. The fix is real;
+   the audit trail is broken in both directions (cited sha unresolvable; real sha's subject
+   describes different work). Third sweep-class incident today, same root (`--amend` on a
+   shared index). Repair routed to mainD: correct the two citations b1222b6e→b41af9d7 with
+   an explanatory note — history is pushed, so a documentary correction, not a rewrite.
+3. `43108014` (mainB, orch) — "75 passed across every consumer" not reconstructable (41
+   narrow / 131 broad); code and 8/8 new tests verified real. Citation-precision note
+   routed.
 
 ## Self-referential closure
 
