@@ -153,6 +153,30 @@ def test_projection_uses_native_schema_as_protocol_and_shared_ladder():
     assert ct.grade(tup)[:2] == ("Witnessed", "Attested")
 
 
+def test_profile_finalizer_rows_use_the_same_measurement_ladder():
+    source = receipt()
+    source["schema"] = "epyc.autokernel.profile_beliefs.v1"
+    source["campaign_id"] = "profile-beliefs-20260811"
+    source["belief_measurements"][0].update({
+        "measurement_id": "c4_q4k_mul_mat_vec_q_device_ns_per_suite",
+        "metric": "profiled_kernel_family_device_duration_ns_per_suite",
+        "value": 74336.4,
+        "unit": "ns",
+        "reps": 5,
+        "reps_basis": "scored:formal production-optimization profiler suites",
+        "claim": "C4 Q4_K mul_mat_vec_q mean formal device time is 74336.4 ns",
+        "extra": {"kernel_family": "mul_mat_vec_q", "promotion_authority": False},
+    })
+    row = aux.native_rows(
+        source, receipt_locator="probe:profile-beliefs/c4-q4k.json",
+        receipt_sha256="d" * 64, attestation_present=True)[0]
+    projected = aux.project(row)
+    assert projected.protocol_id == "epyc.autokernel.profile_beliefs.v1"
+    assert projected.metric_direction == "lower_better"
+    assert projected.extra["kernel_family"] == "mul_mat_vec_q"
+    assert ct.grade(projected)[:2] == ("Witnessed", "Attested")
+
+
 def test_failed_receipt_cannot_smuggle_measurements():
     with pytest.raises(ct.ProjectionError, match="failed"):
         aux.native_rows(receipt(status="failed"))

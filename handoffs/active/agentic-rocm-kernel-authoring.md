@@ -1,7 +1,7 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-11)**: run the matched MI210 controller-authoring A/B across the seven registered AgentKernelArena arms; the gfx90a substrate gate is complete.
+**Next action (2026-08-11)**: provision the six controller implementations still absent from the governed eight-arm AgentKernelArena panel, then run the matched MI210 2h/8h/32h comparison; the gfx90a substrate and internal actor-critic arm are complete.
 **Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-11 (gfx90a GEAK/Arena + LDS gates)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
@@ -68,7 +68,7 @@ statement, not a capability removal._
   *"reference material… not decisions"* and that consumers must *"decide by on-box measurement"* —
   i.e. AMD is telling us to measure on our own card, which is exactly the standing unchecked sanity gate.
 - **The KB is not error-free** — its `memory.md` ridge-point figure is off by 2× (per-GCD vs per-OAM); see
-  [`mi210-mfma-compute-bound-paths.md`](mi210-mfma-compute-bound-paths.md).
+  [`mi210-mfma-compute-bound-paths.md`](../completed/mi210-mfma-compute-bound-paths.md).
 - **Bonus, unexploited:** GEAK ships `languages/` docs on **hipkittens · tilelang · mojo · cutlass ·
   flydsl** and a `landscape/` section on multi-backend libs, DSLs, AI kernel agents, autotuning and
   "AMD SOTA 2026" — a **vendor-maintained survey of the exact taxonomy our Stage-2 dive built by hand**,
@@ -114,7 +114,7 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
   to `ggml/src/ggml-cuda/mma.cuh`'s `tile<16,16>` in our frozen v8 (`:127,144` — `get_i = tid%16`,
   `get_j = 4*(tid/16)+l`, `ne=4`). Every HK technique composes onto our existing fragments with **zero
   layout re-derivation**. The arch-independent lessons are filed in
-  [`mi210-mfma-compute-bound-paths.md`](mi210-mfma-compute-bound-paths.md); do **not** vendor the framework.
+  [`mi210-mfma-compute-bound-paths.md`](../completed/mi210-mfma-compute-bound-paths.md); do **not** vendor the framework.
 - **A live gfx90a build arm already exists** on HK's `cdna3` branch (`GPU_TARGET=CDNA2` →
   `-DKITTENS_CDNA2 --offload-arch=gfx90a`, `tests/unit/Makefile:39-40`). Across all 67 headers the library
   uses exactly **six** `__builtin_amdgcn_*` intrinsics and **exactly one is unavailable on gfx90a**
@@ -208,6 +208,26 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
   EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK, and baseline arms. Registration, exact vendor
   pin/license checks, C4 prompt-hygiene binding, and the three-argument `@register_agent` bridge are
   complete in research commit `48350b24`; only the matched authoring comparison remains.
+  - [x] **Build the governed eight-arm campaign driver and audit executable coverage.** ✅ 2026-08-11
+    — baseline plus Claude/Codex actor-critic, EvoEngineer, KernelFoundry, K-Search, Xe-Forge,
+    GEAK-v1, and ARGUS are serialized on one MI210 at exact 2h/8h/32h checkpoints with source,
+    entrypoint, executable, model, configuration, and driver hashes. The physical audit correctly
+    refused before launch because only **1/8** arms was executable at the initial audit; baseline is
+    explicitly a zero-hour non-authoring control. Audit receipt:
+    `/mnt/raid0/llm/autokernel/probes/inf03-controller-ab-audit-20260811/receipt.json`, SHA-256
+    `3152e2fa97b52d9f0b91fb43449375adec66128189fddf253b0772fadfcf59c4`; research
+    `429b59a1` (promoted via `ee54c144`).
+  - [x] **Provision the internal Claude-planner/Codex-actor arm.** ✅ 2026-08-11 — the exact
+    three-argument Arena callable and stdin executable pin Claude Opus 5/high as planner+critic and
+    GPT-5.6-Codex/high as actor, enforce exact 2h/8h/32h checkpoints plus captured process-group
+    termination, confine all writes to one candidate inside the Arena workspace, and hash-bind the
+    CLIs, prompts, transcripts, candidate, artifacts, and final receipt. The clean physical audit now
+    admits exactly **2/8** arms (baseline plus this controller); the other six refusal rows remain
+    verbatim. Implementation `dcdc2311`, binding `084b8be1`, research main `9947f805`; 409
+    controller tests and 17 AutoKernel README tests pass. Neither CLI was invoked during
+    implementation or audit. Populate the six
+    remaining controller executables/configs, then run the already-fixed panel; do not collapse it
+    back to a seven-arm comparison.
 - [x] Build C4 gfx90a profiler-metric analyzer (GEAK-v2 raw-rocprof path first) ✅ 2026-08-11 —
   `profile_report.py` implements the deterministic paired mapping/formal report; the live single-process
   Q4_K/Q8_0 captures prove it on gfx90a. `profile_context.py` binds the report hash into a priced
@@ -218,6 +238,20 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
   escape checks, planted red-team corpus, prompt disclosure guard, and ranked-set short-circuit cases
   are implemented and covered by the AutoKernel suite. Live candidate sensitivity remains governed by
   the producer-dependent RVP-C2 rows, not by reopening the C6 implementation task.
+- [x] **Compile the initial EPYC C3/C5 exact-suite seam.** ✅ 2026-08-11 — research `4320d83a`
+  (main `5dfd14ad`)
+  emits a hash-bound three-case plan/receipt contract for attention `k228`, MoE `k175`, and native
+  Q4_K dequant, with honest vendor floors, correctness/integrity precedence, and captured-workload
+  whole-model exit. Apex owns only the Python/Triton overlay cases; dequant correctly uses the
+  experimental-binary adapter. This closes the offline integration seam, not the real MI210/Apex
+  evidence campaign.
+- [x] **Add selected-entry-only Apex runtime validation without guessing C5 mappings.** ✅ 2026-08-11
+  — research `934b2a8d` bypasses Apex's unrelated-repository global validation bug only for an exact,
+  reviewed registry row; all source/toolchain/model/capture identities remain fail-closed. The
+  subsequent hash-bound mapping audit (`a9779163`, main `4fd985c2`) classifies both seeds honestly: `k228` is adjacent
+  to AITER MLA prefill but has no pinned gfx90a HSA image or proved LSE/ABI contract, while composite
+  `k175` requires missing component-graph/multi-trace support. Both now return typed structural
+  mismatches rather than a similar-looking single kernel.
 - [x] **GEAK-family freshness sweep completed ✅ 2026-08-03** (research-intake Stage-2b): GEAK v4 retains a current gfx90a KB (`perf_knowledge/hardware/cdna2_mi200/`, `updated: 2026-06-08`) and 40 gfx90a capability entries; all published evaluation remains gfx942. Scoping caveat amended above; "677/678/679 are a coverage regression" **retired** — for GEAK proper it is unpublished coverage. `v1.0.0 @ 4ffba15a` pinned.
 - [x] Re-target the program objective from the Q8 rung to the fp16 rung, with a banded per-lever ceiling (K1–K12) ✅ 2026-08-03
 - [x] Register **ARGUS** (arXiv 2604.18616) as a controller candidate alongside EvoEngineer /

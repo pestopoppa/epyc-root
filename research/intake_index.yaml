@@ -54370,7 +54370,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -54759,7 +54759,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -55874,7 +55874,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -55931,7 +55931,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -56001,7 +56001,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -56069,7 +56069,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -56130,7 +56130,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -56181,7 +56181,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -56233,7 +56233,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -56293,7 +56293,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -56355,7 +56355,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -56418,7 +56418,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -56478,7 +56478,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -56539,7 +56539,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md
@@ -56595,7 +56595,7 @@
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
   - handoffs/active/agentic-rocm-kernel-authoring.md
-  - handoffs/active/mi210-mfma-compute-bound-paths.md
+  - handoffs/completed/mi210-mfma-compute-bound-paths.md
   - handoffs/active/mi210-q8-dequant-gemv-roofline.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/gpu-acceleration-path.md

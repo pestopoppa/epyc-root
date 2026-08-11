@@ -26,6 +26,7 @@ SOURCE_SCHEMAS = frozenset({
     "epyc.autokernel.omniperf_fallback.v1",
     "epyc.autokernel.geak_arena_roundtrip.v1",
     "epyc.autokernel.mmq_wgm_profile.v1",
+    "epyc.autokernel.profile_beliefs.v1",
     "epyc.inf37.iq2_fancy_simd_ab.v1",
 })
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")

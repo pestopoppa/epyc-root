@@ -175,11 +175,16 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
   (`progress/2026-07/2026-07-05-mi210-capability-kernel-rnd.md:23-24`), and the IQ2-vs-Q4 paired eval returned Δ0.0pp,
   McNemar p=1.000 (`progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md:12`). Certified by read-certification (`auditor`).
 - [ ] SoA-repack lever (only if coalescing measured poor - currently deemed healthy)
-- [ ] Optional stream-K K-splitting for Q8-MMQ aggregate (separate bet)
+- [x] Generic stream-K K-splitting for Q8-MMQ aggregate is already present and therefore not a new
+  lever ✅ 2026-08-11 — the current CDNA MMQ path is persistent stream-K, and the governed WGM
+  experiment exercised that exact launch. Retain only a distinctly justified higher-persistent-grid
+  residual (for example `2*nsm`) behind fresh grid/occupancy evidence; do not reopen “add stream-K.”
 - [x] Recompute the full quant ladder on one consistent basis (fp16 62.6 / Q8_0 50.2 / Q4_K 35.1 / MoE-Q8 21.3 / MoE-IQ2 10.3) ✅ 2026-08-03 — via /research-intake Stage-2b; reproduces the fable5 series to within 1 pp
 - [x] Correct the IQ2_XXS access characterization: four INDEPENDENT gathers (single 8-byte memcpy, ILP≈4) plus FOUR sign-table gathers, not a dependent pointer chase with one sign read ✅ 2026-08-03
 - [ ] **Item A — Q8_0 50→62 rung (achieved-bandwidth / occupancy).** There is no per-element fp dequant to hide; do NOT reopen an iqk port for this rung. The governed frozen-v9 replay now supersedes async-prefetch as a presumed win: its 20-block median was only **+0.936%**, below the 2% floor, with one negative block (`NOT_REPRODUCED`; receipt SHA-256 `7b173cafcccb8a99319bf93a80fd13a2e94a400afab2bf03355363f9521ab17f`). Reopen only from fresh cache-line/MLP profiling evidence, not the 2026-07-04 patch prior.
-- [ ] **Item B — Q4_K 35→50 rung (k-quant superblock unpack).** A DIFFERENT mechanism from item A and the largest single banded win available (+38–43%, high confidence). Decisive first measurement: per-op wall share of superblock unpack inside `mul_mat_vec_q` at Q4_K vs Q8_0 on the same model, before any kernel is authored
+- [x] **Item B — attribute the Q4_K superblock-unpack mechanism before authoring.** ✅ 2026-08-11 —
+  the representative-shape mechanism-counter route below passed. It supports a materially larger
+  instruction burden than the same-bit Q4_0 control, but not the former +38–43% single-lever premise.
   - **2026-08-11 bounded op probe:** the hash-bound single-process C4 reports at
     `/mnt/raid0/llm/autokernel/probes/c4-{q4k,q8}-op-singleproc-20260811T12{10,15}Z/report.json`
     hold `m=16,n=1,k=256` and the dispatch sequence fixed. Q4_K versus Q8_0 `mul_mat_vec_q`
@@ -188,6 +193,54 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
     the fused kernel. Item B therefore remains open for a representative-shape counter/source-timer
     probe; the current result prevents mistaking a complete kernel-family table for the requested
     inside-kernel attribution.
+  - [x] **Run the representative-shape single-pass PMC differential and resolve what is identifiable.**
+    ✅ 2026-08-11 — clean frozen-v9 `test-backend-ops` ran four balanced blocks × five exact
+    dispatches at model-derived `m=17408,n=1,k=5120`. A single rocprofv2 pass collected
+    `SQ_WAVES`, `SQ_INSTS_VALU`, and `SQ_INSTS_VALU_INT32`; every counter was exactly invariant
+    within and across blocks. Q4_K and the same-bit Q4_0 control both launched 34,816 waves, but
+    Q4_K carried **+112.5 VALU instructions/wave**, **+35 INT32 instructions/wave**, and a
+    **+11.751%** median dispatch duration (77,600 vs 69,440 ns). Q8_0 launched twice the waves, so
+    it remains the quant-ladder control rather than the closest unpack control. The fused dispatch
+    makes an exact inside-kernel wall share unidentifiable; the admissible result is differential
+    mechanism evidence, not a fabricated share. Receipt:
+    `/mnt/raid0/llm/autokernel/probes/inf37-q4k-unpack-v9-20260811-r7/receipt.json`, SHA-256
+    `1e34339c1c986413c4eeb1b56ba3202c8763d08df45aba1c0580917c888f5e47`; research
+    `70374c43` (promoted via `ac88d75a`). Four rocprofv2 exit-139 attempts were retained and only
+    transport-retried under the predeclared two-attempt ceiling; no parsed counter failure was
+    retried. **The former +38–43% single-lever expectation is not supported by this matched
+    diagnostic.** Before authoring, use the exact instruction delta to define a surgical unpack
+    change and test whether it can recover part of the observed ~10.5% Q4_K-to-Q4_0 headroom.
+  - [x] **Author and test one surgical Q4_K unpack hypothesis.** ✅ 2026-08-11 — the candidate removed
+    the two lane-local Q8 partial-sum `dp4a` operations per `QR4_K` iteration and consumed the
+    already-stored `block_q8_1.ds.y` sum. It failed **5/5** representative Q4_K correctness cases
+    (relative errors 0.729–0.977 versus the 0.0005 limit), while frozen v9 passed 5/5 under a separate
+    released MI210 claim. The reason is structural: `ds.y` covers all 32 block elements, whereas each
+    MMVQ lane needs a distinct 8-element slice selected by `iqs`. Receipt SHA-256
+    `c8c055ff43f022ae4c61e3142b0278c15a807476db03aa29d16a50b6dbb25eea`; the one-file diagnostic
+    remains uncommitted and has no performance or promotion authority.
+  - [x] **Split the remaining +35 INT32/wave burden before a second Q4_K source candidate.** ✅
+    2026-08-11 — exact gfx90a disassembly of the measured
+    `mul_mat_vec_q<Q4_K,1,false,false>` specialization contains four extra
+    `v_dot4c_i32_i8` sites for lane-local Q8 sums. At `k=5120`, Q4_K has 20 superblocks and each
+    lane executes the vecdot five times, attributing **20/35 INT32 instructions/wave (57.1%)** to
+    the required subgroup sums. The residual **15/35 (42.9%)** covers six-bit scale/min unpack plus
+    Q4_K-specific packed-nibble address/control; it is not honestly pure unpack yet. Static receipt:
+    `/mnt/raid0/llm/autokernel/probes/inf37-q4k-isa-attribution-20260811/receipt.json`, SHA-256
+    `01458d64fcd9d2fab0bdb883a619f0904ab3aa3c28d23f3ef8a3fc881517860c`.
+  - [x] **Test a correctness-preserving branchless six-bit scale/min decoder.** ✅ 2026-08-11 — the
+    one-file experimental candidate leaves both lane-local Q8 subgroup sums untouched and replaces
+    only the divergent `j < 2` scale/min extraction. The rebuilt gfx90a backend passed all five exact
+    representative `m=17408,n=1,k=5120` Q4_K correctness repetitions. Static ISA size remained 1,452
+    bytes while the specialization lost three `s_cbranch_execz` and two `s_branch` sites. A balanced
+    two-control/two-candidate diagnostic then found **69,840 vs 78,080.5 ns median (-10.554%)**, despite
+    the candidate executing **236.5 vs 216.5 VALU/wave (+9.238%)** and **87 vs 78 INT32/wave
+    (+11.538%)**. This is directional evidence for reduced exec-mask/control-flow cost, not an
+    instruction-count win. The source is uncommitted, so the result is explicitly diagnostic-only:
+    `/mnt/raid0/llm/autokernel/probes/inf37-q4k-branchless-scales-20260811/diagnostic-paired-r3/receipt.json`,
+    SHA-256 `de4241bd26b77f5dac7df746d165034b67e6f8105133daf0359142a97dd35d5d`.
+  - [ ] **Commit only after explicit experimental-tree approval, then clean-replay the branchless
+    decoder through the governed paired runner.** The clean candidate must reproduce correctness and
+    timing before any promotion or model-level claim; the dirty diagnostic cannot satisfy this gate.
 - [ ] **Item C — architect MoE-IQ2 at 10.3%**, our worst rung by 2× and a production-serving model. Attach the kill-criterion first (below) — this is a probe, not yet a funded kernel
 - [ ] Kill-criterion probe for item C: on gfx906 an optimised community fork **and** vLLM independently converge on ~10% bandwidth for MoE batch-1 — the same rung as ours. Two stacks hitting one wall means this may be an **architectural floor**; establish cheaply whether it is before funding a kernel
   - **2026-08-11 tool-boundary result:** the exact main tensor type in the 122B UD-IQ2_M file is

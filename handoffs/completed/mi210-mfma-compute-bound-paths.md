@@ -1,8 +1,10 @@
 # Handoff: MI210 MFMA for compute-bound paths (prefill / diffusion / high-batch)
 
-**Status**: **CLOSED-BY-ARITHMETIC for decode** (2026-08-03) — the 2026-07-04 `MfmaUtil ≈ 0%` observation is
-now explained, not merely measured; see §"Compute roofline" below. **OPEN for prefill/diffusion** on the
-original measure-first gate. **Created**: 2026-07-04 (MI210 campaign follow-on).
+**Status**: **COMPLETED / TERMINAL NO-GO** (2026-08-11) — decode is closed by arithmetic; the measured
+prefill and high-batch paths already use MFMA and are not compute-bound; G15 and real-MMQ WGM were
+separately falsified. File a new active handoff only if a current profile exposes a new compute-bound
+diffusion/training path or an actual target fusion cluster above 20%. **Created**: 2026-07-04 (MI210
+campaign follow-on). **Completed**: 2026-08-11.
 **Owner tree**: `/mnt/raid0/llm/llama.cpp-experimental` (kernel work here, never production-v6). **Substrate**: MI210 gfx90a/CDNA2 — has fp16/bf16/int8 **MFMA matrix cores**. All numbers OBSERVATION.
 **Context doc**: `fable5-window2-findings-05b-mi210-inference-architecture.md` §9 (the GDN-MFMA-decode KILL, and why MFMA is alive for compute-bound regimes).
 
@@ -134,7 +136,8 @@ Acceptance to proceed to kernel work: a candidate path shows **high VALUBusy + l
 
 ## Progress checklist
 
-- [ ] DEFERRED (with data): reopen MFMA build only if a new compute-bound path appears (measurement gate failed both paths)
+- [x] Close the active experiment set after both measured paths failed the build gate; preserve the
+  explicit new-path / >20%-cluster reopen predicate above ✅ 2026-08-11
 - [x] Close the compute-roofline blank spot from spec arithmetic: 181.0 TFLOPS fp16/bf16, 181.0 TOPS int8 (no doubling), ridge 110.5 FLOP/byte, all marked `[D]` ✅ 2026-08-03 — via /research-intake Stage-2b
 - [x] Explain `MfmaUtil ≈ 0%` at batch-1 as correct behaviour (AI 1.0–5.2 FLOP/byte, 31–113× below the knee) rather than a defect ✅ 2026-08-03
 - [x] Derive `B* = 110.5 × bytes_per_weight / 2` (Q4_K 31, Q8_0 59, bf16 110) and check it against the measured bf16 knee at B≈96–128 ✅ 2026-08-03

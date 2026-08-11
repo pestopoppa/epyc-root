@@ -60,6 +60,45 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
   unseen/hostile shapes, stream/thread escape checks, planted red-team corpus, prompt disclosure,
   output-invariance, and ranked anti-short-circuit cases are implemented and tested.
 - [ ] **Honest baseline + E2E scoring (C3 + FastKernels gate).** Gate reward on a vendor baseline; add a whole-model exit gate via Apex's hot-patch + re-bench with captured EPYC-workload tensors.
+  - [x] **Compile the exact EPYC C3/C5 evaluation contract and controller/backend seam.** ✅ 2026-08-11
+    — the offline research compiler binds HyRA `k228` attention and `k175` MoE to Apex's pinned
+    Python/Triton overlay at `e06b5d1`, and binds EPYC-native Q4_K dequant to an immutable
+    experimental llama.cpp binary because Apex cannot hot-patch system C++ or monolithic binaries.
+    Every case requires an exact captured-tensor surface, honest vendor floor,
+    correctness/integrity-first `fast_p`, and a matched whole-model exit; absent evidence is
+    `COULD_NOT_CHECK`, never a synthetic score. Plan SHA-256
+    `390bd1befe1a3d1eeb1433e579f3fc42d3c1d97ae8e7ccb1b90f059b9a5600ad`; research
+    `4320d83a` (research main `5dfd14ad`). The parent remains open for EPYC workload capture, matched
+    MI210 timing, candidate integration receipt, and whole-model re-bench.
+  - [x] **Provision the exact Apex/ROCm runtime without contaminating the host stack.** ✅ 2026-08-11
+    — Apex is detached at `e06b5d1cd58996a82c5e2897164f760c3b3f87ac`; its time-matched Magpie
+    dependency is detached at `2a9263833f71755df2a93b466cdd3a9f803fc625`; and the isolated Python
+    3.12 environment carries Torch `2.5.1+rocm6.2`, HIP `6.2.41133`, and Triton `3.1.0`. A physical
+    device preflight sees one `gfx90a:sramecc+:xnack-` MI210 with 64 GiB HBM. Apex's blanket registry
+    validator currently requires every unrelated AITER/vLLM/SGLang source file before resolving one
+    selected entry; the EPYC adapter must validate only its exact selected entry without weakening
+    that entry's source pin.
+  - [x] **Implement the fail-closed selected-entry Apex adapter.** ✅ 2026-08-11 — research
+    `934b2a8d` (main `7e2bcb64`) validates only the separately reviewed selected row while still
+    hash-binding the full
+    pinned registry, exact Apex/Magpie/source revisions, source/config/model files, Torch/HIP/Triton,
+    physical gfx90a identity, and the exact `e06b5d1` runner interface. It preserves `Path`-typed
+    runtime fields, refuses a foreign Python/runner origin, binds the three capture outputs, and
+    requires explicit inference authorization. The current path intentionally returns typed
+    `MissingCaseMapping`: C5 records name `kernel.py::run` solution artifacts, not Apex registry
+    entries. `k175` is additionally composite and cannot be laundered through one `kernel_id`; it
+    requires a reviewed component-graph/multi-trace extension or an audited whole-composite entry.
+    This closes the runtime adapter, not the missing semantic mapping or real capture evidence.
+  - [x] **Audit the exact HyRA-to-Apex/AITER semantic mappings.** ✅ 2026-08-11 — the hash-bound
+    static audit closes both current C5 rows as typed `StructuralMappingMismatch`, not executable
+    maps. `k228` is mathematically adjacent to `aiter.hip.mla_prefill_asm_fwd`, but pinned AITER has
+    HSA images only for gfx942/gfx950, no gfx90a object, and lacks reviewed base-2-LSE and split-ABI
+    proof. `k175` is an ordered branch-aware router → top8/count/rank → scatter/gather → routed and
+    shared experts → weighted undispatch graph; the registry lacks the router, exact biased-top8,
+    inverse-map dispatch, shared-expert, weighted-undispatch, and multi-trace contracts. Research
+    `a9779163` (main `4fd985c2`); audit SHA-256
+    `40edaf2af2cf5b8624b9b0a05e7da137f1034dc25f8b6c2f44faae42faf4652e`. This closes mapping review,
+    not EPYC workload capture or the matched whole-model gate.
 - [x] **C4 profiler feedback (MED empirical risk).** ✅ 2026-08-11 — the deterministic paired
   `rocprofv2` report produces useful op-level mapping/formal signal, while the governed timestamp-only
   `rocprof` v1 fallback produced whole-model Qwen3.6 GDN attribution at 2K/8K/32K. Model-facing
@@ -166,6 +205,31 @@ from `$ROCM_PATH`, so the prefix needs a mirrored `.info/version`. Both are hand
   `d7a0c8c257c2a59435b95c39b988485a8283d709d83ef7397b3c67ee7ec8cca9`. Research `0674df51`
   preserves the exact receipt-bound runner SHA; follow-up `4b738fb5` corrects only the per-cell
   hypothesis question label so B=64 no longer says B=128.
+- [x] **RVP-C4-3 — Replace the Q4_K Omniperf multi-pass merge with a governed single-pass PMC
+  transport.** ✅ 2026-08-11 — Omniperf/rocprof-v1 permuted rows across passes and blocks, so its
+  apparent block-1 comparisons were withdrawn. The replacement validates the installed gfx90a
+  counter catalogue, collects `SQ_WAVES`, `SQ_INSTS_VALU`, and `SQ_INSTS_VALU_INT32` in one
+  rocprofv2 file-plugin pass, requires exact within/across-block invariance, and emits no normalized
+  comparison on missing/zero/drifting counters. A predeclared two-attempt ceiling retries only
+  transport exit/missing-artifact failures and preserves every attempt. The four-block
+  representative-shape r7 matrix passed 12/12 cells and found Q4_K minus same-bit Q4_0 at
+  **+112.5 VALU and +35 INT32 instructions/wave** with equal waves. Receipt SHA-256
+  `1e34339c1c986413c4eeb1b56ba3202c8763d08df45aba1c0580917c888f5e47`; research
+  `70374c43` / main `ac88d75a`. The result is differential-mechanism evidence only; fused unpack
+  wall share remains structurally unidentifiable.
+  The retained exit-139 attempts are localized to target-process finalization after complete
+  correctness rows and CSV flush: an intermittent legacy ROCProfilerV2 preload-stack teardown crash
+  in the side-loaded ROCm 6.2 profiler on the unsupported Ubuntu 25.10 / kernel 6.14 host mix. It is
+  not a kernel-execution or counter-collection failure. Keep the fail-closed bounded retry; do not
+  mask rc139 or accept its otherwise-complete CSV. If this becomes recurring infrastructure, first
+  reproduce with core capture in a ROCm-6.2-supported 22.04/24.04 environment, then validate a
+  rocprofiler-SDK/rocprofv3 migration on an isolated current stack.
+  A later Q4_K candidate diagnostic narrowed one tempting false explanation: two runs with 32/34-byte
+  workload identifiers both exhausted their two attempts, but a 13-byte identifier still produced one
+  exit 139 followed by a passing retry. Identifier length is therefore not established as causal.
+  The existing bounded fail-closed retry remains the correct integration contract; never accept a
+  complete-looking CSV from a nonzero profiler exit. Diagnostic receipt SHA-256
+  `de4241bd26b77f5dac7df746d165034b67e6f8105133daf0359142a97dd35d5d`.
 - `omniperf` 2.0.1 is now runnable through a sealed Python environment and `rocprof` v1. A manual
   IQ2_XXS smoke produced 260 dispatch rows, proving fallback reachability, but is non-evidence. The
   governed fallback runner fails closed because frozen v9 lacks its seeded/repeated producer flags;
@@ -729,6 +793,15 @@ the end are deliberate and recorded so they are not re-derived._
   table in [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) and a task in
   [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md). The write side is cheap and
   permanent; the read side cannot be retrofitted.
+- [x] **RVP-VIDYA-2 — Bind the stranded G15, C4, and standalone-WGM profiler receipts into the
+  AutoKernel/Vidya measurement seam.** ✅ 2026-08-11 — research `07b303cc` adds an isolated
+  finalizer rather than modifying the CRITICAL shared C4 capture helper. It verifies immutable source
+  receipts, released device claims, C4 report hashes, exact scored repetitions, physical ranges, and
+  the WGM proxy's non-transfer-to-real-MMQ boundary before emitting a separate self-hashed
+  `epyc.autokernel.profile_beliefs.v1` receipt. Root's existing auxiliary adapter now admits that
+  schema through the one measurement ladder. Four current artifacts produced **16 rows**: G15 B=64/128
+  throughput plus target-share signals, three formal family-duration rows each for Q4_K and Q8_0,
+  and six standalone WGM proxy factors. The original profiler receipts remain unchanged.
 
 **Declined, recorded so they are not re-derived:** lifting the 129 human-verified reference test files
 as a component (design reference only — and the reason is **technical**: torch/CUDA, will not run

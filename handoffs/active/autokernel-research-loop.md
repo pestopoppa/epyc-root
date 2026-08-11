@@ -22,8 +22,9 @@
 the retired v8 era and remain valuable regression evidence; they do **not** authorize ranking on
 frozen v9 plus the hardened measurement overlay. The operator authorized all compute and inference
 for this session on 2026-08-11, but two measurement gates remain: explicit operator approval for the
-two experimental commits that seal the receipt-emitting hardened instrument, and a privileged
-measurement window (or temporary readable `energy_uj` permission, restored to `0400` afterward).
+one remaining experimental producer/oracle/Q4 repair commit stacked on the already-pushed hardened
+instrument `0492c231`, and a privileged measurement window (or temporary readable `energy_uj`
+permission, restored to `0400` afterward).
 INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
 VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
 Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
@@ -2328,7 +2329,7 @@ can act on a waiver-bearing verdict.
   `B*` = Q4_K 34 / Q8_0 64 / bf16 120. Carry the spec-basis ridge (110.5) alongside for cross-vendor
   comparison, and **never mix bases**. Derivations, the measured/derived reconciliation, and the 2×
   defect in AMD's own published figure:
-  [`mi210-mfma-compute-bound-paths.md`](mi210-mfma-compute-bound-paths.md).
+  [`mi210-mfma-compute-bound-paths.md`](../completed/mi210-mfma-compute-bound-paths.md).
   ✅ 2026-08-10 — imported without changing evidence grades; mixed-basis ridges are rejected by
   reconstruction tests.
 
@@ -2799,7 +2800,8 @@ nothing wrong. We held no claim.**
       `269aaf94c850212be5d390e0e9b64436238ce258cc618546bb736296c65f9820`. Package power remains
       unreadable to the current UID (`energy_uj` is `0400 root:root`), so
       `HostStatePolicy(require_package_power=True)` returns `COULD_NOT_CHECK`. The two remaining
-      preflight gates are explicit operator approval for the two local experimental commits and a
+      preflight gates are explicit operator approval for the one remaining local experimental commit
+      on top of already-pushed `0492c231`, and a
       privileged measurement window (or temporary readable `energy_uj` permission, restored to
       `0400` afterward). Local
       failed-attempt evidence remains untracked at
@@ -3393,7 +3395,7 @@ negatives so the planner cannot omit inconvenient history.
 
 | Draft family | Audit verdict | Seed disposition |
 |---|---|---|
-| **G1 host/PCIe/pinned-memory NUMA** | Strong, cheap, still relevant. A four-arm P2-5j placement protocol already exists — consume it, do not reinvent a duplicate sweep. **Note: that protocol was deleted from git (§3.7) and must be restored before the seed is executable.** **Node attachment resolved 2026-08-03: the MI210 is on NUMA node 1** (verified three ways — `/sys/class/drm/card2/device` `0x740f`, `/sys/bus/pci/devices/0000:43:00.0/numa_node`, KFD topology node 4). **The GPU lane's host threads at 184–191 are on NUMA node 3** per `numactl` — neither device-local nor adjacent, and device-local placement has never been tried. **Scope narrowed by measurement 2026-08-03**: bulk H2D/D2H transfer is node-INDEPENDENT (all four nodes within 0.1%), so this placement costs nothing on the transfer path; the open question is host-side memory access during serving. Also correct the link generation: it is **measured Gen4 x16**, not the PCIe 5.0 our docs claimed | `READY_EXISTING_PROTOCOL`, config/placement campaign; node attachment now imported, historical placement confounds still to import |
+| **G1 host/PCIe/pinned-memory NUMA** | Strong, cheap, still relevant. The restored four-arm P2-5j placement protocol at `docs/design/p2-5j-host-thread-placement-sweep-protocol.md` is the one execution owner — consume it, do not reinvent a duplicate sweep. **Node attachment resolved 2026-08-03: the MI210 is on NUMA node 1** (verified three ways — `/sys/class/drm/card2/device` `0x740f`, `/sys/bus/pci/devices/0000:43:00.0/numa_node`, KFD topology node 4). **The GPU lane's host threads at 184–191 are on NUMA node 3** per `numactl` — neither device-local nor adjacent, and device-local placement has never been tried. **Scope narrowed by measurement 2026-08-03**: bulk H2D/D2H transfer is node-INDEPENDENT (all four nodes within 0.1%), so this placement costs nothing on the transfer path; the open question is host-side memory access during serving. The link is measured Gen4 x16, not PCIe 5.0. **2026-08-11 constitution audit:** CPU-affinity variation makes P-BENCH-PLACEMENT-1 controlling; the old four-arm design lacks its full composite. The strict finalizer/context bridge is complete and observation-only; it preserves all arms and cannot select a placement | `READY_OBSERVATION_ONLY`; run only to prioritize a compliant successor. A decision needs human protocol ratification or a full P-BENCH-PLACEMENT-1 execution; then ingest the receipt without relabelling it as kernel speedup |
 | **G2 batch-one low-bit GEMV** | Too broad as written. Generic Q8 dequant is a stale premise (integer-native path); generic megakernel and several speculation/prefetch variants have matching negative or conditional history; workgroup sizing and prior prefetch changes are legacy priors, not patches to replay on v8. Layout/coalescing and MLP questions remain conditional on a fresh profile | Split into atomic priors; seed only current-profile gaps — coalescing/layout if cache-line evidence is poor, or another gfx90a MLP lever if the production path still exposes it |
 | **G3 GPU-native low-bit layouts** | Sound high-upside family, but only if metadata traffic, cache-line use, unpack cost, or occupancy is currently deficient. Startup time and VRAM/context cost are first-class outputs | `MEASUREMENT_FIRST`; T1 starts with load/repack accounting plus captured GEMV/MMQ shapes, then one tiny real graph |
 | **G4 persistent grouped MoE** | Valid high-effort family for batched MoE; must be distinguished from the persistent stream-K MMQ path already present. "Persistent" alone is not novelty | `CONDITIONAL_HIGH_EFFORT`; require routing/expert wall share, grid/occupancy evidence, and a target batched regime before source work |
@@ -3510,10 +3512,26 @@ readiness, and two of them are cheaper than anything currently in the list:
    59.849% at nearly flat read-request volume, falsifying transfer from the synthetic L2 proxy. Keep
    WGM0 and retain the negative receipts in INF-36. Budget briefly returned to G15, whose strict
    current profile then closed it; advance to G18 / the remaining measured seed queue instead.
-7c. **G18 Q4_K superblock-unpack attribution** — instrument representative production-shape Q4_K
-   against Q8_0 inside `mul_mat_vec_q`; the existing m=16 profile cannot see unpack work. Require an
-   inside-kernel source timer or admitted mechanism counter before proposing source changes. This is
-   the missing INF-37 Item-B seed.
+7c. **G18 Q4_K superblock-unpack attribution — MECHANISM CONFIRMED, CEILING REFRAMED 2026-08-11.**
+   The representative `m=17408,n=1,k=5120` single-pass PMC matrix found Q4_K versus the same-bit
+   Q4_0 control at equal 34,816-wave dispatches: +112.5 VALU and +35 INT32 instructions/wave, with
+   +11.751% median device duration. Exact inside-kernel wall share remains unidentifiable because
+   unpack is fused, so no share was invented. The former +38–43% single-lever expectation is not
+   supported; any successor proposal must name the exact instruction subset it removes and treat
+   roughly 10.5% as diagnostic Q4_K-to-Q4_0 headroom, not a promotion claim. INF-37 owns the next
+   surgical source hypothesis. Receipt SHA-256 `1e34339c1c986413c4eeb1b56ba3202c8763d08df45aba1c0580917c888f5e47`.
+   The first exact source hypothesis was correctly falsified before timing: replacing lane-local
+   8-element Q8 sums with the stored 32-element block aggregate failed 5/5 representative correctness
+   cases while frozen v9 passed 5/5. INF-37 now requires ISA accounting that separates scale/min
+   unpack from the necessary subgroup sums before another source change.
+   That accounting attributed 20/35 INT32 instructions/wave to required subgroup sums and bounded
+   the residual scale/min plus address/control budget at 15/35. The follow-on branchless scale/min
+   candidate passed 5/5 representative correctness cases and, in a balanced dirty-source diagnostic,
+   reduced median device duration **10.554%** while increasing VALU/wave **9.238%** and INT32/wave
+   **11.538%**. The direction therefore appears to be exec-mask/control-flow reduction rather than
+   fewer dynamic instructions. Receipt SHA-256
+   `de4241bd26b77f5dac7df746d165034b67e6f8105133daf0359142a97dd35d5d`; no promotion claim is
+   admissible until explicit experimental-tree commit approval and a clean governed replay.
 
 **Inserted 2026-08-10 — v9 DSpark low-hanging upstream queue.** These are concrete merged patches or
 bounded monitors, not speculative research themes. Source state was rechecked on 2026-08-10; the

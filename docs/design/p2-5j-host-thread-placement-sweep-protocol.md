@@ -4,6 +4,24 @@
 registry, takes no lock, and is not an operator grant. It is the placement-selection attachment to
 the P2-5c / P-SHED-1 campaign.
 
+**Execution amendment, 2026-08-11:** P2-2c was cancelled when MiniCPM-o was deprecated, and the
+operator has now granted the active AutoKernel session all inference/compute resources plus authority
+to tear down the resident stack. Those two historical gates are satisfied. The sweep still requires
+the lane's Steps 0–7 preflight/activation choreography, fresh host health, and successful CPU/GPU
+claims; none may be replaced by the broad compute grant.
+
+**Measurement-constitution audit, 2026-08-11:** this historical four-arm design varies CPU
+affinity, so ratified `P-BENCH-PLACEMENT-1` controls it. That protocol requires its full A0–A4
+composite, an `np=1` production-anchor gate, cold/warm cache pairing, and measured
+`/proc/<pid>/numa_maps` locality. P2-5j as written has none of those complete gates, while
+`P-SPEED-OBJ` is the task-rate protocol for whole-system/cross-device decisions and cannot confirm
+an instrument-level decode-tok/s placement effect. Therefore the four-arm campaign below is
+**observation-only**: it may populate bounded AutoKernel G1 context, but cannot select a placement,
+authorize a carve, or re-derive the serving ceiling. A decision-bearing successor requires either
+(a) a human-ratified P2-5j protocol amendment or (b) a redesigned execution satisfying the existing
+`P-BENCH-PLACEMENT-1` composite in full. This trust-boundary correction does not prevent building or
+testing the receipt/context tooling.
+
 ## Question and claim
 
 The MI210 (`0000:43:00.0`, `numa_node=1`) has only been compared with eight host threads on
@@ -13,18 +31,18 @@ placement. This is a symmetric test: remote submission state and DMA locality ca
 incumbent, but locality can also change first-touch and shared submission-state behaviour in either
 direction.
 
-The measurement is GPU throughput, **higher is better**. A decision-grade row uses the P-GPU-1
-grammar:
+The observation is GPU throughput, **higher is better**. A row retains the P-GPU-1 instrument
+fields but is explicitly non-gating because the controlling placement composite is absent:
 
 `GPU lane host placement <arm> <median> tok/s, MAD <mad> [P-GPU-1, n=10, YYYY-MM-DD, attest <ref>]`.
 
-P2-5j does not itself authorize a carve, registry edit, activation, or production traffic. It
-selects the host placement that P2-5c must use when it prices the final placement, carve, and
-residency decision together.
+P2-5j does not itself authorize a carve, registry edit, activation, or production traffic. In its
+current four-arm form it also does not select the host placement. It ranks a topology signal for a
+future constitution-compliant placement decision and supplies bounded AutoKernel context.
 
 ## Arms and fixed shape
 
-Every arm uses exactly eight host threads, the same production-named v8 HIP binary, model and
+Every arm uses exactly eight host threads, the same production-named v9 HIP binary, model and
 model hash, GPU device, launch flags, effective environment, sampling policy, prompt corpus,
 warm-up/discard policy, request count, and server port policy. The only intentionally varying
 field is the server `taskset` CPU list.
@@ -90,18 +108,18 @@ at or below two percent, and it is the correct conservative floor because this c
 small locality effect. Report every raw sample, each arm's median and MAD, and the paired
 placement ratios to I. Arm order is part of the artifact.
 
-`Ls` is a device-local placement win only when all ten valid pairs show a decision-grade
-P-GPU-1 record and its paired comparison with I clears the pre-registered practical threshold
-of **at least 2% higher median throughput** with the applicable P-SPEED-OBJ improvement evidence.
-`Lp` is evaluated by the same rule. The winning local arm must also be non-inferior to H; this
-prevents calling locality a win merely because the incumbent's SMT representation is anomalous.
+`Ls` is a device-local **signal** only when all ten valid pairs retain complete P-GPU-1 instrument
+fields and its paired comparison with I clears the pre-registered practical threshold of **at least
+2% higher median throughput**. `Lp` is evaluated by the same rule. A signalled local arm must also
+be non-inferior to H; this prevents attributing an incumbent-SMT anomaly to locality. No signal is
+a placement win under the current constitution; `P-SPEED-OBJ` is inapplicable to this tok/s scope.
 
-A claimed device-local win is falsified if any required evidence field is absent, fewer than ten
-valid paired repetitions remain, the local arm misses the 2% threshold or confirmation criterion,
-or its live affinity/claim differs from the arm definition. In those cases the result is either
-invalid or **no demonstrated device-local win**; I remains the placement baseline pending a new
-protocolled sweep. H may diagnose an SMT representation effect but cannot by itself justify a
-move off q3.
+A claimed observation-only device-local signal is falsified if any required evidence field is
+absent, fewer than ten valid paired repetitions remain, the local arm misses the 2% threshold, or
+its live affinity/claim differs from the arm definition. In those cases the result is either
+invalid or **no demonstrated device-local signal**. In every case I remains the placement baseline
+pending a constitution-compliant successor sweep. H may diagnose an SMT representation effect but
+cannot by itself justify a move off q3.
 
 ## Gates and sequencing
 
@@ -121,3 +139,5 @@ last, on the selected final placement.
 If scheduling needs an early signal, run only I versus Ls at the same fixed shape for five
 observation-grade, balanced repetitions (estimated 2–4 hours). It can prioritize the full
 campaign but cannot select a placement, close a class, amend a ceiling, or authorize a carve.
+The same authority limit now applies to the full four-arm campaign until the constitution gap
+above is resolved.

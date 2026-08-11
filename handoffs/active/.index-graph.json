@@ -25,17 +25,32 @@
     {
       "from": "INF-06",
       "kind": "dep",
+      "to": "INF-22"
+    },
+    {
+      "from": "INF-06",
+      "kind": "dep",
       "to": "INF-48"
     },
     {
-      "from": "INF-36",
+      "from": "INF-06",
+      "kind": "dep",
+      "to": "EVL-47"
+    },
+    {
+      "from": "INF-37",
       "kind": "dep",
       "to": "INF-48"
     },
     {
       "from": "INF-37",
       "kind": "dep",
-      "to": "INF-48"
+      "to": "EVL-47"
+    },
+    {
+      "from": "INF-48",
+      "kind": "dep",
+      "to": "EVL-47"
     },
     {
       "from": "INF-58",
@@ -1058,12 +1073,6 @@
     {
       "from": "INF-03",
       "kind": "ref",
-      "to": "INF-36",
-      "weight": 4
-    },
-    {
-      "from": "INF-03",
-      "kind": "ref",
       "to": "INF-37",
       "weight": 2
     },
@@ -1125,12 +1134,6 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-18",
-      "weight": 2
-    },
-    {
-      "from": "INF-06",
-      "kind": "ref",
-      "to": "INF-36",
       "weight": 2
     },
     {
@@ -1264,12 +1267,6 @@
       "kind": "ref",
       "to": "EVL-20",
       "weight": 1
-    },
-    {
-      "from": "INF-14",
-      "kind": "ref",
-      "to": "INF-36",
-      "weight": 2
     },
     {
       "from": "INF-14",
@@ -3456,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-11T17:51:03Z",
+  "generated_at": "2026-08-11T20:37:16Z",
   "nodes": [
     {
       "age_days": 12,
@@ -4059,13 +4056,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 37,
+      "closed": 43,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-11",
       "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
-      "open": 15,
+      "open": 13,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -4111,12 +4108,12 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 21,
+      "closed": 25,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-11",
-      "next_action": "Run the matched MI210 controller-authoring A/B across the seven registered Arena arms",
+      "next_action": "Provision six missing controllers; run the fixed eight-arm 2h/8h/32h panel",
       "open": 4,
       "state": "active",
       "track": "agentic rocm kernel authoring"
@@ -4155,7 +4152,7 @@
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-11",
-      "next_action": "Run the first full-host IQK CPU candidate through T0\u2013T3 and retain its validated package",
+      "next_action": "Resolve OP-11; run the first full-host IQK CPU candidate through T0\u2013T3 and retain its validated package",
       "open": 19,
       "state": "active",
       "track": "autokernel research loop"
@@ -4332,13 +4329,13 @@
     {
       "age_days": 11,
       "blocked": 0,
-      "closed": 36,
+      "closed": 37,
       "domain": "inference-research",
       "handoff": "gpu-serving-tie-in-program.md",
       "id": "INF-22",
       "last_advanced": "2026-07-31",
       "next_action": "P0-1 (operator) \u2014 run the E8 ratification once Codex presents the apply-ready D4 bundle",
-      "open": 24,
+      "open": 25,
       "state": "active",
       "track": "gpu serving tie in program"
     },
@@ -4488,26 +4485,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 10,
-      "domain": "inference-research",
-      "handoff": "mi210-mfma-compute-bound-paths.md",
-      "id": "INF-36",
-      "last_advanced": "2026-08-11",
-      "next_action": "Retain no-go; reopen only if a current profile shows an actual fusion cluster above 20%",
-      "open": 1,
-      "state": "active",
-      "track": "mi210 mfma compute bound paths"
-    },
-    {
-      "age_days": 0,
-      "blocked": 0,
-      "closed": 8,
+      "closed": 14,
       "domain": "inference-research",
       "handoff": "mi210-q8-dequant-gemv-roofline.md",
       "id": "INF-37",
       "last_advanced": "2026-08-11",
-      "next_action": "Instrument production-shape Q4_K vs Q8_0 inside mul_mat_vec_q; then rerun IQ2 after OP-11",
-      "open": 8,
+      "next_action": "Resolve approval; clean-replay Q4_K branchless decode and durable IQ2 model paths",
+      "open": 7,
       "state": "active",
       "track": "mi210 q8 dequant gemv roofline"
     },
@@ -4631,12 +4615,12 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 57,
+      "closed": 63,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-11",
-      "next_action": "With OP-11 approval, commit the experimental producers and rerun C2-7/C2-8/C2-9 on that durable identity",
+      "next_action": "Capture EPYC workloads; implement gfx90a k228 and k175 composite adapters; after OP-11 replay C2/C5",
       "open": 18,
       "state": "active",
       "track": "rocm verify profile backend"
