@@ -377,6 +377,21 @@ AutoKernel already self-defends: its harness refused a stale-instrument receipt 
 
 ## FINAL RECONCILIATION — 2026-08-11 22:30Z (post-restart; sections B and D closed)
 
+**D — decision package for the last open item (authored 23:10Z, unowned since inference's
+hand-off; for operator via coordinator):** *What to do with the never-executed E8 final-c1
+retry (P0-1).* Evidence: the ratified retry aborted `no_admission` 9 min post-signature and
+never ran; its own instrument pins REFUSE v9 (`FROZEN_V8` asserts); the v10 multitier baseline
+(ratified 08-10, E16 rows sealed, autopilot state advanced) already superseded the E8 baseline
+as AutoPilot's gate; race rows are retained immutable. **Option A (recommended) — RETIRE:**
+close P0-1 as superseded-by-v10-multitier; mark the E8 record terminal-partial by design;
+retire `run_e8_quality_baseline_reseed.py`, `ratify_and_apply_e8_quality_baseline_v4` (the
+conformance check's standing residual), and `rearm_e8_autopilot` as superseded artifacts. Cost:
+E8 baseline stays documented-incomplete. **Option B — deterministic completion only:** no
+inference, finalize from persisted outputs; already known-blocked (the scoring-replay validator
+rejects the historical judge trace, inference 07-30). **Option C — re-run under v9 as a new
+protocol:** cross-era by construction, duplicates multitier, spends compute inference owns.
+A over B over C.
+
 **D — every token thread terminal:** P-BENCH-4-affinity and E8-capacityfix SPENT (07-29);
 E9-ROUTING-REWARD and E5-THROTTLE satisfied by FOLDING into the consolidated token (signed
 21:35Z); Annex G signed 21:34Z; era-advance signed 22:15Z and its consumer chain verified
