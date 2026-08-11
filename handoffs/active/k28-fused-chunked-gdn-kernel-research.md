@@ -212,7 +212,7 @@ Do **not** invert this order.
 
 ## Part D — ROI reality check + the decision gate (read before building)
 
-- **K28 is lever #7 of 11** (`inference-acceleration-index.md:50-93`) — below every CPU lever, residency/teleport, and the cheaper stream-K residual. GPU raw-speed frontier is "structurally exhausted" (`mi210-...:61`).
+- **K28 is lever #7 of 11** (`inference-research-index.md:50-93`) — below every CPU lever, residency/teleport, and the cheaper stream-K residual. GPU raw-speed frontier is "structurally exhausted" (`mi210-...:61`).
 - **MI210 production-certification remains lane-specific.** Ratified `P-GPU-1` requires a **production-named** kernel → every MI210 result stays **observation-grade** until Gate-R/AXA rerun on `production-consolidated-v7` (`v7-promotion.md:30`).
 - **The GDN model is served on CPU.** Qwen3.6-35B-A3B is the live frontdoor + coder_escalation, **CPU Q8** — K28 accelerates **GPU prefill of a model not served on GPU**.
 - **On CPU, GDN is ~1-2% of prefill wall-clock** (PC-4d: "do not prototype recurrent GDN first while GDN/SSM/RMS stay at about 1-2%"). High node count ≠ high time. CPU is not a fallback justification.
@@ -284,7 +284,7 @@ All results stay **observation-grade** until v7 is operator-promoted and rerun u
 
 **Local source (`/mnt/raid0/llm/llama.cpp-experimental/`):** `ggml/src/ggml-cuda/gated_delta_net.cu` (`:74` loop, `:156-168` snapshots, `:191` TODO) + `.cuh`; `src/models/delta-net-base.cpp` (`:16`/`:166`/`:235-274`/`:289`/`:373`/`:425`); `ggml/src/ggml-cuda/mma.cuh` (reuse), `fattn-mma-f16.cuh`, `solve_tri.cu`, `cumsum.cu`, `tri.cu`; `src/models/qwen35moe.cpp:93-96`.
 **Local evidence:** `data/k28_gdn_perf/` (K28.1 op profile, K28.2 fused-vs-graph, K28.3 BF16 state).
-**Handoffs:** `mi210-big-model-and-acceleration-roadmap.md` (:161-199), `gemma-challenge-kernel-techniques-v7.md` (:60-78, :390), `inference-acceleration-index.md` (:50-93), `v7-promotion.md`, `cpu-prefill-compute-large-models.md` (PC-4d).
+**Handoffs:** `mi210-big-model-and-acceleration-roadmap.md` (:161-199), `gemma-challenge-kernel-techniques-v7.md` (:60-78, :390), `inference-research-index.md` (:50-93), `v7-promotion.md`, `cpu-prefill-compute-large-models.md` (PC-4d).
 
 ---
 

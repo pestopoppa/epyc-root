@@ -356,10 +356,10 @@ Track B Phase 0b (the actual GPU proxy run, only when ready to spend ~$50–150 
 After any phase of either track:
 1. Update `progress/2026-05/2026-05-24.md` (or the day's progress file when the work happens).
 2. Update this handoff's Decision Log + phase checklist; record results inline.
-3. If Track A passes its quality gate (Gate A): file `longcat-engram-worker-evaluation.md` and link from `inference-acceleration-index.md`.
+3. If Track A passes its quality gate (Gate A): file `longcat-engram-worker-evaluation.md` and link from `inference-research-index.md`.
 4. If Track B proxy derisk passes (Gate B0): file `engram-retrofit-qwen36-spike.md` and link from this handoff.
 5. If either track is killed by a falsification gate: write a deep-dive in `research/deep-dives/` documenting the negative measurement, and update intake-599 / intake-504 contradicting_evidence with the verified result.
-6. When the handoff reaches a terminal state (both tracks resolved): move to `handoffs/completed/` and update `inference-acceleration-index.md`'s landscape table.
+6. When the handoff reaches a terminal state (both tracks resolved): move to `handoffs/completed/` and update `inference-research-index.md`'s landscape table.
 
 ## Research Intake Update — 2026-07-02
 

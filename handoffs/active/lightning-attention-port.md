@@ -6,7 +6,7 @@
 **Priority**: MEDIUM
 **Categories**: ssm_hybrid, context_extension, kv_cache, training_distillation, inference_serving
 **Workstream**: Inference Acceleration + CPU Engineering
-**Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md)
+**Parent index**: [inference-research-index.md](inference-research-index.md)
 **Completed ledger**: [lightning-attention-port-v1-completed-through-2026-05-28.md](../completed/lightning-attention-port-v1-completed-through-2026-05-28.md)
 
 ## 2026-07-26 Staleness Review
@@ -78,4 +78,4 @@ Do not restart the Lightning Attention port. The historical ledger preserves the
 
 ## Reporting Instructions
 
-After any LQ task, update this active handoff with the command, model artifact, exact prompt/eval set, result, and the role decision. If a task resolves the remaining production decision, update [inference-acceleration-index.md](inference-acceleration-index.md) and [master-handoff-index.md](master-handoff-index.md).
+After any LQ task, update this active handoff with the command, model artifact, exact prompt/eval set, result, and the role decision. If a task resolves the remaining production decision, update [inference-research-index.md](inference-research-index.md) and [master-handoff-index.md](master-handoff-index.md).

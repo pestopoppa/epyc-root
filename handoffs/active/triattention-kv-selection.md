@@ -5,7 +5,7 @@
 **Updated**: 2026-07-26
 **Priority**: MEDIUM
 **Categories**: kv_cache, inference_serving, memory_bandwidth
-**Parent index**: [inference-acceleration-index.md](inference-acceleration-index.md)
+**Parent index**: [inference-research-index.md](inference-research-index.md)
 **Completed ledger**: [triattention-kv-selection-deployment-completed-through-2026-05-28.md](../completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md)
 
 ## 2026-07-26 Staleness Review
@@ -70,4 +70,4 @@ Reliability notes:
 
 ## Reporting Instructions
 
-After S8 runs, update this handoff with the artifact fields above and the decision on S9. If S9 opens, update [inference-acceleration-index.md](inference-acceleration-index.md), [routing-and-optimization-index.md](routing-and-optimization-index.md) if autopilot behavior changes, and [master-handoff-index.md](master-handoff-index.md).
+After S8 runs, update this handoff with the artifact fields above and the decision on S9. If S9 opens, update [inference-research-index.md](inference-research-index.md), [routing-and-optimization-index.md](routing-and-optimization-index.md) if autopilot behavior changes, and [master-handoff-index.md](master-handoff-index.md).

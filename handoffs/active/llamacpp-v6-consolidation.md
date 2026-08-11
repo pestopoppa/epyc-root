@@ -196,7 +196,7 @@ After any task here:
 - Vestigial CCD env vars: `epyc-orchestrator/scripts/server/stack_env.py` (lines 67/99)
 - Production guard: `verify_llama_cpp.sh` (keeps production on `production-consolidated-v5`)
 - Triage source: this session's 107-commit triage (CORE / PARITY / DEAD / UPSTREAM-NATIVE)
-- Related handoffs: `speculative-decoding-mtp-refresh.md`, `qwen-mtp-llamacpp-port.md`, `inference-acceleration-index.md`, `cpu-inference-optimization-index.md`
+- Related handoffs: `speculative-decoding-mtp-refresh.md`, `qwen-mtp-llamacpp-port.md`, `inference-research-index.md`, `inference-research-index.md`
 - Related memory: `project_cpu1_software_levers_exhausted`, `feedback_verify_live_affinity_not_just_topology_hash`, `project_concurrent_split_throughput`, `project_dual_half_concurrency_negative`
 
 ---
