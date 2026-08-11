@@ -43,7 +43,7 @@
 | INF-33 | log linear gated deltanet readiness | [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size) | — |
 | INF-34 | mi210 big model and acceleration roadmap | [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) | DR-3 broader K2 admission runner/package: implement the dry-run-first K2 | — |
 | INF-36 | mi210 mfma compute bound paths | [mi210-mfma-compute-bound-paths.md](mi210-mfma-compute-bound-paths.md) | DEFERRED with data — reopen the MFMA build only if a new compute-bound path appears | — |
-| INF-37 | mi210 q8 dequant gemv roofline | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) | Apply the SoA-repack lever only if coalescing measures poor; currently deemed healthy | — |
+| INF-37 | mi210 q8 dequant gemv roofline | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) | After OP-11 commits the seeded producer, rerun the IQ2_XXS Omniperf-v1 fallback and retain a passing receipt | — |
 | INF-39 | moe aggregate deployment wins brief | [moe-aggregate-deployment-wins-brief.md](moe-aggregate-deployment-wins-brief.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | INF-40 | moe spec cpu spec dec integration | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | Current live-MTP MoE verifier B-sweep: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bi… | — |
 | INF-41 | multimodal pipeline | [multimodal-pipeline.md](multimodal-pipeline.md) | S-9 — wire start_tts() into orchestrator_stack.py (port 9002 reserved); capability exists, wiring does not | — |

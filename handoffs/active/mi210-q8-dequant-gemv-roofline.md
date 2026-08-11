@@ -200,4 +200,18 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
     probe to a non-`rocprofv2` device timer/counter path rather than retrying the same crash.
   - [ ] **IQ2 tool-boundary follow-up:** capture the same seeded IQ2_XXS shape through a
     non-`rocprofv2` device-timer/counter path and retain the failed receipt as the negative control.
+    The Omniperf 2.0.1 / `rocprof` v1 fallback is now durable in research, but its first governed run
+    correctly failed compatibility before profiling: clean frozen-v9 `test-backend-ops` at
+    `0db32c06` does not implement `--suite-seed` or `--repeat-suite`. The failed receipt retains the
+    exact command, clean source/binary/profiler identities, one device sample, and claim
+    acquisition/release:
+    `/mnt/raid0/llm/autokernel/probes/inf37-iq2xxs-omniperf-v1-20260811/receipt.json`, SHA-256
+    `2054a31b5f9104bcd3437b250833de6086a7dded8533e3cc9182bc9a79222510`. A prior manual smoke at
+    `/mnt/raid0/llm/autokernel/probes/omniperf-iq2xxs-v1-smoke-20260811T1238Z` produced 260 dispatch
+    rows and proves rocprof-v1 reachability, but it has no governed receipt and is non-evidence.
+    Keep this parent open until OP-11 permits a durable seeded producer and the runner records a
+    passing matched capture.
+  - [x] **Build a fail-closed Omniperf-v1 fallback runner for the IQ2 profiler boundary.** ✅ 2026-08-11 —
+    it binds clean exact source/tool/Python identities, requires seeded repeated correctness before
+    SQ/TCC collection, holds the MI210 claim, samples device state, and writes failure receipts.
 - [ ] Investigate the permanently-dead `z_HAVE_FANCY_SIMD` AVX512-VPOPCNTDQ IQ2 sign path on an EXPERIMENTAL branch only (production kernel is frozen; this is a CPU-side finding filed here for mechanism adjacency)
