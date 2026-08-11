@@ -1,12 +1,13 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
-**Status**: ACTIVE HARDENING — C2 live correctness axes validated; producer not yet durable
-**Created**: 2026-06-03 · **Updated**: 2026-08-11 (C2 live acceptance + T0-1 closure; see §2026-08-10)
+**Status**: ACTIVE HARDENING — fp64 oracle live; stock ROCm Q4_K baseline failures open
+**Created**: 2026-06-03 · **Updated**: 2026-08-11 (RVP-C2-6 live oracle + baseline finding)
 
-> **NEXT ACTION (2026-08-11): `RVP-C2-6` (independent fp64 CPU reference).** The stateful integrity
-> pass has live CPU acceptance, while the shared C2-1/C2-3/C2-4/C2-5 experimental producer remains
-> uncommitted and must not be committed or pushed without explicit operator approval. The live sampler
-> changes in the research repo are likewise uncommitted and outside this checkpoint. The two static
+> **NEXT ACTION (2026-08-11): `RVP-C2-6a` — characterize the stock ROCm Q4_K failures under the
+> unchanged κ=1.5 gate.** The independent host-double oracle and representative cases are live, but
+> the full stock matrix has genuine baseline failures that must not be relabelled as an oracle defect
+> or erased by relaxing the threshold. The experimental implementation remains uncommitted and must
+> not be committed or pushed without explicit user approval per that tree's `AGENTS.md`. The two static
 > probes (`RVP-T0-2`, `RVP-T0-5`) remain complete and independently re-verified. **`RVP-T0-1` is now
 > complete:** the live card never approached its 300 W cap, so the clock-pinning branch and AK-OP-2
 > are closed. Everything else in §2026-08-10 is CPU-only or static and runs today.
@@ -378,6 +379,18 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   illusory. Cheap for us specifically: CPU is our abundant resource. Note the error budget: the
   weight-quantisation error largely cancels between the two sides, so the tolerance is set by
   **activation requantisation**, not by reduction order.
+  - [x] **Implement and live-validate the independent host-double oracle.** ✅ 2026-08-11 — Q4_0,
+    Q8_0, Q4_K, and Q6_K are decoded directly from GGUF wire bytes rather than project quant helpers.
+    The final metric id is `fp64_error_ratio/host-double-gguf-wire/v1`. Five representative CPU cases
+    and the dedicated broadcast-indexing regression passed; the real receipt parser remained compatible
+    across 31 parser tests; and the property self-test caught 5/5 planted defects while accepting 5/5
+    clean cases. The implementation remains uncommitted pending explicit user approval.
+  - [ ] **RVP-C2-6a — Characterize and correct the stock ROCm Q4_K baseline failures without changing
+    κ=1.5.** The full stock matrix contains genuine ratio-gate failures even though the representative
+    set and broadcast regression pass. Preserve the failing cases as correctness evidence, identify the
+    affected shapes/error ratios and mechanism, and do not rank candidates on this surface until the
+    baseline itself satisfies the predeclared gate. **Do not call the independent oracle broken and do
+    not relax the gate to make stock pass.**
 - [ ] **RVP-C2-7 — Degenerate and insensitive-case screening.** Reference-only, 3 seeds × 4
   transforms, run once per suite version, plus an input-*insensitivity* screen (does the output move
   at all when the input does?) and a seed-invariance screen. **Audit our own `(0.9, 1.1)`-style ranges

@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** C2 LIVE CORRECTNESS AXES VALIDATED / V9 CONTROLS REQUIRED BEFORE STEP 3 — updated 2026-08-11
+**Status:** C2 FP64 ORACLE LIVE / STOCK Q4_K BASELINE FAILURES OPEN / V9 CONTROLS REQUIRED — updated 2026-08-11
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -53,7 +53,14 @@ also makes the clean control instrument root/binary explicit and tests both over
 completed its authorized 60-second gfx90a saturation probe: 242 device samples held 1700 MHz for
 99.5868% of the window while the GEMM produced 41.904 TFLOP/s and peaked at only 200 W against the
 300 W cap. Because the card never approached the cap, clock pinning is not a live variance remedy here
-and AK-OP-2 is declined. The next live action is the v9/hardened control block,
+and AK-OP-2 is declined. RVP-C2-6 now also has an independent host-double reference that decodes
+Q4_0, Q8_0, Q4_K, and Q6_K directly from GGUF wire bytes and emits
+`fp64_error_ratio/host-double-gguf-wire/v1`. Five representative CPU cases, the broadcast regression,
+31 real parser tests, and the 5/5 planted plus 5/5 clean property self-test passed. The full stock ROCm
+Q4_K matrix then found genuine baseline failures of the predeclared κ=1.5 ratio gate. That is a
+correctness finding, not an oracle defect: keep the gate fixed and characterize the baseline failures
+before this surface can rank candidates. The experimental implementation remains uncommitted under its
+per-commit approval rule. The next live action is the v9/hardened control block,
 followed by §AK6.5 Step 3's known-real CPU candidate.
 The run-specific CPU/GPU authorizations do not extend to producer commits, promotion, or freeze
 actions. Offline AK-WM-1 plumbing is
@@ -2765,6 +2772,13 @@ nothing wrong. We held no claim.**
       input buffers, and one or more compared final-state outputs. The fail-closed consumer is
       research commit `9cc3ed1b`; the experimental producer remains uncommitted pending explicit
       operator approval and was not committed or pushed by this checkpoint.
+- [x] **Live-validate the independent host-double fp64 oracle.** ✅ 2026-08-11 — direct GGUF-wire
+      decoders cover Q4_0, Q8_0, Q4_K, and Q6_K under metric
+      `fp64_error_ratio/host-double-gguf-wire/v1`. Five representative CPU cases, the dedicated
+      broadcast regression, 31 real parser tests, and the property self-test's 5/5 planted plus 5/5
+      clean cases passed. The full stock ROCm Q4_K matrix separately exposed genuine baseline κ=1.5
+      failures; the gate remains fixed and the uncommitted experimental implementation was not staged,
+      committed, or pushed.
 - [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
       characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
       serving. The claim reason alone decides it.
