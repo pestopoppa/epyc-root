@@ -2,9 +2,9 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 3,
-      "handoffs": 55,
+      "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 423
+      "open": 410
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 302
+      "open": 304
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -85,10 +85,10 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 10,
+      "closed": 14,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 15,
+      "open": 11,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
@@ -690,10 +690,10 @@
     },
     "gemma-challenge-kernel-techniques-v7.md": {
       "blocked": 0,
-      "closed": 107,
+      "closed": 109,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 9,
+      "open": 7,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-16",
       "state": "active",
@@ -908,17 +908,6 @@
       "state": "active",
       "total": 17
     },
-    "k28-fused-chunked-gdn-kernel-research.md": {
-      "blocked": 0,
-      "closed": 0,
-      "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 0,
-      "owner_index": "inference-research-index.md",
-      "row_id": "INF-27",
-      "state": "active",
-      "total": 0
-    },
     "laguna-s21-cpu-port.md": {
       "blocked": 0,
       "closed": 11,
@@ -1042,10 +1031,10 @@
     },
     "mi210-big-model-and-acceleration-roadmap.md": {
       "blocked": 0,
-      "closed": 44,
+      "closed": 50,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 10,
+      "open": 4,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-34",
       "state": "active",
@@ -1066,7 +1055,7 @@
       "blocked": 0,
       "closed": 7,
       "guarded": 0,
-      "last_advanced": "2026-08-03",
+      "last_advanced": "2026-08-11",
       "open": 8,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-37",
@@ -1504,14 +1493,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 51,
+      "closed": 55,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 20,
+      "open": 19,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 71
+      "total": 74
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -1856,14 +1845,14 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 34,
+      "closed": 35,
       "guarded": 0,
       "last_advanced": "2026-08-10",
-      "open": 13,
+      "open": 15,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 47
+      "total": 50
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -2373,12 +2362,14 @@
       "track": "agent collab rnd harness"
     },
     "INF-03": {
-      "deps": [],
+      "deps": [
+        "INF-48"
+      ],
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Pre-register AK-LE-1/2 model, effort, budget, and target arms; execute only with explicit inference permission",
+      "next_action": "Run the matched MI210 controller-authoring A/B across the seven registered Arena arms",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {
@@ -2572,21 +2563,12 @@
       "next_action": "T2 \u2014 Gate trellis in ik_llama.cpp, not in our tree. /mnt/raid0/llm/ik_llama.cpp is already on disk and is the reference implementation. Bui\u2026",
       "track": "iqk iquant enablement"
     },
-    "INF-27": {
-      "deps": [],
-      "handoff": "k28-fused-chunked-gdn-kernel-research.md",
-      "id": "INF-27",
-      "index": "inference-research-index.md",
-      "line": 37,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
-      "track": "k28 fused chunked gdn kernel research"
-    },
     "INF-28": {
       "deps": [],
       "handoff": "laguna-s21-cpu-port.md",
       "id": "INF-28",
       "index": "inference-research-index.md",
-      "line": 38,
+      "line": 37,
       "next_action": "L-9P \u2014 conditional CPU throughput/config discovery. The prepared",
       "track": "laguna s21 cpu port"
     },
@@ -2595,7 +2577,7 @@
       "handoff": "large-moe-expert-parallelism.md",
       "id": "INF-29",
       "index": "inference-research-index.md",
-      "line": 39,
+      "line": 38,
       "next_action": "CPU15-REVAL \u2014 Fresh canonical matrix if reopening: before enabling EP anywhere, run:",
       "track": "large moe expert parallelism"
     },
@@ -2604,7 +2586,7 @@
       "handoff": "lightning-attention-port.md",
       "id": "INF-30",
       "index": "inference-research-index.md",
-      "line": 40,
+      "line": 39,
       "next_action": "LQ-2 broader quality eval: if keeping a math/reasoning role, run a focused AIME/MATH/GPQA-style bundle with reasoning_budget=0, exact promp\u2026",
       "track": "lightning attention port"
     },
@@ -2613,7 +2595,7 @@
       "handoff": "llama-cpp-dsa-contribution.md",
       "id": "INF-31",
       "index": "inference-research-index.md",
-      "line": 41,
+      "line": 40,
       "next_action": "D4 \u2014 root-cause the HIP bf16 LIGHTNING_INDEXER numerical failure (flaky, ERR\u22481.0,",
       "track": "llama cpp dsa contribution"
     },
@@ -2622,7 +2604,7 @@
       "handoff": "llamacpp-v6-consolidation.md",
       "id": "INF-32",
       "index": "inference-research-index.md",
-      "line": 42,
+      "line": 41,
       "next_action": "SWA slot-reuse fixes (d1c72d7fc / 603702769) \u2014 verify vs upstream SWA before drop.",
       "track": "llamacpp v6 consolidation"
     },
@@ -2631,7 +2613,7 @@
       "handoff": "log-linear-gated-deltanet-readiness.md",
       "id": "INF-33",
       "index": "inference-research-index.md",
-      "line": 43,
+      "line": 42,
       "next_action": "Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size)",
       "track": "log linear gated deltanet readiness"
     },
@@ -2640,7 +2622,7 @@
       "handoff": "mi210-big-model-and-acceleration-roadmap.md",
       "id": "INF-34",
       "index": "inference-research-index.md",
-      "line": 44,
+      "line": 43,
       "next_action": "DR-3 broader K2 admission runner/package: implement the dry-run-first K2",
       "track": "mi210 big model and acceleration roadmap"
     },
@@ -2649,7 +2631,7 @@
       "handoff": "mi210-mfma-compute-bound-paths.md",
       "id": "INF-36",
       "index": "inference-research-index.md",
-      "line": 45,
+      "line": 44,
       "next_action": "DEFERRED with data \u2014 reopen the MFMA build only if a new compute-bound path appears",
       "track": "mi210 mfma compute bound paths"
     },
@@ -2658,7 +2640,7 @@
       "handoff": "mi210-q8-dequant-gemv-roofline.md",
       "id": "INF-37",
       "index": "inference-research-index.md",
-      "line": 46,
+      "line": 45,
       "next_action": "After OP-11 commits the seeded producer, rerun the IQ2_XXS Omniperf-v1 fallback and retain a passing receipt",
       "track": "mi210 q8 dequant gemv roofline"
     },
@@ -2667,7 +2649,7 @@
       "handoff": "moe-aggregate-deployment-wins-brief.md",
       "id": "INF-39",
       "index": "inference-research-index.md",
-      "line": 47,
+      "line": 46,
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "track": "moe aggregate deployment wins brief"
     },
@@ -2676,7 +2658,7 @@
       "handoff": "moe-spec-cpu-spec-dec-integration.md",
       "id": "INF-40",
       "index": "inference-research-index.md",
-      "line": 48,
+      "line": 47,
       "next_action": "Current live-MTP MoE verifier B-sweep: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bi\u2026",
       "track": "moe spec cpu spec dec integration"
     },
@@ -2685,7 +2667,7 @@
       "handoff": "multimodal-pipeline.md",
       "id": "INF-41",
       "index": "inference-research-index.md",
-      "line": 49,
+      "line": 48,
       "next_action": "S-9 \u2014 wire start_tts() into orchestrator_stack.py (port 9002 reserved); capability exists, wiring does not",
       "track": "multimodal pipeline"
     },
@@ -2694,7 +2676,7 @@
       "handoff": "multiscreen-attention-evaluation.md",
       "id": "INF-42",
       "index": "inference-research-index.md",
-      "line": 50,
+      "line": 49,
       "next_action": "HRM-1: Pull huggingface.co/sapientinc/HRM-Text-1B and run a fair head-to-head against Qwen3.5-1.7B-Instruct on our benchmark suite (MMLU, A\u2026",
       "track": "multiscreen attention evaluation"
     },
@@ -2703,7 +2685,7 @@
       "handoff": "numa-placement-defect-20260730.md",
       "id": "INF-43",
       "index": "inference-research-index.md",
-      "line": 51,
+      "line": 50,
       "next_action": "T3 \u2014 Re-run the 27 confounded E5 cells on declared placement. Per model the grid must",
       "track": "numa placement defect"
     },
@@ -2712,7 +2694,7 @@
       "handoff": "numa-prefill-decode-disaggregation.md",
       "id": "INF-44",
       "index": "inference-research-index.md",
-      "line": 52,
+      "line": 51,
       "next_action": "BLOCKED: feasibility-gated (xGMI KV-transfer falsification); reopen on multi-tenant shift",
       "track": "numa prefill decode disaggregation"
     },
@@ -2721,7 +2703,7 @@
       "handoff": "numa-topology-cutover-resume-20260730.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 53,
+      "line": 52,
       "next_action": "P0-1 \u2014 fix the 30 net-new breaking tests across 14 files; this blocks the commit",
       "track": "numa topology cutover resume"
     },
@@ -2730,7 +2712,7 @@
       "handoff": "qwen-mtp-llamacpp-port.md",
       "id": "INF-46",
       "index": "inference-research-index.md",
-      "line": 54,
+      "line": 53,
       "next_action": "P6b Operator-gated fresh-v8-experimental model-load + gate bench on unsloth/Qwen3.6-35B-A3B-MTP-GGUF, with matched Q4 no-spec vs Q4-MTP art\u2026",
       "track": "qwen mtp llamacpp port"
     },
@@ -2739,7 +2721,7 @@
       "handoff": "qwen36-27b-cpu-feasibility.md",
       "id": "INF-47",
       "index": "inference-research-index.md",
-      "line": 55,
+      "line": 54,
       "next_action": "P1 CPU throughput probe (single-instance + NUMA-4-way) on Qwen3.6-27B Q4_K_M - inference-blocked; PARKED 2026-07-14, reopen only if 27B bec\u2026",
       "track": "qwen36 27b cpu feasibility"
     },
@@ -2748,7 +2730,7 @@
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 56,
+      "line": 55,
       "next_action": "With OP-11 approval, commit the experimental producers and rerun C2-7/C2-8/C2-9 on that durable identity",
       "track": "rocm verify profile backend"
     },
@@ -2757,7 +2739,7 @@
       "handoff": "sarathi-serve-cpu-evaluation.md",
       "id": "INF-49",
       "index": "inference-research-index.md",
-      "line": 57,
+      "line": 56,
       "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (batched-decode E2 keep-candidate = the fired multi-tenant trigg\u2026",
       "track": "sarathi serve cpu evaluation"
     },
@@ -2766,7 +2748,7 @@
       "handoff": "speculative-decoding-mtp-refresh.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 58,
+      "line": 57,
       "next_action": "SW-2 \u2014 confirm SW-1 against a live server when a lane is free and no protected bench region is held: POST a completion carrying speculative\u2026",
       "track": "speculative decoding mtp refresh"
     },
@@ -2775,7 +2757,7 @@
       "handoff": "streaming-llm-baseline.md",
       "id": "INF-51",
       "index": "inference-research-index.md",
-      "line": 59,
+      "line": 58,
       "next_action": "Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models",
       "track": "streaming llm baseline"
     },
@@ -2784,7 +2766,7 @@
       "handoff": "summary-token-attention-readiness.md",
       "id": "INF-52",
       "index": "inference-research-index.md",
-      "line": 60,
+      "line": 59,
       "next_action": "Gate A \u2014 Pretrained checkpoint of a model we serve (Qwen2.5/3.5/3.6 family, or any base we already deploy) released with KSA-style summary\u2026",
       "track": "summary token attention readiness"
     },
@@ -2793,7 +2775,7 @@
       "handoff": "tidar-one-pass-variant-b.md",
       "id": "INF-53",
       "index": "inference-research-index.md",
-      "line": 61,
+      "line": 60,
       "next_action": "W2 \u2014 checkpoint gate + Q4 quality validation (bench-only when gate fires): watch for a Q4_K_M-quantizable TiDAR-class checkpoint (none exis\u2026",
       "track": "tidar one pass variant b"
     },
@@ -2802,7 +2784,7 @@
       "handoff": "tq3-quantization-evaluation.md",
       "id": "INF-54",
       "index": "inference-research-index.md",
-      "line": 62,
+      "line": 61,
       "next_action": "Prototype faithful ChunkKV on a fresh llama.cpp-experimental tree",
       "track": "tq3 quantization evaluation"
     },
@@ -2811,7 +2793,7 @@
       "handoff": "tree-draft-forward-port-plan.md",
       "id": "INF-55",
       "index": "inference-research-index.md",
-      "line": 63,
+      "line": 62,
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "track": "tree draft forward port plan"
     },
@@ -2820,7 +2802,7 @@
       "handoff": "triattention-kv-selection.md",
       "id": "INF-56",
       "index": "inference-research-index.md",
-      "line": 64,
+      "line": 63,
       "next_action": "S8 autopilot exploration: sweep keep_ratio and layer_weights per production role; persist Pareto profiles with quality, speed, cost, and re\u2026",
       "track": "triattention kv selection"
     },
@@ -2829,7 +2811,7 @@
       "handoff": "v7-promotion.md",
       "id": "INF-57",
       "index": "inference-research-index.md",
-      "line": 65,
+      "line": 64,
       "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
       "track": "v7 promotion"
     },
@@ -2840,7 +2822,7 @@
       "handoff": "v9-kernel-per-request-speculative-params.md",
       "id": "INF-58",
       "index": "inference-research-index.md",
-      "line": 66,
+      "line": 65,
       "next_action": "Implement and prospectively ratify the sealed resident promotion fast path with fresh-server fallback",
       "track": "v9 kernel per request speculative params"
     },
@@ -2849,7 +2831,7 @@
       "handoff": "yarn-context-extension-research.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 67,
+      "line": 66,
       "next_action": "QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss",
       "track": "yarn context extension research"
     },

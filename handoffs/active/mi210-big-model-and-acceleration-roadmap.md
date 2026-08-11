@@ -158,7 +158,7 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
       before any serving route or NumericSwarm surface.
 - [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
 - [x] **stream-K `nsm→k·nsm` + compact-LDS residual — zero-build artifact read CLOSED ✅ 2026-07-18** (v7-audit LANE B B2): artifact recovery found the original MI210 campaign under `/mnt/raid0/llm/tmp/mi210-build/campaign/`, including `mmq-compact-lds-NEGATIVE.patch`, `kernels/fused-prefetch-NEGATIVE.patch`, and rocprof CSVs under `moe-agg/prof/`. Read verdict: stream-K is already the live Q8 MMQ path (`mul_mat_q` plus `mul_mat_q_stream_k_fixup`); B32 Q8 MMQ dispatches use grid `53248 = 512 * 104 CUs`, i.e. one persistent workgroup per CU, with fixup grid `53248`, LDS `512`. The compact-LDS patch is explicitly negative and should not be revived. The only surviving idea is a distinct `2*nsm=208` persistent-grid experiment, but that is a new operator-gated build/bench with a narrow `+0–10%` IQ2/capacity ceiling, not a zero-inference closeout or saved-patch apply.
-- [ ] **K28 — GDN long-prefill recurrence kernel** (GPU; `ggml/src/ggml-cuda/gated_delta_net.cu:191` TODO): a default-off fused chunked recurrence kernel avoiding one serial token-axis scan per (head, seq, column-shard); must preserve GDA/KDA + transposed-state + K>1 snapshot semantics. Prefill t/s for hybrid (Qwen3.6/GDN) models; GPU sibling of [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) and owned by [k28-fused-chunked-gdn-kernel-research.md](k28-fused-chunked-gdn-kernel-research.md). Larger perf project; first profile/ceiling pass is complete and says this should not block frozen-v7 promotion.
+- [x] **K28 — GDN long-prefill recurrence kernel CLOSED NO-GO ✅ 2026-08-11** (GPU; `ggml/src/ggml-cuda/gated_delta_net.cu:191` TODO): governed whole-model attribution completed the cheap gate and found no admission case for a prototype. GDN summed-kernel share falls from 15.397% at p2048 to 12.180% at p32768; the optimistic 4x-op ceiling falls from 11.548% to 9.135%, below the requirement to materially beat higher-EV alternatives. Closeout: [k28-fused-chunked-gdn-kernel-research.md](../completed/k28-fused-chunked-gdn-kernel-research.md).
   - [x] **K28.1 — ROCm backend support/correctness/perf profile ✅ 2026-07-20**:
     experimental `build-hip` at `93d945885-dirty` built `test-backend-ops`;
     valid invocations pinned `LD_LIBRARY_PATH=$PWD/build-hip/bin` after a raw
@@ -227,13 +227,15 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
     Verdict: the timing hook validates the Phase 0 ceiling rather than raising
     EV; K28 remains post-promotion/default-off unless a constrained fused
     recurrence prototype proves materially better.
-  - [ ] **K28.5 — fused recurrence prototype gate**:
-    implement only after a cheap proof step raises the Phase 0 ceiling. Accepted
-    proof steps are direct ROCm attribution at 2K/8K/32K or a throwaway HIP
-    prototype that fuses the per-chunk C-loop while leaving the rest of the
-    graph intact. If the gate passes, Phase 1 is FP32/fusion-only and
-    runtime-gated/default-off; MFMA/bf16 is a separate Phase 2, and `K>1`
-    snapshot semantics must either fall back to the serial path or pass parity.
+  - [x] **K28.5 — fused recurrence prototype gate CLOSED NO-GO ✅ 2026-08-11**:
+    direct timestamp-only `rocprof` v1 attribution ran on the clean frozen-v9
+    binary and Qwen3.6-35B-A3B Q8 at p2048/p8192/p32768. GDN shares were
+    15.397%/14.649%/12.180%; optimistic 4x-op full-model ceilings were
+    11.548%/10.987%/9.135%. These reproduce the old timing-hook estimate and do
+    not materially beat the adjacent levers, so the gate says stop before a
+    prototype. Receipt:
+    `/mnt/raid0/llm/autokernel/probes/k28-rocprofv1-attribution-20260811-r3/receipt.json`,
+    SHA-256 `981306080a674f89f5ac7f9c7631feef1d31071dacd46329aa983db72e74c5a0`.
     - [x] **K28.5a — pinned verbose trace scaffold audit CLOSED ✅ 2026-07-20**:
       `LLAMA_QWEN35_PREFILL_TRACE=2` on Qwen3.6-35B-A3B Q8 with pinned
       experimental v7 libs and `llama-bench -v` emitted structural graph-node
@@ -245,7 +247,7 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
       raise the Phase 0 ceiling; `K28.5` stays open only for direct profiler or
       throwaway-prototype evidence. Artifact:
       `data/k28_gdn_perf/k28-qwen35moe-gpu-trace-verbose-pinned-20260720T112158Z/summary.json`.
-  - [ ] **K28-R1 — Adopt the SGLang `fla/` four-stage decomposition as K28's named reference**
+  - [x] **K28-R1 — Adopt the SGLang `fla/` four-stage decomposition as K28's named reference ✅ 2026-08-11**
     (research-intake 2026-08-09, intake-1030 dive-verified against `sgl-project/sglang` `main`).
     Cite by stage ROLE + entrypoint + pinned commit, never by kernel name alone (see K28-R4):
     `chunk_local_cumsum` (`fla/cumsum.py`) -> `recompute_w_u_fwd` (`fla/wy_fast.py`, the WY/UT
@@ -254,20 +256,14 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
     in `fla/chunk.py`. **This reframes the effort**: the SOTA engine is NOT running one monolithic
     fused kernel — it runs four separately-autotuned Triton stages with on-chip chunk locality, a
     materially easier target to match. Detail in
-    [k28-fused-chunked-gdn-kernel-research.md](k28-fused-chunked-gdn-kernel-research.md).
-  - [ ] **K28-R2 — Cheap first probe: attempt `fla/bench_gdn_replayssm_fold.py` under torch-ROCm on
-    gfx90a.** 127 lines, argparse-driven, device-parameterized (`torch.Generator(device=device)`,
-    `torch.randperm(..., device=device)`), with no CUDA-only API in the sampled surface. Far cheaper
-    than authoring a kernel, and it is a candidate route to the direct GDN attribution that K28.4/K28.4a
-    could not obtain because the ROCm profilers were absent. Feeds the K28.5 proof gate.
-  - [ ] **K28-R3 — Sequence K28-R2 behind the `pytorch-triton-rocm` install/verify task in
-    [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md).** All four stage kernels are pure
-    Triton with autotune and no `is_cuda` guard, so gfx90a is plausible — but nothing here is evaluable
-    until Triton compiles for gfx90a. That task is the gating dependency, not an unrelated item.
-  - [ ] **K28-R4 — Test whether the fixed 64-wide blocking in
-    `chunk_gated_delta_rule_fwd_kernel_h_blockdim64` is dimensionally favourable on CDNA2** (64-lane
-    wavefront vs NVIDIA's 32-lane warp). **HYPOTHESIS ONLY** — the 64 may denote a feature-dimension
-    tile rather than lane geometry; confirm from the kernel body before building on it.
+    [k28-fused-chunked-gdn-kernel-research.md](../completed/k28-fused-chunked-gdn-kernel-research.md).
+  - [x] **K28-R2 — SGLang FLA torch-ROCm probe declined by the K28 gate ✅ 2026-08-11.** Direct
+    whole-model attribution supplied the intended decision signal more cheaply and failed the
+    prototype admission bar; running a second route cannot make the closed kernel project higher EV.
+  - [x] **K28-R3 — sequencing dependency retired with K28-R2 ✅ 2026-08-11.** Triton gfx90a itself is
+    proven by the INF-03 GEAK/Arena round-trip, but no K28-specific FLA run remains warranted.
+  - [x] **K28-R4 — fixed-64 blocking hypothesis retired with the failed K28 gate ✅ 2026-08-11.** It
+    remains reference material, not an executable task, because the parent prototype is a measured no-go.
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
 

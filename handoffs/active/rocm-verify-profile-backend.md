@@ -41,13 +41,27 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
 
 ## Current sequence (replaces the old phase plan)
 - [x] **Pre-hardware prep (now).** Pin GEAK / GEAK-eval / Apex / AgentKernelArena repos to paper-matching commits, inspect licenses, and draft a split ROCm + torch-ROCm environment recipe ✅ 2026-07-29. Source pins and the no-execution activation order are recorded in [deep-dive §10](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md#10-pre-hardware-source-pins-and-deferred-environment-recipe-2026-07-29): GEAK v1 `v1.0.0` is Apache-2.0 (not the old MIT label); Apex is MIT; AgentKernelArena is Apache-2.0; GEAK-eval has no project-level license at its paper-era snapshot, so its code is **no-reuse pending resolution**. GEAK v1 (`triton==3.1.0`) and GEAK-eval (`triton==3.3.0`) require isolated environments. No install, server, benchmark, GPU/ROCm workload, or production-kernel action is authorized by this closure.
-- [ ] **MI210 bring-up (gated on card).** Install ROCm + torch-ROCm; confirm `gfx90a` visible; **reproduce GEAK-eval's MI250X numbers on the MI210** (sanity gate — expect lower absolute speedups at ~half the aggregate bandwidth, verify correctness/compile). Also reproduce AgentKernelArena on gfx90a (`target_gpu_model`).
-- [ ] **Harden oracle + integrity (C2 + C6).** Lift robust-kbench's exploit-class defenses + AgentKernelArena's unseen-shape generator into the GEAK/Apex oracle; red-team with deliberately-cheating kernels.
+- [x] **MI210 base bring-up and one-task AgentKernelArena compatibility.** ✅ 2026-08-11 — ROCm,
+  torch-ROCm, Triton and physical `gfx90a` were identity-checked; the live add task compiled, passed
+  correctness 3/3 and timing 5/5, and released the claim. The preflight honestly records
+  `external_type_dispatch_present=false`, so this does not claim the full vendor launcher ran.
+- [ ] **Reproduce GEAK-eval's published MI250X task/result on the MI210.** Run the paper-era task and
+  candidate through the pinned vendor launcher, expecting lower absolute speedup at roughly half the
+  aggregate bandwidth; distinguish source compatibility from result reproduction.
+- [ ] **Harden the remaining producer-dependent C2 oracle surfaces.** C2-7/C2-8/C2-9 reducers and
+  runners are durable, but their sensitivity/hostile/checker-isolation evidence waits on OP-11's
+  experimental producer identity.
+- [x] **Build C6 reward integrity.** ✅ 2026-08-11 — immutable external scoring, exploit detectors,
+  unseen/hostile shapes, stream/thread escape checks, planted red-team corpus, prompt disclosure,
+  output-invariance, and ranked anti-short-circuit cases are implemented and tested.
 - [ ] **Honest baseline + E2E scoring (C3 + FastKernels gate).** Gate reward on a vendor baseline; add a whole-model exit gate via Apex's hot-patch + re-bench with captured EPYC-workload tensors.
-- [ ] **C4 profiler feedback (MED empirical risk).** Run the deterministic paired-trace report first,
-  then confine any model to its bounded similarity/catalogue receipt. Derive whether the resulting
-  gfx90a signal is useful on a real mapping/formal capture; Xe-Forge and CudaForge remain fallbacks.
-- [ ] **EPYC-op seeding + controller A/B.** Seed the suites with EPYC ops; A/B controllers as AgentKernelArena adapters (see parent handoff).
+- [x] **C4 profiler feedback (MED empirical risk).** ✅ 2026-08-11 — the deterministic paired
+  `rocprofv2` report produces useful op-level mapping/formal signal, while the governed timestamp-only
+  `rocprof` v1 fallback produced whole-model Qwen3.6 GDN attribution at 2K/8K/32K. Model-facing
+  similarity/catalogue output remains diagnostic-only. IQ2_XXS's seeded Omniperf replay is tracked
+  separately by INF-37/OP-11 and does not reopen the C4 implementation.
+- [ ] **EPYC-op suite integration.** Seed the backend suites with the selected EPYC ops and honest
+  vendor baselines. The matched controller A/B is owned only by INF-03; do not duplicate it here.
 - [ ] **HIP arm (after the Triton loop works).** GEAK-HIP patterns (678) + AgentKernelArena Torch2HIP suite (679) + our own HIP oracle, toward hand-HIP for the llama.cpp fork.
 
 ## Interface contract (the seam controllers depend on)
@@ -66,7 +80,7 @@ Mirrors GEAK-eval's evaluator, Apex's Magpie scorer, and CUDA Agent's `verificat
 ## gfx90a caveat + audit
 Same `gfx90a` predicts **compile compatibility, not performance equivalence** — reproduce every AMD number on the MI210 before trusting it (GEAK-v1 carries the only gfx90a *evaluation*; GEAK-v2/HIP/AgentKernelArena publish gfx942 numbers only — but GEAK **v4** retains first-class gfx90a *knowledge*, amended 2026-08-03 in [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md)). **Run the GEAK-family freshness sweep (deep dive §9) at each audit.** All intake-674–679 AMD numbers are vendor-reported until reproduced on our own gfx90a (`feedback_classify_eval_failures_by_reason`, observe-before-diagnosing).
 
-## C4 is blocked on TOOL AVAILABILITY, not only on metric selection — 2026-08-03 (research-intake Stage-2b)
+## Historical C4 tooling block — resolved 2026-08-03 (research-intake Stage-2b)
 
 The C4 row above is scored HIGH risk for "CDNA2 counter taxonomy unproven". That is only half of it:
 **the profilers themselves are absent.** `rocprofv2`, `rocprof` and `omniperf` were all missing as of
@@ -128,6 +142,15 @@ from `$ROCM_PATH`, so the prefix needs a mirrored `.info/version`. Both are hand
   mapping/formal reports, and the report now crosses a diagnostic-only AutoKernel/GEAK/Arena seam.
   Residual MED risk is explicitly scoped: `rocprofv2` exits 139 for whole-model Qwen prefill and
   IQ2_XXS op capture on this host, so those workloads require another profiler or a narrower probe.
+- [x] **RVP-C4-1 — Add and exercise a governed whole-model `rocprof` v1 attribution fallback.**
+  ✅ 2026-08-11 — `run_autokernel_rocprofv1_attribution.py` binds clean source/binary/model/profiler
+  and linkage identities, holds the MI210 claim, samples the device at 250 ms, and captures
+  p2048/p8192/p32768 with graphs disabled. GDN summed-kernel shares were **15.397%, 14.649%, and
+  12.180%**; optimistic 4x-op full-model ceilings were **11.548%, 10.987%, and 9.135%**. This
+  reproduces the earlier ceiling instead of raising it. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/k28-rocprofv1-attribution-20260811-r3/receipt.json`, SHA-256
+  `981306080a674f89f5ac7f9c7631feef1d31071dacd46329aa983db72e74c5a0`; research integration
+  commit `48350b24`.
 - `omniperf` 2.0.1 is now runnable through a sealed Python environment and `rocprof` v1. A manual
   IQ2_XXS smoke produced 260 dispatch rows, proving fallback reachability, but is non-evidence. The
   governed fallback runner fails closed because frozen v9 lacks its seeded/repeated producer flags;
@@ -239,7 +262,7 @@ the upstream tooling parses torch-profiler Chrome traces and declares no ROCm pa
 - [x] **RVP-5 — Adopt architecture-shape matching as a profiling primitive.** Attribute trace structure
   to *architectural blocks*, not only to kernel names: repeating trace groups map to the model's layer
   pattern. Kernel names drift (see the K28 rename evidence in
-  [`k28-fused-chunked-gdn-kernel-research.md`](k28-fused-chunked-gdn-kernel-research.md)); block
+  [`k28-fused-chunked-gdn-kernel-research.md`](../completed/k28-fused-chunked-gdn-kernel-research.md)); block
   structure does not. ✅ 2026-08-11 — reviewed architecture blocks are exact ordered family sequences;
   the mapping trace reports their occurrence count without fuzzy kernel-name inference.
 - [x] **RVP-6 — Log RocmProfileData (RPD) as a fourth profiler candidate** alongside `rocprofv2`,
@@ -375,7 +398,7 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   Rule 3 is the one that gets forgotten, and it is the one that matters — a kernel that computes the
   right outputs and corrupts the carried state passes rules 1 and 2. Targets `SSM_SCAN`, `SSM_CONV`,
   flash-attention-with-cache, and the k28 chunked-GDN work
-  ([`k28-fused-chunked-gdn-kernel-research.md`](k28-fused-chunked-gdn-kernel-research.md)).
+  ([`k28-fused-chunked-gdn-kernel-research.md`](../completed/k28-fused-chunked-gdn-kernel-research.md)).
   - [x] **Live acceptance probe.** ✅ 2026-08-11 — suite seed `4711` passed **5,184/5,184** cases
     across `SSM_SCAN`, `SSM_CONV`, `FLASH_ATTN_EXT`, and `GATED_DELTA_NET`. Every emitted
     `AK_STATE_V1` receipt had `initial_equal=1`, `input_immutable=1`, and one or more final-state

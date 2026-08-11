@@ -12,7 +12,7 @@
 |----|-------|---------|-------------|------|
 | INF-01 | 01 speculative decoding | [01-speculative-decoding.md](01-speculative-decoding.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | INF-02 | agent collab rnd harness | [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md) | (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (--backend local, custo… | — |
-| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Pre-register AK-LE-1/2 model, effort, budget, and target arms; execute only with explicit inference permission | — |
+| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Run the matched MI210 controller-authoring A/B across the seven registered Arena arms | INF-48 |
 | INF-04 | angelslim techniques evaluation | [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) | BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist | — |
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Run the first real CPU candidate on the full host after explicit inference permission | INF-48 |
@@ -34,7 +34,6 @@
 | INF-24 | inference batch loop | [inference-batch-loop.md](inference-batch-loop.md) | P0 RCP prologue — RCP-W1 (reference relaunch + preflight), RCP-W2 (ledger materialize), RCP-W3 (calibration smoke) — gated OP-6a/6b + OP-st… | — |
 | INF-25 | intra process tensor parallel decode | [intra-process-tensor-parallel-decode.md](intra-process-tensor-parallel-decode.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | INF-26 | iqk iquant enablement | [iqk-iquant-enablement.md](iqk-iquant-enablement.md) | T2 — Gate trellis in ik_llama.cpp, not in our tree. /mnt/raid0/llm/ik_llama.cpp is already on disk and is the reference implementation. Bui… | — |
-| INF-27 | k28 fused chunked gdn kernel research | [k28-fused-chunked-gdn-kernel-research.md](k28-fused-chunked-gdn-kernel-research.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | INF-28 | laguna s21 cpu port | [laguna-s21-cpu-port.md](laguna-s21-cpu-port.md) | L-9P — conditional CPU throughput/config discovery. The prepared | — |
 | INF-29 | large moe expert parallelism | [large-moe-expert-parallelism.md](large-moe-expert-parallelism.md) | CPU15-REVAL — Fresh canonical matrix if reopening: before enabling EP anywhere, run: | — |
 | INF-30 | lightning attention port | [lightning-attention-port.md](lightning-attention-port.md) | LQ-2 broader quality eval: if keeping a math/reasoning role, run a focused AIME/MATH/GPQA-style bundle with reasoning_budget=0, exact promp… | — |
