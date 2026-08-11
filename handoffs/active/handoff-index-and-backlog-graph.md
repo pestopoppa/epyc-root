@@ -46,6 +46,16 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
   docstring rules out a systemd unit ("host config is operator territory"); the documented alternative
   is the cron form `*/2 * * * * hub_supervisor.sh once`, which is idempotent and self-exits when a
   daemon is already running. Host-level change → operator's call.
+  - [x] **The "sat on stale code unnoticed" half is closed; the cron half is not.** ✅ 2026-08-11 —
+    `mainD`. `hub_supervisor.sh` now detects a hub serving code OLDER than `dashboard/` and restarts
+    it, ported from the bus supervisor's **C42**. `health_ok` only asks whether :8100 answers 200,
+    and a hub running twelve-hour-old code answers yes. This needs **no host change** — when the
+    supervisor IS running it now notices. Identity from the listening port (exact, never a name
+    pattern), fail-closed on every unknown, restart once per source version. 5 tests, predicate-only
+    so it never reaches `restart_hub`. Verified read-only against the live hub: reports **current**,
+    so no false positive on a healthy service.
+    **The parent row stays OPEN and unticked — the cron decision is untouched and still the
+    operator's.**
 
 ## Not filed, deliberately
 

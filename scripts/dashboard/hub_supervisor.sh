@@ -281,10 +281,84 @@ reconcile_hub_pid() {
   fi
 }
 
+# --------------------------------------------------------------------------- #
+# Stale source — the hub is UP but running code older than dashboard/
+# --------------------------------------------------------------------------- #
+#
+# Ported from the bus supervisor's C42 (2026-08-11), where the same gap left five
+# fixes committed-not-live in one evening. `health_ok` asks whether :8100 answers
+# 200; a hub serving twelve-hour-old code answers yes. This handoff's own row
+# records the consequence in its second sentence: hub_supervisor.sh "was found
+# dead on 2026-08-10 ... which is why the hub sat on stale code unnoticed".
+#
+# NOT the operator half of that row. Whether a cron entry should restart this
+# supervisor when it dies is a host-level change and the operator's call; this is
+# the part that needs no host change — when the supervisor IS running, it now
+# notices a stale hub instead of reporting it healthy.
+#
+# Identity comes from the LISTENING PORT via hub_pids, which is exact. The bus
+# version takes it from the daemon's heartbeat for the same reason: never a name
+# pattern, which on this shared host is a wildcard over other sessions' processes.
+STALE_SRC_STATE="${LOG_DIR}/hub_supervisor.stale_src"
+# Whole-second resolution on both sides. 5s covers it and still catches a source
+# edited a minute after a restart. (C42: `ps -o etimes` truncates, so a source
+# written in the same second as a legitimate restart read as NEWER — a false
+# positive that recurs every cycle, i.e. a restart loop.)
+STALE_SRC_SKEW_S="${STALE_SRC_SKEW_S:-5}"
+
+hub_newest_source_mtime() {
+  find "${EPYC_ROOT}/dashboard" -name '*.py' -newermt '@0' -printf '%T@\n' 2>/dev/null \
+    | cut -d. -f1 | sort -n | tail -1
+}
+
+# 0 = running hub predates its source. FAIL CLOSED: every unknown returns 2.
+hub_source_is_newer() {
+  local pid elapsed src now started
+  # `|| true` on every capture: this script runs under `set -euo pipefail`, where a
+  # FAILING command substitution aborts the whole supervisor — so without them the
+  # fail-closed branches below are unreachable and the watchdog exits instead of
+  # reporting. (C42 learned this the hard way, twice.)
+  pid="$(hub_pids | awk '{print $1}' || true)"
+  [[ -z "${pid}" ]] && return 2
+  elapsed="$(ps -p "${pid}" -o etimes= 2>/dev/null | tr -d ' ' || true)"
+  [[ -z "${elapsed}" ]] && return 2
+  src="$(hub_newest_source_mtime || true)"
+  [[ -z "${src}" ]] && return 2
+  now="$(date +%s)"
+  started=$(( now - elapsed ))
+  (( src > started + STALE_SRC_SKEW_S ))
+}
+
+check_hub_stale_source() {
+  local src rc=0
+  # `|| rc=$?`, never `cmd; rc=$?`. Under `set -e` a FUNCTION returning non-zero as
+  # a simple command aborts the script, so the bare form kills the supervisor on
+  # every "current" and every "cannot tell" — the normal path. A watchdog that
+  # silently stops watching.
+  hub_source_is_newer || rc=$?
+  if (( rc == 2 )); then
+    log "stale-source check UNAVAILABLE (no hub pid, start time, or source mtimes) —"
+    log "  reported, not passed: a check that cannot tell is not a clean one"
+    return 0
+  fi
+  (( rc != 0 )) && return 0
+  src="$(hub_newest_source_mtime || true)"
+  # Restart once per source version, or a frequently-touched file turns this into a
+  # restart loop — worse than the staleness it thinks it is fixing.
+  if [[ -f "${STALE_SRC_STATE}" ]] && [[ "$(cat "${STALE_SRC_STATE}" 2>/dev/null)" == "${src}" ]]; then
+    return 0
+  fi
+  log "hub is serving code OLDER than dashboard/ — restarting so landed changes take effect"
+  echo "${src}" > "${STALE_SRC_STATE}"
+  restart_hub
+}
+
 cmd_once() {
   acquire_lock
   if health_ok; then
     reconcile_hub_pid
+    # A HEALTHY hub can still be the wrong hub.
+    check_hub_stale_source
     log "once: hub healthy — no action"
     return 0
   fi
