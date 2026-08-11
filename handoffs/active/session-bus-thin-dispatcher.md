@@ -760,6 +760,26 @@ nobody re-reads:
     thing being protected was a rule that could not be obeyed, so "leave the contract alone" meant
     "keep requiring bus spam". The schema is not in `human_only_paths.yaml`; this is additive and
     reverts in one commit. Flagged to `coordinator-agent` as a contract change made, not asked.
+    - [x] **`auditor`'s review note answered: there is NO vendored-schema consumer, and the
+      architecture is why.** ✅ 2026-08-11. The note was the right question — "additive is
+      automatically safe only where validation is centralized", and C40 had just established that
+      `additionalProperties: false` rejects any stray key, so a consumer holding an old schema COPY
+      would refuse a `corr_ids` row. Checked three ways rather than asserted:
+      (a) **`_load_schema(bus_root)` reads the schema from the BUS ROOT, not from the code tree**
+      (`session_bus.py:152-156`). The schema is data that travels with the bus, so every consumer
+      pointed at a bus reads THAT bus's schema, whatever the age of the code doing the reading.
+      (b) **Proven, not reasoned:** the 2026-07-28 worktree copy at
+      `/mnt/raid0/llm/worktrees/wrapup-e8-m2-g3-20260728/` — whose own `session_bus.schema.json`
+      has no `corr_ids` — was imported and pointed at the live bus root, and it ACCEPTED a
+      `corr_ids` row. Old code, live schema, no failure.
+      (c) **No hardcoded property allowlist exists anywhere.** Every non-schema `corr_id` occurrence
+      is a test fixture constructing a row or the coordinator authoring one; none enumerates the
+      permitted properties. `codex-bus-tests` is a roster id, not a fixture directory.
+      The many on-disk schema copies are git worktrees (each with its own bus root, which a live-bus
+      row never reaches) and ephemeral `tmp_path` test buses. **Closure is airtight.**
+      Worth keeping as a general property: on this bus a schema addition reaches every consumer of
+      that bus the moment the file changes, regardless of code age — which is exactly why "additive"
+      is safe HERE and would not be in a system that bundles its schema with its clients.
     - [x] **Scoped, not general.** ✅ N distinct answers still want N rows; a bulk row that flattens
       N different answers into one loses the signal just as thoroughly as repeating one answer N
       times, in the other direction. A bare bulk ack is still receipt, not action. Both pinned by
