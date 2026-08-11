@@ -14593,6 +14593,52 @@
     quote: 'One command sets up the CLI, authenticates, and installs Firecrawl skills across every detected AI coding agent: npx -y firecrawl-cli@latest init --all --browser Skills firecrawl/skills — Agent Skills for Build and Live Web Work Drop-in skills for Claude Code, Cursor, and OpenAI Codex following the Agent Skills format.'
     quote_sha256: febf522830cc7105e2f4d74221a0b5dd837ee4677243a6d19ff57c6f793edae6
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-29 record repair: the prior not_applicable label was wrong — Firecrawl DOES self-host
+      via SELF_HOST.md and docker compose, with local /v1/scrape and /v1/crawl, SearXNG-backed /search,
+      and OpenAI-compatible or Ollama extraction. That corrects the APPLICABILITY VERDICT, not this claim.
+      The outcome is unchanged: fire-engine anti-bot remains cloud-only, the compose needs seven services
+      and reserves 4 CPU/8 GB + 2 CPU/4 GB, and Crawl4AI (intake-372) is already deployed as the simpler
+      Apache-2.0 local path. Firecrawl''s ranked engine-waterfall is kept as a CA-6 design pattern, not
+      an adoption reason.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-29 record repair: the prior not_applicable label was wrong — Firecrawl DOES self-host
+      via SELF_HOST.md and docker compose, with local /v1/scrape and /v1/crawl, SearXNG-backed /search,
+      and OpenAI-compatible or Ollama extraction. That corrects the APPLICABILITY VERDICT, not this claim.
+      The outcome is unchanged: fire-engine anti-bot remains cloud-only, the compose needs seven services
+      and reserves 4 CPU/8 GB + 2 CPU/4 GB, and Crawl4AI (intake-372) is already deployed as the simpler
+      Apache-2.0 local path. Firecrawl''s ranked engine-waterfall is kept as a CA-6 design pattern, not
+      an adoption reason.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-29 record repair: the prior not_applicable label was wrong — Firecrawl DOES self-host
+      via SELF_HOST.md and docker compose, with local /v1/scrape and /v1/crawl, SearXNG-backed /search,
+      and OpenAI-compatible or Ollama extraction. That corrects the APPLICABILITY VERDICT, not this claim.
+      The outcome is unchanged: fire-engine anti-bot remains cloud-only, the compose needs seven services
+      and reserves 4 CPU/8 GB + 2 CPU/4 GB, and Crawl4AI (intake-372) is already deployed as the simpler
+      Apache-2.0 local path. Firecrawl''s ranked engine-waterfall is kept as a CA-6 design pattern, not
+      an adoption reason.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-29 record repair: the prior not_applicable label was wrong — Firecrawl DOES self-host
+      via SELF_HOST.md and docker compose, with local /v1/scrape and /v1/crawl, SearXNG-backed /search,
+      and OpenAI-compatible or Ollama extraction. That corrects the APPLICABILITY VERDICT, not this claim.
+      The outcome is unchanged: fire-engine anti-bot remains cloud-only, the compose needs seven services
+      and reserves 4 CPU/8 GB + 2 CPU/4 GB, and Crawl4AI (intake-372) is already deployed as the simpler
+      Apache-2.0 local path. Firecrawl''s ranked engine-waterfall is kept as a CA-6 design pattern, not
+      an adoption reason.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-29 record repair: the prior not_applicable label was wrong — Firecrawl DOES self-host
+      via SELF_HOST.md and docker compose, with local /v1/scrape and /v1/crawl, SearXNG-backed /search,
+      and OpenAI-compatible or Ollama extraction. That corrects the APPLICABILITY VERDICT, not this claim.
+      The outcome is unchanged: fire-engine anti-bot remains cloud-only, the compose needs seven services
+      and reserves 4 CPU/8 GB + 2 CPU/4 GB, and Crawl4AI (intake-372) is already deployed as the simpler
+      Apache-2.0 local path. Firecrawl''s ranked engine-waterfall is kept as a CA-6 design pattern, not
+      an adoption reason.'
 - id: intake-365
   arxiv_id: null
   url: https://www.firecrawl.dev/
@@ -17868,6 +17914,28 @@
     quote: In evaluations on OpenAI's MLE-Bench under 24-hour budgets, ML-Master 2.0 achieves a state-of-the-art medal rate of 56.44%.
     quote_sha256: 0ef94daad2137f0fd3069ec49846f23859dbe1039d016038ef73ea4edf68700c
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The 2026-08-03 dive addresses leaderboard provenance and the medal number; it does not touch the
+      long-horizon-autonomy thesis.
+  - claim_index: 1
+    effect: unaffected
+    note: HCC mechanism claim untouched by the provenance correction.
+  - claim_index: 2
+    effect: unaffected
+    note: Cross-task consolidation claim untouched by the provenance correction.
+  - claim_index: 3
+    effect: narrowed
+    note: 'The 56.44 All figure is CONFIRMED and its provenance upgraded — ML-Master 2.0 is on the official
+      MLE-Bench leaderboard pre-freeze (2025-12-16, Deepseek-V3.2-Speciale, 24h, grading reports verified),
+      materially better than intake-940''s. But ''(SOTA)'' does NOT survive: 75.76 Lite = 50/66 is TENTH
+      by All and three medal outcomes below the 80.30 three-way tie. Also note the board marks SOURCE CODE
+      NOT AVAILABLE for the submitted configuration, so any ''open'' framing must be qualified, and per
+      intake-977 the Lite split is quantized at 1.5152 pp and no longer discriminates among top agents.'
+  - claim_index: 4
+    effect: unaffected
+    note: The cognitive-accumulation-vs-reactive-context thesis is not addressed by the leaderboard correction.
 - id: intake-414
   url: https://github.com/mibayy/token-savior
   arxiv_id: null
@@ -27423,6 +27491,37 @@
     located_by: machine
     match_coverage: '0.636'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Dive correction (3): the 0.0 -> 42.1 ''rescue'' that evidences depth-1 gains is substantially
+      a SCORER ARTIFACT — Appendix A.3 records the base model found the answers but emitted long narrative
+      instead of the strict format, and no rescoring was done. The depth-1 gain is not overturned, but its
+      headline evidence does not support it as stated.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'The paper overclaims and the dive caught it: S4.2 says depth-2 ''uniformly degraded performance
+      across all conditions'' while its own Figure 1 shows Kimi K2 S-NIAH FLAT at 90.0 -> 90.0. ''DEGRADES''
+      is true in general and false in at least one cell.'
+  - claim_index: 2
+    effect: reattributed
+    note: 'Dive correction (1), ARM MISLABEL: 3.6s is the BASE LLM arm, not depth-1. The real ladder is
+      Base 3.6 -> D1 89.3 -> D2 344.5, so this claim attributes the figure to the wrong arm and overstates
+      the depth-2 marginal cost by ~25x. The super-linear direction survives; the numbers as attributed
+      do not.'
+  - claim_index: 3
+    effect: narrowed
+    note: '''Actively harmful at depth>=2 for many tasks'' stands directionally, but the Figure-1 flat cell
+      means it is not uniform. The ''paper defaulted to depth=1'' half is untouched.'
+  - claim_index: 4
+    effect: overturned
+    note: This claim IS the correction's own recorded overturn of 'token-cost inflation is exponential in
+      depth' — contradicted by the paper's Figures 3-4 and S4.3; tokens FALL D1->D2 in 3 of 4 cells. Depth-2
+      is a latency pathology, not a token one.
+  - claim_index: 5
+    effect: unaffected
+    note: 'Dynamic/learned depth control is untouched by the dive, and is if anything reinforced by the
+      N17 framing the correction cites: gate depth on predicted failure rather than pin it.'
 - id: intake-548
   arxiv_id: '2605.02801'
   url: https://arxiv.org/abs/2605.02801
@@ -49704,6 +49803,63 @@
     OVERTURNED/CLOSED (D3): intake-693''s recorded remaining gap — "child/sub-LM return schema on batch_llm_query/llm_query (combined_ops.py:302, no schema=)" — is CLOSED in our tree. src/repl_environment/combined_ops.py:338 now takes schema: dict | None, renders a preamble (:33-41), validates via _validate_final_answer (:397) and RETRIES rather than restarts (:402-412, max_retries capped to 2 at :353), and emits schema/schema_validation telemetry (:435, :466). intake-693''s note is stale and should not be re-derived as an open task. NEW from D3: fast-rlm ships ENABLE_STRUCTURED_IO as a built-in ABLATION flag (src/subagents.ts:177-179) that disables schema validation and the schema preamble — a ready-made A/B instrument, and the pattern we lack. Also src/subagents.ts:235 enforces max_depth by THROWING "MAXIMUM DEPTH REACHED" at the child, not by degrading gracefully.'
   notes: 'User-provided 2026-07-27 (pasted X post by @neural_avb showing a Sherlock Holmes novel answered across multiple queries via persistent REPL variables, with a terminal TUI showing query timelines, code steps, and a memory view of saved variables). Operator steering this session: (1) "I know we''ve looked at this github many times already but it keeps getting updated with cool features"; (2) "the RLM project is at a more mature stage than ours showing significant capability at handling real workloads"; (3) "what can we learn from it to get our own architecture into a more mature state?" — steering (1) is PARTIALLY OVERTURNED by the API evidence above (no commits since 2026-07-07); steering (2) and (3) reframe this intake as a capability-gap comparison rather than a technique import, and are carried to Stage 3. DEDUP TRIPWIRE: do NOT open a new intake for this repo until GitHub /repos reports pushed_at later than 2026-07-07T22:36:54Z (HEAD f25f310b); three entries (693, 783, 901) already share this exact URL. Verified-at-Stage-1 sources: GitHub API /repos and /commits (2026-07-27), README.md, docs/guide/sessions.md, docs/development/benchmarks.md, git tree at f25f310b. NOT yet read: fast_rlm/_session.py, src/session.ts, tests/session_state_test.ts, benchmarks/_harness.py — a dive would read these.'
   shared_locator_rationale: 'Shares github.com/avbiswas/fast-rlm with intake-693 and intake-783 and is NOT a duplicate of either: this entry covers the REPL-memory / resumable-session demo from an X post, and is separately dive-verified. Operator decision, 2026-08-10.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-27 D1/D2/D3 dives at pinned SHA f25f310b. The two OVERTURNS are of the dive brief''s
+      own premises — the Stage-1 ''no protocol, no n, no workload'' characterisation (wrong: docs/guide/sessions.md:64-79
+      names model, corpus, query structure, arm independence and metric, and publishes the per-query token
+      table; the correct, narrower criticism is n=1 per arm, no variance, no seed, synthetic corpus, maintainer-measured)
+      and a preliminary actionable about OUR checkpoint/restore. Neither is a claim of this entry, and D1
+      confirms the Session mechanism from source.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-27 D1/D2/D3 dives at pinned SHA f25f310b. The two OVERTURNS are of the dive brief''s
+      own premises — the Stage-1 ''no protocol, no n, no workload'' characterisation (wrong: docs/guide/sessions.md:64-79
+      names model, corpus, query structure, arm independence and metric, and publishes the per-query token
+      table; the correct, narrower criticism is n=1 per arm, no variance, no seed, synthetic corpus, maintainer-measured)
+      and a preliminary actionable about OUR checkpoint/restore. Neither is a claim of this entry, and D1
+      confirms the Session mechanism from source.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-27 D1/D2/D3 dives at pinned SHA f25f310b. The two OVERTURNS are of the dive brief''s
+      own premises — the Stage-1 ''no protocol, no n, no workload'' characterisation (wrong: docs/guide/sessions.md:64-79
+      names model, corpus, query structure, arm independence and metric, and publishes the per-query token
+      table; the correct, narrower criticism is n=1 per arm, no variance, no seed, synthetic corpus, maintainer-measured)
+      and a preliminary actionable about OUR checkpoint/restore. Neither is a claim of this entry, and D1
+      confirms the Session mechanism from source.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-27 D1/D2/D3 dives at pinned SHA f25f310b. The two OVERTURNS are of the dive brief''s
+      own premises — the Stage-1 ''no protocol, no n, no workload'' characterisation (wrong: docs/guide/sessions.md:64-79
+      names model, corpus, query structure, arm independence and metric, and publishes the per-query token
+      table; the correct, narrower criticism is n=1 per arm, no variance, no seed, synthetic corpus, maintainer-measured)
+      and a preliminary actionable about OUR checkpoint/restore. Neither is a claim of this entry, and D1
+      confirms the Session mechanism from source.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-27 D1/D2/D3 dives at pinned SHA f25f310b. The two OVERTURNS are of the dive brief''s
+      own premises — the Stage-1 ''no protocol, no n, no workload'' characterisation (wrong: docs/guide/sessions.md:64-79
+      names model, corpus, query structure, arm independence and metric, and publishes the per-query token
+      table; the correct, narrower criticism is n=1 per arm, no variance, no seed, synthetic corpus, maintainer-measured)
+      and a preliminary actionable about OUR checkpoint/restore. Neither is a claim of this entry, and D1
+      confirms the Session mechanism from source.'
+  - claim_index: 5
+    effect: unaffected
+    note: '2026-07-27 D1/D2/D3 dives at pinned SHA f25f310b. The two OVERTURNS are of the dive brief''s
+      own premises — the Stage-1 ''no protocol, no n, no workload'' characterisation (wrong: docs/guide/sessions.md:64-79
+      names model, corpus, query structure, arm independence and metric, and publishes the per-query token
+      table; the correct, narrower criticism is n=1 per arm, no variance, no seed, synthetic corpus, maintainer-measured)
+      and a preliminary actionable about OUR checkpoint/restore. Neither is a claim of this entry, and D1
+      confirms the Session mechanism from source.'
+  - claim_index: 6
+    effect: unaffected
+    note: '2026-07-27 D1/D2/D3 dives at pinned SHA f25f310b. The two OVERTURNS are of the dive brief''s
+      own premises — the Stage-1 ''no protocol, no n, no workload'' characterisation (wrong: docs/guide/sessions.md:64-79
+      names model, corpus, query structure, arm independence and metric, and publishes the per-query token
+      table; the correct, narrower criticism is n=1 per arm, no variance, no seed, synthetic corpus, maintainer-measured)
+      and a preliminary actionable about OUR checkpoint/restore. Neither is a claim of this entry, and D1
+      confirms the Session mechanism from source.'
 - id: intake-902
   arxiv_id: '1807.03819'
   url: https://arxiv.org/abs/1807.03819
@@ -53905,6 +54061,42 @@
     located_by: machine
     match_coverage: '0.526'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Structural claim. The dive opens by stating 'Structure, novelty framing and verdict adopt_patterns
+      all HOLD', and the four-operator interface is not among the eight corrections.
+  - claim_index: 1
+    effect: overturned
+    note: 'This is the compositionality claim and the dive nulls the comparisons that carry it. The harness
+      swap 53.03 -> 60.61 rests on an AIRA-Evo row ABSENT FROM TABLE 9 ENTIRELY — the only comparison with
+      no dispersion — and is Welch p~0.30 even granting the baseline zero variance; Evo -> Evo-Max on the
+      same checkpoint is p=0.264. The statistical reconstruction is worse than null: one of the three headline
+      runs scored 59.09%, BELOW the 68.18% it claims to beat and below Claude Opus 4.8 and Gemini 3.5 Flash
+      from the same panel. Only the post-training-over-frozen-base result survives, and that is not this.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'The MECHANISM survives; the published WEIGHTS do not. Correction (6): released code sets score
+      1.0 / delta 0.4 / novelty 0.25 identically in two files, while 1.0/0.6/0.3 appears only in Sec 6.5
+      case-study prose — and reconstructing that case study, 10.47% -> 17.09% is consistent with lambda_delta
+      ~0.6 (predicts ~17.6%) and NOT with the shipped 0.4 (~14.9%). Cite the three-factor structure, never
+      the weights.'
+  - claim_index: 3
+    effect: narrowed
+    note: '''On both cost AND yield'' becomes cost-only. The COST half is credible engineering and the dive
+      says so: tokens 129.3M -> 75.3M (-41.7%), prompt tokens -50.3%, Improve prompt p99 -86.1%, Crossover
+      p99 -81.3%, matched checkpoint/seed/12h over 66 task-runs. The YIELD half is dead: correction (3)
+      shows ''+84.3% new-best per 1M tokens'' decomposes as 1.0742 x 1.7171, so 88.3% of the log-ratio gain
+      IS THE DENOMINATOR — it restates the cost claim and is not an independent yield result. Marked DO
+      NOT CARRY.'
+  - claim_index: 4
+    effect: overturned
+    note: 'Testing did happen; transfer was not demonstrated. NatureBench is n=10 so each task is 10pp,
+      the model-swap delta is TWO TASKS, and best-case one-sided p=0.25. Nothing of ''both components transfer''
+      survives at that resolution. Related and worth carrying: OpenMLE-Tasks ships ZERO BYTES of task data
+      — checksums.sha256 has 0 CSV/parquet/npy and 0 paths under data/public or data/private — while the
+      dataset README and docs/release.md both state 1,415 built task packages. All three statements are
+      false against the shipped manifest.'
 - id: intake-941
   arxiv_id: null
   url: https://unsloth.ai/docs/models/inkling
@@ -60265,6 +60457,42 @@
     (A13, decline) OpenMLE-Gym in any form. Our eval tower supersedes it and its contract cannot express throughput objectives.
     (A14, routing note) meta-harness-optimization.md is a RETAINED COMPATIBILITY POINTER whose text states "Do not add new task
     checkboxes here." It must NOT be named as an owner for any of the above. It routes to autopilot-continuous-optimization.md.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'The 2026-08-09 dive corrects this entry''s Stage-1 AUTHOR speculation about PR #2 (overturned:
+      author_association NONE, fork LifeIsSoSolong/OpenRSI, not staff) and drops the CC BY-NC adopt-blocker
+      framing under the operator''s personal-use-only constraint. Neither is a key claim. Every claim here
+      was re-read against the tree at HEAD eab05672 and holds. Component trees confirmed by the tree read.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'The 2026-08-09 dive corrects this entry''s Stage-1 AUTHOR speculation about PR #2 (overturned:
+      author_association NONE, fork LifeIsSoSolong/OpenRSI, not staff) and drops the CC BY-NC adopt-blocker
+      framing under the operator''s personal-use-only constraint. Neither is a key claim. Every claim here
+      was re-read against the tree at HEAD eab05672 and holds. Confirmed from the config itself: sandbox/default.yaml
+      is a pure HTTP client block and there is no server in the tree at HEAD.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'The 2026-08-09 dive corrects this entry''s Stage-1 AUTHOR speculation about PR #2 (overturned:
+      author_association NONE, fork LifeIsSoSolong/OpenRSI, not staff) and drops the CC BY-NC adopt-blocker
+      framing under the operator''s personal-use-only constraint. Neither is a key claim. Every claim here
+      was re-read against the tree at HEAD eab05672 and holds. The LICENCE FACT is untouched; what changed
+      is the consequence drawn from it in verdict_justification, not this statement.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'The 2026-08-09 dive corrects this entry''s Stage-1 AUTHOR speculation about PR #2 (overturned:
+      author_association NONE, fork LifeIsSoSolong/OpenRSI, not staff) and drops the CC BY-NC adopt-blocker
+      framing under the operator''s personal-use-only constraint. Neither is a key claim. Every claim here
+      was re-read against the tree at HEAD eab05672 and holds. Confirmed verbatim: docs/validation.md ends
+      ''Neither validation independently reproduces paper tables.'''
+  - claim_index: 4
+    effect: unaffected
+    note: 'The 2026-08-09 dive corrects this entry''s Stage-1 AUTHOR speculation about PR #2 (overturned:
+      author_association NONE, fork LifeIsSoSolong/OpenRSI, not staff) and drops the CC BY-NC adopt-blocker
+      framing under the operator''s personal-use-only constraint. Neither is a key claim. Every claim here
+      was re-read against the tree at HEAD eab05672 and holds. The dive CONFIRMS and extends this — PR #2
+      is substantive (30 files, +7,617/-0) and is the missing SANDBOX_URL service — but the claim as written
+      stays true. Extension is not narrowing.'
 - id: intake-1025
   arxiv_id: null
   url: unresolved-operator-supplied-inline-material-2026-08-09-sglang-torch-profiler-qwen35-08b
@@ -60756,6 +60984,43 @@
     knowledge base and this intake index do not do it for external sources. Any entry citing an upstream tree should carry the commit it
     was read at - intake-1030's KKT-solve rename is the concrete proof of what its absence costs.
     (E5, decline) The rows themselves. They describe CUDA/FlashInfer families in a stack we do not run.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-09 amendment is additive: it argues the artifact''s mechanisms generalise beyond a gfx90a
+      kernel catalogue (E1 pre-written verdict column, E2 mainline-vs-PR maturity axis, E3 expected-absence
+      register, E4 pinned-head refresh) and declines only the rows themselves (E5). It disputes no statement
+      about what the artifact contains.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-09 amendment is additive: it argues the artifact''s mechanisms generalise beyond a gfx90a
+      kernel catalogue (E1 pre-written verdict column, E2 mainline-vs-PR maturity axis, E3 expected-absence
+      register, E4 pinned-head refresh) and declines only the rows themselves (E5). It disputes no statement
+      about what the artifact contains.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 amendment is additive: it argues the artifact''s mechanisms generalise beyond a gfx90a
+      kernel catalogue (E1 pre-written verdict column, E2 mainline-vs-PR maturity axis, E3 expected-absence
+      register, E4 pinned-head refresh) and declines only the rows themselves (E5). It disputes no statement
+      about what the artifact contains.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-09 amendment is additive: it argues the artifact''s mechanisms generalise beyond a gfx90a
+      kernel catalogue (E1 pre-written verdict column, E2 mainline-vs-PR maturity axis, E3 expected-absence
+      register, E4 pinned-head refresh) and declines only the rows themselves (E5). It disputes no statement
+      about what the artifact contains.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08-09 amendment is additive: it argues the artifact''s mechanisms generalise beyond a gfx90a
+      kernel catalogue (E1 pre-written verdict column, E2 mainline-vs-PR maturity axis, E3 expected-absence
+      register, E4 pinned-head refresh) and declines only the rows themselves (E5). It disputes no statement
+      about what the artifact contains.'
+  - claim_index: 5
+    effect: unaffected
+    note: '2026-08-09 amendment is additive: it argues the artifact''s mechanisms generalise beyond a gfx90a
+      kernel catalogue (E1 pre-written verdict column, E2 mainline-vs-PR maturity axis, E3 expected-absence
+      register, E4 pinned-head refresh) and declines only the rows themselves (E5). It disputes no statement
+      about what the artifact contains.'
 - id: intake-1030
   arxiv_id: null
   url: https://github.com/sgl-project/sglang/tree/main/python/sglang/kernels/ops/attention/fla
@@ -60853,6 +61118,33 @@
     (F2) CITE BY DURABLE IDENTIFIER. Stage ROLE (local cumsum / WY recompute / chunked state update / output) survived the rename;
     kernel NAMES did not. This is the same principle as intake-1025's architecture-shape matching - attribute to structure, not to
     volatile labels - and it generalises past profiling to how we cite anything upstream.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-08-09 amendment reframes the kernel rename as a GOVERNANCE finding — a citation to an external
+      symbol is only meaningful with the commit it was read at (F1), and stage ROLE survived the rename
+      where NAMES did not (F2). Additive; no claim disputed.
+  - claim_index: 1
+    effect: unaffected
+    note: 2026-08-09 amendment reframes the kernel rename as a GOVERNANCE finding — a citation to an external
+      symbol is only meaningful with the commit it was read at (F1), and stage ROLE survived the rename
+      where NAMES did not (F2). Additive; no claim disputed.
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-08-09 amendment reframes the kernel rename as a GOVERNANCE finding — a citation to an external
+      symbol is only meaningful with the commit it was read at (F1), and stage ROLE survived the rename
+      where NAMES did not (F2). Additive; no claim disputed.
+  - claim_index: 3
+    effect: unaffected
+    note: 2026-08-09 amendment reframes the kernel rename as a GOVERNANCE finding — a citation to an external
+      symbol is only meaningful with the commit it was read at (F1), and stage ROLE survived the rename
+      where NAMES did not (F2). Additive; no claim disputed.
+  - claim_index: 4
+    effect: unaffected
+    note: 2026-08-09 amendment reframes the kernel rename as a GOVERNANCE finding — a citation to an external
+      symbol is only meaningful with the commit it was read at (F1), and stage ROLE survived the rename
+      where NAMES did not (F2). Additive; no claim disputed. This claim IS the drift the amendment generalises
+      from; it is affirmed, not corrected.
 
 - id: intake-1031
   arxiv_id: null
