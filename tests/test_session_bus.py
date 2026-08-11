@@ -2640,4 +2640,13 @@ def test_backfill_check_catches_a_signed_gate_with_no_keyed_receipt(
     coordinator.backfill_receipts(bus_root, source, receipts)
     capsys.readouterr()
     assert coordinator.cmd_backfill_receipts(args) == 0
-    assert "index is current" in capsys.readouterr().out
+    clean = capsys.readouterr().out
+    assert "index is current" in clean
+    # The success line must state its SCOPE. This check derives its gate set from
+    # token-requests in the bus outboxes, so it cannot see a receipt for a gate the
+    # bus never carried — `auditor` measured three such gates on 2026-08-11 while
+    # this printed a clean verdict. A pass that reads as an all-clear for something
+    # it never examined is the fail-open shape C39 itself was.
+    assert "gates the bus has seen" in clean
+    assert "check_ratifier_receipt_contract.sh" in clean, \
+        "name the check that covers the other half, or the gap is invisible again"

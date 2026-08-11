@@ -1813,10 +1813,26 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
       `backfill-receipts --check` exits 1 when any SIGNED gate lacks a keyed receipt, whichever
       script signed it, and writes nothing while checking. Verified both directions on the live
       tree: clean → exit 0, one index removed → exit 1 naming the gate, index restored → exit 0.
-    - [ ] **Residual for the ratifier owner (`auditor`), not for C-OWN:** the remaining 22 scripts.
-      They are mostly historical and their gates are already signed, so nothing is broken today —
-      the exposure is the NEXT signature made through one of them. Cheapest durable fix is a shared
-      snippet the ratifiers source rather than 22 copy-pastes; `--check` is the backstop either way.
+    - [x] **Class closed by `auditor` in `ebce92a2`, and the class was WIDER than my count.**
+      ✅ 2026-08-11. Verified: `scripts/operator/check_ratifier_receipt_contract.sh` exists, is
+      static and read-only, and exits 1 on the one honest residual
+      (`ratify_and_apply_e8_quality_baseline_v4_20260727.sh`, signable and receiptless, routed to
+      `inference` as retire-or-repin). Three states, not two: **three gates were signed on disk and
+      INVISIBLE to my `--check`** — `E8-FINAL-C1-RETRY-20260728`, `-SUPERSEDING-20260729`,
+      `P-BENCH-4-FG4B-20260728` — now indexed as pointers with the gate id extracted from each
+      receipt rather than hand-typed. The dry-run/apply vehicles take no token argv and never enter
+      `token-queue.md`: out of scope by design, now documented instead of silently skipped.
+      **My shared-snippet suggestion was WRONG and is withdrawn.** A signed artifact whose
+      behaviour depends on an unpinned external file is no longer the thing the operator validated;
+      self-containment is the trust property these scripts exist to provide. Documented authoring
+      template (`artifacts/operator/receipts/README.md`) + two mechanical checks avoids the C34
+      shape without weakening the signature. `auditor`'s call, and it is the better one.
+    - [x] **My `--check` success line was an overclaim, and now states its scope.** ✅ 2026-08-11 —
+      `mainD`. It derives its gate set from token-requests in the bus outboxes, so it can only speak
+      about gates the BUS has seen — correct for C39, whose subject is what `relay_tokens` presents,
+      and a fail-open if reported as an all-clear. It printed a clean verdict while those three
+      gates sat unindexed. It now says what it did not check and names the check that covers the
+      other half. The two compose; neither subsumes the other.
   - [x] **Fix by ANNOTATING, never by suppressing.** A relay that silently withholds a gate because
     a heuristic thinks it is spent is the C3/C6/C8 fail-open family aimed at the operator path —
     strictly worse than the defect. Present the block as now, and add a line naming the receipt, its

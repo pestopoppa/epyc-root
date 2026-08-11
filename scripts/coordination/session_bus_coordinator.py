@@ -1036,7 +1036,19 @@ def cmd_backfill_receipts(args: argparse.Namespace) -> int:
     if args.check:
         drift = [(g, s, st) for g, s, st in found if not (RECEIPTS_DIR / f"{g}.json").exists()]
         if not drift:
-            print(f"receipt index is current — {len(found)} spent gate(s), all indexed")
+            # SCOPE, stated in the success line. `backfill_receipts` derives its gate
+            # set from token-requests in the bus outboxes, so this can only ever speak
+            # about gates the BUS has seen — correct for C39, whose whole subject is
+            # what `relay_tokens` presents, and an overclaim if reported as an
+            # all-clear. `auditor` measured the difference on 2026-08-11: three gates
+            # were signed on disk with no keyed index while this printed a clean
+            # verdict, because none of the three had ever come through as a
+            # token-request. `scripts/operator/check_ratifier_receipt_contract.sh`
+            # covers that half; the two compose and neither subsumes the other.
+            print(f"receipt index is current for gates the bus has seen — "
+                  f"{len(found)} spent gate(s), all indexed. This does NOT cover "
+                  f"receipts on disk for gates that never reached the bus; "
+                  f"scripts/operator/check_ratifier_receipt_contract.sh checks those.")
             return 0
         print(f"{len(drift)} SIGNED gate(s) have no keyed receipt, so the relay cannot see "
               f"they are spent and will present them as pending:")
