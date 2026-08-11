@@ -588,3 +588,46 @@ def test_the_corruption_invariant_keeps_the_FLAT_span(tmp_path) -> None:
     p = _phased(tmp_path)
     hits = brc.closed_boxes_under_a_guard(p.parent)
     assert hits == [], "a parent banner must NOT make child [x] boxes read as corruption"
+
+
+def test_audit_standing_finds_a_flipped_rule_with_no_banner(tmp_path) -> None:
+    """The miss that took the count 7 -> 11, then 12.
+
+    Only 7 files in handoffs/active/ carry a guard phrase, so a rule flipped closed
+    in an unbannered file is invisible to box_is_guarded, to --audit-guards, and to
+    every dispatch pass. `inference` independently confirmed one such box
+    (autokernel-research-loop.md:2659) that the banner-based pass cannot see.
+    """
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True)
+    (d / "plain.md").write_text(
+        "## Notes\n"                                   # NO banner anywhere
+        "- [x] Do not download the OCR models as bench swaps\n"
+        "- [x] Keep routing default-off until an operator decision\n"
+        "- [x] Port the SQLite reader\n",              # ordinary finished task
+        encoding="utf-8")
+    hits = brc.closed_standing_constraints(d)
+    found = {(ln, kind) for _p, ln, kind, _b in hits}
+    assert (2, "PROHIBITION") in found
+    assert (3, "STANDING") in found
+    assert not any(ln == 4 for ln, _ in found), "an ordinary finished task is not a constraint"
+
+
+def test_audit_standing_reuses_classify_predicates_not_new_ones(tmp_path) -> None:
+    """A second definition of 'standing constraint' would be a second source of truth.
+
+    Pins the reuse: anything classify() would REFUSE to dispatch as a standing
+    constraint while open must be recognised by this audit once closed. That
+    equivalence is the whole point — the tool already knew how to spot these and
+    structurally never asked the question of a closed box.
+    """
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True)
+    text = "Keep production routing default-off until an explicit operator decision"
+    (d / "open.md").write_text(f"## S\n- [ ] {text}\n", encoding="utf-8")
+    (d / "closed.md").write_text(f"## S\n- [x] {text}\n", encoding="utf-8")
+
+    code, _ = brc.classify(d / "open.md", 2, " ", text, "S")
+    assert code == 2, "classify must refuse this while OPEN"
+    assert [h[1] for h in brc.closed_standing_constraints(d)] == [2], \
+        "the same text, once CLOSED, must be caught by the audit"

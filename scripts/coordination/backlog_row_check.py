@@ -471,6 +471,41 @@ def closed_boxes_under_a_guard(root: Path = HANDOFFS) -> list[tuple[Path, int, s
     return hits
 
 
+def closed_standing_constraints(root: Path = HANDOFFS) -> list[tuple[Path, int, str, str]]:
+    """CLOSED boxes that are standing-constraint shaped — BANNER OR NO BANNER.
+
+    2026-08-11 (`mainC`). `closed_boxes_under_a_guard` was the first attempt at this
+    and it can only see what a banner covers. Measured: exactly **7 files** in
+    `handoffs/active/` carry a guard phrase at all, so a rule flipped closed in an
+    unbannered file is invisible to it, to `box_is_guarded`, and to every dispatch
+    pass. That is not a corner case — it is where the misses actually were. Widening
+    the detection method took the count 7 → 11 in one pass, and `inference` then
+    confirmed a 12th in a file this function finds and the banner-based one cannot.
+
+    THE ROOT DEFECT THIS WORKS AROUND, stated so someone eventually fixes it at
+    source: `classify()` returns on `- [x]` *before* it ever applies `_PROHIBITION`
+    or the `_RULE_VERB`+`_RULE_COND` standing-constraint test. Those tests are only
+    ever asked of OPEN boxes. So the tool already knows how to recognise a standing
+    constraint and structurally never asks the question of a closed one.
+
+    Reuses those exact predicates rather than new ones — a second definition of
+    "standing constraint" would be a second source of truth for the thing under
+    audit. REVIEW PROMPT, not a verdict: measured 9 candidates, 4 genuine after
+    reading each. Mass-restoring on this signal would repeat the 6 false positives
+    that trusting a pattern over a reading already produced once.
+    """
+    hits: list[tuple[Path, int, str, str]] = []
+    for path in sorted(root.glob("*.md")):
+        for lineno, state, body, _head in _boxes(path):
+            if state != "x":
+                continue
+            if _PROHIBITION.match(body):
+                hits.append((path, lineno, "PROHIBITION", body))
+            elif _RULE_VERB.match(body) and _RULE_COND.search(body):
+                hits.append((path, lineno, "STANDING", body))
+    return hits
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     g = ap.add_mutually_exclusive_group(required=True)
@@ -479,7 +514,24 @@ def main(argv: list[str] | None = None) -> int:
     g.add_argument("--audit-guards", action="store_true",
                    help="list CLOSED boxes sitting under a DO-NOT-FLIP banner (review prompt, "
                         "not a verdict — a guarded section can hold ordinary finished tasks)")
+    g.add_argument("--audit-standing", action="store_true",
+                   help="list CLOSED boxes that are standing-constraint SHAPED, banner or no "
+                        "banner — catches flipped rules in the ~96%% of files with no banner")
     args = ap.parse_args(argv)
+
+    if args.audit_standing:
+        hits = closed_standing_constraints()
+        if not hits:
+            print("no closed boxes are standing-constraint shaped")
+            return 0
+        print(f"{len(hits)} CLOSED box(es) read as a standing constraint — REVIEW, not a verdict.")
+        print("These need no banner to be found, which is the point: only 7 files in "
+              "handoffs/active/ carry one, so the banner-based pass cannot see most of the tree.")
+        print("Read each before restoring. Measured 9 candidates -> 4 genuine; the rest were "
+              "decisions whose TASK was to record them, or constraints since made moot.")
+        for path, lineno, kind, body in hits:
+            print(f"  {path.name}:{lineno}  [{kind}]  {body[:88]}")
+        return 0
 
     if args.audit_guards:
         hits = closed_boxes_under_a_guard()
