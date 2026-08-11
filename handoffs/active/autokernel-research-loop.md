@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** STATEFUL T0 INTEGRITY LIVE-VALIDATED / V9 CONTROLS REQUIRED BEFORE STEP 3 — updated 2026-08-11
+**Status:** C2 LIVE CORRECTNESS AXES VALIDATED / V9 CONTROLS REQUIRED BEFORE STEP 3 — updated 2026-08-11
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -20,8 +20,8 @@
 
 **Current checkpoint (2026-08-11):** Steps 0–2 and the five-control calibration are complete for
 the retired v8 era and remain valuable regression evidence; they do **not** authorize ranking on
-frozen v9 plus the hardened measurement overlay. The current v9/hardened five-control calibration
-and first CPU candidate are empirical and still require explicit inference permission. The
+frozen v9 plus the hardened measurement overlay. The current v9/hardened five-control calibration is
+authorized and empirical; the first CPU candidate still requires fresh inference permission. The
 no-inference closure added evaluation-event v4 transfer links, adjacent noise-floor display, the
 prior-art gate, historical 4/8/16/32/48-way CPU lane registry, op-level fan-out planning, compile-only
 artifact veto, the two permitted static ROCm audits, era-local calibration authority, exported-ELF
@@ -35,23 +35,28 @@ catalogue scope, and a bounded judgment receipt. The T0 property plane now also 
 per-op/backend/shape residuals in the evaluation event for the Vidya SC18 projection; sealing the
 experimental producer still needs the separately requested local-commit approval. The C2 layout
 axis is now separately flagged and fail-closed in the research consumer, including exact coverage of
-offset, stride-gap and transpose families; its producer shares the same pending experimental commit.
+offset, stride-gap and transpose families; its live CPU acceptance passed **1,048/1,048** cases, while
+its producer shares the same pending experimental commit.
 The C2 value axis is now independently flagged and fail-closed in research commit `eca5dbda`:
 identity, ×3, ×0.01 and negate must all complete on every emitted packed-float case, and property
-residuals retain the input-transform coordinate through the Vidya projection. Its producer also
-shares the pending experimental commit, and no value-transform case has run.
+residuals retain the input-transform coordinate through the Vidya projection. Its live CPU pass used
+suite seed `4711` and passed **779/779** cases across `SOFT_MAX`, `ARGSORT`, `TOP_K`, and `SOLVE_TRI`,
+with all four transforms completed. The `SOFT_MAX` checker was corrected to include implicit attention
+sink mass before that acceptance. Its producer also shares the pending experimental commit.
 Research commit `9cc3ed1b` adds the independent stateful consumer and fail-closed `AK_STATE_V1`
 contract. A live CPU probe with suite seed `4711` then passed all **5,184/5,184** emitted cases across
 `SSM_SCAN`, `SSM_CONV`, `FLASH_ATTN_EXT`, and `GATED_DELTA_NET`; every case reported
 `initial_equal=1`, `input_immutable=1`, and at least one final-state output. This closes the live
 validation milestone for RVP-C2-5, but the shared experimental producer changes remain uncommitted
 and must not be committed or pushed without explicit operator approval. Research commit `598375c5`
-also makes the clean control instrument root/binary explicit and tests both overrides. The next live
-action is the v9/hardened control block,
+also makes the clean control instrument root/binary explicit and tests both overrides. RVP-T0-1 also
+completed its authorized 60-second gfx90a saturation probe: 242 device samples held 1700 MHz for
+99.5868% of the window while the GEMM produced 41.904 TFLOP/s and peaked at only 200 W against the
+300 W cap. Because the card never approached the cap, clock pinning is not a live variance remedy here
+and AK-OP-2 is declined. The next live action is the v9/hardened control block,
 followed by §AK6.5 Step 3's known-real CPU candidate.
-The operator authorized CPU inference on the otherwise idle production host on 2026-08-11 without
-requiring stack teardown; that authority does not extend to GPU load, producer commits, promotion,
-or freeze actions. Offline AK-WM-1 plumbing is
+The run-specific CPU/GPU authorizations do not extend to producer commits, promotion, or freeze
+actions. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
@@ -3736,12 +3741,10 @@ Neither of these may be executed by a session; both are decision packages for th
     authoring cycle and should be paid when there is a claim that needs it.
   - **Requires a human amendment to `MEASUREMENT.md`** — AK-D10 and the constitution's trust boundary.
     No session may self-apply it.
-- [ ] **AK-OP-2 — Root-side `--setperfdeterminism` capability (operator decision) — GATED on RVP-T0-1.**
-  Clock pinning would remove a variance source from every GPU measurement, but the `sysfs` control
-  nodes are root-owned and this container is not the right place to hold that capability. **Do not
-  bring this to the operator until RVP-T0-1 has run**: if the card never approaches its power cap
-  under a saturating GEMM, clock excursion is not a live variance source here and the correct outcome
-  is to decline and close this row at zero cost.
+- [x] **AK-OP-2 — Decline root-side `--setperfdeterminism` capability.** ✅ 2026-08-11 — RVP-T0-1
+  held 1700 MHz for 99.5868% of a 60-second saturating GEMM while peaking at only 200 W against the
+  300 W cap, so the card never approached the cap and clock excursion is not a live variance source
+  under this workload. No root capability or measurement-constitution change is warranted.
 
 ### Recorded declines (so they are not re-derived)
 

@@ -3592,7 +3592,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-11T08:31:30Z",
+  "generated_at": "2026-08-11T09:21:38Z",
   "nodes": [
     {
       "age_days": 12,
@@ -4286,13 +4286,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 177,
+      "closed": 178,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-11",
       "next_action": "Run the authorized v9/hardened CPU controls; then the first real CPU candidate campaign",
-      "open": 26,
+      "open": 25,
       "state": "active",
       "track": "autokernel research loop"
     },
@@ -4819,13 +4819,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 35,
+      "closed": 39,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-11",
-      "next_action": "RVP-C2-6 \u2014 independent fp64 CPU reference; C2 producer commit still needs explicit approval. RVP-T0-1 GPU HELD",
-      "open": 26,
+      "next_action": "Implement RVP-C2-6 independent fp64 CPU reference; C2 producer durability still needs explicit approval",
+      "open": 25,
       "state": "active",
       "track": "rocm verify profile backend"
     },

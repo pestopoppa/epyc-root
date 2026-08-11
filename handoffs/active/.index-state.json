@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 441
+      "open": 439
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -129,10 +129,10 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 177,
+      "closed": 178,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 26,
+      "open": 25,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
@@ -1537,14 +1537,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 35,
+      "closed": 39,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 26,
+      "open": 25,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 61
+      "total": 64
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -2809,7 +2809,7 @@
       "id": "INF-48",
       "index": "inference-research-index.md",
       "line": 59,
-      "next_action": "RVP-C2-6 \u2014 independent fp64 CPU reference; C2 producer commit still needs explicit approval. RVP-T0-1 GPU HELD",
+      "next_action": "Implement RVP-C2-6 independent fp64 CPU reference; C2 producer durability still needs explicit approval",
       "track": "rocm verify profile backend"
     },
     "INF-49": {
