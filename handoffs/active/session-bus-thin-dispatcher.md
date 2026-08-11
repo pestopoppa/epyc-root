@@ -2012,6 +2012,42 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     invisible standing constraint; three hundred would not have been. Adjudicating the 3 is
     `mainC`'s, per the auditor's synthesis proposal — the detector is mine, the disposition is not.
 
+- [x] **R1 (NEW, P0) — the nudge guard HARDENED as the condition worsened, and the whole fleet
+  became unreachable.** ✅ 2026-08-11 — `mainD`, commit `b1222b6e`. Raised by `coordinator-agent`
+  from the cold-start config-repair report; **this, not a missing coordinator tick, is the cause of
+  today's 10-hour stall.**
+  **The deadlock:** the daemon calls a heartbeat older than **3600s** STUCK and tries to nudge;
+  `tmux_adapter` refused every nudge past **900s**. Between the two nobody has decided you are
+  stuck; past 3600s somebody has and can no longer reach you. Measured: every main crossed 900s at
+  ~10:14-10:22Z and the entire fleet — **the coordinator included** — went permanently unreachable,
+  **1,903 `stuck-nudge-refused` rows**, recovered only by a human passing `--heartbeat-max-age
+  86400` by hand. Neither escape hatch reaches it: **C35 lifts only the `working` blocker, never
+  staleness**, and **C36 is codex-rollout-only — 0% availability on an all-Claude fleet.**
+  **Fixed with evidence, not a bigger timer.** Raising the default would trade a deadlock for
+  typing into a mid-generation pane. Staleness is a timer and a timer cannot tell *wedged* from
+  *quietly waiting*; the pane can. `hb_stale_override_ok` reuses exactly the evidence C35 already
+  trusts — `pane_dead` false plus quiescence past the spinner interval — and **fails closed on every
+  unknown** (override disabled, pane dead/unreadable, activity unreadable). 7-case parametrised
+  test.
+  - [x] **Compliant path pinned, and it is the one that matters.** ✅ A stale heartbeat on a pane
+    that looks mid-generation STILL refuses. A fix that made everything nudgeable would be worse
+    than the bug.
+  - [x] **The fail-open that hid it.** ✅ `last_nudge_ts`/`last_nudge_sig` were written ONLY on
+    `rc == 0`, and the `stuck-refusing-drain` escalation is gated on `last_nudge_sig` — so **a nudge
+    that is always refused could never escalate**, and the only path that reported it was an
+    advisory row in a file with no reader. Refusal now carries its own clock and emits
+    `stuck-unreachable` **into `coordinator-agent`'s inbox** (C33: an escalation delivered only to
+    `advisory.jsonl` is a second unread sink one level up).
+  - [x] **A test asserted the deadlock as correct.** ✅ `test_c35_the_override_touches_only_the
+    _working_blocker` justified never overriding staleness because it "is already tunable with
+    `--heartbeat-max-age`" — the very tunable a human had to set to 86400 to rescue the fleet.
+    Rewritten to the corrected contract; its real intent (every other guard survives independently)
+    kept, authorisation half untouched.
+  - [ ] **R2, also mine, not started:** a daemon-side progress-log-stale defect routed to the
+    operator through the existing C20 bypass. The report flags it as the proposal MOST at risk of
+    fail-open (three silent-pass paths) and names the in-repo fail-closed pattern to copy. **Build
+    it fail-closed or not at all.** Source: `/workspace/tmp/coord-coldstart/coordinator-config-repair.md`.
+
 ## Decision gates
 
 - `OP-SENDKEYS-CODEX` (send-keys nudging) — operator grant, evidence-driven, default OFF.
