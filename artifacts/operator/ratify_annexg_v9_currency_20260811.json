@@ -1,0 +1,9 @@
+{
+  "amended_sha256": "d60f4129d84c498cf456a886fa4e5fc7f1db621315bfba96bc39377d6250d6c5",
+  "human_attestation": "RATIFY-ANNEXG-V9-CURRENCY-20260811",
+  "preimage_sha256": "ca47e4e6432b7de426c69bb86557b29ae0d6e32d7d1adbcfb8d632eab59b3a83",
+  "ratified_at": "2026-08-11T21:34:50.039804+00:00",
+  "schema": "epyc.operator_annexg_v9_currency.v1",
+  "status": "ratified",
+  "target": "/mnt/raid0/llm/epyc-root/measurement/protocols/gpu-cross-device.md"
+}

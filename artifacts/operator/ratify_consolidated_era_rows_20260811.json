@@ -1,0 +1,21 @@
+{
+  "applied_rows": [
+    "E9-routing-reward",
+    "E8-cpu-bench-throttle-scope",
+    "E8-seeding-reward-b7-guard",
+    "E9-cpu-kernel"
+  ],
+  "human_attestation": "RATIFY-CONSOLIDATED-ERA-ROWS-20260811",
+  "ratified_at": "2026-08-11T21:35:01.390394+00:00",
+  "row_sha256": {
+    "E8-cpu-bench-throttle-scope": "6d8e7d9f24c6ec2ffdee2f2cb55ce3bf978d6ab546de2f28d001865a84a84c39",
+    "E8-seeding-reward-b7-guard": "b184ed9c89842fbfd6984bd7e99cfd41d41d5e79451ec1e765bcdae2ba321ce9",
+    "E9-cpu-kernel": "d518a83f446899e2335a30ab9bf1484635fbcc13942500c6115f211ee6869f1b",
+    "E9-routing-reward": "31adf813f7d493e680a329ee9cd391f4b6304c5ef00052950c1049cd8a266cc2"
+  },
+  "schema": "epyc.operator_consolidated_era_rows.v1",
+  "status": "ratified",
+  "struck_rows": [],
+  "target": "/mnt/raid0/llm/epyc-orchestrator/orchestration/instrument_eras.yaml",
+  "target_sha256_after": "08a1b93be1279dc3f3d528f5cfdbb67fb99844ff51a1e84aac7ace8beb6702d8"
+}
