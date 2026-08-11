@@ -1560,7 +1560,14 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   re-deliver everything; pinned by a test over empty / torn / unknown-schema files. The save
   happens AFTER the relay pass, so a crash loses at most one tick of ledger updates, never a
   delivery. Test reproduces the exact trigger: an inbox emptied after delivery is NOT re-flooded,
-  and a second tick over the same outbox is a no-op while the first still delivers. *Observed 2026-07-29 during the roster rename.* Renaming the roster ids meant
+  and a second tick over the same outbox is a no-op while the first still delivers.
+  **⚠ COMMITTED, NOT LIVE — added 2026-08-11 after `auditor`'s same-day commit audit caught this box
+  closed with before/after numbers while the running daemon executes the pre-fix code.** `pid 496387`
+  started 08:48:00, before `2e01d5dd`; `coordination/session-bus/relay_state.json` **does not exist on
+  the live bus**, which is the proof. The measurements above are real and were taken by direct
+  invocation; the RUNNING PROCESS has none of it. The fair part of the hit: I disclosed exactly this
+  condition for C39 the same morning and then did not for C28/C38 — the defect class I spent the day
+  closing, inside my own closure. Restart is `coordinator-agent`'s. *Observed 2026-07-29 during the roster rename.* Renaming the roster ids meant
   `git mv inbox/<old>.jsonl inbox/<new>.jsonl`; the running daemon then re-delivered its **entire
   relay history** into freshly recreated old-id inboxes. Measured in the preserved copies under
   `coordination/session-bus/archive/pre-rename-20260729/`: 16 / 13 / 22 / 17 rows across the four
@@ -1847,7 +1854,8 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     every 45s to rebuild a set of 637 pairs.** After: one 104 KiB read, 0 ms. The advisory is never
     fully read again except on a one-time bootstrap, and even that is streamed rather than parsed
     whole — at 1 GiB the parse-everything form is itself the defect. Nothing was trimmed: the
-    ledger is still the record.
+    ledger is still the record. **⚠ COMMITTED, NOT LIVE** — same restart dependency as C28 above;
+    the ~29.5%-of-a-core cost is still being paid by `pid 496387` until it restarts.
   - [ ] **OPEN — rotation.** Nothing rotates `advisory.jsonl`. Note the interaction with **C28**
     before acting: *any* operation that moves, truncates or rotates a bus file is exactly what C28
     says re-floods it. Rotation must land after C28's identity-keyed relay tracking, not before.
@@ -2023,6 +2031,10 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     REVIEW PROMPT and says so, never a verdict. Three rows for a human to glance at is worth one
     invisible standing constraint; three hundred would not have been. Adjudicating the 3 is
     `mainC`'s, per the auditor's synthesis proposal — the detector is mine, the disposition is not.
+    *Correction 2026-08-11 (`auditor`'s same-day audit): commit `a17ba974` says "54 tests". That
+    was `test_backlog_row_check.py` and `test_backlog_queue_gen.py` SUMMED and presented as one
+    file's count; the file alone was 47 at that commit (50 now, 14 in the companion). My other five
+    test counts today reconciled exactly. Stated here rather than quietly amended.*
 
 - [x] **R1 (NEW, P0) — the nudge guard HARDENED as the condition worsened, and the whole fleet
   became unreachable.** ✅ 2026-08-11 — `mainD`, commit `b1222b6e`. Raised by `coordinator-agent`
