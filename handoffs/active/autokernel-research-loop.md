@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** STATIC ADAPTER COMPLETE / V9 CONTROLS REQUIRED BEFORE STEP 3 — design audited 2026-08-11
+**Status:** STATIC ADAPTER + OFFLINE SCOPE GATE COMPLETE / V9 CONTROLS REQUIRED BEFORE STEP 3 — design audited 2026-08-11
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -26,8 +26,11 @@ no-inference closure added evaluation-event v4 transfer links, adjacent noise-fl
 prior-art gate, historical 4/8/16/32/48-way CPU lane registry, op-level fan-out planning, compile-only
 artifact veto, the two permitted static ROCm audits, era-local calibration authority, exported-ELF
 version coverage, and structured CPU-reference receipts for passing backend-op cases. The first-campaign
-HostOps adapter now has no undeclared static seam for its registered IQK parameter proposal. The next
-live action is the v9/hardened control block, followed by §AK6.5 Step 3's known-real CPU candidate.
+HostOps adapter now has no undeclared static seam for its registered IQK parameter proposal. AK-DEL-1
+also replayed a hash-bound, normalized historical `rocprofv2` trace: all three admitted kernel families
+landed in bucket (a), with none in buckets (b)–(d), so the bounded next action is catalogue expansion
+rather than a novel-kernel generator. The next live action is the v9/hardened control block, followed
+by §AK6.5 Step 3's known-real CPU candidate.
 The operator has explicitly required fresh permission
 before any inference; no live work may start from this handoff alone. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
@@ -3505,12 +3508,15 @@ will spend kernel-authoring budget rediscovering ports.
   symbol's absence in a framework's *model* file alone produces a false negative; this session nearly
   reported a source as fabricated for exactly that reason before finding all four symbols in the
   *kernels* tree. Absence claims must name the trees searched.
-- [ ] **AK-DEL-1 — SCOPE-REDUCTION GATE: measure the bucket split before building any novel-kernel
-  proposal generator.** Run AK-CAT-1 once over real findings and record how many land in each of the
-  four buckets. If a–c dominate — as the reference workflow's own "prefer reporting" ordering implies
-  they will — then generative capacity aimed at bucket (d) is aimed at the smallest slice of the
-  space, and the cheaper win is a better catalogue. **This item exists to shrink scope, not to add
-  machinery; it must be run before AK-CAT-2 is expanded past a seed set.**
+- [x] **AK-DEL-1 — SCOPE-REDUCTION GATE: measure the bucket split before building any novel-kernel
+  proposal generator.** ✅ 2026-08-11 — replayed AK-CAT-1 over a preserved real `rocprofv2` trace,
+  normalized to remove host-identifying absolute timestamps and bound to the original trace SHA-256.
+  The 9 dispatches formed 3 admitted kernel families; all 3 landed in bucket (a), with 0 in (b)–(d).
+  The report therefore selects `expand_catalogue_before_novel_generator`. This is deliberately a
+  corpus-bounded scope result, not a claim about all workloads. Evidence:
+  `epyc-inference-research/data/autokernel/prior_art/ak-del-1-k25-q8-mmvq-n1-20260717/`, research
+  commit `df02169e`. The catalogue was refreshed against frozen v9 and generic `mul` matching was
+  tightened so it cannot misclassify RMSNorm/MUL/RoPE fusion rows.
 
 Implementation evidence for AK-CAT-1–5 and AK-KM-1 is
 `epyc-inference-research/scripts/kernel_rnd/autokernel/prior_art.py`, its reviewed JSON seed catalogue,
