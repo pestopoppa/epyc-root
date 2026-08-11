@@ -29,7 +29,10 @@ for f in "$OP"/ratify_*.sh "$OP"/rearm_*.sh "$OP"/attest_*.sh; do
     if grep -q "artifacts/operator/receipts/" "$f"; then continue; fi   # contract adopted
     tok=$(grep -m1 -oP 'TOKEN="\K[^"]+' "$f" || true)
     if [[ -n "$tok" && -f "$OP/receipts/$tok.json" ]]; then continue; fi  # spent via index
-    if [[ -f "${f%.sh}.json" ]]; then continue; fi              # spent via its own basename-receipt guard
+    # Spent via its own basename-receipt guard — but ONLY if that receipt actually says
+    # ratified. A stray/garbage <script>.json would otherwise silently exempt a signable
+    # script from this check (lens: the skip could be bought by creating an empty file).
+    if [[ -f "${f%.sh}.json" ]] && grep -qE '"status": *"ratified"|"ratified_at"' "${f%.sh}.json"; then continue; fi  # modern or legacy receipt schema; a stray empty file has neither
     # Signable (or token not extractable = assume signable, fail closed).
     printf 'MISSING-WRITE: %s (token=%s)\n' "${f##*/}" "${tok:-UNPARSED}"
     fail=1; clean=0
@@ -67,6 +70,11 @@ for name in sorted(os.listdir(op)):
 # provenance; a check passable by the file merely existing is fail-open.
 import subprocess
 idx_dir = os.path.join(op, "receipts")
+if not os.path.isdir(idx_dir):
+    # Lens: a deleted index dir must be a LOUD defect, not a silent zero-iteration pass —
+    # the daemon's spent-gate check stats exactly this path.
+    print(f"MISSING-DIR: {idx_dir} does not exist; every spent-gate check is blind")
+    gap = True
 for name in sorted(os.listdir(idx_dir)) if os.path.isdir(idx_dir) else []:
     if not name.endswith(".json"):
         continue
