@@ -134,7 +134,11 @@ inside `FeatureGFX9`; AMD's own CDNA2 doc says so; and our tree already calls th
 genuinely lacks is the **async DMA engine** and the **SMEM-operand matrix instruction** — different
 limitations with different consequences. Meanwhile AITER's supported-hardware table lists **no
 MI210/MI250/gfx90a, not even experimental** (consumer RDNA parts rank ahead of our datacenter card),
-TileLang is CDNA3-limited, and the quantization×kernel co-design school is ROCm-excluded across the
+TileLang is **gfx90a-reachable** (corrected 2026-08-11: GEAK's own KB tags it `gens: [gfx90a,
+gfx942]`, "validated on MI250"; our `rocm-verify-profile-backend.md` had this right and the earlier
+"CDNA3-limited" line here contradicted both — the same stale claim survives in
+`autokernel-research-loop.md`'s `cdna2-abandoned-by-vendor-and-quant-schools` HARD_CONSTRAINT,
+routed to its owner), and the quantization×kernel co-design school is ROCm-excluded across the
 board. **Nobody will port anything to this card for us**, which is the premise the autokernel program
 exists to answer — not a reason to stop.
 
