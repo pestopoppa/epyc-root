@@ -1513,7 +1513,11 @@ def test_p1b_status_marks_a_dead_daemon_stale_not_working(
     assert coordinator.main(["--bus-root", str(bus_root), "status"]) == 0
     out = capsys.readouterr().out
 
-    assert "DAEMON IS NOT RUNNING" in out
+    # C35 changed the rendering: the verdict now LEADS in one word instead of
+    # being a parenthetical spliced into `state=`. The contract this test guards
+    # — a dead daemon must not read as working — is unchanged.
+    assert out.splitlines()[0] == "coordinator-daemon: DEAD"
+    assert f"pid {dead} does not exist" in out
     assert f"pid={dead}" in out, "the evidence itself is preserved, only annotated"
 
 
@@ -1567,7 +1571,7 @@ def test_c26_a_prboot_heartbeat_is_stale_even_when_its_pid_is_alive(
     assert coordinator.main(["--bus-root", str(bus_root), "status"]) == 0
     out = capsys.readouterr().out
 
-    assert "DAEMON IS NOT RUNNING" in out
+    assert out.splitlines()[0] == "coordinator-daemon: DEAD"
     assert "recycled" in out
 
 
@@ -1578,13 +1582,21 @@ def test_c26_boot_check_is_unknowable_not_false_without_proc_uptime(tmp_path: Pa
 
 
 def test_c26_a_post_boot_heartbeat_is_not_flagged(
-        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    # This test is about the BOOT check, so the C35 identity check is isolated out:
+    # the heartbeat here is written by pytest, not by a daemon, so its cmdline
+    # legitimately does not name session_bus_coordinator. Verified separately
+    # against the live daemon, which reports "is the coordinator-daemon".
+    monkeypatch.setattr(coordinator, "process_cmdline",
+                        lambda _p: "python session_bus_coordinator.py run")
     coordinator._write_heartbeat(bus_root, epoch=13, state="working", note="advisory")
 
     assert coordinator.main(["--bus-root", str(bus_root), "status"]) == 0
     out = capsys.readouterr().out
 
     assert "state=working" in out and "recycled" not in out
+    assert out.splitlines()[0] == "coordinator-daemon: HEALTHY"
 
 
 # ------------------------------------------- C33: a refused gate must reach a reader
@@ -2220,3 +2232,207 @@ def test_no_live_outbox_row_is_still_blocked_by_renamed_from() -> None:
             if reasons:
                 blocked.append((f"{path.name}:{lineno}", sorted(reasons)))
     assert not blocked, f"{len(blocked)} migrated rows still unrelayable, first: {blocked[0]}"
+
+
+# --------------------------------------------------------------- C35 / C36
+#
+# The coordinator-daemon was dead from 2026-08-01T05:42:54Z to 2026-08-11T08:48:02Z
+# — 243.1h, measured as the gap in advisory.jsonl — and nothing noticed. P1b had
+# already added a pid check, so the interesting question was why that was not
+# enough. Two independent holes, both reproduced against the real module before
+# either was touched:
+#   * `os.kill(pid, 0)` proves a process EXISTS, not that it is this daemon. The
+#     boot check closes that only across a reboot; within one boot the number can
+#     be re-issued to anything. A heartbeat naming pid 1 (/sbin/init) reported
+#     `state=working`.
+#   * heartbeat age was printed and never judged, so `age=876736s` and `age=19s`
+#     produced the same verdict: none.
+
+def _hb_file(root: Path, pid: int, *, age_s: float, state: str = "working") -> Path:
+    path = root / "heartbeats" / "coordinator-daemon.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"agent": "coordinator-daemon", "epoch": 13, "pid": pid,
+                                "state": state, "note": "advisory", "task_id": None}),
+                    encoding="utf-8")
+    stamp = time.time() - age_s
+    os.utime(path, (stamp, stamp))
+    return path
+
+
+def test_daemon_liveness_rejects_a_recycled_pid(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The C35 hole. Existence is not identity."""
+    monkeypatch.setattr(coordinator, "process_cmdline", lambda pid: "/sbin/init splash")
+    alive, why = coordinator.daemon_liveness({"pid": os.getpid()})
+    assert alive is False
+    assert "recycled" in why and "/sbin/init" in why
+
+
+def test_daemon_liveness_accepts_the_real_daemon(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The compliant path. A guard that cannot recognise its own process would
+    report every healthy daemon dead and send someone to restart a singleton."""
+    monkeypatch.setattr(coordinator, "process_cmdline",
+                        lambda pid: "/venv/bin/python /repo/scripts/coordination/"
+                                    "session_bus_coordinator.py run")
+    alive, why = coordinator.daemon_liveness({"pid": os.getpid()})
+    assert alive is True and "coordinator-daemon" in why
+
+
+def test_daemon_liveness_states_doubt_when_identity_is_unverifiable(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """No /proc is a portability fact, not evidence of death — but the doubt is
+    reported rather than dropped."""
+    monkeypatch.setattr(coordinator, "process_cmdline", lambda pid: None)
+    alive, why = coordinator.daemon_liveness({"pid": os.getpid()})
+    assert alive is True and "identity unverifiable" in why
+
+
+def test_process_cmdline_reads_this_process_and_survives_a_dead_pid(tmp_path: Path) -> None:
+    mine = coordinator.process_cmdline(os.getpid())
+    if mine is not None:                       # skip where /proc is absent
+        assert "python" in mine.lower() or "pytest" in mine.lower()
+    assert coordinator.process_cmdline(999_999_999, proc_root=tmp_path) is None
+
+
+@pytest.mark.parametrize("age_s,tick_s,expected", [
+    (0, 45, True), (45, 45, True), (449, 45, True), (451, 45, False),
+    (876_736, 45, False),                      # the ten-day heartbeat, judged
+    (119, 1, True), (121, 1, False),           # 120s floor, so a fast tick is not jumpy
+])
+def test_heartbeat_freshness_is_a_verdict_not_a_number(
+        age_s: float, tick_s: float, expected: bool) -> None:
+    fresh, why = coordinator.heartbeat_freshness(age_s, tick_s)
+    assert fresh is expected
+    assert f"{age_s:.0f}s old" in why
+
+
+def test_daemon_verdict_worst_signal_wins(bus_root: Path,
+                                          monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(coordinator, "heartbeat_predates_boot", lambda *_a, **_k: False)
+
+    def verdict(pid: int, age_s: float, cmdline: str | None) -> str:
+        monkeypatch.setattr(coordinator, "process_cmdline", lambda _p: cmdline)
+        path = _hb_file(bus_root, pid, age_s=age_s)
+        hb = json.loads(path.read_text(encoding="utf-8"))
+        return coordinator.daemon_verdict(hb, path.stat().st_mtime, 45.0)[0]
+
+    daemon = "python session_bus_coordinator.py run"
+    assert verdict(os.getpid(), 10, daemon) == "HEALTHY"
+    # Alive, correct process, but has not ticked in ten days: wedged is not healthy.
+    assert verdict(os.getpid(), 876_736, daemon) == "STALE"
+    # Alive, but it is something else entirely.
+    assert verdict(os.getpid(), 10, "/sbin/init splash") == "DEAD"
+    # Dead pid outranks everything.
+    assert verdict(999_999_999, 10, None) == "DEAD"
+    # Unusable pid is reported as unknown, never rendered as either.
+    monkeypatch.setattr(coordinator, "process_cmdline", lambda _p: daemon)
+    path = _hb_file(bus_root, 0, age_s=10)
+    hb = json.loads(path.read_text(encoding="utf-8"))
+    hb["pid"] = None
+    assert coordinator.daemon_verdict(hb, path.stat().st_mtime, 45.0)[0] == "UNKNOWN"
+
+
+def test_status_leads_with_the_verdict_in_one_word(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """The rendering defect, not just the logic one: the old output differed
+    between healthy and ten-days-dead only by a parenthetical several fields into
+    a dense line, and for ten days nobody read the difference."""
+    _provision(bus_root, *AGENTS)
+    monkeypatch.setattr(coordinator, "heartbeat_predates_boot", lambda *_a, **_k: False)
+    monkeypatch.setattr(coordinator, "process_cmdline", lambda _p: "/sbin/init splash")
+    _hb_file(bus_root, os.getpid(), age_s=876_736)
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+    capsys.readouterr()                        # drop the _provision chatter
+
+    args = coordinator.build_parser().parse_args(
+        ["--bus-root", str(bus_root), "status", "--exit-nonzero-if-unhealthy"])
+    assert coordinator.cmd_status(args) == 1
+    out = capsys.readouterr().out
+    assert out.splitlines()[0] == "coordinator-daemon: DEAD"
+    assert "recycled" in out and "876736s old" in out
+    # Evidence is annotated, never overwritten.
+    assert "heartbeat says: state=working" in out
+
+
+def test_status_reports_healthy_and_exits_zero_for_a_live_daemon(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """The other direction, and the one that matters operationally: a false DEAD
+    sends someone to restart a running singleton."""
+    _provision(bus_root, *AGENTS)
+    monkeypatch.setattr(coordinator, "heartbeat_predates_boot", lambda *_a, **_k: False)
+    monkeypatch.setattr(coordinator, "process_cmdline",
+                        lambda _p: "python session_bus_coordinator.py run")
+    _hb_file(bus_root, os.getpid(), age_s=12)
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+    capsys.readouterr()                        # drop the _provision chatter
+
+    args = coordinator.build_parser().parse_args(
+        ["--bus-root", str(bus_root), "status", "--exit-nonzero-if-unhealthy"])
+    assert coordinator.cmd_status(args) == 0
+    assert capsys.readouterr().out.splitlines()[0] == "coordinator-daemon: HEALTHY"
+
+
+def test_status_default_exit_code_is_unchanged_for_existing_readers(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Without the flag, status stays exit 0 even when DEAD — the coordinator-agent
+    reads it by eye and nothing should start failing because of a new verdict."""
+    _provision(bus_root, *AGENTS)
+    monkeypatch.setattr(coordinator, "heartbeat_predates_boot", lambda *_a, **_k: False)
+    monkeypatch.setattr(coordinator, "process_cmdline", lambda _p: None)
+    _hb_file(bus_root, 999_999_999, age_s=876_736)
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+    capsys.readouterr()                        # drop the _provision chatter
+
+    args = coordinator.build_parser().parse_args(["--bus-root", str(bus_root), "status"])
+    assert coordinator.cmd_status(args) == 0
+    assert capsys.readouterr().out.splitlines()[0] == "coordinator-daemon: DEAD"
+
+
+def test_status_says_dead_when_there_is_no_heartbeat_at_all(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """A missing heartbeat used to print 'no coordinator-daemon heartbeat' through
+    a bare `except Exception`, which also swallowed every other failure."""
+    _provision(bus_root, *AGENTS)
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+    capsys.readouterr()                        # drop the _provision chatter
+    args = coordinator.build_parser().parse_args(["--bus-root", str(bus_root), "status"])
+    assert coordinator.cmd_status(args) == 0
+    assert capsys.readouterr().out.splitlines()[0] == "coordinator-daemon: DEAD"
+
+
+@pytest.mark.parametrize("body,n,expected_total,expected_tail", [
+    ("", 5, 0, []),
+    ("a\n", 5, 1, ["a"]),
+    ("a\nb\nc\n", 2, 3, ["b", "c"]),
+    ("a\nb\nc", 2, 2, ["b", "c"]),              # no trailing newline
+    ("a\n\n\nb\n", 5, 4, ["a", "b"]),           # blank lines skipped in the tail
+])
+def test_count_and_tail_matches_a_naive_read(tmp_path: Path, body: str, n: int,
+                                             expected_total: int,
+                                             expected_tail: list[str]) -> None:
+    """C36: status parsed a 1,028 MiB / 2,986,358-row advisory.jsonl into ~6.6 GiB
+    of dicts to print five lines. Cheap is only worth having if it is identical."""
+    path = tmp_path / "advisory.jsonl"
+    path.write_text(body, encoding="utf-8")
+    total, tail = _count_and_tail_probe(path, n)
+    assert (total, tail) == (expected_total, expected_tail)
+
+
+def _count_and_tail_probe(path: Path, n: int) -> tuple[int, list[str]]:
+    # Exercised at a small block size too, so the backwards walk is actually
+    # multi-block in the test rather than always fitting in one read.
+    big = coordinator._count_and_tail(path, n)
+    small = coordinator._count_and_tail(path, n, block=2)
+    assert big == small, f"block size changed the answer: {big} vs {small}"
+    return big
+
+
+def test_count_and_tail_is_bounded_on_a_large_file(tmp_path: Path) -> None:
+    path = tmp_path / "advisory.jsonl"
+    path.write_text("".join(f'{{"i": {i}}}\n' for i in range(50_000)), encoding="utf-8")
+    total, tail = coordinator._count_and_tail(path, 3)
+    assert total == 50_000
+    assert tail == ['{"i": 49997}', '{"i": 49998}', '{"i": 49999}']
+    assert coordinator._count_and_tail(tmp_path / "absent.jsonl", 3) == (0, [])

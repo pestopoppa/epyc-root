@@ -80,6 +80,13 @@ from scripts.coordination.session_bus import (  # noqa: E402
 LOCK_PATH = Path("/tmp/session_bus_coordinator.lock")
 ADVISORY_SCHEMA = "session_bus.advisory.v1"
 
+# C35: the substring that must appear in /proc/<pid>/cmdline for a recorded pid to
+# be THIS daemon rather than whatever else the kernel later handed that number to.
+# Matched against the script name, not the interpreter, because the daemon runs as
+# `<venv>/bin/python <path>/session_bus_coordinator.py run` and the interpreter is
+# shared with every other tool in the venv.
+_DAEMON_MARKER = "session_bus_coordinator"
+
 # A lane is idle only when every signal agrees; unknown means busy.
 _BUSY_LOAD_CLASSES = {"busy"}
 _UNKNOWN_IS_BUSY = True
@@ -2523,6 +2530,16 @@ def daemon_liveness(hb: dict) -> tuple[bool | None, str]:
     ``PermissionError`` means it exists under another uid — alive, not absent. An
     unusable or missing pid returns None: "I cannot tell" is reported as such, never
     silently rendered as either alive or dead.
+
+    C35 (2026-08-11): existence was not enough, and the docstring of
+    `heartbeat_predates_boot` already said why — a pid check answers "does a
+    process with that number exist", not "is it MY process". The boot check
+    closes that only ACROSS a reboot. Within one boot the recorded pid can be
+    re-issued to anything, and then this function reported a long-dead daemon as
+    alive. Reproduced against the real module: a 10-day-old heartbeat naming
+    `pid 1` printed `state=working epoch=13 pid=1 age=876736s` with no staleness
+    note at all — pid 1 is `/sbin/init`. So the pid is now checked for IDENTITY
+    against `/proc/<pid>/cmdline`, which is exact and costs one read.
     """
     pid = hb.get("pid")
     try:
@@ -2536,10 +2553,88 @@ def daemon_liveness(hb: dict) -> tuple[bool | None, str]:
     except ProcessLookupError:
         return False, f"pid {pid} does not exist"
     except PermissionError:
-        return True, f"pid {pid} exists (owned by another user)"
+        # Exists under another uid. Identity is still worth asking about, and
+        # /proc/<pid>/cmdline is world-readable on Linux.
+        return _identity_verdict(pid, f"pid {pid} exists (owned by another user)")
     except OSError as exc:
         return None, f"pid {pid} liveness unknown: {exc}"
-    return True, f"pid {pid} is alive"
+    return _identity_verdict(pid, f"pid {pid} is alive")
+
+
+def process_cmdline(pid: int, proc_root: Path = Path("/proc")) -> str | None:
+    """The argv of `pid`, space-joined, or None where that is not knowable."""
+    try:
+        raw = (proc_root / str(pid) / "cmdline").read_bytes()
+    except OSError:
+        return None
+    return raw.replace(b"\0", b" ").decode("utf-8", "replace").strip() or None
+
+
+def _identity_verdict(pid: int, existence_note: str) -> tuple[bool | None, str]:
+    """Is the process that holds `pid` actually this daemon?
+
+    Unverifiable identity returns True with the doubt STATED rather than False:
+    a missing /proc is a portability fact, not evidence of death, and reporting
+    a live daemon as dead would send someone to restart a running singleton.
+    """
+    cmdline = process_cmdline(pid)
+    if cmdline is None:
+        return True, f"{existence_note}; identity unverifiable (no /proc/{pid}/cmdline)"
+    if _DAEMON_MARKER not in cmdline:
+        return False, (f"pid {pid} exists but is running {cmdline[:60]!r}, NOT the "
+                       f"coordinator-daemon — the recorded pid was recycled")
+    return True, f"{existence_note} and is the coordinator-daemon"
+
+
+def heartbeat_freshness(age_s: float, tick_s: float,
+                        *, missed_ticks: int = 10) -> tuple[bool, str]:
+    """Has this daemon ticked recently enough to be serving the bus?
+
+    C35: age was PRINTED and never judged — `age=876717s` sat in the same line as
+    `state=working` and the reader had to notice that the number meant ten days.
+    A number a human must interpret is not a verdict, and for ten days nobody
+    interpreted it. Liveness and freshness are independent failures: a wedged
+    daemon holds its pid and stops ticking, so pid-alive must not imply healthy.
+
+    The bound is generous on purpose (ten missed ticks, floor 120s). This
+    distinguishes "dead or wedged" from "a slow tick", and a false alarm here
+    costs someone a glance at a process list.
+    """
+    limit = max(tick_s * missed_ticks, 120.0)
+    if age_s > limit:
+        return False, (f"heartbeat is {age_s:.0f}s old, past the {limit:.0f}s bound "
+                       f"({missed_ticks} missed ticks of {tick_s:.0f}s)")
+    return True, f"heartbeat is {age_s:.0f}s old"
+
+
+def daemon_verdict(hb: dict, mtime: float, tick_s: float,
+                   *, now: float | None = None) -> tuple[str, list[str]]:
+    """One word for whether the bus is being serviced, plus every reason.
+
+    DEAD / STALE / UNKNOWN / HEALTHY, worst wins. Three independent checks feed
+    it — the process exists, it is THIS process, and it has ticked recently — and
+    the whole C35 lesson is that any one of them passing tells you nothing on its
+    own. Callers print the word; they do not re-derive it.
+    """
+    age_s = (now if now is not None else time.time()) - mtime
+    reasons: list[str] = []
+
+    alive, why = daemon_liveness(hb)
+    reasons.append(why)
+    if heartbeat_predates_boot(mtime) and alive is not False:
+        alive = False
+        reasons.append("the heartbeat was last written BEFORE this host booted — "
+                       "the pid is recycled, not this daemon")
+    fresh, why_fresh = heartbeat_freshness(age_s, tick_s)
+    reasons.append(why_fresh)
+
+    if alive is False:
+        return "DEAD", reasons
+    if not fresh:
+        return "STALE", reasons
+    if alive is None:
+        return "UNKNOWN", reasons
+    return "HEALTHY", reasons
 
 
 def boot_time(proc: Path = Path("/proc/uptime")) -> float | None:
@@ -2570,41 +2665,79 @@ def heartbeat_predates_boot(mtime: float, *, slack_s: float = 60.0) -> bool | No
     return mtime < boot - slack_s
 
 
+def _count_and_tail(path: Path, n: int, *, block: int = 262_144) -> tuple[int, list[str]]:
+    """(line count, last `n` non-blank lines) without holding the file in memory.
+
+    `advisory.jsonl` reached 1,028 MiB / 2,986,358 rows. Anything on a status or
+    tick path that says "read it all, then look at the end" is a defect at that
+    size, so this counts newlines in fixed blocks and walks backwards for the
+    tail. Cost is bounded by `block`, not by the file.
+    """
+    try:
+        with path.open("rb") as fh:
+            total = 0
+            while chunk := fh.read(block):
+                total += chunk.count(b"\n")
+            size = fh.seek(0, os.SEEK_END)
+            buf, pos = b"", size
+            while pos > 0 and buf.count(b"\n") <= n:
+                step = min(block, pos)
+                pos -= step
+                fh.seek(pos)
+                buf = fh.read(step) + buf
+            lines = [ln for ln in buf.decode("utf-8", "replace").splitlines() if ln.strip()]
+            return total, lines[-n:]
+    except OSError:
+        return 0, []
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     bus_root = Path(args.bus_root)
+    config = _load_config(bus_root)
+    tick_s = float((config.get("coordinator_daemon") or {}).get("tick_s", 45))
     hb_path = _heartbeat_path(bus_root)
+    verdict = "UNKNOWN"
     try:
         hb = json.loads(hb_path.read_text(encoding="utf-8"))
         mtime = hb_path.stat().st_mtime
         age = time.time() - mtime
-        alive, why = daemon_liveness(hb)
-        if heartbeat_predates_boot(mtime) and alive is not False:
-            # The pid check is OVERRIDDEN, not merely supplemented: it is the check
-            # that is wrong in this case, because it is answering about a recycled
-            # number rather than about this daemon.
-            alive, why = False, (f"{why}, but the heartbeat was last written BEFORE this host "
-                                 f"booted — the pid is recycled, not this daemon")
-        state = str(hb.get("state"))
+        verdict, reasons = daemon_verdict(hb, mtime, tick_s)
+        # C35: the VERDICT leads, on its own line, in one word. It used to be an
+        # annotation spliced into `state=`, so the healthy and unhealthy renderings
+        # differed only by a parenthetical several fields into a dense line — and
+        # for ten days nobody read the difference. Every reason is printed under
+        # it, because "why" is what the reader acts on.
+        print(f"coordinator-daemon: {verdict}")
+        for reason in reasons:
+            print(f"  - {reason}")
         # The heartbeat's own claim is never overwritten — it is EVIDENCE, and the
-        # record of what the last daemon believed is worth keeping. It is annotated.
-        if alive is False:
-            state = f"{state} (STALE — DAEMON IS NOT RUNNING: {why})"
-        elif alive is None:
-            state = f"{state} (unverified: {why})"
-        print(f"state={state} epoch={hb.get('epoch')} pid={hb.get('pid')} "
-              f"age={age:.0f}s note={hb.get('note')!r}")
-    except Exception:  # noqa: BLE001
-        print("no coordinator-daemon heartbeat")
+        # record of what the last daemon believed is worth keeping.
+        print(f"  heartbeat says: state={hb.get('state')} epoch={hb.get('epoch')} "
+              f"pid={hb.get('pid')} age={age:.0f}s note={hb.get('note')!r}")
+    except FileNotFoundError:
+        verdict = "DEAD"
+        print(f"coordinator-daemon: {verdict}")
+        print(f"  - no heartbeat at {hb_path} — this daemon has never run here")
+    except Exception as exc:  # noqa: BLE001
+        verdict = "UNKNOWN"
+        print(f"coordinator-daemon: {verdict}")
+        print(f"  - heartbeat at {hb_path} is unreadable: {exc}")
     blockers = capability_blockers(_load_config(bus_root))
     print("M5 capabilities:")
     for b in blockers:
         print(f"  BLOCKED  {b}")
     if not blockers:
         print("  all authorised, capped and implemented")
-    rows, _ = _read_jsonl(bus_root / "advisory.jsonl")
-    print(f"advisory records: {len(rows)}")
-    for row in rows[-5:]:
-        print("  " + json.dumps(row, sort_keys=True)[:160])
+    # C36: this was `_read_jsonl(advisory.jsonl)` — a full parse of what is now a
+    # 1,028 MiB / 2,986,358-row ledger into ~6.6 GiB of dicts, taking ~9s, in
+    # order to print five lines and a count. Counting bytes and reading the tail
+    # gets the identical output for a fixed cost.
+    total, tail = _count_and_tail(bus_root / "advisory.jsonl", 5)
+    print(f"advisory records: {total}")
+    for line in tail:
+        print("  " + line[:160])
+    if args.exit_nonzero_if_unhealthy and verdict != "HEALTHY":
+        return 1
     return 0
 
 
@@ -2622,6 +2755,12 @@ def build_parser() -> argparse.ArgumentParser:
     r.set_defaults(func=cmd_run)
 
     s = sub.add_parser("status", help="daemon liveness + recent advice")
+    # C35: exit code stays 0 by default so existing readers are unaffected. The
+    # flag exists so a cron or supervisor can ACT on the verdict — the 10-day
+    # outage was not a reporting failure in the end, it was that the report was
+    # pull-only and nobody pulled.
+    s.add_argument("--exit-nonzero-if-unhealthy", action="store_true",
+                   help="exit 1 unless the daemon verdict is HEALTHY (for cron/supervisors)")
     s.set_defaults(func=cmd_status)
 
     a = sub.add_parser("audit", help="R7 integrity audit only (defects + observations)")
