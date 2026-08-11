@@ -75,6 +75,40 @@ outcome.
       | `85c3dcf25823c537` | 15 | **2.7448** |
 
       Reported by `readjudicate_sequential_candidates.py` under *SEQ-A: STICKY REFUTED LABELS*.
+
+      > ### ⚠ SEQ-A's PREMISE IS FALSE — measured, not argued (2026-08-11, `mainB`)
+      >
+      > **There is no stale label. There never was.** The heading above, the "56 of 393", and the
+      > 3-candidate table are all artifacts of the detector that produced them.
+      >
+      > `readjudicate_sequential_candidates.py:203` tested `state == "refuted" AND E_quality >=
+      > budget_min_e` — a **JOINT** verdict against a **SINGLE** axis. `safety_gate.py:1529` stamps
+      > `state` refuted when **either** axis refutes (`q_name == REFUTED or rate_name == REFUTED`)
+      > and **recomputes it on every trial**. So a healthy quality axis beside a refuted RATE axis
+      > read as a label that had failed to update.
+      >
+      > It manufactured the entire population: per SEQ-B below, `E_rate_noninf` never exceeds 2.0
+      > anywhere in the corpus (max **1.1100**) against `budget_min_e = 2.0`, so essentially every
+      > candidate's rate axis refutes once `k >= budget`.
+      >
+      > Detector fixed at orchestrator **`f2ad030e`** (reporting only, zero semantic change). It now
+      > attributes each `refuted` label to an axis. Measured against the real journal:
+      >
+      > | bucket | n |
+      > |---|---|
+      > | refuted on the QUALITY axis | 6 |
+      > | refuted on the RATE axis ONLY (quality healthy) | **3** |
+      > | **UNEXPLAINED — joint refuted, NEITHER axis** | **0** |
+      >
+      > The 3 are exactly `70902e4b665474e7`, `dd793a6ee43ce718`, `85c3dcf25823c537`. They are
+      > **correctly labelled** by the joint rule. The empty third bucket is the finding: it is the
+      > only thing that would be a genuinely stale label, and it does not exist.
+      >
+      > **Consequence for SEQ-A1 (below): the question it poses is not real.** Nothing needs
+      > recomputing. The live question is **SEQ-B1** — joint gate vs quality-primary — because those
+      > 3 candidates are precisely the case SEQ-B1 names: *"a candidate that buys quality with
+      > throughput can never be promoted — which may be exactly what you want."* `coordinator-agent`
+      > withdrew a Horn A instruction on this basis and is taking SEQ-B1 to the operator.
   - [x] **SEQ-A0 — the mechanism, built NEUTRAL so SEQ-A1 is a one-line switch** ✅ 2026-08-11
         (`mainB`, orchestrator `43108014`). `SequentialPolicy.sticky_refuted`, **default `False`** —
         seq-v1 semantics reproduced byte-for-byte, the 3 candidates below still flip exactly as
@@ -105,12 +139,18 @@ outcome.
         recomputed on EVERY trial — `safety_gate.py:1529` stamps it from a JOINT rule
         (`q_name == REFUTED or rate_name == REFUTED`). The divergence is joint-vs-quality-only, not
         staleness. See the SEQ-A premise correction under SEQ-A1 below; it changes what SEQ-A1 is.
-  - [ ] SEQ-A1 — **OPERATOR DECISION**: recompute the verdict label per trial from `state_name()`
+  - [x] **SEQ-A1 — VOID, superseded by the premise correction above** ✅ 2026-08-11 (`mainB`).
+        Not "decided" — **dissolved**. Horn 1 ("recompute the verdict label per trial") is already
+        what the code does; horn 2 ("keep stickiness") preserves a stickiness that does not exist.
+        Recomputing from quality-only `state_name()` would not restore pure-function semantics, it
+        would **drop the rate axis out of the verdict** — which is SEQ-B1, a different
+        human-amendment-only question. Routed there; do not re-open this row.
+        ~~SEQ-A1 — **OPERATOR DECISION**: recompute the verdict label per trial from `state_name()`
         (restoring the policy's own pure-function semantics), or keep stickiness and document it as
         "a stop decision is final". Either is defensible — a stopped e-process arguably *should*
         stay stopped — but the current state is neither: the label is sticky while allocation is
         not, so candidates keep burning trials whose evidence is then discarded. This changes which
-        candidates are promotable, so it is **human-amendment-only** per MEASUREMENT.md.
+        candidates are promotable, so it is **human-amendment-only** per MEASUREMENT.md.~~
 - [ ] **SEQ-B — the promotion gate is unreachable, but NOT because anything is broken.**
       **CORRECTED 2026-07-28** — I first wrote that "the rate e-process is frozen". **It is not.**
       Measured: `E_rate_noninf` takes **82 distinct values** (min 0.5213, median 0.9100, max 1.1100)
