@@ -726,6 +726,112 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertEqual(row["parse_state"], "invalid_json")
         self.assertIsNone(row["producer_label"])
 
+    def test_current_state_keeps_fixed_diagnostic_and_smoke_claims_separate(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            probes = root / "probes" / "run-a"
+            probes.mkdir(parents=True)
+            fixed = {
+                "schema": "epyc.autokernel.arena_controller_campaign_audit.v1",
+                "campaign_id": "fixed-eight", "status": "refused",
+                "authority": "diagnostic_only",
+                "constraints": {"all_or_nothing_execution": True,
+                                "controller_or_gpu_command_executed": False},
+                "panel": {"arm_count": 8, "arms": [
+                    {"arm_id": f"ready-{n}", "executable": True}
+                    for n in range(6)] + [
+                    {"arm_id": "evoengineer", "executable": False},
+                    {"arm_id": "argus", "executable": False},
+                ]},
+            }
+            available = {
+                "schema": "epyc.autokernel.arena_available_source_campaign_audit.v1",
+                "campaign_id": "available-six", "status": "ready",
+                "authority": "availability_conditioned_diagnostic_only",
+                "constraints": {"controller_or_gpu_command_executed": False,
+                                "promotion_authority": False},
+                "panel": {"arm_count": 6, "arms": [
+                    {"arm_id": f"ready-{n}", "executable": True}
+                    for n in range(6)]},
+            }
+            smoke = {
+                "schema": "epyc.autokernel.arena_diagnostic_smoke.v1",
+                "campaign_id": "real-smoke", "controller_id": "kernelfoundry",
+                "status": "failed", "authority": "diagnostic_only",
+                "rankable": False, "matched_campaign_implied": False,
+                "device_sampling": {"sample_count": 12,
+                                    "started_at": "2026-08-11T22:30:03Z"},
+                "device_claim_released": {"released_at": "2026-08-11T22:30:06Z"},
+                "error": {"type": "ArenaAdapterError",
+                          "message": "ModuleNotFoundError: No module named 'scripts'"},
+            }
+            (probes / "full-eight-arm-refusal.json").write_text(
+                json.dumps(fixed), encoding="utf-8")
+            (probes / "available-source-six-arm.json").write_text(
+                json.dumps(available), encoding="utf-8")
+            (probes / "smoke-receipt.json").write_text(
+                json.dumps(smoke), encoding="utf-8")
+
+            production = root / "llama.cpp"
+            production.mkdir()
+            subprocess.run(["git", "init", "-q", str(production)], check=True)
+            subprocess.run(["git", "-C", str(production), "checkout", "-q", "-b",
+                            "production-consolidated-v9"], check=True)
+            (production / "README").write_text("frozen\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(production), "add", "README"], check=True)
+            env = dict(os.environ, GIT_AUTHOR_NAME="test",
+                       GIT_AUTHOR_EMAIL="test@example.invalid",
+                       GIT_COMMITTER_NAME="test",
+                       GIT_COMMITTER_EMAIL="test@example.invalid")
+            subprocess.run(["git", "-C", str(production), "commit", "-q", "-m",
+                            "freeze"], check=True, env=env)
+            head = subprocess.run(
+                ["git", "-C", str(production), "rev-parse", "HEAD"],
+                capture_output=True, text=True, check=True).stdout.strip()
+            attestation = root / "ratify.json"
+            attestation.write_text(json.dumps({
+                "decision": "FREEZE-V9", "status": "production_promoted_frozen",
+                "production_frozen": True,
+                "production_branch": "production-consolidated-v9",
+                "production_head": head, "production_version": "10125 (test)",
+                "ratified_at": "2026-08-11T01:16:00Z",
+                "scope": "AutoKernel initialization excluded",
+            }), encoding="utf-8")
+
+            state = server.autokernel_current_state(
+                probes.parent, attestation, production)
+
+        self.assertEqual(state["fixed_campaign"]["status"], "refused")
+        self.assertEqual(state["fixed_campaign"]["ready_arms"], 6)
+        self.assertEqual(state["fixed_campaign"]["total_arms"], 8)
+        self.assertEqual(state["fixed_campaign"]["missing_arms"],
+                         ["evoengineer", "argus"])
+        self.assertFalse(
+            state["fixed_campaign"]["controller_or_gpu_command_executed"])
+        self.assertEqual(state["available_source_diagnostic"]["ready_arms"], 6)
+        self.assertEqual(state["available_source_diagnostic"]["total_arms"], 6)
+        self.assertFalse(state["available_source_diagnostic"]["promotion_authority"])
+        self.assertEqual(state["empirical_smoke"]["status"], "failed")
+        self.assertEqual(state["empirical_smoke"]["device_sample_count"], 12)
+        self.assertFalse(state["empirical_smoke"]["rankable"])
+        self.assertTrue(
+            state["production_kernel"]["checkout"]["matches_attestation"])
+        self.assertIn("AutoKernel initialization excluded",
+                      state["production_kernel"]["scope"])
+        self.assertFalse(state["promotion_claim"])
+
+    def test_current_state_fails_soft_when_evidence_is_absent(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            state = server.autokernel_current_state(
+                root / "no-probes", root / "no-attestation.json",
+                root / "no-production-repo")
+        self.assertFalse(state["fixed_campaign"]["available"])
+        self.assertFalse(state["available_source_diagnostic"]["available"])
+        self.assertFalse(state["empirical_smoke"]["available"])
+        self.assertFalse(state["production_kernel"]["available"])
+        self.assertFalse(state["promotion_claim"])
+
 
 # --------------------------------------------------------------------------- #
 # 5. The /health fold

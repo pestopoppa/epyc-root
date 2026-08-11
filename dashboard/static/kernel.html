@@ -59,7 +59,17 @@
   .activity-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
   .activity-grid h3{font-size:12px;color:var(--muted);margin:0 0 8px}
   .activity-list{margin:0;padding-left:18px}.activity-list li{margin:5px 0}
+  .state-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .state-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px}
+  .state-card.production{border-left:3px solid var(--accent)}
+  .state-card h3{font-size:12px;color:var(--muted);margin:0 0 8px;text-transform:uppercase;letter-spacing:.35px}
+  .state-card .headline{font-size:16px;font-weight:650;margin-bottom:5px}
+  .state-card .detail{font-size:12px;color:var(--muted);margin-top:4px}
+  .state-card .evidence{font-size:10.5px;color:var(--muted);margin-top:9px;overflow-wrap:anywhere}
+  .state-card .evidence code{white-space:normal}
+  .state-note{margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--warn)}
   @media(max-width:760px){.activity-grid{grid-template-columns:1fr}}
+  @media(max-width:760px){.state-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -78,6 +88,11 @@
   </div>
 
   <div class="reporting" id="reporting"></div>
+
+  <section class="panel" id="current-state-panel">
+    <h2>Current kernel state <span class="tag">evidence snapshot, not liveness</span></h2>
+    <div id="current-state"><div class="empty">loading audited kernel state…</div></div>
+  </section>
 
   <section class="panel" id="activity-panel">
     <h2>AutoKernel activity <span class="tag">context, not liveness</span></h2>
@@ -211,6 +226,63 @@ function shortAge(iso){
   return s>=86400?`${(s/86400).toFixed(1)}d ago`:s>=3600?`${(s/3600).toFixed(1)}h ago`:`${Math.round(s/60)}m ago`;
 }
 
+function evidenceLine(row){
+  if(!row||!row.evidence) return '<div class="evidence">evidence unavailable</div>';
+  return '<div class="evidence">evidence: <code>'+esc(row.evidence)+'</code></div>';
+}
+
+// This panel deliberately keeps the operator-ratified production kernel apart
+// from experimental AutoKernel audits. The latter can describe readiness or a
+// failed smoke; none of them can assert a promotion or make the runtime live.
+function renderCurrentState(d){
+  const box=$("#current-state"), s=((d._activity||{}).current_state||{});
+  const prod=s.production_kernel||{}, fixed=s.fixed_campaign||{};
+  const avail=s.available_source_diagnostic||{}, smoke=s.empirical_smoke||{};
+  let h='<div class="state-grid">';
+
+  h+='<div class="state-card production"><h3>Production kernel · operator attestation</h3>';
+  if(prod.available){
+    const checkout=prod.checkout||{};
+    h+='<div class="headline ok">'+esc(prod.branch||"—")+'</div>';
+    h+='<div><code>'+esc((prod.head||"").slice(0,12))+'</code> · '+esc(prod.version||"—")+'</div>';
+    h+='<div class="detail">'+esc(prod.status||"—")+' · ratified '+esc(prod.ratified_at||"—")+'</div>';
+    const checkoutState=checkout.error?'<span class="fail">unavailable: '+esc(checkout.error)+'</span>':(checkout.matches_attestation?'<span class="ok">matches attestation</span>':'<span class="fail">does not match attestation</span>');
+    h+='<div class="detail">canonical checkout '+checkoutState+'</div>';
+    if(prod.scope) h+='<div class="detail">scope: '+esc(prod.scope)+'</div>';
+  } else h+='<div class="muted">freeze attestation unavailable: '+esc(prod.error||"not found")+'</div>';
+  h+=evidenceLine(prod)+'</div>';
+
+  h+='<div class="state-card"><h3>Fixed controller campaign · 8 arms</h3>';
+  if(fixed.available){
+    const ratio=String(fixed.ready_arms==null?"—":fixed.ready_arms)+' / '+String(fixed.total_arms==null?"—":fixed.total_arms);
+    h+='<div class="headline fail">'+esc(ratio)+' · '+esc(String(fixed.status||"unknown").toUpperCase())+'</div>';
+    const executionPolicy=fixed.all_or_nothing_execution?'fail closed: all-or-nothing panel':'execution policy not reported';
+    h+='<div class="detail">'+executionPolicy+'; controller/GPU command '+(fixed.controller_or_gpu_command_executed?'executed':'not executed')+'</div>';
+    if((fixed.missing_arms||[]).length) h+='<div class="detail">missing source arms: <code>'+esc(fixed.missing_arms.join(", "))+'</code></div>';
+  } else h+='<div class="muted">fixed-panel audit unavailable: '+esc(fixed.error||"not found")+'</div>';
+  h+=evidenceLine(fixed)+'</div>';
+
+  h+='<div class="state-card"><h3>Available-source panel · diagnostic only</h3>';
+  if(avail.available){
+    const ratio=String(avail.ready_arms==null?"—":avail.ready_arms)+' / '+String(avail.total_arms==null?"—":avail.total_arms);
+    h+='<div class="headline sec-refused">'+esc(ratio)+' · '+esc(String(avail.status||"unknown").toUpperCase())+'</div>';
+    h+='<div class="detail">availability-conditioned readiness only · no full-panel result · no promotion authority</div>';
+    h+='<div class="detail">controller/GPU command '+(avail.controller_or_gpu_command_executed?'executed':'not executed')+'</div>';
+  } else h+='<div class="muted">available-source audit unavailable: '+esc(avail.error||"not found")+'</div>';
+  h+=evidenceLine(avail)+'</div>';
+
+  h+='<div class="state-card"><h3>Empirical smoke · '+esc(smoke.controller_id||"controller")+'</h3>';
+  if(smoke.available){
+    const cls=smoke.status==="failed"?"fail":"sec-refused";
+    h+='<div class="headline '+cls+'">'+esc(String(smoke.status||"unknown").toUpperCase())+' · '+(smoke.rankable?'rankable':'not rankable')+'</div>';
+    h+='<div class="detail">MI210 device samples: '+esc(smoke.device_sample_count==null?"—":smoke.device_sample_count)+' · claim released '+esc(smoke.device_claim_released_at||"—")+'</div>';
+    if(smoke.error_message) h+='<details class="detail"><summary>'+esc(smoke.error_type||"failure")+' detail</summary><div style="margin-top:5px;overflow-wrap:anywhere">'+esc(smoke.error_message)+'</div></details>';
+  } else h+='<div class="muted">empirical smoke receipt unavailable: '+esc(smoke.error||"not found")+'</div>';
+  h+=evidenceLine(smoke)+'</div></div>';
+  h+='<div class="state-note">No AutoKernel promotion claim. Production freeze identity and experimental audit evidence are independent. '+esc(s.role||"")+'</div>';
+  box.innerHTML=h;
+}
+
 // This context is intentionally rendered apart from the reporting banner.
 // A fresh commit or calibration file is useful progress, but it is not proof
 // that a campaign controller exists or is alive.
@@ -261,6 +333,7 @@ function render(d){
   $("#observation").innerHTML='<b>OBSERVATION discipline.</b> '+esc(notice);
   setBadge((d._freshness&&d._freshness.staleness_class)||"missing", d._freshness);
   renderReporting(d);
+  renderCurrentState(d);
   renderActivity(d);
   renderSections(d);
 

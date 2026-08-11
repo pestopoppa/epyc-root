@@ -159,6 +159,15 @@ AUTOKERNEL_RESEARCH_REPO = Path(os.environ.get(
 AUTOKERNEL_STATE_ROOT = Path(os.environ.get(
     "AUTOKERNEL_STATE_ROOT",
     "/mnt/raid0/llm/autokernel"))
+AUTOKERNEL_PROBE_ROOT = Path(os.environ.get(
+    "AUTOKERNEL_PROBE_ROOT",
+    "/mnt/raid0/llm/autokernel/probes"))
+PRODUCTION_KERNEL_ATTESTATION = Path(os.environ.get(
+    "PRODUCTION_KERNEL_ATTESTATION",
+    str(REPO / "artifacts/operator/ratify_v9_final_freeze_20260811.json")))
+PRODUCTION_KERNEL_REPO = Path(os.environ.get(
+    "PRODUCTION_KERNEL_REPO",
+    "/mnt/raid0/llm/llama.cpp"))
 
 # Freshness thresholds are DECLARED IN THE REGISTRY (dashboard/panels.py) and
 # read back here, so the numbers on the wire and the numbers in the panel→producer
@@ -996,8 +1005,185 @@ def _autokernel_probe_receipts(root: Path, *, limit: int = 20) -> dict:
     }
 
 
+def _latest_autokernel_receipt(root: Path, filename: str,
+                               schema: str) -> tuple[Path | None, dict | None, str | None]:
+    """Find the newest readable receipt of one exact schema below ``root``.
+
+    Probe run directory names are intentionally disposable.  The receipt schema
+    and filename are the durable interface, while mtime is used only to select
+    which completed artifact to display; it is never presented as benchmark
+    time or used for the kernel watchdog.
+    """
+    try:
+        candidates = list(root.glob(f"*/{filename}"))
+    except OSError as exc:
+        return None, None, f"probe discovery unavailable: {exc}"
+    candidates.sort(key=lambda path: _iso_mtime(path) or "", reverse=True)
+    errors = []
+    for path in candidates:
+        _, data, err = _read_json_object(path, filename)
+        if err:
+            errors.append(f"{path}: {err}")
+            continue
+        if data is not None and data.get("schema") == schema:
+            return path, data, None
+    if errors:
+        return None, None, errors[0]
+    return None, None, f"no {schema} receipt found below {root}"
+
+
+def _campaign_audit_summary(path: Path | None, data: dict | None,
+                            error: str | None) -> dict:
+    """Project a controller audit receipt without inventing a verdict."""
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    panel = data.get("panel") if isinstance(data.get("panel"), dict) else {}
+    arms = panel.get("arms") if isinstance(panel.get("arms"), list) else []
+    ready = sum(1 for arm in arms
+                if isinstance(arm, dict) and arm.get("executable") is True)
+    missing = [str(arm.get("arm_id")) for arm in arms
+               if isinstance(arm, dict) and arm.get("executable") is not True]
+    constraints = (data.get("constraints")
+                   if isinstance(data.get("constraints"), dict) else {})
+    return {
+        "available": True,
+        "campaign_id": data.get("campaign_id"),
+        "status": data.get("status"),
+        "authority": data.get("authority"),
+        "ready_arms": ready,
+        "total_arms": panel.get("arm_count"),
+        "missing_arms": missing,
+        "all_or_nothing_execution": constraints.get("all_or_nothing_execution"),
+        "controller_or_gpu_command_executed": constraints.get(
+            "controller_or_gpu_command_executed"),
+        "promotion_authority": constraints.get("promotion_authority", False),
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+    }
+
+
+def _smoke_receipt_summary(path: Path | None, data: dict | None,
+                           error: str | None) -> dict:
+    """Project empirical smoke state while preserving its diagnostic authority."""
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    sampling = (data.get("device_sampling")
+                if isinstance(data.get("device_sampling"), dict) else {})
+    failure = data.get("error") if isinstance(data.get("error"), dict) else {}
+    released = (data.get("device_claim_released")
+                if isinstance(data.get("device_claim_released"), dict) else {})
+    return {
+        "available": True,
+        "campaign_id": data.get("campaign_id"),
+        "controller_id": data.get("controller_id"),
+        "status": data.get("status"),
+        "authority": data.get("authority"),
+        "rankable": data.get("rankable"),
+        "matched_campaign_implied": data.get("matched_campaign_implied"),
+        "device_sample_count": sampling.get("sample_count"),
+        "measurement_started_at": sampling.get("started_at"),
+        "device_claim_released_at": released.get("released_at"),
+        "error_type": failure.get("type"),
+        "error_message": failure.get("message"),
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+    }
+
+
+def _production_kernel_summary(attestation_path: Path,
+                               production_repo: Path) -> dict:
+    """Read the operator freeze attestation and compare the canonical checkout."""
+    present, data, err = _read_json_object(attestation_path,
+                                           "production kernel attestation")
+    if data is None:
+        return {"available": False, "artifact_present": present,
+                "evidence": str(attestation_path), "error": err}
+    observed_branch = observed_head = checkout_error = None
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(production_repo), "symbolic-ref", "--short", "HEAD"],
+            capture_output=True, text=True, timeout=5.0, check=False)
+        head = subprocess.run(
+            ["git", "-C", str(production_repo), "rev-parse", "HEAD"],
+            capture_output=True, text=True, timeout=5.0, check=False)
+        if proc.returncode == 0:
+            observed_branch = proc.stdout.strip() or None
+        else:
+            checkout_error = (proc.stderr.strip()
+                              or f"git symbolic-ref exited {proc.returncode}")
+        if head.returncode == 0:
+            observed_head = head.stdout.strip() or None
+        elif checkout_error is None:
+            checkout_error = head.stderr.strip() or f"git rev-parse exited {head.returncode}"
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        checkout_error = str(exc)
+    expected_branch = data.get("production_branch")
+    expected_head = data.get("production_head")
+    return {
+        "available": True,
+        "decision": data.get("decision"),
+        "status": data.get("status"),
+        "frozen": data.get("production_frozen"),
+        "branch": expected_branch,
+        "head": expected_head,
+        "version": data.get("production_version"),
+        "ratified_at": data.get("ratified_at"),
+        "scope": data.get("scope"),
+        "evidence": str(attestation_path),
+        "checkout": {
+            "path": str(production_repo),
+            "branch": observed_branch,
+            "head": observed_head,
+            "matches_attestation": (observed_branch == expected_branch
+                                    and observed_head == expected_head),
+            "error": checkout_error,
+        },
+    }
+
+
+def autokernel_current_state(probe_root: Path | None = None,
+                             attestation_path: Path | None = None,
+                             production_repo: Path | None = None) -> dict:
+    """Evidence-backed current posture, separate from runtime liveness.
+
+    These receipts describe audits and a diagnostic smoke.  They cannot certify
+    a live controller, rank the partial panel, or promote/freeze a kernel.
+    """
+    probe_root = probe_root or AUTOKERNEL_PROBE_ROOT
+    attestation_path = attestation_path or PRODUCTION_KERNEL_ATTESTATION
+    production_repo = production_repo or PRODUCTION_KERNEL_REPO
+    fixed_path, fixed, fixed_err = _latest_autokernel_receipt(
+        probe_root, "full-eight-arm-refusal.json",
+        "epyc.autokernel.arena_controller_campaign_audit.v1")
+    available_path, available, available_err = _latest_autokernel_receipt(
+        probe_root, "available-source-six-arm.json",
+        "epyc.autokernel.arena_available_source_campaign_audit.v1")
+    smoke_path, smoke, smoke_err = _latest_autokernel_receipt(
+        probe_root, "smoke-receipt.json",
+        "epyc.autokernel.arena_diagnostic_smoke.v1")
+    return {
+        "schema": "epyc.autokernel.dashboard_current_state.v1",
+        "role": ("EVIDENCE SNAPSHOT ONLY — audits and diagnostic smokes do not "
+                 "report controller liveness or authorize promotion"),
+        "fixed_campaign": _campaign_audit_summary(
+            fixed_path, fixed, fixed_err),
+        "available_source_diagnostic": _campaign_audit_summary(
+            available_path, available, available_err),
+        "empirical_smoke": _smoke_receipt_summary(
+            smoke_path, smoke, smoke_err),
+        "production_kernel": _production_kernel_summary(
+            attestation_path, production_repo),
+        "promotion_claim": False,
+    }
+
+
 def autokernel_activity(repo: Path | None = None,
-                        state_root: Path | None = None) -> dict:
+                        state_root: Path | None = None,
+                        probe_root: Path | None = None,
+                        attestation_path: Path | None = None,
+                        production_repo: Path | None = None) -> dict:
     """Live implementation/research context that cannot affect runtime health."""
     repo = repo or AUTOKERNEL_RESEARCH_REPO
     state_root = state_root or AUTOKERNEL_STATE_ROOT
@@ -1010,6 +1196,8 @@ def autokernel_activity(repo: Path | None = None,
         "work_bundles": _autokernel_work_bundles(repo),
         "durable_state": _autokernel_journal_inventory(state_root),
         "probe_receipts": _autokernel_probe_receipts(state_root),
+        "current_state": autokernel_current_state(
+            probe_root, attestation_path, production_repo),
     }
 
 
