@@ -2,8 +2,8 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-10 (belief-substrate promotion track: corroboration counted by source locator, machine anchoring, dependency propagation, R1b closed)
-**Sources**: 36 documents
+**Last compiled**: 2026-08-11 (a same-day operator-commissioned audit's provenance-discipline lessons — receipts outrank bus messages, filesystem presence is not provenance, a closed box with real measurements is more misleading than an open one — see below; earlier 2026-08-10 note: belief-substrate promotion track: corroboration counted by source locator, machine anchoring, dependency propagation, R1b closed)
+**Sources**: 37 documents
 
 ## Summary
 
@@ -14,6 +14,53 @@ The core insight from the 2026-04-28 intake update is that *the right architectu
 A third architectural pattern — **persistent compiled wikis** — is itself a knowledge-management approach. This very wiki is an instance: knowledge is pre-compiled by the `project-wiki` skill from handoffs/research/progress logs into curated topic articles, trading per-query synthesis latency for curation burden and staleness risk. EPYC uses a hybrid: `project-wiki` for stable / cross-cutting topics, KB-RAG for dense ad-hoc cross-referencing during Explore-agent runs.
 
 The 2026-05-27 handoff-index audit sharpened the governance side of that architecture: indices are executable coordination surfaces, not passive navigation pages. A coverage check now treats every non-index active handoff as requiring an owning index or top-level tracking entry, and the blocked index is kept as a live unblock queue rather than a historical graveyard. The latest audit closed the active coverage invariant at 84/84 active non-index handoffs linked, 0 missing index links, and 0 broken relative links across active/blocked/README surfaces.
+
+## Compiled Update — 2026-08-11: provenance discipline from a same-day audit — receipts outrank messages, filesystem presence is not provenance
+
+**Confidence: verified** — every finding below is read directly from `artifacts/audit/completion-flurry-wiring-audit-20260811.md`, an operator-commissioned four-section audit (commits `5c2212ce`→`fc8d4d52`), cross-checked against git and the filesystem rather than restated from the audit's own claims.
+
+### A four-state wiring test, reusable beyond this audit
+
+The audit's standing question was never "was it done" but "is it wired in, and is it live" — resolving every completion claim into one of four states: **(1) committed and live** · **(2) committed, not live** (code merged, but the running process predates it, or nothing calls it) · **(3) claimed, not committed** (a bus message or handoff checkbox asserts work git does not contain) · **(4) live, wired to the wrong thing** (the code runs, but reads or writes the wrong source of truth). Applied to eleven 2026-07-29 completions: 8 were state 1; one instrument (`utm-m5`) was state 2 — tests pass, box reconciled `[x]`, but zero callers and zero runs anywhere on the filesystem, so the question it was built to answer remains unanswered; one batch (`repl-turn-efficiency-ready-batch`) was state 3 — wiped by an unrelated same-day tree-restore and never re-applied, with no incident-log entry for the restore that caused it; and the token relay itself was found in state 4 — live code, reading bus-message state as if it were world state.
+
+### The rule the whole audit reduces to: artifacts on disk outrank any bus message when they disagree
+
+The concrete failure this rule fixes: a post-reboot fleet rebuilt its worldview from twelve-day-old undelivered bus messages and re-presented two operator tokens as pending — both had actually been signed 07-29, with `status: ratified` receipts sitting on disk the whole time (see [Benchmark Methodology](benchmark-methodology.md) and [Agent Architecture](agent-architecture.md) §C39 for the mechanism fix this produced). The delivery plane had been treating *message-not-delivered* as *decision-not-made*. Generalized: **the receipt on disk, not the bus message, is the source of truth for whether a decision was made** — a message queue records that something was *sent*, never that it was *decided*, and rebuilding worldview from the queue conflates the two.
+
+### Filesystem presence is not provenance
+
+Twice in one day, an artifact's mere presence on disk was mistaken for its being committed. A completion citing a doc as evidence found that doc **untracked on any ref to this day** — present on disk, never `git add`-ed, so a fresh checkout of the repo would not have it. And the auditor's own conformance check made the identical mistake against itself: three receipt-index pointers asserted `ratified` by stat-ing the filesystem, not by checking git-tracking, over receipts that had themselves been untracked since 07-29. Both were closed the same way: commit the artifact, then extend the checker to verify git-tracking of every index target it points at, not merely the target's existence. The generalizable rule: a check that answers "does this file exist" is not the same check as "will the next person who clones this repo have it" — an evidence chain built on the former silently breaks on the latter.
+
+### A closed box carrying real, correct measurements is more misleading than an open one
+
+The sharpest single finding: an agent that had *itself disclosed* the exact "committed but the live process predates the fix" hazard for one fix that same morning failed to apply the same disclosure to a second, structurally identical fix a few hours later — flipping its checkbox to `[x]` with accurate before/after numbers while the still-unrestarted daemon kept executing the pre-fix code underneath it. The numbers were true; the state they implied was not. **Knowing a rule is not the same as applying it to your own closure** — the failure mode survives self-awareness of the exact failure mode, which is why an external audit caught it rather than the same agent's own review pass. Both agents in this audit — the closer and the auditor — disclosed a symmetric defect in their own prior work the same day, which the audit names as the reason its numbers are worth anything: closures need a second reader, not just a careful first one.
+
+### `git commit --amend` in a shared clone is a standing trap, confirmed a third time in one day
+
+Three independent same-day incidents shared one root cause: `--amend` (or a broad `git add`) in a repository multiple sessions write to concurrently sweeps other sessions' *currently-staged* files into the amending commit. One instance moved 4→37 files into a single amended commit; recovery in every case was `git reset --soft` plus a pathspec-scoped re-commit, never a force-push or history rewrite. This reinforces, rather than introduces, the project's existing pathspec-limited-commit discipline for shared trees — the finding is that the discipline needs to extend to `--amend` specifically, since `--amend`'s scope is "whatever is staged right now," which in a shared clone is not fully under any one session's control.
+
+### A near-duplicate scorer function is not a migration target merely because it resembles the canonical one
+
+`score_aa_omniscience_run.py`'s answer-extraction routine resembles the canonical letter/answer extractor closely enough to look like a mergeable duplicate, but a per-consumer proof found real behavioral deltas: it compiles with no `re.DOTALL` flag (so it stops matching a multi-line `<answer>` block the canonical path handles) and falls back to the last non-empty line where canonical falls back to the whole response — differences that would move precision/recall/F1 on every unparsed response if merged. Verdict: not a migration target; both functions now cross-reference each other's deltas in comments, with zero behavior change. Reusable method: two similar-looking scorers are not provably identical until every fallback path is compared, not just the primary match pattern — the same discipline already on record in this project for an earlier `debug_scorer` comparison.
+
+### A citation gate needs a way to say "discusses the record" without asserting the record's claims
+
+The `cite-check` gate (which refutes/conflicts citations of intake entries against the belief substrate) could not distinguish an entry *relying on* a claim from an entry *discussing the fact that the claim was fabricated and struck* — flagging a document that correctly recorded a fabrication as if it were relying on the fabrication itself. Fixed by adding a third citation form, `intake-NNN#record`: non-blocking on grade, but still reports a dangling reference (an entry that does not exist cannot be discussed either) and still counts as a dependency edge, because "which pages name this entry" and "which pages rest on its claims" are different questions worth keeping separate. A second, unrelated citation in the same pass was a real defect, not a false positive: three documents had carried forward a paper's superseded accuracy-uplift claim after the authors' own appendix corrected the number — a reminder that a citation gate catching false positives on one entry does not mean the next flagged entry is also a false positive.
+
+### Belief-substrate write-side hook: scope widened, still a TODO
+
+The belief-kernel write-hook obligation (standing project rule: wire the write side immediately when a process starts producing measurements) was generalized today from "experimental kernel candidate receipts" to **all kernel promotion validation/certification receipts** — the v9 freeze's own qualification and certification writers, DFlash's production-certification summaries, and K35's GPU/DSpark results all still lack a prospective ClaimTuple write hook (see [Hardware Optimization](hardware-optimization.md) for the v9 freeze itself). The read-side planner seam (AutoPilot's supersession folding, graded against Vidya's canonical ladder) is live and advisory-only — it never gates generation. Promotion-gate wiring is explicitly blocked pending durable current-trial attestation. **IN-PROGRESS**, not settled: no read-side provenance has been retrofitted into any of the already-completed v9 promotion artifacts.
+
+### A 129-item correction backlog was triaged by splitting on what each item demands, not by working through it in arrival order
+
+A stalled 129-entry citation-correction backlog looked intractable only because it had never been decomposed. Splitting by what adjudication each item actually requires found 37 are scope/framing corrections, 31 numeric, 16 provenance, 6 superseded, 38 need a primary-source read — and **exactly one** needs a genuine primary-source dive (the entry with the most citations, at 7). The other ~99 need not queue behind that one. Deliberately not resolved into verdicts in the same pass: recording a verdict requires a human `--actor`, and manufacturing 129 verdicts from a triage pass would inject the exact unwarranted warrant the correction substrate exists to prevent — the ordering, not the verdicts, was the deliverable. Generalizable triage pattern: split a stalled backlog by the *kind* of work each item needs before attempting any of it, then start with whatever is both rare and highest-leverage (here, the most-cited entry) rather than processing in arrival order.
+
+### Source References (2026-08-11)
+
+- [`artifacts/audit/completion-flurry-wiring-audit-20260811.md`](../artifacts/audit/completion-flurry-wiring-audit-20260811.md) — the four-state wiring test (§A), the receipts-outrank-messages rule (§D, §D5, §A-rc RC2), the two filesystem-presence-is-not-provenance instances (§A item 9, §"Signed-but-untracked closure"), the closed-box-more-misleading-than-open finding and its self-referential closure (§"Tonight-commits audit" item 1, §"Self-referential closure")
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the three `--amend`-sweeps-shared-tree incidents, the scorer-duplication verdict (A10), and the 129-item correction-backlog triage (A9)
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) §SC12/§SC14 — the belief-kernel write-hook scope widening and the advisory-only planner read-side seam
+- [`docs/design/vidya-pilot-corpus.md`](../docs/design/vidya-pilot-corpus.md) — the `#record` citation-form fix and the intake-110 superseded-claim correction (commit `a48e04ba`)
 
 ## Internal KB-RAG Architecture (K1–K8 work items)
 

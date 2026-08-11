@@ -2,8 +2,27 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-01 (adds stack compilation as a pure function of declared inputs, backend-resolved kernel binaries, and derived kernel-freeze scope; prior GPU shadow lane / frozen-v8 E8 posture retained)
-**Sources**: 68 documents
+**Last compiled**: 2026-08-11 (a fail-open 200 masking backend outages as model answers, closed; a NUMA region-lock regression recurring in derived priors, IN-PROGRESS — see below; earlier 2026-08-01 note: adds stack compilation as a pure function of declared inputs, backend-resolved kernel binaries, and derived kernel-freeze scope; prior GPU shadow lane / frozen-v8 E8 posture retained)
+**Sources**: 69 documents
+
+## Compiled Update — 2026-08-11: a fail-open 200 masked backend outages as model answers; a region-lock regression recurs in derived priors
+
+**Confidence: verified** — both findings read directly from committed code and tests. The region-lock fix is **IN-PROGRESS** (owner: `inference`, gated on a stack relaunch) and must not be read as resolved.
+
+### Every eval fan-out through `:8000` had been scoring backend outages as low-quality generations
+
+`/v1/chat/completions` caught *every* exception into a generic `[ERROR] Backend failed: {e}` string and returned it as a normal 200 completion — so retry logic, error metrics, and every eval scorer reading through this route read an infrastructure outage as a model answer. The fix (`a4e398fc`, `f8479a72`) lets `HTTPException` and `ContentionDenied` propagate and maps everything else to 502 (this route is a gateway; the fault is the upstream's). The finding as filed cited one non-streaming call site; the same fail-open pattern was independently found at three further streaming sites plus an uninitialized-primitives case — a stream cannot retract an already-sent 200, so those now emit a terminal SSE `error` event instead of streaming the error as generated content with `finish_reason: "stop"`. Guards assert both directions (three failure-path tests verified to FAIL against pre-fix HEAD in a detached worktree; two success-path tests pass on both sides), closing the false-negative "the guard would pass just as happily if the route errored on everything" shape. 292 tests passed.
+
+### A NUMA-topology region-lock regression recurred, this time in the derived priors rather than the launch config
+
+`derived/stack_priors.yaml` drops the `NUMA_FULL` instance for every quarterable-fleet role (frontdoor `8070`, worker_general `8072`, ingest_long_context `8085`) — the exact triplet the operator ruled "accidental and clearly a mistake" on 2026-07-23, now recurring one layer downstream in the derived priors rather than the launch config that caused the first instance. A HALF instance is advertised as the FULL instance via `ServerURLsConfig().frontdoor`, and this is the confirmed root cause of 7 of 9 red promotion-gate unit tests — the tests assert the topology-declared lineup and are correct; editing them to expect halves-only would encode the regression into the gate itself, the same "guard that asserts the defect" shape already retired elsewhere in this stack. **IN-PROGRESS**: the fix requires a `--numa-mode both` stack relaunch plus a priors recompile (owner: `inference`); a standing, falsifiable prediction is on record that all seven tests go green with zero test edits once that lands.
+
+### Source References (2026-08-11)
+
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — mainB's HS-OD-2 fix narrative and the A4/P0-1 region-lock root-cause derivation
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-OD-2 closure
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — P0-0, the derived-priors `NUMA_FULL` drop
+- [`gpu-serving-tie-in-program.md`](../handoffs/active/gpu-serving-tie-in-program.md) — P2-5l closure (`NUMA_NODE0`/`NUMA_NODE1` constant deletion, quarter-name attribution repair)
 
 ## Compiled Update — 2026-07-29 GPU shadow lane: built, inert, NOT activated
 

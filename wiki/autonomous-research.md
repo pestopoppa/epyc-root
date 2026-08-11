@@ -2,8 +2,31 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-10 (adds the transfer-ratio synthesis — every cheap lane is a proxy whose transfer function is free to record now and impossible to backfill — plus lanes-screen/full-instance-verifies, the three false concurrency constraints, and the rescued-vs-persistent refinement split)
-**Sources**: 99+ documents
+**Last compiled**: 2026-08-11 (AutoKernel's own measurement-integrity hardening lands with no inference run yet; AutoPilot's v10 multi-tier baseline is sealed and applied while the loop stays stopped; a sequential-allocation mechanism ships deliberately neutral on the question it exists to let the operator answer — see below; earlier 2026-08-10 note: adds the transfer-ratio synthesis — every cheap lane is a proxy whose transfer function is free to record now and impossible to backfill — plus lanes-screen/full-instance-verifies, the three false concurrency constraints, and the rescued-vs-persistent refinement split)
+**Sources**: 101+ documents
+
+## Compiled Update — 2026-08-11: two autonomous loops hardened their own measurement integrity before running anything
+
+**Confidence: verified** — read directly from committed code, tests, and operator receipts. AutoKernel's hardened harness has run zero model executions under this checkpoint; AutoPilot remains intentionally stopped. Neither loop advanced its own optimization state today — both advanced the *evidence* that a future advance can be trusted.
+
+### AutoKernel hardened candidate execution, input rotation, and per-quant roofline discipline — before its first hardened campaign
+
+AutoKernel (the autonomous kernel-research loop) landed a static/runtime-authoring hardening checkpoint the same day production froze to v9 (see [Hardware Optimization](hardware-optimization.md) for the full engineering detail — sandbox scope, AK-TR-4/5, AK-X-3/5/6). The autonomous-research-relevant summary: every candidate build and T0/T1 evaluation arm now fails closed through native OS-level confinement with a fresh process identity and verified teardown between arms, closing the gap where the loop's own tool-allowlist did not constrain syscalls made by code the loop itself authored and compiled; a hardened arm rotates input content and buffer/context addresses and validates output through an untimed same-content replica, specifically to stop a repeated-buffer artifact from entering a campaign as if it were a measured result; and the per-quant roofline surface now refuses to construct a comparison across mismatched quant denominators rather than silently producing one. 3,730 tests passed (one declared expected failure); **no model execution ran** — the first real candidate campaign under this hardened harness, cross-lane frequency/power coupling, and the frontier-model comparison track are all still open. The harness validated its own reason to exist the same day it shipped: it refused a stale post-freeze instrument receipt rather than silently scoring a candidate against a superseded kernel.
+
+### AutoPilot's v10 multi-tier baseline is sealed, applied, and the loop is still not running
+
+A consolidated ratifier atomically applied the v10 multi-tier baseline (evening of 2026-08-10, in scope for this pass): **T1=100 quality 1.500, T2=500 quality 1.356, T3=160 quality 1.275**, each at reliability 1.000 with zero error rows, together with the E16 era rows and a staged-promotion policy, while leaving AutoPilot and all model servers stopped. This is a checkpoint-sealing event, not a resumption — restart still requires separate, explicit operator authorization, consistent with the loop's standing pattern this page has tracked since the 2026-08-05 fan-out findings below: an autonomous loop's own guards do not resume it, only an operator does.
+
+### A sequential-verdict mechanism shipped deliberately taking no side on the question it was built to let a human answer
+
+AutoPilot's sequential-allocation policy carries a live tension: the underlying function that decides whether a stopped e-process is `refuted` is **non-sticky** (it has no memory), but the *persisted label* recording that verdict is sticky (never recomputed) — two readings of the same system that are both true and that a lane brief and the owning handoff had stated as opposite framings of a bug. Rather than resolve that human-amendment-only question (SEQ-A1, still open, per `MEASUREMENT.md`), today's fix (`SequentialPolicy.sticky_refuted`, defaulting `False`) reproduces the current non-sticky behavior byte-for-byte — 75 tests pass across every consumer — while unconditionally recording a new `first_refuted_k` field on every trial, on the reasoning that **observing a stop is free and is not the same as deciding it is permanent**. This is a reusable pattern for any autonomous loop sitting on a genuinely undecided policy question: build the instrumentation that lets the decision be made from already-captured data later, ship it behaviorally neutral now, and do not let the mechanism's completion quietly pre-empt the decision it was built to inform.
+
+### Source References (2026-08-11)
+
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — the sandbox/input-rotation/roofline hardening checkpoint (AK-TR-4/5, AK-X-3/5/6)
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the AutoKernel non-inference hardening checkpoint narrative
+- [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — the v10 multi-tier baseline seal and consolidated ratifier
+- [`handoffs/active/autopilot-sequential-allocation.md`](../handoffs/active/autopilot-sequential-allocation.md) — SEQ-A0, the neutral `sticky_refuted` mechanism, and the still-open SEQ-A1 operator decision
 
 ## Summary
 
