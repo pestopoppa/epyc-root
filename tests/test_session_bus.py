@@ -3255,3 +3255,103 @@ def test_r2_defect_kind_reaches_the_operator_path_without_new_code() -> None:
     _OPERATOR_ITEM_KINDS, so an unpresented one reaches token-queue.md on the C20
     timer with no new escalation code."""
     assert "defect" in coordinator._OPERATOR_ITEM_KINDS
+
+
+def test_r2_delivers_into_an_inbox_not_only_advisory(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """R2 CORRECTION, same day, caught by the operator. This first shipped emitting
+    the advisory row only, reasoning that `defect` is in _OPERATOR_ITEM_KINDS and
+    would reach token-queue.md on the C20 timer for free. Wrong: `_is_operator_item`
+    is applied to OUTBOX and INBOX rows, never advisory rows — so the notice went to
+    advisory.jsonl and stopped. That is the C33 shape, quoted twice the same day
+    while building this.
+    """
+    _provision(bus_root, "alice", "coordinator-agent")
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+
+    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert rows and rows[0]["check"] == "progress-log-stale"
+
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event") == "progress-log-stale"]
+    assert notices, "the defect must reach a queue somebody drains"
+    assert "invisible to the operator" in notices[0]["payload"]["action"]
+
+
+def test_r2_does_not_re_deliver_the_same_day_every_tick(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A 45s tick must not turn a true finding into the advisory flood C34 measured.
+    Deduped against the coordinator's own inbox — the notice's durable trace."""
+    _provision(bus_root, "alice", "coordinator-agent")
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+
+    for _ in range(5):
+        coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event") == "progress-log-stale"]
+    assert len(notices) == 1, f"one notice per day, got {len(notices)}"
+
+
+def test_r2_delivery_failure_never_breaks_the_tick(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Reporting must not be able to take the daemon down. A check that can break the
+    tick is worse than a missed notice."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    monkeypatch.setattr(coordinator, "_append_inbox",
+                        lambda *_a, **_k: (_ for _ in ()).throw(OSError("disk full")))
+
+    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert rows and rows[0]["check"] == "progress-log-stale", \
+        "the advisory row still comes back even when delivery fails"
+
+
+def test_advisory_rotates_once_it_passes_the_bound(bus_root: Path) -> None:
+    """advisory.jsonl reached 1,041 MiB / 3,003,126 rows with nothing rotating it."""
+    live = bus_root / "advisory.jsonl"
+    live.write_text("x" * 2048, encoding="utf-8")
+
+    assert coordinator.rotate_advisory(bus_root, 14, max_bytes=10_000) == [], \
+        "under the bound is a no-op"
+
+    rows = coordinator.rotate_advisory(bus_root, 14, max_bytes=1024)
+    assert rows and rows[0]["kind"] == "advisory-rotated"
+    assert (bus_root / "advisory_1.jsonl").exists(), "renamed, never truncated"
+    assert live.exists() and live.stat().st_size == 0, "a fresh live file takes over"
+
+    (bus_root / "advisory.jsonl").write_text("y" * 2048, encoding="utf-8")
+    coordinator.rotate_advisory(bus_root, 14, max_bytes=1024)
+    assert (bus_root / "advisory_2.jsonl").exists(), "shards number upward"
+
+
+def test_bootstrap_reads_every_shard_or_rotation_re_floods(bus_root: Path) -> None:
+    """The hazard rotation introduces, and the reason C28 had to land first. A
+    bootstrap that read only the live file would lose every flag raised before the
+    last rotation and re-flag all of them — turning housekeeping into the C34 flood
+    it was meant to prevent."""
+    _provision(bus_root, "alice")
+    _append(bus_root / "advisory.jsonl", {"relayed_src": "old-1", "unreachable": "schema-invalid"})
+    coordinator.rotate_advisory(bus_root, 14, max_bytes=1)
+    _append(bus_root / "advisory.jsonl", {"relayed_src": "new-1", "unreachable": "schema-invalid"})
+
+    state = coordinator.load_relay_state(bus_root, ["alice"])
+    assert state["bootstrapped"] is True
+    assert ("old-1", "schema-invalid") in state["flagged"], \
+        "a flag in a ROTATED shard must survive — otherwise it is re-flagged forever"
+    assert ("new-1", "schema-invalid") in state["flagged"]
+
+
+def test_rotation_failure_never_stops_the_tick(bus_root: Path,
+                                               monkeypatch: pytest.MonkeyPatch) -> None:
+    """Housekeeping must not be able to take delivery down."""
+    (bus_root / "advisory.jsonl").write_text("x" * 4096, encoding="utf-8")
+    monkeypatch.setattr(Path, "rename",
+                        lambda *_a, **_k: (_ for _ in ()).throw(OSError("read-only fs")))
+    rows = coordinator.rotate_advisory(bus_root, 14, max_bytes=1024)
+    assert rows and rows[0]["kind"] == "advisory-rotation-failed"

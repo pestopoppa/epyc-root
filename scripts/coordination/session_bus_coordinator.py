@@ -636,6 +636,33 @@ _PROGRESS_DIR = REPO_ROOT / "progress"
 _PROGRESS_STALE_H = 4.0
 
 
+def _deliver_progress_defect(bus_root: Path, epoch: int, check: str, day: str,
+                             detail: str) -> None:
+    """Put the R2 defect where somebody drains it, once per day.
+
+    Deduped against `coordinator-agent`'s OWN inbox — the notice's durable trace,
+    the same idiom C18/C33 use — so a 45s tick cannot turn a true finding into the
+    advisory flood C34 measured. Delivery failure is swallowed: this is a reporting
+    path, and a check that can take the daemon down is worse than a missed notice.
+    """
+    try:
+        rows, _ = _read_jsonl(bus_root / "inbox" / f"{COORDINATOR_AGENT}.jsonl")
+        for row in rows:
+            payload = row.get("payload") or {}
+            if payload.get("event") == check and payload.get("day") == day:
+                return
+        _append_inbox(bus_root, [{
+            "to": COORDINATOR_AGENT, "kind": "defect",
+            "payload": {"event": check, "day": day, "detail": detail,
+                        "action": "a working day with commits and no progress entry is "
+                                  "invisible to the operator — the dashboard counts checkbox "
+                                  "state, so unlogged work reads as a day where nothing "
+                                  "happened. Write the entry, or say why none is owed."}}],
+            epoch)
+    except Exception:  # noqa: BLE001 — reporting must never break the tick
+        pass
+
+
 def progress_log_currency(bus_root: Path, epoch: int, *, hours: float = _PROGRESS_STALE_H,
                           now: float | None = None,
                           repo_root: Path | None = None) -> list[dict]:
@@ -660,9 +687,18 @@ def progress_log_currency(bus_root: Path, epoch: int, *, hours: float = _PROGRES
                                                     exactly the fail-open shape.
 
     Precedent for the shape: `scan_operator_receipts` returns a `*-skipped` advisory
-    rather than an all-clear when it cannot read what it needs. `defect` is already
-    in `_OPERATOR_ITEM_KINDS`, so an unpresented one reaches `token-queue.md` on the
-    C20 timer with no new escalation code.
+    rather than an all-clear when it cannot read what it needs.
+
+    **CORRECTION 2026-08-11, same day, caught by the operator.** This first shipped
+    emitting the advisory row ONLY, on the reasoning that `defect` is in
+    `_OPERATOR_ITEM_KINDS` and would therefore reach `token-queue.md` on the C20
+    timer for free. That was wrong: `_is_operator_item` is applied to OUTBOX and
+    INBOX rows, never to advisory rows, so the notice went to `advisory.jsonl` and
+    stopped there. That is the C33 shape — an escalation delivered only to a file
+    nobody drains is a second unread sink one level up from the defect it reports —
+    and it is the sentence I had quoted twice the same day while building this. So
+    the defect is now DELIVERED into `coordinator-agent`'s inbox, deduped once per
+    day against that inbox's own contents so a 45s tick cannot flood it.
 
     Read-only: it inspects git and a file mtime and returns advisory rows. It never
     writes the progress log — a checker that fixes what it checks for cannot be
@@ -673,10 +709,14 @@ def progress_log_currency(bus_root: Path, epoch: int, *, hours: float = _PROGRES
     when = time.time() if now is None else now
     stamp = datetime.fromtimestamp(when, timezone.utc)
 
+    day = f"{stamp:%Y-%m-%d}"
+
     def defect(check: str, detail: str, **extra) -> list[dict]:
-        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
-                 "kind": "defect", "check": check, "subject": COORDINATOR_AGENT,
-                 "detail": detail, **extra}]
+        row = {"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+               "kind": "defect", "check": check, "subject": COORDINATOR_AGENT,
+               "day": day, "detail": detail, **extra}
+        _deliver_progress_defect(bus_root, epoch, check, day, detail)
+        return [row]
 
     try:
         proc = subprocess.run(
@@ -724,6 +764,56 @@ def progress_log_currency(bus_root: Path, epoch: int, *, hours: float = _PROGRES
                       f"happened.", progress_path=str(path.relative_to(root)),
                       stale_h=round((when - written) / 3600.0, 1))
     return []
+
+
+_ADVISORY_MAX_BYTES = 128 * 1024 * 1024
+
+
+def rotate_advisory(bus_root: Path, epoch: int,
+                    max_bytes: int = _ADVISORY_MAX_BYTES) -> list[dict]:
+    """Shard `advisory.jsonl` once it passes `max_bytes`. Returns advisory rows.
+
+    The file reached **1,041 MiB / 3,003,126 rows** and nothing rotated it. Until
+    2026-08-11 that was also a live hot-path cost — the daemon re-parsed the whole
+    thing every 45s for `already_flagged`, ~29.5% of a core — but C38 moved that to
+    `relay_state.json`, and the restarted daemon measures **1.3%**. So this is no
+    longer a performance fix; it is the size itself, and the one remaining full read
+    (the ledger bootstrap).
+
+    ORDERING, and it is load-bearing: **C28 had to land first.** C28's own filing
+    says any operation that moves, truncates or rotates a bus file re-floods what it
+    tracked, because relay idempotency was keyed on the destination file. It is now
+    keyed on message identity in a daemon-owned ledger, so rotation is finally safe
+    — and it was not safe this morning.
+
+    Rename, never truncate: the ledger is the record, and a rotated shard is still
+    readable and greppable. `load_relay_state` bootstraps across every shard for the
+    same reason.
+    """
+    live = bus_root / "advisory.jsonl"
+    try:
+        size = live.stat().st_size
+    except OSError:
+        return []
+    if size <= max_bytes:
+        return []
+    existing = sorted(bus_root.glob("advisory_*.jsonl"))
+    nxt = 1 + max((int(p.stem.rsplit("_", 1)[-1]) for p in existing
+                   if p.stem.rsplit("_", 1)[-1].isdigit()), default=0)
+    shard = bus_root / f"advisory_{nxt}.jsonl"
+    try:
+        live.rename(shard)
+        live.touch()
+    except OSError as exc:  # noqa: BLE001 — never let housekeeping stop the tick
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "advisory-rotation-failed", "check": "advisory-rotation",
+                 "detail": f"could not rotate {live} ({size / 1048576:.0f} MiB): {exc}"}]
+    return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+             "kind": "advisory-rotated", "check": "advisory-rotation",
+             "shard": shard.name, "bytes": size,
+             "detail": f"advisory.jsonl reached {size / 1048576:.0f} MiB and was rotated to "
+                       f"{shard.name}. Readers of the flag history must read every "
+                       f"advisory*.jsonl shard, not just the live file."}]
 
 
 RELAY_STATE_SCHEMA = "session_bus.relay_state.v1"
@@ -785,16 +875,23 @@ def load_relay_state(bus_root: Path, ids: Iterable[str]) -> dict:
         # The ONLY full read of advisory.jsonl left, and it happens once per ledger
         # lifetime rather than 80 times an hour. Streamed, because at 1 GiB the
         # parse-everything form is itself the defect being closed.
-        with (bus_root / "advisory.jsonl").open(encoding="utf-8", errors="replace") as fh:
-            for line in fh:
-                if '"unreachable"' not in line:
-                    continue
-                try:
-                    row = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                if row.get("unreachable"):
-                    flagged.add((str(row.get("relayed_src")), str(row.get("unreachable"))))
+        # EVERY SHARD, not just the live file. Rotation renames the current
+        # advisory to `advisory_<n>.jsonl`; a bootstrap that read only
+        # `advisory.jsonl` would lose every flag raised before the last rotation
+        # and re-flag all of them — turning a housekeeping win into the C34 flood
+        # it was meant to prevent. Same rule as the autopilot journal: rotated
+        # means sharded, and a reader of a sharded log reads all shards.
+        for shard in sorted((bus_root).glob("advisory*.jsonl")):
+            with shard.open(encoding="utf-8", errors="replace") as fh:
+                for line in fh:
+                    if '"unreachable"' not in line:
+                        continue
+                    try:
+                        row = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+                    if row.get("unreachable"):
+                        flagged.add((str(row.get("relayed_src")), str(row.get("unreachable"))))
     except OSError:  # noqa: BLE001 — a torn ledger must not stop delivery
         pass
     return {"delivered": delivered, "flagged": flagged, "bootstrapped": True}
@@ -2830,7 +2927,8 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     # and its `defect` kind is already in _OPERATOR_ITEM_KINDS, so an unpresented
     # one reaches token-queue.md on the C20 timer with no new escalation code.
     advice = (compute_advice(bus_root, config, epoch) + audit(bus_root, epoch)
-              + progress_log_currency(bus_root, epoch))
+              + progress_log_currency(bus_root, epoch)
+              + rotate_advisory(bus_root, epoch))
 
     # C2 relay. Runs at EVERY authority, including manual, because delivering an
     # explicitly-addressed message is transport, not judgment — and gating it on
