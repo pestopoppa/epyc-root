@@ -2882,3 +2882,182 @@ def test_the_triage_trailer_advertises_the_bulk_form_when_it_is_needed(
     bus.print_triage(bus_root, "coordinator-agent")
     out = capsys.readouterr().out
     assert "1 item(s)" in out and "corr_ids:" not in out
+
+
+# ----------------------------------------------------------------- C28 / C38
+#
+# Two defects that turned out to be one defect: both asked "what has this daemon
+# already done" and both answered by re-reading the thing it had acted on.
+#   C28 — relay idempotency was `relayed_src` checked against the RECIPIENT'S
+#     INBOX, so an absent or truncated destination read as "never relayed". The
+#     2026-07-29 roster rename (`git mv inbox/<old> inbox/<new>`) made the running
+#     daemon re-deliver its entire relay history into recreated old-id inboxes.
+#     Generally: any operation that moves, truncates, rotates or restores an inbox.
+#   C38 — `already_flagged` re-read advisory.jsonl in full every 45s. Measured:
+#     1,028 MiB / 3,001,866 rows parsed per tick to rebuild a set of 637 pairs.
+
+def _relayed_into(root: Path, agent: str, src: str) -> None:
+    _append(root / "inbox" / f"{agent}.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": f"msg-20260811T120000Z-9-{agent}",
+        "ts": "2026-08-11T12:00:00+00:00", "from": "bob", "to": agent, "kind": "status",
+        "relayed_src": src})
+
+
+def test_moving_an_inbox_no_longer_re_floods_it(bus_root: Path) -> None:
+    """C28's exact trigger, reproduced. The rename is not the only one — this is
+    every move, truncate, rotate or restore."""
+    _provision(bus_root, "alice")
+    _relayed_into(bus_root, "alice", "msg-20260728T090000Z-1-bob")
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+
+    state = coordinator.load_relay_state(bus_root, ["alice"])
+    assert state["bootstrapped"] is True
+    assert state["delivered"]["alice"] == {"msg-20260728T090000Z-1-bob"}
+    coordinator.save_relay_state(bus_root, state)
+
+    # The destructive operation: the inbox is moved away and recreated empty.
+    (bus_root / "inbox" / "alice.jsonl").write_text("", encoding="utf-8")
+
+    after = coordinator.load_relay_state(bus_root, ["alice"])
+    assert after["bootstrapped"] is False
+    assert after["delivered"]["alice"] == {"msg-20260728T090000Z-1-bob"}, \
+        "the ledger, not the destination file, is what remembers the delivery"
+
+
+def test_a_missing_ledger_degrades_to_the_old_behaviour_not_to_a_re_flood(
+        bus_root: Path) -> None:
+    """The fail-safe direction, and the reason bootstrap reads the inboxes. A lost
+    or corrupt ledger must fall back to reading what is ACTUALLY THERE — today's
+    semantics — rather than to an empty set, which would re-deliver everything."""
+    _provision(bus_root, "alice")
+    _relayed_into(bus_root, "alice", "msg-20260728T090000Z-1-bob")
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+
+    for corrupt in ("", "{not json", json.dumps({"schema_version": "session_bus.relay_state.v99"})):
+        (bus_root / "relay_state.json").write_text(corrupt, encoding="utf-8")
+        state = coordinator.load_relay_state(bus_root, ["alice"])
+        assert state["bootstrapped"] is True, corrupt[:20]
+        assert state["delivered"]["alice"] == {"msg-20260728T090000Z-1-bob"}, \
+            "a torn ledger must never read as 'nothing was ever delivered'"
+
+
+def test_flagged_pairs_survive_without_re_reading_the_advisory(bus_root: Path) -> None:
+    """C38. Once the ledger exists the advisory is not read at all — which is the
+    whole point, since it is 1,028 MiB and the answer is 637 pairs."""
+    _provision(bus_root, "alice")
+    _append(bus_root / "advisory.jsonl",
+            {"relayed_src": "msg-1", "unreachable": "schema-invalid"})
+    _append(bus_root / "advisory.jsonl",
+            {"relayed_src": "msg-2", "unreachable": "handler:relay_tokens"})
+
+    state = coordinator.load_relay_state(bus_root, ["alice"])
+    assert state["flagged"] == {("msg-1", "schema-invalid"), ("msg-2", "handler:relay_tokens")}
+    coordinator.save_relay_state(bus_root, state)
+
+    # Truncating the advisory must not resurrect the flags — they are the daemon's
+    # own record now, in a place a rotation cannot erase.
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+    after = coordinator.load_relay_state(bus_root, ["alice"])
+    assert after["flagged"] == state["flagged"]
+    assert after["bootstrapped"] is False
+
+
+def test_relay_persists_the_ledger_and_stays_idempotent_across_ticks(
+        bus_root: Path) -> None:
+    """End to end, and the compliant path: a second tick over the same outbox must
+    deliver NOTHING new — that is the property C28 exists to protect, and 'never
+    re-flood' is trivially satisfied by never delivering at all."""
+    _provision(bus_root, "alice", "bob", "coordinator-agent")
+    _append(bus_root / "outbox" / "bob.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T120000Z-1-bob",
+        "ts": "2026-08-11T12:00:00+00:00", "from": "bob", "to": "alice", "kind": "status",
+        "payload": {"detail": "hello"}})
+    config = coordinator._load_config(bus_root)
+    roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
+
+    coordinator.relay_outbox_messages(bus_root, roster, 14, config)
+    first = _read_jsonl(bus_root / "inbox" / "alice.jsonl")
+    assert len(first) == 1 and first[0]["relayed_src"] == "msg-20260811T120000Z-1-bob", \
+        "the message must actually be delivered — this is the direction that matters"
+    assert (bus_root / "relay_state.json").exists()
+
+    coordinator.relay_outbox_messages(bus_root, roster, 14, config)
+    assert _read_jsonl(bus_root / "inbox" / "alice.jsonl") == first, "second tick must be a no-op"
+
+
+def _daemon_hb(root: Path, pid: int, age_s: float) -> None:
+    path = root / "heartbeats" / f"{bus.COORDINATOR_DAEMON}.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"agent": bus.COORDINATOR_DAEMON, "pid": pid,
+                                "state": "working", "epoch": 14}), encoding="utf-8")
+    stamp = time.time() - age_s
+    os.utime(path, (stamp, stamp))
+
+
+def test_drain_warns_every_agent_when_the_daemon_is_not_serving(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """C37's second half. The identity and freshness checks fixed the REPORT, but the
+    report was pull-only and for 243 hours nobody pulled — and the supervisor that
+    would have noticed was dead too. Every agent runs `drain` at every task boundary,
+    so the check runs there: the outage becomes visible within ONE boundary.
+    """
+    _provision(bus_root, *AGENTS)
+    _daemon_hb(bus_root, 999_999_999, age_s=10)          # dead pid
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"])
+    err = capsys.readouterr().err
+    assert "COORDINATOR-DAEMON IS NOT SERVING" in err
+    assert "does not exist" in err
+
+
+def test_the_warning_fires_on_an_EMPTY_drain_too(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The case that matters most, and the one an early return would have missed:
+    '(no new messages)' is exactly what a dead relay looks like from inside an
+    agent — an all-clear that is really a silence."""
+    _provision(bus_root, *AGENTS)
+    _daemon_hb(bus_root, 999_999_999, age_s=10)
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"])
+    captured = capsys.readouterr()
+    assert "(no new messages for alice)" in captured.out
+    assert "COORDINATOR-DAEMON IS NOT SERVING" in captured.err
+
+
+def test_a_wedged_daemon_holding_its_pid_is_not_serving(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Alive is not the same as serving. A wedged daemon keeps its pid and stops
+    ticking, which is indistinguishable from healthy if you only check the pid."""
+    _provision(bus_root, *AGENTS)
+    monkeypatch.setattr(bus, "daemon_argv", lambda _p: "python session_bus_coordinator.py run")
+    _daemon_hb(bus_root, os.getpid(), age_s=876_736)     # ten days
+    ok, why = bus.daemon_is_serving(bus_root)
+    assert ok is False and "WEDGED" in why
+
+
+def test_a_healthy_daemon_is_silent(bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+                                    capsys: pytest.CaptureFixture[str]) -> None:
+    """The compliant path, and the one that decides whether the warning gets read at
+    all: a banner on every drain trains the fleet to skip it."""
+    _provision(bus_root, *AGENTS)
+    monkeypatch.setattr(bus, "daemon_argv", lambda _p: "python session_bus_coordinator.py run")
+    _daemon_hb(bus_root, os.getpid(), age_s=12)
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"])
+    assert "NOT SERVING" not in capsys.readouterr().err
+    ok, _ = bus.daemon_is_serving(bus_root)
+    assert ok is True
+
+
+def test_a_recycled_pid_is_not_a_serving_daemon(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The agent-side copy must carry the identity check too, or it reports every
+    recycled pid as a healthy bus."""
+    _provision(bus_root, *AGENTS)
+    _daemon_hb(bus_root, 1, age_s=10)                    # pid 1 is /sbin/init
+    ok, why = bus.daemon_is_serving(bus_root)
+    if Path("/proc/1/cmdline").exists():
+        assert ok is False and "recycled" in why

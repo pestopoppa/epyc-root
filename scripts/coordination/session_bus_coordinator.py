@@ -58,7 +58,7 @@ import sys
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Iterable, Optional
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
@@ -630,6 +630,90 @@ def spent_receipt_for(gate_id: str, receipts_dir: Path | None = None) -> tuple[P
     if status not in _SPENT_STATUSES:
         return None
     return path, status
+
+
+RELAY_STATE_SCHEMA = "session_bus.relay_state.v1"
+
+
+def _relay_state_path(bus_root: Path) -> Path:
+    return bus_root / "relay_state.json"
+
+
+def load_relay_state(bus_root: Path, ids: Iterable[str]) -> dict:
+    """The daemon's own record of what it has delivered and what it has flagged.
+
+    Closes TWO defects that turned out to be the same defect, so they are fixed
+    together rather than twice:
+
+    **C28 — relay was tracked by destination FILE, not by message identity.** The
+    idempotency key was `relayed_src` checked against the recipient's inbox, so an
+    absent or truncated destination read as "never relayed". Renaming the roster on
+    2026-07-29 meant `git mv inbox/<old> inbox/<new>`, and the running daemon
+    re-delivered its ENTIRE relay history into freshly recreated old-id inboxes.
+    Stated generally, because the rename is not the only trigger: **any operation
+    that moves, truncates, rotates or restores an inbox re-floods it** — including a
+    well-meant cleanup or a log rotation.
+
+    **C38 — `already_flagged` re-read `advisory.jsonl` in full, every 45s.** That
+    file reached 1,028 MiB / 3,001,866 rows, and the set it rebuilds has **637
+    members**. Three million rows parsed per tick to reconstruct 637 pairs, on the
+    delivery hot path, costing ~29.5% of a core continuously.
+
+    One ledger answers both, because both questions are "what has this daemon
+    already done", and the C18 rule they each half-applied says to derive that from
+    what the daemon itself leaves behind, in a place the operation cannot erase —
+    not from re-reading the thing it acted on.
+
+    BOOTSTRAP, and why it is the safe direction: with no ledger on disk the state is
+    rebuilt from the inboxes and the advisory exactly as before, then written. That
+    is today's semantics, so a lost or corrupt ledger degrades to the old behaviour
+    rather than to a re-flood — it reads what is actually there. It is paid once,
+    not per tick.
+    """
+    path = _relay_state_path(bus_root)
+    ids = list(ids)
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        if str(raw.get("schema_version")) != RELAY_STATE_SCHEMA:
+            raise ValueError(f"unknown relay_state schema {raw.get('schema_version')!r}")
+        delivered = {aid: set(map(str, raw.get("delivered", {}).get(aid, []))) for aid in ids}
+        flagged = {(str(a), str(b)) for a, b in raw.get("flagged", [])}
+        return {"delivered": delivered, "flagged": flagged, "bootstrapped": False}
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        pass
+
+    delivered = {}
+    for aid in ids:
+        rows, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl")
+        delivered[aid] = {str(r["relayed_src"]) for r in rows if r.get("relayed_src")}
+    flagged: set[tuple[str, str]] = set()
+    try:
+        # The ONLY full read of advisory.jsonl left, and it happens once per ledger
+        # lifetime rather than 80 times an hour. Streamed, because at 1 GiB the
+        # parse-everything form is itself the defect being closed.
+        with (bus_root / "advisory.jsonl").open(encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                if '"unreachable"' not in line:
+                    continue
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if row.get("unreachable"):
+                    flagged.add((str(row.get("relayed_src")), str(row.get("unreachable"))))
+    except OSError:  # noqa: BLE001 — a torn ledger must not stop delivery
+        pass
+    return {"delivered": delivered, "flagged": flagged, "bootstrapped": True}
+
+
+def save_relay_state(bus_root: Path, state: dict) -> None:
+    """Persist the ledger atomically. Sorted so a diff of it is readable."""
+    _write_atomic(_relay_state_path(bus_root), {
+        "schema_version": RELAY_STATE_SCHEMA,
+        "ts": _utcnow_iso(),
+        "delivered": {aid: sorted(src) for aid, src in sorted(state["delivered"].items())},
+        "flagged": sorted([list(pair) for pair in state["flagged"]]),
+    })
 
 
 def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[str, dict],
@@ -2313,21 +2397,11 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
     notified = {(str(r.get("relayed_src")), str((r.get("payload") or {}).get("unreachable")))
                 for r in _ca_rows
                 if r.get("kind") == "defect" and (r.get("payload") or {}).get("unreachable")}
-    delivered_src: dict[str, set[str]] = {}
-    for aid in ids:
-        rows, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl")
-        delivered_src[aid] = {r["relayed_src"] for r in rows if r.get("relayed_src")}
-
-    # C18 dedupe: an unreachable routing recipient is flagged ONCE per (msg, rid),
-    # not once per tick — the pair is looked up in the durable advisory ledger the
-    # tick loop writes, so a restart does not re-flood it either.
-    already_flagged: set[tuple[str, str]] = set()
-    try:
-        advisory_rows, _ = _read_jsonl(bus_root / "advisory.jsonl")
-        already_flagged = {(str(r.get("relayed_src")), str(r.get("unreachable")))
-                          for r in advisory_rows if r.get("unreachable")}
-    except Exception:  # noqa: BLE001 — a torn ledger must not stop delivery
-        pass
+    # C28 + C38 (2026-08-11): both of these used to be re-derived, every tick, from
+    # the thing they describe. They now come from ONE daemon-owned ledger.
+    relay_state = load_relay_state(bus_root, ids)
+    delivered_src: dict[str, set[str]] = relay_state["delivered"]
+    already_flagged: set[tuple[str, str]] = relay_state["flagged"]
 
     advisory: list[dict] = []
     for sender in ids:
@@ -2474,6 +2548,13 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
                 advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
                                  "epoch": epoch, "kind": "relayed", "from": sender,
                                  "to": target, "relayed_src": src, "msg_kind": kind})
+
+    # C28/C38: persist AFTER the pass, so a crash mid-relay loses the ledger update
+    # rather than the delivery. Losing the update re-delivers at most one tick's
+    # worth on the next run — the destination check that bootstrap falls back to
+    # would have caught those anyway. Losing the delivery would be the real damage,
+    # and this ordering makes that impossible.
+    save_relay_state(bus_root, {"delivered": delivered_src, "flagged": already_flagged})
     return advisory
 
 

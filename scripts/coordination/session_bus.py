@@ -1113,6 +1113,81 @@ def message_age_h(row: dict, now: float | None = None) -> float | None:
     return max(0.0, ((time.time() if now is None else now) - authored) / 3600.0)
 
 
+def daemon_argv(pid: int) -> str | None:
+    """argv of `pid`, or None where it cannot be read (no /proc is a portability
+    fact, never evidence of death). Separate so a test can isolate identity from
+    liveness — pytest's own pid is alive and is legitimately not the daemon."""
+    try:
+        raw = (Path("/proc") / str(pid) / "cmdline").read_bytes()
+    except OSError:
+        return None
+    return raw.replace(b"\0", b" ").decode("utf-8", "replace").strip() or None
+
+
+def daemon_is_serving(bus_root: Path, tick_s: float = 45.0,
+                      missed_ticks: int = 10) -> tuple[bool, str]:
+    """Is the coordinator-daemon alive, itself, and ticking? (ok, reason)
+
+    C37, second half (2026-08-11). The identity and freshness checks landed in
+    `session_bus_coordinator.py status`, and that fixed the REPORT — but the report
+    was pull-only, and for 243 hours nobody pulled. The supervisor that would have
+    noticed was dead too, so "something will catch it" had no floor.
+
+    This is the floor, and it needs no host change and no new daemon: **every agent
+    runs `drain` at every task boundary**, by CLAUDE.md and by every task brief. So
+    the check runs there, dozens of times an hour across the fleet, and the outage
+    becomes visible within ONE task boundary instead of ten days.
+
+    Deliberately duplicated rather than imported: `session_bus.py` is the agent-side
+    tool and must not depend on the coordinator module to tell an agent the bus is
+    dead — a check that imports the thing it is checking on is the shape that fails
+    exactly when it is needed. It is also read-only and cheap: one stat, one small
+    read, one `os.kill(pid, 0)`.
+    """
+    path = bus_root / "heartbeats" / f"{COORDINATOR_DAEMON}.json"
+    try:
+        hb = json.loads(path.read_text(encoding="utf-8"))
+        age = time.time() - path.stat().st_mtime
+    except (OSError, json.JSONDecodeError):
+        return False, f"no readable {COORDINATOR_DAEMON} heartbeat at {path}"
+
+    pid = hb.get("pid")
+    try:
+        pid = int(pid)
+        os.kill(pid, 0)
+    except (TypeError, ValueError):
+        return False, f"heartbeat carries no usable pid ({hb.get('pid')!r})"
+    except ProcessLookupError:
+        return False, f"pid {pid} does not exist — the daemon is DEAD"
+    except PermissionError:
+        pass                                    # exists under another uid
+    except OSError as exc:
+        return True, f"pid {pid} liveness unknown ({exc}); heartbeat {age:.0f}s old"
+
+    argv = daemon_argv(pid)
+    if argv is not None and "session_bus_coordinator" not in argv:
+        return False, (f"pid {pid} exists but is running {argv[:48]!r}, NOT the daemon — "
+                       f"the recorded pid was recycled")
+
+    limit = max(tick_s * missed_ticks, 120.0)
+    if age > limit:
+        return False, (f"pid {pid} is alive but the heartbeat is {age:.0f}s old, past the "
+                       f"{limit:.0f}s bound — the daemon is WEDGED, not serving")
+    return True, f"pid {pid} alive, heartbeat {age:.0f}s old"
+
+
+def _print_daemon_health(bus_root: Path) -> None:
+    """Say it only when it is BAD. A line on every drain is a line nobody reads."""
+    ok, why = daemon_is_serving(bus_root)
+    if ok:
+        return
+    print(f"\n!! COORDINATOR-DAEMON IS NOT SERVING THIS BUS: {why}.\n"
+          f"   Nothing is relaying outbox messages, so anything you send now sits "
+          f"undelivered and anything sent to you will not arrive. This is the 243h "
+          f"outage of 2026-08-01..11 repeating; report it rather than working past it.",
+          file=sys.stderr)
+
+
 def _print_staleness(rows: list[dict], stale_after_h: float) -> None:
     """Say, out loud, which of the messages just drained are OLD.
 
@@ -1204,6 +1279,11 @@ def cmd_drain(args: argparse.Namespace) -> int:
         _print_staleness(rows, args.stale_after_h)
     else:
         print(f"(no new messages for {args.agent})")
+    # C37: on EVERY drain, including the empty one. "(no new messages)" is precisely
+    # what a dead relay looks like from inside an agent — an all-clear that is really
+    # a silence. This is the check that would have caught the 243h outage on its
+    # first task boundary.
+    _print_daemon_health(bus_root)
     if getattr(args, "triage", False):
         print_triage(bus_root, args.agent)
     return 0
