@@ -279,6 +279,12 @@ constants, cert registry).
 
 ### C-1. OPERATOR-SIGNATURE ITEMS — surfaced immediately, bypass the saturation gate
 
+> **RESOLVED INTO TOKENS 2026-08-11 (coordinator assignment `consolidated-era-and-annexg-token`):**
+> both items are now authored, pre-validated, unsigned amendment vehicles committed as `75a722c6`
+> — `ratify_consolidated_era_rows_20260811.sh` (four era rows, per-row strike, 59/59 suite
+> evidence) and `ratify_annexg_v9_currency_20260811.sh` (two parentheticals, sha-pinned).
+> Token blocks: `msg-20260811T094705Z-154/-155-auditor`. Awaiting operator signature.
+
 1. **No cpu_bench era row exists for v9.** `orchestration/autopilot_state.json`
    `active_instrument_eras.cpu_bench = "E8-cpu-kernel"` (verified) while production has run v9
    since today's freeze — the era registry (`instrument_eras.yaml`, 31 ids, newest E16 dated
