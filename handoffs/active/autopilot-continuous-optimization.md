@@ -580,6 +580,10 @@ Three "Research Intake Update" sections have surfaced **scoring-mechanism** upgr
 2. ~~**GEPA integration** (intake-240)~~: **PROMOTED to P10** (2026-04-12). Deep-dive confirmed GEPA works with local inference, 35x cheaper than GRPO, 3-example minimum. No longer needs to wait for AR-3 PromptForge limitations — GEPA is strictly better.
 3. **Hard-negative training data** (intake-176): Contrastive negatives for routing classifier. Only relevant when 500+ memories exist for retraining.
 4. ~~**Git worktree isolation for PromptForge**~~: ✅ 2026-04-05. Implemented `worktree_manager.py` with `WorktreeManager` + `ExperimentContext`. Auto-reject safety default prevents corruption incidents like AR-3 trial ~25.
+   - [x] **Exact-preimage rollback repair.** ✅ 2026-08-10 — rejection used to write the saved
+     in-memory preimage and immediately erase it with `git checkout -- <path>`, destroying a dirty
+     operator/parallel-session edit. It now restores exact bytes, distinguishes empty from absent,
+     and has focused regression coverage for all three states.
 5. **Convention locking** (intake-150): Lock baseline parameters from species modification. Premature without more trials.
 
 ### Design considerations (no implementation needed)
