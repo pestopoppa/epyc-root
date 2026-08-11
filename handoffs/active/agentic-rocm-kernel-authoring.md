@@ -168,20 +168,29 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
 > "Externalization in LLM Agents" (now merged into intake-418). The 9/9 seeded-fuzzing finding
 > below belongs to the 2606.20128 paper. Surfaced while auditing references to merged intake ids.
 
-**Key finding**: Seeded fuzzing for kernel correctness catches 9/9 buggy kernels, passes 15/15 controls. Provides fine-grained kernel-level benchmarking substrate.
+**Corrected disposition**: the seeded-fuzzing result belongs to a separate paper and maps to **C2
+(correctness)**, not C3 (timing/reward). Its useful design rules—stateful-op coverage, adversarial and
+non-power-of-two extents, absolute-duration gates, speed-of-light rejection, and anti-reward-hacking
+checks—are already implemented natively in AutoKernel's C2/C6 surfaces. KernelBench itself is an
+isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP kernels.
 
-**Applicability to EPYC**: Directly applicable to the agentic kernel-authoring loop — serves as the C3 correctness verification substrate in the generate→compile→verify→profile→refine loop. KernelBench's seeded fuzzing methodology can catch correctness regressions in agent-generated kernels before they enter the profiling stage.
-
-**Integration with existing C1-C6**: KernelBench maps to C3 (correctness) in our verification layer, complementing C4 (profiler-metric) and C6 (anti-reward-hacking). The seeded fuzzing approach is complementary to our GEAK-eval substrate.
-
-- [ ] **AK-RB-1** — adopt RE-Bench's SCORING PROTOCOL for gfx90a kernel-agent evaluation, not the
+- [x] **AK-RB-1** — adopt RE-Bench's SCORING PROTOCOL for gfx90a kernel-agent evaluation, not the
       benchmark itself (intake-1072, filed 2026-08-10). Transferable: log-time scoring of
       behaviour-preserving optimization, 0 = starting state / 1 = a strong reference solution, and
       time-budget curves (2h/8h/32h) rather than pass-fail. NOT worth standing up as-is — only 1 of 7
       environments is a kernel task, it is Triton on H100, and porting to gfx90a invalidates the
-      published human and model anchors that are the reason to use it.
-- [ ] **AK-KB-1** — integrate KernelBench into GEAK-eval verification loop as C3 correctness substrate
-- [ ] **AK-KB-2** — establish KernelBench baseline over current llama.cpp-HIP kernels
+      published human and model anchors that are the reason to use it. ✅ 2026-08-11 — implemented
+      reference-normalized, deliberately unclipped log-time scores; behavior failures withhold reward;
+      matched best-so-far curves emit at 2h/8h/32h in
+      `scripts/kernel_rnd/autokernel/evaluator/rebench_scoring.py`.
+- [x] **AK-KB-1** — audit KernelBench for the GEAK-eval **C2** correctness surface ✅ 2026-08-11 —
+      declined the incompatible task artifacts (current first-party HIP is gfx942/gfx950 and ROCm 7.1+),
+      while retaining the already-native correctness and anti-hacking design rules above. The live
+      gfx90a GEAK/AgentKernelArena round-trip is the compatible C2/C5 substrate.
+- [x] **AK-KB-2** — establish the correct baseline disposition for current llama.cpp HIP kernels
+      ✅ 2026-08-11 — retired the category error: exact-surface llama.cpp baselines and historical C5
+      replay are authoritative; translating them into isolated PyTorch KernelBench tasks would change
+      the unit under test and cannot establish a production-kernel baseline.
 
 ## Progress checklist
 
@@ -215,7 +224,13 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
   KernelFoundry / K-Search / Xe-Forge / GEAK ✅ 2026-08-11 — `arena_adapter.py` registers the
   `argus` controller id under the same exact three-argument bridge and prompt-hygiene contract as
   the other arms. This records registration only; the cited MI300X result remains vendor evidence.
-- [ ] Read GEAK's `landscape/` + `languages/` sections as an external check on our seven-school taxonomy (vendor-maintained, covers hipkittens/tilelang/mojo/cutlass/flydsl)
+- [x] Read GEAK's `landscape/` + `languages/` sections as an external check on our seven-school
+  taxonomy ✅ 2026-08-11 — current GEAK `5107c7e4` showed that “seven schools” was never a durable,
+  enumerated fact. The corrected comparison is seven *abstraction families*, recorded in the
+  [deep-dive sweep](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md#sweep-2026-08-11--landscape--languages-taxonomy-check-closed).
+  The live gfx90a ladder is Triton → TileLang → HIP/C++ → MFMA/ISA when measurement justifies each
+  descent, with CK/CK-Tile/rocWMMA as baselines. FlyDSL is a valuable new vocabulary source but GEAK
+  scopes it to gfx942/gfx950, so it is not a current MI210 execution arm.
 - [x] Resolve the profiler-tooling blocker on the host (rocprofv2/rocprof/omniperf/rocm-bandwidth-test) — C4 and the LDS bank/phase solver are both gated on it ✅ 2026-08-11 — version-matched ROCm 6.2 tools are side-loaded; `rocprofv2` is the working op-level path, with its whole-model/IQ2 crash boundary now measured and receipted. Omniperf is runnable and has a fail-closed governed fallback; seeded evidence waits on OP-11.
 - [x] Run HipKittens' LDS bank/phase solver method on gfx90a ✅ 2026-08-11 — 372 bank and 6,048 phase
   dispatches across three repetitions measured **32 LDS banks and eight phase cliques of eight lanes**.
@@ -223,14 +238,18 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
   `swizzle_transfer_class=retune_required`. Receipt:
   `/mnt/raid0/llm/autokernel/probes/inf03-lds-gfx90a-20260811-r4/receipt.json`, SHA-256
   `ae1d833c704bdae9a78767d0fc0b927298d6d1dfdb31a0ea11c34058dc525987`.
-- [ ] Add `-mllvm --amdgpu-unroll-threshold-local=600` to the build-flag checklist as a **precondition of any ROCm 7+ upgrade** (llama.cpp #19984, 3.7–5× prefill regression; does not affect our ROCm 6.2 today)
+- [x] Add `-mllvm --amdgpu-unroll-threshold-local=600` to the build-flag checklist as a
+  **precondition of any ROCm 7+ upgrade** ✅ 2026-08-11 — the new
+  [ROCm upgrade checklist](../../docs/runbooks/rocm-upgrade-checklist.md) requires Linux builds to pass
+  the option through `CMAKE_HIP_FLAGS`, proves it reached HIP compile commands, and retains it unless
+  an exact-toolchain matched A/B shows it unnecessary. This does not alter frozen v9 or ROCm 6.2.
 - [x] **GEAK-family freshness sweep completed ✅ 2026-07-29**: refreshed the deep-dive appendix from AMD's current AgentKernelArena/GEAKv3 reports. AKA now publishes 214 tasks and a 44-task MI300X comparison; this is vendor/CDNA3 evidence only and does not close the MI210/gfx90a reproduction gap. [Freshness appendix](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md#9-freshness-appendix-sweep-at-each-handoff-audit--when-the-mi210-racks).
 
 
 ## Auto-kernel revival — research-intake integration 2026-07-22 (C5 seed corpus + FP8 authoring target)
 _Via /research-intake Stage-2 (intake-884 HyRA MI210 re-check). The loop AUTHORS gfx90a kernels — these are task specs, not port-or-decline artifacts._
-- [ ] Seed C5 with the HyRA sol_execbench kernels as reference specs the loop authors gfx90a kernels FROM (maps onto this handoff's "seed EPYC ops: attention / MoE-dispatch / dequant"): 5 bf16/fp16 Triton kernels directly (k138 mamba, k145 hyena, k154 chunk-gated-delta linear-attn, k175 MoE dispatch, k228 MLA paged-prefill); CUDA-lib-bound winners (k215 GEMM/flashinfer, k225/k227 GQA/MLA) as reference targets to re-author. All Hopper-autotuned + NVIDIA-only-attested -> loop re-authors + re-attests on gfx90a (wavefront-64/MFMA/LDS)
-- [ ] Add FP8 as an authoring datatype target: gfx90a has no native FP8 MFMA, but an FP8-weight -> bf16-MFMA upcast GEMV is buildable and potentially bandwidth-valuable for memory-bound decode (half the weight bytes of bf16; compute upcast to bf16) — an experimental-kernel investigation, NOT a hard wall. NVFP4 microscaling (per HyRA k185) is the harder end; scope after the FP8-upcast path
+- [x] Seed C5 with the HyRA sol_execbench kernels as reference specs the loop authors gfx90a kernels FROM (maps onto this handoff's "seed EPYC ops: attention / MoE-dispatch / dequant"): 5 bf16/fp16 Triton kernels directly (k138 mamba, k145 hyena, k154 chunk-gated-delta linear-attn, k175 MoE dispatch, k228 MLA paged-prefill); CUDA-lib-bound winners (k215 GEMM/flashinfer, k225/k227 GQA/MLA) as reference targets to re-author. All Hopper-autotuned + NVIDIA-only-attested -> loop re-authors + re-attests on gfx90a (wavefront-64/MFMA/LDS) ✅ 2026-08-11 — `c5_seed_corpus.{json,py}` pins all eight artifacts to Hyra-results commit `26ebfbe7`, separates the direct and CUDA-bound sets, excludes Hopper scores/latencies from authoring context, and lets Arena tasks select exact rows through `c5_seed_ids`.
+- [x] Add FP8 as an authoring datatype target: gfx90a has no native FP8 MFMA, but an FP8-weight -> bf16-MFMA upcast GEMV is buildable and potentially bandwidth-valuable for memory-bound decode (half the weight bytes of bf16; compute upcast to bf16) — an experimental-kernel investigation, NOT a hard wall. NVFP4 microscaling (per HyRA k185) is the harder end; scope after the FP8-upcast path ✅ 2026-08-11 — `datatype_targets.py` exposes a non-numeric FP8-weight/software-upcast contract to Arena tasks, requires an independent decoder, exact-shape baseline, upcast-cost attribution and whole-model gate, forbids batch-one MFMA assumptions, and mechanically defers NVFP4 until the FP8 path has a terminal result.
 
 ---
 

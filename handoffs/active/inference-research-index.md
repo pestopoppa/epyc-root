@@ -12,10 +12,10 @@
 |----|-------|---------|-------------|------|
 | INF-01 | 01 speculative decoding | [01-speculative-decoding.md](01-speculative-decoding.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | INF-02 | agent collab rnd harness | [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md) | (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (--backend local, custo… | — |
-| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Run the matched MI210 controller-authoring A/B across the seven registered Arena arms | INF-48 |
+| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Run the matched MI210 controller-authoring A/B across the seven registered Arena arms | INF-48, EVL-47 |
 | INF-04 | angelslim techniques evaluation | [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) | BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist | — |
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
-| INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Run the first real CPU candidate on the full host after explicit inference permission | INF-48 |
+| INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Run the first full-host IQK CPU candidate through T0–T3 and retain its validated package | INF-48 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
 | INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Measure tinyBLAS on/off first (Phase 0) — sgemm.cpp is already compiled in, so it confounds every later A/B | — |
@@ -41,8 +41,8 @@
 | INF-32 | llamacpp v6 consolidation | [llamacpp-v6-consolidation.md](llamacpp-v6-consolidation.md) | SWA slot-reuse fixes (d1c72d7fc / 603702769) — verify vs upstream SWA before drop. | — |
 | INF-33 | log linear gated deltanet readiness | [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size) | — |
 | INF-34 | mi210 big model and acceleration roadmap | [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) | DR-3 broader K2 admission runner/package: implement the dry-run-first K2 | — |
-| INF-36 | mi210 mfma compute bound paths | [mi210-mfma-compute-bound-paths.md](mi210-mfma-compute-bound-paths.md) | DEFERRED with data — reopen the MFMA build only if a new compute-bound path appears | — |
-| INF-37 | mi210 q8 dequant gemv roofline | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) | After OP-11 commits the seeded producer, rerun the IQ2_XXS Omniperf-v1 fallback and retain a passing receipt | — |
+| INF-36 | mi210 mfma compute bound paths | [mi210-mfma-compute-bound-paths.md](mi210-mfma-compute-bound-paths.md) | Apply WGM none/8/16/32 to real MMQ launches; retain wall-time, L2/TCC, and correctness evidence | INF-48 |
+| INF-37 | mi210 q8 dequant gemv roofline | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) | Instrument production-shape Q4_K vs Q8_0 inside mul_mat_vec_q; then rerun IQ2 after OP-11 | INF-48 |
 | INF-39 | moe aggregate deployment wins brief | [moe-aggregate-deployment-wins-brief.md](moe-aggregate-deployment-wins-brief.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | INF-40 | moe spec cpu spec dec integration | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | Current live-MTP MoE verifier B-sweep: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bi… | — |
 | INF-41 | multimodal pipeline | [multimodal-pipeline.md](multimodal-pipeline.md) | S-9 — wire start_tts() into orchestrator_stack.py (port 9002 reserved); capability exists, wiring does not | — |

@@ -2784,7 +2784,15 @@ nothing wrong. We held no claim.**
       floor cannot be resolved. CPU inference was explicitly authorized on 2026-08-11 while the
       production stack remains online and idle; do not infer GPU-load, producer-commit, promotion,
       or freeze authority from it. The v8 3%/B_min=12 bundle is a regression fixture, not a literal
-      to copy.
+      to copy. The first v9 preflight was retained and failed closed **before inference**: source and
+      copied-binary identity passed, but the selected measurement binary did not emit the six required
+      hardened runtime receipts (`autokernel_hybrid_ab_complete`, thread-set stability/hash,
+      escape-check completion, unsynchronized-sample timing, and device-sync mode), and package-power
+      readability was `COULD_NOT_CHECK`. Rebuild or select the exact receipt-emitting hardened
+      instrument, restore a readable package-power counter, and rerun the preflight before taking a
+      claim or launching any control. Local evidence remains untracked at
+      `epyc-inference-research/data/autokernel_controls_3pct_20260811_v9_hardened/`; its copied binary
+      payload is about 15 MB and is intentionally not a repository artifact.
 
 ### Step 3 — the first candidate
 
@@ -3478,6 +3486,14 @@ readiness, and two of them are cheaper than anything currently in the list:
 9b. **G14 architect MoE-IQ2** — last on purpose. Its kill-criterion probe runs first and may retire it
    at near-zero cost; funding a kernel before that probe is how a campaign gets spent on an
    architectural floor.
+3c. **G17 gfx90a WGM launch-order locality** — the diagnostic L2 proxy establishes a bounded
+   none/8/16/32 search with 16 as the starting point; instantiate it on the real MMQ launch only,
+   retaining correctness sentinels plus wall-time and L2/TCC evidence. This is an INF-36 seed that
+   consumes INF-48 tooling, not a claim that the proxy gain transfers.
+7c. **G18 Q4_K superblock-unpack attribution** — instrument representative production-shape Q4_K
+   against Q8_0 inside `mul_mat_vec_q`; the existing m=16 profile cannot see unpack work. Require an
+   inside-kernel source timer or admitted mechanism counter before proposing source changes. This is
+   the missing INF-37 Item-B seed.
 
 **Inserted 2026-08-10 — v9 DSpark low-hanging upstream queue.** These are concrete merged patches or
 bounded monitors, not speculative research themes. Source state was rechecked on 2026-08-10; the

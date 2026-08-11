@@ -2,8 +2,29 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-10 (belief-substrate promotion track: corroboration counted by source locator, machine anchoring, dependency propagation, R1b closed)
+**Last compiled**: 2026-08-11 (adds prospective AutoKernel Arena belief emission and dependency-evidence classification; prior promotion-track findings retained)
 **Sources**: 36 documents
+
+## Compiled Update — 2026-08-11 (AutoKernel Arena write-side boundary)
+
+The GEAK/AgentKernelArena adapter now has a prospective belief writer rather than relying on a later
+reader to reinterpret generic benchmark fields. Successful future round trips emit two explicitly
+typed measurements—correctness and timing—using the same measurement ladder as the existing ROCm
+profiling producers. Failed or incomplete runs emit no performance belief. The compatibility
+preflight remains dependency evidence only: source pins, platform reachability, and compile success
+are important facts, but none has an honest higher-is-better or lower-is-better ordinal direction.
+
+This is a small but general rule for evidence systems: **write semantic measurement intent at the
+producer boundary, and classify capability checks separately from ranked observations**. It prevents
+a dashboard or ledger adapter from inventing metric direction after the experiment, and makes future
+controller A/B results comparable without retrofitting old receipts. Existing 2026-08-11 receipts are
+deliberately unchanged.
+
+### Source References (2026-08-11 AutoKernel Arena writer)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20/SC21 acceptance and classification
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — producer vectors and dependency-evidence handling
+- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — research commit identities and closeout boundary
 
 ## Summary
 

@@ -1,8 +1,8 @@
 # Handoff: MI210 single-stream roofline — Q8 dequant-GEMV kernel + batch-1 latency levers
 
-**Status**: OPEN — kernel-authoring task (llama.cpp-experimental). **Created**: 2026-07-04 (Fable5 window-2 MI210 campaign follow-on).
-**Owner tree**: `/mnt/raid0/llm/llama.cpp-experimental` (branch `upstream-mtp-verify`; kernel work goes here, NEVER production-consolidated-v6). HIP build `build-hip/`, `export LD_LIBRARY_PATH=<bin>:/opt/rocm/lib; export HIP_VISIBLE_DEVICES=0`.
-**Substrate**: MI210 gfx90a/CDNA2, 64 GB HBM2e, ~1.64 TB/s peak, ROCm 6.2. All numbers OBSERVATION (no P-GPU-1).
+**Status**: OPEN — Q4_K inside-kernel attribution and IQ2 governed replay remain live. **Created**: 2026-07-04 (Fable5 window-2 MI210 campaign follow-on).
+**Owner tree**: `/mnt/raid0/llm/llama.cpp-experimental`; all work starts from current frozen production v9 in an isolated experimental branch. The old `upstream-mtp-verify`, production-v6, and `build-hip/` instructions below are historical only.
+**Substrate**: MI210 gfx90a/CDNA2, 64 GB HBM2e, ROCm 6.2. Current runs follow P-GPU-1, exclusive device claims, numeric in-window sampling, and the governed INF-48 profiler runners; pre-P-GPU-1 observations below retain their historical authority only.
 **Context doc**: `handoffs/active/fable5-window2-findings-05b-mi210-inference-architecture.md` §1/§9.
 
 ## UPDATE 2026-07-04 — measured results REFRAME this handoff (Tier-1 premise is WRONG; async-prefetch is the lever)
