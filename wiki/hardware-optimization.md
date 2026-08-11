@@ -2,13 +2,13 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds the independent AutoKernel fp64 oracle and stock ROCm Q4_K baseline failures; prior C2, clock, gfx90a kernel-agent, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-11 (adds AutoKernel baseline-honesty probes, MMQ-isolated Q4_K failures, and gfx90a duration admission; prior C2, clock, roofline, topology, and quant-path findings retained)
 **Sources**: 96+ documents
 
 ## Compiled Update — 2026-08-11 (AutoKernel live correctness controls)
 
-**Confidence: verified — measured live on the CPU backend; this is correctness-instrument acceptance,
-not a performance or production claim.**
+**Confidence: mixed — verified correctness-instrument acceptance on CPU; single-run GPU microbench
+observations with retained receipts, not production or cross-surface performance claims.**
 
 AutoKernel's stateful correctness pass now treats carried state as part of the result rather than
 checking only ordinary outputs. For every selected recurrent/cache-backed case, the candidate and
@@ -41,21 +41,34 @@ Q4_K, and Q6_K directly from GGUF wire bytes and emits
 side. Five representative CPU cases, the dedicated broadcast regression, 31 real parser tests, and
 the property self-test's 5/5 planted plus 5/5 clean cases passed.
 
-The larger result is deliberately negative: the full stock ROCm Q4_K matrix contains genuine
-baseline failures under the predeclared κ=1.5 ratio gate. This does not invalidate the independent
-oracle, and the isolated broadcast pass does not override the full-matrix failures. Keep κ fixed,
-preserve and characterize the failing shapes and error ratios, correct the stock baseline, and do
-not rank candidates on this surface until the baseline itself passes. The experimental producer is
-still uncommitted under its explicit per-commit approval boundary.
+The broad matrix first uncovered a real non-contiguous coverage bug in the oracle itself: quantized
+rows must be read through the tensor's `nb[1..3]` strides, not as one packed span. After that repair,
+the fixed forced-dispatch matrix preserved a much sharper negative result. Force-rocBLAS passed
+**43/43** Q4_K cases with maximum error ratio **1.2283**; force-MMQ passed **18/43**, failed 25, and
+reached **3.0361**. The remaining failures are therefore MMQ-specific stock correctness failures.
+Keep κ fixed at 1.5, retain rocBLAS as the control, and do not rank the MMQ surface until corrected.
+
+The baseline-honesty probes also reject global defaults. In AK-BH-1, best-heuristic hipBLASLt beat
+rocBLAS at only three of nine prefill shapes, while its throughput ratio ranged from **0.734× to
+1.322×**; future vendor baselines must choose the strongest library per exact shape. AK-BH-2 then
+completed all eight explicitly pinned flash-attention × ROCWMMA × MMQ-MFMA arms on one 0.5B Q4_K_M
+prefill surface. Flash attention on won each build pair, MMQ-MFMA was slower, and `r1m0-fa-on` won at
+24,647.316788 t/s. That is a surface-local observation, not authority to change global build defaults.
+
+Ranking now also has a device-local absolute-duration admission. RVP-C3-5 derives a
+**250,090,903 ns** minimum complete repetition window from the first nominal-SCLK observation in the
+RVP-T0-1 gfx90a receipt. Missing, foreign-device, malformed, or shorter live GPU windows receive no
+speed rank even if their relative noise looks small. The focused implementation tests pass 11/11.
+The experimental producer is still uncommitted under its explicit per-commit approval boundary.
 
 ### Source References (2026-08-11 AutoKernel correctness)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — live checkpoint,
-  independent fp64 oracle, authorization boundary, and next calibration step.
+  baseline-honesty receipts, independent fp64 oracle, and next calibration step.
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C2-5 triad
-  contract, RVP-C2-6 oracle and Q4_K baseline finding, and producer-durability boundary.
+  contract, MMQ-isolated Q4_K finding, duration-window admission, and producer boundary.
 - [Progress 2026-08-11](../progress/2026-08/2026-08-11.md) — exact live counts, seed, receipt flags,
-  fp64 oracle checks, fixed-gate baseline finding, research commits, and verification results.
+  receipt hashes, runner paths, fixed-gate dispatch finding, and verification results.
 
 ## Compiled Update — 2026-08-03 (the AMD deficit is a QUANT deficit, not a device deficit; and the compute roofline, finally computed)
 

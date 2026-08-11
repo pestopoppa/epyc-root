@@ -1,12 +1,13 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
-**Status**: ACTIVE HARDENING — fp64 oracle live; stock ROCm Q4_K baseline failures open
-**Created**: 2026-06-03 · **Updated**: 2026-08-11 (RVP-C2-6 live oracle + baseline finding)
+**Status**: ACTIVE HARDENING — Q4_K failures isolated to MMQ; fixed-gate correction open
+**Created**: 2026-06-03 · **Updated**: 2026-08-11 (RVP-C2-6a dispatch isolation + RVP-C3-5)
 
-> **NEXT ACTION (2026-08-11): `RVP-C2-6a` — characterize the stock ROCm Q4_K failures under the
-> unchanged κ=1.5 gate.** The independent host-double oracle and representative cases are live, but
-> the full stock matrix has genuine baseline failures that must not be relabelled as an oracle defect
-> or erased by relaxing the threshold. The experimental implementation remains uncommitted and must
+> **NEXT ACTION (2026-08-11): `RVP-C2-6b` — correct the stock gfx90a Q4_K MMQ path under the
+> unchanged κ=1.5 gate.** The non-contiguous oracle coverage defect is fixed. The corrected forced
+> matrix passed force-rocBLAS 43/43 and force-MMQ 18/43, isolating 25 genuine failures to MMQ. Preserve
+> the passing rocBLAS control and do not relax the gate. The experimental implementation remains
+> uncommitted and must
 > not be committed or pushed without explicit user approval per that tree's `AGENTS.md`. The two static
 > probes (`RVP-T0-2`, `RVP-T0-5`) remain complete and independently re-verified. **`RVP-T0-1` is now
 > complete:** the live card never approached its 300 W cap, so the clock-pinning branch and AK-OP-2
@@ -385,12 +386,18 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     and the dedicated broadcast-indexing regression passed; the real receipt parser remained compatible
     across 31 parser tests; and the property self-test caught 5/5 planted defects while accepting 5/5
     clean cases. The implementation remains uncommitted pending explicit user approval.
-  - [ ] **RVP-C2-6a — Characterize and correct the stock ROCm Q4_K baseline failures without changing
-    κ=1.5.** The full stock matrix contains genuine ratio-gate failures even though the representative
-    set and broadcast regression pass. Preserve the failing cases as correctness evidence, identify the
-    affected shapes/error ratios and mechanism, and do not rank candidates on this surface until the
-    baseline itself satisfies the predeclared gate. **Do not call the independent oracle broken and do
-    not relax the gate to make stock pass.**
+  - [x] **RVP-C2-6a — Correct oracle coverage and isolate the stock ROCm Q4_K failures.** ✅ 2026-08-11 —
+    the first matrix exposed a real non-contiguous-row coverage bug in the host-double decoder. Reading
+    each logical row through `nb[1..3]` fixed that oracle defect. The corrected forced-dispatch matrix
+    retained 43 cases per arm: force-rocBLAS passed 43/43 with maximum error ratio 1.2283, while
+    force-MMQ passed 18/43 and failed 25 with maximum ratio 3.0361. This is now an MMQ-specific stock
+    correctness finding under unchanged κ=1.5. Receipt:
+    `/mnt/raid0/llm/autokernel/probes/rvp-c2-6a-rocm-q4k-dispatch2-20260811T1042Z/receipt.json`, SHA-256
+    `6e7870558c6317a7ef12f7fca8a267466cc0734295d0c33562103a0c022a3502`. Research runner:
+    `scripts/benchmark/run_rocm_q4k_fp64_matrix.py`.
+  - [ ] **RVP-C2-6b — Correct the stock gfx90a Q4_K MMQ path without changing κ=1.5.** Preserve the
+    force-rocBLAS 43/43 control, retain all 25 force-MMQ failures as regression cases, and do not rank
+    this surface until the corrected MMQ arm passes the same matrix.
 - [ ] **RVP-C2-7 — Degenerate and insensitive-case screening.** Reference-only, 3 seeds × 4
   transforms, run once per suite version, plus an input-*insensitivity* screen (does the output move
   at all when the input does?) and a seed-invariance screen. **Audit our own `(0.9, 1.1)`-style ranges
@@ -508,10 +515,18 @@ the end are deliberate and recorded so they are not re-derived._
   every check we have. Upgrade the audit from word-presence to value-presence. ✅ 2026-08-10 —
   AutoKernel `evaluator/devices.py` parses SCLK, MCLK, power and junction temperature into validated
   samples; evaluation-event v5 mechanically re-derives throttle and makes it verdict-bearing.
-- [ ] **RVP-C3-4 — 250 ms in-run device-state sampler** across the measurement window. Two endpoints
-  cannot see a mid-run excursion.
-- [ ] **RVP-C3-5 — Declare an absolute duration-window admission test** for any op-shape used to rank
-  variants, with the lower bound **measured on gfx90a**. Do not import a foreign floor.
+- [x] **RVP-C3-4 — 250 ms in-run device-state sampler** across the measurement window. ✅ 2026-08-11 —
+  the AK-BH-1, AK-BH-2, and corrected Q4_K receipts carry numeric in-window samples with maximum gaps
+  of 0.250006, 0.250032, and 0.250023 seconds respectively, plus released device claims.
+- [x] **RVP-C3-5 — Declare an absolute duration-window admission test** for any op-shape used to rank
+  variants, with the lower bound **measured on gfx90a**. ✅ 2026-08-11 — the research implementation
+  derives a 250,090,903 ns minimum from the first nominal-SCLK observation in the hash-bound RVP-T0-1
+  receipt, refuses missing/foreign/sub-floor live GPU evidence before ranking, and exempts CPU and
+  non-live arms. The focused device-sampler module passes 11/11 tests. These research-tree changes
+  live in `scripts/kernel_rnd/autokernel/evaluator/devices.py`,
+  `scripts/kernel_rnd/autokernel/execution/microbench.py`, and
+  `scripts/kernel_rnd/autokernel/execution/test_device_sampler.py`; they remain uncommitted at this
+  checkpoint.
 - [x] **RVP-C2-10 — Add a non-power-of-2 extent to the standing shape set.** ✅ 2026-08-11 — frozen v9's
   executed `MUL_MAT` case set already carries extents 83, 77 and 127 (plus other irregular shapes),
   and the AutoKernel T0 op filter runs that standing set rather than a power-of-two subset. Adding
