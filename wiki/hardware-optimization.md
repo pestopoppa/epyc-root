@@ -2,8 +2,32 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds the WGM proxy boundary, governed authoring seeds, and ROCm-upgrade gate; prior INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
-**Sources**: 96+ documents
+**Last compiled**: 2026-08-11 (adds the live-host C6 sandbox boundary; prior WGM, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Sources**: 99+ documents
+
+## Compiled Update — 2026-08-11 (AutoKernel C6 live-host sandbox)
+
+**Confidence: verified live-host containment behavior; no inference or performance claim.**
+
+AutoKernel's real kernel-authoring path now has a host-native, fail-closed C6 boundary rather than the
+older devcontainer-only bwrap/unshare prototype. The evaluator provisions only a narrow
+`/sys/fs/cgroup/autokernel` parent, creates a fresh per-invocation leaf, and keeps candidate execution
+non-root under Landlock write confinement, seccomp signal/network/namespace denial, finite resource
+limits, and descendant-draining teardown. Missing or unwritable delegation refuses before candidate
+spawn; there is no `allow_unsandboxed` or environment escape on the live campaign path.
+
+The live red-team probe on this host exercised Landlock ABI 6 as uid 1000. A write inside the
+candidate tree succeeded, while an outside write and evaluator-receipt forgery failed; host signalling
+and socket creation returned `EPERM`; and teardown killed an escaped descendant, proved empty cgroup
+membership, and removed the invocation leaf. This closes the C6 host-readiness gate without weakening
+the standing rule that a sandbox claim must name and exercise its actual syscall and filesystem
+controls. No inference or production-stack change was needed.
+
+### Source References (2026-08-11 C6 host sandbox)
+
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — dated C6 closure and live red-team outcomes
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — syscall-confinement acceptance contract and live campaign ownership
+- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — host provisioning, path wiring, verification scope, and no-inference boundary
 
 ## Compiled Update — 2026-08-11 (gfx90a WGM and authoring-loop boundary)
 
