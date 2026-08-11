@@ -254,6 +254,13 @@ mocked responses + targeted pytest). All 61 targeted seeding-scorer tests pass;
 
 ## Residual tasks (filed at 2026-07-22 wrap-up)
 - [ ] Unify the `_inband_error_text` / `_forced_role_serving_mismatch` local copies (seeding `3bfe2584`) with eval_tower's originals into one shared module (currently two deliberate copies)
+  - **RE-VERIFIED 2026-08-11 (`mainC`), independently, against today's tree — the 2026-07-29 audit
+    below still holds.** `--3way` is opt-in (`add_argument("--3way", ..., dest="three_way")` at
+    `:857`), the branch is `if args.three_way:` at **`:1175`**, and without it execution reaches
+    `run_batch(` at **`:1432`** and **`:1481`**. So `run_batch` remains the DEFAULT path and the
+    legacy `ComparativeResult` route is still live. **The anchors drifted** from the audit's
+    `:1173`/`:1430`/`:1479` by two lines from ordinary edits — cite this row by its text, not by
+    those numbers, which is the same anchor-rot that cost the dispatch queue 34.5% of its refs.
 - [x] `seeding_legacy.py:~331` deprecated ComparativeResult path carries the pre-guard reward-injection pattern — guard it or delete the legacy path ✅ 2026-07-29 (`epyc-orchestrator` `e108ec9f`; in-band and scorer-unavailable responses persist as infrastructure diagnostics but suppress comparative reward injection; focused seeding tests 72/72)
   - **AUDITED 2026-07-29 (`auditor`). THE PREMISE OF THIS ROW IS FALSE — "currently unused by the
     live driver" is wrong, and the correct disposition is GUARD, not delete.** Evidence, all in

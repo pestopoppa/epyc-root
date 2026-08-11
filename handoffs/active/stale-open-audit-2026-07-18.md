@@ -83,7 +83,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 - [x] Add `**Lifecycle**: live` to `llama-cpp-dsa-contribution` (board over-flags it superseded) ✅ 2026-07-18
 - [x] Cross-link the MI210 GPU speed campaign into `qwen36-27b-cpu-feasibility` (parked-on-CPU ≠ dead model) ✅ 2026-07-18
 - [x] Surface the fired reopen-triggers (gpu-drafter MI210-gate, minddr DGX→MI210, sarathi batched-decode E1/E2) with dated notes + reactivate `- [ ]` tasks in each handoff ✅ 2026-07-18
-- [ ] Re-anchor GEMV to its 2 live graph-fusion tasks; move the deprioritized SIMD Phase 0–5 plan to a closed appendix
+- [x] Re-anchor GEMV to its 2 live graph-fusion tasks; move the deprioritized SIMD Phase 0–5 plan to a closed appendix ✅ 2026-08-11 (`mainC`, root `9ed95b4d`) — the two live boxes (fuse expert gate+up; fuse the attn QKV cluster, both frontdoor Q8_0, both cutting barrier COUNT) are now the file's whole live surface, and the Phased Work Plan sits under a CLOSED APPENDIX declaration. Measured effect: the handoff presents **2** rows on the generated bench instead of **28**. **The 26 stale rows are still NOT closed and must not be** — the certification coupling is recorded on the GEMV handoff, and closing them ahead of the re-anchor would destroy the evidence separating the shelved plan from the live lever. Placing the banner also exposed a real tool blind spot: a `##` banner did not reach boxes under its own `###` children, so a phased plan could not be declared at all; fixed in the same commit with tests.
   - **VERIFIED 2026-07-29 (`auditor`), handed to the CPU-lane owner — NOT executed here**, because this
     section is headed *"no checkbox flips on the audited handoffs"* and the move would effectively close
     26 boxes. **The recommendation is correct and the target handoff says so itself:** line 5 reads
@@ -253,7 +253,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     * **12 rows explicitly name an owner file.** Checking each against its owner: only the ID-level
       test ("every id named in the index row is `[x]` in the owner, none still open") is suggestive,
       and it yields **2 candidates**, of which **1 is confirmed stale by reading**:
-      `cpu-inference-optimization-index.md:120` tracks *"B1-B5 in a quiet window"* while
+      `inference-research-index.md:120` tracks *"B1-B5 in a quiet window"* while
       `iqk-iquant-enablement.md` has B1–B5 all `- [x]` (2026-07-25/26) and Status **"PROMOTED AND
       FROZEN IN v8"**. **That is a genuine already-done-but-open row — the category the audit wanted
       and could not find.**
