@@ -43753,6 +43753,42 @@
     located_by: machine
     match_coverage: '0.462'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-29 conflation-audit recovery: the earlier promotional summary omitted operational negatives.
+      The RLM converts mainly compute-bound long-context PREFILL into bandwidth-bound DECODE, because it
+      writes code to solve and again to emit the answer — adverse on EPYC''s bandwidth-saturated decode
+      plane specifically — and the post itself says RLM increases wall-clock time significantly in EVERY
+      reported environment. The REPL-as-environment mechanism is untouched.'
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-07-29 conflation-audit recovery: the earlier promotional summary omitted operational negatives.
+      The RLM converts mainly compute-bound long-context PREFILL into bandwidth-bound DECODE, because it
+      writes code to solve and again to emit the answer — adverse on EPYC''s bandwidth-saturated decode
+      plane specifically — and the post itself says RLM increases wall-clock time significantly in EVERY
+      reported environment. Sub-LLM delegation is not what carried the result: the largest Oolong synth-with-labels
+      win used ZERO sub-LM calls — regular expressions over the context variable — which is evidence for
+      deterministic data-by-reference rather than recursive fan-out. Cite the reference-passing, not the
+      fan-out.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-29 conflation-audit recovery: the earlier promotional summary omitted operational negatives.
+      The RLM converts mainly compute-bound long-context PREFILL into bandwidth-bound DECODE, because it
+      writes code to solve and again to emit the answer — adverse on EPYC''s bandwidth-saturated decode
+      plane specifically — and the post itself says RLM increases wall-clock time significantly in EVERY
+      reported environment. Hedged in the claim as ''is framed as''.'
+  - claim_index: 3
+    effect: narrowed
+    note: '2026-07-29 conflation-audit recovery: the earlier promotional summary omitted operational negatives.
+      The RLM converts mainly compute-bound long-context PREFILL into bandwidth-bound DECODE, because it
+      writes code to solve and again to emit the answer — adverse on EPYC''s bandwidth-saturated decode
+      plane specifically — and the post itself says RLM increases wall-clock time significantly in EVERY
+      reported environment. The benchmark direction survives but the operating cost does not: significant
+      wall-clock regression in every reported environment, on the plane where we are already saturated.
+      Mechanism constants worth carrying: depth 1, 8,192-char REPL output cap, 120s sub-call timeout (300/600s
+      did not help), tools available only to sub-LLMs. Main Model Token Efficiency is the portable accounting
+      unit.'
 - id: intake-804
   arxiv_id: '2607.05391'
   url: https://arxiv.org/html/2607.05391v2
@@ -53601,6 +53637,49 @@
     (7) CODE — NOT released, no licence, no repo; unlike ReasoningBank''s Apache-2.0 release.
 
     (8) STORE POLICY — learned delete plus a soft compression RATIO reward; no cap, no decay, no TTL, no eviction rule, and no per-window decay instrument.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-29 combined Stage-1+2 dive (Tier 4, operator-authorised) against the primary PDF. The
+      material correction is to the PARENT dive, which generalised from ALFWorld alone: reachability is
+      CONFIRMED on ALFWorld but OVERTURNED on WebShop, where the same training-free open-weight SkillOS-base
+      BEATS ReasoningBank in all three blocks on Score and two of three on SR — and SkillOS-gemini, also
+      prompt-only with no RL, beats ReasoningBank in three of four ALFWorld blocks. A framing claim about
+      where the bottleneck sits; untouched.'
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-07-29 combined Stage-1+2 dive (Tier 4, operator-authorised) against the primary PDF. The
+      material correction is to the PARENT dive, which generalised from ALFWorld alone: reachability is
+      CONFIRMED on ALFWorld but OVERTURNED on WebShop, where the same training-free open-weight SkillOS-base
+      BEATS ReasoningBank in all three blocks on Score and two of three on SR — and SkillOS-gemini, also
+      prompt-only with no RL, beats ReasoningBank in three of four ALFWorld blocks. ''RL-trained curator
+      beats a frontier prompt-only curator'' does not hold universally: prompt-only wins on WebShop, and
+      a prompt-only Gemini curator wins most ALFWorld blocks. The result is BENCHMARK-DEPENDENT, not a general
+      ordering.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-29 combined Stage-1+2 dive (Tier 4, operator-authorised) against the primary PDF. The
+      material correction is to the PARENT dive, which generalised from ALFWorld alone: reachability is
+      CONFIRMED on ALFWorld but OVERTURNED on WebShop, where the same training-free open-weight SkillOS-base
+      BEATS ReasoningBank in all three blocks on Score and two of three on SR — and SkillOS-gemini, also
+      prompt-only with no RL, beats ReasoningBank in three of four ALFWorld blocks. This claim survives
+      BECAUSE it is correctly scoped to ALFWorld, and the exact cell is confirmed: SkillOS-base 63.6+/-3.9
+      vs ReasoningBank 66.0+/-2.7 vs No Memory 61.2+/-2.3. The overgeneralisation lived in the parent''s
+      prose, not here.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-29 combined Stage-1+2 dive (Tier 4, operator-authorised) against the primary PDF. The
+      material correction is to the PARENT dive, which generalised from ALFWorld alone: reachability is
+      CONFIRMED on ALFWorld but OVERTURNED on WebShop, where the same training-free open-weight SkillOS-base
+      BEATS ReasoningBank in all three blocks on Score and two of three on SR — and SkillOS-gemini, also
+      prompt-only with no RL, beats ReasoningBank in three of four ALFWorld blocks.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-29 combined Stage-1+2 dive (Tier 4, operator-authorised) against the primary PDF. The
+      material correction is to the PARENT dive, which generalised from ALFWorld alone: reachability is
+      CONFIRMED on ALFWorld but OVERTURNED on WebShop, where the same training-free open-weight SkillOS-base
+      BEATS ReasoningBank in all three blocks on Score and two of three on SR — and SkillOS-gemini, also
+      prompt-only with no RL, beats ReasoningBank in three of four ALFWorld blocks.'
 - id: intake-936
   arxiv_id: '2605.18421'
   url: https://arxiv.org/abs/2605.18421
@@ -60387,6 +60466,35 @@
     DIVE-SURFACED SOURCES: https://github.com/sethkarten/continual-harness is the load-bearing public implementation and is proposed for Stage-2b ingest-and-dive; the same-team project page and independent Factorio environment notes are lower priority.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): AP-CH-1 and AP-CH-2 in `handoffs/active/autopilot-continuous-optimization.md` plus TU-ADV-1 in `handoffs/active/tool-use-eval-contract.md` own shadow proposals and adversarial fixtures; live self-modification, executor import, and training remain declined.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2 dive. Reset-free proposal generation and its disclosed failures are VERIFIED;
+      live self-modification and released co-learning are OVERTURNED as integration-ready. NOT-FOUND in
+      the release: PRM/DAgger training, held-out acceptance, transactional commit, automatic rollback, oscillation
+      guard, reward-hacking gate. Four-kind mutation and same-episode refinement are both CONFIRMED.'
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-08-07 Stage-2 dive. Reset-free proposal generation and its disclosed failures are VERIFIED;
+      live self-modification and released co-learning are OVERTURNED as integration-ready. NOT-FOUND in
+      the release: PRM/DAgger training, held-out acceptance, transactional commit, automatic rollback, oscillation
+      guard, reward-hacking gate. The claim is safe only in its ''the paper PROPOSES'' form. Nothing of
+      the co-learning variant is released — PRM, DAgger and frontier-teacher training are all NOT-FOUND
+      — so it must never be cited as an available component.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2 dive. Reset-free proposal generation and its disclosed failures are VERIFIED;
+      live self-modification and released co-learning are OVERTURNED as integration-ready. NOT-FOUND in
+      the release: PRM/DAgger training, held-out acceptance, transactional commit, automatic rollback, oscillation
+      guard, reward-hacking gate. This claim already STATES the dive''s finding, so it is confirmed rather
+      than corrected.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-07 Stage-2 dive. Reset-free proposal generation and its disclosed failures are VERIFIED;
+      live self-modification and released co-learning are OVERTURNED as integration-ready. NOT-FOUND in
+      the release: PRM/DAgger training, held-out acceptance, transactional commit, automatic rollback, oscillation
+      guard, reward-hacking gate. Matches the PARTIAL verdict exactly: only tool errors are explicit, other
+      diagnoses are model-inferred.'
 - id: intake-1017
   arxiv_id: '2606.10532'
   url: https://arxiv.org/abs/2606.10532
@@ -60614,6 +60722,43 @@
     DIVE-SURFACED SOURCES: the companion paper is already dive-verified as intake-1016; no additional gate-worthy source surfaced.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): AP-CH-1 and AP-CH-2 in `handoffs/active/autopilot-continuous-optimization.md` plus TU-ADV-1 in `handoffs/active/tool-use-eval-contract.md` own shadow proposals and adversarial fixtures; live self-modification, executor import, and training remain declined.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2b implementation dive: VERIFIED as a shadow-proposal source and adversarial
+      fixture, OVERTURNED as a safe live optimizer or released co-learning system. Every one of this entry''s
+      claims already states the dive''s CORRECTED position — the hard-coded 25/100 cadence, the absence
+      of held-out acceptance or an atomic transaction, and the same-process exec that is not a security
+      boundary — so the claims are confirmed, not corrected. Adversarial value is real and worth carrying:
+      the companion paper supplies 842 identical invalid calls and a conversion of privileged environment
+      access.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-07 Stage-2b implementation dive: VERIFIED as a shadow-proposal source and adversarial
+      fixture, OVERTURNED as a safe live optimizer or released co-learning system. Every one of this entry''s
+      claims already states the dive''s CORRECTED position — the hard-coded 25/100 cadence, the absence
+      of held-out acceptance or an atomic transaction, and the same-process exec that is not a security
+      boundary — so the claims are confirmed, not corrected. Adversarial value is real and worth carrying:
+      the companion paper supplies 842 identical invalid calls and a conversion of privileged environment
+      access.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2b implementation dive: VERIFIED as a shadow-proposal source and adversarial
+      fixture, OVERTURNED as a safe live optimizer or released co-learning system. Every one of this entry''s
+      claims already states the dive''s CORRECTED position — the hard-coded 25/100 cadence, the absence
+      of held-out acceptance or an atomic transaction, and the same-process exec that is not a security
+      boundary — so the claims are confirmed, not corrected. Adversarial value is real and worth carrying:
+      the companion paper supplies 842 identical invalid calls and a conversion of privileged environment
+      access.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-07 Stage-2b implementation dive: VERIFIED as a shadow-proposal source and adversarial
+      fixture, OVERTURNED as a safe live optimizer or released co-learning system. Every one of this entry''s
+      claims already states the dive''s CORRECTED position — the hard-coded 25/100 cadence, the absence
+      of held-out acceptance or an atomic transaction, and the same-process exec that is not a security
+      boundary — so the claims are confirmed, not corrected. Adversarial value is real and worth carrying:
+      the companion paper supplies 842 identical invalid calls and a conversion of privileged environment
+      access.'
 - id: intake-1021
   arxiv_id: '2605.04808'
   url: https://arxiv.org/abs/2605.04808
