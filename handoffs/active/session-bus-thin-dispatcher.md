@@ -1701,6 +1701,60 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     `probe` stating which mains are uncovered, because a wrong backend guess makes C36 return a
     confident WRONG answer — strictly worse than the heartbeat it replaces.
 
+- [x] **C37 (NEW) — a dead daemon reported itself healthy for 243 hours, and the pid check that
+  was supposed to prevent that had already landed.** ✅ 2026-08-11 — `mainD`, commit `001c06da`'s
+  successor on `main` (see `git log -- scripts/coordination/session_bus_coordinator.py`).
+  **Dead window measured, not estimated: 2026-08-01T05:42:54Z → 2026-08-11T08:48:02Z = 243.1h**, the
+  single >1h gap in `advisory.jsonl`. P1b added the pid check on **2026-07-29**, *before* the death,
+  so "there was no pid check" is the wrong story and chasing it would have fixed nothing. Two
+  independent holes, both **reproduced against the real module before either was touched**:
+  1. **Identity.** `os.kill(pid, 0)` proves a process with that number exists, not that it is this
+     daemon. `heartbeat_predates_boot` closes that only ACROSS a reboot — and its own docstring says
+     so — but the host booted 2026-07-29 13:41 and never rebooted, so the recycling guard was
+     inapplicable for the entire window. Reproduced: a 10-day-old heartbeat naming `pid 1` printed
+     `state=working epoch=13 pid=1 age=876736s` with **no staleness note at all**. `pid 1` is
+     `/sbin/init`. Now verified against `/proc/<pid>/cmdline`. Unverifiable identity reports *alive
+     with the doubt stated*, never dead: a missing `/proc` is a portability fact, and a false DEAD
+     sends someone to restart a running singleton.
+  2. **Freshness was printed and never judged.** `age=876736s` and `age=19s` produced the same
+     verdict: none. A wedged daemon holds its pid and stops ticking, so pid-alive must not imply
+     healthy. Bound is 10 missed ticks (floor 120s) — deliberately generous, a false alarm costs one
+     glance at `ps`.
+  `daemon_verdict` now folds all three checks into **one word, worst wins**: DEAD / STALE / UNKNOWN
+  / HEALTHY, and `status` LEADS with it and lists every reason underneath. That rendering change is
+  the other half of the defect: healthy and ten-days-dead differed only by a parenthetical several
+  fields into a dense line, and for ten days nobody read the difference. The heartbeat's own claim is
+  still printed verbatim — evidence, annotated, never overwritten. Verified **both directions on the
+  live bus**: HEALTHY/exit 0 for running pid 496387, DEAD/exit 1 for the reconstructed heartbeat.
+  22 tests.
+  - [ ] **OPERATOR — nothing polls this, which is the actual reason the outage lasted 243 hours.**
+    The report was correct-once-asked and pull-only, and **the supervisor was dead too**, so "the
+    supervisor will catch it" is not an answer — nothing watched the watcher. `status` now takes
+    `--exit-nonzero-if-unhealthy` (default exit stays 0, so no existing reader changes) precisely so
+    a scheduler can act on it. **Recommendation:** the cron form already documented for the same
+    problem one level up in
+    [`handoff-index-and-backlog-graph.md`](handoff-index-and-backlog-graph.md) — `*/5 * * * *
+    session_bus_coordinator.py status --exit-nonzero-if-unhealthy || bus_supervisor.sh once` —
+    idempotent, self-exiting when a daemon is already running, no new daemon to supervise.
+    Host-level change → operator's call. **Note this is the same unwatched-supervisor defect as the
+    open `hub_supervisor.sh` item in that handoff; one decision should cover both.**
+- [ ] **C38 (NEW) — `advisory.jsonl` is 1,028 MiB / 2,986,358 rows and the daemon re-parses it in
+  full every tick.** Filed 2026-08-11 by `mainD`, half fixed. C34's dedupe stopped the *growth*
+  (~20k rows/hour) but nothing addressed the ledger already on disk, and `already_flagged` in
+  `relay_outbox_messages` reads it **entirely, every 45s, on the delivery hot path**. Measured:
+  ~8.9s and ~6.6 GiB of transient dicts per tick, against a 45s tick — the live daemon sits at
+  **29.5% of a core doing nothing else**. ✅ The `cmd_status` half is fixed: it called `_read_jsonl`
+  on the whole file to print five lines and a count, and now does a bounded byte-count plus a
+  backwards tail walk — identical output, **~9s → 0.4s**.
+  - [ ] **OPEN — the tick-path read.** Do not fix it by trimming the file: the ledger is the
+    record. `already_flagged` needs only a set of `(relayed_src, reason)` pairs, so it wants
+    daemon-owned durable state that is appended to as flags are raised, not re-derived from a 1 GiB
+    scan — the same "derive it from what the thing itself leaves behind" rule **C28** already states
+    for relay idempotency. Worth doing together with C28; they want the same ledger.
+  - [ ] **OPEN — rotation.** Nothing rotates `advisory.jsonl`. Note the interaction with **C28**
+    before acting: *any* operation that moves, truncates or rotates a bus file is exactly what C28
+    says re-floods it. Rotation must land after C28's identity-keyed relay tracking, not before.
+
 ## Decision gates
 
 - `OP-SENDKEYS-CODEX` (send-keys nudging) — operator grant, evidence-driven, default OFF.

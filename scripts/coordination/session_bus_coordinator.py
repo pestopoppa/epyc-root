@@ -80,7 +80,7 @@ from scripts.coordination.session_bus import (  # noqa: E402
 LOCK_PATH = Path("/tmp/session_bus_coordinator.lock")
 ADVISORY_SCHEMA = "session_bus.advisory.v1"
 
-# C35: the substring that must appear in /proc/<pid>/cmdline for a recorded pid to
+# C37: the substring that must appear in /proc/<pid>/cmdline for a recorded pid to
 # be THIS daemon rather than whatever else the kernel later handed that number to.
 # Matched against the script name, not the interpreter, because the daemon runs as
 # `<venv>/bin/python <path>/session_bus_coordinator.py run` and the interpreter is
@@ -2531,7 +2531,7 @@ def daemon_liveness(hb: dict) -> tuple[bool | None, str]:
     unusable or missing pid returns None: "I cannot tell" is reported as such, never
     silently rendered as either alive or dead.
 
-    C35 (2026-08-11): existence was not enough, and the docstring of
+    C37 (2026-08-11): existence was not enough, and the docstring of
     `heartbeat_predates_boot` already said why — a pid check answers "does a
     process with that number exist", not "is it MY process". The boot check
     closes that only ACROSS a reboot. Within one boot the recorded pid can be
@@ -2590,7 +2590,7 @@ def heartbeat_freshness(age_s: float, tick_s: float,
                         *, missed_ticks: int = 10) -> tuple[bool, str]:
     """Has this daemon ticked recently enough to be serving the bus?
 
-    C35: age was PRINTED and never judged — `age=876717s` sat in the same line as
+    C37: age was PRINTED and never judged — `age=876717s` sat in the same line as
     `state=working` and the reader had to notice that the number meant ten days.
     A number a human must interpret is not a verdict, and for ten days nobody
     interpreted it. Liveness and freshness are independent failures: a wedged
@@ -2613,7 +2613,7 @@ def daemon_verdict(hb: dict, mtime: float, tick_s: float,
 
     DEAD / STALE / UNKNOWN / HEALTHY, worst wins. Three independent checks feed
     it — the process exists, it is THIS process, and it has ticked recently — and
-    the whole C35 lesson is that any one of them passing tells you nothing on its
+    the whole C37 lesson is that any one of them passing tells you nothing on its
     own. Callers print the word; they do not re-derive it.
     """
     age_s = (now if now is not None else time.time()) - mtime
@@ -2702,7 +2702,7 @@ def cmd_status(args: argparse.Namespace) -> int:
         mtime = hb_path.stat().st_mtime
         age = time.time() - mtime
         verdict, reasons = daemon_verdict(hb, mtime, tick_s)
-        # C35: the VERDICT leads, on its own line, in one word. It used to be an
+        # C37: the VERDICT leads, on its own line, in one word. It used to be an
         # annotation spliced into `state=`, so the healthy and unhealthy renderings
         # differed only by a parenthetical several fields into a dense line — and
         # for ten days nobody read the difference. Every reason is printed under
@@ -2728,7 +2728,7 @@ def cmd_status(args: argparse.Namespace) -> int:
         print(f"  BLOCKED  {b}")
     if not blockers:
         print("  all authorised, capped and implemented")
-    # C36: this was `_read_jsonl(advisory.jsonl)` — a full parse of what is now a
+    # C38: this was `_read_jsonl(advisory.jsonl)` — a full parse of what is now a
     # 1,028 MiB / 2,986,358-row ledger into ~6.6 GiB of dicts, taking ~9s, in
     # order to print five lines and a count. Counting bytes and reading the tail
     # gets the identical output for a fixed cost.
@@ -2755,7 +2755,7 @@ def build_parser() -> argparse.ArgumentParser:
     r.set_defaults(func=cmd_run)
 
     s = sub.add_parser("status", help="daemon liveness + recent advice")
-    # C35: exit code stays 0 by default so existing readers are unaffected. The
+    # C37: exit code stays 0 by default so existing readers are unaffected. The
     # flag exists so a cron or supervisor can ACT on the verdict — the 10-day
     # outage was not a reporting failure in the end, it was that the report was
     # pull-only and nobody pulled.

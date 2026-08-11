@@ -1513,7 +1513,7 @@ def test_p1b_status_marks_a_dead_daemon_stale_not_working(
     assert coordinator.main(["--bus-root", str(bus_root), "status"]) == 0
     out = capsys.readouterr().out
 
-    # C35 changed the rendering: the verdict now LEADS in one word instead of
+    # C37 changed the rendering: the verdict now LEADS in one word instead of
     # being a parenthetical spliced into `state=`. The contract this test guards
     # — a dead daemon must not read as working — is unchanged.
     assert out.splitlines()[0] == "coordinator-daemon: DEAD"
@@ -1584,7 +1584,7 @@ def test_c26_boot_check_is_unknowable_not_false_without_proc_uptime(tmp_path: Pa
 def test_c26_a_post_boot_heartbeat_is_not_flagged(
         bus_root: Path, monkeypatch: pytest.MonkeyPatch,
         capsys: pytest.CaptureFixture[str]) -> None:
-    # This test is about the BOOT check, so the C35 identity check is isolated out:
+    # This test is about the BOOT check, so the C37 identity check is isolated out:
     # the heartbeat here is written by pytest, not by a daemon, so its cmdline
     # legitimately does not name session_bus_coordinator. Verified separately
     # against the live daemon, which reports "is the coordinator-daemon".
@@ -2234,7 +2234,7 @@ def test_no_live_outbox_row_is_still_blocked_by_renamed_from() -> None:
     assert not blocked, f"{len(blocked)} migrated rows still unrelayable, first: {blocked[0]}"
 
 
-# --------------------------------------------------------------- C35 / C36
+# --------------------------------------------------------------- C37 / C38
 #
 # The coordinator-daemon was dead from 2026-08-01T05:42:54Z to 2026-08-11T08:48:02Z
 # — 243.1h, measured as the gap in advisory.jsonl — and nothing noticed. P1b had
@@ -2260,7 +2260,7 @@ def _hb_file(root: Path, pid: int, *, age_s: float, state: str = "working") -> P
 
 
 def test_daemon_liveness_rejects_a_recycled_pid(monkeypatch: pytest.MonkeyPatch) -> None:
-    """The C35 hole. Existence is not identity."""
+    """The C37 hole. Existence is not identity."""
     monkeypatch.setattr(coordinator, "process_cmdline", lambda pid: "/sbin/init splash")
     alive, why = coordinator.daemon_liveness({"pid": os.getpid()})
     assert alive is False
@@ -2412,7 +2412,7 @@ def test_status_says_dead_when_there_is_no_heartbeat_at_all(
 def test_count_and_tail_matches_a_naive_read(tmp_path: Path, body: str, n: int,
                                              expected_total: int,
                                              expected_tail: list[str]) -> None:
-    """C36: status parsed a 1,028 MiB / 2,986,358-row advisory.jsonl into ~6.6 GiB
+    """C38: status parsed a 1,028 MiB / 2,986,358-row advisory.jsonl into ~6.6 GiB
     of dicts to print five lines. Cheap is only worth having if it is identical."""
     path = tmp_path / "advisory.jsonl"
     path.write_text(body, encoding="utf-8")
