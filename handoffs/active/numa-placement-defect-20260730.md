@@ -55,7 +55,7 @@ checkbox copies of one task give the dashboard two sources of truth.
 E5 campaign**; its `⛔ SUSPENDED PENDING RE-MEASUREMENT (2026-07-30)` banner is the authoritative
 suspension notice and this document is its root-cause backing · [within-role-placement-state-machine.md](within-role-placement-state-machine.md)
 (consumes `NUMA_CONFIG`) · [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md)
-(its `(N,K)` provisioning is parameterized by E5) · [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md)
+(its `(N,K)` provisioning is parameterized by E5) · [inference-research-index.md](inference-research-index.md)
 (CPU14/CPU17/CPU18 rows) · [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) P1-2
 (the E5 W1–W4 execution row and its published-artifact update requirement)
 
@@ -851,6 +851,21 @@ primary artefact.
       independent `n=10` run (`highn.sh`) measured **`23.36 ± 0.11`** against the original
       `23.43 ± 0.07`, a 0.3% agreement. The full-machine figure is replicated; the mislabelled
       arm remains documented as the reason the replicate was owed ✅ 2026-07-30
+  **PARTIAL ✅ 2026-08-11 (`mainA`), orchestrator `d83661a5` — the vacuous-pass half is closed; arming
+  stays blocked.** Found while reading the predicate: `memory_verified` is `mismatches == 0`, and
+  since the predicate is false for **every** instance post-topology-change, the artifact asserted
+  `live_memory_placement_verified: true` on runs that examined **zero** entries — and
+  `--require-memory-locality`, an explicit request for the guarantee, passed **vacuously**. Absence
+  read as a pass, the A11 shape one subsystem over. Now `memory_checked` derives from entries actually
+  examined, the artifact carries `live_memory_placement_checked` + `memory_locality_vacuous`, and the
+  flag REFUSES with a message naming the predicate when nothing was eligible; the vacuity branch fires
+  before the mismatch branch, pinned by a test (25/25, 6/6).
+  **Arming deliberately NOT done**, for two independent reasons: this row is blocked on ratifying
+  `INTERLEAVE_TOLERANCE`, and **mmap placement is shared across instances** — a single-node mmap role
+  can show a low `local_fraction` because another instance first-touched the pages — so arming it
+  would hard-fail correctly-configured roles. That is the throttle-gate failure mode. Still blocked on
+  the tolerance ratification for the multi-node analogue.
+
 - [ ] **T8 — Carry prompt length on every decode claim for `ingest_long_context`**, in the
       registry and in any handoff that quotes a tok/s for it. The 9–12 vs 15–25 split is entirely
       a context-length effect. *(Amended 2026-07-30: the rule stands; the 9–12 / 15–25 bands
@@ -867,12 +882,28 @@ primary artefact.
       artefact.** The existing 3-placement × 3-prompt-length curve is IQ2_M (24.27 GiB), which no
       role serves. Only the `tg128` point exists on Q4_K_M (45.08 GiB). Needed before any
       long-context tok/s is quoted for this role, and it feeds T8.
-- [ ] **T11 — Audit every other role for the wrong-artefact class of error.** The IQ2_M mistake
+- [x] **T11 — Audit every other role for the wrong-artefact class of error.** The IQ2_M mistake
       was not a placement bug — a benched file simply was not the file production resolves. The
       same check has already caught a second instance (`modelref_results.txt` benched
       `gemma-4-26B-A4B-it-Q4_K_M-current.gguf` where `worker_general` serves
       `gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf`). Resolve each role's GGUF through the live registry
       chain and diff it against whatever any open handoff quotes for that role.
+      **✅ 2026-08-11 (`mainA`) — DONE. Audit: [`docs/reviews/t11-wrong-artefact-audit-20260811.md`](../../docs/reviews/t11-wrong-artefact-audit-20260811.md).**
+      Resolved all 11 hot-resident roles through `model_registry_full.yaml → roles[*].model.path` and
+      diffed against every `.gguf` quoted on a role line in `handoffs/active/*.md`.
+      **One NEW instance, the third of this class**: `rao-redel-substrate-spike.md:120` records the
+      ReDel spike against `worker_general` serving `gemma-4-26B-A4B-it-Q4_K_M.gguf`, but that role
+      serves `gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf`. Both exist on disk at `16,796,010,720` (Apr 4)
+      vs `16,796,016,544` (Jun 25) — 5,824 bytes apart, which is why the class survives a casual read.
+      **The same line carries a second defect**: it says *"via ik_llama.cpp PR #1744 MTP"*, and
+      ik_llama.cpp is a fully deprecated serving path — so those observations came off a
+      non-production artefact **and** a non-production kernel. Routed to that handoff's owner rather
+      than edited: it is a historical spike record, so it needs a provenance note appended, not its
+      numbers rewritten.
+      **No other open handoff misquotes a hot-resident role's serving artefact.** 12 of the 15 raw
+      hits are false positives in two named families (drafter GGUFs on a target line; multi-role
+      lines), recorded in the audit so a mechanical version does not ship an ~80% false-positive
+      rate and train readers to ignore it.
 - [ ] **T12 — Re-decide `-c` provisioning now that its cost is measured at ~zero.** Production
       runs `-c 32768` = **12.5 %** of the 262,144-token window every deployed model was trained
       for, and `architect_general` halves that again to **8192/request** via `slots: 2` — a
@@ -1109,7 +1140,7 @@ remain in *this* document:
 * **On completing any task above**: flip its `- [ ]` → `- [x]` here with an inline `✅ YYYY-MM-DD`,
   and mirror the state into the owning handoff
   [batched-decode-measurement.md](batched-decode-measurement.md) (E5 waypoint) and
-  [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md). Prose-only status
+  [inference-research-index.md](inference-research-index.md). Prose-only status
   updates are invisible to the handoff dashboard — the checkbox is the metric.
 * **On T1 landing**: this is a production stack change. Record the three gates
   (pipeline-green / starts / live==config) plus the post-reload live-affinity verification from
