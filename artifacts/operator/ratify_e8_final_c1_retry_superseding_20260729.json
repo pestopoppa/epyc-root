@@ -1,0 +1,92 @@
+{
+  "amendment_script": {
+    "path": "/mnt/raid0/llm/epyc-root/artifacts/operator/ratify_e8_final_c1_retry_superseding_20260729.sh",
+    "sha256": "873ca34c5efb351d6aed9cf9a7686cbc000b528028a24dd951011726d25c0efc"
+  },
+  "authorization": {
+    "generation_concurrency": 1,
+    "no_auto_retry": true,
+    "no_timeout_increase": true,
+    "order": "sequential",
+    "ordinals": [
+      97,
+      279
+    ],
+    "qids": [
+      "leval_codeU_269",
+      "leval_review_summ_382"
+    ],
+    "region_claim_regions": [
+      "q3"
+    ],
+    "repeated_failure_disposition": "terminal_failed_no_admission",
+    "repetition": 2,
+    "request_timeout_s": 300,
+    "runtime_preconditions": [
+      "held_q3_claim",
+      "clean_runtime_watcher"
+    ],
+    "success_disposition": "clean_rows_continue_existing_clean_500_finalizer",
+    "tier": 2
+  },
+  "failed_race_evidence": {
+    "canonical": true,
+    "failed_timeout_sidecars": "97:a550c07752f8dedc0fdf5c4582b587c90f3b624405ed1454f628e523c100cae9,279:a41be1b012bb33475a5d8c9fd2e810c5b6dab651d123e3006f07cfc3f7fc835e",
+    "files": {
+      "generation_failed_attempts.T2.r2.jsonl": "3bf22a12c91a3639992d7db782664a4ed1f580147bf7aacd2cfdb9f69d748385",
+      "partial_r2_plan.json": "81198338c01a8532e6134333e9fdcca33a9061c54eadbfaed5745c8b032184fc",
+      "recovery_proposal.json": "3b15e3ce5025cd758422f468fdf029269bf9a2fed4b7132798a99f2d2925eeb8"
+    },
+    "namespace": "/mnt/raid0/llm/epyc-root/artifacts/operator/e8_quality_baseline_v5_partial_r2_race_retry_20260728T202306Z",
+    "recorded_trees": {
+      "plan_failed_source_tree_sha256": "92241f793c254dcf71dfca452f8cc50416d2fb1410698584b514ff3c14c5571a",
+      "proposal_source_tree_sha256": "b821900094e866027d9a1561b21d91eb09f6a02ff92b8d91b133df57c7d5ce2d"
+    }
+  },
+  "human_attestation": "RATIFY-E8-FINAL-C1-RETRY-SUPERSEDING-20260729",
+  "instrument": {
+    "applier_adapter": {
+      "path": "scripts/benchmark/operator_candidates/apply_e8_quality_baseline_state_v5_candidate.py",
+      "sha256": "ab8ed499c98eedfb961f790ede2596649d8f6080317145f3b8203ab871080309"
+    },
+    "canonical_applier": {
+      "path": "artifacts/operator/apply_e8_quality_baseline_state.py",
+      "sha256": "f1e0c0a88edaea5a66dda34ec9a938f8a20daa17491263a44ffff179623d3d61"
+    },
+    "commit": "243b56e9fa0f0f652d400c2716470b21158c7ae7",
+    "ratifier_interpreter": "/usr/bin/python3",
+    "repository": "/mnt/raid0/llm/epyc-orchestrator",
+    "runner": {
+      "path": "scripts/benchmark/final_c1_retry.py",
+      "sha256": "b215e0aa34357224302543c2b49a5cf8e07a25d2d4dd28df5121131c63cef62b"
+    },
+    "tree": "95c5396e68eff5fb1624b9a0103131b3474d582a",
+    "validator": {
+      "path": "scripts/benchmark/final_c1_validator.py",
+      "sha256": "b82c49cfa362d75496d5e925d58ae5b11d1d33c3d9d14a6f7f796a6c6bf4e977"
+    },
+    "wrapper": {
+      "path": "scripts/benchmark/operator_candidates/ratify_and_apply_e8_quality_baseline_v5.sh",
+      "sha256": "fca5b8b0e663205e3525098e3997fec76b22533ef8dd7175745acc3e4fc1753c"
+    }
+  },
+  "non_authorizations": {
+    "no_inference_by_ratifier": true,
+    "no_lineup_mutation": true,
+    "no_state_write": true
+  },
+  "protocol_id": "e8_quality_full_pool_tier_baseline.v5/final-c1-retry",
+  "ratified_at": "2026-07-29T09:48:21.785993Z",
+  "schema": "epyc.operator_e8_quality_final_c1_retry_superseding.v1",
+  "source": {
+    "path": "/mnt/raid0/llm/epyc-root/artifacts/operator/e8_quality_baseline_v5_partial_r2_race_retry_20260728T202306Z",
+    "tree_sha256": "7f4eb0d380765914c26c887af599df7979152248ef57b5cdd9b824614eee7514"
+  },
+  "status": "ratified",
+  "supersedes": {
+    "human_attestation": "RATIFY-E8-FINAL-C1-RETRY-20260728",
+    "path": "/mnt/raid0/llm/epyc-root/artifacts/operator/ratify_e8_final_c1_retry_amendment_20260728.json",
+    "schema": "epyc.operator_e8_quality_final_c1_retry_amendment.v1",
+    "sha256": "51aef2bd0431c8df5050f7985422d9712fc2d1494cfed1d7a3b1a54e5cab121e"
+  }
+}
