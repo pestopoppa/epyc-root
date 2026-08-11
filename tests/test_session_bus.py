@@ -3133,3 +3133,125 @@ def test_a_successful_nudge_does_not_escalate(
     assert "stuck-unreachable" not in [r.get("kind") for r in seen]
     assert not [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
                 if (r.get("payload") or {}).get("event") == "stuck-unreachable"]
+
+
+# ------------------------------------------------------------------------- R2
+#
+# F1: a day of commits with nothing written to progress/<YYYY-MM>/<today>.md is
+# invisible to the operator — the dashboard counts checkbox state, so
+# committed-but-unlogged work reads as a day where nothing happened. Measured
+# 2026-08-11: open went 1283 -> 1293 while done went 2274 -> 2294 and the board
+# looked flat. The report specifying this flagged it as the proposal MOST at risk
+# of fail-open, with three silent-pass paths, and said build it fail-closed or not
+# at all. These tests are that requirement.
+
+def _git_repo(tmp_path: Path, commit_iso: str) -> Path:
+    import subprocess as sp
+    root = tmp_path / "repo"
+    (root / "progress").mkdir(parents=True)
+    sp.run(["git", "init", "-q", str(root)], check=True)
+    for k, v in (("user.email", "t@t"), ("user.name", "t")):
+        sp.run(["git", "-C", str(root), "config", k, v], check=True)
+    (root / "f.txt").write_text("x", encoding="utf-8")
+    sp.run(["git", "-C", str(root), "add", "f.txt"], check=True)
+    sp.run(["git", "-C", str(root), "commit", "-q", "-m", "c"], check=True,
+           env={**os.environ, "GIT_AUTHOR_DATE": commit_iso, "GIT_COMMITTER_DATE": commit_iso})
+    return root
+
+
+def test_r2_fails_closed_when_git_cannot_be_read(bus_root: Path, tmp_path: Path) -> None:
+    """Silent-pass path 1. An unreadable git is NOT 'no commits' — reporting it as
+    clean is precisely the fail-open this was built to avoid."""
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=tmp_path / "not-a-repo")
+    assert len(rows) == 1
+    assert rows[0]["check"] == "progress-log-check-skipped"
+    assert rows[0]["kind"] == "defect", "must be a defect kind — that is what reaches the operator"
+    assert "not a clean one" in rows[0]["detail"]
+
+
+def test_r2_fails_closed_when_the_progress_directory_is_missing(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Silent-pass path 2. A missing directory is a LOUDER defect than a stale file,
+    not a quieter one."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", tmp_path / "absent")
+    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "does not exist" in rows[0]["detail"]
+
+
+def test_r2_fails_closed_when_todays_file_is_missing(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Silent-pass path 3, and the one most likely to be written wrong: an absent
+    file is the DEFECT, never 'nothing due'."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "does not exist" in rows[0]["detail"] and "not\n" not in rows[0]["detail"]
+
+
+def test_r2_flags_commits_that_landed_after_the_last_entry(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The defect itself: work landing while the log stands still."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    stamp = datetime.fromtimestamp(now, timezone.utc)
+    entry = root / "progress" / f"{stamp:%Y-%m}" / f"{stamp:%Y-%m-%d}.md"
+    entry.parent.mkdir(parents=True)
+    entry.write_text("# today\n", encoding="utf-8")
+    old = now - 6 * 3600
+    os.utime(entry, (old, old))
+
+    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert rows[0]["stale_h"] >= 4.0
+    assert "reads to the operator as a day where nothing happened" in rows[0]["detail"]
+
+
+def test_r2_is_silent_when_the_log_is_current(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The compliant path. A check that fires on a well-run day trains the reader to
+    ignore it, which is how the real one gets missed."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now - 3600, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    stamp = datetime.fromtimestamp(now, timezone.utc)
+    entry = root / "progress" / f"{stamp:%Y-%m}" / f"{stamp:%Y-%m-%d}.md"
+    entry.parent.mkdir(parents=True)
+    entry.write_text("# today\n", encoding="utf-8")     # written now, after the commit
+
+    assert coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root) == []
+
+
+def test_r2_is_silent_on_a_day_with_no_commits(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The ONE clean exit, and it is keyed on POSITIVE evidence — a commit timestamp
+    older than today — never on something being unreadable. Nothing is owed for a day
+    nobody worked."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now - 4 * 86400, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    assert coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root) == []
+
+
+def test_r2_never_writes_the_thing_it_checks(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A checker that fixes what it checks for cannot be trusted to report — the rule
+    --audit-guards and backfill-receipts --check already follow."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    before = sorted(p.name for p in (root / "progress").rglob("*"))
+    coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert sorted(p.name for p in (root / "progress").rglob("*")) == before
+
+
+def test_r2_defect_kind_reaches_the_operator_path_without_new_code() -> None:
+    """The reason this is a `defect` and not a bespoke kind: `defect` is already in
+    _OPERATOR_ITEM_KINDS, so an unpresented one reaches token-queue.md on the C20
+    timer with no new escalation code."""
+    assert "defect" in coordinator._OPERATOR_ITEM_KINDS

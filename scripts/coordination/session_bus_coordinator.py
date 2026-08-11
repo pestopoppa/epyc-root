@@ -632,6 +632,100 @@ def spent_receipt_for(gate_id: str, receipts_dir: Path | None = None) -> tuple[P
     return path, status
 
 
+_PROGRESS_DIR = REPO_ROOT / "progress"
+_PROGRESS_STALE_H = 4.0
+
+
+def progress_log_currency(bus_root: Path, epoch: int, *, hours: float = _PROGRESS_STALE_H,
+                          now: float | None = None,
+                          repo_root: Path | None = None) -> list[dict]:
+    """Commits landed with no progress-log write. FAILS CLOSED, everywhere.
+
+    R2 (2026-08-11). F1: a day of commits with nothing written to
+    `progress/<YYYY-MM>/<today>.md` is invisible to the operator — the dashboard
+    counts checkbox state, so committed-but-unlogged work reads as a day where
+    nothing happened. Measured 2026-08-11: open boxes went 1283 -> 1293 while done
+    went 2274 -> 2294, and the board looked flat.
+
+    The report that specified this flagged it as the proposal MOST at risk of
+    fail-open, with three silent-pass paths, and said to build it fail-closed or not
+    at all. So every unknown emits a defect rather than returning clean:
+
+      * git unreadable / not a repo / times out  -> defect, not "no commits"
+      * `progress/` missing                      -> defect, not "nothing to check"
+      * today's file missing                     -> OVERDUE if commits exist, which
+                                                    is the whole point: the absent
+                                                    file is the defect, and treating
+                                                    absence as "nothing due" is
+                                                    exactly the fail-open shape.
+
+    Precedent for the shape: `scan_operator_receipts` returns a `*-skipped` advisory
+    rather than an all-clear when it cannot read what it needs. `defect` is already
+    in `_OPERATOR_ITEM_KINDS`, so an unpresented one reaches `token-queue.md` on the
+    C20 timer with no new escalation code.
+
+    Read-only: it inspects git and a file mtime and returns advisory rows. It never
+    writes the progress log — a checker that fixes what it checks for cannot be
+    trusted to report, which is the rule `--audit-guards` and
+    `backfill-receipts --check` already follow.
+    """
+    root = repo_root or REPO_ROOT
+    when = time.time() if now is None else now
+    stamp = datetime.fromtimestamp(when, timezone.utc)
+
+    def defect(check: str, detail: str, **extra) -> list[dict]:
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "defect", "check": check, "subject": COORDINATOR_AGENT,
+                 "detail": detail, **extra}]
+
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(root), "log", "-1", "--format=%cI"],
+            capture_output=True, text=True, timeout=15)
+        head_iso = proc.stdout.strip()
+        if proc.returncode != 0 or not head_iso:
+            raise RuntimeError(proc.stderr.strip()[:200] or "git produced no output")
+        head_ts = datetime.fromisoformat(head_iso).timestamp()
+    except Exception as exc:  # noqa: BLE001 — unreadable git is NOT "no commits"
+        return defect("progress-log-check-skipped",
+                      f"cannot read git history to check progress-log currency: {exc}. "
+                      f"This is reported, not passed: an unreadable check is not a clean one.")
+
+    if not _PROGRESS_DIR.is_dir():
+        return defect("progress-log-stale",
+                      f"{_PROGRESS_DIR} does not exist, so no progress log can be written at "
+                      f"all. Reported rather than skipped — a missing directory is a louder "
+                      f"defect than a stale file, not a quieter one.")
+
+    path = _PROGRESS_DIR / f"{stamp:%Y-%m}" / f"{stamp:%Y-%m-%d}.md"
+    try:
+        written = path.stat().st_mtime
+    except OSError:
+        written = None
+
+    # No commits today at all -> genuinely nothing owed. This is the ONE clean exit,
+    # and it is keyed on positive evidence (a commit timestamp older than today),
+    # never on something being unreadable.
+    if head_ts < stamp.replace(hour=0, minute=0, second=0, microsecond=0).timestamp():
+        return []
+
+    if written is None:
+        return defect("progress-log-stale",
+                      f"commits landed today (HEAD {head_iso}) and {path.relative_to(root)} "
+                      f"does not exist. The absent file IS the defect; absence is not "
+                      f"'nothing due'.", progress_path=str(path.relative_to(root)))
+
+    if head_ts > written and (when - written) > hours * 3600.0:
+        return defect("progress-log-stale",
+                      f"HEAD committed {head_iso}; {path.relative_to(root)} last written "
+                      f"{datetime.fromtimestamp(written, timezone.utc):%H:%MZ}, "
+                      f"{(when - written) / 3600.0:.1f}h ago and BEFORE that commit. Work is "
+                      f"landing unlogged, which reads to the operator as a day where nothing "
+                      f"happened.", progress_path=str(path.relative_to(root)),
+                      stale_h=round((when - written) / 3600.0, 1))
+    return []
+
+
 RELAY_STATE_SCHEMA = "session_bus.relay_state.v1"
 
 
@@ -2732,7 +2826,11 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     _reset_tick_cache()   # one consistent host view per tick, probed once
     config = _load_config(bus_root)
     authority = _authority(config)
-    advice = compute_advice(bus_root, config, epoch) + audit(bus_root, epoch)
+    # R2: alongside audit(), the same shape — read-only, returns advisory rows,
+    # and its `defect` kind is already in _OPERATOR_ITEM_KINDS, so an unpresented
+    # one reaches token-queue.md on the C20 timer with no new escalation code.
+    advice = (compute_advice(bus_root, config, epoch) + audit(bus_root, epoch)
+              + progress_log_currency(bus_root, epoch))
 
     # C2 relay. Runs at EVERY authority, including manual, because delivering an
     # explicitly-addressed message is transport, not judgment — and gating it on
