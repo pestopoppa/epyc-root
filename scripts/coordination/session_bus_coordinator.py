@@ -1020,10 +1020,31 @@ def backfill_receipts(bus_root: Path, source_dir: Path, receipts_dir: Path,
 
 
 def cmd_backfill_receipts(args: argparse.Namespace) -> int:
-    """One-shot: index legacy operator receipts by gate_id so the relay can see them."""
+    """One-shot: index legacy operator receipts by gate_id so the relay can see them.
+
+    `--check` exists because the write side is a CONVENTION, not a mechanism.
+    Measured 2026-08-11: 2 of 24 `ratify_*.sh` scripts write
+    `receipts/<GATE_ID>.json` at `--attest` time. The other 22 are each one
+    forgotten copy-paste away from re-creating C39 for their gate, and nothing
+    would say so — the relay would simply present a signed gate as pending again.
+    A drift check catches that whichever script signed it, so the guarantee stops
+    depending on the next author remembering 14 lines.
+    """
     bus_root = Path(args.bus_root)
     found = backfill_receipts(bus_root, REPO_ROOT / "artifacts" / "operator", RECEIPTS_DIR,
-                              dry_run=args.dry_run)
+                              dry_run=args.dry_run or args.check)
+    if args.check:
+        drift = [(g, s, st) for g, s, st in found if not (RECEIPTS_DIR / f"{g}.json").exists()]
+        if not drift:
+            print(f"receipt index is current — {len(found)} spent gate(s), all indexed")
+            return 0
+        print(f"{len(drift)} SIGNED gate(s) have no keyed receipt, so the relay cannot see "
+              f"they are spent and will present them as pending:")
+        for gate, source, status in drift:
+            print(f"  {gate}\n    -> {source.relative_to(REPO_ROOT)}  (status: {status})")
+        print("Run `backfill-receipts` to index them, and have the ratifier that signed each "
+              "one write receipts/<GATE_ID>.json itself at --attest time.")
+        return 1
     if not found:
         print("no spent receipts matched a known gate_id")
         return 0
@@ -2928,6 +2949,8 @@ def build_parser() -> argparse.ArgumentParser:
     br = sub.add_parser("backfill-receipts",
                         help="one-shot: index legacy operator receipts by gate_id (C39)")
     br.add_argument("--dry-run", action="store_true", help="show what would be indexed")
+    br.add_argument("--check", action="store_true",
+                    help="exit 1 if any SIGNED gate lacks a keyed receipt (drift gate for cron/CI)")
     br.set_defaults(func=cmd_backfill_receipts)
 
     i = sub.add_parser("intake", help="one-shot: transcribe task-propose messages into READY rows")

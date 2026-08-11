@@ -2602,3 +2602,42 @@ def test_a_spent_gate_notice_is_not_mislabelled_as_never_presented(
 
 def _load_bus_config(bus_root: Path) -> dict:
     return coordinator._load_config(bus_root)
+
+
+def test_backfill_check_catches_a_signed_gate_with_no_keyed_receipt(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """C39's write side is a CONVENTION, not a mechanism. Measured 2026-08-11: 2 of 24
+    `ratify_*.sh` scripts write `receipts/<GATE_ID>.json` at `--attest` time. The other
+    22 are each one forgotten copy-paste from re-creating C39 for their gate, and
+    nothing would say so — the relay would simply present a signed gate as pending
+    again. `--check` catches that whichever script signed it, so the guarantee stops
+    depending on the next author remembering 14 lines.
+    """
+    _provision(bus_root, "alice")
+    _append(bus_root / "outbox" / "alice.jsonl", _c39_token_request("RATIFY-SIGNED-20260811"))
+    # cmd_backfill_receipts derives its source from REPO_ROOT/artifacts/operator,
+    # so the fixture has to sit where the command will actually look.
+    source = tmp_path / "artifacts" / "operator"
+    receipts = source / "receipts"
+    source.mkdir(parents=True)
+    (source / "ratify_signed.json").write_text(
+        json.dumps({"status": "ratified", "human_attestation": "RATIFY-SIGNED-20260811"}),
+        encoding="utf-8")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(coordinator, "_read_epoch", lambda *_a, **_k: 14)
+
+    args = coordinator.build_parser().parse_args(
+        ["--bus-root", str(bus_root), "backfill-receipts", "--check"])
+    capsys.readouterr()
+    assert coordinator.cmd_backfill_receipts(args) == 1, "drift must FAIL, not merely report"
+    out = capsys.readouterr().out
+    assert "RATIFY-SIGNED-20260811" in out and "no keyed receipt" in out
+    assert not receipts.exists(), "--check must not silently repair what it is checking for"
+
+    # Indexed -> clean, exit 0. Without this the check passes by always failing.
+    coordinator.backfill_receipts(bus_root, source, receipts)
+    capsys.readouterr()
+    assert coordinator.cmd_backfill_receipts(args) == 0
+    assert "index is current" in capsys.readouterr().out

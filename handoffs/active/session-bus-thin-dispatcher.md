@@ -1802,10 +1802,21 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     general way to find them is a content grep. `artifacts/operator/receipts/` **exists and is
     empty**: the keyed-receipt contract was intended and never wired. Fix direction: the `--attest`
     scripts write `artifacts/operator/receipts/<GATE_ID>.json`, and `relay_tokens` reads that.
-    **Half done:** the reader and the backfill exist, so the contract is real for everything already
-    filed. Still open: the `--attest` scripts should write the keyed receipt themselves at signing
-    time, so a NEW gate never needs the backfill. Until they do, `backfill-receipts` must be re-run
-    after each signature.
+    **Write side now exists, and is a CONVENTION — measured, not assumed.** `auditor` closed this
+    for their two in-flight gates in `7c682621` (both ratifiers write `receipts/<GATE_ID>.json` at
+    `--attest` and refuse if the index already exists). Verified, and verified further: **2 of 24
+    `ratify_*.sh` scripts do this.** The other 22 are each one forgotten copy-paste away from
+    re-creating C39 for their gate, and nothing would have said so — the relay would just present a
+    signed gate as pending again. "Closed for two gates" is not closed for the class, which is the
+    same shape as pinning an interpreter in C34.
+    - [x] **So the gap is now DETECTABLE rather than remembered.** ✅ 2026-08-11 — `mainD`.
+      `backfill-receipts --check` exits 1 when any SIGNED gate lacks a keyed receipt, whichever
+      script signed it, and writes nothing while checking. Verified both directions on the live
+      tree: clean → exit 0, one index removed → exit 1 naming the gate, index restored → exit 0.
+    - [ ] **Residual for the ratifier owner (`auditor`), not for C-OWN:** the remaining 22 scripts.
+      They are mostly historical and their gates are already signed, so nothing is broken today —
+      the exposure is the NEXT signature made through one of them. Cheapest durable fix is a shared
+      snippet the ratifiers source rather than 22 copy-pastes; `--check` is the backstop either way.
   - [x] **Fix by ANNOTATING, never by suppressing.** A relay that silently withholds a gate because
     a heuristic thinks it is spent is the C3/C6/C8 fail-open family aimed at the operator path —
     strictly worse than the defect. Present the block as now, and add a line naming the receipt, its
