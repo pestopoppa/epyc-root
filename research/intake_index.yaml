@@ -4013,6 +4013,35 @@
     quote: In this paper, we study this problem in the context of Cognee, a modular framework for end-to-end KG construction and retrieval.
     quote_sha256: bed9943a194f94c8df61c67ea1d012d2260e8cc97396674fdbca9d8d21a81e90
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED. Pure hyperparameter tuning (chunking/graph-construction/retrieval/prompting)
+      inside the Cognee framework with no architectural contribution, and EPYC''s KB is ColBERT dense retrieval
+      over markdown rather than KG construction, so the transfer surface is empty. The paper reports no
+      transferable result and says so itself — its abstract hedges that gains vary ''across datasets and
+      metrics'' and concludes that progress needs ''clearer frameworks for optimization''.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED. Pure hyperparameter tuning (chunking/graph-construction/retrieval/prompting)
+      inside the Cognee framework with no architectural contribution, and EPYC''s KB is ColBERT dense retrieval
+      over markdown rather than KG construction, so the transfer surface is empty. The paper reports no
+      transferable result and says so itself — its abstract hedges that gains vary ''across datasets and
+      metrics'' and concludes that progress needs ''clearer frameworks for optimization''.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED. Pure hyperparameter tuning (chunking/graph-construction/retrieval/prompting)
+      inside the Cognee framework with no architectural contribution, and EPYC''s KB is ColBERT dense retrieval
+      over markdown rather than KG construction, so the transfer surface is empty. The paper reports no
+      transferable result and says so itself — its abstract hedges that gains vary ''across datasets and
+      metrics'' and concludes that progress needs ''clearer frameworks for optimization''.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED. Pure hyperparameter tuning (chunking/graph-construction/retrieval/prompting)
+      inside the Cognee framework with no architectural contribution, and EPYC''s KB is ColBERT dense retrieval
+      over markdown rather than KG construction, so the transfer surface is empty. The paper reports no
+      transferable result and says so itself — its abstract hedges that gains vary ''across datasets and
+      metrics'' and concludes that progress needs ''clearer frameworks for optimization''.'
 - id: intake-137
   arxiv_id: null
   url: https://www.percepta.ai/blog/can-llms-be-computers
@@ -60570,6 +60599,43 @@
     DIVE-SURFACED SOURCES: normalized sharpness and PAC-Bayes follow-ups are already covered at the methodological level by intake-999/1000; no additional source is needed for the selected question.
 
     2026-08-05 STAGE-3/4 DISPOSITION. K1 and K2 landed through AP-WM-1 and AK-WM-1 as semantics-preserving recoding tests and a mandatory canonical-representation declaration. K3 is declined: Dinh et al. is not used as weakness-specific evidence or as a component source.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full ICML paper, supplementary proofs, later controlled-measure
+      studies, intake-994 comparison). DIVE-VERIFIED. Ledger CONFIRMS all three load-bearing points: positive-homogeneous
+      rescaling preserves a ReLU network''s input-output function while changing Hessian-based and neighbourhood
+      sharpness; the supplementary radial construction can perturb relative geometry around finitely many
+      minima; and the authors conclude flatness cannot be divorced from the parameterization. Claim 3 is
+      a NEGATIVE claim and it too is confirmed — the paper does not propose weakness maximization and does
+      not validate intake-994''s completion score.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full ICML paper, supplementary proofs, later controlled-measure
+      studies, intake-994 comparison). DIVE-VERIFIED. Ledger CONFIRMS all three load-bearing points: positive-homogeneous
+      rescaling preserves a ReLU network''s input-output function while changing Hessian-based and neighbourhood
+      sharpness; the supplementary radial construction can perturb relative geometry around finitely many
+      minima; and the authors conclude flatness cannot be divorced from the parameterization. Claim 3 is
+      a NEGATIVE claim and it too is confirmed — the paper does not propose weakness maximization and does
+      not validate intake-994''s completion score.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full ICML paper, supplementary proofs, later controlled-measure
+      studies, intake-994 comparison). DIVE-VERIFIED. Ledger CONFIRMS all three load-bearing points: positive-homogeneous
+      rescaling preserves a ReLU network''s input-output function while changing Hessian-based and neighbourhood
+      sharpness; the supplementary radial construction can perturb relative geometry around finitely many
+      minima; and the authors conclude flatness cannot be divorced from the parameterization. Claim 3 is
+      a NEGATIVE claim and it too is confirmed — the paper does not propose weakness maximization and does
+      not validate intake-994''s completion score.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full ICML paper, supplementary proofs, later controlled-measure
+      studies, intake-994 comparison). DIVE-VERIFIED. Ledger CONFIRMS all three load-bearing points: positive-homogeneous
+      rescaling preserves a ReLU network''s input-output function while changing Hessian-based and neighbourhood
+      sharpness; the supplementary radial construction can perturb relative geometry around finitely many
+      minima; and the authors conclude flatness cannot be divorced from the parameterization. Claim 3 is
+      a NEGATIVE claim and it too is confirmed — the paper does not propose weakness maximization and does
+      not validate intake-994''s completion score.'
 - id: intake-1003
   arxiv_id: '2504.15125'
   url: https://arxiv.org/abs/2504.15125
@@ -60846,6 +60912,39 @@
     DIVE-SURFACED SOURCES: the official LiquidAI/LFM2.5-2.6B-GGUF repository is a distinct deployability artifact and is proposed for the Stage-2b source gate.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): WG-LFM-1 in `handoffs/active/architect-model-selection-bench.md` owns the Q4_K_M/Q8_0/Gemma4 matched worker verdict; no deployment or runtime change was made.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2 dive across launch article, current model/config/chat-template artifacts,
+      the official GGUF repo, frozen-v8 static runtime inspection, the current worker manifest, local Gemma4
+      measurements and an adversarial independent search. OVERALL VERIFIED as an immediately testable worker_general
+      challenger — and the limit that matters for us is stated just as plainly: REPLACEMENT SUPERIORITY
+      REMAINS NOT-FOUND. Testable is not better; nothing here supports displacing the incumbent without
+      our own measurement, which is lane-gated.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-07 Stage-2 dive across launch article, current model/config/chat-template artifacts,
+      the official GGUF repo, frozen-v8 static runtime inspection, the current worker manifest, local Gemma4
+      measurements and an adversarial independent search. OVERALL VERIFIED as an immediately testable worker_general
+      challenger — and the limit that matters for us is stated just as plainly: REPLACEMENT SUPERIORITY
+      REMAINS NOT-FOUND. Testable is not better; nothing here supports displacing the incumbent without
+      our own measurement, which is lane-gated.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2 dive across launch article, current model/config/chat-template artifacts,
+      the official GGUF repo, frozen-v8 static runtime inspection, the current worker manifest, local Gemma4
+      measurements and an adversarial independent search. OVERALL VERIFIED as an immediately testable worker_general
+      challenger — and the limit that matters for us is stated just as plainly: REPLACEMENT SUPERIORITY
+      REMAINS NOT-FOUND. Testable is not better; nothing here supports displacing the incumbent without
+      our own measurement, which is lane-gated.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-07 Stage-2 dive across launch article, current model/config/chat-template artifacts,
+      the official GGUF repo, frozen-v8 static runtime inspection, the current worker manifest, local Gemma4
+      measurements and an adversarial independent search. OVERALL VERIFIED as an immediately testable worker_general
+      challenger — and the limit that matters for us is stated just as plainly: REPLACEMENT SUPERIORITY
+      REMAINS NOT-FOUND. Testable is not better; nothing here supports displacing the incumbent without
+      our own measurement, which is lane-gated.'
 - id: intake-1007
   arxiv_id: null
   url: https://huggingface.co/datasets/r0b0tlab/qwen3.8-max-glm5.2-kimi-k3-distillation
@@ -61112,6 +61211,35 @@
     DIVE-SURFACED SOURCES: Factorio Learning Environment v0.3.0 documents independent environment-side reward-hacking/holdout pressure; it is lower priority than the Continual implementation at the consolidated source gate.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): D-f and D-g in `handoffs/active/repl-session-memory-maturity.md` own the process-safe session lease and uncertain-side-effect recovery journal; overlapping persistence and scheduling features remain declined.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2 blog/repository dive. Architecture and qualitative failure evidence VERIFIED;
+      the headline performance is VENDOR-AUTHORED AND NON-TRANSFERABLE, which is the caveat to carry. The
+      ARC chart (Opus 95.5, Sol 78.3, Terra 25.7, GLM-5.2 8.6) is confirmed as a vendor REPORT, not an independent
+      result, and claim 2 already records the open-weight gap. The Factorio section is PARTIAL: it reports
+      both a 100K+ run and an RCON/heartbeat exploit without establishing the former, which claim 3 states.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-07 Stage-2 blog/repository dive. Architecture and qualitative failure evidence VERIFIED;
+      the headline performance is VENDOR-AUTHORED AND NON-TRANSFERABLE, which is the caveat to carry. The
+      ARC chart (Opus 95.5, Sol 78.3, Terra 25.7, GLM-5.2 8.6) is confirmed as a vendor REPORT, not an independent
+      result, and claim 2 already records the open-weight gap. The Factorio section is PARTIAL: it reports
+      both a 100K+ run and an RCON/heartbeat exploit without establishing the former, which claim 3 states.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2 blog/repository dive. Architecture and qualitative failure evidence VERIFIED;
+      the headline performance is VENDOR-AUTHORED AND NON-TRANSFERABLE, which is the caveat to carry. The
+      ARC chart (Opus 95.5, Sol 78.3, Terra 25.7, GLM-5.2 8.6) is confirmed as a vendor REPORT, not an independent
+      result, and claim 2 already records the open-weight gap. The Factorio section is PARTIAL: it reports
+      both a 100K+ run and an RCON/heartbeat exploit without establishing the former, which claim 3 states.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-07 Stage-2 blog/repository dive. Architecture and qualitative failure evidence VERIFIED;
+      the headline performance is VENDOR-AUTHORED AND NON-TRANSFERABLE, which is the caveat to carry. The
+      ARC chart (Opus 95.5, Sol 78.3, Terra 25.7, GLM-5.2 8.6) is confirmed as a vendor REPORT, not an independent
+      result, and claim 2 already records the open-weight gap. The Factorio section is PARTIAL: it reports
+      both a 100K+ run and an RCON/heartbeat exploit without establishing the former, which claim 3 states.'
 - id: intake-1011
   arxiv_id: null
   url: https://github.com/alexisfox7/PRO-LONG
@@ -61209,6 +61337,39 @@
     DIVE-SURFACED SOURCES: arXiv:2605.04808 (DTAP) is load-bearing for the security-evaluation protocol and harness-confound audit; arXiv:2404.06654 (RULER) and arXiv:2602.00933 (MCP-Atlas) were also surfaced, but DTAP is the recommended Stage-2b selection.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): TU-DTAP-1 in `handoffs/active/tool-use-eval-contract.md` and E3b in `handoffs/active/rlm-contested-claims-self-evaluation.md` own same-harness security evaluation and direct-context-versus-REPL measurement; proprietary model reconstruction remains declined.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-08-07 Stage-2 dive (complete technical report, current public docs/terms, benchmark-method
+      audit, local architecture cross-reference). OVERALL VERIFIED as a source of clean-room evaluation
+      and service patterns; MODEL ARCHITECTURE AND PERFORMANCE TRANSFER REMAIN NOT-FOUND. Benchmark methods
+      confirmed exactly — RULER uses ten samples per configuration and ZEROS failures/overflows, BFCL uses
+      5,106 programmatic items, Terminal-Bench runs 86 tasks ONCE. Each of those is a reason the published
+      numbers cannot be lifted as comparisons.
+  - claim_index: 1
+    effect: unaffected
+    note: 2026-08-07 Stage-2 dive (complete technical report, current public docs/terms, benchmark-method
+      audit, local architecture cross-reference). OVERALL VERIFIED as a source of clean-room evaluation
+      and service patterns; MODEL ARCHITECTURE AND PERFORMANCE TRANSFER REMAIN NOT-FOUND. Benchmark methods
+      confirmed exactly — RULER uses ten samples per configuration and ZEROS failures/overflows, BFCL uses
+      5,106 programmatic items, Terminal-Bench runs 86 tasks ONCE. Each of those is a reason the published
+      numbers cannot be lifted as comparisons.
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-08-07 Stage-2 dive (complete technical report, current public docs/terms, benchmark-method
+      audit, local architecture cross-reference). OVERALL VERIFIED as a source of clean-room evaluation
+      and service patterns; MODEL ARCHITECTURE AND PERFORMANCE TRANSFER REMAIN NOT-FOUND. Benchmark methods
+      confirmed exactly — RULER uses ten samples per configuration and ZEROS failures/overflows, BFCL uses
+      5,106 programmatic items, Terminal-Bench runs 86 tasks ONCE. Each of those is a reason the published
+      numbers cannot be lifted as comparisons.
+  - claim_index: 3
+    effect: unaffected
+    note: 2026-08-07 Stage-2 dive (complete technical report, current public docs/terms, benchmark-method
+      audit, local architecture cross-reference). OVERALL VERIFIED as a source of clean-room evaluation
+      and service patterns; MODEL ARCHITECTURE AND PERFORMANCE TRANSFER REMAIN NOT-FOUND. Benchmark methods
+      confirmed exactly — RULER uses ten samples per configuration and ZEROS failures/overflows, BFCL uses
+      5,106 programmatic items, Terminal-Bench runs 86 tasks ONCE. Each of those is a reason the published
+      numbers cannot be lifted as comparisons.
 - id: intake-1013
   arxiv_id: null
   url: inline:from-zero-to-graph-architect-2026-08-07
@@ -61499,6 +61660,39 @@
     DIVE-SURFACED SOURCES: BrowseComp-Plus (arXiv:2508.06600) validates the load-bearing benchmark contract; Mem0 (arXiv:2504.19413) provides a cross-session comparator. Both are proposed at the consolidated source gate.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): CF-AM-1 in `handoffs/active/context-folding-progressive.md` and UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own the provenance-preserving parallel-gist comparison; unreleased runtime and ACT-score adoption remain declined.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2 paper dive. Task-local parallel gist architecture and reported tables VERIFIED;
+      direct runtime/ACT adoption remains UNSUPPORTED. Confirmed as described: ten-step Planner history,
+      sixteen parallel 4B Memorizers, central Operator, Qwen3-4B similarity routing, asynchronous consolidation,
+      and LOGICAL rather than decentralized distribution — claim 2 states that distinction correctly. The
+      PARTIAL is already claim 3''s content: a document identifier could permit external re-fetch, but shard
+      state holds no raw text and no recovery path is demonstrated.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-07 Stage-2 paper dive. Task-local parallel gist architecture and reported tables VERIFIED;
+      direct runtime/ACT adoption remains UNSUPPORTED. Confirmed as described: ten-step Planner history,
+      sixteen parallel 4B Memorizers, central Operator, Qwen3-4B similarity routing, asynchronous consolidation,
+      and LOGICAL rather than decentralized distribution — claim 2 states that distinction correctly. The
+      PARTIAL is already claim 3''s content: a document identifier could permit external re-fetch, but shard
+      state holds no raw text and no recovery path is demonstrated.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2 paper dive. Task-local parallel gist architecture and reported tables VERIFIED;
+      direct runtime/ACT adoption remains UNSUPPORTED. Confirmed as described: ten-step Planner history,
+      sixteen parallel 4B Memorizers, central Operator, Qwen3-4B similarity routing, asynchronous consolidation,
+      and LOGICAL rather than decentralized distribution — claim 2 states that distinction correctly. The
+      PARTIAL is already claim 3''s content: a document identifier could permit external re-fetch, but shard
+      state holds no raw text and no recovery path is demonstrated.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-07 Stage-2 paper dive. Task-local parallel gist architecture and reported tables VERIFIED;
+      direct runtime/ACT adoption remains UNSUPPORTED. Confirmed as described: ten-step Planner history,
+      sixteen parallel 4B Memorizers, central Operator, Qwen3-4B similarity routing, asynchronous consolidation,
+      and LOGICAL rather than decentralized distribution — claim 2 states that distinction correctly. The
+      PARTIAL is already claim 3''s content: a document identifier could permit external re-fetch, but shard
+      state holds no raw text and no recovery path is demonstrated.'
 - id: intake-1018
   arxiv_id: '2608.03137'
   url: https://arxiv.org/abs/2608.03137
@@ -61557,6 +61751,39 @@
     DIVE-SURFACED SOURCES: AtomMem (arXiv:2601.08323) and Memory-R1 (arXiv:2508.19828) are direct operation-policy comparators; Mem0 (arXiv:2504.19413) is the higher-priority cross-session comparator. All are presented at the consolidated source gate.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): UTM-V1 through UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own the default-inert shadow schema, verifier calibration, distiller comparison, operation credit, and full lifecycle evaluation matrix; no live memory mutation was enabled.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2 paper/repository dive. VERIFIED as a materially stronger within-episode memory-evaluation
+      design and a source of operation/provenance/structural-gate patterns; OVERTURNED as a REPRODUCIBLE
+      SEMANTIC-VERIFIER RELEASE — lift the design, not the artifact. Confirmed: unified LTM/STM/episodic
+      control, seven operations, versioned updates, tombstones, 32,000 SFT states, three GRPO phases, frozen
+      DeepSeek-V3.2 semantic judges, episode reset, headline averages and the ~6.2-point matched verifier
+      ablation. One PARTIAL worth carrying: TN@S*=2080 is an INTERPOLATION to target, not a measured point.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-07 Stage-2 paper/repository dive. VERIFIED as a materially stronger within-episode memory-evaluation
+      design and a source of operation/provenance/structural-gate patterns; OVERTURNED as a REPRODUCIBLE
+      SEMANTIC-VERIFIER RELEASE — lift the design, not the artifact. Confirmed: unified LTM/STM/episodic
+      control, seven operations, versioned updates, tombstones, 32,000 SFT states, three GRPO phases, frozen
+      DeepSeek-V3.2 semantic judges, episode reset, headline averages and the ~6.2-point matched verifier
+      ablation. One PARTIAL worth carrying: TN@S*=2080 is an INTERPOLATION to target, not a measured point.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2 paper/repository dive. VERIFIED as a materially stronger within-episode memory-evaluation
+      design and a source of operation/provenance/structural-gate patterns; OVERTURNED as a REPRODUCIBLE
+      SEMANTIC-VERIFIER RELEASE — lift the design, not the artifact. Confirmed: unified LTM/STM/episodic
+      control, seven operations, versioned updates, tombstones, 32,000 SFT states, three GRPO phases, frozen
+      DeepSeek-V3.2 semantic judges, episode reset, headline averages and the ~6.2-point matched verifier
+      ablation. One PARTIAL worth carrying: TN@S*=2080 is an INTERPOLATION to target, not a measured point.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-07 Stage-2 paper/repository dive. VERIFIED as a materially stronger within-episode memory-evaluation
+      design and a source of operation/provenance/structural-gate patterns; OVERTURNED as a REPRODUCIBLE
+      SEMANTIC-VERIFIER RELEASE — lift the design, not the artifact. Confirmed: unified LTM/STM/episodic
+      control, seven operations, versioned updates, tombstones, 32,000 SFT states, three GRPO phases, frozen
+      DeepSeek-V3.2 semantic judges, episode reset, headline averages and the ~6.2-point matched verifier
+      ablation. One PARTIAL worth carrying: TN@S*=2080 is an INTERPOLATION to target, not a measured point.'
 - id: intake-1019
   arxiv_id: null
   url: https://huggingface.co/LiquidAI/LFM2.5-2.6B-GGUF
@@ -61762,6 +61989,43 @@
     DIVE-SURFACED SOURCES: the official Apache-2.0 repository is a companion artifact bundled into this dive; RULER and MCP-Atlas were already surfaced under intake-1012. No further gate-worthy source surfaced.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): TU-DTAP-1 in `handoffs/active/tool-use-eval-contract.md` and E3b in `handoffs/active/rlm-contested-claims-self-evaluation.md` own the bounded same-harness security contract and the direct-context-versus-REPL comparison.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2b paper/repository dive. VERIFIED as a strong security-evaluation contract
+      and a directly reusable task/judge schema; PUBLISHED RANKINGS REQUIRE STRICTER CONTROLS. Confirmed
+      exactly: 14 domains, 50+ simulations, three threat classes, five injection families, 6,682 released
+      configs with exact split counts, per-case setup, and deterministic state-based judges with full/partial/fail
+      criteria, plus custom-agent integration, Docker isolation, per-task results and skip-existing resume.
+      Claim 3 already states the sharpest caveat itself: the 100% optimized-attack result is a MATCHED-CONSTRUCTION
+      UPPER BOUND.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-07 Stage-2b paper/repository dive. VERIFIED as a strong security-evaluation contract
+      and a directly reusable task/judge schema; PUBLISHED RANKINGS REQUIRE STRICTER CONTROLS. Confirmed
+      exactly: 14 domains, 50+ simulations, three threat classes, five injection families, 6,682 released
+      configs with exact split counts, per-case setup, and deterministic state-based judges with full/partial/fail
+      criteria, plus custom-agent integration, Docker isolation, per-task results and skip-existing resume.
+      Claim 3 already states the sharpest caveat itself: the 100% optimized-attack result is a MATCHED-CONSTRUCTION
+      UPPER BOUND.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2b paper/repository dive. VERIFIED as a strong security-evaluation contract
+      and a directly reusable task/judge schema; PUBLISHED RANKINGS REQUIRE STRICTER CONTROLS. Confirmed
+      exactly: 14 domains, 50+ simulations, three threat classes, five injection families, 6,682 released
+      configs with exact split counts, per-case setup, and deterministic state-based judges with full/partial/fail
+      criteria, plus custom-agent integration, Docker isolation, per-task results and skip-existing resume.
+      Claim 3 already states the sharpest caveat itself: the 100% optimized-attack result is a MATCHED-CONSTRUCTION
+      UPPER BOUND.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-07 Stage-2b paper/repository dive. VERIFIED as a strong security-evaluation contract
+      and a directly reusable task/judge schema; PUBLISHED RANKINGS REQUIRE STRICTER CONTROLS. Confirmed
+      exactly: 14 domains, 50+ simulations, three threat classes, five injection families, 6,682 released
+      configs with exact split counts, per-case setup, and deterministic state-based judges with full/partial/fail
+      criteria, plus custom-agent integration, Docker isolation, per-task results and skip-existing resume.
+      Claim 3 already states the sharpest caveat itself: the 100% optimized-attack result is a MATCHED-CONSTRUCTION
+      UPPER BOUND.'
 - id: intake-1022
   arxiv_id: '2504.19413'
   url: https://arxiv.org/abs/2504.19413
@@ -61820,6 +62084,43 @@
     DIVE-SURFACED SOURCES: the current official Apache repository is bundled as a companion artifact; Memory-R1 is separately ingested as intake-1023. The newer managed-platform benchmark is version-divergent and not treated as evidence for this paper or OSS implementation.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): UTM-V1 through UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own the default-inert shadow schema, conflict/version semantics, raw-source authority, and full lifecycle evaluation matrix; direct deployment and destructive source replacement remain declined.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2b paper/current-repository dive. VERIFIED as a practical local persistence
+      and conflict-management comparator, but accuracy, cost and current-code equivalence are all MATERIALLY
+      NARROWER than the headline. The OVERTURN is the one to carry and it is not in these claims: ''Mem0
+      beats full context on quality'' is OVERTURNED. The 91%/90% efficiency figures are PARTIAL — they apply
+      to the measured QUERY PATH and exclude the rest — and claim 3 already records that the current April-2026
+      OSS default extraction path is ADD-only and diverges from the paper''s design, so the code you can
+      run is not the system that was evaluated.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-07 Stage-2b paper/current-repository dive. VERIFIED as a practical local persistence
+      and conflict-management comparator, but accuracy, cost and current-code equivalence are all MATERIALLY
+      NARROWER than the headline. The OVERTURN is the one to carry and it is not in these claims: ''Mem0
+      beats full context on quality'' is OVERTURNED. The 91%/90% efficiency figures are PARTIAL — they apply
+      to the measured QUERY PATH and exclude the rest — and claim 3 already records that the current April-2026
+      OSS default extraction path is ADD-only and diverges from the paper''s design, so the code you can
+      run is not the system that was evaluated.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2b paper/current-repository dive. VERIFIED as a practical local persistence
+      and conflict-management comparator, but accuracy, cost and current-code equivalence are all MATERIALLY
+      NARROWER than the headline. The OVERTURN is the one to carry and it is not in these claims: ''Mem0
+      beats full context on quality'' is OVERTURNED. The 91%/90% efficiency figures are PARTIAL — they apply
+      to the measured QUERY PATH and exclude the rest — and claim 3 already records that the current April-2026
+      OSS default extraction path is ADD-only and diverges from the paper''s design, so the code you can
+      run is not the system that was evaluated.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-07 Stage-2b paper/current-repository dive. VERIFIED as a practical local persistence
+      and conflict-management comparator, but accuracy, cost and current-code equivalence are all MATERIALLY
+      NARROWER than the headline. The OVERTURN is the one to carry and it is not in these claims: ''Mem0
+      beats full context on quality'' is OVERTURNED. The 91%/90% efficiency figures are PARTIAL — they apply
+      to the measured QUERY PATH and exclude the rest — and claim 3 already records that the current April-2026
+      OSS default extraction path is ADD-only and diverges from the paper''s design, so the code you can
+      run is not the system that was evaluated.'
 - id: intake-1023
   arxiv_id: '2508.19828'
   url: https://arxiv.org/abs/2508.19828
@@ -61878,6 +62179,36 @@
     DIVE-SURFACED SOURCES: the official repository and workshop version are companion artifacts bundled into this dive. MemFactory is a later inspired framework rather than an exact reproduction and is recorded as a comparator, not opened as another source gate.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): UTM-V4 through UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own distiller comparison, shadow operation credit, and deterministic-first lifecycle evaluation; unreleased RL training and live learned mutation remain declined.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2b paper/repository dive. VERIFIED for the learned-operation/two-agent research
+      pattern; OVERTURNED as a released reproducible RL component and NARROWED as a universal improvement
+      claim. Confirmed: four operations, separate manager and answer distiller, PPO/GRPO, exact-match downstream
+      reward, 152 training QA pairs, three benchmark families, multiple backbones and the main table values.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-07 Stage-2b paper/repository dive. VERIFIED for the learned-operation/two-agent research
+      pattern; OVERTURNED as a released reproducible RL component and NARROWED as a universal improvement
+      claim. Confirmed: four operations, separate manager and answer distiller, PPO/GRPO, exact-match downstream
+      reward, 152 training QA pairs, three benchmark families, multiple backbones and the main table values.'
+  - claim_index: 2
+    effect: narrowed
+    note: '2026-08-07 Stage-2b paper/repository dive. VERIFIED for the learned-operation/two-agent research
+      pattern; OVERTURNED as a released reproducible RL component and NARROWED as a universal improvement
+      claim. Confirmed: four operations, separate manager and answer distiller, PPO/GRPO, exact-match downstream
+      reward, 152 training QA pairs, three benchmark families, multiple backbones and the main table values.
+      LEAK RISK flagged by the dive: the split is QUESTION-LEVEL, so the same underlying conversations can
+      appear on both sides of the train/test boundary. With only 152 training QA pairs, that is not a small
+      caveat — treat the downstream numbers as optimistic rather than clean.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-07 Stage-2b paper/repository dive. VERIFIED for the learned-operation/two-agent research
+      pattern; OVERTURNED as a released reproducible RL component and NARROWED as a universal improvement
+      claim. Confirmed: four operations, separate manager and answer distiller, PPO/GRPO, exact-match downstream
+      reward, 152 training QA pairs, three benchmark families, multiple backbones and the main table values.
+      This claim already states the overturn: the repository currently holds only a README and figures and
+      explicitly defers the code.'
 
 - id: intake-1024
   arxiv_id: null
@@ -63197,6 +63528,37 @@
     Discovered during the 2026-08-09 Vidya-handoff audit novelty sweep. Bears directly on the
     Vidya rule that model judgments enter only as typed frames: TOKI formalizes WHY (replay
     consistency requires logging the judge's outputs as inputs).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.06240v1 full text): ALL Stage-1 claims CONFIRMED, including
+      classical bitemporality (valid time + SQL:2011 system time, Snodgrass) which Stage 1 had flagged unconfirmed.
+      The necessity result is verified as a REAL THEOREM (Thm 17) — an intermediate fetch summary had suggested
+      it was unproven, and the raw text overturns that summary, which is a good argument for reading primary
+      sources over digests.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.06240v1 full text): ALL Stage-1 claims CONFIRMED, including
+      classical bitemporality (valid time + SQL:2011 system time, Snodgrass) which Stage 1 had flagged unconfirmed.
+      The necessity result is verified as a REAL THEOREM (Thm 17) — an intermediate fetch summary had suggested
+      it was unproven, and the raw text overturns that summary, which is a good argument for reading primary
+      sources over digests.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.06240v1 full text): ALL Stage-1 claims CONFIRMED, including
+      classical bitemporality (valid time + SQL:2011 system time, Snodgrass) which Stage 1 had flagged unconfirmed.
+      The necessity result is verified as a REAL THEOREM (Thm 17) — an intermediate fetch summary had suggested
+      it was unproven, and the raw text overturns that summary, which is a good argument for reading primary
+      sources over digests.'
+  - claim_index: 3
+    effect: narrowed
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.06240v1 full text): ALL Stage-1 claims CONFIRMED, including
+      classical bitemporality (valid time + SQL:2011 system time, Snodgrass) which Stage 1 had flagged unconfirmed.
+      The necessity result is verified as a REAL THEOREM (Thm 17) — an intermediate fetch summary had suggested
+      it was unproven, and the raw text overturns that summary, which is a good argument for reading primary
+      sources over digests. SHARPENING on the headline number: +0.86 is a DELTA ACCURACY on the audit-row
+      defence''s TARGETED CONTRADICTION SLICE of LoCoMo, not an end-to-end result. Cite it against that
+      slice or not at all.'
 
 - id: intake-1036
   arxiv_id: '2606.26511'
@@ -63252,6 +63614,30 @@
     Extraction quality is the admitted gating factor (~97% keying on clean templates vs ~44% on
     unstructured prose, quarantined in App B.8). Credibility settled at 2: mechanisms and
     negative results usable, headline numbers not citable.
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.26511v1 full text), single-author company paper. Credibility
+      settled at 2: mechanisms and negative results usable, headline numbers not. Stage-1 overstatement
+      corrected: ''no LLM, no similarity'' holds ONLY for the triple path — SS4.1 item 3 is a similarity+LLM
+      text-gate fallback — and the ''bi-temporal ledger'' is schema-present but FUNCTIONALLY UNI-TEMPORAL
+      in the evaluation. The determinism is real but narrower than stated.'
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.26511v1 full text), single-author company paper. Credibility
+      settled at 2: mechanisms and negative results usable, headline numbers not. Extraction quality is
+      the ADMITTED gating factor and it swings the result: ~97% keying on clean templates versus ~44% on
+      unstructured prose, quarantined in App B.8. The 0.95-1.00 figures live in the clean-template regime,
+      which is not ours.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.26511v1 full text), single-author company paper. Credibility
+      settled at 2: mechanisms and negative results usable, headline numbers not. The negative result is
+      the durable contribution and is untouched: cosine AUROC 0.5926 for separating duplicates from contradictions.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.26511v1 full text), single-author company paper. Credibility
+      settled at 2: mechanisms and negative results usable, headline numbers not.'
 
 - id: intake-1037
   arxiv_id: '2405.02079'
@@ -63387,6 +63773,43 @@
     exact retraction by zero substitution. Attribution check: CONFIRMED (4 of 4 claims located
     verbatim in the proceedings PDF, retrieved 2026-08-09). Venue: KR 2022 Main Track pp. 91-101;
     also arXiv 2202.10766, HAL hal-03771031.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (arXiv 2202.10766, full 33pp with appendices): ALL six Stage-1
+      claims VERBATIM-CONFIRMED with proposition numbers pinned — Prop 13 statement, the Table 1 row, Example
+      9 item iv, Props 3/12, and Prop 56 via Arenas-Conca-Perez 2012 #P-hardness. NO CORRECTIONS, which
+      is rare in this queue. On the operator-flagged product-lattice question: every load-bearing hypothesis
+      is algebraic (+-idempotent / absorptive / omega-continuous) and a product of chains satisfies all
+      of them — recorded as the dive author''s own derivation, consistent with the paper''s use of PosBool(X),
+      not as a paper claim. The KR DOI was not re-verified.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (arXiv 2202.10766, full 33pp with appendices): ALL six Stage-1
+      claims VERBATIM-CONFIRMED with proposition numbers pinned — Prop 13 statement, the Table 1 row, Example
+      9 item iv, Props 3/12, and Prop 56 via Arenas-Conca-Perez 2012 #P-hardness. NO CORRECTIONS, which
+      is rare in this queue. On the operator-flagged product-lattice question: every load-bearing hypothesis
+      is algebraic (+-idempotent / absorptive / omega-continuous) and a product of chains satisfies all
+      of them — recorded as the dive author''s own derivation, consistent with the paper''s use of PosBool(X),
+      not as a paper claim. The KR DOI was not re-verified.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (arXiv 2202.10766, full 33pp with appendices): ALL six Stage-1
+      claims VERBATIM-CONFIRMED with proposition numbers pinned — Prop 13 statement, the Table 1 row, Example
+      9 item iv, Props 3/12, and Prop 56 via Arenas-Conca-Perez 2012 #P-hardness. NO CORRECTIONS, which
+      is rare in this queue. On the operator-flagged product-lattice question: every load-bearing hypothesis
+      is algebraic (+-idempotent / absorptive / omega-continuous) and a product of chains satisfies all
+      of them — recorded as the dive author''s own derivation, consistent with the paper''s use of PosBool(X),
+      not as a paper claim. The KR DOI was not re-verified.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (arXiv 2202.10766, full 33pp with appendices): ALL six Stage-1
+      claims VERBATIM-CONFIRMED with proposition numbers pinned — Prop 13 statement, the Table 1 row, Example
+      9 item iv, Props 3/12, and Prop 56 via Arenas-Conca-Perez 2012 #P-hardness. NO CORRECTIONS, which
+      is rare in this queue. On the operator-flagged product-lattice question: every load-bearing hypothesis
+      is algebraic (+-idempotent / absorptive / omega-continuous) and a product of chains satisfies all
+      of them — recorded as the dive author''s own derivation, consistent with the paper''s use of PosBool(X),
+      not as a paper claim. The KR DOI was not re-verified.'
 
 - id: intake-1039
   arxiv_id: '1910.07910'
@@ -64162,6 +64585,35 @@
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (freshness cluster). Surfaced EvolvingQA,
     MRAG, TempRALM as baselines - none warrants separate intake.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v3, 2025-07-18), dive-verified: the Stage-1 filing
+      is accurate and the authors are captured. Nothing disputed. The claims worth carrying are the scoring
+      scheme (+1 perfect / 0 missing / -1 harmful, which REWARDS REFUSAL over confident error) and the negative
+      result — temporal-decay reranking cost ~17% relevant-hit loss while still retrieving stale passages,
+      i.e. the obvious fix does not work.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v3, 2025-07-18), dive-verified: the Stage-1 filing
+      is accurate and the authors are captured. Nothing disputed. The claims worth carrying are the scoring
+      scheme (+1 perfect / 0 missing / -1 harmful, which REWARDS REFUSAL over confident error) and the negative
+      result — temporal-decay reranking cost ~17% relevant-hit loss while still retrieving stale passages,
+      i.e. the obvious fix does not work.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v3, 2025-07-18), dive-verified: the Stage-1 filing
+      is accurate and the authors are captured. Nothing disputed. The claims worth carrying are the scoring
+      scheme (+1 perfect / 0 missing / -1 harmful, which REWARDS REFUSAL over confident error) and the negative
+      result — temporal-decay reranking cost ~17% relevant-hit loss while still retrieving stale passages,
+      i.e. the obvious fix does not work.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v3, 2025-07-18), dive-verified: the Stage-1 filing
+      is accurate and the authors are captured. Nothing disputed. The claims worth carrying are the scoring
+      scheme (+1 perfect / 0 missing / -1 harmful, which REWARDS REFUSAL over confident error) and the negative
+      result — temporal-decay reranking cost ~17% relevant-hit loss while still retrieving stale passages,
+      i.e. the obvious fix does not work.'
 
 - id: intake-1055
   arxiv_id: '2605.30771'
