@@ -1,6 +1,39 @@
 # BACKLOG DISPATCH QUEUE — pre-vetted work for idle mains
 
-**Generated 2026-07-29** (sweep taken at repo tip `4dc445a2`). Read-only sweep. This file is the ONLY
+> # ⛔ SUPERSEDED 2026-08-11 — DO NOT DISPATCH FROM THIS FILE.
+>
+> **Generate the bench instead:**
+>
+> ```bash
+> scripts/coordination/backlog_queue_gen.py --generate     # text-keyed, always current
+> scripts/coordination/backlog_row_check.py --ref <f.md:N> # screen a single row
+> ```
+>
+> **Re-derived 2026-08-11 against today's tree** (all 1,097 unique `file.md:LINE` refs in this
+> file, classified with `backlog_row_check`'s own classifier). Of the **220 rows this file
+> advertises as `none`-lane, unblocked, dispatchable-right-now**:
+>
+> | today | count |
+> |---|---|
+> | still dispatchable | **35** |
+> | already closed | 68 |
+> | anchor rot | 113 |
+> | blocked by a child box | 2 |
+> | guarded template / file moved | 2 |
+>
+> Of the 113 rotted rows, 51 re-anchor to a now-CLOSED box, 36 to a still-open box, 20 are dead
+> and 6 moved to `handoffs/completed/`. **True remaining dispatchable is at most 71 of 220 —
+> 32%.** Queue-wide anchor rot is **34.5%**, up from the 27% measured on 2026-07-29: twelve more
+> days of ordinary edits against line-number anchors, with no intervention.
+>
+> **The defect is the shape, not the maintenance.** Line anchors rot within hours of an edit
+> wave, so no human refresh cadence can hold them. The generator keys on the VERBATIM box text
+> and reads a POSITIVE do-not-dispatch declaration out of each handoff — which additionally makes
+> the corruption invariant checkable (`--audit-procedures`), something a hand-written list of
+> anchors structurally cannot do.
+>
+> Everything below is **retained as evidence**, not as work. It is the record the re-derivation
+> was taken against; the counts in *Counts* and the two benches are all as-of 2026-07-29.
 artifact this session wrote; no handoff, checkbox, `queue.jsonl`, inbox, outbox, heartbeat or cursor was
 touched, and this session ran no `git commit`. (A coordinator session committed an in-progress copy of
 this file as `7adca72d` mid-write; the content below is the finished version.)
