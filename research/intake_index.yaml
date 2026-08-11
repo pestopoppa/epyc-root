@@ -50134,6 +50134,37 @@
   integration_disposition: integrated
   disposition_evidence:
   - '2026-08-05 audit: direct intake-ID citation in the routed handoff owner(s); integrated describes durable workflow routing, not a deployment claim.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-28 Stage-2 dive (primary full-text). All Stage-1 claims CONFIRMED against source. GLOBAL
+      CAVEAT that belongs on every claim here: the training runs are TINY — ~6.5B tokens (1e5 steps x bs64
+      x ctx1024) — so all of it is small-data-regime observation, headline wins are 0.13-0.2, no independent
+      replication exists, and no pretrained checkpoints were released at any scale (code only, MIT).'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-28 Stage-2 dive (primary full-text). All Stage-1 claims CONFIRMED against source. GLOBAL
+      CAVEAT that belongs on every claim here: the training runs are TINY — ~6.5B tokens (1e5 steps x bs64
+      x ctx1024) — so all of it is small-data-regime observation, headline wins are 0.13-0.2, no independent
+      replication exists, and no pretrained checkpoints were released at any scale (code only, MIT). Refinement
+      (c) is worth carrying when citing performance: downstream average at 244M is 55.5 vs 55.6, i.e. the
+      BASELINE is a hair higher, so the right word is ''comparable'', never ''better''.'
+  - claim_index: 2
+    effect: narrowed
+    note: '2026-07-28 Stage-2 dive (primary full-text). All Stage-1 claims CONFIRMED against source. GLOBAL
+      CAVEAT that belongs on every claim here: the training runs are TINY — ~6.5B tokens (1e5 steps x bs64
+      x ctx1024) — so all of it is small-data-regime observation, headline wins are 0.13-0.2, no independent
+      replication exists, and no pretrained checkpoints were released at any scale (code only, MIT). ''Crucial''
+      does not survive at scale for the peri-layernorm half: refinement (b) finds the advantage DIMINISHES
+      at larger model sizes, weakening it specifically at the 1B end. Layer grouping (G=2 optimal, Fig 6)
+      is unaffected.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-28 Stage-2 dive (primary full-text). All Stage-1 claims CONFIRMED against source. GLOBAL
+      CAVEAT that belongs on every claim here: the training runs are TINY — ~6.5B tokens (1e5 steps x bs64
+      x ctx1024) — so all of it is small-data-regime observation, headline wins are 0.13-0.2, no independent
+      replication exists, and no pretrained checkpoints were released at any scale (code only, MIT). Fig
+      4a shared-layer ablation confirmed exactly.'
 - id: intake-904
   arxiv_id: '2410.20672'
   url: https://arxiv.org/abs/2410.20672
@@ -50306,6 +50337,31 @@
   verdict_justification: 'worth_investigating: only referenced as context by two entries, never ingested; its own inference-time contributions are untracked; Huginn-0125 remains the canonical open recurrent-depth checkpoint. The contradicting probe evidence (intake-910) makes the latent-reasoning framing itself a contested claim a dive should adjudicate.'
   dive_corrections: '2026-07-28 Stage-2 dive (primary full-text read + HF/GitHub artifact verification). Benchmark rows CONFIRMED exactly (Tables 1/2/3: GSM8K 24.87/38.13, ARC-E 69.91, ARC-C 38.23, HellaSwag 65.21, MMLU 31.38, HumanEval 23.17, MBPP 24.80); architecture (2,4,2)/132-effective-layers and 180B-token matched-twin result (9.02/10.24 vs 1.82/2.20) CONFIRMED. THREE CORRECTIONS: (1) The headline "50B-parameter equivalent" is ARITHMETIC FLOPs-unrolling (materialized params = num_steps x 1.5B + 2B; r=32 -> 50B), NOT parity with any 50B model — absolute scores trail OLMo-7B badly (MMLU 31.38 vs 60.56). What is measured is that gains continue as r rises toward 32+. (2) The four zero-shot mechanisms are UNEVENLY evidenced: KL-exit adaptive compute QUANTIFIED (MTBench 5.63 vs 5.56, per-domain exit distributions); cyclic KV-sharing QUANTIFIED (cache budget 4 of 32 steps scores 5.86 MTBench, no loss); self-speculative decoding MECHANISM ONLY — zero published numbers (do NOT cite for spec-dec plans, per measure-alpha-first policy); continuous-CoT warm-start weakly quantified (1-2 fewer convergence steps). Stage 1 listed all four as if equally supported. (3) Venue upgrade: NeurIPS 2025 SPOTLIGHT (OpenReview S3GhJooWIC) — not a bare preprint. Also: body says 795B tokens (abstract rounds to 800B); matched-twin is params/data/tokens-matched, NOT training-FLOPs-matched (recurrence spends ~r x more core FLOPs/token); paper itself concedes first-generation instrument (LR never cooled, untested mixture) and its orbit/slider interpretability claims are self-described as qualitative — pre-conceding part of the intake-910 probe surface. Artifacts verified live: HF huginn-0125 Apache-2.0 safetensors (7.6k downloads/mo, no GGUF); seal-rg/recurrent-pretraining (903 stars, trained on 4096 MI250X — ROCm-native, minor practical plus for our MI210). No independent replication beyond the intake-910 probe; third-party coverage is restatement.'
   notes: 'Batch 2026-07-28. UMD/ELLIS/LLNL. Stage-1 fetch: ar5iv full text. Peer-review venue not found in fetched content. Credibility 4: venue +0, ~17mo +0, major-lab pedigree +1, corroboration +2 capped (follow-on sampler paper 2510.14961/intake-636 builds on it; LatentMAS cites it), +1 full code/checkpoint/data release enabling verification. One referenced ID (2310.03819) flagged by the sub-agent as a possible extraction artifact and omitted here.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-07-28 Stage-2 dive (full text + HF/GitHub artifact verification). Benchmark rows CONFIRMED
+      exactly and the 180B-token matched-twin result holds. The latent-iteration mechanism is confirmed.
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-07-28 Stage-2 dive (full text + HF/GitHub artifact verification). Benchmark rows CONFIRMED
+      exactly and the 180B-token matched-twin result holds. Correction (1): the headline ''50B-parameter
+      equivalent'' is ARITHMETIC FLOPs-unrolling (materialized params = num_steps x 1.5B + 2B; r=32 -> 50B),
+      NOT parity with any 50B model. Absolute scores trail OLMo-7B badly — MMLU 31.38 vs 60.56. What is
+      actually measured is that gains continue as r rises toward 32+, which is a scaling-direction result,
+      not a capability-parity one.'
+  - claim_index: 2
+    effect: narrowed
+    note: '2026-07-28 Stage-2 dive (full text + HF/GitHub artifact verification). Benchmark rows CONFIRMED
+      exactly and the 180B-token matched-twin result holds. Correction (2): the four zero-shot mechanisms
+      are UNEVENLY evidenced. KL-exit adaptive compute is QUANTIFIED (MTBench 5.63 vs 5.56 with per-domain
+      exit distributions) and cyclic KV-sharing is QUANTIFIED, so ''naturally support'' is carried only
+      by the quantified subset — do not cite the set as uniformly demonstrated.'
+  - claim_index: 3
+    effect: unaffected
+    note: 2026-07-28 Stage-2 dive (full text + HF/GitHub artifact verification). Benchmark rows CONFIRMED
+      exactly and the 180B-token matched-twin result holds. Path independence from log-normal-Poisson iteration
+      sampling with truncated backprop (last k=8) is confirmed.
 - id: intake-906
   arxiv_id: '2507.10524'
   url: https://arxiv.org/abs/2507.10524
@@ -50383,6 +50439,32 @@
   verdict_justification: 'worth_investigating: keystone paper of the lineage this batch catalogs; its KV/batching serving techniques matter immediately if recursive-depth checkpoints are released; independently validates the TIDE deprecation decision. not_applicable would discard the lineage''s central node; superseded does not apply — the 2026 successors extend rather than outcompete it.'
   dive_corrections: '2026-07-28 Stage-2 dive (primary full-text read, NeurIPS v3, repo + venue verification). CONFIRMED: routing mechanisms (Sec 2.2.1 expert-choice beta-percentile + hierarchical filtering; token-choice argmax), Table 2-Right KV factors (recursion-wise: memory AND IO (Nr+1)/2Nr; recursive sharing: memory 1/Nr but IO 1 — NO IO reduction, decode bottleneck remains), 167M Nr=2 43.1% vs 42.3% headline, Middle-Cycle best (Tables 10/11), NeurIPS 2025 poster 118085. FIVE CORRECTIONS: (1) Stage 1 OMITTED the self-disclosed negative result — at 135M under isoFLOPs MoR LOSES to vanilla (NLL 2.9490 vs 2.8432, avg 38.11 vs 42.15; "recursive capacity bottleneck"); the Pareto claim holds at >=360M only. (2) The 118M Nr=3 NLL comparison direction was wrong-framed: MoR 2.7925 is slightly WORSE than vanilla 2.7824 — parameter-parity result, not a win. (3) 2.06x throughput provenance pinned: MEASURED but on a bespoke queue-based depth-wise-batching harness (H100, FA2 + torch.compile, no-prefill workload, ~256-token generations, 360M models, max batch derived from H100 VRAM 32->51; vanilla does get sequence-wise continuous batching). Not a vLLM/serving-stack number — never quote as such. (4) "Auxiliary router loss" conflated two distinct mechanisms: expert-choice auxiliary loss (causality fix) vs token-choice balancing loss; token-choice is NOT competitive (NLL 2.9163 / avg 40.0 vs expert-choice 2.7925 / 42.6). (5) "Up to 31B tokens" understates appendix isoFLOPs runs to 76.2B. Checkpoints: Google Drive only, 360M only — no HF uploads. OpenReview reviews unretrievable (Cloudflare 403); no independent replications found (bounded); press coverage uncritical restatement. Smoke-test declined: no decision the result could gate.'
   notes: 'Batch 2026-07-28. KAIST + Google DeepMind/Research + Mila. NeurIPS 2025 (confirmed via neurips.cc poster page + repo README in a one-query WebSearch). Stage-1 fetch: arxiv.org/html full text (ar5iv had no rendered copy). Referenced IDs beyond 2410.20672 mapped from cited names, not verbatim. Credibility 4: peer-reviewed +2, ~12.5mo +0, major labs +1, corroboration +1.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-07-28 Stage-2 dive (NeurIPS v3 full text + repo + venue verification). Routing mechanisms
+      and the NeurIPS 2025 poster are confirmed. The unification claim is structural and confirmed.
+  - claim_index: 1
+    effect: unaffected
+    note: 2026-07-28 Stage-2 dive (NeurIPS v3 full text + repo + venue verification). Routing mechanisms
+      and the NeurIPS 2025 poster are confirmed. Expert-choice beta-percentile with hierarchical filtering
+      and token-choice argmax both confirmed at Sec 2.2.1.
+  - claim_index: 2
+    effect: narrowed
+    note: '2026-07-28 Stage-2 dive (NeurIPS v3 full text + repo + venue verification). Routing mechanisms
+      and the NeurIPS 2025 poster are confirmed. Correction (1) is the one Stage 1 OMITTED, and it is the
+      paper''s OWN disclosed negative: at 135M under isoFLOPs MoR LOSES to vanilla (NLL 2.9490 vs 2.8432,
+      avg 38.11 vs 42.15 — a ''recursive capacity bottleneck''), so the Pareto claim holds only at >=360M.
+      Correction (2): the 118M Nr=3 comparison was wrong-framed — MoR 2.7925 is slightly WORSE than vanilla
+      2.7824, a parameter-parity result rather than a win. The 43.1% vs 42.3% headline stands only at 167M
+      Nr=2 and must carry the size floor.'
+  - claim_index: 3
+    effect: narrowed
+    note: '2026-07-28 Stage-2 dive (NeurIPS v3 full text + repo + venue verification). Routing mechanisms
+      and the NeurIPS 2025 poster are confirmed. ''Cut KV memory AND IO'' is false for the recursive-sharing
+      variant. Table 2-Right, confirmed: recursion-wise caching gives memory AND IO (Nr+1)/2Nr, but recursive
+      SHARING gives memory 1/Nr with IO 1 — NO IO reduction at all, so the decode bottleneck remains. That
+      distinction matters directly for us, since decode is the plane we are bandwidth-saturated on.'
 - id: intake-907
   arxiv_id: '2607.13491'
   url: https://arxiv.org/abs/2607.13491
