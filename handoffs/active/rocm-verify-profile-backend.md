@@ -334,6 +334,11 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   preserved, **fail-any** gating. Apply per RVP-T0-5 — negate is near-useless on symmetric ranges.
   **Do not copy the fail-open-on-reference-exception branch** the upstream design carries: a
   reference that throws must fail the case, not pass it (`feedback_fail_open_defaults_conceal_their_own_corruption`).
+  **2026-08-11 static implementation:** research commit `eca5dbda` adds a pass separate from the
+  layout axis, exact four-transform and non-zero-case gates, suite-seed-bound `AK_VALUE_V1`
+  receipts, per-property transform binding, and fail-closed refusals for missing case receipts or
+  legacy property rows. The experimental producer compiles but remains uncommitted pending its
+  required explicit local-commit approval; no transform case has run.
 - [ ] **RVP-C2-4 — Layout / stride axis, as a SEPARATE pass with its own flag.** Three probe families:
   transpose (stride permutation), `as_strided`-equivalent (stride gap), offset base pointer
   (alignment). **Kept separate from RVP-C2-3 deliberately**: the value-transform pass needs shapes

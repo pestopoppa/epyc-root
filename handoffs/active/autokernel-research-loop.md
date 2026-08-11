@@ -36,6 +36,10 @@ per-op/backend/shape residuals in the evaluation event for the Vidya SC18 projec
 experimental producer still needs the separately requested local-commit approval. The C2 layout
 axis is now separately flagged and fail-closed in the research consumer, including exact coverage of
 offset, stride-gap and transpose families; its producer shares the same pending experimental commit.
+The C2 value axis is now independently flagged and fail-closed in research commit `eca5dbda`:
+identity, ×3, ×0.01 and negate must all complete on every emitted packed-float case, and property
+residuals retain the input-transform coordinate through the Vidya projection. Its producer also
+shares the pending experimental commit, and no value-transform case has run.
 The next live action is the v9/hardened control block,
 followed by §AK6.5 Step 3's known-real CPU candidate.
 The operator has explicitly required fresh permission

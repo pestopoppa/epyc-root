@@ -96,6 +96,10 @@ def project(native: Any) -> ClaimTuple:
     if event_seed != suite_seed:
         raise ProjectionError(
             f"measurement suite_seed {suite_seed} does not match event suite_seed {event_seed}")
+    input_transform = str(measurement.get("input_transform") or "identity")
+    if input_transform not in ("identity", "x3", "x0p01", "negate"):
+        raise ProjectionError(
+            "measurement.input_transform must be identity|x3|x0p01|negate")
 
     residual = measurement.get("residual")
     tolerance = measurement.get("tolerance")
@@ -108,7 +112,8 @@ def project(native: Any) -> ClaimTuple:
         raise ProjectionError("measurement.passed must equal residual <= tolerance")
 
     identity_payload = json.dumps(
-        [event_id, native.get("measurement_index"), backend, op, shape_id, metric_id, suite_seed],
+        [event_id, native.get("measurement_index"), backend, op, shape_id, metric_id,
+         suite_seed, input_transform],
         separators=(",", ":"), ensure_ascii=True)
     identity = hashlib.sha256(identity_payload.encode("utf-8")).hexdigest()[:24]
     digest = str(native.get("event_sha256") or "")
@@ -119,7 +124,8 @@ def project(native: Any) -> ClaimTuple:
         value=residual,
         date=str(event.get("created_at") or "")[:10],
         category=_required_text(claim_grammar, "category", "claim_grammar"),
-        claim=(f"AutoKernel {backend} {op} shape {shape_id} property {metric_id}: "
+        claim=(f"AutoKernel {backend} {op} shape {shape_id} transform {input_transform} "
+               f"property {metric_id}: "
                f"residual {residual} <= tolerance {tolerance} is {passed}"),
         metric_direction="lower_better",
         protocol_id=_required_text(claim_grammar, "protocol_id", "claim_grammar"),
@@ -138,6 +144,7 @@ def project(native: Any) -> ClaimTuple:
             "op": op,
             "shape_id": shape_id,
             "suite_seed": suite_seed,
+            "input_transform": input_transform,
             "tolerance": tolerance,
             "passed": passed,
         },

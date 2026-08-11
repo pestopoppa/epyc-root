@@ -63,6 +63,18 @@ def test_distinct_measurements_have_distinct_claim_identity():
     assert len(identities) == 2
 
 
+def test_input_transform_is_part_of_the_claim_and_identity():
+    source = event()
+    base_row = akp.native_rows(source)[0]
+    identity = akp.project(base_row)
+    source["correctness"]["t0.backend_op_units"]["measurements"][0][
+        "input_transform"] = "x3"
+    transformed = akp.project(akp.native_rows(source)[0])
+    assert transformed.extra["input_transform"] == "x3"
+    assert "transform x3" in transformed.claim
+    assert transformed.measurement_id != identity.measurement_id
+
+
 def test_suite_seed_mismatch_refuses_instead_of_relabelling():
     source = event()
     source["performance"]["search_discipline"]["suite_seed"] = 99
