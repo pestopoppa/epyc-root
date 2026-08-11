@@ -36,8 +36,157 @@ def receipt(*, measurements=True, status="passed"):
     return value
 
 
+def q4k_receipt():
+    campaign = "inf37-q4k-unpack-successor-r8"
+    producer_sha = "a" * 64
+    identity = {
+        "source_commit": "0" * 39 + "1",
+        "mmvq_sha256": "b" * 64,
+        "vecdotq_sha256": "c" * 64,
+        "ggml_header_sha256": "d" * 64,
+        "binary_sha256": "e" * 64,
+        "runner_sha256": producer_sha,
+    }
+    source_digest = aux._q4k_source_digest(identity)
+    opened = {
+        "schema": "epyc.autokernel.device_claim_receipt.v1",
+        "campaign_id": campaign,
+        "claim_id": "akd-q4k-r8",
+        "device_id": "mi210_0",
+        "acquired_at": "2026-08-12T00:00:00Z",
+        "released_at": None,
+    }
+    released = dict(opened)
+    released["released_at"] = "2026-08-12T00:01:00Z"
+    claim_digest = aux._canonical_sha256({"opened": opened, "released": released})
+    shape = {"m": 17408, "n": 1, "k": 5120}
+    profiler_sha = "f" * 64
+    measurements = []
+    for control in aux._Q4K_CONTROLS:
+        for native_field, (metric, unit, instrument, role) in aux._Q4K_METRICS.items():
+            values = ([3.0, 3.0] if role == "differential_mechanism_counter"
+                      else [8.0, 9.0])
+            basis = {
+                "arm": "q4_K",
+                "control": control,
+                "comparison_id": f"q4_K_minus_{control}",
+                "shape": shape,
+                "scored_blocks": 2,
+                "active_dispatches_per_arm_per_block": 5,
+                "block_values": values,
+                "native_field": native_field,
+                "instrument": instrument,
+                "counter_transport": "rocprofv2",
+                "counter_file_line": aux._Q4K_PMC_LINE,
+                "aggregation": "median(paired_block_arm_minus_control)",
+                "identifiability": {
+                    "direct_hardware_counter_attribution": "differential_mechanism_only",
+                    "exact_inside_kernel_wall_share": None,
+                    "reason": "fused dispatch fixture",
+                    "closest_control": "Q4_K minus Q4_0 at identical m,n,k",
+                },
+                "source_identity_sha256": source_digest,
+                "producer_sha256": producer_sha,
+                "profiler_sha256": profiler_sha,
+                "device_claim_sha256": claim_digest,
+            }
+            if role == "differential_mechanism_counter":
+                basis.update({
+                    "normalizer": "SQ_WAVES",
+                    "per_arm_reduction": (
+                        "median(dispatch PMC)/median(dispatch SQ_WAVES)"),
+                    "counter_semantics": "fixture semantics",
+                })
+            else:
+                basis.update({
+                    "timestamp_fields": ["Start_Timestamp", "End_Timestamp"],
+                    "per_arm_reduction": (
+                        "median(dispatch End_Timestamp-Start_Timestamp)"),
+                    "diagnostic_only": True,
+                })
+            row = {
+                "measurement_id": (
+                    f"q4k_minus_{control.replace('_', '')}_{native_field}"),
+                "metric": metric,
+                "value": sum(values) / len(values),
+                "unit": unit,
+                "metric_direction": "lower_better",
+                "category": "BASELINE",
+                "reps": 2,
+                "reps_basis": "scored:balanced paired direct-PMC blocks",
+                "claim": f"fixture {native_field}",
+                "extra": {
+                    "measurement_role": role,
+                    "arm": "q4_K",
+                    "control": control,
+                    "shape": shape,
+                    "counter_basis": basis,
+                    "source_commit": identity["source_commit"],
+                    "source_identity_sha256": source_digest,
+                    "binary_sha256": identity["binary_sha256"],
+                    "producer_id": aux._Q4K_PRODUCER,
+                    "producer_sha256": producer_sha,
+                    "evidence_sha256": aux._canonical_sha256(basis),
+                    "device_id": opened["device_id"],
+                    "device_claim_id": opened["claim_id"],
+                    "device_claim_sha256": claim_digest,
+                    "authority": "diagnostic_only",
+                    "promotion_authority": False,
+                    "inside_unpack_wall_share_emitted": False,
+                },
+            }
+            row["measurement_sha256"] = aux._canonical_sha256(row)
+            measurements.append(row)
+    value = {
+        "schema": aux._Q4K_SCHEMA,
+        "status": "passed",
+        "authority": "diagnostic_only",
+        "campaign_id": campaign,
+        "ended_at": "2026-08-12T00:01:01Z",
+        "identity": identity,
+        "producer": {
+            "producer_id": aux._Q4K_PRODUCER,
+            "path": aux._Q4K_PRODUCER_PATH,
+            "sha256": producer_sha,
+        },
+        "source_identity_sha256": source_digest,
+        "device_claim_sha256": claim_digest,
+        "device_claim_open": opened,
+        "device_claim_released": released,
+        "workload": {
+            "counter_transport": "rocprofv2",
+            "shape": shape,
+            "blocks": 2,
+            "active_repetitions": 5,
+        },
+        "counter_support": {
+            "single_pass_group": True,
+            "counter_file_line": aux._Q4K_PMC_LINE,
+            "arch_device": "gfx90a:0",
+            "profiler_sha256": profiler_sha,
+        },
+        "belief_measurements": measurements,
+    }
+    value["receipt_sha256"] = aux._canonical_sha256(value)
+    return value
+
+
+def resign_q4k(value, *measurement_indices):
+    for index in measurement_indices:
+        row = value["belief_measurements"][index]
+        row.pop("measurement_sha256", None)
+        row["measurement_sha256"] = aux._canonical_sha256(row)
+    value.pop("receipt_sha256", None)
+    value["receipt_sha256"] = aux._canonical_sha256(value)
+
+
 def test_old_receipt_without_write_side_vector_is_not_backfilled():
     assert aux.native_rows(receipt(measurements=False)) == ()
+
+
+def test_attestation_digest_refuses_trailing_bytes():
+    with pytest.raises(ct.ProjectionError, match="lowercase SHA-256"):
+        aux.native_rows(receipt(), receipt_sha256="a" * 65)
 
 
 def test_iq2_complete_receipt_projects_only_producer_written_rows():
@@ -66,6 +215,75 @@ def test_iq2_complete_receipt_projects_only_producer_written_rows():
     old = copy.deepcopy(source)
     old.pop("belief_measurements")
     assert aux.native_rows(old, receipt_sha256="c" * 64) == ()
+
+
+def test_q4k_direct_pmc_rows_project_exact_directions_and_digests():
+    source = q4k_receipt()
+    rows = aux.native_rows(
+        source, receipt_locator="probe:inf37-r8/receipt.json",
+        receipt_sha256="9" * 64, attestation_present=True)
+    assert len(rows) == 6
+    tuples = [aux.project(row) for row in rows]
+    assert {tup.extra["control"] for tup in tuples} == {"q4_0", "q8_0"}
+    assert {tup.metric for tup in tuples} == {
+        "q4k_minus_control_valu_instructions_per_wave_delta",
+        "q4k_minus_control_int32_instructions_per_wave_delta",
+        "q4k_minus_control_dispatch_device_duration_ns_delta",
+    }
+    assert all(tup.metric_direction == "lower_better" for tup in tuples)
+    assert all(tup.category == "BASELINE" for tup in tuples)
+    assert all(tup.extra["arm"] == "q4_K" for tup in tuples)
+    assert all(tup.extra["promotion_authority"] is False for tup in tuples)
+    assert all(tup.extra["inside_unpack_wall_share_emitted"] is False for tup in tuples)
+    assert all(tup.extra["native_measurement_sha256"] for tup in tuples)
+    assert all(tup.extra["receipt_self_sha256"] == source["receipt_sha256"]
+               for tup in tuples)
+    assert all(ct.grade(tup)[:2] == ("Witnessed", "Attested") for tup in tuples)
+
+
+def test_historical_q4k_r7_empty_vector_is_not_backfilled():
+    historical = {
+        "schema": aux._Q4K_SCHEMA,
+        "status": "passed",
+        "campaign_id": "inf37-q4k-unpack-v9-20260811-r7",
+        "ended_at": "2026-08-11T18:40:10Z",
+        "summary": {"comparisons": {"q4_K_minus_q4_0": [{"block": 0}]}},
+        "belief_measurements": [],
+    }
+    assert aux.native_rows(historical) == ()
+
+
+@pytest.mark.parametrize("defect", [
+    "measurement_self", "receipt_self", "evidence", "source", "producer",
+    "device_claim", "promotion", "wall_share",
+])
+def test_q4k_digest_and_authority_defects_fail_closed(defect):
+    source = q4k_receipt()
+    if defect == "measurement_self":
+        source["belief_measurements"][0]["measurement_sha256"] = "0" * 64
+        resign_q4k(source)
+    elif defect == "receipt_self":
+        source["receipt_sha256"] = "0" * 64
+    elif defect == "evidence":
+        source["belief_measurements"][0]["extra"]["evidence_sha256"] = "0" * 64
+        resign_q4k(source, 0)
+    elif defect == "source":
+        source["belief_measurements"][0]["extra"]["source_identity_sha256"] = "0" * 64
+        resign_q4k(source, 0)
+    elif defect == "producer":
+        source["belief_measurements"][0]["extra"]["producer_sha256"] = "0" * 64
+        resign_q4k(source, 0)
+    elif defect == "device_claim":
+        source["belief_measurements"][0]["extra"]["device_claim_sha256"] = "0" * 64
+        resign_q4k(source, 0)
+    elif defect == "promotion":
+        source["belief_measurements"][0]["extra"]["promotion_authority"] = True
+        resign_q4k(source, 0)
+    else:
+        source["belief_measurements"][0]["extra"]["inside_unpack_wall_share_emitted"] = True
+        resign_q4k(source, 0)
+    with pytest.raises(ct.ProjectionError):
+        aux.native_rows(source)
 
 
 def test_historical_mmq_wgm_r2_schemas_are_not_registered_or_backfilled():
