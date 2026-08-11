@@ -2,12 +2,18 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-08-11 (production v9 now carries bounded request-local DSpark at `-np 1`; exact Q8 cap-0/cap-3 parity passed, while the quantized-target parallel verifier and multi-slot path remain disabled; the earlier 2026-08-09 pre-port scope is superseded below)
+**Last compiled**: 2026-08-11 (DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
 **Sources**: 63+ documents
 
 ## Compiled Update — 2026-08-11
 
 ### DSpark is production-safe on the validated serial lane, not yet a throughput win
+
+**Identity correction.** `draft-dspark` is the speculation mode, while `dflash` is the sidecar's
+GGUF architecture and shared model backbone. DSpark specializes that backbone with an anchor-first
+block layout and a semi-autoregressive Markov head; it does not introduce a `dspark` GGUF
+architecture. It remains distinct from the target's MTP/NextN tensors and still requires a separate
+target-locked sidecar.
 
 The 2026-08-09 pre-port assessment below is now historical. Upstream had already merged the generic
 DSpark speculator, the DeepSeek-V4 graph, and two required quantized-reshape fixes. EPYC therefore
@@ -31,6 +37,21 @@ and 64 completion tokens preserved exact cap-0/cap-3 token parity. Cap 3 drafted
 (59.70%) but decoded at 4.61014 t/s versus 4.82846 t/s with cap 0, or 0.95478× (−4.52%). This is
 one dirty-host repetition with the resident stack online: useful preliminary evidence that DSpark is
 active and parity-safe on IQ3, but not a claim-grade throughput or quality result.
+
+A standardized comparison sidecar was acquired from
+[`alessandrobologna/DeepSeek-V4-Flash-DSpark-Drafter-GGUF`](https://huggingface.co/alessandrobologna/DeepSeek-V4-Flash-DSpark-Drafter-GGUF)
+at pinned revision `0c8f204aa30677da13c234b4e929212d5d5a0b8c`. The selected
+`DeepSeek-V4-Flash-DSpark-Drafter-Q2_K-Q8_0-dflash.gguf` is expected to be 6,971,242,976 bytes with
+publisher SHA-256 `232dd3c3dc3f7082d242e8700940feedc85f6b65cf2991fd35be0a66dad3efa0`.
+Its manifest reports 81 tensors (F32 45 / F16 2 / Q8_0 25 / Q2_K 9), block size 5 and target layers
+`[41,42,43]`. The local file is exactly 6,971,242,976 bytes and its SHA-256 matches the publisher
+value; no incomplete transfer remains.
+
+The existing 10,896,057,440-byte control also has 81 tensors, block size 5 and the same target
+layers, but its actual composition is MXFP4 9 / F32 41 / Q8_0 25 / BF16 6. Thus the filename
+shorthand “Q8_0” does not make it a uniform Q8 drafter. Its useful next test is a matched
+target/prompt/request/host comparison reporting
+throughput, acceptance and exact token parity against this existing control.
 
 ### Source References (2026-08-11)
 
