@@ -1755,6 +1755,46 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     before acting: *any* operation that moves, truncates or rotates a bus file is exactly what C28
     says re-floods it. Rotation must land after C28's identity-keyed relay tracking, not before.
 
+- [ ] **C39 (NEW) — the token relay is RECEIPT-BLIND: it presents gates the operator already
+  signed.** Filed 2026-08-11 by `auditor`, confirmed independently by `mainD` the same hour.
+  `token-queue.md` currently presents **both** C27 gates as unchecked pending requests —
+  `RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729` (line 134) and
+  `RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729` (line 144) — while **both carry ratified receipts
+  on disk since 2026-07-29**: `artifacts/operator/ratify_pbench4_fg4b_affinity_witness_20260729T105911Z.json`
+  and `artifacts/operator/ratify_e8_final_c1_retry_capacityfix_20260729.json`, each `status:
+  ratified`. `relay_tokens` dedupes only on `gate in existing` — presence of the gate string in
+  `token-queue.md` — and has no notion of a gate being SPENT, so deleting the stale rows will not
+  stick: the next tick re-presents them. **This is not cosmetic. It asks a human to sign something
+  they already signed**, and the E8 gate is the one whose ratified work then aborted, so a re-signature
+  would look like authorisation for a cross-era re-run.
+  Note this became reachable only *because* C27 works: the presentation path is live at
+  `authority: manual` now, so a defect in what it presents is newly visible.
+  - [ ] **The link exists but is not a contract.** Both receipts DO contain the literal gate id —
+    but at different keys (`human_attestation` in one, elsewhere in the other), so today the only
+    general way to find them is a content grep. `artifacts/operator/receipts/` **exists and is
+    empty**: the keyed-receipt contract was intended and never wired. Fix direction: the `--attest`
+    scripts write `artifacts/operator/receipts/<GATE_ID>.json`, and `relay_tokens` reads that.
+  - [ ] **Fix by ANNOTATING, never by suppressing.** A relay that silently withholds a gate because
+    a heuristic thinks it is spent is the C3/C6/C8 fail-open family aimed at the operator path —
+    strictly worse than the defect. Present the block as now, and add a line naming the receipt, its
+    path and its status, so the operator sees "this looks already signed" and decides. Suppression
+    only becomes safe once the keyed-receipt contract above is real.
+  - [ ] **Same shape, same fix:** the C33 pre-validation notice re-fires every tick against
+    `mainA`'s 12-day-old `E5-THROTTLE-SCOPE-ERA-ROW-20260729`. Deduped per `gate_id` against durable
+    evidence, but "the gate is stale/spent" is not among the states it can represent.
+- [ ] **C40 (NEW) — a relayed backlog carries no age, so a fresh session cannot tell 12-day-old mail
+  from this minute's.** Observed 2026-08-11 by `coordinator-agent`, filed by `mainD`. When the daemon
+  came back after the 243h outage it relayed **703 messages** in one burst. `mainA` and `mainB`,
+  spawned minutes earlier, drained that backlog and **both self-assigned `p2-5l-stack-numa-doc-debt`
+  — work `auditor` had COMPLETED on 2026-07-29 as `ae40ee8b`.** They burned tokens on it until the
+  coordinator could redirect them. Distinct from C28: nothing was re-delivered wrongly here, the
+  delivery was CORRECT and the age was invisible. `drain` and `triage` print `ts` inside each JSON
+  body and nowhere else, so "this is stale" is a judgement every reader must make per message, and a
+  fresh session with no history makes it wrong. Fix direction: age is structural, like
+  `needs_routing_to` — `drain`/`triage` annotate each item with its age and flag anything older than
+  a threshold as historical, and a spawn records a mark so pre-spawn mail is labelled as predating
+  this session. Cheap, and it does not require the daemon to change what it delivers.
+
 ## Decision gates
 
 - `OP-SENDKEYS-CODEX` (send-keys nudging) — operator grant, evidence-driven, default OFF.
