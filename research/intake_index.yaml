@@ -5427,6 +5427,31 @@
     quote: The framework offers cross-platform LoRA fine-tuning support for BitNet models across heterogeneous consumer GPUs including AMD, Apple M3 Pro (GPU) and others.
     quote_sha256: 0b3c7ae440fa45d9d621eafb44a946b5e6ddee988f9d89f64cefda9be7112e17
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED, and genuinely READ before dismissal — the TQ1_0-vs-TQ2_0
+      backend inversion it cites is real. The content is Vulkan compute-shader ternary kernels on mobile/consumer
+      GPUs plus LoRA fine-tune timings; EPYC neither fine-tunes nor uses the Vulkan backend, and TQ1_0/TQ2_0
+      are already integrated in the epyc-llama fork. One uncaptured detail, deliberately NOT actioned: the
+      repo''s quality-parity gate methodology (''99.04% same-top-token rate, KL divergence < 0.0003'' against
+      a CPU reference) is a mildly reusable pattern if we ever need a quant-parity gate.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED, and genuinely READ before dismissal — the TQ1_0-vs-TQ2_0
+      backend inversion it cites is real. The content is Vulkan compute-shader ternary kernels on mobile/consumer
+      GPUs plus LoRA fine-tune timings; EPYC neither fine-tunes nor uses the Vulkan backend, and TQ1_0/TQ2_0
+      are already integrated in the epyc-llama fork. One uncaptured detail, deliberately NOT actioned: the
+      repo''s quality-parity gate methodology (''99.04% same-top-token rate, KL divergence < 0.0003'' against
+      a CPU reference) is a mildly reusable pattern if we ever need a quant-parity gate.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED, and genuinely READ before dismissal — the TQ1_0-vs-TQ2_0
+      backend inversion it cites is real. The content is Vulkan compute-shader ternary kernels on mobile/consumer
+      GPUs plus LoRA fine-tune timings; EPYC neither fine-tunes nor uses the Vulkan backend, and TQ1_0/TQ2_0
+      are already integrated in the epyc-llama fork. One uncaptured detail, deliberately NOT actioned: the
+      repo''s quality-parity gate methodology (''99.04% same-top-token rate, KL divergence < 0.0003'' against
+      a CPU reference) is a mildly reusable pattern if we ever need a quant-parity gate.'
 - id: intake-164
   arxiv_id: null
   url: https://huggingface.co/blog/qvac/fabric-llm-finetune-bitnet
@@ -6171,6 +6196,31 @@
 
     '
   dive_corrections: '2026-07-25 ID-37 re-read. CORRECTLY FILED — the strongest not_applicable of the set, triple-disqualified: it is a TRAINING kernel (FA3 backward pass), Hopper-only (README requires H100/H200), CUDA >= 12.8. EPYC has one gfx90a MI210 on ROCm 6.2 and does not train. No CPU or ROCm path exists.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED, and the dive calls it the strongest not_applicable
+      of the set — TRIPLE-disqualified. It is a TRAINING kernel (FA3 backward pass), Hopper-only (the README
+      requires H100/H200), and needs CUDA >= 12.8. EPYC has one gfx90a MI210 on ROCm 6.2 and does not train;
+      no CPU or ROCm path exists. No claim disturbed.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED, and the dive calls it the strongest not_applicable
+      of the set — TRIPLE-disqualified. It is a TRAINING kernel (FA3 backward pass), Hopper-only (the README
+      requires H100/H200), and needs CUDA >= 12.8. EPYC has one gfx90a MI210 on ROCm 6.2 and does not train;
+      no CPU or ROCm path exists. No claim disturbed.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED, and the dive calls it the strongest not_applicable
+      of the set — TRIPLE-disqualified. It is a TRAINING kernel (FA3 backward pass), Hopper-only (the README
+      requires H100/H200), and needs CUDA >= 12.8. EPYC has one gfx90a MI210 on ROCm 6.2 and does not train;
+      no CPU or ROCm path exists. No claim disturbed.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED, and the dive calls it the strongest not_applicable
+      of the set — TRIPLE-disqualified. It is a TRAINING kernel (FA3 backward pass), Hopper-only (the README
+      requires H100/H200), and needs CUDA >= 12.8. EPYC has one gfx90a MI210 on ROCm 6.2 and does not train;
+      no CPU or ROCm path exists. No claim disturbed.'
 - id: intake-179
   arxiv_id: null
   url: https://github.com/karpathy/nanochat/pull/633
@@ -15472,6 +15522,28 @@
     quote: 7) Qwen3-14B_DeepSeek-R1-20k_lr5e-5_ep8_bs256 Hugging Face ModelScope Qwen3-8B_DeepSeek-R1-20k_lr5e-5_ep8_bs256 Hugging Face ModelScope InternLM2.5-20B_DeepSeek-R1-20k_lr5e-5_ep8_bs256 Hugging Face ModelScope Under a fixed 640-step budget, repeated exposure is more effective than one-pass coverage (refer to Sec.
     quote_sha256: 79313eafaec7902debce524c6ef901283ebf2eeec190c0a8dac3216ca1ae31fe
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED, with a correction that makes the entry MORE dismissible
+      rather than less.'
+  - claim_index: 1
+    effect: overturned
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED, with a correction that makes the entry MORE dismissible
+      rather than less. The ''advantage scoring for quality assessment'' half is EMPTY: the `advantage`
+      column is a UNIFORM CONSTANT 1.0 across all 20,480 rows, so there is no quality signal in it at all.
+      This was the entry''s one forward-looking hook, and anyone revisiting it would otherwise chase an
+      empty column. The character-range half of the claim is unaffected.'
+  - claim_index: 2
+    effect: reattributed
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED, with a correction that makes the entry MORE dismissible
+      rather than less. PROVENANCE SMEAR: the dip-and-recovery finding comes from the COMPANION PAPER, not
+      from this dataset entry. Cite it to the paper.'
+  - claim_index: 3
+    effect: reattributed
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED, with a correction that makes the entry MORE dismissible
+      rather than less. Same smear: ''repeated exposure outperforms coverage'' is the companion paper''s
+      result, not this dataset''s.'
 - id: intake-376
   url: https://huggingface.co/datasets/open-r1/OpenR1-Math-220k
   source_type: blog
@@ -15537,6 +15609,35 @@
     quote: 'We follow the model card’s recommended generation parameters and prepend the following instruction to the user prompt: "Please reason step by step, and put your final answer within \boxed{}." We set a 16k token limit per generation, as our analysis showed that only 75% of problems could be solved in under 8k tokens, and most of the remaining problems required the full 16k tokens.'
     quote_sha256: 6794f12bfdaee23cc7d613de32c48036a07a17dd2373591050c9621b59eb5fec
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: VERDICT CORRECTED from not_applicable to already_integrated, and the
+      reasoning is worth reusing — `not_applicable` asserts OUT-OF-SCOPE, but this entry''s own notes cite
+      the source as supporting evidence for a LIVE handoff (reasoning-compression.md, via the 75%-solve-under-8k-tokens
+      statistic). A source feeding a live EPYC thread is not out-of-scope. Verdict hygiene only: no content
+      was missed and no new work is implied.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: VERDICT CORRECTED from not_applicable to already_integrated, and the
+      reasoning is worth reusing — `not_applicable` asserts OUT-OF-SCOPE, but this entry''s own notes cite
+      the source as supporting evidence for a LIVE handoff (reasoning-compression.md, via the 75%-solve-under-8k-tokens
+      statistic). A source feeding a live EPYC thread is not out-of-scope. Verdict hygiene only: no content
+      was missed and no new work is implied.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: VERDICT CORRECTED from not_applicable to already_integrated, and the
+      reasoning is worth reusing — `not_applicable` asserts OUT-OF-SCOPE, but this entry''s own notes cite
+      the source as supporting evidence for a LIVE handoff (reasoning-compression.md, via the 75%-solve-under-8k-tokens
+      statistic). A source feeding a live EPYC thread is not out-of-scope. Verdict hygiene only: no content
+      was missed and no new work is implied.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: VERDICT CORRECTED from not_applicable to already_integrated, and the
+      reasoning is worth reusing — `not_applicable` asserts OUT-OF-SCOPE, but this entry''s own notes cite
+      the source as supporting evidence for a LIVE handoff (reasoning-compression.md, via the 75%-solve-under-8k-tokens
+      statistic). A source feeding a live EPYC thread is not out-of-scope. Verdict hygiene only: no content
+      was missed and no new work is implied.'
 - id: intake-377
   url: https://github.com/huggingface/Math-Verify
   source_type: repo
@@ -43811,6 +43912,35 @@
   notes: 'not_applicable: commercial "viral article" landing page (bias applied), no empirical claims -> credibility null. Generic Claude Code agent primer whose patterns (Commander/Hands tiering, adversarial verification, skills) the project already documents/practices (cf. fable5-findings-*, meta-harness-optimization). Sibling youmind viral-article already indexed at credibility 0. Page contained reader-directed imperatives (end-user behavior, not agent hijacking); treated as data, none obeyed.'
   ingested_date: '2026-07-11'
   dive_corrections: '2026-07-25 ID-37 re-read. CORRECTLY FILED. Commercial landing page promoting the vendor''s own platform and paid tiers; ZERO benchmarks — the only quantities on the page are engagement counters (559K views, 401 likes), which is exactly why credibility_score: null is right. Every pattern described (Commander/Hands tiering, sub-agent fan-out, adversarial verification, .claude/skills markdown) is already documented and practiced here per fable5-findings-* and meta-harness-optimization.md.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED. A commercial landing page promoting the vendor''s
+      own platform and paid tiers, with ZERO benchmarks — the only quantities on the page are engagement
+      counters (559K views, 401 likes), which is exactly why credibility_score null is right. Every pattern
+      it describes (Commander/Hands tiering, sub-agent fan-out, adversarial verification, .claude/skills
+      markdown) is already documented and practised here per fable5-findings-* and meta-harness-optimization.md.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED. A commercial landing page promoting the vendor''s
+      own platform and paid tiers, with ZERO benchmarks — the only quantities on the page are engagement
+      counters (559K views, 401 likes), which is exactly why credibility_score null is right. Every pattern
+      it describes (Commander/Hands tiering, sub-agent fan-out, adversarial verification, .claude/skills
+      markdown) is already documented and practised here per fable5-findings-* and meta-harness-optimization.md.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED. A commercial landing page promoting the vendor''s
+      own platform and paid tiers, with ZERO benchmarks — the only quantities on the page are engagement
+      counters (559K views, 401 likes), which is exactly why credibility_score null is right. Every pattern
+      it describes (Commander/Hands tiering, sub-agent fan-out, adversarial verification, .claude/skills
+      markdown) is already documented and practised here per fable5-findings-* and meta-harness-optimization.md.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-25 ID-37 re-read: CORRECTLY FILED. A commercial landing page promoting the vendor''s
+      own platform and paid tiers, with ZERO benchmarks — the only quantities on the page are engagement
+      counters (559K views, 401 likes), which is exactly why credibility_score null is right. Every pattern
+      it describes (Commander/Hands tiering, sub-agent fan-out, adversarial verification, .claude/skills
+      markdown) is already documented and practised here per fable5-findings-* and meta-harness-optimization.md.'
 - id: intake-802
   arxiv_id: null
   url: https://github.com/local-inference-lab/llm-inference-bench
@@ -49905,6 +50035,26 @@
   verdict_justification: 'adopt_patterns. No importable artifact — the published handbooks are MATH/AIME with a 70B strategist, matching neither our domain nor our extraction model. What transfers is the mechanism: extract named procedural behaviors from our OWN successful traces, retrieve k into context, measure output-token delta at fixed accuracy. Two guardrails ride along (see contradicting_evidence). Protocol note: this is the best-instrumented paper in the batch (5 seeds on MATH, 80 runs on AIME, production-style sampling rather than temp-0), which raises confidence in the 46% meaningfully relative to the rest — still an observation, but a well-replicated one, adequate to justify a local A/B.'
   notes: Ingested 2026-07-25 via /research-intake Phase-3 Tier-1 expansion from intake-888 (CORE). When A/B-ing, score TOTAL pipeline tokens (retrieved-behavior prefill + decode), never decode alone — mirrors the existing S4 formalizer convention and prevents claiming a win a prefill blowup has already eaten.
   dive_corrections: '2026-07-25 Stage-2a dive: Metacognitive Reuse / BCI: the 46% is ''UP TO'' — a best case, output-tokens-only, with no accuracy figure given at that operating point. The input-side cost is ADMITTED BUT NEVER MEASURED (''involves a larger number of input tokens due to the inclusion of retrieved behaviors''), with k=40 behaviors retrieved per query on AIME. Their defence — ''no autoregressive generation required on the input side'' — is a GPU-PREFILL argument that INVERTS on a bandwidth-bound-decode / compute-bound-prefill CPU stack, so my ''worth more to EPYC than to the authors'' framing is unsupported until we measure our own prefill cost. Protocol confirmed as the best-instrumented in the batch (5 seeds MATH, 80 runs AIME, temp 0.6/top-p 0.95).'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-07-25 Stage-2a dive on the Metacognitive Reuse / BCI work. The behavior-distillation mechanism
+      is untouched.
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-07-25 Stage-2a dive on the Metacognitive Reuse / BCI work. The 46% is ''UP TO'' — a best
+      case, OUTPUT-TOKENS-ONLY, with NO accuracy figure given at that operating point, so ''while matching
+      or improving accuracy'' is not established there. The input-side cost is ADMITTED BUT NEVER MEASURED
+      (''involves a larger number of input tokens due to the inclusion of retrieved behaviors''), at k=40
+      behaviors retrieved per query on AIME. Decisive for us: their defence — ''no autoregressive generation
+      required on the input side'' — is a GPU-PREFILL argument, and it INVERTS on a bandwidth-bound-decode
+      / compute-bound-prefill CPU plane, which is ours. Do not carry the 46% into an EPYC cost model.'
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-07-25 Stage-2a dive on the Metacognitive Reuse / BCI work.
+  - claim_index: 3
+    effect: unaffected
+    note: 2026-07-25 Stage-2a dive on the Metacognitive Reuse / BCI work.
 - id: intake-898
   arxiv_id: '2512.15699'
   url: https://arxiv.org/abs/2512.15699
@@ -53328,6 +53478,39 @@
     located_by: machine
     match_coverage: '0.538'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive: the filing stands and the credibility-6 risk Stage 1 flagged is RESOLVED
+      IN THE ENTRY''S FAVOUR. VENUE CONFIRMED as ICLR 2024, SPOTLIGHT POSTER, via THREE independent sources
+      — iclr.cc/virtual/2024/poster/17642 listing ''Spotlight Poster'' with a full 13-author list matching
+      arXiv; DBLP carrying both a 2024 ICLR conference record and a separate 2023 CoRR record for the same
+      work; and OpenReview id=sY5N0zY5Od whose page-1 header reads ''Published as a conference paper at
+      ICLR 2024''. Two Stage-1 records are overturned in the direction of higher, not lower, confidence.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive: the filing stands and the credibility-6 risk Stage 1 flagged is RESOLVED
+      IN THE ENTRY''S FAVOUR. VENUE CONFIRMED as ICLR 2024, SPOTLIGHT POSTER, via THREE independent sources
+      — iclr.cc/virtual/2024/poster/17642 listing ''Spotlight Poster'' with a full 13-author list matching
+      arXiv; DBLP carrying both a 2024 ICLR conference record and a separate 2023 CoRR record for the same
+      work; and OpenReview id=sY5N0zY5Od whose page-1 header reads ''Published as a conference paper at
+      ICLR 2024''. Two Stage-1 records are overturned in the direction of higher, not lower, confidence.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive: the filing stands and the credibility-6 risk Stage 1 flagged is RESOLVED
+      IN THE ENTRY''S FAVOUR. VENUE CONFIRMED as ICLR 2024, SPOTLIGHT POSTER, via THREE independent sources
+      — iclr.cc/virtual/2024/poster/17642 listing ''Spotlight Poster'' with a full 13-author list matching
+      arXiv; DBLP carrying both a 2024 ICLR conference record and a separate 2023 CoRR record for the same
+      work; and OpenReview id=sY5N0zY5Od whose page-1 header reads ''Published as a conference paper at
+      ICLR 2024''. Two Stage-1 records are overturned in the direction of higher, not lower, confidence.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive: the filing stands and the credibility-6 risk Stage 1 flagged is RESOLVED
+      IN THE ENTRY''S FAVOUR. VENUE CONFIRMED as ICLR 2024, SPOTLIGHT POSTER, via THREE independent sources
+      — iclr.cc/virtual/2024/poster/17642 listing ''Spotlight Poster'' with a full 13-author list matching
+      arXiv; DBLP carrying both a 2024 ICLR conference record and a separate 2023 CoRR record for the same
+      work; and OpenReview id=sY5N0zY5Od whose page-1 header reads ''Published as a conference paper at
+      ICLR 2024''. Two Stage-1 records are overturned in the direction of higher, not lower, confidence.'
 - id: intake-928
   arxiv_id: '2511.22699'
   url: https://arxiv.org/abs/2511.22699
@@ -56496,6 +56679,29 @@
 
     LICENCE MIT. DO NOT VENDOR THE FRAMEWORK (C++20 concepts-heavy; ggml already has the identical tile).
     Lift the four mechanisms as self-contained additions with provenance headers.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-08-03 DIVE-I. verdict adopt_patterns and credibility_score 5 both STAND, but the verdict
+      now rests on ECONOMICS RATHER THAN CAPABILITY, which is a different argument.
+  - claim_index: 1
+    effect: unaffected
+    note: 2026-08-03 DIVE-I. verdict adopt_patterns and credibility_score 5 both STAND, but the verdict
+      now rests on ECONOMICS RATHER THAN CAPABILITY, which is a different argument.
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-08-03 DIVE-I. verdict adopt_patterns and credibility_score 5 both STAND, but the verdict
+      now rests on ECONOMICS RATHER THAN CAPABILITY, which is a different argument.
+  - claim_index: 3
+    effect: narrowed
+    note: '2026-08-03 DIVE-I. verdict adopt_patterns and credibility_score 5 both STAND, but the verdict
+      now rests on ECONOMICS RATHER THAN CAPABILITY, which is a different argument. The README scoping to
+      CDNA3/CDNA4 is verbatim and stands, but THE STATED FORECLOSURE MECHANISM IS WRONG and that changes
+      what the scoping means for us. The entry claimed gfx90a ''lacks the CDNA3 asynchronous buffer-load
+      and scheduling machinery the primitives are built around''. There is no such machinery: global_load_lds
+      has ZERO occurrences in the entire HipKittens repo, and the CDNA3 load path is ordinary global_load_dwordx4.
+      So gfx90a is EXCLUDED BY PROJECT SCOPE, not foreclosed by missing hardware capability — a materially
+      different conclusion for anyone costing a port.'
 
 - id: intake-948
   arxiv_id: null
@@ -57084,6 +57290,39 @@
     located_by: machine
     match_coverage: '0.643'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-03 DIVE-D. verdict adopt_component HOLDS AND STRENGTHENS; both UNRESOLVED items close.
+      The decisive question resolves IN OUR FAVOUR AND UNPATCHED: effibench/llm.py calls load_dotenv() and
+      then constructs OpenAI() with NO ARGUMENTS via get_lm_client(), so the SDK''s environment path applies
+      — setting OPENAI_BASE_URL=http://localhost:PORT/v1 plus a dummy OPENAI_API_KEY retargets it at llama-server
+      with NO CODE CHANGE, and the model name is free-form with no allowlist. Three operational risks were
+      added alongside; the claims themselves are untouched.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-03 DIVE-D. verdict adopt_component HOLDS AND STRENGTHENS; both UNRESOLVED items close.
+      The decisive question resolves IN OUR FAVOUR AND UNPATCHED: effibench/llm.py calls load_dotenv() and
+      then constructs OpenAI() with NO ARGUMENTS via get_lm_client(), so the SDK''s environment path applies
+      — setting OPENAI_BASE_URL=http://localhost:PORT/v1 plus a dummy OPENAI_API_KEY retargets it at llama-server
+      with NO CODE CHANGE, and the model name is free-form with no allowlist. Three operational risks were
+      added alongside; the claims themselves are untouched.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-03 DIVE-D. verdict adopt_component HOLDS AND STRENGTHENS; both UNRESOLVED items close.
+      The decisive question resolves IN OUR FAVOUR AND UNPATCHED: effibench/llm.py calls load_dotenv() and
+      then constructs OpenAI() with NO ARGUMENTS via get_lm_client(), so the SDK''s environment path applies
+      — setting OPENAI_BASE_URL=http://localhost:PORT/v1 plus a dummy OPENAI_API_KEY retargets it at llama-server
+      with NO CODE CHANGE, and the model name is free-form with no allowlist. Three operational risks were
+      added alongside; the claims themselves are untouched.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-03 DIVE-D. verdict adopt_component HOLDS AND STRENGTHENS; both UNRESOLVED items close.
+      The decisive question resolves IN OUR FAVOUR AND UNPATCHED: effibench/llm.py calls load_dotenv() and
+      then constructs OpenAI() with NO ARGUMENTS via get_lm_client(), so the SDK''s environment path applies
+      — setting OPENAI_BASE_URL=http://localhost:PORT/v1 plus a dummy OPENAI_API_KEY retargets it at llama-server
+      with NO CODE CHANGE, and the model name is free-form with no allowlist. Three operational risks were
+      added alongside; the claims themselves are untouched.'
 - id: intake-953
   arxiv_id: '2511.06090'
   url: https://arxiv.org/abs/2511.06090
@@ -61459,6 +61698,31 @@
     DIVE-SURFACED SOURCES: https://huggingface.co/LiquidAI/LFM2.5-2.6B-GGUF (official quantized deployment artifact; proposed for Stage-2b ingest-and-dive).
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): WG-LFM-1 in `handoffs/active/architect-model-selection-bench.md` owns the Q4_K_M/Q8_0/Gemma4 matched worker verdict; no deployment or runtime change was made.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2 companion-artifact dive. VERIFIED for release identity and deployability;
+      ROLE REPLACEMENT REMAINS UNPROVEN, which is the limit to carry. Confirmed: architecture and config
+      dimensions, the 131,072-token declaration, the 34T-token pretraining claim, released safetensors,
+      official chat template and official GGUF family; also that the model ALWAYS reasons, and that the
+      card recommends tool use, extraction, RAG and long-context work while WARNING AGAINST agentic coding
+      and knowledge-heavy tasks.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-07 Stage-2 companion-artifact dive. VERIFIED for release identity and deployability;
+      ROLE REPLACEMENT REMAINS UNPROVEN, which is the limit to carry. Confirmed: architecture and config
+      dimensions, the 131,072-token declaration, the 34T-token pretraining claim, released safetensors,
+      official chat template and official GGUF family; also that the model ALWAYS reasons, and that the
+      card recommends tool use, extraction, RAG and long-context work while WARNING AGAINST agentic coding
+      and knowledge-heavy tasks.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2 companion-artifact dive. VERIFIED for release identity and deployability;
+      ROLE REPLACEMENT REMAINS UNPROVEN, which is the limit to carry. Confirmed: architecture and config
+      dimensions, the 131,072-token declaration, the 34T-token pretraining claim, released safetensors,
+      official chat template and official GGUF family; also that the model ALWAYS reasons, and that the
+      card recommends tool use, extraction, RAG and long-context work while WARNING AGAINST agentic coding
+      and knowledge-heavy tasks.'
 - id: intake-1015
   arxiv_id: null
   url: https://github.com/tao-hpu/cognitive-workspace
@@ -61512,6 +61776,31 @@
     DIVE-SURFACED SOURCES: none beyond intake-1008's Mem0 comparator proposal.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): UTM-V1 through UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own the verified negative fixtures and lifecycle-evaluation constraints; the Cognitive Workspace runtime remains declined.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2 repository dive. VERIFIED as a small MIT-licensed rule-based sketch and a
+      NEGATIVE MEASUREMENT FIXTURE — which is its actual value — and the Stage-1 artifact hashes were corrected.
+      Confirmed: simulation is the default, the 8K/64K/256K labels are item-count deques, default vectors
+      derive from padded MD5 hashes, and the code contains the forced-zero control, truthy matching, cumulative
+      logs, dependent tests and an uncalibrated custom efficiency metric. PARTIAL: the repo sketches buffer
+      operations without implementing the paper. All three claims already state these limits.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-07 Stage-2 repository dive. VERIFIED as a small MIT-licensed rule-based sketch and a
+      NEGATIVE MEASUREMENT FIXTURE — which is its actual value — and the Stage-1 artifact hashes were corrected.
+      Confirmed: simulation is the default, the 8K/64K/256K labels are item-count deques, default vectors
+      derive from padded MD5 hashes, and the code contains the forced-zero control, truthy matching, cumulative
+      logs, dependent tests and an uncalibrated custom efficiency metric. PARTIAL: the repo sketches buffer
+      operations without implementing the paper. All three claims already state these limits.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2 repository dive. VERIFIED as a small MIT-licensed rule-based sketch and a
+      NEGATIVE MEASUREMENT FIXTURE — which is its actual value — and the Stage-1 artifact hashes were corrected.
+      Confirmed: simulation is the default, the 8K/64K/256K labels are item-count deques, default vectors
+      derive from padded MD5 hashes, and the code contains the forced-zero control, truthy matching, cumulative
+      logs, dependent tests and an uncalibrated custom efficiency metric. PARTIAL: the repo sketches buffer
+      operations without implementing the paper. All three claims already state these limits.'
 - id: intake-1016
   arxiv_id: '2605.09998'
   url: https://arxiv.org/abs/2605.09998
@@ -61837,6 +62126,31 @@
     DIVE-SURFACED SOURCES: the base model card and frozen-v8 implementation were already verified under intake-1014; no additional gate-worthy source surfaced.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): WG-LFM-1 in `handoffs/active/architect-model-selection-bench.md` owns the pinned Q4_K_M/Q8_0/Gemma4 matched worker verdict; no deployment or runtime change was made.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2b official-artifact dive. VERIFIED as the exact deployable worker candidate,
+      with pinned revision, published quant family, exact Q4_K_M/Q8_0 sizes, llama.cpp launch path, embedded
+      architecture metadata, reasoning preservation, Python-style tool rendering and think-prefill behaviour
+      all confirmed, and frozen v8 statically containing the required loader and parser paths. TWO limits
+      to carry: QUANTIZED ROLE QUALITY REMAINS UNMEASURED, and the OVERTURNED ASSUMPTION that Q4 alone is
+      a sufficient candidate sweep — measuring it is lane-gated compute, not a documentation task.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-07 Stage-2b official-artifact dive. VERIFIED as the exact deployable worker candidate,
+      with pinned revision, published quant family, exact Q4_K_M/Q8_0 sizes, llama.cpp launch path, embedded
+      architecture metadata, reasoning preservation, Python-style tool rendering and think-prefill behaviour
+      all confirmed, and frozen v8 statically containing the required loader and parser paths. TWO limits
+      to carry: QUANTIZED ROLE QUALITY REMAINS UNMEASURED, and the OVERTURNED ASSUMPTION that Q4 alone is
+      a sufficient candidate sweep — measuring it is lane-gated compute, not a documentation task.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2b official-artifact dive. VERIFIED as the exact deployable worker candidate,
+      with pinned revision, published quant family, exact Q4_K_M/Q8_0 sizes, llama.cpp launch path, embedded
+      architecture metadata, reasoning preservation, Python-style tool rendering and think-prefill behaviour
+      all confirmed, and frozen v8 statically containing the required loader and parser paths. TWO limits
+      to carry: QUANTIZED ROLE QUALITY REMAINS UNMEASURED, and the OVERTURNED ASSUMPTION that Q4 alone is
+      a sufficient candidate sweep — measuring it is lane-gated compute, not a documentation task.'
 - id: intake-1020
   arxiv_id: null
   url: https://github.com/sethkarten/continual-harness
@@ -63322,6 +63636,24 @@
     other entries' notes, never ingested (companion-artifact rule: not a duplicate). Landscape
     agent verified the bi-temporal model and invalidation semantics against arXiv 2501.13956 HTML
     full text and the repo (retrieved 2026-08-09).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2501.13956 HTML v1 + repo pinned at 425bf2481b514374e43455e09d241c5f46e3d95f3;
+      edges.py, nodes.py, utils/maintenance/edge_operations.py): all four Stage-1 claims verified FROM SOURCE.'
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-08-09 Stage-2 dive (arXiv 2501.13956 HTML v1 + repo pinned at 425bf2481b514374e43455e09d241c5f46e3d95f3;
+      edges.py, nodes.py, utils/maintenance/edge_operations.py): all four Stage-1 claims verified FROM SOURCE.
+      PRECISION CORRECTION: ''new always wins'' is imprecise. The code is SYMMETRIC ON EVENT TIME — the
+      real rule is ''later valid_at wins, with NO source-authority weighting'', and an incoming edge with
+      an EARLIER valid_at is itself invalidated by the existing candidate. That is a different invariant
+      from recency-of-ingest, and it matters for anyone modelling supersession. The schema has also drifted
+      past the paper.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2501.13956 HTML v1 + repo pinned at 425bf2481b514374e43455e09d241c5f46e3d95f3;
+      edges.py, nodes.py, utils/maintenance/edge_operations.py): all four Stage-1 claims verified FROM SOURCE.'
 
 - id: intake-1033
   arxiv_id: '2603.17244'
@@ -64221,6 +64553,28 @@
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (adoption cluster). source_type blog per
     schema enum (it is a W3C spec).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (PROV-O and PROV-DM Recommendations read), dive-verified.
+      The dive''s key finding is already carried by claim 1: the CLOCK-ALIASING TRAP between expired_at
+      and invalid_at — prov:invalidatedAtTime means the ENTITY/record became unusable, not that the asserted
+      fact stopped being true. Two things surfaced for reuse: the PROV-JSON member submission (check it
+      before inventing an export format) and PROV-CONSTRAINTS (lint inspiration for fold invariants).'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (PROV-O and PROV-DM Recommendations read), dive-verified.
+      The dive''s key finding is already carried by claim 1: the CLOCK-ALIASING TRAP between expired_at
+      and invalid_at — prov:invalidatedAtTime means the ENTITY/record became unusable, not that the asserted
+      fact stopped being true. Two things surfaced for reuse: the PROV-JSON member submission (check it
+      before inventing an export format) and PROV-CONSTRAINTS (lint inspiration for fold invariants).'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (PROV-O and PROV-DM Recommendations read), dive-verified.
+      The dive''s key finding is already carried by claim 1: the CLOCK-ALIASING TRAP between expired_at
+      and invalid_at — prov:invalidatedAtTime means the ENTITY/record became unusable, not that the asserted
+      fact stopped being true. Two things surfaced for reuse: the PROV-JSON member submission (check it
+      before inventing an export format) and PROV-CONSTRAINTS (lint inspiration for fold invariants).'
 
 - id: intake-1047
   arxiv_id: null
