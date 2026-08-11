@@ -1795,9 +1795,9 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   a threshold as historical, and a spawn records a mark so pre-spawn mail is labelled as predating
   this session. Cheap, and it does not require the daemon to change what it delivers.
 
-- [ ] **C41 (NEW) — `backlog_row_check.section_is_guarded` answers a SECTION question about a BOX,
-  and is wrong in both directions.** Filed 2026-08-11 by `auditor`, corroborated independently by
-  `mainC`. The predicate takes the nearest preceding `#` heading and returns one blanket bool for
+- [x] **C41 — `backlog_row_check.section_is_guarded` answers a SECTION question about a BOX,
+  and is wrong in both directions.** ✅ 2026-08-11 — `mainD`. Filed by `auditor`, corroborated
+  independently by `mainC`. The predicate takes the nearest preceding `#` heading and returns one blanket bool for
   everything under it, so a banner that guards *enumerated* boxes silently guards the whole section:
   - **False REFUSAL** — every row in such a section is reported undispatchable, withholding genuinely
     ready work. `mainC` measured this inflating corruption counts; 6 false positives adjudicated
@@ -1807,17 +1807,35 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     box under `model-stack-single-source-update-pipeline.md:320`, whose banner reads *"THESE SIX
     BOXES ARE STANDING CONSTRAINTS"*. It survived two repair sweeps including `e43c8c27` for exactly
     this reason. **A guard that trusts an enumeration is passed by not being enumerated.**
-  Fix direction, concrete: parse the count out of an enumerating banner (`THESE <N> BOXES`) and scope
-  the guard to the N checkboxes that follow it; a banner with no enumeration keeps today's
-  whole-section scope. `section_is_guarded` becomes `box_is_guarded(path, lineno)`.
-  - [ ] **Expect this to surface a DOC defect, and do not paper over it.** Under the fix, the
-    seventh box at `model-stack-single-source-update-pipeline.md:320` correctly reports as
-    UNGUARDED — because the banner says six and there are seven. The tool will then be right and the
-    document wrong. The repair is to the banner (or the box), by its owner; **do not widen the
-    predicate to keep that box covered**, which would restore the false-permit under a new name.
-  - [ ] **Test the compliant path too.** The enumerated boxes must stay guarded, and the rows after
-    them in the same section must become dispatchable — "scope it to the enumeration" is otherwise
-    satisfied by guarding nothing, which deletes the guard rather than scoping it.
+  **FIXED**: `section_is_guarded` → `box_is_guarded(path, lineno)`. A guard now has a scope,
+  resolved per box: **inline** (the phrase on the box's own line) covers that box only;
+  **banner** (a blockquote — the corpus's only form that speaks for other boxes) covers the first
+  N *open* boxes when it enumerates (`THESE SIX BOXES`, digits or words, count read across the whole
+  wrapped blockquote) and otherwise the rest of the section, unchanged; **anything else is prose and
+  guards nothing**. Counting OPEN boxes is deliberate — `classify` returns on `- [x]` before it ever
+  asks, so closed boxes are not what a banner rations.
+  **Measured over the live corpus, 1,277 open boxes: 43 guarded → 39, and every one of the 4
+  changes is `GUARDED → free` on a genuine task.** No box became newly guarded, so the fix cannot
+  have introduced a false permit. The 4: `standardized-stack-…:244` ("Finish W4 swap-CI", refused by
+  the inline marker at `:232` bleeding forward), `stale-open-audit-…:269` ("read-certify the
+  remaining ~918", refused by a table cell 140 lines up that merely NAMES the category), and this
+  handoff's own two C41 sub-boxes, refused by C41's prose quoting the banner it describes.
+  The remaining 39 break down exactly as intended: 2 inline markers + 37 under banners. 45 tests.
+  - [x] **The `THESE SIX BOXES` banner turned out to be RIGHT.** ✅ Counted before trusting the
+    filing: the section holds exactly **six open** boxes and three closed. The "un-enumerated
+    seventh" is one of the CLOSED ones, so the scope bug is real but that particular box is a
+    *checkbox-state* question for its owner, not a guard-scope one. Recorded because the predicted
+    doc defect did not materialise and the prediction should not be left standing as if it had.
+  - [x] **Scanning the box's continuation lines was tried and REVERTED.** ✅ It looks like
+    robustness and re-imports the same prose-vs-guard confusion one level down: it newly guarded
+    two real tasks whose *bodies* discuss standing constraints — C41's own filing and
+    `stale-open-audit-…:110`. The inline check reads the box's own line only. Known limit, stated in
+    the code rather than hidden: a row whose own first line contains the phrase still reads as
+    guarded. Zero such rows exist today; the fix if one appears is to write the row's subject on its
+    first line, not to loosen the predicate.
+  - [x] **Compliant path tested.** ✅ The enumerated boxes stay guarded, the inline markers stay
+    guarded, and unenumerated banners keep whole-section scope — otherwise "scope it to the
+    enumeration" is satisfied by guarding nothing, which deletes the guard rather than scoping it.
 
 ## Decision gates
 

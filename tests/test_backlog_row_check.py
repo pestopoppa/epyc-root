@@ -354,3 +354,137 @@ def test_a_task_that_merely_mentions_not_doing_something_is_still_dispatchable(
     p = _handoff(tmp_path, "## Tasks\n"
                  "- [ ] Add a guard so the applicator does not restart a live role\n")
     assert _classify_row(p, 2)[0] == 0
+
+
+# ------------------------------------------------------------------- C41 guard scope
+#
+# `section_is_guarded` took the nearest preceding heading, searched the whole span for
+# the guard phrase, and returned ONE blanket bool for every box under it. Wrong both
+# ways, and both faces were measured on the live corpus:
+#   * false REFUSAL — an inline per-box marker bled forward onto unrelated rows, and
+#     PROSE ABOUT guards guarded whatever followed it. `standardized-stack-…:244`
+#     ("Finish W4 swap-CI…") and `stale-open-audit-…:269` ("read-certify the remaining
+#     ~918") were both real dispatchable work, refused. mainC adjudicated 6 of these.
+#   * false PERMIT — a standing-constraint box outside a banner's enumeration still
+#     read as guarded, so every repair pass skipped it.
+
+def _guarded(tmp_path: Path, body: str, needle: str) -> bool:
+    path = tmp_path / "h.md"
+    path.write_text(body, encoding="utf-8")
+    lineno = next(i for i, l in enumerate(body.splitlines(), 1) if needle in l)
+    return brc.box_is_guarded(path, lineno)
+
+
+_ENUMERATED = """## Outstanding Work
+
+> **⚠ THESE TWO BOXES ARE STANDING CONSTRAINTS, NOT TASKS — DO NOT DISPATCH OR FLIP THEM.**
+> Checking one asserts an ongoing constraint has been permanently satisfied.
+
+- [ ] FIRST keep the thing switched off until an operator says otherwise
+- [x] a closed box that the count must not spend
+- [ ] SECOND keep the other thing under review
+- [ ] THIRD a genuinely dispatchable task that the banner never claimed
+"""
+
+
+def test_an_enumerating_banner_covers_exactly_what_it_enumerates(tmp_path: Path) -> None:
+    """The false-PERMIT face. 'THESE TWO BOXES' must reach two boxes, not the section."""
+    assert _guarded(tmp_path, _ENUMERATED, "FIRST")
+    assert _guarded(tmp_path, _ENUMERATED, "SECOND")
+    assert not _guarded(tmp_path, _ENUMERATED, "THIRD"), \
+        "a box beyond the banner's own count is NOT covered by it"
+
+
+def test_the_count_is_spent_on_open_boxes_only(tmp_path: Path) -> None:
+    """`classify` returns on `- [x]` before it ever asks, so closed boxes are not what
+    a banner is rationing. If the closed box consumed a slot, SECOND would fall out of
+    scope and a real standing constraint would go unguarded."""
+    assert _guarded(tmp_path, _ENUMERATED, "SECOND")
+
+
+def test_an_unenumerated_banner_still_covers_the_whole_section(tmp_path: Path) -> None:
+    """The compliant path, and the one that makes this a re-scoping rather than a
+    deletion: most banners in the corpus say 'THESE BOXES' with no count, and their
+    behaviour is deliberately unchanged."""
+    body = """## Reopen Checklist
+
+> **⚠ THESE BOXES ARE UNCHECKED BY DESIGN — DO NOT DISPATCH OR FLIP THEM.**
+
+- [ ] FIRST re-read the doc end to end
+- [ ] LATER a box far below, still under the same heading
+"""
+    assert _guarded(tmp_path, body, "FIRST")
+    assert _guarded(tmp_path, body, "LATER")
+
+
+def test_an_inline_marker_guards_its_own_box_and_does_not_bleed_forward(
+        tmp_path: Path) -> None:
+    """The false-REFUSAL face, measured at `standardized-stack-…:232` guarding `:244`."""
+    body = """## Work
+
+- [ ] *(STANDING CONSTRAINT — not a dispatchable task; do not flip.)*
+- [ ] LATER Finish W4 swap-CI so representative stack changes prove generated output
+"""
+    assert _guarded(tmp_path, body, "STANDING CONSTRAINT")
+    assert not _guarded(tmp_path, body, "LATER"), \
+        "a marker written on one box must not speak for the next one"
+
+
+def test_prose_about_guards_is_not_a_guard(tmp_path: Path) -> None:
+    """Measured at `stale-open-audit-…:269`, refused by a table cell 140 lines above
+    that merely NAMES the category. The blockquote requirement is what separates a
+    banner from a sentence about banners."""
+    body = """## Audit
+
+    | **NOT A TASK** — reusable checklist or standing constraint | **36** |
+    (`Reopen Checklist`, `Rules For New Tests`) and standing constraints under headings.
+
+- [ ] LATER read-certify the remaining ~918 open boxes
+"""
+    assert not _guarded(tmp_path, body, "LATER")
+
+
+def test_a_row_that_discusses_constraints_is_not_itself_one(tmp_path: Path) -> None:
+    """Why the inline check reads the box's own line ONLY. Scanning continuation lines
+    looks like robustness and re-imports the same prose-vs-guard confusion one level
+    down: it newly guarded C41's own filing and `stale-open-audit-…:110`, both real
+    tasks whose BODIES discuss standing constraints."""
+    body = """## Work
+
+- [ ] LATER Fix the predicate so an un-enumerated box is no longer exempted
+  by every tool pass. The banner says STANDING CONSTRAINTS but the seventh box
+  is not covered, and DO NOT DISPATCH bleeds forward onto unrelated rows.
+"""
+    assert not _guarded(tmp_path, body, "LATER")
+
+
+def test_numeric_and_word_counts_are_both_understood(tmp_path: Path) -> None:
+    for count in ("2", "TWO", "two"):
+        body = f"""## Work
+
+> **⚠ THESE {count} BOXES ARE STANDING CONSTRAINTS — DO NOT DISPATCH OR FLIP THEM.**
+
+- [ ] FIRST a standing rule
+- [ ] SECOND another standing rule
+- [ ] THIRD a real task
+"""
+        assert _guarded(tmp_path, body, "FIRST"), count
+        assert _guarded(tmp_path, body, "SECOND"), count
+        assert not _guarded(tmp_path, body, "THIRD"), count
+
+
+def test_a_wrapped_banner_still_yields_its_count(tmp_path: Path) -> None:
+    """The live banner wraps over nine blockquote lines and states its count on the
+    first. Reading only the matching line would lose the count on the other shape."""
+    body = """## Work
+
+> **⚠ DO NOT DISPATCH OR FLIP THEM.**
+> Every open box here is a rule with no completion state.
+> THESE TWO BOXES ARE STANDING CONSTRAINTS, noted by `auditor`.
+
+- [ ] FIRST a standing rule
+- [ ] SECOND another standing rule
+- [ ] THIRD a real task
+"""
+    assert _guarded(tmp_path, body, "FIRST")
+    assert not _guarded(tmp_path, body, "THIRD")

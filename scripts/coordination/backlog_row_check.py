@@ -130,11 +130,104 @@ def _boxes(path: Path) -> list[tuple[int, str, str, str]]:
     return out
 
 
-def section_is_guarded(path: Path, lineno: int) -> bool:
-    """Does the enclosing section carry an explicit DO-NOT-FLIP guard?"""
+_BOX = re.compile(r"^\s*- \[( |x)\] ")
+_OPEN_BOX = re.compile(r"^\s*- \[ \] ")
+# A BANNER is the corpus's one guard form that speaks for boxes other than its own:
+# a blockquote. Every real banner in handoffs/active is `> **⚠ …`. Requiring the
+# blockquote is what separates a guard from PROSE ABOUT a guard — see C41.
+_BANNER_LINE = re.compile(r"^\s*>")
+# "THESE SIX BOXES ARE STANDING CONSTRAINTS" — a banner that says how far it reaches.
+_COUNT_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6,
+                "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12}
+_BANNER_COUNT = re.compile(
+    r"\bthese\s+(\d+|" + "|".join(_COUNT_WORDS) + r")\s+boxes\b", re.I)
+
+
+def _banner_count(text: str) -> int | None:
+    """How many boxes an enumerating banner claims, or None if it does not say."""
+    m = _BANNER_COUNT.search(text)
+    if not m:
+        return None
+    token = m.group(1).lower()
+    return int(token) if token.isdigit() else _COUNT_WORDS[token]
+
+
+def box_is_guarded(path: Path, lineno: int) -> bool:
+    """Does an explicit DO-NOT-FLIP guard cover THIS box?
+
+    C41 (2026-08-11): this used to be `section_is_guarded` — it took the nearest
+    preceding heading, searched the whole span for the guard phrase, and returned
+    one blanket bool for every box under it. Wrong in both directions, and both
+    faces were observed:
+
+      * FALSE REFUSAL. Any occurrence of the phrase guarded everything after it to
+        the end of the section, so an inline per-box marker bled forward onto
+        unrelated rows, and PROSE ABOUT guards guarded rows that merely followed
+        it. Measured on the live corpus: `standardized-stack-…:244` ("Finish W4
+        swap-CI…", a real dispatchable task) refused because of the inline marker
+        at :232; `stale-open-audit-…:269` refused by a table cell 140 lines up
+        that only *names* the category. `mainC` adjudicated 6 such false positives.
+      * FALSE PERMIT. A standing-constraint box outside a banner's enumeration was
+        still reported guarded, so every repair pass skipped it — which is how one
+        survived two sweeps. A guard that trusts an enumeration is passed by not
+        being enumerated.
+
+    So a guard now has a SCOPE, resolved per box:
+      * on the box's own line (or its continuation lines) — that box only;
+      * in a blockquote BANNER — the boxes it covers, which is the first N OPEN
+        boxes after it when it enumerates ("THESE SIX BOXES"), else the rest of
+        the section, unchanged;
+      * anywhere else — prose. Not a guard.
+
+    Note the deliberate asymmetry in the count rule: it counts OPEN boxes, because
+    `classify` returns on `- [x]` before ever asking this, so closed boxes are not
+    what a banner is rationing. A banner whose count is WRONG will now leave a real
+    standing constraint unguarded — that is the correct outcome, and the repair
+    belongs in the banner, not in a widened predicate here.
+    """
     lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
-    start = max((i for i, l in enumerate(lines[:lineno]) if l.startswith("#")), default=0)
-    return bool(_GUARD.search("\n".join(lines[start:lineno])))
+    idx = lineno - 1                                   # 0-based index of the box line
+    if idx < 0 or idx >= len(lines):
+        return False
+
+    # 1. Inline: the guard is written on this box, so it speaks for this box.
+    #
+    # The BOX'S OWN LINE ONLY — deliberately, and measured. Extending this to the
+    # box's continuation lines looks like robustness and is not: it re-imports the
+    # prose-vs-guard confusion this function exists to remove, one level down. A
+    # row whose body DISCUSSES standing constraints (C41's own filing does, and so
+    # does `stale-open-audit-…:110`) is not a standing constraint, and scanning the
+    # body newly guarded both of them. The real inline markers in this corpus are
+    # `- [ ] *(STANDING CONSTRAINT — not a dispatchable task; do not flip.)*` — the
+    # marker IS the row. This file's other patterns are narrow for the same reason:
+    # refusing real work is the costlier error.
+    #
+    # KNOWN LIMIT, stated rather than hidden: a row whose OWN first line contains the
+    # phrase still reads as guarded, so "Fix the standing-constraint predicate" written
+    # as a one-liner would be refused. Zero such rows exist in the corpus today (the 39
+    # guarded rows are the 2 inline markers plus 37 under banners), and the fix if one
+    # appears is to write the row's subject on its first line — not to loosen this.
+    if _GUARD.search(lines[idx]):
+        return True
+
+    # 2. Banner: a blockquote in this section, above this box.
+    start = max((i for i, l in enumerate(lines[:idx]) if l.startswith("#")), default=0)
+    for i in range(start, idx):
+        if not (_BANNER_LINE.match(lines[i]) and _GUARD.search(lines[i])):
+            continue
+        # The banner may wrap over several blockquote lines; the count can be on
+        # any of them, so read the whole contiguous block.
+        end = i
+        while end + 1 < len(lines) and _BANNER_LINE.match(lines[end + 1]):
+            end += 1
+        count = _banner_count("\n".join(lines[i:end + 1]))
+        if count is None:
+            return True                                # unscoped banner: rest of section
+        covered = [j for j in range(end + 1, len(lines))
+                   if not lines[j].startswith("#") and _OPEN_BOX.match(lines[j])][:count]
+        if idx in covered:
+            return True
+    return False
 
 
 # Blocking language, deliberately NARROW. A loose pattern here would refuse real
@@ -225,8 +318,8 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple
     reasons = []
     if state == "x":
         return 2, [f"already CLOSED — the box at {path.name}:{lineno} is `- [x]`"]
-    if section_is_guarded(path, lineno):
-        return 2, [f"the enclosing section (§ {head}) carries an explicit DO-NOT-DISPATCH guard — "
+    if box_is_guarded(path, lineno):
+        return 2, [f"an explicit DO-NOT-DISPATCH guard covers THIS box (§ {head}) — "
                    f"this is a reusable checklist or a standing constraint, not a task"]
     blocking = blocking_children(path, lineno)
     if blocking:
