@@ -2537,7 +2537,7 @@ def test_a_gate_already_in_the_queue_gets_a_notice_because_the_block_is_never_re
     spent = [r for r in extra if r.get("check") == "token-gate-looks-spent"]
     assert len(spent) == 1, extra
     assert spent[0]["gate_id"] == "RATIFY-OLD-20260729"
-    assert "will not edit token-queue.md" in spent[0]["detail"]
+    assert "SURFACE IT TO THE OPERATOR" in spent[0]["detail"]
 
 
 def test_backfill_indexes_only_spent_receipts_for_known_gates(
@@ -3355,3 +3355,57 @@ def test_rotation_failure_never_stops_the_tick(bus_root: Path,
                         lambda *_a, **_k: (_ for _ in ()).throw(OSError("read-only fs")))
     rows = coordinator.rotate_advisory(bus_root, 14, max_bytes=1024)
     assert rows and rows[0]["kind"] == "advisory-rotation-failed"
+
+
+def test_c39_advice_never_instructs_an_agent_across_the_trust_boundary(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """C39-advice, 2026-08-11, raised by `coordinator-agent` against my own tooling.
+
+    The notice used to say "verify the receipt, then tick or remove the block
+    yourself". That instructs the ONE action the coordinator is specifically
+    forbidden to take: token-queue.md's header reserves the checkbox to the operator
+    ("Nobody but the operator touches a checkbox") and agents/coordinator-agent.md
+    says "Never tick a checkbox". A coordinator following its own tooling would have
+    breached the human-only boundary — and the advice is persuasive precisely
+    because it comes from the delivery plane. Tooling that contradicts the trust
+    boundary is worse than tooling with a wrong number in it.
+
+    Removing is not the safe alternative either: the block plus its unticked box is
+    the only in-file record that a gate was PRESENTED; the receipt records only the
+    signing.
+
+    Asserted against the PRODUCED NOTICE, not the module source: the source
+    legitimately quotes the old wording to explain the defect, and a guard that
+    forbids its own documentation is the guard-forbids-its-own-idiom trap.
+    """
+    _provision(bus_root, "alice", "coordinator-agent")
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-OLD-20260729", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = bus_root / "tokens" / "token-queue.md"
+    tq.parent.mkdir(parents=True, exist_ok=True)
+    tq.write_text("- [ ] **RATIFY-OLD-20260729** — presented earlier\n", encoding="utf-8")
+    _append(bus_root / "outbox" / "alice.jsonl", _c39_token_request("RATIFY-OLD-20260729"))
+
+    _, extra = coordinator.relay_tokens(
+        bus_root, {"t1": [_c39_token_request("RATIFY-OLD-20260729")]}, {}, 14)
+    coordinator.relay_token_blocks(bus_root, coordinator._load_config(bus_root), 14)
+
+    texts = [str(r.get("detail", "")) for r in extra if r.get("check") == "token-gate-looks-spent"]
+    texts += [str((r.get("payload") or {}).get("action", ""))
+              for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+              if (r.get("payload") or {}).get("event") == "token-gate-looks-spent"]
+    assert texts, "the notice must exist at all"
+    for text in texts:
+        low = text.lower()
+        # POLARITY, not substring. The corrected text legitimately says "do NOT tick
+        # or remove", so a bare substring check fails on the fix itself — the same
+        # trap as a guard forbidding its own documentation. What must hold is that
+        # every mention of ticking is a prohibition.
+        if "tick" in low:
+            assert "do not tick" in low, f"mentions ticking without forbidding it: {text[:140]}"
+        assert "yourself" not in low, f"reads as an instruction to act: {text[:140]}"
+        # ...and it must still name the action that IS permitted. "Do not tick" with
+        # no alternative is how a real signal gets ignored.
+        assert "surface it to the operator" in low, f"no permitted action named: {text[:120]}"

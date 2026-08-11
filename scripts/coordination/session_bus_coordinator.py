@@ -974,8 +974,11 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
                         "detail": f"{gate} is presented UNCHECKED in token-queue.md, but "
                                   f"{found[0].relative_to(REPO_ROOT)} reads status: {found[1]}. "
                                   f"The operator is being asked to sign a gate that already "
-                                  f"has a receipt. Verify, then tick or remove the block — "
-                                  f"the daemon will not edit token-queue.md."})
+                                  f"has a receipt. SURFACE IT TO THE OPERATOR — do not tick or "
+                                  f"remove the block. Only the operator flips a checkbox "
+                                  f"(token-queue.md's own header), and removing the block would "
+                                  f"destroy the only in-file record that the gate was PRESENTED, "
+                                  f"which the receipt does not carry."})
                 seen.add(gate)
             else:
                 seen.add(gate)
@@ -1106,12 +1109,23 @@ def relay_token_blocks(bus_root: Path, config: dict, epoch: int) -> list[dict]:
                     f"{gate} is NOT in token-queue.md and the operator has not been asked. "
                     f"Have {item.get('subject')!r} re-file it with payload.validated = "
                     f"{{cmd, dry_run_exit, dry_run_evidence}}"))
+        # C39-advice (2026-08-11, raised by `coordinator-agent` against this tooling):
+        # this notice used to end "verify the receipt, then tick or remove the block
+        # yourself". That instructed the ONE action the coordinator is forbidden to
+        # take — token-queue.md's header reserves the checkbox to the operator and
+        # agents/coordinator-agent.md says never tick one — and advice from the
+        # delivery plane is persuasive precisely because it is tooling. Tooling that
+        # contradicts the trust boundary is worse than tooling with a wrong number.
+        # The history lives here rather than in the payload: an operational notice
+        # should say what to do now, not narrate its own past defect.
         _notify("token-gate-looks-spent", "token-gate-looks-spent",
                 lambda item, gate: (
                     f"{gate} IS in token-queue.md, unchecked, but a receipt for it already "
-                    f"exists ({item.get('receipt')}). Verify the receipt, then tick or remove "
-                    f"the block yourself — the daemon never edits token-queue.md. Do NOT ask "
-                    f"the operator to sign it again until you have checked."))
+                    f"exists ({item.get('receipt')}). Verify the receipt and SURFACE IT TO THE "
+                    f"OPERATOR. Do not tick the box and do not delete the block: only the "
+                    f"operator flips a checkbox, and the block plus its unticked box is the only "
+                    f"in-file record that this gate was PRESENTED — the receipt records the "
+                    f"signing, not the asking."))
 
     if blocks:
         tq = bus_root / "tokens" / "token-queue.md"

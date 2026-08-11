@@ -2059,7 +2059,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     test counts today reconciled exactly. Stated here rather than quietly amended.*
 
 - [x] **R1 (NEW, P0) — the nudge guard HARDENED as the condition worsened, and the whole fleet
-  became unreachable.** ✅ 2026-08-11 — `mainD`, commit `b1222b6e`. Raised by `coordinator-agent`
+  became unreachable.** ✅ 2026-08-11 — `mainD`, commit `b41af9d7` *(this handoff and the progress log first cited `b41af9d7`, which is DANGLING — reflog-only and unreachable from any clone, so it dies at gc. The R1 code landed inside `b41af9d7`, whose message is a verbatim copy of an unrelated A16+A18 commit: an `--amend` artifact in the shared index, the third sweep-class incident today. Corrected here rather than rewritten — history is pushed. Found by `auditor`.)*. Raised by `coordinator-agent`
   from the cold-start config-repair report; **this, not a missing coordinator tick, is the cause of
   today's 10-hour stall.**
   **The deadlock:** the daemon calls a heartbeat older than **3600s** STUCK and tries to nudge;
