@@ -2172,6 +2172,29 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     reaches `stop_wedged`/`start_daemon`: a stub named `session_bus_coordinator.py` matches the
     production `pgrep` pattern and killed the live daemon that way on 2026-07-27.
 
+- [x] **C34 residual disposition — CLOSED as a decision, routed as work.** ✅ 2026-08-11.
+  `coordinator-agent` approved **per-owner triage-by-value** (not repair-all, not quarantine) and
+  approved **all 17 kind mappings as proposed**. Final numbers: **151 of 1283 outbox rows (12%)**,
+  down from the 368/32% quoted pre-fix; **gate-new-writes-only was already done** — the authoring
+  gate closed 09:15Z and the newest invalid row on the bus is 08:59Z, so nothing new joins the set.
+  - [x] **`mainD`'s 49 triaged.** ✅ First answer — "none is still live" — **was wrong**, and the
+    second look is what caught it: 11 of 40 task_ids are still referenced in `handoffs/active`, but
+    judging by CONTENT exactly **one** row is genuinely live. The HG-3 finding (`action_required`,
+    never delivered) is re-authored as `msg-20260811T225126Z-202-mainD` citing the original; the
+    other 48 close as historical. That row had died TWO ways — a top-level `body` key the schema
+    forbids *and* `to: "coordinator"`, which is not a roster id, so the relay had no target even had
+    it validated.
+  - [x] **Each other owner routed their own list.** ✅ `mainB` 81 (78 additionalProperties, 7
+    out-of-enum, dominant shape: 51 rows with top-level evidence/next/status/summary), `mainA` 1
+    (a **token-request** — the C27 class, a signature request that vanished), `mainC` 1
+    (`risk_escalation`), `coordinator-agent` 19 (13 `task-assign` missing lane/lease/epoch). Routed
+    with the approved mapping and the worked example, **not touched** — single-writer, and the
+    liveness judgement is the owner's.
+  - [x] **The in-place RECEIPT PRESENT marker was NOT built, deliberately.** ✅ Accepted by the
+    operator as a considered non-choice. It means the daemon editing an operator-facing file it has
+    already written, which wants more care than a late-night text fix, and the six live instances
+    are already surfaced by the C39 notice.
+
 ## Decision gates
 
 - `OP-SENDKEYS-CODEX` (send-keys nudging) — operator grant, evidence-driven, default OFF.
