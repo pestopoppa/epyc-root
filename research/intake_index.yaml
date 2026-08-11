@@ -71622,3 +71622,252 @@
         it is not unconditional. The PR-body arithmetic claim of ''all 6 .mcp.json files rewritten'' also
         checks out (CAP_ITEMS 7 minus 1 skill-only edu-agent = 6; the 7th manifest under example/ is not
         in CAP_ITEMS).'
+- id: intake-1102
+  arxiv_id: null
+  url: https://github.com/williamqwu/sol-execbench-rocm
+  source_type: repo
+  title: SOL-ExecBench-ROCm
+  authors:
+  - William Wu
+  source_revision: >-
+    Git commit a38398efa1e51a7b21be943374b264673a20b1d8 (master), retrieved
+    2026-08-11. README SHA-256
+    ba4b145589895eec347b590a06e405acbc413109e5556c3a9f98abc19f5b1fbf;
+    docs/methodology.md SHA-256
+    ec6dee181ce1aae459b44b8c955d33dcdd83edc32fde43de54409e8f172d787a.
+    Provisional Stage-1 assessment used a tree-wide local scan of the pinned
+    checkout.
+  categories:
+  - hardware_optimization
+  - benchmark_methodology
+  - tool_implementation
+  - autonomous_research
+  novelty: high
+  novelty_justification: >-
+    First complete AMD SOL-ExecBench port located in an unbounded exact-URL
+    dedup sweep. It contains reference/workload records for all eight task IDs
+    in the AutoKernel C5 HyRA seed corpus, which the solution-only Hyra-results
+    archive does not contain.
+  relevance: high
+  relevance_justification: >-
+    Directly supplies candidate benchmark definitions and reference logic for
+    RVP-C5-2, plus profiler, scorer, manifest, tolerance, and anti-reward-hack
+    mechanisms relevant to RVP-C2, C3, C5, and C6.
+  credibility_score: null
+  credibility_justification: >-
+    Repository artifact, not a peer-reviewed paper. It is recent, has no
+    independent reproduction located in the bounded search, and targets a
+    newer AMD platform than ours.
+  verdict: adopt_component
+  verdict_justification: >-
+    The task schemas, input/reference definitions, and harness mechanisms are
+    concrete candidate components. The published timing constants and results
+    are platform-specific evidence and are not adoptable on EPYC/MI210.
+  key_claims:
+  - >-
+    The port derives platform-specific Tsol, Tb, and tolerances for AMD and
+    explicitly rejects copying B200 constants or treating cross-vendor scores
+    as performance comparisons.
+  - >-
+    Its checked-in AMD artifact set reports 220 scoreable problems and 3,717
+    scoreable workload instances, with 15 NVFP4 problems deferred.
+  - >-
+    Exact reference/workload records exist for all eight C5 seed tasks: k138,
+    k145, k154, k175, k215, k225, k227, and k228.
+  - >-
+    The harness offers HIP-event and rocprofiler-sdk timing paths plus AMD SMI,
+    stream-policy, and compute-partition reward-hacking defenses.
+  - >-
+    The repository versions manifests and records known invalid bounds,
+    timing defects, and stream-related failure modes rather than silently
+    treating all produced scores as sound.
+  techniques:
+  - Definition/workload/reference artifact separation
+  - Platform-local solution and baseline timing anchors
+  - HIP event and rocprofiler-sdk measurement backends
+  - AMD-specific anti-reward-hacking checks
+  - Versioned manifests with explicit failure ledgers
+  reported_results:
+  - >-
+    Source-reported, unverified: 220 scoreable problems and 3,717 workload
+    instances on the gfx950/ROCm 7.2 target; 15 NVFP4 problems deferred.
+  - >-
+    Source-reported, unverified: 28/28 reward-hack replay cases caught and no
+    false positives across 235 reference solutions.
+  - >-
+    The eight C5 task directories contain 16, 16, 16, 16, 29, 15, 47, and 38
+    AMD reference records respectively. These are population counts, not
+    transferable MI210 performance results.
+  contradicting_evidence:
+  - >-
+    The implementation targets MI350X/MI355X gfx950 with ROCm 7.2 and PyTorch
+    2.9.1, whereas the AutoKernel host is MI210 gfx90a with ROCm 6.2.
+  - >-
+    No LICENSE file, GitHub license metadata, independent reproduction, or
+    public issue history was located at Stage 1.
+  - >-
+    The source itself documents bad bounds and timing/stream defects; the
+    current manifest must be audited rather than assumed clean.
+  portability_to_epyc: >-
+    The benchmark schemas, tensor-generation/reference logic, and workload
+    populations are likely portable after review. All gfx950 timing anchors,
+    tolerances, profiler assumptions, and reported scores are non-transferable
+    and must be regenerated on MI210.
+  cross_references:
+    intake_entries:
+    - intake-884
+    - intake-1085
+    - intake-667
+    - intake-674
+    - intake-679
+    - intake-671
+    handoffs:
+    - autokernel-research-loop.md
+    - rocm-verify-profile-backend.md
+    - agentic-rocm-kernel-authoring.md
+  recommended_actions:
+  - >-
+    [unverified] Deep-dive the exact eight task definitions, reference paths,
+    manifest revisions, and the source-reuse boundary created by the missing
+    license.
+  - >-
+    [unverified] Reproduce the C5-2 three-seed by four-transform
+    input-sensitivity screen on MI210 using our trusted reducer and locally
+    regenerated references; import no CDNA4 numeric constants.
+  - >-
+    [unverified] Diff its scorer, profiler, and anti-reward-hack mechanisms
+    against our existing C2/C3/C6 stack and adopt only mechanisms that close a
+    demonstrated gap.
+  notes: >-
+    Stage-1 discovery while resolving the missing workload/reference half of
+    the C5 HyRA seed corpus. The pinned Hyra-results repository provides the
+    candidate solutions; this repository appears to provide the matching AMD
+    benchmark substrate. That pairing is provisional until a source dive.
+  reader_should_conclude: >-
+    UNVERIFIED. Do not cite its MI350X numbers, treat it as MI210/ROCm-6.2
+    support, or import its timing/tolerance constants. A source dive is needed
+    before its definitions or mechanisms enter the AutoKernel evaluator.
+  discovered_via: search
+  ingested_date: '2026-08-11'
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Exact eight-task overlap with the C5 corpus confirmed by pinned tree scan.
+  - Platform and license mismatches require source-level review before reuse.
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-1103
+  arxiv_id: null
+  url: https://github.com/NVIDIA/SOL-ExecBench
+  source_type: repo
+  title: SOL-ExecBench
+  authors:
+  - NVIDIA Research
+  source_revision: >-
+    Git commit a9fa0804c793d438e70850c33fe34426e66d53dd (main), retrieved
+    2026-08-11. README SHA-256
+    2a07cd39a65d5daabffaf1c4c8b12ab27d4cff6f897e55617b32ee36fcb71424;
+    LICENSE SHA-256
+    c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4.
+  categories:
+  - hardware_optimization
+  - benchmark_methodology
+  - tool_implementation
+  - autonomous_research
+  novelty: medium
+  novelty_justification: >-
+    SOL-ExecBench is already present indirectly through HyRA and intake-884,
+    but the canonical repository, task format, and validation implementation
+    were not indexed as their own source.
+  relevance: high
+  relevance_justification: >-
+    This is the upstream schema and reference-harness source for the benchmark
+    substrate needed to turn the C5 solution archive into reproducible
+    correctness and sensitivity evaluations.
+  credibility_score: null
+  credibility_justification: >-
+    Primary implementation artifact from NVIDIA Research, Apache-2.0 licensed;
+    not independently scored as a paper in this repository entry.
+  verdict: adopt_component
+  verdict_justification: >-
+    The definition/workload/solution schema and validation design are the
+    canonical components to map. CUDA code, B200 bounds, and measurements are
+    explicitly outside the EPYC evidence boundary.
+  key_claims:
+  - >-
+    A benchmark problem is separated into definition metadata, workload JSONL,
+    and solution JSON, with reference correctness, timing, and reward-hacking
+    checks applied by the harness.
+  - >-
+    The SOL score uses platform-local solution and baseline anchors, with 1.0
+    at the solution bound and 0.5 at the optimized PyTorch baseline.
+  - >-
+    Input generation is seeded and configurable but the default evaluation
+    uses seed 200, so the canonical run alone does not satisfy AutoKernel C5-2.
+  - The repository is Apache-2.0 licensed and targets NVIDIA B200/CUDA DSLs.
+  techniques:
+  - JSON benchmark definition/workload/solution contract
+  - Reference-output correctness validation
+  - Platform-local timing bounds and normalized SOL scoring
+  - Seeded tensor generation
+  - Reward-hacking detection in the execution harness
+  reported_results:
+  - >-
+    Source-reported, unverified: official measurements assume fixed B200 clocks
+    and note roughly 5-10% timing variance.
+  contradicting_evidence:
+  - >-
+    The implementation and published bounds are NVIDIA B200/CUDA-specific and
+    cannot validate MI210 performance.
+  - >-
+    Closed issues #15 and #19 report benchmark-wide state-caching and
+    timed-output-validation vulnerabilities; open issue #21 reports an epsilon
+    mismatch. The pinned main commit predates those August reports, so a dive
+    must establish whether fixes exist outside that tree.
+  - >-
+    A single default seed is insufficient for the C5-2 three-seed,
+    four-transform input-insensitivity gate.
+  portability_to_epyc: >-
+    The task schema, reference definitions, and correctness semantics are
+    portable design inputs. CUDA implementations and all B200 timing, clocks,
+    tolerances, and score anchors must be replaced with MI210-local evidence.
+  cross_references:
+    intake_entries:
+    - intake-1102
+    - intake-884
+    - intake-1085
+    - intake-667
+    - intake-674
+    - intake-679
+    handoffs:
+    - autokernel-research-loop.md
+    - rocm-verify-profile-backend.md
+    - agentic-rocm-kernel-authoring.md
+  recommended_actions:
+  - >-
+    [unverified] Deep-dive the definition-to-workload-to-reference execution
+    seam for the eight C5 tasks and map it explicitly onto our reducer.
+  - >-
+    [unverified] Audit current source against issues #15, #19, and #21 before
+    inheriting correctness or anti-reward-hacking assumptions.
+  - >-
+    [unverified] Use the Apache-2.0 upstream as the preferred source for shared
+    schema/reference code and treat the unlicensed ROCm fork as a behavioral
+    comparison until its reuse terms are clarified.
+  notes: >-
+    Expansion source for intake-1102. The associated technical report is a
+    separate source and was not added during this bounded Stage-1 expansion.
+  reader_should_conclude: >-
+    UNVERIFIED. This is the canonical portable schema/reference source, not
+    evidence that its B200 measurements or CUDA implementation apply to EPYC.
+    Source review of the reported validation vulnerabilities is required.
+  discovered_via: expansion
+  expanded_from: intake-1102
+  ingested_date: '2026-08-11'
+  verification: stage1-unverified
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Canonical upstream and Apache-2.0 license confirmed at the pinned revision.
+  - Relevant validation issues require a source-level dive before adoption.
+  handoffs_updated: []
+  handoffs_created: []
