@@ -123,8 +123,11 @@ library was not there to find), and `rocprofv2` derives its ROCm root from its o
 from `$ROCM_PATH`, so the prefix needs a mirrored `.info/version`. Both are handled in `env.sh`.
 
 - [x] **Re-score the C4 risk row from HIGH.** ✅ 2026-08-11 — C4 is now MED: tool availability,
-  CDNA2 taxonomy, deterministic parsing and the report contract are closed; usefulness of the first
-  real paired mapping/formal signal remains empirical.
+  CDNA2 taxonomy, deterministic parsing and the report contract are closed. The empirical question
+  is also answered at op level: hash-bound Q4_K and Q8_0 single-process captures produce complete
+  mapping/formal reports, and the report now crosses a diagnostic-only AutoKernel/GEAK/Arena seam.
+  Residual MED risk is explicitly scoped: `rocprofv2` exits 139 for whole-model Qwen prefill and
+  IQ2_XXS op capture on this host, so those workloads require another profiler or a narrower probe.
 - `omniperf` extracted but **not runnable** — needs a Python venv (`astunparse`, `colorlover`, …).
   Deferred deliberately: our chosen C4 path is the deterministic paired-`rocprofv2` report, so omniperf is a
   fallback, not the critical path. Reopen if the raw-counter path fails
@@ -426,15 +429,26 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   T1 invocation hash the complete three-file manifest against that named anchor and hard-refuse a
   missing, unreadable, deleted or changed file. Pinning to the reviewed overlay rather than pretending
   its intentional instrument change is byte-identical to production preserves both authorities.
-- [ ] **RVP-C6-2 — Stream-escape defence.** Verified: T0 timing brackets
+- [x] **RVP-C6-2 — Stream-escape defence.** ✅ 2026-08-11 — experimental commit `0492c231`
+  implements the ordinary/full-device-synchronized hybrid twin and the research reducer at
+  `eda8de1a` requires `hip_full_device`, retains both timing vectors, and refuses an excessive twin
+  gap. Live AK-BH-2 evidence (`/mnt/raid0/llm/autokernel/probes/ak-bh-2-factorial-20260811T0952Z/receipt.json`,
+  SHA-256 `2a53cee2d8513737eca894e0f34152549932b75f3e04ef541cdee1848472cfdf`) exercised all eight
+  ROCWMMA × MFMA × flash-attention arms with `autokernel_hybrid_ab_complete=true`,
+  `autokernel_escape_checks_complete=true`, and `autokernel_device_sync_mode=hip_full_device`.
+  Verified: T0 timing brackets
   `ggml_backend_graph_compute` with host wall clock (`tests/test-backend-ops.cpp:1621-1627`), and
   `ggml_backend_cuda_synchronize` (`ggml/src/ggml-cuda/ggml-cuda.cu:2512-2518`) calls
   `cudaStreamSynchronize(cuda_ctx->stream())` — **one stream**. Work issued on a second stream is not
   waited on and falls outside the timed region. Add (a) a hybrid A/B that repeats the measurement
   behind a full device synchronize and (b) a stream-creation audit in the source-integrity gate.
   **A candidate need not look malicious to do this** — multi-stream is an ordinary in-tree idiom.
-- [ ] **RVP-C6-3 — Thread / async-escape check across the timed region.** The CPU-side analogue of
-  RVP-C6-2: assert no candidate-spawned thread or async handle outlives the bracket.
+- [x] **RVP-C6-3 — Thread / async-escape check across the timed region.** ✅ 2026-08-11 — the same
+  eight live AK-BH-2 arms record `autokernel_thread_set_stable=true` and hash the process thread set
+  before/after both ordinary and synchronized brackets. Static added-line detectors retain separate
+  thread/async findings and missing detector ids remain `COULD_NOT_CHECK`; the focused reducer,
+  live-control, and reward-hack suites pass 14/14. The CPU-side analogue of RVP-C6-2 is therefore
+  exercised rather than merely present.
 - [x] **RVP-C6-4 — Speed-of-light screen.** ✅ 2026-08-11 —
   `execution/physical_bounds.py` binds conservative per-shape compute/memory ceilings to the exact
   delivered unit and measurement frame; `microbench.py` requires a complete predeclared envelope and

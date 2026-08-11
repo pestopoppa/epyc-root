@@ -1,5 +1,11 @@
 # MI210 GPU speed campaign — executive summary (2026-07-03/04)
 
+> **COMPLETED REFERENCE 2026-08-11.** This records the closed 2026-07 speed campaign. Current
+> capability and kernel-authoring work lives in
+> [`mi210-big-model-and-acceleration-roadmap.md`](../active/mi210-big-model-and-acceleration-roadmap.md),
+> [`agentic-rocm-kernel-authoring.md`](../active/agentic-rocm-kernel-authoring.md), and
+> [`autokernel-research-loop.md`](../active/autokernel-research-loop.md).
+
 **Goal**: get models as fast as possible on the single MI210 (gfx90a/CDNA2, 64 GB, ~1.64 TB/s), and isolate the circumstantial levers per model category. **Both single-stream and aggregate** tracked. GPU-compute only; kernel work in `llama.cpp-experimental` (never production-v6). Every number here is an **OBSERVATION** (no P-GPU-1 protocol) — usable for direction, never to gate a keep/deploy/promote decision. Full detail: [findings-05c (lever × category matrix)](fable5-window2-findings-05c-mi210-lever-category-matrix.md), [findings-05b (architecture)](fable5-window2-findings-05b-mi210-inference-architecture.md), [checkpoint](../../progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md).
 
 > **⏸ PRODUCTION HOLD (operator 2026-07-04).** Everything below stays in the experimental build — NOTHING deploys to production yet. The "deploy now" config wins (FA / bf16 / -md) are experimental-validated recommendations that first need **CPU-numerical-correctness verification** (untestable now, CPU busy); production-push authority is operator-only. Direction chosen: proceed with the research bets + build the kernel-R&D-loop (see bottom).
@@ -11,7 +17,7 @@
 Applies when a role is hosted on the MI210 (the residency bet). **These are validated in experimental only; not for production until CPU-correctness verified.** Brief: [moe-aggregate-deployment-wins-brief.md](moe-aggregate-deployment-wins-brief.md).
 1. **`-fa 1` for aggregate MoE (B≥8), `-fa 0` for single-stream** — +16–43% aggregate; peak **bf16+fa1 @B128 = 1548 t/s** (gemma-26B-A4B).
 2. **bf16 for high-concurrency MoE roles (B≥16–32), Q8 for single-stream** — crossover B≈16–24; bf16 +27–43% at high batch (HBM-fit-gated: bf16-26B fits ≤B128).
-3. **Drop `-md <same GGUF>` for embedded-NEXTN roles** (CPU-side, [md-double-load brief](../completed/md-double-load-mtp-fix-brief.md)) — 2× DRAM saving on BW-bound CPU decode.
+3. **Drop `-md <same GGUF>` for embedded-NEXTN roles** (CPU-side, [md-double-load brief](md-double-load-mtp-fix-brief.md)) — 2× DRAM saving on BW-bound CPU decode.
 
 ## BANKED kernel wins — fork `pestopoppa/llama.cpp@upstream-mtp-verify`, experimental, operator-gated for prod
 Single-stream dense-Q8 (Qwen3.6-27B): **29 → 40.4 t/s (+37%)**. All correctness-verified (`test-backend-ops` clean, output coherent/byte-identical), all runtime-gated default-off.
@@ -67,7 +73,12 @@ The smoke-tests map the card; the payoff is hosting the big models. Two axes:
 - Agentic ROCm kernel authoring loop (child handoff)
 
 - [x] **MI-KB-1** — evaluate KernelBench integration into experimental kernel validation pipeline (step 3 of four-step workflow) ✅ 2026-07-22
-- [ ] **MI-KB-2** — run KernelBench over current v6 production kernel to establish baseline
+- [x] **MI-KB-2** — run KernelBench over current v6 production kernel to establish baseline ✅ 2026-08-11 —
+  closed as an obsolete/invalid run, not executed. There is no current v6 production kernel; the
+  real KernelBench is a CUDA/gfx942+ kernel-generation benchmark rather than a llama.cpp binary
+  baseline, and MI-KB-1 already declined its harness for gfx90a. AutoKernel's seeded
+  `test-backend-ops`/property/reference layers now own this correctness question against frozen v9.
+  Relabelling a v9 run as the requested v6 baseline would manufacture comparability.
 
 ## Progress checklist
 

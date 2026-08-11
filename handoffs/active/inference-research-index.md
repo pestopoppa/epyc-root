@@ -17,7 +17,6 @@
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Run the authorized v9/hardened CPU controls; then the first real CPU candidate campaign | INF-48 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
-| INF-08 | cpu kernel env flags inventory | [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md) | Add an "effect on trace interpretation" column to the flag inventory. This file records which | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
 | INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Measure tinyBLAS on/off first (Phase 0) — sgemm.cpp is already compiled in, so it confounds every later A/B | — |
 | INF-11 | deepseek v4 flash 0731 dspark | [deepseek-v4-flash-0731-dspark.md](deepseek-v4-flash-0731-dspark.md) | Run the matched standardized-versus-control DFlash throughput, acceptance and exact-parity comparison | — |
@@ -43,10 +42,8 @@
 | INF-32 | llamacpp v6 consolidation | [llamacpp-v6-consolidation.md](llamacpp-v6-consolidation.md) | SWA slot-reuse fixes (d1c72d7fc / 603702769) — verify vs upstream SWA before drop. | — |
 | INF-33 | log linear gated deltanet readiness | [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size) | — |
 | INF-34 | mi210 big model and acceleration roadmap | [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) | DR-3 broader K2 admission runner/package: implement the dry-run-first K2 | — |
-| INF-35 | mi210 kernel rnd loop proposal | [mi210-kernel-rnd-loop-proposal.md](mi210-kernel-rnd-loop-proposal.md) | Phase 2 — build the nightshift loop (outer planner/critic + inner sweep → kernel_eval.sh → Pareto) | — |
 | INF-36 | mi210 mfma compute bound paths | [mi210-mfma-compute-bound-paths.md](mi210-mfma-compute-bound-paths.md) | DEFERRED with data — reopen the MFMA build only if a new compute-bound path appears | — |
 | INF-37 | mi210 q8 dequant gemv roofline | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) | Apply the SoA-repack lever only if coalescing measures poor; currently deemed healthy | — |
-| INF-38 | mi210 speed campaign summary | [mi210-speed-campaign-summary.md](mi210-speed-campaign-summary.md) | MI-KB-2 — run KernelBench over current v6 production kernel to establish baseline | — |
 | INF-39 | moe aggregate deployment wins brief | [moe-aggregate-deployment-wins-brief.md](moe-aggregate-deployment-wins-brief.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | INF-40 | moe spec cpu spec dec integration | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | Current live-MTP MoE verifier B-sweep: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bi… | — |
 | INF-41 | multimodal pipeline | [multimodal-pipeline.md](multimodal-pipeline.md) | S-9 — wire start_tts() into orchestrator_stack.py (port 9002 reserved); capability exists, wiring does not | — |
