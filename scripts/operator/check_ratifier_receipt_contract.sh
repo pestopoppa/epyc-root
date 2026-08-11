@@ -60,6 +60,36 @@ for name in sorted(os.listdir(op)):
     if not os.path.isfile(os.path.join(op, "receipts", f"{gate}.json")):
         print(f"MISSING-INDEX: gate {gate} (receipt {name})")
         gap = True
+
+# Receipts must be IN GIT, not merely on disk — an index asserting ratified over
+# an untracked receipt loses its evidence on a fresh checkout (found 2026-08-11:
+# three E8-FINAL-C1 receipts were exactly this). Filesystem presence is not
+# provenance; a check passable by the file merely existing is fail-open.
+import subprocess
+idx_dir = os.path.join(op, "receipts")
+for name in sorted(os.listdir(idx_dir)) if os.path.isdir(idx_dir) else []:
+    if not name.endswith(".json"):
+        continue
+    try:
+        ptr = json.load(open(os.path.join(idx_dir, name), encoding="utf-8"))
+    except Exception:
+        print(f"UNPARSEABLE-INDEX: receipts/{name}")
+        gap = True
+        continue
+    target = ptr.get("receipt", "")
+    for repo, prefix in (("/mnt/raid0/llm/epyc-root", "/mnt/raid0/llm/epyc-root/"),
+                         ("/workspace", "/workspace/")):
+        if target.startswith(prefix):
+            rel = target[len(prefix):]
+            rc = subprocess.run(["git", "-C", repo, "ls-files", "--error-unmatch", rel],
+                                capture_output=True).returncode
+            if rc != 0:
+                print(f"UNTRACKED-EVIDENCE: receipts/{name} -> {rel} is not in git")
+                gap = True
+            break
+    else:
+        print(f"UNRESOLVED-TARGET: receipts/{name} -> {target}")
+        gap = True
 if not gap:
     print("(none)")
 sys.exit(1 if gap else 0)
