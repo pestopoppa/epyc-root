@@ -247,6 +247,12 @@ defect itself was real and is FIXED (`section_is_guarded` → `box_is_guarded`, 
 inside a `[x]` box is invisible as an active rule — that loss-mode stands regardless of guard
 semantics.
 
+**Loss-mode now mechanically detectable (10:00Z):** mainD added
+`backlog_row_check.py --audit-guards` (`a17ba974`, 54 tests) — any `[x]` under a DO-NOT-FLIP
+banner prints as a review prompt, closing the blind spot that `box_is_guarded` (a dispatch
+check) can only ever speak about open boxes. Verified on my thread: 3 hits corpus-wide, L339
+first, framed as REVIEW not verdict. Adjudication of the hits remains with mainC.
+
 **Adjudication conflict, recorded 09:23Z** (`msg-20260811T092254Z-131-mainC`): mainC, as
 repairing owner, adjudicated the `:339` box a *legitimate completed task* (the re-audit half
 did complete). My refined position, sent to mainC: **both halves are real** — the box records
