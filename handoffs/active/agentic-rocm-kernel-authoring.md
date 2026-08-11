@@ -219,22 +219,27 @@ would settle it here. Nothing is blocked: frontier Anthropic/GPT models are avai
 planners (operator, 2026-08-10 — we are not restricted to local models), and every experiment in this
 section costs **zero GPU and zero local inference**.
 
-- [ ] **AK-PL-1 — Prompt-leak guard on the assembled authoring prompt.** Grep the fully-rendered
+- [x] **AK-PL-1 — Prompt-leak guard on the assembled authoring prompt.** Grep the fully-rendered
   planner/actor prompt for `test-backend-ops`, `max_nmse_err` and `init_tensor_uniform`. An agent that
   can read the tolerance it must clear is being graded by a rubric it holds.
   **Test the guard against the COMPLIANT path too** — a guard that also rejects the legitimate prompt
   is a guard that will be disabled the first time it fires
   (`feedback_guard_must_not_forbid_its_own_idiom`). Pairs with RVP-C6-7 in
   [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md), which filters the *diagnostics*
-  half of the same channel.
-- [ ] **AK-PT-1 — Per-turn productivity accounting (this handoff owns it; emitted at
+  half of the same channel. ✅ 2026-08-11 — `controller/authoring_contract.py` scans the fully rendered
+  prompt for all three named internals plus the exact `ERR = value > tolerance` disclosure shape;
+  tests plant every leak and prove an ordinary compliant authoring prompt remains admissible.
+- [x] **AK-PT-1 — Per-turn productivity accounting (this handoff owns it; emitted at
   `autokernel-research-loop.md` §8.8).** Record `(turn, task, correct?, speedup)` per refine turn, and
   split **rescued** (a turn that fixed a previously-failing candidate) from **persistent** (a turn
   that improved an already-correct one). We currently measure **neither**. The reason the split is
   load-bearing: mean speedup falls across turns as a **composition** effect — later turns admit
   candidates that earlier turns could not fix, which are systematically worse — so a declining mean is
   not evidence that refinement stopped working, and reading it that way would truncate the loop
-  exactly where it is still paying.
+  exactly where it is still paying. ✅ 2026-08-11 — AutoKernel `turn_productivity.py` implements an
+  immutable append-order archive with state-continuity checks; rescued/persistent/failed/regressed is
+  mechanically derived from the correctness transition, incorrect turns cannot carry a speed rank,
+  and every observation retains its evidence reference and content hash. AK-X-6 is its first consumer.
 - [ ] **AK-LE-1 — Reasoning-effort × search-persistence experiment.** Hold champion, retrieval context
   and PROPOSE prompt fixed; sweep only the planner's effort knob. Measure **search** outcomes, not
   answer quality: count of novel non-duplicate hypotheses, count of explicit "this is already
@@ -268,20 +273,26 @@ section costs **zero GPU and zero local inference**.
     objective is the missing piece. AgentKernelArena's `@register_agent` adapter pattern (Decision
     Snapshot item 2) is the substrate for registering the arms. So the increment is roles 3 and 4 plus
     a throughput-aware selection objective, not a new controller.
-- [ ] **AK-LE-4 — Context discipline: a priced context budget and a reversible compaction protocol.**
+- [x] **AK-LE-4 — Context discipline: a priced context budget and a reversible compaction protocol.**
   (a) A per-round context-budget table with an explicit **never-bulk-read** rule, so the loop cannot
   spend its window on a file it will not use. (b) A research-log compaction step that writes a
   **what-was-kept / what-was-dropped header** — and, critically, **a git recovery recipe**. The source
   note describes the compaction and omits the recovery half; compaction is only safe *because* it is
   reversible, and a protocol that drops the reversibility keeps the risk and discards the mitigation.
-- [ ] **AK-LE-5 — Anti-fabrication clause for externally-sourced numbers.** Our invariants
+  ✅ 2026-08-11 — the authoring contract prices every context item and round, enforces per-item and
+  total caps, rejects duplicate/bulk reads, prints the budget table and literal never-bulk-read rule,
+  and emits kept/dropped compaction headers with an exact `git -C <repo> show <commit>:<path>` recovery.
+- [x] **AK-LE-5 — Anti-fabrication clause for externally-sourced numbers.** Our invariants
   (`autokernel-research-loop.md` §4) bind the loop's own measurements to a protocol, an anchor and a
   receipt. **Nothing currently covers a number the loop claims came from outside itself** — a vendor
   figure, a paper result, a leaderboard score quoted into a proposal. Require an external number to
   carry a source, a retrieval date or commit, and a normalisation to roofline utilisation (§8.3.1)
   before it may appear in a proposal at all; otherwise it is not admissible even as `design_prior`.
   The source campaign logged this exact failure three times in its own write-up, which is the only
-  part of that document that is self-evidencing.
+  part of that document that is self-evidencing. ✅ 2026-08-11 — proposal-v3 now requires a validated
+  `external_numbers` vector (empty is explicit). Every entry binds source, retrieval date or commit,
+  exact quant, denominator basis and normalized roofline utilization; the validator independently
+  re-derives utilization and refuses mixed unit/quant/basis denominators.
 
 **Declined here (recorded so it is not re-derived):** adopting the note's evaluation cadence. It rests
 on elastic external accelerator capacity and a free third-party adversarial verifier; we have one

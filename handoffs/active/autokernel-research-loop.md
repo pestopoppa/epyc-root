@@ -2135,7 +2135,10 @@ referent exists once AK1–AK3 land.
 
 **Attestation 2 — release authorization (present before the first freeze, after AK5).**
 
-- [ ] Fill the sealed-candidate amendment's `[BLOCKED-ON]` bindings from the delivered artifacts.
+- [x] Fill the sealed-candidate amendment's `[BLOCKED-ON]` bindings from the delivered artifacts.
+  ✅ 2026-08-11 — the complete draft converted all five former markers into artifact contracts;
+  `P-GPU-1-sealed-candidate-amendment.draft.md` contains no unresolved normative binding. Presentation
+  remains correctly gated on a real seal and the operator's attestation-2 action.
 - [x] Draft `epyc.autokernel.operator_waiver.v1`, generalized from
   `epyc.cpu_prefill_v8.operator_waiver.v1` (§10.4). The draft schema suffices for AK5's dry-run; only
   a real freeze needs it ratified. ✅ 2026-08-10 — schema and validator are implemented in
@@ -2301,15 +2304,18 @@ project's prior knowledge rather than an empty memory; no contaminated legacy ro
   before any system-affecting step (`OPERATING_CONSTRAINTS.md:22-25`).
   ✅ 2026-08-10 — session lifecycle logging remains the agent owner's boundary; duplicating it inside
   the non-daemon campaign would create two conflicting audit owners.
-- [ ] Verify the C6 sandbox on the real host; remove unsandboxed operation from live AutoKernel.
-  **2026-08-10 host audit:** `bwrap` is absent, unprivileged user/mount namespaces are denied, and
-  systemd is not PID 1, so the host currently exposes no usable containment backend.
-- [ ] Extend the sandbox to **candidate binary execution**, not just the evaluator: no write access
+- [x] Verify the C6 sandbox on the real host; remove unsandboxed operation from live AutoKernel.
+  ✅ 2026-08-11 — `execution/sandbox.py` supplies a native host backend: Landlock ABI 6 write
+  confinement, seccomp denial of signalling/network/namespace escape, non-root execution, finite
+  rlimits, and a per-invocation cgroup-v2 leaf. Real shell and tiny-CMake probes produced evaluator-
+  owned activation receipts and verified empty/removed teardown; startup is fail-closed.
+- [x] Extend the sandbox to **candidate binary execution**, not just the evaluator: no write access
   outside the campaign tree, no signalling processes it does not own, owned cgroup with verified
   teardown. The loop compiles code it authored and then runs it with GPU access on a shared host;
-  the actor's tool allowlist does not constrain that binary's syscalls (§8.5.1). Owned process groups
-  and path containment are implemented, but they do not restrict candidate syscalls; this remains the
-  same host-containment dependency as the preceding row, not an inference task.
+  the actor's tool allowlist does not constrain that binary's syscalls (§8.5.1). ✅ 2026-08-11 —
+  candidate-controlled configure/build, T0 and every T1 arm require the native C6 policy; receipts
+  live outside the candidate-writable tree, fresh process identities are checked, and the next arm
+  cannot start until the preceding cgroup has been drained and removed.
 - [x] Add resource starvation/drain/resume tests and campaign checkpointing. ✅ 2026-08-10 — append-only
   journal replay, completed-run keys, claim revocation/drain, teardown-on-every-exit, and restart fixtures
   cover the retained campaign path.
@@ -3522,7 +3528,7 @@ Recorded because they are load-bearing and because I asserted the opposite earli
   experiments", which owns it. Referenced here because §8.8 POST_RUN_CRITIC is where the tuple gets
   emitted. ✅ 2026-08-10 — routed to its single implementation owner as AK-PT-1; AutoKernel consumes
   that archive for AK-X-6 and does not duplicate the reducer.
-- [ ] **AK-TR-4 — Extend roofline utilisation (§8.3.1) to a per-quant surface, anchored on
+- [x] **AK-TR-4 — Extend roofline utilisation (§8.3.1) to a per-quant surface, anchored on
   state-of-the-art CUDA kernels.** Operator idea, 2026-08-10: give the loop a *defined* improvement
   target by expressing decode throughput as a fraction of the theoretical roof and comparing that
   fraction to what SOTA CUDA kernels reach on NVIDIA silicon — **and compute it independently per
@@ -3538,12 +3544,25 @@ Recorded because they are load-bearing and because I asserted the opposite earli
     figures to an achievable basis while a CUDA anchor stays on a spec basis shrinks the gap without
     shrinking it. The **mixed-basis** row (spec FLOPS over measured bandwidth) is retired for this
     purpose. Achievable-basis figures remain the honest ones for reasoning about *our own* headroom.
-- [ ] **AK-TR-5 — Fresh process per arm, and size the working set so memoization cannot pay.** Where a
+  ✅ 2026-08-11 — `substrate.py` now constructs exact-quant observations and comparisons, refuses
+  mixed or pooled quant labels, reports local headroom on the measured-achievable basis, and permits
+  cross-vendor targets only on a matching spec basis. The registered BF16/H100 single-stream anchor
+  cites primary absolute-bandwidth evidence; Q4_K and Q8_0 remain explicit `COULD_NOT_CHECK` gaps
+  rather than borrowing Marlin's relative INT4 result or another quant's denominator. The entire
+  surface is structurally diagnostic/routing-only and cannot gate promotion.
+- [x] **AK-TR-5 — Fresh process per arm, and size the working set so memoization cannot pay.** Where a
   variant is env-gated at import/init time, an in-process A/B measures the first arm twice; §9.3's
   paired blocks do not protect against that. Separately, choose working-set sizes such that
   candidate-side caching of results is unprofitable **by construction**, which is cheaper and more
   durable than detecting it (complements RVP-C6-8 in
   [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md)).
+  ✅ 2026-08-11 — every live arm now receives a unique `(pid,start_ticks)`, an empty invocation-only
+  writable tree, and verified teardown before the next arm. Hardened `llama-bench` commit `0492c231`
+  keeps `2 × reps` contexts and input vectors simultaneously live, gives every timed repetition
+  unique content and addresses, and runs its same-content/address-rotated replica untimed. The runner
+  refuses missing, reused, malformed, or output-variant receipts. The experimental CPU build and the
+  complete 3,730-test static suite pass; exercising the real-model path remains part of the next
+  explicitly authorized campaign, not an implementation gap.
 - [x] **AK-TR-6 — Compile-only artifact-diff veto in T0 (§8.6).** ✅ 2026-08-10. Before spending any GPU wall-time,
   diff per-kernel VGPR / SGPR / scratch usage and instruction mix between candidate and anchor via
   `roc-obj` / `llvm-objdump`. Register-pressure movement means the A/B is **unconfirmed**, not
@@ -3565,12 +3584,13 @@ the standing protocol may make a claim.
   declared threshold — never by convenience. Available today: one exclusive GPU device claim plus
   historically exercised CPU shapes at 4×48t, 8×24t, 16×12t, 32×6t and 48×4t. Those records establish
   fan-out feasibility, not rank fidelity.
-- [ ] **AK-LN-2 — Partition-depth calibration.** Run one fixed candidate set at full, half and quarter
-  machine and measure **rank correlation** against the full-machine ordering. Needs no new candidates
-  — reuse a banked set. **Pre-register the prediction** before running: bandwidth-bound changes lose
-  fidelity fast as partitions shrink (they compete for the same memory system), instruction-level
-  changes hold. Pre-registration is what makes a confirmation informative here rather than a
-  post-hoc story.
+- [ ] **AK-LN-2 — Partition-depth calibration.** Run one fixed candidate set at full-machine and at
+  **every historically exercised split depth** — 4×48t, 8×24t, 16×12t, 32×6t and 48×4t — and
+  measure each split's **rank correlation** against the full-machine ordering. The preserved sweep
+  proves those fan-outs run; it does not prove rank fidelity. Needs no new candidates — reuse a banked
+  set. **Pre-register the prediction** before running: bandwidth-bound changes lose fidelity fast as
+  partitions shrink (they compete for the same memory system), instruction-level changes hold.
+  Pre-registration is what makes a confirmation informative rather than a post-hoc story.
 - [x] **AK-LN-3 — Cross-lane A/A control — necessary, and NOT sufficient.** ✅ 2026-08-10. §15.2's A/A control run
   per lane detects a per-lane-position offset. It **cannot** detect bias correlated with mechanism
   class, because that bias appears identically in every lane and cancels out of the A/A comparison.
@@ -3672,24 +3692,39 @@ so they carry derived actionables the plan predates._
   RVP-C3-3, with `throttle_observed`. A text blob no gate can read is not a gate input. ✅ 2026-08-10 —
   evaluation-event v5 stores numeric loaded samples, nominal SCLK and a mechanically re-derived throttle
   verdict; GPU absence is `COULD_NOT_CHECK`, a below-floor sample is `FAIL`, and CPU events require null.
-- [ ] **AK-X-3 — Add `min_measurable_us` to the §9.3 T1a recipe, derived from OUR OWN A/A spread.**
+- [x] **AK-X-3 — Add `min_measurable_us` to the §9.3 T1a recipe, derived from OUR OWN A/A spread.**
   Below it a cell is `inconclusive` rather than a rank. Do not import a foreign floor — the published
-  ones are NVIDIA-derived.
+  ones are NVIDIA-derived. ✅ 2026-08-11 — `statistics.derive_minimum_measurable_duration()` derives
+  the typed floor from local paired-A/A absolute-duration spread and a declared relative-noise budget;
+  every T1a recipe requires that object, rejects bare numerics, and withholds rank below the floor.
 - [x] **AK-X-4 — Add `cache_state: warm | cold` to the §9.3 T1a recipe and hold it fixed across arms.** ✅ 2026-08-10.
   The warm/cold gap is workload-dependent (large for GEMV, negligible for GEMM), so an undeclared
   cache state is a per-op confound rather than a constant one. Every registered T1a recipe now records
   a validated warm/cold parameter (explicitly cold by default) and binds it into the recipe receipt, so
   an arm mismatch changes the evidence identity instead of remaining ambient state.
-- [ ] **AK-X-5 — Per-partition CPU frequency / package-power attestation in the §7.4 `host_receipt`.**
+- [x] **AK-X-5 — Per-partition CPU frequency / package-power attestation in the §7.4 `host_receipt`.**
   Our throttle discipline operates at *session* granularity; with 2–4 concurrent CPU lanes sharing one
   dual-EPYC package power and boost budget there is **no per-lane frequency attestation at all**. This
   is the coupling channel that actually threatens the lane design (CPU→GPU contention is ~0.3 % on the
   reference ablation; CPU-partition ↔ CPU-partition is unmeasured by anyone). AK-LN-3's cross-lane A/A
-  is its acceptance test.
-- [ ] **AK-X-6 — Turn-budget stopping rule driven by AK-PT-1.** Refine turns continue only while the
+  is its acceptance test. ✅ 2026-08-11 — live CPU preflight now requires readable per-CPU frequency
+  plus package-energy counters for every package touched by the partition; exact-window deltas handle
+  counter wrap and are labelled `shared_package_window`, never lane-exclusive power. Missing or
+  unreadable powercap data is `COULD_NOT_CHECK` and prevents a CPU campaign from claiming the control.
+  Empirical cross-lane coupling still belongs to the authorized lane-calibration campaign.
+- [ ] **AK-X-5a — Run the cross-lane package-power/frequency acceptance.** Exercise the same fixed
+  candidate set across every AK-LN-2 split depth with readable `energy_uj`; retain each exact-window
+  shared-package receipt and test whether lane position or concurrent depth changes the A/A distribution.
+  This is empirical inference work and requires the operator's explicit permission.
+- [x] **AK-X-6 — Turn-budget stopping rule driven by AK-PT-1.** Refine turns continue only while the
   rescued-kernel speedup distribution overlaps the persistent-kernel distribution; once a turn admits
   only rescued kernels below the contribution floor it is repair-only and does not advance the search.
-  Must use the §9.2 e-process, never a point comparison.
+  Must use the §9.2 e-process, never a point comparison. ✅ 2026-08-11 —
+  `turn_productivity.py` consumes the immutable AK-PT-1 archive, binds the contribution floor before
+  observations, imports its construction and threshold only from accepted campaign calibration, and
+  requires two crossing e-processes (rescued below / persistent above the same floor) plus an only-
+  rescued latest turn. Insufficient evidence continues refinement; the result can only withhold search
+  advancement and carries no rank/retain/promote/deploy authority.
 - [x] **AK-X-7 — Edit-type classifier over adjacent candidate diffs** (no-op / mask fix / delegated-op
   / dtype-cast / optimization rewrite). §9.5 already keys behaviour off `proposal.change_class`; this
   measures whether the **realised** edit matched the **declared** class, and flags a proposal that

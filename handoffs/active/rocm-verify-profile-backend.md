@@ -348,13 +348,18 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
 
 ### C6 — reward integrity: close the instrument gap first
 
-- [ ] **RVP-C6-1 — Hash-pin the measurement translation units.** `tests/test-backend-ops.cpp`,
+- [x] **RVP-C6-1 — Hash-pin the measurement translation units.** `tests/test-backend-ops.cpp`,
   `tests/test-quantize-perf.cpp` and `tools/llama-bench/llama-bench.cpp` are hashed against the
   production anchor before every measured round; **any diff is a hard fail, not a warning.**
   **This is the highest-value single item in the batch.** C6 as designed pins the *evaluator*; but the
   *instrument* is compiled from the very tree the candidate is allowed to edit. No timer redesign
   fixes that — only pinning the sources does. The gate must also refuse to be satisfied by deleting
-  the file it inspects (`feedback_verify_integrity_not_presence_of_own_edit`).
+  the file it inspects (`feedback_verify_integrity_not_presence_of_own_edit`). ✅ 2026-08-11 — the
+  reviewed measurement anchor is hardened commit `0492c231`, whose direct parent is frozen production
+  v9 `0db32c06`; the one-commit overlay changes only `llama-bench` and its README. T0, T1 open and every
+  T1 invocation hash the complete three-file manifest against that named anchor and hard-refuse a
+  missing, unreadable, deleted or changed file. Pinning to the reviewed overlay rather than pretending
+  its intentional instrument change is byte-identical to production preserves both authorities.
 - [ ] **RVP-C6-2 — Stream-escape defence.** Verified: T0 timing brackets
   `ggml_backend_graph_compute` with host wall clock (`tests/test-backend-ops.cpp:1621-1627`), and
   `ggml_backend_cuda_synchronize` (`ggml/src/ggml-cuda/ggml-cuda.cu:2512-2518`) calls
@@ -367,27 +372,38 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
 - [ ] **RVP-C6-4 — Speed-of-light screen.** Flag any candidate faster than
   `max(compute-bound, HBM-bound)` for its shape. Free, needs no reference execution, and catches the
   whole "measured the wrong thing" family before a single verification rep is spent.
-- [ ] **RVP-C6-5 — Keep provenance detection in its own component.** Substitution / call-provenance
+- [x] **RVP-C6-5 — Keep provenance detection in its own component.** Substitution / call-provenance
   checks populate `integrity_flags`, **never `correct`** (interface contract, §"Interface contract").
   The upstream reference built the merged version and reverted it within 30 minutes — **inherit the
   placement, not the removal**: their stated reason was that their top-10 users are trusted, a
-  *social* control that does not exist for an autonomous loop.
+  *social* control that does not exist for an autonomous loop. ✅ 2026-08-11 — provenance derivation
+  remains isolated in `evaluator/integrity.py` and `evaluator/surface.py`; the evaluator event has no
+  actor-settable `correct` field. The verdict alone derives status, provenance failures appear as
+  `INTEGRITY:<gate>:<outcome>`, and any such flag structurally withholds the speed rank.
 - [ ] **RVP-C6-6 — Red-team corpus with a stated sensitivity.** ~10 planted-bug and ~15 clean HIP
   kernels; report sensitivity and specificity, not an assertion of coverage. Mine the published
   exploit **taxonomy** (harness frame-hacking, pointer-keyed memoization, structured-input
   short-circuit) — **do not vendor the 4.66 GB corpus**; it is NVIDIA-targeted Python with zero
   executable value on gfx90a. This is what lets the §"C6 monitor design" FPR-budget row above be
   stated as a number instead of a promise.
-- [ ] **RVP-C6-7 — Refine-prompt disclosure rule + PUBLIC/SEALED split.** Our loop is multi-turn, so
+- [x] **RVP-C6-7 — Refine-prompt disclosure rule + PUBLIC/SEALED split.** Our loop is multi-turn, so
   the failure diagnostics fed back into a repair turn are a channel into the oracle:
   `test-backend-ops` prints `ERR = %.9f > %.9f` on failure, which hands the candidate the exact
   tolerance it must clear. Filter `diagnostics` at the seam (interface contract), and hold a SEALED
-  case population the refine loop never sees.
-- [ ] **RVP-C6-8 — T1 output-invariance across repetitions, with buffer-address rotation.**
+  case population the refine loop never sees. ✅ 2026-08-11 — `authoring_contract.py` requires
+  predeclared PUBLIC and SEALED populations with content-addressed seeds, projects only PUBLIC
+  diagnostics into refine context, replaces exact tolerance/evaluator disclosures with a generic safe
+  finding, and has planted-leak tests proving sealed ids and details never reach the assembled prompt.
+- [x] **RVP-C6-8 — T1 output-invariance across repetitions, with buffer-address rotation.**
   `llama-bench` repeats over the same input buffers with no output validation between reps — a live
   pointer-keyed-cache hole. Assert outputs are invariant across reps **and rotate the input buffer
   addresses between them**; address rotation is strictly stronger than a re-check, because it defeats
-  memoization keyed on the pointer rather than on the contents.
+  memoization keyed on the pointer rather than on the contents. ✅ 2026-08-11 — experimental commit
+  `0492c231` adds trusted `--autokernel-harden <seed>`: unique content per timed repetition, two
+  simultaneously live contexts/input allocations per comparison, a same-content address-rotated
+  untimed replica, and bitwise logits comparison. It exits nonzero on mismatch and exports hashes,
+  addresses and working-set size; the evaluator refuses incomplete/reused receipts. The experimental
+  CPU build succeeds. Real-model execution awaits explicit inference permission.
 
 ### Recorded so it is not re-derived
 
@@ -440,10 +456,14 @@ the end are deliberate and recorded so they are not re-derived._
 - [ ] **RVP-C2-12 — A hard error on non-contiguous input must be a FAIL, never a skip.** The reference
   suite converts these to skips in half its files; a kernel that cannot accept a strided ggml view is
   not correct for llama.cpp, and a skip records that as neither pass nor fail.
-- [ ] **RVP-C6-9 — Build the two unbuilt detectors behind `AntiRewardHackingEvidence`**
+- [x] **RVP-C6-9 — Build the two unbuilt detectors behind `AntiRewardHackingEvidence`**
   (`timing_dependent_branch_findings`, `environment_probe_findings`). Until they exist, an empty list
   must read **UNKNOWN, not PASS** — an empty result from a detector that was never built is exactly the
-  fail-open shape this row exists to prevent.
+  fail-open shape this row exists to prevent. ✅ 2026-08-11 — versioned added-line scanners now inspect
+  the committed candidate delta for environment probes and direct or simple data-flow timing branches;
+  the real T0 provider records detector ids/findings. Missing ids make empty findings
+  `COULD_NOT_CHECK`; planted/clean source-pattern tests report 100% sensitivity/specificity for this
+  narrow detector taxonomy without claiming the broader RVP-C6-6 exploit corpus.
 - [ ] **RVP-C6-10 — Anti-short-circuit cases go in the RANKED set, not just the gate.** If the hard
   cases only gate, a candidate can route easy inputs to a fast invalid path and never pay for the
   accurate path's cost on the hard ones. Ranking them prices it.

@@ -13,6 +13,11 @@
   },
   "edges": [
     {
+      "from": "INF-06",
+      "kind": "dep",
+      "to": "INF-48"
+    },
+    {
       "from": "INF-58",
       "kind": "dep",
       "to": "INF-11"
@@ -3587,7 +3592,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-11T01:24:04Z",
+  "generated_at": "2026-08-11T02:48:02Z",
   "nodes": [
     {
       "age_days": 12,
@@ -4242,13 +4247,13 @@
     {
       "age_days": 8,
       "blocked": 0,
-      "closed": 4,
+      "closed": 8,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-03",
-      "next_action": "AK-PL-1 \u2014 grep the assembled authoring prompt for test-backend-ops/max_nmse_err; guard must pass the compliant path",
-      "open": 21,
+      "next_action": "Pre-register AK-LE-1/2 model, effort, budget, and target arms; execute only with explicit inference permission",
+      "open": 17,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4281,13 +4286,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 163,
+      "closed": 171,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-11",
-      "next_action": "Enable a C6 containment backend, then verify candidate syscall isolation on the live host",
-      "open": 33,
+      "next_action": "Obtain explicit permission; run v9/hardened controls, then the first real CPU candidate campaign",
+      "open": 26,
       "state": "active",
       "track": "autokernel research loop"
     },
@@ -4344,13 +4349,13 @@
       "track": "cpu shape specialized gemv decode"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "closed": 15,
       "domain": "inference-research",
       "handoff": "deepseek-v4-flash-0731-dspark.md",
       "id": "INF-11",
-      "last_advanced": "2026-08-10",
+      "last_advanced": "2026-08-11",
       "next_action": "Run the claim-grade production Q8 baseline, then the quant-specific IQ3 parity/acceptance study at `-np 1`",
       "open": 12,
       "state": "active",
@@ -4814,13 +4819,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 9,
+      "closed": 14,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-11",
       "next_action": "RVP-C2-1 \u2014 seeded input generation; precondition for the whole C2 oracle. RVP-T0-1 HELD (needs a GPU-load window)",
-      "open": 54,
+      "open": 49,
       "state": "active",
       "track": "rocm verify profile backend"
     },
@@ -4942,13 +4947,13 @@
       "track": "v7 promotion"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "closed": 7,
       "domain": "inference-research",
       "handoff": "v9-kernel-per-request-speculative-params.md",
       "id": "INF-58",
-      "last_advanced": "2026-08-10",
+      "last_advanced": "2026-08-11",
       "next_action": "Implement and prospectively ratify the sealed resident promotion fast path with fresh-server fallback",
       "open": 1,
       "state": "active",

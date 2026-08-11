@@ -12,10 +12,10 @@
 |----|-------|---------|-------------|------|
 | INF-01 | 01 speculative decoding | [01-speculative-decoding.md](01-speculative-decoding.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | INF-02 | agent collab rnd harness | [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md) | (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (--backend local, custo… | — |
-| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | AK-PL-1 — grep the assembled authoring prompt for test-backend-ops/max_nmse_err; guard must pass the compliant path | — |
+| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Pre-register AK-LE-1/2 model, effort, budget, and target arms; execute only with explicit inference permission | — |
 | INF-04 | angelslim techniques evaluation | [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) | BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist | — |
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
-| INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Enable a C6 containment backend, then verify candidate syscall isolation on the live host | — |
+| INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Obtain explicit permission; run v9/hardened controls, then the first real CPU candidate campaign | INF-48 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-08 | cpu kernel env flags inventory | [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md) | Add an "effect on trace interpretation" column to the flag inventory. This file records which | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
