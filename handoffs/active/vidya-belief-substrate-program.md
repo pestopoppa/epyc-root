@@ -198,13 +198,18 @@ deliberately — decide them, do not just implement them.
 - [ ] SC11 Survey the remaining candidate sources named in the register — llama-bench sweeps and the
       speech-kernel (whisper/qwentts) runs. Both need a write-side hook before a reader is worth
       anything; price each with the ~50-record sample before building
-- [ ] SC12 **Kernel promotion validation/certification receipts need a write-side ClaimTuple hook.**
+- [ ] SC12 **Kernel promotion/certification and K35 paired kernel/speculation receipts need a
+      write-side ClaimTuple hook.**
       The first bounded receipt is `artifacts/audit/v9-dspark-autokernel-base-20260810.json`; the v9
-      promotion then produced K35 GPU/DSpark and DFlash production-certification summaries. The
-      artifacts are durable, but their producers still do not emit the full tuple at write time and
-      must not be retrofitted on read. Before the next promotion run, add protocol id, scored
+      promotion then produced K35 GPU/DSpark and DFlash production-certification summaries. The K35
+      runner now also emits quant-specific paired receipts, first
+      `data/deepseek-v4-flash/iq3-dspark-quick-20260811T063729Z/summary.json`. The artifacts are
+      durable, but their producers still do not emit the full tuple at write time and must not be
+      retrofitted on read. Before the next promotion or K35 paired run, add protocol id, scored
       reps/basis, date, durable attestation locator+digest, category, and metric direction to the
-      K35, DFlash, qualification, and final-freeze write paths. Only then price/build the adapter
+      K35, DFlash, qualification, and final-freeze write paths. Project into the existing
+      `ClaimTuple`; `claim_tuple.grade()` remains the only grading rule. Only then price/build the
+      adapter
 - [ ] SC7 Ingest autopilot trials into the ledger once SC6-LIVE confirms rows are landing. Deferred
       deliberately: appending 1,372 retro-graded claims now would record provenance the original
       runs never captured, and the corpus is worth ingesting only once it is born attested. Note

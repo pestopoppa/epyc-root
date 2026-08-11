@@ -79,6 +79,10 @@ the rollback anchor. AutoKernel initialization remained outside this goal.
 ### Phase 0 — Acquisition ✅ COMPLETE 2026-08-10
 - [x] Download UD-Q8_K_XL 5 shards + DSpark Q8_0 sidecar ✅ 2026-08-10 — completed in ~5 h at ~7–10 MB/s unauthenticated. Log: `/workspace/tmp/ds4_0731_download.log`
 - [x] Verify shard sizes and `general.architecture = deepseek4` on shard 1; confirm the 0731 revision in `general.name` ✅ 2026-08-10 — **all five shards byte-exact** against the HF manifest (5,257,408 / 49,215,492,960 / 49,700,372,160 / 49,466,495,968 / 13,481,997,024); DSpark sidecar 10,896,057,440 B. Shard 1 headers confirm `general.architecture=deepseek4`, `general.name=Deepseek-V4-Flash-0731`, `general.size_label=256x8.4B`, and an Unsloth chat template with `thinking`/`reasoning_effort` support. DSpark sidecar header confirms it targets `DeepSeek-V4-Flash-0731`. On-disk 161 GiB at `/mnt/raid0/llm/models/deepseek-v4-flash-0731/`; orphaned `.incomplete` chunk from the aborted first attempt removed; raid0 836 GB free.
+- [x] Download and checksum the four-shard `UD-IQ3_XXS` research quant ✅ 2026-08-11 —
+  revision `fbbb5b93fb787c21338159b0af3318bb3f4d9768`, 104,207,848,032 bytes, all four
+  published SHA-256 hashes pass, and no incomplete files remain. Acquisition alone establishes no
+  throughput, parity, acceptance, or role-candidacy result.
 - [ ] **OPERATOR**: decide whether to configure an `HF_TOKEN` on this host. Downloads currently run unauthenticated at **~9 MB/s** (`hf auth whoami` → not logged in; `hf_xet` is already installed, so a token is the only remaining lever). Blocks nothing — the 0731 pull completes either way — but every future multi-hundred-GB acquisition pays the same ~5.5 h/170 GB tax. Credential provisioning is operator-only.
 - [ ] Prune the dead ik_llama branch `feature/deepseek4-port` @ `c04881fc0` and the `antirez` remote on that tree. Left in place 2026-08-09 as harmless; it is now unreachable work (the port was superseded by upstream #24162) and should go whenever ik_llama is next garbage-collected. Not urgent — ik_llama is deprecated as a serving path and consumes no serving resources.
 
@@ -131,6 +135,13 @@ Tasks:
 ### Phase 3 — Quality parity
 - [ ] Reuse the predecessor's 20-prompt logprob-parity protocol (`v4_quality_gate_runner.py` + `v4_quality_gate_compare.py`, 34 comparator tests pass). The Mac/ds4 external reference dependency is **dissolved** — with the arch in mainline, take parity against a mainline build
 - [ ] Measure acceptance rate α for DSpark before drawing any spec-dec conclusions (`feedback_measure_alpha_before_specdec_investment`)
+- [x] Run a bounded IQ3_XXS cap-0/cap-3 parity and throughput observation ✅ 2026-08-11 —
+  production v9 CPU, `-np 1`, nominal 2,048 context, 64 completion tokens: cap 0
+  4.82846 t/s versus cap 3 4.61014 t/s (`0.95478×`, −4.52%). Exact token parity passed;
+  cap 3 drafted 67 and accepted 40 (59.70%). This is a one-rep dirty-host observation with the
+  resident production stack left online, not a claim-grade speed or quality result. Receipt:
+  `epyc-inference-research/data/deepseek-v4-flash/iq3-dspark-quick-20260811T063729Z/summary.json`
+  (SHA-256 `950073f53dc56bf7e3629491ec8d0568f8ff86a8b40496f5f565babce70ce26e`).
 
 ### Phase 4 — Role candidacy
 - [ ] Only after Phases 1–3: evaluate against `architect_general` (which tolerates lower t/s — Qwen3.5-122B at 12 t/s is documented production), not `worker_general`
@@ -158,6 +169,9 @@ Tasks:
 - [x] Phase 2 effort re-scoped against the DFlash precedent ✅ 2026-08-10 — 14 files / ~712 insertions, not "one enum member"; file-level template recorded in Phase 2
 - [ ] Phase 1 — production-v8 Q8 baseline (claim-grade; required by v9 promotion qualification)
 - [x] Phase 2 — DSpark spec-type on experimental branch ✅ 2026-08-10
+- [x] IQ3_XXS research quant acquisition and checksum verification ✅ 2026-08-11
+- [x] IQ3_XXS bounded DSpark parity/throughput observation ✅ 2026-08-11 — exact 64-token
+  parity; 40/67 accepted; cap 3 was 4.52% slower in this single dirty-host repetition
 - [ ] Phase 3 — broaden quality parity beyond the production 16-token exact-parity certification;
   production α observation is 9/18 = 0.50 at `n_max=3`, `-np 1`
 - [ ] Phase 4 — role candidacy decision

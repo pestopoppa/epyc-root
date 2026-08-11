@@ -20,7 +20,7 @@
 | INF-08 | cpu kernel env flags inventory | [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md) | Add an "effect on trace interpretation" column to the flag inventory. This file records which | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
 | INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Measure tinyBLAS on/off first (Phase 0) — sgemm.cpp is already compiled in, so it confounds every later A/B | — |
-| INF-11 | deepseek v4 flash 0731 dspark | [deepseek-v4-flash-0731-dspark.md](deepseek-v4-flash-0731-dspark.md) | Run the claim-grade production Q8 baseline, then the quant-specific IQ3 parity/acceptance study at `-np 1` | — |
+| INF-11 | deepseek v4 flash 0731 dspark | [deepseek-v4-flash-0731-dspark.md](deepseek-v4-flash-0731-dspark.md) | Run the claim-grade Q8 baseline and repeat the IQ3 pair cleanly before any role-candidacy decision | — |
 | INF-12 | delta mem reproduction | [delta-mem-reproduction.md](delta-mem-reproduction.md) | Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible) | — |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |
 | INF-14 | fable5 window2 findings 05b mi210 inference  | [fable5-window2-findings-05b-mi210-inference-architecture.md](fable5-window2-findings-05b-mi210-inference-architecture.md) | _no open dispatchable task — verify complete or file the next step_ | — |
