@@ -342,17 +342,20 @@ Any future stack update should be accepted only when these hold:
 - [ ] Continue migrating remaining high-risk P2 consumers only where a concrete
   duplicated model/role/serving fact or duplicated stack-prior traversal still
   exists; avoid broad renderer rewrites unless there is a narrow helper seam.
-- [ ] Treat `scripts.benchmark.seeding_rewards`,
-  `scripts.benchmark.corpus_quality_gate`, and `scripts.autopilot.kv_compress`
-  as re-audited surfaces: the current implementations already keep generated
-  stack priors primary with explicit degraded fallback. Do not churn them unless
-  a concrete duplicated live fact reappears.
-  *(Last audited 2026-07-29: each imports generated stack-prior helpers for normal
-  operation; each fallback remains explicitly marked degraded and derives from the
-  manifest rather than copied live model/endpoint facts. Restored to `- [ ]`
-  2026-08-11 by `mainC` — this is a standing constraint, so the audit RESULT is
-  dated here while the rule itself stays open. It had been flipped closed, which
-  asserts "do not churn these" is permanently satisfied and retires the rule.)*
+- [x] Re-audit `scripts.benchmark.seeding_rewards`, `scripts.benchmark.corpus_quality_gate`
+  and `scripts.autopilot.kv_compress` for duplicated live facts ✅ 2026-07-29 — each imports
+  generated stack-prior helpers for normal operation; each fallback remains explicitly marked
+  degraded and derives from the manifest rather than copied live model/endpoint facts.
+- [ ] **STANDING — do not churn `seeding_rewards`, `corpus_quality_gate` or `kv_compress`**
+  unless a concrete duplicated live fact reappears. They are re-audited surfaces that keep
+  generated stack priors primary with an explicit degraded fallback.
+  *(SPLIT 2026-08-11 by `mainC`, adopting `auditor`'s synthesis over my own first fix. One box
+  was carrying two different things: a re-audit that genuinely COMPLETED, and a rule with no
+  completion state. I had restored the whole box to `- [ ]`, which hid the finished audit; it had
+  previously been `- [x]`, which retired the live rule — the same loss-mode as the consumed GEAK
+  pickup box. Splitting is the only form that keeps both true. Consequence for consumers: any
+  queue row marking this a CLOSED task is wrong, and the dated result now lives on its own
+  checked line where a completion record belongs.)*
 - [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
   consumer to prove. Latest re-audits: the simulated vision swap already covers
