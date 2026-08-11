@@ -3456,7 +3456,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-11T14:27:57Z",
+  "generated_at": "2026-08-11T14:43:12Z",
   "nodes": [
     {
       "age_days": 12,
@@ -4486,13 +4486,13 @@
       "track": "mi210 big model and acceleration roadmap"
     },
     {
-      "age_days": 8,
+      "age_days": 0,
       "blocked": 0,
       "closed": 8,
       "domain": "inference-research",
       "handoff": "mi210-mfma-compute-bound-paths.md",
       "id": "INF-36",
-      "last_advanced": "2026-08-03",
+      "last_advanced": "2026-08-11",
       "next_action": "Apply WGM none/8/16/32 to real MMQ launches; retain wall-time, L2/TCC, and correctness evidence",
       "open": 3,
       "state": "active",
@@ -4631,13 +4631,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 55,
+      "closed": 56,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-11",
       "next_action": "With OP-11 approval, commit the experimental producers and rerun C2-7/C2-8/C2-9 on that durable identity",
-      "open": 19,
+      "open": 18,
       "state": "active",
       "track": "rocm verify profile backend"
     },
