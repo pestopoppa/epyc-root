@@ -84,7 +84,7 @@ deliberately for the repetitive-context upside. With no runtime control:
   Qwen3.6-27B Q8 DFlash is capability-certified but lineup-ineligible under P-DFLASH-LINEUP-1:
   acceptance 35.954% < 60%, despite a 2.458× aggregate decode gain; the lane remains disabled.
 - [ ] **V9-8. Implement and prospectively ratify the resident promotion fast path** described in
-  [`kernel-promotion-resident-fast-path.md`](https://github.com/pestopoppa/epyc-inference-research/blob/v9-promotion-instrument-20260810/docs/design/kernel-promotion-resident-fast-path.md): sealed candidate hot stack, exact-parity pack, resident per-request speculation schedule, and automatic fallback to the existing fresh-server instrument.
+  [`kernel-promotion-resident-fast-path.md`](https://github.com/pestopoppa/epyc-inference-research/blob/main/docs/design/kernel-promotion-resident-fast-path.md): sealed candidate hot stack, exact-parity pack, resident per-request speculation schedule, and automatic fallback to the existing fresh-server instrument.
 
 ## 3.1 Evidence
 
