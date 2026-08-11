@@ -696,7 +696,10 @@ C-series forward**, and said so explicitly on the bus rather than letting the wo
 implicitly-owned. These three are filed here so they exist as tasks, not as prose in a bus message
 nobody re-reads:
 
-- [x] **C-OWN — the C-series needs a new owner.** ✅ 2026-07-29 — **adopted by roster id `auditor`**
+- [x] **C-OWN — the C-series needs a new owner.** **CURRENT OWNER: `mainD`, by operator decision
+  2026-08-11** — a dedicated main rather than the auditor, brief
+  `coordination/session-bus/tasks/mainD-c-own-delivery-plane.md`. History below.
+  ✅ 2026-07-29 — **adopted by roster id `auditor`**
   (coordinator assignment, brief `coordination/session-bus/tasks/auditor-c-own-20260729.md`).
   C6/C9/C10/C14/C16/C18/C21 and the `tmux_adapter.py` hardening arc now have an owner. Round 2
   landed C24-review + C25 + C26 + C27(a/b/c) + C32 and the C24 ledger row, each committed with its
@@ -807,7 +810,14 @@ nobody re-reads:
   still-open C18(a) *decision* about what that roster row should ultimately be — that is a
   coordinator call and is unchanged.
 
-> ### POST-REBOOT HANDOVER — `claude-gpu-lane`, closed 2026-07-29 (read this first)
+> ### POST-REBOOT HANDOVER — `claude-gpu-lane`, closed 2026-07-29 — **HISTORICAL, do not act on**
+>
+> *Marked 2026-08-11 by `mainD` (flagged by `mainC`). It says "read this first" and describes a
+> reboot 13 days past, by a session that no longer exists. The host rebooted 2026-07-29 13:41 and
+> again nothing since; the branch it points at should be checked against `main` before any use.
+> Kept for the record, demoted from instruction to history.*
+>
+> <details><summary>original text</summary>
 >
 > **Tier-C rank 10(d) crash-window fixes are on a PUSHED BRANCH, not in /tmp.**
 > `epyc-orchestrator` branch **`tierc-10d-crash-window-durability`** (`8cdf14f9`, off
@@ -848,6 +858,8 @@ nobody re-reads:
 > than an uncollected one; quote the invocation path with any tally (`/workspace` and the canonical
 > root give different answers, deliberately — C19); and derive state from what is observable, never
 > from a field somebody must maintain (C14/C18 polarity).
+>
+> </details>
 
 - [ ] **M5 — flag-gated extensions** (each independent). *Send-keys/spawn BUILT ✅ 2026-07-27*
   after the operator granted `OP-SENDKEYS-CODEX` with `max_spawns_per_day: 3`:
