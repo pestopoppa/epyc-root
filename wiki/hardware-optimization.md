@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds the live AutoKernel stateful-integrity acceptance; prior gfx90a kernel-agent, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-11 (adds AutoKernel C2 live correctness acceptance and closes the MI210 clock-pinning branch; prior gfx90a kernel-agent, roofline, topology, and quant-path findings retained)
 **Sources**: 96+ documents
 
 ## Compiled Update — 2026-08-11 (stateful correctness must include carried state)
@@ -22,6 +22,18 @@ The first live pass used suite seed `4711` and accepted **5,184/5,184** cases ac
 instrument path; it does not make the experimental producer durable. Those producer changes remain
 uncommitted pending explicit operator approval, and the v9/hardened performance calibration is a
 separate next step.
+
+The other live C2 axes now agree with that stateful result: the layout pass accepted **1,048/1,048**
+offset, stride-gap, and transpose cases, while the seed-`4711` value pass accepted **779/779** cases
+across `SOFT_MAX`, `ARGSORT`, `TOP_K`, and `SOLVE_TRI`, with identity, ×3, ×0.01, and negate all
+completed. The `SOFT_MAX` checker required one important correction before acceptance: its invariant
+must include implicit attention sink mass, not demand that only explicit output cells sum to one.
+
+The predeclared clock-pinning discriminator also resolved negatively. During a 60-second 8192³ gfx90a
+GEMM, 242 samples held 1700 MHz for 99.5868% of the window while throughput reached 41.904 TFLOP/s;
+power peaked at only 200 W against the 300 W cap. The card did not approach the cap, so clock excursion
+is not a live variance source under this saturation workload and a privileged
+`--setperfdeterminism` control would add operational authority without solving an observed problem.
 
 ### Source References (2026-08-11 stateful integrity)
 

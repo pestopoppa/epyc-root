@@ -1,18 +1,15 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
-**Status**: ACTIVE HARDENING — stateful C2 integrity live-validated; producer not yet durable
-**Created**: 2026-06-03 · **Updated**: 2026-08-11 (stateful C2 live acceptance; see §2026-08-10)
+**Status**: ACTIVE HARDENING — C2 live correctness axes validated; producer not yet durable
+**Created**: 2026-06-03 · **Updated**: 2026-08-11 (C2 live acceptance + T0-1 closure; see §2026-08-10)
 
 > **NEXT ACTION (2026-08-11): `RVP-C2-6` (independent fp64 CPU reference).** The stateful integrity
 > pass has live CPU acceptance, while the shared C2-1/C2-3/C2-4/C2-5 experimental producer remains
-> uncommitted and must not be committed or pushed without explicit operator approval. The two static
-> probes (`RVP-T0-2`, `RVP-T0-5`) are complete and independently re-verified. **`RVP-T0-1` remains
-> HELD for GPU load** — the 2026-08-11 operator authorization covers CPU inference on the idle host,
-> not a saturating GPU GEMM. It is the only one of the three that puts load on the card (up to
-> the 300 W cap for 60 s), and it decides whether the whole clock-pinning branch — including the
-> operator-only `AK-OP-2` — is live at all. Reopen it when a GPU-load window is authorized; the probe
-> design is finished and needs nothing further. Everything else in §2026-08-10 is CPU-only or static
-> and runs today.
+> uncommitted and must not be committed or pushed without explicit operator approval. The live sampler
+> changes in the research repo are likewise uncommitted and outside this checkpoint. The two static
+> probes (`RVP-T0-2`, `RVP-T0-5`) remain complete and independently re-verified. **`RVP-T0-1` is now
+> complete:** the live card never approached its 300 W cap, so the clock-pinning branch and AK-OP-2
+> are closed. Everything else in §2026-08-10 is CPU-only or static and runs today.
 >
 > **Correction carried with it (operator, 2026-08-10):** the phrase *"All runs operator-approved
 > (P-GPU-1)"* below is **wrong as a blanket statement**. P-GPU-1 governs the **class of claim** a GPU
@@ -287,17 +284,19 @@ job. It is a statement about **what a reward-bearing oracle needs that a regress
 
 ### Zero-cost probes — run these first; two of them can close later work for free
 
-- [ ] **RVP-T0-1 — MI210 saturation probe (row C3). HELD 2026-08-10 — operator: "do not run any
-  inference".** This is the one probe of the three that is not read-only: it drives a saturating GEMM
-  at up to the 300 W cap for 60 s on the shared card. Card state at the time of the hold was **idle**
-  (`rocm-smi`: 0% use, 0% VRAM, no KFD PIDs), so nothing was contended and nothing was started — the
-  hold is a scheduling decision, not a blocker discovered mid-run. **Reopen when a GPU-load window is
-  explicitly authorized**; the probe design below is complete and needs no further work first.
+- [x] **RVP-T0-1 — MI210 saturation probe (row C3).** ✅ 2026-08-11 — the authorized 60-second
+  gfx90a GEMM produced **41.904029 TFLOP/s** while a 250 ms sampler captured **242** samples with a
+  maximum gap of **0.250029 s**. The card held its nominal **1700 MHz** sclk for **99.5868%** of
+  samples and peaked at **200 W** against its **300 W** cap; `approached_power_cap=false`. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/rvp-t0-1-20260811T0906Z/receipt.json` (SHA-256
+  `07788e1d488ecec062e8133dd9e11d379e5075afbcc20f80b6da37e345533431`). The workload PID is gone
+  and the receipt records release at `2026-08-11T09:06:40.267163+00:00`.
   Drive a saturating gfx90a GEMM and log `power_w`
   and `sclk_mhz` at 250 ms intervals for 60 s. **If the card never approaches its 300 W cap, the entire
   clock-pinning branch closes for free** and OP-2 in [`autokernel-research-loop.md`](autokernel-research-loop.md)
-  §21 is declined without spending anything. Facts verified on-box 2026-08-10 before designing the
-  probe: `power1_cap_max` = 300 W (`rocm-smi --showmaxpower` agrees), the card exposes only **three**
+  §21 is declined without spending anything. That condition was met, so the branch is closed. Facts
+  verified on-box 2026-08-10 before designing the probe: `power1_cap_max` = 300 W
+  (`rocm-smi --showmaxpower` agrees), the card exposes only **three**
   sclk levels — `pp_dpm_sclk` = 500 / 800 / 1700 MHz — and the `sysfs` control nodes are root-owned,
   so the probe is read-only and the *remedy*, not the measurement, is what needs root. **At idle the
   card was sitting on level 1 (800 MHz), not level 2**; a three-level DPM table with a wide idle step
@@ -332,6 +331,11 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   Seed set: `SOLVE_TRI` residual bound, `ARGSORT` / `TOP_K` permutation validity (bit-exact — a
   permutation check has no tolerance), `SOFT_MAX` sum-to-one. **Ship it with a seeded-defect gate**
   (RVP-C6-6) or it inherits the same unquantified-sensitivity weakness it was built to fix.
+  - [x] **Live property acceptance within the value-transform pass.** ✅ 2026-08-11 — the 779-case
+    pass covered `SOFT_MAX`, `ARGSORT`, `TOP_K`, and `SOLVE_TRI`. The `SOFT_MAX` invariant was
+    corrected before acceptance to include the operation's implicit attention sink mass rather than
+    demanding that only the explicit output cells sum to one. The parent row remains open until the
+    producer and seeded-defect gate are durable.
 - [ ] **RVP-C2-3 — Value transforms.** identity / ×3 / ×0.01 / negate, floats only, structure
   preserved, **fail-any** gating. Apply per RVP-T0-5 — negate is near-useless on symmetric ranges.
   **Do not copy the fail-open-on-reference-exception branch** the upstream design carries: a
@@ -340,7 +344,10 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   layout axis, exact four-transform and non-zero-case gates, suite-seed-bound `AK_VALUE_V1`
   receipts, per-property transform binding, and fail-closed refusals for missing case receipts or
   legacy property rows. The experimental producer compiles but remains uncommitted pending its
-  required explicit local-commit approval; no transform case has run.
+  required explicit local-commit approval.
+  - [x] **Live value-transform acceptance.** ✅ 2026-08-11 — suite seed `4711` passed **779/779**
+    cases across `SOFT_MAX`, `ARGSORT`, `TOP_K`, and `SOLVE_TRI`; every case completed identity,
+    ×3, ×0.01, and negate. This validates the live pass but does not make its producer durable.
 - [ ] **RVP-C2-4 — Layout / stride axis, as a SEPARATE pass with its own flag.** Three probe families:
   transpose (stride permutation), `as_strided`-equivalent (stride gap), offset base pointer
   (alignment). **Kept separate from RVP-C2-3 deliberately**: the value-transform pass needs shapes
@@ -350,7 +357,10 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   commit `14034623` adds the separate `OpSuitePlan.layout_probe`, exact
   `offset|stride_gap|transpose` family accounting, suite-seed-bound receipts and a gate requiring all
   three families plus a non-zero case count. The experimental producer compiles but remains
-  uncommitted pending its required explicit local-commit approval; no layout case has run.
+  uncommitted pending its required explicit local-commit approval.
+  - [x] **Live layout acceptance.** ✅ 2026-08-11 — **1,048/1,048** emitted layout cases passed the
+    separately gated offset, stride-gap, and transpose-family contract. This validates the live pass
+    but does not make its producer durable.
 - [ ] **RVP-C2-5 — Stateful-op triad.** (1) State is an explicit graph input; (2) byte-equality
   assertion on input buffers across both runs; (3) **the final state is in the compared output set**.
   Rule 3 is the one that gets forgotten, and it is the one that matters — a kernel that computes the
