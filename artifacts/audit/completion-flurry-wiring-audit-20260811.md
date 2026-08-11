@@ -158,6 +158,12 @@ committed, not live · **3** claimed, not committed · **4** live, wired to the 
    Deleting the stale queue rows will not stick — the relay recreates them on the next restart
    unless it learns to check for a receipt/spent state before presenting a token block. Routed
    to mainD (C-OWN owner).
+   **CLOSED same day as C39** (`fd0fdd6e` receipt-aware relay, annotate-never-suppress;
+   `917badee` drift check; `41c20ef5` scope-honest all-clear) plus the auditor-side class
+   closure (`ebce92a2`: static conformance check, 3 signed-but-unindexed gates indexed,
+   authoring contract at `receipts/README.md`). Sole remaining step: coordinator-agent
+   restarts the daemon so the fixed relay goes live. Residual `ratify_and_apply_e8_quality_
+   baseline_v4_20260727.sh` stays with inference (retire-or-repin), named by the check.
 2. **Advisory-store bloat**: `status` reports ~3.0M advisory rows; C34's dedup covers
    schema-invalid rows but not per-tick `would-assign`/re-fired notices. Routed to mainD as an
    observation.
