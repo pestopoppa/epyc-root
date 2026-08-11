@@ -82,6 +82,7 @@ Keep this table current. It is the answer to "has anyone already looked at this?
 | AutoKernel Omniperf fallback | measurement | **write path wired prospectively; awaiting OP-11 and first passing seeded run** — target-family device time per scored suite is producer-written; failed compatibility receipts emit no claims | `autokernel_aux_receipt.py` |
 | AutoKernel GEAK/Arena round-trip | measurement | **write path wired prospectively** — `controller/arena_roundtrip.py` emits separate correctness-pass and timing-validity rates with scored-repetition bases; the completed pre-hook receipt is never back-filled | `autokernel_aux_receipt.py` |
 | AutoKernel GEAK/Arena preflight | dependency evidence | **classified, never coerced into measurement** — the round-trip writer hash-binds source/license/hardware/registry compatibility under `dependencies.preflight` with `belief_measurement_emitted=false` | — |
+| AutoKernel MMQ WGM wall-time/counter sweep | measurement | **candidate — write path task filed before any successor run**; the admitted 2026-08-11 r2 receipts predate a hook and are never back-filled | — |
 
 **Before adding a bulk adapter, price it** (the P2 discipline): sample ~50 records and count how many
 carry the full tuple. If the answer is near zero, the gap is upstream and an adapter adds volume

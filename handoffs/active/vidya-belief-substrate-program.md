@@ -388,6 +388,12 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       metric direction to force it through `ClaimTuple`. ✅ 2026-08-11 — selected the
       least-commitment option: the writer hash-binds preflight under `dependencies.preflight` with
       `classification=dependency_evidence_only` and mechanically emits no belief measurement for it.
+- [ ] SC22 **Wire future AutoKernel MMQ WGM wall-time/counter receipts on the write side before any
+      successor launch-order experiment.** Emit separate directional rows for end-to-end wall time,
+      all-MMQ TCC hit rate, and read-request volume with the exact WGM arm, scored-repetition basis,
+      device claim, producer/source identity, and admitted receipt digest. Project those written rows
+      through the existing measurement ladder; do not add a grading rule and do not back-fill the
+      admitted 2026-08-11 r2 negative, which predates this hook.
 
 ## Dependency notes
 

@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 402
+      "open": 401
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 302
+      "open": 303
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -1042,10 +1042,10 @@
     },
     "mi210-mfma-compute-bound-paths.md": {
       "blocked": 0,
-      "closed": 8,
+      "closed": 9,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 3,
+      "open": 2,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-36",
       "state": "active",
@@ -1848,11 +1848,11 @@
       "closed": 37,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 13,
+      "open": 14,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 50
+      "total": 51
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -2635,7 +2635,7 @@
       "id": "INF-36",
       "index": "inference-research-index.md",
       "line": 44,
-      "next_action": "Apply WGM none/8/16/32 to real MMQ launches; retain wall-time, L2/TCC, and correctness evidence",
+      "next_action": "Profile-select and seed the B=128 elementwise/norm fusion lever through AutoKernel",
       "track": "mi210 mfma compute bound paths"
     },
     "INF-37": {
