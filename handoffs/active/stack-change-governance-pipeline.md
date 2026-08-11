@@ -68,6 +68,28 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - [x] **W2 - Derived stack-priors generator**: descriptors compile the machine-readable stack-prior artifact consumed by validators and migrated consumers.
 - [x] **W3 - Stack drift validator foundation**: freshness, structural contract, scanner ownership, exception metadata, runtime witness, surface summary, and promotion-gate reporting are live. Strict/future hardening continues through owned consumer surfaces rather than a new guard system.
 - [ ] **W4 - Consumer migration**: continue migrating remaining stack-sensitive consumers to generated stack priors or explicit degraded fallbacks. Use the N11/N11a handoffs and `stack_change_surface_manifest.yaml` for prioritization.
+  **2026-08-11 (`mainB`) — sized, and the reason it has stayed open is structural: THE MANIFEST
+  RECORDS NO MIGRATION STATE.** `consumer_surfaces` carries 13 entries whose fields are
+  `classification / consumer_scope / source_of_truth / promotion_blocker / review_cadence /
+  drift_response / implementation_refs / owner / validation_command` — and **no** migration or
+  status field. So "remaining consumers" is not a queryable set; every session that picks this row
+  up must re-derive it from scratch, which is why it never closes.
+  A mechanical screen over `implementation_refs` (does the file read generated priors / does it
+  contain port literals) gives **5 clean, 8 mixed, 0 with no priors read at all**. **That is a
+  SCREEN, not a verdict, and must not be quoted as "8 remaining"**: W4's own wording permits
+  *"or explicit degraded fallbacks"*, and a regex cannot distinguish a **declared** fallback
+  (compliant) from a **hardcoded copy** (not). Reporting the screen as a count would be the same
+  category error as comparing a joint verdict to a single-axis threshold — see SEQ-A.
+  **The unblocking step is therefore not migration work, it is a `migration_status` field on each
+  `consumer_surfaces` entry** (`migrated` | `explicit_fallback` | `unmigrated`, with the evidence
+  ref), so the set becomes queryable and the promotion gate can assert on it. That is a schema
+  change to a governance artifact owned by `stack-change-governance`, so it is **proposed, not
+  applied** — not something to land unattended overnight against a file with a promotion-blocker
+  contract.
+  Screen output for whoever takes it: clean = `routing_prior_consumers`, `admission_policy`,
+  `lock_tap_policy`, `procedure_role_enums`, `generated_stack_docs`; needs a human read =
+  `q_scorer_priors`, `seeding_reward_priors`, `config_model_catalog`, `health_preflight_probes`,
+  `launch_maps`, `dashboard_status_system_cards`, `planner_prompt_guidance`, `runtime_attestation`.
 - [x] **W5 - Simulated model-swap CI gate**: representative data-only stack swaps execute in the promotion gate and cover generated artifacts plus selected consumers.
 - [x] **W6 - Stack-change runbook and launch hook**: production launch, AutoPilot preflight, and benchmark preflight use the canonical gate; bypasses are explicit diagnostics only.
 
