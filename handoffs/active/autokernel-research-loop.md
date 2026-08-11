@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** AK-BH-1–4 COMPLETE / SENSITIVITY REDUCER DURABLE / PRODUCER COMMIT OPEN / Q4_K MMQ REPAIR OPEN — updated 2026-08-11
+**Status:** AK-BH-1–4 COMPLETE / ORACLE + HISTORICAL RESEARCH DURABLE / Q4_K MMQ FIXED LOCALLY / EXPERIMENTAL COMMIT OPEN — updated 2026-08-11
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -64,9 +64,13 @@ Q4_0, Q8_0, Q4_K, and Q6_K directly from GGUF wire bytes and emits
 `fp64_error_ratio/host-double-gguf-wire/v1`. Five representative CPU cases, the broadcast regression,
 31 real parser tests, and the 5/5 planted plus 5/5 clean property self-test passed. A subsequent audit
 fixed a non-contiguous-row coverage bug in that oracle; the corrected forced-dispatch matrix then
-passed all **43/43** force-rocBLAS cases but only **18/43** force-MMQ cases. The retained failures are
-therefore MMQ-specific stock correctness failures, not an oracle defect; κ remains 1.5 and this surface
-cannot rank candidates until MMQ is corrected. AK-BH-1 also measured best-available rocBLAS against
+passed all **43/43** force-rocBLAS cases but only **18/43** force-MMQ cases. The old force-MMQ DP4A
+control also passed only **18/43**, ruling out an MFMA-only defect. The root cause was Q4_K's affine
+MMQ reconstruction mixing a quantized/dequantized Q8 dot term with an original-float activation sum
+for its min correction. The local Q4_K DS4 fix derives both from the same dequantized Q8 population;
+default, force-rocBLAS, force-MMQ MFMA, and force-MMQ DP4A then passed **172/172** at unchanged κ=1.5.
+The source remains uncommitted under OP-11, but the diagnosis and live correction are complete.
+AK-BH-1 also measured best-available rocBLAS against
 hipBLASLt heuristics at nine prefill shapes: hipBLASLt won three, with ratios spanning 0.734×–1.322×,
 so the honest vendor baseline is shape-specific rather than one global library. AK-BH-2 completed all
 eight explicitly pinned `-fa` × `ROCWMMA_FATTN` × `MMQ_MFMA` arms on one Q4_K_M model; `-fa on` won
@@ -84,9 +88,16 @@ released. That smoke is explicitly **non-evidence**: suite identity `0db32c06e` 
 parent while the producer delta is uncommitted. No producer-dependent row closes until explicit
 operator approval permits committing the experimental producer and a fresh matched replay binds its
 durable commit. Separately, the C5-R audit found that the exact 2026-07-04 argv and raw
-parent/human-patch evidence were lost; a fresh matched historical replay is required rather than
-promoting the surviving summary. The next live action remains §AK6.5 Step 3's known-real CPU
-candidate, while producer-dependent sensitivity closure waits on the explicit commit decision.
+parent/human-patch evidence were lost. The replacement historical-task descriptor preserves that
+fact as `historical_command_recovered=false`, seals parent `7c28056b` from expert `496e2f09`, and
+pins the reconstructed surface. Its fresh 15-run matched replay measured a 21.223659% expert ceiling
+(155.4233734 → 188.4099002 `speed_tg`) while correctly leaving candidate scoring `COULD_NOT_CHECK`.
+The C2-8/C2-9 hostile-distribution and checker-isolation reducers/runners, historical scorer/replay,
+and hardened C4 source-identity bridge are durable in research `1a4d7dca` / `main` merge `c5fe6b51`;
+the full AutoKernel suite passes 3,923 tests with one expected failure. The C2-8/C2-9 live smoke was
+implementation-only non-evidence: two selected ROCm0 `SOFT_MAX` rows passed each mode, with claim
+acquisition/release and four samples, but no durable receipt. The next live action remains §AK6.5
+Step 3's known-real CPU candidate, while producer-dependent correctness evidence waits on OP-11.
 The run-specific CPU/GPU authorizations do not extend to producer commits, promotion, or freeze
 actions. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.

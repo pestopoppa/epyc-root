@@ -2,8 +2,34 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds AutoKernel two-axis input-sensitivity instrumentation and its non-evidence boundary; prior baseline-honesty, C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-11 (adds the AutoKernel Q4_K MMQ root cause/fix, historical expert ceiling, and oracle-integrity boundary; prior sensitivity, baseline-honesty, C4, correctness, clock, roofline, topology, and quant-path findings retained)
 **Sources**: 96+ documents
+
+## Compiled Update — 2026-08-11 (Q4_K MMQ correction and expert ceiling)
+
+**Confidence: verified local correctness and matched historical measurement; experimental source is
+not a durable candidate until operator-approved commit/push.**
+
+The gfx90a Q4_K failure was not MFMA-specific: both the old force-MMQ MFMA and DP4A arms passed only
+18/43 cases. The shared mechanism was Q8 activation staging. Q4_K's affine reconstruction multiplied
+the quantized/dequantized Q8 values in its dot term but used the original float activation sum for the
+min correction. Computing both from the same dequantized Q8 population fixed the ordinary and scatter
+DS4 paths. Four final arms—default, force-rocBLAS, force-MMQ MFMA, and force-MMQ DP4A—then passed
+172/172 cases at unchanged κ=1.5, maximum error ratio 1.228272. The receipt is retained; the source
+change remains approval-gated in the experimental tree.
+
+AutoKernel also gained a non-synthetic held-out task from local history. The new descriptor is honest
+about the missing original July 4 command (`historical_command_recovered=false`), pins a replacement
+surface, and seals the human patch until terminal candidate state. Across five matched blocks, the
+human GDN bf16 patch raised mean `speed_tg` from 155.4233734 to 188.4099002, a 21.223659% expert
+ceiling; same-binary expert-off stayed at parity with the parent (-0.105875%). With no terminal
+AutoKernel candidate, candidate-to-expert scoring remains `COULD_NOT_CHECK` rather than inventing a
+comparison.
+
+Hostile same-shape distributions and checker isolation are now durable research gates, but their
+two-case ROCm smoke is non-evidence: the producer is uncommitted and no receipt was retained. The
+smoke showed both modes passing 2/2 selected `SOFT_MAX` rows with claim release and four samples;
+campaign evidence waits for an operator-approved producer identity and fresh replay.
 
 ## Compiled Update — 2026-08-11 (AutoKernel input-sensitivity boundary)
 
