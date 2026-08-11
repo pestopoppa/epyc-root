@@ -413,6 +413,18 @@ bus messages, the D5 rule applied live; `msg-…-167-auditor`).
 | AutoKernel interim output (freeze → 21:34:50Z) | re-stampable | coordinator's interim posture lifts; re-stamp action sits with inference |
 | `e5_cell_manifests.py` `ERA_CPU_KERNEL`/validator | unchanged by design | mainA Token 2 territory (schema + four-constant repair, gated) |
 
+### Known property handed forward (mainA, 22:07Z): cpu_bench scope collision
+
+The signed consolidated token records an ELIGIBILITY boundary (`E8-cpu-bench-throttle-scope`)
+in the same scope as the kernel-cutover rows — so `derive_era(cpu_bench, t)` for
+t ∈ 2026-07-29..2026-08-10 returns the throttle row, not `E8-cpu-kernel`. Not an authoring
+defect (the row was always `scope: cpu_bench` per the 07-29 operator ruling that gate semantics
+are part of the instrument) but a semantic property every future cpu_bench derivation must
+handle: kernel-identity queries must filter by row kind, not scope alone. Owned by mainA's
+Token 2 (structured `binary_version`/kind schema); recorded in
+`batched-decode-measurement.md` and the A7 package banner. My era-advance ratifier is
+unaffected (literal field write, no derivation).
+
 ### Item 4 — C39 re-presentation check
 
 Structural: **no duplicate gate blocks** in `token-queue.md` (string-dedupe held even pre-C39).
