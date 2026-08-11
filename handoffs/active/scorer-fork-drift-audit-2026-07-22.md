@@ -256,6 +256,7 @@ mocked responses + targeted pytest). All 61 targeted seeding-scorer tests pass;
 - [x] Unify the `_inband_error_text` / `_forced_role_serving_mismatch` local copies (seeding `3bfe2584`) with eval_tower's originals into one shared module (currently two deliberate copies) ✅ 2026-08-11 (`mainB`, `epyc-orchestrator` `46f9eacd`)
   Now `src/autopilot_core/measurement_guards.py`, imported by both paths and re-exported under the
   original private names so every caller and test keeps working unchanged.
+  - **Independently re-verified 2026-08-12 (`mainC`), integrity not presence:** grepping `def inband_error_text|def forced_role_serving_mismatch` across the whole orchestrator returns **exactly the two definitions in the shared module and nowhere else**, so no local copy survived the unification — the failure mode a re-export alone would hide. Consumers confirmed at `eval_tower.py:1104-1108` and `seeding_scoring.py:130-134`; 24 tests pass.
   **Equivalence established BEFORE the move, not asserted after**: both pairs parsed to identical
   ASTs once docstrings were stripped, so no scoring outcome changes on either path.
   The module docstring records *why* one copy matters — these are not helpers but the predicates
