@@ -25,6 +25,7 @@ SOURCE_SCHEMAS = frozenset({
     "epyc.autokernel.rocprofv1_attribution.v1",
     "epyc.autokernel.omniperf_fallback.v1",
     "epyc.autokernel.geak_arena_roundtrip.v1",
+    "epyc.inf37.iq2_fancy_simd_ab.v1",
 })
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
@@ -40,7 +41,7 @@ def native_rows(receipt: dict, *, receipt_locator: str = "",
     measurements = receipt.get("belief_measurements")
     if measurements is None:
         return ()
-    if receipt.get("status") not in {"pass", "passed"}:
+    if receipt.get("status") not in {"pass", "passed", "complete"}:
         raise ProjectionError("a failed auxiliary receipt cannot carry belief measurements")
     if not isinstance(measurements, list):
         raise ProjectionError("belief_measurements must be a list")

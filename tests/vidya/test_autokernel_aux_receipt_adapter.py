@@ -40,6 +40,34 @@ def test_old_receipt_without_write_side_vector_is_not_backfilled():
     assert aux.native_rows(receipt(measurements=False)) == ()
 
 
+def test_iq2_complete_receipt_projects_only_producer_written_rows():
+    source = receipt(status="complete")
+    source["schema"] = "epyc.inf37.iq2_fancy_simd_ab.v1"
+    source["belief_measurements"][0].update({
+        "measurement_id": "iq2_xxs_n1_candidate_median_time_us",
+        "metric": "iq2_xxs_backend_op_median_time_us",
+        "value": 3360.0,
+        "unit": "us",
+        "category": "CANDIDATE",
+        "reps": 10,
+        "reps_basis": "scored:balanced paired fresh-process blocks",
+        "claim": "IQ2_XXS n=1 candidate median backend-op time is 3360 us",
+        "extra": {"shape": {"m": 4096, "n": 1, "k": 14336}},
+    })
+    native = aux.native_rows(
+        source, receipt_locator="probe:inf37-r6/receipt.json",
+        receipt_sha256="b" * 64, attestation_present=True)
+    assert len(native) == 1
+    projected = aux.project(native[0])
+    assert projected.metric_direction == "lower_better"
+    assert projected.reps == 10
+    assert projected.attestation_sha256 == "b" * 64
+
+    old = copy.deepcopy(source)
+    old.pop("belief_measurements")
+    assert aux.native_rows(old, receipt_sha256="c" * 64) == ()
+
+
 def test_projection_uses_native_schema_as_protocol_and_shared_ladder():
     row = aux.native_rows(
         receipt(), receipt_locator="probe:k28-r4/receipt.json",
