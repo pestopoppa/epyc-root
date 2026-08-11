@@ -1,6 +1,6 @@
 # DeepSeek-V4-Flash 0731 — Q8 Serving + DSpark Speculative Decoding
 
-**Status**: ACTIVE — experimental v9 DSpark candidate is built and bounded-parity-gated; full v9 promotion qualification is the active next step. Supersedes [`deepseek-v4-flash-cpu-port.md`](../completed/deepseek-v4-flash-cpu-port.md) (closed: port objective met by upstream PR #24162).
+**Status**: ACTIVE — DSpark support is frozen in production v9 and production-named Q8 `-np 1` parity passes; next work is model/quant research, not kernel promotion. Supersedes [`deepseek-v4-flash-cpu-port.md`](../completed/deepseek-v4-flash-cpu-port.md) (closed: port objective met by upstream PR #24162).
 **Created**: 2026-08-09
 **Priority**: P2
 **Effort**: Medium — a new spec-decode type in an existing framework (~14 files/~712 insertions by the DFlash precedent), not an architecture port
@@ -8,7 +8,7 @@
 
 ## Objective
 
-Serve DeepSeek-V4-Flash-0731 (284B total / 13B active MoE) at lossless Q8 on the EPYC CPU path under the frozen v8 kernel, then add DSpark drafting to close the decode-rate gap. Establish a claim-grade throughput baseline on the **production binary and production recipe** — the predecessor's 8–12 t/s band was measured on an out-of-tree fork with different weights and does **not** carry over.
+Serve DeepSeek-V4-Flash-0731 (284B total / 13B active MoE) at lossless Q8 on the EPYC CPU path under frozen production v9 with bounded DSpark drafting. Establish a claim-grade throughput baseline on the **production binary and production recipe** — the predecessor's 8–12 t/s band was measured on an out-of-tree fork with different weights and does **not** carry over.
 
 ## Why this is an integration, not a port
 
@@ -30,6 +30,7 @@ Source repo: [`unsloth/DeepSeek-V4-Flash-0731-GGUF`](https://huggingface.co/unsl
 |---|---|---|
 | `UD-Q8_K_XL/…-0731-UD-Q8_K_XL-0000{1..5}-of-00005.gguf` | 167 GB (5 shards) | Lossless. Routed experts (96% of params) kept in **native MXFP4** — no re-quantization error |
 | `dspark-DeepSeek-V4-Flash-0731-Q8_0.gguf` | 10.9 GB | DSpark draft sidecar (BF16 variant 11.3 GB also exists) |
+| `UD-IQ3_XXS/…-0731-UD-IQ3_XXS-0000{1..4}-of-00004.gguf` | 104.208 GB | Research quant; all four published SHA-256 hashes passed 2026-08-11. Routed experts are materially requantized, so this is not a Q8 promotion substitute |
 
 **Quant choice is settled**: UD-Q4_K_XL is 155 GB — only 7 GB below Q8 — because the MXFP4 experts dominate and are preserved either way. Q4 buys nothing here. The real step down, if ever needed, is UD-IQ3_XXS (103 GB) or UD-Q2_K_XL (97 GB).
 
@@ -66,15 +67,14 @@ batch invariance is outside the current promotion goal. Multi-slot DSpark is rej
 pending #26741. Raw paths and hashes are sealed in
 [`artifacts/audit/v9-dspark-autokernel-base-20260810.json`](../../artifacts/audit/v9-dspark-autokernel-base-20260810.json).
 
-### Promotion qualification handoff (authorized 2026-08-10)
+### Promotion qualification result (completed 2026-08-11)
 
-The operator authorized the complete v8-versus-v9 kernel-promotion procedure for exact candidate
-`2ac4b32a01a6d97af1c85889443472fbd4a1e12e`. The bounded validation above is not a passed promotion
-gate. Qualification must rebuild CPU/HIP from that exact tip, validate linkage and functionality,
-reboot before measurement, and pass every incumbent-role, correctness, quality, topology, rollback,
-and measurement gate. Only then may the authorized conditional `production-consolidated-v9` cutover
-and production-named P-GPU-1/DFlash certification occur. v8 remains immutable throughout and DSpark
-remains restricted to validated `-np 1`. AutoKernel initialization is explicitly outside this goal.
+The complete v8-versus-v9 procedure repaired the authorized starting candidate to final tip
+`0db32c06e3e550065b78311a6031ef3dd2c4f27c`, rebuilt CPU/HIP, and passed the production-role,
+linkage, correctness, quality, topology, rollback, and measurement gates. The versioned cutover and
+production-named GPU/DSpark certification passed; Q8 DSpark cap 0 versus cap 3 preserved exact
+16-token parity, with 18 drafted and 9 accepted at `-np 1`. Production is now frozen v9 and v8 is
+the rollback anchor. AutoKernel initialization remained outside this goal.
 
 ### Phase 0 — Acquisition ✅ COMPLETE 2026-08-10
 - [x] Download UD-Q8_K_XL 5 shards + DSpark Q8_0 sidecar ✅ 2026-08-10 — completed in ~5 h at ~7–10 MB/s unauthenticated. Log: `/workspace/tmp/ds4_0731_download.log`
@@ -123,10 +123,10 @@ Tasks:
 - [x] Build CPU and HIP candidates; prove each binary's local llama/ggml linkage ✅ 2026-08-10
 - [x] Validate real target loader/reshape, focused backend ops, recurrent rollback, request isolation,
   single-slot guard, and bounded greedy token parity ✅ 2026-08-10
-- [ ] Run the complete v8-versus-v9 promotion qualification from the exact candidate; do not credit
-  bounded candidate checks as promotion gates.
-- [ ] If and only if every gate passes, execute the authorized versioned v9 cutover and production-named
-  P-GPU-1/DFlash certification; otherwise retain v8 and repair plus re-run the full candidate.
+- [x] Run the complete v8-versus-v9 promotion qualification from the repaired final candidate ✅ 2026-08-11
+- [x] Execute the authorized versioned v9 cutover and production-named GPU/DFlash/DSpark
+  certification ✅ 2026-08-11 — DFlash capability works, but the Qwen3.6-27B Q8 lane remains disabled
+  because pooled acceptance was 35.954% versus the ratified 60% floor.
 
 ### Phase 3 — Quality parity
 - [ ] Reuse the predecessor's 20-prompt logprob-parity protocol (`v4_quality_gate_runner.py` + `v4_quality_gate_compare.py`, 34 comparator tests pass). The Mac/ds4 external reference dependency is **dissolved** — with the arch in mainline, take parity against a mainline build
@@ -158,5 +158,6 @@ Tasks:
 - [x] Phase 2 effort re-scoped against the DFlash precedent ✅ 2026-08-10 — 14 files / ~712 insertions, not "one enum member"; file-level template recorded in Phase 2
 - [ ] Phase 1 — production-v8 Q8 baseline (claim-grade; required by v9 promotion qualification)
 - [x] Phase 2 — DSpark spec-type on experimental branch ✅ 2026-08-10
-- [ ] Phase 3 — quality parity + α measurement
+- [ ] Phase 3 — broaden quality parity beyond the production 16-token exact-parity certification;
+  production α observation is 9/18 = 0.50 at `n_max=3`, `-np 1`
 - [ ] Phase 4 — role candidacy decision

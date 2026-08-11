@@ -1,23 +1,83 @@
 {
   "schema": "epyc.kernel_promotion_attestation.v1",
-  "status": "production_promoted_pending_gpu_certification",
+  "status": "production_promoted_frozen",
   "production_branch": "production-consolidated-v9",
   "production_head": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
-  "frozen": false,
+  "production_version": 10125,
+  "frozen": true,
   "promoted_at": "2026-08-10T23:59:00Z",
-  "server_binary": {
-    "path": "/mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server",
-    "sha256": "21cfb750dc0ba4b3add0674fcb9dd061d77b3604ebf8e1d063ba0e2c51902feb"
+  "frozen_at": "2026-08-11T01:16:00Z",
+  "server_binaries": {
+    "cpu": {
+      "path": "/mnt/raid0/llm/llama.cpp/build/bin/llama-server",
+      "sha256": "8ebb1355593121a231735d7b58ad076f4539d2c5e3847fa09d2922fa8a980499"
+    },
+    "hip": {
+      "path": "/mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server",
+      "sha256": "21cfb750dc0ba4b3add0674fcb9dd061d77b3604ebf8e1d063ba0e2c51902feb"
+    }
   },
   "rollback": {
     "branch": "production-consolidated-v8",
     "head": "67a433bf45a8a091d83b4ea0b32ff0735fd51800",
     "backup_ref": "refs/heads/production-consolidated-v8",
-    "source_ref": "refs/heads/production-consolidated-v9"
+    "source_ref": "refs/heads/production-consolidated-v9",
+    "rehearsal_status": "pass"
   },
   "qualification": {
     "status": "preproduction_qualification_pass",
     "path": "artifacts/operator/v9-qualification-20260810T235723Z-0db32c06e/summary.json",
     "sha256": "04344a3624247646d0ebd795c12abfa4db48be895ebc8ccc465867917e7da679"
+  },
+  "cutover": {
+    "status": "complete",
+    "path": "artifacts/operator/v9-cutover-20260810T235900Z-0db32c06e/journal.json",
+    "sha256": "e5374f054d0c1be12fe6d511c32c5e24fcac9fb79bc954c82f42bc28e8822d48"
+  },
+  "production_certification": {
+    "research_commit": "5563174f5af9a600d5db13c534cd3d123ec326aa",
+    "region_lock_receipts": {
+      "path": "data/kernel-v9-candidate/promotion-plan-20260810/production-v9-region-lock-receipts.json",
+      "repository": "epyc-inference-research",
+      "sha256": "35e2bfe5d950683e75121cf6edbc60e7aa4c4c921fe7dd066d5ddd899db2e276"
+    },
+    "gpu_roles": {
+      "status": "pass",
+      "path": "data/kernel-v9-candidate/promotion-plan-20260810/production-v9-gpu-cert-run-locked/summary.json",
+      "sha256": "14cb55f5525c2231b44ee4a8caf1d67976f650393ff8843ebb68d4397a479bd6"
+    },
+    "dspark_q8_np1": {
+      "status": "pass",
+      "path": "data/kernel-v9-candidate/promotion-plan-20260810/production-v9-dspark-cert-run-locked/summary.json",
+      "sha256": "ba0e52e323782c8c6f6a3edf32738d9b17c25f61866532ce99e175782bb2fe74",
+      "exact_16_token_parity": true,
+      "disabled_effective_cap": 0,
+      "enabled_effective_cap": 3,
+      "drafted": 18,
+      "accepted": 9,
+      "parallel_slots": 1
+    },
+    "qwen36_27b_q8_dflash": {
+      "status": "lane_ineligible",
+      "kernel_capability_certified": true,
+      "lineup_enabled": false,
+      "protocol": "P-DFLASH-LINEUP-1",
+      "path": "data/gpu-mi210/qwen36-27b-q8-dflash-pgpu1-v9/cert-run-20260811-locked/run-20260811T010339Z/summary.json",
+      "sha256": "136dc83488b7a00d903da460bd59943442126ef2dc2ab45e40672cecb1dd4fbb",
+      "pooled_acceptance": 0.35954022988505746,
+      "acceptance_floor": 0.6,
+      "aggregate_decode_ratio": 2.4576520520087857,
+      "per_prompt_decode_ratios": {
+        "primes": 3.021254593675419,
+        "nested_flatten": 2.2461187640628855,
+        "normalize": 2.148693069352164
+      },
+      "disposition": "DFlash remains disabled for this lane; P-DFLASH-LINEUP-1 states that lane failure does not block the underlying kernel capability or promotion."
+    }
+  },
+  "repository_heads": {
+    "epyc_root_pre_freeze": "1317060a15f7d08f010ea9b2ae5c69fa27717705",
+    "epyc_inference_research": "5563174f5af9a600d5db13c534cd3d123ec326aa",
+    "epyc_orchestrator_qualification": "2ef332286d70ced03d123007865c89ce5d2fefd0"
   }
 }

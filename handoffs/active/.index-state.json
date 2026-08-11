@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 481
+      "open": 478
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -131,7 +131,7 @@
       "blocked": 0,
       "closed": 163,
       "guarded": 0,
-      "last_advanced": "2026-08-10",
+      "last_advanced": "2026-08-11",
       "open": 33,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
@@ -142,7 +142,7 @@
       "blocked": 0,
       "closed": 131,
       "guarded": 0,
-      "last_advanced": "2026-08-10",
+      "last_advanced": "2026-08-11",
       "open": 63,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
@@ -371,10 +371,10 @@
     },
     "deepseek-v4-flash-0731-dspark.md": {
       "blocked": 0,
-      "closed": 13,
+      "closed": 15,
       "guarded": 0,
       "last_advanced": "2026-08-10",
-      "open": 14,
+      "open": 12,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-11",
       "state": "active",
@@ -802,7 +802,7 @@
       "blocked": 0,
       "closed": 5,
       "guarded": 0,
-      "last_advanced": "2026-08-10",
+      "last_advanced": "2026-08-11",
       "open": 5,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-46",
@@ -1539,7 +1539,7 @@
       "blocked": 0,
       "closed": 9,
       "guarded": 0,
-      "last_advanced": "2026-08-10",
+      "last_advanced": "2026-08-11",
       "open": 54,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
@@ -1878,14 +1878,14 @@
     },
     "v9-kernel-per-request-speculative-params.md": {
       "blocked": 0,
-      "closed": 5,
+      "closed": 7,
       "guarded": 0,
       "last_advanced": "2026-08-10",
-      "open": 2,
+      "open": 1,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-58",
       "state": "active",
-      "total": 7
+      "total": 8
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
@@ -2483,7 +2483,7 @@
       "id": "INF-11",
       "index": "inference-research-index.md",
       "line": 23,
-      "next_action": "Run the complete v8-v9 promotion qualification; retain DSpark at validated `-np 1`",
+      "next_action": "Run the claim-grade production Q8 baseline, then the quant-specific IQ3 parity/acceptance study at `-np 1`",
       "track": "deepseek v4 flash 0731 dspark"
     },
     "INF-12": {
@@ -2899,7 +2899,7 @@
       "id": "INF-58",
       "index": "inference-research-index.md",
       "line": 69,
-      "next_action": "Qualify exact v9 candidate `2ac4b32a0` through every promotion gate before any v9 cutover",
+      "next_action": "Implement and prospectively ratify the sealed resident promotion fast path with fresh-server fallback",
       "track": "v9 kernel per request speculative params"
     },
     "INF-59": {

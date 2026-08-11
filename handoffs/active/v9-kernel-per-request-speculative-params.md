@@ -1,7 +1,7 @@
 # v9 kernel candidate — expose per-request speculative parameters
 
-**Filed** 2026-07-31 · **Owner** operator (kernel promotion) · **Status** IMPLEMENTED on experimental v9; full promotion qualification authorized and started 2026-08-10
-**Candidate** `experimental-v9-dspark-autokernel-base` @ `2ac4b32a01a6d97af1c85889443472fbd4a1e12e` (binary 10123), exact v8 base `67a433bf45a8a091d83b4ea0b32ff0735fd51800`
+**Filed** 2026-07-31 · **Owner** operator (kernel promotion) · **Status** PROMOTED AND FROZEN as production v9 on 2026-08-11; resident fast-path follow-up remains open
+**Production** `production-consolidated-v9` @ `0db32c06e3e550065b78311a6031ef3dd2c4f27c` (binary 10125), exact v8 base/rollback `67a433bf45a8a091d83b4ea0b32ff0735fd51800`
 
 ---
 
@@ -76,12 +76,15 @@ deliberately for the repetitive-context upside. With no runtime control:
 - [x] **V9-5. Regression-check ordinary speculative requests.** Focused server tests pass on the
   final candidate (`2 passed in 56.14s`), and the real DSpark smoke reports effective caps 0 and 3
   independently on one reused slot ✅ 2026-08-10
-- [ ] **V9-6. Complete the kernel-promotion qualification procedure** against frozen v8: rebuild CPU
-  and HIP from this exact tip, validate linkage/functionality, reboot before measurement, then run
-  every incumbent-role, correctness, quality, topology, rollback, and measurement gate.
-- [ ] **V9-7. Execute the authorized `production-consolidated-v9` cutover only if V9-6 passes**;
-  then perform production-named P-GPU-1 and DFlash certification. DSpark remains limited to its
-  validated `-np 1` path; failure retains v8 and requires repair plus a full candidate re-run.
+- [x] **V9-6. Complete the kernel-promotion qualification procedure** against frozen v8: rebuild CPU
+  and HIP from the repaired final tip, validate linkage/functionality, and run every incumbent-role,
+  correctness, quality, topology, rollback, and measurement gate ✅ 2026-08-11
+- [x] **V9-7. Execute the authorized `production-consolidated-v9` cutover** and production-named
+  GPU/DFlash/DSpark certification ✅ 2026-08-11. GPU roles and `-np 1` Q8 DSpark exact parity pass.
+  Qwen3.6-27B Q8 DFlash is capability-certified but lineup-ineligible under P-DFLASH-LINEUP-1:
+  acceptance 35.954% < 60%, despite a 2.458× aggregate decode gain; the lane remains disabled.
+- [ ] **V9-8. Implement and prospectively ratify the resident promotion fast path** described in
+  [`kernel-promotion-resident-fast-path.md`](https://github.com/pestopoppa/epyc-inference-research/blob/v9-promotion-instrument-20260810/docs/design/kernel-promotion-resident-fast-path.md): sealed candidate hot stack, exact-parity pack, resident per-request speculation schedule, and automatic fallback to the existing fresh-server instrument.
 
 ## 3.1 Evidence
 
@@ -90,14 +93,19 @@ deliberately for the repetitive-context upside. With no runtime control:
 - Final bounded Q8 smoke: vanilla and DSpark produced identical 16-token arrays; DSpark drafted 18
   and accepted 7 tokens at effective `n_max=3`.
 - Durable receipt: [`artifacts/audit/v9-dspark-autokernel-base-20260810.json`](../../artifacts/audit/v9-dspark-autokernel-base-20260810.json).
+- Qualified final candidate and production tip: `0db32c06e3e550065b78311a6031ef3dd2c4f27c`
+  (version 10125; CPU SHA-256 `8ebb1355…`, HIP `21cfb750…`).
+- Final freeze: [`ratify_v9_final_freeze_20260811.json`](../../artifacts/operator/ratify_v9_final_freeze_20260811.json).
+- Production certification evidence is pinned in
+  [`v9-kernel-promotion-attestation.json`](v9-kernel-promotion-attestation.json), including the
+  region-locked GPU role pass, region-locked DSpark parity pass, and DFlash lane-specific no-go.
 
-## 3.2 Promotion boundary (authorized, no new gate passed)
+## 3.2 Promotion boundary (completed)
 
-The operator authorized the complete v9 promotion procedure on 2026-08-10. It begins from this exact
-candidate and treats v8 as immutable. The bounded smoke and build checks above are candidate evidence,
-not completion of any promotion gate. AutoKernel initialization and its hypothesis queue are explicitly
-outside this promotion goal; they require a separately authorized follow-on after a successful v9
-release boundary.
+The complete qualification repaired the starting candidate to `0db32c06e…`, rebuilt and re-ran the
+full gate set, cut over the versioned production tree, certified the production-named GPU and
+speculation paths, and froze v9. v8 remains the tested rollback anchor. AutoKernel initialization and
+its hypothesis queue were explicitly outside this promotion goal.
 
 ## 4. NOT in scope here — draft-max tuning is a TODAY task
 

@@ -1,0 +1,43 @@
+{
+  "schema": "epyc.operator_v9_final_freeze_attestation.v1",
+  "decision": "FREEZE-V9",
+  "status": "production_promoted_frozen",
+  "ratified_at": "2026-08-11T01:16:00Z",
+  "production_branch": "production-consolidated-v9",
+  "production_head": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+  "production_version": "10125 (0db32c06e)",
+  "production_frozen": true,
+  "production_binary_sha256": {
+    "cpu": "8ebb1355593121a231735d7b58ad076f4539d2c5e3847fa09d2922fa8a980499",
+    "hip": "21cfb750dc0ba4b3add0674fcb9dd061d77b3604ebf8e1d063ba0e2c51902feb"
+  },
+  "candidate_repair_chain": {
+    "authorized_start": "2ac4b32a01a6d97af1c85889443472fbd4a1e12e",
+    "qualified_final": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+    "reason": "Qualification repairs were incorporated and the full candidate was rebuilt and re-run before cutover."
+  },
+  "qualification": {
+    "status": "pass",
+    "path": "artifacts/operator/v9-qualification-20260810T235723Z-0db32c06e/summary.json",
+    "sha256": "04344a3624247646d0ebd795c12abfa4db48be895ebc8ccc465867917e7da679"
+  },
+  "cutover": {
+    "status": "complete",
+    "path": "artifacts/operator/v9-cutover-20260810T235900Z-0db32c06e/journal.json",
+    "sha256": "e5374f054d0c1be12fe6d511c32c5e24fcac9fb79bc954c82f42bc28e8822d48"
+  },
+  "production_certification": {
+    "gpu_roles": "pass",
+    "dspark_q8_np1_exact_parity": "pass",
+    "qwen36_27b_q8_dflash": "lane_ineligible_acceptance_below_floor",
+    "dflash_kernel_capability": "certified",
+    "dflash_lineup_enabled": false,
+    "research_commit": "5563174f5af9a600d5db13c534cd3d123ec326aa"
+  },
+  "rollback": {
+    "branch": "production-consolidated-v8",
+    "head": "67a433bf45a8a091d83b4ea0b32ff0735fd51800",
+    "rehearsal": "pass"
+  },
+  "scope": "operator-authorized complete v8-to-v9 promotion procedure; AutoKernel initialization excluded"
+}

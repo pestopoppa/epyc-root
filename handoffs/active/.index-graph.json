@@ -3587,7 +3587,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-11T00:11:43Z",
+  "generated_at": "2026-08-11T01:24:04Z",
   "nodes": [
     {
       "age_days": 12,
@@ -4279,13 +4279,13 @@
       "track": "attention matching kv compaction"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "closed": 163,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-08-10",
+      "last_advanced": "2026-08-11",
       "next_action": "Enable a C6 containment backend, then verify candidate syscall isolation on the live host",
       "open": 33,
       "state": "active",
@@ -4346,13 +4346,13 @@
     {
       "age_days": 1,
       "blocked": 0,
-      "closed": 13,
+      "closed": 15,
       "domain": "inference-research",
       "handoff": "deepseek-v4-flash-0731-dspark.md",
       "id": "INF-11",
       "last_advanced": "2026-08-10",
-      "next_action": "Run the complete v8-v9 promotion qualification; retain DSpark at validated `-np 1`",
-      "open": 14,
+      "next_action": "Run the claim-grade production Q8 baseline, then the quant-specific IQ3 parity/acceptance study at `-np 1`",
+      "open": 12,
       "state": "active",
       "track": "deepseek v4 flash 0731 dspark"
     },
@@ -4812,13 +4812,13 @@
       "track": "qwen36 27b cpu feasibility"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "closed": 9,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
-      "last_advanced": "2026-08-10",
+      "last_advanced": "2026-08-11",
       "next_action": "RVP-C2-1 \u2014 seeded input generation; precondition for the whole C2 oracle. RVP-T0-1 HELD (needs a GPU-load window)",
       "open": 54,
       "state": "active",
@@ -4944,13 +4944,13 @@
     {
       "age_days": 1,
       "blocked": 0,
-      "closed": 5,
+      "closed": 7,
       "domain": "inference-research",
       "handoff": "v9-kernel-per-request-speculative-params.md",
       "id": "INF-58",
       "last_advanced": "2026-08-10",
-      "next_action": "Qualify exact v9 candidate `2ac4b32a0` through every promotion gate before any v9 cutover",
-      "open": 2,
+      "next_action": "Implement and prospectively ratify the sealed resident promotion fast path with fresh-server fallback",
+      "open": 1,
       "state": "active",
       "track": "v9 kernel per request speculative params"
     },
@@ -5163,13 +5163,13 @@
       "track": "agent world env synthesis"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "closed": 131,
       "domain": "routing-and-optimization",
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",
-      "last_advanced": "2026-08-10",
+      "last_advanced": "2026-08-11",
       "next_action": "Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped",
       "open": 63,
       "state": "active",
@@ -5735,13 +5735,13 @@
       "track": "x mas text routing"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "closed": 5,
       "domain": "routing-and-optimization",
       "handoff": "handoff-index-and-backlog-graph.md",
       "id": "RTG-46",
-      "last_advanced": "2026-08-10",
+      "last_advanced": "2026-08-11",
       "next_action": "Decide whether .index-state.json / .index-graph.json are git-ignored \u2014 timeline artifact already is",
       "open": 5,
       "state": "active",

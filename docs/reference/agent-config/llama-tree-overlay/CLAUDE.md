@@ -1,6 +1,6 @@
-<!-- STAGED OVERLAY (epyc-root, AFC-P6.20) — bake into llama.cpp-experimental BEFORE the next
+<!-- STAGED OVERLAY (epyc-root, AFC-P6.20) — bake into llama.cpp-experimental BEFORE each
      kernel promotion so the vNEXT production tree ships this file at its root. It cannot be
-     added to the frozen v8 tree: HEAD is pinned by verify_llama_cpp.sh + the ratification SHA.
+     edited in the frozen production tree: HEAD is pinned by verify_llama_cpp.sh + ratification.
      At promotion: copy over the upstream 1-line CLAUDE.md; leave upstream AGENTS.md in place
      (this file scopes it). -->
 
