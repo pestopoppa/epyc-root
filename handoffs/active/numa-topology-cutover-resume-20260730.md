@@ -184,17 +184,87 @@ One of those two is worth understanding before you "fix" it:
 
 ## 2. Prioritized task list
 
-### P0 — unblocks the commit (3 tasks)
+### P0 — unblocks the commit (4 tasks)
 
+- [ ] **P0-0 (NEW 2026-08-11, `mainB`) — derived `stack_priors.yaml` has DROPPED the `NUMA_FULL`
+      instance of every quarterable fleet. Owner: the stack owner (`inference`), NOT this lane.**
+      This is the single root cause of **7 of the 9 currently-failing unit tests**, and P0-1 cannot
+      close until it is fixed. **It must not be fixed in the tests.**
+
+      | | frontdoor | worker_general | ingest_long_context |
+      |---|---|---|---|
+      | `stack_topology.yaml` declares | **8070** + 8080 + 8180 | **8072** + 8082 + 8182 | **8085** + 8185 + 8285 |
+      | `derived/stack_priors.yaml` records | 8080, 8180 | 8082, 8182 | 8185, 8285 |
+
+      Every declared `NUMA_FULL` is absent; both surviving entries per fleet carry
+      `cpu_shape_class: half`. `architect_critic` survives only because its sole instance *is* the
+      full. **The tell that this is a drop and not a lineup that was never declared:** the same
+      priors blob still carries `cache.slots_by_port {8070: 4, 8080: 1, 8180: 1}` — the generator
+      knew about the full and it was lost downstream.
+
+      **Consequence beyond the red tests.** `ServerURLsConfig().frontdoor` resolves to
+      `full:http://localhost:8080,...`, and the `full:` prefix designates the FIRST url as the full
+      instance — so a **half is advertised as the full**. `src/config/models.py` warns in-file that
+      dispatch resolves port → topology index and fails OPEN on an unresolvable port; a half
+      labelled full is a region-lock **scope** error (2 of 4 regions claimed as if 4), not a
+      cosmetic string.
+
+      **Operator-visible recurrence.** `8070/8072/8085` is the exact triplet the operator ruled
+      *"accidental and clearly a mistake"* on 2026-07-23, restored the same day via `--numa-mode
+      both` (orchestrator `95dffc88`, see `stack-lineup-dossier-2026-07-23.md`). This is that
+      regression recurring, now in the derived priors rather than the launch contract.
+
+      **Why no session without the stack can fix it:** `src/registry/stack_priors.py:1041`
+      `_realized_compile_numa_mode` derives the mode from the **realized** fleet and explicitly
+      REFUSES to compile when nothing is listening (ESC-8 kill chain A4 — it will not default to
+      `full` and rewrite priors to a dead lineup). The current file is therefore a faithful record
+      of a halves-only launch. Fix = relaunch with the fulls realized, then recompile — i.e. **P0-3
+      step 1, which already exists**; this row is its precondition, not extra work.
+
+      **Standing prediction, recorded so it can be falsified:** after that relaunch + recompile all
+      seven go green with **zero** test edits. If any still fails it is a real test defect and
+      `mainB` owns it.
+
+      Affected tests (do NOT relax them — they assert the topology-declared lineup and are correct;
+      editing them to expect halves-only would encode the regression into the promotion gate, the
+      same "guard that asserts the defect" shape §1.5 already retired one test for):
+      `test_config_consolidation::test_specific_role_urls`, `test_dashboard_helpers` ×3,
+      `test_fleet_layer_build::test_case1_real_worker_fleet_realizes_full_plus_quarters`,
+      `test_kv_compress_adaptive::test_production_ports_use_live_role_names`,
+      `test_stack_templates_v2::TestDefaultYamlRoundTrip::test_default_yaml_loads_and_validates`.
 - [ ] **P0-1. Fix the 30 net-new breaking tests across 14 files**, including the
       two in `PROMOTION_GATE_TARGETS` (both in
       `tests/unit/test_build_server_command_helpers.py`). Retire
       `test_worker_general_numa_policy_is_full_instance_only` rather than
       repairing it — it asserts the defect (§1.5). Re-derive the exact 30 with an
       A/B against a clean `git archive HEAD` if the list has drifted.
-- [ ] **P0-2. Remove the now-XPASSing `xfail(strict=True)` marker** on
+
+      **RE-DERIVED 2026-08-11 (`mainB`) — the list had drifted, badly. Do not re-do the parts that
+      are already done.** Full `tests/unit` run, no `-x`, `--timeout=90`: **9 failed / 11771 passed
+      / 63 skipped**, across **7** files — not 30 across 14.
+      - The **retire target no longer exists**: `test_worker_general_numa_policy_is_full_instance_only`
+        was retired and replaced on 2026-07-31 by the test at
+        `test_build_server_command_helpers.py:1156`.
+      - **`PROMOTION_GATE_TARGETS` is fully green** — all six target files, **200 passed / 0
+        failed** — though this row cites two failures in `test_build_server_command_helpers.py`.
+      - **7 of the 9 are P0-0 above** and are not test work at all.
+      - **1 fixed** ✅ orchestrator `5f08875a`: a `SimpleNamespace` stand-in omitted
+        `retrieval_compaction`, which `eval_tower._compact_question_result` reads unguarded. Fixed on
+        the fixture side to match the real `QuestionResult` default (`{}`); making the production
+        read defensive would have taught it to tolerate a field that is never genuinely absent.
+      - **1 is an operator decision**, filed separately: the E8 protocol's frozen-kernel guard at
+        `run_e8_quality_baseline_reseed.py:1313` fires because today's v9 freeze moved the tree it
+        pins (`/mnt/raid0/llm/llama.cpp` is now `production-consolidated-v9` @ `0db32c06`; the pin
+        wants v8 @ `67a433bf4`). The guard is working correctly — re-pinning it would re-base a
+        measurement era, which is human-amendment-only.
+
+      So what remains of P0-1 is **gated on P0-0**, not on test authoring.
+- [x] **P0-2. Remove the now-XPASSing `xfail(strict=True)` marker** on
       `tests/unit/test_orchestrator_stack_threads.py::test_straddling_cpusets_declare_a_numa_policy`.
       Keep the test; it is the replacement assertion for the one retired in P0-1.
+      ✅ **Already done before 2026-08-11** — verified by `mainB`: the marker is gone, the test is
+      bare with an explanatory comment above it, and it passes. Nothing to remove. Ticked so the
+      next session does not spend a cycle rediscovering that.
 - [ ] **P0-3. Cold-start the stack, re-bench the contention matrix, commit + push
       all three repos.** Strictly ordered; each step has a resume check so a crash
       mid-sequence is recoverable:
@@ -782,7 +852,7 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
 
 - [x] `master-handoff-index.md` **N26 rewritten as a retraction**; N25's P2-debt deploy sentence cancelled ✅
 - [x] `speculative-decoding-mtp-refresh.md` — ⛔ banner added; **NG1–NG4 cancelled**, NG5 re-scoped ✅
-- [x] `inference-acceleration-index.md` — retraction banner above the stale row ✅
+- [x] `inference-research-index.md` — retraction banner above the stale row ✅
 - [x] `numa-topology-cutover-resume-20260730.md` **P2-5 cancelled**; §1.4 in-flight banner corrected ✅
 - [ ] `numa-placement-defect-20260730.md:25-27` and its ngram section still carry the 2.80×. That file is
   **append-only by its own rule** — add a dated superseding note at the end, do **not** edit in place.
