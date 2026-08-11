@@ -207,8 +207,8 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
 - [ ] Run the matched controller-authoring A/B on gfx90a across the registered Claude+Codex,
   EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK, ARGUS, and baseline arms. Registration,
   C4 prompt-hygiene binding, and the three-argument `@register_agent` bridge are complete in
-  research commit `48350b24`; campaign binding/audit and the two unavailable licensed source
-  releases remain before the matched authoring comparison can start.
+  research commit `48350b24`; the full-panel implementation now refuses honestly at 6/8, and the
+  matched eight-arm comparison waits only on the two unavailable licensed source releases.
   - [x] **Build the governed eight-arm campaign driver and audit executable coverage.** ✅ 2026-08-11
     — baseline plus Claude/Codex actor-critic, EvoEngineer, KernelFoundry, K-Search, Xe-Forge,
     GEAK-v1, and ARGUS are serialized on one MI210 at exact 2h/8h/32h checkpoints with source,
@@ -248,9 +248,78 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     inherited 2x2 fixture with two occupied cells, four programs, two QD transitions, and one
     direction without model, GPU, or inference.
     The selected AutoKernel suite passes 538 tests plus 202 subtests at the repaired tip.
-  - [ ] Bind the pushed KernelFoundry adapter into the fixed campaign and produce a fresh
-    no-execution physical audit; do not claim **6/8** before that receipt exists. The latest durable
-    committed audit remains **5/8** and predates both KernelFoundry binding and the Xe repair.
+  - [x] **Bind KernelFoundry and produce the final no-execution full-panel audit.** ✅ 2026-08-11 —
+    research `58c4e332` through `26ad6178` binds all six available arms and emits a clean physical
+    gfx90a refusal at **6/8** before any controller or GPU command. Receipt
+    `/mnt/raid0/llm/autokernel/probes/inf03-final-audits-20260811-Kpg5wU/full-eight-arm-refusal.json`
+    carries receipt SHA-256 `3f67b750c99dccbbe45f5c0043c8aa11973c3e014ab3610bb117786f60a79f7f`
+    and file SHA-256 `b432fcb802797136444b510618966489529147aac60d73209b0c1ee946231b1d`.
+  - [x] **Add and audit the separately governed available-source panel.** ✅ 2026-08-11 — the same
+    pinned task, evaluator, identities, and 2h/8h/32h budgets are ready at **6/6**. Receipt
+    `/mnt/raid0/llm/autokernel/probes/inf03-final-audits-20260811-Kpg5wU/available-source-six-arm.json`
+    carries receipt SHA-256 `d812b69ce380613bd854dd0d15206c09981899abac11b10234a8f98bb02482b8`
+    and file SHA-256 `88101db4f28f909f220acb3bf906f488fe8b4f8e7c307821d325a5542fd4627d`.
+    Its authority is availability-conditioned and diagnostic only: it cannot imply an eight-arm
+    result, rank partial full-panel evidence, or authorize promotion. No inference ran in the audit.
+  - [x] **Run a real KernelFoundry diagnostic smoke and repair the launch boundary it exercised.**
+    ✅ 2026-08-11 — v1 found that copied task workspaces lacked the immutable repository import root;
+    v2 passed import and two real GPT-5.6 Sol/high calls, then found concurrent branches racing in
+    the shared Arena evaluator. Research `f8569112` and `8afd016c` repair both boundaries. V3 passed
+    compilation, correctness, and all 4/4 baseline plus 4/4 optimized timing cases under a cleanly
+    released MI210 claim. Receipt
+    `/mnt/raid0/llm/autokernel/probes/inf03-kernelfoundry-real-smoke-v3-20260811-Mg6Fl9/smoke-receipt.json`
+    carries receipt SHA-256 `cd61675e83040b196a92aa85f2c0bd951f34912bef10a37e1b07f41864f52276`
+    and file SHA-256 `9b47fefcb2744392923745385053aa6ee9a8a959102a17acb7eaea079a1be5b1`.
+    Its `0.9986680991832163` average speedup is diagnostic and non-rankable, not a campaign result.
+  - [x] **Run one-iteration diagnostic smokes for K-Search, Xe-Forge, and GEAK-v1.**
+    ✅ 2026-08-11 — all three terminal runs passed centralized compilation and correctness plus
+    4/4 baseline and 4/4 optimized timing cases, then released their MI210 claims. K-Search receipt
+    `/mnt/raid0/llm/autokernel/probes/inf03-k-search-real-smoke-20260811-tQf7zZ/smoke-receipt.json`
+    has receipt/file SHA-256 `6eea9028399635083a6aed7a4d0101aa106cc4393e4225dd768c6f27c23e7704` /
+    `74f49b472dcb6b2eed1cef66e706e9471ea67f71c94de7a8ba046e3bcd7520b7`; Xe-Forge receipt
+    `/mnt/raid0/llm/autokernel/probes/inf03-xe-forge-real-smoke-20260811-NIffwN/smoke-receipt.json`
+    has `a53ef172b42d3fbb6008902a865eac9c884d181a6cc0fc0cc981f9e8aad1ccae` /
+    `e82917d9f1f751520317700520f33b7bf62dd372749ef18ce3d822ba5b2806ea`; GEAK-v1 receipt
+    `/mnt/raid0/llm/autokernel/probes/inf03-geak-v1-real-smoke-v3-20260811-RJ4UYN/smoke-receipt.json`
+    has `0deef125d026625055e77a63270c444101fd96ce5f6f9b2fce433e47b509a229` /
+    `a4c30029a38011cfc7ca0b59be1eb826463cc336322db57e7d6b2cdea19d7487`.
+    Their near-1.0 speedups are non-rankable smoke telemetry, not comparative evidence.
+  - [x] **Complete the Claude/Codex actor-critic diagnostic smoke through its confined actor path.**
+    ✅ 2026-08-11 — v1–v4 exposed fenced-JSON parsing, contained absolute-path handling, nested
+    sandbox, and Docker-stdin defects. Research `84e2f948`, `dd0daedd`, `da677443`, and `22e60940`
+    repair them while keeping the actor in a digest-pinned, read-only-root container with one
+    writable workspace bind, dropped capabilities, no-new-privileges, exact teardown, and ephemeral
+    auth. V5 completed planner, actor, and critic and reached centralized evaluation, but the worker
+    inherited `/usr/bin/python3` without pytest. Its apparent correctness failure and zero timing
+    cases are therefore an evaluator-runtime defect, not candidate evidence. Receipt
+    `/mnt/raid0/llm/autokernel/probes/inf03-actor-critic-real-smoke-v5-20260811-2Oo2cJ/smoke-receipt.json`
+    has receipt/file SHA-256 `dcb2da77bf691c670b705149bfaec0bf6e8062594cd4297ac3247037da5937fb` /
+    `e890240fa4e3e5134c2975f77930bf5a611e3db285dea2f01a9560d5b699d0d3`.
+    The cleanly released 457.02 s MI210 claim retained 1,829 samples. Research `a57feba0` then pinned
+    the ROCm evaluator Python/package identity and made mismatch a refusal. V6 passed compilation,
+    correctness, and 4/4 baseline plus 4/4 optimized timing cases, reporting diagnostic speedup
+    `0.9936027407797491`. Receipt
+    `/mnt/raid0/llm/autokernel/probes/inf03-actor-critic-real-smoke-v6-20260811-3hAJir/smoke-receipt.json`
+    has receipt/file SHA-256 `5961eef441e487e787310d3bea9d4e57693a8f7a621dff1cc39190d48d952ef9` /
+    `816ecc2d60ee48e8b0be3c6fb05ff1d562d7283697f1def9499ce6d0a98a916c`.
+    The nested controller receipt has SHA-256
+    `fa11ee8162fb6da877358a0c26c67d58d84c75b6c284fe9ee53540bb3673e315`.
+    Its cleanly released 158.72 s claim retained 635 samples; the result remains non-rankable.
+  - [x] **Refresh the campaign pins to the validated controller trees and repeat both static audits.**
+    ✅ 2026-08-11 — clean detached research `6233cd42` binds the actor pin
+    `a57feba0`/`e223a9cd26184aff5df7e24ceafebd53dab7cb1ab712a92c4bf82ca7712d9213` and GEAK pin
+    `743f59df`/`7418493b4322f1be0df76be21686a6e0d48f43f27e0198a0db55b915f27516a7`.
+    The full-panel receipt
+    `/mnt/raid0/llm/autokernel/probes/inf03-final-audits-v2-20260811-v6/full-eight-arm-refusal.json`
+    has receipt/file SHA-256 `4a13f7d0ba91c2610efae4e51bcf7e0be8661d07657f74fecf9a5ee0a4dab3af` /
+    `199e4e129daf561f42d59750a1c2e157da340f433c0fec3abf19cf7c1bd91195` and refuses
+    at 6/8 only for external EvoEngineer and ARGUS. The available-source receipt
+    `/mnt/raid0/llm/autokernel/probes/inf03-final-audits-v2-20260811-v6/available-source-six-arm.json`
+    has `cf8b03df355a8124a1dd668293c1d7d6e839c9f176aebdcd082f073f92ba0581` /
+    `625280fb92b678b8a2a24f15f9a87484a2409c0dcb94e32a777e613639f327ed` and is
+    ready at 6/6. Neither audit ran a controller or GPU command.
+  - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints when
+    inference is authorized; interpret it only as an availability-conditioned diagnostic.
   - [ ] Obtain exact licensed source releases for EvoEngineer and ARGUS, then port their real
     controller policies through the same governed adapter contract; namesake substitutes are not
     admissible.

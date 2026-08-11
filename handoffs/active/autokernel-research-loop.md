@@ -2749,10 +2749,11 @@ nothing wrong. We held no claim.**
       ✅ 2026-08-05
 - [x] Verify host canonical state — governor `performance`, THP `always/always`, `numa_balancing=0`.
       ✅ 2026-08-05
-- [x] **Do not trust the boost gate at idle.** Measured 2026-08-04: 16 cores above 2.5 GHz idle vs
+- [ ] **Do not trust the boost gate at idle.** Standing measurement guardrail. Measured 2026-08-04:
+      16 cores above 2.5 GHz idle vs
       **117 under load**, against a required 80. The gate is now evaluated only at `load/core ≥ 0.25`;
       a preflight that reads it at idle aborts on a perfectly healthy machine. Followed for the
-      claimed probe. ✅ 2026-08-05
+      claimed probe; evidence recorded 2026-08-05.
 
 ### Step 1 — answer the one open measurement question (≈20 min, cheap, do it first)
 
