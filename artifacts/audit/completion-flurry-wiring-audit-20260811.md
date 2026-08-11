@@ -375,6 +375,31 @@ AutoKernel already self-defends: its harness refused a stale-instrument receipt 
 
 ---
 
+## FINAL RECONCILIATION — 2026-08-11 22:30Z (post-restart; sections B and D closed)
+
+**D — every token thread terminal:** P-BENCH-4-affinity and E8-capacityfix SPENT (07-29);
+E9-ROUTING-REWARD and E5-THROTTLE satisfied by FOLDING into the consolidated token (signed
+21:35Z); Annex G signed 21:34Z; era-advance signed 22:15Z and its consumer chain verified
+(state field E9, receipt sha match, dashboard reads per-request — live-on-next-request, no
+process caches it). **Sole remaining D item, now UNOWNED and routed to coordinator:** the E8
+final-c1 cross-era decision package (and the e8-v4 ratifier retire-or-repin) — inference
+handed both off ("unrelated to current AutoKernel scope"); they need an owner assigned.
+
+**B — queue story terminal:** `BACKLOG-DISPATCH-QUEUE.md` carries a SUPERSEDED / DO-NOT-DISPATCH
+banner; `backlog_queue_gen.py --generate` (text-keyed) is the replacement — the structural
+recommendation adopted and built same-day. L339 resolved by its owner (`8ec84f67`, banner
+SEVEN); queue row L1039 is **moot** (a row in a superseded file). `--audit-guards` covers the
+flipped-constraint class going forward. C18(a) is a packaged one-word operator decision
+sitting in the thin-dispatcher (§L800-802), coordinator's to present.
+
+**Daemon restart verification (pid 496387 → 921178 at 22:18:12Z) — all five gaps LIVE, proven
+by consumers not files:** C39 fired five `looks-spent` defect notices into the coordinator
+inbox at 22:18:14 — one per receipted gate in the queue, including the era-advance signed
+three minutes earlier; no gate re-appended (1 block each). C28/C38: `relay_state.json` EXISTS
+(the mirror of mainD's absence-proof), fresh mtime, 641 flagged / 8 delivered and growing.
+R1 (autonomous wake path) and R2 (progress-log staleness check) live by the same restart;
+R2 returns CLEAN against the live repo — correct, the log was written as we went.
+
 ## Self-referential closure
 
 The audit standard applies to the auditor: the 07-29 auditor session's own deliverables —
