@@ -29535,6 +29535,26 @@
   relevance_justification: Inherits intake-576 relevance (medium). The model registry data points (7 variants, BF16-only, no GGUF) are the immediately load-bearing facts for any future deployment decision.
   verdict_justification: superseded by intake-576. All technique analysis and scoring lives in the primary entry; this is the artifact catalog.
   dive_corrections: '2026-07-29 stale-catalog correction: the 2026-05-20 collection snapshot was BF16-only and named no llama.cpp path, but it is no longer an availability statement for this host. A third-party/local `nemotron-diffusion-14b-Q8_0.gguf` (14,359,313,600 bytes; present since 2026-07-10) is available, and the experimental-v7 Dream loader fix at `ed4091266` (2026-07-18) made it runnable through `llama-diffusion-cli`; `test-llama-archs --arch dream` and CPU/MI210 smoke paths passed. Observation-grade local throughput rows are MI210 pp512 1700.42 / tg512 69.05 and CPU pp512 157.57 / tg256 2.69. This does not establish role readiness: the diffusion CLI parses `--grammar` and `-j` but uses its own sampler chain, leaving strict JSON/GBNF/schema-const/line-copy at 0/4. The active blocker is content control or a maintained constrained decode/server path, not GGUF availability or loading.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-07-29 stale-catalog correction. The 2026-05-20 collection snapshot remains accurate AS A
+      SNAPSHOT; what it is no longer is an availability statement for this host.
+  - claim_index: 1
+    effect: narrowed
+    note: 2026-07-29 stale-catalog correction. The 2026-05-20 collection snapshot remains accurate AS A
+      SNAPSHOT; what it is no longer is an availability statement for this host. Still true of the collection
+      'at intake time' — the claim is correctly scoped and that scoping is what saves it — but it must not
+      be read as current availability. A third-party/local nemotron-diffusion-14b-Q8_0.gguf (14,359,313,600
+      bytes) has been present since 2026-07-10, and the experimental-v7 Dream loader fix ed4091266 made
+      it runnable through llama-diffusion-cli, with test-llama-archs --arch dream and CPU/MI210 smoke paths
+      passing. Observation-grade throughput only (MI210 pp512 1700.42 / tg512 69.05; CPU pp512 157.57 /
+      tg256 2.69) — this establishes NO role readiness, since the diffusion CLI parses --grammar and -j
+      but uses its own sampler.
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-07-29 stale-catalog correction. The 2026-05-20 collection snapshot remains accurate AS A
+      SNAPSHOT; what it is no longer is an availability statement for this host.
 - id: intake-579
   arxiv_id: '2603.25333'
   url: https://huggingface.co/papers/2603.25333
@@ -50737,6 +50757,32 @@
     located_by: machine
     match_coverage: '0.875'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-07-28 Stage-2 dive (full text, v2). All qualitative claims CONFIRMED verbatim, including
+      the probing inconsistency — logit lens interpretable at R1-R3 but not R4, coda lens exactly reversed.
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-07-28 Stage-2 dive (full text, v2). All qualitative claims CONFIRMED verbatim, including
+      the probing inconsistency — logit lens interpretable at R1-R3 but not R4, coda lens exactly reversed.
+      Correction (3): the authors explicitly concede the lens methods detect only token-DECODABLE computation
+      and ''do not definitively rule out the presence of latent CoT''. So ''limited evidence'' is a limit
+      of the INSTRUMENT, not established absence — the two must not be conflated when citing this.'
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-07-28 Stage-2 dive (full text, v2). All qualitative claims CONFIRMED verbatim, including
+      the probing inconsistency — logit lens interpretable at R1-R3 but not R4, coda lens exactly reversed.
+      Confirmed verbatim.
+  - claim_index: 3
+    effect: reattributed
+    note: '2026-07-28 Stage-2 dive (full text, v2). All qualitative claims CONFIRMED verbatim, including
+      the probing inconsistency — logit lens interpretable at R1-R3 but not R4, coda lens exactly reversed.
+      Two mis-attributions in one claim. Correction (1): the provisional figures were GSM8K at 8-shot with
+      CoT suppressed by system prompt, NOT the arithmetic probe task (the arithmetic number is 0.19 on 2k
+      one-digit composite). Correction (2): ''falls well short of models that externalize reasoning'' is
+      Huginn-WITH-CoT vs Huginn-WITHOUT — a SELF-comparison, not a cross-model one. The direction survives;
+      both the task and the comparison class are wrong as stated.'
 - id: intake-911
   arxiv_id: '2511.07384'
   url: https://arxiv.org/abs/2511.07384
@@ -50810,6 +50856,41 @@
     located_by: machine
     match_coverage: '0.625'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-28 Stage-2 dive (full text + artifact verification; Stage 1 had the abstract only). The
+      recipe is CONFIRMED — delete a contiguous middle-layer band from a pretrained ~1B decoder (TinyLlama
+      22L -> (4,8,4) by removing layers 4-9), init from pretrained weights (beats random decisively), uptrain
+      with Huginn-style sampled recurrence whose MEAN linearly ramps to 32, which is the genuinely new piece.
+      The test-time knob is CONFIRMED monotone over r=1..32: GSM8K 26.5 -> 51.2, MATH 9.7 -> 14.2.'
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-07-28 Stage-2 dive (full text + artifact verification; Stage 1 had the abstract only). The
+      recipe is CONFIRMED — delete a contiguous middle-layer band from a pretrained ~1B decoder (TinyLlama
+      22L -> (4,8,4) by removing layers 4-9), init from pretrained weights (beats random decisively), uptrain
+      with Huginn-style sampled recurrence whose MEAN linearly ramps to 32, which is the genuinely new piece.
+      The test-time knob is CONFIRMED monotone over r=1..32: GSM8K 26.5 -> 51.2, MATH 9.7 -> 14.2. The curriculum
+      is confirmed, but correction (1) OVERTURNS the cost half: conversion is NOT within a non-pretraining-scale
+      budget, so ''reducing cost'' cannot be carried as stated.'
+  - claim_index: 2
+    effect: narrowed
+    note: '2026-07-28 Stage-2 dive (full text + artifact verification; Stage 1 had the abstract only). The
+      recipe is CONFIRMED — delete a contiguous middle-layer band from a pretrained ~1B decoder (TinyLlama
+      22L -> (4,8,4) by removing layers 4-9), init from pretrained weights (beats random decisively), uptrain
+      with Huginn-style sampled recurrence whose MEAN linearly ramps to 32, which is the genuinely new piece.
+      The test-time knob is CONFIRMED monotone over r=1..32: GSM8K 26.5 -> 51.2, MATH 9.7 -> 14.2. The math-task
+      gain is confirmed; the ''at equal budget'' framing is not, since correction (1) overturns the conversion-cost
+      premise the comparison rests on.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-28 Stage-2 dive (full text + artifact verification; Stage 1 had the abstract only). The
+      recipe is CONFIRMED — delete a contiguous middle-layer band from a pretrained ~1B decoder (TinyLlama
+      22L -> (4,8,4) by removing layers 4-9), init from pretrained weights (beats random decisively), uptrain
+      with Huginn-style sampled recurrence whose MEAN linearly ramps to 32, which is the genuinely new piece.
+      The test-time knob is CONFIRMED monotone over r=1..32: GSM8K 26.5 -> 51.2, MATH 9.7 -> 14.2. Train-time/test-time
+      separation is exactly what the monotone num_steps knob demonstrates. Extrapolation beyond the trained
+      mean depth is conceded open, which this claim does not assert.'
 - id: intake-912
   arxiv_id: '2404.02258'
   url: https://arxiv.org/abs/2404.02258
@@ -54453,6 +54534,87 @@
     and it uses a different estimator. Notably its reward denominator is a STORED constant from a separate
     isolated campaign while the numerator is measured ON THE TRAINING NODE - exactly this entry's condemned
     channel, shipped independently. Venue upgrade: it is now IEEE TPDS 2026, DOI 10.1109/TPDS.2026.3675550.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-03 DIVE-E (full 125pp incl. Appendices A-G, all 46 tables, plus a rendered read of Figure
+      8). EVERY load-bearing measurement number verified exactly; verdict adopt_patterns and credibility_score
+      4 both STAND, so these reward-design findings are liftable as stated. The one resolved gate is about
+      the ARTIFACT, not the claims: the CES execution backend is pre-existing internal Meta infrastructure
+      — Sec C.3 verbatim, ''building the service itself is not a contribution of this paper'' and ''outside
+      the scope of this paper'' — with zero release language in 125 pages, no Data Availability or Reproducibility
+      section, and Table 46 listing licences of CONSUMED assets only. Lift the patterns; there is no code
+      to adopt.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-03 DIVE-E (full 125pp incl. Appendices A-G, all 46 tables, plus a rendered read of Figure
+      8). EVERY load-bearing measurement number verified exactly; verdict adopt_patterns and credibility_score
+      4 both STAND, so these reward-design findings are liftable as stated. The one resolved gate is about
+      the ARTIFACT, not the claims: the CES execution backend is pre-existing internal Meta infrastructure
+      — Sec C.3 verbatim, ''building the service itself is not a contribution of this paper'' and ''outside
+      the scope of this paper'' — with zero release language in 125 pages, no Data Availability or Reproducibility
+      section, and Table 46 listing licences of CONSUMED assets only. Lift the patterns; there is no code
+      to adopt.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-03 DIVE-E (full 125pp incl. Appendices A-G, all 46 tables, plus a rendered read of Figure
+      8). EVERY load-bearing measurement number verified exactly; verdict adopt_patterns and credibility_score
+      4 both STAND, so these reward-design findings are liftable as stated. The one resolved gate is about
+      the ARTIFACT, not the claims: the CES execution backend is pre-existing internal Meta infrastructure
+      — Sec C.3 verbatim, ''building the service itself is not a contribution of this paper'' and ''outside
+      the scope of this paper'' — with zero release language in 125 pages, no Data Availability or Reproducibility
+      section, and Table 46 listing licences of CONSUMED assets only. Lift the patterns; there is no code
+      to adopt.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-03 DIVE-E (full 125pp incl. Appendices A-G, all 46 tables, plus a rendered read of Figure
+      8). EVERY load-bearing measurement number verified exactly; verdict adopt_patterns and credibility_score
+      4 both STAND, so these reward-design findings are liftable as stated. The one resolved gate is about
+      the ARTIFACT, not the claims: the CES execution backend is pre-existing internal Meta infrastructure
+      — Sec C.3 verbatim, ''building the service itself is not a contribution of this paper'' and ''outside
+      the scope of this paper'' — with zero release language in 125 pages, no Data Availability or Reproducibility
+      section, and Table 46 listing licences of CONSUMED assets only. Lift the patterns; there is no code
+      to adopt.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08-03 DIVE-E (full 125pp incl. Appendices A-G, all 46 tables, plus a rendered read of Figure
+      8). EVERY load-bearing measurement number verified exactly; verdict adopt_patterns and credibility_score
+      4 both STAND, so these reward-design findings are liftable as stated. The one resolved gate is about
+      the ARTIFACT, not the claims: the CES execution backend is pre-existing internal Meta infrastructure
+      — Sec C.3 verbatim, ''building the service itself is not a contribution of this paper'' and ''outside
+      the scope of this paper'' — with zero release language in 125 pages, no Data Availability or Reproducibility
+      section, and Table 46 listing licences of CONSUMED assets only. Lift the patterns; there is no code
+      to adopt.'
+  - claim_index: 5
+    effect: unaffected
+    note: '2026-08-03 DIVE-E (full 125pp incl. Appendices A-G, all 46 tables, plus a rendered read of Figure
+      8). EVERY load-bearing measurement number verified exactly; verdict adopt_patterns and credibility_score
+      4 both STAND, so these reward-design findings are liftable as stated. The one resolved gate is about
+      the ARTIFACT, not the claims: the CES execution backend is pre-existing internal Meta infrastructure
+      — Sec C.3 verbatim, ''building the service itself is not a contribution of this paper'' and ''outside
+      the scope of this paper'' — with zero release language in 125 pages, no Data Availability or Reproducibility
+      section, and Table 46 listing licences of CONSUMED assets only. Lift the patterns; there is no code
+      to adopt.'
+  - claim_index: 6
+    effect: unaffected
+    note: '2026-08-03 DIVE-E (full 125pp incl. Appendices A-G, all 46 tables, plus a rendered read of Figure
+      8). EVERY load-bearing measurement number verified exactly; verdict adopt_patterns and credibility_score
+      4 both STAND, so these reward-design findings are liftable as stated. The one resolved gate is about
+      the ARTIFACT, not the claims: the CES execution backend is pre-existing internal Meta infrastructure
+      — Sec C.3 verbatim, ''building the service itself is not a contribution of this paper'' and ''outside
+      the scope of this paper'' — with zero release language in 125 pages, no Data Availability or Reproducibility
+      section, and Table 46 listing licences of CONSUMED assets only. Lift the patterns; there is no code
+      to adopt.'
+  - claim_index: 7
+    effect: unaffected
+    note: '2026-08-03 DIVE-E (full 125pp incl. Appendices A-G, all 46 tables, plus a rendered read of Figure
+      8). EVERY load-bearing measurement number verified exactly; verdict adopt_patterns and credibility_score
+      4 both STAND, so these reward-design findings are liftable as stated. The one resolved gate is about
+      the ARTIFACT, not the claims: the CES execution backend is pre-existing internal Meta infrastructure
+      — Sec C.3 verbatim, ''building the service itself is not a contribution of this paper'' and ''outside
+      the scope of this paper'' — with zero release language in 125 pages, no Data Availability or Reproducibility
+      section, and Table 46 listing licences of CONSUMED assets only. Lift the patterns; there is no code
+      to adopt.'
 
 - id: intake-940
   arxiv_id: '2607.28568'
@@ -54802,6 +54964,37 @@
     located_by: machine
     match_coverage: '0.611'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-08-03 DIVE-A, operator-scoped to a worker_general / architect_critic candidate assessment
+      against the incumbent gemma4-26B-A4B.
+  - claim_index: 1
+    effect: unaffected
+    note: 2026-08-03 DIVE-A, operator-scoped to a worker_general / architect_critic candidate assessment
+      against the incumbent gemma4-26B-A4B.
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-08-03 DIVE-A, operator-scoped to a worker_general / architect_critic candidate assessment
+      against the incumbent gemma4-26B-A4B.
+  - claim_index: 3
+    effect: unaffected
+    note: 2026-08-03 DIVE-A, operator-scoped to a worker_general / architect_critic candidate assessment
+      against the incumbent gemma4-26B-A4B.
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08-03 DIVE-A, operator-scoped to a worker_general / architect_critic candidate assessment
+      against the incumbent gemma4-26B-A4B. CONFIRMED and sharpened: #25731 is OPEN, isDraft TRUE, mergedAt
+      null, REVIEW_REQUIRED, 4078 additions across 63 files — i.e. rejected upstream in its current form,
+      which strengthens rather than weakens ''requires a specific un-merged PR, not upstream master''.'
+  - claim_index: 5
+    effect: reattributed
+    note: 2026-08-03 DIVE-A, operator-scoped to a worker_general / architect_critic candidate assessment
+      against the incumbent gemma4-26B-A4B. The accuracy-retention ladder is MIS-DESCRIBED TWICE. The metric
+      is 'Top-1% Retained (Accuracy Recovery)' — a top-1 TOKEN-AGREEMENT recovery figure against BF16, NOT
+      a benchmark score — and it is measured on the 975B INKLING FLAGSHIP, NOT on Inkling-Small. Any use
+      of it to reason about Inkling-Small quantization is unsupported. The 1-bit figure is also a RANGE,
+      74.2%-77.4%, not the point value this claim states.
 - id: intake-942
   arxiv_id: null
   url: https://huggingface.co/unsloth/Inkling-Small-GGUF
@@ -54927,6 +55120,61 @@
     located_by: machine
     match_coverage: '0.6'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-03 DIVE-A. The quant enumeration and the architecture gate both HOLD, and the gate is
+      now confirmed FIRST-HAND rather than inferred: a read-only grep of the frozen tree at production-consolidated-v8
+      @ 67a433bf4 (branch and HEAD verified unchanged, zero tracked modifications) finds exactly 138 LLM_ARCH_
+      entries ending at LLM_ARCH_DFLASH, with ZERO `inkling` matches anywhere — so this model cannot load
+      on the frozen kernel. The other correction is to the Stage-1 agent''s REASONING, not to a claim: ''storage
+      is a non-issue against 3.7 TB raid0'' argued from TOTAL capacity, but df reports 158-159 GB AVAILABLE
+      of 3.7 TB (96% used) and /mnt/raid0 is the same device as /. Storage is a live constraint.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-03 DIVE-A. The quant enumeration and the architecture gate both HOLD, and the gate is
+      now confirmed FIRST-HAND rather than inferred: a read-only grep of the frozen tree at production-consolidated-v8
+      @ 67a433bf4 (branch and HEAD verified unchanged, zero tracked modifications) finds exactly 138 LLM_ARCH_
+      entries ending at LLM_ARCH_DFLASH, with ZERO `inkling` matches anywhere — so this model cannot load
+      on the frozen kernel. The other correction is to the Stage-1 agent''s REASONING, not to a claim: ''storage
+      is a non-issue against 3.7 TB raid0'' argued from TOTAL capacity, but df reports 158-159 GB AVAILABLE
+      of 3.7 TB (96% used) and /mnt/raid0 is the same device as /. Storage is a live constraint.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-03 DIVE-A. The quant enumeration and the architecture gate both HOLD, and the gate is
+      now confirmed FIRST-HAND rather than inferred: a read-only grep of the frozen tree at production-consolidated-v8
+      @ 67a433bf4 (branch and HEAD verified unchanged, zero tracked modifications) finds exactly 138 LLM_ARCH_
+      entries ending at LLM_ARCH_DFLASH, with ZERO `inkling` matches anywhere — so this model cannot load
+      on the frozen kernel. The other correction is to the Stage-1 agent''s REASONING, not to a claim: ''storage
+      is a non-issue against 3.7 TB raid0'' argued from TOTAL capacity, but df reports 158-159 GB AVAILABLE
+      of 3.7 TB (96% used) and /mnt/raid0 is the same device as /. Storage is a live constraint.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-03 DIVE-A. The quant enumeration and the architecture gate both HOLD, and the gate is
+      now confirmed FIRST-HAND rather than inferred: a read-only grep of the frozen tree at production-consolidated-v8
+      @ 67a433bf4 (branch and HEAD verified unchanged, zero tracked modifications) finds exactly 138 LLM_ARCH_
+      entries ending at LLM_ARCH_DFLASH, with ZERO `inkling` matches anywhere — so this model cannot load
+      on the frozen kernel. The other correction is to the Stage-1 agent''s REASONING, not to a claim: ''storage
+      is a non-issue against 3.7 TB raid0'' argued from TOTAL capacity, but df reports 158-159 GB AVAILABLE
+      of 3.7 TB (96% used) and /mnt/raid0 is the same device as /. Storage is a live constraint.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08-03 DIVE-A. The quant enumeration and the architecture gate both HOLD, and the gate is
+      now confirmed FIRST-HAND rather than inferred: a read-only grep of the frozen tree at production-consolidated-v8
+      @ 67a433bf4 (branch and HEAD verified unchanged, zero tracked modifications) finds exactly 138 LLM_ARCH_
+      entries ending at LLM_ARCH_DFLASH, with ZERO `inkling` matches anywhere — so this model cannot load
+      on the frozen kernel. The other correction is to the Stage-1 agent''s REASONING, not to a claim: ''storage
+      is a non-issue against 3.7 TB raid0'' argued from TOTAL capacity, but df reports 158-159 GB AVAILABLE
+      of 3.7 TB (96% used) and /mnt/raid0 is the same device as /. Storage is a live constraint.'
+  - claim_index: 5
+    effect: unaffected
+    note: '2026-08-03 DIVE-A. The quant enumeration and the architecture gate both HOLD, and the gate is
+      now confirmed FIRST-HAND rather than inferred: a read-only grep of the frozen tree at production-consolidated-v8
+      @ 67a433bf4 (branch and HEAD verified unchanged, zero tracked modifications) finds exactly 138 LLM_ARCH_
+      entries ending at LLM_ARCH_DFLASH, with ZERO `inkling` matches anywhere — so this model cannot load
+      on the frozen kernel. The other correction is to the Stage-1 agent''s REASONING, not to a claim: ''storage
+      is a non-issue against 3.7 TB raid0'' argued from TOTAL capacity, but df reports 158-159 GB AVAILABLE
+      of 3.7 TB (96% used) and /mnt/raid0 is the same device as /. Storage is a live constraint.'
 - id: intake-943
   arxiv_id: null
   url: https://engineering.block.xyz/blog/codecrucible-a-blueprint-for-llm-driven-sast
@@ -55088,6 +55336,79 @@
     located_by: machine
     match_coverage: '0.667'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-03 DIVE-H, against the two Apache-2.0 REPOS rather than the blog. These blueprint claims
+      are untouched; the dive''s finding is a verdict UPGRADE, not a correction. The entry''s own condition
+      for adopt_component IS MET: internal/cli/scan_helpers.go:56-64 ships two first-class LOCAL providers
+      — an `ollama` preset (baseURL http://localhost:11434, authRequired false, wireProvider ''openai'')
+      and a generic `openai-compat` preset (authRequired false, --base-url mandatory) — and wireProvider
+      ''openai'' routes to baseURL + ''/v1/chat/completions'', which is byte-for-byte what llama-server
+      exposes. README.md:127,131-141 documents both. VERDICT SHOULD CHANGE FROM adopt_patterns TO adopt_component.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-03 DIVE-H, against the two Apache-2.0 REPOS rather than the blog. These blueprint claims
+      are untouched; the dive''s finding is a verdict UPGRADE, not a correction. The entry''s own condition
+      for adopt_component IS MET: internal/cli/scan_helpers.go:56-64 ships two first-class LOCAL providers
+      — an `ollama` preset (baseURL http://localhost:11434, authRequired false, wireProvider ''openai'')
+      and a generic `openai-compat` preset (authRequired false, --base-url mandatory) — and wireProvider
+      ''openai'' routes to baseURL + ''/v1/chat/completions'', which is byte-for-byte what llama-server
+      exposes. README.md:127,131-141 documents both. VERDICT SHOULD CHANGE FROM adopt_patterns TO adopt_component.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-03 DIVE-H, against the two Apache-2.0 REPOS rather than the blog. These blueprint claims
+      are untouched; the dive''s finding is a verdict UPGRADE, not a correction. The entry''s own condition
+      for adopt_component IS MET: internal/cli/scan_helpers.go:56-64 ships two first-class LOCAL providers
+      — an `ollama` preset (baseURL http://localhost:11434, authRequired false, wireProvider ''openai'')
+      and a generic `openai-compat` preset (authRequired false, --base-url mandatory) — and wireProvider
+      ''openai'' routes to baseURL + ''/v1/chat/completions'', which is byte-for-byte what llama-server
+      exposes. README.md:127,131-141 documents both. VERDICT SHOULD CHANGE FROM adopt_patterns TO adopt_component.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-03 DIVE-H, against the two Apache-2.0 REPOS rather than the blog. These blueprint claims
+      are untouched; the dive''s finding is a verdict UPGRADE, not a correction. The entry''s own condition
+      for adopt_component IS MET: internal/cli/scan_helpers.go:56-64 ships two first-class LOCAL providers
+      — an `ollama` preset (baseURL http://localhost:11434, authRequired false, wireProvider ''openai'')
+      and a generic `openai-compat` preset (authRequired false, --base-url mandatory) — and wireProvider
+      ''openai'' routes to baseURL + ''/v1/chat/completions'', which is byte-for-byte what llama-server
+      exposes. README.md:127,131-141 documents both. VERDICT SHOULD CHANGE FROM adopt_patterns TO adopt_component.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08-03 DIVE-H, against the two Apache-2.0 REPOS rather than the blog. These blueprint claims
+      are untouched; the dive''s finding is a verdict UPGRADE, not a correction. The entry''s own condition
+      for adopt_component IS MET: internal/cli/scan_helpers.go:56-64 ships two first-class LOCAL providers
+      — an `ollama` preset (baseURL http://localhost:11434, authRequired false, wireProvider ''openai'')
+      and a generic `openai-compat` preset (authRequired false, --base-url mandatory) — and wireProvider
+      ''openai'' routes to baseURL + ''/v1/chat/completions'', which is byte-for-byte what llama-server
+      exposes. README.md:127,131-141 documents both. VERDICT SHOULD CHANGE FROM adopt_patterns TO adopt_component.'
+  - claim_index: 5
+    effect: unaffected
+    note: '2026-08-03 DIVE-H, against the two Apache-2.0 REPOS rather than the blog. These blueprint claims
+      are untouched; the dive''s finding is a verdict UPGRADE, not a correction. The entry''s own condition
+      for adopt_component IS MET: internal/cli/scan_helpers.go:56-64 ships two first-class LOCAL providers
+      — an `ollama` preset (baseURL http://localhost:11434, authRequired false, wireProvider ''openai'')
+      and a generic `openai-compat` preset (authRequired false, --base-url mandatory) — and wireProvider
+      ''openai'' routes to baseURL + ''/v1/chat/completions'', which is byte-for-byte what llama-server
+      exposes. README.md:127,131-141 documents both. VERDICT SHOULD CHANGE FROM adopt_patterns TO adopt_component.'
+  - claim_index: 6
+    effect: unaffected
+    note: '2026-08-03 DIVE-H, against the two Apache-2.0 REPOS rather than the blog. These blueprint claims
+      are untouched; the dive''s finding is a verdict UPGRADE, not a correction. The entry''s own condition
+      for adopt_component IS MET: internal/cli/scan_helpers.go:56-64 ships two first-class LOCAL providers
+      — an `ollama` preset (baseURL http://localhost:11434, authRequired false, wireProvider ''openai'')
+      and a generic `openai-compat` preset (authRequired false, --base-url mandatory) — and wireProvider
+      ''openai'' routes to baseURL + ''/v1/chat/completions'', which is byte-for-byte what llama-server
+      exposes. README.md:127,131-141 documents both. VERDICT SHOULD CHANGE FROM adopt_patterns TO adopt_component.'
+  - claim_index: 7
+    effect: unaffected
+    note: '2026-08-03 DIVE-H, against the two Apache-2.0 REPOS rather than the blog. These blueprint claims
+      are untouched; the dive''s finding is a verdict UPGRADE, not a correction. The entry''s own condition
+      for adopt_component IS MET: internal/cli/scan_helpers.go:56-64 ships two first-class LOCAL providers
+      — an `ollama` preset (baseURL http://localhost:11434, authRequired false, wireProvider ''openai'')
+      and a generic `openai-compat` preset (authRequired false, --base-url mandatory) — and wireProvider
+      ''openai'' routes to baseURL + ''/v1/chat/completions'', which is byte-for-byte what llama-server
+      exposes. README.md:127,131-141 documents both. VERDICT SHOULD CHANGE FROM adopt_patterns TO adopt_component.'
 - id: intake-944
   arxiv_id: null
   url: https://github.com/QuixiAI/QuixiCore
@@ -55239,6 +55560,46 @@
     located_by: machine
     match_coverage: '0.789'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-08-03 DIVE-I, operator-scoped to how others approach experimental kernel work on the AMD/NVIDIA
+      gap, with intake-947 folded in. verdict worth_investigating STANDS.
+  - claim_index: 1
+    effect: unaffected
+    note: 2026-08-03 DIVE-I, operator-scoped to how others approach experimental kernel work on the AMD/NVIDIA
+      gap, with intake-947 folded in. verdict worth_investigating STANDS.
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-08-03 DIVE-I, operator-scoped to how others approach experimental kernel work on the AMD/NVIDIA
+      gap, with intake-947 folded in. verdict worth_investigating STANDS.
+  - claim_index: 3
+    effect: unaffected
+    note: 2026-08-03 DIVE-I, operator-scoped to how others approach experimental kernel work on the AMD/NVIDIA
+      gap, with intake-947 folded in. verdict worth_investigating STANDS.
+  - claim_index: 4
+    effect: narrowed
+    note: 2026-08-03 DIVE-I, operator-scoped to how others approach experimental kernel work on the AMD/NVIDIA
+      gap, with intake-947 folded in. verdict worth_investigating STANDS. One of the two GGUF claims DOWNGRADED
+      TO PARTIAL, verified read-only against our own tree. Treat GGUF-as-reference-semantics as partial
+      rather than established.
+  - claim_index: 5
+    effect: narrowed
+    note: '2026-08-03 DIVE-I, operator-scoped to how others approach experimental kernel work on the AMD/NVIDIA
+      gap, with intake-947 folded in. verdict worth_investigating STANDS. This is the sharper downgrade
+      and it is wrong in a way that matters. ''E8M0 code 255 yields +Inf in GGUF'' is FALSE TWICE: ggml-impl.h:439-473
+      special-cases code 0, and the 255->NaN branch is present-but-COMMENTED with the rationale ''disabled
+      as we don''t need to handle NaNs''. Worse, GGML_E8M0_TO_FP32 HAS ZERO CALL SITES — every CPU MXFP4
+      path uses ggml_e8m0_to_fp32_half, where (255-1)<<23 = 0x7F000000 = 2^127, which is FINITE, neither
+      +Inf nor NaN. So the documented divergence does not describe the code that actually runs.'
+  - claim_index: 6
+    effect: unaffected
+    note: 2026-08-03 DIVE-I, operator-scoped to how others approach experimental kernel work on the AMD/NVIDIA
+      gap, with intake-947 folded in. verdict worth_investigating STANDS.
+  - claim_index: 7
+    effect: unaffected
+    note: 2026-08-03 DIVE-I, operator-scoped to how others approach experimental kernel work on the AMD/NVIDIA
+      gap, with intake-947 folded in. verdict worth_investigating STANDS.
 - id: intake-945
   arxiv_id: null
   url: https://www.eschalabs.com/
@@ -55809,6 +56170,47 @@
     located_by: machine
     match_coverage: '0.583'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-03 DIVE-H. verdict adopt_component and novelty high both STAND, and these methodology
+      claims are untouched. The correction is an ARTIFACT defect, worse than filed: the bundled corpus NEVER
+      EXISTED — all four cited paths 404, the file is absent on all three branches, the repo has 0 tags
+      / 0 releases / 8 commits, and commit 18c4c582, whose message claims to ''align defaults with bundled
+      corpus'', touches ONLY examples/quick-run.sh. It is referenced from five files across three paths
+      and quick-run.sh:43 sets it as the EXECUTABLE DEFAULT, so the shipped quickstart is broken out of
+      the box. That damages the artifact, not the design claims — and it is mildly ironic against claim
+      0, since user-supplied ground truth is exactly what the missing answer key would have been.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-03 DIVE-H. verdict adopt_component and novelty high both STAND, and these methodology
+      claims are untouched. The correction is an ARTIFACT defect, worse than filed: the bundled corpus NEVER
+      EXISTED — all four cited paths 404, the file is absent on all three branches, the repo has 0 tags
+      / 0 releases / 8 commits, and commit 18c4c582, whose message claims to ''align defaults with bundled
+      corpus'', touches ONLY examples/quick-run.sh. It is referenced from five files across three paths
+      and quick-run.sh:43 sets it as the EXECUTABLE DEFAULT, so the shipped quickstart is broken out of
+      the box. That damages the artifact, not the design claims — and it is mildly ironic against claim
+      0, since user-supplied ground truth is exactly what the missing answer key would have been.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-03 DIVE-H. verdict adopt_component and novelty high both STAND, and these methodology
+      claims are untouched. The correction is an ARTIFACT defect, worse than filed: the bundled corpus NEVER
+      EXISTED — all four cited paths 404, the file is absent on all three branches, the repo has 0 tags
+      / 0 releases / 8 commits, and commit 18c4c582, whose message claims to ''align defaults with bundled
+      corpus'', touches ONLY examples/quick-run.sh. It is referenced from five files across three paths
+      and quick-run.sh:43 sets it as the EXECUTABLE DEFAULT, so the shipped quickstart is broken out of
+      the box. That damages the artifact, not the design claims — and it is mildly ironic against claim
+      0, since user-supplied ground truth is exactly what the missing answer key would have been.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-03 DIVE-H. verdict adopt_component and novelty high both STAND, and these methodology
+      claims are untouched. The correction is an ARTIFACT defect, worse than filed: the bundled corpus NEVER
+      EXISTED — all four cited paths 404, the file is absent on all three branches, the repo has 0 tags
+      / 0 releases / 8 commits, and commit 18c4c582, whose message claims to ''align defaults with bundled
+      corpus'', touches ONLY examples/quick-run.sh. It is referenced from five files across three paths
+      and quick-run.sh:43 sets it as the EXECUTABLE DEFAULT, so the shipped quickstart is broken out of
+      the box. That damages the artifact, not the design claims — and it is mildly ironic against claim
+      0, since user-supplied ground truth is exactly what the missing answer key would have been.'
 - id: intake-949
   arxiv_id: '2505.23387'
   url: https://arxiv.org/abs/2505.23387
@@ -60192,6 +60594,39 @@
     DIVE-SURFACED SOURCES: none required for repository mechanics; the related Continual Harness implementation is recorded on intake-1016's gate.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): D-f and D-g in `handoffs/active/repl-session-memory-maturity.md` own the process-safe session lease and uncertain-side-effect recovery journal; the competing runtime remains declined.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-07 Stage-2 repository dive. OVERALL VERIFIED as a well-tested source of persistence/recovery
+      patterns; the only material EPYC gaps are a process-safe session lease and an uncertain-side-effect
+      journal. The ledger''s one OVERTURN is documentation, not a claim: the documented daemon protocol
+      v4 is wrong, the implementation and tests enforce v7.'
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-08-07 Stage-2 repository dive. OVERALL VERIFIED as a well-tested source of persistence/recovery
+      patterns; the only material EPYC gaps are a process-safe session lease and an uncertain-side-effect
+      journal. The ledger''s one OVERTURN is documentation, not a claim: the documented daemon protocol
+      v4 is wrong, the implementation and tests enforce v7. PARTIAL in the dive''s own ledger: restored
+      child records and the recovery mechanics ARE tested, but no empirical success rate is established
+      — so retention across restore is demonstrated in test, not measured in practice.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-07 Stage-2 repository dive. OVERALL VERIFIED as a well-tested source of persistence/recovery
+      patterns; the only material EPYC gaps are a process-safe session lease and an uncertain-side-effect
+      journal. The ledger''s one OVERTURN is documentation, not a claim: the documented daemon protocol
+      v4 is wrong, the implementation and tests enforce v7.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-07 Stage-2 repository dive. OVERALL VERIFIED as a well-tested source of persistence/recovery
+      patterns; the only material EPYC gaps are a process-safe session lease and an uncertain-side-effect
+      journal. The ledger''s one OVERTURN is documentation, not a claim: the documented daemon protocol
+      v4 is wrong, the implementation and tests enforce v7.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08-07 Stage-2 repository dive. OVERALL VERIFIED as a well-tested source of persistence/recovery
+      patterns; the only material EPYC gaps are a process-safe session lease and an uncertain-side-effect
+      journal. The ledger''s one OVERTURN is documentation, not a claim: the documented daemon protocol
+      v4 is wrong, the implementation and tests enforce v7.'
 - id: intake-1010
   arxiv_id: null
   url: https://www.primeintellect.ai/blog/prime-agent
@@ -62042,6 +62477,28 @@
     (retrieved 2026-08-09). What nanopubs LACK maps exactly onto the proposed Vidya kernel: no
     graded evidence, no deterministic fold to derived belief state, no freshness gates, no
     authority classes beyond single-key authorship, no replayable derivation certificates.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive against primary sources (trusty-URI arXiv 1401.5775v3, nanopub guidelines
+      working draft, PeerJ CS-387, npx vocabulary ttl, trustyuri-spec@2015-02-23): all Stage-1 claims verified
+      VERBATIM, including the same-key retraction rule.'
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-08-09 Stage-2 dive against primary sources (trusty-URI arXiv 1401.5775v3, nanopub guidelines
+      working draft, PeerJ CS-387, npx vocabulary ttl, trustyuri-spec@2015-02-23): all Stage-1 claims verified
+      VERBATIM, including the same-key retraction rule. One correction lands here: the RB module exists
+      only in the LIVING SPEC, not in the 2014 paper, so citing ''RA/RB'' to the paper over-states what
+      that source carries. Design note recorded alongside it: nanopub order is sign-then-content-address
+      (the trusty URI covers the signature), and EPYC should INVERT to hash-then-detached-sign so frame
+      ids are stable whether or not signed.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive against primary sources (trusty-URI arXiv 1401.5775v3, nanopub guidelines
+      working draft, PeerJ CS-387, npx vocabulary ttl, trustyuri-spec@2015-02-23): all Stage-1 claims verified
+      VERBATIM, including the same-key retraction rule. Verified verbatim, and the npx vocabulary is RICHER
+      than Stage 1 recorded — npx:invalidates, hasOriginalVersion, approvesOf/disapprovesOf, KeyDeclaration,
+      RetractionNanopub.'
 
 - id: intake-1032
   arxiv_id: '2501.13956'
@@ -64113,6 +64570,73 @@
     intake_entries:
     - intake-664
     - intake-794
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-10. Ingested because rec-005 cited this paper with intake-794''s id attached — a NEIGHBOURING
+      entry, not this one — which is itself the citation-hygiene lesson. The row''s own 2026-07-22 correction
+      is VERIFIED against primary source: RE-Bench is agentic ML-engineering, not a reasoning/CoT eval.
+      The one tightening is already carried by claim 4: scores are normalized to a REFERENCE SOLUTION (0
+      = start, 1 = reference), with the human comparison made at analysis time, so ''scored against human
+      expert baselines'' is loose phrasing. ADOPTION SCOPE, which is the part that binds us: only 1 of 7
+      environments is a kernel task and it is TRITON ON H100 — porting it to gfx90a invalidates the published
+      human and model anchors that are the main reason to use the benchmark at all. The transferable asset
+      is the scoring PROTOCOL, not the numbers.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-10. Ingested because rec-005 cited this paper with intake-794''s id attached — a NEIGHBOURING
+      entry, not this one — which is itself the citation-hygiene lesson. The row''s own 2026-07-22 correction
+      is VERIFIED against primary source: RE-Bench is agentic ML-engineering, not a reasoning/CoT eval.
+      The one tightening is already carried by claim 4: scores are normalized to a REFERENCE SOLUTION (0
+      = start, 1 = reference), with the human comparison made at analysis time, so ''scored against human
+      expert baselines'' is loose phrasing. ADOPTION SCOPE, which is the part that binds us: only 1 of 7
+      environments is a kernel task and it is TRITON ON H100 — porting it to gfx90a invalidates the published
+      human and model anchors that are the main reason to use the benchmark at all. The transferable asset
+      is the scoring PROTOCOL, not the numbers.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-10. Ingested because rec-005 cited this paper with intake-794''s id attached — a NEIGHBOURING
+      entry, not this one — which is itself the citation-hygiene lesson. The row''s own 2026-07-22 correction
+      is VERIFIED against primary source: RE-Bench is agentic ML-engineering, not a reasoning/CoT eval.
+      The one tightening is already carried by claim 4: scores are normalized to a REFERENCE SOLUTION (0
+      = start, 1 = reference), with the human comparison made at analysis time, so ''scored against human
+      expert baselines'' is loose phrasing. ADOPTION SCOPE, which is the part that binds us: only 1 of 7
+      environments is a kernel task and it is TRITON ON H100 — porting it to gfx90a invalidates the published
+      human and model anchors that are the main reason to use the benchmark at all. The transferable asset
+      is the scoring PROTOCOL, not the numbers.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-10. Ingested because rec-005 cited this paper with intake-794''s id attached — a NEIGHBOURING
+      entry, not this one — which is itself the citation-hygiene lesson. The row''s own 2026-07-22 correction
+      is VERIFIED against primary source: RE-Bench is agentic ML-engineering, not a reasoning/CoT eval.
+      The one tightening is already carried by claim 4: scores are normalized to a REFERENCE SOLUTION (0
+      = start, 1 = reference), with the human comparison made at analysis time, so ''scored against human
+      expert baselines'' is loose phrasing. ADOPTION SCOPE, which is the part that binds us: only 1 of 7
+      environments is a kernel task and it is TRITON ON H100 — porting it to gfx90a invalidates the published
+      human and model anchors that are the main reason to use the benchmark at all. The transferable asset
+      is the scoring PROTOCOL, not the numbers.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08-10. Ingested because rec-005 cited this paper with intake-794''s id attached — a NEIGHBOURING
+      entry, not this one — which is itself the citation-hygiene lesson. The row''s own 2026-07-22 correction
+      is VERIFIED against primary source: RE-Bench is agentic ML-engineering, not a reasoning/CoT eval.
+      The one tightening is already carried by claim 4: scores are normalized to a REFERENCE SOLUTION (0
+      = start, 1 = reference), with the human comparison made at analysis time, so ''scored against human
+      expert baselines'' is loose phrasing. ADOPTION SCOPE, which is the part that binds us: only 1 of 7
+      environments is a kernel task and it is TRITON ON H100 — porting it to gfx90a invalidates the published
+      human and model anchors that are the main reason to use the benchmark at all. The transferable asset
+      is the scoring PROTOCOL, not the numbers.'
+  - claim_index: 5
+    effect: unaffected
+    note: '2026-08-10. Ingested because rec-005 cited this paper with intake-794''s id attached — a NEIGHBOURING
+      entry, not this one — which is itself the citation-hygiene lesson. The row''s own 2026-07-22 correction
+      is VERIFIED against primary source: RE-Bench is agentic ML-engineering, not a reasoning/CoT eval.
+      The one tightening is already carried by claim 4: scores are normalized to a REFERENCE SOLUTION (0
+      = start, 1 = reference), with the human comparison made at analysis time, so ''scored against human
+      expert baselines'' is loose phrasing. ADOPTION SCOPE, which is the part that binds us: only 1 of 7
+      environments is a kernel task and it is TRITON ON H100 — porting it to gfx90a invalidates the published
+      human and model anchors that are the main reason to use the benchmark at all. The transferable asset
+      is the scoring PROTOCOL, not the numbers.'
 - id: intake-1073
   arxiv_id: null
   url: https://github.com/GaryStack/Parallel-RL
