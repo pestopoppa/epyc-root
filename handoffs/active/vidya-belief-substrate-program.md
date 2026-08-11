@@ -321,6 +321,36 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       times. Not startable by a summariser: each verdict needs the dive text read against the claim,
       which is the exact failure intake-896#record memorialises. Start with the cited head — `cli.py
       corrections` ranks it — and record `effect` per claim, never per entry
+  - **TRIAGED 2026-08-11 (`mainC`) — no verdicts written. The queue is far more tractable than "129
+    unadjudicated" suggests, and the reason it looked intractable is that it was never split.**
+    Classifying each correction by the adjudication its OWN text demands:
+
+    | adjudication needed | n | share |
+    |---|---|---|
+    | scope / framing | 37 | 29% |
+    | numeric / metric | 31 | 24% |
+    | provenance / citation | 16 | 12% |
+    | superseded or duplicate | 6 | 5% |
+    | needs a PRIMARY-SOURCE dive | **1** | 1% |
+    | unclassified — needs a read to say | 38 | 29% |
+
+    **Only ONE correction demands a primary-source dive** (`intake-547`, whose text says its claims
+    "remain unverified against arXiv:2603.02615" — filed during the intake-901 Stage-3 audit and
+    explicitly *not* a dive on its own entry). It is also the single most-cited entry in the queue
+    (7 citations), so the highest-leverage item is also the only one that needs real research: it
+    should be packaged for the operator, not desk-adjudicated. The other ~99 desk-resolvable ones do
+    not need to wait behind it.
+    - **Where to start:** the cited head. 81 of 129 are cited by a project document; entries at
+      `citations >= 3` block **65 claims** between them. Drain those first — an uncited correction
+      blocks nothing a reader can currently rely on.
+    - **Caveat on the table, stated rather than hidden:** the split is a regex over each
+      `correction_text`, so it is a routing hint, not a verdict. The 29% "unclassified" bucket is
+      the honest residue, and any row may reclassify on a real read. It orders the work; it does not
+      do it.
+    - **Not started deliberately.** `disposition` records a *human* verdict via `--actor`, and SC15
+      is explicit that this is not summariser-safe work. Writing 129 verdicts from a triage pass
+      would inject exactly the unwarranted warrant the substrate exists to prevent. The ordering
+      above is the deliverable; the verdicts are not mine to manufacture.
 - [ ] SC16 **Is `uncertain` the right default for a per-claim verdict?** `apply_claim_verdict` keeps
       the ENTRY-level verdict when a dive records `effect: uncertain`, so on a `dive-overturned`
       entry an "a reader could not tell" verdict currently opposes the claim at `Verified` — the

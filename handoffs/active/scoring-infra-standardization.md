@@ -34,6 +34,35 @@ already has bare-letter handling).
       truncated-boxed regressions. Research `bc33cb76`.
 - [ ] **1b. Migrate research consumers** to import the canonical lib; delete each duplicate extractor; test
       each. (score_benchmarks, lib/scorer, score_aa_omniscience, xmas_*, short_mk_voting, adapters.)
+  - **ADDITIVE PASS 2026-08-11 (`mainC`, operator-authorised: no deletions). Result: NO remaining
+    consumer is a safe migration target, and each verdict is PROVEN per consumer, not assumed.**
+    The two that genuinely were duplicates are already done as 1b.1/1b.2. Corrections to this row's
+    own consumer list, which is partly stale: **`score_benchmarks` does not exist** under that name
+    in either repo, and **`lib/scorer` is in `epyc-orchestrator`, not research** — so this list
+    spans two repos and reads as if it spans one.
+    - **`score_aa_omniscience_run.py` — NOT a duplicate.** Its `extract_answer` is tag-based and
+      configurable (`<answer>…</answer>`), not letter extraction, and it feeds `token_f1` rather
+      than a boolean match. Two concrete blockers to delegating it to canonical
+      `extract_exact_answer`: canonical's single-pattern path compiles with **no flags**, so it
+      loses `re.DOTALL` and would stop matching a multi-line `<answer>` block; and canonical falls
+      back to the **whole stripped response** where AA falls back to the **last non-empty line** —
+      which changes precision/recall/F1 on every unparsed response. This is the "AA configurable
+      token-F1" the blast-radius warning named; the mechanism is now on record.
+    - **`review_f1/scorer.py` — NOT a duplicate.** PR-finding scoring, different domain entirely.
+    - **`debug_scorer._extract_multiple_choice_letter` (orchestrator) — NOT a duplicate, and this
+      is the dangerous one.** It sits on the authority/sealed-capture path. It accepts **A-H** vs
+      canonical **A-J**, has no `\boxed{}` handling, and — the systematic difference — its
+      last-resort strategy returns the **last standalone letter unconditionally**, where canonical
+      accepts a bare letter only when exactly ONE candidate exists. It is therefore
+      **systematically more permissive: it scores answers canonical declines to parse.** Unifying
+      them is a SCORING CHANGE requiring a re-score of the affected sealed captures, not a diff.
+    - **`data/vision_mmmu_cutover_20260731/harness.py:88` — NOT a duplicate.** Its
+      `extract_letter(text, options)` validates against the live option set (`if c in valid`);
+      canonical takes no options and cannot.
+    - **Landed additively** (comments only, zero behaviour change): both extractors now carry a
+      cross-reference naming the other and enumerating the four deltas, so the next reader cannot
+      mistake resemblance for equivalence. Research `answer_scoring.py`, orchestrator
+      `debug_scorer.py`.
   - [x] **1b.1 short-m@k multiple-choice vote extraction** ✅ 2026-07-29 (research `53eb754c`; 11 focused tests): replaced its local multiple-choice regex cascade with canonical `extract_letter_answer`; preserves final-answer precedence and adds the verbose-final-line regression.
   - [x] **1b.2 X-MAS function-axis multiple-choice scoring** ✅ 2026-07-29 (research `5ed43e1e`; targeted scorer tests): replaced its local standalone-letter regex with canonical `extract_letter_answer`; preserved the runner's bespoke substring/rubric paths. The one-cell summary fixture now explicitly requests partial-summary mode, so the full module test file validates the intended partial-run behavior.
 - [x] **1c-audit. Orchestrator scoring + tool-use audit (read-only, subagent).** ✅ 2026-07-24 — report:
