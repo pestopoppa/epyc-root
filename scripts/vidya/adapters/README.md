@@ -75,6 +75,7 @@ Keep this table current. It is the answer to "has anyone already looked at this?
 | llama-bench sweeps | measurement | candidate — needs a write-side hook first | — |
 | speech kernel (whisper/qwentts) runs | measurement | candidate — unexamined | — |
 | kernel promotion/certification and K35 paired kernel/speculation receipts | measurement | candidate — v9 candidate, production GPU, DFlash/DSpark, and IQ3 quick-pair receipts exist, but producers have no ClaimTuple write hook; do not retrofit on read | — |
+| model artifact acquisition/integrity receipts | measurement | candidate — downloads currently preserve repo/revision, bytes and hashes only in session prose; add a prospective ClaimTuple write hook before the next acquisition | — |
 | `test-backend-ops` property-layer residuals (RVP-C2-2) | measurement | **statically wired, awaiting the experimental-tree commit and first real event** — the tool receipt, AutoKernel event projection and Vidya adapter bind per-op/backend/shape residuals to `suite_seed`; absence is not back-filled | `autokernel_property.py` |
 
 **Before adding a bulk adapter, price it** (the P2 discipline): sample ~50 records and count how many

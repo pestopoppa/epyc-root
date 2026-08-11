@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 439
+      "open": 441
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 301
+      "open": 302
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -371,14 +371,14 @@
     },
     "deepseek-v4-flash-0731-dspark.md": {
       "blocked": 0,
-      "closed": 19,
+      "closed": 23,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 12,
+      "open": 14,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-11",
       "state": "active",
-      "total": 31
+      "total": 37
     },
     "delegation-context-preassembly.md": {
       "blocked": 0,
@@ -1892,11 +1892,11 @@
       "closed": 34,
       "guarded": 0,
       "last_advanced": "2026-08-10",
-      "open": 12,
+      "open": 13,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 46
+      "total": 47
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -2485,7 +2485,7 @@
       "id": "INF-11",
       "index": "inference-research-index.md",
       "line": 23,
-      "next_action": "Run the claim-grade Q8 baseline and repeat the IQ3 pair cleanly before any role-candidacy decision",
+      "next_action": "Run the matched standardized-versus-control DFlash throughput, acceptance and exact-parity comparison",
       "track": "deepseek v4 flash 0731 dspark"
     },
     "INF-12": {
