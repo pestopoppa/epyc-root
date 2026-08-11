@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** AK-BH-1–4 COMPLETE / CPU SPLIT-LANE RANKING REJECTED / Q4_K MMQ REPAIR OPEN — updated 2026-08-11
+**Status:** AK-BH-1–4 COMPLETE / SENSITIVITY REDUCER DURABLE / PRODUCER COMMIT OPEN / Q4_K MMQ REPAIR OPEN — updated 2026-08-11
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -73,8 +73,20 @@ eight explicitly pinned `-fa` × `ROCWMMA_FATTN` × `MMQ_MFMA` arms on one Q4_K_
 each paired comparison, `MMQ_MFMA` was materially slower on this surface, and the winning arm was
 `r1m0-fa-on` at 24,647.316788 t/s. Those single-surface observations do not authorize a global build
 default. The experimental implementation remains uncommitted under its per-commit approval rule. The
-next live action is the v9/hardened control block,
-followed by §AK6.5 Step 3's known-real CPU candidate.
+research-side C2-7/C2-11/C5-2 sensitivity reducer and runner are now durable in research commit
+`000a2686` (promoted to `main` via `f3c6b24a`): they reduce a
+reference-only 3-seed × 4-transform population across separate seed-variation and transform-variation
+axes, refusing missing, mixed-version, or untrusted observations. The focused reducer suite passes
+14/14 tests. CPU and HIP `test-backend-ops` builds materialize `AK_SENS_V1`; their parser/provider
+suite passed 201 tests. A live `SOFT_MAX` smoke produced 212 rows per seed, 2,544 observations and
+1,484 scoreable units, with PASS, zero unscoreable units, and a CPU claim held through the run then
+released. That smoke is explicitly **non-evidence**: suite identity `0db32c06e` names the committed
+parent while the producer delta is uncommitted. No producer-dependent row closes until explicit
+operator approval permits committing the experimental producer and a fresh matched replay binds its
+durable commit. Separately, the C5-R audit found that the exact 2026-07-04 argv and raw
+parent/human-patch evidence were lost; a fresh matched historical replay is required rather than
+promoting the surviving summary. The next live action remains §AK6.5 Step 3's known-real CPU
+candidate, while producer-dependent sensitivity closure waits on the explicit commit decision.
 The run-specific CPU/GPU authorizations do not extend to producer commits, promotion, or freeze
 actions. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.

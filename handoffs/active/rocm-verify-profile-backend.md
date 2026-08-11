@@ -417,7 +417,27 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   transforms, run once per suite version, plus an input-*insensitivity* screen (does the output move
   at all when the input does?) and a seed-invariance screen. **Audit our own `(0.9, 1.1)`-style ranges
   first** (RVP-T0-5) — a case whose inputs cannot distinguish a correct kernel from a constant is a
-  case that grades nothing.
+  case that grades nothing. **2026-08-11 implementation checkpoint:** the research-side two-axis
+  reducer and claim-aware runner are complete and durable in research commit `000a2686` (promoted to
+  research `main` via `f3c6b24a`). They require reference-only materialized
+  inputs, at least three seeds, all four identity/×3/×0.01/negate transforms, and measurable input
+  and reference-output movement on both the seed and transform axes. The 14 focused reducer tests
+  pass. This parent row remains open because the `AK_SENS_V1` producer is still an uncommitted change
+  in `llama.cpp-experimental`; commit/push requires explicit operator approval, followed by a fresh
+  matched run whose suite identity includes that durable producer commit.
+
+  - [x] **RVP-C2-7a — Build the two-axis research reducer and claim-aware runner.** ✅ 2026-08-11 —
+    research commit `000a2686`, promoted to `main` via `f3c6b24a`; the focused reducer passes 14/14.
+
+  **OP-11 decision package.** Context: repository policy requires explicit operator approval for each
+  commit/push in `llama.cpp-experimental`, and the current producer delta cannot identify itself
+  durably. Option A: approve one exact reviewed producer commit/push, then rerun the matched
+  sensitivity screen (small, reversible source-history change; makes the suite identity honest).
+  Option B: decline the commit and retain the implementation only as a local diagnostic
+  (zero publication risk; all producer-dependent rows remain open and the smoke remains non-evidence).
+  **Recommendation: A**, after reviewing the exact experimental diff, because the research consumer
+  and both builds are green and a durable producer identity is the only remaining instrumentation
+  dependency. **Default:** no experimental commit or push; no producer-dependent closure.
 - [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
   the value distribution. This is the anti-shape-detection device, and it targets something we
   actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can
@@ -528,10 +548,15 @@ the end are deliberate and recorded so they are not re-derived._
   tasks on our own stack**, at zero hardware-porting cost. **Two hard constraints**: (a) construct and
   run on historical commits or `llama.cpp-experimental` — **never** against the frozen v8 tree; (b) our
   PRs are public and in training data, so temporal filtering or held-out selection is mandatory, or the
-  suite measures memorization.
+  suite measures memorization. **2026-08-11 evidence audit:** the exact 2026-07-04 argv and raw
+  parent/human-patch evidence are no longer available; the surviving summaries cannot reconstruct a
+  matched claim. Do not promote that historical observation. A fresh historical-commit replay must
+  retain exact argv, raw outputs, hashes, and matched parent-versus-human-patch measurements.
 - [ ] **RVP-C5-2 — Screen the C5 seed corpus for input-INSENSITIVE ops** (the `mean(softmax(x))` /
   `relu(x-2)`-under-uniform-sampling class). Twin of the degenerate-output screen on a different axis:
-  constant output vs insensitivity to the input.
+  constant output vs insensitivity to the input. The durable research reducer now implements this
+  distinction, but this row remains open until the experimental producer is committed with operator
+  approval and the C5 corpus is screened by a fresh matched run.
 - [ ] **RVP-C3-2 — Expert-reference ceiling alongside the honest-baseline floor.** Where a task derives
   from a real merged optimization, report candidate-vs-human-patch delta as well as
   candidate-vs-vendor-baseline. C3 currently fixes only the floor.
@@ -560,7 +585,9 @@ the end are deliberate and recorded so they are not re-derived._
   cost. Keep shape-variation-as-correctness-probe distinct from shape-variation-as-hack-detector —
   different instruments, and merging them weakens both.
 - [ ] **RVP-C2-11 — Seed-invariance degeneracy screen**: an output that does not vary across input
-  seeds is cacheable and therefore unscoreable. Complements RVP-C2-7.
+  seeds is cacheable and therefore unscoreable. Complements RVP-C2-7. The durable research reducer
+  now emits this axis separately from transform variation; closure still requires an operator-approved
+  experimental producer commit and a fresh durable-identity replay.
 - [ ] **RVP-C2-12 — A hard error on non-contiguous input must be a FAIL, never a skip.** The reference
   suite converts these to skips in half its files; a kernel that cannot accept a strided ggml view is
   not correct for llama.cpp, and a skip records that as neither pass nor fail. **2026-08-11 static
