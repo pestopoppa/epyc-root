@@ -257,6 +257,24 @@ vision quarter-preference — pre-exist at the base commit, verified by stash-ru
   will keep being picked up and re-declined until the operator either retires the rollback or the
   gate is rewritten. Surfaced to `coordinator-agent` as an operator item rather than re-declined
   silently a third time.
+
+  **Residual `wp12-realized-first-reader` — FILED OUT OF SCOPE WITH A REASON, not left silently**
+  (2026-08-11, `mainB`; the brief required one or the other). `stack_templates._active_numa_mode()`
+  does still delegate to `env_stack_numa_mode()` — re-derived, the code is at
+  `src/config/stack_templates.py:256-259` (the file moved `scripts/server/` → `src/config/` since
+  the residual was filed, so its old path citation reads dead while the line numbers still match).
+  **It is not an oversight and must not be deleted.** WP-14's residual note
+  (`within-role-placement-state-machine.md`, ✅ 2026-07-29, orchestrator `608cc54c`) records this as
+  the *intended* shared validated reader: *"No further WP-12 deletion is needed."*
+  One precision worth having, because the two defaults differ and it is easy to misread as a hazard:
+  `env_stack_numa_mode()` defaults to **`full`** (`DEFAULT_STACK_NUMA_MODE = "full"`), while the port
+  helper `_role_instance_ports()` defaults to **`both`**. An ambient `full` would be the ESC-8 kill
+  chain A4 shape *if it governed* — it does not. The consumer at `stack_templates.py:325+` computes
+  `_matching_numa_mode_for_ports(role, prior_ports)` and prefers the **realized** mode per role, and
+  the function is a *validator* (returns `errors, warnings`), not a priors writer. The actual priors
+  writer is separately hardened: `stack_priors.py:1041` `_realized_compile_numa_mode` **refuses to
+  compile** when nothing is listening rather than defaulting to `full`.
+  So: out of scope for §5, resolved by decision, and the reader stays.
 - [x] §6 case 10 live gate — **PASS** ✅ 2026-07-23 (operator inference grant same day; evidence bundle `coordination/inference-batch/bundles/WP12-case10-live-gate/` + terminal ledger row `WP12-case10-live-gate`): worker_math 4-wide burst → **4 disjoint busy quarters** (8082/8182/8282/8382, all four simultaneously decoding, peak /slots sample all-busy), fleet identity on every dispatch (tap `topology_role=worker_general`), zero same-fleet fallback, zero phantom-full, migration counters 0→0. J2/J3 replay executed faithfully (identical params, `--workers 1` API-only reload, 12/12 OK, n_aborted=0) — verdict INCONCLUSIVE is **structurally correct**: both fleets are quarters-only (no full endpoint), so the full↔quarter migration surface is dormant (C10-F2). Two findings, neither a fleet-layer defect:
   - **C10-F1**: `live_warm_worker_slots()` returns `{}` (filters `tier=="warm"`; every live role is `hot`) → `get_role_max_concurrency()==1` for ALL roles → `_acquire_role` `Semaphore(1)` per role **per API worker process**. Within-role concurrency in production exists ONLY via the 6 uvicorn processes (cross-process disjointness from region flocks). On a `--workers 1` API every role serializes fully — the first burst attempt landed 4/4 on port 8082 back-to-back (staircase 19.7/34.9/49.6/64.1s). Also reinterprets the 2026-07-21 J2/J3 pass: its committed migrations (forward=6/reverse=4) are consistent with fully serial traffic (full-idle KV handovers), not overlap-driven displacement.
   - **C10-F2** (wording corrected 2026-07-23 per [stack-lineup-dossier-2026-07-23.md](stack-lineup-dossier-2026-07-23.md) §5.1): WP-3/WP-4 migration surface dormant in the quarters-only **realized/launched** lineup — the full/half instances remain **declared-dormant** in NUMA_CONFIG (worker full 8072 `placement_policy: full_disabled` by DISPATCH-A `99dd6c92`; frontdoor 8070 / ingest 8085 halves undisabled-but-unlaunched since the v7 quarter-mode cutover `ff4b3766`). SM stays unit-verified; the live surface returns only if the operator redeploys a big instance.
