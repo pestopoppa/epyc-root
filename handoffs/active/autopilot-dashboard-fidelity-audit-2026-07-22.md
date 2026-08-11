@@ -280,9 +280,26 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
   authority banner reads live holds ("quality: HELD pending E8 baseline; speed: pending E8
   numeric rerun N/16"); `decision_grade_possible=False` while any hold is open. Python-side
   takes effect at the deferred API reload (reseed trial boundary); HTML live on refresh.
-  - [ ] **[E8-PANELS-a] Reconcile the rerun counter fields**: banner shows the gate marker's
-    `frontier_rerun_required` count (0/16) while `frontier_rerun_pending_clear` carries the
+  - [x] **[E8-PANELS-a] Reconcile the rerun counter fields** ✅ 2026-08-11 (`mainB`,
+    `epyc-orchestrator` `98ed5c5f`): banner showed the gate marker's
+    `frontier_rerun_required` count (0/16) while `frontier_rerun_pending_clear` carried the
     live 15/16 — unify which field the gate updates mid-run (cosmetic, confusing).
+    **Root cause, and it was not cosmetic in the way the row assumed.** `completed_numeric_trials`
+    was written onto the marker ONLY by `_clear_frontier_rerun_marker` — i.e. once the gate had
+    already been satisfied. While the marker was OPEN it kept its creation value, `0`, even though
+    the live count is recomputed from the journal every decision cycle and reached only the
+    rationale. So it was not two fields disagreeing; it was **one field nothing updated mid-run**,
+    read by three surfaces that each coped differently.
+    Fix: the gate now writes `completed_numeric_trials` / `min_numeric_trials` back onto the open
+    marker each cycle, and `gen_system_card` renders them as `[15/16]`.
+    `optimization_brief.py:188` needed **no change** — it was already reading the right field.
+    **Reporting only, deliberately.** Nothing gates on the number: the decision path uses the
+    freshly computed local and `speed_hold` keys off `required`. A test pins that a missing or zero
+    count still HOLDS the gate — the failure mode worth guarding against is a "cosmetic" fix that
+    quietly wires a fail-closed hold to a display field. Skipped when `journal is None`, where the
+    counter returns 0 and writing it would recreate the bug from the other direction.
+    5 new tests; 719 passed across the autopilot/brief/system-card consumers (the 4 failures are the
+    known pre-existing set: 3× P0-0, 1× the E8 v8 pin).
   - [ ] **[E8-PANELS-b] Commit the ratified era-registry row**: an uncommitted `eval_quality`
     E8 row sits in `orchestration/instrument_eras.yaml` (output of the operator's quality-fence
     transaction; human-amendment provenance) — commit it with its receipt reference.
