@@ -748,7 +748,15 @@ def print_triage(bus_root: Path, agent: str) -> None:
         undelivered = ("" if entry["delivered"] else
                        "   [NOT in your inbox — found by outbox scan; the relay may never "
                        "have delivered it]")
-        print(f"via: {' + '.join(entry['sources'])}{undelivered}")
+        # C40: age on the `via:` line, NOT inside `body`. The fence's byte count and
+        # sha256 are computed over `body` precisely so a downstream truncation is
+        # provable; decorating the body would either invalidate that or force the
+        # digest to cover text the sender never wrote. The framing lines are where
+        # this report already says things ABOUT a message.
+        age = message_age_h(entry["row"])
+        stale = ("" if age is None or age < DEFAULT_STALE_AFTER_H else
+                 f"   [{age / 24:.1f} DAYS OLD — verify the work is not already done]")
+        print(f"via: {' + '.join(entry['sources'])}{undelivered}{stale}")
         print(body)
         print(f"--- END ROUTED MESSAGE {index}/{total} id={logical_id(entry['row'])} ---")
 
@@ -1068,6 +1076,53 @@ def cmd_cursor(args: argparse.Namespace) -> int:
     return 0
 
 
+DEFAULT_STALE_AFTER_H = 24.0
+
+
+def message_age_h(row: dict, now: float | None = None) -> float | None:
+    """Hours since the message was authored, or None if its `ts` is unusable."""
+    try:
+        authored = datetime.fromisoformat(str(row.get("ts"))).timestamp()
+    except (TypeError, ValueError):
+        return None
+    return max(0.0, ((time.time() if now is None else now) - authored) / 3600.0)
+
+
+def _print_staleness(rows: list[dict], stale_after_h: float) -> None:
+    """Say, out loud, which of the messages just drained are OLD.
+
+    C40 (2026-08-11). When the coordinator-daemon came back from its 243h outage it
+    relayed 703 messages in one burst. `mainA` and `mainB`, spawned minutes earlier,
+    drained that backlog and BOTH self-assigned `p2-5l-stack-numa-doc-debt` — work
+    `auditor` had completed on 2026-07-29 as `ae40ee8b`. They burned tokens on it
+    until the coordinator could redirect them.
+
+    Nothing was delivered wrongly; that is C28's subject and this is not it. The
+    delivery was correct and the AGE was invisible: `ts` is printed inside each JSON
+    body and nowhere else, so "is this still current?" was a judgement every reader
+    had to make per message, and a session with no history makes it wrong. A fresh
+    main cannot tell this minute's assignment from twelve-day-old mail, and both
+    look equally like instructions.
+
+    Written to STDERR on purpose. Stdout is JSONL and consumers parse it; the msg
+    schema sets `additionalProperties: false`, so decorating the rows themselves
+    would make anything that re-validates a drained row start failing. The framing
+    that is already on stderr is where a human reads, and this joins it.
+    """
+    aged = [(row, message_age_h(row)) for row in rows]
+    stale = [(row, age) for row, age in aged if age is not None and age >= stale_after_h]
+    if not stale:
+        return
+    print(f"\n!! {len(stale)} of {len(rows)} message(s) are OLDER THAN {stale_after_h:g}h. "
+          f"Check whether the work is already done before acting on them — a relayed "
+          f"backlog looks exactly like fresh instructions.", file=sys.stderr)
+    for row, age in sorted(stale, key=lambda pair: -pair[1]):
+        days = age / 24.0
+        stamp = f"{days:.1f}d" if days >= 1 else f"{age:.0f}h"
+        print(f"   {stamp:>6} old  {row.get('kind', '?')} from {row.get('from', '?')}"
+              f"  task={row.get('task_id')}  id={row.get('id')}", file=sys.stderr)
+
+
 def cmd_drain(args: argparse.Namespace) -> int:
     """Print this agent's inbox past its cursor and advance. The one-liner
     agents run at every task boundary."""
@@ -1121,6 +1176,7 @@ def cmd_drain(args: argparse.Namespace) -> int:
                           {"agent": args.agent, "offset": end, "ts": _utcnow_iso()})
         print(f"-- {len(rows)} message(s); cursor {start} -> {end}"
               f"{' (peek: not advanced)' if args.peek else ''}", file=sys.stderr)
+        _print_staleness(rows, args.stale_after_h)
     else:
         print(f"(no new messages for {args.agent})")
     if getattr(args, "triage", False):
@@ -1446,6 +1502,9 @@ def build_parser() -> argparse.ArgumentParser:
     dp.add_argument("--peek", action="store_true", help="print without advancing the cursor")
     dp.add_argument("--triage", action="store_true",
                     help="also print the routing standing queue (cursor-independent, in full)")
+    dp.add_argument("--stale-after-h", type=float, default=DEFAULT_STALE_AFTER_H,
+                    help=f"flag drained messages older than this many hours "
+                         f"(default {DEFAULT_STALE_AFTER_H:g}; C40)")
     dp.set_defaults(func=cmd_drain)
 
     tp = sub.add_parser("triage", help="standing queue of messages routed to you "

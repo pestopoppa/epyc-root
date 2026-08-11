@@ -12,6 +12,7 @@ import os
 import shutil
 import sys
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -2650,3 +2651,114 @@ def test_backfill_check_catches_a_signed_gate_with_no_keyed_receipt(
     assert "gates the bus has seen" in clean
     assert "check_ratifier_receipt_contract.sh" in clean, \
         "name the check that covers the other half, or the gap is invisible again"
+
+
+# ----------------------------------------------------------------------- C40
+#
+# When the daemon came back from its 243h outage it relayed 703 messages in one
+# burst. mainA and mainB, spawned minutes earlier, drained that backlog and BOTH
+# self-assigned `p2-5l-stack-numa-doc-debt` — work auditor had completed on
+# 2026-07-29 as ae40ee8b. Nothing was delivered wrongly (that is C28's subject);
+# the delivery was correct and the AGE was invisible. `ts` sits inside each JSON
+# body and nowhere else, so a session with no history cannot tell this minute's
+# assignment from twelve-day-old mail, and both read as instructions.
+
+def _aged_msg(hours: float, *, task: str, sender: str = "bob") -> dict:
+    stamp = datetime.now(timezone.utc) - timedelta(hours=hours)
+    # A schema-VALID task-assign: the C34 validator refuses a thin one, and a fixture
+    # that could not survive `validate_row` would not prove anything about drained rows.
+    return {"schema_version": bus.MSG_SCHEMA_VERSION,
+            "id": f"msg-20260811T100000Z-{int(hours)}-{sender}", "ts": stamp.isoformat(),
+            "from": sender, "to": "alice", "kind": "task-assign", "task_id": task,
+            "payload": {"lane": "none", "lease_expires_ts": stamp.isoformat(), "epoch": 14}}
+
+
+def test_drain_flags_a_stale_relayed_backlog_on_stderr(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The incident, reproduced. The old assignment must be called out; the fresh
+    one must not, or the warning is noise and stops being read."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "alice.jsonl",
+            _aged_msg(24 * 12 + 3, task="p2-5l-stack-numa-doc-debt", sender="auditor"))
+    _append(bus_root / "inbox" / "alice.jsonl", _aged_msg(0, task="live-work"))
+    capsys.readouterr()
+
+    assert bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"]) == 0
+    err = capsys.readouterr().err
+
+    assert "1 of 2 message(s) are OLDER THAN 24h" in err
+    assert "p2-5l-stack-numa-doc-debt" in err and "12.1d old" in err
+    assert "live-work" not in err, "a current message must not be flagged"
+
+
+def test_drain_keeps_stdout_as_clean_jsonl(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The constraint that decided WHERE the signal goes. Stdout is JSONL and
+    consumers parse it; the msg schema sets additionalProperties: false, so
+    decorating the rows would make anything that re-validates a drained row start
+    failing — the exact class of defect C34 was."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "alice.jsonl", _aged_msg(24 * 30, task="ancient"))
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"])
+    out = capsys.readouterr().out
+
+    rows = [json.loads(line) for line in out.splitlines() if line.strip()]
+    assert len(rows) == 1
+    for row in rows:
+        bus.validate_row(bus_root, row, "msg")      # still schema-valid, undecorated
+
+
+def test_drain_says_nothing_when_everything_is_current(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The compliant path. A banner on every drain trains the reader to skip it,
+    which is how the real one gets missed."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "alice.jsonl", _aged_msg(1, task="recent"))
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"])
+    assert "OLDER THAN" not in capsys.readouterr().err
+
+
+def test_stale_threshold_is_tunable_and_a_broken_ts_is_never_a_verdict(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "alice.jsonl", _aged_msg(2, task="two-hours-old"))
+    torn = _aged_msg(99, task="unparseable")
+    torn["ts"] = "not a timestamp"
+    _append(bus_root / "inbox" / "alice.jsonl", torn)
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice",
+              "--stale-after-h", "1"])
+    err = capsys.readouterr().err
+    assert "two-hours-old" in err
+    # A ts it cannot read is reported as neither fresh nor stale — inventing an age
+    # would be a claim the record does not support.
+    assert "unparseable" not in err
+    assert bus.message_age_h({"ts": "not a timestamp"}) is None
+
+
+def test_triage_marks_a_stale_item_without_touching_the_fence_digest(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The age goes on the `via:` line, NOT inside `body`. The fence's byte count and
+    sha256 are computed over `body` so a downstream truncation is provable; decorating
+    the body would force the digest to cover text the sender never wrote."""
+    _provision(bus_root, *AGENTS)
+    old = _aged_msg(24 * 12, task="stale-routed")
+    old["needs_routing_to"] = ["alice"]
+    old["action_required"] = True
+    _append(bus_root / "outbox" / "bob.jsonl", old)
+    capsys.readouterr()
+
+    bus.print_triage(bus_root, "alice")
+    out = capsys.readouterr().out
+
+    assert "DAYS OLD" in out
+    fenced = out.split("--- BEGIN", 1)[1]
+    body = fenced.split("\n{", 1)[1]
+    body = "{" + body.split("\n--- END", 1)[0]
+    assert "DAYS OLD" not in body, "the integrity-covered body must be the sender's bytes"
+    assert json.loads(body)["task_id"] == "stale-routed"

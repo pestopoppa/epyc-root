@@ -1851,8 +1851,28 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   body and nowhere else, so "this is stale" is a judgement every reader must make per message, and a
   fresh session with no history makes it wrong. Fix direction: age is structural, like
   `needs_routing_to` — `drain`/`triage` annotate each item with its age and flag anything older than
-  a threshold as historical, and a spawn records a mark so pre-spawn mail is labelled as predating
-  this session. Cheap, and it does not require the daemon to change what it delivers.
+  a threshold as historical. **FIXED**: `drain` prints a staleness banner naming every message older
+  than `--stale-after-h` (default 24), worst first, with kind/sender/task/id; `triage` marks a stale
+  item on its `via:` line. Reproduced today's incident on a fixture — the 12.1d `p2-5l` assignment
+  is flagged, the fresh one is not. 5 tests, 412 green.
+  - [x] **The signal goes to STDERR and to the `via:` line — never into the payload.** ✅ Two
+    constraints decided this, and both are defects this handoff already carries. `drain`'s stdout is
+    JSONL that consumers parse, and the msg schema sets `additionalProperties: false`, so decorating
+    a drained row would make anything that re-validates it start failing — the C34 class. And
+    `triage`'s fence carries a byte count and sha256 **over `body`** precisely so a downstream
+    truncation is provable; putting the age inside would force the digest to cover text the sender
+    never wrote. Tests assert the drained rows still pass `validate_row` untouched, and that the
+    integrity-covered body is the sender's bytes.
+  - [x] **An unreadable `ts` is neither fresh nor stale.** ✅ `message_age_h` returns None and the
+    message is simply not listed — inventing an age would be a claim the record does not support.
+  - [x] **Silent when everything is current.** ✅ A banner on every drain trains the reader to skip
+    it, which is how the real one gets missed.
+  - [ ] **Not done, and deliberately not guessed: the spawn mark.** The filing also proposed
+    labelling mail that predates the current session, which is sharper than any age threshold — a
+    2h-old assignment to a session spawned 10 minutes ago is also suspect. The spawn timestamp lives
+    in `adapter-ledger.jsonl`, which `session_bus.py` does not read today; wiring it couples the two
+    modules and wants its own think. The 24h threshold already covers the measured incident (12
+    days), so this is a refinement, not a gap.
 
 - [x] **C41 — `backlog_row_check.section_is_guarded` answers a SECTION question about a BOX,
   and is wrong in both directions.** ✅ 2026-08-11 — `mainD`. Filed by `auditor`, corroborated
