@@ -50984,6 +50984,52 @@
     UNREPORTED ABLATION FOUND: runtime.py disable_query_memory ("re_mem_noquery") isolates the lossless archive from the compression policy. Implemented in released MIT code; results omitted from the paper. This is the arm that would settle whether the archive earns its cost.
 
     DEDUP HAZARD: arXiv 2607.21503 "Agentic Context Management: Solving Agent Memory and Cost by Treating Them as Lifecycle and Architecture Problems" is a DIFFERENT paper from the same week with a near-identical title. Guard against conflation.'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: '2026-07-29 Stage-2 dive (full text + released repo, joint with intake-922). CENTRAL FINDING:
+      NO MASKING BASELINE. S5.1 baselines are ReAct / Summary Agent / Memory Agent and Table 2 is ReAct/ReSum/ACON/ACE
+      only; truncation appears solely as unrun related work, and the code confirms it — src/configs/runtime.py
+      exposes use_memory_tools and a disable_query_memory ablation with NO masking/truncation/observation-dropping
+      path anywhere. Stage-1 recommended_action #3 is RESOLVED-CONFIRMED. This claim asserts the agent-decides
+      approach BEATS external heuristic triggers such as fixed token thresholds — and the trivial-threshold
+      foil was never run. Recovered baseline rows also cut the margin to roughly a third of the framing:
+      ACM Base beats the STRONGEST run baseline by +2.1/+2.5/+1.4pt (BCP/DSQA/SWE-BV Pass@1), not the +6.5pt-over-ReAct
+      the entry implied, and on SWE-Bench Verified both summarization foils score BELOW plain ReAct.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (full text + released repo, joint with intake-922). CENTRAL FINDING:
+      NO MASKING BASELINE. S5.1 baselines are ReAct / Summary Agent / Memory Agent and Table 2 is ReAct/ReSum/ACON/ACE
+      only; truncation appears solely as unrun related work, and the code confirms it — src/configs/runtime.py
+      exposes use_memory_tools and a disable_query_memory ablation with NO masking/truncation/observation-dropping
+      path anywhere. Stage-1 recommended_action #3 is RESOLVED-CONFIRMED. A design assertion about offload-and-retrieve,
+      not a comparative result, so the missing baseline does not bear on it.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (full text + released repo, joint with intake-922). CENTRAL FINDING:
+      NO MASKING BASELINE. S5.1 baselines are ReAct / Summary Agent / Memory Agent and Table 2 is ReAct/ReSum/ACON/ACE
+      only; truncation appears solely as unrun related work, and the code confirms it — src/configs/runtime.py
+      exposes use_memory_tools and a disable_query_memory ablation with NO masking/truncation/observation-dropping
+      path anywhere. Stage-1 recommended_action #3 is RESOLVED-CONFIRMED. The teacher-supervises-TIMING
+      mechanism is untouched.'
+  - claim_index: 3
+    effect: narrowed
+    note: '2026-07-29 Stage-2 dive (full text + released repo, joint with intake-922). CENTRAL FINDING:
+      NO MASKING BASELINE. S5.1 baselines are ReAct / Summary Agent / Memory Agent and Table 2 is ReAct/ReSum/ACON/ACE
+      only; truncation appears solely as unrun related work, and the code confirms it — src/configs/runtime.py
+      exposes use_memory_tools and a disable_query_memory ablation with NO masking/truncation/observation-dropping
+      path anywhere. Stage-1 recommended_action #3 is RESOLVED-CONFIRMED. The joint ''lowers peak tokens
+      AND lengthens horizon'' benefit is measured against the same baseline set, so it inherits the same
+      ~1/3 margin and the missing masking foil. Direction is plausible; the demonstrated magnitude is not
+      what the entry implied.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (full text + released repo, joint with intake-922). CENTRAL FINDING:
+      NO MASKING BASELINE. S5.1 baselines are ReAct / Summary Agent / Memory Agent and Table 2 is ReAct/ReSum/ACON/ACE
+      only; truncation appears solely as unrun related work, and the code confirms it — src/configs/runtime.py
+      exposes use_memory_tools and a disable_query_memory ablation with NO masking/truncation/observation-dropping
+      path anywhere. Stage-1 recommended_action #3 is RESOLVED-CONFIRMED. Already hedged in the claim itself
+      as ''is offered as evidence''.'
 - id: intake-915
   arxiv_id: null
   url: https://github.com/earthtojake/text-to-cad
@@ -51571,6 +51617,51 @@
     On arXiv 2605.26252 (Is Agent Memory a Database?): it MISSES PRO-LONG''s design — its four failure modes target record-level cross-session stores with ranked retrieval, whereas PRO-LONG''s log is an immutable single-episode trajectory searched by grep. Only "unregulated growth" applies, and it applies as the LATENCY problem PRO-LONG asserts but never measures.
 
     OUR OWN PRIMITIVES VERIFIED (~70% policy, ~30% code): we HAVE _spill_if_truncated() (src/graph/file_artifacts.py:47) emitting a literal peek(99999, file_path=...) pointer, file-capable _peek/_grep/_peek_grep (src/repl_environment/), Python execution over results, observation masking already implemented (helpers.py "[Tool result cleared]"), and an append-only session_log.py. GAPS: the session log is LOSSY by construction (output_preview[:200], error_message[:300], tool_calls[:5]); spill files are per-output/per-turn with no single chronological verbatim log; and src/restricted_executor.py''s _peek/_grep are CONTEXT-ONLY (no file_path), so any path routed through that executor cannot follow the spill pointer it emits.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (raw HTML v1+v2 diffed, tables parsed from markup, joint with intake-925).
+      Two Stage-1 FLAGS WITHDRAWN, both the dive''s own: the ''mis-cites 2605.05138 as WorldModeler'' defect
+      is not a defect (footnote 1 of S2.2 states the renaming verbatim and the bibliography is correct in
+      every field, independently re-confirmed by the intake-931 dive), and the 17.3% reconciliation moves
+      to intake-925. All Stage-1 table cells MATCH on re-verification: tool ladder 23.1/27.2/38.3/41.2,
+      41.2+/-3.5 vs 24.0+/-2.0, Table 3 sums to 100.0 in both columns, Table 4 pins 25 game version hashes.
+      STRENGTHENED by an addition Stage 1 omitted: Table 2''s ''cleared every call'' row is 40.7+/-3.6 (PRO-LONG)
+      vs 19.9+/-2.1 (No-Log), so wiping the workspace costs the log-equipped agent 0.5pp but costs the note-taking
+      agent 4.1pp. That is the load-bearing evidence that self-authored notes are near-worthless once the
+      raw log is retained — which is exactly this claim.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (raw HTML v1+v2 diffed, tables parsed from markup, joint with intake-925).
+      Two Stage-1 FLAGS WITHDRAWN, both the dive''s own: the ''mis-cites 2605.05138 as WorldModeler'' defect
+      is not a defect (footnote 1 of S2.2 states the renaming verbatim and the bibliography is correct in
+      every field, independently re-confirmed by the intake-931 dive), and the 17.3% reconciliation moves
+      to intake-925. All Stage-1 table cells MATCH on re-verification: tool ladder 23.1/27.2/38.3/41.2,
+      41.2+/-3.5 vs 24.0+/-2.0, Table 3 sums to 100.0 in both columns, Table 4 pins 25 game version hashes.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (raw HTML v1+v2 diffed, tables parsed from markup, joint with intake-925).
+      Two Stage-1 FLAGS WITHDRAWN, both the dive''s own: the ''mis-cites 2605.05138 as WorldModeler'' defect
+      is not a defect (footnote 1 of S2.2 states the renaming verbatim and the bibliography is correct in
+      every field, independently re-confirmed by the intake-931 dive), and the 17.3% reconciliation moves
+      to intake-925. All Stage-1 table cells MATCH on re-verification: tool ladder 23.1/27.2/38.3/41.2,
+      41.2+/-3.5 vs 24.0+/-2.0, Table 3 sums to 100.0 in both columns, Table 4 pins 25 game version hashes.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (raw HTML v1+v2 diffed, tables parsed from markup, joint with intake-925).
+      Two Stage-1 FLAGS WITHDRAWN, both the dive''s own: the ''mis-cites 2605.05138 as WorldModeler'' defect
+      is not a defect (footnote 1 of S2.2 states the renaming verbatim and the bibliography is correct in
+      every field, independently re-confirmed by the intake-931 dive), and the 17.3% reconciliation moves
+      to intake-925. All Stage-1 table cells MATCH on re-verification: tool ladder 23.1/27.2/38.3/41.2,
+      41.2+/-3.5 vs 24.0+/-2.0, Table 3 sums to 100.0 in both columns, Table 4 pins 25 game version hashes.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (raw HTML v1+v2 diffed, tables parsed from markup, joint with intake-925).
+      Two Stage-1 FLAGS WITHDRAWN, both the dive''s own: the ''mis-cites 2605.05138 as WorldModeler'' defect
+      is not a defect (footnote 1 of S2.2 states the renaming verbatim and the bibliography is correct in
+      every field, independently re-confirmed by the intake-931 dive), and the 17.3% reconciliation moves
+      to intake-925. All Stage-1 table cells MATCH on re-verification: tool ladder 23.1/27.2/38.3/41.2,
+      41.2+/-3.5 vs 24.0+/-2.0, Table 3 sums to 100.0 in both columns, Table 4 pins 25 game version hashes.'
 - id: intake-920
   arxiv_id: null
   url: https://www.liquid.ai/blog/lfm2-5-encoders
@@ -51673,6 +51764,74 @@
     THIRD THREAD — FALSE NEGATIVE, NOT A CONTRADICTION. The 296-line convert_hf_to_gguf.py is a THIN CLI ("from conversion import ..."); all six Lfm2 registrations live in conversion/lfm2.py (:15 Lfm2ForCausalLM, :67 Lfm2Model/Lfm2BidirectionalModel, :95 Lfm2MoeForCausalLM, :168 VL, :202 Audio, :240 AudioTokenizer), dispatched via conversion/__init__.py:127-136. The 2026-05-29 deep dive''s claim IS STILL ACCURATE — Stage 1 grepped the monolith after upstream''s split-out refactor. Nothing is broken; no fix needed. Gap worth noting: Lfm2BidirectionalForMaskedLM (the ENCODERS'' arch) is NOT registered — only Lfm2BidirectionalModel (the ColBERT/Embedding arch) is.
 
     ADVERSARIAL: zero independent benchmarking (provisional — the line is 1 day old). The HF republication is the SAME vendor org and is RESTATEMENT, not corroboration. FALSE LEAD RULED OUT: a kaitchup.substack.com piece on "LFM2.5 230M and 350M GGUF quality" is dated 2026-07-08, NINETEEN DAYS BEFORE the encoders existed, and evaluates the CAUSAL decoders — not corroboration.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08 dive (blog + both model cards + LICENSE + encoder_eval repo + local frozen-v8 tree).
+      Filing STANDS and this claim survives. What collapsed is the RELEVANCE CASE, on the vendor''s own
+      prose: the CPU advantage exists only above ~1K tokens (''LFM2.5-Encoder-230M is the fastest model
+      from 1K tokens up''; below ~1K ModernBERT-base is roughly 3-4x FASTER at the 128-token column). Our
+      KB-RAG chunks are heading-bounded markdown sections, i.e. predominantly SUB-1K — the regime where
+      the advantage INVERTS, before any precision argument is needed. Reclassified from ''may re-open a
+      closed encoder choice'' to monitor / not-actionable for KB-RAG retrieval, retained only as a fine-tune
+      backbone for classification/routing/PII. NOTE: the correction''s own ''CLAIM 1 PARTIAL'' numbering
+      refers to a different list than this worksheet''s — its CLAIM 1 is about whether the sources name
+      the CPU (both do, and they name DIFFERENT machines: MacBook M4 Max in the blog chart, Apple M3 Max
+      in the card chart) — so this verdict is derived from content, not numbering.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08 dive (blog + both model cards + LICENSE + encoder_eval repo + local frozen-v8 tree).
+      Filing STANDS and this claim survives. What collapsed is the RELEVANCE CASE, on the vendor''s own
+      prose: the CPU advantage exists only above ~1K tokens (''LFM2.5-Encoder-230M is the fastest model
+      from 1K tokens up''; below ~1K ModernBERT-base is roughly 3-4x FASTER at the 128-token column). Our
+      KB-RAG chunks are heading-bounded markdown sections, i.e. predominantly SUB-1K — the regime where
+      the advantage INVERTS, before any precision argument is needed. Reclassified from ''may re-open a
+      closed encoder choice'' to monitor / not-actionable for KB-RAG retrieval, retained only as a fine-tune
+      backbone for classification/routing/PII. NOTE: the correction''s own ''CLAIM 1 PARTIAL'' numbering
+      refers to a different list than this worksheet''s — its CLAIM 1 is about whether the sources name
+      the CPU (both do, and they name DIFFERENT machines: MacBook M4 Max in the blog chart, Apple M3 Max
+      in the card chart) — so this verdict is derived from content, not numbering.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08 dive (blog + both model cards + LICENSE + encoder_eval repo + local frozen-v8 tree).
+      Filing STANDS and this claim survives. What collapsed is the RELEVANCE CASE, on the vendor''s own
+      prose: the CPU advantage exists only above ~1K tokens (''LFM2.5-Encoder-230M is the fastest model
+      from 1K tokens up''; below ~1K ModernBERT-base is roughly 3-4x FASTER at the 128-token column). Our
+      KB-RAG chunks are heading-bounded markdown sections, i.e. predominantly SUB-1K — the regime where
+      the advantage INVERTS, before any precision argument is needed. Reclassified from ''may re-open a
+      closed encoder choice'' to monitor / not-actionable for KB-RAG retrieval, retained only as a fine-tune
+      backbone for classification/routing/PII. NOTE: the correction''s own ''CLAIM 1 PARTIAL'' numbering
+      refers to a different list than this worksheet''s — its CLAIM 1 is about whether the sources name
+      the CPU (both do, and they name DIFFERENT machines: MacBook M4 Max in the blog chart, Apple M3 Max
+      in the card chart) — so this verdict is derived from content, not numbering. This claim is the very
+      statement the dive used to overturn relevance, and it is CORRECT as written — crossover around 1K
+      on CPU and ~2K on Apple GPU. The claim survives; our use case sits on the wrong side of the crossover.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08 dive (blog + both model cards + LICENSE + encoder_eval repo + local frozen-v8 tree).
+      Filing STANDS and this claim survives. What collapsed is the RELEVANCE CASE, on the vendor''s own
+      prose: the CPU advantage exists only above ~1K tokens (''LFM2.5-Encoder-230M is the fastest model
+      from 1K tokens up''; below ~1K ModernBERT-base is roughly 3-4x FASTER at the 128-token column). Our
+      KB-RAG chunks are heading-bounded markdown sections, i.e. predominantly SUB-1K — the regime where
+      the advantage INVERTS, before any precision argument is needed. Reclassified from ''may re-open a
+      closed encoder choice'' to monitor / not-actionable for KB-RAG retrieval, retained only as a fine-tune
+      backbone for classification/routing/PII. NOTE: the correction''s own ''CLAIM 1 PARTIAL'' numbering
+      refers to a different list than this worksheet''s — its CLAIM 1 is about whether the sources name
+      the CPU (both do, and they name DIFFERENT machines: MacBook M4 Max in the blog chart, Apple M3 Max
+      in the card chart) — so this verdict is derived from content, not numbering.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08 dive (blog + both model cards + LICENSE + encoder_eval repo + local frozen-v8 tree).
+      Filing STANDS and this claim survives. What collapsed is the RELEVANCE CASE, on the vendor''s own
+      prose: the CPU advantage exists only above ~1K tokens (''LFM2.5-Encoder-230M is the fastest model
+      from 1K tokens up''; below ~1K ModernBERT-base is roughly 3-4x FASTER at the 128-token column). Our
+      KB-RAG chunks are heading-bounded markdown sections, i.e. predominantly SUB-1K — the regime where
+      the advantage INVERTS, before any precision argument is needed. Reclassified from ''may re-open a
+      closed encoder choice'' to monitor / not-actionable for KB-RAG retrieval, retained only as a fine-tune
+      backbone for classification/routing/PII. NOTE: the correction''s own ''CLAIM 1 PARTIAL'' numbering
+      refers to a different list than this worksheet''s — its CLAIM 1 is about whether the sources name
+      the CPU (both do, and they name DIFFERENT machines: MacBook M4 Max in the blog chart, Apple M3 Max
+      in the card chart) — so this verdict is derived from content, not numbering.'
 - id: intake-921
   arxiv_id: '2607.14159'
   url: https://arxiv.org/html/2607.14159v1
