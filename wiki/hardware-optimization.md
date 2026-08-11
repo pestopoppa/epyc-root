@@ -2,8 +2,51 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds the real-MMQ WGM negative; prior C6, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-11 (adds the final Arena audit/smoke boundary; prior real-MMQ WGM, C6, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
 **Sources**: 102+ documents
+
+## Compiled Update — 2026-08-11 (AutoKernel Arena audit and real-controller smoke)
+
+**Confidence: verified audit and diagnostic-smoke behavior; no matched-campaign or promotion claim.**
+
+The fixed AgentKernelArena authoring panel now distinguishes two authorities mechanically. The full
+comparison remains eight arms and refuses at **6/8** because licensed, commit-pinned EvoEngineer and
+ARGUS implementations are unavailable. A separately named available-source panel is ready at
+**6/6**, but its receipt forbids implying an eight-arm result, ranking partial full-panel evidence,
+or authorizing promotion. Both no-execution audits bind the same task, source identities, evaluator,
+and 2h/8h/32h budget schedule.
+
+A real one-iteration/two-branch KernelFoundry smoke found two defects that static coverage missed:
+copied workspaces lacked the repository import root, then concurrent model branches raced in the
+shared Arena evaluator. The repaired v3 run completed two GPT-5.6 Sol/high calls under a cleanly
+released MI210 claim, passed centralized compilation and correctness, and admitted all four baseline
+and four optimized timing cases. Its average speedup was **0.998668**, but the receipt is diagnostic,
+non-rankable, and explicitly does not imply the matched campaign. The dashboard now projects this
+empirical state separately from generic probe inventory and preserves those authority limits.
+
+The K-Search, Xe-Forge, and GEAK-v1 one-iteration smokes subsequently completed the same centralized
+compile, correctness, and 4/4 baseline plus 4/4 optimized timing boundary and released their MI210
+claims. Their observed average speedups were respectively **1.003368**, **0.999612**, and
+**0.995595**. Those values remain non-rankable smoke telemetry: the smokes establish executable
+integration, not comparative controller quality or a matched-campaign result.
+
+The Claude/Codex actor-critic path also reached a terminal integration smoke after repairs for
+response parsing, contained candidate paths, nested-sandbox launch, and container stdin. Its actor
+runs inside a digest-pinned, read-only-root container with only the task workspace writable. The
+v5 completed planner, actor, and critic and reached centralized evaluation, but the evaluator worker
+used `/usr/bin/python3` without pytest. Its apparent correctness failure and zero timing cases are
+therefore infrastructure evidence, not evidence against the candidate. The authoring path was real,
+but candidate correctness remained unknown until replay with the pinned ROCm evaluator Python and
+package identity. That replay passed centralized compilation and correctness plus all
+4/4 baseline and 4/4 optimized timing cases under the pinned ROCm evaluator. Its average speedup was
+**0.993603**—non-rankable diagnostic telemetry that closes executable integration, not a controller
+quality or promotion claim.
+
+### Source References (2026-08-11 Arena audit/smoke)
+
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — fixed-panel coverage, source gates, receipt hashes, and live next actions
+- [AutoKernel progress, 2026-08-11](../progress/2026-08/2026-08-11.md) — failed-smoke chronology, repairs, v3 measurements, and non-rankable scope
+- [Dashboard contract](../dashboard/README.md) — current-state snapshot and separation of audit, available-source, and empirical-smoke authority
 
 ## Compiled Update — 2026-08-11 (AutoKernel C6 live-host sandbox)
 

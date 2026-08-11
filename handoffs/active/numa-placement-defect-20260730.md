@@ -55,7 +55,7 @@ checkbox copies of one task give the dashboard two sources of truth.
 E5 campaign**; its `⛔ SUSPENDED PENDING RE-MEASUREMENT (2026-07-30)` banner is the authoritative
 suspension notice and this document is its root-cause backing · [within-role-placement-state-machine.md](within-role-placement-state-machine.md)
 (consumes `NUMA_CONFIG`) · [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md)
-(its `(N,K)` provisioning is parameterized by E5) · [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md)
+(its `(N,K)` provisioning is parameterized by E5) · [inference-research-index.md](inference-research-index.md)
 (CPU14/CPU17/CPU18 rows) · [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) P1-2
 (the E5 W1–W4 execution row and its published-artifact update requirement)
 
@@ -1109,7 +1109,7 @@ remain in *this* document:
 * **On completing any task above**: flip its `- [ ]` → `- [x]` here with an inline `✅ YYYY-MM-DD`,
   and mirror the state into the owning handoff
   [batched-decode-measurement.md](batched-decode-measurement.md) (E5 waypoint) and
-  [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md). Prose-only status
+  [inference-research-index.md](inference-research-index.md). Prose-only status
   updates are invisible to the handoff dashboard — the checkbox is the metric.
 * **On T1 landing**: this is a production stack change. Record the three gates
   (pipeline-green / starts / live==config) plus the post-reload live-affinity verification from
