@@ -104,6 +104,24 @@
     <p class="lbl">CPU serving reference · measured 2026-07-30 · kernel v8 @ 67a433bf4 (10107)</p>
     <h1>What each production model does, on its own recipe, in every shape it can run.</h1>
     <p class="lede">Every figure is <strong>tok/s</strong> from llama.cpp's own decode timings, with each role running the exact acceleration recipe its registry entry specifies. No baselines appear above the addendum — a spec-dec-off number is not production-usable.</p>
+
+    <div style="border:1px solid var(--remote); border-left:4px solid var(--remote);
+                background:var(--sunk); padding:14px 18px; border-radius:4px; margin-top:18px">
+      <p class="lbl" style="color:var(--remote)">Era note · appended 2026-08-11 · figures unchanged</p>
+      <p style="margin-top:6px">Every number on this page was measured on <strong>kernel v8</strong>
+      (<code>67a433bf4</code>, binary <code>10107</code>) — instrument era
+      <code>E8-cpu-kernel</code>. Production froze at
+      <strong>production-consolidated-v9</strong> (<code>0db32c06</code>, binary <code>10125</code>)
+      on 2026-08-11, opening <code>E9-cpu-kernel</code>. Under the reconciliation clause on that
+      registry row these figures are <strong>historical priors</strong> for decisions about the v9
+      stack, not current readings: <em>do not rescale across the boundary</em> — re-measure within
+      era under the P-BENCH protocols with host attestation.</p>
+      <p style="margin-top:8px">Nothing here is retracted and no figure has been altered. This page
+      is the <code>P-BENCH-PLACEMENT-1</code> placement package and does <strong>not</strong> carry
+      the E5 Stage-B throughput record, which was separately suspended on 2026-07-30 — that record
+      lives in the sibling <code>e5_w0_preliminary_results.md</code>, which already carries its own
+      void banner. Appended, never edited, per the append-only rule for measurement artifacts.</p>
+    </div>
   </header>
 
   <div class="stats">
