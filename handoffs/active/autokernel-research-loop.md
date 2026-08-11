@@ -20,8 +20,11 @@
 
 **Current checkpoint (2026-08-11):** Steps 0–2 and the five-control calibration are complete for
 the retired v8 era and remain valuable regression evidence; they do **not** authorize ranking on
-frozen v9 plus the hardened measurement overlay. The current v9/hardened five-control calibration is
-authorized and empirical; the first CPU candidate still requires fresh inference permission. The
+frozen v9 plus the hardened measurement overlay. The operator authorized all compute and inference
+for this session on 2026-08-11, but two measurement gates remain: explicit operator approval for the
+two experimental commits that seal the receipt-emitting hardened instrument, and a privileged
+measurement window (or temporary readable `energy_uj` permission, restored to `0400` afterward).
+The
 AK-LN-2/AK-X-5a calibration has now rejected every historical CPU split depth as a general ranking
 proxy, so that first campaign must verify on the full host unless a narrower change-class calibration
 later passes. AK-BH-3 found that the implicit CPU flash-attention default behaves like the fast
@@ -2788,9 +2791,16 @@ nothing wrong. We held no claim.**
       copied-binary identity passed, but the selected measurement binary did not emit the six required
       hardened runtime receipts (`autokernel_hybrid_ab_complete`, thread-set stability/hash,
       escape-check completion, unsynchronized-sample timing, and device-sync mode), and package-power
-      readability was `COULD_NOT_CHECK`. Rebuild or select the exact receipt-emitting hardened
-      instrument, restore a readable package-power counter, and rerun the preflight before taking a
-      claim or launching any control. Local evidence remains untracked at
+      readability was initially `COULD_NOT_CHECK`. The pending v2 overlay now builds cleanly and a
+      claimed CPU smoke emitted all six fields with stable identical thread-set hashes,
+      `cpu_not_applicable` device sync, and a released q0-q3 claim. Receipt SHA-256:
+      `269aaf94c850212be5d390e0e9b64436238ce258cc618546bb736296c65f9820`. Package power remains
+      unreadable to the current UID (`energy_uj` is `0400 root:root`), so
+      `HostStatePolicy(require_package_power=True)` returns `COULD_NOT_CHECK`. The two remaining
+      preflight gates are explicit operator approval for the two local experimental commits and a
+      privileged measurement window (or temporary readable `energy_uj` permission, restored to
+      `0400` afterward). Local
+      failed-attempt evidence remains untracked at
       `epyc-inference-research/data/autokernel_controls_3pct_20260811_v9_hardened/`; its copied binary
       payload is about 15 MB and is intentionally not a repository artifact.
 
@@ -2834,10 +2844,15 @@ nothing wrong. We held no claim.**
       `campaign.py` now projects that registered arm-local variant into the exact dry-run commands.
       A null result on a known win is diagnostic of the *harness*; a null on a novel idea tells you
       nothing about either.
-- [ ] **Keep the 2026-07-04 async-prefetch replay in the GPU lane.** The +3% / MemUnitStalled
+- [x] **Keep the 2026-07-04 async-prefetch replay in the GPU lane.** ✅ 2026-08-11 — the +3% / MemUnitStalled
       reduction on `mul_mat_vec_q8_0_prefetch` is a gfx90a/MI210 result, not a CPU candidate. Its
-      original scratch evidence no longer exists, so a later GPU campaign must re-derive it from the
-      refreshed v9-resident implementation and its runtime gate.
+      original scratch evidence no longer exists, so it was re-derived from the frozen-v9 resident
+      implementation and its runtime gate. The governed 20-block replay did **not** reproduce the
+      historical win: 19/20 block deltas were positive, but median was only **+0.936%** (mean
+      **+1.039%**, range **−0.590% to +3.311%**), below the predeclared 2% floor and with one negative
+      block. This is `NOT_REPRODUCED`, not a banked candidate. Receipt:
+      `/mnt/raid0/llm/autokernel/probes/ak-gpu-prefetch-v9-20260811-r2/receipt.json`, SHA-256
+      `7b173cafcccb8a99319bf93a80fd13a2e94a400afab2bf03355363f9521ab17f`.
 - [ ] Then a real one. Drop a hypothesis into the store (`HYPOTHESES.md` has the shape), or run
       exploratory with no `--hypothesis` at all.
 
