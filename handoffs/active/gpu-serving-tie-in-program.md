@@ -186,7 +186,31 @@ config change with a rehearsed rollback, never a rebuild.
       corrected by addition: it now names **`architect_CRITIC`** as the interleave=all exemplar and
       states that citing `architect_general` *"sent readers to a membind role"*.
     Residual: none. `12.19` now appears exactly once in `stack_numa.py`, correctly attributed.
-  - [ ] **Residual noted, not acted on: the quarter NAMES still encode the old 2-node model.**
+  - [x] **Residual CLOSED ✅ 2026-08-11 — both halves landed; P2-5l is fully done.** Quarters:
+    annotate-don't-rename (`mainC`, orchestrator `872bc851`, which also corrected its own first-pass
+    rationale after `mainA` caught it). `NUMA_NODE0`/`NUMA_NODE1`: **deleted** (`mainB`, file owner,
+    orchestrator `f4230b22`) — see finding 2 below, which `mainA` left to "the session holding the
+    file"; `mainC` had moved to `backlog-dispatch-queue-repair`, so the file owner took it.
+    Verified before deleting rather than assumed: zero imports (every surviving mention was prose),
+    and `test_stack_numa.py` had already called them deletion candidates *"once the remaining test
+    fixtures stop naming them"* — satisfied, those fixtures name them only in comments. Cpusets
+    survive verbatim as `NUMA_HALF_A`/`NUMA_HALF_B` at the correct `-t 48`; `CPU_SHAPE_CLASSES`
+    still yields all four classes. The measurement history that hung on the deleted names (E5
+    affinity artifact, the retracted 2026-04-17 `26.60/27.06` head-to-head, the pending E5 re-run
+    note) is re-anchored to the HALF FLEET block — **deleting a constant must not delete the
+    evidence taken under its shape.** 2857 passed / 7 skipped.
+    ⚠ **Unrelated red test found while validating, filed separately, do NOT close it by relaxing
+    the test:** `test_config_consolidation::test_specific_role_urls` reproduces at clean HEAD in a
+    detached worktree. It is a **true positive** — derived `stack_priors.yaml` drops frontdoor's
+    full `:8070` (`ports: [8080, 8180]`, both `cpu_shape_class: half`) while the same blob still
+    carries `cache.slots_by_port {8070: 4, …}`, so `ServerURLsConfig().frontdoor` advertises the
+    HALF `:8080` as the full instance — a region-lock **scope** error, and the same shape as the
+    drop the operator already ruled "accidental and clearly a mistake" on 2026-07-23
+    (`stack-lineup-dossier-2026-07-23.md`). Routed to `coordinator-agent`; not actioned here because
+    serving config and stack lifecycle belong to the session owning the inference.
+    <details><summary>Original filing and `mainA`'s two findings (kept for audit)</summary>
+
+  - **Residual as originally noted: the quarter NAMES still encode the old 2-node model.**
     `NUMA_Q0A`/`Q0B` read as "halves of node 0" and `Q1A`/`Q1B` as "halves of node 1", but they map
     to nodes 0/1 and 2/3. Renaming is a refactor with real blast radius across the launcher and
     should go through a `gitnexus impact` pass first — filed rather than done.
@@ -211,7 +235,9 @@ config change with a rehearsed rollback, never a rebuild.
        reachable effect of naming one is an import-time `AssertionError`. Their cpusets are already
        `NUMA_HALF_A`/`NUMA_HALF_B` verbatim; `tests/unit/test_stack_numa.py:146` calls them
        "deletion candidates". Deleting beats annotating here, and it is `mainC`'s call as the session
-       holding the file.
+       holding the file. — **ACTIONED by `mainB` at `f4230b22`; `mainA`'s analysis held on every
+       point when re-verified.**
+    </details>
 - [x] **P2-5m (NEW 2026-07-29; free, do at next P-SHED-1 touch) — shape A1 reporting per-role so it doubles as carve-out cost evidence.** Arm A1 already measures exactly the residual contention any SMT carve-out would need priced (GPU host threads on SMT siblings of 88-95 vs Q1B tenants on the physical cores). Archiving A1 **per-role** rather than aggregate means the reservation decision reuses it **free** instead of commissioning a second campaign. Also, independent of everything above: **P-SHED-1 should pin every q3 co-tenant state PER ARM as a declared input** — hidden arm differences confound A1 whichever tenant they involve (this is the one residual from P2-5h that survives on independent grounds). ✅ 2026-07-29 — research `38fb11ec` requires an A0/A1 per-role rate, completion/error, and latency archive plus an arm-specific co-tenant lifecycle/residency manifest; P2-5h's separate corpus/pricing repair remains open.
 
 ## Dependency graph
