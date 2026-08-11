@@ -2,8 +2,35 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-10 (the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
-**Sources**: 93+ documents
+**Last compiled**: 2026-08-11 (adds the live AutoKernel stateful-integrity acceptance; prior gfx90a kernel-agent, roofline, topology, and quant-path findings retained)
+**Sources**: 96+ documents
+
+## Compiled Update — 2026-08-11 (stateful correctness must include carried state)
+
+**Confidence: verified — measured live on the CPU backend; this is correctness-instrument acceptance,
+not a performance or production claim.**
+
+AutoKernel's stateful correctness pass now treats carried state as part of the result rather than
+checking only ordinary outputs. For every selected recurrent/cache-backed case, the candidate and
+reference must begin with byte-identical explicit state inputs, neither execution may mutate those
+input buffers, and at least one final-state tensor must be included in the compared output set. A
+missing receipt or any missing leg fails closed.
+
+The first live pass used suite seed `4711` and accepted **5,184/5,184** cases across `SSM_SCAN`,
+`SSM_CONV`, `FLASH_ATTN_EXT`, and `GATED_DELTA_NET`. Every `AK_STATE_V1` receipt carried
+`initial_equal=1`, `input_immutable=1`, and one or more final outputs. The result validates the
+instrument path; it does not make the experimental producer durable. Those producer changes remain
+uncommitted pending explicit operator approval, and the v9/hardened performance calibration is a
+separate next step.
+
+### Source References (2026-08-11 stateful integrity)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — live checkpoint,
+  authorization boundary, and next calibration step.
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C2-5 triad
+  contract and producer-durability boundary.
+- [Progress 2026-08-11](../progress/2026-08/2026-08-11.md) — exact live counts, seed, receipt flags,
+  research commits, and verification results.
 
 ## Compiled Update — 2026-08-03 (the AMD deficit is a QUANT deficit, not a device deficit; and the compute roofline, finally computed)
 

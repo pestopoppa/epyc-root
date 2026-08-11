@@ -1,12 +1,14 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
-**Status**: SKELETON — design scaffold; substrate is now mostly *adopt AMD-native*, not build-from-scratch
-**Created**: 2026-06-03 · **Updated**: 2026-08-10 (C2/C6 task set + three zero-cost probes; see §2026-08-10)
+**Status**: ACTIVE HARDENING — stateful C2 integrity live-validated; producer not yet durable
+**Created**: 2026-06-03 · **Updated**: 2026-08-11 (stateful C2 live acceptance; see §2026-08-10)
 
-> **NEXT ACTION (2026-08-10): `RVP-C2-1` (seeded input generation) — it is CPU-only and is the
-> precondition for every other C2 row.** The two static probes (`RVP-T0-2`, `RVP-T0-5`) are complete
-> and independently re-verified. **`RVP-T0-1` is HELD** — operator, 2026-08-10: *"do not run any
-> inference"*. It is the only one of the three that puts load on the card (a saturating GEMM at up to
+> **NEXT ACTION (2026-08-11): `RVP-C2-6` (independent fp64 CPU reference).** The stateful integrity
+> pass has live CPU acceptance, while the shared C2-1/C2-3/C2-4/C2-5 experimental producer remains
+> uncommitted and must not be committed or pushed without explicit operator approval. The two static
+> probes (`RVP-T0-2`, `RVP-T0-5`) are complete and independently re-verified. **`RVP-T0-1` remains
+> HELD for GPU load** — the 2026-08-11 operator authorization covers CPU inference on the idle host,
+> not a saturating GPU GEMM. It is the only one of the three that puts load on the card (up to
 > the 300 W cap for 60 s), and it decides whether the whole clock-pinning branch — including the
 > operator-only `AK-OP-2` — is live at all. Reopen it when a GPU-load window is authorized; the probe
 > design is finished and needs nothing further. Everything else in §2026-08-10 is CPU-only or static
@@ -18,7 +20,7 @@
 > What remains true and unchanged: profiling or benching a **live server** is owned by whoever owns
 > that inference, and co-residency is theirs to schedule.
 **Categories**: hardware_optimization, benchmark_methodology, tool_implementation, inference_serving
-**Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked; ROCm 6.2 bind-mounted; llama.cpp HIP build verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`). This backend is now **ACTIVE** (priority MEDIUM). Runnable first tasks: (1) install/pin `pytorch-triton-rocm` matched to ROCm 6.2 + verify gfx90a matmul (intake-760); (2) stand up `rocprof-compute` gfx90a metric subset (C4); (3) the honest-vendor-baseline candidates that are gfx90a-*reachable* — **BitBLAS/TileLang low-bit GEMM** (intake-497/tilelang-puzzles), **NOT AITER** (gfx942-only, intake-759). All runs operator-approved (P-GPU-1). [was: "~July 2026; nothing executes until the card racks" — stale]
+**Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked; ROCm 6.2 bind-mounted; llama.cpp HIP build verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`). This backend is now **ACTIVE** (priority MEDIUM). Runnable first tasks: (1) install/pin `pytorch-triton-rocm` matched to ROCm 6.2 + verify gfx90a matmul (intake-760); (2) stand up `rocprof-compute` gfx90a metric subset (C4); (3) the honest-vendor-baseline candidates that are gfx90a-*reachable* — **BitBLAS/TileLang low-bit GEMM** (intake-497/tilelang-puzzles), **NOT AITER** (gfx942-only, intake-759). GPU claim grade follows P-GPU-1; profiling a live server remains the inference owner's scheduling boundary. [was: "~July 2026; nothing executes until the card racks" — stale]
 **Priority**: MEDIUM (the substrate for [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md))
 **Parent**: [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md) · **Parent index**: [`inference-research-index.md`](inference-research-index.md)
 **Full reasoning + evidence**: [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) (§5.2/§5.5/§5.6 cover this backend).
@@ -34,7 +36,7 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
 | **C1** | Build (hipcc/hipify/torch-ROCm) | **ADOPT** | GEAK-eval 674 / Apex 675 (already build on ROCm/gfx90a); torch-ROCm `load_inline` known-good | LOW |
 | **C2** | Correctness oracle | **ADOPT then HARDEN** | adopt GEAK-eval's torch-ROCm oracle; **harden** with robust-kbench 668 (forward+backward, multi/unseen shapes, magnitude/variation, output-buffer poisoning) **+ AgentKernelArena 679 unseen-shape generator** | MED |
 | **C3** | Timing / speedup reward | **ADOPT then FIX BASELINE** | adopt GEAK-eval timing + Apex/AgentKernelArena Magpie score; **gate reward on an honest vendor baseline** (rocBLAS/hipBLASLt/AITER/torch-ROCm-compile), not eager (FastKernels 671) | MED |
-| **C4** | Profiler-metric feed | **BUILD — try cheapest first** | (1) GEAK-v2 677 Profiler-Analyzer: raw `rocprof-compute` → LLM → NL; (2) Xe-Forge 672 static gfx90a constraint-KB (profiler-free); (3) CudaForge 662 formal offline selection. NVIDIA/NCU subset does NOT transfer | **HIGH** — the standing research risk; CDNA2 counter taxonomy unproven |
+| **C4** | Profiler-metric feed | **BUILD — deterministic first** | Paired mapping/formal `rocprofv2` traces → deterministic kernel/overlap/fuse/architecture tables; bounded similarity/catalogue judgment only after that. Xe-Forge static gfx90a constraint-KB and CudaForge formal selection remain fallbacks. NVIDIA/NCU subsets do NOT transfer | **MED** — parser/report/counter taxonomy are closed; real paired-trace signal remains empirical |
 | **C5** | Benchmark / task suite | **ADOPT (primary) + layer** | GEAK-eval 674 (TritonBench-revised + real ROCm bench, gfx90a-proven) **and** AgentKernelArena 679 (HIP/Triton/Torch2HIP suites); layer our own `fast_p` tiering; seed EPYC ops (attention/MoE-dispatch/dequant). MultiKernelBench 667 = secondary (multi-vendor abstraction only) | MED |
 | **C6** | Reward-integrity / anti-hacking | **BUILD — our differentiator** | robust-kbench 668 exploit-class half (Apache-2.0, liftable) **+** AgentKernelArena 679 unseen-shape half **+** a red-team-with-cheating-kernels gate. GEAK/Apex have only loose oracles | MED |
 
@@ -43,7 +45,9 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
 - [ ] **MI210 bring-up (gated on card).** Install ROCm + torch-ROCm; confirm `gfx90a` visible; **reproduce GEAK-eval's MI250X numbers on the MI210** (sanity gate — expect lower absolute speedups at ~half the aggregate bandwidth, verify correctness/compile). Also reproduce AgentKernelArena on gfx90a (`target_gpu_model`).
 - [ ] **Harden oracle + integrity (C2 + C6).** Lift robust-kbench's exploit-class defenses + AgentKernelArena's unseen-shape generator into the GEAK/Apex oracle; red-team with deliberately-cheating kernels.
 - [ ] **Honest baseline + E2E scoring (C3 + FastKernels gate).** Gate reward on a vendor baseline; add a whole-model exit gate via Apex's hot-patch + re-bench with captured EPYC-workload tensors.
-- [ ] **C4 profiler feedback (HIGH risk).** Try GEAK-v2 LLM-reads-raw-rocprof first; Xe-Forge static-KB second; CudaForge formal selection fallback. Derive whether a usable gfx90a signal exists.
+- [ ] **C4 profiler feedback (MED empirical risk).** Run the deterministic paired-trace report first,
+  then confine any model to its bounded similarity/catalogue receipt. Derive whether the resulting
+  gfx90a signal is useful on a real mapping/formal capture; Xe-Forge and CudaForge remain fallbacks.
 - [ ] **EPYC-op seeding + controller A/B.** Seed the suites with EPYC ops; A/B controllers as AgentKernelArena adapters (see parent handoff).
 - [ ] **HIP arm (after the Triton loop works).** GEAK-HIP patterns (678) + AgentKernelArena Torch2HIP suite (679) + our own HIP oracle, toward hand-HIP for the llama.cpp fork.
 
@@ -119,20 +123,23 @@ Two incidental findings worth keeping: `libpciaccess.so.0` was **absent from thi
 library was not there to find), and `rocprofv2` derives its ROCm root from its own `argv[0]` rather than
 from `$ROCM_PATH`, so the prefix needs a mirrored `.info/version`. Both are handled in `env.sh`.
 
-- [ ] **Re-score the C4 risk row from HIGH.** "No usable gfx90a signal" and "no profiler installed" were
-  aliasing; the second is now resolved and the first is newly testable. The taxonomy exists and is rich —
-  what remains unproven is whether an LLM can read it usefully, which is the actual C4 question
-- [ ] `omniperf` extracted but **not runnable** — needs a Python venv (`astunparse`, `colorlover`, …).
-  Deferred deliberately: our chosen C4 path is GEAK-v2's LLM-reads-raw-`rocprof`, so omniperf is a
+- [x] **Re-score the C4 risk row from HIGH.** ✅ 2026-08-11 — C4 is now MED: tool availability,
+  CDNA2 taxonomy, deterministic parsing and the report contract are closed; usefulness of the first
+  real paired mapping/formal signal remains empirical.
+- `omniperf` extracted but **not runnable** — needs a Python venv (`astunparse`, `colorlover`, …).
+  Deferred deliberately: our chosen C4 path is the deterministic paired-`rocprofv2` report, so omniperf is a
   fallback, not the critical path. Reopen if the raw-counter path fails
-- [ ] **Standing caveat unchanged by any of this**: `rocprof` v1's SQ/TA counters read ZERO on this box and
+- **Standing caveat unchanged by any of this**: `rocprof` v1's SQ/TA counters read ZERO on this box and
   it aborts at init on graph-enabled builds. Use `rocprofv2`
-- [ ] Having the tool does **not** authorize profiling a live server — co-residency is owned by whoever
+- Having the tool does **not** authorize profiling a live server — co-residency is owned by whoever
   owns that inference. **Corrected 2026-08-10 (operator):** the rest of this line used to read "GPU runs
   remain operator-approved", which is wrong as a blanket. P-GPU-1 governs the **class of claim**, not
   permission to run; an AutoKernel experiment on an idle card needs no per-run approval. The live-server
   clause is the part that survives
-- [ ] **Apply the "does the caller propagate this check's answer?" screen to the whole probe family.** The
+- [x] **Apply the "does the caller propagate this check's answer?" screen to the whole probe family.** ✅
+  2026-08-11 — `test_shell_pipeline_status.py` walks every owned `scripts/kernel_rnd/**/*.sh` wrapper,
+  requires `#!/bin/bash` plus `set -euo pipefail` before its first pipeline, and refuses any later
+  `set +o pipefail`. The
   bandwidth probe shipped with `hipcc … 2>&1 | tail -20`, which takes its exit status from `tail`, so a
   failed build exited 0 and the script walked on to the reporting path — a non-compiling probe was
   committed looking like a working one. Fixed there (`PIPESTATUS` + `exit 5`), but the same shape is
@@ -153,19 +160,25 @@ conservative tile/block sizes justified by "LDS pressure", disabled fast paths j
 safety", low unroll factors justified by "register spills". **Each is individually defensible — which is
 exactly why they evaded the general monitor.**
 
-- [ ] **Give the monitor the WHOLE SEARCH TREE, not the selected candidate.** Best-path-only transcripts
+- [x] **Give the monitor the WHOLE SEARCH TREE, not the selected candidate.** ✅ 2026-08-11 —
+  `controller/reward_monitor.py` binds the complete evaluated variant set and exactly one selected row. Best-path-only transcripts
   structurally advantage a saboteur (the authors say so). Hand the monitor every evaluated variant
   **including discarded higher-scoring ones** — otherwise a candidate that quietly discards its own best
   result is invisible. This is a plumbing requirement on the journal, not a prompt change
-- [ ] **Name the threat model in the monitor prompt.** Largest measured effect in the study: a generic
+- [x] **Name the threat model in the monitor prompt.** ✅ 2026-08-11 — the declaration requires the
+  versioned threat-specific id and the compiled prompt renders it. Largest measured effect in the study: a generic
   "is this suspicious?" monitor **rarely fires** on sandbagging; the threat-specific one "performs well"
-- [ ] **Aggregate.** Mean over monitor models ≈ the best single monitor (0.993 vs 0.970); mean@k over
+- [x] **Aggregate.** ✅ 2026-08-11 — the reducer requires a complete model×sample panel and computes
+  mean-of-mean@k. Mean over monitor models ≈ the best single monitor (0.993 vs 0.970); mean@k over
   repeated samples of one model also improves AUC with fast diminishing returns. Cheap on our stack
-- [ ] **Assume monitor-awareness.** Every monitor scored higher AUC on unaware runs, universally. Any
+- [x] **Assume monitor-awareness.** ✅ 2026-08-11 — `assume_monitor_aware` is mandatory true. Every monitor scored higher AUC on unaware runs, universally. Any
   agent that can read the loop's config knows it is monitored — design for the aware case
-- [ ] **Preserve CoT visibility.** Hidden reasoning tokens are described as a "large advantage to the
+- [x] **Preserve CoT visibility.** ✅ 2026-08-11 — every trace requires non-empty reasoning and
+  `include_reasoning_trace` is mandatory true. Hidden reasoning tokens are described as a "large advantage to the
   agent"; a monitor reading only final outputs is the weak configuration
-- [ ] **Declare an explicit FPR budget rather than claiming safety** — *"gaining strict safety guarantees
+- [x] **Declare an explicit FPR budget rather than claiming safety.** ✅ 2026-08-11 — the declaration
+  requires a numeric FPR budget and the reducer emits sensitivity, specificity, observed FPR and
+  `budget_met` — *"gaining strict safety guarantees
   may require prohibitively high false positive rates."* A C6 layer with no stated FPR is not a gate
 - Secondary signal available free: attempting sabotage **reduced main-task performance** for both
   scaffolds in the study — a measurable tax usable as corroboration
@@ -188,7 +201,8 @@ intake-1029 (its two reference catalogs), both dive-verified 2026-08-09 against
 `sgl-project/sglang` `main`. SGLang is Apache-2.0. **These are design references, not components** —
 the upstream tooling parses torch-profiler Chrome traces and declares no ROCm path anywhere.
 
-- [ ] **RVP-1 — Adopt the three-table output contract as the C4 report spec**: kernel /
+- [x] **RVP-1 — Adopt the three-table output contract as the C4 report spec** ✅ 2026-08-11:
+  `profile_report.py` emits kernel /
   overlap-opportunity / fuse-pattern, rendering only rows at or above a `1.0%` cumulative GPU-time
   share. **The report layer is separable from the parser** — verified in source:
   `scripts/analyze_llm_torch_profile.py` renderers (`render_kernel_table_for_stage`,
@@ -197,34 +211,42 @@ the upstream tooling parses torch-profiler Chrome traces and declares no ROCm pa
   `profile_common` modules. So only a `rocprofv2` row adapter has to be built. Adopt the determinism
   rule verbatim (source-backed matching, explicitly *not* a fuzzy matcher) and the bounded
   `high` / `medium` / `low` similarity vocabulary.
-- [ ] **RVP-2 — Split the C4 HIGH-risk path into a deterministic pass plus a bounded judgment pass,
+- [x] **RVP-2 — Split the C4 HIGH-risk path into a deterministic pass plus a bounded judgment pass,
   then re-score the C4 row.** C4 currently reads as "GEAK-v2 LLM-reads-raw-`rocprof`". The reference
   design does not do that: a deterministic script emits the tables, and the model is confined to the
   similarity note and the catalog comparison. This *shrinks* the trusted surface rather than adding
-  to it, and is the cheapest available de-risking of the standing HIGH-risk row.
-- [ ] **RVP-3 — Adopt the two-trace mapping/formal protocol.** Capture an attribution trace first with
+  to it, and is the cheapest available de-risking of the standing HIGH-risk row. ✅ 2026-08-11 — the
+  optional receipt admits only an emitted pattern id, `low|medium|high`, and a catalogue comparison;
+  measured/source fields are unknown-field errors.
+- [x] **RVP-3 — Adopt the two-trace mapping/formal protocol.** Capture an attribution trace first with
   graphs disabled or a lower-fusion configuration, then a formal trace with the real optimizations on,
   because graphs and fusion destroy `kernel -> cpu_op -> source` mapping. Upstream explicitly forbids
   calling the mapping pass a fast profile. **Convergence worth naming**: this handoff already records
   that `rocprof` v1 *aborts at init on graph-enabled builds*. The capture mode our profiler can
   survive is the same one that yields source attribution — so this is a two-phase protocol, not a
-  workaround for a defect.
-- [ ] **RVP-4 — Adopt the capture discipline**: warm up before arming the profiler and bound the
+  workaround for a defect. ✅ 2026-08-11 — the manifest requires mapping mode
+  `graphs_disabled|lower_fusion`, formal mode `production_optimizations`, one source commit and one stage.
+- [x] **RVP-4 — Adopt the capture discipline**: warm up before arming the profiler and bound the
   capture (upstream default is 10 warm-up / 5 active steps), and keep prefill and decode captures
-  stage-separated so they are never averaged together.
-- [ ] **RVP-5 — Adopt architecture-shape matching as a profiling primitive.** Attribute trace structure
+  stage-separated so they are never averaged together. ✅ 2026-08-11 — v1 requires exactly 10 warm-up
+  and 5 active steps and rejects prefill/decode mixing.
+- [x] **RVP-5 — Adopt architecture-shape matching as a profiling primitive.** Attribute trace structure
   to *architectural blocks*, not only to kernel names: repeating trace groups map to the model's layer
   pattern. Kernel names drift (see the K28 rename evidence in
   [`k28-fused-chunked-gdn-kernel-research.md`](k28-fused-chunked-gdn-kernel-research.md)); block
-  structure does not.
-- [ ] **RVP-6 — Log RocmProfileData (RPD) as a fourth profiler candidate** alongside `rocprofv2`,
+  structure does not. ✅ 2026-08-11 — reviewed architecture blocks are exact ordered family sequences;
+  the mapping trace reports their occurrence count without fuzzy kernel-name inference.
+- [x] **RVP-6 — Log RocmProfileData (RPD) as a fourth profiler candidate** alongside `rocprofv2`,
   `rocprof` v1 and `omniperf`, and check gfx90a availability before assuming any RPD-based workflow is
   reachable on this box. Source intake-1027 is `stage1-unverified` and is MI300X/gfx942 only —
-  **no figure from it may be cited for any purpose.**
-- [ ] **RVP-7 — Decide our catalog scope deliberately instead of inheriting it.** intake-1029's catalog
+  **no figure from it may be cited for any purpose.** ✅ 2026-08-11 — every report must declare all
+  four candidates and RPD's independent `gfx90a_state`; missing RPD is a manifest error.
+- [x] **RVP-7 — Decide our catalog scope deliberately instead of inheriting it.** intake-1029's catalog
   excludes "host-only scheduler, event-loop, executor, offload, and load-path patterns" by explicit
   written policy. A host/device transfer bottleneck therefore has no row and cannot be surfaced by a
   kernel-time-share table at all. Either widen the scope or pair the catalog with a host-side one.
+  ✅ 2026-08-11 — `kernel_only` emits the host-path coverage gap; `kernel_and_host` requires a hash-bound
+  host catalogue receipt. No report silently inherits either scope.
 
 **Declined here, recorded so they are not re-derived**: (a) inheriting the upstream synthetic stage
 shapes (prefill `4090`/`1`, decode `1`/`2048`) without re-deriving from our own production
@@ -314,18 +336,32 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   preserved, **fail-any** gating. Apply per RVP-T0-5 — negate is near-useless on symmetric ranges.
   **Do not copy the fail-open-on-reference-exception branch** the upstream design carries: a
   reference that throws must fail the case, not pass it (`feedback_fail_open_defaults_conceal_their_own_corruption`).
+  **2026-08-11 static implementation:** research commit `eca5dbda` adds a pass separate from the
+  layout axis, exact four-transform and non-zero-case gates, suite-seed-bound `AK_VALUE_V1`
+  receipts, per-property transform binding, and fail-closed refusals for missing case receipts or
+  legacy property rows. The experimental producer compiles but remains uncommitted pending its
+  required explicit local-commit approval; no transform case has run.
 - [ ] **RVP-C2-4 — Layout / stride axis, as a SEPARATE pass with its own flag.** Three probe families:
   transpose (stride permutation), `as_strided`-equivalent (stride gap), offset base pointer
   (alignment). **Kept separate from RVP-C2-3 deliberately**: the value-transform pass needs shapes
   *fixed* to catch shape-locked hacks, while this pass needs layout *varied* to catch fragility —
   merging them makes each weaker. `test-backend-ops` already has per-op view flags, but they are
-  opt-in and are not exercised on the paths we reward.
+  opt-in and are not exercised on the paths we reward. **2026-08-11 static implementation:** research
+  commit `14034623` adds the separate `OpSuitePlan.layout_probe`, exact
+  `offset|stride_gap|transpose` family accounting, suite-seed-bound receipts and a gate requiring all
+  three families plus a non-zero case count. The experimental producer compiles but remains
+  uncommitted pending its required explicit local-commit approval; no layout case has run.
 - [ ] **RVP-C2-5 — Stateful-op triad.** (1) State is an explicit graph input; (2) byte-equality
   assertion on input buffers across both runs; (3) **the final state is in the compared output set**.
   Rule 3 is the one that gets forgotten, and it is the one that matters — a kernel that computes the
   right outputs and corrupts the carried state passes rules 1 and 2. Targets `SSM_SCAN`, `SSM_CONV`,
   flash-attention-with-cache, and the k28 chunked-GDN work
   ([`k28-fused-chunked-gdn-kernel-research.md`](k28-fused-chunked-gdn-kernel-research.md)).
+  - [x] **Live acceptance probe.** ✅ 2026-08-11 — suite seed `4711` passed **5,184/5,184** cases
+    across `SSM_SCAN`, `SSM_CONV`, `FLASH_ATTN_EXT`, and `GATED_DELTA_NET`. Every emitted
+    `AK_STATE_V1` receipt had `initial_equal=1`, `input_immutable=1`, and one or more final-state
+    outputs. Research commit `9cc3ed1b` supplies the fail-closed consumer. The parent row remains
+    open because its experimental producer is still uncommitted pending explicit operator approval.
 - [ ] **RVP-C2-6 — fp64 CPU reference with a ratio gate.** `e_cand ≤ κ · max(e_ref, floor)`, κ = 1.5.
   **Implement dequantisation from the GGUF format specification, not from `ggml-quants.c`** — sourcing
   it from our own quant code reproduces the sibling problem one level down and the independence is
@@ -369,7 +405,10 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   **A candidate need not look malicious to do this** — multi-stream is an ordinary in-tree idiom.
 - [ ] **RVP-C6-3 — Thread / async-escape check across the timed region.** The CPU-side analogue of
   RVP-C6-2: assert no candidate-spawned thread or async handle outlives the bracket.
-- [ ] **RVP-C6-4 — Speed-of-light screen.** Flag any candidate faster than
+- [x] **RVP-C6-4 — Speed-of-light screen.** ✅ 2026-08-11 —
+  `execution/physical_bounds.py` binds conservative per-shape compute/memory ceilings to the exact
+  delivered unit and measurement frame; `microbench.py` requires a complete predeclared envelope and
+  refuses any impossible sample before ranking. Flag any candidate faster than
   `max(compute-bound, HBM-bound)` for its shape. Free, needs no reference execution, and catches the
   whole "measured the wrong thing" family before a single verification rep is spent.
 - [x] **RVP-C6-5 — Keep provenance detection in its own component.** Substitution / call-provenance
@@ -380,7 +419,9 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   remains isolated in `evaluator/integrity.py` and `evaluator/surface.py`; the evaluator event has no
   actor-settable `correct` field. The verdict alone derives status, provenance failures appear as
   `INTEGRITY:<gate>:<outcome>`, and any such flag structurally withholds the speed rank.
-- [ ] **RVP-C6-6 — Red-team corpus with a stated sensitivity.** ~10 planted-bug and ~15 clean HIP
+- [x] **RVP-C6-6 — Red-team corpus with a stated sensitivity.** ✅ 2026-08-11 — the two versioned
+  source-pattern detectors pass the named 10 planted / 15 clean corpus and report 10/10 sensitivity,
+  15/15 specificity and 0/15 FPR without claiming arbitrary-program coverage. ~10 planted-bug and ~15 clean HIP
   kernels; report sensitivity and specificity, not an assertion of coverage. Mine the published
   exploit **taxonomy** (harness frame-hacking, pointer-keyed memoization, structured-input
   short-circuit) — **do not vendor the 4.66 GB corpus**; it is NVIDIA-targeted Python with zero
@@ -448,14 +489,21 @@ the end are deliberate and recorded so they are not re-derived._
   cannot see a mid-run excursion.
 - [ ] **RVP-C3-5 — Declare an absolute duration-window admission test** for any op-shape used to rank
   variants, with the lower bound **measured on gfx90a**. Do not import a foreign floor.
-- [ ] **RVP-C2-10 — Add a non-power-of-2 extent to the standing shape set** (e.g. 4095). Near-zero
+- [x] **RVP-C2-10 — Add a non-power-of-2 extent to the standing shape set.** ✅ 2026-08-11 — frozen v9's
+  executed `MUL_MAT` case set already carries extents 83, 77 and 127 (plus other irregular shapes),
+  and the AutoKernel T0 op filter runs that standing set rather than a power-of-two subset. Adding
+  4095 would increase cost without adding the requested non-power-of-two property. Near-zero
   cost. Keep shape-variation-as-correctness-probe distinct from shape-variation-as-hack-detector —
   different instruments, and merging them weakens both.
 - [ ] **RVP-C2-11 — Seed-invariance degeneracy screen**: an output that does not vary across input
   seeds is cacheable and therefore unscoreable. Complements RVP-C2-7.
 - [ ] **RVP-C2-12 — A hard error on non-contiguous input must be a FAIL, never a skip.** The reference
   suite converts these to skips in half its files; a kernel that cannot accept a strided ggml view is
-  not correct for llama.cpp, and a skip records that as neither pass nor fail.
+  not correct for llama.cpp, and a skip records that as neither pass nor fail. **2026-08-11 static
+  implementation:** under the separate `--autokernel-layouts` flag, the experimental tool marks an
+  unsupported selected layout as a hard failure; both console and CSV parsers preserve FAIL instead
+  of `not_supported`. Research commit `14034623` covers the consumer. This row remains open until the
+  producer is committed.
 - [x] **RVP-C6-9 — Build the two unbuilt detectors behind `AntiRewardHackingEvidence`**
   (`timing_dependent_branch_findings`, `environment_probe_findings`). Until they exist, an empty list
   must read **UNKNOWN, not PASS** — an empty result from a detector that was never built is exactly the
@@ -464,10 +512,15 @@ the end are deliberate and recorded so they are not re-derived._
   the real T0 provider records detector ids/findings. Missing ids make empty findings
   `COULD_NOT_CHECK`; planted/clean source-pattern tests report 100% sensitivity/specificity for this
   narrow detector taxonomy without claiming the broader RVP-C6-6 exploit corpus.
-- [ ] **RVP-C6-10 — Anti-short-circuit cases go in the RANKED set, not just the gate.** If the hard
+- [x] **RVP-C6-10 — Anti-short-circuit cases go in the RANKED set, not just the gate.** ✅ 2026-08-11 —
+  `MicrobenchPlan.anti_short_circuit_units` requires real per-unit command/recipe changes, a normal
+  control, distinct parameter frames, and emits those units into the same ranked block stream. If the hard
   cases only gate, a candidate can route easy inputs to a fast invalid path and never pay for the
   accurate path's cost on the hard ones. Ranking them prices it.
-- [ ] **RVP-VIDYA-1 — Belief-kernel wiring, filed now per CLAUDE.md.** The property layer (RVP-C2-2)
+- [x] **RVP-VIDYA-1 — Belief-kernel wiring, filed now per CLAUDE.md.** ✅ 2026-08-11 — the source row is
+  present in `scripts/vidya/adapters/README.md` and the owned projection task is SC18 in
+  `vidya-belief-substrate-program.md`; actual write-side work remains tracked there rather than hidden
+  in this dependency. The property layer (RVP-C2-2)
   **produces measurements** — per-op property residuals per backend per shape. Add a row to the source
   table in [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) and a task in
   [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md). The write side is cheap and

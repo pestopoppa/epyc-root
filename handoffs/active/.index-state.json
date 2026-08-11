@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 462
+      "open": 439
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 171,
+      "closed": 177,
       "guarded": 0,
       "last_advanced": "2026-08-11",
       "open": 26,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 197
+      "total": 203
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
@@ -1537,14 +1537,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 14,
+      "closed": 35,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 49,
+      "open": 26,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 63
+      "total": 61
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -2440,7 +2440,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "Obtain explicit permission; run v9/hardened controls, then the first real CPU candidate campaign",
+      "next_action": "Run the authorized v9/hardened CPU controls; then the first real CPU candidate campaign",
       "track": "autokernel research loop"
     },
     "INF-07": {
@@ -2809,7 +2809,7 @@
       "id": "INF-48",
       "index": "inference-research-index.md",
       "line": 59,
-      "next_action": "RVP-C2-1 \u2014 seeded input generation; precondition for the whole C2 oracle. RVP-T0-1 HELD (needs a GPU-load window)",
+      "next_action": "RVP-C2-6 \u2014 independent fp64 CPU reference; C2 producer commit still needs explicit approval. RVP-T0-1 GPU HELD",
       "track": "rocm verify profile backend"
     },
     "INF-49": {
