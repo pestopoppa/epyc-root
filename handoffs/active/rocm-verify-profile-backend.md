@@ -422,10 +422,12 @@ the end are deliberate and recorded so they are not re-derived._
 - [ ] **RVP-C3-2 — Expert-reference ceiling alongside the honest-baseline floor.** Where a task derives
   from a real merged optimization, report candidate-vs-human-patch delta as well as
   candidate-vs-vendor-baseline. C3 currently fixes only the floor.
-- [ ] **RVP-C3-3 — Parse `rocm-smi` into numeric fields and add `throttle_observed`.** Capture is
+- [x] **RVP-C3-3 — Parse `rocm-smi` into numeric fields and add `throttle_observed`.** Capture is
   already mandatory and implemented, but it is stored as a **text blob** and the completeness audit
   only regex-checks that the word appeared — so a run that throttled 1700 → 800 MHz mid-window passes
-  every check we have. Upgrade the audit from word-presence to value-presence.
+  every check we have. Upgrade the audit from word-presence to value-presence. ✅ 2026-08-10 —
+  AutoKernel `evaluator/devices.py` parses SCLK, MCLK, power and junction temperature into validated
+  samples; evaluation-event v5 mechanically re-derives throttle and makes it verdict-bearing.
 - [ ] **RVP-C3-4 — 250 ms in-run device-state sampler** across the measurement window. Two endpoints
   cannot see a mid-run excursion.
 - [ ] **RVP-C3-5 — Declare an absolute duration-window admission test** for any op-shape used to rank

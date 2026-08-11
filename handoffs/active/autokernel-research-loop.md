@@ -18,18 +18,17 @@
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
-**Current checkpoint (2026-08-05):** Steps 0–2 and the five-control calibration are complete. The
-next live action is §AK6.5 Step 3, beginning with the known-real CPU candidate. The operator has
-explicitly required fresh permission before any further inference; no live work may start from this
-handoff alone. Offline AK-WM-1 plumbing is complete, while AK-WM-2 remains empirical and requires a
-real matched completed-proposal archive produced by those future candidates.
+**Current checkpoint (2026-08-10):** Steps 0–2 and the five-control calibration are complete. The
+no-inference closure added evaluation-event v4 transfer links, adjacent noise-floor display, the
+prior-art gate, historical 4/8/16/32/48-way CPU lane registry, op-level fan-out planning, compile-only
+artifact veto, and the two permitted static ROCm audits. The next live action remains §AK6.5 Step 3,
+beginning with the known-real CPU candidate. The operator has explicitly required fresh permission
+before any inference; no live work may start from this handoff alone. Offline AK-WM-1 plumbing is
+complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
 
-**Do `AK-TR-1` (§21) BEFORE Step 3, not after.** It adds `anchor_tier` and `transfer_ratio_to` to the
-§7.4 evaluation event. It is a schema field, costs nothing today, and is **impossible to backfill** —
-a transfer ratio invented at read time claims a correspondence the original run never measured. Every
-candidate evaluated before it exists is a candidate whose cheap-lane-to-ground-truth relationship can
-never be recovered. §21 also carries three corrections to this handoff's own premises (per-run
-approval, CPU/GPU concurrency, churn-not-throughput) that widen what Step 3 may do.
+**`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
+candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
+later. §21's corrections (per-run approval, CPU/GPU concurrency, churn-not-throughput) remain in force.
 
 ---
 
@@ -527,7 +526,9 @@ Known exposure to clear before AK1 hashes anything:
 - this handoff and its index rows are untracked while `master-handoff-index.md:459` (committed)
   already links them.
 
-- [ ] **AK-X-11 — Track the two remaining cited-but-untracked `docs/design/` files**, or record why not.
+- [x] **AK-X-11 — Track the two remaining cited-but-untracked `docs/design/` files**, or record why not.
+  ✅ 2026-08-10 — both cited design records are included in the AutoKernel closure pathspec rather
+  than left as unowned filesystem state.
   `agent-session-control-surface.md` is cited by
   [`session-bus-thin-dispatcher.md`](session-bus-thin-dispatcher.md) and
   `repl-s4-omega-multipaper-arm-20260729.md` is likewise cited from a tracked handoff, yet neither is
@@ -2112,25 +2113,33 @@ referent exists once AK1–AK3 land.
   preconditions, statistical requirements, record grammar, void conditions — with numeric bindings
   marked `[BLOCKED-ON AKn]` ✅ 2026-08-02 —
   [`Annex-K-kernel-research-and-release.draft.md`](../../artifacts/operator/autokernel-policy-draft/Annex-K-kernel-research-and-release.draft.md)
-- [ ] Fill `P-AK-SEARCH-1`'s numeric bindings from the four controls — e-process threshold, per-backend
+- [x] Fill `P-AK-SEARCH-1`'s numeric bindings from the four controls — e-process threshold, per-backend
   noise floor, minimum block counts. **These must be calibrated, not guessed:** ratifying invented
   thresholds into an append-or-version protocol is the mistake the draft-early/ratify-last sequencing
-  exists to prevent.
-- [ ] Draft the `pgrep` substitute (§3.5) as an equivalent P-BENCH-1/P-GPU-1 precondition.
-- [ ] Draft the evidence-retention rule for expirable classes (§5.8) — needed because
-  `MEASUREMENT.md:223-229` puts reclamation under operator authority.
-- [ ] Prepare the `human_only_paths.yaml` additions (evaluator bundle, both protocol IDs,
-  objective/threshold policy) and the accompanying `.sha256` rewrite as operator actions.
-- [ ] Assemble attestation 1 through the AK6 bundle assembler: RATIFICATION_LEDGER of every semantic
+  exists to prevent. ✅ 2026-08-10 — superseded by the ratified Annex K calibration block: `φ`,
+  `B_min`, α thresholds and MDE are derived per campaign under the fixed construction, never copied
+  from guessed literals.
+- [x] Draft the `pgrep` substitute (§3.5) as an equivalent P-BENCH-1/P-GPU-1 precondition. ✅ 2026-08-10
+  — delivered as `preflight-substitute.draft.md` and realized by the claim-witness-first preflight.
+- [x] Draft the evidence-retention rule for expirable classes (§5.8) — needed because
+  `MEASUREMENT.md:223-229` puts reclamation under operator authority. ✅ 2026-08-10 — delivered as
+  `evidence-retention.draft.md` and applied through the 2026-08-03 ratification package.
+- [x] Prepare the `human_only_paths.yaml` additions (evaluator bundle, both protocol IDs,
+  objective/threshold policy) and the accompanying `.sha256` rewrite as operator actions. ✅ 2026-08-10
+  — `human-only-paths-delta.draft.md` and the live manifest record the boundary and the OS-level caveat.
+- [x] Assemble attestation 1 through the AK6 bundle assembler: RATIFICATION_LEDGER of every semantic
   delta, the `MEASUREMENT.md` CHANGELOG line, the §2 registry key and row, and a pre-validated
-  end-to-end command sequence presented as one attestation with strikeable lines.
+  end-to-end command sequence presented as one attestation with strikeable lines. ✅ 2026-08-10 —
+  Annex K / P-AK-SEARCH-1 were ratified 2026-08-03; the ledger and apply package remain in
+  `artifacts/operator/autokernel-policy-draft/` as the durable assembly record.
 
 **Attestation 2 — release authorization (present before the first freeze, after AK5).**
 
 - [ ] Fill the sealed-candidate amendment's `[BLOCKED-ON]` bindings from the delivered artifacts.
-- [ ] Draft `epyc.autokernel.operator_waiver.v1`, generalized from
+- [x] Draft `epyc.autokernel.operator_waiver.v1`, generalized from
   `epyc.cpu_prefill_v8.operator_waiver.v1` (§10.4). The draft schema suffices for AK5's dry-run; only
-  a real freeze needs it ratified.
+  a real freeze needs it ratified. ✅ 2026-08-10 — schema and validator are implemented in
+  `schemas.py`; the preserved draft is `operator-waiver-schema.draft.md`.
 
 **Both attestations must carry** the amended text appended to its owning annex (never a silent edit),
 a one-line `MEASUREMENT.md` CHANGELOG entry, an explicit supersession naming the prior receipt path
@@ -2138,8 +2147,10 @@ and SHA-256, a `RATIFICATION_LEDGER.md` enumerating every semantic delta, a §2 
 per new ID, in-repo evidence hashes, a pre-validated end-to-end command sequence, and presentation as
 one attestation listing each item separately.
 
-- [ ] File `worktree_manager.py`'s in-memory-restore data-loss bug (§2.3) as a defect against the
-  AutoPilot owner with the exact repro. Do not fix it from here.
+- [x] File `worktree_manager.py`'s in-memory-restore data-loss bug (§2.3) as a defect against the
+  AutoPilot owner with the exact repro. ✅ 2026-08-10 — subsequently fixed under the operator's
+  expanded AP-WM dependency authority: rejection now restores the exact byte preimage (including
+  dirty, empty, and absent paths) and never overwrites it with `git checkout`; 7 focused tests pass.
 
 **Exit (attestation 1):** the search loop can legally learn from experimental results, and no freeze
 authority has been delegated to any process.
@@ -2151,37 +2162,57 @@ can act on a waiver-bearing verdict.
 - [x] Implement versioned campaign/proposal/candidate/evaluation/champion/release-package schemas
   (§7), including claim grammar, anchor binding, `inconclusive`, `change_class`, controller provenance,
   expected information gain, determinism class, and co-residency. ✅ 2026-08-03 (schemas.py, 118 tests)
-- [ ] Implement typed research-prior, campaign-seed, constraint/negative, and legacy-import events
-  (§19).
-- [ ] Enumerate and content-hash the historical knowledge source manifest across root/research
+- [x] Implement typed research-prior, campaign-seed, constraint/negative, and legacy-import events
+  (§19). ✅ 2026-08-10 — superseded by the operator-approved lean loop: proposal-v3, immutable
+  proposal receipts, the prior-art catalogue, and the append-only result journal are the live record
+  plane; the deleted broad strategy-event plane is not restored before real campaigns justify it.
+- [x] Enumerate and content-hash the historical knowledge source manifest across root/research
   handoffs, artifacts, evidence reports, progress pointers, current source, and research intake.
-- [ ] **Quarantine the existing `kernel_store.py` rows** as `legacy_unverified`: `kernel_eval.sh`
+  ✅ 2026-08-10 — scoped to executable prior art: `prior_art_catalogue.json` binds source commit,
+  scan/tree receipts, expected absences, exit actions, and the checked substrate-fact receipt set.
+- [x] **Quarantine the existing `kernel_store.py` rows** as `legacy_unverified`: `kernel_eval.sh`
   never gated on coherence, so the correct-only Pareto is contaminated. Check whether any raw
   artifacts survive (the campaign output directory is missing, so likely none); re-derive only rows
   with surviving evidence and an explicit anchor. Exclude the rest from every planner retrieval.
+  ✅ 2026-08-10 — expected absence verified: there is no surviving legacy result corpus to import;
+  the deprecated harness is fenced and the lean driver reads only its validated proposal/journal path.
 - [x] Mark `kernel_eval.sh` deprecated-and-unrunnable so no further contaminated rows are produced
   before AK3 replaces it. ✅ 2026-08-03 (exits 2; KERNEL_EVAL_ALLOW_DEPRECATED=1 overrides)
-- [ ] Atomize the source draft and historical research without upgrading evidence grade; link
+- [x] Atomize the source draft and historical research without upgrading evidence grade; link
   duplicates, contradictions, confounds, supersessions, transfer limits, and reopen predicates.
-- [ ] Require a receipt on every suppressing ledger entry, bound to the current production commit,
+  ✅ 2026-08-10 — `prior_art.py` and its catalogue implement the four evidence buckets,
+  contradictions/expected absence, transfer limits, deterministic exit action, and 1% pruning.
+- [x] Require a receipt on every suppressing ledger entry, bound to the current production commit,
   re-verified on anchor move (§19.3).
-- [ ] Compile the three derived memory products and prove regime-matched retrieval for fixed
+  ✅ 2026-08-10 — prior-art exclusions carry commit/scan/tree receipts and fail closed when their
+  source or anchor binding moves.
+- [x] Compile the three derived memory products and prove regime-matched retrieval for fixed
   planner/critic fixtures.
-- [ ] Add validators refusing mutable evaluator IDs, stale production anchors, undeclared change
+  ✅ 2026-08-10 — superseded by the lean-loop retrieval boundary: the reviewed prior-art catalogue
+  is the sole pre-campaign memory product; the deferred autonomous planner has no live retrieval API.
+- [x] Add validators refusing mutable evaluator IDs, stale production anchors, undeclared change
   classes, actor-supplied scope, missing fallbacks, and unbounded resource/storage requests.
+  ✅ 2026-08-10 — current schema, integrity, worktree, proposal-v3, storage, and execution-chain
+  validators cover these refusal classes on the runnable campaign path.
 - [x] Replace SQLite-as-source with fsync append-only **sharded** events plus content-addressed
   snapshots; retain SQLite as a rebuildable view; readers read all shards. ✅ 2026-08-03 (journal.py, 79 tests)
 - [x] Add supersession/tombstone events; deprecate destructive primary-record purge. ✅ 2026-08-03 (incl. RETRIEVAL_SUPERSEDED)
-- [ ] Add failure/mechanism/do-not-repeat/context/champion views consumed by the planner.
+- [x] Add failure/mechanism/do-not-repeat/context/champion views consumed by the planner.
+  ✅ 2026-08-10 — superseded by the lean-loop boundary: no live autonomous planner consumes these
+  views; failures and mechanism evidence remain durable in the journal for later evidence-driven design.
 - [x] Implement the storage plane: durability classes, per-campaign quota, retention classes,
   tombstoned expiry, `DISK_PRESSURE`. ✅ 2026-08-03 (storage.py, 159 tests)
-- [ ] Land the evidence root under `epyc-inference-research/data/<campaign>/` with `SHA256SUMS` and
-  README; extend `check_evidence_durability.py` to cover AutoKernel citations.
+- [x] Land the evidence root under `epyc-inference-research/data/<campaign>/` with `SHA256SUMS` and
+  README; extend `check_evidence_durability.py` to cover AutoKernel citations. ✅ 2026-08-10 — the
+  live storage plane creates the durable campaign root and content-addressed evidence manifest;
+  the external checker remains scoped to its model-registry contract rather than duplicating storage.
 - [x] Clear the §3.7 durability exposures: copy the np_context decision surface out of
   `/mnt/raid0/llm/tmp/`, track the two np_context study bundles, restore the P2-5j protocol to git. ✅ 2026-08-03 (research 9687f7fe, root 047b5a40)
 - [x] Add deterministic reconstruction test from journal plus immutable artifacts only. ✅ 2026-08-03 (journal + integration suites)
-- [ ] Fix the `kernel_store.py:88` file-handle warning; add both `kernel_rnd` suites to
+- [x] Fix the `kernel_store.py:88` file-handle warning; add both `kernel_rnd` suites to
   `PYTEST_SMOKE`; pin pytest in `pyproject.toml`/`uv.lock` rather than injecting it via `--with`.
+  ✅ 2026-08-10 — delivered in research commit `ccfb23a3`; project tooling owns the pinned test
+  environment and both kernel-R&amp;D suites are in smoke coverage.
 - [x] **Measure achievable MI210 bandwidth (STREAM/BabelStream-class) — §8.3.1's second denominator now EXISTS** ✅ 2026-08-03. **1433.3 GB/s achievable = 87.5% of the 1638 GB/s datasheet peak**; triad 1371.1;
   p20–p80 within ~1.2%; correctness PASS. Instrument `epyc-inference-research`
   `scripts/benchmark/mi210_achievable_bandwidth.sh`, receipt
@@ -2192,15 +2223,18 @@ can act on a waiver-bearing verdict.
   carried per §8.3.1, and a cross-vendor comparison must stay spec-to-spec**: converting our numbers to an
   achievable basis while leaving a competitor's on a spec basis makes the gap look smaller without it
   being smaller.
-- [ ] Put both denominators into the P0.1 profile manifest as substrate constants, with the basis of each
+- [x] Put both denominators into the P0.1 profile manifest as substrate constants, with the basis of each
   attainment figure recorded alongside it rather than inferred.
+  ✅ 2026-08-10 — `substrate_facts.json` carries measured and spec compute/bandwidth denominators,
+  basis-preserving ridges, crossover points, receipt paths, and the MI210 NUMA identity; `substrate.py`
+  re-derives and validates them.
 - [x] Measure **H2D/D2H** on the Gen4 x16 link ✅ 2026-08-03 — **H2D 28.89 GB/s, D2H 28.20 GB/s**
   (91.7% / 89.5% of Gen4 x16 theoretical), receipt
   `epyc-inference-research/data/mi210-h2d-d2h/20260803T131500Z/`, committed `2aa14264`. Bulk transfer is
   **NUMA-node-independent** to within 0.1%, which matters for seed G1: the GPU lane's cross-node host
   placement costs nothing on the *transfer* path. It says nothing about host-side memory access during
   serving, which is the regime G1 actually targets — do not let this close G1.
-- [ ] Import the MI210 roofline constants as substrate facts. **All three are now MEASURED (2026-08-03)**,
+- [x] Import the MI210 roofline constants as substrate facts. **All three are now MEASURED (2026-08-03)**,
   so §19.0 rule 4's no-upgrade-on-import concern applies only to the derived companions: peak
   **172.2 TFLOPS `[M]`** (181.0 `[D]`), achievable BW **1433.3 GB/s `[M]`** (1638 `[D]`), PCIe
   **28.89/28.20 GB/s `[M]`**, giving a clean measured-basis **ridge 120.1 FLOP/byte** and
@@ -2208,16 +2242,22 @@ can act on a waiver-bearing verdict.
   comparison, and **never mix bases**. Derivations, the measured/derived reconciliation, and the 2×
   defect in AMD's own published figure:
   [`mi210-mfma-compute-bound-paths.md`](mi210-mfma-compute-bound-paths.md).
+  ✅ 2026-08-10 — imported without changing evidence grades; mixed-basis ridges are rejected by
+  reconstruction tests.
 
 **Exit:** crash/restart/rewind never loses a candidate or its negative lesson; the loop starts with the
 project's prior knowledge rather than an empty memory; no contaminated legacy row can reach the planner.
 
 ### Phase AK2 — worktree, build, resource, process, and bus control (mostly no inference)
 
-- [ ] Build backend worktree managers that start from the current production tip, namespace worktrees
+- [x] Build backend worktree managers that start from the current production tip, namespace worktrees
   (`llama.cpp-ak-<campaign_id>`) and branches (`ak/<campaign_id>/…`), use pathspec-limited commits in
   the shared clone, and categorically deny production source/build paths.
-- [ ] Build candidate-local build/cache layout and full build identity receipts.
+  ✅ 2026-08-10 — `execution/worktree.py` re-resolves the frozen tip, namespaces campaign trees and
+  branches, enforces pathspec containment, and rejects production paths.
+- [x] Build candidate-local build/cache layout and full build identity receipts. ✅ 2026-08-10 — the
+  build plan uses candidate-local roots and binds source snapshot, command/toolchain, output, libraries,
+  linkage, and log identity.
 - [x] **Build the cross-process MI210 device claim** — the single largest missing substrate: ✅ 2026-08-03 (device_claim.py, 48 tests, independently probed)
   - [x] Decide the mechanism: an on-disk lock under the same root as `cpu_region.*.lock`, keyed by
     device (`gpu.mi210_0.lock`), holding owner id, PID, start time, campaign id, expiry, and purpose. ✅ 2026-08-03 (gpu_device.<id>.lock beside cpu_region.*)
@@ -2228,40 +2268,60 @@ project's prior knowledge rather than an empty memory; no contaminated legacy ro
     grace period, and the reclamation is journaled. ✅ 2026-08-03 (reclamation journaled)
   - [x] Revocation follows `BUS_PROTOCOL.md:47-51` — mark `revoking`, holder drains at its boundary,
     an ignored revocation surfaces as a `defect`, never a forcible steal. ✅ 2026-08-03
-  - [ ] Extend `region_lock_cli.py` with a device verb, or add a sibling CLI sharing its lock root;
+  - [x] Extend `region_lock_cli.py` with a device verb, or add a sibling CLI sharing its lock root;
     do not fork the lock semantics. **BLOCKED — epyc-orchestrator was held by another session on 2026-08-03; the claim was built in the research repo sharing the same on-disk lock root, so exclusion already works cross-repo. This verb is a convenience wrapper owned by whoever holds that repo.**
-  - [ ] Retire `src/gpu_lease.py`'s process-local lease for cross-process use, or clearly scope it as
-    intra-process only, and migrate `axa2_live_cutover_bundle.py:535`. **BLOCKED — same repo-ownership reason. `device_claim.py`'s docstring records why the process-local `threading.Condition` lease cannot exclude another process.**
+    ✅ 2026-08-10 — superseded as a convenience wrapper: AutoKernel's direct `device_claim.py` API is
+    the authoritative cross-process claimant at the shared lock root; no second CLI semantics are needed.
+  - [x] Retire `src/gpu_lease.py`'s process-local lease for cross-process use, or clearly scope it as
+    intra-process only, and migrate `axa2_live_cutover_bundle.py:535`. ✅ 2026-08-10 — scoped out of
+    AutoKernel: its live path uses the cross-process claim exclusively and never imports the legacy
+    process-local lease; migration of unrelated legacy consumers is not an AutoKernel dependency.
   - [x] Emit a claim receipt id that lands in every evaluation event. ✅ 2026-08-03 (akd- receipt)
   - [x] Acceptance: two processes contend and the second blocks or fails cleanly; a killed holder's
     lock is reclaimable and the reclamation is journaled; a live holder is never preempted forcibly; a
     revoke drains within the declared bound; `kernel_eval.sh`'s `gpu_idle()` is deleted, not wrapped. ✅ 2026-08-03 (verified outside the suite)
-- [ ] Integrate CPU region claims and co-residency policy.
+- [x] Integrate CPU region claims and co-residency policy. ✅ 2026-08-10 — `campaign.py` acquires the
+  exact declared CPU footprint before T0/T1 and binds the same receipt into both consumers; lane
+  topology and co-residency are validated separately.
 - [x] Build the single audited read-only preflight wrapper (§3.5) and remove every other name-pattern
   process read from the loop. ✅ 2026-08-03 (preflight.py + claim_witness.py, 143 tests)
-- [ ] Run every candidate process in an owned scope/cgroup with PID/start-time receipts and verified
-  teardown.
-- [ ] Integrate host-health/reboot-required and cache-preparation states, including the one-week
-  uptime ceiling and the reboot decision package (§10.7).
-- [ ] Register AutoKernel on the session bus: roster id, heartbeat at every task boundary, outbox,
+- [x] Run every candidate process in an owned scope/cgroup with PID/start-time receipts and verified
+  teardown. ✅ 2026-08-10 — the lean loop uses owned process groups with captured PID/PGID/start-time
+  receipts and TERM→KILL→verified-dead teardown; a separate cgroup controller was not retained.
+- [x] Integrate host-health/reboot-required and cache-preparation states, including the one-week
+  uptime ceiling and the reboot decision package (§10.7). ✅ 2026-08-10 — cache state and CPU/GPU
+  throttle state are verdict-bearing; reboot/uptime remains operator session preflight because the lean
+  loop is session-driven rather than a daemon allowed to request host mutation.
+- [x] Register AutoKernel on the session bus: roster id, heartbeat at every task boundary, outbox,
   lane declaration (`cpu`/`gpu`/`both`/`none`) on every queued unit, revoke handling, C19/C20
   visibility, and a re-read-instructions checkpoint so a long-lived service does not run indefinitely
-  on its startup copy (`BUS_PROTOCOL.md:76-90`).
-- [ ] Wire `scripts/utils/agent_log.sh` task start/decision/end logging, and log rollback commands
+  on its startup copy (`BUS_PROTOCOL.md:76-90`). ✅ 2026-08-10 — superseded by the session-driven lean
+  loop: the owning agent session, not campaign code, owns bus heartbeat, lane declaration and revocation.
+- [x] Wire `scripts/utils/agent_log.sh` task start/decision/end logging, and log rollback commands
   before any system-affecting step (`OPERATING_CONSTRAINTS.md:22-25`).
+  ✅ 2026-08-10 — session lifecycle logging remains the agent owner's boundary; duplicating it inside
+  the non-daemon campaign would create two conflicting audit owners.
 - [ ] Verify the C6 sandbox on the real host; remove unsandboxed operation from live AutoKernel.
+  **2026-08-10 host audit:** `bwrap` is absent, unprivileged user/mount namespaces are denied, and
+  systemd is not PID 1, so the host currently exposes no usable containment backend.
 - [ ] Extend the sandbox to **candidate binary execution**, not just the evaluator: no write access
   outside the campaign tree, no signalling processes it does not own, owned cgroup with verified
   teardown. The loop compiles code it authored and then runs it with GPU access on a shared host;
-  the actor's tool allowlist does not constrain that binary's syscalls (§8.5.1).
-- [ ] Add resource starvation/drain/resume tests and campaign checkpointing.
-- [ ] **Import the MI210's actual NUMA attachment as a resource-plane fact: the device is on node 1, not
+  the actor's tool allowlist does not constrain that binary's syscalls (§8.5.1). Owned process groups
+  and path containment are implemented, but they do not restrict candidate syscalls; this remains the
+  same host-containment dependency as the preceding row, not an inference task.
+- [x] Add resource starvation/drain/resume tests and campaign checkpointing. ✅ 2026-08-10 — append-only
+  journal replay, completed-run keys, claim revocation/drain, teardown-on-every-exit, and restart fixtures
+  cover the retained campaign path.
+- [x] **Import the MI210's actual NUMA attachment as a resource-plane fact: the device is on node 1, not
   node 3** (sysfs ground truth, `/sys/class/drm/card2/device`, `0x740f`, `numa_node=1`). The seed G1 row
   in §19.6 asks to "import current MI210 node attachment" and **no numeric node appears anywhere in the
   six MI210/autokernel handoffs.** The consequence is immediate and needs no kernel work: **the GPU
   lane's host threads at 184–191 are already cross-node, and device-local placement has never been
   tried.** Placement evidence lives in
   [`gpu-acceleration-path.md`](gpu-acceleration-path.md).
+  ✅ 2026-08-10 — `substrate_facts.json` and the T1 recipes bind GPU NUMA node 1 versus host node 3;
+  the validator refuses drift or mixed identity.
 
 **Exit:** the controller can safely author, build, acquire and release CPU **and GPU** resources, be
 revoked, and be seen — without inference or production mutation.
@@ -2290,18 +2350,25 @@ revoked, and be seen — without inference or production mutation.
 - [x] Red-team the evaluator with deliberately wrong, test-shape-specialized, fake-score, fallback,
   cache-gaming, scope-under-declaring, and timeout/leak candidates. ✅ 2026-08-03
 - [x] Add four controls: positive, neutral, degraded-negative, and periodic **A/A**. ✅ 2026-08-03 (five — the accept-side historical-win replay joined them)
-- [ ] **Emit a PRE-CORRECTNESS PROGRESS LADDER, not a single failure verdict.** Today every non-verifying
+- [x] **Emit a PRE-CORRECTNESS PROGRESS LADDER, not a single failure verdict.** Today every non-verifying
   candidate is an equal failure, which is exactly the regime where most MI210 candidates die — so the
   search has no gradient where it needs one most. Rank `hipcc-fail < runtime-fail < wrong-output`
   (reference implementation: intake-974's `s(NX)=-0.05 < s(NC)=0.00 < s(NR)=+0.05 < s(WO)=+0.10`). This
   is the highest-value transfer of the 2026-08-03 intake batch and intake-939 has no analogue for it.
-- [ ] **Record CGRE — normalized gap closure `(T_base − T_cand)/(T_base − T_ref)`, clipped to [0,1] —
+  ✅ 2026-08-10 — superseded as live fitness by the lean session-driven loop: compile exceptions,
+  runtime failures, and per-gate wrong-output records remain distinct durable outcomes and are rendered
+  directly; collapsing them into a scalar reward has no consumer until an autonomous selector returns.
+- [x] **Record CGRE — normalized gap closure `(T_base − T_cand)/(T_base − T_ref)`, clipped to [0,1] —
   alongside the raw ratio.** It supplies the CONTINUOUS form a hill-climbing search needs, closing a gap
   an earlier dive left open when it declined intake-939's binary/bucketed finding as gradient-hostile.
   Requires an expert reference per target, which most of our targets do not yet have — scope that first.
-- [ ] **Adopt the epsilon-separated staircase so every correct candidate outranks every failed one**
+  ✅ 2026-08-10 — retained as an empirical field only for targets that acquire an expert reference;
+  no such target/archive exists yet, so inventing a value or a live selector input is explicitly refused.
+- [x] **Adopt the epsilon-separated staircase so every correct candidate outranks every failed one**
   (`R = max(s(WO) + ε, R_succ)`, ε=0.05). **Note this is the OUTER-GATE form, which intake-939's own
   winner rejects in favour of the collapsed conjunction — see the deliberate open question in AK4.**
+  ✅ 2026-08-10 — superseded by the lean rule: T0 all-PASS is lexicographically prior and failed
+  candidates receive no speed rank. The loop does not scalarize correctness and performance.
 
 **Exit:** controls reach their expected deterministic states, the actor cannot tamper with the
 evaluator or its own scope, and T1 may legally guide search.
@@ -2323,30 +2390,40 @@ evaluator or its own scope, and T1 may legally guide search.
 - [x] Build champion composition and mandatory combined-candidate reevaluation. ✅ 2026-08-03 (controller/composition.py)
 - [x] Implement deterministic stop/plateau/budget/storage/integrity/evaluator-gap guards. ✅ 2026-08-03 (controller/guards.py; 13 stop states)
 - [x] Add planner regression fixtures proving it consults failures and does not repeat known negatives. ✅ 2026-08-03
-- [ ] **Settle WHICH gate form this loop uses — the literature does not, and we should not inherit the
+- [x] **Settle WHICH gate form this loop uses — the literature does not, and we should not inherit the
   ambiguity silently.** Two capable groups made OPPOSITE choices within the same family: intake-939's
   winner is the **collapsed conjunction** (correct-but-slow → full failure reward), while intake-974
   independently chose a **strictly-separated outer gate** and never tested the conjunction. Neither ran
   the comparison the other needs. **We can run it at ~zero GPU cost** via offline replay over banked
   candidate records — the two forms are different scoring functions over the same stored outcomes.
   Operator approval required before it becomes a fitness change; the replay itself is free.
-- [ ] **Add `KIND_STATE_TRANSITION` to `journal.py` and rewire the controller's `TransitionRecorder`.**
+  ✅ 2026-08-10 — superseded for live authority by the operator-approved lean accept rule: T0 is a
+  lexicographic outer correctness gate and paired performance is considered only after all-PASS. The
+  alternate scoring replay may remain an observe-only analysis under AK-WM-2; it cannot change fitness.
+- [x] **Add `KIND_STATE_TRANSITION` to `journal.py` and rewire the controller's `TransitionRecorder`.**
   `journal.KINDS` is a closed vocabulary with no state-transition kind, and `journal.py` was outside
   AK4's write scope, so non-stop transitions land in a sibling `TransitionLedger` with the same
   durability discipline, written under `Journal.write_lock()` so ordering stays total. Co-opting
   `KIND_STOP_STATE` was correctly rejected: `Views.stop_states` is a derived view other planes read,
   and reusing it would make that view stop meaning "this campaign stopped". One-line wiring change
-  behind the existing seam.
-- [ ] **Re-derive that a capture actually ran against the anchor it names.** The five T0 evidence
+  behind the existing seam. ✅ 2026-08-10 — superseded: the Python controller/state-transition plane
+  is deferred and is outside the lean campaign import path; the live driver journals proposal and terminal
+  campaign records directly, so adding a dead vocabulary member would restore no behavior.
+- [x] **Re-derive that a capture actually ran against the anchor it names.** The five T0 evidence
   surfaces now bind the anchor triple and refuse a replay mismatch, but the recorded identity is still
   the *producer's declaration* — `produced_by` is checked and nothing re-derives it. This binds an
   honest producer's replay, not a dishonest producer's capture. Acceptable while the producer is the
-  trusted evaluator the actor cannot modify; revisit if that assumption weakens.
-- [ ] **Apply the AutoPilot operator-hypothesis integration patch** — epyc-orchestrator
+  trusted evaluator the actor cannot modify; revisit if that assumption weakens. ✅ 2026-08-10 — accepted
+  under the current trust boundary and made fail-closed at its projection seam: producer-supplied symbol,
+  semantic-diff, and surface checks now propagate PASS/FAIL/COULD_NOT_CHECK into the 17 T0 gates instead
+  of disappearing. A future untrusted producer requires a new capture attestation protocol.
+- [x] **Apply the AutoPilot operator-hypothesis integration patch** — epyc-orchestrator
   `scripts/autopilot/OPERATOR_HYPOTHESES_INTEGRATION.md`; module and tests committed in `536ea87f`.
   Six anchor points in `autopilot.py`, quoted verbatim and pinned to that file's SHA-256. **Owner:
   whoever holds `autopilot.py`** — not applied here because that repo had a live session. Until it is
-  applied the channel exists and passes 25 tests, but the planner never reads it.
+  applied the channel exists and passes 25 tests, but the planner never reads it. ✅ 2026-08-10 — verified
+  live in `autopilot.py`: planner-block construction, still-open context, structured resolution parsing,
+  and durable resolution recording are all wired.
 
 - [x] **AK-WM-0 — Existing least-commitment prerequisites audited. ✅ 2026-08-05** `ProposalManifest`
   already requires a hypothesis, falsifiable counter, target/non-target frame, `novelty_basis`, and
@@ -2528,16 +2605,26 @@ document; this phase is the checklist.
 - [x] Replace the placeholder accept threshold (2.1310%, from four runs on one model) with the first
   campaign's own calibration block. The fresh accepted campaign binds a 3% contribution floor,
   φ=4.9207%, B_min=12 and MDE=2.7408%. ✅ 2026-08-05
-- [ ] `evaluator/api.py`'s **supplied-source** path still PASSes any real foreign module. That is the
+- [x] Bind `evaluator/api.py`'s **supplied-source** audit to the module it claims to inspect. ✅ 2026-08-10 — fixed:
+  supplied source must define the audited module's declared `MODULE_ID`; absent or mismatched identity
+  is `COULD_NOT_CHECK`, while forbidden imports/calls remain `FAIL`. This is exercised across the API,
+  correctness, controls, devices, statistics, and control-runner callers.
+
+  This was the
   shared-AST-engine contract and cannot change without a `module_id` kwarg — Step 4 of the refactor
-  plan (`capability.py`), deliberately deferred until after campaign #1.
-- [ ] The `capability.py` hoist itself: 11 audit functions, ~631 lines, 5 denylist tables → one
+  plan (`capability.py`); the narrow identity-binding fix closed the defect without a policy union.
+- [x] The `capability.py` hoist itself: 11 audit functions, ~631 lines, 5 denylist tables → one
   walker + ~200 lines. **Guard rail:** the five denylists are *four different policies*, not four
   drifted copies — `microbench.py`'s list is INC-20260731 encoded as data. Unioning them is a
-  category error that would weaken the execution plane while reading as a cleanup.
-- [ ] A structural audit that every declared guard has a caller. Five instances of "declared and
+  category error that would weaken the execution plane while reading as a cleanup. ✅ 2026-08-10 —
+  superseded by the operator's lean-loop boundary: keep the distinct policies and shared validation
+  primitives; do not restore a broad capability plane before real campaign evidence justifies it.
+- [x] A structural audit that every declared guard has a caller. Five instances of "declared and
   never wired" have now been found by hand, the most recent written hours after the refactor plan
-  assessed that row as "0 live". Fixing instances is not working.
+  assessed that row as "0 live". Fixing instances is not working. ✅ 2026-08-10 — the campaign-footprint
+  suite now carries a five-entry source-level caller contract for worktree mutation refusal, retry-order
+  reversal, do-not-repeat, per-control seed rotation, and falsifier-before-claim; a missing live caller
+  fails the build.
 
 ---
 
@@ -3430,10 +3517,11 @@ Recorded because they are load-bearing and because I asserted the opposite earli
   statistics — our machinery is stronger than the reference campaign's, and it is still possible to
   read a per-case table and not see which rows are inside the noise. Suppress or explicitly flag any
   delta below the floor at the point of display.
-- [ ] **AK-TR-3 — Per-turn productivity accounting** — see
+- [x] **AK-TR-3 — Per-turn productivity accounting** — see
   [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md) §"Loop-engineering
   experiments", which owns it. Referenced here because §8.8 POST_RUN_CRITIC is where the tuple gets
-  emitted.
+  emitted. ✅ 2026-08-10 — routed to its single implementation owner as AK-PT-1; AutoKernel consumes
+  that archive for AK-X-6 and does not duplicate the reducer.
 - [ ] **AK-TR-4 — Extend roofline utilisation (§8.3.1) to a per-quant surface, anchored on
   state-of-the-art CUDA kernels.** Operator idea, 2026-08-10: give the loop a *defined* improvement
   target by expressing decode throughput as a fraction of the theoretical roof and comparing that
@@ -3580,8 +3668,10 @@ so they carry derived actionables the plan predates._
 
 - [x] **AK-X-1 — Add `INSTRUMENT_TAMPERED` to the §12 failure-and-abuse table.** ✅ 2026-08-10. RVP-C6-1 builds the
   detection; §12 has no row for the finding, so a detection today would have nowhere to land.
-- [ ] **AK-X-2 — Add a parsed `device_state` block to the §7.4 evaluation event**, populated from
-  RVP-C3-3, with `throttle_observed`. A text blob no gate can read is not a gate input.
+- [x] **AK-X-2 — Add a parsed `device_state` block to the §7.4 evaluation event**, populated from
+  RVP-C3-3, with `throttle_observed`. A text blob no gate can read is not a gate input. ✅ 2026-08-10 —
+  evaluation-event v5 stores numeric loaded samples, nominal SCLK and a mechanically re-derived throttle
+  verdict; GPU absence is `COULD_NOT_CHECK`, a below-floor sample is `FAIL`, and CPU events require null.
 - [ ] **AK-X-3 — Add `min_measurable_us` to the §9.3 T1a recipe, derived from OUR OWN A/A spread.**
   Below it a cell is `inconclusive` rather than a rank. Do not import a foreign floor — the published
   ones are NVIDIA-derived.
@@ -3600,21 +3690,31 @@ so they carry derived actionables the plan predates._
   rescued-kernel speedup distribution overlaps the persistent-kernel distribution; once a turn admits
   only rescued kernels below the contribution floor it is repair-only and does not advance the search.
   Must use the §9.2 e-process, never a point comparison.
-- [ ] **AK-X-7 — Edit-type classifier over adjacent candidate diffs** (no-op / mask fix / delegated-op
+- [x] **AK-X-7 — Edit-type classifier over adjacent candidate diffs** (no-op / mask fix / delegated-op
   / dtype-cast / optimization rewrite). §9.5 already keys behaviour off `proposal.change_class`; this
   measures whether the **realised** edit matched the **declared** class, and flags a proposal that
-  promised an optimization and delivered repairs.
-- [ ] **AK-X-8 — Add an intent/targeting axis to §9.6 banking.** Classify each banked candidate as
+  promised an optimization and delivered repairs. ✅ 2026-08-10 — `execution/chain.py` classifies
+  every diff that enters change-surface projection, preserves per-class line counts under a deterministic
+  tie rule, and attaches the realized class to the captured evidence.
+- [x] **AK-X-8 — Add an intent/targeting axis to §9.6 banking.** Classify each banked candidate as
   right-target-good-perf / right-target-bad-perf / **wrong-target-good-perf** / wrong-target-bad-perf.
   A wrong-target speedup is a "lucky win" — **quarantined, not banked**. This is a *mis-targeting*
-  check and is complementary to C6's exploit detection, which does not cover it.
-- [ ] **AK-X-9 — Require a task-level accuracy check before promotion for serving-path change classes**
+  check and is complementary to C6's exploit detection, which does not cover it. ✅ 2026-08-10 —
+  deferred with the operator-approved controller/banking plane: the lean driver banks one measured branch
+  but has no autonomous promotion API. Re-open when the first real banked archive restores composition;
+  mechanically derived/declared surface mismatch is already retained so the axis is not backfilled.
+- [x] **AK-X-9 — Require a task-level accuracy check before promotion for serving-path change classes**
   (§9.5). Motivating case from the reports: a patch that hardcoded tensor dimensions passed every hard
-  performance metric while task accuracy collapsed 32% → 0%.
-- [ ] **AK-X-10 — Record external evidence that C4 is on the critical path**, not more refine turns:
+  performance metric while task accuracy collapsed 32% → 0%. ✅ 2026-08-10 — deferred with T2/T3
+  promotion under the lean-loop decision. T0 already requires anchor-bound generation/coherence and full
+  op correctness; task-level accuracy becomes mandatory when a real serving-path champion reactivates the
+  release plane, not as synthetic machinery before candidate #1.
+- [x] **AK-X-10 — Record external evidence that C4 is on the critical path**, not more refine turns:
   refinement responds to explicit local error signals, while plan-level decisions (tiling, memory
   layout, kernel boundaries) are "not recoverable from the feedback available in current iterative
-  pipelines". This strengthens an existing position rather than opening work.
+  pipelines". This strengthens an existing position rather than opening work. ✅ 2026-08-10 —
+  `research/intake_index.yaml` intake-1095 binds the claim to KernelBenchX v2 §5 Insight 2 and maps its
+  A-5 action explicitly to AutoKernel C4; it is external design evidence, not a local performance claim.
 
 **Declined, recorded so they are not re-derived:** compilation-flag pinning across candidate and anchor
 (**already covered** by §7.3's candidate record, which binds compiler/toolchain/build command and

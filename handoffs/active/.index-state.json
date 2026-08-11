@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 529
+      "open": 481
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -129,10 +129,10 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 116,
+      "closed": 163,
       "guarded": 0,
-      "last_advanced": "2026-08-05",
-      "open": 80,
+      "last_advanced": "2026-08-10",
+      "open": 33,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
@@ -140,14 +140,14 @@
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
-      "closed": 130,
+      "closed": 131,
       "guarded": 0,
       "last_advanced": "2026-08-10",
       "open": 63,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
       "state": "active",
-      "total": 193
+      "total": 194
     },
     "autopilot-control-plane-integration.md": {
       "blocked": 0,
@@ -1537,10 +1537,10 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 8,
+      "closed": 9,
       "guarded": 0,
       "last_advanced": "2026-08-10",
-      "open": 55,
+      "open": 54,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
@@ -2438,7 +2438,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "AK-TR-1 \u2014 add anchor_tier + transfer_ratio_to to the \u00a77.4 evaluation event now; free today, impossible to backfill",
+      "next_action": "Enable a C6 containment backend, then verify candidate syscall isolation on the live host",
       "track": "autokernel research loop"
     },
     "INF-07": {
