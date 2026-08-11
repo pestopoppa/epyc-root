@@ -78,7 +78,15 @@ outcome.
   - [x] **SEQ-A0 — the mechanism, built NEUTRAL so SEQ-A1 is a one-line switch** ✅ 2026-08-11
         (`mainB`, orchestrator `43108014`). `SequentialPolicy.sticky_refuted`, **default `False`** —
         seq-v1 semantics reproduced byte-for-byte, the 3 candidates below still flip exactly as
-        before, 75 passed across every sequential-verdict consumer. Plus `EProcessState
+        before, **75 passed** across the sequential-verdict consumer set. **The set, named so the
+        number is checkable** (`auditor` 2026-08-11: the original citation said "every
+        sequential-verdict consumer", which is not reconstructable — their two reasonable guesses
+        gave 41 and 131):
+        `tests/unit/` × {`test_restart_readiness_report.py`, `test_seq_rate_axis_paired_measurement.py`,
+        `test_seq_readiness_report.py`, `test_sequential_verdict.py`,
+        `test_sequential_verdict_sticky_refuted.py`} — 5 files, selected by
+        `grep -rln 'sequential_verdict\|EProcessState\|seq_readiness\|review_ledger' tests/unit/`.
+        Re-run 2026-08-11 after the note: 75 passed, unchanged. Plus `EProcessState
         .first_refuted_k`, recorded unconditionally as the process folds forward: **observing that a
         stop happened is free, and is not the same as deciding it is permanent** — capturing it now
         is what lets SEQ-A1 be settled from data rather than by re-running `core_v1`, which is over
@@ -89,9 +97,14 @@ outcome.
         `dd793a6ee43ce718` (k=24), `85c3dcf25823c537` (k=15). Confirms the figures above.
         **Deliberately takes no side.** A lane brief phrased SEQ-A as "the function silently
         un-refutes — make it sticky", i.e. the inverse of this handoff's framing. Both readings are
-        true: the FUNCTION is non-sticky (`state_name()` has no memory), the PERSISTED LABEL is
-        sticky (never recomputed). So "make it sticky" is not a bug fix — it is SEQ-A1 horn 2, and
-        deciding it silently would settle a human-amendment-only question on a phrasing.
+        true: the FUNCTION is non-sticky (`state_name()` has no memory), the PERSISTED LABEL reads
+        `refuted` where the function would not. So "make it sticky" is not a bug fix — it is SEQ-A1
+        horn 2, and deciding it silently would settle a human-amendment-only question on a phrasing.
+        **CORRECTION 2026-08-11 (`mainB`), to my own sentence above:** I wrote that the persisted
+        label is "sticky (never recomputed)". **That is false and I checked it only later.** It is
+        recomputed on EVERY trial — `safety_gate.py:1529` stamps it from a JOINT rule
+        (`q_name == REFUTED or rate_name == REFUTED`). The divergence is joint-vs-quality-only, not
+        staleness. See the SEQ-A premise correction under SEQ-A1 below; it changes what SEQ-A1 is.
   - [ ] SEQ-A1 — **OPERATOR DECISION**: recompute the verdict label per trial from `state_name()`
         (restoring the policy's own pure-function semantics), or keep stickiness and document it as
         "a stop decision is final". Either is defensible — a stopped e-process arguably *should*
