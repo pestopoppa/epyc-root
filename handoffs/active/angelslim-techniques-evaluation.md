@@ -3,7 +3,7 @@
 **Status**: stub
 **Created**: 2026-05-21 (via research intake)
 **Categories**: quantization, hardware_optimization, speculative_decoding, context_management
-**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
+**Parent index**: [`inference-research-index.md`](inference-research-index.md)
 **Related**: [`tq3-quantization-evaluation.md`](tq3-quantization-evaluation.md), [`llama-cpp-kernel-push-rebase.md`](../completed/llama-cpp-kernel-push-rebase.md) (archived 2026-06-12), [`per-request-reasoning-budget.md`](per-request-reasoning-budget.md), [`reasoning-compression.md`](reasoning-compression.md)
 
 ## Objective

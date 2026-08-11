@@ -96,7 +96,7 @@ Re-flagged 2026-04-27 after peer-review pass #2 noted that "all software paths e
 **Priority**: MEDIUM (algorithmic; competes with future hardware-acceleration work for engineer-time, NOT with closed CPU kernel/runtime tracks)
 **Categories**: moe_optimization, speculative_decoding, inference_serving, hardware_optimization
 **Workstream**: Inference Acceleration → CPU Optimization
-**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md), [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
+**Parent index**: [`inference-research-index.md`](inference-research-index.md), [`inference-research-index.md`](inference-research-index.md)
 **Related**:
 - [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) — research note that surfaced this technique (Session 2026-04-27)
 - [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) (CPU15) — compacted disposition gate; MoE-Spec only needs CPU15 coordination if `GGML_EP_*` is explicitly re-enabled after CPU15-REVAL

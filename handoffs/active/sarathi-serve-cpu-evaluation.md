@@ -4,7 +4,7 @@
 **Categories**: inference_serving, local_inference, hardware_optimization
 **Priority**: MEDIUM-HIGH (likely the cheaper architectural win compared to CPU16 NUMA-disagg, and likely obsoletes it)
 **Workstream**: Inference Acceleration → CPU Optimization
-**Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) (CPU17)
+**Parent index**: [`inference-research-index.md`](inference-research-index.md) (CPU17)
 **Related**: [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) (CPU16 — pursue this stub FIRST; if it works it likely closes CPU16), [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (DS-7 quarter-scheduler interacts with chunked-prefill scheduling), [`cpu-context-regime-coverage.md`](../completed/cpu-context-regime-coverage.md) (CPU23 — context/interference matrix gate), [`cpu-benchmark-rigor-and-revalidation.md`](../completed/cpu-benchmark-rigor-and-revalidation.md) (historical CPU20 protocol record; living gate = `/workspace/MEASUREMENT.md`)
 
 > **Fable 5 review (2026-06-12)**: the reopen gate ("workload shift to multi-tenant/prefill-heavy") is expected to FIRE from [batched-decode-measurement.md](batched-decode-measurement.md) E1/E2 — the eval-batch serving class is exactly the named trigger (fable5-findings-06 §2).
@@ -133,7 +133,7 @@ For multi-tenant scenarios (not our current deployment): the Sarathi trade-off M
 ## Notes
 
 - This handoff is a **direct outcome** of the 2026-04-26 research-intake batch (intake-458 to 472). The Tier 2b critique of disaggregated serving (recorded in intake-459/460/472 `contradicting_evidence` fields) flagged Sarathi-Serve as the natural CPU-appropriate alternative.
-- Surface this stub via [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) ⚑ START HERE block (CPU17).
+- Surface this stub via [`inference-research-index.md`](inference-research-index.md) ⚑ START HERE block (CPU17).
 - Independent of L3aaN reboot — can be picked up before, during, or after.
 
 ## Progress checklist

@@ -7,8 +7,8 @@
 **Categories**: kv_cache, inference_serving, hardware_optimization, local_inference
 **Workstream**: Inference Acceleration + CPU Engineering (cross-cuts)
 **Parent indices**:
-- [`inference-acceleration-index.md`](inference-acceleration-index.md) (architectural research)
-- [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) (kernel engineering)
+- [`inference-research-index.md`](inference-research-index.md) (architectural research)
+- [`inference-research-index.md`](inference-research-index.md) (kernel engineering)
 **Related**:
 - [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) — GLM-5.2 active target; generic DSA landed and GLM cache/runtime wiring closed on experimental-v7 `3dee86a5a`; sparse final-attention and quality gates remain open
 - [`multiscreen-attention-evaluation.md`](multiscreen-attention-evaluation.md) — sub-quadratic attention survey, intake-506 documented under same-day-expansion sub-section
