@@ -1836,6 +1836,17 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   - [x] **Compliant path tested.** ✅ The enumerated boxes stay guarded, the inline markers stay
     guarded, and unenumerated banners keep whole-section scope — otherwise "scope it to the
     enumeration" is satisfied by guarding nothing, which deletes the guard rather than scoping it.
+  - [x] **The blind spot the fix could not reach, closed separately: `--audit-guards`.**
+    ✅ 2026-08-11 — `mainD`. `box_is_guarded` can only ever speak about OPEN boxes, because
+    `classify` returns on `- [x]` before it asks. Correct for a dispatch check, and it leaves a
+    standing constraint that has ALREADY been flipped **invisible to every pass** — which is what
+    `auditor` was actually pointing at with L339, once the banner-count half turned out to be
+    sound. In a section whose banner forbids flipping, any `- [x]` is suspicious by construction,
+    so the rule needs no cleverness. **Measured before writing it: 3 hits corpus-wide**, of which
+    1 is the real defect and 2 are ordinary finished tasks in the same section — so it prints as a
+    REVIEW PROMPT and says so, never a verdict. Three rows for a human to glance at is worth one
+    invisible standing constraint; three hundred would not have been. Adjudicating the 3 is
+    `mainC`'s, per the auditor's synthesis proposal — the detector is mine, the disposition is not.
 
 ## Decision gates
 

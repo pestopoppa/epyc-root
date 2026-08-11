@@ -377,12 +377,65 @@ def find_by_text(row: str) -> list[tuple[Path, int, str, str, str]]:
     return hits
 
 
+def closed_boxes_under_a_guard(root: Path = HANDOFFS) -> list[tuple[Path, int, str]]:
+    """`- [x]` boxes sitting in a section whose banner says DO NOT FLIP.
+
+    C41 follow-up, 2026-08-11. `box_is_guarded` can only ever speak about OPEN
+    boxes, because `classify` returns on `- [x]` before it asks — which is correct
+    for a dispatch check and leaves a blind spot the audit found the hard way: a
+    standing constraint that has ALREADY been flipped closed is invisible as an
+    active rule, and no tool pass looks at it again. That is how
+    `model-stack-single-source-update-pipeline.md:339` ("Treat … as …", a
+    continuous imperative) sat closed under a DO-NOT-FLIP banner.
+
+    In a section whose banner says nothing here may be flipped, ANY `- [x]` is
+    suspicious by construction, so the rule needs no cleverness. It is a REVIEW
+    PROMPT, not a verdict, and the docstring says so because the precision is
+    honestly low: 3 hits corpus-wide today, of which 1 is the real defect and 2
+    are ordinary tasks that happen to live in the same section. Three rows for a
+    human to glance at is worth one invisible standing constraint; three hundred
+    would not have been, which is why this was measured before it was written.
+    """
+    hits: list[tuple[Path, int, str]] = []
+    for path in sorted(root.glob("*.md")):
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        spans: list[tuple[int, int]] = []
+        for i, line in enumerate(lines):
+            if not (_BANNER_LINE.match(line) and _GUARD.search(line)):
+                continue
+            start = max((j for j, x in enumerate(lines[:i]) if x.startswith("#")), default=0)
+            end = next((j for j in range(i, len(lines)) if lines[j].startswith("#")), len(lines))
+            spans.append((start, end))
+        if not spans:
+            continue
+        for i, line in enumerate(lines):
+            m = re.match(r"^\s*- \[x\] (.*)", line)
+            if m and any(s <= i < e for s, e in spans):
+                hits.append((path, i + 1, m.group(1).strip()))
+    return hits
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument("--ref", help="file.md:LINE, as the dispatch queue writes it")
     g.add_argument("--row", help="the task TEXT — the durable identity")
+    g.add_argument("--audit-guards", action="store_true",
+                   help="list CLOSED boxes sitting under a DO-NOT-FLIP banner (review prompt, "
+                        "not a verdict — a guarded section can hold ordinary finished tasks)")
     args = ap.parse_args(argv)
+
+    if args.audit_guards:
+        hits = closed_boxes_under_a_guard()
+        if not hits:
+            print("no closed boxes under a DO-NOT-FLIP banner")
+            return 0
+        print(f"{len(hits)} CLOSED box(es) under a DO-NOT-FLIP banner — REVIEW, not a verdict.")
+        print("A guarded section can legitimately hold finished tasks; what this catches is a "
+              "STANDING CONSTRAINT that was flipped, which no other pass can see.")
+        for path, lineno, body in hits:
+            print(f"  {path.name}:{lineno}  {body[:96]}")
+        return 0
 
     if args.row:
         hits = find_by_text(args.row)

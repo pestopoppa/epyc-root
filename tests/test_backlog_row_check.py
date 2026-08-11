@@ -488,3 +488,46 @@ def test_a_wrapped_banner_still_yields_its_count(tmp_path: Path) -> None:
 """
     assert _guarded(tmp_path, body, "FIRST")
     assert not _guarded(tmp_path, body, "THIRD")
+
+
+def test_audit_guards_finds_a_standing_constraint_that_was_flipped(tmp_path: Path) -> None:
+    """C41 follow-up. `box_is_guarded` can only speak about OPEN boxes — `classify`
+    returns on `- [x]` before it asks — so a standing constraint ALREADY flipped closed
+    is invisible to every pass. That is exactly how `model-stack-…:339` sat closed under
+    a DO-NOT-FLIP banner. In a section whose banner forbids flipping, any `- [x]` is
+    suspicious by construction, so the rule needs no cleverness.
+    """
+    (tmp_path / "guarded.md").write_text("""## Outstanding Work
+
+> **⚠ THESE BOXES ARE STANDING CONSTRAINTS — DO NOT DISPATCH OR FLIP THEM.**
+
+- [ ] keep the thing switched off until an operator says otherwise
+- [x] FLIPPED treat the helper modules as frozen
+""", encoding="utf-8")
+    (tmp_path / "plain.md").write_text("""## Work
+
+- [x] an ordinary finished task in a section with no banner
+""", encoding="utf-8")
+
+    hits = brc.closed_boxes_under_a_guard(tmp_path)
+    assert [(p.name, n) for p, n, _ in hits] == [("guarded.md", 6)], hits
+    assert "FLIPPED" in hits[0][2]
+
+
+def test_audit_guards_is_silent_when_nothing_is_flipped_under_a_banner(
+        tmp_path: Path) -> None:
+    """The compliant path. A guarded section with only OPEN boxes must report nothing,
+    or the check becomes noise and stops being read — and an unguarded section's closed
+    boxes are none of its business."""
+    (tmp_path / "clean.md").write_text("""## Outstanding Work
+
+> **⚠ THESE BOXES ARE UNCHECKED BY DESIGN — DO NOT DISPATCH OR FLIP THEM.**
+
+- [ ] a standing rule
+- [ ] another standing rule
+
+## Delivered
+
+- [x] a real task, closed, in a section with no banner
+""", encoding="utf-8")
+    assert brc.closed_boxes_under_a_guard(tmp_path) == []
