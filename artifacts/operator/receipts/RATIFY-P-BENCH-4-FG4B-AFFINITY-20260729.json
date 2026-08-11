@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729",
+  "indexed_by": "backfill-receipts",
+  "receipt": "/workspace/artifacts/operator/ratify_pbench4_fg4b_affinity_witness_20260729T105911Z.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

@@ -1755,8 +1755,8 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     before acting: *any* operation that moves, truncates or rotates a bus file is exactly what C28
     says re-floods it. Rotation must land after C28's identity-keyed relay tracking, not before.
 
-- [ ] **C39 (NEW) — the token relay is RECEIPT-BLIND: it presents gates the operator already
-  signed.** Filed 2026-08-11 by `auditor`, confirmed independently by `mainD` the same hour.
+- [x] **C39 — the token relay is RECEIPT-BLIND: it presents gates the operator already
+  signed.** ✅ 2026-08-11 — `mainD`. Filed by `auditor`, confirmed independently the same hour.
   `token-queue.md` currently presents **both** C27 gates as unchecked pending requests —
   `RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729` (line 134) and
   `RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729` (line 144) — while **both carry ratified receipts
@@ -1769,12 +1769,44 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   would look like authorisation for a cross-era re-run.
   Note this became reachable only *because* C27 works: the presentation path is live at
   `authority: manual` now, so a defect in what it presents is newly visible.
-  - [ ] **The link exists but is not a contract.** Both receipts DO contain the literal gate id —
+  **FIXED, and NOT YET LIVE — see the deploy box below.** Three parts:
+  (i) `spent_receipt_for(gate_id)` — a SINGLE keyed read of
+  `artifacts/operator/receipts/<GATE_ID>.json`, treating `ratified|spent|applied|attested|granted`
+  as signed. (ii) A new gate carrying a receipt is still PRESENTED, with the receipt named beside
+  it — annotate, never suppress. (iii) A gate presented BEFORE its receipt existed can never get
+  that annotation, because the daemon does not edit `token-queue.md`; both live C27 gates are in
+  exactly that state, so it says so on the bus instead, as a `token-gate-looks-spent` notice
+  delivered to `coordinator-agent`'s INBOX — advisory-only would rebuild C33.
+  **Verified read-only against the live bus: both gates flag, and 0 new blocks would be appended**
+  (no duplication). 256 tests.
+  - [x] **The 55 MB scan is a one-shot, never the tick path.** ✅ The legacy receipts carry the
+    gate id at inconsistent keys, so finding them means reading `artifacts/operator/*.json` — 55
+    files, 55.7 MB. Doing that every 45s would be a fresh instance of **C38**, the defect this same
+    module already carries. So `session_bus_coordinator.py backfill-receipts [--dry-run]` pays it
+    once (0.15s) and writes the keyed index; the daemon only ever stats one path. Run today: 2
+    receipts indexed, 0 false positives across the 9 known gate_ids. The index is a **POINTER, not
+    a copy** — duplicating an operator signature would give it a second source of truth.
+  - [x] **The notice loop no longer mislabels.** ✅ It consumed EVERY advisory row carrying a
+    `gate_id` and called it `token-request-not-presented` — true while `token-prevalidation` was the
+    only such row. A "looks already signed" row rendered as "was never presented" would send the
+    coordinator chasing a gate that is sitting in the queue. Selection and dedupe are both keyed on
+    the check name now, so a third check cannot inherit the second one's wording. Pinned by a test.
+  - [ ] **DEPLOY — the running daemon is executing the old code.** `pid 496387` started
+    2026-08-11 08:48:00, before this landed, and Python loaded the module then. The fix is verified
+    by direct invocation but **is not live until the daemon restarts**, which is the coordinator's
+    call, not mine — process lifecycle is outside C-OWN's lane. Until then `token-queue.md` keeps
+    presenting both gates with no notice. Flagged rather than assumed, because "committed but not
+    live" is exactly what **C27** was.
+  - [x] **The link exists but is not a contract.** Both receipts DO contain the literal gate id —
     but at different keys (`human_attestation` in one, elsewhere in the other), so today the only
     general way to find them is a content grep. `artifacts/operator/receipts/` **exists and is
     empty**: the keyed-receipt contract was intended and never wired. Fix direction: the `--attest`
     scripts write `artifacts/operator/receipts/<GATE_ID>.json`, and `relay_tokens` reads that.
-  - [ ] **Fix by ANNOTATING, never by suppressing.** A relay that silently withholds a gate because
+    **Half done:** the reader and the backfill exist, so the contract is real for everything already
+    filed. Still open: the `--attest` scripts should write the keyed receipt themselves at signing
+    time, so a NEW gate never needs the backfill. Until they do, `backfill-receipts` must be re-run
+    after each signature.
+  - [x] **Fix by ANNOTATING, never by suppressing.** A relay that silently withholds a gate because
     a heuristic thinks it is spent is the C3/C6/C8 fail-open family aimed at the operator path —
     strictly worse than the defect. Present the block as now, and add a line naming the receipt, its
     path and its status, so the operator sees "this looks already signed" and decides. Suppression

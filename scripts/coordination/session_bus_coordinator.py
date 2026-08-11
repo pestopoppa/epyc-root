@@ -58,7 +58,7 @@ import sys
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
@@ -595,6 +595,43 @@ def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: i
     return [{k: v for k, v in r.items() if v is not None} for r in out]
 
 
+# C39: a gate that has ALREADY been signed must not be presented as if it had not.
+# Statuses that mean "the operator dealt with this"; anything else is not a receipt.
+_SPENT_STATUSES = frozenset({"ratified", "spent", "applied", "attested", "granted"})
+RECEIPTS_DIR = REPO_ROOT / "artifacts" / "operator" / "receipts"
+
+
+def spent_receipt_for(gate_id: str, receipts_dir: Path | None = None) -> tuple[Path, str] | None:
+    """(receipt path, status) if this gate has already been signed, else None.
+
+    C39 (2026-08-11): `relay_tokens` deduped only on "is the gate string already in
+    token-queue.md" and had no notion of a gate being SPENT, so both C27 gates sat
+    presented as unchecked pending requests while carrying `status: ratified`
+    receipts from 2026-07-29. Deleting the rows does not stick — the next tick
+    re-presents them. It asks a human to sign what they already signed, and for the
+    E8 gate (whose ratified work then aborted) a re-signature would read as
+    authorisation for a cross-era re-run.
+
+    Lookup is a SINGLE keyed read, deliberately. The receipts that exist today are
+    unkeyed — they contain the gate id at inconsistent places — and finding them
+    means scanning `artifacts/operator/*.json`, which is 55 files and 55.7 MB. Doing
+    that on a 45s tick would be a fresh instance of C38, the defect this same file
+    is already carrying (a 1 GiB re-read on the delivery hot path). So the scan is
+    paid ONCE by the `backfill-receipts` one-shot, which writes
+    `receipts/<GATE_ID>.json`, and the daemon only ever stats one path.
+    """
+    directory = RECEIPTS_DIR if receipts_dir is None else receipts_dir
+    path = directory / f"{gate_id}.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    status = str((data or {}).get("status", "")).strip().lower()
+    if status not in _SPENT_STATUSES:
+        return None
+    return path, status
+
+
 def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[str, dict],
                  epoch: int) -> tuple[list[str], list[dict]]:
     """Relay token-request blocks into the token queue, verbatim.
@@ -648,11 +685,40 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
                 continue
             if gate in existing or gate in seen:
                 self_block = None            # already presented; the hold below still applies
+                # C39: a gate presented BEFORE its receipt existed never gets the
+                # annotation above, because the block is written once and never
+                # rewritten — the daemon does not edit the operator's file. Both
+                # live C27 gates are in exactly that state. So say it on the bus
+                # instead, once per gate (`seen_spent` below dedupes durably).
+                if gate not in seen and (found := spent_receipt_for(gate)) is not None:
+                    defects.append({
+                        "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                        "kind": "defect", "check": "token-gate-looks-spent",
+                        "subject": msg.get("from"), "gate_id": gate, "msg_id": msg.get("id"),
+                        "receipt": str(found[0].relative_to(REPO_ROOT)),
+                        "detail": f"{gate} is presented UNCHECKED in token-queue.md, but "
+                                  f"{found[0].relative_to(REPO_ROOT)} reads status: {found[1]}. "
+                                  f"The operator is being asked to sign a gate that already "
+                                  f"has a receipt. Verify, then tick or remove the block — "
+                                  f"the daemon will not edit token-queue.md."})
+                seen.add(gate)
             else:
                 seen.add(gate)
+                # C39: ANNOTATE, never suppress. A relay that silently withholds a
+                # gate because it believes the gate is spent is the C3/C6/C8
+                # fail-open family aimed squarely at the operator path — a missed
+                # signature request is exactly what C27 was. So the block is
+                # presented as always and the receipt is named next to it; the
+                # human decides whether they are being asked to sign twice.
+                spent = spent_receipt_for(gate)
+                spent_note = "" if spent is None else (
+                    f"  - ⚠ **A receipt for this gate already exists** — "
+                    f"`{spent[0].relative_to(REPO_ROOT)}` reads `status: {spent[1]}`. "
+                    f"This gate looks ALREADY SIGNED; confirm before signing it again.\n")
                 self_block = (
                     f"\n### {gate}\n\n"
                     f"- [ ] **{gate}** — requested by `{msg.get('from')}` for task `{tid}`\n"
+                    f"{spent_note}"
                     f"  - block ref: `{payload.get('block_ref', '-')}`\n"
                     f"  - command (pre-validated, dry-run exit "
                     f"`{validated.get('dry_run_exit')}`):\n"
@@ -726,25 +792,51 @@ def relay_token_blocks(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     # Aligning the schema with the relay contract — so `append` refuses at authoring
     # time, which is the right place — is a CONTRACT change and is escalated
     # separately, not decided here.
-    seen_notice: set[str] = set()
     if COORDINATOR_AGENT in ids:
         _ca_rows, _ = _read_jsonl(bus_root / "inbox" / f"{COORDINATOR_AGENT}.jsonl")
-        seen_notice = {str((r.get("payload") or {}).get("gate_id")) for r in _ca_rows
-                       if (r.get("payload") or {}).get("event") == "token-request-not-presented"}
-        for item in advisory:
-            gate = str(item.get("gate_id") or "")
-            if not gate or gate in seen_notice:
-                continue
-            _append_inbox(bus_root, [{
-                "to": COORDINATOR_AGENT, "kind": "defect",
-                "payload": {"event": "token-request-not-presented", "gate_id": gate,
-                            "from_agent": item.get("subject"),
-                            "detail": item.get("detail"),
-                            "action": f"{gate} is NOT in token-queue.md and the operator has not "
-                                      f"been asked. Have {item.get('subject')!r} re-file it with "
-                                      f"payload.validated = {{cmd, dry_run_exit, dry_run_evidence}}"}}],
-                          epoch)
-            seen_notice.add(gate)
+
+        def _notify(check: str, event: str, action: Callable[[dict, str], str]) -> None:
+            """Emit one inbox notice per gate for one advisory CHECK, ever.
+
+            C39 (2026-08-11): this loop used to consume EVERY advisory row carrying a
+            `gate_id` and label it `token-request-not-presented`. That was true while
+            `token-prevalidation` was the only such row. It is not any more, and a
+            "looks already signed" row rendered as "was never presented" would send
+            the coordinator to chase a gate that is sitting in the queue. So the
+            check is now named on both sides — selection AND dedupe key — and adding
+            a third one cannot silently inherit the second one's wording.
+
+            The notice goes to an INBOX, not just `advisory.jsonl`, because that is
+            the whole lesson of C33: a notice delivered to a file nobody drains is a
+            second unread sink one level up from the defect it reports.
+            """
+            seen = {str((r.get("payload") or {}).get("gate_id")) for r in _ca_rows
+                    if (r.get("payload") or {}).get("event") == event}
+            for item in advisory:
+                if item.get("check") != check:
+                    continue
+                gate = str(item.get("gate_id") or "")
+                if not gate or gate in seen:
+                    continue
+                _append_inbox(bus_root, [{
+                    "to": COORDINATOR_AGENT, "kind": "defect",
+                    "payload": {"event": event, "gate_id": gate,
+                                "from_agent": item.get("subject"),
+                                "detail": item.get("detail"),
+                                "action": action(item, gate)}}], epoch)
+                seen.add(gate)
+
+        _notify("token-prevalidation", "token-request-not-presented",
+                lambda item, gate: (
+                    f"{gate} is NOT in token-queue.md and the operator has not been asked. "
+                    f"Have {item.get('subject')!r} re-file it with payload.validated = "
+                    f"{{cmd, dry_run_exit, dry_run_evidence}}"))
+        _notify("token-gate-looks-spent", "token-gate-looks-spent",
+                lambda item, gate: (
+                    f"{gate} IS in token-queue.md, unchecked, but a receipt for it already "
+                    f"exists ({item.get('receipt')}). Verify the receipt, then tick or remove "
+                    f"the block yourself — the daemon never edits token-queue.md. Do NOT ask "
+                    f"the operator to sign it again until you have checked."))
 
     if blocks:
         tq = bus_root / "tokens" / "token-queue.md"
@@ -873,6 +965,73 @@ def intake_proposals(bus_root: Path, latest: dict[str, dict], reports: dict[str,
                              "detail": f"lane={pl.get('lane')} gating={pl.get('gating')} "
                                        f"classification={pl.get('classification', 'unstated')}"})
     return rows, advisory
+
+
+def backfill_receipts(bus_root: Path, source_dir: Path, receipts_dir: Path,
+                      *, dry_run: bool = False) -> list[tuple[str, Path, str]]:
+    """Index the legacy unkeyed operator receipts by gate_id. Returns what it found.
+
+    C39. The receipts written before this contract existed carry the gate id at
+    inconsistent keys — `human_attestation` in one, nested elsewhere in another —
+    so the only general way to find them is to look inside the files. That is 55
+    files and 55.7 MB, which is fine ONCE and would be a fresh C38 every 45s. So it
+    lives here, in a one-shot, and never on the tick path.
+
+    Writes a pointer, not a copy: `receipts/<GATE_ID>.json` records where the real
+    receipt is and what it says. Copying would create a second source of truth for
+    an operator signature, which is the last thing that should have two.
+    """
+    gates: set[str] = set()
+    for path in sorted((bus_root / "outbox").glob("*.jsonl")):
+        rows, _ = _read_jsonl(path)
+        for row in rows:
+            if row.get("kind") == "token-request":
+                gate = (row.get("payload") or {}).get("gate_id")
+                if gate:
+                    gates.add(str(gate))
+
+    found: list[tuple[str, Path, str]] = []
+    for source in sorted(source_dir.glob("*.json")):
+        try:
+            text = source.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        hits = [g for g in gates if g in text]
+        if not hits:
+            continue
+        try:
+            status = str((json.loads(text) or {}).get("status", "")).strip().lower()
+        except (json.JSONDecodeError, AttributeError):
+            continue
+        if status not in _SPENT_STATUSES:
+            continue
+        for gate in hits:
+            found.append((gate, source, status))
+
+    if not dry_run:
+        receipts_dir.mkdir(parents=True, exist_ok=True)
+        for gate, source, status in found:
+            (receipts_dir / f"{gate}.json").write_text(
+                json.dumps({"schema_version": "session_bus.receipt_index.v1",
+                            "gate_id": gate, "status": status,
+                            "receipt": str(source), "indexed_by": "backfill-receipts"},
+                           indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return found
+
+
+def cmd_backfill_receipts(args: argparse.Namespace) -> int:
+    """One-shot: index legacy operator receipts by gate_id so the relay can see them."""
+    bus_root = Path(args.bus_root)
+    found = backfill_receipts(bus_root, REPO_ROOT / "artifacts" / "operator", RECEIPTS_DIR,
+                              dry_run=args.dry_run)
+    if not found:
+        print("no spent receipts matched a known gate_id")
+        return 0
+    verb = "would index" if args.dry_run else "indexed"
+    print(f"{verb} {len(found)} receipt(s):")
+    for gate, source, status in found:
+        print(f"  {gate}\n    -> {source.relative_to(REPO_ROOT)}  (status: {status})")
+    return 0
 
 
 def cmd_intake(args: argparse.Namespace) -> int:
@@ -2765,6 +2924,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     a = sub.add_parser("audit", help="R7 integrity audit only (defects + observations)")
     a.set_defaults(func=cmd_audit)
+
+    br = sub.add_parser("backfill-receipts",
+                        help="one-shot: index legacy operator receipts by gate_id (C39)")
+    br.add_argument("--dry-run", action="store_true", help="show what would be indexed")
+    br.set_defaults(func=cmd_backfill_receipts)
 
     i = sub.add_parser("intake", help="one-shot: transcribe task-propose messages into READY rows")
     i.add_argument("--dry-run", action="store_true", help="show what would be admitted")

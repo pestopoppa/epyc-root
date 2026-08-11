@@ -2436,3 +2436,169 @@ def test_count_and_tail_is_bounded_on_a_large_file(tmp_path: Path) -> None:
     assert total == 50_000
     assert tail == ['{"i": 49997}', '{"i": 49998}', '{"i": 49999}']
     assert coordinator._count_and_tail(tmp_path / "absent.jsonl", 3) == (0, [])
+
+
+# ----------------------------------------------------------------------- C39
+#
+# `relay_tokens` deduped only on "is the gate string already in token-queue.md" and
+# had no notion of a gate being SPENT. Both C27 gates sat presented as unchecked
+# pending requests while carrying `status: ratified` receipts from 2026-07-29, so
+# the operator was being asked to sign what they had already signed — and for the
+# E8 gate, whose ratified work then aborted, a re-signature would have read as
+# authorisation for a cross-era re-run. Deleting the rows does not stick: the next
+# tick re-presents them.
+
+def _c39_token_request(gate: str, sender: str = "alice", tid: str = "t1") -> dict:
+    return {"schema_version": bus.MSG_SCHEMA_VERSION, "id": f"msg-20260811T100000Z-1-{sender}",
+            "ts": "2026-08-11T10:00:00+00:00", "from": sender, "to": "coordinator-agent",
+            "kind": "token-request", "task_id": tid,
+            "payload": {"gate_id": gate, "block_ref": "h.md#a",
+                        "validated": {"cmd": "true", "dry_run_exit": 0,
+                                      "dry_run_evidence": "ok"}}}
+
+
+def _write_receipt(directory: Path, gate: str, status: str) -> Path:
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"{gate}.json"
+    path.write_text(json.dumps({"gate_id": gate, "status": status}), encoding="utf-8")
+    return path
+
+
+def test_spent_receipt_is_found_only_for_a_status_that_means_signed(tmp_path: Path) -> None:
+    for status in ("ratified", "spent", "applied", "attested", "granted", "RATIFIED"):
+        _write_receipt(tmp_path, "G", status)
+        assert coordinator.spent_receipt_for("G", tmp_path) is not None, status
+    for status in ("pending", "draft", "requested", "", "revoked"):
+        _write_receipt(tmp_path, "G", status)
+        assert coordinator.spent_receipt_for("G", tmp_path) is None, status
+    assert coordinator.spent_receipt_for("NEVER-FILED", tmp_path) is None
+    (tmp_path / "TORN.json").write_text("{not json", encoding="utf-8")
+    assert coordinator.spent_receipt_for("TORN", tmp_path) is None
+
+
+def test_a_spent_gate_is_ANNOTATED_and_never_suppressed(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The load-bearing direction. A relay that silently withholds a gate because it
+    believes the gate is spent is the C3/C6/C8 fail-open family aimed at the operator
+    path — and a withheld signature request is precisely what C27 was. The block must
+    still be presented; the receipt is named beside it and the human decides.
+    """
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-X-20260729", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+
+    blocks, _ = coordinator.relay_tokens(
+        bus_root, {"t1": [_c39_token_request("RATIFY-X-20260729")]}, {}, 14)
+
+    assert len(blocks) == 1, "the gate is still PRESENTED — suppression would re-create C27"
+    body = blocks[0]
+    assert "- [ ] **RATIFY-X-20260729**" in body, "still an unchecked box the operator can sign"
+    assert "already exists" in body and "status: ratified" in body
+    assert "receipts/RATIFY-X-20260729.json" in body, "names WHERE, so the claim is checkable"
+
+
+def test_an_unspent_gate_is_presented_with_no_annotation(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The compliant path. Every ordinary gate must be untouched by this — an
+    annotation on a gate that is genuinely pending would train the operator to
+    ignore the warning, which is how a real one gets signed twice anyway."""
+    receipts = tmp_path / "receipts"
+    receipts.mkdir()
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+
+    blocks, _ = coordinator.relay_tokens(
+        bus_root, {"t1": [_c39_token_request("RATIFY-FRESH-20260811")]}, {}, 14)
+
+    assert len(blocks) == 1
+    assert "already exists" not in blocks[0] and "⚠" not in blocks[0]
+
+
+def test_a_gate_already_in_the_queue_gets_a_notice_because_the_block_is_never_rewritten(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Both live C27 gates are in this state: presented BEFORE their receipt existed.
+    The daemon does not edit token-queue.md, so the annotation can never reach them —
+    it has to be said on the bus instead."""
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-OLD-20260729", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = bus_root / "tokens" / "token-queue.md"
+    tq.parent.mkdir(parents=True, exist_ok=True)
+    tq.write_text("### RATIFY-OLD-20260729\n\n- [ ] **RATIFY-OLD-20260729** — old\n",
+                  encoding="utf-8")
+
+    blocks, extra = coordinator.relay_tokens(
+        bus_root, {"t1": [_c39_token_request("RATIFY-OLD-20260729")]}, {}, 14)
+
+    assert blocks == [], "already presented — the daemon must not duplicate or rewrite it"
+    spent = [r for r in extra if r.get("check") == "token-gate-looks-spent"]
+    assert len(spent) == 1, extra
+    assert spent[0]["gate_id"] == "RATIFY-OLD-20260729"
+    assert "will not edit token-queue.md" in spent[0]["detail"]
+
+
+def test_backfill_indexes_only_spent_receipts_for_known_gates(
+        bus_root: Path, tmp_path: Path) -> None:
+    """The one-shot exists so the 55-file / 55.7 MB scan is paid ONCE. Doing it on the
+    45s tick would be a fresh instance of C38, which this same module already carries."""
+    _provision(bus_root, "alice")
+    _append(bus_root / "outbox" / "alice.jsonl", _c39_token_request("RATIFY-REAL-20260729"))
+    source, receipts = tmp_path / "operator", tmp_path / "receipts"
+    source.mkdir()
+    (source / "ratify_real_odd_name.json").write_text(
+        json.dumps({"protocol_id": "p", "status": "ratified",
+                    "human_attestation": "RATIFY-REAL-20260729"}), encoding="utf-8")
+    (source / "still_pending.json").write_text(
+        json.dumps({"status": "pending", "gate": "RATIFY-REAL-20260729"}), encoding="utf-8")
+    (source / "unrelated.json").write_text(
+        json.dumps({"status": "ratified", "about": "SOMETHING-ELSE"}), encoding="utf-8")
+
+    dry = coordinator.backfill_receipts(bus_root, source, receipts, dry_run=True)
+    assert [g for g, _, _ in dry] == ["RATIFY-REAL-20260729"]
+    assert not receipts.exists(), "--dry-run must write nothing"
+
+    coordinator.backfill_receipts(bus_root, source, receipts)
+    found = coordinator.spent_receipt_for("RATIFY-REAL-20260729", receipts)
+    assert found is not None and found[1] == "ratified"
+    indexed = json.loads((receipts / "RATIFY-REAL-20260729.json").read_text())
+    assert indexed["receipt"].endswith("ratify_real_odd_name.json"), \
+        "a POINTER, not a copy — an operator signature must not get a second source of truth"
+
+
+def test_a_spent_gate_notice_is_not_mislabelled_as_never_presented(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The regression C39 could easily have introduced. The inbox-notice loop used to
+    consume EVERY advisory row carrying a gate_id and label it
+    `token-request-not-presented` — true while `token-prevalidation` was the only such
+    row. A "looks already signed" row rendered as "was never presented" would send the
+    coordinator to chase a gate that is sitting in the queue, unchecked, right now.
+    """
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-OLD-20260729", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    _provision(bus_root, "alice", "coordinator-agent")
+    _append(bus_root / "outbox" / "alice.jsonl", _c39_token_request("RATIFY-OLD-20260729"))
+    # ...and an unvalidated request, which IS the C33 "never presented" case.
+    unvalidated = _c39_token_request("RATIFY-UNVALIDATED-20260811")
+    unvalidated["payload"]["validated"] = {}
+    _append(bus_root / "outbox" / "alice.jsonl", unvalidated)
+    tq = bus_root / "tokens" / "token-queue.md"
+    tq.parent.mkdir(parents=True, exist_ok=True)
+    tq.write_text("- [ ] **RATIFY-OLD-20260729** — presented earlier\n", encoding="utf-8")
+
+    coordinator.relay_token_blocks(bus_root, _load_bus_config(bus_root), 14)
+
+    notices = {(r.get("payload") or {}).get("event"): (r.get("payload") or {})
+               for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event")}
+    assert notices["token-gate-looks-spent"]["gate_id"] == "RATIFY-OLD-20260729"
+    assert "IS in token-queue.md" in notices["token-gate-looks-spent"]["action"]
+    assert notices["token-request-not-presented"]["gate_id"] == "RATIFY-UNVALIDATED-20260811"
+    assert "is NOT in token-queue.md" in notices["token-request-not-presented"]["action"]
+
+
+def _load_bus_config(bus_root: Path) -> dict:
+    return coordinator._load_config(bus_root)
