@@ -352,7 +352,13 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       and the `ClaimTuple` projection. **Do not write a new grading rule** — the adapter projects into
       a `ClaimTuple` and `claim_tuple.grade()` decides; the `measurement` ladder already exists and the
       registry refuses a second. This is the case `benchmarks/results` is the standing proof of: 4,562
-      files with no write-side hook can never gate a decision, and no read-side pass can repair that
+      files with no write-side hook can never gate a decision, and no read-side pass can repair that.
+      **2026-08-11 static implementation:** research commit `70766412` parses `AK_PROP_V1`, re-derives
+      its verdict, refuses suite-seed mismatches and preserves each residual as a structured
+      `evaluation_event` gate measurement. Root `autokernel_property.py` projects only those written
+      rows into the single measurement ladder and explicitly yields nothing for older events. This
+      row remains open until the experimental `test-backend-ops` producer is committed and its first
+      real event proves the write path.
 
 ## Dependency notes
 

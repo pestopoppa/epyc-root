@@ -69,13 +69,13 @@ Keep this table current. It is the answer to "has anyone already looked at this?
 | `research/intake_index.yaml` | literature | **live** — 1,068 entries | `research_intake.py` |
 | sealed measurement manifests | measurement | **live** — 6 sealed, all `Witnessed/Attested` | `sealed_manifest.py` |
 | autopilot trial journal | measurement | **wired**, awaiting first post-hook trial | `autopilot_journal.py` |
-| AutoKernel `evaluation_event` | measurement | **ready, unwritten** — schema enforces `claim_grammar` already; the loop has emitted none | — |
+| AutoKernel `evaluation_event` property residuals | measurement | **write path wired, awaiting first real event** — `t0.backend_op_units.measurements` carries per-op/backend/shape residuals; older events are never back-filled | `autokernel_property.py` |
 | wiki pages | *(not a class)* | **live** as dependency edges, never claims | `wiki_dependents.py` |
 | `benchmarks/results` (2,605 files) | measurement | **rejected on evidence** — 0/200 sampled carry the full tuple; would add ~4,500 claims that gate nothing | — |
 | llama-bench sweeps | measurement | candidate — needs a write-side hook first | — |
 | speech kernel (whisper/qwentts) runs | measurement | candidate — unexamined | — |
 | kernel promotion/certification and K35 paired kernel/speculation receipts | measurement | candidate — v9 candidate, production GPU, DFlash/DSpark, and IQ3 quick-pair receipts exist, but producers have no ClaimTuple write hook; do not retrofit on read | — |
-| `test-backend-ops` property-layer residuals (RVP-C2-2) | measurement | **candidate — wire the write side BEFORE the layer ships** (2026-08-10). Emits a per-op, per-backend, per-shape property residual with a `suite_seed`; the seed is what makes a residual re-derivable, and RVP-C2-1 adds it. Filed at first design, not after — the read side cannot be retrofitted | — |
+| `test-backend-ops` property-layer residuals (RVP-C2-2) | measurement | **statically wired, awaiting the experimental-tree commit and first real event** — the tool receipt, AutoKernel event projection and Vidya adapter bind per-op/backend/shape residuals to `suite_seed`; absence is not back-filled | `autokernel_property.py` |
 
 **Before adding a bulk adapter, price it** (the P2 discipline): sample ~50 records and count how many
 carry the full tuple. If the answer is near zero, the gap is upstream and an adapter adds volume
