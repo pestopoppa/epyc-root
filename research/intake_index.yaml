@@ -48991,6 +48991,50 @@
   verdict_justification: 'adopt_patterns — not adopt_component, not worth_investigating. Verified from source: MIT; all LLM calls via litellm with openai/ prefix passthrough so a local llama.cpp endpoint works; retrieve.py tool functions are plain local Python with no network. The OSS repo is feature-complete for build + retrieval, not a teaser — the cloud tier sells OCR quality and an MCP frontend, not the core algorithm. The decisive EPYC consideration is QUERY cost: the library imposes no bound, the reference agent does metadata -> full-tree -> page-content -> answer (~4 sequential calls minimum with monotonically growing context, unbounded above). Any adoption must cap navigation depth explicitly. The 98.7% cannot gate anything under MEASUREMENT.md.'
   notes: 'Ingested 2026-07-25 via /research-intake. Derived work PROPOSED (pending Stage-2 plan approval) as intake-derived-work-2026-07-25.md (ID-18). Worth taking regardless of adoption: the build-time injection hardening — regex redaction of override phrases, <user_document> delimiter framing, a system preamble on every prompt, and DETERMINISTIC POST-HOC VALIDATION nullifying any LLM-emitted page index outside the real range — is a reference implementation for the open ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY work. The post-hoc index validation in particular is a pattern we do not have: it constrains LLM output against ground truth rather than trusting the prompt.'
   dive_corrections: '2026-07-25 Stage-2a dive: PageIndex: my timeout figure was INVERTED — the independent evaluation reports 9 of 16 queries TIMED OUT and 7 completed. ''RTX 5090'' is UNSOURCED; the measured setup was Qwen3-32B via Ollama over 18 docs. TWO LLM transports, not one: build path via litellm (confirmed) but the retrieval demo uses the OpenAI Agents SDK. No global bound on per-query LLM calls (only per-call retries); O(N) per document — 18 docs ~9.6 min, 500 ~4.4 h, 10k ~3.5 days. DO NOT OVER-CLAIM: the same author''s follow-up halves query time with parallel execution and gets better recall with a SMALLER model, so 9.6 min is a default-config worst case, not a floor. MIT + genuinely local confirmed.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. Its headline corrections land on Stage-1 PROSE, not on this claim:
+      the timeout figure was INVERTED (9 of 16 queries timed out and 7 completed, not the reverse), ''RTX
+      5090'' is UNSOURCED (the measured setup was Qwen3-32B via Ollama over 18 docs), and cost is O(N) per
+      document — 18 docs ~9.6 min, 500 ~4.4 h, 10k ~3.5 days. The dive explicitly says DO NOT OVER-CLAIM:
+      the same author''s follow-up halves query time with parallel execution and gets better recall with
+      a SMALLER model, so 9.6 min is a default-config worst case, not a floor. MIT and genuinely local both
+      confirmed.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. Its headline corrections land on Stage-1 PROSE, not on this claim:
+      the timeout figure was INVERTED (9 of 16 queries timed out and 7 completed, not the reverse), ''RTX
+      5090'' is UNSOURCED (the measured setup was Qwen3-32B via Ollama over 18 docs), and cost is O(N) per
+      document — 18 docs ~9.6 min, 500 ~4.4 h, 10k ~3.5 days. The dive explicitly says DO NOT OVER-CLAIM:
+      the same author''s follow-up halves query time with parallel execution and gets better recall with
+      a SMALLER model, so 9.6 min is a default-config worst case, not a floor. MIT and genuinely local both
+      confirmed.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. Its headline corrections land on Stage-1 PROSE, not on this claim:
+      the timeout figure was INVERTED (9 of 16 queries timed out and 7 completed, not the reverse), ''RTX
+      5090'' is UNSOURCED (the measured setup was Qwen3-32B via Ollama over 18 docs), and cost is O(N) per
+      document — 18 docs ~9.6 min, 500 ~4.4 h, 10k ~3.5 days. The dive explicitly says DO NOT OVER-CLAIM:
+      the same author''s follow-up halves query time with parallel execution and gets better recall with
+      a SMALLER model, so 9.6 min is a default-config worst case, not a floor. MIT and genuinely local both
+      confirmed. This claim IS a correction already — the 98.7% FinanceBench figure belongs to the commercial
+      Mafin 2.5, not this OSS code — and it stands.'
+  - claim_index: 3
+    effect: narrowed
+    note: '''ALL LLM traffic routes through litellm'' does not survive: the dive finds TWO LLM transports,
+      not one — the build path goes via litellm (confirmed) but the RETRIEVAL DEMO uses the OpenAI Agents
+      SDK. Fully-local-capable survives for the build path; the blanket ''all traffic'' does not, and anyone
+      routing this locally must handle the second transport.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. Its headline corrections land on Stage-1 PROSE, not on this claim:
+      the timeout figure was INVERTED (9 of 16 queries timed out and 7 completed, not the reverse), ''RTX
+      5090'' is UNSOURCED (the measured setup was Qwen3-32B via Ollama over 18 docs), and cost is O(N) per
+      document — 18 docs ~9.6 min, 500 ~4.4 h, 10k ~3.5 days. The dive explicitly says DO NOT OVER-CLAIM:
+      the same author''s follow-up halves query time with parallel execution and gets better recall with
+      a SMALLER model, so 9.6 min is a default-config worst case, not a floor. MIT and genuinely local both
+      confirmed.'
 - id: intake-891
   arxiv_id: null
   url: https://huggingface.co/DavidAU/Qwen3.6-27B-Fable-Fusion-711-Uncensored-Heretic-NM-DAU-NEO-MAX-MTP-GGUF
@@ -49351,6 +49395,51 @@
   verdict_justification: 'adopt_patterns — NOT superseded and NOT already_integrated. VENUE CHECK: this is ACL 2025 Main (aclanthology 2025.acl-long.1508), so the ar5iv "preprint" framing is stale and it IS peer-reviewed — credibility 4, with the recency term neutral at ~13 months. Searched for successors: the IF benchmark space has moved (IFEval++/AdvancedIF-class combinatorial-constraint work), but none subsume the controlled permutation family over a FIXED concept set, which is what makes the identical-output-across-24-orderings diagnostic possible. Do NOT adopt the artifact wholesale (36-model sweep not worth our budget; pBLEURT adds a checkpoint dependency for an axis EV-8 already covers). Take the PATTERN: an ordered-subsequence verifier plus a permutation-invariance probe, rebuilt from public seeds inside our own harness.'
   notes: Ingested 2026-07-25 via /research-intake.
   dive_corrections: '2026-07-25 Stage-2a dive: Ordered CommonGen: venue is ACL 2025 Main AND an OUTSTANDING PAPER award — credibility 4 is if anything understated. CORRECTION: my note that Ordered Rate and Coverage-with-order are near-identical/redundant is OVERTURNED — they diverge by up to 26.5 points on weak models (Qwen2-0.5B 30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so BOTH carry distinct signal precisely in the small/quantized regime we care about. Implement both. CONFOUND to record before using the leaderboard as quant-quality evidence: all 32 open models run at 4-bit while the GPT/Gemini arms are full-precision API at temp 0. Also removed from this entry a CORE ablation line that had been cross-pasted here in error.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-07-25 Stage-2a dive. Venue is ACL 2025 Main AND an OUTSTANDING PAPER award, so credibility
+      4 is if anything understated. The dive's OVERTURN is of its own Stage-1 note that Ordered Rate and
+      Coverage-with-order are near-identical — they diverge by up to 26.5 points on weak models (Qwen2-0.5B
+      30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so BOTH carry distinct signal
+      precisely in the small/quantized regime we care about, and both should be implemented. That corrects
+      a methods note, not this claim. A CORE ablation line cross-pasted here in error was also removed.
+  - claim_index: 1
+    effect: unaffected
+    note: 2026-07-25 Stage-2a dive. Venue is ACL 2025 Main AND an OUTSTANDING PAPER award, so credibility
+      4 is if anything understated. The dive's OVERTURN is of its own Stage-1 note that Ordered Rate and
+      Coverage-with-order are near-identical — they diverge by up to 26.5 points on weak models (Qwen2-0.5B
+      30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so BOTH carry distinct signal
+      precisely in the small/quantized regime we care about, and both should be implemented. That corrects
+      a methods note, not this claim. A CORE ablation line cross-pasted here in error was also removed.
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. Venue is ACL 2025 Main AND an OUTSTANDING PAPER award, so credibility
+      4 is if anything understated. The dive''s OVERTURN is of its own Stage-1 note that Ordered Rate and
+      Coverage-with-order are near-identical — they diverge by up to 26.5 points on weak models (Qwen2-0.5B
+      30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so BOTH carry distinct signal
+      precisely in the small/quantized regime we care about, and both should be implemented. That corrects
+      a methods note, not this claim. A CORE ablation line cross-pasted here in error was also removed.
+      CONFOUND to carry when citing this: all 32 open models were run at 4-bit while the GPT/Gemini arms
+      are full-precision API at temp 0. That bars using the leaderboard as quant-quality evidence, but this
+      claim is a WITHIN-FAMILY scaling comparison (Llama3.2-1B -> Llama3.1-405B), where the 4-bit treatment
+      is common to both ends.'
+  - claim_index: 3
+    effect: unaffected
+    note: 2026-07-25 Stage-2a dive. Venue is ACL 2025 Main AND an OUTSTANDING PAPER award, so credibility
+      4 is if anything understated. The dive's OVERTURN is of its own Stage-1 note that Ordered Rate and
+      Coverage-with-order are near-identical — they diverge by up to 26.5 points on weak models (Qwen2-0.5B
+      30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so BOTH carry distinct signal
+      precisely in the small/quantized regime we care about, and both should be implemented. That corrects
+      a methods note, not this claim. A CORE ablation line cross-pasted here in error was also removed.
+  - claim_index: 4
+    effect: unaffected
+    note: 2026-07-25 Stage-2a dive. Venue is ACL 2025 Main AND an OUTSTANDING PAPER award, so credibility
+      4 is if anything understated. The dive's OVERTURN is of its own Stage-1 note that Ordered Rate and
+      Coverage-with-order are near-identical — they diverge by up to 26.5 points on weak models (Qwen2-0.5B
+      30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so BOTH carry distinct signal
+      precisely in the small/quantized regime we care about, and both should be implemented. That corrects
+      a methods note, not this claim. A CORE ablation line cross-pasted here in error was also removed.
 - id: intake-896
   arxiv_id: null
   url: https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models
@@ -50081,6 +50170,31 @@
   verdict_justification: 'worth_investigating: (1) architectural anchor for the batch''s later papers; (2) continuous depth-wise batching is a serving-side scheduling idea that would matter for llama.cpp if a recursive-depth open model ever enters the candidate pool; (3) usefully corroborates the TIDE post-mortem — early exit needs training-time support. Not superseded within the batch on the parameter-sharing axis.'
   dive_corrections: '2026-07-28 Stage-2 dive (primary full-text read). Core claims CONFIRMED: three init strategies (Sec 2.2, Stepwise best); SVD-init LoRA beats zero init by up to 6.5pp (Fig 6c); 51.7% vs 38.2% and 58.4% vs 58.6% (Fig 5c, Fig 7c); -4.6pp first-loop exit gap (Table 3, via 0.1/1.0 loss coefficients + self-distillation). CORRECTIONS: (a) the 2.66x/1.59x throughput numbers are VERIFIED AS ORACLE-EXIT SIMULATION — paper states "hypothetical throughput improvements based on an oracle-exiting approach"; hardware never identified; KV-cache handling for exited tokens deferred to future work. Never quotable as serving numbers — observation-grade at best under MEASUREMENT.md. (b) Per-rank sweep decimals (54.0/55.2/56.2) are figure-derived and could not be verified digit-for-digit — treat as approximate; trend and rank-512 parity confirmed. (c) "Minimal loss" requires 15-60B tokens of uptraining co-required with pretrained init — init alone is not lossless. (d) TIDE cross-link DOWNGRADED to partial corroboration: the paper runs NO post-hoc/untrained early-exit control arm, so it is consistent-with, not proof-of, "post-hoc adapters fail" — cite as trained-recursion counterpoint only. (e) Venue: ICLR 2025 accepted (credibility 3 -> 4 defensible). No official code/checkpoints; third-party replication github.com/avramdj/rrt-lora. Adversarial: Mixture-of-LoRAs / ModernALBERT (2512.12880) directly beats layer-wise LoRA at BERT scale (GLUE 81.94 vs 80.95) — refines, does not overturn, the decoder results; recorded as a note, NOT a new intake entry (per index-modification policy).'
   notes: 'Batch 2026-07-28. Google DeepMind/Research + KAIST. Stage-1 fetch: ar5iv full text with equations and throughput table. CAVEATS: referenced_arxiv_ids mapped from named works, not verbatim; peer-review venue not stated in fetched copy; throughput numbers are the paper''s own "theoretical" figures. Credibility 3: venue unconfirmed +0, ~21mo +0, major lab +1, corroboration +2 capped (MoR extends it; intake-636 cites it).'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Correction (c): ''minimal loss'' requires 15-60B tokens of UPTRAINING co-required with the pretrained
+      init — init alone is NOT lossless. This claim''s ''IF the shared block is initialized from pretrained
+      weights'' reads as init being sufficient, and it is not.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed in the dive: three init strategies at Sec 2.2 with Stepwise best, and SVD-init LoRA
+      beats zero init by up to 6.5pp (Fig 6c).'
+  - claim_index: 2
+    effect: unaffected
+    note: This claim already carries the uptraining budget (60B tokens with KD) that correction (c) insists
+      on, so it is stated at the right strength.
+  - claim_index: 3
+    effect: narrowed
+    note: 'Correction (a): the 2.66x / 1.59x throughput figures behind this technique are VERIFIED AS ORACLE-EXIT
+      SIMULATION — the paper itself says ''hypothetical throughput improvements based on an oracle-exiting
+      approach'', hardware is never identified, and KV-cache handling for exited tokens is deferred to future
+      work. NEVER quotable as serving numbers; observation-grade at best under MEASUREMENT.md. The mechanism
+      stands; its demonstrated practicality does not.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Explicitly CONFIRMED: -4.6pp first-loop exit gap at Table 3, via 0.1/1.0 loss coefficients plus
+      self-distillation.'
 - id: intake-905
   arxiv_id: '2502.05171'
   url: https://arxiv.org/abs/2502.05171
@@ -60842,6 +60956,57 @@
     four of this article's stage names resolve to real entrypoints, but its "KKT solve" is recompute_w_u_fwd in current source, so the
     article tracks a pre-rename sglang head. Cite the decomposition by stage ROLE plus entrypoint and a pinned commit, never by kernel
     name alone. cutedsl_gdn.py declined as NVIDIA-only.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-09 dive: verdict adopt_patterns HOLDS, relevance STRENGTHENED, every technical claim
+      checkable against source CONFIRMED (all four named kernels resolve verbatim in sgl-project/sglang
+      at main); provenance remains NOT-FOUND. Worth carrying: the dive records a METHOD WARNING because
+      it nearly produced a false negative — grepping the model file qwen3_5.py alone returns ZERO hits for
+      all four names, since the kernels live in a different tree under python/sglang/kernels/ops/attention/.
+      A dive that stopped at the model file would have wrongly reported the symbols absent. Separately,
+      intake-1030 records that the ''KKT solve'' name this entry referenced has since been renamed upstream;
+      none of these five claims names it.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-09 dive: verdict adopt_patterns HOLDS, relevance STRENGTHENED, every technical claim
+      checkable against source CONFIRMED (all four named kernels resolve verbatim in sgl-project/sglang
+      at main); provenance remains NOT-FOUND. Worth carrying: the dive records a METHOD WARNING because
+      it nearly produced a false negative — grepping the model file qwen3_5.py alone returns ZERO hits for
+      all four names, since the kernels live in a different tree under python/sglang/kernels/ops/attention/.
+      A dive that stopped at the model file would have wrongly reported the symbols absent. Separately,
+      intake-1030 records that the ''KKT solve'' name this entry referenced has since been renamed upstream;
+      none of these five claims names it.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 dive: verdict adopt_patterns HOLDS, relevance STRENGTHENED, every technical claim
+      checkable against source CONFIRMED (all four named kernels resolve verbatim in sgl-project/sglang
+      at main); provenance remains NOT-FOUND. Worth carrying: the dive records a METHOD WARNING because
+      it nearly produced a false negative — grepping the model file qwen3_5.py alone returns ZERO hits for
+      all four names, since the kernels live in a different tree under python/sglang/kernels/ops/attention/.
+      A dive that stopped at the model file would have wrongly reported the symbols absent. Separately,
+      intake-1030 records that the ''KKT solve'' name this entry referenced has since been renamed upstream;
+      none of these five claims names it.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-09 dive: verdict adopt_patterns HOLDS, relevance STRENGTHENED, every technical claim
+      checkable against source CONFIRMED (all four named kernels resolve verbatim in sgl-project/sglang
+      at main); provenance remains NOT-FOUND. Worth carrying: the dive records a METHOD WARNING because
+      it nearly produced a false negative — grepping the model file qwen3_5.py alone returns ZERO hits for
+      all four names, since the kernels live in a different tree under python/sglang/kernels/ops/attention/.
+      A dive that stopped at the model file would have wrongly reported the symbols absent. Separately,
+      intake-1030 records that the ''KKT solve'' name this entry referenced has since been renamed upstream;
+      none of these five claims names it.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08-09 dive: verdict adopt_patterns HOLDS, relevance STRENGTHENED, every technical claim
+      checkable against source CONFIRMED (all four named kernels resolve verbatim in sgl-project/sglang
+      at main); provenance remains NOT-FOUND. Worth carrying: the dive records a METHOD WARNING because
+      it nearly produced a false negative — grepping the model file qwen3_5.py alone returns ZERO hits for
+      all four names, since the kernels live in a different tree under python/sglang/kernels/ops/attention/.
+      A dive that stopped at the model file would have wrongly reported the symbols absent. Separately,
+      intake-1030 records that the ''KKT solve'' name this entry referenced has since been renamed upstream;
+      none of these five claims names it.'
 - id: intake-1026
   arxiv_id: null
   url: https://github.com/sgl-project/sglang/tree/main/.claude/skills/llm-torch-profiler-analysis
