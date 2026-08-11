@@ -1,0 +1,21 @@
+{
+  "schema": "epyc.kernel_cutover_journal.v1",
+  "cutover_id": "20260810T235900Z-0db32c06e",
+  "promoted_at": "2026-08-10T23:59:00Z",
+  "phase": "complete",
+  "production_branch": "production-consolidated-v9",
+  "production_head": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+  "rollback_branch": "production-consolidated-v8",
+  "rollback_head": "67a433bf45a8a091d83b4ea0b32ff0735fd51800",
+  "stage": "/mnt/raid0/llm/kernel-runtime-stages/production-consolidated-v9-0db32c06e",
+  "rollback_build_dir": "/mnt/raid0/llm/kernel-runtime-rollbacks/v8-20260810T235900Z-0db32c06e/build",
+  "rollback_hip_build_dir": "/mnt/raid0/llm/kernel-runtime-rollbacks/v8-20260810T235900Z-0db32c06e/build-hip",
+  "failed_v9_build_dir": "/mnt/raid0/llm/kernel-runtime-failures/v9-20260810T235900Z-0db32c06e/build",
+  "failed_v9_hip_dir": "/mnt/raid0/llm/kernel-runtime-failures/v9-20260810T235900Z-0db32c06e/build-hip",
+  "cpu_backed_up": 1,
+  "hip_backed_up": 1,
+  "cpu_installed": 1,
+  "hip_installed": 1,
+  "root_governance_committed": 1,
+  "completed": 1
+}
