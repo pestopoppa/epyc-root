@@ -1,12 +1,14 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
-**Status**: SKELETON — design scaffold; substrate is now mostly *adopt AMD-native*, not build-from-scratch
-**Created**: 2026-06-03 · **Updated**: 2026-08-10 (C2/C6 task set + three zero-cost probes; see §2026-08-10)
+**Status**: ACTIVE HARDENING — stateful C2 integrity live-validated; producer not yet durable
+**Created**: 2026-06-03 · **Updated**: 2026-08-11 (stateful C2 live acceptance; see §2026-08-10)
 
-> **NEXT ACTION (2026-08-10): `RVP-C2-1` (seeded input generation) — it is CPU-only and is the
-> precondition for every other C2 row.** The two static probes (`RVP-T0-2`, `RVP-T0-5`) are complete
-> and independently re-verified. **`RVP-T0-1` is HELD** — operator, 2026-08-10: *"do not run any
-> inference"*. It is the only one of the three that puts load on the card (a saturating GEMM at up to
+> **NEXT ACTION (2026-08-11): `RVP-C2-6` (independent fp64 CPU reference).** The stateful integrity
+> pass has live CPU acceptance, while the shared C2-1/C2-3/C2-4/C2-5 experimental producer remains
+> uncommitted and must not be committed or pushed without explicit operator approval. The two static
+> probes (`RVP-T0-2`, `RVP-T0-5`) are complete and independently re-verified. **`RVP-T0-1` remains
+> HELD for GPU load** — the 2026-08-11 operator authorization covers CPU inference on the idle host,
+> not a saturating GPU GEMM. It is the only one of the three that puts load on the card (up to
 > the 300 W cap for 60 s), and it decides whether the whole clock-pinning branch — including the
 > operator-only `AK-OP-2` — is live at all. Reopen it when a GPU-load window is authorized; the probe
 > design is finished and needs nothing further. Everything else in §2026-08-10 is CPU-only or static
@@ -355,6 +357,11 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   right outputs and corrupts the carried state passes rules 1 and 2. Targets `SSM_SCAN`, `SSM_CONV`,
   flash-attention-with-cache, and the k28 chunked-GDN work
   ([`k28-fused-chunked-gdn-kernel-research.md`](k28-fused-chunked-gdn-kernel-research.md)).
+  - [x] **Live acceptance probe.** ✅ 2026-08-11 — suite seed `4711` passed **5,184/5,184** cases
+    across `SSM_SCAN`, `SSM_CONV`, `FLASH_ATTN_EXT`, and `GATED_DELTA_NET`. Every emitted
+    `AK_STATE_V1` receipt had `initial_equal=1`, `input_immutable=1`, and one or more final-state
+    outputs. Research commit `9cc3ed1b` supplies the fail-closed consumer. The parent row remains
+    open because its experimental producer is still uncommitted pending explicit operator approval.
 - [ ] **RVP-C2-6 — fp64 CPU reference with a ratio gate.** `e_cand ≤ κ · max(e_ref, floor)`, κ = 1.5.
   **Implement dequantisation from the GGUF format specification, not from `ggml-quants.c`** — sourcing
   it from our own quant code reproduces the sibling problem one level down and the independence is

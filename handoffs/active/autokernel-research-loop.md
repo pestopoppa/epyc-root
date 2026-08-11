@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** STATIC ADAPTER + OFFLINE SCOPE GATE COMPLETE / V9 CONTROLS REQUIRED BEFORE STEP 3 — design audited 2026-08-11
+**Status:** STATEFUL T0 INTEGRITY LIVE-VALIDATED / V9 CONTROLS REQUIRED BEFORE STEP 3 — updated 2026-08-11
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -40,10 +40,18 @@ The C2 value axis is now independently flagged and fail-closed in research commi
 identity, ×3, ×0.01 and negate must all complete on every emitted packed-float case, and property
 residuals retain the input-transform coordinate through the Vidya projection. Its producer also
 shares the pending experimental commit, and no value-transform case has run.
-The next live action is the v9/hardened control block,
+Research commit `9cc3ed1b` adds the independent stateful consumer and fail-closed `AK_STATE_V1`
+contract. A live CPU probe with suite seed `4711` then passed all **5,184/5,184** emitted cases across
+`SSM_SCAN`, `SSM_CONV`, `FLASH_ATTN_EXT`, and `GATED_DELTA_NET`; every case reported
+`initial_equal=1`, `input_immutable=1`, and at least one final-state output. This closes the live
+validation milestone for RVP-C2-5, but the shared experimental producer changes remain uncommitted
+and must not be committed or pushed without explicit operator approval. Research commit `598375c5`
+also makes the clean control instrument root/binary explicit and tests both overrides. The next live
+action is the v9/hardened control block,
 followed by §AK6.5 Step 3's known-real CPU candidate.
-The operator has explicitly required fresh permission
-before any inference; no live work may start from this handoff alone. Offline AK-WM-1 plumbing is
+The operator authorized CPU inference on the otherwise idle production host on 2026-08-11 without
+requiring stack teardown; that authority does not extend to GPU load, producer commits, promotion,
+or freeze actions. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
@@ -2722,8 +2730,10 @@ nothing wrong. We held no claim.**
       2.1310% placeholder as live authority. ✅ 2026-08-11
 - [ ] **Run the five controls against frozen v9 plus the hardened measurement instrument.** Produce
       the current identity-bound calibration bundle and retain the failed attempt if the declared
-      floor cannot be resolved. This is inference and must not start without fresh explicit operator
-      permission. The v8 3%/B_min=12 bundle is a regression fixture, not a literal to copy.
+      floor cannot be resolved. CPU inference was explicitly authorized on 2026-08-11 while the
+      production stack remains online and idle; do not infer GPU-load, producer-commit, promotion,
+      or freeze authority from it. The v8 3%/B_min=12 bundle is a regression fixture, not a literal
+      to copy.
 
 ### Step 3 — the first candidate
 
@@ -2744,6 +2754,12 @@ nothing wrong. We held no claim.**
       emits `AK_REF_V1` only after its separately activated CPU reference path passes, and T0 projects
       its observed comparator error/tolerance without mislabelling NMSE as ULP or bitwise identity.
       Generic source proposals still fail closed where whole-program absence or rollback cannot be proved.
+- [x] **Live-validate the stateful T0 integrity pass.** ✅ 2026-08-11 — with suite seed `4711`, all
+      **5,184/5,184** cases passed across `SSM_SCAN`, `SSM_CONV`, `FLASH_ATTN_EXT`, and
+      `GATED_DELTA_NET`. Every `AK_STATE_V1` receipt proved equal initial state inputs, immutable
+      input buffers, and one or more compared final-state outputs. The fail-closed consumer is
+      research commit `9cc3ed1b`; the experimental producer remains uncommitted pending explicit
+      operator approval and was not committed or pushed by this checkpoint.
 - [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
       characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
       serving. The claim reason alone decides it.
