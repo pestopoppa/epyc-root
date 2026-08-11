@@ -2115,6 +2115,33 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     fail-open (three silent-pass paths) and names the in-repo fail-closed pattern to copy. **Build
     it fail-closed or not at all.** Source: `/workspace/tmp/coord-coldstart/coordinator-config-repair.md`.
 
+- [x] **R7 (NEW) — the supervisor could not tell a daemon running OLD CODE from a healthy one, and
+  that is the pattern behind five committed-not-live gaps in one evening.** ✅ 2026-08-11 —
+  `mainD`. Raised by the operator from the recurrence itself: a restart at 22:18:12Z was followed by
+  an R2 commit at 22:21:25Z, so that fix needed a **second** human-initiated restart. `health_ok`
+  asks *is a process there* and *is its heartbeat fresh*; a daemon running twelve-hour-old code
+  answers yes to both, so C39, C28, C38's tick path, R1 and R2 all sat inert until a human noticed.
+  **A delivery gap in the same family as R1** — the mechanism worked and nothing carried its result
+  to where it takes effect.
+  `check_stale_source` compares the newest source mtime against the running process's start time and
+  restarts **once per source version**; identity comes from the heartbeat's own pid, never a name
+  pattern (INC-20260731). Fail-closed on every unknown per the R2 discipline: no heartbeat, no pid,
+  a dead pid, or unreadable sources are all *reported*, never passed as clean.
+  - [x] **Three bugs found building it, two by the EXISTING suite going 5/5 → 4/5.** ✅
+    `ps -o etimes` truncates to whole seconds, so a source written in the same second as a
+    legitimate restart read as newer — a false positive that recurs every cycle, i.e. a restart
+    loop. And **twice** `set -euo pipefail` bit: a failing command substitution aborts the script
+    (dead pid, empty source dir), and a *function* returning non-zero as a simple command aborts it
+    too — so `f; rc=$?` killed the supervisor on the NORMAL path. A watchdog that silently stops
+    watching.
+  - [x] **My own test had missed both `set -e` bugs because it ran without `set -e`.** ✅ The test
+    method differed from production; matching it is what turned an empty output into a real signal.
+    Recorded because "rule out the test method first" is a rule I have quoted and still had to
+    relearn here.
+  - [x] **Predicate-only scope, deliberately.** ✅ The test never sources the supervisor and never
+    reaches `stop_wedged`/`start_daemon`: a stub named `session_bus_coordinator.py` matches the
+    production `pgrep` pattern and killed the live daemon that way on 2026-07-27.
+
 ## Decision gates
 
 - `OP-SENDKEYS-CODEX` (send-keys nudging) — operator grant, evidence-driven, default OFF.
