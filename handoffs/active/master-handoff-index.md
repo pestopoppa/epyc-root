@@ -39,7 +39,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-8 | GLM-5.2 GO/WAIT/KILL verdict — also governs **222 GB** of disk | [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | 2026-08-10 |
 | OP-9 | Nothing restarts `hub_supervisor.sh` if it dies — cron `once` form vs leave as-is (host-level) | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |
 | OP-10 | P-GPU-1 `duty_cycle` amendment — field 4's "fresh server per rep" measures the **bursty** regime, not sustained serving; label it or author a sustained variant. Human-amendment-only (measurement trust boundary) | [autokernel-research-loop.md](autokernel-research-loop.md) §21 AK-OP-1 | 2026-08-10 |
-| OP-11 | Approve or decline the next `llama.cpp-experimental` commit/push containing the materialized `AK_SENS_V1` producer; no producer-dependent sensitivity row closes before a durable producer identity and fresh replay | [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md) RVP-C2-7 | 2026-08-11 |
+| OP-11 | Approve or decline the exact `llama.cpp-experimental` commit/push containing the sensitivity/oracle producers and Q4_K MMQ repair; producer-dependent evidence waits for a durable identity and fresh replay | [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md) RVP-C2-7 | 2026-08-11 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
@@ -63,7 +63,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 55 | 425 | 3 | 2026-07-29 |
+| inference-research | 55 | 423 | 3 | 2026-07-29 |
 | pipeline-integration | 5 | 51 | 0 | 2026-07-29 |
 | research-evaluation | 48 | 302 | 0 | 2026-07-29 |
 | reviewer-control-plane | 9 | 41 | 1 | 2026-07-29 |

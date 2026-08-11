@@ -1,14 +1,14 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
-**Status**: ACTIVE HARDENING — Q4_K failures isolated to MMQ; fixed-gate correction open
-**Created**: 2026-06-03 · **Updated**: 2026-08-11 (RVP-C2-6a dispatch isolation + RVP-C3-5)
+**Status**: ACTIVE HARDENING — Q4_K MMQ corrected locally; oracle producer evidence remains approval-gated
+**Created**: 2026-06-03 · **Updated**: 2026-08-11 (RVP-C2-6b repair + C2-8/C2-9/C5-R instrumentation)
 
-> **NEXT ACTION (2026-08-11): `RVP-C2-6b` — correct the stock gfx90a Q4_K MMQ path under the
-> unchanged κ=1.5 gate.** The non-contiguous oracle coverage defect is fixed. The corrected forced
-> matrix passed force-rocBLAS 43/43 and force-MMQ 18/43, isolating 25 genuine failures to MMQ. Preserve
-> the passing rocBLAS control and do not relax the gate. The experimental implementation remains
-> uncommitted and must
-> not be committed or pushed without explicit user approval per that tree's `AGENTS.md`. The two static
+> **NEXT ACTION (2026-08-11): `RVP-C2-7/C2-8/C2-9` — after OP-11 approves the exact experimental
+> producer commit, rerun sensitivity, hostile-distribution, and checker-isolation evidence on its
+> durable suite identity.** The research reducers/runners are durable; the live oracle-integrity smoke
+> is intentionally non-evidence because its producer is uncommitted. The experimental implementation
+> and Q4_K MMQ repair must not be committed or pushed without explicit user approval per that tree's
+> `AGENTS.md`. The two static
 > probes (`RVP-T0-2`, `RVP-T0-5`) remain complete and independently re-verified. **`RVP-T0-1` is now
 > complete:** the live card never approached its 300 W cap, so the clock-pinning branch and AK-OP-2
 > are closed. Everything else in §2026-08-10 is CPU-only or static and runs today.
@@ -398,7 +398,7 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     `/mnt/raid0/llm/autokernel/probes/rvp-c2-6a-rocm-q4k-dispatch2-20260811T1042Z/receipt.json`, SHA-256
     `6e7870558c6317a7ef12f7fca8a267466cc0734295d0c33562103a0c022a3502`. Research runner:
     `scripts/benchmark/run_rocm_q4k_fp64_matrix.py`.
-  - [ ] **RVP-C2-6b — Correct the stock gfx90a Q4_K MMQ path without changing κ=1.5.** Preserve the
+  - [x] **RVP-C2-6b — Correct the stock gfx90a Q4_K MMQ path without changing κ=1.5.** ✅ 2026-08-11 — Preserve the
     force-rocBLAS 43/43 control, retain all 25 force-MMQ failures as regression cases, and do not rank
     this surface until the corrected MMQ arm passes the same matrix. **2026-08-11 diagnostic:** a
     separately compiled force-MMQ DP4A arm reproduced the same 25/43 failures (maximum ratio 3.0178),
@@ -411,8 +411,15 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     no source delta survives. Receipt:
     `/mnt/raid0/llm/autokernel/probes/rvp-c2-6b-q4k-ls-scale-20260811T1430Z/receipt.json`, SHA-256
     `476e6fb3fc004b30067ea9de4826a094a90db529c610670673c159e803342d89`.
-    The repair therefore remains open below the MFMA-vs-DP4A choice and below a one-parameter
-    least-squares activation-scale adjustment.
+    Root cause was instead the affine Q4_K reconstruction mixing two activation populations: the
+    quantized dot used dequantized Q8 values (`q*d`), while the min-correction used the original
+    pre-quantization float sum. The local `quantize.cu` fix derives the min-correction sum from the
+    same quantized/dequantized Q8 values for Q4_K DS4, in both ordinary and scatter paths. The final
+    default, force-rocBLAS, force-MMQ MFMA, and force-MMQ DP4A matrix passed **172/172** cases with
+    zero failures and maximum error ratio 1.2283 under unchanged κ=1.5. Receipt:
+    `/mnt/raid0/llm/autokernel/probes/rvp-c2-6b-q4k-qsum-final-20260811/receipt.json`, SHA-256
+    `355bdcf169cb8682d2f56e1754b321f770a0fe3c0bbc5f6e1dc58eaffb443fb2`. The source fix remains
+    uncommitted and approval-gated; this row closes the diagnosis and live correction, not promotion.
 - [ ] **RVP-C2-7 — Degenerate and insensitive-case screening.** Reference-only, 3 seeds × 4
   transforms, run once per suite version, plus an input-*insensitivity* screen (does the output move
   at all when the input does?) and a seed-invariance screen. **Audit our own `(0.9, 1.1)`-style ranges
@@ -430,22 +437,38 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     research commit `000a2686`, promoted to `main` via `f3c6b24a`; the focused reducer passes 14/14.
 
   **OP-11 decision package.** Context: repository policy requires explicit operator approval for each
-  commit/push in `llama.cpp-experimental`, and the current producer delta cannot identify itself
-  durably. Option A: approve one exact reviewed producer commit/push, then rerun the matched
-  sensitivity screen (small, reversible source-history change; makes the suite identity honest).
+  commit/push in `llama.cpp-experimental`, and the current sensitivity/oracle producers plus Q4_K
+  repair cannot identify themselves durably. Option A: approve one exact reviewed commit/push, then
+  rerun the matched sensitivity and oracle-integrity screens (small, reversible source-history change;
+  makes their suite identity honest and preserves the repaired MMQ source).
   Option B: decline the commit and retain the implementation only as a local diagnostic
   (zero publication risk; all producer-dependent rows remain open and the smoke remains non-evidence).
   **Recommendation: A**, after reviewing the exact experimental diff, because the research consumer
-  and both builds are green and a durable producer identity is the only remaining instrumentation
-  dependency. **Default:** no experimental commit or push; no producer-dependent closure.
+  and the full research suite plus live repairs are green, while a durable producer identity is the
+  only remaining instrumentation dependency. **Default:** no experimental commit or push; no
+  producer-dependent closure.
 - [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
   the value distribution. This is the anti-shape-detection device, and it targets something we
   actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can
-  learn to satisfy without being correct.
+  learn to satisfy without being correct. The durable research reducer/runner is in `1a4d7dca`
+  (research `main` merge `c5fe6b51`). A non-evidence smoke selected two ROCm0 `SOFT_MAX` cases;
+  hostile mode returned 0 and passed 2/2 rows, with the device claim acquired/released and four
+  sampler observations. Keep this evidence item open until the uncommitted producer gains a durable
+  identity and the claim-aware runner retains a campaign receipt.
+
+  - [x] **RVP-C2-8a — Build the hostile-distribution reducer and claim-aware runner.** ✅ 2026-08-11 —
+    four named same-shape populations require distinct materialized inputs and complete successfully.
 - [ ] **RVP-C2-9 — Checker precision pinning.** The property and reference paths must not run through
   `-fa`, MFMA-f16 accumulation, or `FORCE_MMQ`. A checker validated by the same fast path it is
   checking corrupts **claims**, not merely screens — this is the "verify THE consumer, not A consumer"
-  discipline applied to the oracle itself.
+  discipline applied to the oracle itself. Research commit `1a4d7dca` requires host-double plus CPU
+  sibling/reference checkers and refuses device-code, forced-MMQ, CUDA-FA, or rocWMMA checker paths.
+  The same non-evidence smoke returned 0 and passed 2/2 selected `SOFT_MAX` rows; claim and four-sample
+  telemetry were observed but no durable receipt was retained. Keep this evidence item open until the
+  producer identity is committed and replayed by the claim-aware runner.
+
+  - [x] **RVP-C2-9a — Build the checker-isolation reducer and claim-aware runner.** ✅ 2026-08-11 —
+    missing receipts or accelerated checker paths fail closed.
 
 ### C6 — reward integrity: close the instrument gap first
 
@@ -540,7 +563,7 @@ _The Stage-2b analyst reports were recovered from the session transcript **after
 written, so they carry derived actionables the plan predates. These are the survivors; the declines at
 the end are deliberate and recorded so they are not re-derived._
 
-- [ ] **RVP-C5-R — Mine a real-workload task class from our own repo history.** Keyword-filter merged
+- [x] **RVP-C5-R — Mine a real-workload task class from our own repo history.** ✅ 2026-08-11 — Keyword-filter merged
   llama.cpp performance PRs (`optim`, `speed`, `latency`, `memory`) → classify → verify each is a
   genuine optimization and not a refactor → extract the PR's own benchmark command and claimed numbers
   → replay a candidate at the pre-optimization commit → **score against the human patch**. Row **C5**
@@ -550,8 +573,18 @@ the end are deliberate and recorded so they are not re-derived._
   PRs are public and in training data, so temporal filtering or held-out selection is mandatory, or the
   suite measures memorization. **2026-08-11 evidence audit:** the exact 2026-07-04 argv and raw
   parent/human-patch evidence are no longer available; the surviving summaries cannot reconstruct a
-  matched claim. Do not promote that historical observation. A fresh historical-commit replay must
-  retain exact argv, raw outputs, hashes, and matched parent-versus-human-patch measurements.
+  matched claim. The replacement descriptor therefore states `historical_command_recovered=false`
+  rather than laundering a reconstructed argv into an original-command claim. It seals GDN bf16
+  state at parent `7c28056b` versus human expert `496e2f09`, pins the full replacement benchmark
+  surface and model SHA, and withholds the expert until terminal candidate state. The fresh five-block
+  matched replay retained all 15 exact argv/raw runs, build and descriptor hashes, a 1,995-sample
+  250 ms device trace, and claim acquisition/held/release receipts. Parent mean was 155.4233734
+  `speed_tg`; expert-on mean was 188.4099002, a **21.223659%** expert gain; same-binary expert-off was
+  -0.105875% versus parent. With no terminal AutoKernel candidate, candidate-vs-expert correctly
+  remains `COULD_NOT_CHECK`. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/rvp-c5-r-gdn-bf16-20260811-r2/receipt.json`, SHA-256
+  `279b7c3d6272eb6f881ca55b9599e7f341777338942490f36aadc17766aa1abb`. Research implementation:
+  `1a4d7dca`, promoted via `c5fe6b51`.
 - [ ] **RVP-C5-2 — Screen the C5 seed corpus for input-INSENSITIVE ops** (the `mean(softmax(x))` /
   `relu(x-2)`-under-uniform-sampling class). Twin of the degenerate-output screen on a different axis:
   constant output vs insensitivity to the input. The durable research reducer now implements this
@@ -559,7 +592,12 @@ the end are deliberate and recorded so they are not re-derived._
   approval and the C5 corpus is screened by a fresh matched run.
 - [ ] **RVP-C3-2 — Expert-reference ceiling alongside the honest-baseline floor.** Where a task derives
   from a real merged optimization, report candidate-vs-human-patch delta as well as
-  candidate-vs-vendor-baseline. C3 currently fixes only the floor.
+  candidate-vs-vendor-baseline. C3 currently fixes only the floor. The sealed scorer and replay
+  receipt now establish the 21.223659% human ceiling, but this parent remains open until a terminal
+  AutoKernel candidate supplies the candidate-to-parent and candidate-to-human terms.
+
+  - [x] **RVP-C3-2a — Build and validate expert-ceiling scoring for held-out historical tasks.** ✅ 2026-08-11 —
+    the scorer emits both deltas when a candidate exists and returns `COULD_NOT_CHECK` when it does not.
 - [x] **RVP-C3-3 — Parse `rocm-smi` into numeric fields and add `throttle_observed`.** Capture is
   already mandatory and implemented, but it is stored as a **text blob** and the completeness audit
   only regex-checks that the word appeared — so a run that throttled 1700 → 800 MHz mid-window passes
