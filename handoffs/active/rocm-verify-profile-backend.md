@@ -341,6 +341,13 @@ job. It is a statement about **what a reward-bearing oracle needs that a regress
   `/mnt/raid0/llm/autokernel/probes/rvp-t0-1-20260811T0906Z/receipt.json` (SHA-256
   `07788e1d488ecec062e8133dd9e11d379e5075afbcc20f80b6da37e345533431`). The workload PID is gone
   and the receipt records release at `2026-08-11T09:06:40.267163+00:00`.
+  An independently launched same-protocol replication later on 2026-08-11 corroborated the closure:
+  **41.879670 TFLOP/s**, **242** samples, **0.250022 s** maximum gap, and **202 W** peak. After the
+  initial idle-transition sample, all **241/241** samples held **1700 MHz**; steady-state median/p95
+  power was **198/201 W**. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/rvp-t0-1-v9-20260811-r1/receipt.json` (SHA-256
+  `33b0514a4f2f3ad475c891ca34d46c2faeea241825f5558d68f394401afce17e`). The claim has a recorded
+  release timestamp and the post-run device check found no KFD process or VRAM allocation.
   Drive a saturating gfx90a GEMM and log `power_w`
   and `sclk_mhz` at 250 ms intervals for 60 s. **If the card never approaches its 300 W cap, the entire
   clock-pinning branch closes for free** and OP-2 in [`autokernel-research-loop.md`](autokernel-research-loop.md)
