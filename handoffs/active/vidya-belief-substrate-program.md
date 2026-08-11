@@ -210,6 +210,15 @@ deliberately — decide them, do not just implement them.
       K35, DFlash, qualification, and final-freeze write paths. Project into the existing
       `ClaimTuple`; `claim_tuple.grade()` remains the only grading rule. Only then price/build the
       adapter
+- [ ] SC12-ARTIFACT **Model artifact acquisition/integrity receipts need a prospective write-side
+      ClaimTuple hook.** The standardized DeepSeek-V4 DFlash acquisition established the source
+      repository and pinned revision, expected/observed byte count, publisher/local SHA-256,
+      selected-file scope, metadata summary, process exit and incomplete-file cleanup, but those
+      facts were captured in session prose rather than a native receipt. Before the next model
+      acquisition, emit one run-level record with those fields plus timestamp, protocol id,
+      category, metric direction and durable attestation locator+digest. Project it into the
+      existing `ClaimTuple`; `claim_tuple.grade()` remains the only grading rule. Do not retrofit
+      this completed acquisition on read
 - [ ] SC7 Ingest autopilot trials into the ledger once SC6-LIVE confirms rows are landing. Deferred
       deliberately: appending 1,372 retro-graded claims now would record provenance the original
       runs never captured, and the corpus is worth ingesting only once it is born attested. Note
