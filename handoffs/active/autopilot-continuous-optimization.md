@@ -1,12 +1,14 @@
 # AutoPilot: Continuous Recursive Optimization
 
 > **Current checkpoint — 2026-08-10.** AutoPilot is intentionally stopped and inference resources have
-> been handed back to the operator. Clean execution-instrument-v10 incumbent evidence is sealed for
+> been handed back to the operator. Clean execution-instrument-v10 incumbent evidence is ratified for
 > T1=100 (`q=1.500`), T2=500 (`q=1.356`), and T3=160 (`q=1.275`), each at reliability `1.000` and zero
-> error rows. Orchestrator `8e147213` contains the single human-gated, atomic ratifier; its no-write
-> prevalidation passes against exact artifact, source, recode, and state-preimage hashes. Next: the
-> operator runs that one final ratifier when convenient. It does not start AutoPilot or model servers;
-> any later AutoPilot restart still requires separate explicit permission.
+> error rows. The operator applied the atomic E16 ratifier; receipt
+> [`ratify_multitier_baseline_v10_20260810.json`](../../artifacts/operator/ratify_multitier_baseline_v10_20260810.json)
+> records `ratified_and_applied`, no AutoPilot start, and no model-server change. The verified
+> `production_best` checkpoint SHA-256 is `c60364f1295a931a4b4e806d4dffd2138696537f49b15a3a6881c50737c02b19`.
+> Next active work is AP-50's decision cockpit; any later AutoPilot restart still requires separate
+> explicit permission.
 
 **Resume-precondition — 2026-07-17 (non-inference session diagnosis)**: the ~28h stop on 2026-07-16 was a **DELIBERATE `SIGTERM`** to free the machine for v7 kernel work (`autopilot.log` `Shutdown requested (signal 15)` → `Controller failed (rc=143)`; `agent_audit.log` logs *"Audit experimental v7 kernel worktree … while AutoPilot remains stopped"* seconds later). It is **NOT** a `consecutive_failures` self-halt — `consecutive_failures=2 < safety_gate.MAX_CONSECUTIVE_FAILURES=3` (`safety_gate.py:107`); the persisted `_dispatch_deficiency='consecutive_failures'` marker is stale + self-clearing (`autopilot.py:8687` unconditional pop on `resume`). **No wedge to clear.** Before resuming:
 - [x] Bring the `:8000` stack up + verify HEALTHY first (a resume against a dead stack fails every dispatch). ✅ 2026-08-08 — E15 serving and API readiness were verified before the supervised run; subsequent work stops AutoPilot without tearing down the resident stack.
@@ -578,6 +580,10 @@ Three "Research Intake Update" sections have surfaced **scoring-mechanism** upgr
 2. ~~**GEPA integration** (intake-240)~~: **PROMOTED to P10** (2026-04-12). Deep-dive confirmed GEPA works with local inference, 35x cheaper than GRPO, 3-example minimum. No longer needs to wait for AR-3 PromptForge limitations — GEPA is strictly better.
 3. **Hard-negative training data** (intake-176): Contrastive negatives for routing classifier. Only relevant when 500+ memories exist for retraining.
 4. ~~**Git worktree isolation for PromptForge**~~: ✅ 2026-04-05. Implemented `worktree_manager.py` with `WorktreeManager` + `ExperimentContext`. Auto-reject safety default prevents corruption incidents like AR-3 trial ~25.
+   - [x] **Exact-preimage rollback repair.** ✅ 2026-08-10 — rejection used to write the saved
+     in-memory preimage and immediately erase it with `git checkout -- <path>`, destroying a dirty
+     operator/parallel-session edit. It now restores exact bytes, distinguishes empty from absent,
+     and has focused regression coverage for all three states.
 5. **Convention locking** (intake-150): Lock baseline parameters from species modification. Premature without more trials.
 
 ### Design considerations (no implementation needed)
@@ -1883,7 +1889,14 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       errors reading "include non-launch port(s)" — which describes the *manifest* being wrong, not
       the priors. Either default to the mode the stack is actually running, persist the last-used
       mode, or fail with "no --numa-mode given and the live lineup is `both`".
-- [ ] **Stack-change gate catch-22 is undocumented.** The gate refuses a launch while live != config,
+- [x] **Stack-change gate catch-22 is undocumented.** ✅ 2026-08-11 — `mainD`, epyc-orchestrator
+      `a01a63a6`. The FATAL now names its own escape: retrying `start` cannot work, because the cure
+      for drift is a restart and the gate refuses the launch that would perform it — so
+      `stop --all` first, after which there is no live process to drift against. Message-only, no
+      behaviour change. Verified before writing rather than transcribed: the FATAL at
+      `stack_commands.py:255` did emit only the refusal, and `stop --all` exists
+      (`orchestrator_stack.py:2836`).
+      *Original filing:* The gate refuses a launch while live != config,
       but the only cure for live != config is a restart, which requires the launch. The escape is to
       `stop --all` FIRST so there is no live process to drift against. Nothing says this; the FATAL
       message does not mention it, and the obvious operator reaction (retry `start`) cannot work.
@@ -1992,7 +2005,23 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       chokepoint" `tier_specs.objectives_from` governs construction only. **A fifth scar in
       the same cluster**: no named-axis objective type, so every consumer re-derives the
       layout. Fixing it is the prerequisite for W3e (retiring the cost axis).
-- [ ] **The de-FABLE rename shipped broken operator-facing commands** — `model_gate_report.py`
+- [x] **The de-FABLE rename shipped broken operator-facing commands** ✅ follow-up audit done
+      2026-08-11 — `mainD`. **The class is real and it was still live, in the worst possible place.**
+      `handoffs/active/orchestration-robustness-audit-2026-07-11.md` carried **three
+      copy-pasteable commands under the P0.1 operator run/pause decision heading** pointing at
+      `start_fable_authority_daemon.py` and `fable5_gate_report.py` — neither exists. An operator
+      working that decision would have run three failing commands. Repointed to
+      `start_authority_daemon.py` / `model_gate_report.py`, **with the flags verified against the
+      current scripts first** (`--preflight` present; `--json --require-current-code --out-json
+      --strict` present) — presenting a command that fails is an agent defect by policy, so a
+      rename fix must not itself ship an unverified command.
+      **The discrimination is the finding.** ~120 further hits exist and NONE should be rewritten:
+      they are dated artifacts under `orchestration/reports/` and `lab_review_queue/` (records of
+      what was run at the time — editing them would falsify the record), historical `*.json`
+      artifact FILENAMES that a naive sweep would have renamed, narration of past work in `[x]`
+      rows, and one *correct* comment in `model_gate_report.py:32` explaining the rename. Live
+      runnable dead commands in `handoffs/active` after this: **0**.
+      *Original filing:* — `model_gate_report.py`
       emitted RECOVERY COMMANDS pointing at `start_fable_authority_daemon.py` and
       `fable5_gate_report.py`, neither of which exists, and two test modules could not be
       collected. Fixed in `81be1e56`. Open follow-up: audit remaining restated paths/commands

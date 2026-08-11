@@ -165,12 +165,20 @@ Full REPL error taxonomy extracted from `repl_tap.log` (4462 errors, 4280 `CALL(
 This packet is command-discovery and evidence packaging only. It does not authorize a running autonomous session to pause/resume AutoPilot, sign measurement-policy changes, rewrite the blacklist, or enable the planner spend breaker.
 
 - **P0.1 run/pause call:** inspect current-code and gate status before deciding:
-  - `cd /mnt/raid0/llm/epyc-orchestrator && python3 scripts/autopilot/start_fable_authority_daemon.py --preflight`
+  - `cd /mnt/raid0/llm/epyc-orchestrator && python3 scripts/autopilot/start_authority_daemon.py --preflight`
   - `cd /mnt/raid0/llm/epyc-orchestrator && python3 scripts/autopilot/autopilot_restart_advisor.py --json --strict`
-  - `cd /mnt/raid0/llm/epyc-orchestrator && uv run --with pyyaml python scripts/autopilot/fable5_gate_report.py --json --require-current-code`
+  - `cd /mnt/raid0/llm/epyc-orchestrator && uv run --with pyyaml python scripts/autopilot/model_gate_report.py --json --require-current-code`
   - Decision boundary: keep candidate species running only as an explicit operator choice while the rate-axis/P2 amendment remains unsigned; otherwise pause candidate species or let the preflight/reachability deferral route only promotion-independent work.
+- **Command paths repointed 2026-08-11 (`mainD`).** The three commands above pointed at
+  `start_fable_authority_daemon.py` and `fable5_gate_report.py`, **neither of which exists** — they
+  were renamed to `start_authority_daemon.py` and `model_gate_report.py` in the de-FABLE rename, and
+  this handoff kept the old spelling. An operator working the P0.1 decision would have run three
+  failing commands. Flags verified against the current scripts before rewriting, not assumed:
+  `start_authority_daemon.py` provides `--preflight`, and `model_gate_report.py` accepts `--json`,
+  `--require-current-code`, `--out-json` and `--strict`. Narration of past work below is left
+  spelled as it was — those sentences describe what happened, and only *runnable* lines were changed.
 - **P0.2 amendment bundle:** use the report-only evidence view, then sign outside AutoPilot:
-  - `cd /mnt/raid0/llm/epyc-orchestrator && uv run --with pyyaml python scripts/autopilot/fable5_gate_report.py --json --out-json orchestration/reports/p0_2_amendment_bundle_inputs_20260711.json --out-md orchestration/reports/p0_2_amendment_bundle_inputs_20260711.md --require-current-code`
+  - `cd /mnt/raid0/llm/epyc-orchestrator && uv run --with pyyaml python scripts/autopilot/model_gate_report.py --json --out-json orchestration/reports/p0_2_amendment_bundle_inputs_20260711.json --out-md orchestration/reports/p0_2_amendment_bundle_inputs_20260711.md --require-current-code`
   - Inspect `p0_2_amendment_bundle_inputs`: rate-axis state, latest oracle control-pair attestation, eval discriminability / T3 hard-lane coverage, RI-10 canary state, and `operator_signing_required`.
   - Boundary: this report is non-binding. Any rate-axis era fence, calibration baseline, frozen null, threshold, or P3 canary adoption remains a MEASUREMENT.md human-amendment action.
 - **P0.3 blacklist purge:** preview first, apply only with the explicit token:
