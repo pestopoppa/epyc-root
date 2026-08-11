@@ -40,6 +40,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-9 | Nothing restarts `hub_supervisor.sh` if it dies — cron `once` form vs leave as-is (host-level) | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |
 | OP-10 | P-GPU-1 `duty_cycle` amendment — field 4's "fresh server per rep" measures the **bursty** regime, not sustained serving; label it or author a sustained variant. Human-amendment-only (measurement trust boundary) | [autokernel-research-loop.md](autokernel-research-loop.md) §21 AK-OP-1 | 2026-08-10 |
 | OP-11 | Approve or decline the exact `llama.cpp-experimental` commit/push containing the sensitivity/oracle producers and Q4_K MMQ repair; producer-dependent evidence waits for a durable identity and fresh replay | [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md) RVP-C2-7 | 2026-08-11 |
+| OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
@@ -65,7 +66,7 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 54 | 399 | 3 | 2026-07-29 |
 | pipeline-integration | 5 | 51 | 0 | 2026-07-29 |
-| research-evaluation | 48 | 303 | 0 | 2026-07-29 |
+| research-evaluation | 48 | 304 | 0 | 2026-07-29 |
 | reviewer-control-plane | 9 | 41 | 1 | 2026-07-29 |
 | routing-and-optimization | 47 | 326 | 1 | 2026-07-29 |
 | user-facing-harness | 7 | 44 | 0 | 2026-07-29 |

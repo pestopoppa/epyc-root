@@ -394,6 +394,13 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       device claim, producer/source identity, and admitted receipt digest. Project those written rows
       through the existing measurement ladder; do not add a grading rule and do not back-fill the
       admitted 2026-08-11 r2 negative, which predates this hook.
+- [ ] SC23 **Wire future AutoKernel IQ2 fancy-SIMD screening and model-confirmation receipts on the
+      write side before the OP-12 follow-up run.** Emit separate lower-is-better op-time rows for the
+      exact IQ2_XXS `n=1` and `n=512` cells, plus explicit higher-is-better model TG/PP rows when
+      available, with scored-block bases, candidate/source/binary identities, device claim, and
+      admitted receipt digest. Project only producer-written rows through the existing measurement
+      ladder; do not add a grading rule and do not back-fill the admitted 2026-08-11 r5 screening
+      receipt, which predates this hook.
 
 ## Dependency notes
 

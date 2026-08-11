@@ -214,4 +214,21 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
   - [x] **Build a fail-closed Omniperf-v1 fallback runner for the IQ2 profiler boundary.** ✅ 2026-08-11 —
     it binds clean exact source/tool/Python identities, requires seeded repeated correctness before
     SQ/TCC collection, holds the MI210 claim, samples device state, and writes failure receipts.
-- [ ] Investigate the permanently-dead `z_HAVE_FANCY_SIMD` AVX512-VPOPCNTDQ IQ2 sign path on an EXPERIMENTAL branch only (production kernel is frozen; this is a CPU-side finding filed here for mechanism adjacency)
+- [x] Investigate the permanently-dead `z_HAVE_FANCY_SIMD` AVX512-VPOPCNTDQ IQ2 sign path on an EXPERIMENTAL branch only (production kernel is frozen; this is a CPU-side finding filed here for mechanism adjacency) ✅ 2026-08-11
+  - Globally reviving the historical branch was correctly rejected: a governed ten-block A/B at the
+    exact IQ2_XXS `m=4096,k=14336` shapes improved `n=1` by **+5.753%** median but regressed `n=512`
+    by **-9.511%** median. The kill switch therefore encoded a real prompt-processing tradeoff, not a
+    typo. Global-candidate receipt:
+    `/mnt/raid0/llm/autokernel/probes/inf37-iq2-fancy-simd-ab-v9-20260811-r4/receipt.json`, SHA-256
+    `242cb61b122b39324316d020d1a2a4bc4be4c17ec3008a66f5ecaf7a2a7c2a91`.
+  - A one-row-only template dispatch preserves the arithmetic VPOPCNT sign decoder exclusively for
+    `kernels[0]` while every multi-row kernel keeps the table decoder. Native correctness passed
+    **44/44** supported IQ2_XXS matmul cases plus the full quantization-function suite; the AVX2-only
+    fallback compiled. In the fresh governed replay, `n=1` improved **+5.733%** median across all ten
+    blocks (range **+5.325% to +6.027%**) while `n=512` returned to parity at **+0.020%** median
+    (range **-0.117% to +0.219%**). Receipt:
+    `/mnt/raid0/llm/autokernel/probes/inf37-iq2-fancy-simd-ab-v9-20260811-r5/receipt.json`, SHA-256
+    `12dc4d95a8b208f97ce8c82ab7917f4e6aa28872a90c5fc85f15b72f07fa73ea`; candidate diff SHA-256
+    `c24892485af0bddedc641b4ae764302a3c7dc070ed2d765c8e820c01f680b470` against frozen v9
+    `0db32c06e3e550065b78311a6031ef3dd2c4f27c`.
+- [ ] With OP-12 approval, commit the one-file IQ2_XXS one-row dispatch and run matched model-level TG/PP confirmation before any promotion claim.

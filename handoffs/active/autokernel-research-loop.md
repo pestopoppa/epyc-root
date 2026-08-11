@@ -24,8 +24,10 @@ frozen v9 plus the hardened measurement overlay. The operator authorized all com
 for this session on 2026-08-11, but two measurement gates remain: explicit operator approval for the
 two experimental commits that seal the receipt-emitting hardened instrument, and a privileged
 measurement window (or temporary readable `energy_uj` permission, restored to `0400` afterward).
-The
-AK-LN-2/AK-X-5a calibration has now rejected every historical CPU split depth as a general ranking
+INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
+VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
+Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
+The AK-LN-2/AK-X-5a calibration has now rejected every historical CPU split depth as a general ranking
 proxy, so that first campaign must verify on the full host unless a narrower change-class calibration
 later passes. AK-BH-3 found that the implicit CPU flash-attention default behaves like the fast
 explicit-ON arm on the measured 0.5B Q4_K_M surface, but the choice must still be explicit. AK-BH-4
