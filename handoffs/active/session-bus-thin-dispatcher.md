@@ -1795,6 +1795,30 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   a threshold as historical, and a spawn records a mark so pre-spawn mail is labelled as predating
   this session. Cheap, and it does not require the daemon to change what it delivers.
 
+- [ ] **C41 (NEW) — `backlog_row_check.section_is_guarded` answers a SECTION question about a BOX,
+  and is wrong in both directions.** Filed 2026-08-11 by `auditor`, corroborated independently by
+  `mainC`. The predicate takes the nearest preceding `#` heading and returns one blanket bool for
+  everything under it, so a banner that guards *enumerated* boxes silently guards the whole section:
+  - **False REFUSAL** — every row in such a section is reported undispatchable, withholding genuinely
+    ready work. `mainC` measured this inflating corruption counts; 6 false positives adjudicated
+    (`msg-20260811T092254Z-131-mainC`).
+  - **False PERMIT, and it is the worse one** — a standing-constraint box NOT covered by the
+    enumeration is treated as guarded, so every repair pass *skips* it. Live instance: the **seventh**
+    box under `model-stack-single-source-update-pipeline.md:320`, whose banner reads *"THESE SIX
+    BOXES ARE STANDING CONSTRAINTS"*. It survived two repair sweeps including `e43c8c27` for exactly
+    this reason. **A guard that trusts an enumeration is passed by not being enumerated.**
+  Fix direction, concrete: parse the count out of an enumerating banner (`THESE <N> BOXES`) and scope
+  the guard to the N checkboxes that follow it; a banner with no enumeration keeps today's
+  whole-section scope. `section_is_guarded` becomes `box_is_guarded(path, lineno)`.
+  - [ ] **Expect this to surface a DOC defect, and do not paper over it.** Under the fix, the
+    seventh box at `model-stack-single-source-update-pipeline.md:320` correctly reports as
+    UNGUARDED — because the banner says six and there are seven. The tool will then be right and the
+    document wrong. The repair is to the banner (or the box), by its owner; **do not widen the
+    predicate to keep that box covered**, which would restore the false-permit under a new name.
+  - [ ] **Test the compliant path too.** The enumerated boxes must stay guarded, and the rows after
+    them in the same section must become dispatchable — "scope it to the enumeration" is otherwise
+    satisfied by guarding nothing, which deletes the guard rather than scoping it.
+
 ## Decision gates
 
 - `OP-SENDKEYS-CODEX` (send-keys nudging) — operator grant, evidence-driven, default OFF.
