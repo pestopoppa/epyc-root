@@ -98,6 +98,9 @@ the full AutoKernel suite passes 3,923 tests with one expected failure. The C2-8
 implementation-only non-evidence: two selected ROCm0 `SOFT_MAX` rows passed each mode, with claim
 acquisition/release and four samples, but no durable receipt. The next live action remains §AK6.5
 Step 3's known-real CPU candidate, while producer-dependent correctness evidence waits on OP-11.
+The same gate now applies to INF-37's IQ2 profiler fallback: the Omniperf/rocprof-v1 runner is durable,
+but frozen v9 lacks its required seeded/repeated producer flags. Its failed compatibility receipt is
+evidence of the instrument boundary only; a passing IQ2 counter capture waits on OP-11 and replay.
 The run-specific CPU/GPU authorizations do not extend to producer commits, promotion, or freeze
 actions. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.

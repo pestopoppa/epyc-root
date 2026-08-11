@@ -128,11 +128,15 @@ from `$ROCM_PATH`, so the prefix needs a mirrored `.info/version`. Both are hand
   mapping/formal reports, and the report now crosses a diagnostic-only AutoKernel/GEAK/Arena seam.
   Residual MED risk is explicitly scoped: `rocprofv2` exits 139 for whole-model Qwen prefill and
   IQ2_XXS op capture on this host, so those workloads require another profiler or a narrower probe.
-- `omniperf` extracted but **not runnable** — needs a Python venv (`astunparse`, `colorlover`, …).
-  Deferred deliberately: our chosen C4 path is the deterministic paired-`rocprofv2` report, so omniperf is a
-  fallback, not the critical path. Reopen if the raw-counter path fails
-- **Standing caveat unchanged by any of this**: `rocprof` v1's SQ/TA counters read ZERO on this box and
-  it aborts at init on graph-enabled builds. Use `rocprofv2`
+- `omniperf` 2.0.1 is now runnable through a sealed Python environment and `rocprof` v1. A manual
+  IQ2_XXS smoke produced 260 dispatch rows, proving fallback reachability, but is non-evidence. The
+  governed fallback runner fails closed because frozen v9 lacks its seeded/repeated producer flags;
+  the passing evidence replay waits on OP-11. The deterministic paired-`rocprofv2` report remains C4's
+  primary path; Omniperf is the measured IQ2 crash-boundary fallback.
+- **Standing caveat, now narrowed**: direct `rocprof` v1 whole-model SQ/TA captures read zero and it
+  aborts at init on graph-enabled builds. The Omniperf op smoke had nonzero `SQ_WAIT_ANY` and TCC
+  request/miss totals but zero VALU/VMEM/hit fields, so treat it as a partial diagnostic until the
+  seeded runner passes; use `rocprofv2` for the established C4 surfaces.
 - Having the tool does **not** authorize profiling a live server — co-residency is owned by whoever
   owns that inference. **Corrected 2026-08-10 (operator):** the rest of this line used to read "GPU runs
   remain operator-approved", which is wrong as a blanket. P-GPU-1 governs the **class of claim**, not

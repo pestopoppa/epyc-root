@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds the AutoKernel Q4_K MMQ root cause/fix, historical expert ceiling, and oracle-integrity boundary; prior sensitivity, baseline-honesty, C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-11 (adds the INF-37 Omniperf-v1 compatibility boundary; prior Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
 **Sources**: 96+ documents
 
 ## Compiled Update — 2026-08-11 (Q4_K MMQ correction and expert ceiling)
@@ -30,6 +30,13 @@ Hostile same-shape distributions and checker isolation are now durable research 
 two-case ROCm smoke is non-evidence: the producer is uncommitted and no receipt was retained. The
 smoke showed both modes passing 2/2 selected `SOFT_MAX` rows with claim release and four samples;
 campaign evidence waits for an operator-approved producer identity and fresh replay.
+
+INF-37's alternative IQ2 profiler path is now instrumented but not yet evidence-bearing. A manual
+Omniperf 2.0.1 / `rocprof` v1 smoke reached gfx90a and produced 260 dispatch rows, while the governed
+runner retained a clean failure receipt: frozen-v9 `test-backend-ops` lacks the required
+`--suite-seed` and `--repeat-suite` flags, so it refused before profiling. This separates tool
+reachability from a reproducible counter claim. The seeded IQ2 capture remains open until the
+experimental producer obtains an operator-approved durable identity and the same runner passes.
 
 ## Compiled Update — 2026-08-11 (AutoKernel input-sensitivity boundary)
 

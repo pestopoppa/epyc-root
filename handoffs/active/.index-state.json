@@ -1064,14 +1064,14 @@
     },
     "mi210-q8-dequant-gemv-roofline.md": {
       "blocked": 0,
-      "closed": 6,
+      "closed": 7,
       "guarded": 0,
       "last_advanced": "2026-08-03",
       "open": 8,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-37",
       "state": "active",
-      "total": 14
+      "total": 15
     },
     "minddr-deep-research-mode.md": {
       "blocked": 0,
@@ -2659,7 +2659,7 @@
       "id": "INF-37",
       "index": "inference-research-index.md",
       "line": 46,
-      "next_action": "Apply the SoA-repack lever only if coalescing measures poor; currently deemed healthy",
+      "next_action": "After OP-11 commits the seeded producer, rerun the IQ2_XXS Omniperf-v1 fallback and retain a passing receipt",
       "track": "mi210 q8 dequant gemv roofline"
     },
     "INF-39": {
