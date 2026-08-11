@@ -433,6 +433,12 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       `epyc.autokernel.profile_beliefs.v1` schema through the existing measurement ladder; 16 rows
       from four current artifacts project end to end. This is a new hash-bound derived receipt, not a
       mutation or prose reconstruction of the source evidence.
+- [x] SC26 **Wire the P2-5j placement receipt prospectively before its first real campaign.** ✅
+      2026-08-11 — research `f17116de` emits 16 self-hashed rows covering decode throughput,
+      p50/p95 latency, and paired ratio for all four arms with ten scored blocks and exact claim
+      identities. Root's auxiliary adapter re-derives every value, row digest, arm/topology field,
+      and receipt digest while preserving the observation-only no-selection/no-speedup/no-carve/
+      no-activation boundary. No grading rule was added and no historical result was back-filled.
 
 ## Dependency notes
 

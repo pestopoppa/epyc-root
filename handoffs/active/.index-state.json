@@ -769,7 +769,7 @@
       "blocked": 0,
       "closed": 37,
       "guarded": 0,
-      "last_advanced": "2026-07-31",
+      "last_advanced": "2026-08-11",
       "open": 25,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-22",
@@ -1834,14 +1834,14 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 43,
+      "closed": 44,
       "guarded": 0,
       "last_advanced": "2026-08-11",
       "open": 13,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 56
+      "total": 57
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -2390,7 +2390,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "Resolve OP-11; run the first full-host IQK CPU candidate through T0\u2013T3 and retain its validated package",
+      "next_action": "Resolve OP-11 + OP-14; run the first full-host IQK CPU candidate through T0\u2013T3 and retain its validated package",
       "track": "autokernel research loop"
     },
     "INF-07": {

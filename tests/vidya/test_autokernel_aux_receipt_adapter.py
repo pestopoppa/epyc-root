@@ -36,6 +36,84 @@ def receipt(*, measurements=True, status="passed"):
     return value
 
 
+def p2_receipt():
+    shape = {"np_slots": 8, "slot_context_tokens": 8192,
+             "total_context_tokens": 65536, "mtp": False}
+    summaries = {}
+    measurements = []
+    for arm, (cpu_list, cpu_region, numa_node, relation, role, category) in (
+            aux._P2_ARMS.items()):
+        factor = {"I": 1.0, "H": 1.01, "Lp": 1.03, "Ls": 1.0}[arm]
+        samples = []
+        for block in range(10):
+            samples.append({
+                "sample_id": f"sample-{block}-{arm}",
+                "aggregate_decode_tps": (100.0 + block) * factor,
+                "p50_latency_ms": 1000.0 - block,
+                "p95_latency_ms": 1200.0 - block,
+                "cpu_claim": {"opened": {"claim_id": f"cpu-{block}-{arm}"}},
+                "device_claim": {"opened": {"claim_id": f"gpu-{block}-{arm}"}},
+            })
+        decode = [sample["aggregate_decode_tps"] for sample in samples]
+        p50 = [sample["p50_latency_ms"] for sample in samples]
+        p95 = [sample["p95_latency_ms"] for sample in samples]
+        ratios = [factor] * 10
+        summaries[arm] = {
+            "cpu_list": cpu_list, "cpu_region": cpu_region,
+            "numa_node": numa_node, "relation": relation, "role": role,
+            "n": 10, "median_decode_tps": sum(decode[4:6]) / 2,
+            "median_p50_latency_ms": sum(p50[4:6]) / 2,
+            "median_p95_latency_ms": sum(p95[4:6]) / 2,
+            "paired_ratios_to_incumbent": ratios,
+            "median_paired_ratio_to_incumbent": factor,
+            "samples": samples,
+        }
+        common = {
+            "measurement_surface": "p2_5j_four_arm_host_thread_placement",
+            "arm": arm, "arm_role": role, "cpu_list": cpu_list,
+            "cpu_region": cpu_region, "numa_node": numa_node,
+            "relation": relation, "device_id": "mi210_0", "shape": shape,
+            "authority": aux._P2_AUTHORITY,
+            "placement_selection_authority": False,
+            "kernel_speedup_authority": False, "carve_authority": False,
+            "production_activation_authority": False,
+            "sample_ids": [sample["sample_id"] for sample in samples],
+            "cpu_claim_ids": [sample["cpu_claim"]["opened"]["claim_id"]
+                              for sample in samples],
+            "device_claim_ids": [sample["device_claim"]["opened"]["claim_id"]
+                                 for sample in samples],
+        }
+        for suffix, (metric, unit, direction, summary_key, sample_key,
+                     measurement_role) in aux._P2_METRICS.items():
+            values = ratios if suffix == "paired_ratio_to_incumbent" else [
+                sample[sample_key] for sample in samples]
+            row = {
+                "measurement_id": f"p2_5j_{arm.lower()}_{suffix}",
+                "metric": metric, "value": summaries[arm][summary_key], "unit": unit,
+                "metric_direction": direction, "category": category, "reps": 10,
+                "reps_basis": aux._P2_REPS_BASIS,
+                "claim": f"fixture P2-5j {arm} {suffix}; observation only",
+                "extra": {**common, "measurement_role": measurement_role,
+                          "block_values": values, "aggregation": "median"},
+            }
+            if suffix == "paired_ratio_to_incumbent":
+                row["extra"]["incumbent_arm"] = "I"
+            row["measurement_sha256"] = aux._canonical_sha256(row)
+            measurements.append(row)
+    value = {
+        "schema": aux._P2_SCHEMA, "status": "passed",
+        "authority": aux._P2_AUTHORITY, "campaign_id": "p2-5j-successor",
+        "ended_at": "2026-08-12T02:00:00Z",
+        "producer": {"producer_id": aux._P2_PRODUCER,
+                     "path": aux._P2_PRODUCER_PATH, "sha256": "9" * 64},
+        "identity": {"device": {"device_id": "mi210_0"}},
+        "shape": shape, "arm_summaries": summaries,
+        "belief_measurements": measurements,
+    }
+    value["receipt_sha256"] = aux._canonical_sha256(value)
+    return value
+
+
 def q4k_receipt():
     campaign = "inf37-q4k-unpack-successor-r8"
     producer_sha = "a" * 64
@@ -669,6 +747,43 @@ def test_profile_finalizer_rows_use_the_same_measurement_ladder():
     assert projected.metric_direction == "lower_better"
     assert projected.extra["kernel_family"] == "mul_mat_vec_q"
     assert ct.grade(projected)[:2] == ("Witnessed", "Attested")
+
+
+def test_p2_5j_rows_project_without_acquiring_placement_authority():
+    source = p2_receipt()
+    rows = aux.native_rows(
+        source, receipt_locator="probe:p2-5j/receipt.json",
+        receipt_sha256="8" * 64, attestation_present=True)
+    assert len(rows) == 16
+    tuples = [aux.project(row) for row in rows]
+    assert {tup.metric_direction for tup in tuples} == {
+        "higher_better", "lower_better"}
+    assert all(tup.protocol_id == aux._P2_SCHEMA for tup in tuples)
+    assert all(tup.extra["placement_selection_authority"] is False for tup in tuples)
+    assert all(tup.extra["kernel_speedup_authority"] is False for tup in tuples)
+    assert all(ct.grade(tup)[:2] == ("Witnessed", "Attested") for tup in tuples)
+
+
+def test_p2_5j_authority_or_measurement_tamper_is_refused():
+    authority = p2_receipt()
+    authority["belief_measurements"][0]["extra"]["placement_selection_authority"] = True
+    authority["belief_measurements"][0].pop("measurement_sha256")
+    authority["belief_measurements"][0]["measurement_sha256"] = aux._canonical_sha256(
+        authority["belief_measurements"][0])
+    authority.pop("receipt_sha256")
+    authority["receipt_sha256"] = aux._canonical_sha256(authority)
+    with pytest.raises(ct.ProjectionError, match="identity or authority"):
+        aux.native_rows(authority)
+
+    value = p2_receipt()
+    value["belief_measurements"][0]["value"] += 1.0
+    value["belief_measurements"][0].pop("measurement_sha256")
+    value["belief_measurements"][0]["measurement_sha256"] = aux._canonical_sha256(
+        value["belief_measurements"][0])
+    value.pop("receipt_sha256")
+    value["receipt_sha256"] = aux._canonical_sha256(value)
+    with pytest.raises(ct.ProjectionError, match="rederive"):
+        aux.native_rows(value)
 
 
 def test_failed_receipt_cannot_smuggle_measurements():

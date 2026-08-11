@@ -148,6 +148,8 @@ config change with a rehearsed rollback, never a rebuild.
     released CPU/GPU claims, recomputes all four arm summaries, and emits a self-hashed
     observation-only receipt. `placement_context.py` preserves every arm and the no-selection,
     no-speedup, no-carve, no-activation boundary in AutoKernel G1; it never imports only a leader.
+    Research `5f5d2b1a` delivered the finalizer/context seam and `f17116de` added 16 prospective
+    belief rows; root projects them only through the shared ladder.
   - [ ] **P2-5j decision-bearing successor protocol.** Human trust-boundary action required:
     ratify a P2-5j-specific amendment or pre-register an execution that satisfies the existing
     P-BENCH-PLACEMENT-1 A0–A4, np=1-anchor, cache-pairing, and measured-locality gates in full.

@@ -33,6 +33,7 @@ SOURCE_SCHEMAS = frozenset({
     "epyc.inf37.iq2_fancy_simd_ab.v1",
     "epyc.autokernel.q4k_unpack_attribution.v1",
     "epyc.autokernel.iq2_xxs_model_confirmation.v1",
+    "epyc.autokernel.p2_5j_placement_receipt.v1",
 })
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _COMMIT = re.compile(r"^[0-9a-f]{40}$")
@@ -71,6 +72,37 @@ _IQ2_RECEIPT_IDENTITY_FIELDS = (
     "runner_id", "registry_id", "arm", "binary_path", "binary_sha256",
     "binary_size", "source_root", "library_path",
 )
+_P2_SCHEMA = "epyc.autokernel.p2_5j_placement_receipt.v1"
+_P2_PRODUCER = "scripts.benchmark.autokernel_p2_5j_receipt/v1"
+_P2_PRODUCER_PATH = "scripts/benchmark/autokernel_p2_5j_receipt.py"
+_P2_AUTHORITY = (
+    "observation_only_placement_context_no_selection_speedup_carve_or_activation")
+_P2_REPS_BASIS = "scored:ten randomized complete four-arm placement blocks"
+_P2_ARMS = {
+    "I": ("184-191", "q3", 3, "cross_node", "incumbent", "BASELINE"),
+    "H": ("88-95", "q3", 3, "cross_node", "historical_physical", "BASELINE"),
+    "Lp": ("40-47", "q1", 1, "device_local", "local_physical", "CANDIDATE"),
+    "Ls": ("136-143", "q1", 1, "device_local", "local_smt", "CANDIDATE"),
+}
+_P2_METRICS = {
+    "decode_tps": (
+        "aggregate_decode_tokens_per_second", "tokens/s", "higher_better",
+        "median_decode_tps", "aggregate_decode_tps", "placement_observation",
+    ),
+    "p50_latency_ms": (
+        "request_latency_p50_ms", "ms", "lower_better",
+        "median_p50_latency_ms", "p50_latency_ms", "placement_observation",
+    ),
+    "p95_latency_ms": (
+        "request_latency_p95_ms", "ms", "lower_better",
+        "median_p95_latency_ms", "p95_latency_ms", "placement_observation",
+    ),
+    "paired_ratio_to_incumbent": (
+        "paired_decode_ratio_to_incumbent", "ratio", "higher_better",
+        "median_paired_ratio_to_incumbent", "paired_ratios_to_incumbent",
+        "placement_comparison",
+    ),
+}
 
 
 def _canonical_sha256(value: Any) -> str:
@@ -293,6 +325,112 @@ def _validate_q4k_measurements(receipt: dict, measurements: list[dict]) -> None:
                 or not math.isfinite(value)
                 or float(value) != float(statistics.median(values))):
             raise ProjectionError("Q4_K measurement value is not the median counter-basis value")
+
+
+def _validate_p2_measurements(receipt: dict, measurements: list[dict]) -> None:
+    """Re-derive the prospective P2-5j rows without granting placement authority."""
+    if receipt.get("authority") != _P2_AUTHORITY:
+        raise ProjectionError("P2-5j receipt changed its observation-only authority")
+    producer = receipt.get("producer")
+    if (not isinstance(producer, dict)
+            or producer.get("producer_id") != _P2_PRODUCER
+            or producer.get("path") != _P2_PRODUCER_PATH):
+        raise ProjectionError("P2-5j receipt names a different producer")
+    _sha(producer.get("sha256"), "producer.sha256")
+    logical = dict(receipt)
+    stored_receipt_sha = logical.pop("receipt_sha256", None)
+    if _sha(stored_receipt_sha, "receipt.receipt_sha256") != _canonical_sha256(logical):
+        raise ProjectionError("P2-5j receipt_sha256 does not bind the logical receipt")
+    summaries = receipt.get("arm_summaries")
+    shape = receipt.get("shape")
+    identity = receipt.get("identity")
+    if (not isinstance(summaries, dict) or set(summaries) != set(_P2_ARMS)
+            or shape != {"np_slots": 8, "slot_context_tokens": 8192,
+                         "total_context_tokens": 65536, "mtp": False}
+            or not isinstance(identity, dict)
+            or not isinstance(identity.get("device"), dict)):
+        raise ProjectionError("P2-5j receipt lacks its exact four-arm shape/identity")
+    device_id = identity["device"].get("device_id")
+    if not isinstance(device_id, str) or not device_id:
+        raise ProjectionError("P2-5j receipt lacks device identity")
+    expected_ids = {
+        f"p2_5j_{arm.lower()}_{suffix}"
+        for arm in _P2_ARMS for suffix in _P2_METRICS
+    }
+    if (len(measurements) != len(expected_ids)
+            or {row.get("measurement_id") for row in measurements
+                if isinstance(row, dict)} != expected_ids):
+        raise ProjectionError("P2-5j receipt must carry the exact sixteen placement rows")
+    for row in measurements:
+        unsigned = dict(row)
+        stored_measurement_sha = unsigned.pop("measurement_sha256", None)
+        if _sha(stored_measurement_sha, "measurement.measurement_sha256") != _canonical_sha256(
+                unsigned):
+            raise ProjectionError("P2-5j measurement_sha256 does not bind its row")
+        arm = next((candidate for candidate in _P2_ARMS
+                    if row["measurement_id"].startswith(
+                        f"p2_5j_{candidate.lower()}_")), None)
+        if arm is None:
+            raise ProjectionError("P2-5j measurement id has an unknown arm")
+        suffix = row["measurement_id"][len(f"p2_5j_{arm.lower()}_"):]
+        if suffix not in _P2_METRICS:
+            raise ProjectionError("P2-5j measurement id has an unknown metric")
+        metric, unit, direction, summary_key, sample_key, role = _P2_METRICS[suffix]
+        cpu_list, cpu_region, numa_node, relation, arm_role, category = _P2_ARMS[arm]
+        summary = summaries[arm]
+        if not isinstance(summary, dict):
+            raise ProjectionError("P2-5j arm summary must be an object")
+        samples = summary.get("samples")
+        if (summary.get("n") != 10 or not isinstance(samples, list)
+                or len(samples) != 10):
+            raise ProjectionError("P2-5j arm must contain ten scored samples")
+        values = (summary.get(sample_key) if suffix == "paired_ratio_to_incumbent"
+                  else [sample.get(sample_key) for sample in samples
+                        if isinstance(sample, dict)])
+        if (not isinstance(values, list) or len(values) != 10
+                or any(isinstance(value, bool) or not isinstance(value, (int, float))
+                       or not math.isfinite(value) for value in values)):
+            raise ProjectionError("P2-5j measurement lacks ten finite block values")
+        expected_value = float(statistics.median(values))
+        if (row.get("metric") != metric or row.get("unit") != unit
+                or row.get("metric_direction") != direction
+                or row.get("category") != category
+                or row.get("reps") != 10 or row.get("reps_basis") != _P2_REPS_BASIS
+                or float(row.get("value")) != expected_value
+                or float(summary.get(summary_key)) != expected_value):
+            raise ProjectionError("P2-5j measurement does not rederive from its arm summary")
+        extra = row.get("extra")
+        if not isinstance(extra, dict):
+            raise ProjectionError("P2-5j measurement.extra must be an object")
+        expected_common = {
+            "measurement_surface": "p2_5j_four_arm_host_thread_placement",
+            "arm": arm, "arm_role": arm_role, "cpu_list": cpu_list,
+            "cpu_region": cpu_region, "numa_node": numa_node,
+            "relation": relation, "device_id": device_id, "shape": shape,
+            "authority": _P2_AUTHORITY, "placement_selection_authority": False,
+            "kernel_speedup_authority": False, "carve_authority": False,
+            "production_activation_authority": False,
+            "measurement_role": role, "block_values": values,
+            "aggregation": "median",
+        }
+        if any(extra.get(key) != value for key, value in expected_common.items()):
+            raise ProjectionError("P2-5j measurement changes identity or authority")
+        if suffix == "paired_ratio_to_incumbent" and extra.get("incumbent_arm") != "I":
+            raise ProjectionError("P2-5j paired ratio must name incumbent arm I")
+        for field, nested in (("sample_ids", "sample_id"),
+                              ("cpu_claim_ids", "cpu_claim"),
+                              ("device_claim_ids", "device_claim")):
+            observed = extra.get(field)
+            if not isinstance(observed, list) or len(observed) != 10:
+                raise ProjectionError(f"P2-5j measurement lacks ten {field}")
+            if nested == "sample_id":
+                expected = [sample.get(nested) for sample in samples]
+            else:
+                expected = [sample.get(nested, {}).get("opened", {}).get("claim_id")
+                            for sample in samples]
+            if observed != expected or any(not isinstance(value, str) or not value
+                                           for value in observed):
+                raise ProjectionError(f"P2-5j measurement {field} differs from samples")
 
 
 def _iq2_mapping(value: Any, path: str) -> dict:
@@ -860,6 +998,8 @@ def native_rows(receipt: dict, *, receipt_locator: str = "",
         raise ProjectionError("a failed auxiliary receipt cannot carry belief measurements")
     if receipt.get("schema") == _Q4K_SCHEMA:
         _validate_q4k_measurements(receipt, measurements)
+    if receipt.get("schema") == _P2_SCHEMA:
+        _validate_p2_measurements(receipt, measurements)
     return tuple({
         "receipt": receipt,
         "measurement": measurement,
