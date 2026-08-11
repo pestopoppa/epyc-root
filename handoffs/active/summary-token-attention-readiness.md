@@ -5,7 +5,7 @@
 **Updated**: 2026-07-26 (activation gates reviewed; no gate fired)
 **Categories**: kv_cache, context_extension, context_management, ssm_hybrid, training_distillation
 **Workstream**: Inference Acceleration
-**Parent index**: [`inference-research-index.md`](inference-research-index.md)
+**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Related**:
 - [`multiscreen-attention-evaluation.md`](multiscreen-attention-evaluation.md) — sub-quadratic attention survey, intake-502 + intake-507 documented under same-day-expansion sub-section
 - [`log-linear-gated-deltanet-readiness.md`](log-linear-gated-deltanet-readiness.md) — sibling readiness tracker (template for this stub)

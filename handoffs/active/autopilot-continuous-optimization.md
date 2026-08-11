@@ -1,14 +1,12 @@
 # AutoPilot: Continuous Recursive Optimization
 
 > **Current checkpoint — 2026-08-10.** AutoPilot is intentionally stopped and inference resources have
-> been handed back to the operator. Clean execution-instrument-v10 incumbent evidence is ratified for
+> been handed back to the operator. Clean execution-instrument-v10 incumbent evidence is sealed for
 > T1=100 (`q=1.500`), T2=500 (`q=1.356`), and T3=160 (`q=1.275`), each at reliability `1.000` and zero
-> error rows. The operator applied the atomic E16 ratifier; receipt
-> [`ratify_multitier_baseline_v10_20260810.json`](../../artifacts/operator/ratify_multitier_baseline_v10_20260810.json)
-> records `ratified_and_applied`, no AutoPilot start, and no model-server change. The verified
-> `production_best` checkpoint SHA-256 is `c60364f1295a931a4b4e806d4dffd2138696537f49b15a3a6881c50737c02b19`.
-> Next active work is AP-50's decision cockpit; any later AutoPilot restart still requires separate
-> explicit permission.
+> error rows. Orchestrator `8e147213` contains the single human-gated, atomic ratifier; its no-write
+> prevalidation passes against exact artifact, source, recode, and state-preimage hashes. Next: the
+> operator runs that one final ratifier when convenient. It does not start AutoPilot or model servers;
+> any later AutoPilot restart still requires separate explicit permission.
 
 **Resume-precondition — 2026-07-17 (non-inference session diagnosis)**: the ~28h stop on 2026-07-16 was a **DELIBERATE `SIGTERM`** to free the machine for v7 kernel work (`autopilot.log` `Shutdown requested (signal 15)` → `Controller failed (rc=143)`; `agent_audit.log` logs *"Audit experimental v7 kernel worktree … while AutoPilot remains stopped"* seconds later). It is **NOT** a `consecutive_failures` self-halt — `consecutive_failures=2 < safety_gate.MAX_CONSECUTIVE_FAILURES=3` (`safety_gate.py:107`); the persisted `_dispatch_deficiency='consecutive_failures'` marker is stale + self-clearing (`autopilot.py:8687` unconditional pop on `resume`). **No wedge to clear.** Before resuming:
 - [x] Bring the `:8000` stack up + verify HEALTHY first (a resume against a dead stack fails every dispatch). ✅ 2026-08-08 — E15 serving and API readiness were verified before the supervised run; subsequent work stops AutoPilot without tearing down the resident stack.
@@ -580,10 +578,6 @@ Three "Research Intake Update" sections have surfaced **scoring-mechanism** upgr
 2. ~~**GEPA integration** (intake-240)~~: **PROMOTED to P10** (2026-04-12). Deep-dive confirmed GEPA works with local inference, 35x cheaper than GRPO, 3-example minimum. No longer needs to wait for AR-3 PromptForge limitations — GEPA is strictly better.
 3. **Hard-negative training data** (intake-176): Contrastive negatives for routing classifier. Only relevant when 500+ memories exist for retraining.
 4. ~~**Git worktree isolation for PromptForge**~~: ✅ 2026-04-05. Implemented `worktree_manager.py` with `WorktreeManager` + `ExperimentContext`. Auto-reject safety default prevents corruption incidents like AR-3 trial ~25.
-   - [x] **Exact-preimage rollback repair.** ✅ 2026-08-10 — rejection used to write the saved
-     in-memory preimage and immediately erase it with `git checkout -- <path>`, destroying a dirty
-     operator/parallel-session edit. It now restores exact bytes, distinguishes empty from absent,
-     and has focused regression coverage for all three states.
 5. **Convention locking** (intake-150): Lock baseline parameters from species modification. Premature without more trials.
 
 ### Design considerations (no implementation needed)

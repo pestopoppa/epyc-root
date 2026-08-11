@@ -33,7 +33,7 @@ Attempted the full #22673 cherry-pick + resolved all 25 conflicts (spec subsyste
 
 **#22400 (GDN seq_rm) note**: its commit was resolved forward-compat toward #22673 so it does NOT build standalone (references `DRAFT_MTP`). Since #22673 is shelved, if the GDN backend is ever wanted standalone, re-cherry-pick #22400 resolving its 2 conflicts to the OURS side (drop the MTP-context glue). No current consumer.
 **Categories**: speculative_decoding, hardware_optimization, local_inference
-**Parent**: [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) · [`inference-research-index.md`](inference-research-index.md)
+**Parent**: [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) · [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Work location**: `/mnt/raid0/llm/llama.cpp-experimental`, branch `feature/mtp-qwen36-port` (NEVER production `/mnt/raid0/llm/llama.cpp`).
 
 ## Objective

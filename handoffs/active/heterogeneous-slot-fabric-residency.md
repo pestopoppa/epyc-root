@@ -151,7 +151,7 @@ before any carve is minted.
 - Parent (reuse): `src/backends/concurrency_aware.py` (`ConcurrencyAwareBackend`), `ContentionGate`, `scripts/server/stack_numa.py` (`NUMA_CONFIG`), the KV-migration transaction (WP-3/WP-4), `src/metrics/migration_counters.py` — all in [within-role-placement-state-machine.md](within-role-placement-state-machine.md).
 - Lifecycle: `epyc-orchestrator/scripts/server/orchestrator_stack.py` (Layer-2 actuator home).
 - Parameterizing input: [batched-decode-measurement.md](batched-decode-measurement.md) **E5**.
-- Related: [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) (teleport AXA / residency ladder), [architect-model-selection-bench.md](architect-model-selection-bench.md) (GPU-only-architect deployment cost), [inference-research-index.md](inference-research-index.md) (dispatch).
+- Related: [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) (teleport AXA / residency ladder), [architect-model-selection-bench.md](architect-model-selection-bench.md) (GPU-only-architect deployment cost), [inference-acceleration-index.md](inference-acceleration-index.md) (dispatch).
 
 ## Reporting
 On any phase: flip its `- [ ]`, record the measured constant (E5 provisioning, C for N-dwell, allowlist

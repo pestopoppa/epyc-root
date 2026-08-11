@@ -6,7 +6,7 @@
 **Effort**: Low-Medium (base arch ~350 LOC; DFlash spec path is included in the v8 carrying work, with enablement separately gated)
 **Categories**: local_inference, moe_optimization, speculative_decoding, quantization, hardware_optimization
 **Source**: intake-879 (poolside launch blog) + intake-880 (GGUF model card) + Stage-2 deep-dive 2026-07-22
-**Parent index**: [`inference-research-index.md`](inference-research-index.md)
+**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Related**:
 - [`iqk-iquant-enablement.md`](iqk-iquant-enablement.md) — Laguna UD-IQ2_M IQ-quant acceleration (already-coded branch; add Laguna as 5th beneficiary)
 - [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) — the DFlash draft-dflash spec path + accept-rate bench
@@ -128,4 +128,4 @@ q8_0 model arithmetic error. Remaining items:
 
 ## Notes
 
-Laguna evidence includes both poolside self-reported observations and the local exact-tip GPU KV artifact above; neither is decision-grade or a production-enable gate under MEASUREMENT.md. The iqk (Laguna UD-IQ2_M beneficiary), DFlash (accept-rate bench + draft-dflash port), and architect-bench rows live in the linked handoffs and are cross-indexed under the "Laguna S 2.1 experimental-kernel cluster" in [`inference-research-index.md`](inference-research-index.md) so the whole cluster can be tackled in one session.
+Laguna evidence includes both poolside self-reported observations and the local exact-tip GPU KV artifact above; neither is decision-grade or a production-enable gate under MEASUREMENT.md. The iqk (Laguna UD-IQ2_M beneficiary), DFlash (accept-rate bench + draft-dflash port), and architect-bench rows live in the linked handoffs and are cross-indexed under the "Laguna S 2.1 experimental-kernel cluster" in [`inference-acceleration-index.md`](inference-acceleration-index.md) so the whole cluster can be tackled in one session.

@@ -253,7 +253,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     * **12 rows explicitly name an owner file.** Checking each against its owner: only the ID-level
       test ("every id named in the index row is `[x]` in the owner, none still open") is suggestive,
       and it yields **2 candidates**, of which **1 is confirmed stale by reading**:
-      `inference-research-index.md:120` tracks *"B1-B5 in a quiet window"* while
+      `cpu-inference-optimization-index.md:120` tracks *"B1-B5 in a quiet window"* while
       `iqk-iquant-enablement.md` has B1–B5 all `- [x]` (2026-07-25/26) and Status **"PROMOTED AND
       FROZEN IN v8"**. **That is a genuine already-done-but-open row — the category the audit wanted
       and could not find.**

@@ -53,5 +53,4 @@ the suite parses that file's JavaScript.
 - [x] Backlog graph embedded under the kanban, scoped to active+blocked ✅ 2026-08-10
 - [x] JS parse guard (`tests/test_dashboard_static_js.py`) ✅ 2026-08-10
 - [x] `hermes-agent` → `user-facing-harness` rename ✅ 2026-08-10
-- [x] Repair 42 active-handoff links left pointing at the two retired inference indices ✅ 2026-08-10
 - [ ] Residual decisions above
