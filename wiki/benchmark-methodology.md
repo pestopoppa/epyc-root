@@ -2,8 +2,29 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-10 (adds the generated-eval gate stack G1–G6 with human-curate as a hard node, the two-repo verifier-parity divergences incl. a vacuously-passing `code_execution` scorer, the correction that the paper this expansion was scoped from generates no tasks, and — second pass — why a regression tester cannot serve as a reward-bearing oracle, the instrument-inside-the-candidate's-tree problem, and five generalisable evaluation rules)
+**Last compiled**: 2026-08-11 (adds the resident kernel-promotion fast-path design and its fresh-server fallback; prior generated-eval findings retained)
 **Sources**: 110+ documents
+
+## Compiled Update — 2026-08-11: keep promotion cohorts resident
+
+The v9 cycle exposed a methodological cost problem rather than a compute-capacity problem. The CPU
+ABBA gate spent about 26 minutes wall-clock but only about 12 minutes serving measured requests;
+launch, load, telemetry and teardown consumed 54%. The full production lineup fits concurrently in
+the available memory envelope (about 578 GiB host against a 1,069 GiB budget and 57.7 GiB GPU against
+62 GiB). Repeated teardown was therefore an instrument design choice, not a resource constraint.
+
+The durable successor design keeps sealed v8/v9 cohorts resident, issues request-level ABBA quartets,
+reuses a pinned exact-parity quality pack, and pairs request-local cap-0/cap-N speculation on one
+resident server. It targets a 45–60 minute complete promotion cycle instead of roughly 90–120 minutes.
+That target is prospective until implemented and ratified. Any attestation drift, resident-state
+contamination, mismatch, or other ambiguity automatically falls back to the existing fresh-server
+instrument, so speed does not weaken the proof boundary.
+
+### Source References (2026-08-11)
+
+- [`kernel-promotion-resident-fast-path.md`](https://github.com/pestopoppa/epyc-inference-research/blob/main/docs/design/kernel-promotion-resident-fast-path.md) — measured overhead audit, memory-fit proof, resident schedule and fallback rules.
+- [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — V9-8 implementation/ratification task and request-local speculation contract.
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — v9 qualification context and durable-design checkpoint.
 
 ## Compiled Update — 2026-08-08: evaluate the artifact and harness that actually execute
 

@@ -74,7 +74,7 @@ Keep this table current. It is the answer to "has anyone already looked at this?
 | `benchmarks/results` (2,605 files) | measurement | **rejected on evidence** — 0/200 sampled carry the full tuple; would add ~4,500 claims that gate nothing | — |
 | llama-bench sweeps | measurement | candidate — needs a write-side hook first | — |
 | speech kernel (whisper/qwentts) runs | measurement | candidate — unexamined | — |
-| kernel promotion validation/certification receipts | measurement | candidate — v9 candidate, production GPU, DFlash, and DSpark receipts exist, but producers have no ClaimTuple write hook; do not retrofit on read | — |
+| kernel promotion/certification and K35 paired kernel/speculation receipts | measurement | candidate — v9 candidate, production GPU, DFlash/DSpark, and IQ3 quick-pair receipts exist, but producers have no ClaimTuple write hook; do not retrofit on read | — |
 | `test-backend-ops` property-layer residuals (RVP-C2-2) | measurement | **candidate — wire the write side BEFORE the layer ships** (2026-08-10). Emits a per-op, per-backend, per-shape property residual with a `suite_seed`; the seed is what makes a residual re-derivable, and RVP-C2-1 adds it. Filed at first design, not after — the read side cannot be retrofitted | — |
 
 **Before adding a bulk adapter, price it** (the P2 discipline): sample ~50 records and count how many

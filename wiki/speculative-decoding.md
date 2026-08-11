@@ -2,8 +2,43 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-08-09 (adds DSpark as a distinct draft type — `deepseek4` arch already ships in production v8 via upstream #24162, but no `DRAFT_DSPARK` member exists among the ten enumerated spec types, and DSpark is a separate sidecar GGUF so NextN metadata does not imply it; earlier 2026-07-31 note: adds the composed-recipe reconciliation — production was not launching the operator's `ngram-mod,draft-mtp` recipe since `2370025f`, the naive fix would have disabled speculation entirely, fixed by `2874ed73`+`6390b871` — plus the soft-budget/independent-knob/acceptance-dilution mechanism findings and the draft-max sweep; earlier 2026-07-29 note: verifying a draft/MTP head is a weight-map question, not a config question; earlier 2026-07-24 note: adds the per-model GPU MTP-depth optimum for all three architect candidates and the architecture-dependent spec-dec × batching interaction; earlier 2026-07-20 note: adds the external-drafter-dead / native-MTP-dominant finding, the surviving quant-asymmetric self-spec redesign, and the K28 fused-GDN-kernel research; earlier 2026-07-19 note: adds v7 promotion/reviewer decoupling, repaired native GLM-MTP evidence, and the lossless-only release boundary; 2026-07-04/05/06 MI210/spec-sheet subsections remain flagged where noted)
+**Last compiled**: 2026-08-11 (production v9 now carries bounded request-local DSpark at `-np 1`; exact Q8 cap-0/cap-3 parity passed, while the quantized-target parallel verifier and multi-slot path remain disabled; the earlier 2026-08-09 pre-port scope is superseded below)
 **Sources**: 63+ documents
+
+## Compiled Update — 2026-08-11
+
+### DSpark is production-safe on the validated serial lane, not yet a throughput win
+
+The 2026-08-09 pre-port assessment below is now historical. Upstream had already merged the generic
+DSpark speculator, the DeepSeek-V4 graph, and two required quantized-reshape fixes. EPYC therefore
+performed a dependency-aware manual forward-port onto exact frozen v8 rather than implementing a
+new architecture or blindly cherry-picking conflict-heavy patches. The repaired candidate passed
+the complete CPU/HIP promotion procedure and is frozen as `production-consolidated-v9` at
+`0db32c06e3e550065b78311a6031ef3dd2c4f27c` (binary 10125); v8 remains the rollback anchor.
+
+The validated boundary is deliberately narrow. A production-named Q8 target run at `-np 1` emitted
+the same 16 token ids with request-local cap 0 and cap 3. Cap 0 drafted nothing; cap 3 drafted 18 and
+accepted 9. The candidate uses a serial target verifier for greedy recurrent targets because the
+parallel verifier reproduced the upstream quantized-target parity defect. Multi-slot DSpark remains
+rejected at launch pending the separate speculative-cache defect. The serial correctness fallback
+was slightly slower in preliminary observations, so v9 establishes capability and parity, not a
+DSpark speed claim.
+
+The lower `UD-IQ3_XXS` target is present as a four-shard, checksum-verified research artifact
+(104,207,848,032 bytes). Its routed experts are materially requantized, unlike the Q8 artifact's
+MXFP4-preserving expert tensors. A bounded production-v9 CPU pair at `-np 1`, nominal 2,048 context
+and 64 completion tokens preserved exact cap-0/cap-3 token parity. Cap 3 drafted 67 and accepted 40
+(59.70%) but decoded at 4.61014 t/s versus 4.82846 t/s with cap 0, or 0.95478× (−4.52%). This is
+one dirty-host repetition with the resident stack online: useful preliminary evidence that DSpark is
+active and parity-safe on IQ3, but not a claim-grade throughput or quality result.
+
+### Source References (2026-08-11)
+
+- [`deepseek-v4-flash-0731-dspark.md`](../handoffs/active/deepseek-v4-flash-0731-dspark.md) — dependency closure, final production boundary, Q8 parity and IQ3 artifact identity.
+- [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — request-local cap contract, qualification gates and frozen v9 evidence map.
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — session-level promotion, certification, stack-restoration and acquisition record.
+- [`ratify_v9_final_freeze_20260811.json`](../artifacts/operator/ratify_v9_final_freeze_20260811.json) — operator-ratified production identity and rollback boundary.
+- [`IQ3 DSpark quick-pair receipt`](https://github.com/pestopoppa/epyc-inference-research/blob/main/data/deepseek-v4-flash/iq3-dspark-quick-20260811T063729Z/summary.json) — exact tokens, throughput, acceptance, host caveat and cleanup proof.
 
 ## Compiled Update — 2026-08-09
 
@@ -26,6 +61,9 @@ each verified directly against the frozen production tree on 2026-08-09:
    sidecar GGUF** (~10.9 GB at Q8_0), not as tensors inside the quant. A V4 GGUF carrying
    `deepseek4.nextn_predict_layers` metadata therefore provides *no* DSpark capability. Reading
    NextN metadata as "MTP present, so the newer drafter is available" is the trap here.
+
+> **Superseded scope note (2026-08-11):** upstream DSpark and DeepSeek-V4 support already existed;
+> the final work was a dependency-aware forward-port, and the result is summarized above.
 
 **Generalizable lesson**: when a vendor renames or replaces its drafting algorithm, check the
 engine's *draft-type enumeration*, not the model's architecture support. Arch support and drafter
