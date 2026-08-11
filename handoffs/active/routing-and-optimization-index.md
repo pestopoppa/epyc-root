@@ -55,7 +55,7 @@
 | RTG-43 | wp12 fleet layer design | [wp12-fleet-layer-design.md](wp12-fleet-layer-design.md) | Post-soak §5 cleanup (code + tests as ONE change): retire the legacy per-role build path — ServerURLsConfig URL ownership, Fix-A delegation… | — |
 | RTG-44 | wp9 wp10 lineup event prep | [wp9-wp10-lineup-event-prep.md](wp9-wp10-lineup-event-prep.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | RTG-45 | x mas text routing | [x-mas-text-routing.md](x-mas-text-routing.md) | Monitor post-enable live telemetry for unexpected domain regressions, latency regressions, or guard bypasses; rollback is xmas_routing.mode… | — |
-| RTG-46 | handoff index and backlog graph | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | Decide whether .index-state.json / .index-graph.json are git-ignored — timeline artifact already is | — |
+| RTG-46 | handoff index and backlog graph | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | Populate `Deps` with real dependencies as work reveals them — heuristic import was rejected | — |
 | RTG-47 | dashboard architecture restructure | [dashboard-architecture-restructure.md](dashboard-architecture-restructure.md) | Land fix-10 retention overlay; re-eyeball live ↑/↓ under real load; run old+new in parallel toward the Phase 1b call | — |
 
 ## Cross-domain

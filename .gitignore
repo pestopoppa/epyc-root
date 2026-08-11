@@ -92,3 +92,13 @@ artifacts/operator/*operational_baseline_candidate*.json
 .vidya/ledger.jsonl.repair
 .vidya/state.sqlite
 .vidya/projections/
+
+# Generated handoff-index sidecars (A19). `scripts/handoffs/index_state.py` derives
+# both of these from the index files and the handoffs themselves — they are a VIEW,
+# never a source, and regenerating is a single command. Tracking them made every main
+# that ran index_state.py collide with the other three on a file none of them authored,
+# which is why index_state.py had to be restricted to one session. The dashboard already
+# treats absence as "index_state.py has never run in this checkout" and degrades to
+# "no graph" (dashboard/panels.py, absence_means), so untracking costs nothing there.
+handoffs/active/.index-state.json
+handoffs/active/.index-graph.json

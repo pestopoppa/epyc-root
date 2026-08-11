@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 462
+      "open": 461
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 1,
       "handoffs": 47,
       "oldest_advance": "2026-07-29",
-      "open": 326
+      "open": 325
     },
     "user-facing-harness-index.md": {
       "blocked": 0,
@@ -87,7 +87,7 @@
       "blocked": 0,
       "closed": 8,
       "guarded": 0,
-      "last_advanced": "2026-08-03",
+      "last_advanced": "2026-08-11",
       "open": 17,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
@@ -778,10 +778,10 @@
     },
     "gpu-serving-tie-in-program.md": {
       "blocked": 0,
-      "closed": 36,
+      "closed": 37,
       "guarded": 0,
-      "last_advanced": "2026-07-31",
-      "open": 24,
+      "last_advanced": "2026-08-11",
+      "open": 23,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-22",
       "state": "active",
@@ -800,10 +800,10 @@
     },
     "handoff-index-and-backlog-graph.md": {
       "blocked": 0,
-      "closed": 5,
+      "closed": 6,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 5,
+      "open": 4,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-46",
       "state": "active",
@@ -3452,7 +3452,7 @@
       "id": "RTG-46",
       "index": "routing-and-optimization-index.md",
       "line": 58,
-      "next_action": "Decide whether .index-state.json / .index-graph.json are git-ignored \u2014 timeline artifact already is",
+      "next_action": "Populate `Deps` with real dependencies as work reveals them \u2014 heuristic import was rejected",
       "track": "handoff index and backlog graph"
     },
     "RTG-47": {

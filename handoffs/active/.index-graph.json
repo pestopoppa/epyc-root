@@ -3592,7 +3592,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-11T02:48:02Z",
+  "generated_at": "2026-08-11T09:12:28Z",
   "nodes": [
     {
       "age_days": 12,
@@ -4245,13 +4245,13 @@
       "track": "agent collab rnd harness"
     },
     {
-      "age_days": 8,
+      "age_days": 0,
       "blocked": 0,
       "closed": 8,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
-      "last_advanced": "2026-08-03",
+      "last_advanced": "2026-08-11",
       "next_action": "Pre-register AK-LE-1/2 model, effort, budget, and target arms; execute only with explicit inference permission",
       "open": 17,
       "state": "active",
@@ -4479,15 +4479,15 @@
       "track": "gpu drafter mi200 investigation"
     },
     {
-      "age_days": 11,
+      "age_days": 0,
       "blocked": 0,
-      "closed": 36,
+      "closed": 37,
       "domain": "inference-research",
       "handoff": "gpu-serving-tie-in-program.md",
       "id": "INF-22",
-      "last_advanced": "2026-07-31",
+      "last_advanced": "2026-08-11",
       "next_action": "P0-1 (operator) \u2014 run the E8 ratification once Codex presents the apply-ready D4 bundle",
-      "open": 24,
+      "open": 23,
       "state": "active",
       "track": "gpu serving tie in program"
     },
@@ -5742,13 +5742,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 5,
+      "closed": 6,
       "domain": "routing-and-optimization",
       "handoff": "handoff-index-and-backlog-graph.md",
       "id": "RTG-46",
       "last_advanced": "2026-08-11",
-      "next_action": "Decide whether .index-state.json / .index-graph.json are git-ignored \u2014 timeline artifact already is",
-      "open": 5,
+      "next_action": "Populate `Deps` with real dependencies as work reveals them \u2014 heuristic import was rejected",
+      "open": 4,
       "state": "active",
       "track": "handoff index and backlog graph"
     },
