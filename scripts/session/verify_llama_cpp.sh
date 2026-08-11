@@ -11,11 +11,11 @@ source "$SCRIPT_DIR/../lib/env.sh"
 
 # Configuration (derived from env.sh)
 LLAMA_CPP_DIR="${LLM_ROOT}/llama.cpp"
-EXPECTED_BRANCH="production-consolidated-v8"  # 2026-07 v8 cutover: full exact-tip candidate plus sealed relocatable runtime trees.
-EXPECTED_COMMIT="67a433bf45a8a091d83b4ea0b32ff0735fd51800"
-EXPECTED_VERSION_LINE="version: 10107 (67a433bf4)"
-EXPECTED_CPU_SERVER_SHA256="a4b667163022aa166ade7c0e00fa4e775b37662e02c10da7642c8c23a4d6b414"
-EXPECTED_HIP_SERVER_SHA256="112c560f1c978c584a9899539851348a0ce1e05cde458061c281758aff066882"
+EXPECTED_BRANCH="production-consolidated-v9"  # 2026-08 v9 cutover: DSpark/DFlash plus request-local speculative n_max.
+EXPECTED_COMMIT="0db32c06e3e550065b78311a6031ef3dd2c4f27c"
+EXPECTED_VERSION_LINE="version: 10125 (0db32c06e)"
+EXPECTED_CPU_SERVER_SHA256="8ebb1355593121a231735d7b58ad076f4539d2c5e3847fa09d2922fa8a980499"
+EXPECTED_HIP_SERVER_SHA256="21cfb750dc0ba4b3add0674fcb9dd061d77b3604ebf8e1d063ba0e2c51902feb"
 EXPERIMENTAL_DIR="${LLM_ROOT}/llama.cpp-experimental"
 
 # Colors

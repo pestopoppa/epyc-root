@@ -1,0 +1,23 @@
+{
+  "schema": "epyc.kernel_promotion_attestation.v1",
+  "status": "production_promoted_pending_gpu_certification",
+  "production_branch": "production-consolidated-v9",
+  "production_head": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+  "frozen": false,
+  "promoted_at": "2026-08-10T23:59:00Z",
+  "server_binary": {
+    "path": "/mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server",
+    "sha256": "21cfb750dc0ba4b3add0674fcb9dd061d77b3604ebf8e1d063ba0e2c51902feb"
+  },
+  "rollback": {
+    "branch": "production-consolidated-v8",
+    "head": "67a433bf45a8a091d83b4ea0b32ff0735fd51800",
+    "backup_ref": "refs/heads/production-consolidated-v8",
+    "source_ref": "refs/heads/production-consolidated-v9"
+  },
+  "qualification": {
+    "status": "preproduction_qualification_pass",
+    "path": "artifacts/operator/v9-qualification-20260810T235723Z-0db32c06e/summary.json",
+    "sha256": "04344a3624247646d0ebd795c12abfa4db48be895ebc8ccc465867917e7da679"
+  }
+}
