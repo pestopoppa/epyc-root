@@ -221,7 +221,15 @@ _Via /research-intake Stage-2 (intake-884 HyRA, intake-885 OpenHyra). OpenHyra e
 - [x] Adopt the SOL-ExecBench task/scoring schema {entry_point kernel.py::run, target_hardware, dependencies, hard is_correct gate, sol_score, latency_ms} as the C5 task contract, and OpenHyra run-manifest provenance (sha256 sources+task+evaluator + resume-drift rejection; `provenance.py:72-157`) as the attestation format binding each kernel measurement to MEASUREMENT.md ✅ 2026-07-22
 
 ### Follow-up discovered during C6 implementation — 2026-07-22
-- [ ] The C6 harness (`scripts/kernel_rnd/c6_reward_integrity.py`) Linux sandbox (bwrap/unshare+RLIMIT) **fails closed** and is bypassed via `allow_unsandboxed` only because the devcontainer lacks bwrap/user-namespaces (it is itself the isolation boundary). Before real MI210 kernel-authoring runs, verify a working sandbox backend on the host and remove the unsandboxed override there.
+- [x] Verify a fail-closed C6 sandbox on the live host and remove the unsandboxed route from real
+  kernel-authoring execution. ✅ 2026-08-11 — the campaign path now uses
+  `autokernel/execution/sandbox.py`, not the 2026-07-22 `c6_reward_integrity.py` prototype (which has
+  no AutoKernel caller outside its regression tests). A scoped `/sys/fs/cgroup/autokernel`
+  delegation plus Landlock ABI 6 and seccomp was exercised as uid 1000: an in-tree write succeeded;
+  an outside write and evaluator-receipt forgery failed; host signalling and socket creation returned
+  `EPERM`; and teardown killed an escaped descendant, proved empty membership, and removed its leaf.
+  `execution/provision_cgroup.sh` makes the host prerequisite reproducible after boot. The live path
+  has no `allow_unsandboxed`/environment bypass: missing delegation refuses before spawn.
 
 ## 2026-08-09 — C4 report contract and capture protocol (research-intake Stage-2b)
 
