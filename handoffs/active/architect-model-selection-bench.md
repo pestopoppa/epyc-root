@@ -608,7 +608,7 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
 
 ## 2026-08-09 — OpenRSI release-state watch (research-intake Stage-2b)
 
-- [ ] **Watch FrontisAI/OpenRSI PR #2 ("feat(gym): add OpenMLE Sandbox") to a decision.** State at
+- [x] **Watch FrontisAI/OpenRSI PR #2 ("feat(gym): add OpenMLE Sandbox") to a decision.** ✅ 2026-08-11 — **TRIGGER FIRED: MERGED.** Verified live via gh api: merged=true, author_association flipped NONE→CONTRIBUTOR, upstream main pushed 2026-08-11T12:28Z; still 1 commit / 30 files (+7,617), so the merged content is byte-wise the ingest-reviewed content. The intake-940#record hard blocker (distributed grading service unpublished) has SOFTENED, not cleared — see follow-on. State at
   ingest: DRAFT, 30 files, +7,617/-0, one commit, `mergeable_state: clean`, opened 2026-08-09 from
   fork `LifeIsSoSolong/OpenRSI` branch `codex/openmle-sandbox` by an account with GitHub
   `author_association: NONE` — **not a Frontis account by any GitHub signal**. It publishes the
@@ -621,3 +621,4 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
   GRUB edit plus reboot — a host-boot change that is operator-only. The patch also ships default DB
   passwords and two internal RFC1918 worker IPs that the project's own `docs/validation.md` claims the
   public release scrubbed, which corroborates it as an unscrubbed internal snapshot.
+- [ ] **Follow-on (opened 2026-08-11, trigger-fired): assess OpenMLE Sandbox reproduction feasibility** — re-opens the intake-940#record reproducibility finding via intake-1024#record. Gates, in order: (1) worker/controller images pull from external registry (network only, any main); (2) **cgroup v1 host reconfiguration = OPERATOR decision** (host reboots are operator-only); (3) actual reproduction run = inference-lane compute. File (2) as a decision package only if (1) succeeds and the images are runnable.
