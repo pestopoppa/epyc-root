@@ -1871,9 +1871,16 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     whole — at 1 GiB the parse-everything form is itself the defect. Nothing was trimmed: the
     ledger is still the record. **⚠ COMMITTED, NOT LIVE** — same restart dependency as C28 above;
     the ~29.5%-of-a-core cost is still being paid by `pid 496387` until it restarts.
-  - [ ] **OPEN — rotation.** Nothing rotates `advisory.jsonl`. Note the interaction with **C28**
-    before acting: *any* operation that moves, truncates or rotates a bus file is exactly what C28
-    says re-floods it. Rotation must land after C28's identity-keyed relay tracking, not before.
+  - [x] **Rotation.** ✅ 2026-08-11 — `mainD`, and **only possible because C28 landed first**, as
+    this row required. Shards at 128 MiB to `advisory_<n>.jsonl`; rename, never truncate.
+    **Re-measured after the restart: the daemon is at 1.3% CPU, down from 29.5%** — C38 already
+    removed the hot-path cost, so rotation is the SIZE and the one remaining full read (the ledger
+    bootstrap), not the performance defect it was twelve hours ago. Stated that way rather than
+    claiming a win C38 had already banked.
+    - [x] **`load_relay_state` now bootstraps across EVERY `advisory*.jsonl` shard.** ✅ The one way
+      this change could do harm: a bootstrap reading only the live file would lose every flag raised
+      before the last rotation and re-flag all of them, turning housekeeping into the C34 flood it
+      was meant to prevent. Own test.
 
 - [x] **C39 — the token relay is RECEIPT-BLIND: it presents gates the operator already
   signed.** ✅ 2026-08-11 — `mainD`. Filed by `auditor`, confirmed independently the same hour.
@@ -2094,6 +2101,14 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     reaches `token-queue.md` on the C20 timer with **no new escalation code**. It never writes the
     log it checks — a checker that repairs what it checks for cannot be trusted to report. 8 tests;
     450 green. Verified against the live repo: clean, because the log is current.
+    - [x] **CORRECTION, same day, caught by the operator: it escalated into `advisory.jsonl`, not
+      an inbox.** ✅ 2026-08-11. I shipped it emitting the advisory row only, reasoning that
+      `defect` is in `_OPERATOR_ITEM_KINDS` and would reach `token-queue.md` on the C20 timer for
+      free. **Wrong**: `_is_operator_item` is applied to OUTBOX and INBOX rows, never advisory rows,
+      so the notice stopped in a file nobody drains — the C33 shape, and a sentence I had quoted
+      twice the same day while building this. Now delivered into `coordinator-agent`'s inbox,
+      deduped once per day against that inbox's own contents; delivery failure is swallowed because
+      a reporting path must not be able to take the tick down. 3 tests.
     *(Original filing below, kept for the record.)*
   - [x] **R2, filed:** a daemon-side progress-log-stale defect routed to the
     operator through the existing C20 bypass. The report flags it as the proposal MOST at risk of
