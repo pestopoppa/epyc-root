@@ -47,7 +47,12 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
   `external_type_dispatch_present=false`, so this does not claim the full vendor launcher ran.
 - [ ] **Reproduce GEAK-eval's published MI250X task/result on the MI210.** Run the paper-era task and
   candidate through the pinned vendor launcher, expecting lower absolute speedup at roughly half the
-  aggregate bandwidth; distinguish source compatibility from result reproduction.
+  aggregate bandwidth; distinguish source compatibility from result reproduction. **External gate
+  re-audited 2026-08-11:** paper pin `a85e657f` and current upstream `453b0218` have no project-level
+  license; GitHub reports `license: null`, the license endpoint is 404, and PyPI 0.1.5 declares no
+  license expression. Licensed GEAK-v1 and AgentKernelArena do not contain the paper-era MI250X
+  harness/task. Per the pinned source-prep policy, no reproduction may run until AMD-AGI publishes a
+  covering project license or explicit grant. No cached checkout or GPU claim was used in this audit.
 - [ ] **Harden the remaining producer-dependent C2 oracle surfaces.** C2-7/C2-8/C2-9 reducers and
   runners are durable, but their sensitivity/hostile/checker-isolation evidence waits on OP-11's
   experimental producer identity.
@@ -294,6 +299,24 @@ the upstream tooling parses torch-profiler Chrome traces and declares no ROCm pa
   kernel-time-share table at all. Either widen the scope or pair the catalog with a host-side one.
   ✅ 2026-08-11 — `kernel_only` emits the host-path coverage gap; `kernel_and_host` requires a hash-bound
   host catalogue receipt. No report silently inherits either scope.
+
+**Strict-contract repair and replay (2026-08-11).** Research commit `d7260844` closes four admission
+gaps found after the first live captures: the 1% floor now applies to overlap/fuse rows as well as the
+kernel table; mapping/formal traces must bind the same workload/source/stage while using distinct
+corpus IDs and paths; stage labels are derived from workload semantics; and a host catalogue can no
+longer alias the kernel-catalogue hash. Reviewed family-alias sets preserve architecture-shape
+matching across declared renames without adding fuzzy matching. The full AutoKernel suite passed
+3,972 tests with one declared expected failure.
+
+The first post-repair Q4_K mapping attempt retained a fail-closed `rocprofv2` exit-139 receipt. One
+identity-matched retry succeeded with **195 mapping + 195 formal dispatches**, **80** device samples,
+and a released MI210 claim. The report declares `kernel_only`, independently records the host gap,
+applies the 1% floor, and finds `mul_mat_vec_q` **42.107%**, `quantize_q8_1` **30.457%**, and runtime
+fill **27.436%** at the bounded `m=16,n=1,k=256` decode cell. Receipt:
+`/mnt/raid0/llm/autokernel/probes/c4-q4k-strict-contract-v9-20260811-r2/receipt.json` (SHA-256
+`23f14e71015d21d021b4f6ee6128cd34a52b73f3e756b39e0a47243dd9bb9bfb`). This validates the repaired
+contract on gfx90a; it does not claim the tiny cell provides Item B's requested inside-kernel unpack
+attribution.
 
 **Declined here, recorded so they are not re-derived**: (a) inheriting the upstream synthetic stage
 shapes (prefill `4090`/`1`, decode `1`/`2048`) without re-deriving from our own production
