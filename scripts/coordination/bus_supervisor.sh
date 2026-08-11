@@ -114,8 +114,106 @@ start_daemon() {
   return 1
 }
 
+# ---------------------------------------------------------------- stale source
+#
+# 2026-08-11. FIVE fixes sat committed-not-live in one evening — C39, C28, C38's
+# tick path, R1 and R2 — because a running daemon keeps executing the code it
+# loaded at start, and nothing noticed. `health_ok` asks "is a process there" and
+# "is its heartbeat fresh"; a daemon running twelve-hour-old code answers yes to
+# both. The recurrence proved the point twice in seven minutes: a restart at
+# 22:18:12 was followed by an R2 commit at 22:21:25, so that fix ALSO needed a
+# human to notice and restart again.
+#
+# This is a delivery gap in the same family as R1: the mechanism worked, and
+# nothing carried its result to where it takes effect.
+#
+# Identity comes from the HEARTBEAT's own pid, never from a name pattern — a
+# pattern is a wildcard over other sessions' processes on this shared host
+# (INC-20260731-broad-process-pattern-kills), and the daemon already publishes
+# exactly the number we need.
+daemon_pid_from_heartbeat() {
+  python3 - "$HEARTBEAT" <<'PY_EOF' 2>/dev/null || true
+import json, sys
+try:
+    pid = json.load(open(sys.argv[1])).get("pid")
+    print(int(pid))
+except Exception:
+    pass
+PY_EOF
+}
+
+# Newest mtime across the daemon's own sources. It imports its siblings, so a
+# change to any of them is a change to what it would run.
+newest_source_mtime() {
+  stat -c %Y "$(dirname "$DAEMON")"/*.py 2>/dev/null | sort -n | tail -1
+}
+
+# 0 = the running daemon predates its source. FAIL CLOSED: every unknown returns
+# 2 (cannot tell) and the caller escalates rather than passing.
+source_is_newer_than_daemon() {
+  local pid started elapsed src now
+  # `|| true` on every capture is load-bearing, not defensive noise: this script
+  # runs under `set -euo pipefail`, where a FAILING command substitution aborts the
+  # whole supervisor. A dead pid makes `ps` fail and an empty source dir makes the
+  # `stat | sort` pipeline fail under pipefail — so without these the fail-closed
+  # branches below are unreachable and the watchdog exits instead of reporting.
+  # (Caught by test_bus_supervisor.py; my own predicate test had missed it because
+  # it ran without `set -e` — the test method differed from production.)
+  pid=$(daemon_pid_from_heartbeat || true)
+  [[ -z "$pid" ]] && return 2
+  elapsed=$(ps -p "$pid" -o etimes= 2>/dev/null | tr -d ' ' || true)
+  [[ -z "$elapsed" ]] && return 2
+  src=$(newest_source_mtime || true)
+  [[ -z "$src" ]] && return 2
+  now=$(date +%s)
+  started=$(( now - elapsed ))
+  # SKEW is not padding, it is the resolution of the measurement. `ps -o etimes`
+  # reports whole seconds, so `started` can land up to a second before the real
+  # start, and a source written in the same second as a legitimate restart would
+  # then read as NEWER than the process it produced. That false positive restarts
+  # a daemon that is already current — and it recurs every cycle, which is a
+  # restart loop, strictly worse than the staleness it thinks it is fixing.
+  # Caught by test_bus_supervisor.py, which went 5/5 -> 4/5 on the untolerated
+  # version: the pre-existing suite was defending exactly this.
+  (( src > started + STALE_SRC_SKEW_S ))
+}
+
+STALE_SRC_STATE="${LOG_DIR}/bus_supervisor.stale_src"
+# Whole-second resolution on both sides; 5s covers it with room to spare and
+# still catches a source edited even a minute after a restart.
+STALE_SRC_SKEW_S="${STALE_SRC_SKEW_S:-5}"
+
+check_stale_source() {
+  local src rc=0
+  # `|| rc=$?`, never `cmd; rc=$?`. Under `set -e` a FUNCTION returning non-zero as
+  # a simple command aborts the script, so the bare form killed the supervisor
+  # mid-`once` on every "current" and every "cannot tell" — i.e. on the normal
+  # path. That is how a watchdog silently stops watching.
+  source_is_newer_than_daemon || rc=$?
+  if (( rc == 2 )); then
+    log "STALE-SOURCE CHECK UNAVAILABLE — cannot read the daemon pid, its start time, or the"
+    log "  source mtimes. Reported, not passed: a check that cannot tell is not a clean one."
+    return 0
+  fi
+  (( rc != 0 )) && return 0
+  src=$(newest_source_mtime || true)
+  # Restart ONCE per source version. Without this a file the fleet touches often
+  # would put the supervisor in a restart loop, which is worse than the staleness.
+  if [[ -f "$STALE_SRC_STATE" ]] && [[ "$(cat "$STALE_SRC_STATE" 2>/dev/null)" == "$src" ]]; then
+    return 0
+  fi
+  log "daemon is running code OLDER than its source (source $(date -d @"$src" -u +%H:%M:%SZ)"
+  log "  is newer than the running process) — restarting so committed fixes take effect"
+  echo "$src" > "$STALE_SRC_STATE"
+  stop_wedged
+  start_daemon
+}
+
 check_once() {
-  if health_ok; then return 0; fi
+  # A HEALTHY daemon can still be the wrong daemon. Order matters: a dead one is
+  # restarted by the branch below and comes back on current source anyway, so the
+  # stale-source question only applies to one that is up and answering.
+  if health_ok; then check_stale_source; return 0; fi
   log "unhealthy (heartbeat age $(heartbeat_age_s)s, pids '$(daemon_pids | tr '\n' ' ')') — restarting"
   stop_wedged
   start_daemon
