@@ -3486,10 +3486,11 @@ readiness, and two of them are cheaper than anything currently in the list:
 9b. **G14 architect MoE-IQ2** — last on purpose. Its kill-criterion probe runs first and may retire it
    at near-zero cost; funding a kernel before that probe is how a campaign gets spent on an
    architectural floor.
-3c. **G17 gfx90a WGM launch-order locality** — the diagnostic L2 proxy establishes a bounded
-   none/8/16/32 search with 16 as the starting point; instantiate it on the real MMQ launch only,
-   retaining correctness sentinels plus wall-time and L2/TCC evidence. This is an INF-36 seed that
-   consumes INF-48 tooling, not a claim that the proxy gain transfers.
+3c. **G17 gfx90a WGM launch-order locality — CLOSED_NO_GO 2026-08-11.** The real stream-k MMQ
+   none/2/4/8/16/32 sweep passed 43/43 correctness in every cell, but WGM0 won wall time and every
+   nonzero mapping regressed 1.286–4.050%. WGM8 also reduced all-MMQ TCC hit rate from 67.304% to
+   59.849% at nearly flat read-request volume, falsifying transfer from the synthetic L2 proxy. Keep
+   WGM0, retain the negative receipts in INF-36, and return budget to G15 elementwise/norm fusion.
 7c. **G18 Q4_K superblock-unpack attribution** — instrument representative production-shape Q4_K
    against Q8_0 inside `mul_mat_vec_q`; the existing m=16 profile cannot see unpack work. Require an
    inside-kernel source timer or admitted mechanism counter before proposing source changes. This is

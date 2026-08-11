@@ -2,8 +2,8 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds the live-host C6 sandbox boundary; prior WGM, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
-**Sources**: 99+ documents
+**Last compiled**: 2026-08-11 (adds the real-MMQ WGM negative; prior C6, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Sources**: 102+ documents
 
 ## Compiled Update — 2026-08-11 (AutoKernel C6 live-host sandbox)
 
@@ -31,8 +31,8 @@ controls. No inference or production-stack change was needed.
 
 ## Compiled Update — 2026-08-11 (gfx90a WGM and authoring-loop boundary)
 
-**Confidence: verified diagnostic microbenchmark and implementation; no real-MMQ or five-control
-performance claim.**
+**Confidence: verified diagnostic microbenchmark and real-MMQ negative; no five-control performance
+claim.**
 
 A gfx90a work-group-mapping proxy found a real, bounded locality signal: WGM16 improved the synthetic
 L2-sensitive kernel by **9.823%** versus no mapping across 240 balanced samples per cell, with a paired
@@ -40,6 +40,15 @@ bootstrap 95% CI of **9.754–9.977%** and bit-exact correctness. WGM8 and WGM32
 regressed. The result selects none/8/16/32 for the real MMQ launch-order sweep. It does not establish
 that the gain transfers to MMQ, because the proxy deliberately isolates locality rather than the full
 quantized kernel.
+
+The admitted real-MMQ transfer test then falsified that transfer. Its first pilot was a no-op because
+CDNA stream-k bypassed the initial remap; r2 moved pure tile-order decoding into stream-k. All six
+none/2/4/8/16/32 cells passed **43/43** Q4_K correctness cases, but WGM0 remained fastest and every
+nonzero mapping regressed wall time by **1.286–4.050%**. WGM8 reduced all-MMQ TCC hit rate from
+**67.304% to 59.849%** while read requests stayed nearly flat (**+0.201%**), and Q4_K alone lost
+**7.903 percentage points**. G17 is therefore `CLOSED_NO_GO`; the uncommitted negative source is not a
+promotion candidate, and the budget returns to the already-filed G15 elementwise/norm fusion lever.
+The aborted trace-period counter pilot is excluded; successful counter-only captures are admitted.
 
 The surrounding authoring loop now has three missing control-plane pieces: a versioned C5 seed corpus
 with matched-budget RE-Bench log-time scoring, a prospective GEAK/Arena belief writer, and a gfx90a
@@ -61,8 +70,8 @@ claim.
 
 ### Source References (2026-08-11 WGM/authoring closeout)
 
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — G17/G18 seeds and the failed-closed v9 control preflight
-- [MI210 MFMA compute-bound paths](../handoffs/active/mi210-mfma-compute-bound-paths.md) — WGM proxy receipt and bounded real-MMQ sweep
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — G17 negative disposition, G18 seed, and the failed-closed v9 control preflight
+- [MI210 MFMA compute-bound paths](../handoffs/active/mi210-mfma-compute-bound-paths.md) — admitted proxy and real-MMQ receipts, hashes, and next lever
 - [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — C5, RE-Bench, FP8, taxonomy and upgrade gates
 - [ROCm upgrade checklist](../docs/runbooks/rocm-upgrade-checklist.md) — experimental-branch build and validation contract
 - [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — commit identities, receipt hash and no-inference boundary

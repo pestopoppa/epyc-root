@@ -143,5 +143,16 @@ Acceptance to proceed to kernel work: a candidate path shows **high VALUBusy + l
 - [x] Measure the launch-order/L2 half of HipKittens WGM on a standalone gfx90a proxy before touching MMQ ✅ 2026-08-11 — 240 balanced samples per none/2/4/8/16/32 cell, bit-exact outputs, device claim + 250 ms telemetry, and rocprofv2 dispatch verification found WGM16 best at **+9.823%** (paired bootstrap 95% CI 9.754–9.977%). WGM8/32 were close; WGM2 regressed. This proves launch-order locality matters but is diagnostic-only, not an MMQ keep. Receipt `/mnt/raid0/llm/autokernel/probes/inf36-wgm-gfx90a-20260811-r3/receipt.json`, SHA-256 `d9de5ede02a2ba849b1ffc4362d405a76c45279d907784ecf322ca8a133f7986`; research `f371fc83`.
 - [x] **Measure peak FLOPS with a gfx90a MFMA microbenchmark** ✅ 2026-08-03 — **172.2 TFLOPS**, 95.1% of the derived 181.0, implied sustained clock 1.617 GHz. This was the last derived-from-spec denominator; **every roofline constant this project uses is now measured.** Receipt `data/mi210-mfma-peak/20260803T143200Z/`, research `a2b4e9fc`
 - [x] Peak-FLOPs figures no longer need the `[D]`-only citation restriction — the measured value supersedes it for all internal use; the derived figure remains the right one for cross-vendor spec-to-spec comparison ✅ 2026-08-03
-- [ ] Sweep grid-swizzle WGM (none/8/16/32) on our own MMQ launches — pure launch-order change, no kernel body edit; the gfx90a L2 proxy now favors 16, with 8/32 as the bounded neighboring cells. Require wall time, L2/TCC evidence, and correctness sentinels before any keep.
+- [x] Sweep grid-swizzle WGM on the real stream-k MMQ launch with correctness, wall-time, and L2/TCC
+  evidence ✅ 2026-08-11 — r1 is retained as a failed/no-op pilot because the initial remap sat outside
+  the CDNA stream-k launch path. In admitted r2, pure tile-order decoding moved into stream-k and
+  none/2/4/8/16/32 each passed **43/43** Q4_K correctness cases. WGM0 remained fastest; every nonzero
+  cell regressed wall time by **1.286–4.050%**. The mechanism result agrees: WGM8 reduced all-MMQ TCC
+  hit rate **67.304% → 59.849%** while read requests changed **+0.201%**; Q4_K alone lost **7.903
+  points**. Retain WGM0 and do not commit the negative experimental source. Admitted directory:
+  `/mnt/raid0/llm/autokernel/probes/inf36-mmq-wgm-gfx90a-20260811-r2`; receipt SHA-256 values:
+  correctness `8065674e876ab84e58518d3084ec7671b22f007c558c40781413ec827bf71ffe`, wall time
+  `af57d087f307d2ec423c3168bb0ad66efc22a81ef613877e805db105331a8cec`, counters
+  `0dc3d4d01aba790f7b0f1035771d929f940661f29334fdf2db59a4b2ba8a8adf`. The trace-period
+  counter pilot aborted and is excluded; the successful counter-only captures are admitted.
 - [ ] Elementwise/norm fusion for batched decode remains the live orthogonal lever (43% of B=128 time is non-GEMM vs 37% GEMM) — now seeded in `autokernel-research-loop.md` §19.6/§19.8 rather than only noted here

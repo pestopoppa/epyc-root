@@ -2,7 +2,7 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-11 (adds prospective AutoKernel Arena belief emission and dependency-evidence classification; prior promotion-track findings retained)
+**Last compiled**: 2026-08-11 (adds the MMQ-WGM prospective write-side gap; prior AutoKernel Arena and promotion-track findings retained)
 **Sources**: 36 documents
 
 ## Compiled Update — 2026-08-11 (AutoKernel Arena write-side boundary)
@@ -20,11 +20,17 @@ a dashboard or ledger adapter from inventing metric direction after the experime
 controller A/B results comparable without retrofitting old receipts. Existing 2026-08-11 receipts are
 deliberately unchanged.
 
+The same boundary now applies to the admitted MMQ-WGM negative. Its wall-time, TCC-hit-rate, and
+read-request observations are direct measurements, but the receipt predates any `ClaimTuple` writer.
+SC22 therefore files a producer-side hook before any successor launch-order experiment and explicitly
+forbids retrofitting r2 on read. This preserves the negative as durable experiment evidence without
+claiming that a later adapter witnessed semantics the original producer never wrote.
+
 ### Source References (2026-08-11 AutoKernel Arena writer)
 
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20/SC21 acceptance and classification
-- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — producer vectors and dependency-evidence handling
-- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — research commit identities and closeout boundary
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20/SC21 acceptance, SC22 MMQ-WGM write-side task, and classification
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — producer vectors, MMQ-WGM candidate source, and dependency-evidence handling
+- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — receipt hashes, negative disposition, and closeout boundary
 
 ## Summary
 
