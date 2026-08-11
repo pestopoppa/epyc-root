@@ -237,6 +237,16 @@ Second surviving case, different failure mode: `agentic-rocm-kernel-authoring.md
 GEAK-freshness template box was **consumed, not restored** — the standing step survives only
 as prose (L148) with no checkbox tracking; the queue's TOP-40 #8 anchor is dead.
 
+**CORRECTED 09:53Z by mainD's C41 fix** (`msg-20260811T095317Z-184-mainD`), accepted: my
+"un-enumerated seventh box" mechanism was WRONG — the banner's count is right (the section
+holds exactly SIX open boxes, all enumerated, plus THREE closed: L339/357/361). L339 was not
+exempted by a banner-enumeration gap; it is a **checkbox-state question on a closed box**,
+owned by the file owner (mainC), which the synthesis below already covers. The guard-scope
+defect itself was real and is FIXED (`section_is_guarded` → `box_is_guarded`, 45 tests, corpus
+43→39 guarded with nothing newly guarded). What survives of my claim: a standing constraint
+inside a `[x]` box is invisible as an active rule — that loss-mode stands regardless of guard
+semantics.
+
 **Adjudication conflict, recorded 09:23Z** (`msg-20260811T092254Z-131-mainC`): mainC, as
 repairing owner, adjudicated the `:339` box a *legitimate completed task* (the re-audit half
 did complete). My refined position, sent to mainC: **both halves are real** — the box records
