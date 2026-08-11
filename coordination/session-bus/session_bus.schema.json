@@ -84,6 +84,12 @@
           "type": "string",
           "description": "Set by the coordinator-daemon when it relays an agent-authored outbox message into a recipient inbox: the source msg id. Carries the dedupe key so relay is idempotent across ticks (defect C2, 2026-07-28). Absent on daemon-generated messages."
         },
+        "_renamed_from": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Migration provenance: the roster id this row was authored under, before the 2026-07-29 rename (claude-gpu-lane / claude-main / fable-auditor / codex -> the current ids). Written by the rename migration onto the 217 rows it rewrote, so `from`/`to` could be updated without losing who actually sent the message. PERMITTED 2026-08-11 (C34, second half): the migration wrote it, `additionalProperties: false` forbade it, and the relay therefore refused all 217 rows — including five operator token-requests stranded for two weeks. Stripping it was the alternative and is not available: an outbox has exactly one writer and it is not the daemon, so the choice was to accept the provenance or lose the mail. Historical only; nothing should write this field again.",
+          "$comment": "Underscore-prefixed by convention: tool-written provenance, not agent-authored content."
+        },
         "needs_routing_to": {
           "type": "array",
           "items": {

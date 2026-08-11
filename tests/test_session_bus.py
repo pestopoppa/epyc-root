@@ -2137,7 +2137,7 @@ def test_authoring_without_jsonschema_still_applies_the_full_schema(
     assert bus._validator(_live_schema(), "msg").__class__ is bus._MiniDraft7Validator
 
     with pytest.raises(bus.BusError, match="Additional properties"):
-        bus.validate_row(LIVE_BUS_ROOT, {**VALID_MSG, "_renamed_from": "claude-main"}, "msg")
+        bus.validate_row(LIVE_BUS_ROOT, {**VALID_MSG, "summary": "routing intent as prose"}, "msg")
     with pytest.raises(bus.BusError, match="not one of"):
         bus.validate_row(LIVE_BUS_ROOT, {**VALID_MSG, "kind": "blocker"}, "msg")
     with pytest.raises(bus.BusError, match="required property"):
@@ -2177,3 +2177,46 @@ def test_append_refuses_an_unrelayable_row_at_the_author(
                      "--target", "outbox", "--json",
                      json.dumps({"to": "bob", "kind": "blocker"})]) != 0
     assert not _read_jsonl(bus_root / "outbox" / "alice.jsonl")
+
+
+def test_renamed_from_is_accepted_so_the_migrated_rows_can_be_delivered() -> None:
+    """C34 second half. The 2026-07-29 roster rename wrote `_renamed_from` onto
+    the 217 rows it rewrote; `additionalProperties: false` forbade it, so relay
+    refused every one of them — five operator token-requests among them, stranded
+    two weeks. Stripping the field was the alternative and is not available: an
+    outbox has exactly one writer and it is not the daemon. So the schema accepts
+    the provenance, and this test is what stops a future tidy-up from re-breaking
+    delivery by deleting the property as 'unused'.
+    """
+    for definition in ("msg",):
+        vendored = _vendored(definition)
+        assert vendored.is_valid({**VALID_MSG, "_renamed_from": "claude-main"})
+        # Still typed, not a hole: it is a non-empty string or nothing.
+        assert not vendored.is_valid({**VALID_MSG, "_renamed_from": ""})
+        assert not vendored.is_valid({**VALID_MSG, "_renamed_from": 7})
+    # Unrelated stray keys stay refused — this widened the schema by one field,
+    # not into a bag of anything.
+    assert not _vendored("msg").is_valid({**VALID_MSG, "_renamed_to": "x"})
+    assert not _vendored("queue_row").is_valid({**VALID_QUEUE_ROW, "_renamed_from": "codex"})
+
+
+def test_no_live_outbox_row_is_still_blocked_by_renamed_from() -> None:
+    """The measurement that justified the change, kept as a regression: every one
+    of the 217 rows must now pass, and this fails loudly if the property is
+    narrowed later in a way the real corpus does not satisfy."""
+    validator = _vendored("msg")
+    blocked = []
+    for path in sorted((LIVE_BUS_ROOT / "outbox").glob("*.jsonl")):
+        for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if "_renamed_from" not in row:
+                continue
+            reasons = {e.validator for e in validator.iter_errors(row)}
+            if reasons:
+                blocked.append((f"{path.name}:{lineno}", sorted(reasons)))
+    assert not blocked, f"{len(blocked)} migrated rows still unrelayable, first: {blocked[0]}"
