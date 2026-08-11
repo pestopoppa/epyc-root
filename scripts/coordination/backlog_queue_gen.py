@@ -39,11 +39,49 @@ need real knowledge of whether a row wants an inference window, and a keyword gu
 that mislabels a `cpu`-lane row as `none` would send a main at a task it cannot run.
 They stay human-authored in the queue; this tool never overwrites them.
 
+VERBATIM TEXT, NOT A SUMMARY (2026-08-11, `mainC`). Rows carry the box's text exactly
+as written, untruncated. The hand-written queue stored a sweeper's PARAPHRASE in its
+description column, and that silently defeated the very recovery text-keying exists to
+provide: re-anchoring 379 rotted refs by exact text matched almost nothing, and only
+fuzzy token overlap recovered 76% of them. A paraphrase rots differently from a line
+number, not less. The text printed here is the same string `claim_key` hashes, so the
+claim command under each row is copy-pasteable and takes the lock it displays.
+
+    KNOWN LIMIT, stated rather than hidden: `_boxes` yields a box's FIRST LINE, so on
+    a wrapped box the key stops at the wrap and can end mid-sentence. The identity is
+    therefore wrap-dependent — reflowing a paragraph changes it much as an edit
+    changes a line number, which is a weaker form of the rot this design removes.
+    Joining continuation lines would fix it, but the key must stay byte-identical to
+    what `backlog_row_check.find_by_text` indexes and what `session_bus.py claim`
+    folds, so changing it is a THREE-tool contract change and not a generator-local
+    one. Left consistent on purpose; fixing it means changing all three together.
+
+THE POSITIVE SIGNAL, AND WHY ABSENCE WAS NEVER ENOUGH. This tool used to decide
+dispatchability by SUBTRACTION: everything open, minus what a heuristic could spot as
+bad. Subtraction cannot see what it does not detect, and that gap is measured, not
+theoretical — four boxes in `model-stack-change-standardization-audit.md`'s per-change
+checklist were flipped `[x]` on 2026-07-14, ELEVEN DAYS before the backlog sweep ever
+ran. No queue row ever pointed at them. An absence-based screen is structurally unable
+to report a corruption it was never asked about.
+
+So a guard is now read as a POSITIVE declaration in the handoff (`box_is_guarded`, a
+blockquote banner or an inline marker, with C41 scope resolution), and that declaration
+buys something subtraction never could: an INVARIANT. Under a banner saying nothing
+here may be flipped, any `- [x]` is a defect by construction — `--audit-procedures`
+asserts exactly that, and it would have caught the 07-14 four-box case on the day it
+happened, with no queue, no sweep and no row. Alongside it, `--quarantine` lists boxes
+whose TEXT reads as a recurring step but which carry NO declaration: those are held
+back from the bench and reported as "needs a marker" instead of being silently
+dispatched. Inference still happens; it just can no longer decide alone.
+
     backlog_queue_gen.py --generate            # the dispatchable bench, text-keyed
     backlog_queue_gen.py --check <queue.md>    # audit an existing queue's refs
     backlog_queue_gen.py --summary             # verdict counts only
+    backlog_queue_gen.py --quarantine          # procedural-looking rows with NO marker
+    backlog_queue_gen.py --audit-procedures    # the invariant: [x] under a DO-NOT-FLIP guard
+    backlog_queue_gen.py --audit-procedures --tree all    # ... across active/completed/archived
 
-Exit codes:  0 clean · 1 the checked queue has rotted refs · 3 usage error
+Exit codes:  0 clean · 1 the checked queue has rotted refs, or an audit found hits · 3 usage
 """
 
 from __future__ import annotations
@@ -57,6 +95,24 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HANDOFFS = REPO_ROOT / "handoffs" / "active"
+TREES = {name: REPO_ROOT / "handoffs" / name
+         for name in ("active", "completed", "archived", "blocked")}
+
+# Box TEXT that reads as a recurring step. This is the INFERENCE half — it never
+# decides on its own; a hit with no positive declaration is REPORTED by `--quarantine`
+# and is otherwise left alone.
+#
+# The discriminator is a STANDING CONDITION, never the verb. First cut included
+# `re-?run (this|the|these)` and it matched 11 rows, every one of them a ONE-OFF
+# rerun ("Re-run the 27 confounded E5 cells", "Void and re-run the PaddleOCR-VL arm")
+# and not one a recurring step. A re-run is a task; "re-run BEFORE EACH pickup" is a
+# procedure, and only the second half carries the recurrence. Patterns without an
+# explicit every/each/any-time condition were dropped for that reason.
+_PROCEDURAL = re.compile(
+    r"\b(at each pickup|on each pickup|every time this|each time this|"
+    r"before each|prior to each|for (?:any|each|every) (?:new |future )?"
+    r"(?:change|swap|run|pickup|release)|"
+    r"check .{0,40}\bfor any new\b|start every|begin every)", re.I)
 
 _SPEC = importlib.util.spec_from_file_location(
     "brc", Path(__file__).resolve().parent / "backlog_row_check.py")
@@ -82,12 +138,32 @@ def verdicts(handoffs: Path = HANDOFFS) -> list[dict]:
             if state == "x":
                 continue
             code, reasons = brc.classify(path, lineno, state, body, head)
+            declared = brc.box_is_guarded(path, lineno)
             out.append({
                 "file": path.name, "line": lineno, "text": body, "head": head,
                 "dispatchable": code == 0, "reasons": reasons,
                 "kind": _reason_kind(code, reasons),
+                # Positive declaration in the handoff vs. our own inference. Kept
+                # separate on purpose: conflating them is what let an undeclared
+                # procedure look identical to a screened-and-cleared task.
+                "declared_no_dispatch": declared,
+                "looks_procedural": bool(_PROCEDURAL.search(body)),
             })
     return out
+
+
+def quarantine(rows: list[dict]) -> list[dict]:
+    """Rows whose TEXT reads as a recurring step but which carry NO declaration.
+
+    REPORT ONLY — these are NOT withheld from the bench, deliberately. Withholding
+    would refuse real work on an inference this module has already been wrong about
+    once (see `_PROCEDURAL`), and this corpus's settled rule is that refusing real
+    work is the costlier error. The point is not that the inference is right; it is
+    that an undeclared procedure and a screened task are otherwise indistinguishable
+    to every consumer, and this is the list that makes them distinguishable so an
+    author can settle it by adding a marker.
+    """
+    return [r for r in rows if r["looks_procedural"] and not r["declared_no_dispatch"]]
 
 
 def _reason_kind(code: int, reasons: list[str]) -> str:
@@ -176,12 +252,71 @@ def render(rows: list[dict]) -> str:
         out.append(f"## {name} ({len(by_file[name])})")
         for r in by_file[name]:
             warn = "" if r["kind"] == "clean" else "  ⚠"
-            out.append(f"- L{r['line']}{warn} — {r['text'][:150]}")
+            # VERBATIM and untruncated — this string is the identity, and it is the
+            # exact string `claim_key` folds. Truncating it here would reintroduce
+            # the paraphrase that made the hand-written queue unrecoverable by text.
+            out.append(f"- L{r['line']}{warn} — {r['text']}")
+            out.append(f"    - claim: `session_bus.py claim --agent <id> --row "
+                       f"{brc.claim_key(r['text'])!r}`")
             if r["kind"] == "warned":
                 for reason in r["reasons"]:
-                    out.append(f"    - {reason[:170]}")
+                    out.append(f"    - {reason}")
         out.append("")
     return "\n".join(out)
+
+
+def render_quarantine(rows: list[dict]) -> str:
+    held = quarantine(rows)
+    out = ["# Quarantine — procedural-looking rows carrying NO do-not-dispatch marker",
+           "",
+           "REVIEW PROMPT, not a verdict, and these rows are still ON the bench. Each is",
+           "EITHER a reusable step that needs a declaration in its handoff, OR an ordinary",
+           "task phrased like one. This tool cannot tell them apart, so it names them rather",
+           "than withholding them — refusing real work is the costlier error here.",
+           "",
+           "Resolve by editing the HANDOFF, not this list — add a blockquote banner",
+           "(`> **⚠ … DO NOT DISPATCH OR FLIP THEM.**`) over a reusable section, or an inline",
+           "`*(STANDING CONSTRAINT — not a dispatchable task; do not flip.)*` on the row. Once",
+           "declared, `--audit-procedures` will also protect it from being flipped closed.",
+           "",
+           f"**{len(held)} row(s).**", ""]
+    by_file: dict[str, list[dict]] = {}
+    for r in held:
+        by_file.setdefault(r["file"], []).append(r)
+    for name in sorted(by_file):
+        out.append(f"## {name} ({len(by_file[name])})")
+        for r in by_file[name]:
+            out.append(f"- L{r['line']} — {r['text']}")
+        out.append("")
+    return "\n".join(out)
+
+
+def audit_procedures(trees: list[str]) -> tuple[int, list[str]]:
+    """THE INVARIANT: no `- [x]` may sit under a DO-NOT-FLIP declaration.
+
+    Absence-based screening could never assert this — it only ever looked at rows a
+    queue named. A positive declaration turns "we found no bad row" into "no box under
+    this banner may be closed", which is checkable without any queue at all.
+
+    Returns (hits, report-lines). Report-only: in `completed/` and `archived/` a
+    flipped box may be a correct historical record, so this NEVER edits.
+    """
+    lines_out, total = [], 0
+    for tree in trees:
+        root = TREES[tree]
+        if not root.is_dir():
+            continue
+        hits = brc.closed_boxes_under_a_guard(root)
+        lines_out.append(f"\n=== handoffs/{tree}/ — {len(hits)} checked box(es) under a guard ===")
+        if tree != "active":
+            lines_out.append("    (history: REPORT ONLY. A flipped box here may be a correct "
+                             "record of a run. Restore only if something LIVE still points at "
+                             "the procedure — and say what points at it.)")
+        for path, lineno, text in hits:
+            lines_out.append(f"  {path.name}:{lineno}")
+            lines_out.append(f"      {text[:170]}")
+        total += len(hits)
+    return total, lines_out
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -190,6 +325,13 @@ def main(argv: list[str] | None = None) -> int:
     g.add_argument("--generate", action="store_true", help="emit the dispatchable bench")
     g.add_argument("--summary", action="store_true", help="verdict counts only")
     g.add_argument("--check", metavar="QUEUE.md", help="audit a hand-written queue's refs")
+    g.add_argument("--quarantine", action="store_true",
+                   help="procedural-looking rows carrying NO do-not-dispatch marker")
+    g.add_argument("--audit-procedures", action="store_true",
+                   help="the invariant: `- [x]` sitting under a DO-NOT-FLIP guard")
+    ap.add_argument("--tree", default="active",
+                    choices=[*TREES, "all"],
+                    help="which handoff tree to audit (default: active)")
     args = ap.parse_args(argv)
 
     if args.check:
@@ -199,12 +341,28 @@ def main(argv: list[str] | None = None) -> int:
             print(line)
         return 1 if rotted else 0
 
+    if args.audit_procedures:
+        trees = list(TREES) if args.tree == "all" else [args.tree]
+        total, report = audit_procedures(trees)
+        print(f"checked boxes under a DO-NOT-FLIP declaration: {total}")
+        for line in report:
+            print(line)
+        return 1 if total else 0
+
     rows = verdicts()
+    if args.quarantine:
+        print(render_quarantine(rows))
+        return 0
+
     if args.summary:
         counts = Counter(r["kind"] for r in rows)
         print(f"open boxes: {len(rows)}")
         for kind, n in counts.most_common():
             print(f"  {kind:<20} {n:5d}  ({n / len(rows) * 100:.1f}%)")
+        declared = sum(1 for r in rows if r["declared_no_dispatch"])
+        held = len(quarantine(rows))
+        print(f"\n  positively DECLARED no-dispatch : {declared:5d}   (read from the handoff)")
+        print(f"  quarantined, undeclared         : {held:5d}   (inferred — needs a marker)")
         return 0
 
     print(render(rows))
