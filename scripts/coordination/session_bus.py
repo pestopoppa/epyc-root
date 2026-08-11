@@ -156,53 +156,396 @@ def _load_schema(bus_root: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+# ----------------------------------------------- vendored draft-7 validator
+#
+# C34 (2026-08-11): the two sides of this bus ran DIFFERENT validators, so a row
+# could pass authoring and be refused at relay — written but never sent, and
+# nobody told. Agents author with `python3 scripts/coordination/session_bus.py`
+# (/usr/bin/python3, 3.13, no jsonschema); the coordinator-daemon runs under the
+# orchestrator venv (3.11, jsonschema 4.26) and validates in full.
+#
+# Pinning an interpreter in the documented command was the obvious fix and is the
+# wrong one: it is a CONVENTION, and the next task brief, wrapper or doc that
+# spells the command the old way silently reopens the identical gap. The two
+# interpreters are also ABI-incompatible (3.13 vs 3.11, and jsonschema pulls the
+# compiled rpds-py), so the venv's site-packages cannot simply be borrowed.
+#
+# So agreement is made STRUCTURAL: when jsonschema is absent, validate against
+# the same schema file with a vendored draft-7 subset. It has no dependencies, so
+# it works under any interpreter, and `tests/test_session_bus.py` asserts it
+# agrees with jsonschema verdict-for-verdict over the whole live bus corpus plus
+# a mutant battery. If the schema ever grows a keyword this does NOT implement,
+# construction REFUSES rather than ignoring the keyword — a validator that skips
+# what it does not understand is the C34 fail-open wearing a different hat.
+
+
+class _UnsupportedSchema(Exception):
+    """The schema uses a construct the vendored validator does not implement."""
+
+
+class _MiniError:
+    """Shaped like `jsonschema.ValidationError` for the three attributes this
+    module and `session_bus_coordinator.py` actually read: path, message,
+    validator (the failing keyword)."""
+
+    __slots__ = ("path", "message", "validator")
+
+    def __init__(self, path: list, message: str, validator: str) -> None:
+        self.path = list(path)
+        self.message = message
+        self.validator = validator
+
+    def __repr__(self) -> str:  # pragma: no cover — debugging aid
+        where = "/".join(str(p) for p in self.path) or "<root>"
+        return f"<_MiniError {where}: {self.message}>"
+
+
+# Keywords the vendored validator ENFORCES.
+_MINI_ASSERTIONS = frozenset({
+    "$ref", "type", "enum", "const", "required", "properties",
+    "additionalProperties", "items", "minItems", "maxItems", "uniqueItems",
+    "minLength", "maxLength", "pattern", "minimum", "maximum",
+    "exclusiveMinimum", "exclusiveMaximum", "allOf", "anyOf", "oneOf", "not",
+    "if", "then", "else",
+})
+# Keywords that assert nothing — safe to carry without enforcing.
+_MINI_ANNOTATIONS = frozenset({
+    "$schema", "$id", "$comment", "title", "description", "default",
+    "examples", "deprecated", "readOnly", "writeOnly", "definitions",
+})
+# Where subschemas live, by keyword shape.
+_MINI_SUBSCHEMA = frozenset({"not", "if", "then", "else"})
+_MINI_SUBSCHEMA_LIST = frozenset({"allOf", "anyOf", "oneOf"})
+_MINI_SUBSCHEMA_MAP = frozenset({"properties", "definitions"})
+
+_MINI_TYPES = frozenset({"object", "array", "string", "number", "integer",
+                         "boolean", "null"})
+
+_MINI_TRUE = object()
+_MINI_FALSE = object()
+
+
+def _mini_unbool(value: Any) -> Any:
+    """JSON-Schema equality keeps True distinct from 1 (and False from 0) while
+    treating 1 and 1.0 as equal. Swapping the bools for sentinels buys both."""
+    if value is True:
+        return _MINI_TRUE
+    if value is False:
+        return _MINI_FALSE
+    return value
+
+
+def _mini_equal(a: Any, b: Any) -> bool:
+    a, b = _mini_unbool(a), _mini_unbool(b)
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_mini_equal(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_mini_equal(a[k], b[k]) for k in a)
+    if isinstance(a, (list, dict)) or isinstance(b, (list, dict)):
+        return False
+    return a == b
+
+
+def _mini_is_type(value: Any, kind: str) -> bool:
+    if kind == "object":
+        return isinstance(value, dict)
+    if kind == "array":
+        return isinstance(value, list)
+    if kind == "string":
+        return isinstance(value, str)
+    if kind == "boolean":
+        return isinstance(value, bool)
+    if kind == "null":
+        return value is None
+    if kind == "number":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if kind == "integer":
+        # draft-6+ widened "integer" to any number with zero fractional part.
+        if isinstance(value, bool):
+            return False
+        if isinstance(value, int):
+            return True
+        return isinstance(value, float) and value.is_integer()
+    raise _UnsupportedSchema(f"unknown type {kind!r}")
+
+
+def _mini_extras_msg(extras: Iterable[str]) -> str:
+    extras = sorted(extras)
+    verb = "was" if len(extras) == 1 else "were"
+    listed = ", ".join(repr(e) for e in extras)
+    return f"Additional properties are not allowed ({listed} {verb} unexpected)"
+
+
+def _mini_audit(schema: Any, where: str = "<root>") -> None:
+    """Refuse a schema this validator would only partially enforce.
+
+    Walking the schema up front is the whole safety argument: an unknown
+    keyword must surface as a REFUSAL to validate, never as a keyword quietly
+    skipped, or the vendored path becomes the fail-open it was written to close.
+    """
+    if isinstance(schema, bool):
+        return
+    if not isinstance(schema, dict):
+        raise _UnsupportedSchema(f"{where}: schema is {type(schema).__name__}, not an object")
+    for key, value in schema.items():
+        spot = f"{where}/{key}"
+        if key in _MINI_SUBSCHEMA:
+            _mini_audit(value, spot)
+        elif key in _MINI_SUBSCHEMA_LIST:
+            if not isinstance(value, list):
+                raise _UnsupportedSchema(f"{spot}: expected a list of schemas")
+            for i, sub in enumerate(value):
+                _mini_audit(sub, f"{spot}/{i}")
+        elif key in _MINI_SUBSCHEMA_MAP:
+            if not isinstance(value, dict):
+                raise _UnsupportedSchema(f"{spot}: expected an object of schemas")
+            for name, sub in value.items():
+                _mini_audit(sub, f"{spot}/{name}")
+        elif key == "items":
+            if isinstance(value, list):
+                for i, sub in enumerate(value):
+                    _mini_audit(sub, f"{spot}/{i}")
+            else:
+                _mini_audit(value, spot)
+        elif key == "additionalProperties":
+            if not isinstance(value, bool):
+                _mini_audit(value, spot)
+        elif key == "type":
+            kinds = value if isinstance(value, list) else [value]
+            for kind in kinds:
+                if kind not in _MINI_TYPES:
+                    raise _UnsupportedSchema(f"{spot}: unknown type {kind!r}")
+        elif key == "$ref":
+            if not isinstance(value, str) or not value.startswith("#/"):
+                raise _UnsupportedSchema(f"{spot}: only local '#/...' $ref is supported, got {value!r}")
+        elif key in _MINI_ASSERTIONS or key in _MINI_ANNOTATIONS:
+            continue
+        else:
+            raise _UnsupportedSchema(
+                f"{spot}: keyword {key!r} is not implemented by the vendored validator")
+
+
+class _MiniDraft7Validator:
+    """A dependency-free draft-7 validator covering exactly the constructs
+    `session_bus.schema.json` uses. Interface-compatible with
+    `jsonschema.Draft7Validator` for `iter_errors` / `is_valid`."""
+
+    def __init__(self, schema: dict) -> None:
+        _mini_audit(schema)
+        self.schema = schema
+
+    # -- public ------------------------------------------------------------
+
+    def iter_errors(self, instance: Any) -> Iterable[_MiniError]:
+        yield from self._errors(self.schema, instance, [])
+
+    def is_valid(self, instance: Any) -> bool:
+        for _ in self.iter_errors(instance):
+            return False
+        return True
+
+    # -- internals ---------------------------------------------------------
+
+    def _resolve(self, ref: str) -> Any:
+        node: Any = self.schema
+        for part in ref[2:].split("/"):
+            part = part.replace("~1", "/").replace("~0", "~")
+            if not isinstance(node, dict) or part not in node:
+                raise _UnsupportedSchema(f"$ref {ref!r} does not resolve")
+            node = node[part]
+        return node
+
+    def _valid(self, schema: Any, instance: Any) -> bool:
+        for _ in self._errors(schema, instance, []):
+            return False
+        return True
+
+    def _errors(self, schema: Any, inst: Any, path: list) -> Iterable[_MiniError]:
+        if schema is True or schema == {}:
+            return
+        if schema is False:
+            yield _MiniError(path, f"{inst!r} is not allowed", "schema")
+            return
+        # draft-7: a $ref supersedes its siblings.
+        if "$ref" in schema:
+            yield from self._errors(self._resolve(schema["$ref"]), inst, path)
+            return
+
+        if "type" in schema:
+            kinds = schema["type"] if isinstance(schema["type"], list) else [schema["type"]]
+            if not any(_mini_is_type(inst, k) for k in kinds):
+                listed = ", ".join(repr(k) for k in kinds)
+                yield _MiniError(path, f"{inst!r} is not of type {listed}", "type")
+                # Deliberately NOT an early return: jsonschema evaluates every
+                # keyword independently, and the type-specific blocks below are
+                # already isinstance-guarded. Returning here would suppress the
+                # enum/const/combinator errors jsonschema still reports, and the
+                # differential test compares the whole error set, not just the
+                # verdict.
+        if "enum" in schema and not any(_mini_equal(inst, c) for c in schema["enum"]):
+            yield _MiniError(path, f"{inst!r} is not one of {schema['enum']!r}", "enum")
+        if "const" in schema and not _mini_equal(inst, schema["const"]):
+            yield _MiniError(path, f"{schema['const']!r} was expected", "const")
+
+        if isinstance(inst, str):
+            yield from self._string_errors(schema, inst, path)
+        if isinstance(inst, (int, float)) and not isinstance(inst, bool):
+            yield from self._number_errors(schema, inst, path)
+        if isinstance(inst, list):
+            yield from self._array_errors(schema, inst, path)
+        if isinstance(inst, dict):
+            yield from self._object_errors(schema, inst, path)
+
+        yield from self._combinator_errors(schema, inst, path)
+
+    def _string_errors(self, schema: dict, inst: str, path: list) -> Iterable[_MiniError]:
+        if "minLength" in schema and len(inst) < schema["minLength"]:
+            yield _MiniError(path, f"{inst!r} is too short", "minLength")
+        if "maxLength" in schema and len(inst) > schema["maxLength"]:
+            yield _MiniError(path, f"{inst!r} is too long", "maxLength")
+        if "pattern" in schema and re.search(schema["pattern"], inst) is None:
+            yield _MiniError(path, f"{inst!r} does not match {schema['pattern']!r}", "pattern")
+
+    def _number_errors(self, schema: dict, inst: Any, path: list) -> Iterable[_MiniError]:
+        if "minimum" in schema and inst < schema["minimum"]:
+            yield _MiniError(path, f"{inst!r} is less than the minimum of "
+                                   f"{schema['minimum']!r}", "minimum")
+        if "maximum" in schema and inst > schema["maximum"]:
+            yield _MiniError(path, f"{inst!r} is greater than the maximum of "
+                                   f"{schema['maximum']!r}", "maximum")
+        if "exclusiveMinimum" in schema and inst <= schema["exclusiveMinimum"]:
+            yield _MiniError(path, f"{inst!r} is less than or equal to the exclusive minimum "
+                                   f"of {schema['exclusiveMinimum']!r}", "exclusiveMinimum")
+        if "exclusiveMaximum" in schema and inst >= schema["exclusiveMaximum"]:
+            yield _MiniError(path, f"{inst!r} is greater than or equal to the exclusive maximum "
+                                   f"of {schema['exclusiveMaximum']!r}", "exclusiveMaximum")
+
+    def _array_errors(self, schema: dict, inst: list, path: list) -> Iterable[_MiniError]:
+        if "minItems" in schema and len(inst) < schema["minItems"]:
+            yield _MiniError(path, f"{inst!r} is too short", "minItems")
+        if "maxItems" in schema and len(inst) > schema["maxItems"]:
+            yield _MiniError(path, f"{inst!r} is too long", "maxItems")
+        if schema.get("uniqueItems"):
+            seen: list = []
+            for item in inst:
+                if any(_mini_equal(item, s) for s in seen):
+                    yield _MiniError(path, f"{inst!r} has non-unique elements", "uniqueItems")
+                    break
+                seen.append(item)
+        if "items" in schema:
+            items = schema["items"]
+            if isinstance(items, list):
+                for i, (sub, value) in enumerate(zip(items, inst)):
+                    yield from self._errors(sub, value, path + [i])
+            else:
+                for i, value in enumerate(inst):
+                    yield from self._errors(items, value, path + [i])
+
+    def _object_errors(self, schema: dict, inst: dict, path: list) -> Iterable[_MiniError]:
+        for key in schema.get("required", []):
+            if key not in inst:
+                yield _MiniError(path, f"{key!r} is a required property", "required")
+        props = schema.get("properties")
+        if schema.get("additionalProperties") is False:
+            extras = [k for k in inst if k not in (props or {})]
+            if extras:
+                yield _MiniError(path, _mini_extras_msg(extras), "additionalProperties")
+        elif isinstance(schema.get("additionalProperties"), dict):
+            for key, value in inst.items():
+                if key not in (props or {}):
+                    yield from self._errors(schema["additionalProperties"], value, path + [key])
+        if props:
+            for key, sub in props.items():
+                if key in inst:
+                    yield from self._errors(sub, inst[key], path + [key])
+
+    def _combinator_errors(self, schema: dict, inst: Any, path: list) -> Iterable[_MiniError]:
+        for sub in schema.get("allOf", []):
+            yield from self._errors(sub, inst, path)
+        if "anyOf" in schema and not any(self._valid(s, inst) for s in schema["anyOf"]):
+            yield _MiniError(path, f"{inst!r} is not valid under any of the given schemas",
+                             "anyOf")
+        if "oneOf" in schema:
+            matched = sum(1 for s in schema["oneOf"] if self._valid(s, inst))
+            if matched == 0:
+                yield _MiniError(path, f"{inst!r} is not valid under any of the given schemas",
+                                 "oneOf")
+            elif matched > 1:
+                yield _MiniError(path, f"{inst!r} is valid under each of the given schemas",
+                                 "oneOf")
+        if "not" in schema and self._valid(schema["not"], inst):
+            yield _MiniError(path, f"{inst!r} should not be valid under {schema['not']!r}", "not")
+        if "if" in schema:
+            branch = "then" if self._valid(schema["if"], inst) else "else"
+            if branch in schema:
+                yield from self._errors(schema[branch], inst, path)
+
+
 def _validator(schema: dict, definition: str):
-    try:
-        import jsonschema  # type: ignore
-    except ImportError:
-        return None
+    """The validator for one definition, IDENTICAL on both sides of the bus.
+
+    Prefers `jsonschema` when present (the daemon's interpreter has it) and
+    otherwise uses the vendored draft-7 subset above, so authoring under
+    `/usr/bin/python3` applies the same schema the relay applies. Returns None
+    only when neither can validate — see `validate_row` for that degrade.
+    """
     sub = {"$schema": schema["$schema"], "definitions": schema["definitions"],
            "$ref": f"#/definitions/{definition}"}
-    return jsonschema.Draft7Validator(sub)
+    try:
+        import jsonschema  # type: ignore
+        return jsonschema.Draft7Validator(sub)
+    except ImportError:
+        pass
+    try:
+        return _MiniDraft7Validator(sub)
+    except _UnsupportedSchema as exc:
+        print(f"session_bus: WARNING — jsonschema is unavailable under {sys.executable} AND the "
+              f"vendored fallback validator refuses this schema ({exc}). Someone added a schema "
+              f"construct the fallback does not implement; implement it in _MiniDraft7Validator "
+              f"rather than leaving authoring on the partial check.", file=sys.stderr)
+        return None
 
 
 def validate_row(bus_root: Path, row: dict, definition: str) -> None:
-    """Raise BusError on a structural violation. Degrades to a required-key
-    check when jsonschema is unavailable, and says so rather than passing
-    silently.
+    """Raise BusError on a structural violation, against the FULL schema, under
+    any interpreter.
 
-    C34 (2026-07-29): IT ONLY SAID SO WHEN IT FAILED. On the success path the partial
-    check returned silently, so "validated" and "checked six keys exist" were
-    indistinguishable to the caller — and that distinction is the whole ballgame here,
-    because the two sides of this bus run different interpreters:
+    C34, filed 2026-07-29, closed 2026-08-11. The two sides of this bus run
+    different interpreters — agents author with `python3
+    scripts/coordination/session_bus.py append ...` (the command CLAUDE.md,
+    BUS_PROTOCOL.md and every task brief specify, i.e. `/usr/bin/python3`, which
+    has no jsonschema), while the coordinator-daemon runs under the orchestrator
+    venv, which has 4.26.0 — and until today only ONE of them validated. Authoring
+    degraded to a six-required-key check, relay applied the whole schema, so a
+    message could pass authoring and be REFUSED at relay: the write succeeded, the
+    send did not, and nobody was told. Measured on the live bus 2026-08-11: 368 of
+    1137 outbox rows (32%) were in exactly that state, including both C27 operator
+    gates.
 
-      * agents author with `python3 scripts/coordination/session_bus.py append ...`,
-        the command CLAUDE.md, BUS_PROTOCOL.md and every task brief specify.
-        `/usr/bin/python3` has NO jsonschema, so authoring gets the 6-key check;
-      * the coordinator-daemon runs under the orchestrator venv, which HAS jsonschema
-        (4.26.0), so `relay_outbox_messages` applies the FULL schema.
+    `_validator` now falls back to a vendored draft-7 subset instead of returning
+    None, so both sides apply `session_bus.schema.json` itself and CANNOT disagree.
+    Consequence, and the point: `append` now REFUSES at the author what the relay
+    would have refused later. That is the correct place to fail — the rows it
+    refuses were never being delivered.
 
-    So a message can pass authoring and be REJECTED at relay, and it is then never
-    delivered — the write succeeded, the send did not, and nobody is told. Measured
-    2026-07-29: 217 of 341 live outbox rows (64%) are in exactly that state, 12 of
-    them operator items including both gates from C27 and three from `mainA`.
-
-    The warning is unconditional and goes to stderr, because a degradation nobody sees
-    is not a degradation anyone acts on. It does NOT refuse: refusing would break every
-    agent on the documented command with no interpreter to switch to mid-task, which
-    trades a silent gap for a total outage. Making the two sides agree is a separate,
-    escalated decision.
+    The partial-check degrade below survives for one case only: the schema grows a
+    construct the vendored validator does not implement, which it reports rather
+    than skipping. It stays fail-open-with-a-warning because refusing there would
+    take the whole fleet's bus down over a schema edit, and the warning is
+    unconditional on stderr because a degradation nobody sees is not a degradation
+    anyone acts on.
     """
     validator = _validator(_load_schema(bus_root), definition)
     if validator is None:
         required = {"msg": ["schema_version", "id", "ts", "from", "to", "kind"],
                     "queue_row": ["schema_version", "ts", "task_id", "status", "lane",
                                   "gating", "epoch"]}[definition]
-        print(f"session_bus: WARNING — jsonschema is unavailable under {sys.executable}, so this "
-              f"{definition} was checked for {len(required)} required keys ONLY, not against "
+        print(f"session_bus: WARNING — no validator could be built under {sys.executable}, so "
+              f"this {definition} was checked for {len(required)} required keys ONLY, not against "
               f"session_bus.schema.json. The coordinator-daemon DOES validate in full and will "
-              f"refuse to relay a row this partial check let through. Re-run with an interpreter "
-              f"that has jsonschema to validate properly.", file=sys.stderr)
+              f"refuse to relay a row this partial check let through. See the _UnsupportedSchema "
+              f"warning above and implement the missing keyword in _MiniDraft7Validator.",
+              file=sys.stderr)
         missing = [k for k in required if k not in row]
         if missing:
             raise BusError(f"missing required field(s) {missing} (jsonschema unavailable — "

@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import sys
 import time
 from pathlib import Path
 
@@ -1768,6 +1769,11 @@ def test_c34_partial_validation_warns_on_the_SUCCESS_path_too(
     jsonschema — the 6-key check) while the daemon runs under the orchestrator venv
     (full schema). A message can pass authoring and be refused at relay, and nobody is
     told. 217 of 341 live outbox rows were in exactly that state.
+
+    2026-08-11: the DEGRADE ITSELF is now reachable only when the schema grows a
+    construct the vendored validator refuses (`_validator` no longer returns None
+    merely because jsonschema is missing). This test keeps guarding that last
+    resort — it must still announce itself rather than pass silently.
     """
     monkeypatch.setattr(bus, "_validator", lambda *_a: None)
     row = _message("alice", "bob", "finding", seq=1)
@@ -1776,7 +1782,7 @@ def test_c34_partial_validation_warns_on_the_SUCCESS_path_too(
     bus.validate_row(bus_root, row, "msg")       # must NOT raise — it is a degradation
 
     err = capsys.readouterr().err
-    assert "jsonschema is unavailable" in err
+    assert "no validator could be built" in err
     assert "required keys ONLY" in err
     assert "coordinator-daemon DOES validate in full" in err
 
@@ -1789,7 +1795,7 @@ def test_c34_partial_validation_still_raises_on_a_missing_required_key(
 
     with pytest.raises(bus.BusError, match="missing required field"):
         bus.validate_row(bus_root, {"schema_version": "x", "id": "y"}, "msg")
-    assert "jsonschema is unavailable" in capsys.readouterr().err
+    assert "no validator could be built" in capsys.readouterr().err
 
 
 def test_c34_full_validation_stays_silent(
@@ -1893,3 +1899,281 @@ def test_claim_does_not_disturb_the_single_writer_lint(bus_root: Path) -> None:
     bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice", "--row", "a row"])
 
     assert bus.main(["--bus-root", str(bus_root), "validate"]) == 0
+
+
+# --------------------------------------------------------------------- C34
+#
+# C34: agents author under /usr/bin/python3 (no jsonschema) and the daemon
+# relays under the orchestrator venv (jsonschema 4.26), so for as long as
+# `_validator` returned None without jsonschema the two sides applied DIFFERENT
+# rules — 368 of 1137 live outbox rows passed authoring and were refused at
+# relay. `session_bus` now falls back to a vendored draft-7 subset. These tests
+# exist to prove the fallback is not a second, subtly different rulebook: what
+# it accepts and rejects must match jsonschema exactly, or C34 has merely moved.
+
+SCHEMA_DEFINITIONS = ("msg", "queue_row")
+
+
+def _live_schema() -> dict:
+    return json.loads((LIVE_BUS_ROOT / "session_bus.schema.json").read_text(encoding="utf-8"))
+
+
+def _sub_schema(schema: dict, definition: str) -> dict:
+    return {"$schema": schema["$schema"], "definitions": schema["definitions"],
+            "$ref": f"#/definitions/{definition}"}
+
+
+def _error_set(validator, row: dict) -> set:
+    """(path, failing keyword) pairs — comparable across implementations, unlike
+    the human-facing message text."""
+    return {("/".join(str(p) for p in e.path), e.validator) for e in validator.iter_errors(row)}
+
+
+def _reference_validator(definition: str):
+    jsonschema = pytest.importorskip("jsonschema", reason="reference validator not installed")
+    return jsonschema.Draft7Validator(_sub_schema(_live_schema(), definition))
+
+
+def _vendored(definition: str) -> bus._MiniDraft7Validator:
+    return bus._MiniDraft7Validator(_sub_schema(_live_schema(), definition))
+
+
+VALID_MSG = {
+    "schema_version": "session_bus.msg.v1",
+    "id": "msg-20260811T090000Z-1-mainD",
+    "ts": "2026-08-11T09:00:00+00:00",
+    "from": "mainD",
+    "to": "coordinator-agent",
+    "kind": "status",
+}
+
+VALID_QUEUE_ROW = {
+    "schema_version": "session_bus.queue.v1",
+    "ts": "2026-08-11T09:00:00+00:00",
+    "task_id": "c-own-round-4",
+    "status": "READY",
+    "lane": "none",
+    "gating": "none",
+    "epoch": 14,
+}
+
+
+def _mutants() -> list[tuple[str, str, dict]]:
+    """A battery aimed at every assertion keyword the live schema uses, plus the
+    real per-kind `allOf`/`if`/`then` payload rules."""
+    cases: list[tuple[str, str, dict]] = [("msg", "pristine", dict(VALID_MSG)),
+                                          ("queue_row", "pristine", dict(VALID_QUEUE_ROW))]
+    for definition, base in (("msg", VALID_MSG), ("queue_row", VALID_QUEUE_ROW)):
+        for key in base:
+            cases.append((definition, f"drop:{key}", {k: v for k, v in base.items() if k != key}))
+            cases.append((definition, f"nulled:{key}", {**base, key: None}))
+            cases.append((definition, f"numbered:{key}", {**base, key: 7}))
+            cases.append((definition, f"listed:{key}", {**base, key: []}))
+            cases.append((definition, f"emptied:{key}", {**base, key: ""}))
+    cases += [
+        # additionalProperties — the 217-row `_renamed_from` class, and friends.
+        ("msg", "extra:_renamed_from", {**VALID_MSG, "_renamed_from": "claude-main"}),
+        ("msg", "extra:several", {**VALID_MSG, "summary": "s", "status": "done", "next": "x"}),
+        ("queue_row", "extra:one", {**VALID_QUEUE_ROW, "note": "hi"}),
+        # enum
+        ("msg", "kind:blocker", {**VALID_MSG, "kind": "blocker"}),
+        ("msg", "kind:decision", {**VALID_MSG, "kind": "decision"}),
+        ("queue_row", "lane:tpu", {**VALID_QUEUE_ROW, "lane": "tpu"}),
+        ("queue_row", "status:bogus", {**VALID_QUEUE_ROW, "status": "PARTIALLY_DONE"}),
+        # const
+        ("msg", "schema_version:v2", {**VALID_MSG, "schema_version": "session_bus.msg.v2"}),
+        # pattern
+        ("msg", "id:malformed", {**VALID_MSG, "id": "msg-2026-08-11-1-mainD"}),
+        ("msg", "id:ok", {**VALID_MSG, "id": "msg-20260811T090000Z-42-coordinator-agent"}),
+        ("msg", "priority:P9", {**VALID_MSG, "priority": "P9"}),
+        ("msg", "priority:P0", {**VALID_MSG, "priority": "P0"}),
+        ("queue_row", "task_id:leading-dot", {**VALID_QUEUE_ROW, "task_id": ".hidden"}),
+        # boolean / number types
+        ("msg", "requires_ack:string", {**VALID_MSG, "requires_ack": "yes"}),
+        ("msg", "requires_ack:true", {**VALID_MSG, "requires_ack": True}),
+        ("msg", "action_required:one", {**VALID_MSG, "action_required": 1}),
+        # exclusiveMinimum / minimum / integer
+        ("msg", "ack_deadline:zero", {**VALID_MSG, "ack_deadline_s": 0}),
+        ("msg", "ack_deadline:positive", {**VALID_MSG, "ack_deadline_s": 30}),
+        ("queue_row", "epoch:negative", {**VALID_QUEUE_ROW, "epoch": -1}),
+        ("queue_row", "epoch:float", {**VALID_QUEUE_ROW, "epoch": 2.5}),
+        ("queue_row", "epoch:whole-float", {**VALID_QUEUE_ROW, "epoch": 2.0}),
+        ("queue_row", "epoch:bool", {**VALID_QUEUE_ROW, "epoch": True}),
+        ("queue_row", "max_attempts:zero", {**VALID_QUEUE_ROW, "max_attempts": 0}),
+        # nullable union type
+        ("queue_row", "owner:null", {**VALID_QUEUE_ROW, "owner": None}),
+        ("queue_row", "owner:number", {**VALID_QUEUE_ROW, "owner": 3}),
+        # array: items / minItems / uniqueItems
+        ("msg", "routing:empty", {**VALID_MSG, "needs_routing_to": []}),
+        ("msg", "routing:dupes", {**VALID_MSG, "needs_routing_to": ["mainA", "mainA"]}),
+        ("msg", "routing:blank", {**VALID_MSG, "needs_routing_to": [""]}),
+        ("msg", "routing:number", {**VALID_MSG, "needs_routing_to": [1]}),
+        ("msg", "routing:ok", {**VALID_MSG, "needs_routing_to": ["mainA", "auditor"]}),
+        ("queue_row", "depends_on:mixed", {**VALID_QUEUE_ROW, "depends_on": ["a", 2]}),
+        # per-kind allOf/if/then payload rules
+        ("msg", "assign:no-payload", {**VALID_MSG, "kind": "task-assign", "task_id": "t"}),
+        ("msg", "assign:payload-thin",
+         {**VALID_MSG, "kind": "task-assign", "task_id": "t", "payload": {"lane": "none"}}),
+        ("msg", "assign:payload-full",
+         {**VALID_MSG, "kind": "task-assign", "task_id": "t",
+          "payload": {"lane": "none", "lease_expires_ts": "2026-08-11T10:00:00+00:00",
+                      "epoch": 14}}),
+        ("msg", "assign:lane-bogus",
+         {**VALID_MSG, "kind": "task-assign", "task_id": "t",
+          "payload": {"lane": "quantum", "lease_expires_ts": "x", "epoch": 14}}),
+        ("msg", "assign:no-task_id",
+         {**VALID_MSG, "kind": "task-assign",
+          "payload": {"lane": "none", "lease_expires_ts": "x", "epoch": 14}}),
+        ("msg", "token:no-validated",
+         {**VALID_MSG, "kind": "token-request",
+          "payload": {"gate_id": "g", "block_ref": "b"}}),
+        ("msg", "token:validated-thin",
+         {**VALID_MSG, "kind": "token-request",
+          "payload": {"gate_id": "g", "block_ref": "b", "validated": {"cmd": "true"}}}),
+        ("msg", "token:full",
+         {**VALID_MSG, "kind": "token-request",
+          "payload": {"gate_id": "g", "block_ref": "b",
+                      "validated": {"cmd": "true", "dry_run_exit": 0,
+                                    "dry_run_evidence": "ok"}}}),
+        ("msg", "reprioritize:thin",
+         {**VALID_MSG, "kind": "reprioritize", "payload": {"task_id": "t"}}),
+        ("msg", "reprioritize:bad-scope",
+         {**VALID_MSG, "kind": "reprioritize",
+          "payload": {"task_id": "t", "new_priority": "P1", "scope": "everywhere"}}),
+        ("msg", "revoke:no-reason",
+         {**VALID_MSG, "kind": "lease-revoke", "task_id": "t", "payload": {}}),
+        ("msg", "propose:thin",
+         {**VALID_MSG, "kind": "task-propose", "task_id": "t", "payload": {"lane": "none"}}),
+        ("msg", "propose:full",
+         {**VALID_MSG, "kind": "task-propose", "task_id": "t",
+          "payload": {"lane": "none", "gating": "none", "spec_ref": "h.md#a",
+                      "summary": "s"}}),
+        ("msg", "propose:est-negative",
+         {**VALID_MSG, "kind": "task-propose", "task_id": "t",
+          "payload": {"lane": "none", "gating": "none", "spec_ref": "h.md#a",
+                      "summary": "s", "est_wall_clock_h": -1}}),
+        # payload must be an object at all
+        ("msg", "payload:string", {**VALID_MSG, "payload": "not an object"}),
+        # non-object instances entirely
+        ("msg", "instance:list", []),
+        ("msg", "instance:string", "nope"),
+    ]
+    return cases
+
+
+@pytest.mark.parametrize("definition,label,row", [(d, l, r) for d, l, r in _mutants()],
+                         ids=[f"{d}-{l}" for d, l, _ in _mutants()])
+def test_vendored_validator_matches_jsonschema_on_a_mutant_battery(
+        definition: str, label: str, row) -> None:
+    """Verdict AND error set must agree. Verdict alone would pass a fallback that
+    rejects for the wrong reason, and the reason is what the author reads."""
+    reference, vendored = _reference_validator(definition), _vendored(definition)
+    assert vendored.is_valid(row) == reference.is_valid(row), (
+        f"{definition}/{label}: vendored says valid={vendored.is_valid(row)}, "
+        f"jsonschema says valid={reference.is_valid(row)}")
+    assert _error_set(vendored, row) == _error_set(reference, row), f"{definition}/{label}"
+
+
+def test_vendored_validator_matches_jsonschema_on_the_whole_live_bus() -> None:
+    """The corpus that mattered: every row actually on the bus. Read-only.
+
+    A synthetic battery can only test the failure modes its author imagined;
+    12 days of real agent output is the sample that found `_renamed_from`.
+    """
+    rows: list[tuple[str, str, dict]] = []
+    for area, definition in (("outbox", "msg"), ("inbox", "msg"), ("queue.jsonl", "queue_row")):
+        paths = ([LIVE_BUS_ROOT / area] if area.endswith(".jsonl")
+                 else sorted((LIVE_BUS_ROOT / area).glob("*.jsonl")))
+        for path in paths:
+            if not path.exists():
+                continue
+            for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                if not line.strip():
+                    continue
+                try:
+                    rows.append((f"{path.name}:{lineno}", definition, json.loads(line)))
+                except json.JSONDecodeError:
+                    continue
+    assert len(rows) > 500, f"live corpus looks truncated ({len(rows)} rows) — is the bus intact?"
+
+    validators = {d: (_reference_validator(d), _vendored(d)) for d in SCHEMA_DEFINITIONS}
+    disagreements = []
+    for where, definition, row in rows:
+        reference, vendored = validators[definition]
+        if _error_set(vendored, row) != _error_set(reference, row):
+            disagreements.append((where, sorted(_error_set(vendored, row)),
+                                  sorted(_error_set(reference, row))))
+    assert not disagreements, f"{len(disagreements)} disagreements, first: {disagreements[0]}"
+
+
+def test_vendored_validator_refuses_a_schema_it_would_only_partly_enforce() -> None:
+    """The fail-open this whole fix exists to close, one level up: a validator
+    that ignores the keyword it does not know reports PASS on a row that
+    violates it. Construction must refuse instead."""
+    schema = _live_schema()
+    schema["definitions"]["msg"]["properties"]["ts"]["format"] = "date-time"
+    with pytest.raises(bus._UnsupportedSchema, match="format"):
+        bus._MiniDraft7Validator(_sub_schema(schema, "msg"))
+
+    schema = _live_schema()
+    schema["definitions"]["msg"]["properties"]["from"]["$ref"] = "https://example.com/x.json"
+    with pytest.raises(bus._UnsupportedSchema, match=r"\$ref"):
+        bus._MiniDraft7Validator(_sub_schema(schema, "msg"))
+
+
+@pytest.fixture()
+def no_jsonschema(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Reproduce the authoring interpreter: `import jsonschema` raises."""
+    monkeypatch.setitem(sys.modules, "jsonschema", None)
+    with pytest.raises(ImportError):
+        import jsonschema  # noqa: F401
+
+
+def test_authoring_without_jsonschema_still_applies_the_full_schema(
+        bus_root: Path, no_jsonschema: None) -> None:
+    """C34 itself. Before the fix this row appended cleanly under
+    /usr/bin/python3 and was then refused at relay, forever, silently."""
+    _provision(bus_root, *AGENTS)
+    assert bus._validator(_live_schema(), "msg").__class__ is bus._MiniDraft7Validator
+
+    with pytest.raises(bus.BusError, match="Additional properties"):
+        bus.validate_row(LIVE_BUS_ROOT, {**VALID_MSG, "_renamed_from": "claude-main"}, "msg")
+    with pytest.raises(bus.BusError, match="not one of"):
+        bus.validate_row(LIVE_BUS_ROOT, {**VALID_MSG, "kind": "blocker"}, "msg")
+    with pytest.raises(bus.BusError, match="required property"):
+        bus.validate_row(LIVE_BUS_ROOT, {**VALID_MSG, "kind": "task-assign", "task_id": "t",
+                                         "payload": {"lane": "none"}}, "msg")
+
+
+def test_authoring_without_jsonschema_still_accepts_a_compliant_row(
+        bus_root: Path, no_jsonschema: None, capsys: pytest.CaptureFixture[str]) -> None:
+    """The other direction, and the one that takes the fleet down if it is wrong:
+    a guard that forbids its own idiom passes review and breaks production. The
+    documented `append` command must keep working, silently, with no jsonschema.
+    """
+    _provision(bus_root, *AGENTS)
+    capsys.readouterr()
+
+    assert bus.main(["--bus-root", str(bus_root), "append", "--agent", "alice",
+                     "--target", "outbox", "--json",
+                     json.dumps({"to": "bob", "kind": "status",
+                                 "payload": {"summary": "still here"}})]) == 0
+    captured = capsys.readouterr()
+    assert "WARNING" not in captured.err, captured.err
+
+    written = _read_jsonl(bus_root / "outbox" / "alice.jsonl")
+    assert len(written) == 1 and written[0]["kind"] == "status"
+    # And the daemon's own full-schema check agrees, which is the whole point.
+    bus.validate_row(bus_root, written[0], "msg")
+
+
+def test_append_refuses_an_unrelayable_row_at_the_author(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Failing at the author is the correct place: the rows this refuses were
+    never being delivered anyway, they were just being written."""
+    _provision(bus_root, *AGENTS)
+
+    assert bus.main(["--bus-root", str(bus_root), "append", "--agent", "alice",
+                     "--target", "outbox", "--json",
+                     json.dumps({"to": "bob", "kind": "blocker"})]) != 0
+    assert not _read_jsonl(bus_root / "outbox" / "alice.jsonl")
