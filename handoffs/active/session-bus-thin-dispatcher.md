@@ -2115,7 +2115,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     fail-open (three silent-pass paths) and names the in-repo fail-closed pattern to copy. **Build
     it fail-closed or not at all.** Source: `/workspace/tmp/coord-coldstart/coordinator-config-repair.md`.
 
-- [x] **R7 (NEW) — the supervisor could not tell a daemon running OLD CODE from a healthy one, and
+- [x] **C42 (NEW) — the supervisor could not tell a daemon running OLD CODE from a healthy one, and
   that is the pattern behind five committed-not-live gaps in one evening.** ✅ 2026-08-11 —
   `mainD`. Raised by the operator from the recurrence itself: a restart at 22:18:12Z was followed by
   an R2 commit at 22:21:25Z, so that fix needed a **second** human-initiated restart. `health_ok`
@@ -2123,6 +2123,10 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   answers yes to both, so C39, C28, C38's tick path, R1 and R2 all sat inert until a human noticed.
   **A delivery gap in the same family as R1** — the mechanism worked and nothing carried its result
   to where it takes effect.
+  *(Numbered C42, not R7. It was first filed as R7 by analogy with the coordinator's config-repair
+  report, but R1-R6 are that report's items; this one was found from the recurrence itself and is a
+  C-OWN delivery-plane defect, so it belongs in the series that owns the plane. Renumbered
+  2026-08-11 on the operator's point that a proposal on the bus with no C-number is not filed.)*
   `check_stale_source` compares the newest source mtime against the running process's start time and
   restarts **once per source version**; identity comes from the heartbeat's own pid, never a name
   pattern (INC-20260731). Fail-closed on every unknown per the R2 discipline: no heartbeat, no pid,
