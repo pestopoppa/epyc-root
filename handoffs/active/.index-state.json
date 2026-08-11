@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 55,
       "oldest_advance": "2026-07-29",
-      "open": 429
+      "open": 425
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -129,10 +129,10 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 181,
+      "closed": 185,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 24,
+      "open": 20,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
@@ -2407,7 +2407,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "Run the authorized v9/hardened CPU controls; then the first real CPU candidate campaign",
+      "next_action": "Run the first real CPU candidate on the full host after explicit inference permission",
       "track": "autokernel research loop"
     },
     "INF-07": {

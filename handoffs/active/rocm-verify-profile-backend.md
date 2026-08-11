@@ -400,7 +400,19 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     `scripts/benchmark/run_rocm_q4k_fp64_matrix.py`.
   - [ ] **RVP-C2-6b — Correct the stock gfx90a Q4_K MMQ path without changing κ=1.5.** Preserve the
     force-rocBLAS 43/43 control, retain all 25 force-MMQ failures as regression cases, and do not rank
-    this surface until the corrected MMQ arm passes the same matrix.
+    this surface until the corrected MMQ arm passes the same matrix. **2026-08-11 diagnostic:** a
+    separately compiled force-MMQ DP4A arm reproduced the same 25/43 failures (maximum ratio 3.0178),
+    so the defect is not the gfx90a MFMA implementation. It is common to MMQ's Q8 activation staging;
+    do not spend the repair on an MFMA-only patch. Receipt:
+    `/mnt/raid0/llm/autokernel/probes/rvp-c2-6b-q4k-dp4a-20260811T1300Z/receipt.json`, SHA-256
+    `c955f5df4cd584586b0e59746b8dc1e2542fbde57a558de0257ba616dee78021`.
+    A second Q4_K-only least-squares refinement of the existing per-32 Q8 activation scale also
+    failed 25/43 (maximum ratio 2.8834) while the rocBLAS control remained clean; it was reverted, so
+    no source delta survives. Receipt:
+    `/mnt/raid0/llm/autokernel/probes/rvp-c2-6b-q4k-ls-scale-20260811T1430Z/receipt.json`, SHA-256
+    `476e6fb3fc004b30067ea9de4826a094a90db529c610670673c159e803342d89`.
+    The repair therefore remains open below the MFMA-vs-DP4A choice and below a one-parameter
+    least-squares activation-scale adjustment.
 - [ ] **RVP-C2-7 — Degenerate and insensitive-case screening.** Reference-only, 3 seeds × 4
   transforms, run once per suite version, plus an input-*insensitivity* screen (does the output move
   at all when the input does?) and a seed-invariance screen. **Audit our own `(0.9, 1.1)`-style ranges

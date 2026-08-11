@@ -3484,7 +3484,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-11T10:47:37Z",
+  "generated_at": "2026-08-11T11:16:47Z",
   "nodes": [
     {
       "age_days": 12,
@@ -4178,13 +4178,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 181,
+      "closed": 185,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-11",
-      "next_action": "Run the authorized v9/hardened CPU controls; then the first real CPU candidate campaign",
-      "open": 24,
+      "next_action": "Run the first real CPU candidate on the full host after explicit inference permission",
+      "open": 20,
       "state": "active",
       "track": "autokernel research loop"
     },
