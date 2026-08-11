@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** AK-BH-1/2 COMPLETE / Q4_K MMQ FAILURES OPEN / V9 CONTROLS REQUIRED — updated 2026-08-11
+**Status:** AK-BH-1–4 COMPLETE / CPU SPLIT-LANE RANKING REJECTED / Q4_K MMQ REPAIR OPEN — updated 2026-08-11
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -22,7 +22,13 @@
 the retired v8 era and remain valuable regression evidence; they do **not** authorize ranking on
 frozen v9 plus the hardened measurement overlay. The current v9/hardened five-control calibration is
 authorized and empirical; the first CPU candidate still requires fresh inference permission. The
-no-inference closure added evaluation-event v4 transfer links, adjacent noise-floor display, the
+AK-LN-2/AK-X-5a calibration has now rejected every historical CPU split depth as a general ranking
+proxy, so that first campaign must verify on the full host unless a narrower change-class calibration
+later passes. AK-BH-3 found that the implicit CPU flash-attention default behaves like the fast
+explicit-ON arm on the measured 0.5B Q4_K_M surface, but the choice must still be explicit. AK-BH-4
+now enforces exact-surface strongest-provider selection. These research controls are durable in
+`5fbd471b` (promoted to research `main` via `caa380f7`). The no-inference closure added
+evaluation-event v4 transfer links, adjacent noise-floor display, the
 prior-art gate, historical 4/8/16/32/48-way CPU lane registry, op-level fan-out planning, compile-only
 artifact veto, the two permitted static ROCm audits, era-local calibration authority, exported-ELF
 version coverage, and structured CPU-reference receipts for passing backend-op cases. The first-campaign
@@ -3686,12 +3692,19 @@ the standing protocol may make a claim.
   declared threshold — never by convenience. Available today: one exclusive GPU device claim plus
   historically exercised CPU shapes at 4×48t, 8×24t, 16×12t, 32×6t and 48×4t. Those records establish
   fan-out feasibility, not rank fidelity.
-- [ ] **AK-LN-2 — Partition-depth calibration.** Run one fixed candidate set at full-machine and at
+- [x] **AK-LN-2 — Partition-depth calibration.** ✅ 2026-08-11. Run one fixed candidate set at full-machine and at
   **every historically exercised split depth** — 4×48t, 8×24t, 16×12t, 32×6t and 48×4t — and
   measure each split's **rank correlation** against the full-machine ordering. The preserved sweep
   proves those fan-outs run; it does not prove rank fidelity. Needs no new candidates — reuse a banked
   set. **Pre-register the prediction** before running: bandwidth-bound changes lose fidelity fast as
-  partitions shrink (they compete for the same memory system), instruction-level changes hold.
+  partitions shrink (they compete for the same memory system), instruction-level changes hold. The
+  pre-registered anchor/IQK-off/flash-attention-off calibration found full-machine rank fidelity 1.0.
+  Depth 4 retained the ordering (1.0), but depths 8, 16, 32 and 48 inverted IQK-off versus
+  flash-attention-off (Spearman 0.5). No historical split depth is therefore admitted as a ranking
+  proxy by this candidate set. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/ak-ln-2-x5a-lanes-20260811T1400Z/receipt.json`, SHA-256
+  `c207a46f7e1868deeca4628faedfd47b933839a921b0b6d472055ce80c415618`. Research runner:
+  `scripts/benchmark/run_autokernel_cpu_lane_calibration.py`.
   Pre-registration is what makes a confirmation informative rather than a post-hoc story.
 - [x] **AK-LN-3 — Cross-lane A/A control — necessary, and NOT sufficient.** ✅ 2026-08-10. §15.2's A/A control run
   per lane detects a per-lane-position offset. It **cannot** detect bias correlated with mechanism
@@ -3715,7 +3728,9 @@ the standing protocol may make a claim.
 Implementation evidence: `lanes.py` records each lane's physical-core-share cost, capacity, proxy,
 CPU set, memory binding and historical evidence reference. It refuses mmap and physical-core overlap,
 requires A/A plus class-specific rank calibration, falls back to full verification without it, and
-fans candidates over the measured highest-share op in waves. AK-LN-2 remains empirical.
+fans candidates over the measured highest-share op in waves. The AK-LN-2 campaign rejected every
+historical split as a general ranking proxy; those lane shapes remain execution capacity only unless a
+narrower change-class calibration later clears the same gates.
 
 ### AK-BH — baseline honesty (needs a GPU window; sequence T0 probes first)
 
@@ -3749,12 +3764,21 @@ GPU cost before any GPU claim is filed.
   `/mnt/raid0/llm/autokernel/probes/ak-bh-2-factorial-20260811T0952Z/receipt.json`, SHA-256
   `2a53cee2d8513737eca894e0f34152549932b75f3e04ef541cdee1848472cfdf`. Research runner:
   `scripts/benchmark/run_autokernel_gpu_factorial.py`.
-- [ ] **AK-BH-3 — CPU-lane baseline-honesty arm, run concurrently with AK-BH-2.** Different claim type,
-  different resource (correction 2 above), so it costs no additional wall-clock. Establishes whether
-  the CPU-side anchor carries the same class of unpinned-default exposure.
-- [ ] **AK-BH-4 — Encode strongest-baseline selection by exact measured surface.** Prefill GEMM cells
-  must compare against the stronger of rocBLAS and hipBLASLt for that shape; factorial flags must be
-  explicit, and the single 0.5B result must not transfer to another model/quant without recalibration.
+- [x] **AK-BH-3 — CPU-lane baseline-honesty arm, run concurrently with AK-BH-2. ✅ 2026-08-11** The
+  full-host CPU claim remained held across three randomized 30-repetition hardened arms. On the exact
+  Qwen2.5-Coder-0.5B Q4_K_M prefill surface, implicit AUTO measured 5,569.961069 t/s, explicit ON
+  5,451.900259 t/s, and explicit OFF 2,741.087873 t/s. AUTO therefore behaves like the fast ON path
+  here while hiding the choice in argv. Every exact measurement window retained package-power
+  evidence; the counter permission was restored to `0400`. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/ak-bh-3-cpu-baseline-honesty-20260811T1330Z/receipt.json`, SHA-256
+  `157580a4133a5b7404384e16a4f0b3737f54480365694cfdfd079a6ce9c99911`. Research runner:
+  `scripts/benchmark/run_autokernel_cpu_baseline_honesty.py`.
+- [x] **AK-BH-4 — Encode strongest-baseline selection by exact measured surface. ✅ 2026-08-11**
+  `evaluator/baseline_honesty.py` requires both rocBLAS and hipBLASLt observations for one identical
+  model SHA, quant, operation, shape, dtype, build SHA, and explicit factor set; selects by declared
+  metric direction; refuses `auto`, missing or duplicate provider arms, metric mismatch, and any
+  candidate model/quant/shape/factor transfer. Nine focused tests pass. Research commit `5fbd471b`.
+  The earlier 0.5B result is consequently evidence for that surface only, never a portable baseline.
 
 ### AK-OP — operator-only (measurement trust boundary is human-amendment-only)
 
@@ -3827,10 +3851,16 @@ so they carry derived actionables the plan predates._
   counter wrap and are labelled `shared_package_window`, never lane-exclusive power. Missing or
   unreadable powercap data is `COULD_NOT_CHECK` and prevents a CPU campaign from claiming the control.
   Empirical cross-lane coupling still belongs to the authorized lane-calibration campaign.
-- [ ] **AK-X-5a — Run the cross-lane package-power/frequency acceptance.** Exercise the same fixed
+- [x] **AK-X-5a — Run the cross-lane package-power/frequency acceptance.** ✅ 2026-08-11. Exercise the same fixed
   candidate set across every AK-LN-2 split depth with readable `energy_uj`; retain each exact-window
   shared-package receipt and test whether lane position or concurrent depth changes the A/A distribution.
-  This is empirical inference work and requires the operator's explicit permission.
+  This is empirical inference work and requires the operator's explicit permission. The authorized
+  campaign retained readable exact-window package-energy evidence for every arm and restored
+  `energy_uj` to mode `0400`. Every split failed the predeclared combined acceptance: maximum anchor
+  lane-position deviations were 37.36%, 53.25%, 77.43%, 36.19% and 16.28% at depths 4, 8, 16, 32 and
+  48 respectively (limit 10%); loaded-frequency ratios to full were 0.815, 0.829, 0.794, 0.743 and
+  0.800 (limit 0.8). The full CPU claim remained held through all waves and was released. Evidence is
+  the AK-LN-2 receipt above.
 - [x] **AK-X-6 — Turn-budget stopping rule driven by AK-PT-1.** Refine turns continue only while the
   rescued-kernel speedup distribution overlaps the persistent-kernel distribution; once a turn admits
   only rescued kernels below the contribution floor it is repair-only and does not advance the search.

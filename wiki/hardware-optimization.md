@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds AutoKernel C4 live profile integration and its bounded rocprofv2 scope; prior correctness, clock, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-11 (adds AutoKernel CPU baseline honesty, lane-calibration rejection, and Q4_K repair diagnostics; prior C4, correctness, clock, roofline, topology, and quant-path findings retained)
 **Sources**: 96+ documents
 
 ## Compiled Update — 2026-08-11 (AutoKernel live correctness controls)
@@ -77,6 +77,27 @@ inside the fused kernel, so the representative-shape counter/source-timer questi
 IQ2_XXS is a durable tool boundary: ten unprofiled repetitions pass, but active `rocprofv2` capture
 exits 139 even in one process. That failed receipt is evidence about profiler scope, not an
 architectural bandwidth floor; the next IQ2 probe must use a non-`rocprofv2` device timer/counter path.
+
+CPU baseline honesty now has the same exact-surface rule. On Qwen2.5-Coder-0.5B Q4_K_M prefill,
+implicit AUTO measured **5,569.96 t/s**, explicit flash-attention ON **5,451.90 t/s**, and explicit
+OFF **2,741.09 t/s** across randomized 30-repetition hardened arms. AUTO behaves like ON here, but
+that observation does not authorize an implicit or portable default. The evaluator now requires both
+provider arms on one identical model/quant/op/shape/dtype/build/factor surface, selects by declared
+metric direction, and rejects any transfer to a different candidate surface.
+
+The historical CPU fan-out shapes are execution capacity, not ranking capacity. Against the
+full-machine anchor/IQK-off/flash-attention-off order, depth 4 retained Spearman 1.0, but depths 8,
+16, 32, and 48 fell to 0.5. More decisively, every split failed the predeclared combined
+package-power/frequency acceptance: maximum anchor lane-position deviations ranged from **16.28% to
+77.43%** against a 10% limit, while loaded-frequency ratios ranged from **0.743 to 0.829**. The first
+real CPU candidate must therefore rank on the full host unless a narrower change-class calibration
+later clears the same gates.
+
+Two Q4_K MMQ diagnostics narrowed the still-open correctness repair without fixing it. Disabling the
+gfx90a MFMA route and forcing DP4A still failed **25/43** cases (maximum ratio 3.0178), excluding an
+MFMA-only defect. A Q4_K-only least-squares refinement of the per-32 Q8 activation scale also failed
+**25/43** (maximum ratio 2.8834) and was reverted. The clean 43/43 rocBLAS control and fixed κ=1.5
+remain; the search must move below both the implementation choice and a one-parameter scale repair.
 
 ### Source References (2026-08-11 AutoKernel correctness)
 
