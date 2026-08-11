@@ -737,7 +737,7 @@ nobody re-reads:
   The two structural options (a `corr_ids: [...]` list on one message, or a bulk-disposition verb in
   `drain --triage`) remain **open and unimplemented** — they change the contract, which is not this
   lane's to change unilaterally.
-  - [ ] **REOPENED 2026-07-29 — "the workaround is discipline" HAS NOW FAILED IN PRACTICE, twice in
+  - [x] **REOPENED 2026-07-29 — "the workaround is discipline" HAS NOW FAILED IN PRACTICE, twice in
     ten minutes, hours after the rule was codified.** Measured from one careful main (`mainA`): 3
     byte-identical payloads at 17:41Z (payload sha `ad177aa188e8`), then 6 more at 17:44Z whose
     payloads are identical and differ ONLY in `corr_id`. **Nine identical payloads in ten minutes.**
@@ -926,7 +926,22 @@ nobody re-reads:
     explicitly tested (a guard must not forbid its own idiom). Commit `667ed96f`, 3 passed.
   - [ ] **M5a — `--min-interval-s` default of 600s is the implementer's guess, not an operator
     decision.** Same class as the `max_spawns_per_day: 4` that the operator corrected to 3.
-  - [ ] **M5b — operator disposition for preserved roster orphans.** C7 prevents recurrence and
+  - [x] **M5b — operator disposition for preserved roster orphans.** ✅ 2026-08-11 — `mainD`,
+    commit `060efa27`, on `coordinator-agent`'s approval of a disposition package. **This row's own
+    recommended action, carried out in its own order.** The two task-keyed outboxes were dealt with
+    FIRST: their four messages — the E8-launch audit finding and three E8-R2 statuses including the
+    sealed-vector scorer fix `c7f6c7fa` — were relayed to `coordinator-agent`
+    (`msg-20260811T111438Z-193-mainD`) before anything moved, because they were never relayed and
+    the archive would otherwise have been the only copy. Then all 24 files (2 outboxes + 22
+    heartbeat snapshots) moved to `archive/non-roster-20260811/` with a provenance README.
+    `validate`'s non-roster warning set: 24 → 0.
+    **One deviation from the letter of the recommendation, stated rather than glossed:** it says a
+    roster writer should "adopt the messages with original ids". That is not achievable — the msg
+    `id` pattern encodes its writer, and one agent cannot author another's id without forging
+    provenance. So the content was relayed with the original id CITED, and the originals kept
+    readable in the archive. Same guarantee (nothing lost, content delivered), honest about
+    authorship.
+    *Original filing:* C7 prevents recurrence and
     keeps existing task-named heartbeat/outbox files out of roster-derived state, but does not
     delete or move evidence. **Audit 2026-07-29:** archive (never delete) the 22 task-keyed
     heartbeat snapshots after disposition; each is only `{agent,state,task_id,ts}` and carries no
@@ -1042,7 +1057,14 @@ nobody re-reads:
     - **First whole-repo run:** `5 failed, 571 passed, 2 warnings in 189.05s`. The five are exactly
       the pre-existing E8 reds; no new failure introduced, none hidden. Codex owns those; do not
       "fix" them from this lane.
-  - [ ] **C11 — C9 landed without the independent review its own filing required.** The C9 entry
+  - [x] **C11 — C9 landed without the independent review its own filing required.** ✅ Paid
+    2026-07-29 by `auditor` as part of the C24 review, commit `3d509613` — the two touch the same
+    invariant, exactly as the row directed. Re-verified by `mainD` 2026-08-11 against current HEAD
+    rather than taken from the earlier claim: the commit exists, carries 145 lines of test, and its
+    review attacked C9's central claim — *can `live_mains()` return a set missing a genuinely live
+    id?* — and found that **it can**, correcting a safety argument this module had stated wrongly
+    twice. The debt is paid; this box was simply never flipped.
+    *Original filing:* The C9 entry
     says the change "wants an independent review before it lands, not a same-session self-merge",
     and it was implemented and committed (`8cbe50c0`) by the same session that had just reviewed
     C6 — on direct operator instruction, which supersedes the handoff's own procedure, but the
@@ -1218,9 +1240,13 @@ nobody re-reads:
       loop, so any direct caller — every unit test, and any future one — would have re-notified on
       every pass. Same rule the module applies to liveness: derive it from what the thing itself
       leaves behind. Two regression tests; 96 passed across the affected suites.
-    - [ ] **ACTIVATION for the second half: the daemon at epoch 9 predates it.** Third activation
-      gap on this file in one day. The notice is inert until the daemon's owner restarts it —
-      or, most likely, until the post-reboot restart picks it up for free. Not this lane's to do.
+    - [x] **ACTIVATION for the second half: the daemon at epoch 9 predates it.** ✅ 2026-08-11 —
+      closed by restart. The daemon is at **epoch 16** (pid 942753); the row was written against
+      epoch 9, so every restart since carried it. Verified from the live heartbeat, not assumed.
+      Its own words — *"third activation gap on this file in one day"* — are the reason **C42**
+      exists: a merged fix and a running fix are different states, and this row had to wait for a
+      human to notice. The supervisor now detects a daemon predating its own source, so this class
+      of gap should not need a row again.
     *Precision + polarity note (fable-auditor, wrap-up 2026-07-29):* post-`528435fc` the rostered
     non-retired case is no longer *dropped* — it is durably DELIVERED to an inbox nothing drains
     (recoverable if the session revives; invisible to the sender either way). For (b), prefer
