@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 303
+      "open": 304
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -1053,14 +1053,14 @@
     },
     "mi210-q8-dequant-gemv-roofline.md": {
       "blocked": 0,
-      "closed": 7,
+      "closed": 8,
       "guarded": 0,
       "last_advanced": "2026-08-11",
       "open": 8,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-37",
       "state": "active",
-      "total": 15
+      "total": 16
     },
     "minddr-deep-research-mode.md": {
       "blocked": 0,
@@ -1848,11 +1848,11 @@
       "closed": 37,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 14,
+      "open": 15,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 51
+      "total": 52
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
