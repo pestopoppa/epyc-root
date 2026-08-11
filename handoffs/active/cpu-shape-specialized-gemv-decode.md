@@ -5,7 +5,7 @@
 **Priority**: ~~MEDIUM~~ DEPRIORITIZED for the *SIMD ukernel*; **but the barrier/op-count sub-lever is RE-ELEVATED** by fable5-window2-findings-05 (2026-07-03): the roofline sweep confirms this handoff's own diagnosis (frontdoor Q8_0 decode is barrier/op-count-bound at 13.8% of 460 GB/s, not BW-bound; 45% of Q4_K decode cycles are libomp barrier at 96t). The **#2 cross-substrate kernel ROI** is **frontdoor Q8_0 operator/graph fusion to cut barrier COUNT** (fuse expert gate+up, fuse the attn QKV cluster) — est +10–15% decode, one cluster already measured +2.6%. Cheapest test: llama-bench tg128 frontdoor Q8_0, fusion flag on/off, same window. This is the fusion path, NOT more SIMD. See findings-05 §3/§6.
 **Categories**: hardware_optimization, inference_serving, local_inference
 **Workstream**: Inference Acceleration
-**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
+**Parent index**: [`inference-research-index.md`](inference-research-index.md)
 **Related**:
 - [`llama-cpp-kernel-push-rebase.md`](../completed/llama-cpp-kernel-push-rebase.md) — historical v4 kernel-push record (archived 2026-06-12)
 - [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — orthogonal throughput lever (KV-side)
@@ -26,7 +26,7 @@
 - Does NOT require BIOS reboot or env var. Pure software change inside `ggml/src/ggml-cpu/`.
 - Open questions before starting: (1) does the indexing scheme map cleanly onto our existing 8×8 repack layout, or does it require a parallel repack format? (2) what's the per-token sync overhead of the indexing recompute on a 48-layer MoE? (3) does it interact with CPU15 drone+shard's expert-set partitioning?
 - Suggested first step: read `ggml/src/ggml-cpu/repack.cpp` to find the `mul_mat_id` path, then prototype a blocked-CSR-COO routing index in `llama.cpp-experimental` on a fresh branch off `cpu-optimization/q8-8x8-avx512bw`. Validate on Qwen3.6-35B-A3B Q8_0 (already CPU15-EP-friendly) and gemma-26B-A4B (already CPU15-EP-friendly).
-- Cross-reference: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) ⚑ START HERE block + Prioritized Task List item CPU18.
+- Cross-reference: [`inference-research-index.md`](inference-research-index.md) ⚑ START HERE block + Prioritized Task List item CPU18.
 
 ### CPU18 design notes — added 2026-04-26 evening (post-CPU24 perf-record)
 
@@ -63,7 +63,7 @@ Code path located: `ggml/src/ggml-cpu/ggml-cpu.c:1774` `ggml_compute_forward_mul
 - Open questions before starting: (1) is `GGML_OP_LIGHTNING_INDEXER` compute-bound or BW-bound on CPU? Per `feedback_cpu_decode_bw_bound`, BW-bound work doesn't benefit from SIMD. **Profile-first gate is mandatory.** (2) does the indexer's per-block FP8 quantization map cleanly to AVX-512BW i8-pair multiplication (similar to Q8_0 8x8 kernel structure)? (3) does the existing token-generation sparse path benefit, or is the optimization only impactful in the (deferred) prompt-processing sparse path?
 - Suggested first step: pull PR #21149 into `llama.cpp-experimental` as a feature branch (D1.2 in `llama-cpp-dsa-contribution.md`); profile current CPU `GGML_OP_LIGHTNING_INDEXER` with `perf record` on V3.2-Exp Q4_K_M (or any DSA-architecture model) to confirm whether SIMD optimization will move the needle. If compute-bound → write kernel; if BW-bound → redirect effort to D2 (prompt-processing sparse path follow-on).
 - Strategic context: [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) D3 sub-track — full work-item list with explicit `[GATED on user inference approval]` markers per `feedback_no_concurrent_inference.md`.
-- Cross-reference: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) ⚑⚑⚑⚑⚑ Lowest-Hanging Fruit block + CPU26 entry in Pickup Sequence.
+- Cross-reference: [`inference-research-index.md`](inference-research-index.md) ⚑⚑⚑⚑⚑ Lowest-Hanging Fruit block + CPU26 entry in Pickup Sequence.
 
 ### Recommended ordering
 
@@ -289,11 +289,11 @@ Change reverted (`git diff ggml/src/ggml-cpu/arch/x86/quants.c` is clean). Build
 - Attention softmax/RoPE on FP16/BF16 activations (would benefit from VDPBF16PS, not VNNI).
 - Batched multi-user decode (`-np N`) as N grows toward prefill regime — tracked under CPU14.
 
-**Work redirected to CPU1 (TP-sharding) and CPU4 (per-CCD sync primitive)** — memory-bandwidth-addressing levers rather than compute-addressing. See [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) for updated priorities.
+**Work redirected to CPU1 (TP-sharding) and CPU4 (per-CCD sync primitive)** — memory-bandwidth-addressing levers rather than compute-addressing. See [`inference-research-index.md`](inference-research-index.md) for updated priorities.
 
 ### 2026-04-23 audit update (pre-Phase-0)
 
-Joined the coordinated pickup sequence under [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) as **CPU2**. Pre-Phase-0 audit resolved several open items and adjusted gates. Key changes from the original draft:
+Joined the coordinated pickup sequence under [`inference-research-index.md`](inference-research-index.md) as **CPU2**. Pre-Phase-0 audit resolved several open items and adjusted gates. Key changes from the original draft:
 
 - **tinyBLAS IS already in the fork** (answers Open Question 1). See updated Prior Art §5 and Phase 0 § below.
 - **KleidiAI plugin is repo-internal prior art** for how a Zen 5 ukernel plugin directory should be laid out. See updated Prior Art §2.
@@ -726,13 +726,22 @@ When resuming this handoff:
 >
 > Noted 2026-07-29 by `auditor` during a sweep of `handoffs/active/` prompted by the automated
 > backlog sweep classifying steps like these as dispatchable `none`-lane work. **THIS SECTION WAS CORRUPTED AND REPAIRED:** two boxes were flipped to `[x]` on 2026-07-29 via BACKLOG-DISPATCH-QUEUE TOP-40 rows #1 and #2 — whose own *Handoff §* column reads `pickup-checklist`. `Check llama.cpp upstream for new CPU ukernel PRs` is precisely a step that must re-run at each pickup, because upstream moves. The dated observations from that pickup are retained below; the repeatable procedure remains unchecked.
+>
+> **A THIRD box was still corrupted and was restored 2026-08-11 by `mainC`:** *"Check for any new
+> Justine Tunney / tinyBLAS Zen 5 benchmarks"*, flipped `[x]` with a ✅ 2026-07-29 result inline. It
+> sat between two boxes the 07-29 pass restored and was missed by it — the auditor's own warning that
+> *"the predicted runbook corruption HAS ALREADY HAPPENED and I under-reported the scope"* was
+> correct. Its finding was moved into **Last pickup (2026-07-29) found** rather than deleted. The
+> repair method that works is a sweep by BOX TEXT across the guarded section, not a re-read of the
+> rows the queue happened to name — the queue names only what it dispatched, and this box was
+> corrupted without ever appearing in it.
 
 
 - [ ] Re-read this doc end-to-end including the 2026-04-23 audit update block.
-- [ ] Check `master-handoff-index.md` and `cpu-inference-optimization-index.md` for any status changes since 2026-04-23.
+- [ ] Check `master-handoff-index.md` and `inference-research-index.md` for any status changes since 2026-04-23.
 - [ ] Check llama.cpp upstream for any new CPU ukernel PRs (this handoff may be partially obsoleted).
-- [x] Check for any new Justine Tunney / tinyBLAS Zen 5 benchmarks. ✅ 2026-07-29 — no Zen 5-specific tinyBLAS benchmark was found in the primary project sources searched: the current [llamafile repository](https://github.com/mozilla-ai/llamafile) and its open pull-request list contain no Zen 5 benchmark result, while Tunney's cited prior-art article remains Zen 4. This is an absence result, not a performance claim; retain the existing Zen 4 prior as the only cited hardware result and do not infer Zen 5 speedup from it. Sources checked 2026-07-29: [llamafile repository](https://github.com/mozilla-ai/llamafile), [open pull requests](https://github.com/mozilla-ai/llamafile/pulls), and [Tunney's matmul article](https://justine.lol/matmul/).
-- [ ] **Work in `/mnt/raid0/llm/llama.cpp-experimental`, never the production `llama.cpp` tree.** Start every new experiment from the current frozen production tip (`production-consolidated-v8` / `67a433bf4` as of 2026-07-29), then create a fresh experimental branch; do not revive the obsolete v4 anchor.
+- [ ] Check for any new Justine Tunney / tinyBLAS Zen 5 benchmarks.
+- [ ] **Work in `/mnt/raid0/llm/llama.cpp-experimental`, never the production `llama.cpp` tree.** Start every new experiment from the current frozen production tip (`production-consolidated-v9` / `0db32c06` as of 2026-08-11), then create a fresh experimental branch; do not revive the obsolete v4 anchor.
 - [ ] **Measure tinyBLAS on/off as first Phase 0 step** (`GGML_USE_LLAMAFILE` macro); that delta changes the remaining headroom calculation.
 - [ ] Confirm TIDE early-exit paths are dormant before any baseline.
 - [ ] Run Phase 0 baseline measurements — do not skip the profiling gate (DeltaNet >40% abandon threshold).
@@ -743,6 +752,7 @@ When resuming this handoff:
 
 - The upstream review found unmerged x86 Q4_Kx8/Q8_K GEMV candidates [#23309](https://github.com/ggml-org/llama.cpp/pull/23309) and [#23793](https://github.com/ggml-org/llama.cpp/pull/23793). They remain experimental-watchlist items only: the observations are Intel/small-model-specific, overlap `repack.cpp`, and require no v8 production action. [#25390](https://github.com/ggml-org/llama.cpp/pull/25390) is a merged generic scalar-tail fix to review only on a future upstream forward-port.
 - Fork commits `143ded626`, `c4e06b01e`, and `59d2012b2` were not reachable from frozen production `production-consolidated-v8` (`67a433bf4`); `common/`, `src/`, `ggml/`, `tools/`, and `examples/` contained no `TIDE`, `n_layer_exit`, or early-exit implementation. The baseline therefore could not enable TIDE at that pickup.
+- No Zen 5-specific tinyBLAS benchmark existed in the primary sources searched: the [llamafile repository](https://github.com/mozilla-ai/llamafile) and its open pull-request list carried no Zen 5 benchmark result, and Tunney's cited prior-art article remains Zen 4. **This is an absence result, not a performance claim** — retain the existing Zen 4 prior as the only cited hardware result and do not infer a Zen 5 speedup from it. Sources checked 2026-07-29: [llamafile repository](https://github.com/mozilla-ai/llamafile), [open pull requests](https://github.com/mozilla-ai/llamafile/pulls), [Tunney's matmul article](https://justine.lol/matmul/). *(Moved here 2026-08-11 by `mainC` from the pickup box above, which had been flipped to `[x]`. The observation is dated and belongs in this block; the step itself must re-run at every pickup, because upstream moves.)*
 
 ## 2026-04-26 update — kill-switch added
 
@@ -959,7 +969,7 @@ Most of these are **GPU-focused** research. CPU adaptation requires:
 
 **Surface MoE-Spec via research-intake** as a high-value intake item. Verdict candidate: `worth_investigating` with focus on CPU spec-dec integration. Effort: probably 1-2 days for a Phase 0 prototype that wraps the existing draft-verify path with budgeted-expert selection. Expected gain: **5-15% on Coder-30B and REAP-246B** decode (the two production spec-dec models) if it ports cleanly.
 
-NOT a CPU2-track task (no kernel changes) — belongs in a separate handoff under `inference-acceleration-index.md`. Tagged for next research-intake batch.
+NOT a CPU2-track task (no kernel changes) — belongs in a separate handoff under `inference-research-index.md`. Tagged for next research-intake batch.
 
 Sources:
 - [MoE-Spec arXiv](https://arxiv.org/html/2602.16052v1)

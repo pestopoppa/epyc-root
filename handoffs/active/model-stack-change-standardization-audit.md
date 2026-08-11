@@ -237,10 +237,10 @@ Use this sequence for future stack changes. Steps marked "no inference" should b
   - `epyc-orchestrator/orchestration/model_descriptors.yaml` for physical model identity and measured/candidate evidence.
   - `epyc-inference-research/orchestration/model_registry.yaml` only for comprehensive benchmark/candidate history, with measurement-status semantics.
   - `scripts/server/stack_manifest.py` only where launcher metadata still lacks generated ownership.
-- [x] Compile descriptors, preserving gaps instead of inventing values. ✅ 2026-07-14 descriptors `status: compiled` after `54b7c77`
-- [x] Compile stack priors. ✅ 2026-07-14 `stack_priors.yaml` `status: compiled` after `54b7c77`
-- [x] Sync procedure role enums. Verified current via `python3 scripts/registry/sync_procedure_role_enums.py --check` (`OK`).
-- [x] Run loose guard, all-surface guard, and strict guard. ✅ 2026-07-14 post-`03ed49f`: loose clean, strict clean, all-surfaces blocker waiver gone
+- [ ] Compile descriptors, preserving gaps instead of inventing values.
+- [ ] Compile stack priors.
+- [ ] Sync procedure role enums (`python3 scripts/registry/sync_procedure_role_enums.py --check`).
+- [ ] Run loose guard, all-surface guard, and strict guard.
 - [ ] Run focused unit tests for stack priors, guard, enum sync, q_scorer, admission, and any touched consumer.
 - [ ] Run simulated model-swap tests:
   - shared mmap swap (`frontdoor`/`coder_escalation` style)
@@ -249,6 +249,22 @@ Use this sequence for future stack changes. Steps marked "no inference" should b
 - [ ] Update only generated operator summaries or explicitly historical docs.
 - [ ] Before launch, require fresh generated priors and a guard pass or an explicit diagnostic override.
 - [ ] After launch, compare running PIDs/ports/flags/binaries against stack priors and restart stale processes if needed.
+
+**Last run (2026-07-14) recorded:**
+
+- Descriptors compiled preserving gaps — `model_descriptors.yaml` reached `status: compiled` after `54b7c77`.
+- Stack priors compiled — `stack_priors.yaml` reached `status: compiled` after `54b7c77`.
+- Procedure role enums verified current via `scripts/registry/sync_procedure_role_enums.py --check` (`OK`).
+- Loose, all-surface and strict guards run post-`03ed49f`: loose clean, strict clean, all-surfaces blocker waiver gone.
+
+> *Restored 2026-08-11 by `mainC`.* These four results had been recorded by **flipping the template
+> boxes to `[x]`**, which asserted that a per-change checklist was permanently complete — so the next
+> model-stack change would have skipped compile, enum-sync and the three guards, reading them as
+> already done. The evidence is preserved here verbatim; the steps above are unchecked because they
+> must run **for every change**. Note this corruption predates the 2026-07-29 backlog sweep (these
+> carry ✅ 2026-07-14 dates), so the sweep did not cause it — the sweep only made the class visible.
+> Found by sweeping checked boxes inside DO-NOT-FLIP sections across `handoffs/active/`, not by
+> following queue rows.
 
 ## Validator And CI Guard Proposal
 
