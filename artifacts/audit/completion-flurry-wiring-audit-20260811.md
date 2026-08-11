@@ -441,6 +441,36 @@ resolves. Findings:
    narrow / 131 broad); code and 8/8 new tests verified real. Citation-precision note
    routed.
 
+## Merge-reconciliation audit — 2026-08-11 23:25Z (local main ⇄ origin/main, fork 3dd1ec1b)
+
+Sweep over ours (82 commits, mains lane) × theirs (39 non-merge, AutoKernel lane), patch-id +
+file-overlap + undo-hunt, all read-only against the live merge worktree:
+
+- **Duplicated effort: ≈ZERO.** Exactly one same-subject pair fleet-wide, and it is ONE
+  byte-identical change double-delivered (377 added lines match exactly; patch-id divergence
+  is base drift from theirs' earlier probe-receipts commit whose CSS line rides as context).
+  Git dedupes it correctly — both dashboard panels present exactly once in the merged tree.
+  **Correction to my 23:10Z characterization**: not "built twice with divergent
+  implementations" — the 87-line end-state delta was theirs' separate earlier commit, not
+  divergent authorship.
+- **Cross-lane silent undo: ZERO, both directions.** Theirs touches none of the mains'
+  artifacts (audit, receipts, ratifiers, bus code, token queue); ours touches no AutoKernel
+  path; all 9 auto-merging overlap files verified to compose; theirs' wiki edits are
+  uncontested (ours' wiki compile commits post-date the sweep tip).
+- **The one real regression is intra-lane and rides the merge silently:** `b41af9d7`
+  (the mislabeled amend, already flagged) ALSO reverted the 08-10 index consolidation —
+  ~32 files rewired from `inference-research-index.md` back to two DEAD filenames
+  (13 → `cpu-inference-optimization-index.md`, ~19 → `inference-acceleration-index.md`),
+  one file accidentally self-corrected 29 min later (proving bug, not intent), at least
+  `large-moe-expert-parallelism.md` and `qwen36-27b-cpu-feasibility.md` still broken at tip.
+  Auto-merges cleanly = lands unreviewed. **Upgrades my tonight-commits finding** (I
+  under-called the 31 riders as "index-regeneration artifacts"; they were a reversion).
+  Repair: mechanical link restoration, owner mainD, routed with the file list.
+- **Merge verdict for the operator: SAFE to present.** No cross-lane damage; conflict
+  ownership map delivered (8 files, per-lane attribution); 3 files carry live conflict
+  markers, 3 are hand-resolved-pending-add, 2 settled by ours' untrack. The b41af9d7 link
+  repair can land before or immediately after the merge — it does not gate it.
+
 ## Self-referential closure
 
 The audit standard applies to the auditor: the 07-29 auditor session's own deliverables —
