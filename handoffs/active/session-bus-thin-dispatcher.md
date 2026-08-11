@@ -1049,14 +1049,29 @@ nobody re-reads:
     review debt is real and unpaid. A second pair of eyes on `live_mains` / `resolve_spawn_cap` /
     `cmd_spawn` is cheap now and expensive after something spawns wrongly. Not urgent: the change
     is fail-closed on every branch it cannot evaluate, and both suites are green.
-  - [ ] **C12 — the nudge fragment can collide with the transcript.** Post-Enter success is "the
+  - [x] **C12 — the nudge fragment can collide with the transcript.** ✅ 2026-08-11 — `mainD`.
+    Closed with an OCCURRENCE COUNT rather than the cursor offset the filing proposed: the capture
+    is re-normalised and the pane can scroll between samples, so a byte offset does not survive a
+    poll and a count does. The caller records how many times the fragment is on the pane before
+    Enter; a genuine submission MOVES our copy from the composer into the transcript so the count
+    holds, while an Enter eaten by a completion overlay DELETES it so the count drops and whatever
+    remains is provably stale. An unreadable pane yields `None` = no anchor and keeps the pre-C12
+    behaviour — the capture-failure path already refuses a moment later, and refusing twice for one
+    cause turns a transient tmux hiccup into a nudge failure. 3 tests.
+    *Original filing:* Post-Enter success is "the
     60-char tail is on the pane but not at the cursor". If an identical fragment is already in the
     scrollback (the same nudge sent earlier, or an agent echoing the text), an Enter that never
     submitted could still find it and read as success. The 600s rate limit makes a same-text
     repeat unlikely and the failure needs a *second* fault to matter, which is why it is filed
     rather than fixed. Closing it properly means anchoring the echo to a position *below* the
     pre-Enter cursor rather than anywhere on the pane.
-  - [ ] **C13 — nudge refuses `@` anywhere in the message, which is broader than the hazard.**
+  - [x] **C13 — nudge refuses `@` anywhere in the message, which is broader than the hazard.**
+    ✅ 2026-08-11 — `mainD`. Narrowed to a token-initial `@` (start of message or after
+    whitespace), which is the shape the picker actually binds to. `ops@example.com` and `a@b` now
+    pass; `@file.py` and a bare `@` still refuse. **Narrowed, not relaxed** — the filing's own
+    condition was "if it proves annoying in practice", and it did, on a message containing an email
+    address. 6-case parametrised test covering both directions.
+    *Original filing:*
     The trigger is a picker opening on an `@`-prefixed *token*; the guard refuses the character
     anywhere, so an email address or an `@`-mention in otherwise-fine prose is rejected. Chosen
     deliberately — a false refusal costs a rephrase, a false accept fires Enter into a picker —

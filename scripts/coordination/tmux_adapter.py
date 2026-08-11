@@ -49,6 +49,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -115,8 +116,17 @@ _PASTE_BLOB_MARKER = "[Pasted"
 # than say something. There is no pane state that distinguishes these after the
 # fact, so the trigger is refused up front instead of being detected afterwards.
 _COMPOSER_MODE_PREFIXES = ("/", "!", "#", "@")
-# `@` anywhere (not just leading) opens Codex's file picker at the typed token.
+# `@` opens Codex's file picker — but only when it STARTS A TOKEN, which is what
+# the picker binds to. C13 (closed 2026-08-11): the guard refused the character
+# ANYWHERE, so `ops@example.com` and "the rate limit is 600s @ default" were
+# rejected as picker triggers. The original filing chose the broad form knowingly
+# ("a false refusal costs a rephrase, a false accept fires Enter into a picker")
+# and said to narrow it if it proved annoying; it did, on a message about an email
+# address. Narrowed to the actual hazard, NOT relaxed: `@` after whitespace or at
+# the start of the message still refuses, because that is the shape the picker
+# opens on. `foo@bar` cannot open it — the token already began.
 _INLINE_PICKER_TRIGGER = "@"
+_INLINE_PICKER_RE = re.compile(r"(?:^|\s)@")
 # How far back from the cursor a paste banner can sit on the composer line.
 _BLOB_LOOKBACK_CHARS = 200
 _FRAGMENT_CHARS = 60
@@ -279,7 +289,8 @@ def _pending_fragment(message: str) -> str:
     return trimmed[-min(len(trimmed), _FRAGMENT_CHARS):]
 
 
-def _submission_state(composer_text: str, fragment: str) -> str:
+def _submission_state(composer_text: str, fragment: str,
+                      min_occurrences: int | None = None) -> str:
     """Classify the composer, cursor-anchored. Four states, all distinct.
 
     ``text_present``  the composer ENDS with the message — pending, not submitted.
@@ -310,12 +321,49 @@ def _submission_state(composer_text: str, fragment: str) -> str:
     if _PASTE_BLOB_MARKER in composer_text[-_BLOB_LOOKBACK_CHARS:]:
         return "paste_blob"
     if needle in normalised:
+        # C12 (closed 2026-08-11): `needle in normalised` matched the fragment
+        # ANYWHERE on the pane, including scrollback ABOVE the composer. So an
+        # identical fragment already in the transcript — the same nudge sent
+        # earlier, or an agent echoing the text back — could satisfy the post-Enter
+        # success check even though Enter never submitted: a completion overlay
+        # rewrites the composer, our copy vanishes, and the STALE copy answers for
+        # it. The 600s rate limit makes that unlikely and it needs a second fault
+        # to matter, which is why it was filed rather than fixed — but "unlikely"
+        # is not the standard this module holds elsewhere, and it is the C6
+        # fail-open through a third door.
+        #
+        # `min_occurrences` is the anchor the filing asked for, expressed as a
+        # COUNT rather than a cursor offset — the capture is re-normalised and the
+        # pane can scroll between samples, so a byte offset does not survive, and a
+        # count does. The caller passes the pre-Enter occurrence count. A genuine
+        # submission MOVES our copy from the composer into the transcript, so the
+        # count holds; an Enter eaten by a picker DELETES it, so the count drops
+        # and what remains is provably stale.
+        if min_occurrences is not None and normalised.count(needle) < min_occurrences:
+            return "text_absent"
         return "text_echoed"
     return "text_absent"
 
 
+def _fragment_occurrences(target: str, fragment: str) -> int | None:
+    """How many times the fragment appears on the pane right now, or None if the
+    pane cannot be read.
+
+    C12. None propagates as "no anchor available" and the post-Enter check keeps its
+    pre-C12 behaviour rather than refusing — an unreadable pane at THIS point is
+    already handled by the capture failure path a moment later, and refusing twice
+    for one cause would turn a transient tmux hiccup into a nudge failure.
+    """
+    composer, failure = _composer_text(target)
+    if failure or composer is None:
+        return None
+    needle = _normalise(fragment)
+    return _normalise(composer).count(needle) if needle else None
+
+
 def _await_state(target: str, fragment: str, wanted: set[str], timeout_s: float,
-                 stable_samples: int = 1) -> tuple[str | None, str | None]:
+                 stable_samples: int = 1,
+                 min_occurrences: int | None = None) -> tuple[str | None, str | None]:
     """Poll the composer until it reaches one of ``wanted``; return the last state.
 
     Polling exists so that a slow redraw is a WAIT, not a refusal. It never turns
@@ -333,7 +381,7 @@ def _await_state(target: str, fragment: str, wanted: set[str], timeout_s: float,
         composer, failure = _composer_text(target)
         if failure:
             return None, failure
-        state = _submission_state(composer or "", fragment)
+        state = _submission_state(composer or "", fragment, min_occurrences)
         run = run + 1 if state in wanted else 0
         if run >= max(1, stable_samples):
             return state, None
@@ -1312,9 +1360,10 @@ def cmd_nudge(args: argparse.Namespace) -> int:
               "would submit a partial message. Send a single line.", file=sys.stderr)
         return EX_USAGE
     stripped = args.message.lstrip()
-    if stripped.startswith(_COMPOSER_MODE_PREFIXES) or _INLINE_PICKER_TRIGGER in args.message:
+    if stripped.startswith(_COMPOSER_MODE_PREFIXES) or _INLINE_PICKER_RE.search(args.message):
         print(f"REFUSING: nudge message starts with one of {' '.join(_COMPOSER_MODE_PREFIXES)} "
-              f"or contains '{_INLINE_PICKER_TRIGGER}'. Those put the composer in a mode where "
+              f"or contains a token-initial '{_INLINE_PICKER_TRIGGER}'. Those put the composer in "
+              f"a mode where "
               f"Enter accepts a completion (or runs a command) instead of submitting prose, and "
               f"the resulting pane is indistinguishable from a successful send. Rephrase without "
               f"the trigger — write the path plainly, or point at a brief file.", file=sys.stderr)
@@ -1379,8 +1428,15 @@ def cmd_nudge(args: argparse.Namespace) -> int:
     # failure is exactly the false negative this fix removes. Nor is it merely
     # "no longer at the cursor": that would accept an Enter which a completion
     # overlay consumed to rewrite the composer. Success is the echo, positively.
+    # C12: how many times the fragment was on the pane BEFORE Enter, including any
+    # stale copy already in the scrollback. A genuine submission moves our copy from
+    # the composer into the transcript, so the count holds; an Enter eaten by a
+    # completion overlay deletes it, so the count drops and any remaining match is
+    # provably a stale one that must not read as success.
+    pre_enter_occurrences = _fragment_occurrences(p["target"], fragment)
     submitted_state, failure = _await_state(p["target"], fragment, {"text_echoed"},
-                                            _VERIFY_TIMEOUT_S, _VERIFY_STABLE_SAMPLES)
+                                            _VERIFY_TIMEOUT_S, _VERIFY_STABLE_SAMPLES,
+                                            min_occurrences=pre_enter_occurrences)
     if failure:
         print(f"nudge submission verification unavailable after Enter: {failure}", file=sys.stderr)
         return EX_MISCONFIG

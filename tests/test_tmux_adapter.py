@@ -1953,3 +1953,60 @@ def test_a_fresh_heartbeat_never_consults_the_stale_override(
     assert p["heartbeat_stale_override_applied"] is False
     assert "not evaluated" in p["heartbeat_stale_override_reason"]
     assert not any("stale" in b for b in p["blockers"])
+
+
+# --------------------------------------------------------------------- C12 / C13
+
+def test_c12_a_stale_scrollback_copy_cannot_answer_for_an_unsent_nudge() -> None:
+    """C12. Post-Enter success was `fragment in pane` — ANYWHERE, including
+    scrollback ABOVE the composer. So an identical fragment already in the
+    transcript (the same nudge sent earlier, or an agent echoing the text back)
+    could satisfy the success check even though Enter never submitted: a completion
+    overlay rewrites the composer, our copy vanishes, and the STALE copy answers for
+    it. The C6 fail-open through a third door.
+    """
+    adapter = _load("c12")
+    frag = "drain your inbox and refresh your heartbeat"
+
+    # Genuine submission: our copy MOVED from composer to transcript, count holds.
+    assert adapter._submission_state(f"echo: {frag}\n> ", frag, 1) == "text_echoed"
+
+    # Enter eaten by a picker: our copy is DELETED and only a stale one remains,
+    # so the count dropped below what was there before Enter.
+    assert adapter._submission_state(f"old nudge: {frag}\n> /completion", frag, 2) \
+        == "text_absent", "a stale copy must not read as this nudge's echo"
+
+
+def test_c12_the_anchor_is_optional_and_absence_is_not_a_refusal() -> None:
+    """None means "no anchor available" — an unreadable pane is already handled by
+    the capture-failure path, and refusing twice for one cause would turn a transient
+    tmux hiccup into a nudge failure."""
+    adapter = _load("c12_none")
+    frag = "please drain"
+    assert adapter._submission_state(f"echo: {frag}\n> ", frag, None) == "text_echoed"
+
+
+def test_c12_the_pre_enter_state_is_unchanged_by_the_anchor() -> None:
+    """The compliant path. text_present is decided by endswith and must not start
+    depending on a count — the anchor exists only to discriminate the echo."""
+    adapter = _load("c12_pre")
+    frag = "please drain"
+    assert adapter._submission_state(f"> {frag}", frag, 99) == "text_present"
+
+
+@pytest.mark.parametrize("message,refused,why", [
+    ("mail ops@example.com when done", False, "an email address is not a picker trigger"),
+    ("a@b and c@d", False, "mid-token @ cannot open the picker — the token already began"),
+    ("@file.py please look", True, "token-initial @ at the start IS the hazard"),
+    ("see @path/to/thing", True, "token-initial @ after whitespace IS the hazard"),
+    ("the limit is 600s @ default", True, "a bare @ starts a token"),
+    ("plain prose with no trigger", False, "unaffected"),
+])
+def test_c13_the_picker_guard_is_narrowed_to_the_actual_hazard(
+        message: str, refused: bool, why: str) -> None:
+    """C13. The guard refused `@` ANYWHERE, so an email address in otherwise-fine
+    prose was rejected. The original filing chose the broad form knowingly and said
+    to narrow it if it proved annoying — it did. Narrowed to the shape the picker
+    actually binds to (token-initial), NOT relaxed."""
+    adapter = _load(f"c13_{abs(hash(message)) % 9999}")
+    assert bool(adapter._INLINE_PICKER_RE.search(message)) is refused, why
