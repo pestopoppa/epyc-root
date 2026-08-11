@@ -51067,6 +51067,51 @@
     COLLISION HAZARD: Qwen3.6-35B-A3B''s OFFICIAL SWE-bench Verified is 73.4 — identical digits to KAT-Coder V1''s flagship 73.4. Different vendors, different artifacts, different harnesses. Anyone grepping "73.4" across these entries will conflate the deployed base model with a proprietary Kuaishou model.
 
     SWE-BENCH HYGIENE CORRECTIONS to this entry''s contradicting_evidence: (a) "of 100 models on llm-stats only 1 independently verified" — the page actually reads 104 models, 0 verified, 104 self-reported (retrieved 2026-07-29). Direction correct and stronger; the 1-of-100 figure is not what the source says. (b) "32.67% of successful patches involve solution leakage" — NOT FOUND in the OpenAI post or any primary source; DROP or mark unverified. Real primary figures: 27.6% audited subset, 59.4% of those with flawed test cases (35.5 narrow / 18.8 wide / 5.1 misc). (c) the "69% -> 81% scaffold swing" was an uncited secondary blog — replace with the primary observation from this paper''s own Table: the same models on Terminal-Bench 2.1 swing up to 16.84pp across Terminus-2 vs Claude Code and the WINNER FLIPS (4 of 8 models prefer each harness). (d) arXiv 2605.21404, 2605.23950, 2605.27922 and 2505.20411 all verified genuine via the arXiv API.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (24pp PDF + LaTeXML span-grid, joint with intake-917/932). Table 4 alignment
+      re-derived TWICE independently. The MATERIAL OMISSION corrected — KAT-Coder-V2.5 is SECOND on SWE-Bench
+      Pro (Opus-4.8 leads 69.2) and LAST of five on Terminal-Bench 2.1 (60.7 vs 61.8/73.0/77.9/84.6) — lands
+      on the entry''s FRAMING, not on this methodology claim; the raw row was already right. NOTE: the correction''s
+      own ''CLAIM 2/CLAIM 3'' numbering indexes a different list than this worksheet''s (its CLAIM 3 concerns
+      an undisclosed base model, which is not among these five), so this verdict is derived from content,
+      not from that numbering.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (24pp PDF + LaTeXML span-grid, joint with intake-917/932). Table 4 alignment
+      re-derived TWICE independently. The MATERIAL OMISSION corrected — KAT-Coder-V2.5 is SECOND on SWE-Bench
+      Pro (Opus-4.8 leads 69.2) and LAST of five on Terminal-Bench 2.1 (60.7 vs 61.8/73.0/77.9/84.6) — lands
+      on the entry''s FRAMING, not on this methodology claim; the raw row was already right. NOTE: the correction''s
+      own ''CLAIM 2/CLAIM 3'' numbering indexes a different list than this worksheet''s (its CLAIM 3 concerns
+      an undisclosed base model, which is not among these five), so this verdict is derived from content,
+      not from that numbering.'
+  - claim_index: 2
+    effect: narrowed
+    note: Directly undercut on content. The dive establishes that Claude Code is BOTH a black-box TRAINING
+      harness (§4.1, and Figure 4 shows it feeding the Rollout Engine) AND the unified EVALUATION harness
+      — Stage 1 recorded only the latter. A train/eval overlap weakens 'harness randomization prevents overfitting
+      to a single harness' precisely where it matters, and the dive says the overlap predicts the -Dev model's
+      Claude-Code-favouring Terminal-Bench split (see intake-917). The 'Claude-based architecture' assertion
+      is separately confirmed ABSENT (0 hits), so the mechanism claim itself is not overturned.
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (24pp PDF + LaTeXML span-grid, joint with intake-917/932). Table 4 alignment
+      re-derived TWICE independently. The MATERIAL OMISSION corrected — KAT-Coder-V2.5 is SECOND on SWE-Bench
+      Pro (Opus-4.8 leads 69.2) and LAST of five on Terminal-Bench 2.1 (60.7 vs 61.8/73.0/77.9/84.6) — lands
+      on the entry''s FRAMING, not on this methodology claim; the raw row was already right. NOTE: the correction''s
+      own ''CLAIM 2/CLAIM 3'' numbering indexes a different list than this worksheet''s (its CLAIM 3 concerns
+      an undisclosed base model, which is not among these five), so this verdict is derived from content,
+      not from that numbering.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (24pp PDF + LaTeXML span-grid, joint with intake-917/932). Table 4 alignment
+      re-derived TWICE independently. The MATERIAL OMISSION corrected — KAT-Coder-V2.5 is SECOND on SWE-Bench
+      Pro (Opus-4.8 leads 69.2) and LAST of five on Terminal-Bench 2.1 (60.7 vs 61.8/73.0/77.9/84.6) — lands
+      on the entry''s FRAMING, not on this methodology claim; the raw row was already right. NOTE: the correction''s
+      own ''CLAIM 2/CLAIM 3'' numbering indexes a different list than this worksheet''s (its CLAIM 3 concerns
+      an undisclosed base model, which is not among these five), so this verdict is derived from content,
+      not from that numbering.'
 - id: intake-917
   arxiv_id: null
   url: https://modelscope.ai/models/Kwaipilot/KAT-Coder-V2.5-Dev
@@ -54843,6 +54888,55 @@
   notes: 'credibility_score null: the assigned source is a marketing page whose entire retrievable content is one tagline behind a JavaScript shell - it makes zero empirical claims of its own, so any integer would import the sibling model card claims rather than measure this page. Factors that WOULD apply at org level are adverse: commercial vendor, no peer review, no published method, self-reported evals only, zero independent corroboration; the one positive is recency. Credibility is deliberately deferred to intake-946, which has actual claims to score. EXPLICIT NON-TIE-IN recorded to prevent a false linkage: gpu-serving-tie-in-program.md is a llama.cpp/GGUF gfx90a slot and is ORTHOGONAL to an NVIDIA-CUDA runtime - this entry does not feed that program. PRECEDENT: intake-158 (DFlash) targeted the same model family and was blocked for the identical reason - requires SGLang or vLLM, no llama.cpp support, no GGUF, no CPU inference path. Filed the same way for consistency. The Stage-1 agent recommends AGAINST a Stage-2 dive on this URL specifically: the page is exhausted, and the remaining org questions (team, funding, methodology) are unpublished rather than merely unfetched.'
   dive_corrections: |-
     2026-08-03 DIVE-B. NO CHANGE TO THE FILING - the Stage-1 recommendation AGAINST diving this URL was CORRECT and is recorded as such. The page carries no empirical claims of its own, so deferring credibility to intake-946 was right, and credibility_score null stands. The dive confirmed the org-level facts (single tagline behind a JavaScript shell, /about and /blog both 404, no founder or funding information reachable, two artifacts only) and added nothing that changes the verdict. worth_investigating STANDS as a lineage-tracking entry. The genuinely actionable content lives at intake-946; see its dive_corrections for the transferable path, which runs through unsloth's already-published GGUFs of the same base model rather than through anything Escha ships.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-08-03 DIVE-B records NO CHANGE TO THE FILING — the Stage-1 recommendation AGAINST diving
+      this URL was CORRECT, credibility_score null stands, and worth_investigating stands as a lineage-tracking
+      entry. The dive confirmed the org-level facts (single tagline behind a JavaScript shell, /about and
+      /blog both 404, no founder or funding reachable, two artifacts only) and added nothing that changes
+      the verdict. The actionable content lives at intake-946, and its transferable path runs through unsloth's
+      already-published GGUFs of the same base model rather than through anything this vendor ships.
+  - claim_index: 1
+    effect: unaffected
+    note: 2026-08-03 DIVE-B records NO CHANGE TO THE FILING — the Stage-1 recommendation AGAINST diving
+      this URL was CORRECT, credibility_score null stands, and worth_investigating stands as a lineage-tracking
+      entry. The dive confirmed the org-level facts (single tagline behind a JavaScript shell, /about and
+      /blog both 404, no founder or funding reachable, two artifacts only) and added nothing that changes
+      the verdict. The actionable content lives at intake-946, and its transferable path runs through unsloth's
+      already-published GGUFs of the same base model rather than through anything this vendor ships.
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-08-03 DIVE-B records NO CHANGE TO THE FILING — the Stage-1 recommendation AGAINST diving
+      this URL was CORRECT, credibility_score null stands, and worth_investigating stands as a lineage-tracking
+      entry. The dive confirmed the org-level facts (single tagline behind a JavaScript shell, /about and
+      /blog both 404, no founder or funding reachable, two artifacts only) and added nothing that changes
+      the verdict. The actionable content lives at intake-946, and its transferable path runs through unsloth's
+      already-published GGUFs of the same base model rather than through anything this vendor ships.
+  - claim_index: 3
+    effect: unaffected
+    note: 2026-08-03 DIVE-B records NO CHANGE TO THE FILING — the Stage-1 recommendation AGAINST diving
+      this URL was CORRECT, credibility_score null stands, and worth_investigating stands as a lineage-tracking
+      entry. The dive confirmed the org-level facts (single tagline behind a JavaScript shell, /about and
+      /blog both 404, no founder or funding reachable, two artifacts only) and added nothing that changes
+      the verdict. The actionable content lives at intake-946, and its transferable path runs through unsloth's
+      already-published GGUFs of the same base model rather than through anything this vendor ships.
+  - claim_index: 4
+    effect: unaffected
+    note: 2026-08-03 DIVE-B records NO CHANGE TO THE FILING — the Stage-1 recommendation AGAINST diving
+      this URL was CORRECT, credibility_score null stands, and worth_investigating stands as a lineage-tracking
+      entry. The dive confirmed the org-level facts (single tagline behind a JavaScript shell, /about and
+      /blog both 404, no founder or funding reachable, two artifacts only) and added nothing that changes
+      the verdict. The actionable content lives at intake-946, and its transferable path runs through unsloth's
+      already-published GGUFs of the same base model rather than through anything this vendor ships.
+  - claim_index: 5
+    effect: unaffected
+    note: 2026-08-03 DIVE-B records NO CHANGE TO THE FILING — the Stage-1 recommendation AGAINST diving
+      this URL was CORRECT, credibility_score null stands, and worth_investigating stands as a lineage-tracking
+      entry. The dive confirmed the org-level facts (single tagline behind a JavaScript shell, /about and
+      /blog both 404, no founder or funding reachable, two artifacts only) and added nothing that changes
+      the verdict. The actionable content lives at intake-946, and its transferable path runs through unsloth's
+      already-published GGUFs of the same base model rather than through anything this vendor ships.
 
 - id: intake-946
   arxiv_id: null
@@ -54993,6 +55087,58 @@
     located_by: machine
     match_coverage: '0.818'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-08-03 DIVE-B, operator-scoped to a worker_general / architect_critic assessment. Core filing
+      SOUND and confirmed; the methodology-discipline note UPHELD. The single partial overturn is the coding-gap
+      magnitude, which is a different claim.
+  - claim_index: 1
+    effect: unaffected
+    note: 2026-08-03 DIVE-B, operator-scoped to a worker_general / architect_critic assessment. Core filing
+      SOUND and confirmed; the methodology-discipline note UPHELD. The single partial overturn is the coding-gap
+      magnitude, which is a different claim.
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-08-03 DIVE-B, operator-scoped to a worker_general / architect_critic assessment. Core filing
+      SOUND and confirmed; the methodology-discipline note UPHELD. The single partial overturn is the coding-gap
+      magnitude, which is a different claim.
+  - claim_index: 3
+    effect: narrowed
+    note: DIRECTION-CORROBORATED, MAGNITUDE-UNRESOLVED — the -4.4pp LiveCodeBench delta must NOT be carried
+      as an established magnitude. On n=182 that is 8 questions against an unpaired binomial SE of ~5.0pp,
+      i.e. ~0.9 sigma, with no CIs anywhere on the card, and the card applies an ASYMMETRIC noise standard
+      (GPQA +3.1 at n=198 called an 'effective tie' citing ~+-5pp instability, while the SMALLER-n LCB delta
+      is called 'the one clear 2-bit gap'). The truncation confound is confirmed but biases BOTH arms (13.9%
+      vs FP8 13.0%), and back-solving completed-answer rates NARROWS the gap to ~1.2pp against the 1.4pp
+      headline. Worth recording that the asymmetry is ANTI-self-serving — it makes their product look worse
+      — so it supports the card's honesty rather than impeaching it.
+  - claim_index: 4
+    effect: unaffected
+    note: 2026-08-03 DIVE-B, operator-scoped to a worker_general / architect_critic assessment. Core filing
+      SOUND and confirmed; the methodology-discipline note UPHELD. The single partial overturn is the coding-gap
+      magnitude, which is a different claim. Already hedged in the claim itself as 'on a single comparison'.
+  - claim_index: 5
+    effect: unaffected
+    note: 2026-08-03 DIVE-B, operator-scoped to a worker_general / architect_critic assessment. Core filing
+      SOUND and confirmed; the methodology-discipline note UPHELD. The single partial overturn is the coding-gap
+      magnitude, which is a different claim. The thinking-mode MECHANISM is confirmed; what the dive weakens
+      is applicability to our intended use, which is a verdict matter.
+  - claim_index: 6
+    effect: unaffected
+    note: 2026-08-03 DIVE-B, operator-scoped to a worker_general / architect_critic assessment. Core filing
+      SOUND and confirmed; the methodology-discipline note UPHELD. The single partial overturn is the coding-gap
+      magnitude, which is a different claim.
+  - claim_index: 7
+    effect: unaffected
+    note: 2026-08-03 DIVE-B, operator-scoped to a worker_general / architect_critic assessment. Core filing
+      SOUND and confirmed; the methodology-discipline note UPHELD. The single partial overturn is the coding-gap
+      magnitude, which is a different claim.
+  - claim_index: 8
+    effect: unaffected
+    note: 2026-08-03 DIVE-B, operator-scoped to a worker_general / architect_critic assessment. Core filing
+      SOUND and confirmed; the methodology-discipline note UPHELD. The single partial overturn is the coding-gap
+      magnitude, which is a different claim.
 - id: intake-947
   arxiv_id: '2511.08083'
   url: https://github.com/HazyResearch/HipKittens
