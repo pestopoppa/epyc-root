@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-P-BENCH-4-FG4B-20260728",
+  "indexed_by": "auditor-backfill-20260811",
+  "receipt": "/workspace/artifacts/operator/ratify_pbench4_fg4b_server_native_20260729T055435Z.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

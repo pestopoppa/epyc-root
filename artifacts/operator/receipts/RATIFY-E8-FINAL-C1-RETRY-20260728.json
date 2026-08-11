@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-E8-FINAL-C1-RETRY-20260728",
+  "indexed_by": "auditor-backfill-20260811",
+  "receipt": "/workspace/artifacts/operator/ratify_e8_final_c1_retry_amendment_20260728.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}
