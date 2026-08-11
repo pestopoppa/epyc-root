@@ -2,10 +2,10 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds AutoKernel C2 live correctness acceptance and closes the MI210 clock-pinning branch; prior gfx90a kernel-agent, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-11 (adds the independent AutoKernel fp64 oracle and stock ROCm Q4_K baseline failures; prior C2, clock, gfx90a kernel-agent, roofline, topology, and quant-path findings retained)
 **Sources**: 96+ documents
 
-## Compiled Update — 2026-08-11 (stateful correctness must include carried state)
+## Compiled Update — 2026-08-11 (AutoKernel live correctness controls)
 
 **Confidence: verified — measured live on the CPU backend; this is correctness-instrument acceptance,
 not a performance or production claim.**
@@ -35,14 +35,27 @@ power peaked at only 200 W against the 300 W cap. The card did not approach the 
 is not a live variance source under this saturation workload and a privileged
 `--setperfdeterminism` control would add operational authority without solving an observed problem.
 
-### Source References (2026-08-11 stateful integrity)
+The next correctness layer is now live as an independent host-double oracle. It decodes Q4_0, Q8_0,
+Q4_K, and Q6_K directly from GGUF wire bytes and emits
+`fp64_error_ratio/host-double-gguf-wire/v1`, avoiding project quantization helpers on the reference
+side. Five representative CPU cases, the dedicated broadcast regression, 31 real parser tests, and
+the property self-test's 5/5 planted plus 5/5 clean cases passed.
+
+The larger result is deliberately negative: the full stock ROCm Q4_K matrix contains genuine
+baseline failures under the predeclared κ=1.5 ratio gate. This does not invalidate the independent
+oracle, and the isolated broadcast pass does not override the full-matrix failures. Keep κ fixed,
+preserve and characterize the failing shapes and error ratios, correct the stock baseline, and do
+not rank candidates on this surface until the baseline itself passes. The experimental producer is
+still uncommitted under its explicit per-commit approval boundary.
+
+### Source References (2026-08-11 AutoKernel correctness)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — live checkpoint,
-  authorization boundary, and next calibration step.
+  independent fp64 oracle, authorization boundary, and next calibration step.
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C2-5 triad
-  contract and producer-durability boundary.
+  contract, RVP-C2-6 oracle and Q4_K baseline finding, and producer-durability boundary.
 - [Progress 2026-08-11](../progress/2026-08/2026-08-11.md) — exact live counts, seed, receipt flags,
-  research commits, and verification results.
+  fp64 oracle checks, fixed-gate baseline finding, research commits, and verification results.
 
 ## Compiled Update — 2026-08-03 (the AMD deficit is a QUANT deficit, not a device deficit; and the compute roofline, finally computed)
 

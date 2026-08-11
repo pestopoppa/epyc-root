@@ -3592,7 +3592,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-11T09:21:38Z",
+  "generated_at": "2026-08-11T09:40:13Z",
   "nodes": [
     {
       "age_days": 12,
@@ -4286,7 +4286,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 178,
+      "closed": 179,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
@@ -4819,13 +4819,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 39,
+      "closed": 40,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-11",
-      "next_action": "Implement RVP-C2-6 independent fp64 CPU reference; C2 producer durability still needs explicit approval",
-      "open": 25,
+      "next_action": "Characterize stock ROCm Q4_K fp64-gate failures at fixed \u03ba=1.5; do not rank this surface yet",
+      "open": 26,
       "state": "active",
       "track": "rocm verify profile backend"
     },
