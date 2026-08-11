@@ -409,7 +409,7 @@ bus messages, the D5 rule applied live; `msg-…-167-auditor`).
 | Consumer | State | Note |
 |---|---|---|
 | Registry-deriving readers (newest `from` ≤ now per scope) | **LIVE** | derive `E9-cpu-kernel` from the amended file directly |
-| `autopilot_state.json` `active_instrument_eras.cpu_bench` | **STILL `E8-cpu-kernel`** | the state consumer has NOT advanced; update mechanism under investigation (subagent) — the predicted committed-not-live candidate |
+| `autopilot_state.json` `active_instrument_eras.cpu_bench` | **STILL `E8-cpu-kernel` — mechanism gap CONFIRMED** | **Nothing is wired to advance it.** v8 precedent (`ratify_v8_era_fence_20260725.sh`) wrote registry+state atomically; no v9 analogue exists; the v10 multitier seal passes `cpu_bench` through unchanged (`dict(...)` shallow copy); no code derives cpu_bench from the registry at runtime. Downstream: dashboard Pareto endpoint (`dashboard.py:~5539`) reports E8 against a signed registry saying E9. **Closure authored**: `ratify_v9_cpu_bench_era_advance_20260811.sh` (`e31fba9f`, dry-run exit 0, single-field, receipt-chained) — token block `msg-…-168-auditor`, awaiting signature |
 | AutoKernel interim output (freeze → 21:34:50Z) | re-stampable | coordinator's interim posture lifts; re-stamp action sits with inference |
 | `e5_cell_manifests.py` `ERA_CPU_KERNEL`/validator | unchanged by design | mainA Token 2 territory (schema + four-constant repair, gated) |
 
@@ -424,9 +424,29 @@ so even post-restart C39 cannot annotate it — the queue owner (mainC) should m
 SUPERSEDED-BY `RATIFY-CONSOLIDATED-ERA-ROWS-20260811`; suggestion filed to mainD for a
 `status: superseded` index form.
 
+### Signed-but-untracked closure (found during item 1)
+
+Both operator-signed amendments sat **applied but uncommitted** — the exact tree-restore loss
+class this audit documented this morning. Closed: root signature artifacts committed as
+`cd58ba75` (annex + 2 receipts + 2 keyed indexes), orchestrator registry amendment as
+`53fc3250` (live sha verified = receipt `target_sha256_after` before committing).
+
 ### Item 3 — same-day commit audit (29 root + 4 orchestrator)
 
-*(pending — two subagents running; results below when reviewed)*
+**Orchestrator (4 commits, all verified state 1):** `78257261` (stack_topology re-attribution,
+comment-only, claim==diff), `872bc851` (stack_numa rationale correction; claimed 19 tests
+re-run by the auditing agent: 19 passed exact), `f4230b22` (NUMA_NODE0/1 deletion; AST-verified
+**zero code references remain**, all survivors prose; no running process to be stale against),
+`5f08875a` (test fixture; claimed 76 tests re-run: 76 passed exact). The
+`test_specific_role_urls` failure is **confirmed pre-existing and disjoint** from today's
+commits — root cause is `stack_priors.yaml` regenerated at 01:36Z faithfully recording a
+halves-only launch with no frontdoor `:8070` full instance (the 2026-07-23 dropped-ports
+regression class, independently reproduced by mainB, already filed). Also noted: **no**
+autopilot/instrument commit exists today in orchestrator — the era amendment was signed
+tonight and committed by this audit (`53fc3250`); and `scripts/autopilot/system_card.md` is
+stale on BOTH era fields (generated artifact, regeneration → autopilot resume checklist).
+
+**Root (29 commits):** *(subagent results pending review)*
 
 ## Bus filings
 
