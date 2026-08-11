@@ -339,7 +339,11 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   (alignment). **Kept separate from RVP-C2-3 deliberately**: the value-transform pass needs shapes
   *fixed* to catch shape-locked hacks, while this pass needs layout *varied* to catch fragility —
   merging them makes each weaker. `test-backend-ops` already has per-op view flags, but they are
-  opt-in and are not exercised on the paths we reward.
+  opt-in and are not exercised on the paths we reward. **2026-08-11 static implementation:** research
+  commit `14034623` adds the separate `OpSuitePlan.layout_probe`, exact
+  `offset|stride_gap|transpose` family accounting, suite-seed-bound receipts and a gate requiring all
+  three families plus a non-zero case count. The experimental producer compiles but remains
+  uncommitted pending its required explicit local-commit approval; no layout case has run.
 - [ ] **RVP-C2-5 — Stateful-op triad.** (1) State is an explicit graph input; (2) byte-equality
   assertion on input buffers across both runs; (3) **the final state is in the compared output set**.
   Rule 3 is the one that gets forgotten, and it is the one that matters — a kernel that computes the
@@ -483,7 +487,11 @@ the end are deliberate and recorded so they are not re-derived._
   seeds is cacheable and therefore unscoreable. Complements RVP-C2-7.
 - [ ] **RVP-C2-12 — A hard error on non-contiguous input must be a FAIL, never a skip.** The reference
   suite converts these to skips in half its files; a kernel that cannot accept a strided ggml view is
-  not correct for llama.cpp, and a skip records that as neither pass nor fail.
+  not correct for llama.cpp, and a skip records that as neither pass nor fail. **2026-08-11 static
+  implementation:** under the separate `--autokernel-layouts` flag, the experimental tool marks an
+  unsupported selected layout as a hard failure; both console and CSV parsers preserve FAIL instead
+  of `not_supported`. Research commit `14034623` covers the consumer. This row remains open until the
+  producer is committed.
 - [x] **RVP-C6-9 — Build the two unbuilt detectors behind `AntiRewardHackingEvidence`**
   (`timing_dependent_branch_findings`, `environment_probe_findings`). Until they exist, an empty list
   must read **UNKNOWN, not PASS** — an empty result from a detector that was never built is exactly the
