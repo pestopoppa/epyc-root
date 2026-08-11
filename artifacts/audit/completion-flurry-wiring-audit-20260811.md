@@ -237,6 +237,16 @@ Second surviving case, different failure mode: `agentic-rocm-kernel-authoring.md
 GEAK-freshness template box was **consumed, not restored** — the standing step survives only
 as prose (L148) with no checkbox tracking; the queue's TOP-40 #8 anchor is dead.
 
+**Adjudication conflict, recorded 09:23Z** (`msg-20260811T092254Z-131-mainC`): mainC, as
+repairing owner, adjudicated the `:339` box a *legitimate completed task* (the re-audit half
+did complete). My refined position, sent to mainC: **both halves are real** — the box records
+a genuine completed re-audit AND carries a standing constraint ("Do not churn them unless…")
+that a `[x]` renders invisible as an active rule, the same loss-mode as the consumed
+GEAK box. Recommended synthesis, owner's call: keep the `[x]` completion record but extract
+the do-not-churn constraint into its own unchecked constraint line (or add it to the banner's
+enumeration, which currently stops at six and is why every tool pass exempts it). The queue
+row L1039 marking the standing constraint "CLOSED" is wrong under either reading.
+
 ### B-3. The queue still offers 19 template steps as READY
 
 34 rows point into banner-guarded template sections; **19 carry `blocker = -`**; only ONE
