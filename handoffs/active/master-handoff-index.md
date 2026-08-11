@@ -34,7 +34,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-3 | Zero-inference decision batch — residual `dispatch_swarm_fanout` items | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 2026-07-14 |
 | OP-4 | gfx90a training-viability smoke — single unblock for F3 fine-tunes + GPU-drafter Stage-5 | [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) | 2026-07-14 |
 | OP-5 | Reviewer control-plane decision bundle (P-REV-1 amendment) | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-16 |
-| OP-6 | Consolidated quiet window — reviewer-plane baselines on the v8 reference lineup | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-17 |
+| OP-6 | Consolidated quiet window — reviewer-plane baselines on the v9 reference lineup | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-17 |
 | OP-7 | `HF_TOKEN` provisioning — downloads run unauthenticated at ~9 MB/s (~5.5 h per 170 GB) | [deepseek-v4-flash-0731-dspark.md](deepseek-v4-flash-0731-dspark.md) | 2026-08-09 |
 | OP-8 | GLM-5.2 GO/WAIT/KILL verdict — also governs **222 GB** of disk | [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | 2026-08-10 |
 | OP-9 | Nothing restarts `hub_supervisor.sh` if it dies — cron `once` form vs leave as-is (host-level) | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |

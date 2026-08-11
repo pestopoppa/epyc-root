@@ -43,7 +43,7 @@
 | RTG-31 | routing truth restoration | [routing-truth-restoration.md](routing-truth-restoration.md) | Move to completed/ — closed 2026-07-14 with W1–W8 live-attested; relink the 6 active handoffs citing it | — |
 | RTG-32 | scaffold autopilot cost lever deployment | [scaffold-autopilot-cost-lever-deployment.md](scaffold-autopilot-cost-lever-deployment.md) | T0.1 — Coordinate with the live autopilot agent. Confirm the daemon is idle/handed-back before any scripts/autopilot/ or registry edit. Get… | — |
 | RTG-33 | searxng search backend | [searxng-search-backend.md](searxng-search-backend.md) | SX-5: Load test — Folded into AR-3 Package D. Web_research sentinel suite (50q) provides realistic load validation. Post-AR-3: analyze engi… | — |
-| RTG-34 | session bus thin dispatcher | [session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) | R1a — the end-to-end bench claim never fired; wiring exists but is inference-gated | — |
+| RTG-34 | session bus thin dispatcher | [session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) | C-OWN — continue the C-series control-plane work (mainD's lane); R1a's bench is inference-gated but does NOT gate the handoff | — |
 | RTG-35 | shape keyed contention gating | [shape-keyed-contention-gating.md](shape-keyed-contention-gating.md) | Echo GateDecision into /chat response metadata (admitted/waited_s/decision/topology_idx) | — |
 | RTG-36 | stack change governance pipeline | [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md) | W4 - Consumer migration: continue migrating remaining stack-sensitive consumers to generated stack priors or explicit degraded fallbacks. U… | — |
 | RTG-37 | stack lineup dossier 2026 07 23 | [stack-lineup-dossier-2026-07-23.md](stack-lineup-dossier-2026-07-23.md) | Refresh the lineup dossier against the v9 freeze, or mark it a historical snapshot and retire it | — |
@@ -56,7 +56,7 @@
 | RTG-44 | wp9 wp10 lineup event prep | [wp9-wp10-lineup-event-prep.md](wp9-wp10-lineup-event-prep.md) | Declare this ready-to-run WP9/WP10 runbook do-not-dispatch, or execute it — it is PREPARED, NOT EXECUTED | — |
 | RTG-45 | x mas text routing | [x-mas-text-routing.md](x-mas-text-routing.md) | Monitor post-enable live telemetry for unexpected domain regressions, latency regressions, or guard bypasses; rollback is xmas_routing.mode… | — |
 | RTG-46 | handoff index and backlog graph | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | Populate `Deps` with real dependencies as work reveals them — heuristic import was rejected | — |
-| RTG-47 | dashboard architecture restructure | [dashboard-architecture-restructure.md](dashboard-architecture-restructure.md) | Land fix-10 retention overlay; re-eyeball live ↑/↓ under real load; run old+new in parallel toward the Phase 1b call | — |
+| RTG-47 | dashboard architecture restructure | [dashboard-architecture-restructure.md](dashboard-architecture-restructure.md) | Take the Phase 1b call — fix-10 retention and the view-plane consolidation both landed 2026-08-10; parallel-run evidence is in hand | — |
 
 ## Cross-domain
 
