@@ -130,10 +130,15 @@ after its terminal `STOP_STATE` is fsynced, to the durable
 journal timestamp, not export time, drives freshness.
 
 The hub also adds `_activity`: committed AutoKernel history, durable
-`data/autokernel_*` bundles, in-progress timestamp markers, and a bounded journal
-inventory. This is presentation context only. It is structurally excluded from
-`_freshness` and `/api/health`, so a commit or A/A artifact cannot make an absent
-or dead campaign look alive.
+`data/autokernel_*` bundles, in-progress timestamp markers, a bounded journal
+inventory, and an evidence-backed `current_state` snapshot. The snapshot keeps
+the operator-ratified production freeze separate from the latest fixed-panel
+audit, available-source diagnostic, and empirical-smoke receipts under
+`/mnt/raid0/llm/autokernel/probes`. It always carries `promotion_claim: false`:
+audit readiness and a diagnostic smoke cannot promote or freeze a kernel. All of
+this is presentation context only. It is structurally excluded from `_freshness`
+and `/api/health`, so a commit, audit, or A/A artifact cannot make an absent or
+dead campaign look alive.
 
 ### The seam: what the hub owns of the producer's document
 
