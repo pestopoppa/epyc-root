@@ -385,6 +385,49 @@ report. (`artifacts/audit/gpu-activation-critical-path.md` and `untracked-backup
 remain untracked deliberately — not auditor lineage, ownership unestablished; flagged to
 coordinator rather than committed.)
 
+## Post-signature verification addendum — 2026-08-11 ~21:45Z (operator standing directive)
+
+**Both tokens signed at 21:34:50Z (Annex G) and 21:35:01Z (era rows), directly from the 09:47
+token blocks.** The coordinator's P0 "deliver both commands" reprioritize (21:34:22Z) crossed
+the signing by ~30 seconds — stood down with receipts as evidence (receipts-on-disk outrank
+bus messages, the D5 rule applied live; `msg-…-167-auditor`).
+
+### Signature integrity — all verified
+
+- Both keyed receipt indexes exist with `indexed_by: "attest"` — written by the ratifiers'
+  own attest paths. **The C39 authoring contract worked on its first live use.**
+- Era token: all FOUR rows applied, none struck; live `instrument_eras.yaml` sha256 is
+  **byte-identical** to the receipt's `target_sha256_after` (`08a1b93b…`) — applied exactly as
+  validated, no churn since.
+- Annex G: both currency sites (line 17-18 and 167-168) read `currently v9 0db32c06e`;
+  amended file sha equals the pre-validated candidate `d60f4129…` exactly. **P-GPU-1
+  decision-grade claim class on v9 is textually unambiguous as of 21:34:50Z.** D-series items
+  D3/D4 and C-1 items 1–2: **CLOSED.**
+
+### Consumer states (the "is it live" half)
+
+| Consumer | State | Note |
+|---|---|---|
+| Registry-deriving readers (newest `from` ≤ now per scope) | **LIVE** | derive `E9-cpu-kernel` from the amended file directly |
+| `autopilot_state.json` `active_instrument_eras.cpu_bench` | **STILL `E8-cpu-kernel`** | the state consumer has NOT advanced; update mechanism under investigation (subagent) — the predicted committed-not-live candidate |
+| AutoKernel interim output (freeze → 21:34:50Z) | re-stampable | coordinator's interim posture lifts; re-stamp action sits with inference |
+| `e5_cell_manifests.py` `ERA_CPU_KERNEL`/validator | unchanged by design | mainA Token 2 territory (schema + four-constant repair, gated) |
+
+### Item 4 — C39 re-presentation check
+
+Structural: **no duplicate gate blocks** in `token-queue.md` (string-dedupe held even pre-C39).
+Live annotation: **blocked on the daemon restart** — pid 496387 unchanged since 08:48, so the
+queue currently presents FIVE unchecked gates of which **all five are phantoms**: two spent
+07-29, two signed tonight, and `RATIFY-E9-ROUTING-REWARD-ERA-20260729` **superseded** by the
+consolidated token (its row content landed inside it). The superseded one has no keyed receipt,
+so even post-restart C39 cannot annotate it — the queue owner (mainC) should mark it
+SUPERSEDED-BY `RATIFY-CONSOLIDATED-ERA-ROWS-20260811`; suggestion filed to mainD for a
+`status: superseded` index form.
+
+### Item 3 — same-day commit audit (29 root + 4 orchestrator)
+
+*(pending — two subagents running; results below when reviewed)*
+
 ## Bus filings
 
 - Item D findings → coordinator-agent: `msg-20260811T090716Z-138-auditor`
