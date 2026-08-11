@@ -2762,3 +2762,123 @@ def test_triage_marks_a_stale_item_without_touching_the_fence_digest(
     body = "{" + body.split("\n--- END", 1)[0]
     assert "DAYS OLD" not in body, "the integrity-covered body must be the sender's bytes"
     assert json.loads(body)["task_id"] == "stale-routed"
+
+
+# ----------------------------------------------------------------------- C23
+#
+# Clearing triage took one `corr_id` per item, so a session holding ONE answer for
+# N routed items had no compliant way to send it once. BUS_PROTOCOL.md told authors
+# to "write it once and reference it" while no mechanism to reference it existed —
+# the rule was not performable. Measured 2026-07-29 from a careful main: 3
+# byte-identical payloads at 17:41Z, 6 more at 17:44Z differing only in `corr_id`.
+# Nine in ten minutes, hours after the discipline rule was codified. Two failures
+# in ten minutes is the rule being the defect, not the sender.
+
+def _routed(msg_id: str, task: str, sender: str = "bob") -> dict:
+    return {"schema_version": bus.MSG_SCHEMA_VERSION, "id": msg_id,
+            "ts": "2026-08-11T10:00:00+00:00", "from": sender, "to": "alice",
+            "kind": "finding", "task_id": task,
+            "needs_routing_to": ["alice"], "action_required": True}
+
+
+def test_one_row_can_disposition_many_routed_items(bus_root: Path) -> None:
+    """The fix. One answer, one row, N ids cleared."""
+    _provision(bus_root, *AGENTS)
+    ids = [f"msg-20260811T10000{i}Z-{i}-bob" for i in range(3)]
+    for i, mid in enumerate(ids):
+        _append(bus_root / "inbox" / "alice.jsonl", _routed(mid, f"task-{i}"))
+    assert len(bus.routed_view(bus_root, "alice")["pending"]) == 3
+
+    _append(bus_root / "outbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T110000Z-9-alice",
+        "ts": "2026-08-11T11:00:00+00:00", "from": "alice", "to": "bob", "kind": "ack",
+        "corr_ids": ids, "payload": {"disposition": "done", "note": "all three superseded"}})
+
+    view = bus.routed_view(bus_root, "alice")
+    assert view["pending"] == [] and view["acked_awaiting_action"] == []
+
+
+def test_the_scalar_corr_id_still_works_unchanged(bus_root: Path) -> None:
+    """Backward compatibility, and the compliant path. This is purely additive: the
+    scalar is still right for a genuinely per-item answer, and every row already on
+    the bus uses it."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "alice.jsonl", _routed("msg-20260811T100000Z-1-bob", "t1"))
+    _append(bus_root / "inbox" / "alice.jsonl", _routed("msg-20260811T100001Z-2-bob", "t2"))
+
+    _append(bus_root / "outbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T110000Z-9-alice",
+        "ts": "2026-08-11T11:00:00+00:00", "from": "alice", "to": "bob", "kind": "ack",
+        "corr_id": "msg-20260811T100000Z-1-bob", "payload": {"disposition": "done"}})
+
+    pending = bus.routed_view(bus_root, "alice")["pending"]
+    assert [bus.logical_id(e["row"]) for e in pending] == ["msg-20260811T100001Z-2-bob"], \
+        "one scalar disposition must clear exactly one item — no wider, no narrower"
+
+
+def test_corr_ids_clears_only_what_it_lists(bus_root: Path) -> None:
+    """The direction that would make this dangerous. 'Bulk' must not mean 'all'."""
+    _provision(bus_root, *AGENTS)
+    ids = [f"msg-20260811T10000{i}Z-{i}-bob" for i in range(3)]
+    for i, mid in enumerate(ids):
+        _append(bus_root / "inbox" / "alice.jsonl", _routed(mid, f"task-{i}"))
+
+    _append(bus_root / "outbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T110000Z-9-alice",
+        "ts": "2026-08-11T11:00:00+00:00", "from": "alice", "to": "bob", "kind": "ack",
+        "corr_ids": ids[:2], "payload": {"disposition": "done"}})
+
+    pending = bus.routed_view(bus_root, "alice")["pending"]
+    assert [bus.logical_id(e["row"]) for e in pending] == [ids[2]]
+
+
+def test_a_bare_bulk_ack_is_receipt_not_action(bus_root: Path) -> None:
+    """The bulk form must not become a loophole around the rule it sits inside: an
+    `action_required` message KEEPS APPEARING after a bare ack, because
+    acknowledgement is receipt, not action. Bulk changes the arity, not the semantics.
+    """
+    _provision(bus_root, *AGENTS)
+    ids = [f"msg-20260811T10000{i}Z-{i}-bob" for i in range(2)]
+    for i, mid in enumerate(ids):
+        _append(bus_root / "inbox" / "alice.jsonl", _routed(mid, f"task-{i}"))
+
+    _append(bus_root / "outbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T110000Z-9-alice",
+        "ts": "2026-08-11T11:00:00+00:00", "from": "alice", "to": "bob", "kind": "ack",
+        "corr_ids": ids, "payload": {"seen": True}})          # no disposition
+
+    view = bus.routed_view(bus_root, "alice")
+    assert view["pending"] == []
+    assert len(view["acked_awaiting_action"]) == 2, "bare acks are receipt, in bulk too"
+
+
+def test_corr_ids_is_schema_valid_and_typed(bus_root: Path) -> None:
+    base = {"schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T110000Z-1-alice",
+            "ts": "2026-08-11T11:00:00+00:00", "from": "alice", "to": "bob", "kind": "ack"}
+    bus.validate_row(LIVE_BUS_ROOT, {**base, "corr_ids": ["a", "b"]}, "msg")
+    for bad in ([], ["a", "a"], [""], [1], "not-a-list"):
+        with pytest.raises(bus.BusError):
+            bus.validate_row(LIVE_BUS_ROOT, {**base, "corr_ids": bad}, "msg")
+
+
+def test_the_triage_trailer_advertises_the_bulk_form_when_it_is_needed(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The previous instruction implied one row per item was the only way, which is
+    how someone following it correctly sent nine identical payloads in ten minutes."""
+    _provision(bus_root, *AGENTS)
+    for i in range(2):
+        _append(bus_root / "inbox" / "alice.jsonl",
+                _routed(f"msg-20260811T10000{i}Z-{i}-bob", f"task-{i}"))
+    capsys.readouterr()
+    bus.print_triage(bus_root, "alice")
+    assert "corr_ids:" in capsys.readouterr().out
+
+    # ...and stays quiet for a single item, where the bulk form is just noise.
+    _provision(bus_root, "coordinator-agent")
+    _append(bus_root / "inbox" / "coordinator-agent.jsonl",
+            {**_routed("msg-20260811T100009Z-9-bob", "solo"), "to": "coordinator-agent",
+             "needs_routing_to": ["coordinator-agent"]})
+    capsys.readouterr()
+    bus.print_triage(bus_root, "coordinator-agent")
+    out = capsys.readouterr().out
+    assert "1 item(s)" in out and "corr_ids:" not in out

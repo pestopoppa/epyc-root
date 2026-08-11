@@ -61,6 +61,16 @@
         "corr_id": {
           "type": "string"
         },
+        "corr_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "C23 (2026-08-11): every routed message this ONE row dispositions, in addition to any scalar `corr_id`. Added because the previous rule was not performable: clearing triage took one corr_id per item, so a session holding a single answer for N routed items had no compliant way to send it once, and BUS_PROTOCOL.md told authors to 'write it once and reference it' while no mechanism to reference it existed. Measured 2026-07-29: 9 byte-identical payloads in 10 minutes from one careful main, hours after that discipline rule was codified — and fan-out makes it N dispositions x M routing targets. Purely additive: the scalar still works and is still right for a genuinely per-item answer. Use this ONLY when one answer really does cover every id listed; N distinct answers still want N rows, because a reader who cannot tell N answers from one answer repeated N times has lost the signal the queue exists to carry."
+        },
         "task_id": {
           "type": "string"
         },

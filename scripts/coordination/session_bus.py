@@ -687,17 +687,33 @@ def routed_view(bus_root: Path, agent: str) -> dict[str, list[dict]]:
     my_outbox, _ = _read_jsonl(bus_root / "outbox" / f"{agent}.jsonl")
     state: dict[str, str] = {}
     for row in my_outbox:
-        corr = str(row.get("corr_id") or "")
-        if not corr:
-            continue
-        lid = alias.get(corr, corr)
-        if lid not in entries:
+        # C23: a row clears every id it names — scalar `corr_id`, plus `corr_ids`.
+        #
+        # The rule this replaces was NOT PERFORMABLE. Clearing triage took one
+        # `corr_id` per item, so a session holding ONE answer for N routed items had
+        # no compliant way to send it once; `BUS_PROTOCOL.md` told authors to "write
+        # it once and reference it" while no mechanism to reference it existed.
+        # Measured 2026-07-29 from a careful main: 3 byte-identical payloads at
+        # 17:41Z, 6 more at 17:44Z differing only in `corr_id` — nine in ten minutes,
+        # hours after the discipline rule was written. Fan-out multiplies it, since
+        # N dispositions × M routing targets is N×M triage entries fleet-wide.
+        # Discipline cannot fix a protocol that makes the spam the only compliant
+        # move, and the honest reading of two failures in ten minutes is that the
+        # rule was the defect.
+        corrs = [str(row["corr_id"])] if row.get("corr_id") else []
+        corrs += [str(c) for c in (row.get("corr_ids") or [])]
+        if not corrs:
             continue
         disposition = (row.get("payload") or {}).get("disposition")
-        if row.get("kind") != "ack" or disposition in TERMINAL_DISPOSITIONS:
-            state[lid] = "actioned"
-        else:
-            state.setdefault(lid, "acked")
+        actioned = row.get("kind") != "ack" or disposition in TERMINAL_DISPOSITIONS
+        for corr in corrs:
+            lid = alias.get(corr, corr)
+            if lid not in entries:
+                continue
+            if actioned:
+                state[lid] = "actioned"
+            else:
+                state.setdefault(lid, "acked")
 
     pending: list[dict] = []
     acked_awaiting: list[dict] = []
@@ -776,6 +792,15 @@ def print_triage(bus_root: Path, agent: str) -> None:
     print(f"triage: to clear an item, append to YOUR outbox a row with corr_id=<its id> — any "
           f"substantive kind, or kind=ack with payload.disposition in "
           f"{sorted(TERMINAL_DISPOSITIONS)}. Advancing your cursor never clears this list.")
+    if total > 1:
+        # C23: say the bulk form exists at the exact moment it is needed. The
+        # previous instruction implied one row per item was the only way, which is
+        # how nine byte-identical payloads got sent in ten minutes by someone
+        # following it correctly.
+        print(f"       ONE answer for several of them? Send ONE row carrying "
+              f"corr_ids: [<id>, <id>, ...] instead of repeating the payload per id. "
+              f"Use it only when the answer really is the same — N distinct answers "
+              f"still want N rows.")
     print(f"== TRIAGE REPORT COMPLETE: {total} item(s), {body_bytes} body bytes. A copy of "
           f"this report missing any END fence or this trailer has been TRUNCATED and has "
           f"lost routed intent. ==")
