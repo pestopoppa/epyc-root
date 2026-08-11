@@ -755,7 +755,7 @@ Commit `af2e45de4` on `feature/cpu-ep-inter-process` adds `GGML_NUMA_REPACK_INTE
 
 Default-on is correct. Kill-switch is for: (a) measuring mbind's isolated impact, (b) running alternative NUMA strategies, (c) regression diagnostics. A startup `GGML_LOG_INFO` is emitted when `=0` is set so the disabled state is visible in server logs.
 
-The DeltaNet/`GGML_PERF=1` profile gap mentioned in the original status block was filled 2026-04-26 via Phase D `perf stat` on REAP-246B + cross-model perf stat in P2. Findings: bottleneck class follows the QUANT (Q8_0 = BW-bound, Q4_K_M = sync-bound). See [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) for the complete CPU1/CPU2/CPU15 flag list and `progress/2026-04/2026-04-26.md` for measurements.
+The DeltaNet/`GGML_PERF=1` profile gap mentioned in the original status block was filled 2026-04-26 via Phase D `perf stat` on REAP-246B + cross-model perf stat in P2. Findings: bottleneck class follows the QUANT (Q8_0 = BW-bound, Q4_K_M = sync-bound). See [`cpu-kernel-env-flags-inventory.md`](../completed/cpu-kernel-env-flags-inventory.md) for the complete CPU1/CPU2/CPU15 flag list and `progress/2026-04/2026-04-26.md` for measurements.
 
 ## Session 16 (2026-04-26 evening) — Q6_K 8x8 AVX-512BW dispatcher SCAFFOLDING landed
 
@@ -811,7 +811,7 @@ Pure plumbing only — the actual SIMD body is a stub that falls through to the 
 1. Implement the SIMD body of `gemv_q6_K_8x8_q8_K_avx512bw` per the algorithm design above.
 2. PPL bit-exact validation on Coder-30B Q4_K_M.
 3. Throughput measurement: env on/off comparison on the 5 production models. Expected: +2-5% on Q4_K_M class, neutral on Q8_0 (no Q6_K content).
-4. If gain is real and PPL bit-exact: update [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) to add `GGML_Q6_K_8X8_AVX=1` to the production-ready opt-in list.
+4. If gain is real and PPL bit-exact: update [`cpu-kernel-env-flags-inventory.md`](../completed/cpu-kernel-env-flags-inventory.md) to add `GGML_Q6_K_8X8_AVX=1` to the production-ready opt-in list.
 5. After Q6_K lands, follow up with **Q5_K** (smaller cycle share ~4.6% per Session 14 dispatcher gap analysis, but trivial once the Q6_K bit-fiddling pattern is established).
 
 ## Session 17 (2026-04-27) — Q6_K AVX-512BW SIMD body LANDED + bit-exact verified

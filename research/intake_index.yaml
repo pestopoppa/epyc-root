@@ -60695,7 +60695,7 @@
   handoffs_created: []
   handoffs_updated:
   - handoffs/active/autokernel-research-loop.md
-  - handoffs/active/cpu-kernel-env-flags-inventory.md
+  - handoffs/completed/cpu-kernel-env-flags-inventory.md
   - handoffs/active/rocm-verify-profile-backend.md
   - handoffs/active/research-evaluation-index.md
   cross_references:

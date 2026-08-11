@@ -180,6 +180,24 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
 - [x] Correct the IQ2_XXS access characterization: four INDEPENDENT gathers (single 8-byte memcpy, ILP≈4) plus FOUR sign-table gathers, not a dependent pointer chase with one sign read ✅ 2026-08-03
 - [ ] **Item A — Q8_0 50→62 rung (achieved-bandwidth / occupancy).** The 2026-07-04 finding stands: no per-element fp dequant to hide. Continue on the async-prefetch/MLP track; do NOT reopen an iqk port for this rung
 - [ ] **Item B — Q4_K 35→50 rung (k-quant superblock unpack).** A DIFFERENT mechanism from item A and the largest single banded win available (+38–43%, high confidence). Decisive first measurement: per-op wall share of superblock unpack inside `mul_mat_vec_q` at Q4_K vs Q8_0 on the same model, before any kernel is authored
+  - **2026-08-11 bounded op probe:** the hash-bound single-process C4 reports at
+    `/mnt/raid0/llm/autokernel/probes/c4-{q4k,q8}-op-singleproc-20260811T12{10,15}Z/report.json`
+    hold `m=16,n=1,k=256` and the dispatch sequence fixed. Q4_K versus Q8_0 `mul_mat_vec_q`
+    share is 41.95% versus 40.92%, and per-dispatch duration is ~5.72 versus ~5.50 µs. That small
+    synthetic surface does **not** explain the 35→50 roofline rung and cannot see unpack work inside
+    the fused kernel. Item B therefore remains open for a representative-shape counter/source-timer
+    probe; the current result prevents mistaking a complete kernel-family table for the requested
+    inside-kernel attribution.
 - [ ] **Item C — architect MoE-IQ2 at 10.3%**, our worst rung by 2× and a production-serving model. Attach the kill-criterion first (below) — this is a probe, not yet a funded kernel
 - [ ] Kill-criterion probe for item C: on gfx906 an optimised community fork **and** vLLM independently converge on ~10% bandwidth for MoE batch-1 — the same rung as ours. Two stacks hitting one wall means this may be an **architectural floor**; establish cheaply whether it is before funding a kernel
+  - **2026-08-11 tool-boundary result:** the exact main tensor type in the 122B UD-IQ2_M file is
+    IQ2_XXS (94 tensors; alongside IQ3_XXS/Q5_K/Q6_K). Ten unprofiled seeded warm-up repetitions pass,
+    but `rocprofv2` exits 139 during the IQ2_XXS active trace even after moving all repetitions into
+    one backend process. Durable failure receipt:
+    `/mnt/raid0/llm/autokernel/probes/c4-iq2xxs-op-singleproc-20260811T1220Z/receipt.json`,
+    SHA-256 `fdf355ebc933f3cf20def077cdcc7b998c0072295c00c97b977ad32358c284e2`.
+    This is not evidence of an architectural floor. Keep the kill-criterion open and switch the next
+    probe to a non-`rocprofv2` device timer/counter path rather than retrying the same crash.
+  - [ ] **IQ2 tool-boundary follow-up:** capture the same seeded IQ2_XXS shape through a
+    non-`rocprofv2` device-timer/counter path and retain the failed receipt as the negative control.
 - [ ] Investigate the permanently-dead `z_HAVE_FANCY_SIMD` AVX512-VPOPCNTDQ IQ2 sign path on an EXPERIMENTAL branch only (production kernel is frozen; this is a CPU-side finding filed here for mechanism adjacency)

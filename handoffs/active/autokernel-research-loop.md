@@ -8,7 +8,7 @@
 **Source draft:** [`docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md`](../../docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md)
 (SHA-256 `af2fd586d3b1e3b58b038fcc0a0c7d5def22d70b45dbdc54bd64799b082e7b8b`; moved out of `tmp/` on
 2026-08-02 because `tmp/*` is gitignored and `MEASUREMENT.md:146-156` forbids scratch citations)
-**Supersedes as loop owner:** [`mi210-kernel-rnd-loop-proposal.md`](mi210-kernel-rnd-loop-proposal.md)
+**Supersedes as loop owner:** [`mi210-kernel-rnd-loop-proposal.md`](../completed/mi210-kernel-rnd-loop-proposal.md)
 **Absorbed 2026-08-02:** the bootstrap-corpus design pass (now §19) and the full design audit
 (findings folded into §§2–15; the standalone audit document is retired)
 **Consumes rather than replaces:** [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md),
@@ -3329,7 +3329,7 @@ negatives so the planner cannot omit inconvenient history.
 | **P0.2 fixed-shape vs continuous serving** | Correct separation; kernel and scheduler effects have historically been conflated | Make benchmark class part of evaluator identity: fixed-shape feeds kernel campaigns, variable-request feeds `serving_runtime` |
 | **P0.3 normalized scoreboard** | Correct derived view, but must not be a hand-maintained source of truth | Derive from journal events and capability rows; bind every row to regime and candidate identity |
 
-**GPU families.** Current anchors: [MI210 speed-campaign summary](mi210-speed-campaign-summary.md),
+**GPU families.** Current anchors: [MI210 speed-campaign summary](../completed/mi210-speed-campaign-summary.md),
 [Q8/GEMV roofline](mi210-q8-dequant-gemv-roofline.md),
 [graph techniques](gemma-challenge-kernel-techniques-v7.md),
 [acceleration index](inference-research-index.md).
@@ -3536,7 +3536,7 @@ will spend kernel-authoring budget rediscovering ports.
   carries a 15-row toggles table whose column is literally "effect on trace interpretation", including
   cases where a flag *intentionally* disables a fast path so split kernels are expected. Without it,
   every legitimately-disabled path reads as a missing optimization. Our substrate is
-  [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md), which inventories flags
+  [cpu-kernel-env-flags-inventory.md](../completed/cpu-kernel-env-flags-inventory.md), which inventories flags
   without their expected trace consequence. This is the three-states-not-two discipline as data.
 - [x] **AK-CAT-4 — Adopt the pinned-head refresh discipline.** ✅ 2026-08-10. The reference pins the upstream head of
   every scanned project with a dated note and ships the exact scan commands, making staleness

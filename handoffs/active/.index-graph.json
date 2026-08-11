@@ -570,12 +570,6 @@
     {
       "from": "EVL-29",
       "kind": "ref",
-      "to": "INF-35",
-      "weight": 2
-    },
-    {
-      "from": "EVL-29",
-      "kind": "ref",
       "to": "INF-47",
       "weight": 2
     },
@@ -1056,12 +1050,6 @@
     {
       "from": "INF-03",
       "kind": "ref",
-      "to": "INF-38",
-      "weight": 2
-    },
-    {
-      "from": "INF-03",
-      "kind": "ref",
       "to": "INF-48",
       "weight": 6
     },
@@ -1104,12 +1092,6 @@
     {
       "from": "INF-06",
       "kind": "ref",
-      "to": "INF-08",
-      "weight": 2
-    },
-    {
-      "from": "INF-06",
-      "kind": "ref",
       "to": "INF-09",
       "weight": 3
     },
@@ -1134,12 +1116,6 @@
     {
       "from": "INF-06",
       "kind": "ref",
-      "to": "INF-35",
-      "weight": 2
-    },
-    {
-      "from": "INF-06",
-      "kind": "ref",
       "to": "INF-36",
       "weight": 4
     },
@@ -1148,12 +1124,6 @@
       "kind": "ref",
       "to": "INF-37",
       "weight": 3
-    },
-    {
-      "from": "INF-06",
-      "kind": "ref",
-      "to": "INF-38",
-      "weight": 1
     },
     {
       "from": "INF-06",
@@ -1204,18 +1174,6 @@
       "weight": 2
     },
     {
-      "from": "INF-08",
-      "kind": "ref",
-      "to": "INF-06",
-      "weight": 2
-    },
-    {
-      "from": "INF-08",
-      "kind": "ref",
-      "to": "INF-29",
-      "weight": 3
-    },
-    {
       "from": "INF-09",
       "kind": "ref",
       "to": "INF-10",
@@ -1244,12 +1202,6 @@
       "kind": "ref",
       "to": "INF-07",
       "weight": 2
-    },
-    {
-      "from": "INF-10",
-      "kind": "ref",
-      "to": "INF-08",
-      "weight": 6
     },
     {
       "from": "INF-10",
@@ -1600,12 +1552,6 @@
       "weight": 3
     },
     {
-      "from": "INF-29",
-      "kind": "ref",
-      "to": "INF-08",
-      "weight": 3
-    },
-    {
       "from": "INF-30",
       "kind": "ref",
       "to": "EVL-09",
@@ -1746,49 +1692,7 @@
     {
       "from": "INF-34",
       "kind": "ref",
-      "to": "INF-38",
-      "weight": 2
-    },
-    {
-      "from": "INF-34",
-      "kind": "ref",
       "to": "INF-48",
-      "weight": 2
-    },
-    {
-      "from": "INF-35",
-      "kind": "ref",
-      "to": "INF-06",
-      "weight": 2
-    },
-    {
-      "from": "INF-38",
-      "kind": "ref",
-      "to": "EVL-20",
-      "weight": 1
-    },
-    {
-      "from": "INF-38",
-      "kind": "ref",
-      "to": "EVL-48",
-      "weight": 1
-    },
-    {
-      "from": "INF-38",
-      "kind": "ref",
-      "to": "INF-14",
-      "weight": 1
-    },
-    {
-      "from": "INF-38",
-      "kind": "ref",
-      "to": "INF-35",
-      "weight": 2
-    },
-    {
-      "from": "INF-38",
-      "kind": "ref",
-      "to": "INF-39",
       "weight": 2
     },
     {
@@ -1952,12 +1856,6 @@
       "kind": "ref",
       "to": "INF-18",
       "weight": 5
-    },
-    {
-      "from": "INF-47",
-      "kind": "ref",
-      "to": "INF-38",
-      "weight": 2
     },
     {
       "from": "INF-48",
@@ -2800,12 +2698,6 @@
       "weight": 3
     },
     {
-      "from": "RTG-16",
-      "kind": "ref",
-      "to": "INF-35",
-      "weight": 3
-    },
-    {
       "from": "RTG-17",
       "kind": "ref",
       "to": "EVL-09",
@@ -3592,7 +3484,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-11T10:13:59Z",
+  "generated_at": "2026-08-11T10:47:37Z",
   "nodes": [
     {
       "age_days": 12,
@@ -4247,13 +4139,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 8,
+      "closed": 10,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-11",
       "next_action": "Pre-register AK-LE-1/2 model, effort, budget, and target arms; execute only with explicit inference permission",
-      "open": 17,
+      "open": 15,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4308,19 +4200,6 @@
       "open": 15,
       "state": "active",
       "track": "batched decode measurement"
-    },
-    {
-      "age_days": 13,
-      "blocked": 0,
-      "closed": 1,
-      "domain": "inference-research",
-      "handoff": "cpu-kernel-env-flags-inventory.md",
-      "id": "INF-08",
-      "last_advanced": "2026-07-29",
-      "next_action": "Add an \"effect on trace interpretation\" column to the flag inventory. This file records which",
-      "open": 1,
-      "state": "active",
-      "track": "cpu kernel env flags inventory"
     },
     {
       "age_days": 13,
@@ -4650,19 +4529,6 @@
     {
       "age_days": 8,
       "blocked": 0,
-      "closed": 3,
-      "domain": "inference-research",
-      "handoff": "mi210-kernel-rnd-loop-proposal.md",
-      "id": "INF-35",
-      "last_advanced": "2026-08-03",
-      "next_action": "Phase 2 \u2014 build the nightshift loop (outer planner/critic + inner sweep \u2192 kernel_eval.sh \u2192 Pareto)",
-      "open": 3,
-      "state": "active",
-      "track": "mi210 kernel rnd loop proposal"
-    },
-    {
-      "age_days": 8,
-      "blocked": 0,
       "closed": 7,
       "domain": "inference-research",
       "handoff": "mi210-mfma-compute-bound-paths.md",
@@ -4682,22 +4548,9 @@
       "id": "INF-37",
       "last_advanced": "2026-08-03",
       "next_action": "Apply the SoA-repack lever only if coalescing measures poor; currently deemed healthy",
-      "open": 7,
+      "open": 8,
       "state": "active",
       "track": "mi210 q8 dequant gemv roofline"
-    },
-    {
-      "age_days": 13,
-      "blocked": 0,
-      "closed": 3,
-      "domain": "inference-research",
-      "handoff": "mi210-speed-campaign-summary.md",
-      "id": "INF-38",
-      "last_advanced": "2026-07-29",
-      "next_action": "MI-KB-2 \u2014 run KernelBench over current v6 production kernel to establish baseline",
-      "open": 1,
-      "state": "active",
-      "track": "mi210 speed campaign summary"
     },
     {
       "age_days": 13,
@@ -4819,13 +4672,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 43,
+      "closed": 45,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-11",
       "next_action": "Fix stock gfx90a Q4_K MMQ failures at fixed \u03ba=1.5; retain force-rocBLAS as the control",
-      "open": 24,
+      "open": 22,
       "state": "active",
       "track": "rocm verify profile backend"
     },
