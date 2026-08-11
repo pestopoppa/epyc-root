@@ -65,6 +65,13 @@ Coupling edges: `.claude/dependency-map.json`.
 - **Checkbox discipline**: the dashboard counts checkbox state ONLY — any edit recording completed work flips `- [ ]` → `- [x]` (append `✅ YYYY-MM-DD`); mid-flight discoveries get their own task line. Full axioms: `agents/shared/SESSION_LIFECYCLE.md`.
 - Authoring/editing an index: `docs/guides/agent-workflows/handoff-index-authoring.md` — the thin-row contract. Rows carry a pointer and a next step; **status, evidence and history never go in a row**. On completion, extract findings to docs, move to `completed/`, and delete the row.
 
+## Dashboards
+
+Adding or changing a dashboard surface? The **plane rule** is one paragraph in
+[`dashboard/README.md`](dashboard/README.md): data contracts live with the subsystem they observe;
+pages, nav and the registry live with the hub (`:8100`); every new dashboard needs a registry entry
+**plus** a health probe **plus** a freshness envelope; no unregistered pages.
+
 ## Progress Tracking
 
 Daily progress in `progress/YYYY-MM/YYYY-MM-DD.md`. Always update after significant work.

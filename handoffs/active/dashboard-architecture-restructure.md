@@ -352,11 +352,30 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
 
 ### Phase 3 — codify governance
 
-- [ ] Write the plane rule into `dashboard/README.md` (+ one-line CLAUDE.md pointer):
+- [x] Write the plane rule into `dashboard/README.md` (+ one-line CLAUDE.md pointer):
       *data contracts live with their subsystem; pages/nav/registry live with the hub; every new
       dashboard = registry entry + health probe + freshness envelope; no unregistered pages.*
+      ✅ 2026-08-11 — `mainD`. **Half of this was already done before I touched it and I am not
+      claiming it:** the plane rule proper (data plane with the subsystem, view plane with the hub)
+      has been in `dashboard/README.md` since the RTG-47 ratification on 2026-08-10, after this row
+      was written. What was genuinely missing was the row's *checklist* form and the pointer.
+      `Adding a dashboard =` named only the registry row, so the **health probe** and **freshness
+      envelope** were requirements nothing stated; both are now spelled out with what each one buys
+      — a surface with no probe cannot be told *down* from *slow*, and absence must say what absence
+      MEANS or a silent panel is indistinguishable from a dead producer. "No unregistered pages" is
+      stated with its own history: it is how the 7.6k-line `:8000/dashboard` accreted.
+      Verified before documenting rather than asserted: all **7/7** registry entries do declare
+      `health_path`, and the envelope is real (37 `absence_means`/`warn_s` sites in
+      `dashboard/panels.py`). CLAUDE.md gains a four-line `## Dashboards` pointer — it had none.
+      `tests/test_dashboard_static_js.py` 4 passed.
 - [ ] Rationalize supervision with OP-9's resolution: one documented lifecycle story for the hub
       (managed service + watchdog roles stated once, in one repo's docs).
+      *BLOCKED, noted 2026-08-11 by `mainD`: this reads "with OP-9's **resolution**", and OP-9 —
+      "nothing restarts the supervisor itself" — is still an OPEN operator decision (a cron entry is
+      a host-level change). Writing the lifecycle story now would document a supervision model whose
+      top layer is undecided. **`backlog_row_check.py --ref` returns DISPATCHABLE for this row**,
+      because the dependency lives in prose rather than in a child box — the same screener blind
+      spot as an `OPERATOR:` prefix. Worth a generator signal.*
 - [ ] H1/H2 blind-spot panels (owned by RTG-03) get homes assigned post-split: breaker/fallback →
       `/machine`; REL-1 eval error-rate → autopilot page.
 

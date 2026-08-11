@@ -26,9 +26,23 @@ state → orchestrator serves the page"), which is how the 7.6k-line combined
 page on `:8000/dashboard` accreted. That page is **legacy, pending Phase-1b
 deprecation** (`handoffs/active/dashboard-architecture-restructure.md`) — its
 data routes stay; its page is superseded by `/machine` + `/autopilot` here.
-Adding a dashboard = one row in `dashboard/registry.json` (the shared nav and
-the directory strip render from it); hand-adding cross-dashboard links to a
-page is the drift this registry exists to end.
+**Adding a dashboard = three things, not one.** All three are load-bearing and all
+three are checkable:
+
+1. **A registry entry** in `dashboard/registry.json` — the shared nav and the
+   directory strip render from it. Hand-adding cross-dashboard links to a page is
+   the drift this registry exists to end.
+2. **A health probe** — the `health_path` field on that entry. All 7 current
+   entries declare one; a surface with no probe cannot be told *down* from *slow*,
+   and "is it up" is the first question anyone asks of a dashboard.
+3. **A freshness envelope** for every panel — a producer, a timestamp field, a
+   staleness bound and an `absence_means` string (`dashboard/panels.py`). Absence
+   must say what absence MEANS, or a panel that renders nothing is
+   indistinguishable from a panel whose producer died.
+
+**No unregistered pages.** A page reachable but absent from the registry is
+invisible to the nav, has no probe, and no one learns it exists — which is how the
+7.6k-line `:8000/dashboard` page accreted in the first place.
 
 ## Running
 
