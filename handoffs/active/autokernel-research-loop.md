@@ -29,8 +29,10 @@ version coverage, and structured CPU-reference receipts for passing backend-op c
 HostOps adapter now has no undeclared static seam for its registered IQK parameter proposal. AK-DEL-1
 also replayed a hash-bound, normalized historical `rocprofv2` trace: all three admitted kernel families
 landed in bucket (a), with none in buckets (b)–(d), so the bounded next action is catalogue expansion
-rather than a novel-kernel generator. The next live action is the v9/hardened control block, followed
-by §AK6.5 Step 3's known-real CPU candidate.
+rather than a novel-kernel generator. Its INF-48 dependency now also has the inference-free C4 layer:
+paired mapping/formal traces, deterministic kernel/overlap/fuse/architecture tables, explicit host
+catalogue scope, and a bounded judgment receipt. The next live action is the v9/hardened control block,
+followed by §AK6.5 Step 3's known-real CPU candidate.
 The operator has explicitly required fresh permission
 before any inference; no live work may start from this handoff alone. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
