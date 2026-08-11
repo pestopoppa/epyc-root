@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 54,
       "oldest_advance": "2026-07-29",
-      "open": 410
+      "open": 403
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 304
+      "open": 302
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -85,10 +85,10 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 14,
+      "closed": 21,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 11,
+      "open": 4,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
@@ -692,7 +692,7 @@
       "blocked": 0,
       "closed": 109,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-08-11",
       "open": 7,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-16",
@@ -1033,7 +1033,7 @@
       "blocked": 0,
       "closed": 50,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-08-11",
       "open": 4,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-34",
@@ -1042,14 +1042,14 @@
     },
     "mi210-mfma-compute-bound-paths.md": {
       "blocked": 0,
-      "closed": 7,
+      "closed": 8,
       "guarded": 0,
       "last_advanced": "2026-08-03",
       "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-36",
       "state": "active",
-      "total": 10
+      "total": 11
     },
     "mi210-q8-dequant-gemv-roofline.md": {
       "blocked": 0,
@@ -1845,10 +1845,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 35,
+      "closed": 37,
       "guarded": 0,
-      "last_advanced": "2026-08-10",
-      "open": 15,
+      "last_advanced": "2026-08-11",
+      "open": 13,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
@@ -2363,7 +2363,8 @@
     },
     "INF-03": {
       "deps": [
-        "INF-48"
+        "INF-48",
+        "EVL-47"
       ],
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
@@ -2398,7 +2399,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "Run the first real CPU candidate on the full host after explicit inference permission",
+      "next_action": "Run the first full-host IQK CPU candidate through T0\u2013T3 and retain its validated package",
       "track": "autokernel research loop"
     },
     "INF-07": {
@@ -2627,21 +2628,25 @@
       "track": "mi210 big model and acceleration roadmap"
     },
     "INF-36": {
-      "deps": [],
+      "deps": [
+        "INF-48"
+      ],
       "handoff": "mi210-mfma-compute-bound-paths.md",
       "id": "INF-36",
       "index": "inference-research-index.md",
       "line": 44,
-      "next_action": "DEFERRED with data \u2014 reopen the MFMA build only if a new compute-bound path appears",
+      "next_action": "Apply WGM none/8/16/32 to real MMQ launches; retain wall-time, L2/TCC, and correctness evidence",
       "track": "mi210 mfma compute bound paths"
     },
     "INF-37": {
-      "deps": [],
+      "deps": [
+        "INF-48"
+      ],
       "handoff": "mi210-q8-dequant-gemv-roofline.md",
       "id": "INF-37",
       "index": "inference-research-index.md",
       "line": 45,
-      "next_action": "After OP-11 commits the seeded producer, rerun the IQ2_XXS Omniperf-v1 fallback and retain a passing receipt",
+      "next_action": "Instrument production-shape Q4_K vs Q8_0 inside mul_mat_vec_q; then rerun IQ2 after OP-11",
       "track": "mi210 q8 dequant gemv roofline"
     },
     "INF-39": {

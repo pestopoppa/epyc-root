@@ -2,8 +2,46 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds the INF-37 Omniperf-v1 compatibility boundary; prior Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-11 (adds the WGM proxy boundary, governed authoring seeds, and ROCm-upgrade gate; prior INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
 **Sources**: 96+ documents
+
+## Compiled Update — 2026-08-11 (gfx90a WGM and authoring-loop boundary)
+
+**Confidence: verified diagnostic microbenchmark and implementation; no real-MMQ or five-control
+performance claim.**
+
+A gfx90a work-group-mapping proxy found a real, bounded locality signal: WGM16 improved the synthetic
+L2-sensitive kernel by **9.823%** versus no mapping across 240 balanced samples per cell, with a paired
+bootstrap 95% CI of **9.754–9.977%** and bit-exact correctness. WGM8 and WGM32 were close; WGM2
+regressed. The result selects none/8/16/32 for the real MMQ launch-order sweep. It does not establish
+that the gain transfers to MMQ, because the proxy deliberately isolates locality rather than the full
+quantized kernel.
+
+The surrounding authoring loop now has three missing control-plane pieces: a versioned C5 seed corpus
+with matched-budget RE-Bench log-time scoring, a prospective GEAK/Arena belief writer, and a gfx90a
+FP8 target whose contract explicitly distinguishes authoring/emulation from unavailable MI210 native
+FP8 matrix execution. A taxonomy audit also corrected an old citation conflation: KernelBench is a
+kernel-generation benchmark, while the 9/9 bug-detection result belongs to a separate seeded-fuzzing
+paper. RE-Bench contributes its scoring protocol, not its H100 task environment.
+
+ROCm 7+ upgrades now have a fail-closed compile gate for the known LLVM unroll regression: pass
+`-mllvm --amdgpu-unroll-threshold-local=600` through `CMAKE_HIP_FLAGS`, retain the compile command that
+proves it reached HIP compilation, and compare only from an experimental branch. The current ROCm 6.2
+stack is unchanged.
+
+The authorized frozen-v9 five-control run did not reach inference. Its preflight passed source and
+copied-binary identity but failed because the selected binary omitted six hardened runtime receipts;
+package power was also unreadable. That is instrument evidence, not a performance result. The next
+attempt must use a receipt-emitting hardened build and pass package-power preflight before taking a
+claim.
+
+### Source References (2026-08-11 WGM/authoring closeout)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — G17/G18 seeds and the failed-closed v9 control preflight
+- [MI210 MFMA compute-bound paths](../handoffs/active/mi210-mfma-compute-bound-paths.md) — WGM proxy receipt and bounded real-MMQ sweep
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — C5, RE-Bench, FP8, taxonomy and upgrade gates
+- [ROCm upgrade checklist](../docs/runbooks/rocm-upgrade-checklist.md) — experimental-branch build and validation contract
+- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — commit identities, receipt hash and no-inference boundary
 
 ## Compiled Update — 2026-08-11 (Q4_K MMQ correction and expert ceiling)
 

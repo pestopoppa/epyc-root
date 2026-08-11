@@ -18,7 +18,22 @@
       "to": "INF-48"
     },
     {
+      "from": "INF-03",
+      "kind": "dep",
+      "to": "EVL-47"
+    },
+    {
       "from": "INF-06",
+      "kind": "dep",
+      "to": "INF-48"
+    },
+    {
+      "from": "INF-36",
+      "kind": "dep",
+      "to": "INF-48"
+    },
+    {
+      "from": "INF-37",
       "kind": "dep",
       "to": "INF-48"
     },
@@ -3441,7 +3456,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-11T13:35:00Z",
+  "generated_at": "2026-08-11T14:27:57Z",
   "nodes": [
     {
       "age_days": 12,
@@ -4042,15 +4057,15 @@
       "track": "tool use eval contract"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
-      "closed": 35,
+      "closed": 37,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
-      "last_advanced": "2026-08-10",
+      "last_advanced": "2026-08-11",
       "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
-      "open": 15,
+      "open": 13,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -4096,13 +4111,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 14,
+      "closed": 21,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-11",
       "next_action": "Run the matched MI210 controller-authoring A/B across the seven registered Arena arms",
-      "open": 11,
+      "open": 4,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4140,7 +4155,7 @@
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-11",
-      "next_action": "Run the first real CPU candidate on the full host after explicit inference permission",
+      "next_action": "Run the first full-host IQK CPU candidate through T0\u2013T3 and retain its validated package",
       "open": 20,
       "state": "active",
       "track": "autokernel research loop"
@@ -4237,13 +4252,13 @@
       "track": "fable5 window2 findings 05b mi210 inference"
     },
     {
-      "age_days": 13,
+      "age_days": 0,
       "blocked": 0,
       "closed": 109,
       "domain": "inference-research",
       "handoff": "gemma-challenge-kernel-techniques-v7.md",
       "id": "INF-16",
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-08-11",
       "next_action": "K10 \u2014 (follow-up) Lever A quiet-host re-eval: on a quiesced host (fresh-server/run, fprintf(stderr) keylog to confirm the nodes0 collision\u2026",
       "open": 7,
       "state": "active",
@@ -4458,13 +4473,13 @@
       "track": "log linear gated deltanet readiness"
     },
     {
-      "age_days": 13,
+      "age_days": 0,
       "blocked": 0,
       "closed": 50,
       "domain": "inference-research",
       "handoff": "mi210-big-model-and-acceleration-roadmap.md",
       "id": "INF-34",
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-08-11",
       "next_action": "DR-3 broader K2 admission runner/package: implement the dry-run-first K2",
       "open": 4,
       "state": "active",
@@ -4473,12 +4488,12 @@
     {
       "age_days": 8,
       "blocked": 0,
-      "closed": 7,
+      "closed": 8,
       "domain": "inference-research",
       "handoff": "mi210-mfma-compute-bound-paths.md",
       "id": "INF-36",
       "last_advanced": "2026-08-03",
-      "next_action": "DEFERRED with data \u2014 reopen the MFMA build only if a new compute-bound path appears",
+      "next_action": "Apply WGM none/8/16/32 to real MMQ launches; retain wall-time, L2/TCC, and correctness evidence",
       "open": 3,
       "state": "active",
       "track": "mi210 mfma compute bound paths"
@@ -4491,7 +4506,7 @@
       "handoff": "mi210-q8-dequant-gemv-roofline.md",
       "id": "INF-37",
       "last_advanced": "2026-08-11",
-      "next_action": "After OP-11 commits the seeded producer, rerun the IQ2_XXS Omniperf-v1 fallback and retain a passing receipt",
+      "next_action": "Instrument production-shape Q4_K vs Q8_0 inside mul_mat_vec_q; then rerun IQ2 after OP-11",
       "open": 8,
       "state": "active",
       "track": "mi210 q8 dequant gemv roofline"

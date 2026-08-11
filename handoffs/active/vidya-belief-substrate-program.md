@@ -375,15 +375,19 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       native schema as protocol id, and returns zero rows for receipts predating the hook. Current
       2026-08-11 receipts are deliberately not retrofitted. The adapter's GEAK round-trip schema seam
       is ready, but no round-trip producer vector is claimed by this closure.
-- [ ] SC20 **Add the write-side `belief_measurements` vector to the GEAK/Arena round-trip producer
+- [x] SC20 **Add the write-side `belief_measurements` vector to the GEAK/Arena round-trip producer
       before the matched controller A/B.** Emit correctness pass rate and timing-harness validity as
       separate directional rows with scored-repetition bases. Do not infer them later from the
-      completed 2026-08-11 receipt; that record predates the hook.
-- [ ] SC21 **Classify GEAK/Arena preflight findings deliberately.** Source pin/license, physical
+      completed 2026-08-11 receipt; that record predates the hook. ✅ 2026-08-11 — research
+      `controller/arena_roundtrip.py` is the prospective writer; its two rows pass the root
+      `autokernel_aux_receipt.py` projection contract end to end. Older receipts remain untouched.
+- [x] SC21 **Classify GEAK/Arena preflight findings deliberately.** Source pin/license, physical
       gfx90a identity, registry shape and spoof refusal are verified findings, not ordinal
       measurements and not literature. Either declare one shared `verification` source-class ladder
       with a documented ceiling or retain preflight solely as dependency evidence; never invent a
-      metric direction to force it through `ClaimTuple`.
+      metric direction to force it through `ClaimTuple`. ✅ 2026-08-11 — selected the
+      least-commitment option: the writer hash-binds preflight under `dependencies.preflight` with
+      `classification=dependency_evidence_only` and mechanically emits no belief measurement for it.
 
 ## Dependency notes
 
