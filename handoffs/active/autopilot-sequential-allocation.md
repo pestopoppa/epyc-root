@@ -267,6 +267,98 @@ outcome.
       are not forecasts; all are historical-`core_v1` priors and cannot be continued
       without the SEQ-3a bridge ruling or the clean SEQ-3b E8 restart.
 
+## Rider — retroactive objective change: what survives it, what does not (2026-08-11)
+
+**Operator position, 2026-08-11, ACCEPTED**: as long as results and progress are tracked diligently,
+the to-be-optimized metric may be changed later, and whatever is needed to keep optimizing in the new
+direction can be recomputed from that moment forward.
+
+**Operator context**: the Pareto frontier is sparse today (models being swapped, infra bugs still
+landing), so deliberately choosing throughput-penalized / quality-favoured configs is premature. The
+operator may authoritatively choose them later. AutoPilot's hypervolume is quality × tasks-per-hour;
+unless the tradeoff is exactly inversely proportional there should be a non-trivial interior optimum,
+plausibly near the frontier's highest-curvature (knee) point.
+
+### F1 — the claim holds, CONDITIONALLY: re-aiming runs over stored COMPONENTS, never over stored SCALARIZATIONS
+
+Verified in code, not taken on report:
+
+- `experiment_journal.py:191-265` — `JournalEntry` persists the raw axes as top-level fields
+  (`quality`, `speed`, `cost`, `reliability`), plus `eval_details`, `harness_metrics`, `seq`.
+- `experiment_journal.py:336` — the direction comment is exactly as cited: the optimizer declares
+  `directions=["maximize"]*4`, the third objective is NEGATED cost, so the raw `cost` field on the
+  row is `lower_better`. The row stores raw cost; the sign lives in the reader.
+- `experiment_journal.py:289` — `eval_details["objective_policy_live"]` is read per row, as cited.
+- The objective vector is **derived at read time**, not stored:
+  `tier_specs.py:344-366` `_policy_aware_objectives_from_row` dispatches on the row's own recorded
+  policy; `tier_specs.py:328-341` `_rate_objectives_from_row` rebuilds `(quality, qph, -cost,
+  reliability)` on demand; `tier_specs.py:220-230` `seq_task_rate_qph_from_row` recomputes
+  tasks-per-hour from `question_results` + `eval_wall_s`. This is the mechanism that makes the
+  operator's claim true — and it has already been exercised once, on the tokens/s → qph axis flip.
+
+**The picture is more partial than the two cited lines alone suggest — state it plainly.** Measured
+over `orchestration/autopilot_journal*.jsonl`, 1372 trial rows:
+
+| write-side field | rows carrying it |
+|---|---|
+| 4 raw components (`quality`/`speed`/`cost`/`reliability`) | 1372 / 1372 |
+| `eval_details.eval_wall_s` | 1147 / 1372 |
+| `eval_details.question_results` (rate-axis numerator) | 523 / 1372 |
+| `eval_details.objective_policy_live` | 534 / 1372 |
+| `measurement` claim tuple (added 2026-08-10) | **0 / 1372** |
+
+So: the 4-axis re-aim is fully retroactive; a re-aim needing the question ledger is retroactive over
+~38% of history; and the era label is *inferred from absence* on the other ~61% —
+`tier_specs.py:352-360` says so outright ("pre-flip rows … have no question ledger at all"). The
+claim-tuple hook exists in code but has zero rows behind it yet.
+
+This is the belief-kernel rule in CLAUDE.md, restated on a second store: the write side is cheap and
+permanent, the read side cannot be retrofitted, and `benchmarks/results` (4,562 files, no write-side
+hook, 0/200 sampled with a usable claim tuple) is the standing counterexample.
+
+**A metric change is structurally an ERA BOUNDARY, and the machinery already exists.**
+`epyc-orchestrator/orchestration/instrument_eras.yaml` was amended four times on 2026-08-11 under
+operator signature (`53fc3250`, "4 rows, none struck"). **Recommendation: any future objective change
+is recorded as an era row, never as an edit.**
+
+### F2 — the exception that matters: rescoring is retroactive, STOPPING is not
+
+The sequential gate does not merely score candidates — it decides which ones keep GENERATING data
+(`safety_gate.py:1528-1529`: `if q_name == STATE_REFUTED or rate_name == STATE_REFUTED: state =
+"refuted"`). A candidate refuted under today's joint rule stops accumulating trials. Under a future
+objective you can rescore every trial that exists; you cannot recover trials never run. **A stopping
+rule is a data-generating decision wearing the costume of a scoring decision, and it is the one thing
+a future metric change cannot undo.**
+
+Concretely, and exactly the configuration class the operator says they may later want:
+`70902e4b665474e7` (k=40), `dd793a6ee43ce718` (k=24), `85c3dcf25823c537` (k=15) stopped under the
+joint gate because they buy quality with throughput.
+
+- [ ] SEQ-B2 — Capture the refutation counterfactual AT STOP TIME: record which axis refuted and the margin on the other. | `safety_gate.py:1528` write-side + `readjudicate_sequential_candidates.py:203` report-side (mainB authorized 2026-08-11 to split quality-refuted / rate-refuted / joint — that fix is the first half) | Deps: none; per CLAUDE.md belief-kernel rule, wire the write side now — a future objective change must at minimum be able to IDENTIFY which stopped candidates deserve re-running, even though their trials must be regenerated.
+
+### F3 — knee / max-curvature is not scale-invariant
+
+Curvature of a Pareto frontier changes under rescaling of the axes. Quality is roughly [0,1] while
+tasks-per-hour is order [0,600] (`tier_specs.py:203` returns `n / (wall/3600)`), so "the
+highest-curvature point" is **undefined until a normalization is fixed — and the normalization
+silently does the real work.** Hypervolume is also scale-dependent, but it forces the reference point
+to be stated explicitly, which is why it is the more honest default.
+
+**Recommendation**: if knee-selection is ever adopted, the normalization is a declared and ratified
+quantity (an era row), not an implementation detail.
+
+The operator's accompanying observation is correct and worth recording: a strictly inversely
+proportional (hyperbolic) tradeoff makes every frontier point equivalent under a product objective, so
+a genuine interior optimum requires curvature away from that.
+
+### Background, not an open question — SEQ-B1 posture
+
+SEQ-B1 (joint gate vs quality-primary with rate advisory) remains human-amendment-only and
+**UNDECIDED**. On 2026-08-11 the operator stated the current joint-gate behaviour **"is fine for
+now"** and explicitly deferred the change to a future in which the frontier is well populated.
+Recorded here as a dated operator position so nobody re-opens it as a defect: **the gate is working as
+designed; nothing is broken.**
+
 ## Why this is independent of the episodic-memory work
 
 The candidate evidence lives in `orchestration/autopilot_journal*.jsonl`, a different store from
