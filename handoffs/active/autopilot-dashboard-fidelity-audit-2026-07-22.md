@@ -268,6 +268,18 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
   `scripts/server/runtime_facts_manifest.py` (other-agent ownership); ESC-8 fixes
   already rewrote the writer to derive `selected_servers` from realized state, but
   the live manifest still shows an empty lineup — verify separately.
+  **2026-08-11 (`mainB`) — screened, NOT actionable as written: the observation is CONFOUNDED and
+  must not be "fixed".** `/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json` (generated
+  `2026-08-11T08:19:56Z`) does carry `selected_servers: None` — but **the stack is down**: nothing
+  is listening on 8070/8072/8085/8080/8180 (checked). A writer that derives from *realized* state
+  is **supposed** to emit an empty lineup when nothing is realized, so an empty manifest is
+  evidence the ESC-8 rewrite WORKS, not that it failed. The row was filed while a lineup was
+  presumably up, and re-reading it against a down stack inverts its meaning.
+  Distinguishing "writer broken" from "nothing running" requires a live stack, i.e. **compute** —
+  `inference`-owned, not this lane. Leaving the box open and untouched; re-verify during the
+  P0-0 relaunch window, when a realized lineup exists to compare against.
+  Related trap already recorded at P0-0 (`numa-topology-cutover-resume-20260730.md`): the derived
+  priors are likewise a faithful record of a halves-only launch, not a corrupted file.
 - [ ] **[C1 fix #3] One env / one SoT across the `--workers 6` pool** — process/launch
   concern (`scripts/server/*`), out of dashboard-file ownership.
 - [x] **[E8-PANELS] Era-honest pareto/GEPA plots for E8** ✅ 2026-07-27 — implemented in
