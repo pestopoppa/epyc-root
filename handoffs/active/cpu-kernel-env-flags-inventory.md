@@ -115,32 +115,44 @@ OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active \
 
 ## Inventory at a glance
 
-| Flag | Default | Class | File:line |
-|------|---------|-------|-----------|
-| `GGML_CCD_POOLS` | off | needs verification | ggml-cpu.c:3831 |
-| `GGML_NUMA_WEIGHTS` | off | needs verification | llama-mmap.cpp:471, llama-model-loader.cpp:1548 |
-| `GGML_CCD_WORK_DIST` | off | needs verification | ggml-cpu.c:1531, 3610 |
-| `GGML_BARRIER_LOCAL_BETWEEN_OPS` | off | needs verification | ggml-cpu.c:3606 |
-| `GGML_BARRIER_STRICT` | off | diagnostic | ggml-cpu.c:701 |
-| `GGML_NUMA_WARMUP_CCD` | off | diagnostic | llama-model-loader.cpp:1555, 1665, 1766 |
-| `GGML_NUMA_WARMUP_PHYS_PER_CCD` | off | diagnostic | llama-model-loader.cpp:1560 |
-| `GGML_NUMA_WARMUP_MIN_BYTES` | off | diagnostic | llama-model-loader.cpp:1585 |
-| `GGML_RMS_NORM_PARALLEL` | off | experimental (net-negative) | ops.cpp:3761 |
-| `GGML_GDN_K_PER_HEAD` | off | experimental (no current effect) | ops.cpp:11062 |
-| `GGML_EXPERT_CCD_SHARDING` | off | superseded | ggml-cpu.c:1986 |
-| `GGML_Q8_0_8X8` | off | opt-in optimization | repack.cpp:4944 |
-| `GGML_Q8_0_8X8_AVX` | off | opt-in optimization | arch/x86/repack.cpp:1550 |
-| `GGML_Q6_K_8X8_AVX` | off | **production-ready opt-in (PPL bit-exact 32-chunk on Coder-30B + REAP-246B, 2026-04-28)** | arch/x86/repack.cpp:1789 |
-| **`GGML_NUMA_REPACK_INTERLEAVE`** | **on** | **kill-switch (CPU2 mbind)** | repack.cpp:5024 |
-| `GGML_NUMA_MIRROR` (compile flag, not env) | off (compile-time) | research/decisive-negative on single-socket NPS4 (CPU25) | ggml.h:733, repack.cpp guarded sections |
-| `LLAMA_ARG_SPEC_NUMA_QUARTERS` (CLI: `--spec-numa-quarters K`) | 1 (off) | **closed via test 2026-04-30 — mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B drafter; dispatcher v1 in tree disabled-by-default** | common/arg.cpp + tools/server/server-context.cpp |
-| `GGML_EP_ROLE` | off | EP control plane; default-off experimental | ggml-ep-bootstrap.cpp:114 |
-| `GGML_EP_N_INSTANCES` | off | EP control plane; default-off experimental | ggml-ep-bootstrap.cpp:124 |
-| `GGML_EP_NUMA_PIN` | off | EP control plane; default-off experimental | ggml-ep-bootstrap.cpp:177 |
-| `GGML_EP_MASTER_ALL_NODES` | off | EP control plane; default-off experimental | ggml-ep-bootstrap.cpp:184 |
-| `GGML_EP_SHARD` | off | EP feature; default-off experimental | ggml-ep-shard.cpp:78 |
-| `GGML_EP_WORKER_DRONE` | off | EP feature; default-off experimental | ggml-cpu.c:1671, 2259 |
-| `GGML_EP_MASTER_PARK` | off | EP feature; default-off experimental | ggml-cpu.c:1688 |
+> **How to read the last column.** This file records which flags *exist*; the **Effect on trace
+> interpretation** column records what their being set or unset should make a profile **look
+> like**. It exists because several flags intentionally disable a fast path, so a split, scalar or
+> serialized kernel is the **expected observation, not a missing optimization** — without that
+> register every legitimately-disabled path reads as a defect, and someone "fixes" a default.
+> Read it **before** filing a kernel regression. Added 2026-08-11 (`mainC`, A18); the column
+> pattern is the 15-row toggles table in `intake-1029#record`. Entries are derived from THIS
+> file's own P3 isolation, CPU2 kill-switch and EP measurements — not from the intake.
+>
+> Consumed by **AK-CAT-3** in [`autokernel-research-loop.md`](autokernel-research-loop.md) as the
+> substrate for the gfx90a prior-art catalogue.
+
+| Flag | Default | Class | Effect on trace interpretation | File:line |
+|------|---------|-------|--------------------------------|-----------|
+| `GGML_CCD_POOLS` | off | needs verification | Off ⇒ **one global threadpool**; absence of per-CCD pool partitioning in a thread trace is the default, not a build defect. | ggml-cpu.c:3831 |
+| `GGML_NUMA_WEIGHTS` | off | needs verification | **Read variance before reading speed.** ON produced 20-33 ± **19-22** on Coder-30B and 8-9 ± 4-5 on Qwen3.6-35B (P3). Wild run-to-run spread is THE FLAG, not a noisy host — do not chase it as contention. | llama-mmap.cpp:471, llama-model-loader.cpp:1548 |
+| `GGML_CCD_WORK_DIST` | off | needs verification | Off ⇒ expert work is **not** CCD-partitioned; uniform per-thread work is expected. | ggml-cpu.c:1531, 3610 |
+| `GGML_BARRIER_LOCAL_BETWEEN_OPS` | off | needs verification | Off ⇒ a single global barrier per op; **no 2-level CCD-local barrier** appears in the trace. | ggml-cpu.c:3606 |
+| `GGML_BARRIER_STRICT` | off | diagnostic | ON ⇒ barrier path is **deliberately serialized**. The profile will look barrier-bound *by construction*; never quote a run with this set as a throughput result. | ggml-cpu.c:701 |
+| `GGML_NUMA_WARMUP_CCD` | off | diagnostic | ON ⇒ an extra per-CCD warmup pass at load. **Longer load time is the intended cost**, not a regression; it changes first-touch placement, so it also changes what `numa_maps` shows. | llama-model-loader.cpp:1555, 1665, 1766 |
+| `GGML_NUMA_WARMUP_PHYS_PER_CCD` | off | diagnostic | Tuning only, and **load-phase only** — alters warmup thread count; no decode-path signature. | llama-model-loader.cpp:1560 |
+| `GGML_NUMA_WARMUP_MIN_BYTES` | off | diagnostic | Raises the size floor for warmup, so **small tensors are legitimately unwarmed**. Uneven placement across tensor sizes is expected. | llama-model-loader.cpp:1585 |
+| `GGML_RMS_NORM_PARALLEL` | off | experimental (net-negative) | Off ⇒ rms_norm reduces **serially** on the inner axis. A serial rms_norm is correct here; it was measured net-negative when defaulted on. | ops.cpp:3761 |
+| `GGML_GDN_K_PER_HEAD` | off | experimental (no current effect) | Measured **net-zero**: a trace showing no difference either way is the CORRECT result, not a failed A/B or a mis-set flag. | ops.cpp:11062 |
+| `GGML_EXPERT_CCD_SHARDING` | off | superseded | Off ⇒ no intra-process expert sharding. Superseded by inter-process EP; do not read its absence as EP being broken. | ggml-cpu.c:1986 |
+| `GGML_Q8_0_8X8` | off | opt-in optimization | **Off ⇒ the 8x8 Q8_0 repack path is NOT taken and the legacy/scalar GEMV is the expected observation.** Wins only at 1 thread (+31.8%); BW-saturated at 12-96t (+1-3%), so at production thread counts its absence costs almost nothing. | repack.cpp:4944 |
+| `GGML_Q8_0_8X8_AVX` | off | opt-in optimization | **Off ⇒ no AVX-512BW 8x8 GEMV in the profile; the generic kernel is correct.** Same 1-thread-only rationale — do not file "AVX-512 kernel missing" against a default build. | arch/x86/repack.cpp:1550 |
+| `GGML_Q6_K_8X8_AVX` | off | **production-ready opt-in (PPL bit-exact 32-chunk on Coder-30B + REAP-246B, 2026-04-28)** | Production-ready **but still default-off**: absent from any trace unless explicitly set. PPL is bit-exact, so a PPL delta between on/off indicates a *bug*, not the flag. | arch/x86/repack.cpp:1789 |
+| **`GGML_NUMA_REPACK_INTERLEAVE`** | **on** | **kill-switch (CPU2 mbind)** | **The only default-ON row — interleaved pages are the BASELINE observation.** `mbind(MPOL_INTERLEAVE)` applies to every CPU_REPACK buffer ≥ 1 MiB, Q4_K_M included (REAP-246B: 110 GB buffer). Setting `=0` emits a startup `GGML_LOG_INFO`: **check the server log before attributing any placement finding**, or you will read a deliberate kill-switch as host misconfiguration. | repack.cpp:5024 |
+| `GGML_NUMA_MIRROR` (compile flag, not env) | off (compile-time) | research/decisive-negative on single-socket NPS4 (CPU25) | **Compile-time — it will never appear in an env dump**, so absence from the environment proves nothing about the binary. Decisive-negative on this host. | ggml.h:733, repack.cpp guarded sections |
+| `LLAMA_ARG_SPEC_NUMA_QUARTERS` (CLI: `--spec-numa-quarters K`) | 1 (off) | **closed via test 2026-04-30 — mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B drafter; dispatcher v1 in tree disabled-by-default** | Dispatcher v1 **is in the tree but disabled**: seeing its code without seeing its effect is expected. It is a CLI arg, not an env var, so an env dump cannot confirm its state — read argv. | common/arg.cpp + tools/server/server-context.cpp |
+| `GGML_EP_ROLE` | off | EP control plane; default-off experimental | Set automatically by ggml-ep-bootstrap when EP is active. Off ⇒ **single-process**; no master/worker split in a process tree. | ggml-ep-bootstrap.cpp:114 |
+| `GGML_EP_N_INSTANCES` | off | EP control plane; default-off experimental | Off ⇒ one instance. **A single-process trace is the default state**, not a failed EP launch. | ggml-ep-bootstrap.cpp:124 |
+| `GGML_EP_NUMA_PIN` | off | EP control plane; default-off experimental | Off ⇒ EP instances are **not** node-pinned, so cross-node traffic is expected if EP is otherwise enabled. | ggml-ep-bootstrap.cpp:177 |
+| `GGML_EP_MASTER_ALL_NODES` | off | EP control plane; default-off experimental | Off ⇒ the master is pinned like any worker; full-DRAM-bandwidth master behaviour will be absent. | ggml-ep-bootstrap.cpp:184 |
+| `GGML_EP_SHARD` | off | EP feature; default-off experimental | Off ⇒ **every instance holds full expert weights**; N× memory is expected, not a leak. | ggml-ep-shard.cpp:78 |
+| `GGML_EP_WORKER_DRONE` | off | EP feature; default-off experimental | Off ⇒ workers execute non-MoE ops too; broadcast volume is correspondingly higher. | ggml-cpu.c:1671, 2259 |
+| `GGML_EP_MASTER_PARK` | off | EP feature; default-off experimental | Off ⇒ master parker threads **do** enter the MoE expert loop, so apparent oversubscription on the master is expected. | ggml-cpu.c:1688 |
 
 **Behavior changes that activate on every multi-NUMA host (no model-level opt-in):**
 
@@ -536,7 +548,7 @@ Build environment additions (one-time):
 
 ## 2026-08-09 — expected-absence register (research-intake Stage-2b)
 
-- [ ] **Add an "effect on trace interpretation" column to the flag inventory.** This file records which
+- [x] **Add an "effect on trace interpretation" column to the flag inventory.** ✅ 2026-08-11 (`mainC`) — added to *Inventory at a glance*, all 24 flags, with a reading note above the table. Entries are derived from this file's own P3 per-flag isolation, the CPU2 mbind kill-switch measurements and the EP family notes, **not** from the intake. The load-bearing rows are the ones where absence is correct by design: `GGML_Q8_0_8X8`/`_AVX` off means the legacy GEMV *is* the expected observation (the 8x8 kernel wins only at 1 thread, +31.8%, and is BW-saturated at 12-96t); `GGML_NUMA_REPACK_INTERLEAVE` is the only default-ON row, so interleaved pages are the baseline and `=0` emits a startup `GGML_LOG_INFO` that must be read before attributing any placement finding; `GGML_NUMA_WEIGHTS` is a variance signature (± 19-22) before it is a speed one; `GGML_NUMA_MIRROR` is compile-time so its absence from an env dump proves nothing; and `LLAMA_ARG_SPEC_NUMA_QUARTERS` is a CLI arg, so argv — not the environment — is what confirms its state. This file records which
   flags exist; it does not record what their being set or unset should make a profile *look* like.
   intake-1029 (dive-verified 2026-08-09) carries a 15-row toggles table with exactly that column,
   including cases where a flag intentionally disables a fast path so split kernels are the expected

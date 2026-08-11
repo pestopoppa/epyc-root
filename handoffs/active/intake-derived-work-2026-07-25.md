@@ -25,8 +25,31 @@
 
 - [ ] **ID-2 — Decide the `gepa` dependency pin.** Installed is **0.0.26** (2026-01-24), verified in `/mnt/raid0/llm/epyc-orchestrator/.venv`; `import gepa.optimize_anything` and `import gepa.oa` both raise `ModuleNotFoundError`. PyPI latest is 0.1.4 (2026-07-15); the `optimize_anything` engine layer exists **only on main** (absent at tag v0.1.4, confirmed by upstream 404). Options: (a) hold 0.0.26, (b) bump to PyPI 0.1.4, (c) pin a main SHA for the engine layer. Re-run `tests/test_gepa_integration.py` against the choice — 0.0.26 → 0.1.x is untested here. **Sequence after ID-1**: a version bump against a proposer that always raises proves nothing.
   - Owner: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md).
-
----
+  - **RE-DERIVED 2026-08-11 (`mainC`) — the framing "installed and unpinned" is WRONG, and the
+    real defect is a different one.** `gepa` **is** pinned: `uv.lock` holds `gepa==0.0.26` with
+    sha256 hashes for both sdist and wheel, so supply-chain integrity is already enforced. What is
+    actually wrong is that **`gepa` is an UNDECLARED DIRECT dependency**. It reaches us only as a
+    transitive dep of `dspy` 3.1.3, yet `scripts/autopilot/species/gepa_optimizer.py:247` does
+    `import gepa` directly — so the day `dspy` drops or re-pins it, our import breaks with nothing
+    in `pyproject.toml` to catch it. This repo has already been bitten by exactly this class twice
+    and says so in the manifest: `matplotlib` ("used-but-undeclared before 2026-06-04: a venv
+    rebuild silently dropped it") and `mcp` ("fastmcp depends on it transitively, but pin it
+    explicitly so a future fastmcp release can't drop us").
+  - **DECISION (the ungated half): declare `gepa==0.0.26` directly in `pyproject.toml`.** Pinned,
+    not floated — AP-29c holds the VERSION choice until AP-19b runs the repaired proposer live
+    once, and 0.1.4 still lacks `optimize_anything` (main-branch only), so a `>=` would authorize
+    a gated upgrade. Declaring the already-resolved version changes no resolution. This does not
+    re-argue the pin; option (a)/(b)/(c) above stays untouched and still sequenced behind ID-1.
+  - **BLOCKED ON A TOOLING MISMATCH, verified rather than assumed.** I made the edit and ran
+    `uv lock`: it produced the two expected `gepa` lines **plus unrelated churn** — environment
+    markers stripped from `nvidia-cublas-cu12`, `nvidia-nvjitlink-cu12`, `nvidia-cusparse-cu12`,
+    `cryptography` and `jeepney` (e.g. `marker = "platform_machine != 's390x' and sys_platform !=
+    'emscripten' and sys_platform != 'win32'"` → unconditional). That would change what installs on
+    other platforms, so I reverted both files; `uv lock --check` is clean again at baseline. Local
+    uv is **0.11.26**, which is evidently not the version that generated the current lock.
+    **Consequence beyond this row: ANY dependency edit in `epyc-orchestrator` right now will drag
+    the same marker churn in.** Apply this with a matching uv version, or land the marker rewrite
+    deliberately as its own reviewed change — not as a side effect of a one-line pin.
 
 ## P1 — Standing decisions now contradicted by independent evidence
 
