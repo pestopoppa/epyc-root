@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** RUNNABLE / CONTROLS PASSED / READY FOR EXPLICITLY AUTHORIZED STEP 3 — design audited 2026-08-02
+**Status:** STATIC ADAPTER COMPLETE / V9 CONTROLS REQUIRED BEFORE STEP 3 — design audited 2026-08-11
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -18,11 +18,17 @@
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
-**Current checkpoint (2026-08-10):** Steps 0–2 and the five-control calibration are complete. The
+**Current checkpoint (2026-08-11):** Steps 0–2 and the five-control calibration are complete for
+the retired v8 era and remain valuable regression evidence; they do **not** authorize ranking on
+frozen v9 plus the hardened measurement overlay. The current v9/hardened five-control calibration
+and first CPU candidate are empirical and still require explicit inference permission. The
 no-inference closure added evaluation-event v4 transfer links, adjacent noise-floor display, the
 prior-art gate, historical 4/8/16/32/48-way CPU lane registry, op-level fan-out planning, compile-only
-artifact veto, and the two permitted static ROCm audits. The next live action remains §AK6.5 Step 3,
-beginning with the known-real CPU candidate. The operator has explicitly required fresh permission
+artifact veto, the two permitted static ROCm audits, era-local calibration authority, exported-ELF
+version coverage, and structured CPU-reference receipts for passing backend-op cases. The first-campaign
+HostOps adapter now has no undeclared static seam for its registered IQK parameter proposal. The next
+live action is the v9/hardened control block, followed by §AK6.5 Step 3's known-real CPU candidate.
+The operator has explicitly required fresh permission
 before any inference; no live work may start from this handoff alone. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
 
@@ -2493,7 +2499,11 @@ cannot retrigger the expensive gate unchanged.
 - [x] Route the cutover request through the bus to whoever owns inference (§11.3). ✅ 2026-08-03
 - [x] Render the package as a four-part decision package (`OPERATING_CONSTRAINTS.md:69-78`). ✅ 2026-08-03
 - [ ] Run an end-to-end campaign that stops at a validated package with zero production writes.
-- [ ] Run repeated restart/crash/resource-preemption/tamper fault injections.
+- [x] Run repeated restart/crash/resource-preemption/tamper fault injections. ✅ 2026-08-11 — the
+  complete 3,811-test no-inference suite exercised torn-journal restart recovery, sequence continuity,
+  real killed-holder claim reclamation, live-holder non-preemption, mid-run revocation, owned-child
+  timeout/failure teardown with verified death, cgroup descendant cleanup, source/instrument tamper,
+  and captured-output corruption. These tests use owned fixture processes and never touch production.
 - [x] Give the operator surface a freshness and health contract, not just data. Today's `/kernel` page is
   **absence-tolerant over a missing directory** — it renders clean when its producer is dead, which is
   the exact shape of AutoPilot dying at trial 1302 and staying dead ~23 h with every dashboard green.
@@ -2569,7 +2579,7 @@ document; this phase is the checklist.
   procedural. `MICROBENCH_RUN_COMPLETED` carries the full raw vector plus its content-hash identity;
   runner and pooling tests prove a duplicate key spends no further inference. ✅ 2026-08-05
 
-**Built 2026-08-04 — the loop became runnable:**
+**Built 2026-08-04 — the loop gained a composable driver:**
 
 - [x] **`campaign.py` — the entrypoint the package spent 94k lines not having.** A `grep` for
   `__main__|argparse|def main(` across every non-test module returned *nothing*: 5,695 tests passing
@@ -2634,11 +2644,15 @@ document; this phase is the checklist.
 
 ---
 
-## ▶ START HERE — NEXT: RUN THE FIRST CANDIDATE
+## ▶ START HERE — NEXT: RUN CURRENT CONTROLS, THEN THE FIRST CPU CANDIDATE
 
-Everything below is executable **today**. The loop has an entrypoint, an accept rule calibrated
-against a real measurement, a hypothesis path, a machine-enforced completed-run ledger, and two
-real A/A bundles. Steps 0–2 were completed on 2026-08-05; the next executable work is Step 3.
+The first IQK campaign adapter is statically complete: the loop has an entrypoint, a hypothesis path,
+a machine-enforced completed-run ledger, a registered source-free parameter mutation, measured
+per-tool anchor bindings, and candidate-specific T0 evidence. The 2026-08-11 audit corrected the
+remaining stronger claim: v8 calibration cannot authorize the current v9/hardened cell. A current
+identity-bound control bundle is required before Step 3 may rank anything. Generic source proposals
+remain separately fail-closed where whole-program absence and rollback cannot be proved; that does
+not re-open the registered IQK parameter adapter or weaken the campaign's all-PASS rule.
 
 **Read first, in this order:** `execution/README.md` (the runbook, cold start to first candidate),
 then `program.md` (the loop procedure and the hypothesis inbox), then this list.
@@ -2687,17 +2701,47 @@ nothing wrong. We held no claim.**
       its 20-block MDE was 2.5867%; no controls ran under it. A genuinely fresh 3% campaign then
       accepted with φ=`0.049206882811302755`, α_sel=`0.1`, α_conf=`0.05`, B_min=`12`, MDE=`2.7408%`,
       and an A/A false-crossing rate of `1.4%`. ✅ 2026-08-05
+- [x] **Make calibration authority era- and instrument-local.** The executing CLI now requires
+      `--calibration-bundle`, verifies the bundle's source-label hash, accepted solve/control state,
+      production commit, measurement-instrument commit, recipe, floor, B_min/ceiling and MDE, and
+      refuses the v8 bundle on v9. Dry run reports `UNCALIBRATED CELL` rather than printing the old
+      2.1310% placeholder as live authority. ✅ 2026-08-11
+- [ ] **Run the five controls against frozen v9 plus the hardened measurement instrument.** Produce
+      the current identity-bound calibration bundle and retain the failed attempt if the declared
+      floor cannot be resolved. This is inference and must not start without fresh explicit operator
+      permission. The v8 3%/B_min=12 bundle is a regression fixture, not a literal to copy.
 
 ### Step 3 — the first candidate
 
+- [x] **Close the first-campaign `HostOps` adapter before taking a claim.** Supply the candidate
+      mutation (or the declared no-source parameter comparison), measured `llama-cli` and
+      `llama-bench` anchors, the proposal-owned T0 declarations/registration patterns, and the
+      healthy all-core nominal frequency. The CLI's pre-claim refusal is the acceptance test; do not
+      bypass it with a placeholder capture. ✅ 2026-08-11 — the built-in proposal-v3 IQK parameter
+      adapter proves an empty source diff, derives the registered parameter surface and IQK registration
+      patterns, measures separate `llama-cli`/`libggml` anchor identities, and requires `--nominal-khz`;
+      `unimplemented_seams()` plus CLI tests refuse before claim if any required input is absent.
+- [x] **Turn the six reference-leg T0 unknowns into real evidence for the first parameter candidate.** Close exact reference,
+      ASAN/UBSAN applicability, state rollback/teardown, symbol-version coverage, and affected-
+      surface reachability. `COULD_NOT_CHECK` remains speed-blocking; do not reinterpret it as PASS.
+      ✅ 2026-08-11 — the source-free registered surface proves memory/threading/persistent-state false,
+      which resolves ASAN, UBSAN, state safety, and reconciliation by non-applicability; ELF v2 parses
+      exported version indices and leaves genuinely versioned exports explicit; `test-backend-ops`
+      emits `AK_REF_V1` only after its separately activated CPU reference path passes, and T0 projects
+      its observed comparator error/tolerance without mislabelling NMSE as ULP or bitwise identity.
+      Generic source proposals still fail closed where whole-program absence or rollback cannot be proved.
 - [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
       characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
       serving. The claim reason alone decides it.
-- [ ] **Reproduce a known-real win as candidate #1** — the 2026-07-04 async-prefetch result
-      (+3%, MemUnitStalled reduction on `mul_mat_vec_q8_0_prefetch`). A null result on a known win is
-      diagnostic of the *harness*; a null on a novel idea tells you nothing about either. Note its
-      original evidence was written to `/mnt/raid0/llm/tmp/mi210-build/campaign/` and **that
-      directory no longer exists** — the win must be re-derived from the commit, not the record.
+- [ ] **Reproduce a known-real CPU win as candidate #1 — the IQK replay.** It is a proposal-v3
+      `change_class: parameter` comparison with candidate `ggml_iqk=1` and anchor `ggml_iqk=0`;
+      `campaign.py` now projects that registered arm-local variant into the exact dry-run commands.
+      A null result on a known win is diagnostic of the *harness*; a null on a novel idea tells you
+      nothing about either.
+- [ ] **Keep the 2026-07-04 async-prefetch replay in the GPU lane.** The +3% / MemUnitStalled
+      reduction on `mul_mat_vec_q8_0_prefetch` is a gfx90a/MI210 result, not a CPU candidate. Its
+      original scratch evidence no longer exists, so a later GPU campaign must re-derive it from the
+      refreshed v9-resident implementation and its runtime gate.
 - [ ] Then a real one. Drop a hypothesis into the store (`HYPOTHESES.md` has the shape), or run
       exploratory with no `--hypothesis` at all.
 
@@ -2811,7 +2855,6 @@ Each line names the specific blocker, per *Act, Don't Defer*.
 | Open item | Blocked on | Not blocked — just undone |
 |---|---|---|
 | AK6 end-to-end campaign stopping at a validated package | — | Step 3 first candidate |
-| AK6 fault injection (restart/crash/preemption/tamper) | needs process management, forbidden to the agents that built this | who runs it, and where |
 | ~~AK6 `/kernel` freshness contract + JSON contract v2~~ | — | **REBASED 2026-08-05.** The prior `autokernel/surface/` producer was deleted on 2026-08-04 while the hub still named it. The surviving campaign path now exports the fsynced terminal `STOP_STATE` through compact `autokernel/dashboard.py`. The hub separately shows committed implementation and durable `data/autokernel_*` activity, structurally excluded from liveness/health. Runtime truth remains absent until the first real campaign exports. |
 | AK7 first supervised freeze | a CHAMPION, which needs AK6.5 Step 3 | — |
 | AK8 seed queue, `oracle_port`, external suites | fresh profiling, which needs the loop running | — |

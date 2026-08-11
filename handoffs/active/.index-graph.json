@@ -3592,7 +3592,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-11T02:48:02Z",
+  "generated_at": "2026-08-11T06:22:59Z",
   "nodes": [
     {
       "age_days": 12,
@@ -4245,13 +4245,13 @@
       "track": "agent collab rnd harness"
     },
     {
-      "age_days": 8,
+      "age_days": 0,
       "blocked": 0,
       "closed": 8,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
-      "last_advanced": "2026-08-03",
+      "last_advanced": "2026-08-11",
       "next_action": "Pre-register AK-LE-1/2 model, effort, budget, and target arms; execute only with explicit inference permission",
       "open": 17,
       "state": "active",
@@ -4286,13 +4286,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 171,
+      "closed": 175,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-11",
       "next_action": "Obtain explicit permission; run v9/hardened controls, then the first real CPU candidate campaign",
-      "open": 26,
+      "open": 27,
       "state": "active",
       "track": "autokernel research loop"
     },

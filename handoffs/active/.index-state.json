@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 58,
       "oldest_advance": "2026-07-29",
-      "open": 462
+      "open": 463
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -87,7 +87,7 @@
       "blocked": 0,
       "closed": 8,
       "guarded": 0,
-      "last_advanced": "2026-08-03",
+      "last_advanced": "2026-08-11",
       "open": 17,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 171,
+      "closed": 175,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 26,
+      "open": 27,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 197
+      "total": 202
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
