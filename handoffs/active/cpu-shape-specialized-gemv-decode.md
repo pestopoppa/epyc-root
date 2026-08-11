@@ -15,6 +15,32 @@
 
 > **Fable 5 review (2026-06-12)**: E3 (the 8x8 GEMM SIMD body this file would land) is gated and owned by [batched-decode-measurement.md](batched-decode-measurement.md) — claim E3 there.
 
+## ★ THE LIVE LEVER — frontdoor Q8_0 graph fusion (re-anchored 2026-08-11, A17)
+
+**These two boxes are the whole live surface of this handoff.** Everything under *Phased Work Plan*
+is the deprioritized SIMD ukernel plan and is a closed appendix (see its banner). The re-anchor is
+the point: this file carried 38 open boxes of which 36 were the shelved SIMD plan, so the two tasks
+that are actually live were invisible, and the handoff read as a large stale mass rather than a
+small live one.
+
+Diagnosis this rests on, from this file's own profiling and confirmed by
+`fable5-window2-findings-05` (2026-07-03): frontdoor Q8_0 decode is **barrier/op-count-bound at
+13.8% of 460 GB/s — not BW-bound**, and 45% of Q4_K decode cycles are libomp barrier at 96t. The
+lever is therefore cutting barrier COUNT, **not more SIMD**.
+
+- [ ] **Fuse the expert gate+up operators (frontdoor Q8_0)** to cut barrier count. Est. +10–15%
+  decode across the pair with the QKV fusion; one cluster already measured **+2.6%**. Cheapest
+  test: `llama-bench tg128`, frontdoor Q8_0, fusion flag on/off, same window. **Needs an inference
+  window — do not start without one.**
+- [ ] **Fuse the attention QKV cluster (frontdoor Q8_0)** to cut barrier count. Same measurement
+  shape and the same window as the gate+up fusion; run them as one paired arm rather than two.
+
+> **Certification coupling — read before closing anything.** The GEMV certification is
+> high-severity and belongs to the **CPU-lane owner**, and it requires this re-anchor to land
+> *before* the audit's 26 stale rows may close. **Do not close the 26 first**: closing them ahead of
+> the re-anchor destroys the evidence that distinguishes the shelved plan from the live lever.
+> Tracked as A17 in [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
+
 ## Phase 4 candidate (CPU18, added 2026-04-26 from research-intake batch)
 
 **MegaBlocks blocked-CSR-COO + transpose-indices port for CPU MoE expert dispatch**
@@ -506,7 +532,23 @@ Total per 32-weight block: ~6 instructions of dequant + 1 FMA. Compare to the ge
 
 Relevant compiler flags (GCC/Clang): `-mavx512f -mavx512bf16 -mavx512vnni -mavx512vbmi -mtune=znver5`.
 
-## Phased Work Plan
+## Phased Work Plan — ⛔ CLOSED APPENDIX (deprioritized SIMD ukernel plan)
+
+> **⛔ CLOSED APPENDIX — DEPRIORITIZED PLAN. Do not dispatch from the phases below.**
+> Retained for its reasoning and its negative results, not as backlog. The SIMD ukernel lever this
+> plan builds (E3, the 8x8 GEMM SIMD body) is **gated and owned elsewhere** — see the Fable 5 review
+> at the top of this file — and the live work in THIS handoff is the two graph-fusion boxes under
+> *★ THE LIVE LEVER*, which cut barrier COUNT rather than adding SIMD.
+>
+> Re-anchored 2026-08-11 (`mainC`, A17). Before this banner these phases contributed **36 open
+> boxes**, which is what made this handoff the third-largest stale mass in the
+> [stale-open audit](stale-open-audit-2026-07-18.md) (36 of 38 open boxes shelved). They are
+> deprioritized, not abandoned: if the barrier/op-count lever is exhausted and decode is shown
+> BW-bound after all, reopen from Phase 0 rather than re-deriving it.
+>
+> **The `- [x]` boxes below are correct historical records of work that was done** (the prior-art
+> reads, the baseline profile, the >40% gate) — this is a shelved plan, NOT a reusable procedure,
+> so nothing here is "unchecked by design" and none of it should be restored to `- [ ]`.
 
 ### Phase 0: Feasibility — read prior art & profile baseline (1–2 days)
 

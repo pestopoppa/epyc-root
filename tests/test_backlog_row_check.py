@@ -531,3 +531,60 @@ def test_audit_guards_is_silent_when_nothing_is_flipped_under_a_banner(
 - [x] a real task, closed, in a section with no banner
 """, encoding="utf-8")
     assert brc.closed_boxes_under_a_guard(tmp_path) == []
+
+
+# --------------------------------------------------------------------------------
+# 2026-08-11 (`mainC`) — a banner must reach a section's DESCENDANTS, and the
+# corruption invariant must NOT inherit that reach. Both pinned, because they are
+# deliberately different and a future reader will be tempted to unify them.
+# --------------------------------------------------------------------------------
+
+
+def _phased(tmp_path):
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "plan.md").write_text(
+        "## Phased Work Plan\n"
+        "> **⛔ CLOSED APPENDIX — DEPRIORITIZED PLAN. Do not dispatch from the phases below.**\n"
+        "\n"
+        "### Phase 0\n"
+        "- [ ] Shelved step one\n"
+        "- [x] A read that really was done\n"
+        "\n"
+        "### Phase 1\n"
+        "- [ ] Shelved step two\n"
+        "\n"
+        "## Live Work\n"
+        "- [ ] A genuinely dispatchable task\n",
+        encoding="utf-8")
+    return d / "plan.md"
+
+
+def test_a_parent_banner_reaches_boxes_in_child_sections(tmp_path) -> None:
+    """The blind spot that made phased plans undeclarable.
+
+    Measured on cpu-shape-specialized-gemv-decode.md: a CLOSED APPENDIX banner under
+    `## Phased Work Plan` covered ZERO of the 36 open boxes beneath it, because
+    `### Phase 0` opened a new section three lines later.
+    """
+    p = _phased(tmp_path)
+    assert brc.box_is_guarded(p, 5) is True, "banner must reach `### Phase 0`"
+    assert brc.box_is_guarded(p, 9) is True, "banner must reach `### Phase 1`"
+
+
+def test_a_sibling_section_banner_does_not_leak_forward(tmp_path) -> None:
+    """Scope still ends at the section boundary — this is not a blanket widening."""
+    p = _phased(tmp_path)
+    assert brc.box_is_guarded(p, 13) is False, "`## Live Work` is a sibling, not a descendant"
+
+
+def test_the_corruption_invariant_keeps_the_FLAT_span(tmp_path) -> None:
+    """A deprioritized plan's `- [x]` boxes are correct history, not corruption.
+
+    Dispatch exclusion is generous; a corruption ACCUSATION is conservative. If these
+    two ever share a scope rule, the 6 completed boxes under the GEMV appendix get
+    reported as defects forever.
+    """
+    p = _phased(tmp_path)
+    hits = brc.closed_boxes_under_a_guard(p.parent)
+    assert hits == [], "a parent banner must NOT make child [x] boxes read as corruption"

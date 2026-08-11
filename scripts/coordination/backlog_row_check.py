@@ -210,9 +210,46 @@ def box_is_guarded(path: Path, lineno: int) -> bool:
     if _GUARD.search(lines[idx]):
         return True
 
-    # 2. Banner: a blockquote in this section, above this box.
-    start = max((i for i, l in enumerate(lines[:idx]) if l.startswith("#")), default=0)
-    for i in range(start, idx):
+    # 2. Banner: a blockquote in this section OR in an ANCESTOR section, above this box.
+    #
+    # C41 follow-up, 2026-08-11 (`mainC`). This used to start at the nearest preceding
+    # heading of ANY level, which meant a `##` banner was invisible to boxes under its
+    # own `###` children. Measured on `cpu-shape-specialized-gemv-decode.md`: a
+    # CLOSED APPENDIX banner placed under `## Phased Work Plan` covered ZERO of the 36
+    # open boxes beneath it, because `### Phase 0` opened a new section three lines
+    # later. A phased plan is exactly the shape that cannot be declared without this,
+    # and phased plans are common here — so the mechanism had a blind spot precisely
+    # where the largest stale masses live.
+    #
+    # This is NOT the widening C41 warns against. That warning is about PROSE bleeding
+    # into rows it does not speak for; the scope rule is unchanged in that direction —
+    # a banner still speaks only for its own section, and a SIBLING subsection's banner
+    # is still ignored. What changed is that "its own section" now includes that
+    # section's descendants, which is what a reader already assumes a `##` banner means.
+    def _level(line: str) -> int:
+        return len(line) - len(line.lstrip("#")) if line.startswith("#") else 0
+
+    # Resolved FORWARDS, via an explicit ancestor chain. A backwards scan cannot do it:
+    # walking up from a box in `### Phase 1`, the parent's preamble (where the banner
+    # lives) is reached BEFORE the parent's heading, so there is no way to know yet
+    # whether those lines are the parent's preamble or a sibling's body.
+    heads = [(i, _level(lines[i])) for i in range(idx) if _level(lines[i])]
+    chain: list[int] = []                      # ancestor headings, outermost first
+    for pos, lv in heads:
+        while chain and _level(lines[chain[-1]]) >= lv:
+            chain.pop()
+        chain.append(pos)
+
+    in_scope: list[int] = []
+    for n, pos in enumerate(chain):
+        # Each ancestor speaks through its PREAMBLE: its heading down to its first
+        # child heading. For the innermost section that preamble runs to the box.
+        nxt = next((i for i, _ in heads if i > pos), idx)
+        in_scope.extend(range(pos, min(nxt, idx)))
+    if chain:
+        in_scope.extend(range(chain[-1], idx))  # innermost section body
+
+    for i in sorted(set(in_scope)):
         if not (_BANNER_LINE.match(lines[i]) and _GUARD.search(lines[i])):
             continue
         # The banner may wrap over several blockquote lines; the count can be on
@@ -395,6 +432,25 @@ def closed_boxes_under_a_guard(root: Path = HANDOFFS) -> list[tuple[Path, int, s
     are ordinary tasks that happen to live in the same section. Three rows for a
     human to glance at is worth one invisible standing constraint; three hundred
     would not have been, which is why this was measured before it was written.
+
+    SCOPE DIVERGES FROM `box_is_guarded`, DELIBERATELY (2026-08-11, `mainC`). That
+    function now resolves a banner over a section's DESCENDANTS, so a `##` banner
+    reaches boxes under its `###` children. This one deliberately keeps the older
+    FLAT span — same section only — and the asymmetry is the point:
+
+      * DISPATCH exclusion should be generous. Failing to dispatch a shelved plan
+        costs nothing; dispatching one wastes a main. So a banner reaches down.
+      * A CORRUPTION claim should be conservative. Every hit here accuses someone
+        of having wrongly flipped a box, and a human pays to read it. So only a
+        banner in the box's own section counts.
+
+    The case that forced the distinction: `cpu-shape-specialized-gemv-decode.md`'s
+    CLOSED APPENDIX banner correctly removes 36 shelved SIMD boxes from the bench,
+    but the 6 `- [x]` boxes under it are CORRECT historical records of work that was
+    done — a deprioritized plan is not a reusable procedure, and nothing in it is
+    "unchecked by design". Under a shared scope rule those 6 would be reported as
+    corruption forever. If a nested section ever does need flip-protection, put a
+    banner IN it; that is one line and it is unambiguous.
     """
     hits: list[tuple[Path, int, str]] = []
     for path in sorted(root.glob("*.md")):
