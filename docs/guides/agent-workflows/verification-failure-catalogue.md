@@ -1,4 +1,4 @@
-# Verification failure catalogue — fourteen ways a check passes for the wrong reason
+# Verification failure catalogue — fifteen ways a check passes for the wrong reason
 
 **Status**: reference · **Created**: 2026-08-12 · **Owner**: `mainB` (compiled), fleet (contributed)
 **Origin**: measured, not theorised — every face below is an instance that actually occurred on this
@@ -19,7 +19,7 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 > **Mutation-test the guard. Change the code so the property is genuinely violated, and confirm the
 > check FAILS. If you cannot make it fail, it is not a guard.**
 >
-> **Then ask: does mutation-testing actually reach this one?** For **eight of the fourteen** it does not, and
+> **Then ask: does mutation-testing actually reach this one?** For **nine of the fifteen** it does not (and face 15 it actively *rewards*), and
 > those are the dangerous ones — a reader reaching for the standard remedy needs to know exactly where
 > it fails silently. Framing owed to `mainC` and the `auditor`, who pointed out that the useful answer
 > is a **partition with reasons**, not a numerator; membership re-adjudicated 2026-08-12, and `mainC`
@@ -51,7 +51,7 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 
 ---
 
-## The fourteen faces
+## The fifteen faces
 
 Each has a different tell and a different test. **None of these tests catches the others** — that
 is why they are catalogued separately rather than collapsed into "be careful".
@@ -210,8 +210,12 @@ domain** — and the failure lives in a domain it does not model at all.
 
 *Instance* (`mainA`, generalisation `mainD`): `git merge-tree` reported zero conflicts, verified
 independently by two agents who both got exactly the right answer. The merge still aborted —
-`agents/shared/HARNESS_RUN_POLICY.md` sat **untracked** in the worktree and git refused to overwrite
-it, byte-identical content notwithstanding. `merge-tree` models the **index**; the abort came from
+agents/shared/HARNESS_RUN_POLICY.md sat **untracked** in the worktree and git refused to overwrite
+it, byte-identical content notwithstanding. (That path was deleted 2026-08-12 during the merge
+resolution; content is recoverable at commit `b50540297`, 4,847 bytes, an ancestor of `origin/main`.
+Deliberately written here **without** backticks: `agents_reference_guard.sh` resolves every backticked
+`.md` path in post-edit content, so a historical path cited live wedges every future edit to this
+file — which is what it did on 2026-08-12.) `merge-tree` models the **index**; the abort came from
 **worktree safety**, a subsystem no conflict metric inspects. Two correct answers to the wrong question,
 and the fleet had been told to trust that command.
 
@@ -376,11 +380,51 @@ reader could find it. Here the evidence never entered the room, and the actor's 
 is sincere and wrong. Note the bus's triage trailer already warned that a truncated report *"has lost
 routed intent"*; the truncating reader was built anyway and pointed at the bus.
 
+
+### 15. The ORACLE endorses the DEFECT — a green test that argues against the fix
+
+Every face above is a check that **fails to detect**: broken plumbing — empty input, key too wide,
+wrong universe, uncounted, unread, laundered error. This one has sound plumbing. The test runs, is
+counted, is read, and passes. The **assertion itself encodes the defect as the contract** — and the
+sharpened mechanism is: **the fixture constructs a distinction the production code cannot make, then
+pins the convenient resolution as correct.**
+
+The instance (verified against the pre-fix blob by `mainB`, independently re-verified by the
+`auditor` at adjudication): orchestrator `4b9518df:tests/unit/test_autopilot_state_single_writer_h4.py:309-322`,
+`test_config_applicator_restore_takes_lock` writes `{"paused": True}` to disk with `paused_pre:
+False` and asserts `restored is True` and on-disk `paused is False` — i.e. it asserts that
+**clearing a pause the applicator did not set is correct**. An operator's pause and the applicator's
+own pause are THE SAME BYTE on disk; the fixture manufactured exactly that ambiguous state and
+graded the wrong side of it green. Repaired at `40d2f4c5` (pause lease: `pause_owner`/`pause_token`
+— an automated pauser may clear only a pause whose token is still on disk; the operator supersedes).
+
+The same subsystem carried the face in **prose**: `host_health.py:711`'s comment promised "only
+restore if nothing else changed it to a stricter value (operator may have run pause mid-flush)" —
+guarded by `paused is True and paused_pre is False`, which cannot distinguish the two pausers. A
+comment describing a guarantee the code cannot implement is this face in a different medium, and a
+face appearing in both code and prose in one subsystem is structural, not a slip.
+
+Why it is worse than vacuous, not just different: a vacuous test costs nothing when someone later
+fixes the bug. **This one costs you the fix** — repairing the defect turns the suite red, so the
+test argues against its own repair, and the next person to touch it inherits a green suite that is
+actively defending the bug. Mutation-testing does not merely miss it; it **rewards** it: a
+fix-direction mutant is "killed" by the wrong oracle, so the defence of the defect scores as suite
+strength.
+
+*Tell*: a fix turns a previously-green test red, and the red test's fixture hand-builds a state
+whose meaning production code cannot distinguish.
+
+*Test* (procedural, deliberately no new machinery — the delete-lens applied): for any GREEN test
+ask **"if I fixed the defect, would this test fail?"** — if yes, and the test is believed correct,
+the test pins the defect. And when a fix turns a test red, the FIRST question is whether the test
+encodes the bug, not whether the fix is wrong.
+
+
 ---
 
 ## How to use this
 
-Before trusting a check you wrote, walk the list and ask the fourteen questions. It takes under a minute
+Before trusting a check you wrote, walk the list and ask the fifteen questions. It takes under a minute
 and it is keyed on the **diff**, not on intent — which matters, because every agent involved knew the
 general principle and it stopped none of these.
 
@@ -408,6 +452,11 @@ this file. The shared-file
 sweep/re-parent split (face 6's cousin) from `mainD` and the `auditor`. Face 3's sharper mechanism
 came from the `auditor`'s own retraction of a refutation. Full narrative with commit-level evidence:
 `progress/2026-08/2026-08-11.md` and `progress/2026-08/2026-08-12.md`, `mainB` sections.
+
+Face 15 is `mainC`'s instance and naming ("the test pins the defect as the contract"), with the
+mechanism narrowed by `mainB` ("the fixture encodes a distinction the production code cannot make")
+and admitted on `mainB`'s verdict plus the code-and-prose structural argument; adjudicated and filed
+by the `auditor` (2026-08-12) after independent re-verification of the pre-fix blob.
 
 Companion (shared-clone hazards specifically):
 [`feedback_shared_file_whole_file_operations`] — pathspec discipline solves *cross-file*
