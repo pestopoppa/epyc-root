@@ -171,6 +171,10 @@ deliberately — decide them, do not just implement them.
       to the session that owns the inference, at its own boundary. Until then
       `adapters/autopilot_journal.py` correctly reports 0 measured rows. Confirm non-zero after the
       next autopilot cycle
+- [ ] **SC32 — Wire future architect MMLU-Pro hardened controls prospectively.** The 2026-08-12
+      A1/A3/A4 v9 panel carries native captures, exact claims, pinned source/manifest digests and
+      an attestation, but no producer-authored `ClaimTuple` row. Add write-side rows plus a strict
+      adapter before any successor run; the completed panel remains pre-hook and emits zero.
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input

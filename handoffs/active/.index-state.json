@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 301
+      "open": 300
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -107,10 +107,10 @@
     },
     "architect-model-selection-bench.md": {
       "blocked": 0,
-      "closed": 59,
+      "closed": 61,
       "guarded": 0,
       "last_advanced": "2026-08-03",
-      "open": 24,
+      "open": 22,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-02",
       "state": "active",
@@ -1837,11 +1837,11 @@
       "closed": 52,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 12,
+      "open": 13,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 64
+      "total": 65
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -1915,7 +1915,7 @@
       "id": "EVL-02",
       "index": "research-evaluation-index.md",
       "line": 14,
-      "next_action": "Re-run the MMLU-Pro control under the hardened protocol \u2014 the sidecar's n=50 run predates it",
+      "next_action": "Complete the full paired GPU `gpqa_diamond_cot` arm or close it by the standing ROI rule",
       "track": "architect model selection bench"
     },
     "EVL-03": {
