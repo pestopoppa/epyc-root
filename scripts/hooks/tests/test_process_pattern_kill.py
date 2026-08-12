@@ -75,3 +75,48 @@ def test_the_hook_blocks_end_to_end_and_names_the_alternative() -> None:
     r2 = subprocess.run(["bash", str(HOOKS / "check_process_pattern_kill.sh")],
                         input=ok, capture_output=True, text=True)
     assert r2.returncode == 0, r2.stdout + r2.stderr
+
+
+# --- Two defects found in this guard within an hour of shipping it -------------
+
+def test_a_comment_documenting_the_rule_is_not_an_invocation() -> None:
+    """C47: the coordinator's bus message documenting INC-20260812 was BLOCKED.
+
+    It carried the banned command in an unquoted `#` comment. strip_quoted covers
+    quoted mentions; comments were the gap. A guard that cannot distinguish
+    executing a command from discussing one blocks writing about the incident it
+    exists for.
+    """
+    for c in ["# never run pkill -f llama-server on this host",
+              "ls -la   # reminder: pkill -f is forbidden",
+              "echo hi  # pgrep -f autopilot is banned"]:
+        assert pattern_kill_verdict(c) == "clean", c
+
+
+def test_a_comment_does_not_hide_a_real_invocation_on_the_same_line() -> None:
+    """Mutation: stripping comments must not become a way to smuggle one past."""
+    assert pattern_kill_verdict("pkill -f llama-server  # cleanup") == "kill-pattern"
+    assert pattern_kill_verdict("if [ $# -gt 0 ]; then pkill -f x; fi") == "kill-pattern"
+
+
+def test_the_scanner_refuses_rather_than_saying_clean_for_input_it_never_read() -> None:
+    """mainA's HIGH: `scan.py <file>` ignored argv, read empty stdin, printed `clean`.
+
+    A false ALL-CLEAR from a tool whose only job is to refuse. They reported
+    "scanner says clean" twice off it, about a file that genuinely trips.
+    """
+    scan = str(HOOKS / "process_pattern_kill_scan.py")
+    empty = subprocess.run([sys.executable, scan], input="", capture_output=True, text=True)
+    assert empty.returncode == 2, empty.stdout
+    assert "clean" not in empty.stdout
+    assert "refusing" in empty.stderr
+
+
+def test_a_path_argument_actually_scans_that_path() -> None:
+    import tempfile
+    with tempfile.NamedTemporaryFile("w", suffix=".sh", delete=False) as fh:
+        fh.write("#!/bin/bash\npkill -9 -f llama-server\n")
+        name = fh.name
+    scan = str(HOOKS / "process_pattern_kill_scan.py")
+    r = subprocess.run([sys.executable, scan, name], input="", capture_output=True, text=True)
+    assert r.returncode == 0 and r.stdout.startswith("kill-pattern"), (r.stdout, r.stderr)
