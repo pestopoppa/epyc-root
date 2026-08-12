@@ -1769,6 +1769,25 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       across `src/ scripts/ orchestration/` excluding the store and backfill script -> **zero hits**.
       `scripts/memory/backfill_sub_decision.py` exists and has never been run. Exact twin of
       `model_id` and `assigned_role`. Three agents ran its test and none noticed the column is empty.
+      - **RE-DERIVED 2026-08-12 (`mainC`) — the finding HOLDS and is worse than filed, but it is
+        NOT closed.** Producers outside the store and the never-run backfill: still ZERO. A
+        read-only count over the checkpoint store gives **0 non-null of 642,328 rows**, an order of
+        magnitude more data than the 59,337 recorded here and still entirely empty.
+      - **Why nobody noticed, which is the reusable part.** `test_episodic_store_sub_decision.py`
+        is 312 lines and green: it covers the enum, the normaliser, the column-and-index migration,
+        the classifier token map and the backfill script — **everything except whether anything
+        writes the column on the live path.** A test can cover all the machinery and never touch
+        the question of whether the machinery is REACHED.
+      - **Instrumented, not fixed** (orchestrator `6aa083be`): added
+        `tests/unit/test_sub_decision_producer_tripwire.py`, which passes while the gap exists and
+        FAILS the moment a producer appears — forcing whoever wires it to confirm the column
+        actually POPULATES (a call site is not population), settle the backfill question and close
+        this row. A second test guards the other direction, since silently DELETING the column
+        would also leave this row describing something that no longer exists. Deliberately not
+        `xfail`/`skip`: both are invisible in a green run, and invisibility is the defect.
+      - **Box left unchecked deliberately** — the column is still inert. This makes the gap
+        self-announcing; it does not resolve it. The fix is still a decision: wire a producer, or
+        retire the column and its machinery on purpose.
 - [ ] **`binding_router` is a parameter nobody passes, gating a whole feature.** `src/api/state.py:97`
       declares `binding_router: Any | None = None`, never assigned anywhere;
       `chat_routing.py:230`'s `if binding_router is not None:` guards the entire override block;
