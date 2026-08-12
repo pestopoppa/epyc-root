@@ -1009,3 +1009,36 @@ carry a second implementation of it inside the confined process.
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 checklist, r7/r8 authority boundary, and fresh-attempt gate
 - [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — matched-archive dependency and separation from AK-WM-2 evidence
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact research commits, receipt hashes, failure transcript, and cleanup evidence
+
+## Compiled Update — 2026-08-12: broker authority and semantic task state need explicit interfaces
+
+**Confidence: verified for the implementation boundary and first completed loop; the live campaign
+remains incomplete and non-rankable.** R9 and r10 exposed two failures that would both have looked
+like generic controller instability without the fail-closed receipt chain. First, writing an
+authenticated frame through `socket.sendall()` is not equivalent to writing it on an already-admitted
+descriptor: the socket implementation selected `sendto`, which seccomp correctly denied. Second, a
+workspace mutation guard cannot use the entire controller workspace as the task identity once that
+workspace deliberately contains ephemeral model credentials and session configuration. The repairs
+write frames on the inherited descriptor and define the semantic task file set independently of staged
+model state.
+
+The fresh r11 attempt then completed the first real end-to-end loop through the intended boundaries:
+parent-owned starting evaluation, directly sandboxed Claude planning, a digest-pinned Docker Codex
+actor with one writable workspace bind, parent-owned candidate evaluation, and directly sandboxed
+Claude critique. The candidate compiled and passed all four correctness cases but regressed to
+`0.993531469254354×`; the critic chose `revise`, and the controller restored the measured starting
+source before beginning iteration 2. That is valuable liveness and negative-feedback evidence, but it
+is not a campaign result. Until r11 emits a terminal aggregate and its complete model/evaluation/claim/
+sampler/sandbox chain is revalidated, it cannot rank controllers, update belief, bank a proposal,
+select a champion, promote, or release.
+
+The reusable rule is that isolation boundaries need two explicit contracts, not one: an *authority
+contract* saying which inherited operation is permitted, and an *identity contract* saying which files
+constitute the object being protected. Generic socket helpers and whole-workspace hashing silently
+broaden those contracts in opposite directions.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning r9-r11 checklist, next terminal gate, and authority boundary
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — separation from the matched-archive and champion gates
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commits, artifact hashes, ratios, and cleanup evidence

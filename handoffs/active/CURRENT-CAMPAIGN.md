@@ -7,6 +7,17 @@
 
 ---
 
+> **🟡 2026-08-12 — INF-03 AVAILABLE-SOURCE 7/7 ATTEMPT R11 IS LIVE; FIRST FULL REAL
+> ACTOR-CRITIC LOOP COMPLETE.** R9 stopped before Claude when broker `sendall()` selected a denied
+> `sendto`; r10 banked its starting evaluation and completed the first real Claude planner request,
+> then refused when staged model state was counted as a task mutation. Research `6270ebc1`,
+> `cd1303b9`, `eb00c411`, `2525f2f7`, and `7b20b5d6` close those implementation and pinning seams.
+> R11 has now completed starting evaluation, Claude planning, a digest-pinned Docker Codex actor,
+> candidate GPU evaluation, and Claude critique. The candidate passed compilation/correctness but
+> regressed to `0.993531469254354×`; the critic selected `revise`, the starting source was restored,
+> and iteration 2 began. **Do not interpret, aggregate, rank, bank, promote, or release from this live
+> partial.** Owner: [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) INF-03.
+
 > **🟡 2026-08-12 — AUTOKERNEL V9 CONTROLS PASS; CPU IQK WAITS ONLY FOR THE RATIFIED REBOOT
 > GATE.** `ak-controls-v9-a4cb04ca-20260812-r2` is an accepted `5/5`, `may_rank=true` control
 > bundle under frozen v9 and hardened instrument `a4cb04ca8`; the historical IQK arm promoted.

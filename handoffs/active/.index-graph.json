@@ -1136,7 +1136,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-03",
-      "weight": 10
+      "weight": 12
     },
     {
       "from": "INF-06",
@@ -3491,7 +3491,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T15:50:08Z",
+  "generated_at": "2026-08-12T16:10:39Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4159,12 +4159,12 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 65,
+      "closed": 66,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Remove controller-side Arena evaluator imports, prove the exact Claude cell, then launch a fresh governed 7/7",
+      "next_action": "Supervise r11 to a terminal aggregate, then validate its complete receipt chain before comparison",
       "open": 3,
       "state": "active",
       "track": "agentic rocm kernel authoring"
@@ -4198,7 +4198,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 227,
+      "closed": 228,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",

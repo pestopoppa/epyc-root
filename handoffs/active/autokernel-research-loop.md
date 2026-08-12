@@ -195,12 +195,16 @@ The run-specific CPU/GPU authorizations do not extend to producer commits, promo
 actions. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
 
-The concurrent GPU-side INF-03 path has not changed that evidence posture. Research `43ba6263` and
-`a3fcea3c` repaired the process-bound model sandbox and refreshed the actor pin. R7 then refused a
-stale pin before controller or GPU execution; r8 passed its 7/7 static audit and completed the
-starting-state baseline, but its first actor cell failed before Claude inference because the
-broker-backed controller unnecessarily imported the Arena evaluator and unavailable `yaml`. Both
-attempts are immutable diagnostics and cannot satisfy AK-WM-2a or any proposal/champion gate.
+The concurrent GPU-side INF-03 path has not changed that evidence posture. Research `6270ebc1`,
+`cd1303b9`, `eb00c411`, `2525f2f7`, and `7b20b5d6` close the controller-side evaluator import,
+inherited-descriptor broker write, semantic-task/state separation, and pinning defects exposed by
+r8-r10. R9 stopped pre-Claude when `socket.sendall()` selected denied `sendto`; r10 completed the
+starting evaluation and first real Claude planner request, then refused because staged model state
+was misclassified as a task mutation. Fresh r11 is live and has completed its first full real
+planner→Docker Codex actor→centralized GPU evaluation→critic loop. The candidate passed
+compilation/correctness but regressed to `average_speedup=0.993531469254354`; the critic selected
+`revise`, the starting source was restored, and iteration 2 began. R9/r10 are immutable partials and
+r11 remains incomplete and non-rankable. None can satisfy AK-WM-2a or any proposal/champion gate.
 
 **Read-only evidence-authority audit (2026-08-12):** the RVP-T0-1 saturation pair and the
 AK-BH-1/2/3 plus AK-LN-2/AK-X-5a receipts are durable diagnostic evidence. They retain commands,
@@ -297,6 +301,16 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   proves only its narrow path; the owning open differential and fresh-attempt gate remain in
   [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md). R5/r6 have no aggregate or
   decision authority, and both controller cgroups were verified empty and removed.
+- [x] **AK-AUD-12 — Close the r8-r10 actor-cell implementation defects and prove one full real
+  actor-critic loop without upgrading a live partial into evidence.** ✅ 2026-08-12 — research
+  `6270ebc1`, `cd1303b9`, `eb00c411`, `2525f2f7`, and `7b20b5d6` move vendor evaluation fully into
+  the parent, repair inherited broker writes, separate semantic task state from staged model state,
+  and refresh both pins. R11's first candidate passed compilation/correctness but measured
+  `0.993531469254354×`; the critic chose `revise` and the controller restored the measured starting
+  source before iteration 2. This is an implementation/liveness checkpoint only. R11 is still live,
+  has no terminal aggregate, and carries no comparison, belief, bank, champion, promotion, or release
+  authority. Terminal receipt-chain validation remains owned by
+  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md).
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
