@@ -2071,7 +2071,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       Collision is legible in six places, not silent. 22 new tests, 48 across the pause files; three
       mutations, none survived. Blast radius: full 12,185-test suite vs a pristine checkout, failure
       SETS diffed, regression set EMPTY — and re-baselined mid-run when HEAD moved under them.
-- [ ] **STILL OPEN, and correctly not fixed: the unbounded health-check retry.** `autopilot.py`'s
+- [x] **STILL OPEN, and correctly not fixed: the unbounded health-check retry.** `autopilot.py`'s
   health branch is `time.sleep(HEALTH_BACKOFF_S); continue` with no attempt cap and no halt latch —
   `Connection refused` forever. The interlock breaks the specific 2026-08-03 chain (the operator's
   pause now holds, so the loop never resumes into the retry) but the unbounded spin survives on every
@@ -2079,6 +2079,32 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
   after N with a `pause_reason`, matching the ~8 existing halt-latch sites — but a transient blip
   during a long reload then needs an operator resume overnight; or (b) keep retrying and escalate to a
   loud journalled deficiency after N. **UNOWNED — needs the ruling, not the code.**
+  ✅ 2026-08-12 — orchestrator `bec1bc0d`. **OPERATOR RULED: escalate loudly, do NOT latch.**
+  Implemented as ruled, and a test pins the ruling itself — the branch must contain no halt latch, no
+  `paused = True`, no `break`, no `sys.exit`. *(Verified by `mainC`.)* The retry is unchanged: still
+  `sleep(); continue`, forever.
+  **THE DEFECT WAS WORSE THAN 'UNLOGGED' AND THIS IS THE FINDING.** The retry branch republishes a
+  FRESH HEARTBEAT every iteration, so `build_phase_health_report` saw a recent heartbeat from a live
+  pid and returned `status="active", ok=True`. Staleness and a dead pid are the only things the
+  report tests for — so **a daemon spinning forever on a dead API read as a WORKING one** to the
+  dashboard, the restart advisor, and `model_gate_report`'s P0 gate. The observation layer was
+  structurally blind to this exact failure mode, which is why it survived: nothing was lying, and
+  nothing could see it.
+  **N = 30 ≈ 6 minutes** (10s backoff + ~2s refused-connection probe), anchored to the longest restart
+  wait this codebase sanctions — `wait_for_health(timeout=300)` — so an ordinary slow API restart
+  rides through without crying wolf. Edge-triggered once per episode; recovery emits
+  `health_recovered` and returns the report to `ok/active`.
+  **Channel reused, not invented**, with three alternatives rejected on evidence: `PHASE_EVENTS_PATH`
+  (zero readers repo-wide), `/dashboard/api/health` (mtime-only, structurally blind to a
+  live-but-deficient producer), and a new `autopilot_state.json` field (unguarded by
+  `state_ownership`, and `dispatch_deficiency` proves a served field is not necessarily rendered).
+  **One mutation SURVIVED first:** deleting the `record_failure()` call site left every test green —
+  the loop wiring was unpinned. Four wiring tests added; it now fails. 15 new tests, 34 in file.
+  Blast radius over 28 transitively-importing files, failure SETS identical, re-run after HEAD moved.
+- [ ] **Cosmetic follow-on, not acted on:** `dashboard.html:6305-6307` has no explicit case for
+  `health_escalated`, so it renders via the generic `bad` fallback — correct and red today, but an
+  explicit label would read better than the raw status string.
+
 - [ ] **Flaky under load, flagged to its owner:** `test_daemon_owned_state_ownership.py` (landed today)
   fails intermittently under full-suite `-n 16` while passing 19/19 in isolation and under `-n 8` on
   both trees. Ruled out as test method by the finder before reporting, not assumed.
