@@ -2,8 +2,35 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-12 (adds the clean AutoKernel instrument and independent v9 async-prefetch replay; prior diagnostic provenance, Arena, real-MMQ WGM, C6, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-12 (adds the accepted current-v9 AutoKernel controls and reboot-gated CPU IQK handoff; clean instrument, independent async-prefetch replay, prior diagnostic provenance, Arena, real-MMQ WGM, C6, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
 **Sources**: 102+ documents
+
+## Compiled Update — 2026-08-12 (current-v9 controls and CPU IQK boundary)
+
+**Confidence: verified measured controls and fail-closed preflight; no CPU candidate result.**
+
+AutoKernel's current frozen-v9 control bundle is now accepted under the clean hardened instrument.
+Calibration solved B_min=`10` and φ=`0.03578502357852242`; positive, neutral, wrong-work, A/A, and
+historical-win controls all satisfied their declared behavior (`5/5`), the historical IQK replay
+promoted at `+26.6050%`, and the bundle reports `may_rank=true`. A deterministic composition defect
+appeared only after the six inference legs had completed: `CampaignBinding.change_class` was missing.
+The repaired evaluator recomposed the immutable raw vectors without inference and bound every input
+hash plus `inference_executed=false` in a separate attestation. This preserves the distinction between
+recovering deterministic evaluation and rerunning measurements.
+
+The first full-host CPU IQK campaign is prepared against that bundle, including proposal-v3 and an
+exact recipe-frame physical envelope. Its corrected live attempt nevertheless produced no candidate
+measurement: preflight refused at host uptime `13.47 days`, beyond the ratified one-week ceiling,
+before claim, build, or benchmark. The next valid empirical sequence is therefore a compliant reboot,
+the prepared CPU IQK replay, construction of the first real matched completed-proposal archive, then
+the least-commitment evaluation observe-only. The new archive builder is ready but correctly cannot
+turn the preflight-refused journal into completed-proposal evidence.
+
+### Source References (2026-08-12 current-v9 controls)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact control receipts, archive-builder boundary, and Step-3 gate
+- [Current campaign state](../handoffs/active/CURRENT-CAMPAIGN.md) — live reboot-gated execution order
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — measured values, hashes, composition recovery, and fail-closed CPU chronology
 
 ## Compiled Update — 2026-08-12 (clean instrument and governed GPU replay)
 

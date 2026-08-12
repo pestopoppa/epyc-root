@@ -4,7 +4,7 @@
       "blocked": 4,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 401
+      "open": 402
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 1,
-      "closed": 190,
+      "closed": 193,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 20,
+      "open": 21,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 211
+      "total": 215
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
@@ -2390,7 +2390,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "Run fresh v9 controls, then full-host CPU IQK and construct and evaluate the matched archive",
+      "next_action": "After a compliant reboot, run full-host CPU IQK; then materialize and evaluate the matched archive",
       "track": "autokernel research loop"
     },
     "INF-07": {

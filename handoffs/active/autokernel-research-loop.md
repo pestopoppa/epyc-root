@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** DIAGNOSTIC RECEIPTS DURABLE / CLEAN INSTRUMENT PROVENANCE → V9 CONTROLS → CPU IQK → MATCHED ARCHIVE — updated 2026-08-12
+**Status:** V9 CONTROLS 5/5 PASS / CPU IQK READY AFTER REQUIRED REBOOT / MATCHED ARCHIVE NEXT — updated 2026-08-12
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -18,17 +18,19 @@
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
-**Current checkpoint (2026-08-12):** Steps 0–2 and the five-control calibration are complete for
-the retired v8 era and remain valuable regression evidence; they do **not** authorize ranking on
-frozen v9 plus the hardened measurement overlay. The current measurement instrument is the clean,
-one-parent overlay `a4cb04ca8f92fa4d665684490f609b380f9b5e96` directly on frozen v9
-`0db32c06e3e550065b78311a6031ef3dd2c4f27c`, and its real CPU smoke emitted every required
-hardening receipt. Research commit `1094ff6b` removes the package-power privilege blocker through a
-pinned, networkless, read-only broker and makes the v9 controls decision-grade. Research commit
-`7f8e9997` then requires a fresh operator-chosen campaign id and derives every seed, window, and
-absolute evidence reference from it. The remaining order is: run the five v9 controls, run the
-full-host CPU IQK proposal, construct the real matched archive, then run the least-commitment
-evaluation observe-only.
+**Current checkpoint (2026-08-12):** the current frozen-v9 control campaign is accepted and
+decision-grade. Under clean one-parent instrument `a4cb04ca8f92fa4d665684490f609b380f9b5e96`,
+`ak-controls-v9-a4cb04ca-20260812-r2` solved B_min=`10` and φ=`0.03578502357852242`, passed all
+five controls, promoted the historical IQK replay at `+26.6050%`, and set `may_rank=true`. The six
+inference legs completed under one released CPU claim. Deterministic composition initially stopped
+because `CampaignBinding.change_class` was absent; research `c4a42c69` repaired that drift and
+recomposed the already-completed raw vectors with a hash-bound attestation stating
+`inference_executed=false`. Research `900cb5c6` also implements the strict AK-WM-2a real-archive
+builder. The CPU IQK proposal, exact physical envelope, calibration binding, and dry run are ready,
+but live preflight correctly refused before claim, build, or benchmark because host uptime was
+`13.47 days`, beyond the ratified one-week ceiling. After a compliant reboot, run the full-host CPU
+IQK proposal, materialize the real matched archive, then run the least-commitment evaluation
+observe-only.
 INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
 VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
 Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
@@ -2558,10 +2560,16 @@ evaluator or its own scope, and T1 may legally guide search.
   fsynced before preflight, claim, mutation, or build, identical resume is idempotent, and same-id/different-
   bytes is refused. The AP-WM-1 evaluator is implemented as an observe-only module outside the campaign
   import path and exposes no selector/champion/T2/T3 mutation API.
-- [ ] **AK-WM-2a — Build the first real matched completed-proposal archive.** After Step 3 writes real
-  proposal-v3 plus journal/evaluation records, deterministically join them and fail closed on missing or
-  inconsistent frame, representation, demand, metric-direction, and matched-intervention receipts.
-  Synthetic fixtures remain regression tests and cannot populate the archive.
+- [ ] **AK-WM-2a — Materialize the first real matched completed-proposal archive.** After Step 3
+  writes real proposal-v3 plus clean DECIDED terminal journal/evaluation records, deterministically
+  join them with the strict builder and retain the archive plus build manifest. Synthetic fixtures
+  remain regression tests and cannot populate the archive.
+  - [x] **Implement the strict real-archive builder.** ✅ 2026-08-12 — research `900cb5c6` adds
+    `least_commitment_archive_builder.py`. It accepts only real proposal-v3 events joined to clean
+    DECIDED terminal events with executed/ok decisions, unchanged-production PASS, released
+    resources, nonempty pairs, and hash-bound diagnostic, outcome, and matched one-factor receipts.
+    Missing, synthetic, mismatched-frame, direction-drifted, or receipt-tampered inputs fail closed.
+    The canonical AutoKernel suite passed 4,078 tests with one expected failure.
 - [ ] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol,
   matched-intervention validation, per-regime/surface results, noise floor, robust sign error, and
   recoding stability. Until real evidence shows invariant independent signal, do not add weakness,
@@ -2619,6 +2627,11 @@ cannot retrigger the expensive gate unchanged.
   `ANCHOR_MOVED`, phase-trade exceptions), resource claims held, and release-package state. Version the
   contract explicitly, keep it absence-tolerant as the current page is, preserve the freshness envelope,
   and point `KERNEL_DASHBOARD_JSON` at a durable path rather than the missing scratch directory. ✅ 2026-08-03
+- [ ] **Repair the Kernel-R&D dashboard's current-receipt selector and live runs producer.** The
+  2026-08-12 audit verified the production-v9 identity is correct, but the selector does not discover
+  the current v9 control/probe receipts and the runs producer is absent, so the page cannot yet show
+  this checkpoint as current runtime truth. Land the bounded post-hold producer/selector repair with
+  the registry health probe, freshness envelope, and static-JavaScript test intact.
 
 **Exit:** campaigns produce correct, idempotent, operator-executable release packages and never write
 production.
@@ -2834,13 +2847,19 @@ nothing wrong. We held no claim.**
       requires `--campaign-id` plus an absolute `--output`, and deterministically derives the seed and
       window id. Declaration, calibration, claim, host, control, evaluator, and summary receipts now
       carry the same identity; invalid ids and relative evidence roots fail before execution.
-- [ ] **Run the five controls against frozen v9 plus the hardened measurement instrument.** Produce
-      the current identity-bound calibration bundle and retain the failed attempt if the declared
-      floor cannot be resolved. CPU inference is explicitly authorized for the owning session; do not
-      infer producer promotion or freeze authority from it. The v8 3%/B_min=12 bundle is a regression
-      fixture, not a literal to copy. The clean instrument, package-power, and fresh-identity gates now
-      pass. Run a new campaign id and preserve any fail-closed result under that id rather than
-      overwriting it.
+- [x] **Run the five controls against frozen v9 plus the hardened measurement instrument.** ✅
+      2026-08-12 — `ak-controls-v9-a4cb04ca-20260812-r2` accepted at contribution floor `3%`,
+      B_min=`10`, φ=`0.03578502357852242`, and passed positive/neutral/wrong-work/A/A/historical
+      controls (`5/5`, `may_rank=true`). The historical IQK replay promoted at
+      `+0.2660503395746673`. Summary SHA-256
+      `81b5bc4b95cfd8e3ca9346c9f44a70fc297c159310e57bdb84f62c80588d78e1`; control-sweep SHA-256
+      `9f765c5c19d0ea4669ac55a55796a643b578c4ff1bf126b5f6b630a297197ae1`. The six inference legs
+      completed under claim `akclaim-c9f943ba08234877`, whose journal records release at
+      `2026-08-12T00:46:23.957344+00:00`. When deterministic post-processing exposed missing
+      `CampaignBinding.change_class`, research `c4a42c69` repaired the evaluator and recomposed the
+      immutable raw vectors without inference; `composition_attestation.json` binds every input hash,
+      evaluator commit `c4a42c69917187b53809c8d4c3267cc1a99a37de`, and
+      `inference_executed=false`.
 
 ### Step 3 — the first candidate
 
@@ -2874,6 +2893,19 @@ nothing wrong. We held no claim.**
       clean cases passed. The full stock ROCm Q4_K matrix separately exposed genuine baseline κ=1.5
       failures; the gate remains fixed and the uncommitted experimental implementation was not staged,
       committed, or pushed.
+- [x] **Prepare and fail-closed preflight the first CPU IQK campaign.** ✅ 2026-08-12 — rebound
+      the physical envelope to exact deterministic recipe frame
+      `e504d8e937fd0f645b8dadb3b971e320f95c2f1bf34fc678b186fbf37bb079b0`; dry run was clean;
+      repaired the missing `/workspace/repos/epyc-whisper` and `epyc-qwentts` symlinks; and verified
+      both frozen speech kernels. The first live attempt stopped on the missing symlink before claim;
+      the corrected attempt stopped in preflight because uptime was `13.47 days`. Neither attempt
+      acquired a claim, built a candidate, or benchmarked. The append-only proposal and both
+      fail-closed STOP_STATE records remain in
+      `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/events.jsonl`.
+- [ ] **After a compliant host reboot, rerun the prepared full-host CPU IQK campaign.** The ratified
+      one-week uptime ceiling in `measurement/protocols/kernel-research.md` and `bench-cpu.md` is the
+      sole remaining preflight blocker. Reuse the accepted v9 control bundle and exact recipe frame;
+      preserve the journal and require claim/build/benchmark evidence rather than bypassing preflight.
 - [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
       characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
       serving. The claim reason alone decides it.

@@ -7,6 +7,15 @@
 
 ---
 
+> **🟡 2026-08-12 — AUTOKERNEL V9 CONTROLS PASS; CPU IQK WAITS ONLY FOR THE RATIFIED REBOOT
+> GATE.** `ak-controls-v9-a4cb04ca-20260812-r2` is an accepted `5/5`, `may_rank=true` control
+> bundle under frozen v9 and hardened instrument `a4cb04ca8`; the historical IQK arm promoted.
+> The prepared full-host CPU IQK campaign then refused before claim/build/benchmark because uptime
+> was `13.47 days`, beyond the one-week measurement ceiling. Preserve the journal and current bundle;
+> after a compliant reboot, rerun CPU IQK, construct the real matched archive, and execute the
+> least-commitment analysis observe-only. Owner: [autokernel-research-loop.md](autokernel-research-loop.md)
+> §AK6.5 Step 3.
+
 > **⛔ 2026-08-09 — AUTOPILOT IS INTENTIONALLY STOPPED; STAGED MULTI-TIER EVIDENCE IS BEING BUILT.**
 > Orchestrator `3f62f712` implements the approved T1 screen → matched T2 → matched T3 → fresh T1
 > promotion policy with exact runtime rollback and fail-closed startup. The semantic rebuild is now clean.
