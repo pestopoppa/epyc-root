@@ -1,6 +1,6 @@
 --- a/artifacts/operator/ratify_and_apply_e8_quality_baseline_v4_20260727.sh
 +++ b/artifacts/operator/ratify_and_apply_e8_quality_baseline_v4_20260727.sh
-@@ -444,9 +444,40 @@
+@@ -444,9 +444,42 @@
      trap - RETURN
  }
  
@@ -21,7 +21,9 @@
 +    tmp="$(mktemp "${index}.tmp.XXXXXX")"
 +    trap 'rm -f -- "$tmp"' RETURN
 +    printf '{\n  "gate_id": "%s",\n  "indexed_by": "attest",\n  "receipt": "%s",\n  "schema_version": "session_bus.receipt_index.v1",\n  "status": "ratified"\n}\n' "$TOKEN" "$RECEIPT" > "$tmp"
-+    mv -- "$tmp" "$index"
++    ln -- "$tmp" "$index" 2>/dev/null ||
++        fail "receipt index appeared concurrently; refusing to clobber: $index"
++    rm -f -- "$tmp"
 +}
 +
  apply_final() {
@@ -31,9 +33,9 @@
 +    # cleaned-world re-run that would fall through to a FULL re-apply - refuse.
 +    # Every transactions-present path (crash recovery, rollback retry) is
 +    # untouched, preserving the vehicle's resumable design.
-+    if [[ -e "$ROOT/artifacts/operator/receipts/$TOKEN.json" ]] &&
++    if { [[ -e "$RECEIPT" ]] || [[ -e "$ROOT/artifacts/operator/receipts/$TOKEN.json" ]]; } &&
 +        ! compgen -G "${TRANSACTION_BASE}-attempt-*" >/dev/null; then
-+        fail "already attested (keyed index present) with no transaction state on disk; re-apply refused - operator review required"
++        fail "already attested (receipt and/or keyed index present) with no transaction state on disk; re-apply refused - operator review required"
 +    fi
      validate_only
      mint_receipt
