@@ -135,6 +135,13 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
 - [x] **AK-AUD-3 — Reconcile the durable diagnostics against clean-source campaign authority.**
   Receipt hashes, bounded results, provenance gaps, and the four-step dependency order are retained in
   `progress/2026-08/2026-08-12.md`; no inference or kernel-tree mutation was performed. ✅ 2026-08-12
+- [x] **AK-AUD-4 — Reconcile executed diagnostic rows without upgrading their authority.** ✅
+  2026-08-12 — current state already marks RVP-T0-1, AK-BH-1/2/3, AK-LN-2/AK-X-5a, and AK-DEL-1
+  complete. Receipt re-audit confirms the first six are durable bounded diagnostics, not current
+  calibration, ranking, archive, or promotion evidence where clean source/build provenance is absent.
+  AK-DEL-1 is separately commit-backed at research `df02169e`: its hash-bound scope report found all
+  3/3 admitted families in `existing_path_should_apply` and selects catalogue expansion before a novel
+  generator. This corpus-bounded routing conclusion is not a claim about all workloads.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it

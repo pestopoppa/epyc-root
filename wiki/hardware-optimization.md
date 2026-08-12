@@ -71,6 +71,11 @@ from clean committed source, run fresh frozen-v9 controls, run the full-host CPU
 construct the real matched completed-proposal archive and evaluate it observe-only. Existing diagnostics
 remain valid in their declared scope; synthetic archives remain regression tests.
 
+AK-DEL-1 is a distinct, commit-backed scope-reduction diagnostic rather than campaign evidence. Its
+preserved trace report placed all three admitted kernel families in the existing-path bucket and selects
+catalogue expansion before a novel generator. The finding is bounded to that corpus and does not claim
+that every workload lacks a novel-kernel opportunity.
+
 ### Source References (2026-08-12 provenance audit)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — campaign dependency order and matched-archive gates
