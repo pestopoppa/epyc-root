@@ -30,7 +30,8 @@ for path in sorted(ARTIFACTS.rglob('*.json')):
             'suites': d.get('suites', []) if isinstance(d.get('suites'), list) else []}
     (matched[item['model_path']] if item['model_path'] in models else unmatched).append(item)
 out = {'schema_version': 'benchmark_artifact_inventory.v1', 'generated_at': datetime.now(timezone.utc).isoformat(),
-       'models': [{'model': models[p]['model'], 'quant': models[p]['quant'], 'path': p, 'artifacts': a} for p,a in matched.items()],
+       'models': [{'model': models[p]['model'], 'quant': models[p]['quant'], 'path': p,
+                   'artifacts': matched.get(p, [])} for p in sorted(models)],
        'unmatched_artifacts': unmatched, 'counts': {'matched_models': len(matched), 'matched_artifacts': sum(map(len, matched.values())), 'unmatched_artifacts': len(unmatched)}}
 OUTPUT.write_text(json.dumps(out, indent=2) + '\n')
 print(json.dumps(out['counts']))
