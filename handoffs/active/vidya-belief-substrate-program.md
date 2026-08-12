@@ -470,16 +470,20 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
 - [x] SC29 **Wire AK-LE planner prefilter/reduction receipts before the corrected panel runs.** ✅
       2026-08-12 — research `16ad9c2c` prospectively emits four self-hashed search-persistence rows
       per complete cell only after re-running the source-pinned reducer; corrected r3 produced **32**
-      rows from **8/8** cells. Root `47400351` registers the source. Add
+      rows from **8/8** cells. Root `47400351` registered the source and root `803a90b5`
+      implemented the fail-closed canonical reader. It projects
       producer-authored `ClaimTuple` rows for the predeclared per-cell search-persistence measures
       (`novel_nonduplicate_count`, `prefilter_survival_count`, explicit already-optimized
       termination, and elapsed wall time), with model/quant/effort/target-arm identity, direction,
       scored-cell basis, exact manifest/panel/prefilter/evidence digests, and run-level locator. The
       under-specified 2026-08-12 r1 panel remains a durable refusal and projects zero rows; the r2
       malformed-Claude-wrapper attempt failed before one complete cell and also projects zero rows.
-  - [ ] **Implement the root read-side adapter for the live AK-LE planner-reduction schema.** Re-run
-    the pinned reducer, project only producer-authored r3+ rows through the shared measurement ladder,
-    and keep r1/r2 at zero without reconstructing historical tuples.
+  - [x] **Implement the root read-side adapter for the live AK-LE planner-reduction schema.** ✅
+    2026-08-12 — `autokernel_planner_reduction.py` independently replays the pinned structural
+    prefilter and planner receipt, re-derives every producer row, then delegates grading to the
+    shared measurement ladder. The real r3 artifact projects **32/32** unique rows; r1/r2 project
+    zero without reconstructing historical tuples. Focused tests pass **8/8** and the complete
+    Vidya suite passes **512**, with one pre-existing skip.
 - [x] SC30 **Classify and wire the AutoKernel real host-process fault rehearsal before it runs
       again.** ✅ 2026-08-12 — research `5c8714a1` writes three self-hashed dependency-evidence rows
       and root `7077f1cc` independently re-derives them while refusing ClaimTuple projection. Preserve
