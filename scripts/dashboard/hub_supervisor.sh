@@ -23,7 +23,7 @@
 # ADOPTION (short note)
 # ---------------------------------------------------------------------------
 #   Start (detached, survives logout; idempotent — a 2nd copy self-exits):
-#       nohup /mnt/raid0/llm/epyc-root/scripts/dashboard/hub_supervisor.sh \
+#       nohup setsid -f /mnt/raid0/llm/epyc-root/scripts/dashboard/hub_supervisor.sh \
 #             > /mnt/raid0/llm/epyc-root/logs/hub_supervisor.out 2>&1 &
 #
 #   One-shot check (for a cron entry instead of the daemon loop):
@@ -196,7 +196,7 @@ start_hub() {
     PYTHONPATH="${EPYC_ROOT}${PYTHONPATH:+:${PYTHONPATH}}" \
     setsid "${HUB_PYTHON}" -m dashboard.server \
         --host 0.0.0.0 --port "${HUB_PORT}" \
-        >>"${HUB_LOG}" 2>&1 < /dev/null &
+        >>"${HUB_LOG}" 2>&1 < /dev/null 9>&- &
   )
   # DO NOT record `$!` here. `setsid cmd &` backgrounds *setsid*, which forks and
   # exits; `$!` is that transient wrapper, not the hub, so the pidfile was wrong

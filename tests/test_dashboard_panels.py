@@ -1130,6 +1130,24 @@ class SupervisorCheckoutIdentityTest(unittest.TestCase):
             r'cd "\$\{EPYC_ROOT\}"[\s\S]*setsid "\$\{HUB_PYTHON\}" -m dashboard\.server',
         )
 
+    def test_hub_does_not_inherit_the_supervisor_lock(self):
+        """A detached hub must not keep the singleton supervisor lock alive."""
+        source = (Path(__file__).parents[1]
+                  / "scripts/dashboard/hub_supervisor.sh").read_text()
+        start = source.index("start_hub()")
+        record = source.index("record_hub_pid()", start)
+        launch = source[start:record]
+        self.assertRegex(
+            launch,
+            r'setsid "\$\{HUB_PYTHON\}"[\s\S]*9>&-\s*&',
+        )
+
+    def test_documented_daemon_launch_creates_a_new_session(self):
+        """Automation shells may reap their process group after command exit."""
+        source = (Path(__file__).parents[1]
+                  / "scripts/dashboard/hub_supervisor.sh").read_text()
+        self.assertIn("nohup setsid -f ", source)
+
 
 # --------------------------------------------------------------------------- #
 # 8. Routing tables stay the enumeration source
