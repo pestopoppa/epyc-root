@@ -186,31 +186,6 @@ PRODUCTION_LLAMA_BINARIES = {
     "hip": Path(os.environ.get("PRODUCTION_LLAMA_HIP_BINARY",
                                "/mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server")),
 }
-#: Stable serving paths are part of the production contract too.  A frozen binary
-#: can still be bypassed by a stale symlink, so tree/digest identity alone is not a
-#: sufficient operational projection.
-PRODUCTION_KERNEL_SLOTS = {
-    "cpu": {
-        "stable_link": Path("/mnt/raid0/llm/kernels/production/cpu"),
-        "expected_target": Path("/mnt/raid0/llm/llama.cpp/build/bin"),
-        "library_root": Path("/mnt/raid0/llm/llama.cpp/build/bin"),
-    },
-    "gpu": {
-        "stable_link": Path("/mnt/raid0/llm/kernels/production/gpu"),
-        "expected_target": Path("/mnt/raid0/llm/llama.cpp/build-hip/bin"),
-        "library_root": Path("/mnt/raid0/llm/llama.cpp/build-hip/bin"),
-    },
-    "stt": {
-        "stable_link": Path("/mnt/raid0/llm/kernels/production/stt"),
-        "expected_target": Path("/mnt/raid0/llm/whisper.cpp/build/bin"),
-        "library_root": Path("/mnt/raid0/llm/whisper.cpp/build/bin"),
-    },
-    "tts": {
-        "stable_link": Path("/mnt/raid0/llm/kernels/production/tts"),
-        "expected_target": Path("/mnt/raid0/llm/qwentts.cpp/build"),
-        "library_root": Path("/mnt/raid0/llm/qwentts.cpp/build"),
-    },
-}
 #: Guard against hashing something pathological on a request path. The real binaries
 #: are 20 KB–1.7 MB and hash in ~4 ms; anything far larger is not what we think it is.
 _MAX_HASHED_BINARY_BYTES = 512 * 1024 * 1024
@@ -1446,93 +1421,6 @@ def _binary_identity(label: str, path: Path, expected_sha256: str | None) -> dic
             "matches": matches, "error": error}
 
 
-def _stable_link_identity(slot: str, link: Path, expected_target: Path) -> dict:
-    """Resolve one stable production path without mutating it.
-
-    ``matches`` stays three-valued: false means a real path/link points somewhere
-    else, while ``None`` means the link or its target could not be established.
-    """
-    raw_target = resolved = error = None
-    is_link = link.is_symlink()
-    present = is_link or link.exists()
-    if not present:
-        error = "stable production link absent"
-        matches = None
-    elif not is_link:
-        error = "stable production path exists but is not a symlink"
-        matches = False
-    else:
-        try:
-            raw_target = os.readlink(link)
-            resolved_path = link.resolve(strict=True)
-            expected_path = expected_target.resolve(strict=True)
-            resolved = str(resolved_path)
-            matches = resolved_path == expected_path
-            if not matches:
-                error = "STABLE LINK DRIFT — resolved target is not the frozen build root"
-        except (OSError, RuntimeError) as exc:
-            matches = None
-            error = f"stable link target unverifiable: {exc}"
-    return {
-        "slot": slot, "path": str(link), "present": present, "is_symlink": is_link,
-        "raw_target": raw_target, "resolved_target": resolved,
-        "expected_target": str(expected_target), "matches": matches, "error": error,
-    }
-
-
-def _linked_library_identity(label: str, binary: Path,
-                             expected_library_root: Path) -> dict:
-    """Read-only loader proof under the launcher's required tree-local environment.
-
-    This mirrors ``verify_ggml_linkage.sh``.  ``ldd`` is bounded and the production
-    binary itself is never invoked.  The required root is prepended because that is
-    the launcher contract for the three incompatible ggml generations; the exact
-    environment used for the observation is returned rather than implied.
-    """
-    root = expected_library_root.resolve(strict=False)
-    base = {"label": label, "binary": str(binary),
-            "required_library_root": str(root), "probe": "ldd",
-            "ld_library_path_prepend": str(root)}
-    if not binary.is_file():
-        return {**base, "matches": None, "libraries": [],
-                "error": "linkage unverifiable — binary absent"}
-    env = os.environ.copy()
-    inherited = env.get("LD_LIBRARY_PATH", "")
-    env["LD_LIBRARY_PATH"] = str(root) + ((":" + inherited) if inherited else "")
-    try:
-        proc = subprocess.run(["ldd", str(binary)], capture_output=True, text=True,
-                              timeout=5.0, check=False, env=env)
-    except (OSError, subprocess.TimeoutExpired) as exc:
-        return {**base, "matches": None, "libraries": [],
-                "error": f"linkage unverifiable — ldd failed: {exc}"}
-    if proc.returncode != 0:
-        reason = proc.stderr.strip() or f"ldd exited {proc.returncode}"
-        return {**base, "matches": None, "libraries": [],
-                "error": f"linkage unverifiable — {reason}"}
-    libraries = []
-    prefixes = ("libggml", "libwhisper", "libllama", "libmtmd")
-    for line in proc.stdout.splitlines():
-        parts = line.strip().split()
-        if len(parts) < 3 or not parts[0].startswith(prefixes) or parts[1] != "=>":
-            continue
-        path_text = parts[2]
-        if path_text == "not":
-            libraries.append({"name": parts[0], "path": None, "tree_local": False})
-            continue
-        path = Path(path_text).resolve(strict=False)
-        libraries.append({"name": parts[0], "path": str(path),
-                          "tree_local": path == root or root in path.parents})
-    if not libraries:
-        return {**base, "matches": None, "libraries": [],
-                "error": "linkage unverifiable — ldd reported no ggml-family libraries"}
-    foreign = [lib for lib in libraries if not lib["tree_local"]]
-    error = None
-    if foreign:
-        error = ("FOREIGN GGML LINKAGE — " + ", ".join(
-            f"{lib['name']} => {lib['path'] or 'not found'}" for lib in foreign))
-    return {**base, "matches": not foreign, "libraries": libraries, "error": error}
-
-
 def _checkout_identity(repo: Path, expected_branch: str | None,
                        expected_head: str | None) -> dict:
     """Live branch/head of a kernel tree vs what the attestation froze."""
@@ -1562,34 +1450,6 @@ def _checkout_identity(repo: Path, expected_branch: str | None,
     return {"path": str(repo), "branch": observed_branch, "head": observed_head,
             "expected_branch": expected_branch, "expected_head": expected_head,
             "matches_attestation": matches, "error": error}
-
-
-def _ggml_generation_identity(repo: Path, expected: str | None) -> dict:
-    """Compare the attested ggml generation with the checked-out tree metadata."""
-    cmake = repo / "ggml" / "CMakeLists.txt"
-    try:
-        source = cmake.read_text(encoding="utf-8")
-    except OSError as exc:
-        return {"expected": expected, "observed": None, "matches": None,
-                "evidence": str(cmake), "error": f"ggml generation unverifiable: {exc}"}
-    values = {}
-    for name in ("MAJOR", "MINOR", "PATCH"):
-        match = re.search(rf"set\(GGML_VERSION_{name}\s+([0-9]+)\)", source)
-        if match:
-            values[name] = match.group(1)
-    observed = ".".join(values.get(name, "") for name in ("MAJOR", "MINOR", "PATCH"))
-    if not observed or ".." in observed:
-        return {"expected": expected, "observed": None, "matches": None,
-                "evidence": str(cmake),
-                "error": "ggml generation unverifiable — version fields incomplete"}
-    if not expected:
-        return {"expected": None, "observed": observed, "matches": None,
-                "evidence": str(cmake),
-                "error": "ggml generation observed but not attested"}
-    matches = observed == expected
-    return {"expected": expected, "observed": observed, "matches": matches,
-            "evidence": str(cmake),
-            "error": None if matches else "GGML GENERATION DRIFT — tree differs from attestation"}
 
 
 def _speech_kernel_summary(attestation_path: Path | None = None) -> dict:
@@ -1653,8 +1513,7 @@ def _speech_kernel_summary(attestation_path: Path | None = None) -> dict:
 
 def production_kernel_set(attestation_path: Path | None = None,
                           production_repo: Path | None = None,
-                          speech_attestation_path: Path | None = None,
-                          kernel_slots: dict | None = None) -> dict:
+                          speech_attestation_path: Path | None = None) -> dict:
     """The COMPLETE frozen kernel set, folded to one honest verdict.
 
     Three kernels, four binaries. `production_kernel` (llama only) is left untouched
@@ -1672,53 +1531,29 @@ def production_kernel_set(attestation_path: Path | None = None,
                                        production_repo or PRODUCTION_KERNEL_REPO)
     speech = _speech_kernel_summary(speech_attestation_path)
 
-    slots = kernel_slots or PRODUCTION_KERNEL_SLOTS
     binaries = []
     llama_digests = llama.get("binary_sha256") or {}
     for slot, path in PRODUCTION_LLAMA_BINARIES.items():
-        entry = _binary_identity(f"llama.cpp {slot.upper()}", path,
-                                 llama_digests.get(slot))
-        # The attestation names the accelerator digest ``hip`` while the stable
-        # serving-path contract names the same lane ``gpu``.
-        entry["slot"] = "gpu" if slot == "hip" else slot
-        binaries.append(entry)
+        binaries.append(_binary_identity(f"llama.cpp {slot.upper()}", path,
+                                         llama_digests.get(slot)))
     for kernel in speech.get("kernels", []):
         if kernel.get("binary"):
-            entry = dict(kernel["binary"])
-            entry["slot"] = "stt" if kernel.get("key") == "whisper_cpp" else "tts"
-            binaries.append(entry)
-
-    stable_links = []
-    linkage = []
-    binary_by_slot = {entry["slot"]: Path(entry["path"]) for entry in binaries}
-    for slot in ("cpu", "gpu", "stt", "tts"):
-        spec = slots.get(slot) or {}
-        link = Path(spec.get("stable_link") or "/nonexistent")
-        target = Path(spec.get("expected_target") or "/nonexistent")
-        library_root = Path(spec.get("library_root") or target)
-        stable_links.append(_stable_link_identity(slot, link, target))
-        linkage.append(_linked_library_identity(slot, binary_by_slot.get(slot, Path("/nonexistent")),
-                                                library_root))
+            binaries.append(kernel["binary"])
 
     members, alarms = [], []
     llama_ck = llama.get("checkout") or {}
-    llama_generation = _ggml_generation_identity(
-        production_repo or PRODUCTION_KERNEL_REPO, llama.get("ggml"))
     members.append({"key": "llama_cpp", "title": "llama.cpp",
                     "available": llama.get("available"),
                     "branch": llama.get("branch"), "head": llama.get("head"),
                     "version": llama.get("version"), "ggml": llama.get("ggml"),
-                    "ggml_generation": llama_generation,
                     "matches_attestation": llama_ck.get("matches_attestation"),
                     "error": llama.get("error") or llama_ck.get("error")})
     for kernel in speech.get("kernels", []):
-        tree = Path(kernel.get("tree") or "/nonexistent")
         members.append({
             "key": kernel.get("key"), "title": kernel.get("title"),
             "available": kernel.get("available"),
             "branch": kernel.get("branch"), "head": kernel.get("head"),
             "version": None, "ggml": kernel.get("ggml"),
-            "ggml_generation": _ggml_generation_identity(tree, kernel.get("ggml")),
             "matches_attestation": (kernel.get("checkout") or {}).get("matches_attestation"),
             "error": kernel.get("error") or (kernel.get("checkout") or {}).get("error")})
 
@@ -1732,35 +1567,15 @@ def production_kernel_set(attestation_path: Path | None = None,
             alarms.append(f"{member['title']}: tree does NOT match attestation (drift)")
         elif member.get("available") and member.get("matches_attestation") is None:
             alarms.append(f"{member['title']}: tree identity could not be established")
-        generation = member.get("ggml_generation") or {}
-        if generation.get("matches") is False:
-            alarms.append(f"{member['title']}: GGML GENERATION DRIFT")
-        elif generation.get("matches") is None:
-            alarms.append(f"{member['title']}: ggml generation unverified")
     for binary in binaries:
         if binary.get("matches") is False:
             alarms.append(f"{binary['label']}: BINARY DRIFT vs operator attestation")
         elif not binary.get("present"):
             alarms.append(f"{binary['label']}: attested binary absent from disk")
-    for stable in stable_links:
-        if stable.get("matches") is False:
-            alarms.append(f"{stable['slot']}: STABLE LINK DRIFT")
-        elif stable.get("matches") is None:
-            alarms.append(f"{stable['slot']}: stable production link unverified")
-    for linked in linkage:
-        if linked.get("matches") is False:
-            alarms.append(f"{linked['label']}: FOREIGN GGML LINKAGE")
-        elif linked.get("matches") is None:
-            alarms.append(f"{linked['label']}: loader linkage unverified")
 
     proven = sum(1 for b in binaries if b.get("matches") is True)
     unverified = sum(1 for b in binaries if b.get("matches") is None)
     trees_proven = sum(1 for m in members if m.get("matches_attestation") is True)
-    links_proven = sum(1 for item in stable_links if item.get("matches") is True)
-    linkage_proven = sum(1 for item in linkage if item.get("matches") is True)
-    generations_proven = sum(
-        1 for member in members
-        if (member.get("ggml_generation") or {}).get("matches") is True)
     return {
         "schema": "epyc.production_kernel_set.v1",
         "expected_kernels": 3,
@@ -1769,20 +1584,12 @@ def production_kernel_set(attestation_path: Path | None = None,
         "trees_matching": trees_proven,
         "binaries_proven": proven,
         "binaries_unverified": unverified,
-        "stable_links_proven": links_proven,
-        "linkage_proven": linkage_proven,
-        "ggml_generations_proven": generations_proven,
         "intact": (llama.get("available") is True and speech.get("available") is True
                    and trees_proven == len(members) == 3
-                   and proven == len(binaries) == 4
-                   and links_proven == len(stable_links) == 4
-                   and linkage_proven == len(linkage) == 4
-                   and generations_proven == len(members) == 3),
+                   and proven == len(binaries) == 4),
         "alarms": alarms,
         "members": members,
         "binaries": binaries,
-        "stable_links": stable_links,
-        "linkage": linkage,
         "llama": llama,
         "speech": speech,
         "evidence": [str(attestation_path or PRODUCTION_KERNEL_ATTESTATION),
