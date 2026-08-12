@@ -701,3 +701,40 @@ def test_a_bare_pending_does_not_refuse(tmp_path) -> None:
     p = _one_row(tmp_path, "Write the pending section of the migration guide")
     code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
     assert code == 0
+
+
+def test_a_row_gated_on_an_unevaluated_predicate_is_refused(tmp_path) -> None:
+    """mainD's THIRD signal, and the one with a live reproduction behind it.
+
+    `model-stack-update-pipeline-audit.md:628` screened DISPATCHABLE while reading
+    "Direct benchmark runtime enforcement ONLY IF promotion-gate coverage proves
+    insufficient". Nobody had assessed insufficiency, so the work was UNAUTHORISED —
+    and two agents pulled that row independently, hours apart, avoiding it only by
+    reading the text after the tool said go.
+    """
+    p = _one_row(tmp_path,
+                 "Direct benchmark runtime enforcement only if promotion-gate coverage "
+                 "proves insufficient")
+    code, reasons = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 2
+    assert "GATES ITSELF" in reasons[0]
+
+
+def test_a_bare_only_if_does_NOT_refuse(tmp_path) -> None:
+    """The narrowness that makes the signal safe, pinned.
+
+    59 of 1,255 open boxes contain a bare `only if`/`only after`, and most are ordinary
+    sequencing notes. Refusing on the phrase alone would withhold real work — the
+    costlier error by this file's settled rule. The gate must name an UNEVALUATED
+    PREDICATE (prove/show/demonstrate/confirm), not merely a condition.
+    """
+    p = _one_row(tmp_path, "Run the export only after the nightly batch completes")
+    code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 0, "a plain sequencing condition must stay dispatchable"
+
+
+def test_a_proof_verb_without_an_only_gate_does_NOT_refuse(tmp_path) -> None:
+    """The other half of the conjunction. Both halves are required."""
+    p = _one_row(tmp_path, "Write the report that shows how the scheduler behaves under load")
+    code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 0

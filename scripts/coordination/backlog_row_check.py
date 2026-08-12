@@ -109,6 +109,25 @@ _OWNER_PREFIX = re.compile(r"^\**\s*(operator|owner|human)\b[^:\n]{0,60}:", re.I
 _DEP_IN_TEXT = re.compile(
     r"\b[A-Z]{2,6}-\d+(?:'s|s')\s+(resolution|decision|ruling)\b"
     r"|\bgated on\s+(the\s+)?[A-Z]{2,6}-\d+\b", re.I)
+
+# THIRD signal of the same family (`mainD`, 2026-08-12), and the one with a live
+# reproduction behind it: `model-stack-update-pipeline-audit.md:628` reads "Direct
+# benchmark runtime enforcement ONLY IF promotion-gate coverage proves insufficient".
+# Nobody has assessed insufficiency, so the work is UNAUTHORISED — and the screener
+# said DISPATCHABLE. Two agents, hours apart, pulled that row independently and both
+# avoided doing unauthorised work only by reading the text after the tool said go.
+#
+# NARROW BY CONSTRUCTION, per mainD's standing caveat (prefix or clause-initial, never
+# substring): a bare `only if` is NOT enough — 59 of 1,255 open boxes contain one and
+# most are ordinary sequencing notes. This requires an explicit ONLY-gate whose
+# condition is an UNEVALUATED PREDICATE — something must PROVE / SHOW / DEMONSTRATE /
+# CONFIRM before the row is authorised. Measured on the live corpus: 6 of 1,255 (0.5%),
+# and every one reads verbatim as gated on evidence nobody has produced, e.g.
+# "only if a CPU20 canonical target demonstrates stable gain", "Reopen only after a
+# current-traffic DAR-1 replay shows …", "ONLY after an offline A/B shows".
+_CONDITIONAL_GATE = re.compile(
+    r"\bonly (?:if|when|once|after)\b[^.]{0,80}?"
+    r"\b(prove[sd]?|shows?|demonstrate[sd]?|confirms?|gives? a reason|turns out)\b", re.I)
 # A section can disclaim execution by the reader without being a template. Measured
 # 2026-07-29: `stale-open-audit-2026-07-18.md` § "Recommendations (follow-up tasks —
 # no checkbox flips on the audited handoffs)" holds six rows, FOUR of which direct
@@ -420,6 +439,13 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple
                    "owner:/human: is asking for a decision or an action outside an agent's "
                    "authority — taking it produces work nobody asked for, or a decision nobody "
                    "authorised"]
+    gate = _CONDITIONAL_GATE.search(body)
+    if gate:
+        return 2, [f"the ROW GATES ITSELF on a condition nobody has evaluated: "
+                   f"{gate.group(0)!r}",
+                   "the work is authorised only once that predicate is established, so doing it now "
+                   "is unauthorised rather than early. Establish the condition first — or, if it is "
+                   "already established, say so IN the row, because the next reader cannot tell"]
     dep = _DEP_IN_TEXT.search(body)
     if dep:
         return 2, [f"the ROW DECLARES A DEPENDENCY in its own text, not in a child box: "
