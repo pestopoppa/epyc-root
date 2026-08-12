@@ -233,6 +233,17 @@ the non-termination severity was 18% vs 50% across two models, so certify each m
   saturated-equal (all-correct or all-wrong). If half the suite carries no discriminating signal, the
   effective n is tiny and a null means "suite too easy," not "models equal." That is the trigger to climb
   to L4 / a harder suite.
+- **Retired judge suites (2026-08-12).** The judge suites `general`, `thinking`, and `math` are
+  **retired for any comparative/keep-drop read at the ≥27B tier**: in the 2026-08-02 paired
+  head-to-head (research `data/judge_suite_headtohead_20260802`) they scored a perfect 3 for BOTH
+  arms on 10/10, 9/10 and 8/9 questions respectively — a ceiling artifact, not model equivalence
+  (published benchmarks separate the same pair on 8/8 axes). The retirement is **binding and
+  machine-readable**: `benchmarks/prompts/v1/suite_retirements.json` (research repo) carries the
+  rates and evidence, and `score_with_claude.py` + `rebuild_summary.py` consume it **fail-closed** —
+  retired-suite scores are still recorded, but every mention is stamped NON-DISCRIMINATING, they are
+  excluded from comparative aggregates (all-retired runs exit 3), and a missing/invalid sidecar
+  aborts scoring entirely instead of silently un-retiring the suites. Tier is parsed from the model
+  path; an unresolvable size is treated as at-tier (fail-closed). Sub-27B runs are untouched.
 - **Difficulty-descending sequential evaluation** (efficiency): for a suite with an **a-priori,
   model-independent** difficulty key (AIME problem number — validated: tiers 1–5/6–10/11–15 → 92/76/50%),
   run hardest→easiest with arms **interleaved per question**, and stop early on:
