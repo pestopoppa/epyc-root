@@ -16,7 +16,7 @@
       "blocked": 9,
       "handoffs": 49,
       "oldest_advance": "2026-07-29",
-      "open": 291
+      "open": 292
     },
     "reviewer-control-plane-index.md": {
       "blocked": 11,
@@ -671,11 +671,11 @@
       "closed": 6,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 3,
+      "open": 4,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-25",
       "state": "active",
-      "total": 9
+      "total": 10
     },
     "frontier-f4-continuity-backup.md": {
       "blocked": 0,
@@ -2144,7 +2144,7 @@
       "id": "EVL-25",
       "index": "research-evaluation-index.md",
       "line": 37,
-      "next_action": "W3 \u2014 GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate is now satisfied by 100 trusted reviewed triage\u2026",
+      "next_action": "Scope W3(a) planner-distill QLoRA \u2014 all three gates met; SFT/QLoRA/GRPO each demonstrated on gfx90a 2026-08-12",
       "track": "frontier f3 data flywheel"
     },
     "EVL-26": {

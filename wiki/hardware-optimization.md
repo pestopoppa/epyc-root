@@ -2610,3 +2610,44 @@ Verify a tool exists before trusting its negative result.
   the decode timings the occupancy question hangs off.
 - [MI210 Q8 dequant GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the filed
   `v_perm_b32` re-expression task and its experimental-branch constraint.
+
+## Compiled Update — 2026-08-12c (ROCm 6.3 wheels on a 6.2 host; the mixed-runtime rule)
+
+**A PyTorch `+rocm6.3` wheel runs on a host whose system ROCm is 6.2** — verified on the MI210, not
+assumed: `torch 2.7.1+rocm6.3` reports `hip 6.3.42131`, sees the device as `AMD Instinct MI210`, and
+executes a real bf16 4096² GEMM. PyTorch ROCm wheels bundle their own ROCm runtime (a large part of
+their ~3 GB), so they depend on the kernel driver rather than the system userspace. This matters
+because the ROCm 6.2 wheel index tops out at **torch 2.5.1**, so any requirement for torch ≥2.6 on a
+6.2 host necessarily means running a 6.3+ wheel.
+
+**The corollary is a hazard with the same shape as the three-ggml-generations rule: never mix a
+system-ROCm-linked native library with a wheel-bundled-ROCm process.** A `bitsandbytes` built from
+source against ROCm 6.2 has **zero torch linkage** — it resolves `libhipblas`, `libhipblaslt`,
+`librocblas` and `librocsolver` from `/opt/rocm` — while a `+rocm6.3` torch brings its own copies.
+Loading both places two ROCm runtimes in one address space. Compounding it, `bitsandbytes` selects its
+kernel library by **runtime-detected ROCm version**, so under a 6.3 torch it looks for
+`libbitsandbytes_rocm63.so` when the built artifact is `_rocm62`; `BNB_ROCM_VERSION` can force the
+match but that deliberately pairs a 6.2-linked kernel with a 6.3 runtime and needs a numerical check,
+not a successful load. **The clean pattern is one venv per ROCm generation, each internally
+consistent**, rather than one environment spanning both.
+
+**Version-skew diagnosis is worth doing before version-pinning.** A blocked `trl` GRPO import looked
+like a two-way trl↔torch problem (`FSDPModule` needs torch ≥2.6) but was three-way: the last trl
+without that import, `0.19.1`, breaks against `transformers 5.15.0`, whose `_is_package_available`
+returns a **tuple** — making trl's `if is_vllm_available():` truthy and forcing an unguarded
+`import vllm`. Pinning back the obvious package would have required downgrading a second one. Check
+`pip show <pkg>` `Required-by:` before asserting blast radius: for trl it was **empty**.
+
+**Verification note.** An import is not a kernel. `bitsandbytes` installs, imports, and exposes
+`Linear4bit` while its kernels are absent for the target arch — the failure only appears as
+`no kernel image is available for execution on the device` when a real quantized load runs. Every
+environment claim here is backed by an on-device compute step for that reason.
+
+### Source References (2026-08-12c ROCm environment)
+
+- [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — the venv split, verification steps, the
+  three-way skew diagnosis, and the GRPO smoke's measured scope.
+- [Frontier F3 data flywheel](../handoffs/active/frontier-f3-data-flywheel.md) — the don't-consolidate
+  note, per-venv ownership, and the `BNB_ROCM_VERSION` trap.
+- [A9 gfx90a training viability](../artifacts/gpu-aux-baselines/a9_gfx90a_training_viability_20260812.md) —
+  the bitsandbytes wheel failure and the source build that fixed it.

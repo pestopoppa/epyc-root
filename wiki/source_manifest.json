@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-12T13:30:29Z",
+  "last_compile": "2026-08-12T13:41:12Z",
   "mode": "full",
-  "scan_time": "2026-08-12T13:40:52Z",
+  "scan_time": "2026-08-12T13:56:18Z",
   "schema_version": 1,
-  "source_set_hash": "407a7b4b7692c70e21c51c42d6bcb5a67561d362302cd78eec0e17af20cab570",
+  "source_set_hash": "fc897e3f838aa1739cbf5cee3ef74d61a0c707221dd2a6d4a61d3469fe551c32",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -95,10 +95,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cba87ae6812517cb54491e86014c6d8f86e227f01b5ce08e7d102dcd2881734f",
-      "modified": "2026-08-12T13:38:17Z",
+      "content_hash": "e1e0c263d62ed8e02e4675d73e7d57c8d132435425034cc4ef7c03492493daac",
+      "modified": "2026-08-12T13:52:18Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 346444,
+      "size": 349226,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -479,10 +479,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7010971670fa2a2345c9daebe46d3c97d6ae3c9945c8c81c1fc1a7d0f185995b",
-      "modified": "2026-08-12T13:40:14Z",
+      "content_hash": "4784cbe6c663e2f9faa9eb2982011bd17ca6bb622bcfffce6506b4c2de11030c",
+      "modified": "2026-08-12T13:55:29Z",
       "path": "handoffs/active/frontier-f3-data-flywheel.md",
-      "size": 29487,
+      "size": 31693,
       "title": "Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates",
       "type": "handoff-active"
     },
@@ -6015,10 +6015,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "5579688200cb8f506373e94e58e86d0c3dfd83027803a092ab1a018218de97e8",
-      "modified": "2026-08-12T13:40:14Z",
+      "content_hash": "1f7cdda23f420f442f31a6da3d6bb4d47f8649407af76d6701a594212e119417",
+      "modified": "2026-08-12T13:56:02Z",
       "path": "progress/2026-08/2026-08-12.md",
-      "size": 343243,
+      "size": 345734,
       "title": "2026-08-12",
       "type": "progress"
     },

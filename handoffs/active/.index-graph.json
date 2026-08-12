@@ -3497,7 +3497,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T13:55:33Z",
+  "generated_at": "2026-08-12T13:57:35Z",
   "nodes": [
     {
       "age_days": 13,
@@ -3819,8 +3819,8 @@
       "handoff": "frontier-f3-data-flywheel.md",
       "id": "EVL-25",
       "last_advanced": "2026-08-12",
-      "next_action": "W3 \u2014 GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate is now satisfied by 100 trusted reviewed triage\u2026",
-      "open": 3,
+      "next_action": "Scope W3(a) planner-distill QLoRA \u2014 all three gates met; SFT/QLoRA/GRPO each demonstrated on gfx90a 2026-08-12",
+      "open": 4,
       "state": "active",
       "track": "frontier f3 data flywheel"
     },
