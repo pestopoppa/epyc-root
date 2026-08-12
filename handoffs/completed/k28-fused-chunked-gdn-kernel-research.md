@@ -1,9 +1,24 @@
 # K28 — Fused Chunked GDN Recurrence Kernel: Research Handoff
 
-**Status**: RESEARCH/DESIGN — Phase 0 ceiling + pinned verbose trace + direct HIP-event timing gate run 2026-07-20; no fused recurrence kernel written. A default-off timing hook was added on the post-candidate experimental line only. An isolated worktree scaffold now adds a default-off future launch hook, but every path still falls back to the existing serial GDN kernel. Design + SOTA deep-dive gates a possible post-v7 default-off kernel effort.
-**Created**: 2026-07-20. **Scope**: GPU (MI210 / gfx90a / CDNA2, ROCm/HIP). **Owner task**: `mi210-big-model-and-acceleration-roadmap.md` K28 (`- [ ]`, `gated_delta_net.cu:191` TODO).
-**Related (distinct)**: [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) (a different, monitoring-only *log-linear* GDN tracker — not this kernel effort).
-**For**: the parallel agent working the K28 / GDN long-prefill thread.
+**Status**: COMPLETED — measured no-go on the accepted direct-profiler gate; no fused recurrence kernel was authored.
+**Created**: 2026-07-20. **Completed**: 2026-08-11. **Scope**: GPU (MI210 / gfx90a / CDNA2, ROCm/HIP). **Owner task**: [`mi210-big-model-and-acceleration-roadmap.md`](../active/mi210-big-model-and-acceleration-roadmap.md) K28 (`- [x]`, `gated_delta_net.cu:191` TODO).
+**Related (distinct)**: [`log-linear-gated-deltanet-readiness.md`](../active/log-linear-gated-deltanet-readiness.md) (a different, monitoring-only *log-linear* GDN tracker — not this kernel effort).
+
+## Final closeout — 2026-08-11
+
+**K28 is a measured no-go; stop before prototype authoring.** The accepted Phase-0 direct-profiler
+gate ran under schema `epyc.autokernel.rocprofv1_attribution.v1` on the clean frozen-v9 HIP binary,
+Qwen3.6-35B-A3B Q8, physical gfx90a, graphs disabled, at p2048/p8192/p32768. GDN accounted for
+**15.397% / 14.649% / 12.180%** of summed device-kernel time. Even the deliberately optimistic 4x
+GDN speedup model therefore caps full-model gain at **11.548% / 10.987% / 9.135%**, declining with
+context. That reproduces the 2026-07-20 timing-hook estimate instead of raising it and fails this
+handoff's requirement to materially beat the higher-EV alternatives in Part G.
+
+No throwaway or production fused recurrence kernel is warranted. The default-off scaffold and SGLang
+four-stage design remain reference material only; they are not latent implementation tasks. Receipt:
+`/mnt/raid0/llm/autokernel/probes/k28-rocprofv1-attribution-20260811-r3/receipt.json`, SHA-256
+`981306080a674f89f5ac7f9c7631feef1d31071dacd46329aa983db72e74c5a0`. Durable runner and shared
+claim/sampler teardown fix: epyc-inference-research integration commit `48350b24`.
 
 ---
 
@@ -422,7 +437,7 @@ Per-lane VGPR fragment cost (elements/lane = rows×cols/64; fp16/bf16 packed 2/V
 
 Source: [intake-1030](../../research/intake_index.yaml), dive-verified 2026-08-09 by reading
 `sgl-project/sglang` `main` (Apache-2.0). **Reference material — no checkboxes here by design; the
-tasks are K28-R1..R4 in [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md).**
+tasks are K28-R1..R4 in [mi210-big-model-and-acceleration-roadmap.md](../active/mi210-big-model-and-acceleration-roadmap.md).**
 
 This handoff's core framing is that "the chunked *algorithm* is what every SOTA engine ships
 (FLA -> vLLM/SGLang, FlashQLA, TFLA)" and that what loses on MI210 is llama.cpp's *generic-ggml

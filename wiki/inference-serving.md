@@ -23,6 +23,32 @@
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-OD-2 closure
 - [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — P0-0, the derived-priors `NUMA_FULL` drop
 - [`gpu-serving-tie-in-program.md`](../handoffs/active/gpu-serving-tie-in-program.md) — P2-5l closure (`NUMA_NODE0`/`NUMA_NODE1` constant deletion, quarter-name attribution repair)
+**Last compiled**: 2026-08-11 (production v9 stack restoration and the launcher circular-import boundary; prior stack-compilation and GPU-shadow findings retained)
+**Sources**: 68 documents
+
+## Compiled Update — 2026-08-11 production v9 stack restoration
+
+The complete serving stack is resident again on frozen production v9. Runtime attestation matches
+`production-consolidated-v9` at `0db32c06e3e550065b78311a6031ef3dd2c4f27c` (binary 10125), all
+six backend groups and probes report healthy, the embedders warmed, speech launchers proved their
+tree-local ggml linkage, and a live TTS synthesis smoke passed. This is a stack-health result, not a
+new model-quality or throughput claim.
+
+The first cold start failed closed because `stack_paths` imported the full config graph before
+publishing the binary/path constants that the config graph itself imports. Runtime-facts NUMA
+inference then failed and selected an inactive manifest. Orchestrator `74c68a2a` breaks that cycle
+without removing `PathsConfig` environment overrides; `969244d8` regenerates the stack derivatives
+from the repaired loader. Focused config/manifest tests passed 142/142 and the complete launch gate
+passed 191/191. The reusable lesson is that launcher leaf modules must publish path constants before
+importing configuration consumers: generated topology selection is only as reliable as the import
+graph that feeds it.
+
+### Source References (2026-08-11)
+
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — live restoration, health probes, root cause and verification counts.
+- [`ratify_v9_final_freeze_20260811.json`](../artifacts/operator/ratify_v9_final_freeze_20260811.json) — ratified kernel identity and rollback boundary.
+- [`v9-kernel-promotion-attestation.json`](../handoffs/active/v9-kernel-promotion-attestation.json) — frozen CPU/HIP and production certification evidence map.
+- [orchestrator `74c68a2a`](https://github.com/pestopoppa/epyc-orchestrator/commit/74c68a2a8e01a0f4a8c93a49fa32c0b85494f501) and [`969244d8`](https://github.com/pestopoppa/epyc-orchestrator/commit/969244d8015155c0193ad2780313a858df3f0ba1) — circular-import repair and regenerated derivatives.
 
 ## Compiled Update — 2026-07-29 GPU shadow lane: built, inert, NOT activated
 

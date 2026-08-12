@@ -52,7 +52,7 @@ lever is therefore cutting barrier COUNT, **not more SIMD**.
 - Does NOT require BIOS reboot or env var. Pure software change inside `ggml/src/ggml-cpu/`.
 - Open questions before starting: (1) does the indexing scheme map cleanly onto our existing 8×8 repack layout, or does it require a parallel repack format? (2) what's the per-token sync overhead of the indexing recompute on a 48-layer MoE? (3) does it interact with CPU15 drone+shard's expert-set partitioning?
 - Suggested first step: read `ggml/src/ggml-cpu/repack.cpp` to find the `mul_mat_id` path, then prototype a blocked-CSR-COO routing index in `llama.cpp-experimental` on a fresh branch off `cpu-optimization/q8-8x8-avx512bw`. Validate on Qwen3.6-35B-A3B Q8_0 (already CPU15-EP-friendly) and gemma-26B-A4B (already CPU15-EP-friendly).
-- Cross-reference: [`inference-research-index.md`](inference-research-index.md) ⚑ START HERE block + Prioritized Task List item CPU18.
+- Cross-reference: [`inference-research-index.md`](inference-research-index.md) (the merged CPU/GPU inference index).
 
 ### CPU18 design notes — added 2026-04-26 evening (post-CPU24 perf-record)
 
@@ -89,7 +89,7 @@ Code path located: `ggml/src/ggml-cpu/ggml-cpu.c:1774` `ggml_compute_forward_mul
 - Open questions before starting: (1) is `GGML_OP_LIGHTNING_INDEXER` compute-bound or BW-bound on CPU? Per `feedback_cpu_decode_bw_bound`, BW-bound work doesn't benefit from SIMD. **Profile-first gate is mandatory.** (2) does the indexer's per-block FP8 quantization map cleanly to AVX-512BW i8-pair multiplication (similar to Q8_0 8x8 kernel structure)? (3) does the existing token-generation sparse path benefit, or is the optimization only impactful in the (deferred) prompt-processing sparse path?
 - Suggested first step: pull PR #21149 into `llama.cpp-experimental` as a feature branch (D1.2 in `llama-cpp-dsa-contribution.md`); profile current CPU `GGML_OP_LIGHTNING_INDEXER` with `perf record` on V3.2-Exp Q4_K_M (or any DSA-architecture model) to confirm whether SIMD optimization will move the needle. If compute-bound → write kernel; if BW-bound → redirect effort to D2 (prompt-processing sparse path follow-on).
 - Strategic context: [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) D3 sub-track — full work-item list with explicit `[GATED on user inference approval]` markers per `feedback_no_concurrent_inference.md`.
-- Cross-reference: [`inference-research-index.md`](inference-research-index.md) ⚑⚑⚑⚑⚑ Lowest-Hanging Fruit block + CPU26 entry in Pickup Sequence.
+- Cross-reference: [`inference-research-index.md`](inference-research-index.md) (the merged CPU/GPU inference index).
 
 ### Recommended ordering
 
@@ -315,11 +315,11 @@ Change reverted (`git diff ggml/src/ggml-cpu/arch/x86/quants.c` is clean). Build
 - Attention softmax/RoPE on FP16/BF16 activations (would benefit from VDPBF16PS, not VNNI).
 - Batched multi-user decode (`-np N`) as N grows toward prefill regime — tracked under CPU14.
 
-**Work redirected to CPU1 (TP-sharding) and CPU4 (per-CCD sync primitive)** — memory-bandwidth-addressing levers rather than compute-addressing. See [`inference-research-index.md`](inference-research-index.md) for updated priorities.
+**Work redirected to CPU1 (TP-sharding) and CPU4 (per-CCD sync primitive)** — memory-bandwidth-addressing levers rather than compute-addressing. See [`inference-research-index.md`](inference-research-index.md) for current priorities.
 
 ### 2026-04-23 audit update (pre-Phase-0)
 
-Joined the coordinated pickup sequence under [`inference-research-index.md`](inference-research-index.md) as **CPU2**. Pre-Phase-0 audit resolved several open items and adjusted gates. Key changes from the original draft:
+Joined the historical coordinated pickup sequence now consolidated under [`inference-research-index.md`](inference-research-index.md) as **CPU2**. Pre-Phase-0 audit resolved several open items and adjusted gates. Key changes from the original draft:
 
 - **tinyBLAS IS already in the fork** (answers Open Question 1). See updated Prior Art §5 and Phase 0 § below.
 - **KleidiAI plugin is repo-internal prior art** for how a Zen 5 ukernel plugin directory should be laid out. See updated Prior Art §2.
@@ -807,7 +807,7 @@ Commit `af2e45de4` on `feature/cpu-ep-inter-process` adds `GGML_NUMA_REPACK_INTE
 
 Default-on is correct. Kill-switch is for: (a) measuring mbind's isolated impact, (b) running alternative NUMA strategies, (c) regression diagnostics. A startup `GGML_LOG_INFO` is emitted when `=0` is set so the disabled state is visible in server logs.
 
-The DeltaNet/`GGML_PERF=1` profile gap mentioned in the original status block was filled 2026-04-26 via Phase D `perf stat` on REAP-246B + cross-model perf stat in P2. Findings: bottleneck class follows the QUANT (Q8_0 = BW-bound, Q4_K_M = sync-bound). See [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) for the complete CPU1/CPU2/CPU15 flag list and `progress/2026-04/2026-04-26.md` for measurements.
+The DeltaNet/`GGML_PERF=1` profile gap mentioned in the original status block was filled 2026-04-26 via Phase D `perf stat` on REAP-246B + cross-model perf stat in P2. Findings: bottleneck class follows the QUANT (Q8_0 = BW-bound, Q4_K_M = sync-bound). See [`cpu-kernel-env-flags-inventory.md`](../completed/cpu-kernel-env-flags-inventory.md) for the complete CPU1/CPU2/CPU15 flag list and `progress/2026-04/2026-04-26.md` for measurements.
 
 ## Session 16 (2026-04-26 evening) — Q6_K 8x8 AVX-512BW dispatcher SCAFFOLDING landed
 
@@ -863,7 +863,7 @@ Pure plumbing only — the actual SIMD body is a stub that falls through to the 
 1. Implement the SIMD body of `gemv_q6_K_8x8_q8_K_avx512bw` per the algorithm design above.
 2. PPL bit-exact validation on Coder-30B Q4_K_M.
 3. Throughput measurement: env on/off comparison on the 5 production models. Expected: +2-5% on Q4_K_M class, neutral on Q8_0 (no Q6_K content).
-4. If gain is real and PPL bit-exact: update [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) to add `GGML_Q6_K_8X8_AVX=1` to the production-ready opt-in list.
+4. If gain is real and PPL bit-exact: update [`cpu-kernel-env-flags-inventory.md`](../completed/cpu-kernel-env-flags-inventory.md) to add `GGML_Q6_K_8X8_AVX=1` to the production-ready opt-in list.
 5. After Q6_K lands, follow up with **Q5_K** (smaller cycle share ~4.6% per Session 14 dispatcher gap analysis, but trivial once the Q6_K bit-fiddling pattern is established).
 
 ## Session 17 (2026-04-27) — Q6_K AVX-512BW SIMD body LANDED + bit-exact verified

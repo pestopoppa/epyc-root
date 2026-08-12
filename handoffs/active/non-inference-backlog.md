@@ -208,5 +208,5 @@ Canonical sources (always verify status in these files first):
 - [`research-evaluation-index.md`](research-evaluation-index.md) — EV, REPL, CF, TOC series
 - [`inference-research-index.md`](inference-research-index.md) — AM, triattention, KV series
 - [`pipeline-integration-index.md`](pipeline-integration-index.md) — vision, ODL, Lean, TTS series
-- [`user-facing-harness-index.md`](user-facing-harness-index.md) — B-series (Hermes outer shell, P2)
+- [`user-facing-harness-index.md`](user-facing-harness-index.md) — user-facing harness work (formerly Hermes B-series)
 - [`master-handoff-index.md`](master-handoff-index.md) — cross-domain priorities

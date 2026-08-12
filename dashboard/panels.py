@@ -170,6 +170,8 @@ class PanelSource:
     timestamp_field: str
     absence_means: str
     route: Optional[str] = None
+    health_route: Optional[str] = None
+    health_func: Optional[str] = None
     warn_s: Optional[float] = None
     stale_s: Optional[float] = None
     silent_after_s: Optional[float] = None
@@ -192,6 +194,11 @@ class PanelSource:
         if self.kind not in KINDS:
             raise RegistryError(
                 f"PanelSource({self.panel!r}).kind: {self.kind!r} not in {KINDS}")
+        if bool(self.health_route) != bool(self.health_func):
+            raise RegistryError(
+                f"PanelSource({self.panel!r}): health_route and health_func must "
+                "be declared together — a health route with no named reader (or "
+                "a reader with no route) cannot be checked against the hub")
         live = self.kind in LIVE_KINDS
         if live:
             if self.warn_s is not None or self.stale_s is not None:
@@ -331,6 +338,8 @@ PANELS: Mapping[str, PanelSource] = _index((
         kind=KIND_EXPORT,
         payload_func="kernel_payload",
         route="/api/kernel",
+        health_route="/api/kernel/health",
+        health_func="kernel_data_health",
         producer="autokernel.dashboard (campaign terminal journal hook)",
         producer_repo="epyc-inference-research",
         evidence="/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json",
@@ -458,7 +467,7 @@ PANELS: Mapping[str, PanelSource] = _index((
         route="/api/dashboards",
         producer="dashboard.server.dashboards_payload (this hub) over dashboard/registry.json",
         producer_repo="epyc-root",
-        evidence="dashboard/registry.json + live 127.0.0.1 health probes",
+        evidence="dashboard/registry.json + live 127.0.0.1 health_path probes",
         timestamp_field="live-scan",
         absence_means=(
             "dashboard/registry.json is missing or unreadable, so the hub cannot say "
@@ -470,12 +479,11 @@ PANELS: Mapping[str, PanelSource] = _index((
             "forbid, one level up from the panels it lists."),
         gates_health=False,
         absence_is_anomalous=True,
-        notes="The per-entry `probe` object is a LIVE transport reading of another "
-              "server's /health and is deliberately NOT folded into /api/health: a "
-              "down :8000 is a fact about the orchestrator, and letting it colour "
-              "this hub's verdict would restart the wrong process (see the "
-              "/health vs /api/health split in server.py). Payload + probes are "
-              "TTL-cached ~15s so the directory strip cannot become a probe storm.",
+        notes="The per-entry `probe` object reads the entry's declared health_path. "
+              "Most are transport-only /health; Kernel-R&D deliberately names its "
+              "non-recursive producer/data probe. These readings are never folded "
+              "back into /api/health. Payload + probes are TTL-cached ~15s so the "
+              "directory strip cannot become a probe storm.",
     ),
     PanelSource(
         panel="transport_probe",
@@ -593,6 +601,7 @@ def registry_gaps(module: Any) -> dict:
     routes = dict(getattr(module, "API_ROUTES", {}) or {})
     routes.update(getattr(module, "API_ROUTES_WITH_STATUS", {}) or {})
     routes.update(getattr(module, "PROBE_ROUTES", {}) or {})
+    health_routes = dict(getattr(module, "PANEL_HEALTH_ROUTES", {}) or {})
 
     gaps: dict[str, list] = {
         "unregistered_payload_functions": sorted(funcs - registered_funcs),
@@ -600,6 +609,8 @@ def registry_gaps(module: Any) -> dict:
         "unregistered_routes": [],
         "panels_missing_route": [],
         "route_mismatch": [],
+        "unregistered_health_routes": [],
+        "health_route_mismatch": [],
     }
     declared_routes = {src.route: src.panel for src in PANELS.values() if src.route}
     for route in sorted(routes):
@@ -631,6 +642,28 @@ def registry_gaps(module: Any) -> dict:
             gaps["route_mismatch"].append(
                 f"{panel}: route {src.route!r} is served by {served_name!r}, "
                 f"but the registry names {src.payload_func!r}")
+    declared_health_routes = {
+        src.health_route: src for src in PANELS.values() if src.health_route
+    }
+    for route, served in sorted(health_routes.items()):
+        src = declared_health_routes.get(route)
+        if src is None:
+            gaps["unregistered_health_routes"].append(route)
+            continue
+        if route in routes:
+            gaps["health_route_mismatch"].append(
+                f"{src.panel}: health route {route!r} collides with an evidence "
+                "or transport route and would not reach its data-health reader")
+        served_name = getattr(served, "__name__", None)
+        if served_name != src.health_func:
+            gaps["health_route_mismatch"].append(
+                f"{src.panel}: health route {route!r} is served by "
+                f"{served_name!r}, but the registry names {src.health_func!r}")
+    for route, src in sorted(declared_health_routes.items()):
+        if route not in health_routes:
+            gaps["health_route_mismatch"].append(
+                f"{src.panel}: declares health route {route!r}, which the hub "
+                "does not serve")
     return gaps
 
 

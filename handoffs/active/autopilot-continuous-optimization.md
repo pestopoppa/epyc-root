@@ -2452,9 +2452,10 @@ verified diagnostic and validation patterns._
     directions, recoding coverage, and observe-only authority; it emits the full required report and has no
     live mutation API. A deterministic matched fixture proves the report and conservative simpler-baseline
     fallback.
-  - [ ] **AP-WM-1b — Execute over real completed proposals.** AutoKernel currently has no proposal archive:
-    campaign Step 3 has not run. Admit the first archive only after proposal-v3 frame receipts and completed
-    matched interventions exist; synthetic regression rows are protocol tests, never decision evidence.
+  - [ ] **AP-WM-1b — Execute over AutoKernel's first real matched archive, observe-only.** Consume the
+    deterministic AK-WM-2a output only after clean instrument provenance, current v9 controls, the CPU IQK
+    proposal, proposal-v3 frame receipts, and completed matched interventions exist. Synthetic regression
+    rows are protocol tests, never decision evidence; this path gains no live selector authority.
 
 - [x] **AP-29d — Make strategy compression commitment-nonincreasing before wiring distillation. ✅ 2026-08-05** For both
   StructuralLab MDL conventions and KnowledgeDistiller patterns, retain source member/evidence ids and

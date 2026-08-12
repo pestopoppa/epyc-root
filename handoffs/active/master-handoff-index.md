@@ -39,6 +39,12 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-8 | GLM-5.2 GO/WAIT/KILL verdict — also governs **222 GB** of disk | [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | 2026-08-10 |
 | OP-9 | Nothing restarts `hub_supervisor.sh` if it dies — cron `once` form vs leave as-is (host-level) | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |
 | OP-10 | P-GPU-1 `duty_cycle` amendment — field 4's "fresh server per rep" measures the **bursty** regime, not sustained serving; label it or author a sustained variant. Human-amendment-only (measurement trust boundary) | [autokernel-research-loop.md](autokernel-research-loop.md) §21 AK-OP-1 | 2026-08-10 |
+| OP-11 | Approve or decline the audited two-file producer/Q4_K core on `a4cb04ca`; exact diff SHA-256 `6dcec2b4…`, recommendation approve | [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md) RVP-C2-7 | 2026-08-11 |
+| OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
+| OP-13 | Ratify a P2-5j placement amendment or require a full P-BENCH-PLACEMENT-1 composite; the old four-arm design is observation-only | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) P2-5j | 2026-08-11 |
+| OP-14 | Grant or decline a temporary readable `energy_uj` window, restored to `0400`; without it the required package-energy gate remains COULD_NOT_CHECK | [autokernel-research-loop.md](autokernel-research-loop.md) AK6.5 Step 2 | 2026-08-11 |
+| OP-15 | Approve or decline one experimental commit for the Q4_K branchless scale/min decoder before a clean governed replay | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
+| OP-16 | Authorize an orderly host reboot after wrap-up so the ratified uptime gate permits the prepared CPU IQK campaign | [autokernel-research-loop.md](autokernel-research-loop.md) AK6.5 Step 3 | 2026-08-12 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
@@ -62,11 +68,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 58 | 421 | 11 | 2026-07-29 |
+| inference-research | 53 | 364 | 12 | 2026-07-29 |
 | pipeline-integration | 5 | 50 | 1 | 2026-07-29 |
-| research-evaluation | 48 | 290 | 9 | 2026-07-29 |
+| research-evaluation | 48 | 288 | 9 | 2026-07-29 |
 | reviewer-control-plane | 9 | 38 | 4 | 2026-07-29 |
-| routing-and-optimization | 47 | 305 | 11 | 2026-07-29 |
+| routing-and-optimization | 47 | 303 | 11 | 2026-07-29 |
 | user-facing-harness | 7 | 40 | 3 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

@@ -232,3 +232,109 @@ fixed allowlist rather than a schema match.
    absence a first-class alarm rather than only a banner state. Right now `current_state` can render
    fully healthy while the entire runs/pareto contract is missing, and **that combination is the
    incident-8 shape at the page level rather than the field level.**
+
+---
+
+# Implementation follow-up — post-hold reconciliation (2026-08-12 01:18Z)
+
+The auditor hold is no longer active: the merge worktree has no dashboard conflict, the selected
+dashboard commits are on `main`, and the four touched dashboard paths were clean with no live file
+claim. The additive repair was implemented on isolated branch
+`codex/kernel-rnd-dashboard-audit-20260812`; no inference or kernel-tree write occurred.
+
+## Live-state correction since the addendum
+
+The runtime producer is no longer absent. A terminal campaign export now exists at
+`/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json` and live `/api/kernel` reports:
+
+- campaign `ak-iqk-v9-20260811`, state `preflight_refused`;
+- the explicit blocker is the ratified one-week uptime ceiling (13.47 days), routed to an operator
+  reboot decision rather than hidden as idle;
+- freshness `fresh`, with 4/7 v2 sections reported and the three unreported owners named.
+
+This closes the addendum's producer-absence observation. It does **not** turn the terminal refusal
+into success or authorize a reboot.
+
+## Implemented
+
+| Finding | Disposition |
+|---|---|
+| D-1 missing production attestation rendered quietly | **FIXED** — a missing attestation now renders `ATTESTATION UNAVAILABLE` in the failure class and says production identity is unasserted. |
+| Hardened v9 instrument and controls absent | **FIXED** — schema-selected preflight plus attested control summary show 8/8 preflight checks, 5/5 controls, `MAY RANK`, instrument `a4cb04ca…`, direct production-v9 anchor match, B_min 10 and 3.5785% noise floor. |
+| ROCm replay absent / positivity could be misread | **FIXED** — one card keeps `20/20 positive`, median `+1.2442%`, the `2.00%` floor and `NOT_REPRODUCED` together; it also reports ROCm0 sampling (2,544 samples) and claim release. |
+| Activity card trailed isolated-worktree commits | **FIXED** — committed AutoKernel activity is selected across local refs and explicitly labelled as activity, not merge/deploy state. It now sees the `900cb5c6` matched-archive builder and its immediate predecessors. |
+
+The schema-less historical `summary.json` control artifact is not trusted by filename alone: the
+reader requires the control/calibration/provenance shape plus a sibling
+`epyc.autokernel.control_composition_attestation.v1` with the same campaign id. The GPU replay and
+preflight are selected by exact schema.
+
+## Validation
+
+- `python3 -m unittest discover -s tests -p 'test_dashboard*.py'` — **182 passed**.
+- `tests/test_dashboard_static_js.py` is included in that run and parses every static dashboard's
+  JavaScript.
+- A supervised temporary hub on `127.0.0.1:18100` returned the fresh campaign blocker plus the new
+  controls/preflight/replay projections; the exact captured PID was terminated and verified gone.
+
+## Remaining gaps (not silently promoted to dashboard facts)
+
+- **D-2 remains LOW**: the registry's `/health` target is transport-only. Pointing it naively at the
+  global `/api/health` fold would recurse through the dashboard-directory probe; a panel-specific
+  data-health endpoint or a non-recursive registry-probe contract is needed.
+- **Production-kernel-set coverage is partial (MEDIUM)**: the card correctly covers AutoKernel's
+  current llama.cpp anchor (`production-consolidated-v9`), but does not yet project the independently
+  frozen whisper.cpp and qwentts.cpp identities from the speech-kernel ratification. Those backends
+  are AK9 work, so absence is recorded rather than implying they are controlled by today's llama
+  campaign.
+- **ROCm profiling handoffs are plans, not runtime receipts**: `rocm-verify-profile-backend.md`,
+  `agentic-rocm-kernel-authoring.md`, and the kernel-specific profiling handoffs remain discoverable
+  through the handoff board. The Kernel-R&D page now shows the ROCm evidence it can warrant (device
+  sampler, paired replay, claim release); it must not synthesize progress from open prose rows.
+
+---
+
+# Deployment addendum — promoted and observed live (2026-08-12)
+
+The implementation landed on root `main` as `572f33af`; deployment binding landed as `d76b6ee1`;
+supervisor lock-FD isolation landed as `5bae9d3f`.
+The deployed checkout is
+`/mnt/raid0/llm/autokernel/worktrees/promote-kernel-rnd-dashboard-20260812`, and the focused promotion
+suite passed **85/85**. No inference or kernel-tree write was part of deployment.
+
+The durable live supervisor is PID `1669388` and the hub is PID `1669429`, each detached into its
+own session. The hub has FD 9 closed; only the supervisor owns `/tmp/hub_supervisor_8100.lock`.
+Repeated health polls passed and `/health` reports transport `ok`.
+
+Live `/api/kernel` exposes:
+
+- frozen `production-consolidated-v9` at `0db32c06e3e550065b78311a6031ef3dd2c4f27c`;
+- instrument preflight `8/8 PASS` and current controls `5/5`, `may_rank=true`;
+- GPU replay `NOT_REPRODUCED` at its predeclared 2% floor despite 20/20 positive blocks; and
+- AutoKernel implementation head `900cb5c6`.
+
+The terminal v2 export is fresh and reports the CPU IQK campaign as `preflight_refused` at the
+one-week uptime gate. The Kernel-R&D panel's `/api/health` contribution and current `status_set_by`
+remain `absent` because the contract explicitly leaves `champion`, `headroom`, and `release_package`
+unreported. Those are empirical outputs of the reboot-gated real campaign; calibration,
+implementation commits, and diagnostic receipts cannot fill them. Timeline is a separate
+root-dashboard health input outside this audit's scope. **OP-16 and the post-reboot empirical sequence
+are unchanged.**
+
+---
+
+# Panel-health addendum — D-2 closed live (2026-08-12)
+
+Root `6188197f` implements the non-recursive panel-specific probe requested above and changes the
+Kernel-R&D registry `health_path` from transport `/health` to `/api/kernel/health`. The live hub
+demonstrates the intended split:
+
+- `/health` returns HTTP 200 and reports transport `ok`;
+- `/api/kernel/health` returns HTTP 503 / `absent`, with the result scoped only to the Kernel-R&D
+  producer and its unreported `champion`, `headroom`, and `release_package` sections; and
+- the panel probe does not fold timeline, outcome, queue, or dashboard-registry state and therefore
+  cannot recurse through global `/api/health`.
+
+The promoted live supervisor is PID `1689063` and hub PID `1689100`. This closes D-2. It does not
+claim those three missing campaign outputs exist: the reboot-gated real campaign remains their only
+valid producer, so **OP-16 and the empirical sequence remain unchanged.**

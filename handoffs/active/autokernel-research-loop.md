@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** RUNNABLE / CONTROLS PASSED / READY FOR EXPLICITLY AUTHORIZED STEP 3 — design audited 2026-08-02
+**Status:** V9 CONTROLS 5/5 PASS / CPU IQK READY AFTER REQUIRED REBOOT / MATCHED ARCHIVE NEXT — updated 2026-08-12
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -8,7 +8,7 @@
 **Source draft:** [`docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md`](../../docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md)
 (SHA-256 `af2fd586d3b1e3b58b038fcc0a0c7d5def22d70b45dbdc54bd64799b082e7b8b`; moved out of `tmp/` on
 2026-08-02 because `tmp/*` is gitignored and `MEASUREMENT.md:146-156` forbids scratch citations)
-**Supersedes as loop owner:** [`mi210-kernel-rnd-loop-proposal.md`](mi210-kernel-rnd-loop-proposal.md)
+**Supersedes as loop owner:** [`mi210-kernel-rnd-loop-proposal.md`](../completed/mi210-kernel-rnd-loop-proposal.md)
 **Absorbed 2026-08-02:** the bootstrap-corpus design pass (now §19) and the full design audit
 (findings folded into §§2–15; the standalone audit document is retired)
 **Consumes rather than replaces:** [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md),
@@ -18,13 +18,130 @@
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
-**Current checkpoint (2026-08-10):** Steps 0–2 and the five-control calibration are complete. The
-no-inference closure added evaluation-event v4 transfer links, adjacent noise-floor display, the
+**Current checkpoint (2026-08-12):** the current frozen-v9 control campaign is accepted and
+decision-grade. Under clean one-parent instrument `a4cb04ca8f92fa4d665684490f609b380f9b5e96`,
+`ak-controls-v9-a4cb04ca-20260812-r2` solved B_min=`10` and φ=`0.03578502357852242`, passed all
+five controls, promoted the historical IQK replay at `+26.6050%`, and set `may_rank=true`. The six
+inference legs completed under one released CPU claim. Deterministic composition initially stopped
+because `CampaignBinding.change_class` was absent; research `c4a42c69` repaired that drift and
+recomposed the already-completed raw vectors with a hash-bound attestation stating
+`inference_executed=false`. Research `900cb5c6` also implements the strict AK-WM-2a real-archive
+builder. The CPU IQK proposal, exact physical envelope, calibration binding, and dry run are ready,
+but live preflight correctly refused before claim, build, or benchmark because host uptime was
+`13.47 days`, beyond the ratified one-week ceiling. After a compliant reboot, run the full-host CPU
+IQK proposal, materialize the real matched archive, then run the least-commitment evaluation
+observe-only.
+INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
+VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
+Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
+The AK-LN-2/AK-X-5a calibration has now rejected every historical CPU split depth as a general ranking
+proxy, so that first campaign must verify on the full host unless a narrower change-class calibration
+later passes. AK-BH-3 found that the implicit CPU flash-attention default behaves like the fast
+explicit-ON arm on the measured 0.5B Q4_K_M surface, but the choice must still be explicit. AK-BH-4
+now enforces exact-surface strongest-provider selection. These research controls are durable in
+`5fbd471b` (promoted to research `main` via `caa380f7`). The no-inference closure added
+evaluation-event v4 transfer links, adjacent noise-floor display, the
 prior-art gate, historical 4/8/16/32/48-way CPU lane registry, op-level fan-out planning, compile-only
-artifact veto, and the two permitted static ROCm audits. The next live action remains §AK6.5 Step 3,
-beginning with the known-real CPU candidate. The operator has explicitly required fresh permission
-before any inference; no live work may start from this handoff alone. Offline AK-WM-1 plumbing is
+artifact veto, the two permitted static ROCm audits, era-local calibration authority, exported-ELF
+version coverage, and structured CPU-reference receipts for passing backend-op cases. The first-campaign
+HostOps adapter now has no undeclared static seam for its registered IQK parameter proposal. AK-DEL-1
+also replayed a hash-bound, normalized historical `rocprofv2` trace: all three admitted kernel families
+landed in bucket (a), with none in buckets (b)–(d), so the bounded next action is catalogue expansion
+rather than a novel-kernel generator. Its INF-48 dependency now also has the inference-free C4 layer:
+paired mapping/formal traces, deterministic kernel/overlap/fuse/architecture tables, explicit host
+catalogue scope, and a bounded judgment receipt. The T0 property plane now also preserves numeric
+per-op/backend/shape residuals in the evaluation event for the Vidya SC18 projection; sealing the
+experimental producer still needs the separately requested local-commit approval. The C2 layout
+axis is now separately flagged and fail-closed in the research consumer, including exact coverage of
+offset, stride-gap and transpose families; its live CPU acceptance passed **1,048/1,048** cases, while
+its producer shares the same pending experimental commit.
+The C2 value axis is now independently flagged and fail-closed in research commit `eca5dbda`:
+identity, ×3, ×0.01 and negate must all complete on every emitted packed-float case, and property
+residuals retain the input-transform coordinate through the Vidya projection. Its live CPU pass used
+suite seed `4711` and passed **779/779** cases across `SOFT_MAX`, `ARGSORT`, `TOP_K`, and `SOLVE_TRI`,
+with all four transforms completed. The `SOFT_MAX` checker was corrected to include implicit attention
+sink mass before that acceptance. Its producer also shares the pending experimental commit.
+Research commit `9cc3ed1b` adds the independent stateful consumer and fail-closed `AK_STATE_V1`
+contract. A live CPU probe with suite seed `4711` then passed all **5,184/5,184** emitted cases across
+`SSM_SCAN`, `SSM_CONV`, `FLASH_ATTN_EXT`, and `GATED_DELTA_NET`; every case reported
+`initial_equal=1`, `input_immutable=1`, and at least one final-state output. This closes the live
+validation milestone for RVP-C2-5, but the shared experimental producer changes remain uncommitted
+and must not be committed or pushed without explicit operator approval. Research commit `598375c5`
+also makes the clean control instrument root/binary explicit and tests both overrides. RVP-T0-1 also
+completed its authorized 60-second gfx90a saturation probe: 242 device samples held 1700 MHz for
+99.5868% of the window while the GEMM produced 41.904 TFLOP/s and peaked at only 200 W against the
+300 W cap. Because the card never approached the cap, clock pinning is not a live variance remedy here
+and AK-OP-2 is declined. RVP-C2-6 now also has an independent host-double reference that decodes
+Q4_0, Q8_0, Q4_K, and Q6_K directly from GGUF wire bytes and emits
+`fp64_error_ratio/host-double-gguf-wire/v1`. Five representative CPU cases, the broadcast regression,
+31 real parser tests, and the 5/5 planted plus 5/5 clean property self-test passed. A subsequent audit
+fixed a non-contiguous-row coverage bug in that oracle; the corrected forced-dispatch matrix then
+passed all **43/43** force-rocBLAS cases but only **18/43** force-MMQ cases. The old force-MMQ DP4A
+control also passed only **18/43**, ruling out an MFMA-only defect. The root cause was Q4_K's affine
+MMQ reconstruction mixing a quantized/dequantized Q8 dot term with an original-float activation sum
+for its min correction. The local Q4_K DS4 fix derives both from the same dequantized Q8 population;
+default, force-rocBLAS, force-MMQ MFMA, and force-MMQ DP4A then passed **172/172** at unchanged κ=1.5.
+The source remains uncommitted under OP-11, but the diagnosis and live correction are complete.
+AK-BH-1 also measured best-available rocBLAS against
+hipBLASLt heuristics at nine prefill shapes: hipBLASLt won three, with ratios spanning 0.734×–1.322×,
+so the honest vendor baseline is shape-specific rather than one global library. AK-BH-2 completed all
+eight explicitly pinned `-fa` × `ROCWMMA_FATTN` × `MMQ_MFMA` arms on one Q4_K_M model; `-fa on` won
+each paired comparison, `MMQ_MFMA` was materially slower on this surface, and the winning arm was
+`r1m0-fa-on` at 24,647.316788 t/s. Those single-surface observations do not authorize a global build
+default. The experimental implementation remains uncommitted under its per-commit approval rule. The
+research-side C2-7/C2-11/C5-2 sensitivity reducer and runner are now durable in research commit
+`000a2686` (promoted to `main` via `f3c6b24a`): they reduce a
+reference-only 3-seed × 4-transform population across separate seed-variation and transform-variation
+axes, refusing missing, mixed-version, or untrusted observations. The focused reducer suite passes
+14/14 tests. CPU and HIP `test-backend-ops` builds materialize `AK_SENS_V1`; their parser/provider
+suite passed 201 tests. A live `SOFT_MAX` smoke produced 212 rows per seed, 2,544 observations and
+1,484 scoreable units, with PASS, zero unscoreable units, and a CPU claim held through the run then
+released. That smoke is explicitly **non-evidence**: suite identity `0db32c06e` names the committed
+parent while the producer delta is uncommitted. No producer-dependent row closes until explicit
+operator approval permits committing the experimental producer and a fresh matched replay binds its
+durable commit. Separately, the C5-R audit found that the exact 2026-07-04 argv and raw
+parent/human-patch evidence were lost. The replacement historical-task descriptor preserves that
+fact as `historical_command_recovered=false`, seals parent `7c28056b` from expert `496e2f09`, and
+pins the reconstructed surface. Its fresh 15-run matched replay measured a 21.223659% expert ceiling
+(155.4233734 → 188.4099002 `speed_tg`) while correctly leaving candidate scoring `COULD_NOT_CHECK`.
+The C2-8/C2-9 hostile-distribution and checker-isolation reducers/runners, historical scorer/replay,
+and hardened C4 source-identity bridge are durable in research `1a4d7dca` / `main` merge `c5fe6b51`;
+the full AutoKernel suite passes 3,923 tests with one expected failure. The C2-8/C2-9 live smoke was
+implementation-only non-evidence: two selected ROCm0 `SOFT_MAX` rows passed each mode, with claim
+acquisition/release and four samples, but no durable receipt. The next live action remains §AK6.5
+Step 3's known-real CPU candidate, while producer-dependent correctness evidence waits on OP-11.
+The same gate now applies to INF-37's IQ2 profiler fallback: the Omniperf/rocprof-v1 runner is durable,
+but frozen v9 lacks its required seeded/repeated producer flags. Its failed compatibility receipt is
+evidence of the instrument boundary only; a passing IQ2 counter capture waits on OP-11 and replay.
+The run-specific CPU/GPU authorizations do not extend to producer commits, promotion, or freeze
+actions. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
+
+**Read-only evidence-authority audit (2026-08-12):** the RVP-T0-1 saturation pair and the
+AK-BH-1/2/3 plus AK-LN-2/AK-X-5a receipts are durable diagnostic evidence. They retain commands,
+binary or source hashes, and their bounded results, but they do not all bind a committed, clean
+source checkout and build manifest. In particular, the current experimental CPU benchmark binary
+comes from a dirty shared tree even though its receipt reports frozen-v9 as `build_commit`; that is
+not campaign provenance. The next campaign therefore has one strict dependency chain:
+
+1. materialize the hardened measurement instrument from a clean committed source identity and retain
+   its source, commit, tree, build, and binary hashes;
+2. run the five frozen-v9 controls under that exact identity;
+3. run the first full-host CPU IQK proposal under the accepted control bundle; and
+4. build the first matched completed-proposal archive, then run AK-WM-2/AP-WM-1b observe-only.
+
+The durable diagnostics remain useful inputs and regressions; none substitutes for those four gates.
+
+- [x] **AK-AUD-3 — Reconcile the durable diagnostics against clean-source campaign authority.**
+  Receipt hashes, bounded results, provenance gaps, and the four-step dependency order are retained in
+  `progress/2026-08/2026-08-12.md`; no inference or kernel-tree mutation was performed. ✅ 2026-08-12
+- [x] **AK-AUD-4 — Reconcile executed diagnostic rows without upgrading their authority.** ✅
+  2026-08-12 — current state already marks RVP-T0-1, AK-BH-1/2/3, AK-LN-2/AK-X-5a, and AK-DEL-1
+  complete. Receipt re-audit confirms the first six are durable bounded diagnostics, not current
+  calibration, ranking, archive, or promotion evidence where clean source/build provenance is absent.
+  AK-DEL-1 is separately commit-backed at research `df02169e`: its hash-bound scope report found all
+  3/3 admitted families in `existing_path_should_apply` and selects catalogue expansion before a novel
+  generator. This corpus-bounded routing conclusion is not a claim about all workloads.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
@@ -2244,7 +2361,7 @@ can act on a waiver-bearing verdict.
   `B*` = Q4_K 34 / Q8_0 64 / bf16 120. Carry the spec-basis ridge (110.5) alongside for cross-vendor
   comparison, and **never mix bases**. Derivations, the measured/derived reconciliation, and the 2×
   defect in AMD's own published figure:
-  [`mi210-mfma-compute-bound-paths.md`](mi210-mfma-compute-bound-paths.md).
+  [`mi210-mfma-compute-bound-paths.md`](../completed/mi210-mfma-compute-bound-paths.md).
   ✅ 2026-08-10 — imported without changing evidence grades; mixed-basis ridges are rejected by
   reconstruction tests.
 
@@ -2450,13 +2567,21 @@ evaluator or its own scope, and T1 may legally guide search.
   fsynced before preflight, claim, mutation, or build, identical resume is idempotent, and same-id/different-
   bytes is refused. The AP-WM-1 evaluator is implemented as an observe-only module outside the campaign
   import path and exposes no selector/champion/T2/T3 mutation API.
-- [ ] **AK-WM-2 — Run AP-WM-1 on the first real matched completed-proposal archive.** The archive protocol,
-  matched-intervention validation, metric-direction declaration, per-regime/surface report, noise floor,
-  robust sign error, and recoding-stability checks are executable now. The current durable campaign store
-  contains zero proposal records because candidate Step 3 has not run; do not substitute synthetic
-  regression fixtures for empirical evidence. Until a real archive shows invariant independent signal, do
-  not add weakness, completion count, K-rho, scope width, prose length, patch size, or description length to
-  live selection, champion, T2, or T3 authority.
+- [ ] **AK-WM-2a — Materialize the first real matched completed-proposal archive.** After Step 3
+  writes real proposal-v3 plus clean DECIDED terminal journal/evaluation records, deterministically
+  join them with the strict builder and retain the archive plus build manifest. Synthetic fixtures
+  remain regression tests and cannot populate the archive.
+  - [x] **Implement the strict real-archive builder.** ✅ 2026-08-12 — research `900cb5c6` adds
+    `least_commitment_archive_builder.py`. It accepts only real proposal-v3 events joined to clean
+    DECIDED terminal events with executed/ok decisions, unchanged-production PASS, released
+    resources, nonempty pairs, and hash-bound diagnostic, outcome, and matched one-factor receipts.
+    Missing, synthetic, mismatched-frame, direction-drifted, or receipt-tampered inputs fail closed.
+    The canonical AutoKernel suite passed 4,078 tests with one expected failure.
+- [ ] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol,
+  matched-intervention validation, per-regime/surface results, noise floor, robust sign error, and
+  recoding stability. Until real evidence shows invariant independent signal, do not add weakness,
+  completion count, K-rho, scope width, prose length, patch size, or description length to live selection,
+  champion, T2, or T3 authority.
 
 **Exit:** a mock campaign moves from source/profile facts through proposals, corrections, negative
 memory, and champion maintenance without human steering.
@@ -2493,7 +2618,15 @@ cannot retrigger the expensive gate unchanged.
 - [x] Route the cutover request through the bus to whoever owns inference (§11.3). ✅ 2026-08-03
 - [x] Render the package as a four-part decision package (`OPERATING_CONSTRAINTS.md:69-78`). ✅ 2026-08-03
 - [ ] Run an end-to-end campaign that stops at a validated package with zero production writes.
-- [ ] Run repeated restart/crash/resource-preemption/tamper fault injections.
+- [ ] Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
+  fault-injection tests are prerequisites, not substitutes for a campaign rehearsal with durable
+  empirical receipts.
+  - [x] **Complete the offline fault-injection acceptance matrix.** ✅ 2026-08-12 — research
+    `900cb5c6` ran three repetitions of a 657-test matrix: **1,971/1,971 PASS**, no inference. The
+    journal, GPU claim, CPU claim, hypotheses, Arena cell runner, statistics, C3 compiler, and physical
+    bounds suites cover torn-write/restart recovery, exact-owned-PID crash/reclaim, live-holder
+    non-preemption and revocation, plus receipt/hash/source tamper refusal. The broader 4,078-test
+    suite passed once with one expected failure. This closes offline acceptance only.
 - [x] Give the operator surface a freshness and health contract, not just data. Today's `/kernel` page is
   **absence-tolerant over a missing directory** — it renders clean when its producer is dead, which is
   the exact shape of AutoPilot dying at trial 1302 and staying dead ~23 h with every dashboard green.
@@ -2505,6 +2638,27 @@ cannot retrigger the expensive gate unchanged.
   `ANCHOR_MOVED`, phase-trade exceptions), resource claims held, and release-package state. Version the
   contract explicitly, keep it absence-tolerant as the current page is, preserve the freshness envelope,
   and point `KERNEL_DASHBOARD_JSON` at a durable path rather than the missing scratch directory. ✅ 2026-08-03
+- [x] **Repair the Kernel-R&D dashboard's current-receipt selector and live runs producer.** ✅
+  2026-08-12 — root `572f33af` adds schema-selected current receipts and a loud missing-attestation
+  alarm; `d76b6ee1` binds the supervised hub to the clean deployed checkout; `5bae9d3f` closes the
+  inherited supervisor lock FD in the detached hub. Live `/api/kernel`
+  reports frozen production v9, `8/8` instrument preflight, `5/5` accepted controls, the GPU replay's
+  honest `NOT_REPRODUCED` verdict, and implementation head `900cb5c6`. The terminal v2 campaign
+  export is fresh and names the reboot-gated preflight refusal; **85/85** focused deployment tests
+  pass. The Kernel-R&D panel's `/api/health` contribution remains `absent` because `champion`,
+  `headroom`, and `release_package` are correctly `not_reported` until a real campaign completes,
+  not because the dashboard producer is stale.
+- [x] Add a non-recursive, panel-specific Kernel-R&D data-health probe so registry consumers can
+  distinguish hub transport health from AutoKernel producer health without recursing through the
+  global `/api/health` fold. ✅ 2026-08-12 — root `6188197f` moves the registry probe from
+  transport `/health` to `/api/kernel/health`. Live transport returns HTTP 200 while the semantic
+  endpoint correctly returns HTTP 503 / `absent`, scoped only to Kernel-R&D's unreported
+  `champion`, `headroom`, and `release_package` sections. The promoted hub remains supervised by PID
+  `1689063` with hub PID `1689100`; no global-health recursion or unrelated timeline state enters the
+  panel result.
+- [ ] Extend production-kernel-set projection from the attested llama.cpp v9 anchor to the separately
+  frozen whisper.cpp and qwentts.cpp identities when AK9 consumes those backends; do not imply the
+  current llama campaign governs speech kernels.
 
 **Exit:** campaigns produce correct, idempotent, operator-executable release packages and never write
 production.
@@ -2569,7 +2723,7 @@ document; this phase is the checklist.
   procedural. `MICROBENCH_RUN_COMPLETED` carries the full raw vector plus its content-hash identity;
   runner and pooling tests prove a duplicate key spends no further inference. ✅ 2026-08-05
 
-**Built 2026-08-04 — the loop became runnable:**
+**Built 2026-08-04 — the loop gained a composable driver:**
 
 - [x] **`campaign.py` — the entrypoint the package spent 94k lines not having.** A `grep` for
   `__main__|argparse|def main(` across every non-test module returned *nothing*: 5,695 tests passing
@@ -2634,11 +2788,15 @@ document; this phase is the checklist.
 
 ---
 
-## ▶ START HERE — NEXT: RUN THE FIRST CANDIDATE
+## ▶ START HERE — CLEAN INSTRUMENT → CURRENT CONTROLS → CPU IQK → MATCHED ARCHIVE
 
-Everything below is executable **today**. The loop has an entrypoint, an accept rule calibrated
-against a real measurement, a hypothesis path, a machine-enforced completed-run ledger, and two
-real A/A bundles. Steps 0–2 were completed on 2026-08-05; the next executable work is Step 3.
+The first IQK campaign adapter is statically complete: the loop has an entrypoint, a hypothesis path,
+a machine-enforced completed-run ledger, a registered source-free parameter mutation, measured
+per-tool anchor bindings, and candidate-specific T0 evidence. The 2026-08-11 audit corrected the
+remaining stronger claim: v8 calibration cannot authorize the current v9/hardened cell. A current
+identity-bound control bundle is required before Step 3 may rank anything. Generic source proposals
+remain separately fail-closed where whole-program absence and rollback cannot be proved; that does
+not re-open the registered IQK parameter adapter or weaken the campaign's all-PASS rule.
 
 **Read first, in this order:** `execution/README.md` (the runbook, cold start to first candidate),
 then `program.md` (the loop procedure and the hypothesis inbox), then this list.
@@ -2656,10 +2814,11 @@ nothing wrong. We held no claim.**
       ✅ 2026-08-05
 - [x] Verify host canonical state — governor `performance`, THP `always/always`, `numa_balancing=0`.
       ✅ 2026-08-05
-- [x] **Do not trust the boost gate at idle.** Measured 2026-08-04: 16 cores above 2.5 GHz idle vs
+- [ ] **Do not trust the boost gate at idle.** Standing measurement guardrail. Measured 2026-08-04:
+      16 cores above 2.5 GHz idle vs
       **117 under load**, against a required 80. The gate is now evaluated only at `load/core ≥ 0.25`;
       a preflight that reads it at idle aborts on a perfectly healthy machine. Followed for the
-      claimed probe. ✅ 2026-08-05
+      claimed probe; evidence recorded 2026-08-05.
 
 ### Step 1 — answer the one open measurement question (≈20 min, cheap, do it first)
 
@@ -2671,6 +2830,18 @@ nothing wrong. We held no claim.**
       window. Evidence: `data/autokernel_aa_20260805_rest_recovery/`. ✅ 2026-08-05
 
 ### Step 2 — calibrate the instrument before trusting it
+
+- [x] **Bind the hardened instrument to clean, committed provenance before inference.** ✅ 2026-08-12 —
+      `experimental-v9-autokernel-t1-hardening-final` at
+      `a4cb04ca8f92fa4d665684490f609b380f9b5e96` has exactly one parent, frozen v9
+      `0db32c06e3e550065b78311a6031ef3dd2c4f27c`, changes only `llama-bench.cpp` and its README,
+      is clean, and is pushed to the internal fork. The clean CPU build's copied `llama-bench` is
+      SHA-256 `19dfba5c65a94e7b27e3db001a8a6a250a91d013bfea73970f4e931f0c1e54b0`.
+      A claimed 0–95 CPU smoke emitted all six required hybrid-sync, thread-set, escape-check,
+      unsynchronized-sample, and device-sync receipts (`cpu_not_applicable`) and released its q0–q3
+      claim. The all-PASS preflight is
+      `/mnt/raid0/llm/autokernel/probes/ak-v9-final-preflight-20260812-r1/preflight.json`, SHA-256
+      `0baf7b73055f028c5c493afd9a4ab8c9950d3c088ed79f3751102ddff71fdefd`.
 
 - [x] **Run the five fixed controls (§15.2) before any real search**: positive, neutral, negative,
       A/A, and the **historical-win replay — the iqk port, which MUST promote**. The negative control
@@ -2687,17 +2858,120 @@ nothing wrong. We held no claim.**
       its 20-block MDE was 2.5867%; no controls ran under it. A genuinely fresh 3% campaign then
       accepted with φ=`0.049206882811302755`, α_sel=`0.1`, α_conf=`0.05`, B_min=`12`, MDE=`2.7408%`,
       and an A/A false-crossing rate of `1.4%`. ✅ 2026-08-05
+- [x] **Make calibration authority era- and instrument-local.** The executing CLI now requires
+      `--calibration-bundle`, verifies the bundle's source-label hash, accepted solve/control state,
+      production commit, measurement-instrument commit, recipe, floor, B_min/ceiling and MDE, and
+      refuses the v8 bundle on v9. Dry run reports `UNCALIBRATED CELL` rather than printing the old
+      2.1310% placeholder as live authority. ✅ 2026-08-11
+- [x] **Close package-power admission without broadening host privilege.** ✅ 2026-08-12 — research
+      commit `1094ff6b` adds a lazy, exact-container-id broker pinned to image
+      `sha256:3a2e92b4133d06d1287f96ec47bacd743717b377f4b9df6be1e3af626c35dbb0`, with no network,
+      a read-only root, all capabilities dropped, `no-new-privileges`, a 16-PID limit, and only the
+      powercap mount exposed read-only. The v9 preflight now passes package-power availability; unit
+      coverage proves exact-id stop/inspect/kill escalation and refuses image-identity mismatch.
+- [x] **Require a fresh campaign identity and self-consistent evidence root.** ✅ 2026-08-12 —
+      research commit `7f8e9997` removes the retired hard-coded campaign id and evidence directory,
+      requires `--campaign-id` plus an absolute `--output`, and deterministically derives the seed and
+      window id. Declaration, calibration, claim, host, control, evaluator, and summary receipts now
+      carry the same identity; invalid ids and relative evidence roots fail before execution.
+- [x] **Run the five controls against frozen v9 plus the hardened measurement instrument.** ✅
+      2026-08-12 — `ak-controls-v9-a4cb04ca-20260812-r2` accepted at contribution floor `3%`,
+      B_min=`10`, φ=`0.03578502357852242`, and passed positive/neutral/wrong-work/A/A/historical
+      controls (`5/5`, `may_rank=true`). The historical IQK replay promoted at
+      `+0.2660503395746673`. Summary SHA-256
+      `81b5bc4b95cfd8e3ca9346c9f44a70fc297c159310e57bdb84f62c80588d78e1`; control-sweep SHA-256
+      `9f765c5c19d0ea4669ac55a55796a643b578c4ff1bf126b5f6b630a297197ae1`. The six inference legs
+      completed under claim `akclaim-c9f943ba08234877`, whose journal records release at
+      `2026-08-12T00:46:23.957344+00:00`. When deterministic post-processing exposed missing
+      `CampaignBinding.change_class`, research `c4a42c69` repaired the evaluator and recomposed the
+      immutable raw vectors without inference; `composition_attestation.json` binds every input hash,
+      evaluator commit `c4a42c69917187b53809c8d4c3267cc1a99a37de`, and
+      `inference_executed=false`.
 
 ### Step 3 — the first candidate
 
+- [x] **Close the first-campaign `HostOps` adapter before taking a claim.** Supply the candidate
+      mutation (or the declared no-source parameter comparison), measured `llama-cli` and
+      `llama-bench` anchors, the proposal-owned T0 declarations/registration patterns, and the
+      healthy all-core nominal frequency. The CLI's pre-claim refusal is the acceptance test; do not
+      bypass it with a placeholder capture. ✅ 2026-08-11 — the built-in proposal-v3 IQK parameter
+      adapter proves an empty source diff, derives the registered parameter surface and IQK registration
+      patterns, measures separate `llama-cli`/`libggml` anchor identities, and requires `--nominal-khz`;
+      `unimplemented_seams()` plus CLI tests refuse before claim if any required input is absent.
+- [x] **Turn the six reference-leg T0 unknowns into real evidence for the first parameter candidate.** Close exact reference,
+      ASAN/UBSAN applicability, state rollback/teardown, symbol-version coverage, and affected-
+      surface reachability. `COULD_NOT_CHECK` remains speed-blocking; do not reinterpret it as PASS.
+      ✅ 2026-08-11 — the source-free registered surface proves memory/threading/persistent-state false,
+      which resolves ASAN, UBSAN, state safety, and reconciliation by non-applicability; ELF v2 parses
+      exported version indices and leaves genuinely versioned exports explicit; `test-backend-ops`
+      emits `AK_REF_V1` only after its separately activated CPU reference path passes, and T0 projects
+      its observed comparator error/tolerance without mislabelling NMSE as ULP or bitwise identity.
+      Generic source proposals still fail closed where whole-program absence or rollback cannot be proved.
+- [x] **Live-validate the stateful T0 integrity pass.** ✅ 2026-08-11 — with suite seed `4711`, all
+      **5,184/5,184** cases passed across `SSM_SCAN`, `SSM_CONV`, `FLASH_ATTN_EXT`, and
+      `GATED_DELTA_NET`. Every `AK_STATE_V1` receipt proved equal initial state inputs, immutable
+      input buffers, and one or more compared final-state outputs. The fail-closed consumer is
+      research commit `9cc3ed1b`; the experimental producer remains uncommitted pending explicit
+      operator approval and was not committed or pushed by this checkpoint.
+- [x] **Live-validate the independent host-double fp64 oracle.** ✅ 2026-08-11 — direct GGUF-wire
+      decoders cover Q4_0, Q8_0, Q4_K, and Q6_K under metric
+      `fp64_error_ratio/host-double-gguf-wire/v1`. Five representative CPU cases, the dedicated
+      broadcast regression, 31 real parser tests, and the property self-test's 5/5 planted plus 5/5
+      clean cases passed. The full stock ROCm Q4_K matrix separately exposed genuine baseline κ=1.5
+      failures; the gate remains fixed and the uncommitted experimental implementation was not staged,
+      committed, or pushed.
+- [x] **Prepare and fail-closed preflight the first CPU IQK campaign.** ✅ 2026-08-12 — rebound
+      the physical envelope to exact deterministic recipe frame
+      `e504d8e937fd0f645b8dadb3b971e320f95c2f1bf34fc678b186fbf37bb079b0`; dry run was clean;
+      repaired the missing `/workspace/repos/epyc-whisper` and `epyc-qwentts` symlinks; and verified
+      both frozen speech kernels. The first live attempt stopped on the missing symlink before claim;
+      the corrected attempt stopped in preflight because uptime was `13.47 days`. Neither attempt
+      acquired a claim, built a candidate, or benchmarked. The append-only proposal and both
+      fail-closed STOP_STATE records remain in
+      `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/events.jsonl`.
+- [ ] **After a compliant host reboot, rerun the prepared full-host CPU IQK campaign.** The ratified
+      one-week uptime ceiling in `measurement/protocols/kernel-research.md` and `bench-cpu.md` is the
+      sole remaining preflight blocker. Reuse the accepted v9 control bundle and exact recipe frame;
+      preserve the journal and require claim/build/benchmark evidence rather than bypassing preflight.
+  - [ ] **OP-16 — Operator decision package: authorize the orderly reboot.**
+    - **Context:** CPU IQK preflight measured host uptime at approximately `13.48 days`; the ratified
+      seven-day ceiling requires a reboot before further search measurement. The refusal occurred
+      before inference, claim, build, or benchmark, and every current artifact is wrapped and pushed.
+    - **Option A — authorize an orderly reboot now (recommended):** preserve the accepted v9 control
+      bundle and journal, reboot after all mains report ready, bootstrap the `agent` tmux session per
+      session-bus C20, respawn the established roster, then rerun the prepared campaign. This is the
+      shortest compliant path and is reversible operationally; reboot downtime is the cost.
+    - **Option B — postpone the reboot:** leave the host and production stack as-is. AutoKernel CPU
+      measurement remains fail-closed; no result or resource consumption occurs, but the empirical
+      chain cannot advance.
+    - **Recommendation:** Option A. All pre-reboot durability obligations are satisfied and no useful
+      protocol-compliant CPU candidate measurement can proceed at the current uptime.
+    - **Default:** Option B; preflight continues to refuse and no inference runs.
 - [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
       characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
       serving. The claim reason alone decides it.
-- [ ] **Reproduce a known-real win as candidate #1** — the 2026-07-04 async-prefetch result
-      (+3%, MemUnitStalled reduction on `mul_mat_vec_q8_0_prefetch`). A null result on a known win is
-      diagnostic of the *harness*; a null on a novel idea tells you nothing about either. Note its
-      original evidence was written to `/mnt/raid0/llm/tmp/mi210-build/campaign/` and **that
-      directory no longer exists** — the win must be re-derived from the commit, not the record.
+- [ ] **Reproduce a known-real CPU win as candidate #1 — the IQK replay.** It is a proposal-v3
+      `change_class: parameter` comparison with candidate `ggml_iqk=1` and anchor `ggml_iqk=0`;
+      `campaign.py` now projects that registered arm-local variant into the exact dry-run commands.
+      A null result on a known win is diagnostic of the *harness*; a null on a novel idea tells you
+      nothing about either.
+- [x] **Keep the 2026-07-04 async-prefetch replay in the GPU lane.** ✅ 2026-08-11 — the +3% / MemUnitStalled
+      reduction on `mul_mat_vec_q8_0_prefetch` is a gfx90a/MI210 result, not a CPU candidate. Its
+      original scratch evidence no longer exists, so it was re-derived from the frozen-v9 resident
+      implementation and its runtime gate. The governed 20-block replay did **not** reproduce the
+      historical win: 19/20 block deltas were positive, but median was only **+0.936%** (mean
+      **+1.039%**, range **−0.590% to +3.311%**), below the predeclared 2% floor and with one negative
+      block. This is `NOT_REPRODUCED`, not a banked candidate. Receipt:
+      `/mnt/raid0/llm/autokernel/probes/ak-gpu-prefetch-v9-20260811-r2/receipt.json`, SHA-256
+      `7b173cafcccb8a99319bf93a80fd13a2e94a400afab2bf03355363f9521ab17f`.
+- [x] **Repeat the governed v9 async-prefetch replay under an independent 20-block campaign.**
+      ✅ 2026-08-12 — all **20/20** paired blocks were positive, but the median delta was only
+      **+1.2442303249%** (minimum **+0.6788501205%**), below the predeclared **2%** contribution
+      floor. The honest verdict remains `NOT_REPRODUCED`; positivity alone is not promotion evidence.
+      The receipt binds frozen-v9 source/binary/linkage/model identities, a held-and-released MI210
+      claim, and 2,544 device samples across 635.76 s:
+      `/mnt/raid0/llm/autokernel/probes/ak-gpu-prefetch-v9-20260812-r1/receipt.json`, SHA-256
+      `7321f2a640a7cc0b3169544867e26e3102a3efe3ebd5b0ebc732e154398339b0`.
 - [ ] Then a real one. Drop a hypothesis into the store (`HYPOTHESES.md` has the shape), or run
       exploratory with no `--hypothesis` at all.
 
@@ -2811,7 +3085,6 @@ Each line names the specific blocker, per *Act, Don't Defer*.
 | Open item | Blocked on | Not blocked — just undone |
 |---|---|---|
 | AK6 end-to-end campaign stopping at a validated package | — | Step 3 first candidate |
-| AK6 fault injection (restart/crash/preemption/tamper) | needs process management, forbidden to the agents that built this | who runs it, and where |
 | ~~AK6 `/kernel` freshness contract + JSON contract v2~~ | — | **REBASED 2026-08-05.** The prior `autokernel/surface/` producer was deleted on 2026-08-04 while the hub still named it. The surviving campaign path now exports the fsynced terminal `STOP_STATE` through compact `autokernel/dashboard.py`. The hub separately shows committed implementation and durable `data/autokernel_*` activity, structurally excluded from liveness/health. Runtime truth remains absent until the first real campaign exports. |
 | AK7 first supervised freeze | a CHAMPION, which needs AK6.5 Step 3 | — |
 | AK8 seed queue, `oracle_port`, external suites | fresh profiling, which needs the loop running | — |
@@ -2943,7 +3216,7 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 | AK-D32 | Harvest/explore are **phases switched on marginal yield**, not a fixed budget fraction; the decay floor and window are derived, with a minimum dwell and a `PLANNER_DEGRADED` disambiguation | A fixed ratio spends explore budget while a fresh region still yields and caps exploration once it is dead; a freshly opened region's adjacent wins are cheap, high-probability and perishable, so they should be stripped first |
 | AK-D33 | Spikes owe no anchor gate, paired blocks, e-process or confirmation sample — they emit a mechanism verdict, not a rate claim — but still hold a claim and pass preflight | Institutional cost is spent confirming gains, not discovering them; a spike that costs what a T1 costs will not be used |
 | AK-D34 | The oracle registry declares a **harvest class** per row on the axis of architectural portability (`portable_source` vs `reimplement`), **not licensing** — standing policy is open-source self-hosted, non-commercial, licences not blockers and new oracles enter via `research-intake`, not by an agent adding a row | Misclassifying is a schedule problem, not a legal one: a `reimplement` oracle costs authoring effort a `portable_source` one does not. Intake still verifies real gfx90a/EPYC support and normalises the claimed result to roofline utilisation before a port is proposed |
-| AK-D37 | **AK-D36 excludes a *target*, not a *regime*.** Single-stream and batched prefill and decode are all legitimate optimization directions, and AutoKernel looks for improvement independently of batch count. What AK-D36 forbids is recruiting the whole-stack llama.cpp-vs-vLLM ratio as a kernel objective, because that ratio is dominated by scheduling above 16 concurrent users | Read as "batch-1 only", AK-D36 would retire G15 — 43% of B=128 decode is non-GEMM elementwise/norm — which is the highest-confidence GPU band currently available. The constraint is on the *metric*, never on the batch regime |
+| AK-D37 | **AK-D36 excludes a *target*, not a *regime*.** Single-stream and batched prefill and decode are all legitimate optimization directions, and AutoKernel looks for improvement independently of batch count. What AK-D36 forbids is recruiting the whole-stack llama.cpp-vs-vLLM ratio as a kernel objective, because that ratio is dominated by scheduling above 16 concurrent users | A coarse 2026-07-04 B=128 profile originally made G15 look like the highest-confidence GPU band; the strict 2026-08-11 family map later closed G15 itself. That falsification reinforces the rule: batch regimes remain valid, but targets must be selected by current mechanism-specific metrics rather than a whole-stack ratio or a coarse non-GEMM remainder |
 | AK-D38 | **Operator hypotheses are a first-class planner input**, carrying an explicit falsifier, entering at `design_prior` evidence grade and never above it, tracked still-open until resolved, and subject to every gate without exception | The operator sees things the profile does not; without a channel that steering arrives as an out-of-band instruction with no falsifier and no resolution record. Grading it `design_prior` is what stops a hunch being laundered into a measured fact. **Note the sibling comparison in §8.4.0 was corrected on 2026-08-03: AutoPilot does not have still-open tracking either, its falsifier is optional and observability-only, its open-set block is stagnation-gated, and it has no evidence-grade vocabulary at all — so this is a new mechanism in both loops rather than parity with one** |
 | AK-D31 | Architectural campaigns replace three §8.4 rejection conditions rather than waiving them: predicted post-change profile for the wall-share ceiling, prospective shapes, and per-step conceptual-change scope; plus spikes and a reserved budget fraction | Those three are correct for incremental work and would block the deep kernel rethinking the loop exists to find; EIG-first ranking starves high-variance work by arithmetic unless budget is reserved |
 | AK-D29 | Source-integrity gates run **before** behavioural gates: symbol/registration preservation, clean build from snapshot, semantic diff conformance, repair from clean parent | AutoPilot's one autonomous source mutation destroyed a module with a syntactically valid edit; none of its four Python defenses transfer to compiled C++, where "it compiles" is far weaker than "it imports" |
@@ -3230,14 +3503,14 @@ negatives so the planner cannot omit inconvenient history.
 | **P0.2 fixed-shape vs continuous serving** | Correct separation; kernel and scheduler effects have historically been conflated | Make benchmark class part of evaluator identity: fixed-shape feeds kernel campaigns, variable-request feeds `serving_runtime` |
 | **P0.3 normalized scoreboard** | Correct derived view, but must not be a hand-maintained source of truth | Derive from journal events and capability rows; bind every row to regime and candidate identity |
 
-**GPU families.** Current anchors: [MI210 speed-campaign summary](mi210-speed-campaign-summary.md),
+**GPU families.** Current anchors: [MI210 speed-campaign summary](../completed/mi210-speed-campaign-summary.md),
 [Q8/GEMV roofline](mi210-q8-dequant-gemv-roofline.md),
 [graph techniques](gemma-challenge-kernel-techniques-v7.md),
 [acceleration index](inference-research-index.md).
 
 | Draft family | Audit verdict | Seed disposition |
 |---|---|---|
-| **G1 host/PCIe/pinned-memory NUMA** | Strong, cheap, still relevant. A four-arm P2-5j placement protocol already exists — consume it, do not reinvent a duplicate sweep. **Note: that protocol was deleted from git (§3.7) and must be restored before the seed is executable.** **Node attachment resolved 2026-08-03: the MI210 is on NUMA node 1** (verified three ways — `/sys/class/drm/card2/device` `0x740f`, `/sys/bus/pci/devices/0000:43:00.0/numa_node`, KFD topology node 4). **The GPU lane's host threads at 184–191 are on NUMA node 3** per `numactl` — neither device-local nor adjacent, and device-local placement has never been tried. **Scope narrowed by measurement 2026-08-03**: bulk H2D/D2H transfer is node-INDEPENDENT (all four nodes within 0.1%), so this placement costs nothing on the transfer path; the open question is host-side memory access during serving. Also correct the link generation: it is **measured Gen4 x16**, not the PCIe 5.0 our docs claimed | `READY_EXISTING_PROTOCOL`, config/placement campaign; node attachment now imported, historical placement confounds still to import |
+| **G1 host/PCIe/pinned-memory NUMA** | Strong, cheap, still relevant. The restored four-arm P2-5j placement protocol at `docs/design/p2-5j-host-thread-placement-sweep-protocol.md` is the one execution owner — consume it, do not reinvent a duplicate sweep. **Node attachment resolved 2026-08-03: the MI210 is on NUMA node 1** (verified three ways — `/sys/class/drm/card2/device` `0x740f`, `/sys/bus/pci/devices/0000:43:00.0/numa_node`, KFD topology node 4). **The GPU lane's host threads at 184–191 are on NUMA node 3** per `numactl` — neither device-local nor adjacent, and device-local placement has never been tried. **Scope narrowed by measurement 2026-08-03**: bulk H2D/D2H transfer is node-INDEPENDENT (all four nodes within 0.1%), so this placement costs nothing on the transfer path; the open question is host-side memory access during serving. The link is measured Gen4 x16, not PCIe 5.0. **2026-08-11 constitution audit:** CPU-affinity variation makes P-BENCH-PLACEMENT-1 controlling; the old four-arm design lacks its full composite. The strict finalizer/context bridge is complete and observation-only; it preserves all arms and cannot select a placement | `READY_OBSERVATION_ONLY`; run only to prioritize a compliant successor. A decision needs human protocol ratification or a full P-BENCH-PLACEMENT-1 execution; then ingest the receipt without relabelling it as kernel speedup |
 | **G2 batch-one low-bit GEMV** | Too broad as written. Generic Q8 dequant is a stale premise (integer-native path); generic megakernel and several speculation/prefetch variants have matching negative or conditional history; workgroup sizing and prior prefetch changes are legacy priors, not patches to replay on v8. Layout/coalescing and MLP questions remain conditional on a fresh profile | Split into atomic priors; seed only current-profile gaps — coalescing/layout if cache-line evidence is poor, or another gfx90a MLP lever if the production path still exposes it |
 | **G3 GPU-native low-bit layouts** | Sound high-upside family, but only if metadata traffic, cache-line use, unpack cost, or occupancy is currently deficient. Startup time and VRAM/context cost are first-class outputs | `MEASUREMENT_FIRST`; T1 starts with load/repack accounting plus captured GEMV/MMQ shapes, then one tiny real graph |
 | **G4 persistent grouped MoE** | Valid high-effort family for batched MoE; must be distinguished from the persistent stream-K MMQ path already present. "Persistent" alone is not novelty | `CONDITIONAL_HIGH_EFFORT`; require routing/expert wall share, grid/occupancy evidence, and a target batched regime before source work |
@@ -3246,7 +3519,7 @@ negatives so the planner cannot omit inconvenient history.
 | **G7 LM head/logits/top-k/sampling** | Good portable family spanning projection and exact/distributional sampling correctness; atomize rather than propose one giant fusion | `MEASUREMENT_FIRST`; profile tail share, then isolate projection, partial top-k, and sampler fusion seeds |
 | **G8 shape-bucketed HIP graphs** | Generic graph enablement already implemented and measured; some graph-key/onegraph variants were neutral, conditional, or deferred. Surviving question is exact shape-recapture/launch-gap evidence for a named workload | Mark generic capture `ALREADY_SUPPORTED` **with a receipt**; seed only when a shape histogram shows costly misses in an uncovered family |
 | **G9 recurrent/GDN/SSM decode fusion** | Valid architecture-specific family, but history already rejects an occupancy rewrite and supports a state-format lever in particular regimes. Targeted fusion needs current per-block wall share and strict rollback/state tests | `CONDITIONAL`; import both the positive state-format prior and the occupancy negative. Never seed a generic GDN optimization |
-| **G10 chunked recurrent prefill** | Already owned by [`k28-fused-chunked-gdn-kernel-research.md`](k28-fused-chunked-gdn-kernel-research.md) (active; Phase-0 ceiling run 2026-07-20, no fused recurrence kernel written) with extensive correctness prerequisites | `OWNED_EXISTING_SEED`; ingest K28's state, gates, and reopen conditions as the canonical seed lineage |
+| **G10 chunked recurrent prefill** | Closed by the governed direct-profiler gate in [`k28-fused-chunked-gdn-kernel-research.md`](../completed/k28-fused-chunked-gdn-kernel-research.md): optimistic 4x-op full-model ceiling falls 11.55% → 9.14% from 2K → 32K | `CLOSED_NO_GO`; retain as negative seed evidence, never synthesize a fused-kernel task without a new materially higher ceiling |
 | **G11 mixed-KV specialized attention** | One of the clearest remaining concrete gaps: the default path can fall back on mixed q4/f16 while blanket all-quant support harms protected homogeneous paths | `READY_AFTER_PROTOCOL`; seed a dedicated mixed-format path with no-fallback proof and homogeneous f16/f16 and q4/q4 sentinels |
 | **G12 joint speculation-depth/batch/context policy** | Strong and cheap, but a serving/config policy rather than a kernel source freeze; prior results prove the sign is regime-specific | `READY_SERVING_ADAPTER`; search the existing parameter surface cheaply and release through `serving_runtime` |
 | **G13 vLLM capability audit** | Useful design oracle, but a broad rerun is stale work — earlier local audits already separated dense-control advantages from gfx90a/model blockers | Import the existing capability result; reopen only on a source-version, supported-model, quant, or gfx90a capability change. Port algorithms via `oracle_port` (§6.5), never unsupported instructions |
@@ -3260,7 +3533,7 @@ calibration caveat are in [`mi210-q8-dequant-gemv-roofline.md`](mi210-q8-dequant
 | New family | Audit verdict | Seed disposition |
 |---|---|---|
 | **G14 architect MoE-IQ2 batch-1 GEMV** | `Qwen3.5-122B-A10B UD-IQ2_M` attains **10.3%** — our worst rung by 2×, and a **production-serving** model, so a win lands on a live role rather than a benchmark. Reaching even the Q4_K rung takes 43.7 → ~145 tok/s. **But a kill-criterion must be attached before funding:** on gfx906 an optimised community fork **and** vLLM independently converge on ~10% bandwidth for MoE batch-1 — the same rung. Two independent stacks hitting one wall means this may be an **architectural floor**, not a kernel gap | `CONDITIONAL_PROBE_FIRST`; the cheapest discriminator is not a kernel — establish whether the ~10% MoE batch-1 rung is architectural before any source work. Band if it is not: +2–3×, MED-LOW confidence |
-| **G15 batched elementwise/norm fusion (GPU)** | **43% of B=128 decode time is non-GEMM elementwise/norm; GEMM is only 37%.** The finding has existed since 2026-07-04 in [`mi210-mfma-compute-bound-paths.md:11`](mi210-mfma-compute-bound-paths.md) and was **never made a seed** — a genuine gap in the G-family, not a duplicate. Distinct from CPU-family C2: different memory hierarchy, different fusion boundaries, different correctness surface | `READY_PROFILE_SELECTED`; seed exact operator clusters from a current B=64/128 wall-share map, not "fuse the tail" generically. Band +20–27%, HIGH confidence |
+| **G15 batched elementwise/norm fusion (GPU) — CLOSED_NO_GO 2026-08-11** | The old **43% non-GEMM** bucket was too coarse to fund fusion: it conflated gather/scatter and runtime copies with actual elementwise/norm work. A clean frozen-v9 B=64/128 trace now separates the families. Verdict-bearing norm + activation + elementwise share is only **1.837% / 1.490%**, while B=128 is instead dominated by gather/scatter **18.631%** and recurrent work **17.464%** | `CLOSED_NO_GO`; the predeclared 20% target-selection floor is missed by more than 13x. Retain the exact cluster table as negative seed evidence; do not author G15 fusion without a new current trace above that floor |
 | **G16 MoE expert-gather GEMV** | Our dense/MoE attainment ratio is **2.1×** (fp16 62.6 → MoE-Q8 21.3) against NVIDIA's **1.3×** (GB10 dense 77–80 → MoE-Q8 59.6) on the same engine. That excess ratio is the gather, not the quant — it is the one place where our sag is measurably worse than a comparison platform's rather than merely present | `MEASUREMENT_FIRST`; first artifact is an expert-token histogram plus gather wall share at the production routing skew, then one atomic gather experiment. Band ~2.0×, MEDIUM |
 
 **CPU families.** Current anchors: [CPU optimization index](inference-research-index.md),
@@ -3339,14 +3612,41 @@ readiness, and two of them are cheaper than anything currently in the list:
 0. **Measured achievable MI210 bandwidth** (§14 AK1) — one hour, no kernel, and it is the denominator of
    every roofline number the loop will read or emit. Ranked ahead of P0 because P0's profile manifest
    consumes it.
-3b. **G15 batched elementwise/norm fusion** — the largest HIGH-confidence GPU band available (+20–27%)
-   and it sits on an already-measured wall share, so its discriminator is a profile it can compile
-   immediately rather than a new experiment.
+3b. **G15 batched elementwise/norm fusion — CLOSED_NO_GO 2026-08-11.** The strict frozen-v9 B=64/128
+   map puts norm + activation + elementwise at only 1.837% / 1.490%, far below the predeclared 20%
+   floor. The old 43% non-GEMM remainder was not an operator cluster: at B=128, gather/scatter is
+   18.631% and recurrent work 17.464%. Do not fund fusion from the coarse historical bucket.
 7b. **G16 MoE expert-gather** — after the expert-token histogram C5/G4 already requires, so it costs one
    shared instrument rather than its own.
 9b. **G14 architect MoE-IQ2** — last on purpose. Its kill-criterion probe runs first and may retire it
    at near-zero cost; funding a kernel before that probe is how a campaign gets spent on an
    architectural floor.
+3c. **G17 gfx90a WGM launch-order locality — CLOSED_NO_GO 2026-08-11.** The real stream-k MMQ
+   none/2/4/8/16/32 sweep passed 43/43 correctness in every cell, but WGM0 won wall time and every
+   nonzero mapping regressed 1.286–4.050%. WGM8 also reduced all-MMQ TCC hit rate from 67.304% to
+   59.849% at nearly flat read-request volume, falsifying transfer from the synthetic L2 proxy. Keep
+   WGM0 and retain the negative receipts in INF-36. Budget briefly returned to G15, whose strict
+   current profile then closed it; advance to G18 / the remaining measured seed queue instead.
+7c. **G18 Q4_K superblock-unpack attribution — MECHANISM CONFIRMED, CEILING REFRAMED 2026-08-11.**
+   The representative `m=17408,n=1,k=5120` single-pass PMC matrix found Q4_K versus the same-bit
+   Q4_0 control at equal 34,816-wave dispatches: +112.5 VALU and +35 INT32 instructions/wave, with
+   +11.751% median device duration. Exact inside-kernel wall share remains unidentifiable because
+   unpack is fused, so no share was invented. The former +38–43% single-lever expectation is not
+   supported; any successor proposal must name the exact instruction subset it removes and treat
+   roughly 10.5% as diagnostic Q4_K-to-Q4_0 headroom, not a promotion claim. INF-37 owns the next
+   surgical source hypothesis. Receipt SHA-256 `1e34339c1c986413c4eeb1b56ba3202c8763d08df45aba1c0580917c888f5e47`.
+   The first exact source hypothesis was correctly falsified before timing: replacing lane-local
+   8-element Q8 sums with the stored 32-element block aggregate failed 5/5 representative correctness
+   cases while frozen v9 passed 5/5. INF-37 now requires ISA accounting that separates scale/min
+   unpack from the necessary subgroup sums before another source change.
+   That accounting attributed 20/35 INT32 instructions/wave to required subgroup sums and bounded
+   the residual scale/min plus address/control budget at 15/35. The follow-on branchless scale/min
+   candidate passed 5/5 representative correctness cases and, in a balanced dirty-source diagnostic,
+   reduced median device duration **10.554%** while increasing VALU/wave **9.238%** and INT32/wave
+   **11.538%**. The direction therefore appears to be exec-mask/control-flow reduction rather than
+   fewer dynamic instructions. Receipt SHA-256
+   `de4241bd26b77f5dac7df746d165034b67e6f8105133daf0359142a97dd35d5d`; no promotion claim is
+   admissible until explicit experimental-tree commit approval and a clean governed replay.
 
 **Inserted 2026-08-10 — v9 DSpark low-hanging upstream queue.** These are concrete merged patches or
 bounded monitors, not speculative research themes. Source state was rechecked on 2026-08-10; the
@@ -3437,7 +3737,7 @@ will spend kernel-authoring budget rediscovering ports.
   carries a 15-row toggles table whose column is literally "effect on trace interpretation", including
   cases where a flag *intentionally* disables a fast path so split kernels are expected. Without it,
   every legitimately-disabled path reads as a missing optimization. Our substrate is
-  [cpu-kernel-env-flags-inventory.md](cpu-kernel-env-flags-inventory.md), which inventories flags
+  [cpu-kernel-env-flags-inventory.md](../completed/cpu-kernel-env-flags-inventory.md), which inventories flags
   without their expected trace consequence. This is the three-states-not-two discipline as data.
 - [x] **AK-CAT-4 — Adopt the pinned-head refresh discipline.** ✅ 2026-08-10. The reference pins the upstream head of
   every scanned project with a dated note and ships the exact scan commands, making staleness
@@ -3462,12 +3762,15 @@ will spend kernel-authoring budget rediscovering ports.
   symbol's absence in a framework's *model* file alone produces a false negative; this session nearly
   reported a source as fabricated for exactly that reason before finding all four symbols in the
   *kernels* tree. Absence claims must name the trees searched.
-- [ ] **AK-DEL-1 — SCOPE-REDUCTION GATE: measure the bucket split before building any novel-kernel
-  proposal generator.** Run AK-CAT-1 once over real findings and record how many land in each of the
-  four buckets. If a–c dominate — as the reference workflow's own "prefer reporting" ordering implies
-  they will — then generative capacity aimed at bucket (d) is aimed at the smallest slice of the
-  space, and the cheaper win is a better catalogue. **This item exists to shrink scope, not to add
-  machinery; it must be run before AK-CAT-2 is expanded past a seed set.**
+- [x] **AK-DEL-1 — SCOPE-REDUCTION GATE: measure the bucket split before building any novel-kernel
+  proposal generator.** ✅ 2026-08-11 — replayed AK-CAT-1 over a preserved real `rocprofv2` trace,
+  normalized to remove host-identifying absolute timestamps and bound to the original trace SHA-256.
+  The 9 dispatches formed 3 admitted kernel families; all 3 landed in bucket (a), with 0 in (b)–(d).
+  The report therefore selects `expand_catalogue_before_novel_generator`. This is deliberately a
+  corpus-bounded scope result, not a claim about all workloads. Evidence:
+  `epyc-inference-research/data/autokernel/prior_art/ak-del-1-k25-q8-mmvq-n1-20260717/`, research
+  commit `df02169e`. The catalogue was refreshed against frozen v9 and generic `mul` matching was
+  tightened so it cannot misclassify RMSNorm/MUL/RoPE fusion rows.
 
 Implementation evidence for AK-CAT-1–5 and AK-KM-1 is
 `epyc-inference-research/scripts/kernel_rnd/autokernel/prior_art.py`, its reviewed JSON seed catalogue,
@@ -3584,12 +3887,19 @@ the standing protocol may make a claim.
   declared threshold — never by convenience. Available today: one exclusive GPU device claim plus
   historically exercised CPU shapes at 4×48t, 8×24t, 16×12t, 32×6t and 48×4t. Those records establish
   fan-out feasibility, not rank fidelity.
-- [ ] **AK-LN-2 — Partition-depth calibration.** Run one fixed candidate set at full-machine and at
+- [x] **AK-LN-2 — Partition-depth calibration.** ✅ 2026-08-11. Run one fixed candidate set at full-machine and at
   **every historically exercised split depth** — 4×48t, 8×24t, 16×12t, 32×6t and 48×4t — and
   measure each split's **rank correlation** against the full-machine ordering. The preserved sweep
   proves those fan-outs run; it does not prove rank fidelity. Needs no new candidates — reuse a banked
   set. **Pre-register the prediction** before running: bandwidth-bound changes lose fidelity fast as
-  partitions shrink (they compete for the same memory system), instruction-level changes hold.
+  partitions shrink (they compete for the same memory system), instruction-level changes hold. The
+  pre-registered anchor/IQK-off/flash-attention-off calibration found full-machine rank fidelity 1.0.
+  Depth 4 retained the ordering (1.0), but depths 8, 16, 32 and 48 inverted IQK-off versus
+  flash-attention-off (Spearman 0.5). No historical split depth is therefore admitted as a ranking
+  proxy by this candidate set. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/ak-ln-2-x5a-lanes-20260811T1400Z/receipt.json`, SHA-256
+  `c207a46f7e1868deeca4628faedfd47b933839a921b0b6d472055ce80c415618`. Research runner:
+  `scripts/benchmark/run_autokernel_cpu_lane_calibration.py`.
   Pre-registration is what makes a confirmation informative rather than a post-hoc story.
 - [x] **AK-LN-3 — Cross-lane A/A control — necessary, and NOT sufficient.** ✅ 2026-08-10. §15.2's A/A control run
   per lane detects a per-lane-position offset. It **cannot** detect bias correlated with mechanism
@@ -3613,31 +3923,57 @@ the standing protocol may make a claim.
 Implementation evidence: `lanes.py` records each lane's physical-core-share cost, capacity, proxy,
 CPU set, memory binding and historical evidence reference. It refuses mmap and physical-core overlap,
 requires A/A plus class-specific rank calibration, falls back to full verification without it, and
-fans candidates over the measured highest-share op in waves. AK-LN-2 remains empirical.
+fans candidates over the measured highest-share op in waves. The AK-LN-2 campaign rejected every
+historical split as a general ranking proxy; those lane shapes remain execution capacity only unless a
+narrower change-class calibration later clears the same gates.
 
 ### AK-BH — baseline honesty (needs a GPU window; sequence T0 probes first)
 
 Sequence **RVP-T0-1 → RVP-T0-2 → AK-BH-1 → AK-BH-2**, so two thirds of this block can falsify at zero
 GPU cost before any GPU claim is filed.
 
-- [ ] **AK-BH-1 — hipBLASLt vs rocBLAS microbench at our prefill shapes, standalone.** `libhipblaslt.so`
+- [x] **AK-BH-1 — hipBLASLt vs rocBLAS microbench at our prefill shapes, standalone.** ✅ 2026-08-11 —
+  `libhipblaslt.so`
   is installed on this host and **not linked** by our build. Measure the two libraries against each
   other at our shapes *before* touching ggml, so the question "is our GPU baseline the honest one" is
   answered by a 30-minute microbench rather than by a kernel campaign. This is the structural analogue
   of the baseline-deflation finding this batch turned up: a result measured against a weaker-than-
   available baseline overstates the win by the size of the gap, and the gap here is measurable today.
-  Complements the §"New index-backed leads" hipBLASLt grouped-GEMM lever.
-- [ ] **AK-BH-2 — Baseline-honesty factorial: `-fa 0|1` × `ROCWMMA_FATTN` × `MMQ_MFMA`.**
+  Complements the §"New index-backed leads" hipBLASLt grouped-GEMM lever. The best-heuristic live
+  receipt covered nine shapes: hipBLASLt won three, while its ratio to rocBLAS ranged from 0.734× to
+  1.322×. A universal library replacement is explicitly declined; the strongest baseline is
+  shape-specific. Receipt: `/mnt/raid0/llm/autokernel/probes/ak-bh-1-best-of-heuristics-20260811T0948Z/receipt.json`,
+  SHA-256 `aca0dc59dbea9745008e00f3958a767dfb07b4c9e2e21f8946239ec981762cfc`. Research runner:
+  `scripts/benchmark/run_rocm_gemm_baseline_compare.py`; comparator source:
+  `scripts/benchmark/rocm_gemm_baseline_compare.cpp`.
+- [x] **AK-BH-2 — Baseline-honesty factorial: `-fa 0|1` × `ROCWMMA_FATTN` × `MMQ_MFMA`.** ✅ 2026-08-11
   **Correction to a standing project assumption**: `llama-bench`'s `-fa` default is
   `LLAMA_FLASH_ATTN_TYPE_AUTO`, not `0` — verified at `tools/llama-bench/llama-bench.cpp:389` in the
   frozen v8 tree. **AUTO is worse for baseline honesty than a known-off default**, because it resolves
   differently per model, quant and backend: two runs with *identical command lines* can silently
   differ, manufacturing or hiding a speedup with no visible flag difference. Pin `-fa` explicitly on
-  every arm and **record what AUTO resolved to** when reading any historical number. 4 builds + 1
-  region claim.
-- [ ] **AK-BH-3 — CPU-lane baseline-honesty arm, run concurrently with AK-BH-2.** Different claim type,
-  different resource (correction 2 above), so it costs no additional wall-clock. Establishes whether
-  the CPU-side anchor carries the same class of unpinned-default exposure.
+  every arm and **record what AUTO resolved to** when reading any historical number. All eight live
+  arms completed with 30 retained repetitions. On the tested Qwen2.5-Coder-0.5B Q4_K_M prefill
+  surface, `-fa on` beat off in all four build pairs, `MMQ_MFMA` was slower, and `r1m0-fa-on` won at
+  24,647.316788 t/s. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/ak-bh-2-factorial-20260811T0952Z/receipt.json`, SHA-256
+  `2a53cee2d8513737eca894e0f34152549932b75f3e04ef541cdee1848472cfdf`. Research runner:
+  `scripts/benchmark/run_autokernel_gpu_factorial.py`.
+- [x] **AK-BH-3 — CPU-lane baseline-honesty arm, run concurrently with AK-BH-2. ✅ 2026-08-11** The
+  full-host CPU claim remained held across three randomized 30-repetition hardened arms. On the exact
+  Qwen2.5-Coder-0.5B Q4_K_M prefill surface, implicit AUTO measured 5,569.961069 t/s, explicit ON
+  5,451.900259 t/s, and explicit OFF 2,741.087873 t/s. AUTO therefore behaves like the fast ON path
+  here while hiding the choice in argv. Every exact measurement window retained package-power
+  evidence; the counter permission was restored to `0400`. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/ak-bh-3-cpu-baseline-honesty-20260811T1330Z/receipt.json`, SHA-256
+  `157580a4133a5b7404384e16a4f0b3737f54480365694cfdfd079a6ce9c99911`. Research runner:
+  `scripts/benchmark/run_autokernel_cpu_baseline_honesty.py`.
+- [x] **AK-BH-4 — Encode strongest-baseline selection by exact measured surface. ✅ 2026-08-11**
+  `evaluator/baseline_honesty.py` requires both rocBLAS and hipBLASLt observations for one identical
+  model SHA, quant, operation, shape, dtype, build SHA, and explicit factor set; selects by declared
+  metric direction; refuses `auto`, missing or duplicate provider arms, metric mismatch, and any
+  candidate model/quant/shape/factor transfer. Nine focused tests pass. Research commit `5fbd471b`.
+  The earlier 0.5B result is consequently evidence for that surface only, never a portable baseline.
 
 ### AK-OP — operator-only (measurement trust boundary is human-amendment-only)
 
@@ -3660,12 +3996,10 @@ Neither of these may be executed by a session; both are decision packages for th
     authoring cycle and should be paid when there is a claim that needs it.
   - **Requires a human amendment to `MEASUREMENT.md`** — AK-D10 and the constitution's trust boundary.
     No session may self-apply it.
-- [ ] **AK-OP-2 — Root-side `--setperfdeterminism` capability (operator decision) — GATED on RVP-T0-1.**
-  Clock pinning would remove a variance source from every GPU measurement, but the `sysfs` control
-  nodes are root-owned and this container is not the right place to hold that capability. **Do not
-  bring this to the operator until RVP-T0-1 has run**: if the card never approaches its power cap
-  under a saturating GEMM, clock excursion is not a live variance source here and the correct outcome
-  is to decline and close this row at zero cost.
+- [x] **AK-OP-2 — Decline root-side `--setperfdeterminism` capability.** ✅ 2026-08-11 — RVP-T0-1
+  held 1700 MHz for 99.5868% of a 60-second saturating GEMM while peaking at only 200 W against the
+  300 W cap, so the card never approached the cap and clock excursion is not a live variance source
+  under this workload. No root capability or measurement-constitution change is warranted.
 
 ### Recorded declines (so they are not re-derived)
 
@@ -3712,10 +4046,16 @@ so they carry derived actionables the plan predates._
   counter wrap and are labelled `shared_package_window`, never lane-exclusive power. Missing or
   unreadable powercap data is `COULD_NOT_CHECK` and prevents a CPU campaign from claiming the control.
   Empirical cross-lane coupling still belongs to the authorized lane-calibration campaign.
-- [ ] **AK-X-5a — Run the cross-lane package-power/frequency acceptance.** Exercise the same fixed
+- [x] **AK-X-5a — Run the cross-lane package-power/frequency acceptance.** ✅ 2026-08-11. Exercise the same fixed
   candidate set across every AK-LN-2 split depth with readable `energy_uj`; retain each exact-window
   shared-package receipt and test whether lane position or concurrent depth changes the A/A distribution.
-  This is empirical inference work and requires the operator's explicit permission.
+  This is empirical inference work and requires the operator's explicit permission. The authorized
+  campaign retained readable exact-window package-energy evidence for every arm and restored
+  `energy_uj` to mode `0400`. Every split failed the predeclared combined acceptance: maximum anchor
+  lane-position deviations were 37.36%, 53.25%, 77.43%, 36.19% and 16.28% at depths 4, 8, 16, 32 and
+  48 respectively (limit 10%); loaded-frequency ratios to full were 0.815, 0.829, 0.794, 0.743 and
+  0.800 (limit 0.8). The full CPU claim remained held through all waves and was released. Evidence is
+  the AK-LN-2 receipt above.
 - [x] **AK-X-6 — Turn-budget stopping rule driven by AK-PT-1.** Refine turns continue only while the
   rescued-kernel speedup distribution overlaps the persistent-kernel distribution; once a turn admits
   only rescued kernels below the contribution floor it is repair-only and does not advance the search.

@@ -10,7 +10,7 @@
 **Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md)
 **Related**:
 - [`model-registry-v5-deployment-draft.yaml`](model-registry-v5-deployment-draft.yaml) — `todo_or_undecided` slot for `architect_general`
-- [`cpu-kernel-env-flags-inventory.md`](../active/cpu-kernel-env-flags-inventory.md) — Per-Arch Deployment Matrix
+- [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) — Per-Arch Deployment Matrix
 - [`single-instance-system-tuning.md`](../active/single-instance-system-tuning.md) — host prerequisites
 
 ## Why this exists

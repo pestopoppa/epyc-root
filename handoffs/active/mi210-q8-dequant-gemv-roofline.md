@@ -1,8 +1,8 @@
 # Handoff: MI210 single-stream roofline — Q8 dequant-GEMV kernel + batch-1 latency levers
 
-**Status**: OPEN — kernel-authoring task (llama.cpp-experimental). **Created**: 2026-07-04 (Fable5 window-2 MI210 campaign follow-on).
-**Owner tree**: `/mnt/raid0/llm/llama.cpp-experimental` (branch `upstream-mtp-verify`; kernel work goes here, NEVER production-consolidated-v6). HIP build `build-hip/`, `export LD_LIBRARY_PATH=<bin>:/opt/rocm/lib; export HIP_VISIBLE_DEVICES=0`.
-**Substrate**: MI210 gfx90a/CDNA2, 64 GB HBM2e, ~1.64 TB/s peak, ROCm 6.2. All numbers OBSERVATION (no P-GPU-1).
+**Status**: OPEN — Q4_K inside-kernel attribution and IQ2 governed replay remain live. **Created**: 2026-07-04 (Fable5 window-2 MI210 campaign follow-on).
+**Owner tree**: `/mnt/raid0/llm/llama.cpp-experimental`; all work starts from current frozen production v9 in an isolated experimental branch. The old `upstream-mtp-verify`, production-v6, and `build-hip/` instructions below are historical only.
+**Substrate**: MI210 gfx90a/CDNA2, 64 GB HBM2e, ROCm 6.2. Current runs follow P-GPU-1, exclusive device claims, numeric in-window sampling, and the governed INF-48 profiler runners; pre-P-GPU-1 observations below retain their historical authority only.
 **Context doc**: `handoffs/active/fable5-window2-findings-05b-mi210-inference-architecture.md` §1/§9.
 
 ## UPDATE 2026-07-04 — measured results REFRAME this handoff (Tier-1 premise is WRONG; async-prefetch is the lever)
@@ -175,11 +175,113 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
   (`progress/2026-07/2026-07-05-mi210-capability-kernel-rnd.md:23-24`), and the IQ2-vs-Q4 paired eval returned Δ0.0pp,
   McNemar p=1.000 (`progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md:12`). Certified by read-certification (`auditor`).
 - [ ] SoA-repack lever (only if coalescing measured poor - currently deemed healthy)
-- [ ] Optional stream-K K-splitting for Q8-MMQ aggregate (separate bet)
+- [x] Generic stream-K K-splitting for Q8-MMQ aggregate is already present and therefore not a new
+  lever ✅ 2026-08-11 — the current CDNA MMQ path is persistent stream-K, and the governed WGM
+  experiment exercised that exact launch. Retain only a distinctly justified higher-persistent-grid
+  residual (for example `2*nsm`) behind fresh grid/occupancy evidence; do not reopen “add stream-K.”
 - [x] Recompute the full quant ladder on one consistent basis (fp16 62.6 / Q8_0 50.2 / Q4_K 35.1 / MoE-Q8 21.3 / MoE-IQ2 10.3) ✅ 2026-08-03 — via /research-intake Stage-2b; reproduces the fable5 series to within 1 pp
 - [x] Correct the IQ2_XXS access characterization: four INDEPENDENT gathers (single 8-byte memcpy, ILP≈4) plus FOUR sign-table gathers, not a dependent pointer chase with one sign read ✅ 2026-08-03
-- [ ] **Item A — Q8_0 50→62 rung (achieved-bandwidth / occupancy).** The 2026-07-04 finding stands: no per-element fp dequant to hide. Continue on the async-prefetch/MLP track; do NOT reopen an iqk port for this rung
-- [ ] **Item B — Q4_K 35→50 rung (k-quant superblock unpack).** A DIFFERENT mechanism from item A and the largest single banded win available (+38–43%, high confidence). Decisive first measurement: per-op wall share of superblock unpack inside `mul_mat_vec_q` at Q4_K vs Q8_0 on the same model, before any kernel is authored
+- [ ] **Item A — Q8_0 50→62 rung (achieved-bandwidth / occupancy).** There is no per-element fp dequant to hide; do NOT reopen an iqk port for this rung. The governed frozen-v9 replay now supersedes async-prefetch as a presumed win: its 20-block median was only **+0.936%**, below the 2% floor, with one negative block (`NOT_REPRODUCED`; receipt SHA-256 `7b173cafcccb8a99319bf93a80fd13a2e94a400afab2bf03355363f9521ab17f`). Reopen only from fresh cache-line/MLP profiling evidence, not the 2026-07-04 patch prior.
+- [x] **Item B — attribute the Q4_K superblock-unpack mechanism before authoring.** ✅ 2026-08-11 —
+  the representative-shape mechanism-counter route below passed. It supports a materially larger
+  instruction burden than the same-bit Q4_0 control, but not the former +38–43% single-lever premise.
+  - **2026-08-11 bounded op probe:** the hash-bound single-process C4 reports at
+    `/mnt/raid0/llm/autokernel/probes/c4-{q4k,q8}-op-singleproc-20260811T12{10,15}Z/report.json`
+    hold `m=16,n=1,k=256` and the dispatch sequence fixed. Q4_K versus Q8_0 `mul_mat_vec_q`
+    share is 41.95% versus 40.92%, and per-dispatch duration is ~5.72 versus ~5.50 µs. That small
+    synthetic surface does **not** explain the 35→50 roofline rung and cannot see unpack work inside
+    the fused kernel. Item B therefore remains open for a representative-shape counter/source-timer
+    probe; the current result prevents mistaking a complete kernel-family table for the requested
+    inside-kernel attribution.
+  - [x] **Run the representative-shape single-pass PMC differential and resolve what is identifiable.**
+    ✅ 2026-08-11 — clean frozen-v9 `test-backend-ops` ran four balanced blocks × five exact
+    dispatches at model-derived `m=17408,n=1,k=5120`. A single rocprofv2 pass collected
+    `SQ_WAVES`, `SQ_INSTS_VALU`, and `SQ_INSTS_VALU_INT32`; every counter was exactly invariant
+    within and across blocks. Q4_K and the same-bit Q4_0 control both launched 34,816 waves, but
+    Q4_K carried **+112.5 VALU instructions/wave**, **+35 INT32 instructions/wave**, and a
+    **+11.751%** median dispatch duration (77,600 vs 69,440 ns). Q8_0 launched twice the waves, so
+    it remains the quant-ladder control rather than the closest unpack control. The fused dispatch
+    makes an exact inside-kernel wall share unidentifiable; the admissible result is differential
+    mechanism evidence, not a fabricated share. Receipt:
+    `/mnt/raid0/llm/autokernel/probes/inf37-q4k-unpack-v9-20260811-r7/receipt.json`, SHA-256
+    `1e34339c1c986413c4eeb1b56ba3202c8763d08df45aba1c0580917c888f5e47`; research
+    `70374c43` (promoted via `ac88d75a`). Four rocprofv2 exit-139 attempts were retained and only
+    transport-retried under the predeclared two-attempt ceiling; no parsed counter failure was
+    retried. **The former +38–43% single-lever expectation is not supported by this matched
+    diagnostic.** Before authoring, use the exact instruction delta to define a surgical unpack
+    change and test whether it can recover part of the observed ~10.5% Q4_K-to-Q4_0 headroom.
+  - [x] **Author and test one surgical Q4_K unpack hypothesis.** ✅ 2026-08-11 — the candidate removed
+    the two lane-local Q8 partial-sum `dp4a` operations per `QR4_K` iteration and consumed the
+    already-stored `block_q8_1.ds.y` sum. It failed **5/5** representative Q4_K correctness cases
+    (relative errors 0.729–0.977 versus the 0.0005 limit), while frozen v9 passed 5/5 under a separate
+    released MI210 claim. The reason is structural: `ds.y` covers all 32 block elements, whereas each
+    MMVQ lane needs a distinct 8-element slice selected by `iqs`. Receipt SHA-256
+    `c8c055ff43f022ae4c61e3142b0278c15a807476db03aa29d16a50b6dbb25eea`; the one-file diagnostic
+    remains uncommitted and has no performance or promotion authority.
+  - [x] **Split the remaining +35 INT32/wave burden before a second Q4_K source candidate.** ✅
+    2026-08-11 — exact gfx90a disassembly of the measured
+    `mul_mat_vec_q<Q4_K,1,false,false>` specialization contains four extra
+    `v_dot4c_i32_i8` sites for lane-local Q8 sums. At `k=5120`, Q4_K has 20 superblocks and each
+    lane executes the vecdot five times, attributing **20/35 INT32 instructions/wave (57.1%)** to
+    the required subgroup sums. The residual **15/35 (42.9%)** covers six-bit scale/min unpack plus
+    Q4_K-specific packed-nibble address/control; it is not honestly pure unpack yet. Static receipt:
+    `/mnt/raid0/llm/autokernel/probes/inf37-q4k-isa-attribution-20260811/receipt.json`, SHA-256
+    `01458d64fcd9d2fab0bdb883a619f0904ab3aa3c28d23f3ef8a3fc881517860c`.
+  - [x] **Test a correctness-preserving branchless six-bit scale/min decoder.** ✅ 2026-08-11 — the
+    one-file experimental candidate leaves both lane-local Q8 subgroup sums untouched and replaces
+    only the divergent `j < 2` scale/min extraction. The rebuilt gfx90a backend passed all five exact
+    representative `m=17408,n=1,k=5120` Q4_K correctness repetitions. Static ISA size remained 1,452
+    bytes while the specialization lost three `s_cbranch_execz` and two `s_branch` sites. A balanced
+    two-control/two-candidate diagnostic then found **69,840 vs 78,080.5 ns median (-10.554%)**, despite
+    the candidate executing **236.5 vs 216.5 VALU/wave (+9.238%)** and **87 vs 78 INT32/wave
+    (+11.538%)**. This is directional evidence for reduced exec-mask/control-flow cost, not an
+    instruction-count win. The source is uncommitted, so the result is explicitly diagnostic-only:
+    `/mnt/raid0/llm/autokernel/probes/inf37-q4k-branchless-scales-20260811/diagnostic-paired-r3/receipt.json`,
+    SHA-256 `de4241bd26b77f5dac7df746d165034b67e6f8105133daf0359142a97dd35d5d`.
+  - [ ] **Commit only after explicit experimental-tree approval, then clean-replay the branchless
+    decoder through the governed paired runner.** The clean candidate must reproduce correctness and
+    timing before any promotion or model-level claim; the dirty diagnostic cannot satisfy this gate.
 - [ ] **Item C — architect MoE-IQ2 at 10.3%**, our worst rung by 2× and a production-serving model. Attach the kill-criterion first (below) — this is a probe, not yet a funded kernel
 - [ ] Kill-criterion probe for item C: on gfx906 an optimised community fork **and** vLLM independently converge on ~10% bandwidth for MoE batch-1 — the same rung as ours. Two stacks hitting one wall means this may be an **architectural floor**; establish cheaply whether it is before funding a kernel
-- [ ] Investigate the permanently-dead `z_HAVE_FANCY_SIMD` AVX512-VPOPCNTDQ IQ2 sign path on an EXPERIMENTAL branch only (production kernel is frozen; this is a CPU-side finding filed here for mechanism adjacency)
+  - **2026-08-11 tool-boundary result:** the exact main tensor type in the 122B UD-IQ2_M file is
+    IQ2_XXS (94 tensors; alongside IQ3_XXS/Q5_K/Q6_K). Ten unprofiled seeded warm-up repetitions pass,
+    but `rocprofv2` exits 139 during the IQ2_XXS active trace even after moving all repetitions into
+    one backend process. Durable failure receipt:
+    `/mnt/raid0/llm/autokernel/probes/c4-iq2xxs-op-singleproc-20260811T1220Z/receipt.json`,
+    SHA-256 `fdf355ebc933f3cf20def077cdcc7b998c0072295c00c97b977ad32358c284e2`.
+    This is not evidence of an architectural floor. Keep the kill-criterion open and switch the next
+    probe to a non-`rocprofv2` device timer/counter path rather than retrying the same crash.
+  - [ ] **IQ2 tool-boundary follow-up:** capture the same seeded IQ2_XXS shape through a
+    non-`rocprofv2` device-timer/counter path and retain the failed receipt as the negative control.
+    The Omniperf 2.0.1 / `rocprof` v1 fallback is now durable in research, but its first governed run
+    correctly failed compatibility before profiling: clean frozen-v9 `test-backend-ops` at
+    `0db32c06` does not implement `--suite-seed` or `--repeat-suite`. The failed receipt retains the
+    exact command, clean source/binary/profiler identities, one device sample, and claim
+    acquisition/release:
+    `/mnt/raid0/llm/autokernel/probes/inf37-iq2xxs-omniperf-v1-20260811/receipt.json`, SHA-256
+    `2054a31b5f9104bcd3437b250833de6086a7dded8533e3cc9182bc9a79222510`. A prior manual smoke at
+    `/mnt/raid0/llm/autokernel/probes/omniperf-iq2xxs-v1-smoke-20260811T1238Z` produced 260 dispatch
+    rows and proves rocprof-v1 reachability, but it has no governed receipt and is non-evidence.
+    Keep this parent open until OP-11 permits a durable seeded producer and the runner records a
+    passing matched capture.
+  - [x] **Build a fail-closed Omniperf-v1 fallback runner for the IQ2 profiler boundary.** ✅ 2026-08-11 —
+    it binds clean exact source/tool/Python identities, requires seeded repeated correctness before
+    SQ/TCC collection, holds the MI210 claim, samples device state, and writes failure receipts.
+- [x] Investigate the permanently-dead `z_HAVE_FANCY_SIMD` AVX512-VPOPCNTDQ IQ2 sign path on an EXPERIMENTAL branch only (production kernel is frozen; this is a CPU-side finding filed here for mechanism adjacency) ✅ 2026-08-11
+  - Globally reviving the historical branch was correctly rejected: a governed ten-block A/B at the
+    exact IQ2_XXS `m=4096,k=14336` shapes improved `n=1` by **+5.753%** median but regressed `n=512`
+    by **-9.511%** median. The kill switch therefore encoded a real prompt-processing tradeoff, not a
+    typo. Global-candidate receipt:
+    `/mnt/raid0/llm/autokernel/probes/inf37-iq2-fancy-simd-ab-v9-20260811-r4/receipt.json`, SHA-256
+    `242cb61b122b39324316d020d1a2a4bc4be4c17ec3008a66f5ecaf7a2a7c2a91`.
+  - A one-row-only template dispatch preserves the arithmetic VPOPCNT sign decoder exclusively for
+    `kernels[0]` while every multi-row kernel keeps the table decoder. Native correctness passed
+    **44/44** supported IQ2_XXS matmul cases plus the full quantization-function suite; the AVX2-only
+    fallback compiled. In the fresh governed replay, `n=1` improved **+5.733%** median across all ten
+    blocks (range **+5.325% to +6.027%**) while `n=512` returned to parity at **+0.020%** median
+    (range **-0.117% to +0.219%**). Receipt:
+    `/mnt/raid0/llm/autokernel/probes/inf37-iq2-fancy-simd-ab-v9-20260811-r5/receipt.json`, SHA-256
+    `12dc4d95a8b208f97ce8c82ab7917f4e6aa28872a90c5fc85f15b72f07fa73ea`; candidate diff SHA-256
+    `c24892485af0bddedc641b4ae764302a3c7dc070ed2d765c8e820c01f680b470` against frozen v9
+    `0db32c06e3e550065b78311a6031ef3dd2c4f27c`.
+- [ ] With OP-12 approval, commit the one-file IQ2_XXS one-row dispatch and run matched model-level TG/PP confirmation before any promotion claim.

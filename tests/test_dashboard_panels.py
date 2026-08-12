@@ -28,6 +28,7 @@ import subprocess
 import tempfile
 import types
 import unittest
+from unittest import mock
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -114,8 +115,8 @@ class _KernelFile:
         return False
 
 
-def _fake_hub(name="fake_hub", *, funcs=None, routes=None, extra_funcs=(),
-              drop=()):
+def _fake_hub(name="fake_hub", *, funcs=None, routes=None, health_routes=None,
+              extra_funcs=(), drop=()):
     """A synthetic module shaped like the hub, for the registry's NEGATIVE controls.
 
     Built from the real registry so the controls stay honest when a panel is added:
@@ -127,10 +128,19 @@ def _fake_hub(name="fake_hub", *, funcs=None, routes=None, extra_funcs=(),
     funcs = [f for f in funcs if f not in drop] + list(extra_funcs)
     exec("\n".join(f"def {f}(*a, **k):\n    return {{}}\n" for f in funcs),
          mod.__dict__)
+    exec("\n".join(
+        f"def {src.health_func}(*a, **k):\n    return 200, {{}}"
+        for src in panels.PANELS.values() if src.health_func), mod.__dict__)
     if routes is None:
         routes = {s.route: s.payload_func for s in panels.PANELS.values()
                   if s.route and s.payload_func not in drop}
     mod.API_ROUTES = {route: getattr(mod, fn) for route, fn in routes.items()}
+    if health_routes is None:
+        health_routes = {src.health_route: src.health_func
+                         for src in panels.PANELS.values() if src.health_route}
+    mod.PANEL_HEALTH_ROUTES = {
+        route: getattr(mod, fn) for route, fn in health_routes.items()
+    }
     return mod
 
 
@@ -180,6 +190,26 @@ class RegistryTotalityTest(unittest.TestCase):
         routes["/api/ghost"] = "kernel_payload"
         gaps = panels.registry_gaps(_fake_hub(routes=routes))
         self.assertEqual(gaps["unregistered_routes"], ["/api/ghost"])
+
+    def test_an_unregistered_panel_health_route_is_a_gap(self):
+        gaps = panels.registry_gaps(_fake_hub(health_routes={
+            "/api/kernel/health": "kernel_data_health",
+            "/api/ghost/health": "kernel_data_health",
+        }))
+        self.assertEqual(gaps["unregistered_health_routes"],
+                         ["/api/ghost/health"])
+
+    def test_a_missing_panel_health_route_is_a_gap(self):
+        gaps = panels.registry_gaps(_fake_hub(health_routes={}))
+        self.assertTrue(any("/api/kernel/health" in message
+                            for message in gaps["health_route_mismatch"]), gaps)
+
+    def test_a_panel_health_route_bound_to_the_wrong_reader_is_a_gap(self):
+        gaps = panels.registry_gaps(_fake_hub(health_routes={
+            "/api/kernel/health": "board_payload",
+        }))
+        self.assertTrue(any("kernel_data_health" in message
+                            for message in gaps["health_route_mismatch"]), gaps)
 
     def test_the_baseline_fake_hub_is_clean(self):
         """COMPLIANT-PATH CONTROL: the fixture the negative controls mutate is
@@ -685,6 +715,7 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertEqual(activity["status"], "observed")
         self.assertEqual(activity["head"]["subject"], "autokernel: compose campaign")
         self.assertEqual(len(activity["head"]["short_sha"]), 10)
+        self.assertIn("across local refs", activity["scope"])
 
     def test_journal_inventory_states_its_bounded_discovery_scope(self):
         with tempfile.TemporaryDirectory() as td:
@@ -696,6 +727,35 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertEqual([row["root"] for row in inventory["journals"]],
                          [str(journal)])
         self.assertIn("--journal-root", inventory["discovery_scope"])
+
+    def test_probe_receipts_pass_through_producer_labels_without_grading(self):
+        with tempfile.TemporaryDirectory() as td:
+            state = Path(td)
+            receipt = state / "probes" / "g15-r4" / "receipt.json"
+            receipt.parent.mkdir(parents=True)
+            receipt.write_text(json.dumps({
+                "schema": "epyc.autokernel.g15_profile.v1",
+                "campaign_id": "g15-r4",
+                "result": {"verdict": "FALSIFIED_PROFILE_TARGET"},
+            }) + "\n", encoding="utf-8")
+            inventory = server._autokernel_probe_receipts(state)
+        self.assertEqual(len(inventory["receipts"]), 1)
+        row = inventory["receipts"][0]
+        self.assertEqual(row["probe"], "g15-r4")
+        self.assertEqual(row["producer_label"], "FALSIFIED_PROFILE_TARGET")
+        self.assertEqual(row["parse_state"], "parsed")
+        self.assertIn("does not grade", inventory["role"])
+
+    def test_malformed_probe_receipt_stays_visible(self):
+        with tempfile.TemporaryDirectory() as td:
+            state = Path(td)
+            receipt = state / "probes" / "interrupted" / "receipt.json"
+            receipt.parent.mkdir(parents=True)
+            receipt.write_text("{broken", encoding="utf-8")
+            row = server._autokernel_probe_receipts(state)["receipts"][0]
+        self.assertEqual(row["probe"], "interrupted")
+        self.assertEqual(row["parse_state"], "invalid_json")
+        self.assertIsNone(row["producer_label"])
 
     def test_current_state_keeps_fixed_diagnostic_and_smoke_claims_separate(self):
         with tempfile.TemporaryDirectory() as td:
@@ -742,6 +802,29 @@ class KernelActivityContextTest(unittest.TestCase):
                 json.dumps(available), encoding="utf-8")
             (probes / "smoke-receipt.json").write_text(
                 json.dumps(smoke), encoding="utf-8")
+            (probes / "preflight.json").write_text(json.dumps({
+                "schema": "epyc.autokernel.live_control_preflight.v1",
+                "measured_at": "2026-08-12T00:17:01Z",
+                "checks": {
+                    "measurement_instrument": {"outcome": "PASS"},
+                    "production_commit": {"outcome": "PASS"},
+                },
+            }), encoding="utf-8")
+            (probes / "receipt.json").write_text(json.dumps({
+                "schema": "epyc.autokernel.async_prefetch_replay.v1",
+                "campaign_id": "gpu-replay", "blocks": 20,
+                "source_branch": "production-consolidated-v9",
+                "source_commit": "frozen-head",
+                "result": {
+                    "verdict": "NOT_REPRODUCED", "all_blocks_positive": True,
+                    "contribution_floor": 0.02,
+                    "median_relative_delta": 0.0124423,
+                    "minimum_relative_delta": 0.0067,
+                },
+                "device_sampling": {"device_id": "ROCm0", "sample_count": 2544,
+                                    "source": "amdgpu-hwmon/numeric-250ms/v1"},
+                "device_claim_released": {"released_at": "2026-08-12T00:11:03Z"},
+            }), encoding="utf-8")
 
             production = root / "llama.cpp"
             production.mkdir()
@@ -769,8 +852,30 @@ class KernelActivityContextTest(unittest.TestCase):
                 "scope": "AutoKernel initialization excluded",
             }), encoding="utf-8")
 
+            controls = root / "controls" / "controls-current"
+            controls.mkdir(parents=True)
+            (controls / "summary.json").write_text(json.dumps({
+                "campaign_id": "controls-current", "state": "controls_complete",
+                "may_rank": True, "measured_at": "2026-08-12T00:54:17Z",
+                "measurement_instrument_commit": "instrument-head",
+                "production_source_commit": head, "binary_copy_exact": True,
+                "composition_mode": "existing_completed_raw_vectors",
+                "controls": {"panel_result": {"panel": {
+                    "marker": "5/5", "positive": "PASS", "neutral": "PASS",
+                    "degraded_negative": "PASS", "aa": "PASS",
+                    "historical_replay": "PASS",
+                }}},
+                "calibration": {"accepted": True, "outputs": {
+                    "b_min_blocks": 10, "noise_floor_phi": 0.035785,
+                }},
+            }), encoding="utf-8")
+            (controls / "composition_attestation.json").write_text(json.dumps({
+                "schema": "epyc.autokernel.control_composition_attestation.v1",
+                "campaign_id": "controls-current", "inference_executed": False,
+            }), encoding="utf-8")
+
             state = server.autokernel_current_state(
-                probes.parent, attestation, production)
+                probes.parent, attestation, production, root / "controls")
 
         self.assertEqual(state["fixed_campaign"]["status"], "refused")
         self.assertEqual(state["fixed_campaign"]["ready_arms"], 6)
@@ -785,21 +890,48 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertEqual(state["empirical_smoke"]["status"], "failed")
         self.assertEqual(state["empirical_smoke"]["device_sample_count"], 12)
         self.assertFalse(state["empirical_smoke"]["rankable"])
+        self.assertEqual(state["instrument_preflight"]["status"], "PASS")
+        self.assertEqual(state["instrument_preflight"]["passed_checks"], 2)
+        self.assertEqual(state["decision_controls"]["marker"], "5/5")
+        self.assertTrue(state["decision_controls"]["may_rank"])
+        self.assertTrue(state["decision_controls"]["anchor_matches_production"])
+        self.assertFalse(
+            state["decision_controls"]["composition_inference_executed"])
+        self.assertEqual(state["gpu_prefetch_replay"]["verdict"],
+                         "NOT_REPRODUCED")
+        self.assertTrue(state["gpu_prefetch_replay"]["all_blocks_positive"])
+        self.assertAlmostEqual(
+            state["gpu_prefetch_replay"]["median_relative_delta"], 0.0124423)
+        self.assertEqual(state["gpu_prefetch_replay"]["device_sample_count"], 2544)
         self.assertTrue(
             state["production_kernel"]["checkout"]["matches_attestation"])
         self.assertIn("AutoKernel initialization excluded",
                       state["production_kernel"]["scope"])
         self.assertFalse(state["promotion_claim"])
 
+    def test_current_state_renderer_cannot_show_replay_positivity_without_floor(self):
+        page = (Path(__file__).resolve().parents[1] / "dashboard" / "static" /
+                "kernel.html").read_text(encoding="utf-8")
+        renderer = page.split("function renderCurrentState", 1)[1].split(
+            "function renderActivity", 1)[0]
+        for field in ("replay.verdict", "replay.all_blocks_positive",
+                      "replay.median_relative_delta",
+                      "replay.contribution_floor"):
+            self.assertIn(field, renderer)
+        self.assertIn("ATTESTATION UNAVAILABLE", renderer)
+
     def test_current_state_fails_soft_when_evidence_is_absent(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             state = server.autokernel_current_state(
                 root / "no-probes", root / "no-attestation.json",
-                root / "no-production-repo")
+                root / "no-production-repo", root / "no-controls")
         self.assertFalse(state["fixed_campaign"]["available"])
         self.assertFalse(state["available_source_diagnostic"]["available"])
         self.assertFalse(state["empirical_smoke"]["available"])
+        self.assertFalse(state["instrument_preflight"]["available"])
+        self.assertFalse(state["decision_controls"]["available"])
+        self.assertFalse(state["gpu_prefetch_replay"]["available"])
         self.assertFalse(state["production_kernel"]["available"])
         self.assertFalse(state["promotion_claim"])
 
@@ -961,6 +1093,62 @@ class HealthPayloadFoldTest(unittest.TestCase):
                          panels.REPORTING_OBSERVED)
 
 
+class KernelDataHealthProbeTest(unittest.TestCase):
+    """The directory probe reads Kernel-R&D data health, not hub transport."""
+
+    def test_absent_export_is_http_503_with_an_absent_verdict(self):
+        with _KernelFile(None):
+            status_code, body = server.kernel_data_health()
+        self.assertEqual(status_code, 503)
+        self.assertEqual(body["status"], panels.STATUS_ABSENT)
+        self.assertEqual(body["probe"], "panel-data")
+        self.assertEqual(body["panel"], "kernel")
+        self.assertEqual(body["freshness"]["reporting"],
+                         panels.REPORTING_ABSENT)
+        self.assertEqual(body["transport_health"], "/health")
+        self.assertEqual(body["global_health"], "/api/health")
+
+    def test_partial_contract_is_http_503_and_names_unreported_sections(self):
+        doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=("campaign",))
+        with _KernelFile(doc):
+            status_code, body = server.kernel_data_health()
+        self.assertEqual(status_code, 503)
+        self.assertEqual(body["status"], panels.STATUS_ABSENT)
+        self.assertEqual(body["freshness"]["reporting"],
+                         panels.REPORTING_OBSERVED)
+        self.assertIn("champion", body["freshness"]["unreported"])
+        self.assertIn("section(s)", body["status_set_by"]["why"])
+
+    def test_fully_reported_current_contract_is_http_200(self):
+        doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=_V2_SECTIONS)
+        with _KernelFile(doc):
+            status_code, body = server.kernel_data_health()
+        self.assertEqual(status_code, 200)
+        self.assertEqual(body["status"], panels.STATUS_OK)
+        self.assertIsNone(body["status_set_by"])
+        self.assertEqual(body["freshness"]["reporting"],
+                         panels.REPORTING_OBSERVED)
+        self.assertEqual(body["freshness"]["unreported"], [])
+
+    def test_probe_never_calls_the_global_fold_or_all_panel_readers(self):
+        doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=_V2_SECTIONS)
+        with (_KernelFile(doc),
+              mock.patch.object(server, "health_payload",
+                                side_effect=AssertionError("global recursion")),
+              mock.patch.object(server, "panel_envelopes",
+                                side_effect=AssertionError("all-panel recursion"))):
+            status_code, body = server.kernel_data_health()
+        self.assertEqual((status_code, body["status"]), (200, panels.STATUS_OK))
+
+    def test_dashboard_registry_selects_the_data_probe_only_for_kernel(self):
+        registry = json.loads(server.DASHBOARD_REGISTRY_JSON.read_text())
+        paths = {entry["id"]: entry["health_path"]
+                 for entry in registry["dashboards"]}
+        self.assertEqual(paths["kernel"], "/api/kernel/health")
+        self.assertEqual(paths["handoffs"], "/health")
+        self.assertEqual(paths["machine"], "/health")
+
+
 # --------------------------------------------------------------------------- #
 # 6. The transport plane must stay separate from the producer plane
 # --------------------------------------------------------------------------- #
@@ -1007,7 +1195,48 @@ class TransportPlaneTest(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------- #
-# 7. Routing tables stay the enumeration source
+# 7. A supervised restart must import the checkout the supervisor names
+# --------------------------------------------------------------------------- #
+class SupervisorCheckoutIdentityTest(unittest.TestCase):
+    def test_start_hub_changes_to_epyc_root_before_python_imports(self):
+        """PYTHONPATH does not outrank ``sys.path[0]`` for ``python -m``.
+
+        Without the explicit ``cd``, a supervisor launched from a stale shared
+        checkout logs ``cwd=$EPYC_ROOT`` while importing ``dashboard.server``
+        from its actual launch directory.  That made a healthy restart keep
+        serving the pre-deployment selector.
+        """
+        source = (Path(__file__).parents[1]
+                  / "scripts/dashboard/hub_supervisor.sh").read_text()
+        start = source.index("start_hub()")
+        record = source.index("record_hub_pid()", start)
+        launch = source[start:record]
+        self.assertRegex(
+            launch,
+            r'cd "\$\{EPYC_ROOT\}"[\s\S]*setsid "\$\{HUB_PYTHON\}" -m dashboard\.server',
+        )
+
+    def test_hub_does_not_inherit_the_supervisor_lock(self):
+        """A detached hub must not keep the singleton supervisor lock alive."""
+        source = (Path(__file__).parents[1]
+                  / "scripts/dashboard/hub_supervisor.sh").read_text()
+        start = source.index("start_hub()")
+        record = source.index("record_hub_pid()", start)
+        launch = source[start:record]
+        self.assertRegex(
+            launch,
+            r'setsid "\$\{HUB_PYTHON\}"[\s\S]*9>&-\s*&',
+        )
+
+    def test_documented_daemon_launch_creates_a_new_session(self):
+        """Automation shells may reap their process group after command exit."""
+        source = (Path(__file__).parents[1]
+                  / "scripts/dashboard/hub_supervisor.sh").read_text()
+        self.assertIn("nohup setsid -f ", source)
+
+
+# --------------------------------------------------------------------------- #
+# 8. Routing tables stay the enumeration source
 # --------------------------------------------------------------------------- #
 class RouteTableTest(unittest.TestCase):
     def test_every_api_route_is_bound_to_its_registered_payload(self):
@@ -1018,6 +1247,19 @@ class RouteTableTest(unittest.TestCase):
     def test_the_detail_route_is_bound_without_an_adapter(self):
         self.assertIs(server.API_ROUTES_WITH_STATUS["/api/handoff_detail"],
                       server.detail_payload)
+
+    def test_panel_health_routes_are_enumerated_and_registry_bound(self):
+        self.assertIs(server.PANEL_HEALTH_ROUTES["/api/kernel/health"],
+                      server.kernel_data_health)
+        src = panels.source("kernel")
+        self.assertEqual(src.health_route, "/api/kernel/health")
+        self.assertEqual(src.health_func, "kernel_data_health")
+
+    def test_panel_health_routes_do_not_collide_with_dispatch_tables(self):
+        ordinary = (set(server.API_ROUTES) | set(server.API_ROUTES_WITH_STATUS)
+                    | set(server.PROBE_ROUTES) | set(server.HTML_ROUTES)
+                    | set(server.ASSET_ROUTES))
+        self.assertEqual(set(server.PANEL_HEALTH_ROUTES) & ordinary, set())
 
     def test_html_routes_are_disjoint_from_api_routes(self):
         self.assertEqual(set(server.HTML_ROUTES) & set(server.API_ROUTES), set())

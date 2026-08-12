@@ -34,6 +34,378 @@ A companion GPU-side static probe (`rocm-verify-profile-backend.md`, RVP-T0-2/T0
 - [`handoffs/active/cpu-shape-specialized-gemv-decode.md`](../handoffs/active/cpu-shape-specialized-gemv-decode.md) — A17 re-anchor to the barrier-count lever
 - [`handoffs/active/cpu-kernel-env-flags-inventory.md`](../handoffs/active/cpu-kernel-env-flags-inventory.md) — A18 trace-interpretation column, all 24 flags
 - [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — RVP-T0-1 hold, RVP-T0-2/T0-5 static probe results
+**Last compiled**: 2026-08-12 (adds the accepted current-v9 AutoKernel controls and reboot-gated CPU IQK handoff; clean instrument, independent async-prefetch replay, prior diagnostic provenance, Arena, real-MMQ WGM, C6, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Sources**: 102+ documents
+
+## Compiled Update — 2026-08-12 (current-v9 controls and CPU IQK boundary)
+
+**Confidence: verified measured controls and fail-closed preflight; no CPU candidate result.**
+
+AutoKernel's current frozen-v9 control bundle is now accepted under the clean hardened instrument.
+Calibration solved B_min=`10` and φ=`0.03578502357852242`; positive, neutral, wrong-work, A/A, and
+historical-win controls all satisfied their declared behavior (`5/5`), the historical IQK replay
+promoted at `+26.6050%`, and the bundle reports `may_rank=true`. A deterministic composition defect
+appeared only after the six inference legs had completed: `CampaignBinding.change_class` was missing.
+The repaired evaluator recomposed the immutable raw vectors without inference and bound every input
+hash plus `inference_executed=false` in a separate attestation. This preserves the distinction between
+recovering deterministic evaluation and rerunning measurements.
+
+The first full-host CPU IQK campaign is prepared against that bundle, including proposal-v3 and an
+exact recipe-frame physical envelope. Its corrected live attempt nevertheless produced no candidate
+measurement: preflight refused at host uptime `13.47 days`, beyond the ratified one-week ceiling,
+before claim, build, or benchmark. The next valid empirical sequence is therefore a compliant reboot,
+the prepared CPU IQK replay, construction of the first real matched completed-proposal archive, then
+the least-commitment evaluation observe-only. The new archive builder is ready but correctly cannot
+turn the preflight-refused journal into completed-proposal evidence.
+
+Three complete repetitions of the offline AK6 fault matrix passed 1,971/1,971 tests without inference,
+covering journal recovery, claim-owner death/reclaim, live-holder non-preemption and revocation, and
+receipt/hash/source tamper refusal. This establishes offline acceptance, not a real campaign rehearsal;
+the latter remains open and must produce its own empirical receipts.
+
+The Kernel-R&D hub now surfaces this state from durable producers rather than a fixed historical
+allowlist. Its live contract shows the attested frozen-v9 anchor, `8/8` instrument preflight, accepted
+`5/5` controls, GPU replay `NOT_REPRODUCED`, and implementation `900cb5c6`; a missing production
+attestation is a loud alarm. The registry now uses the panel-specific `/api/kernel/health` probe:
+transport remains HTTP 200 while semantic health correctly returns HTTP 503 until champion, headroom,
+and release package are reported by the reboot-gated real campaign. AK9 speech-kernel-set projection
+remains a separate follow-up.
+
+The OP-11 source audit also reduced the approval request to its genuine two-file core on parent
+`a4cb04ca`: `quantize.cu` plus `test-backend-ops.cpp`, `+1795/-64`, plain-diff SHA-256
+`6dcec2b44322470fd76cbbd1e6223cd5a204b8352339b80189d3c06aa1cbbebf`. The audit found no
+critical/high hazard and retained the 172/172 Q4_K final matrix, 5,184/5,184 stateful result, and
+sensitivity/specificity 1.0. This is a recommendation only; the experimental commit remains forbidden
+until the operator approves OP-11.
+
+### Source References (2026-08-12 current-v9 controls)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact control receipts, archive-builder boundary, and Step-3 gate
+- [Current campaign state](../handoffs/active/CURRENT-CAMPAIGN.md) — live reboot-gated execution order
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — measured values, hashes, composition recovery, and fail-closed CPU chronology
+- [Kernel-R&D operational-truth audit](../artifacts/audit/kernel-rnd-dashboard-operational-truth-20260812.md) — selector, producer, health, and production-attestation findings
+
+## Compiled Update — 2026-08-12 (clean instrument and governed GPU replay)
+
+**Confidence: verified committed provenance, live smoke, and governed replay; no promotion claim.**
+
+AutoKernel's current measurement instrument is now a clean one-commit overlay on frozen v9:
+`a4cb04ca8f92fa4d665684490f609b380f9b5e96` has `0db32c06e3e550065b78311a6031ef3dd2c4f27c`
+as its sole parent and changes only `llama-bench.cpp` plus its README. Its real CPU smoke emitted the
+required hybrid-sync, thread-set, escape-check, unsynchronized-sample, and device-sync receipts under
+an exact 0–95 claim, then released that claim. A pinned, networkless, read-only package-power broker
+also made the source/binary/model/topology/storage/production/package-power preflight all-PASS without
+changing the root-owned powercap permissions.
+
+An independent governed frozen-v9 replay of the runtime-gated async-prefetch path then produced
+positive deltas in all 20 paired blocks, but the median was only **+1.2442303249%** and the minimum
+**+0.6788501205%**, below the predeclared **2%** contribution floor. Its verdict is therefore
+`NOT_REPRODUCED`, not a banked kernel win. The result reinforces the gate's intended distinction:
+consistent direction does not substitute for a predeclared material-effect threshold.
+
+### Source References (2026-08-12 clean instrument and replay)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — instrument identity, control dependency order, and replay verdict
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C6 instrument provenance and receipt-integrity boundary
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes, CPU smoke, package-power broker, and governed GPU result
+
+## Compiled Update — 2026-08-12 (AutoKernel diagnostic provenance)
+
+**Confidence: verified receipt/source audit; no inference or campaign claim.**
+
+RVP-T0-1, AK-BH-1/2/3, and AK-LN-2/AK-X-5a have durable diagnostic receipts and retain bounded
+hardware, provider, factorial, flash-attention, and lane-proxy findings. They do not collectively
+establish current AutoKernel campaign authority: several bind an experimental binary without a clean
+committed source/build manifest, while the shared experimental tree is dirty. A receipt field naming
+frozen v9 is not a substitute for the exact source, tree, build, library, and binary identities.
+
+The operational dependency order is consequently provenance first: reproduce the hardened instrument
+from clean committed source, run fresh frozen-v9 controls, run the full-host CPU IQK proposal, then
+construct the real matched completed-proposal archive and evaluate it observe-only. Existing diagnostics
+remain valid in their declared scope; synthetic archives remain regression tests.
+
+AK-DEL-1 is a distinct, commit-backed scope-reduction diagnostic rather than campaign evidence. Its
+preserved trace report placed all three admitted kernel families in the existing-path bucket and selects
+catalogue expansion before a novel generator. The finding is bounded to that corpus and does not claim
+that every workload lacks a novel-kernel opportunity.
+
+### Source References (2026-08-12 provenance audit)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — campaign dependency order and matched-archive gates
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — diagnostic receipt authority boundary
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes and source-provenance audit
+
+## Compiled Update — 2026-08-11 (AutoKernel Arena audit and real-controller smoke)
+
+**Confidence: verified audit and diagnostic-smoke behavior; no matched-campaign or promotion claim.**
+
+The fixed AgentKernelArena authoring panel now distinguishes two authorities mechanically. The full
+comparison remains eight arms and refuses at **6/8** because licensed, commit-pinned EvoEngineer and
+ARGUS implementations are unavailable. A separately named available-source panel is ready at
+**6/6**, but its receipt forbids implying an eight-arm result, ranking partial full-panel evidence,
+or authorizing promotion. Both no-execution audits bind the same task, source identities, evaluator,
+and 2h/8h/32h budget schedule.
+
+A real one-iteration/two-branch KernelFoundry smoke found two defects that static coverage missed:
+copied workspaces lacked the repository import root, then concurrent model branches raced in the
+shared Arena evaluator. The repaired v3 run completed two GPT-5.6 Sol/high calls under a cleanly
+released MI210 claim, passed centralized compilation and correctness, and admitted all four baseline
+and four optimized timing cases. Its average speedup was **0.998668**, but the receipt is diagnostic,
+non-rankable, and explicitly does not imply the matched campaign. The dashboard now projects this
+empirical state separately from generic probe inventory and preserves those authority limits.
+
+The K-Search, Xe-Forge, and GEAK-v1 one-iteration smokes subsequently completed the same centralized
+compile, correctness, and 4/4 baseline plus 4/4 optimized timing boundary and released their MI210
+claims. Their observed average speedups were respectively **1.003368**, **0.999612**, and
+**0.995595**. Those values remain non-rankable smoke telemetry: the smokes establish executable
+integration, not comparative controller quality or a matched-campaign result.
+
+The Claude/Codex actor-critic path also reached a terminal integration smoke after repairs for
+response parsing, contained candidate paths, nested-sandbox launch, and container stdin. Its actor
+runs inside a digest-pinned, read-only-root container with only the task workspace writable. The
+v5 completed planner, actor, and critic and reached centralized evaluation, but the evaluator worker
+used `/usr/bin/python3` without pytest. Its apparent correctness failure and zero timing cases are
+therefore infrastructure evidence, not evidence against the candidate. The authoring path was real,
+but candidate correctness remained unknown until replay with the pinned ROCm evaluator Python and
+package identity. That replay passed centralized compilation and correctness plus all
+4/4 baseline and 4/4 optimized timing cases under the pinned ROCm evaluator. Its average speedup was
+**0.993603**—non-rankable diagnostic telemetry that closes executable integration, not a controller
+quality or promotion claim.
+
+### Source References (2026-08-11 Arena audit/smoke)
+
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — fixed-panel coverage, source gates, receipt hashes, and live next actions
+- [AutoKernel progress, 2026-08-11](../progress/2026-08/2026-08-11.md) — failed-smoke chronology, repairs, v3 measurements, and non-rankable scope
+- [Dashboard contract](../dashboard/README.md) — current-state snapshot and separation of audit, available-source, and empirical-smoke authority
+
+## Compiled Update — 2026-08-11 (AutoKernel C6 live-host sandbox)
+
+**Confidence: verified live-host containment behavior; no inference or performance claim.**
+
+AutoKernel's real kernel-authoring path now has a host-native, fail-closed C6 boundary rather than the
+older devcontainer-only bwrap/unshare prototype. The evaluator provisions only a narrow
+`/sys/fs/cgroup/autokernel` parent, creates a fresh per-invocation leaf, and keeps candidate execution
+non-root under Landlock write confinement, seccomp signal/network/namespace denial, finite resource
+limits, and descendant-draining teardown. Missing or unwritable delegation refuses before candidate
+spawn; there is no `allow_unsandboxed` or environment escape on the live campaign path.
+
+The live red-team probe on this host exercised Landlock ABI 6 as uid 1000. A write inside the
+candidate tree succeeded, while an outside write and evaluator-receipt forgery failed; host signalling
+and socket creation returned `EPERM`; and teardown killed an escaped descendant, proved empty cgroup
+membership, and removed the invocation leaf. This closes the C6 host-readiness gate without weakening
+the standing rule that a sandbox claim must name and exercise its actual syscall and filesystem
+controls. No inference or production-stack change was needed.
+
+### Source References (2026-08-11 C6 host sandbox)
+
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — dated C6 closure and live red-team outcomes
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — syscall-confinement acceptance contract and live campaign ownership
+- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — host provisioning, path wiring, verification scope, and no-inference boundary
+
+## Compiled Update — 2026-08-11 (gfx90a WGM and authoring-loop boundary)
+
+**Confidence: verified diagnostic microbenchmark and real-MMQ negative; no five-control performance
+claim.**
+
+A gfx90a work-group-mapping proxy found a real, bounded locality signal: WGM16 improved the synthetic
+L2-sensitive kernel by **9.823%** versus no mapping across 240 balanced samples per cell, with a paired
+bootstrap 95% CI of **9.754–9.977%** and bit-exact correctness. WGM8 and WGM32 were close; WGM2
+regressed. The result selects none/8/16/32 for the real MMQ launch-order sweep. It does not establish
+that the gain transfers to MMQ, because the proxy deliberately isolates locality rather than the full
+quantized kernel.
+
+The admitted real-MMQ transfer test then falsified that transfer. Its first pilot was a no-op because
+CDNA stream-k bypassed the initial remap; r2 moved pure tile-order decoding into stream-k. All six
+none/2/4/8/16/32 cells passed **43/43** Q4_K correctness cases, but WGM0 remained fastest and every
+nonzero mapping regressed wall time by **1.286–4.050%**. WGM8 reduced all-MMQ TCC hit rate from
+**67.304% to 59.849%** while read requests stayed nearly flat (**+0.201%**), and Q4_K alone lost
+**7.903 percentage points**. G17 is therefore `CLOSED_NO_GO`; the uncommitted negative source is not a
+promotion candidate, and the budget returns to the already-filed G15 elementwise/norm fusion lever.
+The aborted trace-period counter pilot is excluded; successful counter-only captures are admitted.
+
+The surrounding authoring loop now has three missing control-plane pieces: a versioned C5 seed corpus
+with matched-budget RE-Bench log-time scoring, a prospective GEAK/Arena belief writer, and a gfx90a
+FP8 target whose contract explicitly distinguishes authoring/emulation from unavailable MI210 native
+FP8 matrix execution. A taxonomy audit also corrected an old citation conflation: KernelBench is a
+kernel-generation benchmark, while the 9/9 bug-detection result belongs to a separate seeded-fuzzing
+paper. RE-Bench contributes its scoring protocol, not its H100 task environment.
+
+ROCm 7+ upgrades now have a fail-closed compile gate for the known LLVM unroll regression: pass
+`-mllvm --amdgpu-unroll-threshold-local=600` through `CMAKE_HIP_FLAGS`, retain the compile command that
+proves it reached HIP compilation, and compare only from an experimental branch. The current ROCm 6.2
+stack is unchanged.
+
+The authorized frozen-v9 five-control run did not reach inference. Its preflight passed source and
+copied-binary identity but failed because the selected binary omitted six hardened runtime receipts;
+package power was also unreadable. That is instrument evidence, not a performance result. The next
+attempt must use a receipt-emitting hardened build and pass package-power preflight before taking a
+claim.
+
+### Source References (2026-08-11 WGM/authoring closeout)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — G17 negative disposition, G18 seed, and the failed-closed v9 control preflight
+- [MI210 MFMA compute-bound paths](../handoffs/active/mi210-mfma-compute-bound-paths.md) — admitted proxy and real-MMQ receipts, hashes, and next lever
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — C5, RE-Bench, FP8, taxonomy and upgrade gates
+- [ROCm upgrade checklist](../docs/runbooks/rocm-upgrade-checklist.md) — experimental-branch build and validation contract
+- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — commit identities, receipt hash and no-inference boundary
+
+## Compiled Update — 2026-08-11 (Q4_K MMQ correction and expert ceiling)
+
+**Confidence: verified local correctness and matched historical measurement; experimental source is
+not a durable candidate until operator-approved commit/push.**
+
+The gfx90a Q4_K failure was not MFMA-specific: both the old force-MMQ MFMA and DP4A arms passed only
+18/43 cases. The shared mechanism was Q8 activation staging. Q4_K's affine reconstruction multiplied
+the quantized/dequantized Q8 values in its dot term but used the original float activation sum for the
+min correction. Computing both from the same dequantized Q8 population fixed the ordinary and scatter
+DS4 paths. Four final arms—default, force-rocBLAS, force-MMQ MFMA, and force-MMQ DP4A—then passed
+172/172 cases at unchanged κ=1.5, maximum error ratio 1.228272. The receipt is retained; the source
+change remains approval-gated in the experimental tree.
+
+AutoKernel also gained a non-synthetic held-out task from local history. The new descriptor is honest
+about the missing original July 4 command (`historical_command_recovered=false`), pins a replacement
+surface, and seals the human patch until terminal candidate state. Across five matched blocks, the
+human GDN bf16 patch raised mean `speed_tg` from 155.4233734 to 188.4099002, a 21.223659% expert
+ceiling; same-binary expert-off stayed at parity with the parent (-0.105875%). With no terminal
+AutoKernel candidate, candidate-to-expert scoring remains `COULD_NOT_CHECK` rather than inventing a
+comparison.
+
+Hostile same-shape distributions and checker isolation are now durable research gates, but their
+two-case ROCm smoke is non-evidence: the producer is uncommitted and no receipt was retained. The
+smoke showed both modes passing 2/2 selected `SOFT_MAX` rows with claim release and four samples;
+campaign evidence waits for an operator-approved producer identity and fresh replay.
+
+INF-37's alternative IQ2 profiler path is now instrumented but not yet evidence-bearing. A manual
+Omniperf 2.0.1 / `rocprof` v1 smoke reached gfx90a and produced 260 dispatch rows, while the governed
+runner retained a clean failure receipt: frozen-v9 `test-backend-ops` lacks the required
+`--suite-seed` and `--repeat-suite` flags, so it refused before profiling. This separates tool
+reachability from a reproducible counter claim. The seeded IQ2 capture remains open until the
+experimental producer obtains an operator-approved durable identity and the same runner passes.
+
+## Compiled Update — 2026-08-11 (AutoKernel input-sensitivity boundary)
+
+**Confidence: verified implementation; live smoke is non-evidence until the producer has a durable
+commit identity.**
+
+AutoKernel now screens task populations on two independent axes before treating correctness cases as
+meaningful: materialized inputs and reference outputs must vary across at least three seeds, and they
+must also respond to identity, ×3, ×0.01, and negate transforms. Missing coverage, mixed suite
+versions, a non-reference population, or an untrusted producer fails closed. The research reducer and
+claim-aware runner are durable in research commit `000a2686` / `main` merge `f3c6b24a`.
+
+A `SOFT_MAX` smoke returned PASS over 2,544 observations and 1,484 units with no unscoreable units,
+while holding and releasing the CPU claim. It does **not** support a correctness or corpus-quality
+claim: its `0db32c06e` suite identity names the committed parent while the materialized `AK_SENS_V1`
+producer remains uncommitted. Producer-dependent rows stay open until an operator-approved producer
+commit and fresh matched replay. This is the practical rule: an internally consistent receipt cannot
+be durable evidence when the code that produced it is absent from the identity it cites.
+
+The same audit invalidated promotion of the old RVP-C5-R observation: exact 2026-07-04 argv and raw
+matched parent/human-patch evidence are gone, so a fresh retained replay is required.
+
+## Compiled Update — 2026-08-11 (AutoKernel live correctness controls)
+
+**Confidence: mixed — verified correctness-instrument acceptance on CPU; single-run GPU microbench
+observations with retained receipts, not production or cross-surface performance claims.**
+
+AutoKernel's stateful correctness pass now treats carried state as part of the result rather than
+checking only ordinary outputs. For every selected recurrent/cache-backed case, the candidate and
+reference must begin with byte-identical explicit state inputs, neither execution may mutate those
+input buffers, and at least one final-state tensor must be included in the compared output set. A
+missing receipt or any missing leg fails closed.
+
+The first live pass used suite seed `4711` and accepted **5,184/5,184** cases across `SSM_SCAN`,
+`SSM_CONV`, `FLASH_ATTN_EXT`, and `GATED_DELTA_NET`. Every `AK_STATE_V1` receipt carried
+`initial_equal=1`, `input_immutable=1`, and one or more final outputs. The result validates the
+instrument path; it does not make the experimental producer durable. Those producer changes remain
+uncommitted pending explicit operator approval, and the v9/hardened performance calibration is a
+separate next step.
+
+The other live C2 axes now agree with that stateful result: the layout pass accepted **1,048/1,048**
+offset, stride-gap, and transpose cases, while the seed-`4711` value pass accepted **779/779** cases
+across `SOFT_MAX`, `ARGSORT`, `TOP_K`, and `SOLVE_TRI`, with identity, ×3, ×0.01, and negate all
+completed. The `SOFT_MAX` checker required one important correction before acceptance: its invariant
+must include implicit attention sink mass, not demand that only explicit output cells sum to one.
+
+The predeclared clock-pinning discriminator also resolved negatively. During a 60-second 8192³ gfx90a
+GEMM, 242 samples held 1700 MHz for 99.5868% of the window while throughput reached 41.904 TFLOP/s;
+power peaked at only 200 W against the 300 W cap. The card did not approach the cap, so clock excursion
+is not a live variance source under this saturation workload and a privileged
+`--setperfdeterminism` control would add operational authority without solving an observed problem.
+
+The next correctness layer is now live as an independent host-double oracle. It decodes Q4_0, Q8_0,
+Q4_K, and Q6_K directly from GGUF wire bytes and emits
+`fp64_error_ratio/host-double-gguf-wire/v1`, avoiding project quantization helpers on the reference
+side. Five representative CPU cases, the dedicated broadcast regression, 31 real parser tests, and
+the property self-test's 5/5 planted plus 5/5 clean cases passed.
+
+The broad matrix first uncovered a real non-contiguous coverage bug in the oracle itself: quantized
+rows must be read through the tensor's `nb[1..3]` strides, not as one packed span. After that repair,
+the fixed forced-dispatch matrix preserved a much sharper negative result. Force-rocBLAS passed
+**43/43** Q4_K cases with maximum error ratio **1.2283**; force-MMQ passed **18/43**, failed 25, and
+reached **3.0361**. The remaining failures are therefore MMQ-specific stock correctness failures.
+Keep κ fixed at 1.5, retain rocBLAS as the control, and do not rank the MMQ surface until corrected.
+
+The baseline-honesty probes also reject global defaults. In AK-BH-1, best-heuristic hipBLASLt beat
+rocBLAS at only three of nine prefill shapes, while its throughput ratio ranged from **0.734× to
+1.322×**; future vendor baselines must choose the strongest library per exact shape. AK-BH-2 then
+completed all eight explicitly pinned flash-attention × ROCWMMA × MMQ-MFMA arms on one 0.5B Q4_K_M
+prefill surface. Flash attention on won each build pair, MMQ-MFMA was slower, and `r1m0-fa-on` won at
+24,647.316788 t/s. That is a surface-local observation, not authority to change global build defaults.
+
+Ranking now also has a device-local absolute-duration admission. RVP-C3-5 derives a
+**250,090,903 ns** minimum complete repetition window from the first nominal-SCLK observation in the
+RVP-T0-1 gfx90a receipt. Missing, foreign-device, malformed, or shorter live GPU windows receive no
+speed rank even if their relative noise looks small. The focused implementation tests pass 11/11.
+The experimental producer is still uncommitted under its explicit per-commit approval boundary.
+
+C4 now crosses from deterministic profile evidence into the authoring loop without granting the
+profile authority over a decision. The hash-bound `profile_context.py` bridge emits a priced discovery
+block plus a framework-neutral `c4_evaluator_observation.v1`; both are `diagnostic_only`, retain the
+report/manifest/formal-profile hashes, and cannot write a verdict or rank. Prompt hygiene also excludes
+sealed evaluator paths. The generalized capture runner holds mapping and formal invocations to one
+backend process, validates exact argv and quant selection, retains every artifact on failure, and uses
+the existing deterministic report rather than exposing raw profiler text to the agent.
+
+The first live op-level captures bound what that signal can presently say. At fixed
+`m=16,n=1,k=256`, Q4_K and Q8_0 both produced complete fill → requantize → `mul_mat_vec_q` sequences.
+Matvec occupied **41.95% versus 40.92%** of wall time and averaged about **5.72 versus 5.50 µs** per
+dispatch. This small surface neither explains the 35→50 Q4_K roofline rung nor attributes unpack work
+inside the fused kernel, so the representative-shape counter/source-timer question remains open.
+IQ2_XXS is a durable tool boundary: ten unprofiled repetitions pass, but active `rocprofv2` capture
+exits 139 even in one process. That failed receipt is evidence about profiler scope, not an
+architectural bandwidth floor; the next IQ2 probe must use a non-`rocprofv2` device timer/counter path.
+
+CPU baseline honesty now has the same exact-surface rule. On Qwen2.5-Coder-0.5B Q4_K_M prefill,
+implicit AUTO measured **5,569.96 t/s**, explicit flash-attention ON **5,451.90 t/s**, and explicit
+OFF **2,741.09 t/s** across randomized 30-repetition hardened arms. AUTO behaves like ON here, but
+that observation does not authorize an implicit or portable default. The evaluator now requires both
+provider arms on one identical model/quant/op/shape/dtype/build/factor surface, selects by declared
+metric direction, and rejects any transfer to a different candidate surface.
+
+The historical CPU fan-out shapes are execution capacity, not ranking capacity. Against the
+full-machine anchor/IQK-off/flash-attention-off order, depth 4 retained Spearman 1.0, but depths 8,
+16, 32, and 48 fell to 0.5. More decisively, every split failed the predeclared combined
+package-power/frequency acceptance: maximum anchor lane-position deviations ranged from **16.28% to
+77.43%** against a 10% limit, while loaded-frequency ratios ranged from **0.743 to 0.829**. The first
+real CPU candidate must therefore rank on the full host unless a narrower change-class calibration
+later clears the same gates.
+
+Two Q4_K MMQ diagnostics narrowed the still-open correctness repair without fixing it. Disabling the
+gfx90a MFMA route and forcing DP4A still failed **25/43** cases (maximum ratio 3.0178), excluding an
+MFMA-only defect. A Q4_K-only least-squares refinement of the per-32 Q8 activation scale also failed
+**25/43** (maximum ratio 2.8834) and was reverted. The clean 43/43 rocBLAS control and fixed κ=1.5
+remain; the search must move below both the implementation choice and a one-parameter scale repair.
+
+### Source References (2026-08-11 AutoKernel correctness)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — live checkpoint,
+  baseline-honesty receipts, independent fp64 oracle, and next calibration step.
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C2-5 triad
+  contract, MMQ-isolated Q4_K finding, duration-window admission, and producer boundary.
+- [Progress 2026-08-11](../progress/2026-08/2026-08-11.md) — exact live counts, seed, receipt flags,
+  C4 receipt hashes and bounded results, runner paths, fixed-gate dispatch finding, and verification
+  results.
 
 ## Compiled Update — 2026-08-03 (the AMD deficit is a QUANT deficit, not a device deficit; and the compute roofline, finally computed)
 
@@ -421,7 +793,7 @@ New CPU-prefill and GPU-kernel evidence sharpens the roofline picture: **CPU dec
 - **v8 is the current frozen production kernel, `production-consolidated-v8`** — `67a433bf45a8a091d83b4ea0b32ff0735fd51800` / binary `10107`, ratified by [`ratify_v8_final_freeze_20260725.json`](../artifacts/operator/ratify_v8_final_freeze_20260725.json) (SHA-256 `e7fce2c5cd720940fc84b669f57b78a61589fd8baef9b4e03030ed0dc4a3175b`). `GGML_IQK=1` now covers IQ2/IQ3 and IQ4_XS; IQ1 remains non-accelerated. v7 (`6ad45fa3ff6718c07c000061dbc6e29c1771f6e3` / `10098`) remains the rollback/history anchor.
 - **CPU prefill ≠ CPU decode roofline (verified).** Decode is DRAM-BW-bound (Qwen3.6-27B Q8 @96t = 0.17 IPC, 96.6% cycles memory-stalled); prefill is `M>1` GEMM, compute-bound. PC-0 confirmed positive: 122B architect Q4 `p8192` ≈ 108–122 t/s at 0.92–1.47 IPC, and prompt/prefill dominates wall-clock in the targeted large/long-context regimes (GLM-5.2 patch review 81% prompt-wall, ingest 31K 75.1%). ([cpu-prefill-compute-large-models](../handoffs/active/cpu-prefill-compute-large-models.md))
 - **The CPU-prefill hot path is OpenMP barriers, not math.** Symbolized profiling (PC-3/PC-4j) attributes 38–44% of prefill to `GOMP_barrier`/`__kmpc_barrier` (libomp spin/pause), ~22% to MoE `mul_mat_id`, and only ~1–2% each to GDN/SSM/RMS. The first landed lever is a **default-off CPU `CONCAT` dim0 row-partition** (`GGML_CPU_CONCAT_DIM0_ROWS=1`, experimental commit `93d945885`) targeting the `conv_input` CONCAT barrier in shared `build_conv_state()`: measured `pp8192` **+3.2% to +9.1%** single-seq and batched `pl=2` prompt **+22% to +54%**, cutting the target CONCAT barrier sum ~99%. It was **not part of frozen v7**; it is now carried default-off in frozen v8, with no default-on claim (one decode-only row regressed −5.8%). ([cpu-prefill-compute-large-models](../handoffs/active/cpu-prefill-compute-large-models.md), [progress 2026-07-20](../progress/2026-07/2026-07-20.md))
-- **GPU raw-speed frontier is structurally exhausted** (single-stream dense-Q8 at the +37% ceiling; occupancy rewrites + compact-LDS falsified; stream-K already the live Q8 MMQ path). K28 GDN long-prefill fused-chunked kernel: the serial token-scan op is serial-dependency-bound (effective BW *falls* 51→27 GB/s as prompt grows, ~1.7% of MI210 HBM peak → real fusion headroom), but the Phase-0 full-model ceiling is bounded — GDN is only ~15% of GPU prefill wall-clock, so a 4× op speedup maps to only ~11% full-model gain. Do NOT delay v7 for it; post-promotion/default-off only. ([mi210-big-model-and-acceleration-roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md), [k28-fused-chunked-gdn-kernel-research](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md))
+- **GPU raw-speed frontier is structurally exhausted** (single-stream dense-Q8 at the +37% ceiling; occupancy rewrites + compact-LDS falsified; stream-K already the live Q8 MMQ path). K28 GDN long-prefill is now a measured no-go: direct attribution found 15.40% / 14.65% / 12.18% GDN share at 2K/8K/32K and only 11.55% / 10.99% / 9.14% optimistic 4×-op full-model ceilings. The declining ceiling fails its higher-EV admission bar, so no fused prototype is warranted. ([mi210-big-model-and-acceleration-roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md), [K28 closeout](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md))
 - **E5 NUMA×batch is the never-measured 2D cross** (specced, post-promotion, runs last): batching amortizes per-token weight reads and may shift CPU decode from BW-bound to compute-bound, flipping the NUMA-locality advantage at high `-np` K — the crossover sets the slot-fabric grid shape. ([batched-decode-measurement](../handoffs/active/batched-decode-measurement.md))
 
 ### Open Questions (2026-07-20)
@@ -436,7 +808,7 @@ New CPU-prefill and GPU-kernel evidence sharpens the roofline picture: **CPU dec
 - [v7-stack-throughput-full-optimization.md](../docs/reference/v7-stack-throughput-full-optimization.md) — deployed-lane vs candidate-bench throughput table with provenance guards.
 - [v7-promotion.md](../handoffs/active/v7-promotion.md) / [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) — banked runtime-gated-off wins + readiness gate audit.
 - [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — GPU raw-speed frontier exhausted; residency/teleport is the live frontier.
-- [k28-fused-chunked-gdn-kernel-research.md](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md) + [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md) — GDN serial-dependency-bound op + bounded full-model ceiling.
+- [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) + [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md) — GDN serial-dependency finding + measured no-go closeout.
 - [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — E5 NUMA×batch 2D sweep spec.
 
 ## Summary
@@ -477,7 +849,7 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 
 ### 2026-07-05 — MI210 big-model residency ladder (2-for-2) + CoT-scaffold REOPENED/VALIDATED on reasoning tasks (GPQA reversal, +12) → verifier/selector now COMPLEMENTARY + KV-quant SCOPED→DEFER + MTP-on-GPU-MoE CONVERGED (~neutral at prod) + stream-K already-shipped — ⚠️ COMPILE-FLAGGED FOR HUMAN REVIEW
 
-> **Review flag (project-wiki writer-evidence policy):** model-compiled from the MI210 residency phase; **not adopted until human or measured review**. Every throughput/PPL number is an **OBSERVATION** — single MI210, serial, contended host, no P-GPU-1 per MEASUREMENT.md — the *residency-viability verdict + ladder pattern* is the load-bearing part, not the absolute t/s. Sources: [MI210 speed-campaign summary](../handoffs/active/mi210-speed-campaign-summary.md), [big-model residency + acceleration roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md), [findings-05c lever × category matrix §3.3](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md), [GPU CoT-scaffold sidecar](../handoffs/active/gpu-cot-scaffold-sidecar.md), [progress 2026-07-05 residency + CoT reframe](../progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md), [progress 2026-07-05 CoT falsification + MTP re-check](../progress/2026-07/2026-07-05-cot-falsification-and-mtp.md), [progress 2026-07-05 GPQA reversal + KV-quant DEFER](../progress/2026-07/2026-07-05-mi210-gpqa-reversal-and-kvquant-defer.md).
+> **Review flag (project-wiki writer-evidence policy):** model-compiled from the MI210 residency phase; **not adopted until human or measured review**. Every throughput/PPL number is an **OBSERVATION** — single MI210, serial, contended host, no P-GPU-1 per MEASUREMENT.md — the *residency-viability verdict + ladder pattern* is the load-bearing part, not the absolute t/s. Sources: [MI210 speed-campaign summary](../handoffs/completed/mi210-speed-campaign-summary.md), [big-model residency + acceleration roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md), [findings-05c lever × category matrix §3.3](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md), [GPU CoT-scaffold sidecar](../handoffs/active/gpu-cot-scaffold-sidecar.md), [progress 2026-07-05 residency + CoT reframe](../progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md), [progress 2026-07-05 CoT falsification + MTP re-check](../progress/2026-07/2026-07-05-cot-falsification-and-mtp.md), [progress 2026-07-05 GPQA reversal + KV-quant DEFER](../progress/2026-07/2026-07-05-mi210-gpqa-reversal-and-kvquant-defer.md).
 
 - **The IQ2 GPU-residency bet is now MEASURED VIABLE on TWO large models — a 2-for-2 ladder, and the pattern generalizes across GDN families.** The prior campaign projected 122B-IQ2 residency; this phase *confirmed* it and added a second data point on a different arch. **(1) Qwen3.5-122B-A10B UD-IQ2_M** runs fully GPU-resident (47/64 GB, ~17 GB headroom): 43.7 t/s single / 148.7 agg @B=32, IQ2 PPL 5.02 healthy. **(2) Qwen3-Next-80B-A3B i1-IQ2_M** (26.1 GB, qwen3next GDN-hybrid — a *different* GDN family from qwen3.5): coherent under CDNA2 IQ2 MMQ with `-fa on`, 55.8 t/s single (~2.7–3.9× CPU-Q4) / 265 t/s agg @B=32 (~13–18× CPU-Q4), PPL 5.77; VRAM 27.7 GB @`-c 32768` → ~38 GB free, **32K KV fits trivially** because GDN linear-attn keeps KV ~O(1) (the long-context ingest role is *better* GPU-served than a dense model would be). The **bf16-GDN-state kernel win generalizes to qwen3next too** (+13.3% aggregate, coherent — first confirmation outside qwen3.5). Together this establishes that CDNA2 IQ2 residency is a repeatable capability lever for ≤122B GDN-hybrid MoEs, not a one-model fluke. (GLM-5.2 ~238 GB even at UD-IQ2 still does not fit GPU-only — the cap is ~122B; larger needs expert-offload/REAP.)
 
@@ -504,8 +876,8 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - **KV-quant does NOT help the weight-dominated MoE frontdoor.** q8_0-KV vs f16-KV on Qwen3.6-35B-A3B Q8 @98k context saves only ~0.94 GB VRAM and changes decode t/s by nothing (±1.5% noise); the ~36 GB Q8 weights dominate and ~15 GB is free even @128-way → VRAM is not the binding constraint and the **~430 t/s aggregate @128-way @80k plateau is compute/BW-bound**. Stay on f16-KV. (Alive in a KV-heavy regime — a dense model, or single-stream long-context where KV rivals the weights.) **UPDATE — SCOPED → DEFER (2026-07-05, findings-05c L14): no dedicated GPU run.** Resolving the "alive regime" against the deployed roster: only the **qwen35 ~1/4 full-global attention layers @ single-stream 32–64k** qualify — **GDN keeps KV O(1)**, **gemma SWA bounds it**, and **aggregate is weight-dominated**, so **3 of 4 resident model classes see ~0 payoff**. CPU precedent shows the **dequant cast COSTS throughput** (+9% wall / −30% gen). No deployed role needs it. Decision: run only as a cheap **~2–4h rider** on a *future* dense-full-global long-context role, to close the `[U]` with data — **it is a max-context / VRAM characterization, not a speed lever.**
 - **Throughput-vs-context: the "hybrid stays flat" hypothesis is FALSIFIED (SWA confound).** 1k→64k single-stream decode degrades qwen35 hybrid **−22.3%** vs gemma-4 **−7.9%** — the OPPOSITE of expected. Root cause (GGUF metadata): gemma-4 uses sliding-window attention (bounded per-layer KV → context-capped decode) while qwen35's ~1/4 attention layers are full-global (unbounded KV growth). GDN context-independence is real, but the full-global attention layers dominate degradation; a clean GDN-flatness test needs a non-SWA dense baseline (gemma-4 is not one). qwen35's full-global attention is a recall advantage, not a pure loss.
 - **The batch-1 dequant wall — the lever is dispatch, not a rewrite.** Single-stream Q8 decode is BW-bound `mul_mat_vec_q` (77.8% @B=1, whole GEMM/dequant bucket 84%; GDN only 2.0%), so raw batch-1 kernel headroom is small (Q8 47–52% roofline; fp16 ceiling 62% → ~+19% recoverable is the hard ceiling). The single-stream lever is the verify-dispatch fix above, not a dequant rewrite. Still OPEN as separate handoffs: a Q8 dequant-GEMV kernel ([mi210-q8-dequant-gemv-roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md)) and MFMA for compute-bound paths ([mi210-mfma-compute-bound-paths](../handoffs/active/mi210-mfma-compute-bound-paths.md)).
-- **CAMPAIGN OUTCOME (updated 2026-07-04 EOD — speed exhausted; frontier moved to capability).** Every kernel/occupancy bet has now been driven to a verdict, and the honest conclusion is convergence. Single-stream dense-Q8 banked **+37% (40.4 t/s)** — MMVQ +17.4%, nwarps 2→4 +4.6% (`5dc116130`), async-prefetch +3.3% (`7c28056b7`) — then **fused-prefetch, megakernel (Pass-2: MLP/memory floor — HIP graphs already capture the only +5.9% launch headroom), n-gram-GPU-spec, MFMA, and the L3-MoE MMQ-occupancy rewrite were all ruled out WITH DATA** (the last: *built* then falsified — Q8-MMQ at B=32 is **grid-limited** (104 WGs = 1/CU), not LDS-limited, and bf16 wins on native-MFMA not occupancy). Aggregate is solved by **config, not kernels**: **`-fa 1` is a WIN for MoE aggregate** (B≥8, +16–43%, peak **bf16+`-fa1` @B128 = 1548 t/s** — the *opposite* of dense-27B where FA hurt) and **bf16-for-aggregate / Q8-for-single-stream** (crossover B≈16–24). L20 GDN-occupancy scoped **NO-GO** (theoretical occupancy already 100% — nothing to free; the one modest lever is bf16 recurrent-state, ~+11%@B32, drift-gated). **Load-bearing meta-finding: a lever's sign is set by {arch × substrate × batch} — never carry a spec-dec / quant / FA verdict across dense↔MoE or GPU↔CPU.** With speed at bedrock, the frontier moved to **capability**: the CDNA2 sub-4-bit MMQ path is already numerically correct (`MUL_MAT_ID 789/789` across IQ2/IQ3/IQ1), so IQ2 unlocks **Qwen3.5-122B-A10B @ ~38 GB fully GPU-resident** — the residency bet's real prize (GLM-5.2 ~238 GB still won't fit). Top-line: [MI210 speed-campaign summary](../handoffs/active/mi210-speed-campaign-summary.md) · [lever × model-category matrix (findings-05c)](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md).
-- **Kernel-R&D loop — the verify→profile→refine automation this campaign motivated** (a concrete instance of the 2026-06-03 GEAK/Apex agentic-kernel-authoring program below). The manual per-bet rigor is codified into a reusable, nightshift-runnable loop in `epyc-inference-research/scripts/kernel_rnd/`: **`kernel_eval.sh`** (GPU-idle gate → correctness-gate-FIRST/lexicographic → alternated-A/B → rocprofv2 mechanism → one OBSERVATION record), **`kernel_store.py`** (SQLite + a Pareto frontier over *correctness-passing* runs only — a fast-but-wrong variant can never reach the frontier), **`kernel_sweep.sh`** (the inner tuning loop). The *outer* hypothesis/design loop stays planner/critic-interactive (single-GPU serial ⇒ brute search too costly); authorize (P-GPU-1 / prod push) stays operator-only. **Build status (2026-07-05): Phases 0–3 are present** — Phase 0 `kernel_eval.sh` validated (research `48f990f`; re-confirmed the async-prefetch kernel +2.11% / MemUnitStalled −55% / byte-identical, and a deliberately broken stub proved the correctness-first gate blocks speed-ranking a wrong variant), Phases 1–2 `kernel_store.py` + `kernel_sweep.sh` built (research `133017d`), Phase 3 dashboard page specced+built by the dashboard-hub session (`export` contract research `93c28ed`). **The only remaining open piece is the Phase-2 nightshift-autopilot wrapper.** Design: [mi210-kernel-rnd-loop-proposal](../handoffs/active/mi210-kernel-rnd-loop-proposal.md).
+- **CAMPAIGN OUTCOME (updated 2026-07-04 EOD — speed exhausted; frontier moved to capability).** Every kernel/occupancy bet has now been driven to a verdict, and the honest conclusion is convergence. Single-stream dense-Q8 banked **+37% (40.4 t/s)** — MMVQ +17.4%, nwarps 2→4 +4.6% (`5dc116130`), async-prefetch +3.3% (`7c28056b7`) — then **fused-prefetch, megakernel (Pass-2: MLP/memory floor — HIP graphs already capture the only +5.9% launch headroom), n-gram-GPU-spec, MFMA, and the L3-MoE MMQ-occupancy rewrite were all ruled out WITH DATA** (the last: *built* then falsified — Q8-MMQ at B=32 is **grid-limited** (104 WGs = 1/CU), not LDS-limited, and bf16 wins on native-MFMA not occupancy). Aggregate is solved by **config, not kernels**: **`-fa 1` is a WIN for MoE aggregate** (B≥8, +16–43%, peak **bf16+`-fa1` @B128 = 1548 t/s** — the *opposite* of dense-27B where FA hurt) and **bf16-for-aggregate / Q8-for-single-stream** (crossover B≈16–24). L20 GDN-occupancy scoped **NO-GO** (theoretical occupancy already 100% — nothing to free; the one modest lever is bf16 recurrent-state, ~+11%@B32, drift-gated). **Load-bearing meta-finding: a lever's sign is set by {arch × substrate × batch} — never carry a spec-dec / quant / FA verdict across dense↔MoE or GPU↔CPU.** With speed at bedrock, the frontier moved to **capability**: the CDNA2 sub-4-bit MMQ path is already numerically correct (`MUL_MAT_ID 789/789` across IQ2/IQ3/IQ1), so IQ2 unlocks **Qwen3.5-122B-A10B @ ~38 GB fully GPU-resident** — the residency bet's real prize (GLM-5.2 ~238 GB still won't fit). Top-line: [MI210 speed-campaign summary](../handoffs/completed/mi210-speed-campaign-summary.md) · [lever × model-category matrix (findings-05c)](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md).
+- **Kernel-R&D loop — the verify→profile→refine automation this campaign motivated** (a concrete instance of the 2026-06-03 GEAK/Apex agentic-kernel-authoring program below). The manual per-bet rigor is codified into a reusable, nightshift-runnable loop in `epyc-inference-research/scripts/kernel_rnd/`: **`kernel_eval.sh`** (GPU-idle gate → correctness-gate-FIRST/lexicographic → alternated-A/B → rocprofv2 mechanism → one OBSERVATION record), **`kernel_store.py`** (SQLite + a Pareto frontier over *correctness-passing* runs only — a fast-but-wrong variant can never reach the frontier), **`kernel_sweep.sh`** (the inner tuning loop). The *outer* hypothesis/design loop stays planner/critic-interactive (single-GPU serial ⇒ brute search too costly); authorize (P-GPU-1 / prod push) stays operator-only. **Build status (2026-08-11): the historical four-phase scaffold is reconciled into the system-wide AutoKernel loop.** Design history: [mi210-kernel-rnd-loop-proposal](../handoffs/completed/mi210-kernel-rnd-loop-proposal.md); current owner: [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md).
 
 ### 2026-07-03 — Roofline-gap synthesis (CPU v6+iqk & MI210) and the GPU-program un-gating
 
@@ -686,11 +1058,11 @@ Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-
 - [MoE-Spec — CPU Spec-Dec with Budgeted Expert Selection](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) -- proven mechanism (REAP-246B B=40 +15% pp / +3% e2e) but NO live consumer; reopen chained to frontdoor spec-dec + N5 α
 - [TQ3 / TurboQuant Quantization Monitor](../handoffs/active/tq3-quantization-evaluation.md) -- KV-cache quant watch (Hadamard PR #21038 landed/auto in v6; TBQ3/TBQ4 #21089 open); [intake-756 NVIDIA Qwen3.6-27B-NVFP4] not_applicable (GPU-native, MI210 no FP4 path) but an FP8-parity external bar; Sherry STQ1_0 sub-2-bit watch
 - [MI210 big-model residency + acceleration roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) -- the two-axis strategic thread (Axis A residency quant-ladder IQ2→offload/REAP→GLM-5.2 754B endgame; Axis B GPU drafter-farm with quant-asymmetric self-spec N5-free-by-construction); corrected architect baseline ~18–21 t/s (not 4.3); expert-routing-skew profile as the shared offload/REAP gating experiment
-- [MI210 speed-campaign summary](../handoffs/active/mi210-speed-campaign-summary.md) -- top-line campaign verdict: single-stream dense-Q8 +37% banked, aggregate solved by config (bf16-for-aggregate / Q8-for-single-stream, `-fa 1` win for MoE), all occupancy rewrites (L3-MoE, L20) structurally dead, frontier moved speed→capability
+- [MI210 speed-campaign summary](../handoffs/completed/mi210-speed-campaign-summary.md) -- completed top-line campaign verdict: single-stream dense-Q8 +37% banked, aggregate solved by config (bf16-for-aggregate / Q8-for-single-stream, `-fa 1` win for MoE), all occupancy rewrites (L3-MoE, L20) structurally dead, frontier moved speed→capability
 - [MI210 batch-1 latency-wall greenfield (prefetch→megakernel)](../handoffs/active/mi210-batch1-latency-wall-greenfield.md) -- the 62→100% batch-1 MLP floor; async-prefetch `raw.buffer.load.lds` +3.3% (MemUnitStalled −62%, CDNA2 ceiling); megakernel RULED OUT (HIP graphs already capture the only +5.9% launch headroom; AMD Fleet arXiv 2604.15379 is the CDNA3/4 precedent, no CDNA2 megakernel exists); rocBLAS GEMV is dense-only (dequant-to-fp16 = fatal bytes-moved for BW-bound decode)
 - [MI210 Q8 dequant-GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) -- the batch-1 dequant gap decomposition (Q4_K 34%→Q8 50%→fp16 62.5% roofline); custom dequant-GEMV worth authoring only for a batch-1 *latency* role (GPU drafter), self-compensates when served batched
 - [MI210 MFMA compute-bound paths](../handoffs/active/mi210-mfma-compute-bound-paths.md) -- GDN-MFMA killed by profile for decode (MemUnitBusy 65% vs VALUBusy 16%, MfmaUtil 0% — memory/occupancy-bound, not compute); MFMA targets headroom that isn't the bottleneck
-- [MI210 kernel-R&D loop proposal](../handoffs/active/mi210-kernel-rnd-loop-proposal.md) -- the codified verify→profile→refine loop (`kernel_eval.sh`/`kernel_store.py`/`kernel_sweep.sh`), correctness-first lexicographic fitness, Phases 0–3 built, only nightshift-autopilot wrapper open
+- [MI210 kernel-R&D loop proposal](../handoffs/completed/mi210-kernel-rnd-loop-proposal.md) -- completed historical scaffold; the current system-wide owner is AutoKernel
 - [Progress 2026-07-03 — MI210 Qwen3.6-27B speed campaign](../progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md) -- the running kernel/quant/regime campaign log (MMVQ→MMQ verify-dispatch, nwarps, async-prefetch, fused-prefetch/megakernel/L3-MoE-occupancy falsifications, bf16-for-aggregate crossover)
 - [Progress 2026-07-04 — MI210 kernel-R&D loop + occupancy falsification](../progress/2026-07/2026-07-04-mi210-kernel-rnd-loop.md) -- Phase-0 harness built/validated, L3-MoE MMQ-occupancy BUILT+FALSIFIED (grid-limited at B=32 not LDS-limited), L20 GDN-occupancy NO-GO, capability pivot to L15 residency
 - [Progress 2026-07-05 — MI210 capability + kernel-R&D loop + strategy](../progress/2026-07/2026-07-05-mi210-capability-kernel-rnd.md) -- kernel-R&D Phases 1–2, bf16 GDN recurrent-state BUILT+GO (+21.5/+17.7/+16.4/+13.3% table), 122B IQ2 residency VIABLE, strategic roadmap wired, corrected architect baseline
@@ -1144,7 +1516,7 @@ Historical 2026-04-25 claim: `--numa distribute` regresses Qwen3.6-35B Q8_0 from
 ### Sources (2026-04-26)
 
 - `progress/2026-04/2026-04-26.md` — full Phase A-G + P1-P4 narrative
-- `handoffs/active/cpu-kernel-env-flags-inventory.md` — 20 env knobs classified
+- `handoffs/completed/cpu-kernel-env-flags-inventory.md` — 20 env knobs classified, including trace-interpretation effects
 - `handoffs/active/cpu-hierarchical-barrier.md` — CPU4 design + negative-result data
 - `handoffs/active/cpu-shape-specialized-gemv-decode.md` (updated) — kill-switch addendum
 - `handoffs/active/nps-reboot-runbook.md` (updated) — L3aaN evaluation plan post-2026-04-26
@@ -1507,7 +1879,7 @@ v5 cherry-pick candidates have all passed PPL bit-exactness:
 
 ### Sources
 
-- [`handoffs/active/cpu-kernel-env-flags-inventory.md`](../handoffs/active/cpu-kernel-env-flags-inventory.md) — env-flag catalogue, P3 stability verdict, NUMA_WEIGHTS deprecation
+- [`handoffs/completed/cpu-kernel-env-flags-inventory.md`](../handoffs/completed/cpu-kernel-env-flags-inventory.md) — completed env-flag catalogue, P3 stability verdict, NUMA_WEIGHTS deprecation, and trace-interpretation effects
 - [`handoffs/completed/cpu-benchmark-rigor-and-revalidation.md`](../handoffs/completed/cpu-benchmark-rigor-and-revalidation.md) — CPU20 protocol, canonical baseline config, replication rules
 - [`handoffs/completed/cpu-openmp-runtime-scheduling-matrix.md`](../handoffs/completed/cpu-openmp-runtime-scheduling-matrix.md) — CPU21 libomp +6.4% Coder, affinity stack +3–8%, schedule per-role opt-in
 - [`handoffs/completed/cpu-context-regime-coverage.md`](../handoffs/completed/cpu-context-regime-coverage.md) — CPU23 Phase 2.2 TTFT / interference findings
@@ -1814,9 +2186,9 @@ A v7-promotion guardrail chased apparent v7 CPU non-spec base-decode regressions
 
 ### The SOTA target is four autotuned stages, not one fused megakernel
 
-- **A production serving engine expresses the chunked Gated-DeltaNet recurrence as four *separately-autotuned Triton stages* behind one autograd wrapper, not as a single hand-fused kernel.** Verified in `sgl-project/sglang` at `main`: `chunk_local_cumsum` (`fla/cumsum.py`) → `recompute_w_u_fwd` (`fla/wy_fast.py`, the WY/UT transform) → `chunk_gated_delta_rule_fwd_h` (`fla/chunk_delta_h.py`) → `chunk_fwd_o` (`fla/chunk_o.py`), orchestrated by `chunk_gated_delta_rule_fwd` / `ChunkGatedDeltaRuleFunction` in `fla/chunk.py`. **This lowers the bar for a llama.cpp fused-kernel effort**, which had been framed against an imagined monolithic competitor. The contrast that matters is ~two dozen purpose-built files against llama.cpp's ~150 generic ggml ops round-tripping intermediates through HBM. Sources: [k28-fused-chunked-gdn-kernel-research.md](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md), [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md), intake-1030/intake-1025 in [research/intake_index.yaml](../research/intake_index.yaml).
+- **A production serving engine expresses the chunked Gated-DeltaNet recurrence as four *separately-autotuned Triton stages* behind one autograd wrapper, not as a single hand-fused kernel.** Verified in `sgl-project/sglang` at `main`: `chunk_local_cumsum` (`fla/cumsum.py`) → `recompute_w_u_fwd` (`fla/wy_fast.py`, the WY/UT transform) → `chunk_gated_delta_rule_fwd_h` (`fla/chunk_delta_h.py`) → `chunk_fwd_o` (`fla/chunk_o.py`), orchestrated by `chunk_gated_delta_rule_fwd` / `ChunkGatedDeltaRuleFunction` in `fla/chunk.py`. This design is retained as reference material; K28 itself later closed no-go on the measured whole-model ceiling. Sources: [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md), intake-1030/intake-1025 in [research/intake_index.yaml](../research/intake_index.yaml).
 
-- **All four stage files are pure Triton with autotune and carry no `is_cuda` guard or device-capability check** — a *necessary* condition for a gfx90a port, not a sufficient one. Autotune configs, block sizes and `num_warps` remain NVIDIA-SM-shaped, and the gating dependency is the unstarted `pytorch-triton-rocm` install/verify task. A 127-line device-parameterized GDN microbenchmark (`fla/bench_gdn_replayssm_fold.py`) ships alongside and is a far cheaper probe than authoring a kernel. The CuTe-DSL GDN variants in the same tree are NVIDIA-only. Sources: [k28-fused-chunked-gdn-kernel-research.md](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md), [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), intake-1030.
+- **All four stage files are pure Triton with autotune and carry no `is_cuda` guard or device-capability check** — a necessary portability condition, not performance evidence. AutoKernel's GEAK/Arena round-trip has since proven Triton 3.1.0 compile/correctness/timing on physical gfx90a, but the K28-specific FLA probe was retired when direct whole-model attribution failed the parent gate. Sources: [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), intake-1030.
 
 ### Two-phase capture: the mode our profiler survives is the mode that gives attribution
 

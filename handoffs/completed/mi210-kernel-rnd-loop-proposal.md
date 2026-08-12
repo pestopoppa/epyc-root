@@ -2,12 +2,14 @@
 
 > **SUPERSEDED AS LOOP OWNER 2026-08-01.** The system-wide, fully autonomous controller,
 > tiered evaluation, checkpoint trigger, and automatic-release design now live in
-> [`autokernel-research-loop.md`](autokernel-research-loop.md). This file remains the historical
+> [`autokernel-research-loop.md`](../active/autokernel-research-loop.md). This file remains the historical
 > MI210 scaffold record and should not receive new controller/release architecture. Backend-specific
-> MI210 evaluator findings may continue in `agentic-rocm-kernel-authoring.md` and
-> `rocm-verify-profile-backend.md`.
+> MI210 evaluator findings continue in
+> [`agentic-rocm-kernel-authoring.md`](../active/agentic-rocm-kernel-authoring.md) and
+> [`rocm-verify-profile-backend.md`](../active/rocm-verify-profile-backend.md).
 
-**Status**: **APPROVED 2026-07-04 — building. Phase 0 (`kernel_eval.sh`) ✅ BUILT + VALIDATED + committed** (research `48f990f`). **Phase 3 (dashboard page) ✅ BUILT 2026-07-05 by the dashboard-hub session**: the epyc-root hub serves `/kernel` (OBSERVATION-disciplined; Pareto correct-only, best-per-model, run log with MemUnitStalled/Busy mechanism deltas, freshness), reading a self-contained JSON contract produced by the loop-owned `kernel_store.py export` (wired into `kernel_sweep.sh`); seeded + previewing against the real `prefetch-validate` row. **Phases 1–2 remain open** (Phase 1 strategy store: `kernel_store.py` + `export` exist; Phase 2 nightshift loop: not built). Now a buildable handoff (see Build plan). The measure/authorize trust boundary (MEASUREMENT.md, human-amendment-only) is respected by the authorize ceiling below: autonomous only up to experimental-tree commits + OBSERVATIONS; production push is operator-only. **Created**: 2026-07-04 (operator raised: "should sessions like this become another form of autopilot… planner/critic → hypothesis → verify → authorize, like the orchestration-optimization loop?").
+**Status**: **COMPLETED 2026-08-11.**
+**Disposition**: Superseded and reconciled. Phase 0 (`kernel_eval.sh`) remains a historical instrument at research `48f990f`; Phase 1 and the dashboard landed. The open Phase-2 architecture is closed here because [`autokernel-research-loop.md`](../active/autokernel-research-loop.md) now owns and implements the journaled claim → worktree → T0 → paired-block → decide → revert/release loop. Reviving `kernel_eval.sh` as a second controller would fork the current evaluator and resource-claim contracts. The measure/authorize trust boundary remains unchanged. **Created**: 2026-07-04 (operator raised: "should sessions like this become another form of autopilot… planner/critic → hypothesis → verify → authorize, like the orchestration-optimization loop?").
 **Context**: this GPU speed campaign (findings-05b, findings-05c, the three mi210 kernel handoffs) is the manual instance of exactly this loop — we're running it by hand right now.
 
 ## The core claim
@@ -80,10 +82,10 @@ Single-GPU serialization ⇒ one experiment at a time (unlike the orchestration 
 - [x] Phase 3 dashboard page :8100/kernel (BUILT 2026-07-05) ✅
 - [x] Phase 1 kernel strategy store SQLite + Pareto/purge/rewind wiring (research `133017de`,
   `a1f38cd7`) ✅ 2026-07-17
-- [ ] Phase 2 the nightshift loop (outer planner/critic + inner sweep->kernel_eval.sh->Pareto)
-- [ ] First real workload: L3-MoE/L15 MMQ-family param sweep through the loop
+- [x] Phase 2 the nightshift loop (outer planner/critic + inner sweep->kernel_eval.sh->Pareto) ✅ 2026-08-11 — closed as superseded by the current AutoKernel `program.md` + `campaign.py` loop; no second controller is built.
+- [x] First real workload: L3-MoE/L15 MMQ-family param sweep through the loop ✅ 2026-08-11 — the underlying workload was already executed: L3 compact-LDS was built/correct and falsified; L15 IQ2 residency/correctness/quality was measured. Replaying it through a superseded harness would add no new question.
 
 
 ## Auto-kernel revival — research-intake integration 2026-07-22 (Phase 2 from OpenHyra harness)
 _Via /research-intake Stage-2 (intake-885 OpenHyra)._
-- [ ] Build Phase 2 (autonomous inner verify loop) on OpenHyra's harness pattern: all-outcomes Experience Bank (`eb.py` append-only + fsync) as the Phase-1 strategy store; evidence-gated stop (the LLM may only REQUEST stop; deterministic guards on evaluator records dispose; `stopping.py:238-263`). Autonomy ceiling unchanged — experimental-tree commits + OBSERVATIONS only; P-GPU-1 / production push stays operator-gated
+- [x] Build Phase 2 (autonomous inner verify loop) on OpenHyra's harness pattern: all-outcomes Experience Bank (`eb.py` append-only + fsync) as the Phase-1 strategy store; evidence-gated stop (the LLM may only REQUEST stop; deterministic guards on evaluator records dispose; `stopping.py:238-263`). ✅ 2026-08-11 — reconciled into the current owner: AutoKernel's append-only fsynced journal retains all outcomes, deterministic campaign stop/release rules own disposal, and the hypothesis/do-not-repeat plane gates claim spending. The obsolete `eb.py`/`kernel_eval.sh` spelling is not revived.

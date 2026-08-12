@@ -4,6 +4,54 @@
 **Confidence**: inferred
 **Last compiled**: 2026-08-11 (a same-day operator-commissioned audit's provenance-discipline lessons — receipts outrank bus messages, filesystem presence is not provenance, a closed box with real measurements is more misleading than an open one — see below; earlier 2026-08-10 note: belief-substrate promotion track: corroboration counted by source locator, machine anchoring, dependency propagation, R1b closed)
 **Sources**: 37 documents
+**Last compiled**: 2026-08-12 (adds SC27 prospective live-control/replay belief wiring; prior AutoKernel Arena and promotion-track findings retained)
+**Sources**: 36 documents
+
+## Compiled Update — 2026-08-12 (AutoKernel governed receipts)
+
+AutoKernel's live controls and governed async-prefetch replay now write belief semantics at the
+producer boundary. Future receipts carry protocol and metric direction, scored-block basis, exact
+source/binary/model/resource-claim/producer identities, the native verdict, and immutable evidence
+digests. The Vidya adapter independently re-derives those bindings and delegates grading to the one
+shared measurement ladder; it does not introduce a source-specific grade rule.
+
+The temporal boundary is deliberate. The accepted controls, hardened-instrument smoke, and GPU replay
+completed before this hook and therefore project no Vidya rows. A reader cannot manufacture write-time
+warrant after the fact. Research `730adb1d` and root `2a4e170a` close SC27 prospectively; the next
+governed controls or replay will be the first admissible source records.
+
+### Source References (2026-08-12 SC27)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC27 contract and completion boundary
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — live source register and projection semantics
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — promoted commits, tests, and no-backfill evidence
+
+## Compiled Update — 2026-08-11 (AutoKernel Arena write-side boundary)
+
+The GEAK/AgentKernelArena adapter now has a prospective belief writer rather than relying on a later
+reader to reinterpret generic benchmark fields. Successful future round trips emit two explicitly
+typed measurements—correctness and timing—using the same measurement ladder as the existing ROCm
+profiling producers. Failed or incomplete runs emit no performance belief. The compatibility
+preflight remains dependency evidence only: source pins, platform reachability, and compile success
+are important facts, but none has an honest higher-is-better or lower-is-better ordinal direction.
+
+This is a small but general rule for evidence systems: **write semantic measurement intent at the
+producer boundary, and classify capability checks separately from ranked observations**. It prevents
+a dashboard or ledger adapter from inventing metric direction after the experiment, and makes future
+controller A/B results comparable without retrofitting old receipts. Existing 2026-08-11 receipts are
+deliberately unchanged.
+
+The same boundary now applies to the admitted MMQ-WGM negative. Its wall-time, TCC-hit-rate, and
+read-request observations are direct measurements, but the receipt predates any `ClaimTuple` writer.
+SC22 therefore files a producer-side hook before any successor launch-order experiment and explicitly
+forbids retrofitting r2 on read. This preserves the negative as durable experiment evidence without
+claiming that a later adapter witnessed semantics the original producer never wrote.
+
+### Source References (2026-08-11 AutoKernel Arena writer)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20/SC21 acceptance, SC22 MMQ-WGM write-side task, and classification
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — producer vectors, MMQ-WGM candidate source, and dependency-evidence handling
+- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — receipt hashes, negative disposition, and closeout boundary
 
 ## Summary
 
@@ -557,9 +605,9 @@ post-approval round, so the rest of the plan was authored without their findings
 
 - **The generalizable failure is that a broken graph does not announce itself — it produces plausible, wrong rankings.** Repair reordered the most-cited list substantially (one entry moved 12 → 27 inbound and became the index's most-cited; another moved 3 → 17; **239 entries gained edges**). A backfill population that had been *scoped by inbound-citation count* was therefore measuring the wrong set and had to be recomputed against the repaired graph. **Any selection rule computed over a reference graph inherits that graph's defects silently**, which is the same class of error as gating on a metric whose scope does not match the measured subset. Sources: [research/intake_index.yaml](../research/intake_index.yaml), [progress 2026-08-09](../progress/2026-08/2026-08-09.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md).
 
-- **A maintained prior-art register is a cheap, high-leverage artifact, and its design is worth copying wholesale.** An upstream serving project ships one as markdown consulted *before* any profiler finding may be called novel, with a five-column schema — pattern, trace keywords, primary code, existing path, and **a pre-written conclusion**. That last column is the load-bearing one: it moves the verdict out of model judgment at read time and into reviewable data at authoring time, the same move a claim grammar makes for measurement claims. Three further mechanisms transfer directly: partitioning rows **mainline vs in-flight** (a pattern merged upstream but absent from a frozen local build is a *port*, not a research proposal), an **expected-absence register** recording why a path may be legitimately missing so a disabled path does not read as a defect, and a **pinned-head refresh** that records the upstream commit each scan was taken against so staleness is measurable rather than asserted. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md), [cpu-kernel-env-flags-inventory.md](../handoffs/active/cpu-kernel-env-flags-inventory.md), intake-1029 in [research/intake_index.yaml](../research/intake_index.yaml).
+- **A maintained prior-art register is a cheap, high-leverage artifact, and its design is worth copying wholesale.** An upstream serving project ships one as markdown consulted *before* any profiler finding may be called novel, with a five-column schema — pattern, trace keywords, primary code, existing path, and **a pre-written conclusion**. That last column is the load-bearing one: it moves the verdict out of model judgment at read time and into reviewable data at authoring time, the same move a claim grammar makes for measurement claims. Three further mechanisms transfer directly: partitioning rows **mainline vs in-flight** (a pattern merged upstream but absent from a frozen local build is a *port*, not a research proposal), an **expected-absence register** recording why a path may be legitimately missing so a disabled path does not read as a defect, and a **pinned-head refresh** that records the upstream commit each scan was taken against so staleness is measurable rather than asserted. The local flag register now also states each flag's effect on trace interpretation, preventing an intentionally disabled fast path from being misread as a missing optimization. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md), [cpu-kernel-env-flags-inventory.md](../handoffs/completed/cpu-kernel-env-flags-inventory.md), intake-1029 in [research/intake_index.yaml](../research/intake_index.yaml).
 
-- **External code moves, so an unpinned citation of an external symbol is unfalsifiable later.** Two independent sources — a technical article and a maintained upstream catalog — both named a kernel that no longer exists under that name; neither was wrong when written, both were wrong when read, and neither recorded the head it was true at. This is now a written contract in the intake skill: pin the commit or retrieval date, prefer durable identifiers (the *role* a thing plays) over volatile ones (internal symbol names), record the head for tree-wide claims, and **verify absence across trees rather than one file** — the same dive nearly reported a source as fabricated because a first search covered only a framework's model file while every symbol lived in its kernels tree. Sources: [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md), [k28-fused-chunked-gdn-kernel-research.md](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md), intake-1030.
+- **External code moves, so an unpinned citation of an external symbol is unfalsifiable later.** Two independent sources — a technical article and a maintained upstream catalog — both named a kernel that no longer exists under that name; neither was wrong when written, both were wrong when read, and neither recorded the head it was true at. This is now a written contract in the intake skill: pin the commit or retrieval date, prefer durable identifiers (the *role* a thing plays) over volatile ones (internal symbol names), record the head for tree-wide claims, and **verify absence across trees rather than one file** — the same dive nearly reported a source as fabricated because a first search covered only a framework's model file while every symbol lived in its kernels tree. Sources: [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md), [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), intake-1030.
 
 ## Compiled Update — 2026-08-09 (second batch): auditing a belief-system design, and what the epistemic literature actually licenses
 

@@ -88,7 +88,7 @@ MoE-Spec Phase 0
 | epyc-llama | `ggml/src/ggml-cpu/ep-dispatcher.cpp` | shared-memory dispatcher implementation |
 | epyc-llama | `ggml/src/ggml-cpu/ggml-ep-bootstrap.cpp` | env-var master/worker bootstrap |
 | epyc-llama | `ggml/src/ggml-cpu/ggml-ep-shard.cpp` | expert shard/eager-warm infrastructure |
-| epyc-root | `handoffs/active/cpu-kernel-env-flags-inventory.md` | deployment status for `GGML_EP_*` flags |
+| epyc-root | `handoffs/completed/cpu-kernel-env-flags-inventory.md` | deployment status for `GGML_EP_*` flags |
 | epyc-root | `handoffs/completed/cpu-uncore-fabric-attribution.md` | CPU24 bottleneck attribution |
 
 ## Completed Scope
@@ -105,4 +105,4 @@ MoE-Spec Phase 0
 
 - Update this file and [`inference-research-index.md`](inference-research-index.md) after any CPU15 revalidation.
 - If EP is left default-off after a re-run, record the negative result explicitly; do not leave stale "candidate production route" text in indices.
-- If a `GGML_EP_*` flag disposition changes, update [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) in the same commit.
+- If a `GGML_EP_*` flag disposition changes, update [`cpu-kernel-env-flags-inventory.md`](../completed/cpu-kernel-env-flags-inventory.md) in the same commit.

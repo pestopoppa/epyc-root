@@ -39,7 +39,7 @@
 #   draft, validates each env block measures as documented, and merges into
 #   model_registry.yaml.
 #
-# Source matrix: handoffs/active/cpu-kernel-env-flags-inventory.md §"Per-Arch
+# Source matrix: handoffs/completed/cpu-kernel-env-flags-inventory.md §"Per-Arch
 # Deployment Matrix" (revised 2026-04-30 with Phase A-D Remediation findings +
 # multi-arch + Probe B + Hybrid SSM follow-up).
 #

@@ -32,6 +32,29 @@ An additive, no-deletion pass over `scoring-infra-standardization.md`'s "migrate
 - [`artifacts/operator/receipts/RATIFY-CONSOLIDATED-ERA-ROWS-20260811.json`](../artifacts/operator/receipts/RATIFY-CONSOLIDATED-ERA-ROWS-20260811.json), [`RATIFY-ANNEXG-V9-CURRENCY-20260811.json`](../artifacts/operator/receipts/RATIFY-ANNEXG-V9-CURRENCY-20260811.json), [`RATIFY-V9-CPU-BENCH-ERA-ADVANCE-20260811.json`](../artifacts/operator/receipts/RATIFY-V9-CPU-BENCH-ERA-ADVANCE-20260811.json) — the three signed ratification receipts
 - [`artifacts/operator/ratify_cpu_bench_binary_version_20260811.py`](../artifacts/operator/ratify_cpu_bench_binary_version_20260811.py) — the drafted, not-yet-signed Token 2 `binary_version` discriminator
 - [`handoffs/active/scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — the additive consumer-by-consumer audit and the `debug_scorer` permissiveness finding
+**Last compiled**: 2026-08-11 (adds the resident kernel-promotion fast-path design and its fresh-server fallback; prior generated-eval findings retained)
+**Sources**: 110+ documents
+
+## Compiled Update — 2026-08-11: keep promotion cohorts resident
+
+The v9 cycle exposed a methodological cost problem rather than a compute-capacity problem. The CPU
+ABBA gate spent about 26 minutes wall-clock but only about 12 minutes serving measured requests;
+launch, load, telemetry and teardown consumed 54%. The full production lineup fits concurrently in
+the available memory envelope (about 578 GiB host against a 1,069 GiB budget and 57.7 GiB GPU against
+62 GiB). Repeated teardown was therefore an instrument design choice, not a resource constraint.
+
+The durable successor design keeps sealed v8/v9 cohorts resident, issues request-level ABBA quartets,
+reuses a pinned exact-parity quality pack, and pairs request-local cap-0/cap-N speculation on one
+resident server. It targets a 45–60 minute complete promotion cycle instead of roughly 90–120 minutes.
+That target is prospective until implemented and ratified. Any attestation drift, resident-state
+contamination, mismatch, or other ambiguity automatically falls back to the existing fresh-server
+instrument, so speed does not weaken the proof boundary.
+
+### Source References (2026-08-11)
+
+- [`kernel-promotion-resident-fast-path.md`](https://github.com/pestopoppa/epyc-inference-research/blob/main/docs/design/kernel-promotion-resident-fast-path.md) — measured overhead audit, memory-fit proof, resident schedule and fallback rules.
+- [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — V9-8 implementation/ratification task and request-local speculation contract.
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — v9 qualification context and durable-design checkpoint.
 
 ## Compiled Update — 2026-08-08: evaluate the artifact and harness that actually execute
 

@@ -89,6 +89,8 @@ the orchestrator's venv is **not** required.
 - `GET /api/handoff_detail?id=<state>/<stem>` — full card + scrubbed markdown body (path-traversal guarded)
 - `GET /api/handoff_timeline` — the git-derived timeline artifact + freshness
 - `GET /api/kernel` — the AutoKernel `/kernel` contract (v2, v1 still readable) + freshness
+- `GET /api/kernel/health` — Kernel-R&D producer/data health only; HTTP 200 when
+  fully reported and current, HTTP 503 with `absent`/`degraded` detail otherwise
 - `GET /api/bus`, `GET /api/queue`, `GET /api/outcome`, `GET /api/benchmark_artifacts`
 - `GET /api/health` — **the fold**: every registered panel's envelope + one verdict
 
@@ -144,6 +146,10 @@ trusted.
 * `/health` stays transport-only because
   `scripts/dashboard/hub_supervisor.sh` restarts the hub on a non-ok body, and
   restarting the dashboard cannot revive a producer in another repository.
+* `/api/kernel/health` is the non-recursive Kernel-R&D data probe used by the
+  dashboard registry. It reads and folds only the `kernel` envelope; it never
+  calls the global `/api/health` fold. This lets registry consumers see a live hub
+  and an absent/partial AutoKernel producer as two different facts.
 
 Producer side (contract v2): `epyc-inference-research` →
 `scripts/kernel_rnd/autokernel/dashboard.py`. The campaign driver exports only
