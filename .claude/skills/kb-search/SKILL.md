@@ -74,7 +74,14 @@ python3 /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py stats
 
 - This skill is for the markdown corpus only. For code, use GitNexus tools.
 - The encoder requires `onnxruntime` and the GTE-ModernColBERT-v1 ONNX model at `/mnt/raid0/llm/models/gte-moderncolbert-v1-onnx/`. If absent, `kb_rag query` returns no results — fall back to grep.
-- Index location: `/workspace/repos/epyc-orchestrator/data/kb_rag/index/` (gitignored).
+- Index location: `/workspace/repos/epyc-orchestrator/data/kb_rag/index-qd-v1/` (gitignored).
+- **Prefix convention (OP-24, 2026-08-12)**: the index records which ColBERT role
+  convention produced its vectors (`index_meta.prefix_convention`), and `query`
+  encodes the query the same way. `index-qd-v1` uses the model's trained `[Q] ` /
+  `[D] ` prefixes; the retained `data/kb_rag/index/` is the pre-migration
+  prefix-free store and is the rollback — `KB_RAG_INDEX_DIR=.../data/kb_rag/index`
+  switches back with no code change. Never point the reader at a store built under
+  a different convention; a mismatch is worse than either convention alone.
 
 ## Verification
 

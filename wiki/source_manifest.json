@@ -1,18 +1,18 @@
 {
   "by_type": {
-    "docs": 67,
+    "docs": 68,
     "handoff-active": 172,
     "handoff-blocked": 2,
     "handoff-completed": 164,
-    "progress": 274,
+    "progress": 276,
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-12T20:16:59Z",
+  "last_compile": "2026-08-12T22:02:17Z",
   "mode": "full",
-  "scan_time": "2026-08-12T20:52:37Z",
+  "scan_time": "2026-08-12T22:25:36Z",
   "schema_version": 1,
-  "source_set_hash": "be2cb125aaa48df5a61858e0f0e59613f0514bb277a9d1dafd8ef7514c912e00",
+  "source_set_hash": "e10183caf85b3ffcbed3d019d7d8f635696fb57fef5a883f6877b838ea6017c1",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -71,10 +71,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ae0a66b891d2c9ae0394a98ba1bf43ac080f93b754fa47365f88bfcbbbfa20f1",
-      "modified": "2026-08-12T20:52:10Z",
+      "content_hash": "c6075f70ea17b7f602d313bb4a5a9f74e624d214aebd6bdd3dd723d98bb81250",
+      "modified": "2026-08-12T21:38:51Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
-      "size": 121545,
+      "size": 115965,
       "title": "Architect Model Comparison Benchmark",
       "type": "handoff-active"
     },
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "94327d7fb64bb7dbd8139f9592d26a3964540a636069c01f934b915ee90dd97e",
-      "modified": "2026-08-12T20:20:36Z",
+      "content_hash": "6b444bbdff3ece454cbbb57f84c3cd09967aa904bc046fbc08876ebba518ac7c",
+      "modified": "2026-08-12T21:09:05Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 380714,
+      "size": 382139,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -223,10 +223,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8d575b355defaabd165a7be599a514d7c8372cb1ffe66642a28928ad966f7885",
-      "modified": "2026-08-12T12:42:27Z",
+      "content_hash": "185562dcb006ccf5cb410502c333103fd08cd8c6a7d23eaf072a628c28a28be1",
+      "modified": "2026-08-12T22:25:08Z",
       "path": "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
-      "size": 104191,
+      "size": 122483,
       "title": "Coordinator role \u2014 failure modes, root causes, and the refactor",
       "type": "handoff-active"
     },
@@ -1167,10 +1167,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9a93dab22491b4c85d17b5f2f28e1844a10002d88e3fd7de43163a11812456fa",
-      "modified": "2026-08-12T20:13:40Z",
+      "content_hash": "cf9c224d6b50d41375a4dc21f080764df3c41c7f73f13f2f0847be05aee72444",
+      "modified": "2026-08-12T21:57:04Z",
       "path": "handoffs/active/session-bus-thin-dispatcher.md",
-      "size": 251773,
+      "size": 254186,
       "title": "Session Bus + Thin Coordinator \u2014 N-main-thread control structure",
       "type": "handoff-active"
     },
@@ -6015,10 +6015,26 @@
       "type": "progress"
     },
     {
-      "content_hash": "5e8e9448d6c6e6b781c857754c69ce96776e729803d9437a255ab53731ca639b",
-      "modified": "2026-08-12T20:45:47Z",
+      "content_hash": "3ca336571bc2452944f06692bf0252e63897b141c499e6ada8ee8d5121b87795",
+      "modified": "2026-08-12T22:02:50Z",
+      "path": "progress/2026-08/2026-08-12-mainC.md",
+      "size": 4958,
+      "title": "2026-08-12 \u2014 `mainC` session wrap-up",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b5d154e565dbcdc07bff10b438ccdec5b7538b0d558578e1bed6459feb592ddb",
+      "modified": "2026-08-12T22:12:18Z",
+      "path": "progress/2026-08/2026-08-12-refactor-session.md",
+      "size": 5383,
+      "title": "2026-08-12 \u2014 coordinator-seat refactor (refactor-session)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3f75af915cc0fbe342b6e60b823bb82d92bb606cd61b9647d01c6201a009ad25",
+      "modified": "2026-08-12T21:57:53Z",
       "path": "progress/2026-08/2026-08-12.md",
-      "size": 507093,
+      "size": 514079,
       "title": "2026-08-12",
       "type": "progress"
     },
@@ -6479,6 +6495,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "6d8815667626fd5e18ab66815179aac63a7263835f3b7a542dd9d173890e0e72",
+      "modified": "2026-08-12T21:49:52Z",
+      "path": "docs/reviews/gpu-linkage-retro-certification-20260812.md",
+      "size": 48976,
+      "title": "P-GPU-1 retro-certification of the ggml-linkage window (2026-07-31 \u2192 2026-08-12)",
+      "type": "docs"
+    },
+    {
       "content_hash": "ff5608f90af7650834b22116fe5faef7d46c3e639416ce5541315723f717ee7f",
       "modified": "2026-08-12T00:24:04Z",
       "path": "docs/reviews/kvquant-27b-decision-package-20260812.md",
@@ -6559,7 +6583,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 818,
+  "total_new": 821,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
