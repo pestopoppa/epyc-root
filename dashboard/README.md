@@ -74,6 +74,7 @@ the orchestrator's venv is **not** required.
 |------|------|
 | `dashboard/server.py` | stdlib `http.server` app: page + JSON endpoints + `/health` |
 | `dashboard/panels.py` | **SSOT panel→producer registry**, per-panel freshness envelope, transport watchdog, `/api/health` fold |
+| `dashboard/arena_attempt_dispositions.json` | Exact-attempt, one-way Arena integrity retractions for the Kernel-R&D view |
 | `dashboard/handoff_parser.py` | pure parser: cards, tasks, status-derived Blocked column |
 | `dashboard/freshness.py` | the one age→`fresh/aging/stale/missing` classifier (+ a legacy mtime badge) |
 | `dashboard/static/handoffs.html` | kanban UI + modal + hand-rolled SVG charts (no framework, no CDN) |
@@ -178,6 +179,16 @@ The view exposes attempt receipt identities, output roots, completed
 checkpoint/cell counts, and individual observations, but an incomplete matrix
 has no aggregate and remains explicitly non-rankable. These fields are evidence
 inventory, not controller liveness and not part of Kernel-R&D health.
+
+Cross-artifact integrity retractions live in the hub-owned, versioned
+`dashboard/arena_attempt_dispositions.json`. Rows bind both the producer's exact
+manifest self-hash and run directory. This overlay is deliberately one-way: it
+may reduce a hash-valid attempt to stopped diagnostic history, forbid resume and
+withhold ranking/release authority, but it cannot admit evidence or make a
+producer healthy. The r4 INF-03 attempt is retracted here because its
+KernelFoundry controller made 64 intermediate evaluator calls outside the two
+durable GPU claim windows; the page keeps the partial checkpoint inventory
+visible while labelling the campaign evidence invalid.
 
 `current_state.hip_decision_grade` is a curated projection of the terminal
 `hip-silu-decision-grade-20260812-r6/receipt.json`. The hub verifies the receipt's

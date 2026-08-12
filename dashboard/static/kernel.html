@@ -403,7 +403,13 @@ function renderCurrentState(d){
   h+='<div class="state-card"><h3>INF-03 · available-source Arena progress</h3>';
   if(arena.available){
     const terminal=arena.terminal_aggregate_present===true;
-    h+='<div class="headline '+(terminal?'ok':'sec-refused')+'">'+esc(arena.completed_checkpoints+' / '+arena.planned_checkpoints)+' checkpoints · '+esc(arena.completed_cells+' / '+arena.planned_cells)+' cells · '+(terminal?'TERMINAL AGGREGATE':'NO AGGREGATE')+'</div>';
+    const retracted=arena.campaign_evidence_valid===false;
+    h+='<div class="headline '+(retracted?'fail':(terminal?'ok':'sec-refused'))+'">'+(retracted?'STOPPED · DIAGNOSTIC HISTORY ONLY':esc(arena.completed_checkpoints+' / '+arena.planned_checkpoints)+' checkpoints · '+esc(arena.completed_cells+' / '+arena.planned_cells)+' cells · '+(terminal?'TERMINAL AGGREGATE':'NO AGGREGATE'))+'</div>';
+    if(retracted){
+      h+='<div class="detail fail">'+esc(arena.completed_checkpoints+' / '+arena.planned_checkpoints)+' checkpoints · '+esc(arena.completed_cells+' / '+arena.planned_cells)+' cells · campaign evidence invalid · resume forbidden · not rankable</div>';
+      h+='<div class="detail fail">'+esc((arena.retraction||{}).reason||"attempt retracted by governance integrity audit")+'</div>';
+      h+=evidenceLine((arena.retraction||{}));
+    }
     h+='<div class="detail">'+esc(arena.tasks)+' tasks × '+esc(arena.arms)+' available arms · checkpoints <code>'+esc((arena.checkpoint_hours||[]).join('h, ')+'h')+'</code> · partial rankable: <span class="'+(arena.rankable?'fail':'ok')+'">'+esc(String(arena.rankable===true))+'</span></div>';
     h+='<div class="detail">released measurement windows '+esc(arena.released_measurement_windows+' / '+arena.measurement_windows)+' · '+esc(arena.measurement_samples)+' sampler observations · '+esc(num(arena.measurement_claimed_seconds,6))+' claimed GPU-seconds · belief rows '+esc(arena.belief_measurement_count)+'</div>';
     h+='<div class="detail">attempt <code>'+esc(String(arena.attempt_id||"—").slice(0,16))+'…</code> · output root <code>'+esc(arena.output_root||"—")+'</code></div>';
@@ -415,8 +421,8 @@ function renderCurrentState(d){
       h+='</tbody></table>';
     }
     if((arena.attempts||[]).length){
-      h+='<div class="detail"><b>verified attempts</b> (same logical campaign, distinct immutable receipts/output roots)</div><table><thead><tr><th>attempt</th><th>output root</th><th>checkpoints</th><th>cells</th><th>latest completed evidence</th></tr></thead><tbody>';
-      (arena.attempts||[]).forEach(function(a){ h+='<tr><td><code>'+esc(String(a.attempt_id||"—").slice(0,12))+'…</code></td><td><code>'+esc(a.output_root||"—")+'</code></td><td>'+esc(a.completed_checkpoints)+'</td><td>'+esc(a.completed_cells)+'</td><td>'+esc(a.latest_completed_evidence_at||"—")+'</td></tr>'; });
+      h+='<div class="detail"><b>attempt inventory</b> (same logical campaign, distinct immutable receipts/output roots; integrity disposition shown separately)</div><table><thead><tr><th>attempt</th><th>output root</th><th>checkpoints</th><th>cells</th><th>latest evidence / disposition</th></tr></thead><tbody>';
+      (arena.attempts||[]).forEach(function(a){ const state=a.campaign_evidence_valid===false?'STOPPED / INVALID':(a.execution_state||'evidence only'); h+='<tr><td><code>'+esc(String(a.attempt_id||"—").slice(0,12))+'…</code></td><td><code>'+esc(a.output_root||"—")+'</code></td><td>'+esc(a.completed_checkpoints)+'</td><td>'+esc(a.completed_cells)+'</td><td>'+esc(a.latest_completed_evidence_at||"—")+' · '+esc(state)+'</td></tr>'; });
       h+='</tbody></table>';
     }
     h+='<div class="detail">'+esc(arena.note||"")+' · attempts without verified checkpoint evidence '+esc(arena.rejected_attempts||0)+'</div>';

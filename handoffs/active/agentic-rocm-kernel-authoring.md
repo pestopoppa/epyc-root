@@ -393,16 +393,28 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     **540/540**. The r3 audit is ready at **6/6** over four tasks with authority still limited to an
     availability-conditioned diagnostic; self-hash
     `b8d966ee7581f2a2fe4ee7e8c2eb7e314514bc4f888f22635dfa23d9ec4ce6dc`.
-  - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints and
-    interpret it only as an availability-conditioned diagnostic. The corrected r4 campaign is live
-    at `/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-six-arm-20260812-r4`. At the
-    2026-08-12 wrap boundary, **4/64 checkpoints** and **2/24 cells** were terminal: the starting
-    baseline and all three Claude/Codex checkpoints. Their eight vendor/final measurement windows
-    all released, retaining **183** numeric samples across **44.728 claimed GPU-seconds**. The
-    grouped completed-cell Claude/Codex receipt self-hash is
-    `fbaa5b5796d89d1d214b281d57d611f78242084ec9cb86408156983e73add285`, and KernelFoundry 2h was
-    in controller deliberation. The partial attempt has no aggregate and remains non-rankable; rank
-    only the terminal full 6/6 panel.
+  - [x] **Stop INF-03 r4 and preserve it only as invalid diagnostic history after auditing its
+    intermediate feedback path.** ✅ 2026-08-12 — the captured campaign processes were terminated
+    by exact PID and confirmed dead; no MI210 claim remained. The immutable partial root is
+    `/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-six-arm-20260812-r4`, bound to manifest
+    self-hash `941fece21400362f41772682ec2cf8e3162b08488183a767dce276209ec61eaf`. It retains **5/64
+    checkpoints**, **2/24 cells**, **10/10 released** vendor/final windows, 215 samples, and 52.588
+    claimed GPU-seconds, but it is not resumable, rankable, aggregatable, or valid controller-comparison
+    evidence. KernelFoundry's receipt records 64 intermediate centralized evaluations; the evaluator
+    log records 64/64 correctness failures. Those calls ran from the deliberately GPU-blind controller
+    environment outside the only two durable claim windows, so the controller received invalid search
+    feedback even though its final checkpoint receipt was structurally complete.
+  - [ ] **Broker every intermediate controller evaluation through the parent worker's exact-PID
+    boundary.** The parent owns an authenticated AF_UNIX broker, verifies the exact controller PID with
+    `SO_PEERCRED`, evaluates bounded candidate bytes in a fresh workspace, acquires/releases one MI210
+    claim per evaluator action, and gives neither controller nor candidate a claim credential.
+  - [ ] **Prove controller/candidate OS isolation before a decision-bearing INF-03 pilot.** Exact-PID
+    brokerage closes claim ownership but not same-UID `/proc` or workspace attacks. Until the controller
+    and evaluated candidate execute across an OS isolation boundary, any live pilot is engineering
+    smoke only and cannot choose, eliminate, rank, bank, or advance a controller policy.
+  - [ ] Run a fresh governed available-source campaign only after a one-task/one-arm pilot proves
+    non-null brokered intermediate feedback, exact claim/release receipts, peer authentication, and the
+    required OS isolation. Never resume or reuse r4.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims

@@ -1,0 +1,17 @@
+{
+  "schema": "epyc.dashboard.arena_attempt_dispositions.v1",
+  "attempts": [
+    {
+      "attempt_id": "941fece21400362f41772682ec2cf8e3162b08488183a767dce276209ec61eaf",
+      "run_directory": "inf03-available-source-six-arm-20260812-r4",
+      "disposition": "invalid_diagnostic_history",
+      "execution_state": "stopped",
+      "recorded_at": "2026-08-12T11:34:00Z",
+      "resume_permitted": false,
+      "ranking_authority": false,
+      "release_authority": false,
+      "reason": "KernelFoundry performed 64 intermediate centralized evaluator calls outside the only two durable MI210 claim windows, so its search feedback and this partial campaign cannot support controller comparison.",
+      "evidence": "/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-six-arm-20260812-r4/execution/cells/005-instruction2triton_rocmbench_test_add_kernel-377f41e44c06-kernelfoundry-179741117a7a-2h/workspace/.autokernel-upstream-controller/receipt.json"
+    }
+  ]
+}
