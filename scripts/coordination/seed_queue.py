@@ -159,10 +159,37 @@ def cmd_seed(args: argparse.Namespace) -> int:
         i["expected_occupancy"] = row_intake.estimate_occupancy(
             i["summary"], lane=i["lane"], gating=i["gating"])
         admitted.append(i)
+
+    # DSP-2, 2026-08-12: ASK AT AUTHORING, WHERE THE ANSWER IS KNOWN.
+    #
+    # Refusing an unestimated row at DISPATCH is correct but too late — the row
+    # already exists, so every one of them lands in a growing hand-dispatch pool
+    # (measured at the time: 15 of 19 live rows). The author of a hardware-lane
+    # task is the one person who knows whether it is a 40-second sweep or an
+    # overnight run, and F-14 is precisely the failure of never asking: seconds of
+    # work were queued at a card that needed hours, and the card read idle all
+    # morning.
+    #
+    # So a `cpu`/`gpu` proposal with no derivable duration is surfaced HERE, with
+    # the fix in the author's hands (state a duration in the task text, and rule 2
+    # picks it up verbatim). This is a WARNING, not a refusal: the row is still
+    # proposed and still hand-dispatchable, because a task nobody can time is
+    # still real work and dropping it would be worse than scheduling it by hand.
+    # Nothing is fabricated either way.
+    unestimated_hw = [i for i in seedable
+                      if i["lane"] in ("cpu", "gpu") and not i.get("expected_occupancy")]
     seedable = admitted
 
     print(f"{handoff.name}: {len(items)} open, {len(seedable)} to propose, "
           f"{len(skipped)} unclassifiable, {len(refused)} refused by the screener\n")
+    if unestimated_hw:
+        print(f"  ⚠ {len(unestimated_hw)} HARDWARE-LANE row(s) state no duration, so they can only "
+              f"ever be dispatched BY HAND:")
+        for i in unestimated_hw:
+            print(f"      {i['task_id']:<52} lane={i['lane']}")
+        print("    Fix it where the answer is known — state a duration in the task text "
+              "(\"~2h\", \"overnight\", \"20-40 min\")\n    and it is picked up verbatim. "
+              "Nothing is invented for you: an unestimated row is a row a human dispatches.\n")
     for i in seedable:
         print(f"  + {i['task_id']:<52} lane={i['lane']:<5} gating={i['gating']:<5} — {i['reason']}")
         print(f"      screen: {i['screen'].verdict} · {row_intake.occupancy_note(i['expected_occupancy'])}")
