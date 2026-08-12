@@ -606,3 +606,29 @@ resolved, and the operator's freeze-sha byte-checked). Findings:
   mainA flipped and annotated the row in place 2026-08-12; the provenance gap matches this
   audit's section-D theme: the era registry's trust rests on receipt linkage, and a row
   without one is exactly the shape the C39 keyed index exists to prevent going forward.
+
+## Gates that can refuse into a void — ratification-path sweep (2026-08-12 02:20Z)
+
+Answering the coordinator's lens question from `c39-live-receipt-contract-violation` ("ask what
+else in the ratification path can refuse into a void"). Subagent sweep; the three headline
+claims re-verified on the auditor's own thread. Classification: WATCHED = automation runs it
+and consumes the exit; PARTIALLY = invoked but exit swallowed or flow-limited; UNWATCHED =
+hand-run only.
+
+| Gate | Class | Verified detail |
+|---|---|---|
+| `scripts/validate/check_ratification_receipts.py` | **UNWATCHED — fully orphaned** | ✔ main-thread: added `cb6ea509` 08-02, ZERO references outside itself (no invoker, no doc pointer). Guards the human-amendment-only measurement boundary — strictly more invisible than the checker that prompted the question. |
+| `scripts/operator/check_ratifier_receipt_contract.sh` | UNWATCHED | The known instance (exit 1 = e8-v4 residual BY DESIGN; v3 patch pending operator). Only "invoker" is a hand-typed command in token-queue + daemon comment pointers. |
+| `scripts/handoffs/index_state.py --check` | **UNWATCHED, binding-language gap** | ✔ main-thread: CLAUDE.md says "must exit 0 before committing"; pre-commit hook never calls it; post-commit runs generate-only as `( … >/dev/null 2>&1 & ) \|\| true` — exit physically unobservable. Widest stated-policy/mechanism gap found. |
+| `scripts/session/verify_llama_cpp.sh` (+speech) | PARTIALLY | ✔ main-thread: `session_init.sh:66-80` wraps in `if ! …` → prints WARNING, logs, **continues and exits 0**; and session_init itself is convention-run (no SessionStart hook). Wrong-branch llama.cpp serves silently unless a human reads the banner. |
+| `session_bus` trust-boundary pin check | WATCHED | Live daemon audits per tick (PID confirmed); files `defect` rows. |
+| `backfill-receipts --check` (drift side) | PARTIALLY | Read-side spent-gate is live in the daemon; the drift subcommand is test-covered only, and no CI runs pytest (`.github/workflows/` = docs.yml alone). |
+| `vidya cli.py cite-check` | UNWATCHED | Not called from research-intake Stage 3 — the exact seam where citations enter handoffs. |
+| PreToolUse hooks / git pre-commit (pii, hermes) | WATCHED | Harness/hook-enforced, correctly status-accumulating. |
+| `scripts/nightshift/run_wrapper.sh` | hazard | `} 2>&1 \| tee "$LOGFILE"` — wrapper exit is tee's; any exit-code consumer is blind (no live cron consumer found on this host). |
+
+**Wiring decisions deliberately NOT taken unilaterally** (per coordinator instruction and blast
+radius): a pre-commit `--check` would block all four mains' commits on freshness mid-campaign; a
+daemon-tick invocation edits the coordinator-owned live daemon; a SessionStart hook changes
+every session's startup. Each is a one-line change whose *placement* is the decision — packaged
+for the coordinator/operator rather than landed at 02:20.
