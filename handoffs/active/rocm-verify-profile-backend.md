@@ -800,10 +800,12 @@ the end are deliberate and recorded so they are not re-derived._
   derives a 250,090,903 ns minimum from the first nominal-SCLK observation in the hash-bound RVP-T0-1
   receipt, refuses missing/foreign/sub-floor live GPU evidence before ranking, and exempts CPU and
   non-live arms. The focused device-sampler module passes 11/11 tests. These research-tree changes
-  live in `scripts/kernel_rnd/autokernel/evaluator/devices.py`,
+  landed in research commit `5fbd471b5e7929d04113f7d5d95008837cd2107a`, an ancestor of
+  research `origin/main` at `1448d93e3b3f42ef7b16484fe6cb3e770660c1e2`, in
+  `scripts/kernel_rnd/autokernel/evaluator/devices.py`,
   `scripts/kernel_rnd/autokernel/execution/microbench.py`, and
-  `scripts/kernel_rnd/autokernel/execution/test_device_sampler.py`; they remain uncommitted at this
-  checkpoint.
+  `scripts/kernel_rnd/autokernel/execution/test_device_sampler.py`. A clean detached worktree at that
+  main commit revalidated the focused module at 11/11 on 2026-08-12.
 - [x] **RVP-C2-10 — Add a non-power-of-2 extent to the standing shape set.** ✅ 2026-08-11 — frozen v9's
   executed `MUL_MAT` case set already carries extents 83, 77 and 127 (plus other irregular shapes),
   and the AutoKernel T0 op filter runs that standing set rather than a power-of-two subset. Adding
