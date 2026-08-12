@@ -12,6 +12,35 @@ def sha(label: str) -> str:
     return hashlib.sha256(label.encode("utf-8")).hexdigest()
 
 
+def rebind_capture(record: dict) -> None:
+    """Recompute the prospective raw-material and identity bindings after a fixture edit."""
+    raw = record["performance"]["raw_samples"]
+    raw_json = json.dumps(raw, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    raw_digest = hashlib.sha256(raw_json.encode("utf-8")).hexdigest()
+    record["performance"]["raw_samples_ref"] = f"sha256:{raw_digest}"
+    capture = record["performance"]["search_discipline"]["belief_capture"]
+    capture["raw_samples_sha256"] = raw_digest
+    binding = {
+        "schema": capture["schema"], "event_id": record["event_id"],
+        "campaign_id": record["campaign_id"], "candidate_id": record["candidate_id"],
+        "category": record["claim_grammar"]["category"],
+        "protocol_id": record["claim_grammar"]["protocol_id"],
+        "metric": record["claim_grammar"]["metric"],
+        "metric_direction": record["claim_grammar"]["metric_direction"],
+        "reps": record["claim_grammar"]["reps"],
+        "effect_scale": capture["effect_scale"], "model_id": capture["model_id"],
+        "model_sha256": capture["model_sha256"],
+        "source_sha256": capture["source_sha256"],
+        "binary_sha256": capture["binary_sha256"],
+        "resource_claim_receipt": capture["resource_claim_receipt"],
+        "producer_sha256": capture["producer_sha256"],
+        "raw_samples_sha256": capture["raw_samples_sha256"],
+    }
+    capture["identity_binding_sha256"] = hashlib.sha256(
+        json.dumps(binding, sort_keys=True, separators=(",", ":"),
+                   ensure_ascii=False).encode("utf-8")).hexdigest()
+
+
 def event(*, prospective: bool = True, properties: bool = True, estimate: float | None = None):
     raw = [
         [0, "decode/seed-1", "selection", "anchor_first", "base", None,
@@ -60,6 +89,9 @@ def event(*, prospective: bool = True, properties: bool = True, estimate: float 
         "claim_grammar": {
             "category": "CANDIDATE", "protocol_id": "P-AK-SEARCH-1/v1",
             "metric": "decode_tokens_per_s", "metric_direction": "higher_better",
+            # Per-arm repetitions are independent of the number of paired blocks.
+            # A real campaign commonly uses five reps over twelve blocks; keeping
+            # them unequal here catches a consumer that conflates the two axes.
             "reps": 2, "attestation_ref": "akcap:campaign-20260812-0001",
         },
         "evaluator": {
@@ -92,31 +124,12 @@ def event(*, prospective: bool = True, properties: bool = True, estimate: float 
         "integrity_flags": [], "status": "pass", "supersedes": [],
         "created_at": "2026-08-12T10:02:00Z",
     }
-    raw_json = json.dumps(raw, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    raw_digest = hashlib.sha256(raw_json.encode("utf-8")).hexdigest()
-    record["performance"]["raw_samples_ref"] = f"sha256:{raw_digest}"
     if prospective:
-        discipline["belief_capture"]["raw_samples_sha256"] = raw_digest
-        capture = discipline["belief_capture"]
-        binding = {
-            "schema": capture["schema"], "event_id": record["event_id"],
-            "campaign_id": record["campaign_id"], "candidate_id": record["candidate_id"],
-            "category": record["claim_grammar"]["category"],
-            "protocol_id": record["claim_grammar"]["protocol_id"],
-            "metric": record["claim_grammar"]["metric"],
-            "metric_direction": record["claim_grammar"]["metric_direction"],
-            "reps": record["claim_grammar"]["reps"],
-            "effect_scale": capture["effect_scale"], "model_id": capture["model_id"],
-            "model_sha256": capture["model_sha256"],
-            "source_sha256": capture["source_sha256"],
-            "binary_sha256": capture["binary_sha256"],
-            "resource_claim_receipt": capture["resource_claim_receipt"],
-            "producer_sha256": capture["producer_sha256"],
-            "raw_samples_sha256": capture["raw_samples_sha256"],
-        }
-        capture["identity_binding_sha256"] = hashlib.sha256(
-            json.dumps(binding, sort_keys=True, separators=(",", ":"),
-                       ensure_ascii=False).encode("utf-8")).hexdigest()
+        rebind_capture(record)
+    else:
+        raw_json = json.dumps(raw, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        record["performance"]["raw_samples_ref"] = (
+            "sha256:" + hashlib.sha256(raw_json.encode("utf-8")).hexdigest())
     return record
 
 
