@@ -331,3 +331,36 @@ _(none — the coordinator-daemon appends relayed blocks below this line)_
   - **deliberately excluded**: `E5-cpu-kernel`. Its note records no binary version and no commit sha, so there is nothing to witness and inventing one is the exact failure this repair exists to stop. Consequence, stated rather than papered over: kernel-era derivation **fails closed** for instants in `[2026-06-26T22:07:11Z, 2026-07-20T13:30:13Z)`. No banked manifest falls in that gap — E5 pre-registration begins 2026-07-23.
   - **safety**: refuses without `--attest`; idempotent (re-running exits 0 as a no-op); refuses on drift, on a half-applied row, and when a row's note disagrees with the asserted value; per-row independent via `--only`, so striking any row from this token leaves the others valid. All five refusal paths and the idempotent re-apply were exercised on copies, not asserted. Writes receipt + keyed index in the house shape at git-tracked paths.
   - **not in this token**: the code repair (three remaining stale constants, derived lookup, run-manifest binding). Code is not a trust boundary and needs no signature — it is gated on this field existing, and `mainA` executes it once this is signed.
+
+<!-- daemon:spent-gate-notice ee892a24d19a -->
+
+### ⚠ Daemon notice — these unchecked gates already have receipts
+
+**Not a gate and not a checkbox.** The daemon never ticks or removes a block; this is STATE, so that a reader of this file alone is not misled. Each gate below is presented above as unchecked, and a ratified receipt for it exists on disk. Verify, then tick or remove it yourself — that is the operator's call, not the daemon's and not the coordinator's.
+
+- `RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729` — receipt `artifacts/operator/receipts/RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729.json` reads `status: ratified`
+- `RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729` — receipt `artifacts/operator/receipts/RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729.json` reads `status: ratified`
+- `RATIFY-CONSOLIDATED-ERA-ROWS-20260811` — receipt `artifacts/operator/receipts/RATIFY-CONSOLIDATED-ERA-ROWS-20260811.json` reads `status: ratified`
+- `RATIFY-ANNEXG-V9-CURRENCY-20260811` — receipt `artifacts/operator/receipts/RATIFY-ANNEXG-V9-CURRENCY-20260811.json` reads `status: ratified`
+- `RATIFY-V9-CPU-BENCH-ERA-ADVANCE-20260811` — receipt `artifacts/operator/receipts/RATIFY-V9-CPU-BENCH-ERA-ADVANCE-20260811.json` reads `status: ratified`
+- `RATIFY-CPU-BENCH-BINARY-VERSION-20260811` — receipt `artifacts/operator/receipts/RATIFY-CPU-BENCH-BINARY-VERSION-20260811.json` reads `status: ratified`
+
+
+### APPLY-C39-KEYED-RECEIPT-E8V4-20260812
+
+- [ ] **APPLY-C39-KEYED-RECEIPT-E8V4-20260812** — requested by `mainD` for task `c39-authoring-side-keyed-write-patch`
+  - block ref: `handoffs/active/session-bus-thin-dispatcher.md#c39`
+  - command (pre-validated, dry-run exit `0`):
+    ```
+    cd /mnt/raid0/llm/epyc-root && git apply artifacts/operator/prepared/c39-e8v4-keyed-receipt.patch && bash scripts/operator/check_ratifier_receipt_contract.sh
+    ```
+  - dry-run evidence: git apply --check on the patch: CLEAN, applies without conflict. bash -n on the patched copy: clean. The checkers OWN predicate (grep -q artifacts/operator/receipts/) run against the patched copy PASSES - the script would be skipped as contract-adopted - and FAILS against the unpatched original, which is exactly why it is reported today. Live tree untouched: git status on the signer is empty and the checker still exits 1. NOT PROVEN from here and the README says so: that the checker exits 0 AFTERWARDS is only true once applied; the other half already reports (none), so this MISSING-WRITE is the sole remaining failure.
+
+<!-- daemon:withdrawn-gate-notice a190d1db42e7 -->
+
+### ⚠ Daemon notice — these unchecked gates may no longer be live asks
+
+**Not a gate and not a checkbox.** The daemon never ticks or removes a block. `WITHDRAWN` means the requester explicitly said so and is authoritative. `REQUESTER-MOVED-ON` is a DISCREPANCY, not a verdict — the requester later reported the same task complete, which usually means the ask lapsed, but only the requester and the operator can settle it. **Verify before signing:** a withdrawn gate asks for a signature on work its own author has stopped standing behind.
+
+- `APPLY-C39-KEYED-RECEIPT-E8V4-20260812` — **REQUESTER-MOVED-ON** — `mainD` filed it at 2026-08-12T01:21:10+00:00 on task `c39-authoring-side-keyed-write-patch`, then reported that same task complete at 2026-08-12T01:41:39+00:00 (`msg-20260812T014139Z-235-mainD`)
+

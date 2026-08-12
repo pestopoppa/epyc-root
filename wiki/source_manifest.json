@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-12T13:58:09Z",
+  "last_compile": "2026-08-12T15:40:11Z",
   "mode": "full",
-  "scan_time": "2026-08-12T14:02:41Z",
+  "scan_time": "2026-08-12T19:54:16Z",
   "schema_version": 1,
-  "source_set_hash": "59fc7f41815e2168520346082bd275b34d0665ceda97187ed918d4df54f169db",
+  "source_set_hash": "9ee2b6a04d4a0b9df16b08b4369636a77bcc0feb8765f9c2552c769044bbf373",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -71,10 +71,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "81aedfe3d47d779bf5a6bfd291714d9bad35474811a88fb598a0f4e9ff78299e",
-      "modified": "2026-08-12T13:13:07Z",
+      "content_hash": "8778b35b22ba39676b5c7feb059b9ffd3ac68ac18570e2aadf2ab807859462c3",
+      "modified": "2026-08-12T19:53:39Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
-      "size": 103595,
+      "size": 110806,
       "title": "Architect Model Comparison Benchmark",
       "type": "handoff-active"
     },
@@ -199,10 +199,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "64f0d389a7c6e90d591b5a5abffdd89be061094f57b4053dabc64987b56f5a2c",
-      "modified": "2026-07-29T16:42:45Z",
+      "content_hash": "936d6e089926ad663411fdfe381c31bd53708ed3187475af2f9d7444d39add06",
+      "modified": "2026-08-12T19:34:26Z",
       "path": "handoffs/active/colbert-reranker-web-research.md",
-      "size": 51760,
+      "size": 59682,
       "title": "ColBERT Reranker for web_research Pipeline",
       "type": "handoff-active"
     },
@@ -1175,10 +1175,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "753dc988806465fdebaf14fcb8d165a34034e0977fac3afdd2888ade857c8f60",
-      "modified": "2026-08-12T13:58:22Z",
+      "content_hash": "243afd3176a5e8bed46b25586b57d4151ef775f09aa803d04e3ad0795f1a23bc",
+      "modified": "2026-08-12T19:25:17Z",
       "path": "handoffs/active/shape-keyed-contention-gating.md",
-      "size": 48846,
+      "size": 51924,
       "title": "Shape-Keyed Contention Gating + Cross-Role Disjoint Placement",
       "type": "handoff-active"
     },
@@ -6015,10 +6015,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "8c844245d80396bb3eabea05990e9418dcf013f3b0295c274b77f1517f908e9e",
-      "modified": "2026-08-12T14:02:27Z",
+      "content_hash": "c7f11b1d7bfbc4041d70ff5d6f90e18b7b0480ab4c6f63931997421e8b22ed43",
+      "modified": "2026-08-12T19:53:58Z",
       "path": "progress/2026-08/2026-08-12.md",
-      "size": 356536,
+      "size": 388161,
       "title": "2026-08-12",
       "type": "progress"
     },
