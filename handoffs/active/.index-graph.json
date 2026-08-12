@@ -3465,7 +3465,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T10:26:52Z",
+  "generated_at": "2026-08-12T10:31:56Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4159,7 +4159,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 216,
+      "closed": 217,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
@@ -4627,7 +4627,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 71,
+      "closed": 72,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",

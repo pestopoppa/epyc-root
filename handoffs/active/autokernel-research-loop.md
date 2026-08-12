@@ -56,6 +56,14 @@ through measured, hash-bound bindings to the exact candidate source and evaluato
 dry-run capture, or identity drift is verdict-bearing `COULD_NOT_CHECK`. The exact-main C3,
 correctness, and execution slice passed **444 tests with 132 subtests**. This closes implementation
 authority only: no EPYC workload capture, candidate timing, whole-model exit, or inference ran.
+Research `77689f76` makes AK-D39 executable rather than advisory. Proposal v4 binds every provider's
+source/opaque mode, immutable source or artifact identity, licence check, isolated prefix, toolchain,
+linkage, target backend, and evidence authority. Opaque binaries are diagnostic-only. Provider roots
+are realpath-resolved and refused when they lie inside—or broadly encompass—shared ROCm/system paths
+or a frozen production tree. Banked evidence requires a clean experimental `llama.cpp` integration
+whose source, branch, ancestry, patch, binary, linkage, and toolchain identities all join. The C3
+compiler now distinguishes diagnostic provider overlays from `IntegratedLlamaGpuBinding`; only the
+latter can satisfy the whole-model exit. This checkpoint ran no inference.
 Research `4a5f7361` closes the remaining offline integration seam from the lean sequencer's
 schema-bound composed champion through readiness, dry-run T3, and one validated
 `RELEASE_PACKAGE_READY` journal record. The closeout is operator-triggered, unreachable from Campaign
@@ -368,6 +376,15 @@ kernel source tree or permit a module to bypass the deployable product:
 
 This keeps module-level search broad while keeping promotion narrow. Serving concurrency and
 scheduler work remains a separate `serving_runtime` campaign under AK-D9/AK-D23.
+
+- [x] **AK-D39-1 — Enforce the provider-not-champion boundary in records, execution setup, C3, and
+  champion admission.** ✅ 2026-08-12 — research `77689f76` adds proposal-v4 provider identity,
+  diagnostic-only opaque authority, realpath-aware isolated prefixes, exact baseline manifests,
+  provider-integration joins, and the diagnostic-versus-integrated C3 split. Ancestor-root and
+  symlink-to-protected mutation tests fail closed. Post-rebase focused/affected validation passed
+  580 tests; a full 5,597-test discovery exposed four current-schema call sites, which were repaired
+  and revalidated in a 419-test affected slice. The only remaining discovery error was environmental:
+  the checkout Python lacks `pytest` for `test_placement_context.py`.
 
 ### 1.6 The objective is per-backend, per-phase non-inferiority plus improvement
 

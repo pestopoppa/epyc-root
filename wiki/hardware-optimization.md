@@ -24,6 +24,16 @@ win becomes bankable only through an experimental `llama_gpu` integration with e
 captured-workload, and whole-model evidence; the champion remains the deployable `llama.cpp`
 lineage. Shared `/opt/rocm` mutation and opaque-binary champion source are forbidden.
 
+Research main `77689f76` turns this rule into a checked boundary. Proposal v4 carries a versioned
+provider reference with source/opaque mode, immutable artifact/source identity, licence, isolated
+prefix, toolchain, linkage, target backend, and evidence authority. The filesystem guard resolves
+symlinks and rejects both descendants and overly broad ancestors of shared ROCm/system prefixes and
+frozen production trees. Opaque providers remain diagnostic-only; baseline provider labels are backed
+by exact manifests; and C3 refuses to treat an Apex overlay or standalone provider binary as an
+integrated whole-model candidate. A bankable result must bind a clean, production-descended
+experimental `llama.cpp`/`llama_gpu` commit through its patch, binary, linkage, toolchain, and isolated
+build identity.
+
 ### Source References (2026-08-12 ROCm-provider boundary)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — AK-D39 and the binding provider/integration rules

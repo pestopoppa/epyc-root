@@ -96,6 +96,12 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
     `390bd1befe1a3d1eeb1433e579f3fc42d3c1d97ae8e7ccb1b90f059b9a5600ad`; research
     `4320d83a` (research main `5dfd14ad`). The parent remains open for EPYC workload capture, matched
     MI210 timing, candidate integration receipt, and whole-model re-bench.
+  - [x] **Separate diagnostic ROCm-provider evidence from bankable llama.cpp integration.** ✅
+    2026-08-12 — research `77689f76` gives baseline providers exact versioned manifests and makes
+    Apex/standalone-provider bindings diagnostic-only at the whole-model exit. Only a clean,
+    production-descended experimental `llama_gpu` commit with bound patch, binary, linkage,
+    toolchain, and isolated-prefix identity can satisfy `IntegratedLlamaGpuBinding`. This closes an
+    authority-laundering path; it does not perform the still-open EPYC capture or matched re-bench.
   - [x] **Provision the exact Apex/ROCm runtime without contaminating the host stack.** ✅ 2026-08-11
     — Apex is detached at `e06b5d1cd58996a82c5e2897164f760c3b3f87ac`; its time-matched Magpie
     dependency is detached at `2a9263833f71755df2a93b466cdd3a9f803fc625`; and the isolated Python
