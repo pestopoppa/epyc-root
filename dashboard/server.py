@@ -180,6 +180,20 @@ AUTOKERNEL_HIP_DECISION_AUTHORITY = \
     "task_local_rank_no_release_or_promotion_authority"
 AUTOKERNEL_DIAGNOSTIC_PILOT_SCHEMA = \
     "epyc.autokernel.arena_diagnostic_pilot.v1"
+# Mainline feature identities are presentation anchors, not deployment claims.
+# They let the view distinguish "implemented and awaiting a real receipt" from
+# "the producer does not exist" without importing the research package or
+# trusting whichever shared checkout happens to be current.
+AUTOKERNEL_READINESS_COMMITS = (
+    ("structured_output_retry", "537163d5696ab646a0d8ef4b543d78da1199332c",
+     "retry-hardened seven-arm controller"),
+    ("sc33_reward_integrity_v2", "aa331993",
+     "prospective SC33 reward-integrity belief producer"),
+    ("c3_c5_capture_mapping", "7f29ee15",
+     "governed C3/C5 tensor capture and k228/k175 mapping"),
+    ("ak_del_2_catalogue", "35f10715",
+     "bounded gfx90a prior-art catalogue expansion"),
+)
 PRODUCTION_KERNEL_ATTESTATION = Path(os.environ.get(
     "PRODUCTION_KERNEL_ATTESTATION",
     str(REPO / "artifacts/operator/ratify_v9_final_freeze_20260811.json")))
@@ -1310,7 +1324,8 @@ def _verified_receipt(path: Path, schemas: set[str], label: str) -> tuple[dict |
 def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
     """Verify one Arena attempt using completed receipts, never file markers."""
     manifest, error = _verified_receipt(
-        manifest_path, {"epyc.autokernel.arena_campaign_run_manifest.v1"},
+        manifest_path, {"epyc.autokernel.arena_campaign_run_manifest.v1",
+                        "epyc.autokernel.arena_campaign_run_manifest.v2"},
         "Arena campaign manifest")
     if error or manifest is None:
         return None, error
@@ -1429,6 +1444,45 @@ def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
         _, aggregate, aggregate_error = _read_json_object(aggregate_path, "Arena aggregate")
         aggregate_present = bool(not aggregate_error and isinstance(aggregate, dict) and
                                  aggregate.get("receipt_sha256") == _canonical_receipt_hash(aggregate))
+
+    # A worker request or recently-written file is not liveness.  A sandbox
+    # activation is useful only while the exact captured PID still has the same
+    # /proc start tick; PID existence alone is vulnerable to reuse.  Controller
+    # activations span a checkpoint and are GPU-blind, so this read does not
+    # touch inference or extend a device claim.
+    live_cells = []
+    for activation_path in sorted(run_root.glob(
+            "execution/cells/*/controller-sandbox-activation.json")):
+        _, activation, activation_error = _read_json_object(
+            activation_path, "Arena controller activation")
+        if activation_error or not isinstance(activation, dict) or \
+                activation.get("schema") != "epyc.autokernel.sandbox_receipt.v2":
+            continue
+        pid, expected_ticks = activation.get("pid"), activation.get("process_start_ticks")
+        if not isinstance(pid, int) or not isinstance(expected_ticks, int):
+            continue
+        try:
+            observed_ticks = int((Path("/proc") / str(pid) / "stat").read_text(
+                encoding="utf-8").split()[21])
+        except (OSError, ValueError, IndexError):
+            continue
+        if observed_ticks != expected_ticks:
+            continue
+        _, request, request_error = _read_json_object(
+            activation_path.parent / "worker-request.json", "Arena worker request")
+        if request_error or not isinstance(request, dict) or \
+                request.get("attempt_id") != manifest.get("attempt_id"):
+            continue
+        task = request.get("task") if isinstance(request.get("task"), dict) else {}
+        arm = request.get("arm") if isinstance(request.get("arm"), dict) else {}
+        live_cells.append({
+            "pid": pid, "process_start_ticks": expected_ticks,
+            "cell": activation_path.parent.name,
+            "task_id": task.get("task_id"), "arm_id": arm.get("arm_id"),
+            "checkpoint_hours": request.get("checkpoint_hours"),
+            "activated_at_unix_ns": activation.get("activated_at_unix_ns"),
+            "evidence": str(activation_path),
+        })
     return {
         "available": True, "campaign_id": manifest.get("campaign_id"),
         "attempt_id": manifest.get("receipt_sha256"), "run_directory": run_root.name,
@@ -1443,6 +1497,7 @@ def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
         "belief_measurement_count": belief_rows, "observations": observations,
         "terminal_aggregate_present": aggregate_present,
         "rankable": bool(aggregate_present and len(observations) == planned_checkpoints),
+        "live_cells": live_cells, "active": bool(live_cells),
         "latest_completed_evidence_at": latest_evidence_at or None,
         "evidence": str(manifest_path), "evidence_mtime": _iso_mtime(manifest_path),
         "note": ("verified completed receipts only; no file marker is liveness and no "
@@ -1521,18 +1576,47 @@ def _arena_campaign_progress(root: Path,
                 attempt["campaign_evidence_valid"] = \
                     None if disposition_error else True
                 attempt["execution_state"] = (
-                    "unknown_disposition_overlay_unavailable"
-                    if disposition_error else "unknown_from_evidence")
-                attempt["active"] = None
+                    "unknown_disposition_overlay_unavailable" if disposition_error
+                    else ("terminal_complete" if attempt["terminal_aggregate_present"]
+                          else ("live" if attempt.get("active")
+                                else "stale_or_terminal_unreported")))
+                if not attempt.get("active") and not attempt["terminal_aggregate_present"]:
+                    attempt["active"] = None
                 if disposition_error:
                     attempt["rankable"] = False
             attempts.append(attempt)
         else:
             rejected += 1
+
+    preflight_refusals = []
+    try:
+        audits = list((root / "campaigns").glob("*/audit.json"))
+    except OSError:
+        audits = []
+    for audit_path in audits:
+        if (audit_path.parent / "campaign-manifest.json").exists():
+            continue
+        audit, audit_error = _verified_receipt(
+            audit_path, {"epyc.autokernel.arena_available_source_campaign_audit.v2"},
+            "Arena preflight audit")
+        constraints = audit.get("constraints") if isinstance(audit, dict) else {}
+        if audit_error or not isinstance(audit, dict) or audit.get("status") != "refused" or \
+                not isinstance(constraints, dict) or \
+                constraints.get("controller_or_gpu_command_executed") is not False:
+            continue
+        preflight_refusals.append({
+            "run_directory": audit_path.parent.name,
+            "execution_state": "preflight_refused",
+            "active": False, "rankable": False,
+            "refusal_reasons": audit.get("refusal_reasons") or [],
+            "attempt_id": audit.get("receipt_sha256"),
+            "evidence": str(audit_path),
+        })
     if not attempts:
         return {"available": False, "rejected_attempts": rejected,
                 "error": f"no verified Arena checkpoint evidence below {root / 'campaigns'}"}
-    attempts.sort(key=lambda value: (value.get("latest_completed_evidence_at") or "",
+    attempts.sort(key=lambda value: (value.get("active") is True,
+                                     value.get("latest_completed_evidence_at") or "",
                                      value.get("attempt_id") or ""), reverse=True)
     selected = dict(attempts[0])
     selected["attempts"] = [{
@@ -1542,12 +1626,77 @@ def _arena_campaign_progress(root: Path,
         "completed_cells": attempt["completed_cells"],
         "latest_completed_evidence_at": attempt["latest_completed_evidence_at"],
         "campaign_evidence_valid": attempt["campaign_evidence_valid"],
+        "active": attempt.get("active"),
         "execution_state": attempt["execution_state"],
         "disposition": attempt.get("disposition"),
     } for attempt in attempts]
+    selected["preflight_refusals"] = sorted(
+        preflight_refusals, key=lambda row: row["run_directory"], reverse=True)
     selected["rejected_attempts"] = rejected
     selected["disposition_overlay_error"] = disposition_error
     return selected
+
+
+def _autokernel_implementation_readiness(repo: Path) -> dict:
+    """Project reviewed AutoKernel features from the authoritative main ref."""
+    refs = ("refs/remotes/origin/main", "refs/heads/main")
+    selected = None
+    try:
+        for ref in refs:
+            probe = subprocess.run(
+                ["git", "-C", str(repo), "show-ref", "--verify", "--quiet", ref],
+                capture_output=True, text=True, timeout=5.0, check=False)
+            if probe.returncode == 0:
+                selected = ref
+                break
+        if selected is None:
+            raise RuntimeError("neither origin/main nor local main exists")
+        tip = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", selected], capture_output=True,
+            text=True, timeout=5.0, check=False)
+        if tip.returncode != 0:
+            raise RuntimeError(tip.stderr.strip() or "cannot resolve research main")
+        capabilities = []
+        for capability_id, commit, label in AUTOKERNEL_READINESS_COMMITS:
+            ancestor = subprocess.run(
+                ["git", "-C", str(repo), "merge-base", "--is-ancestor", commit, selected],
+                capture_output=True, text=True, timeout=5.0, check=False)
+            capabilities.append({
+                "id": capability_id, "label": label, "evidence_commit": commit,
+                "integrated": ancestor.returncode == 0,
+            })
+    except (OSError, subprocess.TimeoutExpired, RuntimeError) as exc:
+        return {"available": False, "error": str(exc), "capabilities": []}
+
+    by_id = {row["id"]: row for row in capabilities}
+    pending = [
+        {
+            "id": "SC33-v2", "title": "Fresh reward-integrity v2 receipt",
+            "implementation_ready": by_id["sc33_reward_integrity_v2"]["integrated"],
+            "next_evidence": ("Run the executable gfx90a corpus with the prospective hook; "
+                              "the admitted v1 receipt cannot be back-filled."),
+        },
+        {
+            "id": "C3-C5", "title": "Real EPYC tensor captures and mappings",
+            "implementation_ready": by_id["c3_c5_capture_mapping"]["integrated"],
+            "next_evidence": ("Capture the real-model tensor surface, then admit one exact k228 "
+                              "trace and the ordered multi-trace k175 component graph."),
+        },
+        {
+            "id": "AK-DEL-2", "title": "Bounded gfx90a catalogue expansion",
+            "implementation_ready": by_id["ak_del_2_catalogue"]["integrated"],
+            "next_evidence": ("Reconcile the active handoff review gate before this integrated "
+                              "catalogue can route a campaign."),
+        },
+    ]
+    return {
+        "available": True, "repo": str(repo), "ref": selected,
+        "tip": tip.stdout.strip(), "capabilities": capabilities,
+        "all_capabilities_integrated": all(row["integrated"] for row in capabilities),
+        "pending_empirical": pending,
+        "note": ("mainline code readiness is not empirical completion; pending rows remain "
+                 "open until their named producer evidence or review gate exists"),
+    }
 
 
 def _scaffold_panel_summary(root: Path) -> dict:
@@ -2894,6 +3043,8 @@ def autokernel_current_state(probe_root: Path | None = None,
         "scaffold_engineering": scaffold,
         "fault_rehearsal": _fault_rehearsal_summary(state_root),
         "arena_campaign_progress": arena,
+        "implementation_readiness": _autokernel_implementation_readiness(
+            AUTOKERNEL_RESEARCH_REPO),
         "rocm_diagnostics": rocm,
         "hip_decision_grade": hip_decision,
         "belief_source_wiring": {
