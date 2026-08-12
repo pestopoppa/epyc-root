@@ -89,6 +89,12 @@ from scripts.coordination import row_intake  # noqa: E402
 LOCK_PATH = Path("/tmp/session_bus_coordinator.lock")
 ADVISORY_SCHEMA = "session_bus.advisory.v1"
 
+# Statuses a row may be ASSIGNED from. STALE_REQUEUED belongs here: the stall
+# ladder writes it precisely because the row should go round again, and escalates
+# to INFRA_BLOCKED when attempts run out — the retry bound lives there, not here.
+# See the long note in `_eligible`.
+ASSIGNABLE_STATUSES = ("READY", "STALE_REQUEUED")
+
 # C37: the substring that must appear in /proc/<pid>/cmdline for a recorded pid to
 # be THIS daemon rather than whatever else the kernel later handed that number to.
 # Matched against the script name, not the interpreter, because the daemon runs as
@@ -798,7 +804,20 @@ def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: st
               co_ctx: dict | None = None) -> tuple[bool, str]:
     if row.get("revoking"):
         return False, "lease is being handed back (draining) — not re-assignable while held"
-    if row.get("status") != "READY":
+    # 2026-08-12: STALE_REQUEUED is ASSIGNABLE, and treating it otherwise was a
+    # black hole. The stall ladder writes it when a lease expires and there are
+    # attempts left, and writes INFRA_BLOCKED when they are exhausted (see the
+    # attempt/max_attempts branch in the hard-stall handler) — so the ladder
+    # ALREADY bounds retries, and the status means exactly what it says: this row
+    # went back on the queue. Nothing anywhere converted it to READY, and
+    # `_eligible` demanded READY, so a requeued row could never be picked again by
+    # anything. Measured at the moment of the fix: 17 of 19 live rows sat in that
+    # state, unassignable regardless of how well they were screened or estimated —
+    # a second, independent way to ship an inert dispatcher, one status change
+    # behind the missing-receipts one. If this is ever narrowed back, rename the
+    # status too: a name that says "requeued" while nothing can dequeue it is the
+    # defect, not the fix.
+    if row.get("status") not in ASSIGNABLE_STATUSES:
         return False, f"status={row.get('status')}"
     # C50: dereference the anchor. Only a POSITIVELY closed box refuses.
     spec_state, spec_detail = spec_ref_state(str(row.get("spec_ref") or ""))

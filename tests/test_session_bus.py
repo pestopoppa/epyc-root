@@ -3736,6 +3736,43 @@ def _c50_bed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     return (stale, live, rot), (latest, {"load_class": "idle"}, "")
 
 
+def test_STALE_REQUEUED_is_assignable_or_the_dispatcher_is_inert(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A requeued row must be pickable again, or "requeued" is a lie.
+
+    The stall ladder writes STALE_REQUEUED when a lease expires AND attempts
+    remain, and writes INFRA_BLOCKED when they are exhausted — so the retry bound
+    lives in the ladder, not in eligibility. Nothing anywhere converts the status
+    back to READY. When `_eligible` demanded READY, a requeued row could never be
+    picked by anything again: measured 2026-08-12, 17 of 19 live queue rows sat in
+    that state, unassignable no matter how well screened or estimated. That is a
+    second, independent way to ship a dispatcher that never dispatches.
+
+    Pinned as a PROPERTY over ASSIGNABLE_STATUSES rather than a spelling, so
+    narrowing the tuple fails here rather than going quiet in production.
+    """
+    (_stale, live, _rot), (latest, snap, tok) = _c50_bed(tmp_path, monkeypatch)
+
+    assert "STALE_REQUEUED" in coordinator.ASSIGNABLE_STATUSES, (
+        "STALE_REQUEUED must remain assignable; if it is ever narrowed back, the "
+        "status needs renaming too — a name that says 'requeued' while nothing can "
+        "dequeue it is the defect, not the fix."
+    )
+
+    for status in coordinator.ASSIGNABLE_STATUSES:
+        row = dict(live, status=status)
+        latest_row = dict(latest, **{row["task_id"]: row})
+        ok, why = coordinator._eligible(row, latest_row, snap, tok)
+        assert ok is True, f"status={status} must be assignable — got {why!r}"
+
+    # And the bound still holds: a terminal status is still refused, so this is a
+    # widening of exactly one state, not a removal of the status gate.
+    blocked = dict(live, status="INFRA_BLOCKED")
+    ok, why = coordinator._eligible(blocked, dict(latest, **{blocked["task_id"]: blocked}),
+                                    snap, tok)
+    assert ok is False and "INFRA_BLOCKED" in why, why
+
+
 def test_C50_probe_the_consumer_refuses_a_READY_row_whose_box_is_closed(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """The probe that would have caught the stuck picker.

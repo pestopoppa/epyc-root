@@ -6,9 +6,15 @@ inbox/, outbox/, cursors/, heartbeats/, claims/, advisory*.jsonl,
 boundary_state.json and adapter-ledger.jsonl were `git rm --cached`'d and
 matching .gitignore patterns added -- files stay on disk (the live daemon
 and every session read/write the same paths, undisturbed), just no longer
-tracked. token-queue.md, unblock.md, unblock.pins.json, BUS_PROTOCOL.md and
-tasks/*.md were deliberately kept tracked (operator/trust surfaces and
-durable briefs).
+tracked. BUS_PROTOCOL.md and tasks/*.md are deliberately kept tracked (the
+contract and the durable briefs).
+
+2026-08-12: token-queue.md, unblock.md and unblock.pins.json JOINED the
+untracked set by operator decision (`cc394307`). They read as operator/trust
+surfaces but are live churn — the token queue is rewritten on every grant and
+every drain — and they were a standing merge-conflict surface in a five-writer
+tree. The durable operator decision record lives in `artifacts/operator/`, so
+untracking them loses no history that anyone relies on.
 
 BOTH DIRECTIONS:
   - positive: every untracked class is actually ignored by git, and files in
@@ -63,12 +69,26 @@ UNTRACKED_CLASSES = [
     "coordination/session-bus/advisory_42.jsonl",
     "coordination/session-bus/boundary_state.json",
     "coordination/session-bus/adapter-ledger.jsonl",
-]
-
-KEPT_TRACKED = [
+    # Untracked 2026-08-12 by operator decision (`cc394307`) — see KEPT_TRACKED.
     "coordination/session-bus/tokens/token-queue.md",
     "coordination/session-bus/tokens/unblock.md",
     "coordination/session-bus/tokens/unblock.pins.json",
+]
+
+# 2026-08-12: the three `tokens/*` files moved from KEPT_TRACKED to
+# UNTRACKED_CLASSES by operator decision (commit `cc394307`). They are live bus
+# runtime state — the token queue churns on every grant and every drain, and it
+# was a standing merge-conflict surface in a five-writer tree, which is the same
+# class as the queue and the cursors. The operator decision record that used to
+# be cited as the reason to track them lives in `artifacts/operator/`, not in the
+# token prose, so nothing durable was lost by untracking.
+#
+# This list is a CONTRACT, not an observation: it must name files whose tracking
+# is deliberate, so that untracking one is a test failure someone has to answer
+# for rather than a silent drift. Shrinking it to match reality is therefore the
+# correct edit — but only alongside the decision that caused it, which is why the
+# commit is cited above.
+KEPT_TRACKED = [
     "coordination/session-bus/BUS_PROTOCOL.md",
 ]
 
