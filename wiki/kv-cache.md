@@ -2,8 +2,32 @@
 
 **Category**: `kv_cache`
 **Confidence**: verified
-**Last compiled**: 2026-07-20 (adds the StreamingLLM floor/admission verdict, the TurboQuant/ChunkKV KV-quant monitor status, and the MI210 KV-split residency facts; earlier 2026-07-17 pass retained)
-**Sources**: 39 documents (3 deep-dives, 6 active handoffs, 2 completed handoffs, 25 intake entries, 2 progress logs)
+**Last compiled**: 2026-08-12 (a fork SWA slot-reuse patch previously held for review is **DROPped as a correctness regression, not merely redundant** — it deleted upstream's per-sequence check; KV quantization gets its first decision package with an exact parity result; and lazy KV faulting is re-read as *relocating* provisioning cost rather than removing it; earlier 2026-07-20 note: adds the StreamingLLM floor/admission verdict, the TurboQuant/ChunkKV KV-quant monitor status, and the MI210 KV-split residency facts; earlier 2026-07-17 pass retained)
+**Sources**: 42 documents (3 deep-dives, 8 active handoffs, 2 completed handoffs, 25 intake entries, 3 progress logs)
+
+## Compiled Update — 2026-08-12: a "keep or port?" review that resolves to *neither*, and the first KV-quant decision package
+
+**Confidence: verified** — the fork verdicts are read-only git archaeology with commit SHAs and ancestry checks; the KV-quant numbers are a measured retrieval-parity run.
+
+### The SWA slot-reuse fork commits: DROP, because they subtract a safety check
+
+Two fork commits (`d1c72d7fc`, `603702769`) sat under review as ambiguous keep-or-port candidates. The verdict is **DROP**, and the reason is stronger than redundancy: the fork **deletes** upstream's `cells.seq_get(idx)` lookup and substitutes the incoming batch's position, replacing a per-sequence-aware sliding-window reuse check with a **per-sequence-blind** one. Under multi-slot serving a cell can be judged reusable against the wrong slot's window. Production v6 through v9 correctly retain upstream's original form and were never exposed.
+
+The reusable lesson for fork-reconciliation reviews: **a commit that reads as "our version of upstream's check" may be upstream's check with a lookup removed.** The discriminating question is not *does the fork do the same thing* but *what does the fork's diff delete*.
+
+### KV quantization has a decision package, and q8 is dominated
+
+The first exact-parity KV-quant measurement gives a clean shape: across f16 / q8_0 / q4_0 KV, retrieval parity holds at **51 of 52 on every arm**. `q4_0` buys **10.54 GiB** of KV headroom at **−7.4% decode**; **q8 is dominated** — it neither preserves the f16 operating point nor buys q4_0's memory. One arm (C) aborted invalid. The recommendation is Option A. This is the first result that lets the KV-quant monitor status recorded in the 2026-07-20 pass below be acted on rather than watched.
+
+### Lazy faulting relocates the `-c` provisioning cost, it does not remove it
+
+The old premise for capping context provisioning — that a large `-c` costs at *launch* — is dead: KV pages fault lazily. But the re-read is not "provision maximally and stop worrying". The cost moves from launch to **load**, and the worst case is the sum of full-window KV across all resident roles under concurrent deep-context load, **which is currently uncomputed**. The recommendation is the staged option: raise `-c` only where the lineup's Σ full-window-KV fits RAM with margin, computed mechanically at priors-compile rather than chosen per role. The ruling belongs to the lineup owner plus the operator and is **not settled**.
+
+### Source References (2026-08-12)
+
+- [`llamacpp-v6-consolidation.md`](../handoffs/active/llamacpp-v6-consolidation.md) — the SWA slot-reuse DROP verdict and the deleted per-sequence check.
+- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — the T12 lazy-KV decision package and the uncomputed concurrent-load worst case.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the KVQuant parity/headroom numbers and the dominated-q8 finding.
 
 ## Compiled Update — 2026-07-20
 

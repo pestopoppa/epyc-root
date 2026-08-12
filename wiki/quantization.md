@@ -2,8 +2,35 @@
 
 **Category**: `quantization`
 **Confidence**: verified (CPU quant findings) · observation (2026-07 MI210 gfx90a roofline numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-07-24 (adds the RP-1/RP-2 refutation of the 2-bit-EOS-damage hypothesis for the architect's degenerate `\boxed{}` loop, and the CPU A2 Q4 arm's live at-or-above IQ2 reasoning read; earlier 2026-07-20 note: adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
+**Last compiled**: 2026-08-12 (a blocker row's *description* was wrong in a load-bearing way — the PR it names is an **ARM NEON ternary kernel that touches no x86 file**, so a naive dependent bench on Zen 5 would have measured a scalar fallback; plus the first KV-quant decision package and the Q4_K MMQ correctness root cause — see below; earlier 2026-07-24 note: adds the RP-1/RP-2 refutation of the 2-bit-EOS-damage hypothesis for the architect's degenerate `\boxed{}` loop, and the CPU A2 Q4 arm's live at-or-above IQ2 reasoning read; earlier 2026-07-20 note: adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
 **Sources**: 33 documents (0 dedicated deep-dives, 4 handoffs, 6 active handoffs, 24 intake entries + cross-references from 6 deep-dives)
+
+## Compiled Update — 2026-08-12: a blocker cited by the right PR number and the wrong description, and it would have cost a benchmark
+
+**Confidence: verified** — the PR state and file list were re-derived from the GitHub API; the Q4_K numbers are receipted governed runs.
+
+### The mislabelled blocker, and why the label was load-bearing
+
+A tracking row blocked sub-2-bit work on "PR #22836 (AngelSlim kernels)". The **number is right and the description is wrong**: #22836 is the **STQ1_0 / Sherry ternary quantization kernel** (author `sjl623`). There is no llama.cpp PR that adds AngelSlim kernels at all.
+
+The reason this is not a bookkeeping nit: **the PR touches only `arch/arm/` — not a single x86 file.** A dependent benchmark row taken naively on this Zen 5 EPYC host would have landed on the generic scalar `vec_dot` path and measured a fallback while believing it measured the kernel. The mislabel would have produced a number, not an error. Gate status as re-derived on 2026-08-12: #22836 is still `open`, `merged: false` (opened 2026-05-08, last touched 2026-08-10); the CUDA sibling PR #23332 was **closed unmerged** on 2026-05-22.
+
+The generalisable rule: **a citation's identifier and its description are two separate claims, and only the identifier is self-verifying.** Re-derive the description before letting it gate compute — especially when the gated work is architecture-sensitive.
+
+### KV quantization: the first parity-and-headroom package
+
+Measured across f16 / q8_0 / q4_0 KV, retrieval parity holds at **51 of 52 on every arm**. `q4_0` buys **10.54 GiB** at a **−7.4%** decode cost; **q8_0 is dominated** — it gives up the f16 operating point without buying q4_0's memory. Full context and the provisioning consequence are on the [KV Cache](kv-cache.md) page.
+
+### Q4_K on gfx90a: a real correctness defect, root-caused
+
+Stock MMQ Q4_K was failing forced-dispatch correctness at **18/43** (max error ratio 3.0361) while rocBLAS passed 43/43. An independently compiled DP4A arm reproduced the *same* failures, which falsified the MFMA-specific hypothesis and located the defect in shared Q8 activation staging: affine Q4_K reconstruction mixed a **dequantized** Q8 dot term with an **original-float** activation sum in the min correction. Deriving both from the same dequantized population gives **172/172 pass, max error ratio 1.2283**. The fix is uncommitted pending operator approval. The performance side of the same investigation — the retracted "+38–43% single-lever" unpack ceiling, now ~10.5% of which 57% is structurally required — is on [Hardware Optimization](hardware-optimization.md).
+
+### Source References (2026-08-12)
+
+- [`angelslim-techniques-evaluation.md`](../handoffs/active/angelslim-techniques-evaluation.md) — the mislabel correction and the re-derived PR state.
+- [`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) — the mirrored correction and the ARM-only file-scope consequence for Zen 5.
+- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — the Q4_K MMQ correctness matrices and root cause.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the KV-quant decision package and the "window saved" framing of the mislabel.
 
 ## Compiled Update — 2026-07-24
 

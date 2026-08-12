@@ -2,8 +2,32 @@
 
 **Category**: `moe_optimization`
 **Confidence**: verified (CPU MoE findings) · observation (2026-07-06 MI210 GPU MoE-MTP numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-07-20 (adds the reasoning∝active MoE law, the production-representative GLM expert-routing-skew result, the IQ2 GPU big-MoE residency ladder, and the slot-fabric residency model; earlier 2026-07-17 note: adds GLM-5.2 DSA-DENSE-MASK runtime classification + expert-routing-skew hypothesis + Hy3 MoE-verify-wall re-confirmation; ⚠️ 2026-07-06 GPU MoE-MTP-negative note added under the CPU-MTP-wall finding — human review)
-**Sources**: 37 documents
+**Last compiled**: 2026-08-12 (the `--moe-n-expert` fork patch resolves to **DROP** — stock v9 already reaches it via `--override-kv expert_used_count`, identically and with fewer copies; its motivating throughput numbers are v4/v5-era and unverified on v9; plus a roadmap-vs-deployment drift correction on the 122B's residency — see below; earlier 2026-07-20 note: adds the reasoning∝active MoE law, the production-representative GLM expert-routing-skew result, the IQ2 GPU big-MoE residency ladder, and the slot-fabric residency model; earlier 2026-07-17 note: adds GLM-5.2 DSA-DENSE-MASK runtime classification + expert-routing-skew hypothesis + Hy3 MoE-verify-wall re-confirmation; ⚠️ 2026-07-06 GPU MoE-MTP-negative note added under the CPU-MTP-wall finding — human review)
+**Sources**: 39 documents
+
+## Compiled Update — 2026-08-12: the expert-count fork patch is unnecessary — stock v9 already does it, and does it cheaper
+
+**Confidence: verified** for the equivalence argument and the code archaeology; **stale** for the throughput numbers, which are v4/v5-era and have not been re-run on v9.
+
+### `--moe-n-expert` resolves to DROP, via an equivalence rather than a measurement
+
+The fork's `--moe-n-expert` hard-mask commit (`86901388a`) was held for review as a capability the production kernel might be missing. It is not missing. Stock v9 provides it natively through `--override-kv <arch>.expert_used_count=int:N`, and the two are **numerically identical**: `ggml_argsort_top_k` sorts descending, so taking the top-N of a top-M selection is the same set either way. The fork version is strictly worse on cost — it pays extra `ggml_cont` copies per layer.
+
+This is the second fork patch this week to resolve to DROP for a reason other than "already merged" (see [KV Cache](kv-cache.md) for the SWA one, which resolves to DROP because it *removes* a check). The pattern worth carrying: **before porting a fork's flag, ask what the stock kernel's generic override mechanism already reaches** — a config-level equivalent is cheaper than a code-level one and does not need re-validating at every promotion.
+
+### The expert-pruning throughput numbers are v4/v5-era and need re-running
+
+The measurements that motivated the flag are retained but must be read with their era attached — **none has been re-run on v9**: Qwen3-Coder-480B-A35B 2.5 → 3.7 t/s (+48%), GLM-4.6-355B-A32B 2.2 → 3.0 (+36%), Qwen3-Coder-30B-A3B 26.6 → 33.6 (+26%), Qwen3-VL-30B-A3B 32.2 → 38.9 (+21%). The quality reading alongside them is the operative constraint and is coarse by design: **excellent at 50% of experts, degraded at 25%, gibberish at 12.5%**. That places the usable band well above the point where the speedups get interesting, which is consistent with the near-uniform GLM-5.2 routing skew recorded in the pass below.
+
+### A roadmap-vs-deployment drift correction
+
+A roadmap line describing the 122B UD-IQ2_M as "measured viable, fully GPU-resident" is true as a *viability measurement* and **false as a description of the deployed stack**: since the 2026-07-31 cutover the GPU-resident architect is the 27B, and the 122B is retained as a CPU critic. The correction was routed to the owning document rather than self-edited. Read any large-MoE residency claim against the live lineup, not against the probe that established feasibility.
+
+### Source References (2026-08-12)
+
+- [`llamacpp-v6-consolidation.md`](../handoffs/active/llamacpp-v6-consolidation.md) — the `--moe-n-expert` DROP verdict, the `--override-kv` equivalence, and the retained era-stamped throughput table.
+- [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md) — the CPU15 expert-parallelism disposition this sits inside.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the argsort equivalence derivation and the AXA-1 roadmap-drift correction.
 
 ## Compiled Update — 2026-07-20
 

@@ -2,8 +2,38 @@
 
 **Category**: `ssm_hybrid`
 **Confidence**: verified (CPU/arch findings) · observation (2026-07-06 MI210 bf16-GDN-state numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-08-08
-**Sources**: 17 documents
+**Last compiled**: 2026-08-12 (**the headline reason to want Log-Linear GDN is inverted on the released checkpoint** — its state is ~15× *larger* than standard GDN, not 4–10× smaller; and all three activation gates fired, six months after the checkpoint went public, because three staleness reviews asserted "no checkpoint" without querying HuggingFace — see below; earlier 2026-08-08 note: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement)
+**Sources**: 19 documents
+
+## Compiled Update — 2026-08-12: the state-size argument runs backwards, and the monitoring that should have caught it never ran
+
+**Confidence: verified** for the artifact facts (tensor dims, config, license, gate dates, HuggingFace publication date) — these were read off the released checkpoint. **Inferred/undecided** for whether to port: that decision is explicitly the operator's and is gated on an oracle that does not exist yet.
+
+### RETRACTED: "Log-Linear GDN gives a 4–10× state-size reduction"
+
+This page and its index entry have carried the 4–10× state reduction as the reason Log-Linear Gated DeltaNet could unblock hybrid-SSM speculation. **Measured against the actual released checkpoint, the comparison runs the other way.** Log-linear GDN replicates state across a 15-level set, so per layer its state is **≈15× larger** than standard GDN — **≈557 MB vs ≈37 MB** over 21 layers at f32.
+
+The reduction claim is not fabricated, it is *mis-anchored*: it holds against a **softmax-attention KV cache**, which grows linearly in sequence length, and never against standard GDN, which is already O(1). The original bullet did not name its baseline, and that omission is what let the number face the wrong direction for months. Any planning that assumed log-linear GDN reduces *our* residents' state must be re-derived.
+
+### The checkpoint had been public for six months, and three reviews said it wasn't
+
+`hanguo/log-linear-attention` has been public since **2026-02-13**. The handoff recorded "no pretrained checkpoint" from 2026-04-14, and **two later staleness reviews restated it** — under a standing monthly-cadence monitoring commitment. All three activation gates fired on 2026-08-12 when someone finally queried the API. The gate was not late upstream; **the monitoring never executed**, and a review that restates a prior status without re-deriving it is indistinguishable from one that checked.
+
+Artifact facts as released: **795.690 M params, F32, ≈3.2 GB, 21 layers, hidden 1536, 6 heads, head_dim 192**. Licensing has a wrinkle worth recording — MIT ships *inside the model folder*, while the GitHub repository itself carries no LICENSE and reports `license: null`.
+
+### What is genuinely undecided
+
+Neither the numerical oracle (`hattention_recurrent()` wired into the forward pass) nor the GGUF converter tensor map exists, and the operator decision on whether to port is explicitly gated behind the oracle. The sources do **not** settle whether log-linear GDN is worth porting; they settle that the reason previously given for wanting it was wrong.
+
+### Related: the verification wall this was supposed to relieve
+
+Nothing in this pass changes the standing finding that sequential Delta Net verification, not draft availability, is the CPU blocker for hybrid-SSM speculation. What changes is that the state-size lever cannot be the argument for relieving it.
+
+### Source References (2026-08-12)
+
+- [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md) — the three fired gates, checkpoint identity and license, and the inverted state-size derivation.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the retraction in its session context and the "three gates fired and were never checked" framing.
+- [`qwen36-27b-cpu-feasibility.md`](../handoffs/active/qwen36-27b-cpu-feasibility.md) — CPU-side feasibility context for hybrid residents on this host.
 
 ## Compiled Update — 2026-08-08: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement
 

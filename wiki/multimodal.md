@@ -5,8 +5,27 @@
 `upstream-published` (a paper's own numbers, on the paper's hardware), `projected-unmeasured` (an extrapolation
 authored here and never run), and `locally-measured` (run on this host, with an artifact). A projected number
 may never carry `verified`. Retagged 2026-07-31.
-**Last compiled**: 2026-07-31 (session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+**Last compiled**: 2026-08-12 (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
 **Sources**: 42+ documents (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge)
+
+## Compiled Update — 2026-08-12: the TTS wiring task was already done ten days earlier, and the box was the only thing missing
+
+**Confidence: verified** for the static and test evidence; **explicitly unverified** for live runtime — no process was launched, so this records that the wiring exists, not that the service answers.
+
+The open task to wire TTS into the stack lifecycle was closed by **discovering it had already landed** on 2026-08-02; only the checkbox had never been flipped. Independent verification found `start_tts` present in the launcher, port 9002 declared in the launch manifest, and reload dispatch driven off the auxiliary-services table rather than a special case — plus six parametrised tests passing, including a real linkage check. What was **not** done is a socket-level startup or a `/v1/audio/speech` smoke test, and this page does not claim either.
+
+Two governance points come out of it, and they are the durable part:
+
+- **A completed task with an open box is a live cost.** This one sat for ten days, and the same session found a sibling case where a note about the speech-kernel verification had to be corrected because the script it described did not actually run its check. The pattern — an announcement landing while the thing it announces does not, or the reverse — recurred repeatedly across the fleet this week.
+- **Verify before building.** The correct output of this task was zero lines of new code. A task that begins by re-deriving whether its premise still holds costs one check; a task that begins by implementing costs a duplicate implementation and a merge.
+
+Related speech-kernel context unchanged: both speech kernels remain frozen at `production-speech-v1`, and the three-tree ggml generation split means every launcher still has to prove its own `LD_LIBRARY_PATH` — see [Local Inference](local-inference.md) for the linkage landmine that makes this non-optional.
+
+### Source References (2026-08-12)
+
+- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — the S-9 closure, the independent verification, and the explicit unverified-runtime boundary.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the same-session speech-kernel verification correction.
+- [`capability-registry-and-promotion.md`](../handoffs/active/capability-registry-and-promotion.md) — the parallel "the applicator already existed" premise correction, same shape.
 
 ## Compiled Update — 2026-07-26 bounded MiniCPM-o evidence
 

@@ -2,8 +2,102 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-11 (production v9 stack restoration and the launcher circular-import boundary; prior stack-compilation and GPU-shadow findings retained; concurrent-lane compile 2026-08-11: a fail-open 200 masking backend outages as model answers, closed; a NUMA region-lock regression recurring in derived priors, IN-PROGRESS — see below; earlier 2026-08-01 note: adds stack compilation as a pure function of declared inputs, backend-resolved kernel binaries, and derived kernel-freeze scope; prior GPU shadow lane / frozen-v8 E8 posture retained)
+**Last compiled**: 2026-08-12 (second pass — a topology gate was **false-passing on 21 of 25 entries** because a stale pin and a stale attestation agreed with each other; two "missing" capabilities turned out already built, one needing only a zero-coverage test branch; a banked throughput number was corrected onto the right role after a cutover moved the binding; duty cycle is **~8–9% receipted, not ~20%** — see below; earlier same-day note: the fail-open 200 had three more streaming sites and a stream cannot retract its 200; a documented dry-run flag was inert and launched the production stack; the stack-change gate's catch-22 now names its own escape; and `-c` provisioning re-decided — lazy faulting relocates the cost from launch to load rather than removing it — see below; earlier 2026-08-11 note: production v9 stack restoration and the launcher circular-import boundary; prior stack-compilation and GPU-shadow findings retained; concurrent-lane compile 2026-08-11: a fail-open 200 masking backend outages as model answers, closed; a NUMA region-lock regression recurring in derived priors, IN-PROGRESS — see below; earlier 2026-08-01 note: adds stack compilation as a pure function of declared inputs, backend-resolved kernel binaries, and derived kernel-freeze scope; prior GPU shadow lane / frozen-v8 E8 posture retained)
 **Sources**: 69 documents
+
+## Compiled Update — 2026-08-12 (second pass): a gate that fails open by agreeing with itself, and two "missing" things that already existed
+
+**Confidence: verified** — each item was measured through the real consumer rather than inferred from the declaration; the registry-coverage figures are executed-statement counts.
+
+### RETRACTED premise: "25 inference-batch entries are failing closed on a dead topology pin"
+
+The premise inverts under measurement. Of the 25 entries pinned to a dead topology hash and kernel era, only **4 genuinely failed closed**. The other **21 were FALSE-PASSING** — because the topology gate compares the entry's pin against a **stale attestation from 2026-07-20** rather than against the live host. A stale pin and a stale attestation **agreed with each other**, and the gate reported success while both disagreed with reality.
+
+This is the most reusable failure shape on the page: **a check between two artifacts that rot together is not a check.** Re-pinning is necessary and insufficient — 36 entries across 7 files were re-pinned to the live hash and the v9 era, and the residual blocker is a **fresh attestation**, without which the repaired pins would simply agree with a new stale reference later.
+
+The same tree contains the contrast case, which is why the defect was diagnosable at all: two consumers implement the nominally same check, and one is fail-closed on exact match while the other is the attestation-based one above. **Same name, opposite polarity.** When two implementations of one invariant exist, the weaker one is the one that will be in the path that matters.
+
+A sibling premise fell the same day: a host-prep task assumed `numa_balancing=0` did not persist across reboot. It already did, via two independent host mechanisms — the confusion was that the container's `/etc/sysctl.d` is a **different overlayfs layer** from the host's, so the setting was invisible from where it was checked. What genuinely did not persist were `perf_event_paranoid`, the CPU governor and the transparent-hugepage settings, now covered by a boot unit spanning eight settings with 39 fake-root mutation tests plus 7 live assertions.
+
+### Two "missing" capabilities that were already built
+
+- **The role-restart applicator was not missing.** A backlog row framed `restart_role()` as the one absent piece blocking capability promotion; it has existed since late June. What was actually missing was **test coverage of one branch**: the orchestrator-role health-gate path had **zero executed statements across 44 existing tests**. Five induced-failure tests closed it — **49 passing, zero missing statements, 5 of 5 mutations caught**. The applicator has a real production caller chain but stays fail-closed behind a flag with zero promoted registry rows, so nothing changed operationally. Live shadowed restart remains **blocked on a reload window owned by the inference-owning session**, per the reload-ownership rule.
+- **A duplicate port registration was not a collision.** Port 8083 appearing twice in the registry had been filed as a blocker; it is **intentional** — one role is an alias of another and they share the server, which is the same-GGUF-roles-share-one-server rule working as designed. Fleet construction resolves cleanly to 6 fleets and 11 bindings with no phantom. The slot count in the original filing was also wrong (2, not 8).
+
+Both are the same lesson from opposite directions: **before building the missing thing, measure whether it is missing.** Two of this week's largest "gaps" cost their sessions a re-derivation and zero implementation.
+
+### A role-attribution correction that changes who owns a banked number
+
+The Probe B result recorded below and on [MoE Optimization](moe-optimization.md) — 12.19 t/s single-instance canonical against 4.3 t/s per instance cross-NUMA, +184% per-request — was **attributed to the wrong role after the 2026-07-31 cutover**. The 122B moved to the critic role at that cutover and the GPU-resident 27B now holds `architect_general`. The numbers are unchanged and correct; **the role label on them was not**. The fix was applied as an append-only correction note rather than by editing the original figures, which is the right handling: a banked measurement's *identity* can be corrected without rewriting the measurement.
+
+The general rule for reading any role-keyed throughput on this page: **a role name is a binding, not a model**, and bindings move at cutovers. Index by model and quant; treat the role as of-its-era.
+
+### Duty cycle: the instrument, not just the number
+
+A compute duty-cycle figure circulated at ~19–20% and is **~8–9% receipted**. Two independent errors produced it: the 19% window was scoped to a couple of hours and quoted as covering a whole night, and a 3h47m stretch with **zero compute receipts** was treated as measured rather than **unwitnessed**. The instrument was also wrong in kind — instantaneous samples used as a utilisation *rate*, where the load average (which peaked at 38.84) is the rate. Any serving-utilisation claim needs its window, its instrument, and an explicit unwitnessed category.
+
+### Source References (2026-08-12, second pass)
+
+- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/reboot-gated-inventory-and-staging.md) — the 21-of-25 false-passing gate, the two-consumer polarity split, and the host-persistence premise correction.
+- [`capability-registry-and-promotion.md`](../handoffs/active/capability-registry-and-promotion.md) — the applicator premise correction and the zero-coverage branch closed to 49 tests.
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — the port-8083 alias resolution and the fleet/binding recount.
+- [`gpu-serving-tie-in-program.md`](../handoffs/active/gpu-serving-tie-in-program.md) — the Probe B role-attribution correction, applied append-only.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the duty-cycle scope and instrument corrections.
+
+## Compiled Update — 2026-08-12: fixing only the cited line would have left every streaming client corrupted
+
+**Confidence: verified** — read from committed code and its guard tests, plus direct execution of the validation path against the live template. Items marked committed-not-live are explicitly not in effect until the owning session reloads at its own boundary.
+
+### The fail-open 200 was four sites, not one — and a stream cannot retract its 200
+
+The 2026-08-11 finding (backend failures returned as HTTP 200, so retry logic, error metrics and every eval scorer read an outage as a model answer) cited a single non-streaming line. **The identical fail-open sat at three further streaming sites plus the uninitialised-primitives case** — and streaming is the SDK default for most harnesses, so fixing only the cited line would have ticked the box and left the majority path corrupted.
+
+Two consequences the original finding did not name, both from the same blanket handler:
+
+- It swallowed the **503 raised twelve lines above it** for uninitialised primitives.
+- It swallowed the **contention-denied exception**, which has a dedicated `503 + Retry-After + failure_provenance` handler — so documented back-pressure arrived at the caller as prose and nothing retried.
+
+Now typed exceptions propagate and everything else is a **502**. The streaming sites emit a **terminal SSE error event** rather than streaming the error as content and closing with `finish_reason: "stop"`, because **a stream cannot retract its 200** — once the status line is out, the only honest channel left is the event stream itself.
+
+> **When a fail-open is found on one path, the finding is the class, not the line.** Enumerate every path that reaches the same handler before closing the row.
+
+A companion cleanup on the same principle: two dashboard-facing fallbacks silently substituted a *plausible* value on failure — an unfiltered manifest rendering other-mode ports as "expected", and an empty list rendering as a **healthy empty stack** rather than a read failure. The **fail-open was deliberately kept** (for a status panel, over-reporting beats dropping the panel); what was fixed is the **silence** — each now warns, naming what was substituted and why, with a negative-control test asserting the healthy path does *not* warn.
+
+### A dry-run flag that is not wired is worse than no dry-run flag
+
+`orchestrator_stack.py start --validate-only` was **declared and never read**: the argparse entry existed with help text *"Validate stack template and exit"*, and a grep for its destination across the whole file returned only the declaration. `main()` dispatched `start` straight to the launcher with no branch — so **the documented dry run launched the production stack.**
+
+> **A missing implementation made a safety affordance do the opposite of what it advertised, and it manufactures exactly the confidence needed to run the command.** Note the test that would not have caught it: *a test asserting the flag EXISTS passes today.*
+
+Now wired, with two design choices worth keeping: the branch sits **before dispatch**, so no code path between the check and the launcher can start a server; and it exits 0 on valid, **1 on invalid *or unloadable***, so an unloadable template fails closed rather than falling through to a launch. Its guard test drives `main()` through argv with the launcher booby-trapped **plus a control proving the trap can fire** — the positive alone would also pass if `main()` never reached dispatch for an unrelated reason. Executed directly against the live template it returns `validate-only: stack template 'default' — PASS` / `nothing was launched`, exit 0.
+
+**Guard scope must match what the action mutates.** The new validation path initially sat *below* the running-bench guard — which covers start/stop/reload because those **mutate the host**, and exists because a lifecycle action once destroyed 1 h 09 m of decision-gating measurement. Validation mutates nothing, so `--validate-only` returned a refusal whenever a bench was detectable: **pure config validation was unavailable exactly when the host is busy, i.e. when you most want it.** Fail-closed, never dangerous, just useless at the moment of need. Hoisted above the guard, with a test asserting a **real** `start` is still refused under identical conditions — or the hoist could have been implemented by weakening the guard for every start.
+
+### The stack-change gate's catch-22 now names its own escape
+
+The gate refuses a launch while live ≠ config; the only cure for that drift is a restart; the restart requires the launch it just refused. **The obvious operator reaction — retry `start` — cannot work**, and the fatal message said only that it refused. It now names the escape: `stop --all` first, after which there is no live process to drift against. Message-only, no behaviour change, and the escape was **verified to exist before the message was written** — a fix that ships an unverified command is the same defect wearing the new name.
+
+A sibling correctness note on the launcher: **keying on a structural property survives a topology change that breaks name-keyed code.** The NUMA-mode resolver (arg → runtime-facts manifest → shell env, then probe the realized fleet and *override* a disagreeing resolution, logging the correction) still returns the right answer after the lineup changed, because its probe universe is defined as *the non-full instances* rather than by shape name. Verified by classification with no live probing: full ports and non-full ports together classify as `both`, and the empty set classifies as unknown — deliberately fail-safe, so a cold start falls back to manifest/env rather than fabricating a mode. **The label went stale and the behaviour did not.**
+
+### `-c` provisioning re-decided: lazy faulting relocates the cost, it does not remove it
+
+The standing rationing of context length rested on launch-time cost, which was later measured at ~zero. The decision package that followed corrects the inference rather than the measurement: **lazy KV faulting relocates the cost from launch to load.** Resident-set size grows toward the full reservation exactly when requests genuinely use deep context, so max-provisioning converts a **launch-time guarantee** (KV bounded by construction) into a **runtime exposure** — worst case being the sum of full-window KV over all resident roles, hit silently under concurrent deep-context load. *"~Zero" was measured at reservation and short context — true, and not the number the decision needs.*
+
+Options as filed: **(A)** max-provision fleet-wide plus a compaction/eviction policy above the server — full trained window everywhere, but that policy machinery does not exist and the worst-case sum is uncomputed; **(B, recommended)** a **staged raise** — raise context only where the lineup's summed full-window KV fits RAM with stated margin, computed **mechanically at priors/stack compile time so the gate is a check, not a judgement** — and keep rationing elsewhere until (A) exists; **(C)** status quo, the worst option, because it is a rationing decision standing on a premise now measured false. Sequencing note that costs nothing to honour: fold the change into the next recompile so the rebuild is paid once. **Ruling belongs to the lineup owner plus operator; the row stays open.**
+
+### Registry hygiene for status surfaces: a liveness probe is not a freshness probe
+
+Every entry in the dashboard registry declared the **transport** health path, while the server's own source states plainly that it means only *this process is serving*. **A registry entry buys liveness of the SERVER, not freshness of the DATA** — an automated consumer reading that field as "the page is fine" reads a much narrower claim than it thinks, and the probe stays green over a dead producer. One entry has been repointed to its three-valued fold; the pattern generalises to every surface added under the plane rule.
+
+Filed alongside and still **OPEN**: drift in the production-kernel attestation renders loudly as a failure class, but a **missing** attestation renders as a single muted line with no reason and no alarm class — on the one surface whose job is to assert which kernel is production. The neighbouring reader already synthesises an explanatory sentence when the file is merely absent; the summary passes the error straight through.
+
+### Source References (2026-08-12)
+
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the streaming-site enumeration, the `--validate-only` wiring and guard hoist, and the registry/attestation findings
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the stack-gate catch-22 message fix and the fail-open fallback warnings
+- [`handoffs/active/numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) §T12 — the `-c` provisioning decision package and its three options
+- [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — the rows these closures were pulled from
+- `epyc-orchestrator/scripts/server/orchestrator_stack.py`, `scripts/server/realized_fleet.py` — read directly for the validation branch and the mode classifier
 
 ## Compiled Update — 2026-08-11: a fail-open 200 masked backend outages as model answers; a region-lock regression recurs in derived priors
 

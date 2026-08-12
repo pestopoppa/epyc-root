@@ -2,8 +2,42 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-08-09 (adds routing-memory namespace isolation; retains the 2026-07-31 throughput-prior and contention-surface updates)
-**Sources**: 71+ documents (adds the 2026-08-09 measured repair receipt and campaign checkpoint; retains the 2026-07-31 throughput-prior, 2026-07-05 RI-10, and earlier routing evidence)
+**Last compiled**: 2026-08-12 (the episodic-index leak is **not** a text-format problem — that was fixed by a prior reseed; it is a single unobserved field value splitting writer paths at 99.973% purity; the standing integrity gate that was supposed to catch it had been comparing embeddings against a string that was never embedded; and an eval fan-out collapsed for every NUMA mode except one because a branch swallowed the rest — see below; earlier 2026-08-09 note: adds routing-memory namespace isolation; retains the 2026-07-31 throughput-prior and contention-surface updates)
+**Sources**: 75+ documents (adds the 2026-08-12 episodic-leak decision and its gate repair; retains the 2026-08-09 measured repair receipt and campaign checkpoint, the 2026-07-31 throughput-prior, 2026-07-05 RI-10, and earlier routing evidence)
+
+## Compiled Update — 2026-08-12: the leak moved from format to field, and the gate that should have caught it was measuring the wrong string
+
+**Confidence: verified** — row counts are live store queries; the gate defect is a code-level finding with a test-count delta.
+
+### The premise was stale, and the real defect is one field
+
+The standing diagnosis of the episodic embedding-index leak — *the index mixes three or more text conventions* — is **no longer true**. A 2026-08-09 reseed had already rebuilt the store at **63,786 / 63,786 rows** under one canonical builder. The leak that remains is not a **format**, it is a **field value**: `context.priority` takes exactly two values store-wide — `interactive` on **34,938** rows and absent on **29,081** — and that split reproduces the writer paths at **99.973% purity**. The field is *unobserved*: it comes from a hardcoded default, so it carries no task signal at all while acting as a near-perfect writer fingerprint. Roughly 45% of the corpus is queried with a value most rows lack.
+
+**Decision: drop `priority` from the embedded text; keep `task_type`.** Partitioning by writer path was explicitly **rejected** on five counts — it preserves the defect, costs the 29,081-row corpus reach, has unproven de-confounding value, breaks as a post-filter under global KNN, and is structurally expensive. The generalisable form is worth carrying: **a field that is defaulted rather than observed is not a feature, it is a provenance stamp**, and embedding it teaches the index to retrieve by writer.
+
+### The integrity gate was comparing against a string nobody embedded
+
+The reason this survived a standing check is the sharper finding. `check_episodic_integrity.py` — the gate protecting a 0.90 similarity floor — built its comparison string **by hand**, and the hand-built string omitted the `priority:` segment. So on **54.6% of rows** the "decisive" check compared the stored vector against a string that was never the input to any embedding, silently burning margin against its own floor. The repair is to call the real publish function rather than reconstruct its output.
+
+This is the routing-plane instance of the verification-failure class catalogued this week: *a check can be sound in form and still be about the wrong object*. A gate that reconstructs its target instead of invoking the producer is testing its own reconstruction.
+
+Two residuals are explicitly **not fixed**: no live write site yet produces the canonical vector (reseed and drift diverge by construction, the serializer differing three ways from the canonical builder), and two live writers still hardcode foreign conventions.
+
+### A routing-adjacent scoring collapse: one branch swallowing four modes
+
+The eval fan-out's NUMA handling checked for `stack_numa_mode == "quarter"` and let **`full`, `both`, unset, and typos** all fall through one branch — so every non-quarter mode was scored as if it were the same thing. The corrected valid set is `{full, quarter, both}`; note `half` is **not** a NUMA mode at all but a `cpu_shape_class`, which is exactly the kind of adjacent-vocabulary confusion that makes a fallthrough look reasonable while writing. Fixed with 29 tests and mutation-checked.
+
+Alongside it, a related classifier repair that matters for any reward signal derived from evals: a substring-match failure classifier was **fail-open**, so HTTP-400s and unreachable endpoints — including an empty-string read timeout — were scored `WRONG` and fed `success_reward(False)` into the MemRL learned router. **An unreachable endpoint is INFRA-FAILED, never WRONG.** Failures are now classified structurally.
+
+### A metric whose name overstates what it counts
+
+A contention metric surfaced on the dashboard counts *"N-way fired, non-ALLOW"*, while its name and tooltip read as *"N-way was the binding constraint"*. Those are different populations, and the render-layer fix that made the number visible did not fix the label. Recorded here so the figure is not read as a binding-constraint count.
+
+### Source References (2026-08-12)
+
+- [`learned-routing-controller.md`](../handoffs/active/learned-routing-controller.md) — the EPD-3 decision, the rejected partition-by-writer alternative, the integrity-gate defect, and the two open write-site residuals.
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — the NUMA fan-out collapse, the fail-open failure classifier, and the contention-metric label finding.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the B5/EPD-3 premise falsification in session context.
 
 ## Summary
 

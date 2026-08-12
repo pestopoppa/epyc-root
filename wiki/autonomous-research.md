@@ -2,8 +2,105 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-11 (AutoKernel's own measurement-integrity hardening lands with no inference run yet; AutoPilot's v10 multi-tier baseline is sealed and applied while the loop stays stopped; a sequential-allocation mechanism ships deliberately neutral on the question it exists to let the operator answer — see below; earlier 2026-08-10 note: adds the transfer-ratio synthesis — every cheap lane is a proxy whose transfer function is free to record now and impossible to backfill — plus lanes-screen/full-instance-verifies, the three false concurrency constraints, and the rescued-vs-persistent refinement split)
+**Last compiled**: 2026-08-12 (second pass — three loop-engineering experiments on the loop's own operating assumptions returned **two nulls and one non-portable positive**: more reasoning effort bought time, not hypotheses; a "proximate target" framing was null for one model and adverse for the other; split scaffolding helped one model 1.393× and neither helped nor hurt the other. The governed controller campaign refuses 2 of 8 arms on licensing and is **4/64 checkpoints terminal**, so it has no aggregate. The first real CPU candidate campaign is ready and refused by its own uptime preflight at 13.47 days — see below; earlier same-day note: an AutoPilot dead-machinery audit re-derived: three modules whose surfaces all look green, instrumented with tripwires rather than fixed because each is a decision; the objective plane admits zero-quality Pareto points and one trial row in six is already there; a "sticky refuted" population dissolved as a joint-verdict-vs-single-axis defect; and the stale-premise class that makes a screened backlog row still unsafe to act on — see below; earlier 2026-08-11 note: AutoKernel's own measurement-integrity hardening lands with no inference run yet; AutoPilot's v10 multi-tier baseline is sealed and applied while the loop stays stopped; a sequential-allocation mechanism ships deliberately neutral on the question it exists to let the operator answer — see below; earlier 2026-08-10 note: adds the transfer-ratio synthesis — every cheap lane is a proxy whose transfer function is free to record now and impossible to backfill — plus lanes-screen/full-instance-verifies, the three false concurrency constraints, and the rescued-vs-persistent refinement split)
 **Sources**: 101+ documents
+
+## Compiled Update — 2026-08-12 (second pass): the loop-engineering experiments returned nulls, and the campaign they were meant to steer is 4/64 done
+
+**Confidence: verified** for the experiment mechanics and campaign state (each cell is receipted and self-hashed); **explicitly bounded** for every conclusion — these are one-observation-per-cell panels that the sources themselves refuse to generalise, and this page keeps that refusal.
+
+### Three experiments on how to run the loop, and two of them found nothing
+
+The AutoKernel program spent this window testing its *own* operating assumptions rather than kernels. The results are mostly negative, which is the useful part — each one closes a knob that was being tuned on faith:
+
+- **Reasoning effort × search persistence (8/8 predeclared cells, two frontier models at high and xhigh).** Higher effort did **not** increase novel or surviving hypothesis counts in either control arm (6 → 6 for one model, 3 → 3 for the other), and **all four xhigh cells took longer**. A bounded null: paying for more reasoning effort bought time, not hypotheses.
+- **A "proximate target" framing arm.** Null for one model (6 surviving hypotheses in every arm) and **adverse** for the other, whose target arms produced *fewer* than their matched controls (3 → 1 at high, 3 → 2 at xhigh). No transferable proximate-target benefit is established.
+- **Split implement/exploit vs direct (4/4 cells).** The only positive, and it does not generalise: average speedup **1.393× for one model's split arm** against **0.996 direct**, while the other model's split arm came in at **0.994** against **1.002 direct**. The split benefit is **task- and model-specific, not a cross-model scaffold default.**
+
+The pattern across all three is the finding: **loop-engineering levers are not portable across models**, and a scaffold that helps one controller can be neutral or adverse on another. Anything written as "use split scaffolding" or "raise effort" without naming the model and task is unsupported.
+
+### The controller campaign is real, governed, and mostly unrun
+
+The eight-arm agentic-kernel comparison **correctly refuses to run as eight arms**. Auditing moved it 1/8 → 2/8 executable, then to **6/8** after porting four controllers; the last two are blocked on licensed sources that have not been released, and **namesake substitutes are explicitly inadmissible**. The 6/6 available-source panel is ready and was expanded from an add-only proxy to four representative tasks.
+
+Two things must be read together. First, every controller smoke so far sits **at or just below 1.0× speedup** (0.9987, 1.0034, 0.9996, 0.9956, 0.9936) and every one is labelled **non-rankable diagnostic telemetry** — one iteration each, no ranking authority. Second, the live governed campaign is **partial**: at the immutable wrap boundary, **4 of 64 checkpoints and 2 of 24 cells were terminal**, with one arm still in controller deliberation. The standing rule is *rank only the terminal full 6/6 panel*, so the partial attempt has no aggregate and this page reports none.
+
+Getting even that far took two fail-closed restarts, and their causes are instructive: run 1 was invalidated because a **dotted task path escaped the exact workspace** and a device claim was left unreleased; run 2 proved the containment repair and then stopped when a strict parser rejected provider JSON carrying extra fields. **The strict parser was retained rather than loosened** when the provider schemas were integrated — the right call, and the one that costs a restart.
+
+### The GEAK reproduction is blocked on licensing, not capability
+
+The substrate works: an exact-pinned adapter refused gfx90a spoofing, compiled a live kernel under Torch 2.5.1+ROCm 6.2 / Triton 3.1.0, and passed correctness 3/3 and timing 5/5 on the physical MI210. What is blocked is the *paper-era reproduction*: both the paper pin and current upstream carry **no project-level license** (`license: null`, license endpoint 404, PyPI declares none). No reproduction may run until a covering license is published. This is an external dependency with no internal workaround, and it should not be re-scoped as an engineering task.
+
+### A calibration placeholder retired, and a matched archive with nothing in it
+
+Two housekeeping results with teeth. The old fixed **2.1310% MDE placeholder** — derived from four runs on a single model — is **no longer live authority**; the CLI now reports `UNCALIBRATED CELL` and each campaign must supply its own era-local calibration bundle. And the matched completed-proposal archive is **structurally ready and empirically empty**: the builder and its governed receipt producers pass their suites, but the archive holds no real records until the first CPU candidate campaign runs. A ready instrument with no data in it is a correct state to be in and a wrong thing to cite.
+
+### What actually gates the next result
+
+The first real CPU candidate campaign is **ready and refused by its own preflight**: host uptime measured **13.47–13.48 days** against a ratified 7-day ceiling, so no claim, build or benchmark occurred. The dry run recovers cleanly (13 steps, 10 pairs, 3% floor, exits zero). The gate is an operator reboot authorization, and its default — no reboot, no result — is the current state.
+
+The five-control acceptance run that *did* execute passed **5/5** at a 3% contribution floor with `may_rank=true`, and its historical replay promoted at **+26.605%** — evidence the harness discriminates, not evidence about any candidate.
+
+### Source References (2026-08-12, second pass)
+
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — the 6/8 refusal, the r4 campaign's 4/64 partial state, the two invalidated runs, and the AK-LE-1/2/3 panels.
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — the controls campaign, the uptime refusal, the retired MDE placeholder, and the empty matched archive.
+- [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) — the GEAK substrate synthesis behind the compile round-trip.
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the diagnostic controller speedups and the licensing block in session context.
+
+## Compiled Update — 2026-08-12: a self-optimizing loop's audit rows, re-derived — the findings held and the anchors did not
+
+**Confidence: verified** — every item below was re-derived against the current tree rather than inherited from the audit row that named it. Where a re-derivation *changed* the finding, the corrected version is what is recorded.
+
+### Three shapes of dead machinery, all with a green-looking surface
+
+An earlier audit of the optimization loop's codebase listed several "built, tested, zero production importers" items. Re-deriving them found the **findings held and were understated, while the anchors had rotted** — in one case the named function no longer exists at all. The three re-derived instances form a taxonomy:
+
+- **A column with no producer.** An episodic-memory `sub_decision` column: **0 non-null of 642,328 rows** (the row had claimed 0 of 59,337 — an order of magnitude more data, still entirely empty). Its 312-line test suite is green and covers the enum, the normaliser, the migration, the classifier token map and the backfill script — **everything except whether anything writes the column on the live path.** Three agents ran that suite and none noticed. *A test can cover all the machinery and never touch the question of whether the machinery is REACHED.*
+- **A feature dead at three independent layers**, any one of which would suffice: the router class appears exactly once in the tree and **that line is inside a docstring Usage example**; the state field is declared and never assigned; and the guard's **one production caller omits the argument** (every other caller is a test). The feature flag is a fourth layer of inertness. Two of the audit row's three anchors had rotted — the module had moved and the named function no longer exists — *the finding underneath survived the rot; the addresses did not.*
+- **A module whose docstring asserts its own live integration.** A mutation ledger states verbatim that the accept-path constructs records and consults it before composing a mutation onto the live config; a repo-wide grep excluding the module itself returns nothing. **Dead code is inert; a docstring asserting its own live integration is actively misleading** — a reader grepping for how conflict-aware acceptance works concludes it is wired.
+
+**The count in the audit row was wrong, and the honest answer is a range with a method.** "Ten fully-built, zero-importer modules" is at least **20** over 368 modules under `src/`; a stem-match scan gives 24, a dotted-import scan gives 22, and **they agree on 20** — 20 is the defensible floor, 26 the union. *A single number here would have been false precision*, and the caveat exists only because the second pass was run as a cross-check on the first method and disagreed with it. **The raw count is also not the actionable list**: declared console-script entry points and server modules legitimately have zero importers, so anyone acting on a bare importer count would have "cleaned up" a shipped CLI.
+
+**All three were instrumented, not fixed** — a tripwire per dead layer, each failing the moment that layer is wired (or, for the docstring, the moment the claim is softened), so whoever wires one is forced to wire the rest of the chain rather than landing a layer that silently does nothing. Deliberately **not** `xfail`/`skip`, because both are invisible in a green run and invisibility is the defect. The boxes stay **unchecked on purpose**: each is a decision (wire it, or retire it and correct its docstring), not a repair. A follow-up hardened the tripwires themselves after they proved brittle — the "is it constructed" layer now walks the **AST** and counts only real call nodes, so a construction named inside a docstring correctly isn't one, because **a tripwire that cries wolf is one somebody deletes.**
+
+### The objective plane admits a zero-quality Pareto point, and one trial row in six is already there
+
+The live dominance vector maximises `(quality, rate, -cost, reliability)`. A point holding the maximum rate is therefore unbeatable on rate and **nothing dominates it however bad its quality** — only an explicit floor or a scaled axis can exclude it, and no quality floor exists in the loop's core. Compounding it, quality is read as `float(row.get("quality") or 0.0)`, which **cannot distinguish measured-zero from never-measured**: **231 of 1,372 trial rows (16.8%)** carry falsy or absent quality.
+
+A companion gate over-promises in its own docstring: it says *"True when this result carries every axis the live dominance vector needs"* and its body validates the **rate** and nothing else — so a row with no quality, cost or reliability passes a check whose name and docstring both claim otherwise.
+
+> **Fix the `or 0.0` regardless of which metric wins** — a metric change would paper over a data defect. And per the standing rider, a metric change is structurally an **era boundary**, not an edit.
+
+Same store, same habit, one field over: the trial journal's era label is **inferred from a missing question ledger** on ~61% of rows — the absence-read-as-a-value class recorded in [Benchmark Methodology](benchmark-methodology.md).
+
+### A "sticky refuted" population dissolved: a joint verdict compared against a single axis
+
+A sequential-allocation readjudicator tested `state == "refuted" AND E_quality >= budget_min_e` — a **joint** label against **one** axis — while the safety gate stamps `refuted` when *either* axis refutes, recomputing it every trial. Measured: the rate axis's evidence value maxes at **1.1100 across all 393 trials** against a budget minimum of **2.0**, so every candidate's rate axis refutes past the budget threshold, **manufacturing the entire "sticky refuted" population.** The corrected report attributes each label to an axis — **6 quality, 3 rate-only, 0 UNEXPLAINED** — and the bucket that would hold a genuinely stale label is empty. The decision item is therefore **VOID / dissolved, not decided**; the live question moved to a different one. *A joint verdict compared against a single axis is the same category error as a full-machine gate applied to a partial-machine cell.*
+
+### An experience-card schema, derived from the row type that already validates
+
+The requested experience-card facets were mapped onto the existing strategy-store entry rather than a parallel type: **three of six are already carried** (provenance, scores, and the raw material for novelty), **three are genuinely absent** (error type, method family, resource usage). Two design findings worth more than the mapping:
+
+- **`score` is ambiguous in the request, and the existing type proves it.** The entry already carries three `*_score` floats — a validity prior, a retrieval similarity and a fusion rank — and **none is an outcome score**. Adding a fourth bare `score` to that set is exactly how a consumer reads the wrong one. Name it for what it measures.
+- **`species` is a population label, not a method taxonomy**, so it cannot stand in for method family.
+
+Recommended shape: **extend additively rather than defining a parallel type** — the serializer is a plain dataclass dump, so new optional fields round-trip for free and the existing projections keep validating. Filed with it, and deliberately *not* filed as a belief-substrate register row: an experience card carrying an outcome score plus provenance **is a measurement-shaped record and needs a write-side ClaimTuple decision at design time** — but *a register entry for an unbuilt producer is the speculative row that register warns against.* Left NOT IMPLEMENTED on purpose: the row said *schema only*, and each absent facet needs an owner decision.
+
+### Screening checks FORM; whether the premise still holds is a separate read
+
+Multiple backlog rows pulled from the generated bench this period screened as well-formed and dispatchable while their **premises had been overtaken by events** — a row describing files as uncommitted that had been committed two weeks earlier, a row prescribing a validation route that did not exist, a row naming an instrument the run did not use. The sharpest instance: a row asserting an operator-facing results page "still presents retracted numbers" — the page contains **zero** occurrences of the campaign identifiers it names, its figures are a different metric entirely, and it had been rebuilt from scratch. **Acting on that row as written would have stamped a retraction onto figures that were never retracted.**
+
+> **A backlog row is a claim about the world made at a past instant.** A screener can certify its form; only a read certifies its premise. The corollary for anyone driving a queue: budget a premise check per row, and treat *the row disagrees with the tree* as the finding rather than as an obstacle to closing it.
+
+Two related closures from the same lane. A row prescribing a dry-run route was **unfalsifiable for its entire life** because the flag it named was parsed and discarded — it now validates and exits 0 with zero errors, so the row's own numbers were never checkable by the route it named. And a "known blocker" (a port declared twice in the registry) was closed by **executing the layer rather than reading its comment**: the duplicate is real and intentional, the code was taught both spellings, and building against the production registry returns 6 fleets and 11 bindings with no phantom and no collision.
+
+### Source References (2026-08-12)
+
+- [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — the re-derived dead-machinery rows, the experience-card schema, and the stale-premise closures
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the tripwire designs, the module-count cross-check, and the objective-plane measurements
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the joint-verdict dissolution and its per-axis re-attribution
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — why the unbuilt experience-card producer was deliberately not given a register row
 
 ## Compiled Update — 2026-08-11: two autonomous loops hardened their own measurement integrity before running anything
 

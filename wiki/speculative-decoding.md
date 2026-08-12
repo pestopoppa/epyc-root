@@ -2,8 +2,77 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-08-11 (DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
-**Sources**: 63+ documents
+**Last compiled**: 2026-08-12 (v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
+**Sources**: 64+ documents
+
+## Compiled Update — 2026-08-12: the per-request surface is one field wide, and a 2.458× lane can still be ineligible
+
+**Confidence: verified** — read from the v9 qualification evidence map and the DFlash lineup-gate ratification, not from source-file presence. Where a field exists in the kernel source but is not reachable from a request, that is recorded as *unexposed*, not as available.
+
+### One knob, and the rule that produced that answer
+
+Frozen `production-consolidated-v9` exposes exactly one request-local speculative parameter:
+`speculative.n_max`. Its contract is fully specified — `0` disables drafting for that request, a
+positive value caps the launch-configured maximum, an over-large value clamps rather than raises,
+omission restores the launch default, and slot reuse does not leak the previous request's cap.
+Every other speculative field (`n_min`, `p_min`, `type`, and the n-gram parameters) is **present in
+the source and not wired to the request path**.
+
+The generalisable rule is the one the audit had to apply to get that answer: *a field's presence in
+the kernel source is not evidence that a request can set it.* The check that settles it is whether
+the request parser writes the field, not whether the struct declares it. Anything written on the
+assumption that the other fields are per-request tunable is wrong on v9.
+([`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md))
+
+### A lane can be capability-certified, materially faster, and still ineligible
+
+The Qwen3.6-27B Q8 DFlash lane is the sharpest case the v9 freeze produced. It is
+capability-functional, and it is **2.458× faster overall with every prompt class at ≥2.149×** — and
+it is **disabled in production**, because pooled acceptance measured **35.954%** against a ratified
+**60%** floor (`P-DFLASH-LINEUP-1`). The gate is on acceptance, not on throughput, so the speedup
+does not buy an exemption; the lane's exclusion also did not block the v9 release itself.
+
+This is worth holding next to the DSpark result on the same kernel, which is the inverse shape:
+DSpark's Q8 `-np 1` lane passes exact cap-0/cap-3 parity (cap 3: **18 drafted / 9 accepted**, α ≈
+0.50) and is *certified but slower* in preliminary observation, while the IQ3_XXS pair reaches
+**59.70% acceptance** (67 drafted / 40 accepted) — just under the same 60% floor — and still decodes
+**−4.52%** slower than cap 0 (4.61014 vs 4.82846 t/s, one dirty-host repetition). Across three lanes
+on one kernel, acceptance rate and end-to-end speed do not co-vary in a way that would let either
+one stand in for the other.
+([`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md),
+[`deepseek-v4-flash-0731-dspark.md`](../handoffs/active/deepseek-v4-flash-0731-dspark.md))
+
+### RETRACTED, and carried here because this page still cited the pre-retraction reading: the `ngram-mod` 2.80×
+
+The **2.80× CPU-decode gain attributed to `ngram-mod`** (Qwen3.6-35B-A3B, 24.92 → 69.89 t/s at 14,059 tokens, acceptance .505 → .755) is a **measurement artifact and the real gain is approximately zero**. The mechanism is worth stating precisely because it generalises to every context-drafter: the benchmark replayed *the same prompt* against a *warm server*, so `ngram-mod` was copying its own previous answer back out of retained context — draft length inflated 3.58 → 15.88 and acceptance went to **1.000**, which is the tell. A confirmatory re-run with **three distinct prompts per repetition** measures **−4.2% to +1.3%**, and `ngram-mod` *alone* costs **23–31%**.
+
+The rule: **never bench a context-drafter by repeating one prompt.** An acceptance rate that approaches 1.0 is not a good result, it is a self-copy alarm. The recurrence is logged as `INC-20260731-warm-server-repeat-prompt-recurrence`.
+
+Two consequences must not be conflated, because the sources are explicit that they are independent:
+
+- The instruction to *fold the ngram result into the production recipe* is **cancelled**; no `acceleration.spec_type` field is to be added.
+- **Retracting the speedup does not retract the recipe.** The composed `ngram-mod,draft-mtp` lane remains production by standing operator decision, carried for its repetitive-context upside at an accepted **≈ −1.6%** ordinary-text cost — not because of the 2.80×.
+
+This page's 2026-07-16 subsection below still reports the pre-retraction `ngram-mod` speed signals (+18.9% on repetitive JSON, +50.6% on Gemma-4 with reasoning off) with only a quality caveat. **Read those numbers through this retraction**: they share the repeated-prompt exposure, and the corrected reading is the three-distinct-prompt one. The single source of truth for the deployed recipe is the `speculative_decoding_policy` block at the top of `epyc-inference-research/orchestration/model_registry.yaml` — link to it, do not restate it (this paragraph included).
+([`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md),
+[`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md))
+
+### Still not measured
+
+The matched comparison that would settle the standardized 6.97 GB Q2_K/Q8_0 sidecar against the
+existing 10.9 GB control — same target, prompts, request shape and host, reporting throughput,
+acceptance *and* exact token parity — **has not been run**. Both artifacts are checksum-verified and
+on disk; the comparison is the missing thing, and the wiki should not be read as having a preference
+between them. Multi-slot DSpark also remains disabled pending the upstream speculative-cache defect.
+([`deepseek-v4-flash-0731-dspark.md`](../handoffs/active/deepseek-v4-flash-0731-dspark.md))
+
+### Source References (2026-08-12)
+
+- [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — the one-field surface, its clamp/reset/slot-isolation contract, and the unexposed-field list.
+- [`deepseek-v4-flash-0731-dspark.md`](../handoffs/active/deepseek-v4-flash-0731-dspark.md) — DSpark Q8 and IQ3_XXS acceptance/throughput pairs, and the un-run matched sidecar comparison.
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the DFlash lineup-gate certification numbers in their promotion context.
+- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — the `ngram-mod` 2.80× retraction, its self-copy mechanism, and the corrected three-distinct-prompt figures.
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — the cancelled P2-5 fold-into-production instruction and the recipe-survives-the-retraction distinction.
 
 ## Compiled Update — 2026-08-11
 

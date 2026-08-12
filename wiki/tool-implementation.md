@@ -2,7 +2,7 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-08-10 (the dashboard plane rule — data contracts with their subsystem, pages/nav/registry with the hub — **supersedes** the 2026-07-05 transport-rule boundary recorded below; plus the shared nav registry, the absence-is-loud rendering discipline, and the one-assembly-path rule)
+**Last compiled**: 2026-08-12 (the plane rule gets its first enforcement pass and a matching failure mode: a **two-valued health check cannot say "I cannot tell"**, and three separate supervisors were found resolving that ambiguity into a confident restart, a confident kill, or a confident green. Plus a registry probe moved from transport to semantics, and a stale-source check wired only into the mode nobody runs — see below; earlier 2026-08-10 note: the dashboard plane rule — data contracts with their subsystem, pages/nav/registry with the hub — **supersedes** the 2026-07-05 transport-rule boundary recorded below; plus the shared nav registry, the absence-is-loud rendering discipline, and the one-assembly-path rule)
 **Sources**: 40 documents (2026-07-06 focused pass: AutoPilot dashboard regions-lock coherence and local planner provider hardening; 2026-07-05 full pass: project dashboard hub :8100 + recency/Blocked-routing fixes, AutoPilot dashboard live-tps repair, loops-and-dashboards audit, repo-readiness portfolio-L5 milestone + passive pickup launcher wiring, and 2026-07-04 tool-sentinel activation telemetry; prior 2026-07-03 corpus-augmented prompt lookup revalidation and AutoPilot planner-turn tool-use hint rendering, 2026-06-22 DCP context-assembler and stack-change guard cross-refs, 2026-06-20 OpenRouter subagent/Fusion server-tool contract patterns)
 
 ## Summary
@@ -407,6 +407,41 @@ The root governance validators now reflect the split-repo layout instead of assu
 The wrap-up command and Codex wrap-up skill were updated together so handoff compaction behavior is consistent across Claude and Codex surfaces. The important tooling semantics: compaction is manual-wrap-up-only; the trigger is first-screen readability, not line count; partial splits create or extend a sibling while editing the active handoff in place; repeat compactions update the newest sibling's date stamp; and wrap-up output must include a `## Index pruning / handoff compaction` table when any split/prune/archive happened.
 
 Sources: [`scripts/validate/validate_doc_drift.py`](../scripts/validate/validate_doc_drift.py), [`scripts/validate/validate_agents_references.py`](../scripts/validate/validate_agents_references.py), [`wrap-up.md`](../.claude/commands/wrap-up.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).
+
+## Compiled Update — 2026-08-12: a health check with two values is a tool that cannot report its own blindness
+
+**Confidence: verified** — each item carries a commit and a test-count delta; one item is verified *from a ref* rather than from the working tree, deliberately.
+
+### The defect class, stated once
+
+Every item below is the same shape: **a check whose output has two states (`ok` / `not ok`) when its input has three (`ok` / `not ok` / `could not observe`)**. The third state gets folded into one of the first two, and which one it folds into decides whether the tool fails loud or fails silent. Three independent instances landed in one week:
+
+- A hub supervisor's `health_ok()` collapses a curl timeout, a missing binary and a wrong port into the same value as a genuinely dead service — so "cannot observe" becomes "restart it", and the restart loop is indistinguishable from remediation. Filed, **open**.
+- A bus supervisor's daemon-liveness predicate matched only self-launched daemons, so a healthy 75-minute-old daemon read as absent and was killed; its replacement predicate is **vacuous in a five-writer tree** and was observed killing healthy daemons in **11 cycles over 35 minutes**. (Full detail on [Agent Architecture](agent-architecture.md).)
+- A production-kernel dashboard panel was **absence-tolerant quietly**: a missing attestation rendered as a muted line rather than an alarm. Fixed to render a loud `ATTESTATION UNAVAILABLE`; a cosmetic residual remains, in that the underlying function still returns `error: None` for a merely-absent file — the panel is loud now, the function still cannot say why.
+
+The rule this yields for any probe: **enumerate the states of the observation, not the states of the subject.** A check that cannot emit "I cannot tell" will emit something else instead, and that something else will be actionable.
+
+### The probe-semantics fix the plane rule implies
+
+The plane rule recorded below says every dashboard needs a health probe; this week supplies the sharper version of *which* probe. A Kernel-R&D registry entry was pointing its `health_path` at the **transport** probe (`/health`) — which stays green over a dead producer, because the process is serving fine — and was moved to a **semantic** data-health probe (`/api/kernel/health`) that returns 503 when the champion, headroom or release package is unreported. Roughly 74 lines of server and 110 lines of tests. The generalisable statement: `/health` answers *is this process alive*, `/api/health` answers *is what this page shows still true*, and a registry that stores the first while the page promises the second is a correctly-configured lie.
+
+A related wiring defect is worth carrying because it is cheap to reproduce: a staleness check was hooked into the one-shot command path and **never into the loop**, which is the default long-running mode — so the check existed, passed its tests, and never ran in production. The identical shape had already been fixed once in a sibling supervisor.
+
+### Verify from a ref, not from the shared working tree
+
+One verification in this pass was deliberately performed against a committed ref rather than the working tree, and the reason generalises to every multi-writer repo: **the working tree is the one surface that can show you a repair with no evidence that it is a repair.** The precedent is a same-week adjudication where a reviewer refuted a peer's finding 20 seconds *before* the fixing commit existed — they had read the peer's uncommitted edit and concluded the defect never existed. The rule adopted: adjudicate a peer's finding from `git show <ref>:<path>`.
+
+### Counting instruments must anchor their own patterns
+
+A checkbox counter using an unanchored `- [ ]` regex matched mid-line and was **wrong in both directions** — re-derived with an anchored pattern the real movement was 1273 → 1242 open (−31) and 2306 → 2368 done (+62), against circulated figures that had both endpoints wrong. A canonical anchored counter already existed in the repo and was not used. When a project has one, a hand-rolled grep is not a second opinion; it is an unvalidated instrument.
+
+### Source References (2026-08-12)
+
+- [`dashboard-architecture-restructure.md`](../handoffs/active/dashboard-architecture-restructure.md) — the D-1 absence-tolerant panel, the D-2 transport→semantic probe move, and the open D-3 two-valued supervisor check.
+- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — the OBS-series "fails to say I cannot tell" sweep, including a fail-open guard and a duplicated liveness oracle across four files.
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — the supervisor liveness and watchdog defects that share the class.
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the verify-from-a-ref rule and the anchored-counter correction.
 
 ## Compiled Update — 2026-08-10: dashboards split by plane, not by transport
 

@@ -2,8 +2,181 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-11 (a 243-hour coordinator-daemon outage reported itself healthy; a nudge-guard deadlock caused a ~10-hour fleet stall; the session-bus C-series hardening arc closed; the backlog dispatch queue was retired as an unreliable instrument — see below; earlier 2026-08-08 note retained)
+**Last compiled**: 2026-08-12 (second pass — a reviewed audit of the coordinator role **falsifies the root cause the role wrote for itself**: policy compliance does not "decay with context", it fails at *retrieval on the emission path*, and the same defect recurred 21 minutes after being written up as a correction; the audit also finds the self-audit applying **opposite evidentiary rules** depending on whether the evidence incriminates or exculpates the role — see below; earlier same-day note: a `git clean -ffdx` wiped the session bus and the recovery selected the one dead claim while dropping every live one; the "the daemon knew what to run and told nobody" narrative is RETRACTED with its measured refutation; the committed-not-live chain closed after four nested restarts; residency-is-not-work; within-file contamination in a shared log named as distinct from the cross-file rule pathspecs already solve — see below; earlier 2026-08-11 note: a 243-hour coordinator-daemon outage reported itself healthy; a nudge-guard deadlock caused a ~10-hour fleet stall; the session-bus C-series hardening arc closed; the backlog dispatch queue was retired as an unreliable instrument — see below; earlier 2026-08-08 note retained)
 **Sources**: 77+ documents
+
+## Compiled Update — 2026-08-12 (second pass): a role's self-diagnosis, audited — the conclusion survives and every argument for it does not
+
+**Confidence: verified** for the audit's artifact-level findings (each cites commits, test counts, and timestamped bus rows); **inferred/self-assessed** for the failure ledger's recurrence counts, which the audit itself downgrades as "the least reliable thing in it". One boundary must be stated up front: the reviewing document is an explicit **stand-in** for the `auditor` role (which was at 100% context and unreachable), it marks three of its own sections `[THIN]`, and the real ruling (A-1…A-9) is still pending. Nothing below should be read as the auditor's verdict.
+
+### RETRACTED root cause: "compliance decays with context"
+
+The coordinator role, told by the operator to collect its own failure modes, produced a 32-row ledger and a root cause **RC-1**: *written policy has no checkpoint at the moment of action, so compliance decays with context — rules with a mechanism held, rules relying on recall decayed.*
+
+The audit's verdict is the sharpest form a review can take: **"the conclusion is directionally right and every leg of the argument for it fails."** The legs, and why each fails:
+
+- **The comparison is structurally impossible.** Mechanisms self-log; prose rules that *hold* leave no trace at all. So the "held" column is a definition, not a measurement — and it has no denominators either (13 registered `PreToolUse` hooks against 252 directive-bearing policy lines).
+- **RC-1 is itself an instance of the failure class it names.** It quotes an N with no M or K, which is exactly what the same repo's newly-landed *Reporting Units* rule forbids.
+- **The causal claim is refuted at zero decay.** F-02 (instantaneous sampling read as a utilisation rate) was committed as the coordinator's *own correction #2* at 10:07:18Z, and recurred at 10:28:19Z and again ~10:40Z — 21 and 33 minutes later, same session, same context window. Nothing decayed.
+- **Four of the six "rules that held" do not survive.** Only two do (one-daemon-one-supervisor via `flock`, and the human-only trust boundary). One is **refuted and is itself a reporting-units error** — the composer guard's glyph table was miscalibrated, returning "not empty" for empty composers on all six Claude panes, so the doorbell refused every ring to every Claude main: 0% operative, and therefore "refused a nudge that should not have been sent" had *zero discriminating power*. Another is **vacuous**: deleting the rate-limit `if` block leaves both of its tests green, contradicting its own commit body.
+- **The largest counter-case runs the other way.** A `git clean` classifier hook would have refused the exact 08:20Z command that wiped the bus (149 untracked entries ⇒ `block:clean-untracked:/workspace`) — but it had been reverted 27–47 minutes earlier. The audit also corrects *why*: it was reverted **as defective** (two HIGH findings its own 12 tests missed), not as a well-built guard at a bad trade — which removes the foundation of the delete-lens argument built on top of it.
+
+**The replacement finding, and it generalises past this role:** *a rule is followed at the rate at which the act it governs forces a read of it.* The repair target moves from durability (write it down harder, ledger it) to the **emission path** — the moment of emission is where retrieval fails. The corroborating pair is stark: a sentence-template correction ("N records resolving to M distinct rows, of which K were dispatchable at emission") had **zero** recurrences, while narrative corrections recurred **within the hour**; a durable resolution ledger went stale in **48 minutes** because nothing on any startup path referenced it.
+
+### The self-audit's evidentiary bias, named
+
+The audit finds the failure ledger applying **opposite evidentiary rules to the same signal** depending on which way it cuts. On an authorship charge, absence of a commit trailer was discarded as weak; on an exculpatory one, the same absence was accepted as decisive — and the base rate settles it (5 of 48 merges repo-wide carry a trailer, so trailer-absence is the *norm* for merges and proves nothing). One struck authorship claim was restored by the role's own commit body 13 minutes later: *"hand-written by the coordinator on its own thread under time pressure… never tested."*
+
+The structural conclusion is a governance one rather than a code one: **a role cannot be the auditor of its own failure ledger**, and it is listed as a deletion (D6) alongside D1 *stop reading dials* (which alone kills seven ledger rows at zero build cost), D2 *stop authoring your own agent infrastructure* (the coordinator wrote its own idle-detector — a conflict of interest, and the detector's owner disputes its attributions on record), D3 *stop hand-deriving repo metrics*, and D5 *stop 2 KB freeform payloads* (219 distinct payload keys across 53 messages, median 2,106 B).
+
+### A correction that propagated faster than its own fix
+
+The mechanism of the emission-path failure is visible in miniature. A wrong figure ("relaunch-looped every ~10s", actually 42 s = 30 s timeout + backoff, 2 attempts over 74 s) was corrected *in the handoff* — but had already propagated into a guard script and a contract test, and a commit landing 13 minutes later did not fix it. The error ends up standing in **five files**. Writing the correction down is not the same act as reaching the places the claim already went.
+
+### Live mechanisms that cannot see their own target
+
+Three same-week defects share one shape — *a check that cannot distinguish "false" from "I cannot tell"*, and resolves the ambiguity to a confident value:
+
+- The bus supervisor's daemon pattern matched only self-launched daemons (the live one runs with `--bus-root <path>` inserted), so it killed a healthy 75-minute-old daemon. Its replacement predicate is **vacuous in a five-writer tree** and was observed killing healthy daemons in **11 cycles over 35 minutes** *during the audit*, epoch 54→64.
+- Supervisor liveness was derived from a pid file rather than the lock: a process alive 7h40m holding the lock reported `UNHEALTHY` because its pidfile had vanished.
+- An operator-escalation classifier reported **11 action-required items when there were 0** — 111 rows carry `action_required` but only 8 satisfy the operator predicate and 7 of those overlap, so the two predicates are nearly disjoint. The fix replaces inference-from-absence with a **positive marker** (`payload.operator_signature_needed: true`), taking 8 classified items to 0 across 267 rows with 315 tests passing.
+
+The generalisable rule (raised the same night, and violated twice by the person who had just fixed the class): **a field used to discriminate KIND must BE an explicit kind, never a present/absent test.**
+
+### The picker defect behind the retracted backlog figure — still open
+
+The retracted "4,602 pending picks" number (carried in corrected form in the pass below) has a located root cause: the coordinator caches a `status: READY` literal and never re-derives eligibility from the row it points at. A partial fix landed (closed-box detection); **re-anchoring picks on row identity rather than `file.md:LINE` has not been done**, and the anchor-rot rate that makes line references unsafe was measured the same day at **22 of 201 references (10%)**, 12 of them from ordinary edits within about three hours, against a whole-queue rot of 34.5% the day before.
+
+### Disagreements this pass does not resolve
+
+- **Was the GPU idle?** The coordinator raised idle compute repeatedly; the `inference` main disputes the premise on record — its authorized six-arm AutoKernel campaign was continuously resident. Both are recorded; the wiki does not adjudicate.
+- **Was a reboot authorization declined?** One handoff states OP-16 was declined by the operator; another searched the bus, progress logs and token queue and **found no such decision anywhere**, giving the status as *deferred-with-announcement*. A correction task is filed against the first. Note the provenance constraint that makes this hard to settle: across 839 bus rows in 16 files, the operator has written **zero** — every "the operator said X" on the bus is second-hand agent quotation.
+- **Two consumers of the same nominal check disagree in-tree**: one topology gate compares against a stale attestation and false-passes, the other is fail-closed on exact match.
+
+### Source References (2026-08-12, second pass)
+
+- [`docs/reviews/coordinator-role-audit-20260812.md`](../docs/reviews/coordinator-role-audit-20260812.md) — the RC-1 falsification, the four-of-six rule audit, the evidentiary-bias finding, and the D1–D6 deletion proposals.
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — the 32-row failure ledger under review, its own corrections, and the bus-provenance count.
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — the C44–C50 defect arc, the stale-READY picker root cause, and the *Reporting Units* rule it produced.
+- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) — compacting-read-as-idle, post-exit-VRAM-sample, and dispatch-by-line-number as canonical incidents.
+- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/reboot-gated-inventory-and-staging.md) — the OP-16 status dispute and the two-consumer topology-gate disagreement.
+
+## Compiled Update — 2026-08-12: a retracted scheduling narrative, a bus wipe, and the four nested restarts it took to make one check fire
+
+**Confidence: verified**, with one section explicitly marked **RETRACTED**. Read from `progress/2026-08/2026-08-11.md` and `2026-08-12.md`, the committed module headers, and `coordination/backfill/README.md` — whose own text carries the correction.
+
+### RETRACTED: "the coordinator daemon knew exactly what should run and told nobody"
+
+This framing circulated for most of a night and is **false**. It is recorded here rather than deleted, because the corrected version is more useful than the original was and because a retraction that publishes its mechanism is worth more than one that merely withdraws.
+
+**What was actually measured**, once the picks were screened against the rows they named:
+
+- The advisory stream's `would-assign` records resolve to **nine distinct task rows, all from a single handoff file** — the daemon was not naming a fleet-wide backlog, it was repeating one file's rows.
+- **Of six sampled picks, one was dispatchable.** Four had been `- [x]` since **2026-07-29** — fourteen days closed at the moment the daemon named them — and one was anchor rot.
+- The record count that made it look like a backlog (thousands of rows) is a **repetition count of a stuck picker**, not a count of work. The surviving shard shows **811 records** resolving to those nine rows.
+- The picker selected the same closed rows on **20 consecutive ticks**: it never re-read the file that had closed them.
+- Utilisation for the night was **~8–9% receipted**, not the ~20% first reported. That earlier figure came from reading a **15-minute load average as if it were a duty cycle** — a smoothed window is not a sample of instants. Separately, a 3h47m window carries **no compute receipt of any kind**, which is an *unwitnessed* interval, not a *measured-idle* one.
+
+> **The durable rule: a count of scheduler records is not a count of available work.** State a queue figure as *"N records resolving to M distinct rows, of which K were dispatchable at emission."* The third number is the only one that was ever a claim about the fleet, and it is the one nobody computed. This generalises to any queue-depth, backlog-size or advisory-volume figure.
+
+**What survives the retraction, and it matters**: the real defect is a **stuck picker serving a stale READY set**, which is *distinct from* the delivery gap. Fixing delivery does not fix selection — **a working courier delivers wrong rows faster.** The two must be closed separately.
+
+**A second retraction from the same night, kept for the same reason**: every checkbox/board-delta count reported that session was computed with an **unanchored `- [ ]` grep**, which matches box-like text anywhere in a line and inflates both sides. The pattern must be anchored to the list-item start. A second counter disagreed with it in-session and the disagreement was noted but not resolved — **two disagreeing board counts in front of the operator is itself the defect**, so no delta from that pass should be quoted.
+
+### The committed-not-live chain: every mechanism that carries a fix is itself a thing that has to be carried
+
+The sharpest structural finding of the period. A staleness check was built to detect *a daemon up and answering while running old code* — and then reproduced the defect four times over before it fired once:
+
+1. The **supervisor** that would run the check had itself started **before the check landed**, so it ran pre-check code and logged zero detections.
+2. The check was hooked into the health-probe function but **the loop's HEALTHY branch does `sleep; continue` and never calls it** — so the detector only ever ran on the *unhealthy* path, where the daemon is about to be restarted anyway and the question is moot.
+3. Its tests exercised the predicate and the probe function directly — ***a* consumer, not *THE* consumer.** Closed with a **static wiring assertion** that the loop's healthy branch reaches the check, mutation-verified: removing the call takes the suite 8/8 → 7/8 with the failure naming the defect. *A test that cannot fail on the bug it was written for is decoration.*
+4. The wiring fix was then itself committed-not-live until one more restart.
+
+**Measured payoff on closure**: the first live detection in the mechanism's history fired (*"daemon is running code OLDER than its source"*), the daemon was replaced, rotation finally ran — a **1,044 MiB** advisory file went to 0 with its history preserved as a shard, **660 flag pairs** survived and were all re-found by an all-shard bootstrap (a live-file-only bootstrap would have lost pre-rotation history and re-flagged everything). Daemon CPU fell **29.5% → 1.8%**, and **five separate defects went committed → live on one restart**.
+
+> **A bootstrap problem is not solved by a restart — it is solved by the mechanism outliving the need for them.** And: **verify a restart by its consumers, not by the restart** — the evidence accepted here was a verdict naming the pid *as* the daemon, receipt-relay notices firing two seconds after start, and a state file that had not existed before now existing.
+
+**A companion race, and why the first fix was not one.** Supervisor relaunch raced the *dying* holder's lock release, leaving ~90 s with nothing supervising. The proposed fix — report the holder pid and whether it is alive — would not have helped: in this race the holder is **still alive while releasing**, so it prints ALIVE and exits 0. *Evidence about a race is not a fix for the race.* Fixed with a bounded lock wait: a dying holder releases in milliseconds so the relaunch wins, a live one holds for its life so we still report and exit 0. Exit 0 on contention was **kept deliberately** — for the documented cron idiom a skip is the normal case, and paging on every ordinary tick is how a real alarm gets ignored. The race test carries a **contrast**, not just an assertion: it proves the old non-blocking form *loses* the same race under the same fixture, otherwise a passing test might only be describing a fast machine.
+
+### Residency is not work — an idle resident model positively locks the queue
+
+A device sensor OR-ed utilisation with VRAM occupancy into one `occupied` boolean. The two numbers were always stored separately; **only the verdict conflated them.** So a loaded-but-idle model read BUSY and the eligibility check rejected every queued row behind it — **572 `lane busy` rejections**. The sensor now publishes `busy | resident | free | unknown`.
+
+**The admission ruling, stated rather than buried: RESIDENT ADMITS, WITH A WARNING — because admission is not acquisition.** Eligibility only makes a row *pickable*; the device claim and the region lock still gate the run and are the only things that grant a device. **Fail-closed belongs on acquisition** and is untouched there. BUSY and UNKNOWN still reject.
+
+Two design rules landed alongside:
+
+- **A mechanism that behaves differently when a config flag is raised has smuggled the flag's decision into itself.** The scheduling-recommendation delivery has **no authority branch in its code**: under the stronger authority the row leaves READY, the pick stops being emitted and the arming counter resets, so the mechanism silences itself *structurally*.
+- **Half the tests for a new detector should assert it does NOT fire** — a well-run night, an empty queue, an ordinary gap between campaign legs, a pick inside the arming window, a legitimately busy device. *A check that fires on a well-run night trains everyone to ignore it, which is the same failure as not checking, one level up.* The test that pinned the old defect was **deleted, not adjusted**, and six mutations were verified against a **sandbox copy**, never the shared tree.
+
+**And the fleet's only claim-expiry check was disarmed for exactly the claim that monopolised the GPU**: the device claim was acquired without a max-hold while the CPU claim three lines above passed one, so no expiry was ever written and the check returned `COULD_NOT_CHECK` forever instead of `FAIL`. Fixed by quoting the campaign's single declared window rather than introducing a second constant — both claims are taken in one transaction and released together, so two declared deadlines would be a defect by construction.
+
+### An escalation predicate nearly disjoint from what it claims to detect
+
+The daemon escalated **11 operator items**; a full parse of the same 17-item queue found **zero** needing the human. The formula reproduces exactly (`action_required: true` minus `kind: status`) — but on this bus `action_required` means *"some named agent must act next"*, not *"the operator must act"*, and all 11 named an agent in their own text. Across live inboxes: **111 rows carry `action_required`, 8 satisfy the operator-item test, 7 overlap.** A predicate can be perfectly deterministic, perfectly reproducible, and measure a different population than its name.
+
+### The bus wipe: `git clean -ffdx` in a shared repo, and a recovery that inverted
+
+**Cause established by scope, not plausibility.** The sweep took the cache directory, repo-root scripts, an operator receipts directory, logs, and all 29 nested worktrees; untracked entries went **149 → 3**, total dirty **232 → 56**. No log-reaper explains repo-root scripts, and no targeted delete explains all of them in one instant. **The double force is proven**: a dry run with a single `-f` prints *"Would skip repository"* for all 29 worktrees and removes none — only `-ffdx` removes them.
+
+**The enabling half is the part worth carrying.** A commit earlier the same day added `.gitignore` entries for the bus runtime directories. That commit could not have deleted anything (`git rm --cached` cannot delete an untracked file), but it converted the bus runtime from **tracked — and therefore immune to `git clean` at any force level** — into ignored, and so `-x`-eligible.
+
+> **The moment a path becomes ignored it becomes `clean -x` fodder. Untracking live runtime should move it OUT of the repo, not merely hide it FROM git.** Write-side corollary: **snapshot before untracking**, because git-based recovery recovers only what git already had — which by definition excludes everything the untracking is about.
+
+**Damage, and the inversion that is the lesson.** Inbox rows **826 → 4**; one outbox **85 → 2**; another gone entirely; all cursors gone; the bus could see **1 of 8 agents**. **17 claim files destroyed, 13 of them live.** The single claim that survived was a 327-hour-stale row everyone agreed should be released — **because it was the only claim tracked in git. The recovery selected the dead one and dropped every live one.**
+
+Three structural consequences:
+
+- **`git status` can never report a loss like this again**, because those paths are now ignored — the ordinary signal that something is missing is gone by construction.
+- **A history that only exists in `clean -x` fodder is not a history.** The advisory record before the wipe is unrecoverable, which is precisely why the inflated record count above cannot be re-derived.
+- **The incident was self-concealing** — no artifact records the command, because the clean removed the logs that would have carried it. Who ran it was deliberately **not inferred**; proximity is not evidence. The archive was held **outside the repo**, applying the finding that a scratch directory inside it would be swept by the very command being diagnosed.
+
+**Deliberately NOT restored over the runtime**: replaying 826 stale messages against a zero cursor recreates a mass re-drain — the same flood by a different door. *The archive is the record; the runtime starts clean.*
+
+**A near-miss inside the damage assessment**: a first lookup reported "NO BRANCH" for six campaign branches purely because unprefixed names were guessed; they were intact under prefixed names, their trees live outside the repo, and deleting a worktree never touches the object store. **A naming assumption inside a damage assessment nearly escalated a recoverable state into a catastrophic one.** Real closure for worktree exposure is structural — trees outside the repo — not an ignore rule.
+
+### Shared-file concurrency: pathspec discipline solves the CROSS-file problem and does nothing for the WITHIN-file one
+
+This is the gap the fleet had named only halfway. `git commit -- shared.md` is **file-limited, not hunk-limited**: it captures every uncommitted hunk in that path, including another agent's mid-edit. Five distinct variants occurred in one night on one daily log, across five writers:
+
+1. **SWEEP** — a pathspec commit absorbs a peer's in-flight section (one instance carried 66–67 lines by two authors).
+2. **RE-PARENT** — appending with `cat >>` at end-of-file re-parents your `###` under whoever wrote a `##` last.
+3. **CONTAINER-vs-CONTENT** — the container is checked, the content is not.
+4. **UNTRACKED PROBE** — the verification probe is untracked, so `git grep` cannot see it and the tripwire looks inert.
+5. **`no changes added to commit` is not failure** — it means someone else already committed your work seconds earlier.
+
+**The fifth is different in kind and is the one to remember: the content survives and the COMMIT MESSAGE dies.** The other four misattribute *work*; this one silently discards the *reasoning*, and nothing anywhere shows it is missing, because "nothing to commit" is also what a no-op prints.
+
+> **Durable records go in the FILE; the commit message only points at them. A message is the one artifact another session can destroy without leaving a trace.**
+
+Checks that do catch it, both cheap:
+
+- Before committing a known-shared file, diff it and look for **another owner's heading** in your added lines.
+- **Append under your own heading by insertion, never `cat >>`** — end-of-file is a moving target.
+
+**The pre-commit check has its own time-of-check hole, and its answer must never enter a commit message**: it was true when taken and false when acted on, and the stale answer was written into a permanent message as a claim about a colleague. Verify the **artifact** post-hoc instead — a commit is immutable, so that check has no window. Keep the pre-commit grep; it is what makes you look. And the ownership detector built for this promptly hit an over-wide key two minutes after adoption: it matched a **name**, not an **author**, flagging sections *titled* after one agent and correctly written by another. **Knowing the class does not exempt your own tools from it.**
+
+**Why it fools experienced agents repeatedly**: appending is the one edit where **the structure you are joining is invisible from the edit you are making**, and a pathspec shows nothing about who else is mid-edit in that path. Both are silent and both look exactly like success. Not three lapses — a tool shape.
+
+**One standing exception, adjudicated**: committing another agent's uncommitted work is acceptable **when the message names it as theirs** and the alternative is loss. Explicit naming converts a sweep into a custody transfer; misattribution is recoverable, a lossy event is not.
+
+### Reconciliation is not authorship — and a brief freeze is the only lever
+
+Two rules from a merge that went stale eight times against a five-writer tree:
+
+- **The single-writer rule governs AUTHORSHIP, not RECONCILIATION.** Asking each owner to resolve their own paths serialises N round-trips against a moving base, so every resolution is stale before the next arrives. One agent absorbing the churn landed it.
+- **Freeze compliance is not "don't commit" — it is "hold no uncommitted hunk"**, because an uncommitted edit on a frozen path gets swept by the next peer's pathspec commit. And the *lift* condition must be a ref check that the merge is an ancestor of main, or a lift announced before main fast-forwards releases primed append buffers onto a stale base.
+- **Scope a freeze from the STRUCTURAL predicate (both-sides-modified), never from the observed-conflict list.** Measured: 22 changed paths on one side, 67–72 on the other, intersection exactly **three** — and the observed-symptom list is always a subset of the affected set, precisely the subset that no longer needs warning. One read-only command yields both sets at once, since its auto-merging lines *are* the intersection.
+- **When three agents converge on one signing vehicle, broadcast that the work exists and let the owner REVIEW — do not author a second patch.** The payoff here was correctness, not efficiency: the review found a hole **neither author would have found alone** (both guarded only one of two writes, and the dangerous re-apply also occurs with the receipt present and the index absent).
+- **Idiom transplant is a trap the reader catches and the author cannot.** Two agents independently lifted a hard refuse-on-exists idiom from one-shot ratifiers into a host where re-run-after-crash is the *designed* recovery path — it would have blocked the legitimate recovery route. Familiarity with the source is exactly what made the transplant feel safe.
+
+### Source References (2026-08-12)
+
+- [`coordination/backfill/README.md`](../coordination/backfill/README.md) and `scripts/coordination/hardware_backfill.py` — the corrected history of the advisory-record claim, in the artifacts that had republished it
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the pick screening, the committed-not-live chain, the bus-wipe scope analysis, and the five shared-file variants
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the nudge deadlock, the relay-state ledger, and the undelivered-message triage
+- [`handoffs/active/CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — the daemon/agent split this work sits under
+- [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md) — the shared vocabulary these findings are indexed against (see [Knowledge Management](knowledge-management.md))
 
 ## Compiled Update — 2026-08-11: a 243-hour daemon outage was reported healthy, and the guard built to catch it nearly caused a second one
 

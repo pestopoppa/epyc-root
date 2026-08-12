@@ -2,8 +2,38 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-12 (records the first live post-hook GEAK/Arena beliefs; SC27 and prior promotion-track findings retained; concurrent-lane compile 2026-08-11: a same-day operator-commissioned audit's provenance-discipline lessons — receipts outrank bus messages, filesystem presence is not provenance, a closed box with real measurements is more misleading than an open one — see below; earlier 2026-08-10 note: belief-substrate promotion track: corroboration counted by source locator, machine anchoring, dependency propagation, R1b closed)
+**Last compiled**: 2026-08-12 (second pass — the verification-failure catalogue reaches fourteen faces, eight of which defeat mutation testing; the 129-item correction queue drains to zero and the per-claim/per-entry distinction that made it tractable; three systematic hazards for anyone re-running it; the write-side hook trigger keyed on the diff rather than on intent; and two locator traps that read one witness as N; first pass records the first live post-hook GEAK/Arena beliefs; SC27 and prior promotion-track findings retained; concurrent-lane compile 2026-08-11: a same-day operator-commissioned audit's provenance-discipline lessons — receipts outrank bus messages, filesystem presence is not provenance, a closed box with real measurements is more misleading than an open one — see below; earlier 2026-08-10 note: belief-substrate promotion track: corroboration counted by source locator, machine anchoring, dependency propagation, R1b closed)
 **Sources**: 37 documents
+
+## Compiled Update — 2026-08-12 (third pass): the projection contract, and what "wired" is not
+
+**Confidence: verified** — the contract is read from the ratified pilot spec and the adapter registry's own conformance tests; the roster status is read from the adapter source table.
+
+### One ladder per source class, and an adapter never grades
+
+The rule the substrate is built on is short enough to quote and is now enforced rather than documented: **an adapter PROJECTS; it never grades.** A native record is projected into a `ClaimTuple`, and `claim_tuple.grade()` returns `(Q, T, reasons)`. The carrier is shared, but each *source class* has exactly one ladder and `register_ladder()` refuses a second — with a conformance test that fails on any undeclared ladder. Two classes exist: `measurement`, graded by the measurement constitution's claim rule (metric, protocol_id, n/reps, date, durable host attestation) with a ceiling of **Witnessed**; and `literature`, graded by verification status, ceiling **Verified**.
+
+The defect that produced this contract is the argument for it: on identical input (no protocol, no attestation) two adapters disagreed — one returned `Judged/T0`, the other `Judged/Located`. Two graders will drift; one grader with many projections cannot.
+
+**Dependency evidence is deliberately not a third class.** It may write self-hashed native rows and be integrity-checked and classified, but it must **not** register a `ClaimTuple` projection or emit `evidence_supports_claim` until a shared dependency-evidence carrier and warrant rule are declared. The concrete consequence: multiple legs of one rehearsal support the *run*, not each leg — so a per-leg warrant would multiply one witness into several. Two rehearsal-class sources are live under exactly this restriction.
+
+Also worth recording as a superseded design: the v1 chain `Hinted < Judged < Corroborated < Traced < Verified < Witnessed` is declared **wrong and `Corroborated` was dropped from the carrier**, because it ranked two independent Judged sources *below* one unverified anchor. Warrant quality and traceability are separate axes; conflating them is what produced the indefensible ordering.
+
+### "Wired" is not "validated", and the distinction is now the roster's main axis
+
+The adapter roster grew by roughly a dozen entries across 2026-08-11/12, and almost all of the new ones are **prospective**: the write path exists and is tested, and **zero real post-hook records have flowed through it**. Only a handful are live on real data (the intake index at 1,068 entries, six sealed measurement manifests, the GEAK/Arena round-trip, the gfx90a saturation and vendor-GEMM diagnostics, and the planner-reduction receipts). Reading a wired adapter as a validated one is the error this distinction exists to prevent.
+
+The standing rejection also holds and is worth repeating because it is the roster's most-cited decision: `benchmarks/results` is **rejected on evidence** — 0 of 200 sampled files carry a usable claim tuple, so no volume of them can gate anything.
+
+### Three completed measurements that can never be graded
+
+Three real 2026-08-12 measurement sets — an architect MMLU-Pro hardened GPU control, an AutoKernel reward-integrity corpus, and E5 cell affinity-preflight artifacts — carry native captures, exact claims, pinned digests and attestation, and **predate their producer's write hook**. They emit zero rows and, by the substrate's own no-backfill rule, must **never be reconstructed on read**. This is the third repeat of the same shape in one program, which is the real finding: *wiring the write side is cheap and permanent; the read side cannot be retrofitted*, and every gap between a producer shipping and its hook landing is permanently unpriceable evidence.
+
+### Source References (2026-08-12, third pass)
+
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) — §4.1 the dropped `Corroborated` grade, §4.7 the ingestion contract, and the dependency-evidence restriction.
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the project-never-grade rule, the one-ladder-per-class registry, and the live/wired/candidate/rejected source table.
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the 2026-08-11/12 wiring sprint and the three pre-hook measurement gaps.
 
 ## Summary
 
@@ -14,6 +44,79 @@ The core insight from the 2026-04-28 intake update is that *the right architectu
 A third architectural pattern — **persistent compiled wikis** — is itself a knowledge-management approach. This very wiki is an instance: knowledge is pre-compiled by the `project-wiki` skill from handoffs/research/progress logs into curated topic articles, trading per-query synthesis latency for curation burden and staleness risk. EPYC uses a hybrid: `project-wiki` for stable / cross-cutting topics, KB-RAG for dense ad-hoc cross-referencing during Explore-agent runs.
 
 The 2026-05-27 handoff-index audit sharpened the governance side of that architecture: indices are executable coordination surfaces, not passive navigation pages. A coverage check now treats every non-index active handoff as requiring an owning index or top-level tracking entry, and the blocked index is kept as a live unblock queue rather than a historical graveyard. The latest audit closed the active coverage invariant at 84/84 active non-index handoffs linked, 0 missing index links, and 0 broken relative links across active/blocked/README surfaces.
+## Compiled Update — 2026-08-12: fourteen ways a check passes for the wrong reason, and a correction queue drained to zero
+
+**Confidence: verified** — the catalogue is read directly from [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md); the queue drain from [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) §SC15 and the ledger commits it names.
+
+### The verification-failure catalogue: fourteen faces, and the eight that defeat the standard remedy
+
+The project's standing "eight ways a check passes for the wrong reason" note is now a compiled reference at **fourteen faces**. Its provenance matters more than its length: **every face is an instance that actually occurred on this fleet in one night, across five agents, in roughly six hours** — measured, not theorised. The rate is the argument for a catalogue: everyone involved already knew "verify your work", and knowing it prevented none of them.
+
+The one-line remedy stands — *mutation-test the guard: change the code so the property is genuinely violated and confirm the check FAILS; if you cannot make it fail, it is not a guard.* The genuinely new contribution of this pass is the **partition of where that remedy does not reach**. For **eight of the fourteen** mutation testing fails silently, for three distinct reasons:
+
+| Why mutation testing fails | Faces |
+|---|---|
+| The instrument cannot see the mutation | probe outside the tool's universe · right key, wrong universe · a check that is never run · a reader that truncated the input |
+| The mutation produces no distinguishable signal | a pre-written verdict label (a constant cannot move) · an error laundered into a plausible `0` |
+| The check is right about the wrong thing | it models a different subsystem than the one that broke · it was true when written and the world moved |
+
+Faces caught by an honest mutation test — empty input, over-wide key, target read from the working tree, assertion pinning a spelling, unchecked container, sentinel counted as content — carry one caveat: **empty-input defeats mutation testing under its own condition.** Mutation-test while the input is genuinely empty and the empty set satisfies the check, so the mutation goes unseen. *Assert the input is non-empty first, then mutate the guard* — which is why input assertion precedes rather than replaces mutation testing.
+
+Five faces are new enough to be worth stating in full, because each has a different tell and none of their tests catches the others:
+
+- **Right key, wrong universe.** Verifying a handover's commit list, `git cat-file -t <hash>` was run for every hash — but an earlier `cd` persisted in the same shell invocation, so root-repo hashes resolved against a *different* repo and eight valid hashes reported BAD. **In a multi-repo tree, a lookup that does not name its repo is not a lookup** (`git -C <repo> …`). Corollary: treat a run of identical failures as a scope bug before a content bug. Fails CLOSED and loud — in a handover it would have discredited a correct list.
+- **Sentinel counted where it also occurs as content.** Counting `<<<<<<<` markers in merge output to size a merge is sound until a file in the tree *documents* conflict markers — and in a repo whose agents write about merge hazards all night, several do. **Attribute the token to a path before counting it**; a sentinel is only a sentinel where the instrument put it. The same run produced the mirror image: a pattern returned nothing on 670 KB of non-empty output at exit 0 because that git emits different wording — *when a pattern returns zero on a large non-empty output, suspect the pattern before the tree.*
+- **The instrument models a different subsystem than the failure.** A conflict check reported zero conflicts, independently verified by two agents who both got exactly the right answer — and the merge still aborted, because an untracked (byte-identical) file triggered *worktree-safety*, a subsystem no conflict metric inspects. The durable form: **every readiness metric models one subsystem, and the failure will come from the one it does not model.** Name the subsystem out loud next to the claim it licenses — "zero conflicts" licenses *the index would merge*, not *the merge will run* — and prefer an end-to-end rehearsal over any single metric. Fails OPEN *while carrying independent confirmation*: two agents agreeing does not widen a metric's domain.
+- **Verified at one timestamp, read at another.** The only face where the check was right; soundness is no defence. Reproduced independently by three agents within one hour, on three freshly-certified handover documents. The sharpest sub-case is a **self-verifying claim with a hard-coded total** — *"all 35 hashes in this document resolve"* was true when written and made false on save by the same commit that fixed two other decays. **The version that expires is the one that reads most rigorous**, because a bare assertion has nothing to go stale. Remedy: **cite the resolver, not the total** — ship the command that re-derives the claim; where a number must appear, stamp it (*"38 as of 04:35Z"*) so a reader sees a measurement rather than a fact; and **re-check a document before it is read, not before it is committed.**
+- **Reader dropped part of the input and said nothing.** The first face on the *input* side. Bus payload fields were printed to 230 characters; a coordinator's instruction *"Do NOT build it tonight"* began at character **265** of a 348-character field, and the thing was built. Four agents then recorded it as a deliberate override — **which is worse, because a knowing override can be argued about and a silent truncation cannot even be noticed.** Sweeping the same inbox: **980 payload fields that day, 608 (62%) longer than the cutoff, 37 carrying directive language in the part never displayed.** Remedy: **never truncate an input you intend to act on — only one you intend to skim.** If volume forces a cut, make it visible and structural (drop whole fields with a marker), never a character cutoff that can land mid-sentence, and never truncate a field whose name or tail carries directive language. Fails OPEN and uniquely **self-concealing**: the evidence never entered the room, so the actor's own account of events is sincere and wrong.
+
+Two meta-observations from the same night ride with the catalogue:
+
+- **A retraction that publishes its mechanism is worth more than one that merely withdraws.** One refutation in this set was itself wrong; because the retraction explained *why*, it corrected a mechanism that had been written down under the wrong description. A quiet withdrawal would have left the wrong version standing.
+- **When an edit and its announcement are written in the same breath, the announcement lands even if the edit does not.** Two commit messages in one night described notes their edits had failed to apply. Assert the edit applied *before* writing the claim.
+
+The catalogue's own instruction for using it: walk the fourteen questions keyed on the **diff**, not on intent — and ask the twelfth question of any document you are about to hand to someone: not *"was this right?"* but *"is it still right?"*
+
+### The correction queue drained 129 → 0, and the distinction that made it possible
+
+The stalled citation-correction backlog triaged in the prior pass is now **fully drained: 129 unadjudicated → 0, blocked claims 571 → 0, the `review` bucket empty**, across 233+ review frames in 13 batches. Each carries a per-claim corrections block written back into the intake index, so the next re-ingest grades opposition **per claim**. Integrity was re-verified after every batch rather than at the end: ledger chain plus all three checkpoints, index entry count held at 1,097 throughout, and the `conflicted` count unmoved at 3 — so no batch introduced one.
+
+The load-bearing distinction, and the reason a summariser could not have done this work:
+
+> **A heavily corrected ENTRY is not the same thing as corrected CLAIMS.** Roughly two-thirds of these corrections land on Stage-1 prose, a verdict justification, an applicability call, or an actionable about *our own* repo — not on any key claim. Propagating the entry-level label would have mass-downgraded claims that are fine.
+
+**Three systematic hazards, on record for anyone re-running a pass like this:**
+
+1. **Correction texts number their claims against a different list than the ledger's `claim_index`** — hit three separate times. Adjudicate on **content**, never on that numbering.
+2. **Some entries were written with their dive corrections already folded in**, so their claims *state* the corrected position and must read as **confirmed**, not corrected.
+3. **A citation-hygiene family**: four consecutive entries were each ingested only because a recommendation cited them with a **neighbouring entry's id** attached. Four wrong ids in one batch is a pattern, not four accidents.
+
+**Draining unmasked a consumer defect rather than causing one.** Moving ~140 citations out of `review` revealed the real grade underneath — mostly `ok`, but a *bare* `intake-NNN` citation in this very article surfaced as `conflicted`, inheriting a pre-existing overturned claim from an entry it was only *discussing*. That is the precise case the `#record` form exists for; the citation has been narrowed in this pass. The general rule it reinforces: **a bare entry citation inherits every defect of every claim in the entry**, so prose that merely writes *about* an entry should say `#record`, and prose relying on one claim should say `#NN`.
+
+### The write-side hook trigger is the diff, not the intent
+
+The standing rule (wire a producer's write side immediately; the read side can never be retrofitted) failed four times in one day *among agents who were actively citing it* — including once by the author of the belief-substrate work, against a surface they had built hours earlier. What closed it was not more emphasis but a **different trigger**:
+
+> The test is **"you touched a producer"**, not **"you thought about producers"**. A checklist keyed on the diff catches it; one keyed on intent does not.
+
+Two **locator traps** were recorded alongside, both of the same shape — *a naive per-record count reads ONE witness as N*:
+
+- A per-request gate surface deliberately records **every candidate tried**, not just the winner, so the probe can see the walk down the placement priority order. Key on the **request**, not the decision.
+- Repeated pre-flight artifacts for one benchmark cell are the **same witness**, not N. Key at run level, not file level.
+
+And a pricing discipline that keeps the register honest: **price a candidate source with a ~50-record sample before building any adapter** — for a small corpus the honest answer may be that the volume never justifies one, in which case *record that verdict* rather than leaving the row open. A surface whose branch has not landed is `candidate — ready, unwritten`, not `live`.
+
+### Fold purity: reject a bad stamp at append time, not at read time
+
+A ledger `fold` did not exclude frames dated *after* its `as_of`, so a future-stamped frame took effect immediately at any earlier instant — which is how 895 future-stamped frames from a date incident still folded in. Two designs were defensible (filter in `fold`, or refuse at append); the chosen one keeps **`fold` pure** — `created_at` stays publication metadata the fold never reads — and puts the guard in an **append-time refusal** with a bounded future-skew tolerance. Deliberately tolerant in two directions so the guard cannot fire on its own idiom: absent or malformed stamps pass (frame construction's contract; maintenance frames carry none), and past stamps pass (history is untouched — the existing future-stamped frames are correction-queue territory, not a validation matter). Tests cover both directions including the yes-paths.
+
+### Source References (2026-08-12)
+
+- [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md) — the fourteen faces, the mutation-testing partition, and the two meta-observations
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) §SC15/§SC13/§SC17/§SC19 — the queue drain, the three re-run hazards, fold purity, and the diff-keyed write-side trigger
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — batch-by-batch drain chronology and the self-caught write-side instance
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the source register the locator traps and pricing discipline are recorded against
+
 ## Compiled Update — 2026-08-11: provenance discipline from a same-day audit — receipts outrank messages, filesystem presence is not provenance
 
 **Confidence: verified** — every finding below is read directly from `artifacts/audit/completion-flurry-wiring-audit-20260811.md`, an operator-commissioned four-section audit (commits `5c2212ce`→`fc8d4d52`), cross-checked against git and the filesystem rather than restated from the audit's own claims.
@@ -59,7 +162,7 @@ A stalled 129-entry citation-correction backlog looked intractable only because 
 - [`artifacts/audit/completion-flurry-wiring-audit-20260811.md`](../artifacts/audit/completion-flurry-wiring-audit-20260811.md) — the four-state wiring test (§A), the receipts-outrank-messages rule (§D, §D5, §A-rc RC2), the two filesystem-presence-is-not-provenance instances (§A item 9, §"Signed-but-untracked closure"), the closed-box-more-misleading-than-open finding and its self-referential closure (§"Tonight-commits audit" item 1, §"Self-referential closure")
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the three `--amend`-sweeps-shared-tree incidents, the scorer-duplication verdict (A10), and the 129-item correction-backlog triage (A9)
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) §SC12/§SC14 — the belief-kernel write-hook scope widening and the advisory-only planner read-side seam
-- [`docs/design/vidya-pilot-corpus.md`](../docs/design/vidya-pilot-corpus.md) — the `#record` citation-form fix and the intake-110 superseded-claim correction (commit `a48e04ba`)
+- [`docs/design/vidya-pilot-corpus.md`](../docs/design/vidya-pilot-corpus.md) — the `#record` citation-form fix and the intake-110#record superseded-claim correction (commit `a48e04ba`). *(Narrowed from a bare `intake-110` on 2026-08-12: this line discusses the record, it does not rely on the entry's claims, and the bare form inherits every defect of every claim in the entry — which is how it surfaced as `conflicted` once the correction queue drained.)*
 ## Internal KB-RAG Architecture (K1–K8 work items)
 
 Per [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), the planned KB-RAG indexes the wiki + active handoffs + completed handoffs + research/deep-dives + progress logs + (cross-repo) `epyc-inference-research/docs/chapters` with heading-aware chunking. Storage: per-document `.npz` of token embeddings + SQLite catalog mapping `(chunk_id, file_path, line_range, heading_path, mtime, content_hash)`. Per-document files keep incremental rebuild cheap — only re-encode files whose `content_hash` changed since last index. Excluded by design: `handoffs/archived/*.md` (archived state is misleading by design and pollutes retrieval signal).
