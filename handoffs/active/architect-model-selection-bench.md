@@ -637,6 +637,53 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
   registry, stack manifest, or production process unless a later operator decision accepts a
   decision-grade Pareto result.
 
+  **SCOUT PASS 2026-08-12** (`mainC`) — evidence in `epyc-inference-research`
+  `benchmarks/results/scout/wg-lfm-1-20260812/` (commits `fd9efdb3`, `b0f92dc5`, 42 files, replayable).
+  Row intentionally left OPEN: the checkbox asks for a decision-grade verdict with tool compliance,
+  per-suite success and an MTP-inclusive incumbent, and none of that was obtainable in this window.
+  GGUFs are downloaded and SHA-256-verified against the remote LFS oids at the pinned revision.
+
+  Raw decode, one region (`q0`, 24 threads), canonical OMP + `GGML_IQK=1`, v9 `0db32c06e`:
+  LFM Q4_K_M **72.04 tg** · LFM Q8_0 **44.95** · gemma4-26B-A4B Q4_K_M **28.00** (no MTP), with LFM Q4
+  at 1.70 GiB resident vs the incumbent's 16.51 GiB. Crediting the incumbent a conservative 1.4–1.5×
+  for its MTP draft path puts it near 39–42, so **LFM Q4 still leads ~1.7–1.8× and LFM Q8 is roughly at
+  parity** — but that MTP credit is an ESTIMATE, not a measurement, and it is the load-bearing number.
+
+- [ ] **WG-LFM-2 — the incumbent arm was benched OUT of its production configuration, so the
+  per-task cost comparison is not yet decision-relevant.** `worker_general` sets
+  `enable_thinking: false` in `orchestration/derived/stack_priors.yaml`, but the scout ran the default
+  embedded template with thinking **ON** for every arm. Both models therefore emitted a reasoning block
+  on all 5 correctness prompts — which makes the observed verbosity symmetry an ARTIFACT of the bench,
+  not a property of production. In production the incumbent emits **no** reasoning tokens while LFM2.5
+  reasons by default (60–120 tokens for "capital of Japan", and not reliably bounded — one Q8 case ran
+  past a 512-token cap mid-deliberation).
+  **Why this decides the verdict**: a 1.7× tokens-per-second lead is worth nothing if the model emits
+  several times the tokens per task. The comparison that matters is *time to a correct answer*, not
+  decode rate. So the open question is narrow and answerable: **can LFM2.5's reasoning be disabled the
+  way the incumbent's is?** If yes, re-run the correctness arm with thinking off on both sides and the
+  throughput lead likely stands. If no, LFM carries an irreducible per-task cost the incumbent does not,
+  and the raw t/s advantage may invert on short high-volume work — which is exactly what
+  `worker_general` is. Corroborating: `intake_index.yaml:34556` already rules LFM2.5 out as a spec-dec
+  drafter (its 128K `lfm2` BPE vocab), so it cannot recover throughput the way the incumbent does.
+
+- [x] **`GGML_IQK_Q8_0=1` is load-bearing for any Q8_0 arm** ✅ 2026-08-12 — without it the Q8_0 run
+  logged no `[iqk] ACTIVE` line at all: pp 539.24→870.47 (+61%), tg 15.75→24.97 (+58%). A Q8_0 bench
+  omitting it is not top-optimized and must not be published as one. `canonical_recipe.py` already
+  exposes `--ggml-iqk-q8-0`.
+
+- [ ] **RECIPE-NUMA-1 — `numactl --membind=<node>` is WRONG even when the CPU grant is a single
+  region, and `canonical_recipe.py` has no region-scoped path to stop the next person hitting it.**
+  Measured 2026-08-12 while benching one region (`q0`, cores 0-23): binding memory to node 0 to "match"
+  the cpuset looks obviously correct and confines a bandwidth-bound decode to one node's memory
+  channels. Same cores, same binary, switching only to canonical `--interleave=all`: **gemma +42%,
+  LFM Q8 +80%, LFM Q4 +195%**, and run-to-run stddev collapsed from as much as **51% of the mean to
+  under 1.5%**. The enormous variance under `--membind` is the tell — it was not a slow-but-stable
+  configuration, it was an unstable one that could have been reported as either result.
+  **`--interleave=all` is correct at EVERY CPU scope, not just full-machine.** This matches the
+  standing CPU-decode-is-bandwidth-bound finding; the novelty is that a partial-machine grant does not
+  license a partial-machine membind. Worth codifying before the OP-21 contention re-bench or any other
+  region-scoped work repeats it.
+
 ## 2026-08-09 — OpenRSI release-state watch (research-intake Stage-2b)
 
 - [x] **Watch FrontisAI/OpenRSI PR #2 ("feat(gym): add OpenMLE Sandbox") to a decision.** ✅ 2026-08-11 — **TRIGGER FIRED: MERGED.** Verified live via gh api: merged=true, author_association flipped NONE→CONTRIBUTOR, upstream main pushed 2026-08-11T12:28Z; still 1 commit / 30 files (+7,617), so the merged content is byte-wise the ingest-reviewed content. The intake-940#record hard blocker (distributed grading service unpublished) has SOFTENED, not cleared — see follow-on. State at

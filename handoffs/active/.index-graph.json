@@ -3497,7 +3497,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T19:34:43Z",
+  "generated_at": "2026-08-12T19:43:18Z",
   "nodes": [
     {
       "age_days": 13,
@@ -3515,13 +3515,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 68,
+      "closed": 69,
       "domain": "research-evaluation",
       "handoff": "architect-model-selection-bench.md",
       "id": "EVL-02",
       "last_advanced": "2026-08-12",
       "next_action": "Decide :596 EffiBench-X adoption once the 2607.01211 ingest lands; gpqa_diamond_cot arm per ROI rule",
-      "open": 16,
+      "open": 18,
       "state": "active",
       "track": "architect model selection bench"
     },
