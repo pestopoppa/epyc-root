@@ -75,12 +75,82 @@ outcome.
       | `85c3dcf25823c537` | 15 | **2.7448** |
 
       Reported by `readjudicate_sequential_candidates.py` under *SEQ-A: STICKY REFUTED LABELS*.
-  - [ ] SEQ-A1 — **OPERATOR DECISION**: recompute the verdict label per trial from `state_name()`
+
+      > ### ⚠ SEQ-A's PREMISE IS FALSE — measured, not argued (2026-08-11, `mainB`)
+      >
+      > **There is no stale label. There never was.** The heading above, the "56 of 393", and the
+      > 3-candidate table are all artifacts of the detector that produced them.
+      >
+      > `readjudicate_sequential_candidates.py:203` tested `state == "refuted" AND E_quality >=
+      > budget_min_e` — a **JOINT** verdict against a **SINGLE** axis. `safety_gate.py:1529` stamps
+      > `state` refuted when **either** axis refutes (`q_name == REFUTED or rate_name == REFUTED`)
+      > and **recomputes it on every trial**. So a healthy quality axis beside a refuted RATE axis
+      > read as a label that had failed to update.
+      >
+      > It manufactured the entire population: per SEQ-B below, `E_rate_noninf` never exceeds 2.0
+      > anywhere in the corpus (max **1.1100**) against `budget_min_e = 2.0`, so essentially every
+      > candidate's rate axis refutes once `k >= budget`.
+      >
+      > Detector fixed at orchestrator **`f2ad030e`** (reporting only, zero semantic change). It now
+      > attributes each `refuted` label to an axis. Measured against the real journal:
+      >
+      > | bucket | n |
+      > |---|---|
+      > | refuted on the QUALITY axis | 6 |
+      > | refuted on the RATE axis ONLY (quality healthy) | **3** |
+      > | **UNEXPLAINED — joint refuted, NEITHER axis** | **0** |
+      >
+      > The 3 are exactly `70902e4b665474e7`, `dd793a6ee43ce718`, `85c3dcf25823c537`. They are
+      > **correctly labelled** by the joint rule. The empty third bucket is the finding: it is the
+      > only thing that would be a genuinely stale label, and it does not exist.
+      >
+      > **Consequence for SEQ-A1 (below): the question it poses is not real.** Nothing needs
+      > recomputing. The live question is **SEQ-B1** — joint gate vs quality-primary — because those
+      > 3 candidates are precisely the case SEQ-B1 names: *"a candidate that buys quality with
+      > throughput can never be promoted — which may be exactly what you want."* `coordinator-agent`
+      > withdrew a Horn A instruction on this basis and is taking SEQ-B1 to the operator.
+  - [x] **SEQ-A0 — the mechanism, built NEUTRAL so SEQ-A1 is a one-line switch** ✅ 2026-08-11
+        (`mainB`, orchestrator `43108014`). `SequentialPolicy.sticky_refuted`, **default `False`** —
+        seq-v1 semantics reproduced byte-for-byte, the 3 candidates below still flip exactly as
+        before, **75 passed** across the sequential-verdict consumer set. **The set, named so the
+        number is checkable** (`auditor` 2026-08-11: the original citation said "every
+        sequential-verdict consumer", which is not reconstructable — their two reasonable guesses
+        gave 41 and 131):
+        `tests/unit/` × {`test_restart_readiness_report.py`, `test_seq_rate_axis_paired_measurement.py`,
+        `test_seq_readiness_report.py`, `test_sequential_verdict.py`,
+        `test_sequential_verdict_sticky_refuted.py`} — 5 files, selected by
+        `grep -rln 'sequential_verdict\|EProcessState\|seq_readiness\|review_ledger' tests/unit/`.
+        Re-run 2026-08-11 after the note: 75 passed, unchanged. Plus `EProcessState
+        .first_refuted_k`, recorded unconditionally as the process folds forward: **observing that a
+        stop happened is free, and is not the same as deciding it is permanent** — capturing it now
+        is what lets SEQ-A1 be settled from data rather than by re-running `core_v1`, which is over
+        (era E8). Persisted trial state untouched; the field defaults to `None` so a state rebuilt
+        from an older record behaves identically (pinned by test).
+        **Numbers re-derived, not inherited**: against `readjudicate_sequential_20260728.json`,
+        exactly 3 candidates flip `refuted`→`accumulating` — `70902e4b665474e7` (k=40),
+        `dd793a6ee43ce718` (k=24), `85c3dcf25823c537` (k=15). Confirms the figures above.
+        **Deliberately takes no side.** A lane brief phrased SEQ-A as "the function silently
+        un-refutes — make it sticky", i.e. the inverse of this handoff's framing. Both readings are
+        true: the FUNCTION is non-sticky (`state_name()` has no memory), the PERSISTED LABEL reads
+        `refuted` where the function would not. So "make it sticky" is not a bug fix — it is SEQ-A1
+        horn 2, and deciding it silently would settle a human-amendment-only question on a phrasing.
+        **CORRECTION 2026-08-11 (`mainB`), to my own sentence above:** I wrote that the persisted
+        label is "sticky (never recomputed)". **That is false and I checked it only later.** It is
+        recomputed on EVERY trial — `safety_gate.py:1529` stamps it from a JOINT rule
+        (`q_name == REFUTED or rate_name == REFUTED`). The divergence is joint-vs-quality-only, not
+        staleness. See the SEQ-A premise correction under SEQ-A1 below; it changes what SEQ-A1 is.
+  - [x] **SEQ-A1 — VOID, superseded by the premise correction above** ✅ 2026-08-11 (`mainB`).
+        Not "decided" — **dissolved**. Horn 1 ("recompute the verdict label per trial") is already
+        what the code does; horn 2 ("keep stickiness") preserves a stickiness that does not exist.
+        Recomputing from quality-only `state_name()` would not restore pure-function semantics, it
+        would **drop the rate axis out of the verdict** — which is SEQ-B1, a different
+        human-amendment-only question. Routed there; do not re-open this row.
+        ~~SEQ-A1 — **OPERATOR DECISION**: recompute the verdict label per trial from `state_name()`
         (restoring the policy's own pure-function semantics), or keep stickiness and document it as
         "a stop decision is final". Either is defensible — a stopped e-process arguably *should*
         stay stopped — but the current state is neither: the label is sticky while allocation is
         not, so candidates keep burning trials whose evidence is then discarded. This changes which
-        candidates are promotable, so it is **human-amendment-only** per MEASUREMENT.md.
+        candidates are promotable, so it is **human-amendment-only** per MEASUREMENT.md.~~
 - [ ] **SEQ-B — the promotion gate is unreachable, but NOT because anything is broken.**
       **CORRECTED 2026-07-28** — I first wrote that "the rate e-process is frozen". **It is not.**
       Measured: `E_rate_noninf` takes **82 distinct values** (min 0.5213, median 0.9100, max 1.1100)
@@ -196,6 +266,98 @@ outcome.
       `b738287be98c3372` / `80aa44d93a242af5` were falling (growth <1). Those estimates
       are not forecasts; all are historical-`core_v1` priors and cannot be continued
       without the SEQ-3a bridge ruling or the clean SEQ-3b E8 restart.
+
+## Rider — retroactive objective change: what survives it, what does not (2026-08-11)
+
+**Operator position, 2026-08-11, ACCEPTED**: as long as results and progress are tracked diligently,
+the to-be-optimized metric may be changed later, and whatever is needed to keep optimizing in the new
+direction can be recomputed from that moment forward.
+
+**Operator context**: the Pareto frontier is sparse today (models being swapped, infra bugs still
+landing), so deliberately choosing throughput-penalized / quality-favoured configs is premature. The
+operator may authoritatively choose them later. AutoPilot's hypervolume is quality × tasks-per-hour;
+unless the tradeoff is exactly inversely proportional there should be a non-trivial interior optimum,
+plausibly near the frontier's highest-curvature (knee) point.
+
+### F1 — the claim holds, CONDITIONALLY: re-aiming runs over stored COMPONENTS, never over stored SCALARIZATIONS
+
+Verified in code, not taken on report:
+
+- `experiment_journal.py:191-265` — `JournalEntry` persists the raw axes as top-level fields
+  (`quality`, `speed`, `cost`, `reliability`), plus `eval_details`, `harness_metrics`, `seq`.
+- `experiment_journal.py:336` — the direction comment is exactly as cited: the optimizer declares
+  `directions=["maximize"]*4`, the third objective is NEGATED cost, so the raw `cost` field on the
+  row is `lower_better`. The row stores raw cost; the sign lives in the reader.
+- `experiment_journal.py:289` — `eval_details["objective_policy_live"]` is read per row, as cited.
+- The objective vector is **derived at read time**, not stored:
+  `tier_specs.py:344-366` `_policy_aware_objectives_from_row` dispatches on the row's own recorded
+  policy; `tier_specs.py:328-341` `_rate_objectives_from_row` rebuilds `(quality, qph, -cost,
+  reliability)` on demand; `tier_specs.py:220-230` `seq_task_rate_qph_from_row` recomputes
+  tasks-per-hour from `question_results` + `eval_wall_s`. This is the mechanism that makes the
+  operator's claim true — and it has already been exercised once, on the tokens/s → qph axis flip.
+
+**The picture is more partial than the two cited lines alone suggest — state it plainly.** Measured
+over `orchestration/autopilot_journal*.jsonl`, 1372 trial rows:
+
+| write-side field | rows carrying it |
+|---|---|
+| 4 raw components (`quality`/`speed`/`cost`/`reliability`) | 1372 / 1372 |
+| `eval_details.eval_wall_s` | 1147 / 1372 |
+| `eval_details.question_results` (rate-axis numerator) | 523 / 1372 |
+| `eval_details.objective_policy_live` | 534 / 1372 |
+| `measurement` claim tuple (added 2026-08-10) | **0 / 1372** |
+
+So: the 4-axis re-aim is fully retroactive; a re-aim needing the question ledger is retroactive over
+~38% of history; and the era label is *inferred from absence* on the other ~61% —
+`tier_specs.py:352-360` says so outright ("pre-flip rows … have no question ledger at all"). The
+claim-tuple hook exists in code but has zero rows behind it yet.
+
+This is the belief-kernel rule in CLAUDE.md, restated on a second store: the write side is cheap and
+permanent, the read side cannot be retrofitted, and `benchmarks/results` (4,562 files, no write-side
+hook, 0/200 sampled with a usable claim tuple) is the standing counterexample.
+
+**A metric change is structurally an ERA BOUNDARY, and the machinery already exists.**
+`epyc-orchestrator/orchestration/instrument_eras.yaml` was amended four times on 2026-08-11 under
+operator signature (`53fc3250`, "4 rows, none struck"). **Recommendation: any future objective change
+is recorded as an era row, never as an edit.**
+
+### F2 — the exception that matters: rescoring is retroactive, STOPPING is not
+
+The sequential gate does not merely score candidates — it decides which ones keep GENERATING data
+(`safety_gate.py:1528-1529`: `if q_name == STATE_REFUTED or rate_name == STATE_REFUTED: state =
+"refuted"`). A candidate refuted under today's joint rule stops accumulating trials. Under a future
+objective you can rescore every trial that exists; you cannot recover trials never run. **A stopping
+rule is a data-generating decision wearing the costume of a scoring decision, and it is the one thing
+a future metric change cannot undo.**
+
+Concretely, and exactly the configuration class the operator says they may later want:
+`70902e4b665474e7` (k=40), `dd793a6ee43ce718` (k=24), `85c3dcf25823c537` (k=15) stopped under the
+joint gate because they buy quality with throughput.
+
+- [ ] SEQ-B2 — Capture the refutation counterfactual AT STOP TIME: record which axis refuted and the margin on the other. | `safety_gate.py:1528` write-side + `readjudicate_sequential_candidates.py:203` report-side (mainB authorized 2026-08-11 to split quality-refuted / rate-refuted / joint — that fix is the first half) | Deps: none; per CLAUDE.md belief-kernel rule, wire the write side now — a future objective change must at minimum be able to IDENTIFY which stopped candidates deserve re-running, even though their trials must be regenerated.
+
+### F3 — knee / max-curvature is not scale-invariant
+
+Curvature of a Pareto frontier changes under rescaling of the axes. Quality is roughly [0,1] while
+tasks-per-hour is order [0,600] (`tier_specs.py:203` returns `n / (wall/3600)`), so "the
+highest-curvature point" is **undefined until a normalization is fixed — and the normalization
+silently does the real work.** Hypervolume is also scale-dependent, but it forces the reference point
+to be stated explicitly, which is why it is the more honest default.
+
+**Recommendation**: if knee-selection is ever adopted, the normalization is a declared and ratified
+quantity (an era row), not an implementation detail.
+
+The operator's accompanying observation is correct and worth recording: a strictly inversely
+proportional (hyperbolic) tradeoff makes every frontier point equivalent under a product objective, so
+a genuine interior optimum requires curvature away from that.
+
+### Background, not an open question — SEQ-B1 posture
+
+SEQ-B1 (joint gate vs quality-primary with rate advisory) remains human-amendment-only and
+**UNDECIDED**. On 2026-08-11 the operator stated the current joint-gate behaviour **"is fine for
+now"** and explicitly deferred the change to a future in which the frontier is well populated.
+Recorded here as a dated operator position so nobody re-opens it as a defect: **the gate is working as
+designed; nothing is broken.**
 
 ## Why this is independent of the episodic-memory work
 

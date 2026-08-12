@@ -73,9 +73,30 @@ echo "[✓] Model found: $(basename $MODEL_PATH)"
 # Kill existing processes
 echo ""
 echo "Stopping existing processes..."
-pkill -9 -f "llama-server" 2>/dev/null && echo "  Killed llama-server" || echo "  No llama-server running"
-pkill -9 -f "uvicorn.*src.api" 2>/dev/null && echo "  Killed uvicorn" || echo "  No uvicorn running"
-sleep 3
+# Resolve what to stop by LISTENING PORT, never by name pattern.
+#
+# This host is shared. `pkill -f "llama-server"` is a wildcard over every session's
+# processes, not just this script's — it killed another agent's server twice
+# (INC-20260731, docs/reference/agent-config/INCIDENT_LOG.md). A port is a precise
+# identity: only one process can hold it, and it is the one actually in our way.
+for port in 8000 8080; do
+  for pid in $(netstat -tlnp 2>/dev/null | awk -v p=":${port}\$" '$4 ~ p { split($7, a, "/"); if (a[1] ~ /^[0-9]+$/) print a[1] }' | sort -u); do
+    echo "  Port $port held by PID $pid — stopping it"
+    kill "$pid" 2>/dev/null || true
+    for _ in $(seq 1 10); do ps -p "$pid" >/dev/null 2>&1 || break; sleep 1; done
+    if ps -p "$pid" >/dev/null 2>&1; then
+      echo "  PID $pid ignored SIGTERM; escalating to SIGKILL"
+      kill -9 "$pid" 2>/dev/null || true
+      sleep 1
+    fi
+    if ps -p "$pid" >/dev/null 2>&1; then
+      echo "ERROR: PID $pid is still alive after SIGKILL — refusing to continue"
+      exit 1
+    fi
+    echo "  PID $pid confirmed stopped"
+  done
+done
+sleep 1
 
 # Check ports
 for port in 8000 8080; do
@@ -208,7 +229,16 @@ echo "    -H 'Content-Type: application/json' \\"
 echo "    -d '{\"model\":\"frontdoor\",\"messages\":[{\"role\":\"user\",\"content\":\"Hello\"}]}'"
 echo ""
 echo "To stop:"
-echo "  pkill -f 'llama-server|uvicorn'"
+# The stop ADVICE must not teach the command the stop CODE was fixed to remove.
+# Until 2026-08-12 this printed a name-pattern kill over llama-server|uvicorn, so an
+# operator following the script's own closing output ran, by hand, exactly the
+# wildcard INC-20260731 is about — laundered as official instructions. The executed
+# commands and the recommended one had different universes, and the recommended one
+# is arguably worse: a human runs it deliberately, on a shared host, at the moment a
+# stack is being torn down. This script CAPTURES both pids (LLAMA_PID, ORCH_PID), so
+# the compliant form was available the whole time.
+echo "  kill $LLAMA_PID $ORCH_PID     # the pids this run started"
+echo "  ps -p $LLAMA_PID -p $ORCH_PID  # confirm they are gone; escalate to -9 only if not"
 echo ""
 echo "Memory usage:"
 free -h | head -2

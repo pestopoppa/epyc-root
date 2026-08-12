@@ -195,3 +195,33 @@ only that component's pinned requirements; (5) run a **non-benchmark** import/de
 then present the P-GPU-1 command package for the GEAK-eval compile/correctness/timing reproduction.
 Never solve an ABI mismatch by an ad-hoc host ROCm install, and never let the preflight create a production
 kernel build or modify the frozen production tree.
+
+### Freshness addendum — 2026-08-11 late (auditor, queue row L189 re-execution)
+
+The L189 external check was re-run tonight from the stale local branch before the origin merge
+landed — `b0366d9c` (origin/main) had already executed it, found the same premise defect ("our
+seven-school taxonomy" was never an enumerated artifact; it originated as an aside in
+intake-960), and replaced it with the 7-row authoring-abstraction-family table. This re-run adds
+three things the origin pass did not have:
+
+1. **TileLang/gfx90a contradiction (actionable, missed by `b0366d9c`)**: GEAK's own
+   `perf_knowledge/languages/tilelang/overview.md` (updated 2026-06-08, HEAD `5107c7e4`
+   re-verified unchanged tonight) tags `gens: [gfx90a, gfx942]`, "validated on MI250" —
+   agreeing with our `rocm-verify-profile-backend.md` and contradicting BOTH
+   `wiki/hardware-optimization.md:137` (fixed tonight) and `autokernel-research-loop.md`'s
+   `cdna2-abandoned-by-vendor-and-quant-schools` HARD_CONSTRAINT (owner: inference — routed,
+   not edited; that constraint's TileLang clause overstates abandonment and could wrongly
+   fence a live gfx90a lever).
+2. **Agent-method taxonomy cross-check (first time)**: GEAK's `ai_kernel_agents.md` 4-way
+   split (agentic-loop / RL-verifiable-rewards / evolutionary-QD / fine-tuned-specialist) maps
+   cleanly onto our controller groupings; GEAK collapses EvoEngineer+KernelFoundry into one
+   "evolutionary/search" family where we keep the flat-population vs MAP-Elites distinction —
+   ours is finer-grained, no contradiction.
+3. **CK/CK-Tile + rocWMMA under-weighting**: GEAK treats the vendor tile/template library as a
+   first-class family with real gfx90a baselines; our corpus carries it only as "CK = baseline
+   to beat" in passing. Worth an explicit baseline-source row when the C4 profiler work lands.
+
+Also re-confirmed: GEAK HEAD unchanged since the `b0366d9c` sweep (compare ahead:0 behind:0);
+FlyDSL remains gfx942/950-only (correctly not a current MI210 arm); intake-960's
+"seven-school" phrasing needs an intake-index correction (needs index-modification approval —
+flagged to the A9 corrections lane, not edited here).

@@ -77,6 +77,33 @@ deliberately — decide them, do not just implement them.
 
 ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?)
 
+- [ ] **SC19 — wire `ChatResponse.contention_gate` (A14) on the write side, BEFORE the branch
+      lands.** Filed 2026-08-12 by `mainB`, the author of the change, at the change — the property
+      that makes a write-side hook trustworthy at all. The surface echoes the contention
+      `GateDecision` per request (`admitted`, `waited_s`, `decision`, `candidate_topology_idx`, plus
+      a `gate_decisions` list for multi-pass requests). **It is a producer by definition:** its
+      entire stated purpose is to convert an inferred verdict into a measured one — ROUTE-A1 today
+      infers admit-vs-queue from a fail-closed 503 timeout, and `queued_then_admitted`
+      (`admitted=True` with `waited_s > 0`) is *structurally invisible* to that proxy.
+      **The window is now and it is narrow:** the code is parked on `a14-gatedecision-echo` @
+      `a7d7bdb6` and NOT yet merged. Wiring the write side is cheap while it is unmerged and
+      permanent afterwards; retrofitting the read side is impossible, per the standing rule.
+      **Locator trap, specific to this source:** the natural locator is the request/chat id, but one
+      request can emit MULTIPLE decisions — the `_dispatch` path records every candidate tried, not
+      just the winner, deliberately, so the probe can see the walk down the placement priority
+      order. A naive per-decision count therefore reads ONE request as N independent witnesses. Key
+      on the request, not the decision. (Same class as the run-level trap `mainA` recorded for the
+      affinity-preflight source, and as the `benchmarks/results` same-harness case.)
+      **Price it first** per the P2 discipline before any bulk adapter: the surface emits nothing
+      until the branch lands, so the honest state today is `candidate — ready, unwritten`, not
+      `live`. Source-table row added in `scripts/vidya/adapters/README.md`.
+      **Self-caught, and the trigger is worth keeping:** I built this surface earlier tonight and
+      filed no wiring task until `mainA` published the right test — *"you touched a producer", not
+      "you thought about producers"*. A checklist keyed on the diff catches it; one keyed on intent
+      does not. Four instances in one day (v9 freeze receipt, mainA's affinity-preflight surface,
+      this one, and the standing `benchmarks/results` proof) says the rule is known and the trigger
+      is what is missing.
+
 - [x] SC1 **Measured the gap rather than assuming it.** The substrate models only what we READ:
       across 4,224 beliefs the Q axis is `Hinted 3,503 · Verified 709 · Q0 12` and **zero at
       Witnessed**, because spec §4.5 reserves Q4 for a protocol-admissible measurement with durable
@@ -218,6 +245,20 @@ deliberately — decide them, do not just implement them.
 - [ ] SC11 Survey the remaining candidate sources named in the register — llama-bench sweeps and the
       speech-kernel (whisper/qwentts) runs. Both need a write-side hook before a reader is worth
       anything; price each with the ~50-record sample before building
+- [ ] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
+      by `mainA`, at the moment of changing the producer rather than afterwards).
+      `affinity_preflight.py` cell mode writes `data/contention_matrix/affinity_preflight_*.json` per
+      Stage-B cell and that artifact **already gates `decision_grade`** — `live_affinity_verified` is a
+      hard gate and `--require-memory-locality` is an operator-requestable one. Anything that gates a
+      grade is exactly what the register says needs a tuple.
+      Today's change (orchestrator `74806223`, `d83661a5`) ADDED attested fields — `gpu_tenant_overlaps`,
+      `smt_only_contention` (sibling-folded, so a GPU host lane sharing physical cores stops reading as
+      disjoint), `live_memory_placement_checked`, `memory_locality_vacuous` — so the producer grew new
+      measurement surface without a tuple, which is the SC12 shape repeating a third time.
+      **Price it first** with the ~50-record sample; the corpus is small (tens of artifacts), so the
+      honest answer may be that the volume never justifies an adapter — in which case record that
+      verdict rather than leaving the row open. **Locator must be run-level, not file-level**: repeated
+      preflights of one cell are the same witness, not N.
 - [ ] SC12 **Kernel promotion/certification and K35 paired kernel/speculation receipts need a
       write-side ClaimTuple hook.**
       The first bounded receipt is `artifacts/audit/v9-dspark-autokernel-base-20260810.json`; the v9
@@ -351,10 +392,65 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       BASELINE/OPTIMUM transition with `gate.evaluate`; append resolution/evidence links so AutoKernel
       sees the same negative, and use `impact_of_retracting` to reopen downstream promotions. Do not
       activate until the pre-promotion journal ordering supplies a durable current-trial attestation
-- [ ] SC15 **Drain the queue.** 129 corrections, 81 cited by project documents, top ones cited 5–7
+- [x] SC15 **Drain the queue.** 129 corrections, 81 cited by project documents, top ones cited 5–7
+  - **✅ 2026-08-12 — QUEUE FULLY DRAINED by `mainC`. 129 → 0 unadjudicated; blocked claims 571 → 0;
+    the `review` bucket is empty.** 233+ `correction_reviewed` frames across 13 batches, each with
+    its `claim_corrections` block written into `research/intake_index.yaml` so the next re-ingest
+    grades opposition PER CLAIM. Ledger chain and all three checkpoints verified after EVERY apply;
+    index entry count held at 1,097 throughout; `conflicted` unmoved at 3, so no batch introduced
+    one. Commits: root `12cc6529`, `6e70bc0a`, `9548160c`, `40e783da`, `e18f7858`, `7af3cf70`,
+    `4b653d3e`, `80b54438`, `d3e2674b`, `6142085c`, `fc70b9d7`, `c9897ca2` + this batch.
+    - **Adjudicated per claim, by reading each correction against each claim** — which is what this
+      row demanded and what a summariser cannot do. The single most useful distinction: **a heavily
+      corrected ENTRY is not the same as corrected CLAIMS.** Roughly two-thirds of these corrections
+      land on Stage-1 prose, a verdict justification, an applicability call, or an actionable about
+      *our own* repo — not on any key claim. Propagating the entry-level label would have
+      mass-downgraded claims that are fine.
+    - **Three systematic hazards now on record for anyone re-running this**: (1) correction texts
+      number claims against a DIFFERENT list than the ledger's `claim_index` — hit three times
+      (`intake-916`, `intake-920`, `intake-929`), so adjudicate on CONTENT, never on that numbering;
+      (2) several entries were written WITH their dive corrections already folded in, so their
+      claims STATE the corrected position and must read as confirmed rather than corrected
+      (`intake-1020` is the clean example); (3) a citation-hygiene family — `intake-1068/1069/1070/1071`
+      were each ingested only because a recommendation cited them with a NEIGHBOURING entry's id
+      attached. Four wrong ids in one batch is a pattern, not four accidents.
+    - **`SC12-ENTRY` is now the live consumer defect.** Draining moved ~140 citations out of
+      `review`, which unmasks the real grade underneath — mostly `ok`, but one bare `intake-110`
+      citation in `wiki/knowledge-management.md` surfaced as `conflicted`, inheriting a pre-existing
+      overturned claim 4. Surfaced, not caused; it needs narrowing to `#NN` or `#record`.
       times. Not startable by a summariser: each verdict needs the dive text read against the claim,
       which is the exact failure intake-896#record memorialises. Start with the cited head — `cli.py
       corrections` ranks it — and record `effect` per claim, never per entry
+  - **TRIAGED 2026-08-11 (`mainC`) — no verdicts written. The queue is far more tractable than "129
+    unadjudicated" suggests, and the reason it looked intractable is that it was never split.**
+    Classifying each correction by the adjudication its OWN text demands:
+
+    | adjudication needed | n | share |
+    |---|---|---|
+    | scope / framing | 37 | 29% |
+    | numeric / metric | 31 | 24% |
+    | provenance / citation | 16 | 12% |
+    | superseded or duplicate | 6 | 5% |
+    | needs a PRIMARY-SOURCE dive | **1** | 1% |
+    | unclassified — needs a read to say | 38 | 29% |
+
+    **Only ONE correction demands a primary-source dive** (`intake-547`, whose text says its claims
+    "remain unverified against arXiv:2603.02615" — filed during the intake-901 Stage-3 audit and
+    explicitly *not* a dive on its own entry). It is also the single most-cited entry in the queue
+    (7 citations), so the highest-leverage item is also the only one that needs real research: it
+    should be packaged for the operator, not desk-adjudicated. The other ~99 desk-resolvable ones do
+    not need to wait behind it.
+    - **Where to start:** the cited head. 81 of 129 are cited by a project document; entries at
+      `citations >= 3` block **65 claims** between them. Drain those first — an uncited correction
+      blocks nothing a reader can currently rely on.
+    - **Caveat on the table, stated rather than hidden:** the split is a regex over each
+      `correction_text`, so it is a routing hint, not a verdict. The 29% "unclassified" bucket is
+      the honest residue, and any row may reclassify on a real read. It orders the work; it does not
+      do it.
+    - **Not started deliberately.** `disposition` records a *human* verdict via `--actor`, and SC15
+      is explicit that this is not summariser-safe work. Writing 129 verdicts from a triage pass
+      would inject exactly the unwarranted warrant the substrate exists to prevent. The ordering
+      above is the deliverable; the verdicts are not mine to manufacture.
 - [ ] SC16 **Is `uncertain` the right default for a per-claim verdict?** `apply_claim_verdict` keeps
       the ENTRY-level verdict when a dive records `effect: uncertain`, so on a `dive-overturned`
       entry an "a reader could not tell" verdict currently opposes the claim at `Verified` — the
@@ -362,7 +458,7 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       the live instance. The conservative reading may still be right (an entry-level overturn is
       evidence about the entry), but it was inherited, never chosen. Decide it deliberately and
       write the reason into the docstring either way
-- [ ] SC17 **`fold` does not exclude frames dated after `as_of`.** A frame stamped in the future
+- [x] SC17 **`fold` does not exclude frames dated after `as_of`.** ✅ 2026-08-12 (`auditor`) — design chosen per the row's own recommendation + spec §fold-purity: `fold` stays pure (created_at remains publication metadata it never reads); the guard is an **append-time refusal** in `ledger.py` (`FrameStampError`, `MAX_FUTURE_SKEW_SECONDS=300`), tolerating absent/malformed stamps (frame-construction's contract; maintenance frames carry none) and past stamps (history untouched — the 895 incident frames are correction-queue territory, out of SC17 scope). 6 new tests both directions incl. yes-paths (`tests/vidya/test_ledger_future_stamp.py`); full vidya suite 371 green. A frame stamped in the future
       takes effect immediately at any earlier `as_of`, which is how 895 future-stamped frames from
       the 2026-08-10 date incident still fold in, and how a frame this session mis-stamped
       `2026-08-11` applied on 2026-08-10 before being re-stamped. Two defensible designs — ignore
@@ -555,6 +651,20 @@ Retained as the ratification record. Nothing here blocks P1.
   intake session; never edit the skill mid-run.
 - Judgment frames (any LLM verdict entering the ledger) must satisfy the V2.7 keying rules from
   day one — retrofitting replay keys is not possible.
+- **A field used to discriminate KIND must BE an explicit kind, never a present/absent test.**
+  Raised 2026-08-11 by `mainA` from four absence-inferred fields found in one night — and the
+  generalisable point is not carelessness: **two of the four were introduced by the person fixing
+  that exact class, hours apart.** Presence/absence is the cheapest discriminator available at
+  design time, and its whole cost lands on whoever reads the store months later, who cannot tell
+  *"this kind has no value"* from *"nobody wrote one"* from *"the writer predates the field"*.
+  Same asymmetry as the write-side rule above: cheap and permanent to state now, impossible to
+  retrofit — a reader cannot recover a distinction the writer never recorded.
+  Three independent instances the same day show it is not confined to manifests: `mainB` read merge
+  stage `:3` after a `git add` (which collapses stages 1/2/3, so `:3` returned EMPTY and empty made
+  every comparison pass); `mainD`'s `backfill-receipts --check` reported "index is current" while
+  covering only bus-known gates; the `auditor`'s receipt index asserted `ratified` over files that
+  were untracked. **Each was true about a smaller set than it appeared to speak for** — the read-side
+  face of the same defect.
 
 ## Reporting
 

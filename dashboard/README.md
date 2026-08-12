@@ -26,9 +26,32 @@ state → orchestrator serves the page"), which is how the 7.6k-line combined
 page on `:8000/dashboard` accreted. That page is **legacy, pending Phase-1b
 deprecation** (`handoffs/active/dashboard-architecture-restructure.md`) — its
 data routes stay; its page is superseded by `/machine` + `/autopilot` here.
-Adding a dashboard = one row in `dashboard/registry.json` (the shared nav and
-the directory strip render from it); hand-adding cross-dashboard links to a
-page is the drift this registry exists to end.
+**Adding a dashboard = three things, not one.** All three are load-bearing and all
+three are checkable:
+
+1. **A registry entry** in `dashboard/registry.json` — the shared nav and the
+   directory strip render from it. Hand-adding cross-dashboard links to a page is
+   the drift this registry exists to end.
+2. **A health probe** — the `health_path` field on that entry. All 7 current
+   entries declare one, and a surface with no probe cannot be told *down* from
+   *slow*. **But know what it answers.** Every entry points at `/health`, which is
+   the **TRANSPORT** probe: it says *this process is serving* and nothing more, so
+   it stays green while the producer behind a panel is dead. The honest question —
+   *is what this page shows still true?* — is `/api/health`, the three-valued fold
+   over `dashboard/panels.py` (`ok` / `absent` / stale). A registry entry buys you
+   liveness of the SERVER, not freshness of the DATA; an automated consumer that
+   treats `health_path: /health` as "the dashboard is fine" is reading a narrower
+   claim than it thinks. (Raised by `mainC` 2026-08-12 against the first version of
+   this list, which said "health probe" without saying which one — the same
+   true-about-a-smaller-set shape this repo has hit four times in a day.)
+3. **A freshness envelope** for every panel — a producer, a timestamp field, a
+   staleness bound and an `absence_means` string (`dashboard/panels.py`). Absence
+   must say what absence MEANS, or a panel that renders nothing is
+   indistinguishable from a panel whose producer died.
+
+**No unregistered pages.** A page reachable but absent from the registry is
+invisible to the nav, has no probe, and no one learns it exists — which is how the
+7.6k-line `:8000/dashboard` page accreted in the first place.
 
 ## Running
 

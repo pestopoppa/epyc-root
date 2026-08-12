@@ -1,0 +1,45 @@
+--- a/artifacts/operator/ratify_and_apply_e8_quality_baseline_v4_20260727.sh
++++ b/artifacts/operator/ratify_and_apply_e8_quality_baseline_v4_20260727.sh
+@@ -444,9 +444,42 @@
+     trap - RETURN
+ }
+ 
++mint_receipt_index() {
++    # C39 keyed receipt-index contract (2026-08-11): the coordinator-daemon's
++    # spent-gate check stats exactly artifacts/operator/receipts/<TOKEN>.json;
++    # a signature without this index is invisible to it. Idempotent to match
++    # mint_receipt: verify-if-present, write-if-absent, atomic rename.
++    local index_dir="$ROOT/artifacts/operator/receipts"
++    local index="$index_dir/$TOKEN.json"
++    if [[ -e "$index" ]]; then
++        grep -q '"status": "ratified"' "$index" ||
++            fail "existing receipt index is malformed: $index"
++        return
++    fi
++    mkdir -p -- "$index_dir"
++    local tmp
++    tmp="$(mktemp "${index}.tmp.XXXXXX")"
++    trap 'rm -f -- "$tmp"' RETURN
++    printf '{\n  "gate_id": "%s",\n  "indexed_by": "attest",\n  "receipt": "%s",\n  "schema_version": "session_bus.receipt_index.v1",\n  "status": "ratified"\n}\n' "$TOKEN" "$RECEIPT" > "$tmp"
++    ln -- "$tmp" "$index" 2>/dev/null ||
++        fail "receipt index appeared concurrently; refusing to clobber: $index"
++    rm -f -- "$tmp"
++}
++
+ apply_final() {
++    # Durable spent-guard (mainA acceptance addition, host-correct form): the
++    # transaction dirs that gate re-application are UNTRACKED scratch; the keyed
++    # index is the durable marker. Index present + transactions absent = a
++    # cleaned-world re-run that would fall through to a FULL re-apply - refuse.
++    # Every transactions-present path (crash recovery, rollback retry) is
++    # untouched, preserving the vehicle's resumable design.
++    if { [[ -e "$RECEIPT" ]] || [[ -e "$ROOT/artifacts/operator/receipts/$TOKEN.json" ]]; } &&
++        ! compgen -G "${TRANSACTION_BASE}-attempt-*" >/dev/null; then
++        fail "already attested (receipt and/or keyed index present) with no transaction state on disk; re-apply refused - operator review required"
++    fi
+     validate_only
+     mint_receipt
++    mint_receipt_index
+     local transaction state attempt
+     for transaction in "${TRANSACTION_BASE}"-attempt-*; do
+         [[ -d "$transaction" ]] || continue

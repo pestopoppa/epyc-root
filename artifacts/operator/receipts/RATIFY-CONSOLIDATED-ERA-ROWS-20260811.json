@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-CONSOLIDATED-ERA-ROWS-20260811",
+  "indexed_by": "attest",
+  "receipt": "/mnt/raid0/llm/epyc-root/artifacts/operator/ratify_consolidated_era_rows_20260811.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

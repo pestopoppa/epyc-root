@@ -2,72 +2,8 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-12 (records the first live post-hook GEAK/Arena beliefs; SC27 and prior promotion-track findings retained)
-**Sources**: 36 documents
-
-## Compiled Update — 2026-08-12 (first live GEAK/Arena belief rows)
-
-The producer-side GEAK/Arena boundary has crossed from prospective wiring to live evidence. INF-03
-r3's terminal Claude/Codex 2h and 8h checkpoints each wrote two measurements: correctness pass rate
-and timing-harness validity rate. The generic adapter projects only those producer-authored rows
-through the shared ladder; it does not infer speedup, campaign rank, or promotion authority from the
-receipts. Earlier pre-hook smokes remain deliberately unprojected.
-
-This is also a useful example of why storage and resource authority are distinct. Terminal cells can
-remain durable, restart-safe evidence while the wider campaign pauses to repair over-broad GPU claim
-scope. No read-side reconstruction is needed, and no invalid/incomplete cell enters the belief set.
-
-### Source References (2026-08-12 live Arena rows)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20's live receipt boundary
-- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — current write/read status and no-backfill rule
-- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact terminal receipts and paused-campaign chronology
-
-## Compiled Update — 2026-08-12 (AutoKernel governed receipts)
-
-AutoKernel's live controls and governed async-prefetch replay now write belief semantics at the
-producer boundary. Future receipts carry protocol and metric direction, scored-block basis, exact
-source/binary/model/resource-claim/producer identities, the native verdict, and immutable evidence
-digests. The Vidya adapter independently re-derives those bindings and delegates grading to the one
-shared measurement ladder; it does not introduce a source-specific grade rule.
-
-The temporal boundary is deliberate. The accepted controls, hardened-instrument smoke, and GPU replay
-completed before this hook and therefore project no Vidya rows. A reader cannot manufacture write-time
-warrant after the fact. Research `730adb1d` and root `2a4e170a` close SC27 prospectively; the next
-governed controls or replay will be the first admissible source records.
-
-### Source References (2026-08-12 SC27)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC27 contract and completion boundary
-- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — live source register and projection semantics
-- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — promoted commits, tests, and no-backfill evidence
-
-## Compiled Update — 2026-08-11 (AutoKernel Arena write-side boundary)
-
-The GEAK/AgentKernelArena adapter now has a prospective belief writer rather than relying on a later
-reader to reinterpret generic benchmark fields. Successful future round trips emit two explicitly
-typed measurements—correctness and timing—using the same measurement ladder as the existing ROCm
-profiling producers. Failed or incomplete runs emit no performance belief. The compatibility
-preflight remains dependency evidence only: source pins, platform reachability, and compile success
-are important facts, but none has an honest higher-is-better or lower-is-better ordinal direction.
-
-This is a small but general rule for evidence systems: **write semantic measurement intent at the
-producer boundary, and classify capability checks separately from ranked observations**. It prevents
-a dashboard or ledger adapter from inventing metric direction after the experiment, and makes future
-controller A/B results comparable without retrofitting old receipts. Existing 2026-08-11 receipts are
-deliberately unchanged.
-
-The same boundary now applies to the admitted MMQ-WGM negative. Its wall-time, TCC-hit-rate, and
-read-request observations are direct measurements, but the receipt predates any `ClaimTuple` writer.
-SC22 therefore files a producer-side hook before any successor launch-order experiment and explicitly
-forbids retrofitting r2 on read. This preserves the negative as durable experiment evidence without
-claiming that a later adapter witnessed semantics the original producer never wrote.
-
-### Source References (2026-08-11 AutoKernel Arena writer)
-
-- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20/SC21 acceptance, SC22 MMQ-WGM write-side task, and classification
-- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — producer vectors, MMQ-WGM candidate source, and dependency-evidence handling
-- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — receipt hashes, negative disposition, and closeout boundary
+**Last compiled**: 2026-08-12 (records the first live post-hook GEAK/Arena beliefs; SC27 and prior promotion-track findings retained; concurrent-lane compile 2026-08-11: a same-day operator-commissioned audit's provenance-discipline lessons — receipts outrank bus messages, filesystem presence is not provenance, a closed box with real measurements is more misleading than an open one — see below; earlier 2026-08-10 note: belief-substrate promotion track: corroboration counted by source locator, machine anchoring, dependency propagation, R1b closed)
+**Sources**: 37 documents
 
 ## Summary
 
@@ -78,7 +14,52 @@ The core insight from the 2026-04-28 intake update is that *the right architectu
 A third architectural pattern — **persistent compiled wikis** — is itself a knowledge-management approach. This very wiki is an instance: knowledge is pre-compiled by the `project-wiki` skill from handoffs/research/progress logs into curated topic articles, trading per-query synthesis latency for curation burden and staleness risk. EPYC uses a hybrid: `project-wiki` for stable / cross-cutting topics, KB-RAG for dense ad-hoc cross-referencing during Explore-agent runs.
 
 The 2026-05-27 handoff-index audit sharpened the governance side of that architecture: indices are executable coordination surfaces, not passive navigation pages. A coverage check now treats every non-index active handoff as requiring an owning index or top-level tracking entry, and the blocked index is kept as a live unblock queue rather than a historical graveyard. The latest audit closed the active coverage invariant at 84/84 active non-index handoffs linked, 0 missing index links, and 0 broken relative links across active/blocked/README surfaces.
+## Compiled Update — 2026-08-11: provenance discipline from a same-day audit — receipts outrank messages, filesystem presence is not provenance
 
+**Confidence: verified** — every finding below is read directly from `artifacts/audit/completion-flurry-wiring-audit-20260811.md`, an operator-commissioned four-section audit (commits `5c2212ce`→`fc8d4d52`), cross-checked against git and the filesystem rather than restated from the audit's own claims.
+
+### A four-state wiring test, reusable beyond this audit
+
+The audit's standing question was never "was it done" but "is it wired in, and is it live" — resolving every completion claim into one of four states: **(1) committed and live** · **(2) committed, not live** (code merged, but the running process predates it, or nothing calls it) · **(3) claimed, not committed** (a bus message or handoff checkbox asserts work git does not contain) · **(4) live, wired to the wrong thing** (the code runs, but reads or writes the wrong source of truth). Applied to eleven 2026-07-29 completions: 8 were state 1; one instrument (`utm-m5`) was state 2 — tests pass, box reconciled `[x]`, but zero callers and zero runs anywhere on the filesystem, so the question it was built to answer remains unanswered; one batch (`repl-turn-efficiency-ready-batch`) was state 3 — wiped by an unrelated same-day tree-restore and never re-applied, with no incident-log entry for the restore that caused it; and the token relay itself was found in state 4 — live code, reading bus-message state as if it were world state.
+
+### The rule the whole audit reduces to: artifacts on disk outrank any bus message when they disagree
+
+The concrete failure this rule fixes: a post-reboot fleet rebuilt its worldview from twelve-day-old undelivered bus messages and re-presented two operator tokens as pending — both had actually been signed 07-29, with `status: ratified` receipts sitting on disk the whole time (see [Benchmark Methodology](benchmark-methodology.md) and [Agent Architecture](agent-architecture.md) §C39 for the mechanism fix this produced). The delivery plane had been treating *message-not-delivered* as *decision-not-made*. Generalized: **the receipt on disk, not the bus message, is the source of truth for whether a decision was made** — a message queue records that something was *sent*, never that it was *decided*, and rebuilding worldview from the queue conflates the two.
+
+### Filesystem presence is not provenance
+
+Twice in one day, an artifact's mere presence on disk was mistaken for its being committed. A completion citing a doc as evidence found that doc **untracked on any ref to this day** — present on disk, never `git add`-ed, so a fresh checkout of the repo would not have it. And the auditor's own conformance check made the identical mistake against itself: three receipt-index pointers asserted `ratified` by stat-ing the filesystem, not by checking git-tracking, over receipts that had themselves been untracked since 07-29. Both were closed the same way: commit the artifact, then extend the checker to verify git-tracking of every index target it points at, not merely the target's existence. The generalizable rule: a check that answers "does this file exist" is not the same check as "will the next person who clones this repo have it" — an evidence chain built on the former silently breaks on the latter.
+
+### A closed box carrying real, correct measurements is more misleading than an open one
+
+The sharpest single finding: an agent that had *itself disclosed* the exact "committed but the live process predates the fix" hazard for one fix that same morning failed to apply the same disclosure to a second, structurally identical fix a few hours later — flipping its checkbox to `[x]` with accurate before/after numbers while the still-unrestarted daemon kept executing the pre-fix code underneath it. The numbers were true; the state they implied was not. **Knowing a rule is not the same as applying it to your own closure** — the failure mode survives self-awareness of the exact failure mode, which is why an external audit caught it rather than the same agent's own review pass. Both agents in this audit — the closer and the auditor — disclosed a symmetric defect in their own prior work the same day, which the audit names as the reason its numbers are worth anything: closures need a second reader, not just a careful first one.
+
+### `git commit --amend` in a shared clone is a standing trap, confirmed a third time in one day
+
+Three independent same-day incidents shared one root cause: `--amend` (or a broad `git add`) in a repository multiple sessions write to concurrently sweeps other sessions' *currently-staged* files into the amending commit. One instance moved 4→37 files into a single amended commit; recovery in every case was `git reset --soft` plus a pathspec-scoped re-commit, never a force-push or history rewrite. This reinforces, rather than introduces, the project's existing pathspec-limited-commit discipline for shared trees — the finding is that the discipline needs to extend to `--amend` specifically, since `--amend`'s scope is "whatever is staged right now," which in a shared clone is not fully under any one session's control.
+
+### A near-duplicate scorer function is not a migration target merely because it resembles the canonical one
+
+`score_aa_omniscience_run.py`'s answer-extraction routine resembles the canonical letter/answer extractor closely enough to look like a mergeable duplicate, but a per-consumer proof found real behavioral deltas: it compiles with no `re.DOTALL` flag (so it stops matching a multi-line `<answer>` block the canonical path handles) and falls back to the last non-empty line where canonical falls back to the whole response — differences that would move precision/recall/F1 on every unparsed response if merged. Verdict: not a migration target; both functions now cross-reference each other's deltas in comments, with zero behavior change. Reusable method: two similar-looking scorers are not provably identical until every fallback path is compared, not just the primary match pattern — the same discipline already on record in this project for an earlier `debug_scorer` comparison.
+
+### A citation gate needs a way to say "discusses the record" without asserting the record's claims
+
+The `cite-check` gate (which refutes/conflicts citations of intake entries against the belief substrate) could not distinguish an entry *relying on* a claim from an entry *discussing the fact that the claim was fabricated and struck* — flagging a document that correctly recorded a fabrication as if it were relying on the fabrication itself. Fixed by adding a third citation form, `intake-NNN#record`: non-blocking on grade, but still reports a dangling reference (an entry that does not exist cannot be discussed either) and still counts as a dependency edge, because "which pages name this entry" and "which pages rest on its claims" are different questions worth keeping separate. A second, unrelated citation in the same pass was a real defect, not a false positive: three documents had carried forward a paper's superseded accuracy-uplift claim after the authors' own appendix corrected the number — a reminder that a citation gate catching false positives on one entry does not mean the next flagged entry is also a false positive.
+
+### Belief-substrate write-side hook: scope widened, still a TODO
+
+The belief-kernel write-hook obligation (standing project rule: wire the write side immediately when a process starts producing measurements) was generalized today from "experimental kernel candidate receipts" to **all kernel promotion validation/certification receipts** — the v9 freeze's own qualification and certification writers, DFlash's production-certification summaries, and K35's GPU/DSpark results all still lack a prospective ClaimTuple write hook (see [Hardware Optimization](hardware-optimization.md) for the v9 freeze itself). The read-side planner seam (AutoPilot's supersession folding, graded against Vidya's canonical ladder) is live and advisory-only — it never gates generation. Promotion-gate wiring is explicitly blocked pending durable current-trial attestation. **IN-PROGRESS**, not settled: no read-side provenance has been retrofitted into any of the already-completed v9 promotion artifacts.
+
+### A 129-item correction backlog was triaged by splitting on what each item demands, not by working through it in arrival order
+
+A stalled 129-entry citation-correction backlog looked intractable only because it had never been decomposed. Splitting by what adjudication each item actually requires found 37 are scope/framing corrections, 31 numeric, 16 provenance, 6 superseded, 38 need a primary-source read — and **exactly one** needs a genuine primary-source dive (the entry with the most citations, at 7). The other ~99 need not queue behind that one. Deliberately not resolved into verdicts in the same pass: recording a verdict requires a human `--actor`, and manufacturing 129 verdicts from a triage pass would inject the exact unwarranted warrant the correction substrate exists to prevent — the ordering, not the verdicts, was the deliverable. Generalizable triage pattern: split a stalled backlog by the *kind* of work each item needs before attempting any of it, then start with whatever is both rare and highest-leverage (here, the most-cited entry) rather than processing in arrival order.
+
+### Source References (2026-08-11)
+
+- [`artifacts/audit/completion-flurry-wiring-audit-20260811.md`](../artifacts/audit/completion-flurry-wiring-audit-20260811.md) — the four-state wiring test (§A), the receipts-outrank-messages rule (§D, §D5, §A-rc RC2), the two filesystem-presence-is-not-provenance instances (§A item 9, §"Signed-but-untracked closure"), the closed-box-more-misleading-than-open finding and its self-referential closure (§"Tonight-commits audit" item 1, §"Self-referential closure")
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the three `--amend`-sweeps-shared-tree incidents, the scorer-duplication verdict (A10), and the 129-item correction-backlog triage (A9)
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) §SC12/§SC14 — the belief-kernel write-hook scope widening and the advisory-only planner read-side seam
+- [`docs/design/vidya-pilot-corpus.md`](../docs/design/vidya-pilot-corpus.md) — the `#record` citation-form fix and the intake-110 superseded-claim correction (commit `a48e04ba`)
 ## Internal KB-RAG Architecture (K1–K8 work items)
 
 Per [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), the planned KB-RAG indexes the wiki + active handoffs + completed handoffs + research/deep-dives + progress logs + (cross-repo) `epyc-inference-research/docs/chapters` with heading-aware chunking. Storage: per-document `.npz` of token embeddings + SQLite catalog mapping `(chunk_id, file_path, line_range, heading_path, mtime, content_hash)`. Per-document files keep incremental rebuild cheap — only re-encode files whose `content_hash` changed since last index. Excluded by design: `handoffs/archived/*.md` (archived state is misleading by design and pollutes retrieval signal).
@@ -88,7 +69,6 @@ Per [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), the planned K
 **K7 — validation (Flywheel-template eval methodology)**: rewritten 2026-04-28 from "five hand-curated queries" to a Flywheel-derived two-protocol Python re-implementation. (1) HotpotQA-style document-recall probe over a 4,960-doc-pool-equivalent assembled from our corpora, ~50 multi-hop questions whose ground-truth evidence spans 2+ documents, measure document-recall@k for k ∈ {3, 5, 10}, KB-RAG vs grep baseline. (2) LoCoMo-style multi-session probe simulating ~20 multi-session "agent investigations" (e.g., follow the v3 kernel rebase across handoffs over 4 weeks). Variance band: ~1 pp run-to-run from LLM non-determinism is the noise floor — any cross-config delta under ~2 pp is within noise.
 
 **K8 — wikilink learning-loop scorer (deferred)**: Flywheel's auto-wikilink suggestion uses an accept/reject feedback loop that updates a graph-edge scorer over time (alias + co-occurrence + graph + semantic context). Adapt as a wiki-cross-reference quality signal for the existing `wiki/INDEX.md` compilation pipeline. Deferred until K1–K7 ships and a measured wiki-cross-link gap emerges.
-
 ## Flywheel as Methodology Source (intake-492, credibility 3)
 
 [Flywheel](https://github.com/velvetmonkey/flywheel-memory) (Apache-2.0) is a local-first MCP memory layer for AI agents over Obsidian/Markdown vaults. Its primary value to EPYC is the **eval methodology**, not the runtime. The runtime is Node/MCP/Obsidian-coupled — `demos/hotpotqa/` and `demos/locomo/` ship as demo directories tightly bound to the harness and require Python re-implementation, not lift-and-shift. The methodology IS portable: corpus-pool sizing (4,960-doc HotpotQA-derived pool), multi-session evidence-recall protocol (LoCoMo 695-question / 272-session split), variance band (~1 pp from LLM non-determinism).
@@ -101,7 +81,6 @@ Self-reported headline numbers from Flywheel's README (HotpotQA 90.0% doc recall
 - Hash-before-write + single-step undo log as a portable abstract write contract (Node/Obsidian implementation NOT lift-and-shift; the contract itself is a Python-friendly design pattern). Captured in `meta-harness-optimization.md` as a design note.
 - Token-budgeted memory brief assembly with confidence decay — Flywheel's `memory(action=brief)` is correctly framed as a *read-side* token-budgeted assembler over already-persisted vault content, NOT a "promote to persistent memory" action. The persistence happens via separate write tools.
 - Wikilink learning-loop scorer (see K8 above).
-
 ## Wiki Compilation Governance
 
 This page itself is a product of the `project-wiki` skill compile operation (`/workspace/.claude/skills/project-wiki/SKILL.md` Operation 3). The pipeline:
@@ -114,7 +93,6 @@ This page itself is a product of the `project-wiki` skill compile operation (`/w
 Lint (`Operation 1`): orphan handoffs, stale entries (>30d ERROR, >14d WARNING), contradictory status, un-actioned intake (verdict `worth_investigating`/`new_opportunity` with no `handoffs_created` and `ingested_date` >7d old), broken cross-references. Run `python3 .claude/skills/project-wiki/scripts/lint_wiki.py` before nightshift runs and after handoff sweeps.
 
 The `research-intake` skill is the upstream complement — it ingests new papers/repos/blogs into `research/intake_index.yaml` with cross-referencing into existing handoffs and chapter docs. Wiki compile pulls *from* intake; intake does NOT write to the wiki. This separation avoids duplicate cross-referencing logic and keeps the wiki a derived artefact.
-
 ## Key Findings
 
 ### Dashboard brief hygiene (2026-07-08)
@@ -126,7 +104,6 @@ The `research-intake` skill is the upstream complement — it ingests new papers
 The current wrap-up cycle tightened a pattern the wiki already depends on: durable records should be **append-only plus supersession-aware**, while the dashboard should only treat a panel as current when the process behind it is still the same process that wrote the tap data. AutoPilot's contaminated seed-batch trials were quarantined in-place with append-only supersession rather than deleted, preserving provenance for later audit while keeping the bad rows out of planner evidence. The dashboard side now carries freshness metadata (`planner_tap_mtime_s`, `planner_tap_precedes_autopilot_start`) so a stale tap file can be labeled historical instead of being mistaken for live planner output. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md), [frontier-f2-self-running-lab.md](../handoffs/active/frontier-f2-self-running-lab.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
 
 This is the same producer/consumer discipline the wiki already uses: operational logs and handoffs stay primary, compiled pages remain derived, and stale-but-useful history is kept readable without letting it re-enter the active decision path.
-
 ## OKF Conformance Adoption (2026-06-20, intake-710/711)
 
 The Open Knowledge Format (OKF v0.1, Google Cloud) is a vendor-neutral spec that formalizes the "LLM-wiki" pattern — a knowledge bundle is a directory of markdown files with YAML frontmatter, one concept per file, file path as concept identity, concepts cross-linked via plain markdown links to form a graph. Its mandatory schema is deliberately minimal (exactly one required frontmatter field, `type`), with conventional `index.md` (progressive disclosure) and `log.md` (newest-first change history) reserved filenames, conventional `# Schema` / `# Examples` / `# Citations` headings, and a producer/consumer separation where producers MAY add arbitrary keys and consumers MUST preserve unknown fields. OKF is a FORMAT, not a platform — producible without SDKs and consumable without integrations. Confidence: external (vendor blog + v0.1 spec, no empirical claims, credibility null); verdict `adopt_patterns` not `adopt_component`, because Google's reference enrichment agent and Knowledge Catalog ingest are BigQuery/cloud-coupled and have no self-hosted EPYC analog.
@@ -137,25 +114,21 @@ The load-bearing intake finding is **convergence, not novelty**: 5 of OKF's 6 co
 2. **Codified permissive-consumption contract** — consumers of intake entries MUST preserve unknown/extra keys and MUST NOT reject an entry for carrying fields beyond the required set. This was already the de-facto behavior of `validate_intake.py` (it flags only MISSING required fields and invalid enums); the Conformance section makes it an *intentional* contract, so any future validator change that rejects entries on extra/unknown fields is a conformance break that must be rejected in review. This adoption is **verified** (the behavior exists; the section pins it).
 
 The four conventions deliberately **rejected as already-covered** (confidence: verified): reserved `index.md` (we have `wiki/INDEX.md` as a progressive-disclosure index); per-bundle `log.md` change history (we use per-file dated "Research Intake Update" sections, finer per-file granularity); the `# Schema` / `# Examples` / `# Citations` heading renames (our Summary / Key-Findings / Source-References headings are equivalent in role); and a bespoke HTML force-directed graph visualizer (GitNexus `wiki` / `cypher` already cover symbol-and-relationship graph visualization). This is a conventions adoption, not a tooling import; OKF's enrichment agent is out of scope.
-
 ## Governance skill backlog (2026-06-05)
 
 Three active stubs extend the knowledge-management surface beyond retrieval: AutoWiki-style incremental KB generation, repo-readiness scoring, and security-review skill design. The shared pattern is that these are governance tools first: they should emit reviewable artifacts and explicit contracts before they become autonomous writers over handoffs, wiki pages, or code. For wiki/RAG work specifically, this preserves the current source-of-truth layering: intake and handoffs remain primary records, wiki pages are compiled derivatives, and readiness/security outputs are evidence attached to the relevant handoff rather than hidden state.
 
 Sources: [autowiki-incremental-kb-generator.md](../handoffs/completed/autowiki-incremental-kb-generator.md), [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md), [security-review-skill.md](../handoffs/active/security-review-skill.md).
-
 ## Active-handoff hygiene rule (2026-05-27)
 
 The 2026-05-27 backlog hygiene pass formalized a governance rule that matters for KB integrity: **active indices are for outstanding work only**. Completed work should be archived to `handoffs/completed/` at wrap-up cadence, and index cells should be trimmed to live TODOs rather than accumulating chronology. That keeps `handoffs/active/` queryable as an action surface instead of a mixed historical dump, and it reduces drift between active indices, wrap-up reports, and compiled wiki pages.
 
 The execution pass archived nine clearly closed aging handoffs and rewired active references to the completed copies. The important policy detail is procedural, not just structural: pruning happens **during operator-invoked wrap-up**, not ad hoc mid-session, so removals from the active tree remain reviewable in one place.
-
 ## Handoff index coverage invariant (2026-05-27 late)
 
 The follow-on audit after the AR-3 tracking gap turned the hygiene rule into a measurable invariant: every active non-index handoff must be linked by `handoffs/README.md`, `master-handoff-index.md`, a domain index, or the blocked index. The audit found and fixed missing/stale tracking for AR-3 restart work, blocked routing-model retraining after episodic-memory reset, Engram conditional memory, ERNIE local image generation, and several completed-reference links.
 
 Six completed handoffs were moved from `active/` to `completed/` during the same pass: MoE dynamic expert selection, CPU22 hybrid spillover design, wdata-aware MUL_MAT coalescing design, CPU4 deferred avenues, Qwen3.6 benchmark fixes, and the SearXNG bash web-search bridge. The active tree now has 84 non-index active handoffs and 7 active coordination indices; validation reported 84/84 linked, 0 unlinked, 0 missing index links, 0 broken active/blocked/README relative links, and 0 stale handoffs over the 30-day freshness threshold.
-
 ## Active/completed twin compaction (2026-05-28)
 
 The next governance refinement is for partially complete handoffs whose live task is buried under validated history. The wrap-up routine now uses active/completed twins instead of all-or-nothing archival: the active handoff keeps current status, next actions, blockers, gates, key files, and reporting instructions, while completed or superseded detail moves to a sibling under `handoffs/completed/` or `handoffs/archived/`. Master and domain indices continue to point at the active handoff only.
@@ -173,7 +146,6 @@ The final same-day wrap-up applied the same rule to the acceleration dispatch su
 A subsequent same-day wrap-up applied the rule to the two remaining large domain indices. `user-facing-harness-index.md` and `research-evaluation-index.md` now function as 63-line dispatch surfaces rather than chronological ledgers. Their pre-compaction bodies are preserved in [`user-facing-harness-index-history-through-2026-06-19.md`](../handoffs/archived/user-facing-harness-index-history-through-2026-06-19.md) and [`research-evaluation-index-history-through-2026-06-19.md`](../handoffs/archived/research-evaluation-index-history-through-2026-06-19.md). This reinforces the active-index invariant: current queue, gates, dependencies, key files, and reporting rules stay active; completed checklist detail and research-intake narration move to dated history ledgers. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md).
 
 The final pass compacted `pipeline-integration-index.md` under the same rule. The active file now routes vision, image generation, PDF extraction, Lean proving, TTS, doc-to-LoRA, and KB-RAG work by current gate, while historical checklist detail lives in [`pipeline-integration-index-history-through-2026-06-19.md`](../handoffs/archived/pipeline-integration-index-history-through-2026-06-19.md). Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md).
-
 ## K-RAG Validation Update (2026-06-19)
 
 K1-K6 are no longer just architecture notes: the internal KB-RAG indexer/query path has shipped, and K7 now has both a seed harness and a certification pool. The fresh K7 build indexed 577 files into 18,010 chunks with about 1.2 GiB of embeddings. On the 20-case seed suite, the best recall@10 config was `recency_w0.1_s90` at 0.6417 overall, with no missed-all-evidence cases. Rerank settings improved recall@3 and first-evidence rank but lost recall@10 and introduced missed-all-evidence failures.
@@ -181,7 +153,6 @@ K1-K6 are no longer just architecture notes: the internal KB-RAG indexer/query p
 The seed result is calibration only. The decision pool is now a 70-case evidence-grounded suite: 50 HotpotQA-style and 20 LoCoMo-style cases, with JSON/count/evidence validation passed. The certification sweep is complete: 420 rows passed artifact checks, `recency_w0.3_s90` was the zero-miss candidate with recall@10 `0.6167`, and `recency_w0.1_s90_rerank_w0.3` had the best aggregate recall@10 `0.6298` while missing three all-evidence cases. Use the zero-miss candidate for safety-sensitive retrieval defaults unless a later certification explicitly trades that property away.
 
 Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
-
 ## Certified KB-RAG Consumer and Parked Two-Pass Retrieval (2026-06-13 / 2026-06-20)
 
 KB-RAG is no longer pre-deployment: K1–K7 are **CERTIFIED 2026-06-13** and shipped under `epyc-orchestrator/src/retrieval/` (additive `colbert_encoder.py`, `markdown_chunker.py`, `kb_rag.py`), plus a query CLI, the `post_commit_kb_rag_update.sh` hook, the `kb-search` Skill (the production Explore-subagent integration path — the MCP-tool variant was never needed), and unit tests. Beyond the certified single-pass MaxSim retrieval (with K9 cross-encoder rerank and K10 Gaussian recency as measured-but-conditional blends, and K11 FTS5 lexical landed default-off, measure-first), there is one **parked retrieval-policy idea** worth tracking so it is not re-discovered: a **self-correcting two-pass retrieval** pattern (from agent-oss, intake-610) — when a downstream consumer signals "evidence incomplete," emit gap-queries and re-retrieve at a lower MaxSim threshold before answering. It stays deferred behind a prerequisite that does not exist yet: a consumer (Explore subagent / orchestrator) that actually emits the incompleteness signal.
@@ -189,19 +160,16 @@ KB-RAG is no longer pre-deployment: K1–K7 are **CERTIFIED 2026-06-13** and shi
 A 2026-06-20 research intake added a **second independent instance** of that same family: **MRAgent** ([intake-698], "Memory is Reconstructed, Not Retrieved," arXiv:2606.06036) uses a Cue-Tag-Content associative graph with active reconstruction — LLM reasoning interleaved with retrieval, iteratively exploring the graph and *pruning* retrieval paths on intermediate evidence rather than fetching a flat top-k. It approaches the same evidence-conditioned problem from the pruning side, where agent-oss approaches it from the re-retrieval side. It is logged as a **comparative datapoint against the parked note, not a new workstream** — same deferral, no new K-track, no plan delta. Its numbers are observations, not decision-gating: token cost ~118k vs 245k–3.3M for baselines (the genuinely transferable idea, given our token-budget constraints, is the *token-cost discipline* of evidence-pruned traversal), but it is cloud-LLM-bound (Gemini-2.5-Flash / Claude-Sonnet-4.5) with no CPU/local results and it **loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17)** — so the accuracy headline does not carry. Explicitly NOT routed to `delta-mem-reproduction` (whose open gates are GPU-bound accuracy reproduction, not retrieval token-cost).
 
 Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
-
 ## Governance Tooling Update (2026-06-13)
 
 The repo-readiness scorer makes knowledge-management maturity measurable. Its v1 deterministic criteria put the portfolio at Documented (L2), with root at Optimized (L4) and each child repo at Documented (L2). The useful output is the failing-criteria queue: standardized security automation, dev environment enforcement, generated docs, health automation, prioritized task discovery, and autonomous security review. Treat this as a governance backlog generator, not a subjective quality grade.
 
 Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
-
 ## 2026-06-19 Update — K7 Certified, Wiki Compile Refreshed
 
 - **K7 is certified for a zero-miss retrieval candidate.** The full 70-case pool produced 420 valid rows; the aggregate winner has slightly higher recall@10, but the zero-miss candidate is the safer default for evidence-seeking workflows because it avoided all-evidence misses. Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
 - **Wiki compilation remains a derived artifact pipeline with wrap-up discipline.** Active handoffs and indices should stay live-only while completed detail moves to completed/archived twins; the wiki is updated from those sources, not edited as the primary record. Source: [handoff-backlog-hygiene-audit.md](../handoffs/completed/handoff-backlog-hygiene-audit.md).
 - **Repo-readiness scoring is a backlog generator, not a quality certificate.** The deterministic scorer is useful because it turns governance gaps into concrete remediation work, but it does not certify the artifact quality behind those gaps. Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
-
 ## 2026-06-20 Update — OKF Conventions Adopted, KB-RAG Consumer Certified
 
 - **OKF validates our hand-built KB shape as convergent, not idiosyncratic.** An external vendor-neutral spec (OKF v0.1) independently arrives at markdown+frontmatter knowledge atoms, file-path-as-identity, a markdown-link graph, a progressive-disclosure index, and change history — 5 of its 6 conventions were already present in our KB. The finding is design-risk reduction, not a migration mandate. Source: [intake-710], [intake-711].
@@ -209,13 +177,11 @@ Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 - **Permissive consumption is now a contract, not an accident.** `validate_intake.py` already ignored extra keys; pinning that as an intentional conformance contract means a future validator change that rejects entries on unknown fields is a reviewable regression, which protects forward-compatible schema evolution across parallel agents. Source: [`wiki/SCHEMA.md`](SCHEMA.md).
 - **The certified KB-RAG is single-pass; smarter retrieval policy is deliberately parked, not abandoned.** Self-correcting two-pass retrieval (agent-oss / intake-610) and evidence-pruned graph traversal (MRAgent / intake-698) are the same deferred pattern from two angles, both blocked on the absence of a consumer that emits an incompleteness signal. The transferable lever is token-cost discipline, not the cloud-LLM accuracy headlines. Source: [internal-kb-rag.md].
 - **Self-hosted constraint governs OKF adoption.** OKF's reference enrichment agent and Knowledge Catalog ingest are BigQuery/cloud-coupled, so the verdict is `adopt_patterns` (conventions) not `adopt_component` (tooling) — the schema is portable, the implementation is not. Source: [intake-710], [intake-711].
-
 ## 2026-06-22 Update — Continuity Backup, Single-Source Stack Governance, Repo-Readiness Scorecard
 
 - **F4 continuity-backup exposed an unresolved existential single-point-of-failure: the entire working set is on one RAID0 device with no off-array copy yet.** Inventory + tiered policy (T0/T1/T2 `MANIFEST.yaml`) and a git-state alerting hook landed; `backup_critical.sh` refuses same-device and overlayfs targets; restore tooling (`verify_restore.sh`, `check_latest_backup.sh`) landed 2026-06-21. But both `/workspace` and `/mnt/raid0/llm` sit on `/dev/md127` (RAID0 striping, no redundancy), and no real off-host/off-array backup has been created and no snapshot restore has been validated. The existential risk stands until an off-array target is approved. Source: [frontier-f4-continuity-backup.md](../handoffs/active/frontier-f4-continuity-backup.md).
 - **Live model/role/serving facts now flow from a single generated source, enforced by stack-change guards across 13 consumer surfaces (27 rules).** Generated model descriptors, stack priors, and operator summaries are authoritative; runtime attestation, q_scorer priors, production launch, AutoPilot preflight, and direct benchmark runtime all gate on them. High-risk consumer migrations completed (admission slot limits, benchmark seeding topology, `/v1/models` ordering, vision-serving role set, WorkerPool primary-port binding, chat-routing fallback candidates, escalation-prewarm endpoint resolution, `launch_maps` auxiliary-role tail). The standardized pipeline is finalized: `stack_change_pipeline.py check --run-promotion-gate` is the canonical command (174 tests pass), guard baseline clean, all surfaces ownership-labeled, no active waivers, W4 swap-CI covers frontdoor/worker/vision/long-context-ingest swaps. Both pipelines are inference-free governance and require no live model runs. Sources: [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md), [standardized-stack-update-pipeline-finalization.md](../handoffs/active/standardized-stack-update-pipeline-finalization.md).
 - **A deterministic repo-readiness maturity scorecard (5 levels, 9 pillars, 45 criteria; adapted from Factory.ai) is deployed advisory-only; the portfolio sits at Level 2 (Documented).** epyc-root is Level 4 (Optimized, 77.8% toward L5); epyc-orchestrator/inference-research/llama are Level 2 (next gate L3, 33-56% coverage). Lowest portfolio criteria: L3 security-automation and standard-dev-env (25% coverage), L4 generated-docs/health-automation, L5 auto-eval-gates/self-optimizing-loop. The 49-item remediation queue (13 P0 blockers) is advisory — items require normal handoff ownership and GitNexus impact gates. A passive AutoPilot pickup JSON (2026-06-21, `mode=advisory_only`, `authority_gate=false`) feeds planning context only; the scorer stays deterministic with no LLM judgment per `feedback_observe_before_diagnosing`. Sources: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md), [progress repo-readiness-2026-06-21](../progress/2026-06/repo-readiness-2026-06-21.md), [progress repo-readiness-remediation-2026-06-21](../progress/2026-06/repo-readiness-remediation-2026-06-21.md).
-
 ## 2026-07-02 Update — Two-Batch Research Intake, Clean-Window Compile Rule, Dedup Discipline
 
 Two operator-directed `/research-intake` batches ran on 2026-07-02 and grew `research/intake_index.yaml` past **772 entries** (intake-732…772). Both closed clean under `validate_intake.py` (exit 0). The sessions are knowledge-management-relevant less for their model content than for the intake→distill→compile governance discipline they exercised, which is the upstream feeder of this wiki.
@@ -226,7 +192,6 @@ Two operator-directed `/research-intake` batches ran on 2026-07-02 and grew `res
 - **Never-dismiss produces URL-less index rows, not silent drops.** An orphaned survey whose operator-supplied arXiv ID was a mismatch was still indexed URL-less as intake-750, flagged for a corrected URL, per the CLAUDE.md "never dismiss a source" rule — the intake index records the gap rather than discarding the source. Source: [intake progress log](../progress/2026-07/2026-07-02-research-intake.md).
 - **Distillation writes to handoffs, provenance flows back to intake — the wiki is never the intake write target.** The distillation phase mapped each new insight to its owning handoff with exact line anchors (14 edits across 9 handoffs), all operator-approved, and populated the `handoffs_updated` provenance field for 17 entries. This reaffirms the producer/consumer layering: intake and handoffs are primary records, the wiki compiles *from* them. The fan-out itself used many parallel per-URL sub-agents while the main agent performed all index/handoff writes, keeping mutation authority centralized. Sources: [distillation progress log](../progress/2026-07/2026-07-02-research-intake-distillation.md), [intake progress log](../progress/2026-07/2026-07-02-research-intake.md).
 - **A canonical autopilot self-improvement reference entered the corpus.** The Darwin Gödel Machine ([intake-772], `2505.22954`, credibility 6, `adopt_patterns`) — a self-referential agent that rewrites its own codebase and keeps an open-ended archive of all variants as stepping stones — is logged as the canonical reference for the project's own autopilot loop, echoing the "keep-all-stepping-stones vs greedy Pareto pruning" tension already surfaced in the autopilot journal/archive governance sections below. Source: [intake-772](https://arxiv.org/abs/2505.22954).
-
 ## Open Questions
 
 - Should the clean-window compile rule become a machine check (e.g., `compile_sources.py` refusing to compile when uncommitted changes touch any corpus root, or when a concurrent-writer lock is held), or remain an operator-judgment step as it is today?
@@ -239,14 +204,12 @@ Two operator-directed `/research-intake` batches ran on 2026-07-02 and grew `res
 - What corpus scale threshold makes structured-DB alternatives (SLIDERS) viable vs ColBERT? Current rough estimate: >1M tokens; SLIDERS' headline gains are at 36M-token corpora, far above our scale.
 - Should the wiki compiler eventually auto-detect handoff moves and refresh stale source paths in compiled chapters, or is manual wrap-up-time repair sufficient? Current policy is manual review during wrap-up.
 - Should the active-handoff coverage audit become a first-class validator alongside `check_handoff_freshness.sh`, or remain a wrap-up-time scriptlet?
-
 ## Related Categories
 
 - [Search & Retrieval](search-retrieval.md) — ColBERT encoder, model selection, decontamination protocol, S3/S4 ONNX pipeline shared with KB-RAG K1
 - [RAG Alternatives](rag-alternatives.md) — SLIDERS structured-DB+SQL architecture, GPT-4.1 hard-wiring blocker, Phase 0 falsification gate
 - [Memory-Augmented Systems](memory-augmented.md) — strategy store + episodic store retrieval patterns; Flywheel's `memory(action=brief)` read-side assembler design pattern
 - [Routing Intelligence](routing-intelligence.md) — KB-RAG integration into Explore-agent routing (K6 work item)
-
 ## Source References
 
 - [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — ColBERT-based RAG architecture, K1–K8 work items, K7 Flywheel-template eval methodology, K8 deferred wikilink learning-loop scorer
@@ -270,7 +233,6 @@ Two operator-directed `/research-intake` batches ran on 2026-07-02 and grew `res
 - [`progress/2026-07/2026-07-02-research-intake-distillation.md`](../progress/2026-07/2026-07-02-research-intake-distillation.md) — 13-source intake batch (intake-732…750) + deep-dive distillation into 9 handoffs with exact line anchors; the clean-window wiki-compile deferral rule, dedup-caught arXiv-ID mismatches, and `handoffs_updated` provenance population
 - [`progress/2026-07/2026-07-02-research-intake.md`](../progress/2026-07/2026-07-02-research-intake.md) — 15-source intake batch (intake-751…772, index to 772 entries); within-batch dedup and the paper+weights `arxiv_id: null` primary-key-collision handling, URL-less orphan indexing (intake-750), and main-agent-writes fan-out governance
 - [intake-772](https://arxiv.org/abs/2505.22954) Darwin Gödel Machine — self-referential self-improving coding agent with an open-ended keep-all-stepping-stones archive; credibility 6, verdict `adopt_patterns`; logged as the canonical reference for the project's own autopilot self-improvement loop
-
 ## Unified trace / memory service (2026-05-06)
 
 Read-only SQLite query layer over the three fragmented audit/trace formats already written by existing infra:
@@ -288,7 +250,6 @@ Source files keep their existing writers; the new layer at `epyc-orchestrator/sr
 **Live ingest (2026-05-06)**: 3477 events ingested (2214 agent_audit + 1260 progress + 3 autopilot source_unavailable markers) in <1s; idempotent re-ingest skipped 3477/3477. CLI: `python -m src.trace.cli {ingest,query,stats}` with date-range, session_id, trial_id, role, category, status, source filters + FTS5 text search.
 
 Sources: [`handoffs/active/unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md), `epyc-orchestrator/src/trace/`.
-
 ## Autopilot dashboard data-source rule (2026-05-28)
 
 The `GEPA + Pareto Frontier` dashboard panel should be journal-backed, not state-cache-backed. The append-only `orchestration/autopilot_journal.jsonl` is the durable per-trial source that remains useful when autopilot is stopped; `autopilot_state.json` is operational state and can contain a stale `pareto_archive` cache if a writer path saves an older in-memory state after the archive write. The dashboard now reconstructs the current-session frontier and hypervolume from journal rows at or after `autopilot_fleet_started_at`, filters `bug_corrupted_by` rows, and falls back to `autopilot_state.json` only when journal data is unavailable.
@@ -296,23 +257,19 @@ The `GEPA + Pareto Frontier` dashboard panel should be journal-backed, not state
 Operationally, apparent Pareto plot staleness should be diagnosed by checking the endpoint source and payload first: `/dashboard/api/pareto` now reports `source=journal_current_session` when it is using the durable journal, plus live totals for frontier size, entry count, and hypervolume points. Source: [`2026-05-28-pareto-dashboard.md`](../progress/2026-05/2026-05-28-pareto-dashboard.md).
 
 2026-07-03 addendum — all-era view: the endpoint gained `scope=all_eras|current` (default `current`, the decision-grade view, unchanged). All-era scope reconstructs across ALL journal shards and instrument-era boundaries, labeling every point from the append-only `orchestration/instrument_eras.yaml` registry (scopes `autopilot_speed`/`autopilot_quality`; synthetic `pre-E2` region) and applying only the codified pre-E2 ×0.5 speed deinflation — later boundaries such as the E5 v6+iqk cutover are labeled, never rescaled (MEASUREMENT.md forbids cross-era rescaling). The UI renders eras as a chronological rainbow ramp (oldest=red → current=cyan) with per-era convex-hull clouds on the scatter and shaded bands on the hypervolume timeline; the payload self-declares `scope` and tags the all-era view non-decision-grade. Source: [`2026-07-03.md`](../progress/2026-07/2026-07-03.md).
-
 ## Autopilot journal authority during empty-journal saves (2026-06-19)
 
 The append-only journal remains the archive authority even before an archive-bearing trial exists. Empty-journal lifecycle saves should persist ordinary operational state directly and must not recreate a legacy `pareto_archive` cache through `archive.save(state)`. Compatibility save APIs can remain for explicit state-payload tests/tools, but the live AutoPilot save path should not use them as a fallback when the journal fold is unavailable.
 
 Operationally, if a fresh or reset AutoPilot lifecycle save lacks archive-bearing journal rows, treat the missing fold as a reason to skip archive cache writes, not as permission to rehydrate state-cache authority. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md) (`A8 archive-save fallback retirement`) and [`handoffs/active/evidence-plane-event-sourcing-and-narrative.md`](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
-
 ## Append-only scrub hygiene (2026-06-19)
 
 Evidence-plane correction tools must fail closed if they would rewrite live history or derived memory stores. The retired gate-lock narrative scrubber is the concrete example: an older one-shot script could rewrite `autopilot_journal.jsonl`, generated STM, StrategyStore rows, FTS, and FAISS mirrors in place. It now exits with operator guidance to append supersession events via `scrub_journal.py` and validate with `archive_authority_report.py --strict`.
 
 The durable rule is to keep the journal as the append-only source, express retroactive corrections as policy-versioned events, and regenerate or fold read views instead of editing mirrors directly. That rule also applies to compatibility paths: if a caller supplies a journal or explicit excluded-trial set, StrategyStore promotion helpers must require the journal-aware selector API rather than falling back to raw SQL. Frontier strategy memory follows the same pattern: AutoPilot should append the trial `JournalEntry` first, then project StrategyStore rows from that persisted row with deterministic journal-keyed IDs, so retry/restart projection cannot create duplicates or get ahead of the ledger. The follow-up audit/sync path compares those deterministic rows against the folded journal, inserts only missing safe projections, and fails closed before future writes unless semantic embeddings are available or hash fallback is explicitly allowed. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md) (`A8 W2 gate-lock scrubber retirement`, `A8 W6 legacy strategy quarantine fallback hardening`, `A8 W1/W6 journal-keyed frontier strategy projection`, `A8 W1/W6 strategy projection audit and sync`) and [`handoffs/active/evidence-plane-event-sourcing-and-narrative.md`](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
-
 ## Evidence-plane handoff compaction (2026-06-19)
 
 The active evidence-plane ledger was compacted after W4/W7 implementation history began obscuring the live dispatch gate. Completed W1-W7 chronology now lives in [`handoffs/archived/evidence-plane-ledger-and-sequential-verdicts-history-through-2026-06-19.md`](../handoffs/archived/evidence-plane-ledger-and-sequential-verdicts-history-through-2026-06-19.md), while the active handoff starts with the current readiness blocker: `57/120` trusted vectors and `5/30` seq shadow rows. This is the intended wrap-up pattern for large active handoffs: keep the active file as the next-action surface and move validated chronology to a dated sibling.
-
 ## PII / secret hygiene pre-commit hook (2026-05-06)
 
 Regex-only pre-commit hook scanning staged git blobs (NOT working tree, so `git add -p` partial stages are caught) for accidentally-committed secrets and account-number-shaped strings. Installed at `.git/hooks/pre-commit` across the three EPYC repos via exec wrappers pointing to a single canonical `scripts/hooks/pii_precommit.sh` in epyc-root.
@@ -331,8 +288,6 @@ Sources: [`handoffs/completed/privacy-hygiene-precommit-hooks.md`](../handoffs/c
 
 - **"Derived-but-unfiled" is a distinct knowledge-loss mode, orthogonal to un-flipped checkboxes.** An operator-prompted audit of one session's deep dives found **seven** high-ROI items — including the session's only time-sensitive one — that were fully derived in analysis prose ("measurable locally today", "cheapest experiment in the program") and then filed nowhere: no task in the owning handoff, no index row. Three recurring shapes: (1) a conclusion stated in prose but never converted to a task; (2) a fix landed while the flag/config that would make it *run* stayed off with no enable task; (3) a live idea silently discarded because a **sibling** idea was falsified. The same audit found the converse defect too: a task filed at line ~1444 of a 1,400-line handoff, in zero indices — *filed is not discoverable*. Sources: [progress 2026-07-21](../progress/2026-07/2026-07-21.md), [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md).
 - **The countermeasure is a closure property enforced at four gates, not vigilance.** (1) research-intake Stage 1: every `relevance ≥ medium` entry → a proposal row with verbatim draft task lines, or an explicit decline; **no handoff/index writes in the sweep** — integration is proposed, not performed. (2) Stage 2 (operator-gated): deep dives each end in a derived-actionables ledger; the plan-mode integration proposal must resolve **every Stage-1 proposal row (dived or not) plus every ledger row** — dives correct drafts, they do not scope the plan. (3) Plan approval before any write; mid-execution additions return to the operator. (4) The wrap-up skill's derived-actionables gate backstops whatever leaked into prose anyway, in both harnesses (one real file — `.claude/commands/wrap-up.md` symlinks to `agents/commands/wrap-up.md`). At each gate a silent drop becomes a checkable defect. Sources: `.claude/skills/research-intake/SKILL.md` (2026-07-21 redesign), `agents/commands/wrap-up.md`, [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
-
-
 ## Companion-artifact conflation in research intake (2026-07-25)
 
 A companion **repo / weights collection / project page is a DISTINCT artifact** from the paper it
@@ -353,7 +308,6 @@ the paper" while the blocker they cite (`no llama.cpp support / no GGUF / no CPU
 are overwhelmingly `discovered_via: seed` bootstrap corpus (correct behavior, not dropped value);
 and `handoffs_updated` is unreliable as an integration signal — the REAP cluster has an empty field
 while `completed/reap-moe-expert-pruning.md` exists and cites it.
-
 ## Fabricated citations from summarizer agents (2026-07-25)
 
 Two invented specifics reached the intake index from Stage-1 agent summaries and were caught only
@@ -371,8 +325,6 @@ blog index; one where the sweep queried the benchmark's site rather than the pub
 
 _Sources: `handoffs/active/intake-derived-work-2026-07-25.md` ID-10/10b/10c;
 `research/intake_index.yaml` (dive_corrections fields); `progress/2026-07/2026-07-25.md`._
-
-
 ## Research-intake protocol: four stages, and why (2026-07-25)
 
 The intake pipeline was rewritten from two stages to four after a session in which the two-stage
@@ -415,7 +367,6 @@ be named, because an unexplained `superseded` is unfalsifiable.
 
 _Sources: `.claude/skills/research-intake/SKILL.md`; `references/intake-schema.md` § Verification
 lifecycle; `references/session-persistence.md` § Steering ledger; `progress/2026-07/2026-07-25.md`._
-
 ## Compiled Update — 2026-07-29: a stale record is an active liability — the correction pass
 
 **Confidence**: verified — each correction below was settled against a primary
@@ -565,7 +516,6 @@ post-approval round, so the rest of the plan was authored without their findings
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — weight-map-over-config verification rule
 - [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — near-identical-title dedup hazard; cite by arXiv ID
 - [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — prose-to-checkbox conversion during the same pass
-
 ## Compiled Update — 2026-08-09: a citation graph nobody had measured was 23.5% broken, and the ranking derived from it was wrong
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled; the index defect and its repair were measured directly against `research/intake_index.yaml` before and after migration on 2026-08-09.
@@ -577,7 +527,6 @@ post-approval round, so the rest of the plan was authored without their findings
 - **A maintained prior-art register is a cheap, high-leverage artifact, and its design is worth copying wholesale.** An upstream serving project ships one as markdown consulted *before* any profiler finding may be called novel, with a five-column schema — pattern, trace keywords, primary code, existing path, and **a pre-written conclusion**. That last column is the load-bearing one: it moves the verdict out of model judgment at read time and into reviewable data at authoring time, the same move a claim grammar makes for measurement claims. Three further mechanisms transfer directly: partitioning rows **mainline vs in-flight** (a pattern merged upstream but absent from a frozen local build is a *port*, not a research proposal), an **expected-absence register** recording why a path may be legitimately missing so a disabled path does not read as a defect, and a **pinned-head refresh** that records the upstream commit each scan was taken against so staleness is measurable rather than asserted. The local flag register now also states each flag's effect on trace interpretation, preventing an intentionally disabled fast path from being misread as a missing optimization. Sources: [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md), [cpu-kernel-env-flags-inventory.md](../handoffs/completed/cpu-kernel-env-flags-inventory.md), intake-1029 in [research/intake_index.yaml](../research/intake_index.yaml).
 
 - **External code moves, so an unpinned citation of an external symbol is unfalsifiable later.** Two independent sources — a technical article and a maintained upstream catalog — both named a kernel that no longer exists under that name; neither was wrong when written, both were wrong when read, and neither recorded the head it was true at. This is now a written contract in the intake skill: pin the commit or retrieval date, prefer durable identifiers (the *role* a thing plays) over volatile ones (internal symbol names), record the head for tree-wide claims, and **verify absence across trees rather than one file** — the same dive nearly reported a source as fabricated because a first search covered only a framework's model file while every symbol lived in its kernels tree. Sources: [intake-schema.md](../.claude/skills/research-intake/references/intake-schema.md), [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), intake-1030.
-
 ## Compiled Update — 2026-08-09 (second batch): auditing a belief-system design, and what the epistemic literature actually licenses
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled from a single research-intake
@@ -675,7 +624,6 @@ post-approval round, so the rest of the plan was authored without their findings
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the resulting program: spec-amendment sheet, downscoped gold corpus, shadow pilot, research track, operator decision queue
 - [`progress/2026-08/2026-08-09.md`](../progress/2026-08/2026-08-09.md) — session record for the audit batch
 - [`research/intake_index.yaml`](../research/intake_index.yaml) — entries `intake-1031`–`intake-1067`, each carrying its verified claims, adoption extract, and dated `dive_corrections`
-
 ## Compiled Update — 2026-08-09/10: what building the belief substrate actually taught
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled from an implementation
@@ -763,7 +711,6 @@ post-approval round, so the rest of the plan was authored without their findings
 - [`research/deep-dives/vidya-p5c-evaluation-and-decision.md`](../research/deep-dives/vidya-p5c-evaluation-and-decision.md) — 28/28, and the four failures found first; verdict ITERATE
 - [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) · [`vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md)
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — 58 done / 4 open
-
 ## Compiled Update — 2026-08-10: a citation is not a dependency, and a check can be passed by deleting what it inspects
 
 > Model-compiled from an implementation session (vidya program + a full citation audit of the intake
@@ -850,7 +797,6 @@ post-approval round, so the rest of the plan was authored without their findings
 - [`research/deep-dives/vidya-r1-r2-stratified-negation.md`](../research/deep-dives/vidya-r1-r2-stratified-negation.md) §2.4c — the vacuity retraction and the four retraction routes
 - [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — alias candidate generation, source-identity defect
 - [`research/recommendations.md`](../research/recommendations.md) — rec-001 and rec-002 rewritten after their sources were read
-
 ## Belief-kernel ingestion contract — one carrier, one ladder per source class (2026-08-10)
 
 Heterogeneous producers write measurements in different shapes: an autopilot trial row, an
@@ -906,7 +852,6 @@ independent evidence.
 - [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — implementer's guide and the live source register
 - [`research/deep-dives/vidya-r4-r5-corroboration-and-decay.md`](../research/deep-dives/vidya-r4-r5-corroboration-and-decay.md) — the withdrawn 2.2% ceiling and the corrected structured-corpus measurement
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC1–SC11 — the source-coverage track
-
 ## Compiled Update — 2026-08-10 (promotion track): what it took to make one belief rest on two sources
 
 > Model-compiled from the belief-substrate promotion track and the R-program closeout. Every figure
@@ -1073,7 +1018,6 @@ independent evidence.
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC5/SC6 — wiki-as-dependents, the autopilot write hook and `reps_basis`
 - [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) · [`progress/2026-08/2026-08-10-vidya.md`](../progress/2026-08/2026-08-10-vidya.md) — the session records for both halves
 - [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.2 — the amended carrier with `T2 MachineLocated`
-
 ## Discussing a record is not relying on it (2026-08-10)
 
 The first production run of a citation gate over this repository flagged six documents as resting on
@@ -1112,3 +1056,64 @@ corpus before choosing the default, and reserve the strict floor for the load-be
 - [`scripts/vidya/citation_gate.py`](../scripts/vidya/citation_gate.py) — the gate, its blocking set, and why `review` only warns
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) SC12–SC17 — the consumption track
 - [`progress/2026-08/2026-08-10-vidya.md`](../progress/2026-08/2026-08-10-vidya.md) — the run that produced these numbers
+## Compiled Update — 2026-08-12 (first live GEAK/Arena belief rows)
+
+The producer-side GEAK/Arena boundary has crossed from prospective wiring to live evidence. INF-03
+r3's terminal Claude/Codex 2h and 8h checkpoints each wrote two measurements: correctness pass rate
+and timing-harness validity rate. The generic adapter projects only those producer-authored rows
+through the shared ladder; it does not infer speedup, campaign rank, or promotion authority from the
+receipts. Earlier pre-hook smokes remain deliberately unprojected.
+
+This is also a useful example of why storage and resource authority are distinct. Terminal cells can
+remain durable, restart-safe evidence while the wider campaign pauses to repair over-broad GPU claim
+scope. No read-side reconstruction is needed, and no invalid/incomplete cell enters the belief set.
+
+### Source References (2026-08-12 live Arena rows)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20's live receipt boundary
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — current write/read status and no-backfill rule
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact terminal receipts and paused-campaign chronology
+## Compiled Update — 2026-08-12 (AutoKernel governed receipts)
+
+AutoKernel's live controls and governed async-prefetch replay now write belief semantics at the
+producer boundary. Future receipts carry protocol and metric direction, scored-block basis, exact
+source/binary/model/resource-claim/producer identities, the native verdict, and immutable evidence
+digests. The Vidya adapter independently re-derives those bindings and delegates grading to the one
+shared measurement ladder; it does not introduce a source-specific grade rule.
+
+The temporal boundary is deliberate. The accepted controls, hardened-instrument smoke, and GPU replay
+completed before this hook and therefore project no Vidya rows. A reader cannot manufacture write-time
+warrant after the fact. Research `730adb1d` and root `2a4e170a` close SC27 prospectively; the next
+governed controls or replay will be the first admissible source records.
+
+### Source References (2026-08-12 SC27)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC27 contract and completion boundary
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — live source register and projection semantics
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — promoted commits, tests, and no-backfill evidence
+## Compiled Update — 2026-08-11 (AutoKernel Arena write-side boundary)
+
+The GEAK/AgentKernelArena adapter now has a prospective belief writer rather than relying on a later
+reader to reinterpret generic benchmark fields. Successful future round trips emit two explicitly
+typed measurements—correctness and timing—using the same measurement ladder as the existing ROCm
+profiling producers. Failed or incomplete runs emit no performance belief. The compatibility
+preflight remains dependency evidence only: source pins, platform reachability, and compile success
+are important facts, but none has an honest higher-is-better or lower-is-better ordinal direction.
+
+This is a small but general rule for evidence systems: **write semantic measurement intent at the
+producer boundary, and classify capability checks separately from ranked observations**. It prevents
+a dashboard or ledger adapter from inventing metric direction after the experiment, and makes future
+controller A/B results comparable without retrofitting old receipts. Existing 2026-08-11 receipts are
+deliberately unchanged.
+
+The same boundary now applies to the admitted MMQ-WGM negative. Its wall-time, TCC-hit-rate, and
+read-request observations are direct measurements, but the receipt predates any `ClaimTuple` writer.
+SC22 therefore files a producer-side hook before any successor launch-order experiment and explicitly
+forbids retrofitting r2 on read. This preserves the negative as durable experiment evidence without
+claiming that a later adapter witnessed semantics the original producer never wrote.
+
+### Source References (2026-08-11 AutoKernel Arena writer)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20/SC21 acceptance, SC22 MMQ-WGM write-side task, and classification
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — producer vectors, MMQ-WGM candidate source, and dependency-evidence handling
+- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — receipt hashes, negative disposition, and closeout boundary

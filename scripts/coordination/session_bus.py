@@ -38,8 +38,42 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
+# REPO_ROOT is retained for anything that legitimately wants "wherever this
+# copy of the repo lives" (there is none left in this module after the fix
+# below, but it costs nothing to keep and other modules still import the
+# pattern). It must NEVER be used to derive the bus root — see get_bus_root().
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_BUS_ROOT = REPO_ROOT / "coordination" / "session-bus"
+
+
+def get_bus_root() -> Path:
+    """Resolve the ONE canonical session-bus root.
+
+    Deliberately NOT __file__-relative. Under the worktree-per-main model
+    (scripts/coordination/WORKTREE_MIGRATION.md), every main runs this exact
+    script from its own worktree checkout, at a different filesystem path --
+    a Path(__file__).resolve().parents[2] resolution (the old code here)
+    would therefore derive FIVE independently-mutating bus directories, one
+    per worktree, instead of the single shared runtime plane the whole
+    protocol assumes: one queue, one set of per-agent cursors, one
+    single-writer rule per file. There is exactly one live bus. It lives at
+    the canonical /workspace checkout -- the versioned WORK happens in
+    per-main worktrees, but the coordination RUNTIME plane does not fork.
+    Every worktree's copy of this module must resolve to that same path.
+
+    EPYC_BUS_ROOT overrides this, for tests only -- production code paths
+    (agents, the coordinator-daemon, the hooks) never set it. Most tests
+    instead isolate via an explicit --bus-root / bus_root argument (see
+    tests/test_session_bus.py's tmp_path-based fixture); the env var exists
+    for callers that cannot thread an argument through (e.g. shelling out to
+    this script from a test without controlling its argv).
+    """
+    override = os.environ.get("EPYC_BUS_ROOT")
+    if override:
+        return Path(override)
+    return Path("/workspace/coordination/session-bus")
+
+
+DEFAULT_BUS_ROOT = get_bus_root()
 
 COORDINATOR_DAEMON = "coordinator-daemon"
 
@@ -156,53 +190,396 @@ def _load_schema(bus_root: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+# ----------------------------------------------- vendored draft-7 validator
+#
+# C34 (2026-08-11): the two sides of this bus ran DIFFERENT validators, so a row
+# could pass authoring and be refused at relay — written but never sent, and
+# nobody told. Agents author with `python3 scripts/coordination/session_bus.py`
+# (/usr/bin/python3, 3.13, no jsonschema); the coordinator-daemon runs under the
+# orchestrator venv (3.11, jsonschema 4.26) and validates in full.
+#
+# Pinning an interpreter in the documented command was the obvious fix and is the
+# wrong one: it is a CONVENTION, and the next task brief, wrapper or doc that
+# spells the command the old way silently reopens the identical gap. The two
+# interpreters are also ABI-incompatible (3.13 vs 3.11, and jsonschema pulls the
+# compiled rpds-py), so the venv's site-packages cannot simply be borrowed.
+#
+# So agreement is made STRUCTURAL: when jsonschema is absent, validate against
+# the same schema file with a vendored draft-7 subset. It has no dependencies, so
+# it works under any interpreter, and `tests/test_session_bus.py` asserts it
+# agrees with jsonschema verdict-for-verdict over the whole live bus corpus plus
+# a mutant battery. If the schema ever grows a keyword this does NOT implement,
+# construction REFUSES rather than ignoring the keyword — a validator that skips
+# what it does not understand is the C34 fail-open wearing a different hat.
+
+
+class _UnsupportedSchema(Exception):
+    """The schema uses a construct the vendored validator does not implement."""
+
+
+class _MiniError:
+    """Shaped like `jsonschema.ValidationError` for the three attributes this
+    module and `session_bus_coordinator.py` actually read: path, message,
+    validator (the failing keyword)."""
+
+    __slots__ = ("path", "message", "validator")
+
+    def __init__(self, path: list, message: str, validator: str) -> None:
+        self.path = list(path)
+        self.message = message
+        self.validator = validator
+
+    def __repr__(self) -> str:  # pragma: no cover — debugging aid
+        where = "/".join(str(p) for p in self.path) or "<root>"
+        return f"<_MiniError {where}: {self.message}>"
+
+
+# Keywords the vendored validator ENFORCES.
+_MINI_ASSERTIONS = frozenset({
+    "$ref", "type", "enum", "const", "required", "properties",
+    "additionalProperties", "items", "minItems", "maxItems", "uniqueItems",
+    "minLength", "maxLength", "pattern", "minimum", "maximum",
+    "exclusiveMinimum", "exclusiveMaximum", "allOf", "anyOf", "oneOf", "not",
+    "if", "then", "else",
+})
+# Keywords that assert nothing — safe to carry without enforcing.
+_MINI_ANNOTATIONS = frozenset({
+    "$schema", "$id", "$comment", "title", "description", "default",
+    "examples", "deprecated", "readOnly", "writeOnly", "definitions",
+})
+# Where subschemas live, by keyword shape.
+_MINI_SUBSCHEMA = frozenset({"not", "if", "then", "else"})
+_MINI_SUBSCHEMA_LIST = frozenset({"allOf", "anyOf", "oneOf"})
+_MINI_SUBSCHEMA_MAP = frozenset({"properties", "definitions"})
+
+_MINI_TYPES = frozenset({"object", "array", "string", "number", "integer",
+                         "boolean", "null"})
+
+_MINI_TRUE = object()
+_MINI_FALSE = object()
+
+
+def _mini_unbool(value: Any) -> Any:
+    """JSON-Schema equality keeps True distinct from 1 (and False from 0) while
+    treating 1 and 1.0 as equal. Swapping the bools for sentinels buys both."""
+    if value is True:
+        return _MINI_TRUE
+    if value is False:
+        return _MINI_FALSE
+    return value
+
+
+def _mini_equal(a: Any, b: Any) -> bool:
+    a, b = _mini_unbool(a), _mini_unbool(b)
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_mini_equal(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_mini_equal(a[k], b[k]) for k in a)
+    if isinstance(a, (list, dict)) or isinstance(b, (list, dict)):
+        return False
+    return a == b
+
+
+def _mini_is_type(value: Any, kind: str) -> bool:
+    if kind == "object":
+        return isinstance(value, dict)
+    if kind == "array":
+        return isinstance(value, list)
+    if kind == "string":
+        return isinstance(value, str)
+    if kind == "boolean":
+        return isinstance(value, bool)
+    if kind == "null":
+        return value is None
+    if kind == "number":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if kind == "integer":
+        # draft-6+ widened "integer" to any number with zero fractional part.
+        if isinstance(value, bool):
+            return False
+        if isinstance(value, int):
+            return True
+        return isinstance(value, float) and value.is_integer()
+    raise _UnsupportedSchema(f"unknown type {kind!r}")
+
+
+def _mini_extras_msg(extras: Iterable[str]) -> str:
+    extras = sorted(extras)
+    verb = "was" if len(extras) == 1 else "were"
+    listed = ", ".join(repr(e) for e in extras)
+    return f"Additional properties are not allowed ({listed} {verb} unexpected)"
+
+
+def _mini_audit(schema: Any, where: str = "<root>") -> None:
+    """Refuse a schema this validator would only partially enforce.
+
+    Walking the schema up front is the whole safety argument: an unknown
+    keyword must surface as a REFUSAL to validate, never as a keyword quietly
+    skipped, or the vendored path becomes the fail-open it was written to close.
+    """
+    if isinstance(schema, bool):
+        return
+    if not isinstance(schema, dict):
+        raise _UnsupportedSchema(f"{where}: schema is {type(schema).__name__}, not an object")
+    for key, value in schema.items():
+        spot = f"{where}/{key}"
+        if key in _MINI_SUBSCHEMA:
+            _mini_audit(value, spot)
+        elif key in _MINI_SUBSCHEMA_LIST:
+            if not isinstance(value, list):
+                raise _UnsupportedSchema(f"{spot}: expected a list of schemas")
+            for i, sub in enumerate(value):
+                _mini_audit(sub, f"{spot}/{i}")
+        elif key in _MINI_SUBSCHEMA_MAP:
+            if not isinstance(value, dict):
+                raise _UnsupportedSchema(f"{spot}: expected an object of schemas")
+            for name, sub in value.items():
+                _mini_audit(sub, f"{spot}/{name}")
+        elif key == "items":
+            if isinstance(value, list):
+                for i, sub in enumerate(value):
+                    _mini_audit(sub, f"{spot}/{i}")
+            else:
+                _mini_audit(value, spot)
+        elif key == "additionalProperties":
+            if not isinstance(value, bool):
+                _mini_audit(value, spot)
+        elif key == "type":
+            kinds = value if isinstance(value, list) else [value]
+            for kind in kinds:
+                if kind not in _MINI_TYPES:
+                    raise _UnsupportedSchema(f"{spot}: unknown type {kind!r}")
+        elif key == "$ref":
+            if not isinstance(value, str) or not value.startswith("#/"):
+                raise _UnsupportedSchema(f"{spot}: only local '#/...' $ref is supported, got {value!r}")
+        elif key in _MINI_ASSERTIONS or key in _MINI_ANNOTATIONS:
+            continue
+        else:
+            raise _UnsupportedSchema(
+                f"{spot}: keyword {key!r} is not implemented by the vendored validator")
+
+
+class _MiniDraft7Validator:
+    """A dependency-free draft-7 validator covering exactly the constructs
+    `session_bus.schema.json` uses. Interface-compatible with
+    `jsonschema.Draft7Validator` for `iter_errors` / `is_valid`."""
+
+    def __init__(self, schema: dict) -> None:
+        _mini_audit(schema)
+        self.schema = schema
+
+    # -- public ------------------------------------------------------------
+
+    def iter_errors(self, instance: Any) -> Iterable[_MiniError]:
+        yield from self._errors(self.schema, instance, [])
+
+    def is_valid(self, instance: Any) -> bool:
+        for _ in self.iter_errors(instance):
+            return False
+        return True
+
+    # -- internals ---------------------------------------------------------
+
+    def _resolve(self, ref: str) -> Any:
+        node: Any = self.schema
+        for part in ref[2:].split("/"):
+            part = part.replace("~1", "/").replace("~0", "~")
+            if not isinstance(node, dict) or part not in node:
+                raise _UnsupportedSchema(f"$ref {ref!r} does not resolve")
+            node = node[part]
+        return node
+
+    def _valid(self, schema: Any, instance: Any) -> bool:
+        for _ in self._errors(schema, instance, []):
+            return False
+        return True
+
+    def _errors(self, schema: Any, inst: Any, path: list) -> Iterable[_MiniError]:
+        if schema is True or schema == {}:
+            return
+        if schema is False:
+            yield _MiniError(path, f"{inst!r} is not allowed", "schema")
+            return
+        # draft-7: a $ref supersedes its siblings.
+        if "$ref" in schema:
+            yield from self._errors(self._resolve(schema["$ref"]), inst, path)
+            return
+
+        if "type" in schema:
+            kinds = schema["type"] if isinstance(schema["type"], list) else [schema["type"]]
+            if not any(_mini_is_type(inst, k) for k in kinds):
+                listed = ", ".join(repr(k) for k in kinds)
+                yield _MiniError(path, f"{inst!r} is not of type {listed}", "type")
+                # Deliberately NOT an early return: jsonschema evaluates every
+                # keyword independently, and the type-specific blocks below are
+                # already isinstance-guarded. Returning here would suppress the
+                # enum/const/combinator errors jsonschema still reports, and the
+                # differential test compares the whole error set, not just the
+                # verdict.
+        if "enum" in schema and not any(_mini_equal(inst, c) for c in schema["enum"]):
+            yield _MiniError(path, f"{inst!r} is not one of {schema['enum']!r}", "enum")
+        if "const" in schema and not _mini_equal(inst, schema["const"]):
+            yield _MiniError(path, f"{schema['const']!r} was expected", "const")
+
+        if isinstance(inst, str):
+            yield from self._string_errors(schema, inst, path)
+        if isinstance(inst, (int, float)) and not isinstance(inst, bool):
+            yield from self._number_errors(schema, inst, path)
+        if isinstance(inst, list):
+            yield from self._array_errors(schema, inst, path)
+        if isinstance(inst, dict):
+            yield from self._object_errors(schema, inst, path)
+
+        yield from self._combinator_errors(schema, inst, path)
+
+    def _string_errors(self, schema: dict, inst: str, path: list) -> Iterable[_MiniError]:
+        if "minLength" in schema and len(inst) < schema["minLength"]:
+            yield _MiniError(path, f"{inst!r} is too short", "minLength")
+        if "maxLength" in schema and len(inst) > schema["maxLength"]:
+            yield _MiniError(path, f"{inst!r} is too long", "maxLength")
+        if "pattern" in schema and re.search(schema["pattern"], inst) is None:
+            yield _MiniError(path, f"{inst!r} does not match {schema['pattern']!r}", "pattern")
+
+    def _number_errors(self, schema: dict, inst: Any, path: list) -> Iterable[_MiniError]:
+        if "minimum" in schema and inst < schema["minimum"]:
+            yield _MiniError(path, f"{inst!r} is less than the minimum of "
+                                   f"{schema['minimum']!r}", "minimum")
+        if "maximum" in schema and inst > schema["maximum"]:
+            yield _MiniError(path, f"{inst!r} is greater than the maximum of "
+                                   f"{schema['maximum']!r}", "maximum")
+        if "exclusiveMinimum" in schema and inst <= schema["exclusiveMinimum"]:
+            yield _MiniError(path, f"{inst!r} is less than or equal to the exclusive minimum "
+                                   f"of {schema['exclusiveMinimum']!r}", "exclusiveMinimum")
+        if "exclusiveMaximum" in schema and inst >= schema["exclusiveMaximum"]:
+            yield _MiniError(path, f"{inst!r} is greater than or equal to the exclusive maximum "
+                                   f"of {schema['exclusiveMaximum']!r}", "exclusiveMaximum")
+
+    def _array_errors(self, schema: dict, inst: list, path: list) -> Iterable[_MiniError]:
+        if "minItems" in schema and len(inst) < schema["minItems"]:
+            yield _MiniError(path, f"{inst!r} is too short", "minItems")
+        if "maxItems" in schema and len(inst) > schema["maxItems"]:
+            yield _MiniError(path, f"{inst!r} is too long", "maxItems")
+        if schema.get("uniqueItems"):
+            seen: list = []
+            for item in inst:
+                if any(_mini_equal(item, s) for s in seen):
+                    yield _MiniError(path, f"{inst!r} has non-unique elements", "uniqueItems")
+                    break
+                seen.append(item)
+        if "items" in schema:
+            items = schema["items"]
+            if isinstance(items, list):
+                for i, (sub, value) in enumerate(zip(items, inst)):
+                    yield from self._errors(sub, value, path + [i])
+            else:
+                for i, value in enumerate(inst):
+                    yield from self._errors(items, value, path + [i])
+
+    def _object_errors(self, schema: dict, inst: dict, path: list) -> Iterable[_MiniError]:
+        for key in schema.get("required", []):
+            if key not in inst:
+                yield _MiniError(path, f"{key!r} is a required property", "required")
+        props = schema.get("properties")
+        if schema.get("additionalProperties") is False:
+            extras = [k for k in inst if k not in (props or {})]
+            if extras:
+                yield _MiniError(path, _mini_extras_msg(extras), "additionalProperties")
+        elif isinstance(schema.get("additionalProperties"), dict):
+            for key, value in inst.items():
+                if key not in (props or {}):
+                    yield from self._errors(schema["additionalProperties"], value, path + [key])
+        if props:
+            for key, sub in props.items():
+                if key in inst:
+                    yield from self._errors(sub, inst[key], path + [key])
+
+    def _combinator_errors(self, schema: dict, inst: Any, path: list) -> Iterable[_MiniError]:
+        for sub in schema.get("allOf", []):
+            yield from self._errors(sub, inst, path)
+        if "anyOf" in schema and not any(self._valid(s, inst) for s in schema["anyOf"]):
+            yield _MiniError(path, f"{inst!r} is not valid under any of the given schemas",
+                             "anyOf")
+        if "oneOf" in schema:
+            matched = sum(1 for s in schema["oneOf"] if self._valid(s, inst))
+            if matched == 0:
+                yield _MiniError(path, f"{inst!r} is not valid under any of the given schemas",
+                                 "oneOf")
+            elif matched > 1:
+                yield _MiniError(path, f"{inst!r} is valid under each of the given schemas",
+                                 "oneOf")
+        if "not" in schema and self._valid(schema["not"], inst):
+            yield _MiniError(path, f"{inst!r} should not be valid under {schema['not']!r}", "not")
+        if "if" in schema:
+            branch = "then" if self._valid(schema["if"], inst) else "else"
+            if branch in schema:
+                yield from self._errors(schema[branch], inst, path)
+
+
 def _validator(schema: dict, definition: str):
-    try:
-        import jsonschema  # type: ignore
-    except ImportError:
-        return None
+    """The validator for one definition, IDENTICAL on both sides of the bus.
+
+    Prefers `jsonschema` when present (the daemon's interpreter has it) and
+    otherwise uses the vendored draft-7 subset above, so authoring under
+    `/usr/bin/python3` applies the same schema the relay applies. Returns None
+    only when neither can validate — see `validate_row` for that degrade.
+    """
     sub = {"$schema": schema["$schema"], "definitions": schema["definitions"],
            "$ref": f"#/definitions/{definition}"}
-    return jsonschema.Draft7Validator(sub)
+    try:
+        import jsonschema  # type: ignore
+        return jsonschema.Draft7Validator(sub)
+    except ImportError:
+        pass
+    try:
+        return _MiniDraft7Validator(sub)
+    except _UnsupportedSchema as exc:
+        print(f"session_bus: WARNING — jsonschema is unavailable under {sys.executable} AND the "
+              f"vendored fallback validator refuses this schema ({exc}). Someone added a schema "
+              f"construct the fallback does not implement; implement it in _MiniDraft7Validator "
+              f"rather than leaving authoring on the partial check.", file=sys.stderr)
+        return None
 
 
 def validate_row(bus_root: Path, row: dict, definition: str) -> None:
-    """Raise BusError on a structural violation. Degrades to a required-key
-    check when jsonschema is unavailable, and says so rather than passing
-    silently.
+    """Raise BusError on a structural violation, against the FULL schema, under
+    any interpreter.
 
-    C34 (2026-07-29): IT ONLY SAID SO WHEN IT FAILED. On the success path the partial
-    check returned silently, so "validated" and "checked six keys exist" were
-    indistinguishable to the caller — and that distinction is the whole ballgame here,
-    because the two sides of this bus run different interpreters:
+    C34, filed 2026-07-29, closed 2026-08-11. The two sides of this bus run
+    different interpreters — agents author with `python3
+    scripts/coordination/session_bus.py append ...` (the command CLAUDE.md,
+    BUS_PROTOCOL.md and every task brief specify, i.e. `/usr/bin/python3`, which
+    has no jsonschema), while the coordinator-daemon runs under the orchestrator
+    venv, which has 4.26.0 — and until today only ONE of them validated. Authoring
+    degraded to a six-required-key check, relay applied the whole schema, so a
+    message could pass authoring and be REFUSED at relay: the write succeeded, the
+    send did not, and nobody was told. Measured on the live bus 2026-08-11: 368 of
+    1137 outbox rows (32%) were in exactly that state, including both C27 operator
+    gates.
 
-      * agents author with `python3 scripts/coordination/session_bus.py append ...`,
-        the command CLAUDE.md, BUS_PROTOCOL.md and every task brief specify.
-        `/usr/bin/python3` has NO jsonschema, so authoring gets the 6-key check;
-      * the coordinator-daemon runs under the orchestrator venv, which HAS jsonschema
-        (4.26.0), so `relay_outbox_messages` applies the FULL schema.
+    `_validator` now falls back to a vendored draft-7 subset instead of returning
+    None, so both sides apply `session_bus.schema.json` itself and CANNOT disagree.
+    Consequence, and the point: `append` now REFUSES at the author what the relay
+    would have refused later. That is the correct place to fail — the rows it
+    refuses were never being delivered.
 
-    So a message can pass authoring and be REJECTED at relay, and it is then never
-    delivered — the write succeeded, the send did not, and nobody is told. Measured
-    2026-07-29: 217 of 341 live outbox rows (64%) are in exactly that state, 12 of
-    them operator items including both gates from C27 and three from `mainA`.
-
-    The warning is unconditional and goes to stderr, because a degradation nobody sees
-    is not a degradation anyone acts on. It does NOT refuse: refusing would break every
-    agent on the documented command with no interpreter to switch to mid-task, which
-    trades a silent gap for a total outage. Making the two sides agree is a separate,
-    escalated decision.
+    The partial-check degrade below survives for one case only: the schema grows a
+    construct the vendored validator does not implement, which it reports rather
+    than skipping. It stays fail-open-with-a-warning because refusing there would
+    take the whole fleet's bus down over a schema edit, and the warning is
+    unconditional on stderr because a degradation nobody sees is not a degradation
+    anyone acts on.
     """
     validator = _validator(_load_schema(bus_root), definition)
     if validator is None:
         required = {"msg": ["schema_version", "id", "ts", "from", "to", "kind"],
                     "queue_row": ["schema_version", "ts", "task_id", "status", "lane",
                                   "gating", "epoch"]}[definition]
-        print(f"session_bus: WARNING — jsonschema is unavailable under {sys.executable}, so this "
-              f"{definition} was checked for {len(required)} required keys ONLY, not against "
+        print(f"session_bus: WARNING — no validator could be built under {sys.executable}, so "
+              f"this {definition} was checked for {len(required)} required keys ONLY, not against "
               f"session_bus.schema.json. The coordinator-daemon DOES validate in full and will "
-              f"refuse to relay a row this partial check let through. Re-run with an interpreter "
-              f"that has jsonschema to validate properly.", file=sys.stderr)
+              f"refuse to relay a row this partial check let through. See the _UnsupportedSchema "
+              f"warning above and implement the missing keyword in _MiniDraft7Validator.",
+              file=sys.stderr)
         missing = [k for k in required if k not in row]
         if missing:
             raise BusError(f"missing required field(s) {missing} (jsonschema unavailable — "
@@ -344,17 +721,33 @@ def routed_view(bus_root: Path, agent: str) -> dict[str, list[dict]]:
     my_outbox, _ = _read_jsonl(bus_root / "outbox" / f"{agent}.jsonl")
     state: dict[str, str] = {}
     for row in my_outbox:
-        corr = str(row.get("corr_id") or "")
-        if not corr:
-            continue
-        lid = alias.get(corr, corr)
-        if lid not in entries:
+        # C23: a row clears every id it names — scalar `corr_id`, plus `corr_ids`.
+        #
+        # The rule this replaces was NOT PERFORMABLE. Clearing triage took one
+        # `corr_id` per item, so a session holding ONE answer for N routed items had
+        # no compliant way to send it once; `BUS_PROTOCOL.md` told authors to "write
+        # it once and reference it" while no mechanism to reference it existed.
+        # Measured 2026-07-29 from a careful main: 3 byte-identical payloads at
+        # 17:41Z, 6 more at 17:44Z differing only in `corr_id` — nine in ten minutes,
+        # hours after the discipline rule was written. Fan-out multiplies it, since
+        # N dispositions × M routing targets is N×M triage entries fleet-wide.
+        # Discipline cannot fix a protocol that makes the spam the only compliant
+        # move, and the honest reading of two failures in ten minutes is that the
+        # rule was the defect.
+        corrs = [str(row["corr_id"])] if row.get("corr_id") else []
+        corrs += [str(c) for c in (row.get("corr_ids") or [])]
+        if not corrs:
             continue
         disposition = (row.get("payload") or {}).get("disposition")
-        if row.get("kind") != "ack" or disposition in TERMINAL_DISPOSITIONS:
-            state[lid] = "actioned"
-        else:
-            state.setdefault(lid, "acked")
+        actioned = row.get("kind") != "ack" or disposition in TERMINAL_DISPOSITIONS
+        for corr in corrs:
+            lid = alias.get(corr, corr)
+            if lid not in entries:
+                continue
+            if actioned:
+                state[lid] = "actioned"
+            else:
+                state.setdefault(lid, "acked")
 
     pending: list[dict] = []
     acked_awaiting: list[dict] = []
@@ -405,7 +798,15 @@ def print_triage(bus_root: Path, agent: str) -> None:
         undelivered = ("" if entry["delivered"] else
                        "   [NOT in your inbox — found by outbox scan; the relay may never "
                        "have delivered it]")
-        print(f"via: {' + '.join(entry['sources'])}{undelivered}")
+        # C40: age on the `via:` line, NOT inside `body`. The fence's byte count and
+        # sha256 are computed over `body` precisely so a downstream truncation is
+        # provable; decorating the body would either invalidate that or force the
+        # digest to cover text the sender never wrote. The framing lines are where
+        # this report already says things ABOUT a message.
+        age = message_age_h(entry["row"])
+        stale = ("" if age is None or age < DEFAULT_STALE_AFTER_H else
+                 f"   [{age / 24:.1f} DAYS OLD — verify the work is not already done]")
+        print(f"via: {' + '.join(entry['sources'])}{undelivered}{stale}")
         print(body)
         print(f"--- END ROUTED MESSAGE {index}/{total} id={logical_id(entry['row'])} ---")
 
@@ -425,6 +826,15 @@ def print_triage(bus_root: Path, agent: str) -> None:
     print(f"triage: to clear an item, append to YOUR outbox a row with corr_id=<its id> — any "
           f"substantive kind, or kind=ack with payload.disposition in "
           f"{sorted(TERMINAL_DISPOSITIONS)}. Advancing your cursor never clears this list.")
+    if total > 1:
+        # C23: say the bulk form exists at the exact moment it is needed. The
+        # previous instruction implied one row per item was the only way, which is
+        # how nine byte-identical payloads got sent in ten minutes by someone
+        # following it correctly.
+        print(f"       ONE answer for several of them? Send ONE row carrying "
+              f"corr_ids: [<id>, <id>, ...] instead of repeating the payload per id. "
+              f"Use it only when the answer really is the same — N distinct answers "
+              f"still want N rows.")
     print(f"== TRIAGE REPORT COMPLETE: {total} item(s), {body_bytes} body bytes. A copy of "
           f"this report missing any END fence or this trailer has been TRUNCATED and has "
           f"lost routed intent. ==")
@@ -691,12 +1101,28 @@ def _cursor_path(bus_root: Path, agent: str) -> Path:
 
 
 def _cursor_get(bus_root: Path, agent: str) -> int:
+    """Read position, defaulting to 0 — which REPLAYS rather than skips.
+
+    THREE STATES, NOT TWO (`mainB`, 2026-08-12, routed rather than committed because
+    the fix belonged with the loaded test suite). A cursor can be MISSING (handled:
+    replay), CORRUPT (handled: replay), or PRESENT-BUT-UNREADABLE — bad mode, bad ACL,
+    I/O error. That last one raised `OSError` straight out of the drain, so the agent
+    neither replayed nor skipped: it CRASHED, and presented as a stuck agent, which is
+    the exact signature improved at cc81c119. Only two of the three were covered.
+
+    `OSError` also closes a TOCTOU hole the `exists()` check opens: on a bus whose
+    runtime was wiped mid-flight, the file can vanish between the check and the read,
+    and `FileNotFoundError` is an `OSError`.
+
+    Defaulting to 0 is the deliberate fail-SAFE direction, verified by `mainB` on
+    themselves: a lost cursor costs duplicate delivery and noise, never lost messages.
+    """
     path = _cursor_path(bus_root, agent)
-    if not path.exists():
-        return 0
     try:
+        if not path.exists():
+            return 0
         return int(json.loads(path.read_text(encoding="utf-8")).get("offset", 0))
-    except (json.JSONDecodeError, ValueError, TypeError):
+    except (json.JSONDecodeError, ValueError, TypeError, OSError):
         return 0
 
 
@@ -723,6 +1149,128 @@ def cmd_cursor(args: argparse.Namespace) -> int:
     _write_atomic(path, {"agent": args.agent, "offset": int(args.set), "ts": _utcnow_iso()})
     print(f"cursor[{args.agent}] = {args.set}")
     return 0
+
+
+DEFAULT_STALE_AFTER_H = 24.0
+
+
+def message_age_h(row: dict, now: float | None = None) -> float | None:
+    """Hours since the message was authored, or None if its `ts` is unusable."""
+    try:
+        authored = datetime.fromisoformat(str(row.get("ts"))).timestamp()
+    except (TypeError, ValueError):
+        return None
+    return max(0.0, ((time.time() if now is None else now) - authored) / 3600.0)
+
+
+def daemon_argv(pid: int) -> str | None:
+    """argv of `pid`, or None where it cannot be read (no /proc is a portability
+    fact, never evidence of death). Separate so a test can isolate identity from
+    liveness — pytest's own pid is alive and is legitimately not the daemon."""
+    try:
+        raw = (Path("/proc") / str(pid) / "cmdline").read_bytes()
+    except OSError:
+        return None
+    return raw.replace(b"\0", b" ").decode("utf-8", "replace").strip() or None
+
+
+def daemon_is_serving(bus_root: Path, tick_s: float = 45.0,
+                      missed_ticks: int = 10) -> tuple[bool, str]:
+    """Is the coordinator-daemon alive, itself, and ticking? (ok, reason)
+
+    C37, second half (2026-08-11). The identity and freshness checks landed in
+    `session_bus_coordinator.py status`, and that fixed the REPORT — but the report
+    was pull-only, and for 243 hours nobody pulled. The supervisor that would have
+    noticed was dead too, so "something will catch it" had no floor.
+
+    This is the floor, and it needs no host change and no new daemon: **every agent
+    runs `drain` at every task boundary**, by CLAUDE.md and by every task brief. So
+    the check runs there, dozens of times an hour across the fleet, and the outage
+    becomes visible within ONE task boundary instead of ten days.
+
+    Deliberately duplicated rather than imported: `session_bus.py` is the agent-side
+    tool and must not depend on the coordinator module to tell an agent the bus is
+    dead — a check that imports the thing it is checking on is the shape that fails
+    exactly when it is needed. It is also read-only and cheap: one stat, one small
+    read, one `os.kill(pid, 0)`.
+    """
+    path = bus_root / "heartbeats" / f"{COORDINATOR_DAEMON}.json"
+    try:
+        hb = json.loads(path.read_text(encoding="utf-8"))
+        age = time.time() - path.stat().st_mtime
+    except (OSError, json.JSONDecodeError):
+        return False, f"no readable {COORDINATOR_DAEMON} heartbeat at {path}"
+
+    pid = hb.get("pid")
+    try:
+        pid = int(pid)
+        os.kill(pid, 0)
+    except (TypeError, ValueError):
+        return False, f"heartbeat carries no usable pid ({hb.get('pid')!r})"
+    except ProcessLookupError:
+        return False, f"pid {pid} does not exist — the daemon is DEAD"
+    except PermissionError:
+        pass                                    # exists under another uid
+    except OSError as exc:
+        return True, f"pid {pid} liveness unknown ({exc}); heartbeat {age:.0f}s old"
+
+    argv = daemon_argv(pid)
+    if argv is not None and "session_bus_coordinator" not in argv:
+        return False, (f"pid {pid} exists but is running {argv[:48]!r}, NOT the daemon — "
+                       f"the recorded pid was recycled")
+
+    limit = max(tick_s * missed_ticks, 120.0)
+    if age > limit:
+        return False, (f"pid {pid} is alive but the heartbeat is {age:.0f}s old, past the "
+                       f"{limit:.0f}s bound — the daemon is WEDGED, not serving")
+    return True, f"pid {pid} alive, heartbeat {age:.0f}s old"
+
+
+def _print_daemon_health(bus_root: Path) -> None:
+    """Say it only when it is BAD. A line on every drain is a line nobody reads."""
+    ok, why = daemon_is_serving(bus_root)
+    if ok:
+        return
+    print(f"\n!! COORDINATOR-DAEMON IS NOT SERVING THIS BUS: {why}.\n"
+          f"   Nothing is relaying outbox messages, so anything you send now sits "
+          f"undelivered and anything sent to you will not arrive. This is the 243h "
+          f"outage of 2026-08-01..11 repeating; report it rather than working past it.",
+          file=sys.stderr)
+
+
+def _print_staleness(rows: list[dict], stale_after_h: float) -> None:
+    """Say, out loud, which of the messages just drained are OLD.
+
+    C40 (2026-08-11). When the coordinator-daemon came back from its 243h outage it
+    relayed 703 messages in one burst. `mainA` and `mainB`, spawned minutes earlier,
+    drained that backlog and BOTH self-assigned `p2-5l-stack-numa-doc-debt` — work
+    `auditor` had completed on 2026-07-29 as `ae40ee8b`. They burned tokens on it
+    until the coordinator could redirect them.
+
+    Nothing was delivered wrongly; that is C28's subject and this is not it. The
+    delivery was correct and the AGE was invisible: `ts` is printed inside each JSON
+    body and nowhere else, so "is this still current?" was a judgement every reader
+    had to make per message, and a session with no history makes it wrong. A fresh
+    main cannot tell this minute's assignment from twelve-day-old mail, and both
+    look equally like instructions.
+
+    Written to STDERR on purpose. Stdout is JSONL and consumers parse it; the msg
+    schema sets `additionalProperties: false`, so decorating the rows themselves
+    would make anything that re-validates a drained row start failing. The framing
+    that is already on stderr is where a human reads, and this joins it.
+    """
+    aged = [(row, message_age_h(row)) for row in rows]
+    stale = [(row, age) for row, age in aged if age is not None and age >= stale_after_h]
+    if not stale:
+        return
+    print(f"\n!! {len(stale)} of {len(rows)} message(s) are OLDER THAN {stale_after_h:g}h. "
+          f"Check whether the work is already done before acting on them — a relayed "
+          f"backlog looks exactly like fresh instructions.", file=sys.stderr)
+    for row, age in sorted(stale, key=lambda pair: -pair[1]):
+        days = age / 24.0
+        stamp = f"{days:.1f}d" if days >= 1 else f"{age:.0f}h"
+        print(f"   {stamp:>6} old  {row.get('kind', '?')} from {row.get('from', '?')}"
+              f"  task={row.get('task_id')}  id={row.get('id')}", file=sys.stderr)
 
 
 def cmd_drain(args: argparse.Namespace) -> int:
@@ -778,8 +1326,14 @@ def cmd_drain(args: argparse.Namespace) -> int:
                           {"agent": args.agent, "offset": end, "ts": _utcnow_iso()})
         print(f"-- {len(rows)} message(s); cursor {start} -> {end}"
               f"{' (peek: not advanced)' if args.peek else ''}", file=sys.stderr)
+        _print_staleness(rows, args.stale_after_h)
     else:
         print(f"(no new messages for {args.agent})")
+    # C37: on EVERY drain, including the empty one. "(no new messages)" is precisely
+    # what a dead relay looks like from inside an agent — an all-clear that is really
+    # a silence. This is the check that would have caught the 243h outage on its
+    # first task boundary.
+    _print_daemon_health(bus_root)
     if getattr(args, "triage", False):
         print_triage(bus_root, args.agent)
     return 0
@@ -836,8 +1390,59 @@ def cmd_claim(args: argparse.Namespace) -> int:
                 print(f"session_bus: WARNING unreadable claim {p.name}", file=sys.stderr)
         if not rows:
             print("(no rows claimed)")
+        # STALE MARKING (2026-08-12, `mainC`, on `mainB`'s finding). A claim has no
+        # expiry, so a claim held by a session that died behaves as a lock nobody
+        # remembers taking — and it is INVISIBLE as a blocker, because the row simply
+        # never gets pulled. Measured when this was added: 15 claims, 8 of them older
+        # than 300 HOURS, all from the 2026-07-29 fleet death. Two consequences seen
+        # in that same set: `mainB` declined to work a row solely because `mainC` held
+        # a 14-day-old claim on it, and one stale claim OUTLIVED ITS OWN ROW'S
+        # CLOSURE — the legacy ComparativeResult path it names was closed in
+        # `e108ec9f` while the claim stayed held.
+        #
+        # This only MARKS; it never releases. A claim is single-writer by design and
+        # only its owner may drop it, so auto-expiry here would break the one property
+        # that makes the O_EXCL scheme sound. Marking is enough: it makes the lock
+        # visible to the owner and to whoever is blocked.
+        # OWNER LIVENESS BEATS AGE (2026-08-12, `mainC`). The 24h rule cannot see the
+        # case that actually bit this fleet: 18 claims on the books at dawn, 16 of them
+        # taken THAT NIGHT — so unmarked — while their owners had gone idle and stated
+        # in writing, repeatedly, that they held no claims. Age answers "how long has
+        # this been here"; the question a blocked reader has is "is anyone working it".
+        #
+        # So the owner's heartbeat is read as a POSITIVE signal, the same way the
+        # dispatch generator reads a do-not-dispatch declaration rather than inferring
+        # from absence. An idle owner is not proof the row is abandoned, which is why
+        # this still only MARKS — a claim is single-writer and only its owner may drop
+        # it, so auto-expiry here would break the one property making O_EXCL sound.
+        # It distinguishes the two cases age conflates: at the time this was written,
+        # `mainA` was idle with 4 claims (residue, and they had said so) while the
+        # `auditor` was working with 13 (possibly live). Age alone marked NEITHER.
+        heartbeats = bus_root / "heartbeats"
+
+        def _owner_state(agent: str) -> tuple:
+            try:
+                hb = json.loads((heartbeats / f"{agent}.json").read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError, TypeError):
+                return None, None
+            return hb.get("state"), hb.get("ts")
+
+        now = datetime.now(timezone.utc)
         for r in rows:
-            print(f"{r.get('agent'):18s} {r.get('ts')}  {r.get('row')}")
+            marks = []
+            try:
+                age_h = (now - datetime.fromisoformat(r.get("ts"))).total_seconds() / 3600.0
+                if age_h >= 24:
+                    marks.append(f"STALE {age_h:.0f}h — owner should release or re-affirm")
+            except (TypeError, ValueError):
+                marks.append("unparseable ts")
+            state, hb_ts = _owner_state(r.get("agent"))
+            if state == "idle":
+                marks.append(f"OWNER IDLE since {hb_ts} — likely residue, owner should release")
+            elif state is None:
+                marks.append("OWNER HAS NO HEARTBEAT — cannot tell if this is being worked")
+            mark = ("  [" + " | ".join(marks) + "]") if marks else ""
+            print(f"{r.get('agent'):18s} {r.get('ts')}  {r.get('row')}{mark}")
         return 0
 
     if not args.row:
@@ -1077,6 +1682,10 @@ def cmd_provision(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="session_bus.py", description=__doc__.split("\n")[0])
     p.add_argument("--bus-root", default=str(DEFAULT_BUS_ROOT))
+    p.add_argument("--print-root", action="store_true",
+                    help="print the resolved canonical bus root (get_bus_root()) and exit; "
+                         "does not require a subcommand -- handled before subparser dispatch "
+                         "so this works standalone, e.g. from a fresh worktree checkout")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     ap = sub.add_parser("append", help="append a schema-validated row to a file you own")
@@ -1103,6 +1712,9 @@ def build_parser() -> argparse.ArgumentParser:
     dp.add_argument("--peek", action="store_true", help="print without advancing the cursor")
     dp.add_argument("--triage", action="store_true",
                     help="also print the routing standing queue (cursor-independent, in full)")
+    dp.add_argument("--stale-after-h", type=float, default=DEFAULT_STALE_AFTER_H,
+                    help=f"flag drained messages older than this many hours "
+                         f"(default {DEFAULT_STALE_AFTER_H:g}; C40)")
     dp.set_defaults(func=cmd_drain)
 
     tp = sub.add_parser("triage", help="standing queue of messages routed to you "
@@ -1132,6 +1744,13 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Optional[list[str]] = None) -> int:
+    # --print-root is handled before the subparsers' `required=True` check so
+    # it works with no subcommand at all (`session_bus.py --print-root`) --
+    # the verification idiom a fresh worktree checkout is expected to run.
+    raw = list(sys.argv[1:] if argv is None else argv)
+    if "--print-root" in raw:
+        print(get_bus_root())
+        return 0
     args = build_parser().parse_args(argv)
     try:
         return args.func(args)

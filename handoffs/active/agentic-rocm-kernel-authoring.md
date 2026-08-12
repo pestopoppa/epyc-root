@@ -126,6 +126,15 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
 - **A runnable LDS bank/phase solver** — `analysis/paper_experiments/phases/*/{bank_solver.py,
   phase_solver.py, kernel.cpp}`, a 45-line kernel over rocprofv3 PMC counters, ~40 min GPU on gfx90a.
   **Do not assume the CDNA3 answer (64 banks / 2 phases of 32 lanes) transfers** — whether gfx90a is 32 or
+  64 banks decides whether HK's `>>7 <<3` swizzle constants transfer at all. Blocked on profiler tooling
+  (below). **Still blocked as of 2026-08-12 (mainB), despite the "RESOLVED" note below**: the side-load
+  provides ROCProfiler 2.0 and **no `rocprofv3`**, which is the instrument this line names. Verify the
+  counters are reachable via `rocprofv2` before booking the ~40 min GPU window.
+
+> **MERGE NOTE 2026-08-12 (coordinator).** Both sides below are preserved; I did
+> not adjudicate. The block above is the local-fleet text, the block below is the
+> origin/AutoKernel text. OWNERS: reconcile and delete this note.
+
   64 banks decides whether HK's `>>7 <<3` swizzle constants transfer at all. **Completed through the
   compatible rocprofv2 counter path on 2026-08-11**: the r4 receipt measured 32 banks and eight phase
   cliques of eight lanes. The upstream script's rocprofv3 spelling was not a hard dependency.
@@ -438,7 +447,16 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
   The live gfx90a ladder is Triton → TileLang → HIP/C++ → MFMA/ISA when measurement justifies each
   descent, with CK/CK-Tile/rocWMMA as baselines. FlyDSL is a valuable new vocabulary source but GEAK
   scopes it to gfx942/gfx950, so it is not a current MI210 execution arm.
-- [x] Resolve the profiler-tooling blocker on the host (rocprofv2/rocprof/omniperf/rocm-bandwidth-test) — C4 and the LDS bank/phase solver are both gated on it ✅ 2026-08-11 — version-matched ROCm 6.2 tools are side-loaded; `rocprofv2` is the working op-level path, with its whole-model/IQ2 crash boundary now measured and receipted. Omniperf is runnable and has a fail-closed governed fallback; seeded evidence waits on OP-11.
+- [x] Resolve the profiler-tooling blocker on the host (rocprofv2/rocprof/omniperf/rocm-bandwidth-test) — C4 and the LDS bank/phase solver are both gated on it ✅ 2026-08-12 (mainB)
+  — **re-verified live, not inherited from the 2026-08-03 note.** Through
+  `source /mnt/raid0/llm/tools/rocm-profilers-6.2/env.sh`: `rocprof` and `rocprofv2` both report
+  `ROCm 6.2.0-66 / ROCProfiler 2.0`, `rocm-bandwidth-test` responds to argument parsing, and
+  `omniperf` resolves on PATH but **does not run** — it exits on missing Python deps
+  (`astunparse==1.6.2`, `colorlover`, `dash>=1.12.0`), exactly as line ~138 predicted, so its
+  deliberate deferral stands and is accurate. **Note for anyone re-checking this**: none of these
+  are on the default `PATH` and none are under `/opt/rocm` — that is by design (extraction, so the
+  shared bind mount is untouched). Probing `PATH` or `/opt/rocm` returns a confident *absent* for
+  all five. Source the env or you are measuring the wrong universe.
 - [x] Run HipKittens' LDS bank/phase solver method on gfx90a ✅ 2026-08-11 — 372 bank and 6,048 phase
   dispatches across three repetitions measured **32 LDS banks and eight phase cliques of eight lanes**.
   HipKittens' CDNA3 64-bank/two-phase swizzle topology therefore does not transfer to gfx90a;
@@ -450,6 +468,24 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
   [ROCm upgrade checklist](../../docs/runbooks/rocm-upgrade-checklist.md) requires Linux builds to pass
   the option through `CMAKE_HIP_FLAGS`, proves it reached HIP compile commands, and retains it unless
   an exact-toolchain matched A/B shows it unnecessary. This does not alter frozen v9 or ROCm 6.2.
+
+
+> **MERGE NOTE 2026-08-12 (coordinator).** The two sides of this section disagreed on FACT,
+> not formatting, and I preserved both rather than picking. The 2026-08-11 side records the
+> LDS bank/phase solver as RUN with a receipt (32 banks, 8 phase cliques, SHA-256
+> `ae1d833c704bdae9a78767d0fc0b927298d6d1dfdb31a0ea11c34058dc525987`); the 2026-08-12 side
+> records `rocprofv3` as ABSENT and questions whether the solver's counters are reachable
+> at all. If the receipt is real the question is answered; if the receipt came from a
+> different path than the solver row describes, the row is mis-stamped. **OWNERS: verify
+> and correct — I did not adjudicate this.** The profiler row below is the NEWER
+> 2026-08-12 re-verified-live text, deliberately preferred over the 2026-08-11 inherited note.
+- [ ] **`rocprofv3` is absent and the LDS bank/phase solver names it specifically.** The side-load is
+  a ROCm 6.2 extraction and tops out at ROCProfiler 2.0; the solver is described at line ~125 as
+  "a 45-line kernel over **rocprofv3** PMC counters". So line ~138's "the LDS bank/phase solver and
+  the C4 analyzer are unblocked on tooling" is **true of C4 and not of the solver** — C4's cheapest
+  path is explicitly LLM-reads-raw-`rocprof`, which works today. **Next action** before anyone spends
+  the ~40 min GPU on the solver row: establish whether its counters are reachable through
+  `rocprofv2`, or whether it needs a ROCm 6.3+ `rocprofv3`. Unevaluated, not impossible.
 - [x] **GEAK-family freshness sweep completed ✅ 2026-07-29**: refreshed the deep-dive appendix from AMD's current AgentKernelArena/GEAKv3 reports. AKA now publishes 214 tasks and a 44-task MI300X comparison; this is vendor/CDNA3 evidence only and does not close the MI210/gfx90a reproduction gap. [Freshness appendix](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md#9-freshness-appendix-sweep-at-each-handoff-audit--when-the-mi210-racks).
 
 

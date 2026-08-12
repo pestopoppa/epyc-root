@@ -2,33 +2,27 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-11 (production v9 stack restoration and the launcher circular-import boundary; prior stack-compilation and GPU-shadow findings retained)
-**Sources**: 68 documents
+**Last compiled**: 2026-08-11 (production v9 stack restoration and the launcher circular-import boundary; prior stack-compilation and GPU-shadow findings retained; concurrent-lane compile 2026-08-11: a fail-open 200 masking backend outages as model answers, closed; a NUMA region-lock regression recurring in derived priors, IN-PROGRESS — see below; earlier 2026-08-01 note: adds stack compilation as a pure function of declared inputs, backend-resolved kernel binaries, and derived kernel-freeze scope; prior GPU shadow lane / frozen-v8 E8 posture retained)
+**Sources**: 69 documents
 
-## Compiled Update — 2026-08-11 production v9 stack restoration
+## Compiled Update — 2026-08-11: a fail-open 200 masked backend outages as model answers; a region-lock regression recurs in derived priors
 
-The complete serving stack is resident again on frozen production v9. Runtime attestation matches
-`production-consolidated-v9` at `0db32c06e3e550065b78311a6031ef3dd2c4f27c` (binary 10125), all
-six backend groups and probes report healthy, the embedders warmed, speech launchers proved their
-tree-local ggml linkage, and a live TTS synthesis smoke passed. This is a stack-health result, not a
-new model-quality or throughput claim.
+**Confidence: verified** — both findings read directly from committed code and tests. The region-lock fix is **IN-PROGRESS** (owner: `inference`, gated on a stack relaunch) and must not be read as resolved.
 
-The first cold start failed closed because `stack_paths` imported the full config graph before
-publishing the binary/path constants that the config graph itself imports. Runtime-facts NUMA
-inference then failed and selected an inactive manifest. Orchestrator `74c68a2a` breaks that cycle
-without removing `PathsConfig` environment overrides; `969244d8` regenerates the stack derivatives
-from the repaired loader. Focused config/manifest tests passed 142/142 and the complete launch gate
-passed 191/191. The reusable lesson is that launcher leaf modules must publish path constants before
-importing configuration consumers: generated topology selection is only as reliable as the import
-graph that feeds it.
+### Every eval fan-out through `:8000` had been scoring backend outages as low-quality generations
+
+`/v1/chat/completions` caught *every* exception into a generic `[ERROR] Backend failed: {e}` string and returned it as a normal 200 completion — so retry logic, error metrics, and every eval scorer reading through this route read an infrastructure outage as a model answer. The fix (`a4e398fc`, `f8479a72`) lets `HTTPException` and `ContentionDenied` propagate and maps everything else to 502 (this route is a gateway; the fault is the upstream's). The finding as filed cited one non-streaming call site; the same fail-open pattern was independently found at three further streaming sites plus an uninitialized-primitives case — a stream cannot retract an already-sent 200, so those now emit a terminal SSE `error` event instead of streaming the error as generated content with `finish_reason: "stop"`. Guards assert both directions (three failure-path tests verified to FAIL against pre-fix HEAD in a detached worktree; two success-path tests pass on both sides), closing the false-negative "the guard would pass just as happily if the route errored on everything" shape. 292 tests passed.
+
+### A NUMA-topology region-lock regression recurred, this time in the derived priors rather than the launch config
+
+`derived/stack_priors.yaml` drops the `NUMA_FULL` instance for every quarterable-fleet role (frontdoor `8070`, worker_general `8072`, ingest_long_context `8085`) — the exact triplet the operator ruled "accidental and clearly a mistake" on 2026-07-23, now recurring one layer downstream in the derived priors rather than the launch config that caused the first instance. A HALF instance is advertised as the FULL instance via `ServerURLsConfig().frontdoor`, and this is the confirmed root cause of 7 of 9 red promotion-gate unit tests — the tests assert the topology-declared lineup and are correct; editing them to expect halves-only would encode the regression into the gate itself, the same "guard that asserts the defect" shape already retired elsewhere in this stack. **IN-PROGRESS**: the fix requires a `--numa-mode both` stack relaunch plus a priors recompile (owner: `inference`); a standing, falsifiable prediction is on record that all seven tests go green with zero test edits once that lands.
 
 ### Source References (2026-08-11)
 
-- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — live restoration, health probes, root cause and verification counts.
-- [`ratify_v9_final_freeze_20260811.json`](../artifacts/operator/ratify_v9_final_freeze_20260811.json) — ratified kernel identity and rollback boundary.
-- [`v9-kernel-promotion-attestation.json`](../handoffs/active/v9-kernel-promotion-attestation.json) — frozen CPU/HIP and production certification evidence map.
-- [orchestrator `74c68a2a`](https://github.com/pestopoppa/epyc-orchestrator/commit/74c68a2a8e01a0f4a8c93a49fa32c0b85494f501) and [`969244d8`](https://github.com/pestopoppa/epyc-orchestrator/commit/969244d8015155c0193ad2780313a858df3f0ba1) — circular-import repair and regenerated derivatives.
-
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — mainB's HS-OD-2 fix narrative and the A4/P0-1 region-lock root-cause derivation
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-OD-2 closure
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — P0-0, the derived-priors `NUMA_FULL` drop
+- [`gpu-serving-tie-in-program.md`](../handoffs/active/gpu-serving-tie-in-program.md) — P2-5l closure (`NUMA_NODE0`/`NUMA_NODE1` constant deletion, quarter-name attribution repair)
 ## Compiled Update — 2026-07-29 GPU shadow lane: built, inert, NOT activated
 
 The MI210 acquired a *designed and largely implemented* serving lane during the
@@ -181,7 +175,6 @@ never served a request. The Phase-3 bake-off that would produce one has not star
   resource-admission-blueprint generalization.
 - [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the D11 decision, the W3
   execution and P2-2 rescope, and the pre-reboot state in which none of this is activated.
-
 ## Compiled Update — 2026-07-26 E8 rebaseline hold
 
 Production remains frozen on `production-consolidated-v8`; the post-freeze E8
@@ -200,7 +193,6 @@ lineup, or serving-kernel conclusion is implied.
 - [Progress 2026-07-26](../progress/2026-07/2026-07-26.md) — checkpoint count and human-only apply boundary.
 - [AutoPilot digest 2026-07-26](../progress/2026-07/2026-07-26-autopilot.md) — current numeric-trial activity; it does not override the checkpoint's exact-stop gate.
 - [Bulk inference campaign](../handoffs/active/bulk-inference-campaign.md) — related post-v8 campaign context; no additional serving conclusion was promoted from this source.
-
 ## Compiled Update — 2026-07-24
 
 The operator ruled the v7-cutover's quarters-only launch an **accidental regression**, not a ratified design, and the CPU lineage restored the big+quarters lineup same-day behind a new additive, no-outage promotion path. In parallel, the WP-12 server-fleet layer (one `ConcurrencyAwareBackend` per physical fleet, replacing N per-role URL/CAB copies) flipped live, and its case-10 acceptance gate surfaced a load-bearing finding about how within-role concurrency actually works in production. Confidence: `verified` for the landed/flipped code and the measured live gates; `observation` for the E5 scout numbers referenced below (pre-cert, direction-only — see [Hardware Optimization](hardware-optimization.md)).
@@ -228,7 +220,6 @@ The operator ruled the v7-cutover's quarters-only launch an **accidental regress
 - [within-role-placement-state-machine.md](../handoffs/active/within-role-placement-state-machine.md) — DESIGN CONTRACT (full/quarters mutual exclusivity is dispatch-time), WP-12 checkbox closure, J2/J3 restored-lineup pass.
 - [inference-batch-loop.md](../handoffs/active/inference-batch-loop.md) — parked-island decision menu, ownership transfer.
 - [progress 2026-07-23](../progress/2026-07/2026-07-23.md) — restoration execution log, WP-12 flip-boundary sequence, case-10 evidence.
-
 ## Compiled Update — 2026-07-21
 
 ### Addendum (same day, evening): within-role placement fixed end-to-end (DISPATCH-A/A2/A3)
@@ -279,7 +270,6 @@ The inference-batch `/loop` — the single-writer execution vehicle over a 52-en
 - [within-role-placement-state-machine.md](../handoffs/active/within-role-placement-state-machine.md) — placement SM whose session-handover KV-migration path ROUTE-A3 ratified under traffic.
 - [progress 2026-07-21](../progress/2026-07/2026-07-21.md) — ROUTE-A3 evidence row, the takeover reconciliation, and the EV-4 launch log.
 - [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — the E1/E2/E5 batched-decode serving-class context the loop's eval-fanout entries exercise.
-
 ## Compiled Update — 2026-07-20
 
 The serving layer gained a **live within-role placement state machine**, decision-grade **single-instance batched-decode** economics, and a **heterogeneous CPU×GPU slot-fabric design** that generalizes (not replaces) the placement machinery. The load-bearing constraint across all three: `_migrate_kv` **cannot preempt an in-flight llama-server decode** — every migration/teleport is session-handover / turn-boundary.
@@ -304,7 +294,6 @@ The serving layer gained a **live within-role placement state machine**, decisio
 - [heterogeneous-slot-fabric-residency.md](../handoffs/active/heterogeneous-slot-fabric-residency.md) — CPU×GPU slot-fabric design extending the live fabric.
 - [inference-batch-loop.md](../handoffs/active/inference-batch-loop.md) — single-writer campaign loop + quiet-window discipline.
 - [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — MI210 fleet-placement sequencing (residency → eval-engine → embedder → prefill offload → drafter farm).
-
 ## Summary
 
 The production inference serving stack runs 9+ llama-server instances plus 2-4 auxiliary services, organized into HOT/WARM/COLD memory tiers on a single AMD EPYC 9655 machine with 1.13 TB RAM. The architecture follows a hierarchical local-agent workflow: one model thinks (architect), many models work (workers), and tools decide who is right. This is speculative decoding applied at the system level -- a strong model sets the trajectory, cheap models propose artifacts in parallel, and correctness is enforced by gates rather than agreement.
@@ -314,7 +303,6 @@ The server topology maps models to agent tiers. Tier A (frontdoor, Qwen3.6-35B-A
 The orchestrator uses a hierarchical configuration system with 15 independent feature flags backed by pydantic-settings. Production mode enables all flags; test mode defaults to all-off for isolation. Critical environment variables redirect all caches, temp files, and data to the RAID array -- the 120 GB OS drive must never receive large writes. Request routing uses round-robin distribution for multi-instance models (frontdoor 4x, coder 4x), with escalation driven by gate failures (lint, typecheck, unit tests), repetition detection, context overflow, or explicit TaskIR directives.
 
 Recent architectural improvements include REAP MoE expert-pruning evidence for the now-retired coding-architect path, attention-matching KV compaction (L1-L4 merged to production-consolidated-v3), and concurrent inference sweeps that determined optimal -np settings per role (frontdoor gets np=2, dense models stay at np=1 due to p95 latency degradation).
-
 ## Key Findings
 
 ### New Findings (2026-07-16) — refreshed v7 readiness checkpoint and server-launch guard
@@ -380,7 +368,6 @@ Recent architectural improvements include REAP MoE expert-pruning evidence for t
   Hadamard rotation auto-enables in v3 when KV types are quantized (PR #21038 landed upstream as `744c0c731`); the orchestrator's prior custom `--kv-hadamard` flag is redundant and was removed. Paged attention is registry-driven via `paged_attention.enabled_threshold_gb` — no `--paged-attention` CLI flag needed. The swap was binary-only; no config or model changes. [bulk-inference-campaign.md § Package F](../handoffs/active/bulk-inference-campaign.md), [completed/llama-cpp-v3-upstream-rebuild.md](../handoffs/completed/llama-cpp-v3-upstream-rebuild.md)
 
 - **Model-specific serving configurations are critical for correct behavior (2026-04-19).** Five new models each required unique configurations not documented in the codebase. Universal findings: (1) Gemma4 models need `use_chat_api + repeat_penalty 1.05 + reasoning off + KV q8_0` to avoid degenerate repetition (70-83% of responses without fix) and thought leakage; (2) Qwen3.6 needs `use_chat_api + reasoning off` to avoid `<think>` loops; (3) M2.7 needs `--jinja` for correct template (37% training data leakage without it) and must NOT use repeat_penalty (caused 52%->27% regression); (4) SG4-26b Q4KM proved irrecoverable (16.2%) due to fundamental MoE expert routing degradation at Q4 -- model deprecated and GGUF deleted. The benchmark infrastructure now supports per-model `disable_thinking`, `repeat_penalty`, and `reasoning` flags. [progress/2026-04-19](../progress/2026-04/2026-04-19.md)
-
 ## 2026-06-13 Update — Serving Gaps After Fable 5
 
 Fable 5 confirmed the batch=1 CPU decode closure at the kernel level but found a serving-level evidence gap. The system has mature multi-instance concurrency: NUMA quartering, placement state machine, per-region locks, cross-role disjoint placement, measured contention matrix, session affinity, and reverse migration. What remains unmeasured is the eval/harness serving class: single-instance continuous batching and CPU14 `-np` sweeps were never run despite the dominant workload now being independent eval questions.
@@ -390,7 +377,6 @@ The decisive next measurements are E1/E2 from the kernel/concurrency handoff: ru
 Frontdoor speculative decoding is another unharvested config path. It is not a general GPU-drafter endorsement; it is the first cheap measurement that unlocks or kills several downstream hypotheses, including MoE-Spec reuse on frontdoor verification batches.
 
 Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-06-kernel-and-concurrency.md), [routing truth restoration](../handoffs/active/routing-truth-restoration.md).
-
 ## 2026-06-13 Update — Stack-Prior Serving Truth
 
 The stack-update audit established `stack_priors.yaml` as the generated serving contract for model-specific consumers. The live truth hierarchy is: orchestrator `server_mode` plus descriptors first, generated priors as the consumer contract, and research-registry/history only as provenance until explicitly projected. This matters because raw compatibility surfaces can still mention retired roles and dead ports while live serving has moved on.
@@ -402,7 +388,6 @@ Follow-through on 2026-06-13 moved this from policy to working guardrails in act
 The 2026-06-19 wrap-up re-audited AutoPilot `health_preflight_probes` after the consumer migrations. The live preflight path already derives model-server targets from stack-prior serving URLs, while its degraded fallback intentionally consumes stack-manifest HOT/WARM auxiliary metadata and launch-mode filtering. That fallback is compatibility plumbing, not a duplicate role/port table to migrate. The same pass recorded that full stack-change checks with runtime attestation can legitimately stop while the isolated K-MEM Tulving benchmark owns stack port `8080`; generated-contract and guard checks remain the correct no-inference validation during that measurement window. A follow-up simulated worker swap witness now also proves seeding reward degraded fallback consumes swapped model descriptor throughput before the legacy static table.
 
 Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [standardized-stack-update-pipeline-finalization.md](../handoffs/active/standardized-stack-update-pipeline-finalization.md), [progress 2026-06-13](../progress/2026-06/2026-06-13.md).
-
 ## Actionable for EPYC
 
 - **Current deployed stack** has evolved beyond the 2026-04-13 snapshot: the later Qwen3.6 consolidation moved frontdoor, coder_escalation, and worker_summarize onto shared Qwen3.6-35B-A3B Q8 mmap, and Probe B rewired architect_general to a 1x96t canonical full-machine layout. Keep the older list below as historical context only.
@@ -410,7 +395,6 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-u
 - **Dynamic NUMA-aware concurrent routing** is planned but not yet implemented -- event-driven allocation based on conversation lifecycle, queue depth, escalation events, and idle timeouts.
 - **Autopilot should dynamically assemble the orchestrator stack** based on workload rather than static configuration. Single-user constraints noted.
 - **Monitoring**: All servers expose /health endpoint. orchestrator_stack.py status shows component health, model, port, and PID. State persists to orchestrator_state.json for graceful recovery.
-
 ## 2026-06-15 Update — Generated Serving Truth
 
 - **Serving truth now comes from generated stack priors.** The live contract for ports, launch shape, and role aliases is projected into the generated stack-prior view, and the major consumers now read that generated truth instead of stale handwritten role/port tables. Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md).
@@ -434,7 +418,6 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-u
 - **Stack-template validation now uses live stack-prior role records for retired-role checks.** `src/config/stack_templates.py` no longer keeps a local retired-role denylist; it validates deployable template roles against the generated live-role set, so the last active-code retired-role warning is derived from serving truth instead of a hand-maintained literal list. Sources: [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md), [progress 2026-06-15](../progress/2026-06/2026-06-15.md), `src/config/stack_templates.py`.
 - **Dashboard contention accounting is now exact per PID, not overlap-attribution by region.** The active-count view groups held locks by `(role, PID)` so one worker no longer renders as a multiplied set of holders just because its region spans multiple quarters. Source: [progress/2026-05/2026-05-31.md](../progress/2026-05/2026-05-31.md).
 - **The remaining serving question is still batch/eval serving, not batch=1 decode.** Fable 5 treats the current kernel closure as insufficient to infer continuous-batching behavior, so the next measurements are `-np` sweeps and single-instance-vs-fanout eval A/Bs rather than more same-shape kernel extrapolation. Sources: [canonical-cpu-benchmarking-methodology-draft.md](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md), [public-results-draft.md](../docs/publication/public-results-draft.md).
-
 ## Open Questions
 
 - Least-loaded routing (route to instance with shortest queue) would improve latency under uneven load but adds complexity over round-robin. Worth implementing when concurrent user count exceeds 1.
@@ -448,7 +431,6 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-u
 - Which GPU roles migrate first once the drafter α is measured — frontdoor residency, eval-engine acceleration, embedder/classifier host, prefill offload, or the drafter farm? Fable 5 re-ranked residency and eval-engine ahead of the drafter farm, but all placements remain gated on the N5 acceptance-rate number that GPU-side qwen35 decode does not by itself supply.
 - Does GPU-side MTP head-split for `worker_general` (Gemma4-26B/31B) pay off, given the CPU MTP baseline is already ~77% acceptance-saturated (Stage-0 low-headroom, revised ceiling +10-15%)? The 2026-07-02 gemma4-31B + NEXTN GPU demo (1.44x) shows the mechanism is structurally sound but does not yet isolate the CPU-BW-released component.
 - Where can MoE-Spec's budgeted-verification gain actually be deployed now that REAP is off the stack and the frontdoor runs no spec-dec? The mechanism is proven but consumer-less until frontdoor spec-dec is enabled and re-benched on its real verification batches.
-
 ## Related Categories
 
 - [Hardware Optimization](hardware-optimization.md) -- NUMA topology and thread allocation determine serving performance
@@ -457,7 +439,6 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-u
 - [Speculative Decoding](speculative-decoding.md) -- acceleration methods vary per serving endpoint
 - [KV Cache](kv-cache.md) -- cache management directly impacts serving memory footprint and latency
 - [MoE Optimization](moe-optimization.md) -- expert reduction applied per serving role
-
 ## Source References
 
 - [Chapter 04: Production Server Stack](/mnt/raid0/llm/epyc-orchestrator/docs/chapters/04-production-server-stack.md) -- Server topology, memory architecture, CLI operations, concurrent inference sweep
@@ -489,7 +470,6 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-u
 - [MoE-on-GPU aggregate deployment wins brief](../handoffs/active/moe-aggregate-deployment-wins-brief.md) -- OBSERVATION-grade (no P-GPU-1, operator production-hold) MI210 gemma-26B-A4B config wins: `-fa 1` for aggregate B≥8 (peak bf16-fa1 @B128 = 1548 t/s, ~2.75× prior anchor), bf16-for-aggregate / Q8-for-single-stream crossover B≈16–24; L1-MoE mmid dispatch and MoE-decode MTP falsified as levers.
 - [Progress 2026-07-04](../progress/2026-07/2026-07-04.md) -- DS-7 static-prewarm profile decision, capability-registry W3 strict restart contract, MI210 aggregate campaign summary, v6 `/slots` dashboard-stream regression fix + SSE multiplex.
 - [Progress 2026-07-05](../progress/2026-07/2026-07-05.md) -- launcher NUMA default checkpoint (`01d14301`), stack-prior source-fingerprint repair (`a0377110`), AutoPilot current-code-guard restarts.
-
 ## 2026-04-23 Additions — Single-instance throughput backlog
 
 Deployment has leaned hard on NUMA 4-way multi-instance aggregate throughput (6.7× frontdoor). This makes concurrent-session aggregate great but leaves single-session interactive use at 14.2 t/s on 30B-A3B — the user-visible slow path. Three new handoffs target single-session decode specifically, under a new backlog index:
@@ -501,7 +481,6 @@ Deployment has leaned hard on NUMA 4-way multi-instance aggregate throughput (6.
 Composition: TP × GEMV ukernel × system tuning multiply up to the 460 GB/s BW ceiling. Realistic 2.5× TP × 1.75× ukernel × 1.25× tuning = 5.5× single-instance; stretch 5× × 2.5× × 1.4× = 17.5× but clipped by ceiling on most production models. Beyond the ceiling requires reducing weights-read-per-token (KV work, speculation, sparsity).
 
 What this does NOT replace: the NUMA 4-way multi-instance deployment for concurrent sessions stays. TP sharding changes what "full-speed instance" means; the ConcurrencyAwareBackend routing architecture is unchanged.
-
 ## 2026-04-23 late-session update — CPU2 falsified, 96t whole-machine opportunity found
 
 > **Label correction 2026-07-30** (annotation; no measurement changed): this section originally
@@ -531,7 +510,6 @@ Phase 0 of the CPU optimization pickup (see `hardware-optimization.md` §2026-04
 CPU1 TP-sharding (gate passed) would close the 49→95 single-session gap via CCD-local weight sharding + per-CCD pools + reduction-during-barrier-window prefetch. CPU4 per-CCD sync primitive (promoted to HIGH on the 32–45% barrier-cost measurement) is an independent lever that could recover barrier idle time.
 
 Action for `dynamic-stack-concurrency.md` / routing owner: benchmark 1×96t whole-machine (`0-95` + `interleave=all`) under realistic concurrent load; verify KV scaling; verify multi-instance aggregate doesn't regress if adopted as a single-session fast path. Task #10 tracks.
-
 ## 2026-04-24 — Concurrent-split sweep dominates: +110% production throughput available
 
 **Bigger finding**: going the OPPOSITE direction from "1×96t single" — splitting the socket into MORE smaller concurrent instances — delivers the largest production gain in this work stream. SMT-paired splits measured:
@@ -549,7 +527,6 @@ Action for `dynamic-stack-concurrency.md` / routing owner: benchmark 1×96t whol
 **Autopilot implications**: `project_autopilot_stack_assembly.md` memory predicted dynamic mode switching would matter. Today validated with hard numbers: the stack should switch between single-session modes (1×48t / 1×96t for ~27 t/s/user interactive) and concurrent-split modes (48×4t for 135 t/s aggregate across N users) based on real-time load.
 
 Deep-dive: `research/deep-dives/cpu-96t-production-sweep-2026-04-24.md`. Auto-memory: `project_concurrent_split_throughput.md`.
-
 ## Disaggregated prefill/decode literature audit (2026-04-26)
 
 Research-intake batch indexed the disaggregation lineage: DistServe (intake-459, arXiv:2401.09670, OSDI'24, 4.48× throughput), Splitwise (intake-460, arXiv:2311.18677, ISCA'24, 1.4× at 20% lower cost), Mooncake (intake-472, arXiv:2407.00079, FAST'25, 525% throughput on long-context Kimi production traces). All three split prefill (compute-intensive, latency-tolerant) onto one machine pool and decode (memory-bandwidth-bound, latency-critical) onto another, with KV migration over high-bandwidth back-plane (NVLink / InfiniBand). Foundational scheduler literature also indexed: ORCA (intake-468, OSDI'22, iteration-level scheduling + selective batching — the abstraction underpinning vLLM/SGLang/TRT-LLM continuous batching).
@@ -557,7 +534,6 @@ Research-intake batch indexed the disaggregation lineage: DistServe (intake-459,
 **Tier 2b critique mattered.** Disaggregation can REGRESS 20-30% on small/short workloads (BentoML handbook; vLLM disagg_prefill docs explicitly state "does not improve throughput" — it trades throughput for TTFT/SLO interference reduction). NVIDIA's "Beyond the Buzz" (arXiv:2506.05508, Jun 2025, first systematic study) shows disagg only wins on prefill-heavy traffic + larger models with dynamic rate matching + elastic scaling; static splits lose. EPYC's xGMI inter-socket bandwidth (~64 GB/s/dir) is ~14× lower than NVLink, making the KV-transfer tax proportionally worse on CPU. Single-user CPU regime is the opposite of the multi-tenant GPU regime where DistServe/Splitwise were validated.
 
 **The CPU-appropriate alternative is chunked prefill, not disagg.** Sarathi-Serve (intake-048, OSDI'24, **already_integrated** upstream) achieves the same prefill/decode interference elimination via chunked-prefill + decode-piggybacking hybrid batches — no KV migration, no high-bandwidth interconnect requirement. Sarathi authors explicitly note disagg "could be challenging in the absence of high-bandwidth interconnects." Two CPU backlog tracks now reflect this finding: CPU16 (`numa-prefill-decode-disaggregation.md` — feasibility-gated stub with Tier 2b counter-evidence pre-recorded; Phase 0 = empirical xGMI BW falsification) and CPU17 (`sarathi-serve-cpu-evaluation.md` — chunked-prefill eval, the cheaper path likely to obsolete CPU16). See [`cpu-inference-optimization-index.md`](../handoffs/active/cpu-inference-optimization-index.md) ⚑ START HERE block.
-
 ## 2026-04-26 critique-integration addendum
 
 Serving-side CPU optimization now follows a strict wave pipeline:
@@ -568,7 +544,6 @@ Serving-side CPU optimization now follows a strict wave pipeline:
 4. CPU23 regime matrix (2K/8K/32K + interference), including this Sarathi-serving path
 
 Implication for serving decisions: treat any decode-only or single-regime conclusion as provisional until CPU23 coverage completes.
-
 ## Updates — 2026-04-28
 
 This update consolidates dynamic stack concurrency Phases B–D status, revisits the 2026-04-24 concurrent-split throughput finding through the lens of dynamic stack assembly, and indexes SGLang's slot-promotion serving primitives (intake-490) as architectural lessons for hybrid SSM serving on CPU.
@@ -608,7 +583,6 @@ Per intake-490, SGLang ships hybrid Mamba+Attention slot-promotion serving primi
 - 2026-04-24 concurrent-split sweep deep-dive: `research/deep-dives/cpu-96t-production-sweep-2026-04-24.md`
 - Auto-memory: `project_concurrent_split_throughput.md`
 - intake-490 (SGLang slot-promotion serving) — architectural-lessons reference, NOT adopt_component; cross-link to `wiki/ssm-hybrid.md`
-
 ## 2026-05-04 Update — architect_general 1× canonical wiring + orchestrator host_prereqs
 
 ### architect_general wiring change LANDED
@@ -670,7 +644,6 @@ Workaround: clear `draft_model:` field for `architect_general` in registry. Lose
 - [`handoffs/active/model-registry-v5-deployment-draft.yaml`](../handoffs/active/model-registry-v5-deployment-draft.yaml) — `host_prerequisites` + per-role env blocks; status PARTIAL APPLIED 2026-05-04
 - [`progress/2026-05/2026-05-04.md`](../progress/2026-05/2026-05-04.md) — full session including restart verification
 - [`data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md) — wiring revalidation
-
 ## 2026-05-24 — Test-time-compute techniques (OptiLLM intake): DeepConf built + validated NEGATIVE on CPU
 
 `/research-intake` of OptiLLM (intake-601) + expansion (CoT-Decoding intake-602, DeepConf intake-603, Sharma theory intake-604). Full analysis + autopilot-scope determination in [`research/deep-dives/optillm-test-time-techniques.md`](../research/deep-dives/optillm-test-time-techniques.md).
@@ -695,7 +668,6 @@ The model is systematically **overconfident on wrong short answers** (e.g. `529`
 - `epyc-orchestrator` branch `feat/p21a-deepconf` (`d894fd5` module+flag, `3f4eaee` runner+adapter+tests) — default-OFF, not merged
 - [`handoffs/active/routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) P21 (A1 done / A2 negative / A3 do-not-proceed)
 - [`handoffs/active/per-request-reasoning-budget.md`](../handoffs/active/per-request-reasoning-budget.md), [`handoffs/active/routing-intelligence.md`](../handoffs/active/routing-intelligence.md) — research-intake updates
-
 ## 2026-05-25 — Within-role full↔quarter placement is unmodeled (architectural gap)
 
 `ConcurrencyAwareBackend` (`epyc-orchestrator/src/backends/concurrency_aware.py`) and `ContentionGate` (`src/scheduling/contention_gate.py`) admit and place requests by lock availability + NUMA disjointness, but they do NOT model the within-role full↔quarter cpuset overlap relation. For each role with `full + N quarters` deployed, the dispatcher tries full first (via non-blocking try-acquire), then falls through to NUMA-disjoint quarters first, overlapping quarters last. The `same_role` matrix verdict in `orchestration/contention_matrix.yaml` is a single `allow / block / n/a` value with no instance-pair granularity — it was measured for quarters-only co-placement, not full+quarter.
@@ -752,7 +724,6 @@ Inference-gated verifications (WP-2/WP-3/WP-4 gates, WP-5 ratification, WP-6 mat
 - [`handoffs/active/bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) § Package J — wires the inference gates with priority-zero sequencing
 - [`handoffs/active/within-role-placement-state-machine.md`](../handoffs/active/within-role-placement-state-machine.md) — handoff frontmatter `implementation_status` block tracks per-WP status
 - [`progress/2026-05/2026-05-25.md`](../progress/2026-05/2026-05-25.md) Session 14 + [`progress/2026-05/2026-05-26.md`](../progress/2026-05/2026-05-26.md) Session 15
-
 ## 2026-05-27 — Handoff hygiene now separates live serving work from stale narration
 
 Second-pass handoff hygiene corrected an index-tracking failure: some active CPU/serving handoffs were still visible as broad work streams even though only narrow residual decisions remained. The durable serving rule is that domain indices should carry unresolved action only; completed chronology belongs in progress logs or the handoff body.
@@ -770,13 +741,11 @@ Current examples:
 - [`handoffs/active/numa-prefill-decode-disaggregation.md`](../handoffs/active/numa-prefill-decode-disaggregation.md), [`handoffs/completed/wdata-aware-mul-mat-coalescing-design.md`](../handoffs/completed/wdata-aware-mul-mat-coalescing-design.md), [`handoffs/completed/qwen36-benchmark-fixes.md`](../handoffs/completed/qwen36-benchmark-fixes.md) — handoff notes
 - [`handoffs/active/launcher-numa-mode-gating.md`](../handoffs/active/launcher-numa-mode-gating.md) — partial status and default-decision gate
 - [`progress/2026-05/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — owner-refresh and dereference queue
-
 ## 2026-05-28 — Dynamic-stack active gate clarified
 
 The active/completed split for `dynamic-stack-concurrency.md` separates already-landed serving mechanics from still-open scheduler decisions. DS-B through DS-D remain completed evidence in the sibling ledger. The active handoff now owns DS-6/DS-7 and explicitly gates scheduler rollout on Phase E evidence; KVCOMM is optional after Attention Matching / q4_0 feasibility rather than a deployment queue item.
 
 Operational implication: do not implement the quarter scheduler from old completed sections alone. Start from the active twin, confirm the current Phase E/autoresearch evidence, and only then decide whether DS-6 is code-ready. Sources: [`dynamic-stack-concurrency.md`](../handoffs/active/dynamic-stack-concurrency.md), [`dynamic-stack-concurrency-completed-through-2026-05-28.md`](../handoffs/completed/dynamic-stack-concurrency-completed-through-2026-05-28.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).
-
 ## 2026-06-26 — Prompt-construction & sampling determinism audit
 
 A determinism audit of the live orchestrator prompt/sampling path (post-v6-iqk-cutover) established that **prompt *construction* is deterministic, but generation *sampling* was not** — and the non-determinism was masked by an accidental fallback.
@@ -793,7 +762,6 @@ A determinism audit of the live orchestrator prompt/sampling path (post-v6-iqk-c
 Operational implication: the stack was reproducible only by accident (temp=0 fallback). Wiring declared temps + a seed makes it deterministic *by design*, but it is a behavior change (greedy→sampled) that requires canonical-bench certification and an `autopilot_quality` instrument-era boundary.
 
 Sources: [`prompt-construction-determinism.md`](../handoffs/active/prompt-construction-determinism.md) (master N14), [`bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) (J12 revert-gate), [`progress/2026-06/2026-06-26.md`](../progress/2026-06/2026-06-26.md).
-
 ## 2026-07-02 Update — GPU Serving Tier Arrives (MI210 installed, HIP verified)
 
 The long-dormant GPU-acceleration workstream activated: an AMD Instinct **MI210 (gfx90a, CDNA2, 64 GB HBM2e)** is physically installed, passed into the devcontainer, and the fork's HIP build leg is verified. This turns the entire GPU-drafter design corpus from hardware-gated speculation into a live serving surface. Framing that matters for serving decisions:
@@ -805,7 +773,6 @@ The long-dormant GPU-acceleration workstream activated: an AMD Instinct **MI210 
 **Two serving-relevant unblocks.** (1) GPU-side MTP spec-dec works: gemma-4-31B + its NEXTN head both on ROCm0 → 43.25 t/s (1.44x, 59.7% accept), the first live evidence for the head-on-GPU / trunk split. (2) qwen35 (gated-delta-net) decodes clean on the GPU HIP path, localizing the persistent CPU spec-dec crashes (M-RoPE/GDN `GGML_ASSERT(logits != nullptr)`) to the CPU speculative codepath rather than the qwen35 forward pass. Neither supplies the N5 frontdoor-drafter acceptance-rate (α) number, which remains the single gating measurement for all GPU placements. The gfx90a support matrix is settled on paper: Triton/FlashAttention-2/vLLM-core cover the card; AITER/MORI/DeepEP are CDNA3-only; Vulkan is impossible on CDNA2 — HIP/ROCm is the only path.
 
 Sources: [gpu-drafter-mi200-investigation.md § 2026-07-02 Advancement](../handoffs/active/gpu-drafter-mi200-investigation.md), [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md), [2026-07-02 ROCm MI210 vLLM / gfx90a deep-dive](../research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md), [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/moe-spec-cpu-spec-dec-integration.md).
-
 ## 2026-07-05 Update — Launcher NUMA Default Flip, DS-7 Profile Codified, Restart-Applicator Hardening, MoE-on-GPU Deployment Wins
 
 Five serving-plane threads advanced this window: the launcher now defaults to a single NUMA mode (no more silent full+quarter oversubscription), the dynamic-stack effort resolved its Phase E profile decision without touching the live stack, the capability-registry restart applicator gained strict-scope gates, the standardized stack-change pipeline caught and repaired source-fingerprint drift twice, and the MI210 campaign produced measured (observation-grade) config wins for MoE-on-GPU aggregate serving.
@@ -861,8 +828,6 @@ From the 2026-07-04 MI210 campaign on gemma-4-26B-A4B (the clean MoE-no-GDN test
 Meta-finding reinforced across the campaign: every lever's sign is a function of arch × substrate × batch — never carry a verdict across dense↔MoE or GPU↔CPU.
 
 Sources: [launcher-numa-mode-gating.md](../handoffs/active/launcher-numa-mode-gating.md), [dynamic-stack-concurrency.md](../handoffs/active/dynamic-stack-concurrency.md), [capability-registry-and-promotion.md](../handoffs/active/capability-registry-and-promotion.md), [standardized-stack-update-pipeline-finalization.md](../handoffs/active/standardized-stack-update-pipeline-finalization.md), [moe-aggregate-deployment-wins-brief.md](../handoffs/active/moe-aggregate-deployment-wins-brief.md), [progress/2026-07/2026-07-04.md](../progress/2026-07/2026-07-04.md), [progress/2026-07/2026-07-05.md](../progress/2026-07/2026-07-05.md).
-
-
 ## Realized-fleet truth (ESC-8, compiled 2026-07-22)
 
 Production routed correctly only by accident for two days: a poisoned `STACK_NUMA_MODE=full`
@@ -876,8 +841,6 @@ guard, and the dashboard. The manifest is honest for the first time (realized mo
 servers), verified end-to-end. Deploy discipline: SIGSTOP the eval runner before any API reload
 (no client reconnect backoff — two burned-arm incidents), and implementation subagents carry
 zero process-management authority (a prose ban failed; 532 questions paid for the lesson).
-
-
 ## Cold-fleet mode inference in the stack-change gate (2026-07-25)
 
 **Why a cold start cannot be gate-green, and why that is correct.**
@@ -909,8 +872,6 @@ the fleet is realized and the mode is derivable) is the **sanctioned** path, not
 
 _Sources: `handoffs/active/esc8-stack-restart-landmine-audit-2026-07-22.md` § 2026-07-25;
 `epyc-orchestrator ed6288ea`._
-
-
 ## Compiling the stack: the derived layer is the only thing production reads (2026-07-31)
 
 Confidence: `verified` — every claim below was checked against the live process table
@@ -1016,3 +977,26 @@ _Sources: `handoffs/active/numa-topology-cutover-resume-20260730.md` § SESSION 
 `artifacts/audit/orchestration-wiring-audit-20260731.md` (epyc-root `5d4d05a6`);
 `progress/2026-07/2026-07-31.md` § Session 20:00–23:00Z;
 `epyc-orchestrator` `ed891211`, `596e2189`, `c1a004bf`, `b060dd56`, `4e8bf1f0`, `ca5f3e81`._
+## Compiled Update — 2026-08-11 production v9 stack restoration
+
+The complete serving stack is resident again on frozen production v9. Runtime attestation matches
+`production-consolidated-v9` at `0db32c06e3e550065b78311a6031ef3dd2c4f27c` (binary 10125), all
+six backend groups and probes report healthy, the embedders warmed, speech launchers proved their
+tree-local ggml linkage, and a live TTS synthesis smoke passed. This is a stack-health result, not a
+new model-quality or throughput claim.
+
+The first cold start failed closed because `stack_paths` imported the full config graph before
+publishing the binary/path constants that the config graph itself imports. Runtime-facts NUMA
+inference then failed and selected an inactive manifest. Orchestrator `74c68a2a` breaks that cycle
+without removing `PathsConfig` environment overrides; `969244d8` regenerates the stack derivatives
+from the repaired loader. Focused config/manifest tests passed 142/142 and the complete launch gate
+passed 191/191. The reusable lesson is that launcher leaf modules must publish path constants before
+importing configuration consumers: generated topology selection is only as reliable as the import
+graph that feeds it.
+
+### Source References (2026-08-11)
+
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — live restoration, health probes, root cause and verification counts.
+- [`ratify_v9_final_freeze_20260811.json`](../artifacts/operator/ratify_v9_final_freeze_20260811.json) — ratified kernel identity and rollback boundary.
+- [`v9-kernel-promotion-attestation.json`](../handoffs/active/v9-kernel-promotion-attestation.json) — frozen CPU/HIP and production certification evidence map.
+- [orchestrator `74c68a2a`](https://github.com/pestopoppa/epyc-orchestrator/commit/74c68a2a8e01a0f4a8c93a49fa32c0b85494f501) and [`969244d8`](https://github.com/pestopoppa/epyc-orchestrator/commit/969244d8015155c0193ad2780313a858df3f0ba1) — circular-import repair and regenerated derivatives.

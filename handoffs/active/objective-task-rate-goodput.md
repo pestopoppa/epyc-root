@@ -70,13 +70,48 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
       `objectives_legacy_v1 = [2.025, 14.78, -0.5, 0.8]`. Frontier restarted via
       `pareto_exclude_before_ts` at the flip commit (both vectors are 4-D, so nothing
       catches a mixed frontier by shape — the epoch fence is what separates them).
-- [ ] **W3d — the 2026-06-13 hold conditions were never satisfied; they were superseded.**
+- [x] **W3d — the 2026-06-13 hold conditions were never satisfied; they were superseded.**
       Record why, so the hold is not silently re-derived: the flip shipped on an operator
       decision, not on the ">=2/5 legacy frontier points drop" proof threshold. The
       "raw `task_rate` admits a zero-quality high-rate frontier point" objection is still
       LIVE and unaddressed — quality remains a separate axis, so a zero-quality/high-rate
       point can still enter the frontier. Decide whether goodput (quality-scaled rate)
       should replace raw rate on axis 1, or whether the reliability floor is sufficient.
+      **✅ 2026-08-12 (`mainA`, pulled from the generated bench and claimed) — RECORDED, and the
+      objection is not merely still live: it is MEASURABLY REALISED, and the mechanism is worse
+      than the row states.**
+      **The live vector** (`tier_specs.py:328` `_rate_objectives_from_row`) is
+      `(quality, rate, -cost, reliability)`, all maximised. Quality is read as
+      `float(row.get("quality") or 0.0)`.
+      **1. A zero-quality high-rate point genuinely cannot be excluded by dominance.** It is
+      dominated only by a point that is at least equal on ALL FOUR axes. A point holding the max
+      rate is unbeatable on rate, so nothing dominates it regardless of how bad its quality is.
+      Pareto cannot fix this; only a floor or a scaled axis can. Searched for one — no
+      `quality_floor` / `min_quality` / reliability floor exists in `src/autopilot_core/`.
+      **2. The worse half: ABSENT quality is silently scored as ZERO.** `or 0.0` cannot
+      distinguish *measured zero* from *never measured*. Measured over both journal shards:
+      **231 of 1372 trial rows (16.8%) carry falsy or absent quality** and are therefore admitted
+      to the frontier as zero-quality points. So the objection is not a hypothetical about a
+      future bad point — one row in six is already in that state.
+      **3. `objectives_measurable` promises more than it checks.** Its docstring reads *"True when
+      this result carries every axis the live dominance vector needs"* and its body is
+      `return seq_task_rate_qph_from(result) is not None` — it validates the RATE and nothing else.
+      A row with no quality, cost or reliability passes a gate whose name and docstring both say
+      it checked them. That is the same claim-without-witness shape as the era stamps and the
+      `--validate-only` help text, sitting in the objective plane.
+      **Why the hold was superseded, recorded so it is not silently re-derived:** the flip shipped
+      on an operator decision, not on the `>=2/5 legacy frontier points drop` proof threshold the
+      2026-06-13 hold named. The threshold was never met and never waived — it was overtaken. Any
+      future reader finding the hold unsatisfied should NOT reinstate it; it is void, not pending.
+  - [ ] **OPERATOR DECISION — goodput vs raw rate on axis 1.** Not mine to take, and it is bigger
+    than a scoring tweak: per the 2026-08-11 rider, a metric change is structurally an **ERA
+    BOUNDARY** and should be recorded as an era row rather than an edit. Three options: (a)
+    quality-scaled goodput replaces raw rate on axis 1; (b) raw rate stays and a quality floor
+    gates admission; (c) status quo, accepting that ~1 row in 6 enters at zero quality.
+    **Recommend (b) plus a separate fix**: a floor addresses the dominance hole without redefining
+    a banked axis, and the 231 absent-quality rows are a DATA defect that a metric change would
+    silently paper over — `or 0.0` should distinguish absent from zero regardless of which option
+    is chosen, or the same 231 rows will re-enter under goodput scored as zero goodput.
 - [ ] **W3e — retire the tier-cost axis from dominance** (deferred out of W3). The original
       W3 scope included dropping `-cost`; that is what made the vector 3-D and is blocked by
       the positional consumers above. Doing it means fixing `safety_gate.py:2303` and
@@ -190,6 +225,11 @@ Reopen W3 only after all of these are true:
 
 - Wall time carries the same ~9% host-noise CV as t/s (spec caveat 1) — findings-01 Phase 1.4 sequential/median-cluster admission rules apply to the new axis unchanged; never single-trial rate claims.
 - `task_rate` depends on question mix AND eval concurrency — both are instrument: fix per core-version, bump policy version on any change; per-suite wall telemetry attributes which suites pay the bloat.
+- **2026-08-05 boundary prepared**: orchestrator `65aac3d6` bumps the live identifier to
+  `task_rate_4d_v2_resource_lanes`, retains `task_rate_4d_v1` only for faithful historical
+  replay, rejects mismatched snapshots from live archive authority, and refuses startup until
+  state names the matching execution instrument. The E9 registry/state apply remains human-owned;
+  no v2 measurements exist until that transaction is applied.
 - Degenerate-terseness is bounded (quality is a co-equal axis); if a long-form role emerges, add a suite-level format-adequacy check — never re-reward tokens globally.
 - Tool tokens stay excluded from the rate (already correct); tool use is priced by downstream correctness + wall cost.
 - Replay is retire-view, not rewrite: journal rows are immutable; quality is NOT rescaled across eras (MEASUREMENT.md §5).

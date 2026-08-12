@@ -39,9 +39,10 @@ exact disaster the guards exist to prevent. Endpoints must be
 `tmux:<session>:<window>`, or a window whose name equals the agent id must exist.
 
 Usage:
-    tmux_adapter.py probe  --agent codex                 # all guard signals, no action
-    tmux_adapter.py nudge  --agent codex --message "..."  # send-keys, guarded
-    tmux_adapter.py spawn  --agent new-main               # 4 bus files, then a pane
+    tmux_adapter.py probe    --agent codex                 # all guard signals, no action
+    tmux_adapter.py nudge    --agent codex --message "..."  # send-keys, guarded (DEPRECATED payload)
+    tmux_adapter.py doorbell --agent codex                  # fixed ring, two guards, bus carries payload
+    tmux_adapter.py spawn    --agent new-main               # 4 bus files, then a pane
 """
 
 from __future__ import annotations
@@ -49,6 +50,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -115,8 +117,17 @@ _PASTE_BLOB_MARKER = "[Pasted"
 # than say something. There is no pane state that distinguishes these after the
 # fact, so the trigger is refused up front instead of being detected afterwards.
 _COMPOSER_MODE_PREFIXES = ("/", "!", "#", "@")
-# `@` anywhere (not just leading) opens Codex's file picker at the typed token.
+# `@` opens Codex's file picker — but only when it STARTS A TOKEN, which is what
+# the picker binds to. C13 (closed 2026-08-11): the guard refused the character
+# ANYWHERE, so `ops@example.com` and "the rate limit is 600s @ default" were
+# rejected as picker triggers. The original filing chose the broad form knowingly
+# ("a false refusal costs a rephrase, a false accept fires Enter into a picker")
+# and said to narrow it if it proved annoying; it did, on a message about an email
+# address. Narrowed to the actual hazard, NOT relaxed: `@` after whitespace or at
+# the start of the message still refuses, because that is the shape the picker
+# opens on. `foo@bar` cannot open it — the token already began.
 _INLINE_PICKER_TRIGGER = "@"
+_INLINE_PICKER_RE = re.compile(r"(?:^|\s)@")
 # How far back from the cursor a paste banner can sit on the composer line.
 _BLOB_LOOKBACK_CHARS = 200
 _FRAGMENT_CHARS = 60
@@ -279,7 +290,138 @@ def _pending_fragment(message: str) -> str:
     return trimmed[-min(len(trimmed), _FRAGMENT_CHARS):]
 
 
-def _submission_state(composer_text: str, fragment: str) -> str:
+# ---------------------------------------------------------------------------
+# C45, 2026-08-12. THE DOORBELL: nudges stop carrying payload.
+#
+# THE FAILURE THIS REPLACES. `probe`'s `state == "working"` blocker (see the
+# C35/R1/C36 blocks above) is correct in principle for a PAYLOAD nudge — typing
+# a brief into a pane mid-generation corrupts whatever is running there — but it
+# is the wrong tradeoff for the common case, where the message carries no new
+# information at all ("you have mail, go read it"). On 2026-08-12 an
+# idle-but-`working`-labelled agent sat unreachable for 33 minutes because
+# every nudge attempt refused on the heartbeat state, and nothing could clear
+# the flag because clearing it is what the refused nudge would have done. C35's
+# quiescence override and C36's runtime-liveness signal both exist to patch
+# exactly this deadlock for the PAYLOAD path — and both remain necessary there,
+# because a payload nudge really can corrupt a mid-generation pane.
+#
+# THE REDESIGN. Payload moves entirely to the bus, which already is durable,
+# schema-validated and cursor-tracked (see BUS_PROTOCOL.md) — it does not need
+# a tmux pane to carry it reliably, and never did. The pane only ever needed a
+# DOORBELL: a signal to go check the bus. So `doorbell` sends a fixed,
+# content-free, idempotent string and nothing else — no `--message`, because a
+# caller-controlled string is a payload nudge wearing a different name. Once
+# nothing an agent DOES (drains a bus message, keeps generating, sits at an
+# empty prompt) changes what the doorbell says, most of the reasons a payload
+# nudge must be refused stop applying to it:
+#
+#   * quiet-for (window_activity < --quiet-s)     NOT applied. A short fixed
+#     line buffers safely inside a busy composer and submits cleanly once
+#     generation stops — the whole reason chunking/pacing exists for nudge is
+#     to survive a PASTE-BLOB threshold on a LONG message; the doorbell string
+#     is ~45 chars, an order of magnitude under the smallest calibrated
+#     single-burst limit (800 chars, Claude Code). There is nothing here for
+#     the quiet-for check to protect against.
+#   * rate limit (--min-interval-s)                NOT applied. Ringing twice
+#     is a no-op by design: the second ring says exactly what the first one
+#     said, to an agent that either already drained (so the doorbell is inert)
+#     or still has not (so ringing again is the correct behaviour, not spam).
+#     A payload nudge earns a rate limit because repetition means the operator
+#     is re-typing a brief into a live session; a doorbell has no brief to
+#     re-type.
+#   * heartbeat-state refusal (`state == "working"`) NOT applied. THIS is the
+#     guard whose removal fixes the 33-minute incident above, and it is safe to
+#     remove here specifically because of what the message no longer does: it
+#     does not interrupt a task with new instructions, it cannot corrupt a
+#     mid-generation composer with foreign content (see guard (b) below — the
+#     composer-empty check is what still protects a genuinely mid-typing pane),
+#     and an agent correctly mid-generation simply keeps generating with three
+#     extra harmless lines in its scrollback. The failure mode C35/C36 exist to
+#     avoid — believing a stale `working` self-report and typing a live brief
+#     into a busy pane — cannot happen here because there is no brief.
+#   * C35's quiescence-override machinery                NOT applied, and not
+#     merely "applied but never triggers": there is no `working` blocker on
+#     this path for it to override, so wiring it in would be dead code arguing
+#     with a guard that no longer exists. C35 (and its R1 stale-heartbeat
+#     sibling) stay exactly as they are for `nudge` — this module still owns a
+#     real payload path, and it still needs a real deadlock escape hatch.
+#
+# WHAT STAYS, AND WHY THESE TWO ARE LOAD-BEARING WHERE THE OTHERS ARE NOT.
+# Both guards below protect against the SAME hazard class — an Enter landing
+# somewhere it corrupts — which none of the four removed guards do:
+#
+#   (a) pane exists and is not dead. An Enter (and the string ahead of it) sent
+#       to a pane that no longer exists is not caught by tmux — `send-keys` to
+#       a dead/gone target simply fails or silently goes nowhere — so this is
+#       the same "does the target still exist" question `resolve_target` and
+#       `probe`'s `pane_dead` read already answer for `nudge`, asked fresh
+#       (state can change between resolution and send) and answered the same
+#       fail-closed way: unreadable is refused, not assumed alive.
+#   (b) the composer holds no pending input. This is the one hazard a
+#       content-free message does NOT remove: the doorbell's Enter is still a
+#       real Enter, and Enter always submits whatever is already sitting in
+#       the composer, doorbell text or not. If an operator (or the agent
+#       itself) has half-typed something and not yet submitted it, ringing the
+#       doorbell submits THAT, not the doorbell string. This is a hazard the
+#       payload path also has — see the C6/C12 cursor-anchored submission
+#       machinery above — but `nudge` gets to defend against it by verifying
+#       ITS OWN fragment lands before pressing Enter. A doorbell has no
+#       fragment of its own to plant first; it must instead confirm the
+#       composer is empty BEFORE typing anything, or refuse.
+#
+# See `_composer_row_is_empty` for how (b) is read, and its docstring for the
+# one thing this check is known not to distinguish (a placeholder/hint string
+# a TUI might render at an empty prompt from real pending content) — that case
+# fails CLOSED (reads as non-empty, refuses), which is the safe direction: a
+# doorbell that occasionally over-refuses costs a retry; one that fires into
+# half-typed text does not.
+DOORBELL_TEXT_TEMPLATE = "Bus: unread inbox for {agent} — drain now."
+# Codex's bare prompt is "› ", Claude Code's is "❱ " (both calibrated in the
+# C6 block above and used throughout tests/test_tmux_adapter.py as the bare-
+# prompt fixture for each TUI). A composer showing only one of these — or
+# nothing at all, the disposable-shell fixture's bare state — has no pending
+# input. Anything else on the row is real content, typed by the operator or
+# left behind by the agent, and must not be typed over.
+_BARE_PROMPT_GLYPHS = ("›", "❱")
+
+
+def doorbell_text(agent: str) -> str:
+    """The fixed doorbell string. `agent` is the ONLY substitution — no other
+    interpolation, no free-form content. This is deliberately not an f-string
+    at the call site: routing every doorbell through one template is what makes
+    "the string is not caller-controllable" a property of the code, not a
+    convention callers are trusted to honour."""
+    return DOORBELL_TEXT_TEMPLATE.format(agent=agent)
+
+
+def _composer_row_is_empty(composer_text: str) -> bool:
+    """Is the composer's CURRENT ROW free of pending input? For guard (b) above.
+
+    Deliberately narrower than `_composer_text`'s own return value. That value
+    is "everything up to the cursor" — the right anchor for fragment matching
+    (see its docstring), but wrong here: it also contains the entire prior
+    transcript, which is real, submitted, harmless content and must not count
+    against emptiness. `doorbell` has no fragment to match against in the
+    first place — the question is not "does the composer end with X" but "is
+    there anything at all pending" — so this reads only the last line of that
+    capture: the physical row the cursor sits on, from column 0 to the cursor.
+
+    KNOWN SCOPE LIMIT, stated rather than hidden: a composer with pending input
+    spanning MULTIPLE rows (an operator mid-typing a multi-line message, cursor
+    resting on a trailing blank line) would read this row as empty while an
+    earlier row is not. Not addressed here — the design brief scopes this to
+    the "composer/input row", singular, and multi-row pending input on an
+    otherwise-idle main is not the case this guard was written to catch. If it
+    ever matters, extend the scan to every row from the last recognised
+    bare-prompt line to the cursor, not just the last one.
+    """
+    row = composer_text.rsplit("\n", 1)[-1]
+    stripped = row.strip()
+    return stripped == "" or stripped in _BARE_PROMPT_GLYPHS
+
+
+def _submission_state(composer_text: str, fragment: str,
+                      min_occurrences: int | None = None) -> str:
     """Classify the composer, cursor-anchored. Four states, all distinct.
 
     ``text_present``  the composer ENDS with the message — pending, not submitted.
@@ -310,12 +452,49 @@ def _submission_state(composer_text: str, fragment: str) -> str:
     if _PASTE_BLOB_MARKER in composer_text[-_BLOB_LOOKBACK_CHARS:]:
         return "paste_blob"
     if needle in normalised:
+        # C12 (closed 2026-08-11): `needle in normalised` matched the fragment
+        # ANYWHERE on the pane, including scrollback ABOVE the composer. So an
+        # identical fragment already in the transcript — the same nudge sent
+        # earlier, or an agent echoing the text back — could satisfy the post-Enter
+        # success check even though Enter never submitted: a completion overlay
+        # rewrites the composer, our copy vanishes, and the STALE copy answers for
+        # it. The 600s rate limit makes that unlikely and it needs a second fault
+        # to matter, which is why it was filed rather than fixed — but "unlikely"
+        # is not the standard this module holds elsewhere, and it is the C6
+        # fail-open through a third door.
+        #
+        # `min_occurrences` is the anchor the filing asked for, expressed as a
+        # COUNT rather than a cursor offset — the capture is re-normalised and the
+        # pane can scroll between samples, so a byte offset does not survive, and a
+        # count does. The caller passes the pre-Enter occurrence count. A genuine
+        # submission MOVES our copy from the composer into the transcript, so the
+        # count holds; an Enter eaten by a picker DELETES it, so the count drops
+        # and what remains is provably stale.
+        if min_occurrences is not None and normalised.count(needle) < min_occurrences:
+            return "text_absent"
         return "text_echoed"
     return "text_absent"
 
 
+def _fragment_occurrences(target: str, fragment: str) -> int | None:
+    """How many times the fragment appears on the pane right now, or None if the
+    pane cannot be read.
+
+    C12. None propagates as "no anchor available" and the post-Enter check keeps its
+    pre-C12 behaviour rather than refusing — an unreadable pane at THIS point is
+    already handled by the capture failure path a moment later, and refusing twice
+    for one cause would turn a transient tmux hiccup into a nudge failure.
+    """
+    composer, failure = _composer_text(target)
+    if failure or composer is None:
+        return None
+    needle = _normalise(fragment)
+    return _normalise(composer).count(needle) if needle else None
+
+
 def _await_state(target: str, fragment: str, wanted: set[str], timeout_s: float,
-                 stable_samples: int = 1) -> tuple[str | None, str | None]:
+                 stable_samples: int = 1,
+                 min_occurrences: int | None = None) -> tuple[str | None, str | None]:
     """Poll the composer until it reaches one of ``wanted``; return the last state.
 
     Polling exists so that a slow redraw is a WAIT, not a refusal. It never turns
@@ -333,7 +512,7 @@ def _await_state(target: str, fragment: str, wanted: set[str], timeout_s: float,
         composer, failure = _composer_text(target)
         if failure:
             return None, failure
-        state = _submission_state(composer or "", fragment)
+        state = _submission_state(composer or "", fragment, min_occurrences)
         run = run + 1 if state in wanted else 0
         if run >= max(1, stable_samples):
             return state, None
@@ -931,6 +1110,44 @@ def record(kind: str, agent: str, detail: str, **fields: object) -> None:
         fh.write(json.dumps(row, sort_keys=True) + "\n")
 
 
+def hb_stale_override_ok(pane_dead: bool | None, quiet_for: float | None,
+                         override_quiet_s: float) -> bool:
+    """May a STALE heartbeat be overruled? Only on positive pane evidence.
+
+    R1. Deliberately the same predicate C35 uses for a `working` heartbeat, and
+    deliberately fail-closed on every unknown: a disabled override, an unreadable or
+    dead pane, or unreadable window activity all mean NO. The one case that says yes
+    is a live pane that has been quiet longer than the spinner interval — both TUIs
+    redraw about once a second while generating, so quiet at that scale means settled
+    at the prompt, not thinking.
+
+    Note what this does NOT do: it never makes a mid-generation pane nudgeable. That
+    is the compliant path, and a fix that made everything reachable would be worse
+    than the deadlock it replaces.
+    """
+    if override_quiet_s <= 0:
+        return False
+    if pane_dead is not False:
+        return False
+    if quiet_for is None:
+        return False
+    return quiet_for >= override_quiet_s
+
+
+def _stale_override_refusal(pane_dead: bool | None, quiet_for: float | None,
+                            override_quiet_s: float) -> str:
+    """Why the stale-heartbeat override did NOT fire. Said out loud, because the
+    whole R1 defect was a refusal whose reason nobody could see."""
+    if override_quiet_s <= 0:
+        return f"stale-override disabled (--heartbeat-override-quiet-s {override_quiet_s:.0f})"
+    if pane_dead is not False:
+        return "pane state unreadable or dead — fail closed, no override"
+    if quiet_for is None:
+        return "window_activity unreadable — fail closed, no override"
+    return (f"window was active {quiet_for:.0f}s ago (< {override_quiet_s:.0f}s) — the pane "
+            f"looks mid-generation, so the stale heartbeat is NOT overruled")
+
+
 def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
           hb_override_quiet_s: float = DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S,
           runtime_fn=None) -> dict:
@@ -1087,6 +1304,8 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
     # one of them was a fail-OPEN. A non-positive threshold disables the override
     # entirely rather than meaning "override always", so a mis-set 0 is inert.
     hb_override_applied = False
+    hb_stale_override_applied = False
+    hb_stale_override_reason = "not evaluated (heartbeat not stale)"
     hb_override_reason: str | None = None
 
     # ---- C36: when the runtime has an answer, it DECIDES and the heartbeat corroborates ----
@@ -1138,7 +1357,41 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
             if not hb_override_applied:
                 blockers.append(f"heartbeat says working (task {hb.get('task_id')})")
         if hb_age is not None and hb_age > hb_max_age:
-            blockers.append(f"heartbeat is {hb_age:.0f}s stale (> {hb_max_age:.0f}s)")
+            # R1 (2026-08-11): THE GUARD USED TO HARDEN AS THE CONDITION WORSENED.
+            #
+            # Three-way deadlock, measured today across the whole fleet. The daemon
+            # calls a heartbeat older than 3600s STUCK and tries to nudge; this line
+            # refused every nudge past 900s. So between 900s and 3600s nobody has
+            # decided you are stuck, and past 3600s somebody has and can no longer
+            # reach you. Every main crossed 900s at ~10:14-10:22Z and the entire
+            # fleet — the coordinator included — became permanently unreachable:
+            # 1,903 stuck-nudge-refused rows in advisory.jsonl. The only way back was
+            # a human passing --heartbeat-max-age 86400 by hand.
+            #
+            # Neither existing escape hatch reaches this. C35 lifts the `working`
+            # blocker and never staleness. C36 is codex-rollout-only, so on an
+            # all-Claude fleet its availability is exactly 0%.
+            #
+            # The fix is NOT to raise the default: that trades a deadlock for typing
+            # into a pane that is genuinely mid-generation. Staleness is a TIMER, and
+            # a timer cannot tell "wedged" from "quietly waiting". The pane can:
+            # `pane_dead` says the window still exists, and quiescence says the TUI is
+            # settled at its prompt rather than redrawing a spinner. So the same
+            # evidence C35 already trusts to overrule a `working` self-report — and
+            # only that evidence — overrules an OLD one. A heartbeat that stopped
+            # being written is not a reason to stop trying to reach a demonstrably
+            # alive, demonstrably idle pane; it is the reason to try.
+            if hb_stale_override_ok(dead, quiet_for, hb_override_quiet_s):
+                hb_stale_override_applied = True
+                hb_stale_override_reason = (
+                    f"heartbeat {hb_age:.0f}s stale (> {hb_max_age:.0f}s) BUT the pane is alive "
+                    f"and quiet {quiet_for:.0f}s (>= {hb_override_quiet_s:.0f}s) — settled at its "
+                    f"prompt, so it is reachable; refusing here is the R1 deadlock")
+            else:
+                hb_stale_override_reason = _stale_override_refusal(
+                    dead, quiet_for, hb_override_quiet_s)
+                blockers.append(f"heartbeat is {hb_age:.0f}s stale (> {hb_max_age:.0f}s)"
+                                f" — {hb_stale_override_reason}")
 
     return {"agent": agent, "target": target, "target_reason": why,
             "authorised": authorised, "spawn_cap": spawn_cap, "spawn_cap_reason": cap_reason,
@@ -1156,6 +1409,11 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
             "heartbeat_override_quiet_s": hb_override_quiet_s,
             "heartbeat_override_applied": hb_override_applied,
             "heartbeat_override_reason": hb_override_reason,
+            # R1: reported ALWAYS, fired or not, for the same reason C35's is — a
+            # reader must be able to tell "reachable despite a stale heartbeat" from
+            # "refused, and here is the pane evidence that refused it".
+            "heartbeat_stale_override_applied": hb_stale_override_applied,
+            "heartbeat_stale_override_reason": hb_stale_override_reason,
             # C36: reported ALWAYS, including when the runtime had no answer, so a
             # reader can tell "the runtime cleared this main" from "the runtime was
             # unavailable and the heartbeat decided" — and can see which mains are
@@ -1233,9 +1491,10 @@ def cmd_nudge(args: argparse.Namespace) -> int:
               "would submit a partial message. Send a single line.", file=sys.stderr)
         return EX_USAGE
     stripped = args.message.lstrip()
-    if stripped.startswith(_COMPOSER_MODE_PREFIXES) or _INLINE_PICKER_TRIGGER in args.message:
+    if stripped.startswith(_COMPOSER_MODE_PREFIXES) or _INLINE_PICKER_RE.search(args.message):
         print(f"REFUSING: nudge message starts with one of {' '.join(_COMPOSER_MODE_PREFIXES)} "
-              f"or contains '{_INLINE_PICKER_TRIGGER}'. Those put the composer in a mode where "
+              f"or contains a token-initial '{_INLINE_PICKER_TRIGGER}'. Those put the composer in "
+              f"a mode where "
               f"Enter accepts a completion (or runs a command) instead of submitting prose, and "
               f"the resulting pane is indistinguishable from a successful send. Rephrase without "
               f"the trigger — write the path plainly, or point at a brief file.", file=sys.stderr)
@@ -1300,8 +1559,15 @@ def cmd_nudge(args: argparse.Namespace) -> int:
     # failure is exactly the false negative this fix removes. Nor is it merely
     # "no longer at the cursor": that would accept an Enter which a completion
     # overlay consumed to rewrite the composer. Success is the echo, positively.
+    # C12: how many times the fragment was on the pane BEFORE Enter, including any
+    # stale copy already in the scrollback. A genuine submission moves our copy from
+    # the composer into the transcript, so the count holds; an Enter eaten by a
+    # completion overlay deletes it, so the count drops and any remaining match is
+    # provably a stale one that must not read as success.
+    pre_enter_occurrences = _fragment_occurrences(p["target"], fragment)
     submitted_state, failure = _await_state(p["target"], fragment, {"text_echoed"},
-                                            _VERIFY_TIMEOUT_S, _VERIFY_STABLE_SAMPLES)
+                                            _VERIFY_TIMEOUT_S, _VERIFY_STABLE_SAMPLES,
+                                            min_occurrences=pre_enter_occurrences)
     if failure:
         print(f"nudge submission verification unavailable after Enter: {failure}", file=sys.stderr)
         return EX_MISCONFIG
@@ -1331,6 +1597,73 @@ def cmd_nudge(args: argparse.Namespace) -> int:
            window_quiet_for_s=p.get("window_quiet_for_s")
            if p.get("heartbeat_override_applied") else None)
     print(f"nudged {args.agent} at {p['target']}")
+    return 0
+
+
+def cmd_doorbell(args: argparse.Namespace) -> int:
+    """Ring the fixed doorbell string. Two load-bearing guards, both fail-closed;
+    see the C45 block above `doorbell_text` for what is and is not applied here
+    and why. Deliberately does NOT call `probe()` or `heartbeat()` — pulling in
+    `probe` would silently re-attach every guard C45 removes (quiet-for, rate
+    limit, heartbeat state, the C35 override machinery built to patch it), which
+    is precisely the deadlock this command exists to stop reproducing.
+    """
+    config = load_config()
+    flags = config.get("flags") or {}
+    authorised = str(flags.get("codex_sendkeys")).strip().lower() in {"1", "true", "yes", "on"}
+    if not authorised:
+        # The master send-keys authorisation (gate OP-SENDKEYS-CODEX), not one of
+        # doorbell's two pane-state guards — this adapter does not type into any
+        # pane, doorbell or payload, without it.
+        print("REFUSING: flags.codex_sendkeys is off (gate OP-SENDKEYS-CODEX)", file=sys.stderr)
+        return EX_BLOCKED
+
+    target, why = resolve_target(config, args.agent)
+    if not target:
+        print(f"REFUSING: {why}", file=sys.stderr)
+        return EX_BLOCKED
+
+    # ---- guard (a): pane exists and pane_dead == 0 ----
+    rc, out = _tmux("display-message", "-p", "-t", target, "#{pane_dead}")
+    if rc != 0 or out.strip() not in ("0", "1"):
+        print(f"REFUSING: could not read pane_dead for {target}: {out!r} — fail closed",
+              file=sys.stderr)
+        return EX_BLOCKED
+    if out.strip() == "1":
+        print(f"REFUSING: pane {target} is dead", file=sys.stderr)
+        return EX_BLOCKED
+
+    # ---- guard (b): composer holds no pending input ----
+    composer, failure = _composer_text(target)
+    if failure or composer is None:
+        print(f"REFUSING: could not read the composer to confirm it holds no pending input: "
+              f"{failure} — fail closed rather than risk submitting whatever is there",
+              file=sys.stderr)
+        return EX_MISCONFIG
+    if not _composer_row_is_empty(composer):
+        print(f"REFUSING: pane {target} composer holds pending input; ringing the doorbell "
+              f"sends a real Enter, which would submit whatever is already typed there, not "
+              f"the doorbell string. Clear it (or let whoever is typing submit it) and retry — "
+              f"retrying costs nothing, ringing is idempotent.", file=sys.stderr)
+        return EX_BLOCKED
+
+    message = doorbell_text(args.agent)
+    if args.dry_run:
+        print(f"would ring doorbell for {args.agent} at {target}: {message!r}")
+        return 0
+    # One send-keys call is enough — no chunking, no pacing gap: the string is
+    # ~45 chars, an order of magnitude under the smallest calibrated single-burst
+    # paste threshold (800 chars, Claude Code CLI v2.1.220). See the C45 block.
+    rc, out = _tmux("send-keys", "-l", "-t", target, "--", message)
+    if rc != 0:
+        print(f"send-keys message failed: {out}", file=sys.stderr)
+        return EX_MISCONFIG
+    rc, out = _tmux("send-keys", "-t", target, "Enter")
+    if rc != 0:
+        print(f"send-keys Enter failed: {out}", file=sys.stderr)
+        return EX_MISCONFIG
+    record("doorbell", args.agent, message)
+    print(f"doorbell rung for {args.agent} at {target}")
     return 0
 
 
@@ -1614,7 +1947,9 @@ def build_parser() -> argparse.ArgumentParser:
     pr.add_argument("--json", action="store_true")
     pr.set_defaults(func=cmd_probe)
 
-    nu = sub.add_parser("nudge", help="send-keys into the agent's pane, guarded")
+    nu = sub.add_parser("nudge", help="send-keys into the agent's pane, guarded — DEPRECATED: "
+                        "payload nudges are deprecated — bus carries payload, doorbell rings "
+                        "(see the 'doorbell' subcommand and the C45 block in this file)")
     nu.add_argument("--agent", required=True)
     nu.add_argument("--message", required=True)
     nu.add_argument("--min-interval-s", type=float, default=600.0, help="rate limit (default 600)")
@@ -1622,6 +1957,13 @@ def build_parser() -> argparse.ArgumentParser:
                     help="delay before each prompt-tail submission check")
     nu.add_argument("--dry-run", action="store_true")
     nu.set_defaults(func=cmd_nudge)
+
+    db = sub.add_parser("doorbell", help="ring a FIXED, content-free string into the agent's "
+                        "pane — no --message: the bus carries payload, this only says 'go "
+                        "drain it'. Two guards only (pane alive, composer empty); see C45.")
+    db.add_argument("--agent", required=True)
+    db.add_argument("--dry-run", action="store_true")
+    db.set_defaults(func=cmd_doorbell)
 
     sp = sub.add_parser("spawn", help="create the agent's bus files, then its pane")
     sp.add_argument("--agent", required=True)

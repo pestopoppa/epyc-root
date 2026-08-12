@@ -1434,13 +1434,29 @@ def test_c35_the_override_touches_only_the_working_blocker(
         monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Every other guard must survive the override independently. Without this the
     change could quietly become 'a quiet pane is always nudgeable'."""
-    # staleness: independent, and deliberately NOT overridden — it is already
-    # tunable with --heartbeat-max-age, whereas state was not tunable at all.
+    # R1 (2026-08-11) CORRECTS THIS BLOCK. It used to assert that staleness is never
+    # overridden, on the reasoning that it "is already tunable with
+    # --heartbeat-max-age". That tunable is exactly what a human had to set to 86400
+    # by hand to rescue the fleet: the daemon calls a heartbeat >3600s STUCK and the
+    # adapter refused >900s, so past 3600s the detector said stuck and the guard said
+    # unreachable — the guard hardened as the condition worsened, and 1,903 refusals
+    # accumulated while nothing escalated. A live, quiet pane is now reachable
+    # regardless of heartbeat age, on the SAME pane evidence C35 already trusts.
     stale = _c35_probe("stale", monkeypatch, tmp_path, state="working",
                        quiet_for=300.0, hb_age_s=4000.0)
     assert stale["heartbeat_override_applied"] is True
-    assert any("stale" in b for b in stale["blockers"])
-    assert not stale["nudge_ok"], "an overridden state must not also waive staleness"
+    assert stale["heartbeat_stale_override_applied"] is True
+    assert not any("stale" in b for b in stale["blockers"]), \
+        "a live pane quiet well past the spinner interval must be reachable (R1)"
+
+    # THE COMPLIANT PATH, and the one that keeps this a re-scoping rather than a
+    # waiver: a stale heartbeat on a pane that looks MID-GENERATION still refuses.
+    # A fix that made everything nudgeable would be worse than the deadlock.
+    busy = _c35_probe("stale_busy", monkeypatch, tmp_path, state="working",
+                      quiet_for=3.0, hb_age_s=4000.0)
+    assert busy["heartbeat_stale_override_applied"] is False
+    assert any("stale" in b for b in busy["blockers"])
+    assert not busy["nudge_ok"], "typing into a mid-generation pane is the hazard"
 
     # authorisation flag
     adapter = _load("c35_flagoff")
@@ -1819,3 +1835,178 @@ def test_c36_runtime_never_overrides_the_OTHER_guards(
     assert any("codex_sendkeys is off" in b for b in p["blockers"]), p["blockers"]
     assert any("refusing" in b.lower() or "resolve" in b.lower() for b in p["blockers"]), \
         f"an unresolvable target must still block: {p['blockers']}"
+
+
+def test_the_rate_limit_is_per_agent_not_fleet_wide(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Reported 2026-08-11 by `coordinator-agent` as a HIGH-severity correctness bug:
+    "--min-interval-s is enforced GLOBALLY across the fleet". It is NOT, and this test
+    is why the question should not need re-litigating.
+
+    The report reconciled to per-agent behaviour on inspection. Both cited numbers are
+    the age of the refused agent's OWN most recent nudge:
+      * "probe --agent mainA at 09:02Z showed 127s, the age of the mainD nudge" —
+        mainA's own nudge was 09:00:29, and 09:00:29 + 127s = 09:02:36. The mainD
+        nudge (08:57:42) would have read 258s at that moment, not 127s.
+      * "mainC refused with 594s, the age of the auditor nudge" — mainC's own nudge
+        was 09:00:31, and 09:00:31 + 594s = 09:10:25; mainC was successfully nudged at
+        09:10:39, 14s later. The auditor's nudge reaches 594s at 09:07:47.
+    What made it LOOK fleet-wide is real and worth keeping in mind: all five agents
+    were nudged inside two seconds (09:00:29-09:00:31), so they came off the 600s
+    limit together and every refusal in between quoted a near-identical age.
+
+    `probe` filters ledger rows on `r.get("agent") != agent`, and `cmd_nudge` reads
+    the rate limit from `probe`'s result — one code path, no second limit anywhere.
+    """
+    other_nudged_recently = [
+        {"ts": _iso_ago(60), "kind": "nudge", "agent": "someone-else", "detail": "not us"},
+        {"ts": _iso_ago(30), "kind": "nudge", "agent": "third-agent", "detail": "also not us"},
+        {"ts": _iso_ago(3600), "kind": "spawn", "agent": "new-main", "detail": "our window"},
+    ]
+    p = _c31_probe("fleet_wide", monkeypatch, tmp_path, other_nudged_recently)
+    assert p["seconds_since_last_nudge"] is None, \
+        "another agent's nudge must not rate-limit this one"
+    assert p["nudges_this_window_instance"] == 0
+    assert not any("rate limit" in b for b in p["blockers"])
+
+
+def test_the_rate_limit_still_fires_for_the_agent_that_was_nudged(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The compliant path, and the reason the test above cannot pass by cheating.
+
+    "Other agents do not rate-limit me" is trivially satisfied by deleting the rate
+    limit, which is exactly the failure the coordinator's ask warned about. So the
+    same ledger that leaves a bystander unblocked must still block the agent whose
+    own nudge is inside the interval.
+    """
+    rows = [
+        {"ts": _iso_ago(3600), "kind": "spawn", "agent": "new-main", "detail": "our window"},
+        {"ts": _iso_ago(60), "kind": "nudge", "agent": "someone-else", "detail": "not us"},
+        {"ts": _iso_ago(45), "kind": "nudge", "agent": "new-main", "detail": "OURS"},
+    ]
+    p = _c31_probe("own_nudge", monkeypatch, tmp_path, rows)
+    assert p["seconds_since_last_nudge"] is not None
+    assert 40 <= p["seconds_since_last_nudge"] <= 60, \
+        "must be OUR 45s nudge, not the other agent's 60s one"
+    assert p["nudges_this_window_instance"] == 1
+
+
+# ------------------------------------------------------------------------- R1
+#
+# THE GUARD HARDENED AS THE CONDITION WORSENED. The daemon calls a heartbeat older
+# than 3600s STUCK and tries to nudge; the adapter refused every nudge past 900s.
+# Between 900s and 3600s nobody has decided you are stuck; past 3600s somebody has
+# and can no longer reach you. Measured 2026-08-11: every main crossed 900s at
+# ~10:14-10:22Z and the entire fleet — coordinator included — became permanently
+# unreachable, 1,903 stuck-nudge-refused rows, recovered only by a human passing
+# --heartbeat-max-age 86400 by hand. Neither escape hatch reaches it: C35 lifts only
+# the `working` blocker, and C36 is codex-only (0% availability on an all-Claude
+# fleet).
+
+@pytest.mark.parametrize("dead,quiet,override,expected,why", [
+    (False, 300.0, 120.0, True,  "live pane, quiet past the spinner interval"),
+    (False, 3.0,   120.0, False, "pane looks mid-generation — the hazard case"),
+    (False, 120.0, 120.0, True,  "exactly at the bound counts as quiet"),
+    (True,  300.0, 120.0, False, "pane dead — fail closed"),
+    (None,  300.0, 120.0, False, "pane state unreadable — fail closed"),
+    (False, None,  120.0, False, "window activity unreadable — fail closed"),
+    (False, 300.0, 0.0,   False, "override disabled — fail closed"),
+])
+def test_stale_override_fires_only_on_positive_pane_evidence(
+        dead, quiet, override, expected, why) -> None:
+    """Every unknown must fail CLOSED. The override exists to reach a demonstrably
+    alive, demonstrably settled pane — not to reach anything whose state we cannot
+    read."""
+    adapter = _load("r1_pred")
+    assert adapter.hb_stale_override_ok(dead, quiet, override) is expected, why
+
+
+def test_a_stale_heartbeat_on_a_quiet_live_pane_is_reachable(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The deadlock itself: an idle agent whose heartbeat simply stopped being
+    written. A heartbeat that stopped is not a reason to stop trying to reach a live
+    idle pane — it is the reason to try."""
+    p = _c35_probe("r1_idle_stale", monkeypatch, tmp_path, state="idle",
+                   quiet_for=1200.0, hb_age_s=40_000.0)
+    assert p["heartbeat_stale_override_applied"] is True
+    assert not any("stale" in b for b in p["blockers"])
+    assert "reachable" in p["heartbeat_stale_override_reason"]
+
+
+def test_the_stale_override_reason_is_reported_even_when_it_does_not_fire(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The whole R1 defect was a refusal whose reason nobody could see. Reported
+    either way, like C35's."""
+    p = _c35_probe("r1_reason", monkeypatch, tmp_path, state="idle",
+                   quiet_for=2.0, hb_age_s=40_000.0)
+    assert p["heartbeat_stale_override_applied"] is False
+    assert "mid-generation" in p["heartbeat_stale_override_reason"]
+    assert any("stale" in b for b in p["blockers"])
+
+
+def test_a_fresh_heartbeat_never_consults_the_stale_override(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The ordinary case must be untouched — this is a re-scoping of one refusal,
+    not a new pathway into nudging."""
+    p = _c35_probe("r1_fresh", monkeypatch, tmp_path, state="idle",
+                   quiet_for=1200.0, hb_age_s=30.0)
+    assert p["heartbeat_stale_override_applied"] is False
+    assert "not evaluated" in p["heartbeat_stale_override_reason"]
+    assert not any("stale" in b for b in p["blockers"])
+
+
+# --------------------------------------------------------------------- C12 / C13
+
+def test_c12_a_stale_scrollback_copy_cannot_answer_for_an_unsent_nudge() -> None:
+    """C12. Post-Enter success was `fragment in pane` — ANYWHERE, including
+    scrollback ABOVE the composer. So an identical fragment already in the
+    transcript (the same nudge sent earlier, or an agent echoing the text back)
+    could satisfy the success check even though Enter never submitted: a completion
+    overlay rewrites the composer, our copy vanishes, and the STALE copy answers for
+    it. The C6 fail-open through a third door.
+    """
+    adapter = _load("c12")
+    frag = "drain your inbox and refresh your heartbeat"
+
+    # Genuine submission: our copy MOVED from composer to transcript, count holds.
+    assert adapter._submission_state(f"echo: {frag}\n> ", frag, 1) == "text_echoed"
+
+    # Enter eaten by a picker: our copy is DELETED and only a stale one remains,
+    # so the count dropped below what was there before Enter.
+    assert adapter._submission_state(f"old nudge: {frag}\n> /completion", frag, 2) \
+        == "text_absent", "a stale copy must not read as this nudge's echo"
+
+
+def test_c12_the_anchor_is_optional_and_absence_is_not_a_refusal() -> None:
+    """None means "no anchor available" — an unreadable pane is already handled by
+    the capture-failure path, and refusing twice for one cause would turn a transient
+    tmux hiccup into a nudge failure."""
+    adapter = _load("c12_none")
+    frag = "please drain"
+    assert adapter._submission_state(f"echo: {frag}\n> ", frag, None) == "text_echoed"
+
+
+def test_c12_the_pre_enter_state_is_unchanged_by_the_anchor() -> None:
+    """The compliant path. text_present is decided by endswith and must not start
+    depending on a count — the anchor exists only to discriminate the echo."""
+    adapter = _load("c12_pre")
+    frag = "please drain"
+    assert adapter._submission_state(f"> {frag}", frag, 99) == "text_present"
+
+
+@pytest.mark.parametrize("message,refused,why", [
+    ("mail ops@example.com when done", False, "an email address is not a picker trigger"),
+    ("a@b and c@d", False, "mid-token @ cannot open the picker — the token already began"),
+    ("@file.py please look", True, "token-initial @ at the start IS the hazard"),
+    ("see @path/to/thing", True, "token-initial @ after whitespace IS the hazard"),
+    ("the limit is 600s @ default", True, "a bare @ starts a token"),
+    ("plain prose with no trigger", False, "unaffected"),
+])
+def test_c13_the_picker_guard_is_narrowed_to_the_actual_hazard(
+        message: str, refused: bool, why: str) -> None:
+    """C13. The guard refused `@` ANYWHERE, so an email address in otherwise-fine
+    prose was rejected. The original filing chose the broad form knowingly and said
+    to narrow it if it proved annoying — it did. Narrowed to the shape the picker
+    actually binds to (token-initial), NOT relaxed."""
+    adapter = _load(f"c13_{abs(hash(message)) % 9999}")
+    assert bool(adapter._INLINE_PICKER_RE.search(message)) is refused, why

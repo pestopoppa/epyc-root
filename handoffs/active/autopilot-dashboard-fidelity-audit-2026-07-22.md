@@ -268,6 +268,18 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
   `scripts/server/runtime_facts_manifest.py` (other-agent ownership); ESC-8 fixes
   already rewrote the writer to derive `selected_servers` from realized state, but
   the live manifest still shows an empty lineup — verify separately.
+  **2026-08-11 (`mainB`) — screened, NOT actionable as written: the observation is CONFOUNDED and
+  must not be "fixed".** `/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json` (generated
+  `2026-08-11T08:19:56Z`) does carry `selected_servers: None` — but **the stack is down**: nothing
+  is listening on 8070/8072/8085/8080/8180 (checked). A writer that derives from *realized* state
+  is **supposed** to emit an empty lineup when nothing is realized, so an empty manifest is
+  evidence the ESC-8 rewrite WORKS, not that it failed. The row was filed while a lineup was
+  presumably up, and re-reading it against a down stack inverts its meaning.
+  Distinguishing "writer broken" from "nothing running" requires a live stack, i.e. **compute** —
+  `inference`-owned, not this lane. Leaving the box open and untouched; re-verify during the
+  P0-0 relaunch window, when a realized lineup exists to compare against.
+  Related trap already recorded at P0-0 (`numa-topology-cutover-resume-20260730.md`): the derived
+  priors are likewise a faithful record of a halves-only launch, not a corrupted file.
 - [ ] **[C1 fix #3] One env / one SoT across the `--workers 6` pool** — process/launch
   concern (`scripts/server/*`), out of dashboard-file ownership.
 - [x] **[E8-PANELS] Era-honest pareto/GEPA plots for E8** ✅ 2026-07-27 — implemented in
@@ -280,16 +292,75 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
   authority banner reads live holds ("quality: HELD pending E8 baseline; speed: pending E8
   numeric rerun N/16"); `decision_grade_possible=False` while any hold is open. Python-side
   takes effect at the deferred API reload (reseed trial boundary); HTML live on refresh.
-  - [ ] **[E8-PANELS-a] Reconcile the rerun counter fields**: banner shows the gate marker's
-    `frontier_rerun_required` count (0/16) while `frontier_rerun_pending_clear` carries the
+  - [x] **[E8-PANELS-a] Reconcile the rerun counter fields** ✅ 2026-08-11 (`mainB`,
+    `epyc-orchestrator` `98ed5c5f`): banner showed the gate marker's
+    `frontier_rerun_required` count (0/16) while `frontier_rerun_pending_clear` carried the
     live 15/16 — unify which field the gate updates mid-run (cosmetic, confusing).
-  - [ ] **[E8-PANELS-b] Commit the ratified era-registry row**: an uncommitted `eval_quality`
+    **Root cause, and it was not cosmetic in the way the row assumed.** `completed_numeric_trials`
+    was written onto the marker ONLY by `_clear_frontier_rerun_marker` — i.e. once the gate had
+    already been satisfied. While the marker was OPEN it kept its creation value, `0`, even though
+    the live count is recomputed from the journal every decision cycle and reached only the
+    rationale. So it was not two fields disagreeing; it was **one field nothing updated mid-run**,
+    read by three surfaces that each coped differently.
+    Fix: the gate now writes `completed_numeric_trials` / `min_numeric_trials` back onto the open
+    marker each cycle, and `gen_system_card` renders them as `[15/16]`.
+    `optimization_brief.py:188` needed **no change** — it was already reading the right field.
+    **Reporting only, deliberately.** Nothing gates on the number: the decision path uses the
+    freshly computed local and `speed_hold` keys off `required`. A test pins that a missing or zero
+    count still HOLDS the gate — the failure mode worth guarding against is a "cosmetic" fix that
+    quietly wires a fail-closed hold to a display field. Skipped when `journal is None`, where the
+    counter returns 0 and writing it would recreate the bug from the other direction.
+    5 new tests; 719 passed across the autopilot/brief/system-card consumers (the 4 failures are the
+    known pre-existing set: 3× P0-0, 1× the E8 v8 pin).
+  - [x] **[E8-PANELS-b] Commit the ratified era-registry row**: an uncommitted `eval_quality`
     E8 row sits in `orchestration/instrument_eras.yaml` (output of the operator's quality-fence
     transaction; human-amendment provenance) — commit it with its receipt reference.
-  - [ ] **[E8-PANELS-c] Hub pct presentation**: `pct_all_done` reads intake sweeps as decline
-    (denominator inflation, see 2026-07-27 forensics) — surface absolute `all_tasks_done` +
-    a newly-filed-tasks series on the :8100 hub (owner may also be
+    **✅ 2026-08-12 (`mainA`, pulled from the generated bench and claimed) — the row IS committed;
+    the premise was stale. But it landed WITHOUT its receipt reference, which is the half worth
+    recording.**
+    Verified against git, not the filesystem: the `eval_quality` E8 row is at
+    `instrument_eras.yaml:170-176` on `HEAD` and has been committed since **`e2e5c035`
+    (2026-07-27)** — so "an uncommitted E8 row sits in ..." has not been true for two weeks.
+    **The provenance gap is real.** `e2e5c035`'s subject is *"fix: scope E8 candidate collection
+    watcher"* and its body carries no receipt reference, so an operator-ratified trust-boundary
+    row rode into the repo inside a bugfix commit. Anyone tracing that row's authority through
+    `git log` lands on a watcher fix. The receipt does exist and matches:
+    `artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.json`, decision
+    `RATIFY-E8-AUTOPILOT-QUALITY-FENCE`, ratified 2026-07-26T12:15:03Z, carrying
+    `quality_era: {id: E8, scope: eval_quality, from: 2026-07-25T18:38:43Z}` — identical to the
+    committed row.
+    **I did NOT mint a receipt-index entry for it.** Ran
+    `scripts/operator/check_ratifier_receipt_contract.sh` first: it reports *"on-disk ratified
+    receipts lacking a keyed index: (none)"*, because the fence is satisfied by its own
+    basename receipt under the contract's explicit guard. Creating an index entry would have
+    manufactured an evidentiary artifact the contract does not ask for — and I would have done it
+    on assumption rather than on the contract.
+    **Separate live finding, NOT mine, filed on the bus:** that same checker **exits 1 today** —
+    `MISSING-WRITE: ratify_and_apply_e8_quality_baseline_v4_20260727.sh (token=
+    ATTEST-E8-CONTEXT-FEASIBILITY-AND-BASELINE-APPLY-20260727)`. A signable token script with no
+    keyed-receipt write, i.e. a gate that could be signed without leaving an index entry. Routed
+    to the E8 quality-baseline owner.
+  - [x] **[E8-PANELS-c] Hub pct presentation** ✅ 2026-08-12 (`mainB`) — `pct_all_done` reads intake
+    sweeps as decline (denominator inflation, see 2026-07-27 forensics) — surface absolute
+    `all_tasks_done` + a newly-filed-tasks series on the :8100 hub (owner may also be
     loops-and-dashboards-audit-2026-07-05.md).
+    **Both requested surfaces ALREADY EXISTED; the defect left was the guard protecting them.**
+    Absolute: `handoffs.html:620` renders `bk.all_tasks_done` ("tasks completed (all tracked)").
+    Newly-filed series: `:943` and `:994-995` (`newly_filed` / `tasks_newly_filed`, each falling
+    back to `opened`). The percentage was *kept* rather than removed — a later design decision,
+    commented in place — but scope-labelled, "% done · open scope" beside "% done · all scope",
+    which addresses the same confusion by disambiguation instead of deletion.
+    **What was actually broken: the frontend-contract test asserted a SPELLING, not a property.**
+    `tests/test_handoff_parser.py` carried
+    `assertNotIn("const pctAll = bk.pct_all_done", html)` — and that exact expression exists nowhere
+    in the file, so the guard passed while `bk.pct_all_done` was still rendered through a different
+    expression at `:704-705`. A guard that forbids one *way of writing* a thing does not forbid the
+    thing. Rewritten to assert the property: if `bk.pct_all_done` is rendered at all, it must carry
+    its scope label AND appear beside the open-scope figure.
+    **Mutation-checked, because a guard I cannot make fail is the defect I was removing:** stripping
+    the two scope labels while leaving the render in place makes the new assertion FAIL
+    (`'% done · all scope' not found`); the old one passed on that same mutation. Restored, 42/42
+    green.
 - [x] **[E8-TRIALS-COLD] Validate restart-surface trial speed samples for cold-start
   contamination** ✅ 2026-07-27. Retrospective row-level audit cleared the sealed E8
   frontier: restart attempts 1442/1455 were tier-0 skips because AP-3 restart was disabled,

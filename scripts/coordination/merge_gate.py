@@ -39,13 +39,25 @@ import subprocess
 import sys
 from pathlib import Path
 
+# This insertion is for LOCATING the sibling session_bus module only -- it is
+# __file__-relative, but that is harmless here because get_bus_root() itself
+# resolves to a literal canonical path rather than to ITS OWN __file__, so it
+# makes no difference which worktree's copy of session_bus.py answers this
+# import (see session_bus.py::get_bus_root for the divergence bug this and
+# that function jointly close -- one resolution strategy, not two).
+_REPO_ROOT_FOR_IMPORT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT_FOR_IMPORT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT_FOR_IMPORT))
+
+from scripts.coordination.session_bus import get_bus_root  # noqa: E402
+
 REPO_PATHS = {
     "epyc-root": Path("/workspace"),
     "epyc-orchestrator": Path("/mnt/raid0/llm/epyc-orchestrator"),
     "epyc-inference-research": Path("/mnt/raid0/llm/epyc-inference-research"),
     "epyc-llama": Path("/mnt/raid0/llm/llama.cpp"),
 }
-BUS_ROOT = Path("/workspace/coordination/session-bus")
+BUS_ROOT = get_bus_root()
 GATE_LIST = BUS_ROOT / "human_only_paths.yaml"
 GATE_PIN = BUS_ROOT / "human_only_paths.sha256"
 

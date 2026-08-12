@@ -2994,6 +2994,11 @@ nothing wrong. We held no claim.**
 `load/core ≥ 0.25`; a preflight that reads it at idle aborts on a healthy machine. The claimed probe
 followed this rule and recorded evidence on 2026-08-05. This is an invariant, not an open task.
 
+*(ADJUDICATED 2026-08-12 by `mainC` — deliberately left CLOSED/non-task. Reads as a
+prohibition to the standing-constraint sweep, but the rule is already enforced in CODE and
+Steps 0–2 are a linear campaign preflight, not a per-pickup checklist. Do not re-open on a
+future sweep.)*
+
 ### Step 1 — answer the one open measurement question (≈20 min, cheap, do it first)
 
 - [x] **Does the decode decline recover after rest?** The previous monotone trajectory did not

@@ -15,6 +15,32 @@
 
 > **Fable 5 review (2026-06-12)**: E3 (the 8x8 GEMM SIMD body this file would land) is gated and owned by [batched-decode-measurement.md](batched-decode-measurement.md) — claim E3 there.
 
+## ★ THE LIVE LEVER — frontdoor Q8_0 graph fusion (re-anchored 2026-08-11, A17)
+
+**These two boxes are the whole live surface of this handoff.** Everything under *Phased Work Plan*
+is the deprioritized SIMD ukernel plan and is a closed appendix (see its banner). The re-anchor is
+the point: this file carried 38 open boxes of which 36 were the shelved SIMD plan, so the two tasks
+that are actually live were invisible, and the handoff read as a large stale mass rather than a
+small live one.
+
+Diagnosis this rests on, from this file's own profiling and confirmed by
+`fable5-window2-findings-05` (2026-07-03): frontdoor Q8_0 decode is **barrier/op-count-bound at
+13.8% of 460 GB/s — not BW-bound**, and 45% of Q4_K decode cycles are libomp barrier at 96t. The
+lever is therefore cutting barrier COUNT, **not more SIMD**.
+
+- [ ] **Fuse the expert gate+up operators (frontdoor Q8_0)** to cut barrier count. Est. +10–15%
+  decode across the pair with the QKV fusion; one cluster already measured **+2.6%**. Cheapest
+  test: `llama-bench tg128`, frontdoor Q8_0, fusion flag on/off, same window. **Needs an inference
+  window — do not start without one.**
+- [ ] **Fuse the attention QKV cluster (frontdoor Q8_0)** to cut barrier count. Same measurement
+  shape and the same window as the gate+up fusion; run them as one paired arm rather than two.
+
+> **Certification coupling — read before closing anything.** The GEMV certification is
+> high-severity and belongs to the **CPU-lane owner**, and it requires this re-anchor to land
+> *before* the audit's 26 stale rows may close. **Do not close the 26 first**: closing them ahead of
+> the re-anchor destroys the evidence that distinguishes the shelved plan from the live lever.
+> Tracked as A17 in [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
+
 ## Phase 4 candidate (CPU18, added 2026-04-26 from research-intake batch)
 
 **MegaBlocks blocked-CSR-COO + transpose-indices port for CPU MoE expert dispatch**
@@ -506,7 +532,23 @@ Total per 32-weight block: ~6 instructions of dequant + 1 FMA. Compare to the ge
 
 Relevant compiler flags (GCC/Clang): `-mavx512f -mavx512bf16 -mavx512vnni -mavx512vbmi -mtune=znver5`.
 
-## Phased Work Plan
+## Phased Work Plan — ⛔ CLOSED APPENDIX (deprioritized SIMD ukernel plan)
+
+> **⛔ CLOSED APPENDIX — DEPRIORITIZED PLAN. Do not dispatch from the phases below.**
+> Retained for its reasoning and its negative results, not as backlog. The SIMD ukernel lever this
+> plan builds (E3, the 8x8 GEMM SIMD body) is **gated and owned elsewhere** — see the Fable 5 review
+> at the top of this file — and the live work in THIS handoff is the two graph-fusion boxes under
+> *★ THE LIVE LEVER*, which cut barrier COUNT rather than adding SIMD.
+>
+> Re-anchored 2026-08-11 (`mainC`, A17). Before this banner these phases contributed **36 open
+> boxes**, which is what made this handoff the third-largest stale mass in the
+> [stale-open audit](stale-open-audit-2026-07-18.md) (36 of 38 open boxes shelved). They are
+> deprioritized, not abandoned: if the barrier/op-count lever is exhausted and decode is shown
+> BW-bound after all, reopen from Phase 0 rather than re-deriving it.
+>
+> **The `- [x]` boxes below are correct historical records of work that was done** (the prior-art
+> reads, the baseline profile, the >40% gate) — this is a shelved plan, NOT a reusable procedure,
+> so nothing here is "unchecked by design" and none of it should be restored to `- [ ]`.
 
 ### Phase 0: Feasibility — read prior art & profile baseline (1–2 days)
 
@@ -726,13 +768,22 @@ When resuming this handoff:
 >
 > Noted 2026-07-29 by `auditor` during a sweep of `handoffs/active/` prompted by the automated
 > backlog sweep classifying steps like these as dispatchable `none`-lane work. **THIS SECTION WAS CORRUPTED AND REPAIRED:** two boxes were flipped to `[x]` on 2026-07-29 via BACKLOG-DISPATCH-QUEUE TOP-40 rows #1 and #2 — whose own *Handoff §* column reads `pickup-checklist`. `Check llama.cpp upstream for new CPU ukernel PRs` is precisely a step that must re-run at each pickup, because upstream moves. The dated observations from that pickup are retained below; the repeatable procedure remains unchecked.
+>
+> **A THIRD box was still corrupted and was restored 2026-08-11 by `mainC`:** *"Check for any new
+> Justine Tunney / tinyBLAS Zen 5 benchmarks"*, flipped `[x]` with a ✅ 2026-07-29 result inline. It
+> sat between two boxes the 07-29 pass restored and was missed by it — the auditor's own warning that
+> *"the predicted runbook corruption HAS ALREADY HAPPENED and I under-reported the scope"* was
+> correct. Its finding was moved into **Last pickup (2026-07-29) found** rather than deleted. The
+> repair method that works is a sweep by BOX TEXT across the guarded section, not a re-read of the
+> rows the queue happened to name — the queue names only what it dispatched, and this box was
+> corrupted without ever appearing in it.
 
 
 - [ ] Re-read this doc end-to-end including the 2026-04-23 audit update block.
 - [ ] Check `master-handoff-index.md` and `inference-research-index.md` for any status changes since 2026-04-23.
 - [ ] Check llama.cpp upstream for any new CPU ukernel PRs (this handoff may be partially obsoleted).
-- [x] Check for any new Justine Tunney / tinyBLAS Zen 5 benchmarks. ✅ 2026-07-29 — no Zen 5-specific tinyBLAS benchmark was found in the primary project sources searched: the current [llamafile repository](https://github.com/mozilla-ai/llamafile) and its open pull-request list contain no Zen 5 benchmark result, while Tunney's cited prior-art article remains Zen 4. This is an absence result, not a performance claim; retain the existing Zen 4 prior as the only cited hardware result and do not infer Zen 5 speedup from it. Sources checked 2026-07-29: [llamafile repository](https://github.com/mozilla-ai/llamafile), [open pull requests](https://github.com/mozilla-ai/llamafile/pulls), and [Tunney's matmul article](https://justine.lol/matmul/).
-- [ ] **Work in `/mnt/raid0/llm/llama.cpp-experimental`, never the production `llama.cpp` tree.** Start every new experiment from the current frozen production tip (`production-consolidated-v8` / `67a433bf4` as of 2026-07-29), then create a fresh experimental branch; do not revive the obsolete v4 anchor.
+- [ ] Check for any new Justine Tunney / tinyBLAS Zen 5 benchmarks.
+- [ ] **Work in `/mnt/raid0/llm/llama.cpp-experimental`, never the production `llama.cpp` tree.** Start every new experiment from the current frozen production tip (`production-consolidated-v9` / `0db32c06` as of 2026-08-11), then create a fresh experimental branch; do not revive the obsolete v4 anchor.
 - [ ] **Measure tinyBLAS on/off as first Phase 0 step** (`GGML_USE_LLAMAFILE` macro); that delta changes the remaining headroom calculation.
 - [ ] Confirm TIDE early-exit paths are dormant before any baseline.
 - [ ] Run Phase 0 baseline measurements — do not skip the profiling gate (DeltaNet >40% abandon threshold).
@@ -743,6 +794,7 @@ When resuming this handoff:
 
 - The upstream review found unmerged x86 Q4_Kx8/Q8_K GEMV candidates [#23309](https://github.com/ggml-org/llama.cpp/pull/23309) and [#23793](https://github.com/ggml-org/llama.cpp/pull/23793). They remain experimental-watchlist items only: the observations are Intel/small-model-specific, overlap `repack.cpp`, and require no v8 production action. [#25390](https://github.com/ggml-org/llama.cpp/pull/25390) is a merged generic scalar-tail fix to review only on a future upstream forward-port.
 - Fork commits `143ded626`, `c4e06b01e`, and `59d2012b2` were not reachable from frozen production `production-consolidated-v8` (`67a433bf4`); `common/`, `src/`, `ggml/`, `tools/`, and `examples/` contained no `TIDE`, `n_layer_exit`, or early-exit implementation. The baseline therefore could not enable TIDE at that pickup.
+- No Zen 5-specific tinyBLAS benchmark existed in the primary sources searched: the [llamafile repository](https://github.com/mozilla-ai/llamafile) and its open pull-request list carried no Zen 5 benchmark result, and Tunney's cited prior-art article remains Zen 4. **This is an absence result, not a performance claim** — retain the existing Zen 4 prior as the only cited hardware result and do not infer a Zen 5 speedup from it. Sources checked 2026-07-29: [llamafile repository](https://github.com/mozilla-ai/llamafile), [open pull requests](https://github.com/mozilla-ai/llamafile/pulls), [Tunney's matmul article](https://justine.lol/matmul/). *(Moved here 2026-08-11 by `mainC` from the pickup box above, which had been flipped to `[x]`. The observation is dated and belongs in this block; the step itself must re-run at every pickup, because upstream moves.)*
 
 ## 2026-04-26 update — kill-switch added
 

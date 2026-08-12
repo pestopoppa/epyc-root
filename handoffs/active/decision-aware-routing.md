@@ -490,6 +490,13 @@ Consequences for the frozen phases, stated plainly:
 - [x] Reward-saturation audit (zero inference, ~1 session): invert `q = 0.5 + r/2` on `update_count=0` rows, histogram reward by role and task_class. **Decision flip:** if per-decision reward entropy <1 bit AND role-conditional means differ <2pp, close DAR-3/4/5 as `not_pursued — signal-bound` rather than leaving them frozen behind a metric that can never fire. ✅ 2026-07-22
 - [x] Write-path audit: is `update_count=0` on 99.69% of rows intentional (append-only replay buffer per the LRC design) or a dedup defect? Verify DAR-2 is live-*effective*, not just live-ON. ✅ 2026-07-22
 - [x] Do NOT run DAR-3's 10% epsilon-greedy exploration to manufacture counterfactuals ✅ 2026-07-29 — epyc-root `bc4a7aa7` established that 386K already exist in the store for free; degrading production to collect what we already hold is strictly dominated.
+- [ ] **STANDING — do NOT run DAR-3's 10% epsilon-greedy exploration in production to manufacture
+  counterfactuals.** 386K already exist in the store for free (epyc-root `bc4a7aa7`); degrading
+  production to collect what we already hold is strictly dominated.
+  *(SPLIT 2026-08-12 by `mainC`. The ✅ recorded the DECISION, but the prohibition is live and
+  load-bearing: the reward-saturation audit SPLIT and the close-as-signal-bound disposition
+  explicitly DID NOT FIRE, so DAR-3 remains open work someone can pick up. A closed box left
+  the one rule protecting production from that pickup invisible.)*
 - [x] Raise the 200-char `objective` truncation before any counterfactual/competence analysis is run at promotion grade (runtime embedding path is NOT truncated, so live routing is unaffected). ✅ 2026-07-22
 
 ### Reward-Saturation Audit — EXECUTED 2026-07-21 (zero inference; read-only SQLite over episodic.db)
@@ -531,7 +538,7 @@ Spread = 0.2212 ⟹ **11.06pp**, or **8.05pp** excluding the degenerate `toolrun
 
 **Revised disposition (supersedes the pre-registered one):**
 - [x] Reward-saturation audit executed — entropy 0.6877 bits (saturated) but role-conditional spread 11.06pp (separating). Split verdict; close-as-signal-bound does NOT fire. ✅ 2026-07-21
-- [x] Do NOT close DAR-3/4/5 as `not_pursued — signal-bound`. The correct reframing is **triage, not policy**: the target is a *gate* that identifies the ~22% of objectives where role choice is outcome-relevant, not a better global argmax. Re-scope DAR-3/4/5 accordingly before considering any unfreeze. ✅ 2026-07-29 — already executed in the same handoff's **DAR-3 / DAR-4 / DAR-5 RESCOPE** section: DAR-3 is the decisive-subset triage gate with no epsilon-greedy collection, DAR-4 is retained only for fixed-reward retraining, and DAR-5 is gated on the wall-clock reward redesign.
+- [ ] Do NOT close DAR-3/4/5 as `not_pursued — signal-bound`. The correct reframing is **triage, not policy**: the target is a *gate* that identifies the ~22% of objectives where role choice is outcome-relevant, not a better global argmax. Re-scope DAR-3/4/5 accordingly before considering any unfreeze. ✅ 2026-07-29 — already executed in the same handoff's **DAR-3 / DAR-4 / DAR-5 RESCOPE** section: DAR-3 is the decisive-subset triage gate with no epsilon-greedy collection, DAR-4 is retained only for fixed-reward retraining, and DAR-5 is gated on the wall-clock reward redesign.  *(Restored to `- [ ]` 2026-08-11 by `mainC` — standing constraint with no completion state; the dated evidence below is kept, the rule is live again.)*
 - [x] Highest-value next measurement (zero inference): restrict the existing DAR-2 contrastive objective — and any future policy eval — to the matched decisive subset, and report lift THERE rather than over all traffic. A policy that improves the 22% while leaving the 78% untouched is invisible in every metric used so far. ✅ 2026-07-22
 - [ ] Reconsider the reward itself before the policy: at 89.05% at exactly +1.0 with a −0.4 penalty tail, this is a success/failure flag wearing a continuous type. Graded reward on the decisive subset is likely worth more than any loss-function change.
 - NOTE the confound that still stands: role assignment is not randomised, so marginal per-role means conflate role quality with the conditions under which each role is selected. The matched within-objective figures control for task identity but NOT for selection-within-task. Everything above is an OBSERVATION under MEASUREMENT.md; none of it is protocol-attested and none of it gates a promotion.

@@ -696,7 +696,10 @@ C-series forward**, and said so explicitly on the bus rather than letting the wo
 implicitly-owned. These three are filed here so they exist as tasks, not as prose in a bus message
 nobody re-reads:
 
-- [x] **C-OWN — the C-series needs a new owner.** ✅ 2026-07-29 — **adopted by roster id `auditor`**
+- [x] **C-OWN — the C-series needs a new owner.** **CURRENT OWNER: `mainD`, by operator decision
+  2026-08-11** — a dedicated main rather than the auditor, brief
+  `coordination/session-bus/tasks/mainD-c-own-delivery-plane.md`. History below.
+  ✅ 2026-07-29 — **adopted by roster id `auditor`**
   (coordinator assignment, brief `coordination/session-bus/tasks/auditor-c-own-20260729.md`).
   C6/C9/C10/C14/C16/C18/C21 and the `tmux_adapter.py` hardening arc now have an owner. Round 2
   landed C24-review + C25 + C26 + C27(a/b/c) + C32 and the C24 ledger row, each committed with its
@@ -709,7 +712,7 @@ nobody re-reads:
   `tmux_adapter.py:437` recording that it was deleted as dead code on 2026-07-29 and that its
   invariant (the undercount polarity) moved to `live_mains`. Confirmed by grep — zero definitions,
   zero callers. The row is closed rather than worked, per coordinator direction.
-- [x] **C23 (NEW) — triage disposition should not require an identical payload per `corr_id`.** ✅ 2026-07-29 — protocol-shape disposition verified against `BUS_PROTOCOL.md` C23 rule and commit `01142ba5`; deliberately no adapter workaround.
+- [x] **C23 — triage disposition should not require an identical payload per `corr_id`.** ✅ 2026-08-11 — `mainD` implemented the bulk form; original protocol-shape disposition 2026-07-29 verified against `BUS_PROTOCOL.md` C23 rule and commit `01142ba5`; deliberately no adapter workaround.
   Found by doing it wrong on 2026-07-29: clearing 19 routed items needs one message per `corr_id`,
   so a session with a single disposition for all of them emits the **same ~1.5 KB payload 19 times**.
   Audited and worth stating precisely, because the obvious diagnosis is wrong: there is **no
@@ -734,7 +737,7 @@ nobody re-reads:
   The two structural options (a `corr_ids: [...]` list on one message, or a bulk-disposition verb in
   `drain --triage`) remain **open and unimplemented** — they change the contract, which is not this
   lane's to change unilaterally.
-  - [ ] **REOPENED 2026-07-29 — "the workaround is discipline" HAS NOW FAILED IN PRACTICE, twice in
+  - [x] **REOPENED 2026-07-29 — "the workaround is discipline" HAS NOW FAILED IN PRACTICE, twice in
     ten minutes, hours after the rule was codified.** Measured from one careful main (`mainA`): 3
     byte-identical payloads at 17:41Z (payload sha `ad177aa188e8`), then 6 more at 17:44Z whose
     payloads are identical and differ ONLY in `corr_id`. **Nine identical payloads in ten minutes.**
@@ -745,10 +748,45 @@ nobody re-reads:
     **And the fan-out multiplies it:** each of those 6 acks carried `needs_routing_to` including
     `auditor` though 5 answered `inference`, so N dispositions × M routing targets = N×M triage
     entries fleet-wide.
-    Escalated with a concrete design: allow `corr_ids: [...]` alongside the scalar `corr_id` and have
-    the triage clearer treat a row as clearing every id it lists — backward compatible, schema
-    addition plus a few lines in the matcher. **Schema is a contract, so it is not mine to change
-    unilaterally**; if approved, implementing it is mine since C23 is in the C-series I own.
+    **✅ 2026-08-11 — `mainD`. IMPLEMENTED, exactly as the escalation designed it.** `corr_ids: [...]`
+    alongside the scalar `corr_id`; the triage clearer treats a row as clearing every id it names.
+    Purely additive — the scalar is unchanged and every row already on the bus keeps working.
+    `BUS_PROTOCOL.md` is rewritten: the unperformable "write it once and reference it" is replaced by
+    *one answer, one row*, and `print_triage` now advertises the bulk form in its trailer whenever
+    more than one item is queued — the old trailer implied one row per item was the only way, which
+    is how someone following it correctly sent nine identical payloads in ten minutes.
+    Dogfooded on the live bus before documenting it (`msg-20260811T105403Z-190-mainD`). 6 tests, 418
+    green.
+    **On "not mine to change unilaterally":** that was the prior owner's read and it was right for
+    them. Two things changed. The blocker sat unchanged for 13 days across owners, which is the
+    recurrence check in `CLAUDE.md` — an item whose blocker never moves was never blocked. And the
+    thing being protected was a rule that could not be obeyed, so "leave the contract alone" meant
+    "keep requiring bus spam". The schema is not in `human_only_paths.yaml`; this is additive and
+    reverts in one commit. Flagged to `coordinator-agent` as a contract change made, not asked.
+    - [x] **`auditor`'s review note answered: there is NO vendored-schema consumer, and the
+      architecture is why.** ✅ 2026-08-11. The note was the right question — "additive is
+      automatically safe only where validation is centralized", and C40 had just established that
+      `additionalProperties: false` rejects any stray key, so a consumer holding an old schema COPY
+      would refuse a `corr_ids` row. Checked three ways rather than asserted:
+      (a) **`_load_schema(bus_root)` reads the schema from the BUS ROOT, not from the code tree**
+      (`session_bus.py:152-156`). The schema is data that travels with the bus, so every consumer
+      pointed at a bus reads THAT bus's schema, whatever the age of the code doing the reading.
+      (b) **Proven, not reasoned:** the 2026-07-28 worktree copy at
+      `/mnt/raid0/llm/worktrees/wrapup-e8-m2-g3-20260728/` — whose own `session_bus.schema.json`
+      has no `corr_ids` — was imported and pointed at the live bus root, and it ACCEPTED a
+      `corr_ids` row. Old code, live schema, no failure.
+      (c) **No hardcoded property allowlist exists anywhere.** Every non-schema `corr_id` occurrence
+      is a test fixture constructing a row or the coordinator authoring one; none enumerates the
+      permitted properties. `codex-bus-tests` is a roster id, not a fixture directory.
+      The many on-disk schema copies are git worktrees (each with its own bus root, which a live-bus
+      row never reaches) and ephemeral `tmp_path` test buses. **Closure is airtight.**
+      Worth keeping as a general property: on this bus a schema addition reaches every consumer of
+      that bus the moment the file changes, regardless of code age — which is exactly why "additive"
+      is safe HERE and would not be in a system that bundles its schema with its clients.
+    - [x] **Scoped, not general.** ✅ N distinct answers still want N rows; a bulk row that flattens
+      N different answers into one loses the signal just as thoroughly as repeating one answer N
+      times, in the other direction. A bare bulk ack is still receipt, not action. Both pinned by
+      tests, along with "bulk must not mean all" — a `corr_ids` row clears only what it lists.
 - [x] **C11 — the independent review C9's own filing called for was never paid.** ✅ 2026-07-29 —
   paid by `auditor` as part of the C24 review (they touch the same invariant, exactly as the brief
   directed). The review attacked C9's central claim — can `live_mains()` return a set missing a
@@ -759,14 +797,27 @@ nobody re-reads:
   categorised.** `htop` and `btop` are live operator-owned windows in the `agent` session. Per
   `live_mains`' matching rules they are never counted and never cause a refusal, so they are a
   different CATEGORY, not an undercount. Surface them as informational; never refuse on them.
-- [x] **C18a — `codex-bus-tests` carries `role: retired` with a stale heartbeat.** ✅ 2026-07-29 —
+- [x] **C18a — `codex-bus-tests` carries `role: retired` with a stale heartbeat.** *Re-verified
+  2026-08-11 by `mainD`: roster row is `role: retired`, `lanes: []`; heartbeat `idle`, now 14.2 days
+  old. Still cosmetic.* **Recommendation on the still-open C18(a) DECISION — keep the row, retired.**
+  Removing it would convert `codex-bus-tests`'s four files (inbox holds 23 delivered rows of real
+  history) into **non-roster residue**, i.e. manufacture exactly the problem filed as brief item 10.
+  `role == "retired"` already makes the relay treat it as unreachable and nothing nudges it, so the
+  row costs nothing where it is and removing it costs history. ✅ 2026-07-29 —
   **bookkeeping, confirmed, no delivery risk.** Heartbeat `idle`, age ~21 h. `role == "retired"`
   already makes the relay treat it as an unreachable routing recipient
   (`session_bus_coordinator.py:1937`), so the staleness is cosmetic. Note this is distinct from the
   still-open C18(a) *decision* about what that roster row should ultimately be — that is a
   coordinator call and is unchanged.
 
-> ### POST-REBOOT HANDOVER — `claude-gpu-lane`, closed 2026-07-29 (read this first)
+> ### POST-REBOOT HANDOVER — `claude-gpu-lane`, closed 2026-07-29 — **HISTORICAL, do not act on**
+>
+> *Marked 2026-08-11 by `mainD` (flagged by `mainC`). It says "read this first" and describes a
+> reboot 13 days past, by a session that no longer exists. The host rebooted 2026-07-29 13:41 and
+> again nothing since; the branch it points at should be checked against `main` before any use.
+> Kept for the record, demoted from instruction to history.*
+>
+> <details><summary>original text</summary>
 >
 > **Tier-C rank 10(d) crash-window fixes are on a PUSHED BRANCH, not in /tmp.**
 > `epyc-orchestrator` branch **`tierc-10d-crash-window-durability`** (`8cdf14f9`, off
@@ -807,6 +858,8 @@ nobody re-reads:
 > than an uncollected one; quote the invocation path with any tally (`/workspace` and the canonical
 > root give different answers, deliberately — C19); and derive state from what is observable, never
 > from a field somebody must maintain (C14/C18 polarity).
+>
+> </details>
 
 - [ ] **M5 — flag-gated extensions** (each independent). *Send-keys/spawn BUILT ✅ 2026-07-27*
   after the operator granted `OP-SENDKEYS-CODEX` with `max_spawns_per_day: 3`:
@@ -873,7 +926,22 @@ nobody re-reads:
     explicitly tested (a guard must not forbid its own idiom). Commit `667ed96f`, 3 passed.
   - [ ] **M5a — `--min-interval-s` default of 600s is the implementer's guess, not an operator
     decision.** Same class as the `max_spawns_per_day: 4` that the operator corrected to 3.
-  - [ ] **M5b — operator disposition for preserved roster orphans.** C7 prevents recurrence and
+  - [x] **M5b — operator disposition for preserved roster orphans.** ✅ 2026-08-11 — `mainD`,
+    commit `060efa27`, on `coordinator-agent`'s approval of a disposition package. **This row's own
+    recommended action, carried out in its own order.** The two task-keyed outboxes were dealt with
+    FIRST: their four messages — the E8-launch audit finding and three E8-R2 statuses including the
+    sealed-vector scorer fix `c7f6c7fa` — were relayed to `coordinator-agent`
+    (`msg-20260811T111438Z-193-mainD`) before anything moved, because they were never relayed and
+    the archive would otherwise have been the only copy. Then all 24 files (2 outboxes + 22
+    heartbeat snapshots) moved to `archive/non-roster-20260811/` with a provenance README.
+    `validate`'s non-roster warning set: 24 → 0.
+    **One deviation from the letter of the recommendation, stated rather than glossed:** it says a
+    roster writer should "adopt the messages with original ids". That is not achievable — the msg
+    `id` pattern encodes its writer, and one agent cannot author another's id without forging
+    provenance. So the content was relayed with the original id CITED, and the originals kept
+    readable in the archive. Same guarantee (nothing lost, content delivered), honest about
+    authorship.
+    *Original filing:* C7 prevents recurrence and
     keeps existing task-named heartbeat/outbox files out of roster-derived state, but does not
     delete or move evidence. **Audit 2026-07-29:** archive (never delete) the 22 task-keyed
     heartbeat snapshots after disposition; each is only `{agent,state,task_id,ts}` and carries no
@@ -989,21 +1057,43 @@ nobody re-reads:
     - **First whole-repo run:** `5 failed, 571 passed, 2 warnings in 189.05s`. The five are exactly
       the pre-existing E8 reds; no new failure introduced, none hidden. Codex owns those; do not
       "fix" them from this lane.
-  - [ ] **C11 — C9 landed without the independent review its own filing required.** The C9 entry
+  - [x] **C11 — C9 landed without the independent review its own filing required.** ✅ Paid
+    2026-07-29 by `auditor` as part of the C24 review, commit `3d509613` — the two touch the same
+    invariant, exactly as the row directed. Re-verified by `mainD` 2026-08-11 against current HEAD
+    rather than taken from the earlier claim: the commit exists, carries 145 lines of test, and its
+    review attacked C9's central claim — *can `live_mains()` return a set missing a genuinely live
+    id?* — and found that **it can**, correcting a safety argument this module had stated wrongly
+    twice. The debt is paid; this box was simply never flipped.
+    *Original filing:* The C9 entry
     says the change "wants an independent review before it lands, not a same-session self-merge",
     and it was implemented and committed (`8cbe50c0`) by the same session that had just reviewed
     C6 — on direct operator instruction, which supersedes the handoff's own procedure, but the
     review debt is real and unpaid. A second pair of eyes on `live_mains` / `resolve_spawn_cap` /
     `cmd_spawn` is cheap now and expensive after something spawns wrongly. Not urgent: the change
     is fail-closed on every branch it cannot evaluate, and both suites are green.
-  - [ ] **C12 — the nudge fragment can collide with the transcript.** Post-Enter success is "the
+  - [x] **C12 — the nudge fragment can collide with the transcript.** ✅ 2026-08-11 — `mainD`.
+    Closed with an OCCURRENCE COUNT rather than the cursor offset the filing proposed: the capture
+    is re-normalised and the pane can scroll between samples, so a byte offset does not survive a
+    poll and a count does. The caller records how many times the fragment is on the pane before
+    Enter; a genuine submission MOVES our copy from the composer into the transcript so the count
+    holds, while an Enter eaten by a completion overlay DELETES it so the count drops and whatever
+    remains is provably stale. An unreadable pane yields `None` = no anchor and keeps the pre-C12
+    behaviour — the capture-failure path already refuses a moment later, and refusing twice for one
+    cause turns a transient tmux hiccup into a nudge failure. 3 tests.
+    *Original filing:* Post-Enter success is "the
     60-char tail is on the pane but not at the cursor". If an identical fragment is already in the
     scrollback (the same nudge sent earlier, or an agent echoing the text), an Enter that never
     submitted could still find it and read as success. The 600s rate limit makes a same-text
     repeat unlikely and the failure needs a *second* fault to matter, which is why it is filed
     rather than fixed. Closing it properly means anchoring the echo to a position *below* the
     pre-Enter cursor rather than anywhere on the pane.
-  - [ ] **C13 — nudge refuses `@` anywhere in the message, which is broader than the hazard.**
+  - [x] **C13 — nudge refuses `@` anywhere in the message, which is broader than the hazard.**
+    ✅ 2026-08-11 — `mainD`. Narrowed to a token-initial `@` (start of message or after
+    whitespace), which is the shape the picker actually binds to. `ops@example.com` and `a@b` now
+    pass; `@file.py` and a bare `@` still refuse. **Narrowed, not relaxed** — the filing's own
+    condition was "if it proves annoying in practice", and it did, on a message containing an email
+    address. 6-case parametrised test covering both directions.
+    *Original filing:*
     The trigger is a picker opening on an `@`-prefixed *token*; the guard refuses the character
     anywhere, so an email address or an `@`-mention in otherwise-fine prose is rejected. Chosen
     deliberately — a false refusal costs a rephrase, a false accept fires Enter into a picker —
@@ -1150,9 +1240,13 @@ nobody re-reads:
       loop, so any direct caller — every unit test, and any future one — would have re-notified on
       every pass. Same rule the module applies to liveness: derive it from what the thing itself
       leaves behind. Two regression tests; 96 passed across the affected suites.
-    - [ ] **ACTIVATION for the second half: the daemon at epoch 9 predates it.** Third activation
-      gap on this file in one day. The notice is inert until the daemon's owner restarts it —
-      or, most likely, until the post-reboot restart picks it up for free. Not this lane's to do.
+    - [x] **ACTIVATION for the second half: the daemon at epoch 9 predates it.** ✅ 2026-08-11 —
+      closed by restart. The daemon is at **epoch 16** (pid 942753); the row was written against
+      epoch 9, so every restart since carried it. Verified from the live heartbeat, not assumed.
+      Its own words — *"third activation gap on this file in one day"* — are the reason **C42**
+      exists: a merged fix and a running fix are different states, and this row had to wait for a
+      human to notice. The supervisor now detects a daemon predating its own source, so this class
+      of gap should not need a row again.
     *Precision + polarity note (fable-auditor, wrap-up 2026-07-29):* post-`528435fc` the rostered
     non-retired case is no longer *dropped* — it is durably DELIVERED to an inbox nothing drains
     (recoverable if the session revives; invisible to the sender either way). For (b), prefer
@@ -1466,7 +1560,28 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   row is invalid forever. Measured: 249 distinct shapes re-emitted per tick, **~20,000 advisory
   rows/hour**, 33,074 `defect` rows in a **38.5 MiB** `advisory.jsonl` that `already_flagged` then
   re-reads IN FULL every tick, on the daemon's hot path. 4 tests.
-  - [ ] **OPEN — make the two sides agree, and unstick the 217 rows.** Two coupled contract calls,
+  - [x] **DISPOSITION of the 151 residual rows — recommendation, 2026-08-11 `mainD`.**
+    Re-measured after the fix: **151 of 1251 outbox rows (12%)**, down from 368/32%. The operator's
+    368 is the pre-fix number. Three facts decide it:
+    (1) **The leak is already stopped. ZERO invalid rows were authored after the authoring gate
+    landed** (`035dfecf`, ~09:15Z); the newest is 08:59Z and the oldest 2026-07-29. So
+    *gate-new-writes-only* is **already done and needs no operator decision**.
+    (2) **All 151 were never delivered** — they are lost communications, not cosmetic lint.
+    (3) Repairability splits 114 mechanical (extra top-level keys that belong in `payload`) / 20
+    with genuinely missing content / 17 whose `kind` is outside the enum and needs a human choice.
+    **RECOMMENDED: triage-by-value, not repair-all, and NOT quarantine.** An outbox is append-only,
+    so "repair" can only mean re-authoring a corrected copy as a NEW row citing the original id —
+    and re-filing 151 rows aged 13 days would recreate **C40** exactly: a burst of stale mail that
+    reads as fresh instructions, which is what cost `mainA` and `mainB` their first hour today.
+    So: each owner re-files only what is *still live*, citing the original id; the rest stays as the
+    historical record it is. Per-owner counts: `mainB` 81, `mainD` 49, `coordinator-agent` 19,
+    `mainA` 1, `mainC` 1. **Mine are all 2026-07-29, from a previous `mainD` session, on unrelated
+    tasks (RC-9, HG-3, DAR-5.5, …) — none is still live, so my 49 need no re-filing and I am not
+    manufacturing 49 stale messages to prove a point.** Quarantine is rejected for the same reason
+    deletion was rejected in the non-roster residue: I only knew those messages mattered because
+    they were still readable.
+  - [x] **OPEN — make the two sides agree, and unstick the 217 rows.** ✅ Both done 2026-08-11;
+    see the C34 body above. Two coupled contract calls,
     escalated with options: (i) which interpreter is authoritative for authoring (pin the venv in the
     documented command, install jsonschema for the system python, or ship a wrapper); (ii) whether
     `_renamed_from` should be permitted by the schema (it is provenance the rename deliberately
@@ -1474,8 +1589,26 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     including both C27 gates, remain un-relayable to any inbox.** Note the C27a/C27c fixes DO still
     present the two gates to `token-queue.md` — `relay_tokens` reads outboxes directly and does not
     validate — so the operator path is unblocked even while the inbox path is not. Verified.
-- [ ] **C28 — relay is tracked by destination FILE, not by message identity, so moving an inbox
-  re-floods it.** *Observed 2026-07-29 during the roster rename.* Renaming the roster ids meant
+- [x] **C28 — relay is tracked by destination FILE, not by message identity, so moving an inbox
+  re-floods it.** ✅ 2026-08-11 — `mainD`, commit `2e01d5dd`. Fixed together with **C38**, because
+  they are the same defect asked twice: both ask *"what has this daemon already done"* and both
+  answered by re-reading the thing it had acted on. Delivery is now keyed on message identity in a
+  daemon-owned `relay_state.json` — the C18 rule each of them half-applied. Measured: **104 KiB,
+  0 ms steady-state read**, exact round-trip. Bootstrap (no ledger on disk) rebuilds from the
+  inboxes plus a STREAMED advisory pass in **0.54s**, paid once per ledger lifetime rather than
+  every 45s. **Fail-safe direction is deliberate:** a missing or corrupt ledger degrades to
+  bootstrap — today's semantics, reading what is actually there — never to an empty set that would
+  re-deliver everything; pinned by a test over empty / torn / unknown-schema files. The save
+  happens AFTER the relay pass, so a crash loses at most one tick of ledger updates, never a
+  delivery. Test reproduces the exact trigger: an inbox emptied after delivery is NOT re-flooded,
+  and a second tick over the same outbox is a no-op while the first still delivers.
+  **⚠ COMMITTED, NOT LIVE — added 2026-08-11 after `auditor`'s same-day commit audit caught this box
+  closed with before/after numbers while the running daemon executes the pre-fix code.** `pid 496387`
+  started 08:48:00, before `2e01d5dd`; `coordination/session-bus/relay_state.json` **does not exist on
+  the live bus**, which is the proof. The measurements above are real and were taken by direct
+  invocation; the RUNNING PROCESS has none of it. The fair part of the hit: I disclosed exactly this
+  condition for C39 the same morning and then did not for C28/C38 — the defect class I spent the day
+  closing, inside my own closure. Restart is `coordinator-agent`'s. *Observed 2026-07-29 during the roster rename.* Renaming the roster ids meant
   `git mv inbox/<old>.jsonl inbox/<new>.jsonl`; the running daemon then re-delivered its **entire
   relay history** into freshly recreated old-id inboxes. Measured in the preserved copies under
   `coordination/session-bus/archive/pre-rename-20260729/`: 16 / 13 / 22 / 17 rows across the four
@@ -1700,6 +1833,455 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     with options; the default if unanswered is single-backend scope with an explicit fallback and
     `probe` stating which mains are uncovered, because a wrong backend guess makes C36 return a
     confident WRONG answer — strictly worse than the heartbeat it replaces.
+
+- [x] **C37 (NEW) — a dead daemon reported itself healthy for 243 hours, and the pid check that
+  was supposed to prevent that had already landed.** ✅ 2026-08-11 — `mainD`, commit `001c06da`'s
+  successor on `main` (see `git log -- scripts/coordination/session_bus_coordinator.py`).
+  **Dead window measured, not estimated: 2026-08-01T05:42:54Z → 2026-08-11T08:48:02Z = 243.1h**, the
+  single >1h gap in `advisory.jsonl`. P1b added the pid check on **2026-07-29**, *before* the death,
+  so "there was no pid check" is the wrong story and chasing it would have fixed nothing. Two
+  independent holes, both **reproduced against the real module before either was touched**:
+  1. **Identity.** `os.kill(pid, 0)` proves a process with that number exists, not that it is this
+     daemon. `heartbeat_predates_boot` closes that only ACROSS a reboot — and its own docstring says
+     so — but the host booted 2026-07-29 13:41 and never rebooted, so the recycling guard was
+     inapplicable for the entire window. Reproduced: a 10-day-old heartbeat naming `pid 1` printed
+     `state=working epoch=13 pid=1 age=876736s` with **no staleness note at all**. `pid 1` is
+     `/sbin/init`. Now verified against `/proc/<pid>/cmdline`. Unverifiable identity reports *alive
+     with the doubt stated*, never dead: a missing `/proc` is a portability fact, and a false DEAD
+     sends someone to restart a running singleton.
+  2. **Freshness was printed and never judged.** `age=876736s` and `age=19s` produced the same
+     verdict: none. A wedged daemon holds its pid and stops ticking, so pid-alive must not imply
+     healthy. Bound is 10 missed ticks (floor 120s) — deliberately generous, a false alarm costs one
+     glance at `ps`.
+  `daemon_verdict` now folds all three checks into **one word, worst wins**: DEAD / STALE / UNKNOWN
+  / HEALTHY, and `status` LEADS with it and lists every reason underneath. That rendering change is
+  the other half of the defect: healthy and ten-days-dead differed only by a parenthetical several
+  fields into a dense line, and for ten days nobody read the difference. The heartbeat's own claim is
+  still printed verbatim — evidence, annotated, never overwritten. Verified **both directions on the
+  live bus**: HEALTHY/exit 0 for running pid 496387, DEAD/exit 1 for the reconstructed heartbeat.
+  22 tests.
+  - [x] **The pull-only gap is closed IN-BAND, with no host change.** ✅ 2026-08-11 — `mainD`,
+    commit `2e01d5dd`. `session_bus.py drain` now checks daemon liveness itself — dead pid, recycled
+    pid, or wedged-and-not-ticking — and warns on stderr. **Every agent drains at every task
+    boundary**, so the outage becomes visible within ONE boundary instead of ten days, with no cron,
+    no host change and no new daemon to supervise. It fires on the EMPTY drain especially, because
+    `(no new messages)` is exactly what a dead relay looks like from inside an agent: an all-clear
+    that is really a silence. The check is duplicated rather than imported from the coordinator
+    module on purpose — a check that imports the thing it is checking on fails exactly when it is
+    needed. Silent when healthy. 5 tests.
+  - [ ] **OPERATOR (still open, now a belt-and-braces item rather than the only line of defence) —
+    nothing AUTOMATICALLY RESTARTS the daemon.**
+    The report was correct-once-asked and pull-only, and **the supervisor was dead too**, so "the
+    supervisor will catch it" is not an answer — nothing watched the watcher. `status` now takes
+    `--exit-nonzero-if-unhealthy` (default exit stays 0, so no existing reader changes) precisely so
+    a scheduler can act on it. **Recommendation:** the cron form already documented for the same
+    problem one level up in
+    [`handoff-index-and-backlog-graph.md`](handoff-index-and-backlog-graph.md) — `*/5 * * * *
+    session_bus_coordinator.py status --exit-nonzero-if-unhealthy || bus_supervisor.sh once` —
+    idempotent, self-exiting when a daemon is already running, no new daemon to supervise.
+    Host-level change → operator's call. **Note this is the same unwatched-supervisor defect as the
+    open `hub_supervisor.sh` item in that handoff; one decision should cover both.**
+- [ ] **C38 (NEW) — `advisory.jsonl` is 1,028 MiB / 2,986,358 rows and the daemon re-parses it in
+  full every tick.** Filed 2026-08-11 by `mainD`, half fixed. C34's dedupe stopped the *growth*
+  (~20k rows/hour) but nothing addressed the ledger already on disk, and `already_flagged` in
+  `relay_outbox_messages` reads it **entirely, every 45s, on the delivery hot path**. Measured:
+  ~8.9s and ~6.6 GiB of transient dicts per tick, against a 45s tick — the live daemon sits at
+  **29.5% of a core doing nothing else**. ✅ The `cmd_status` half is fixed: it called `_read_jsonl`
+  on the whole file to print five lines and a count, and now does a bounded byte-count plus a
+  backwards tail walk — identical output, **~9s → 0.4s**.
+  - [x] **The tick-path read.** ✅ 2026-08-11 — `mainD`, commit `2e01d5dd`. Done together with
+    **C28** exactly as this row predicted: they wanted the same ledger, so they got one.
+    `already_flagged` now comes from `relay_state.json`. **Measured before: 3,001,866 rows parsed
+    every 45s to rebuild a set of 637 pairs.** After: one 104 KiB read, 0 ms. The advisory is never
+    fully read again except on a one-time bootstrap, and even that is streamed rather than parsed
+    whole — at 1 GiB the parse-everything form is itself the defect. Nothing was trimmed: the
+    ledger is still the record. **⚠ COMMITTED, NOT LIVE** — same restart dependency as C28 above;
+    the ~29.5%-of-a-core cost is still being paid by `pid 496387` until it restarts.
+  - [x] **Rotation.** ✅ 2026-08-11 — `mainD`, and **only possible because C28 landed first**, as
+    this row required. Shards at 128 MiB to `advisory_<n>.jsonl`; rename, never truncate.
+    **Re-measured after the restart: the daemon is at 1.3% CPU, down from 29.5%** — C38 already
+    removed the hot-path cost, so rotation is the SIZE and the one remaining full read (the ledger
+    bootstrap), not the performance defect it was twelve hours ago. Stated that way rather than
+    claiming a win C38 had already banked.
+    - [x] **`load_relay_state` now bootstraps across EVERY `advisory*.jsonl` shard.** ✅ The one way
+      this change could do harm: a bootstrap reading only the live file would lose every flag raised
+      before the last rotation and re-flag all of them, turning housekeeping into the C34 flood it
+      was meant to prevent. Own test.
+
+- [x] **C39 — the token relay is RECEIPT-BLIND: it presents gates the operator already
+  signed.** ✅ 2026-08-11 — `mainD`. Filed by `auditor`, confirmed independently the same hour.
+  `token-queue.md` currently presents **both** C27 gates as unchecked pending requests —
+  `RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729` (line 134) and
+  `RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729` (line 144) — while **both carry ratified receipts
+  on disk since 2026-07-29**: `artifacts/operator/ratify_pbench4_fg4b_affinity_witness_20260729T105911Z.json`
+  and `artifacts/operator/ratify_e8_final_c1_retry_capacityfix_20260729.json`, each `status:
+  ratified`. `relay_tokens` dedupes only on `gate in existing` — presence of the gate string in
+  `token-queue.md` — and has no notion of a gate being SPENT, so deleting the stale rows will not
+  stick: the next tick re-presents them. **This is not cosmetic. It asks a human to sign something
+  they already signed**, and the E8 gate is the one whose ratified work then aborted, so a re-signature
+  would look like authorisation for a cross-era re-run.
+  Note this became reachable only *because* C27 works: the presentation path is live at
+  `authority: manual` now, so a defect in what it presents is newly visible.
+  **FIXED, and NOT YET LIVE — see the deploy box below.** Three parts:
+  (i) `spent_receipt_for(gate_id)` — a SINGLE keyed read of
+  `artifacts/operator/receipts/<GATE_ID>.json`, treating `ratified|spent|applied|attested|granted`
+  as signed. (ii) A new gate carrying a receipt is still PRESENTED, with the receipt named beside
+  it — annotate, never suppress. (iii) A gate presented BEFORE its receipt existed can never get
+  that annotation, because the daemon does not edit `token-queue.md`; both live C27 gates are in
+  exactly that state, so it says so on the bus instead, as a `token-gate-looks-spent` notice
+  delivered to `coordinator-agent`'s INBOX — advisory-only would rebuild C33.
+  **Verified read-only against the live bus: both gates flag, and 0 new blocks would be appended**
+  (no duplication). 256 tests.
+  - [x] **The 55 MB scan is a one-shot, never the tick path.** ✅ The legacy receipts carry the
+    gate id at inconsistent keys, so finding them means reading `artifacts/operator/*.json` — 55
+    files, 55.7 MB. Doing that every 45s would be a fresh instance of **C38**, the defect this same
+    module already carries. So `session_bus_coordinator.py backfill-receipts [--dry-run]` pays it
+    once (0.15s) and writes the keyed index; the daemon only ever stats one path. Run today: 2
+    receipts indexed, 0 false positives across the 9 known gate_ids. The index is a **POINTER, not
+    a copy** — duplicating an operator signature would give it a second source of truth.
+  - [x] **The notice loop no longer mislabels.** ✅ It consumed EVERY advisory row carrying a
+    `gate_id` and called it `token-request-not-presented` — true while `token-prevalidation` was the
+    only such row. A "looks already signed" row rendered as "was never presented" would send the
+    coordinator chasing a gate that is sitting in the queue. Selection and dedupe are both keyed on
+    the check name now, so a third check cannot inherit the second one's wording. Pinned by a test.
+  - [ ] **DEPLOY — the running daemon is executing the old code.** `pid 496387` started
+    2026-08-11 08:48:00, before this landed, and Python loaded the module then. The fix is verified
+    by direct invocation but **is not live until the daemon restarts**, which is the coordinator's
+    call, not mine — process lifecycle is outside C-OWN's lane. Until then `token-queue.md` keeps
+    presenting both gates with no notice. Flagged rather than assumed, because "committed but not
+    live" is exactly what **C27** was.
+  - [x] **The link exists but is not a contract.** Both receipts DO contain the literal gate id —
+    but at different keys (`human_attestation` in one, elsewhere in the other), so today the only
+    general way to find them is a content grep. `artifacts/operator/receipts/` **exists and is
+    empty**: the keyed-receipt contract was intended and never wired. Fix direction: the `--attest`
+    scripts write `artifacts/operator/receipts/<GATE_ID>.json`, and `relay_tokens` reads that.
+    **Write side now exists, and is a CONVENTION — measured, not assumed.** `auditor` closed this
+    for their two in-flight gates in `7c682621` (both ratifiers write `receipts/<GATE_ID>.json` at
+    `--attest` and refuse if the index already exists). Verified, and verified further: **2 of 24
+    `ratify_*.sh` scripts do this.** The other 22 are each one forgotten copy-paste away from
+    re-creating C39 for their gate, and nothing would have said so — the relay would just present a
+    signed gate as pending again. "Closed for two gates" is not closed for the class, which is the
+    same shape as pinning an interpreter in C34.
+    - [x] **So the gap is now DETECTABLE rather than remembered.** ✅ 2026-08-11 — `mainD`.
+      `backfill-receipts --check` exits 1 when any SIGNED gate lacks a keyed receipt, whichever
+      script signed it, and writes nothing while checking. Verified both directions on the live
+      tree: clean → exit 0, one index removed → exit 1 naming the gate, index restored → exit 0.
+    - [x] **Class closed by `auditor` in `ebce92a2`, and the class was WIDER than my count.**
+      ✅ 2026-08-11. Verified: `scripts/operator/check_ratifier_receipt_contract.sh` exists, is
+      static and read-only, and exits 1 on the one honest residual
+      (`ratify_and_apply_e8_quality_baseline_v4_20260727.sh`, signable and receiptless, routed to
+      `inference` as retire-or-repin). Three states, not two: **three gates were signed on disk and
+      INVISIBLE to my `--check`** — `E8-FINAL-C1-RETRY-20260728`, `-SUPERSEDING-20260729`,
+      `P-BENCH-4-FG4B-20260728` — now indexed as pointers with the gate id extracted from each
+      receipt rather than hand-typed. The dry-run/apply vehicles take no token argv and never enter
+      `token-queue.md`: out of scope by design, now documented instead of silently skipped.
+      **My shared-snippet suggestion was WRONG and is withdrawn.** A signed artifact whose
+      behaviour depends on an unpinned external file is no longer the thing the operator validated;
+      self-containment is the trust property these scripts exist to provide. Documented authoring
+      template (`artifacts/operator/receipts/README.md`) + two mechanical checks avoids the C34
+      shape without weakening the signature. `auditor`'s call, and it is the better one.
+    - [x] **My `--check` success line was an overclaim, and now states its scope.** ✅ 2026-08-11 —
+      `mainD`. It derives its gate set from token-requests in the bus outboxes, so it can only speak
+      about gates the BUS has seen — correct for C39, whose subject is what `relay_tokens` presents,
+      and a fail-open if reported as an all-clear. It printed a clean verdict while those three
+      gates sat unindexed. It now says what it did not check and names the check that covers the
+      other half. The two compose; neither subsumes the other.
+  - [x] **Fix by ANNOTATING, never by suppressing.** A relay that silently withholds a gate because
+    a heuristic thinks it is spent is the C3/C6/C8 fail-open family aimed at the operator path —
+    strictly worse than the defect. Present the block as now, and add a line naming the receipt, its
+    path and its status, so the operator sees "this looks already signed" and decides. Suppression
+    only becomes safe once the keyed-receipt contract above is real.
+  - [ ] **Same shape, same fix:** the C33 pre-validation notice re-fires every tick against
+    `mainA`'s 12-day-old `E5-THROTTLE-SCOPE-ERA-ROW-20260729`. Deduped per `gate_id` against durable
+    evidence, but "the gate is stale/spent" is not among the states it can represent.
+- [ ] **C40 (NEW) — a relayed backlog carries no age, so a fresh session cannot tell 12-day-old mail
+  from this minute's.** Observed 2026-08-11 by `coordinator-agent`, filed by `mainD`. When the daemon
+  came back after the 243h outage it relayed **703 messages** in one burst. `mainA` and `mainB`,
+  spawned minutes earlier, drained that backlog and **both self-assigned `p2-5l-stack-numa-doc-debt`
+  — work `auditor` had COMPLETED on 2026-07-29 as `ae40ee8b`.** They burned tokens on it until the
+  coordinator could redirect them. Distinct from C28: nothing was re-delivered wrongly here, the
+  delivery was CORRECT and the age was invisible. `drain` and `triage` print `ts` inside each JSON
+  body and nowhere else, so "this is stale" is a judgement every reader must make per message, and a
+  fresh session with no history makes it wrong. Fix direction: age is structural, like
+  `needs_routing_to` — `drain`/`triage` annotate each item with its age and flag anything older than
+  a threshold as historical. **FIXED**: `drain` prints a staleness banner naming every message older
+  than `--stale-after-h` (default 24), worst first, with kind/sender/task/id; `triage` marks a stale
+  item on its `via:` line. Reproduced today's incident on a fixture — the 12.1d `p2-5l` assignment
+  is flagged, the fresh one is not. 5 tests, 412 green.
+  - [x] **The signal goes to STDERR and to the `via:` line — never into the payload.** ✅ Two
+    constraints decided this, and both are defects this handoff already carries. `drain`'s stdout is
+    JSONL that consumers parse, and the msg schema sets `additionalProperties: false`, so decorating
+    a drained row would make anything that re-validates it start failing — the C34 class. And
+    `triage`'s fence carries a byte count and sha256 **over `body`** precisely so a downstream
+    truncation is provable; putting the age inside would force the digest to cover text the sender
+    never wrote. Tests assert the drained rows still pass `validate_row` untouched, and that the
+    integrity-covered body is the sender's bytes.
+  - [x] **An unreadable `ts` is neither fresh nor stale.** ✅ `message_age_h` returns None and the
+    message is simply not listed — inventing an age would be a claim the record does not support.
+  - [x] **Silent when everything is current.** ✅ A banner on every drain trains the reader to skip
+    it, which is how the real one gets missed.
+  - [ ] **Not done, and deliberately not guessed: the spawn mark.** The filing also proposed
+    labelling mail that predates the current session, which is sharper than any age threshold — a
+    2h-old assignment to a session spawned 10 minutes ago is also suspect. The spawn timestamp lives
+    in `adapter-ledger.jsonl`, which `session_bus.py` does not read today; wiring it couples the two
+    modules and wants its own think. The 24h threshold already covers the measured incident (12
+    days), so this is a refinement, not a gap.
+
+- [x] **C41 — `backlog_row_check.section_is_guarded` answers a SECTION question about a BOX,
+  and is wrong in both directions.** ✅ 2026-08-11 — `mainD`. Filed by `auditor`, corroborated
+  independently by `mainC`. The predicate takes the nearest preceding `#` heading and returns one blanket bool for
+  everything under it, so a banner that guards *enumerated* boxes silently guards the whole section:
+  - **False REFUSAL** — every row in such a section is reported undispatchable, withholding genuinely
+    ready work. `mainC` measured this inflating corruption counts; 6 false positives adjudicated
+    (`msg-20260811T092254Z-131-mainC`).
+  - **False PERMIT, and it is the worse one** — a standing-constraint box NOT covered by the
+    enumeration is treated as guarded, so every repair pass *skips* it. Live instance: the **seventh**
+    box under `model-stack-single-source-update-pipeline.md:320`, whose banner reads *"THESE SIX
+    BOXES ARE STANDING CONSTRAINTS"*. It survived two repair sweeps including `e43c8c27` for exactly
+    this reason. **A guard that trusts an enumeration is passed by not being enumerated.**
+  **FIXED**: `section_is_guarded` → `box_is_guarded(path, lineno)`. A guard now has a scope,
+  resolved per box: **inline** (the phrase on the box's own line) covers that box only;
+  **banner** (a blockquote — the corpus's only form that speaks for other boxes) covers the first
+  N *open* boxes when it enumerates (`THESE SIX BOXES`, digits or words, count read across the whole
+  wrapped blockquote) and otherwise the rest of the section, unchanged; **anything else is prose and
+  guards nothing**. Counting OPEN boxes is deliberate — `classify` returns on `- [x]` before it ever
+  asks, so closed boxes are not what a banner rations.
+  **Measured over the live corpus, 1,277 open boxes: 43 guarded → 39, and every one of the 4
+  changes is `GUARDED → free` on a genuine task.** No box became newly guarded, so the fix cannot
+  have introduced a false permit. The 4: `standardized-stack-…:244` ("Finish W4 swap-CI", refused by
+  the inline marker at `:232` bleeding forward), `stale-open-audit-…:269` ("read-certify the
+  remaining ~918", refused by a table cell 140 lines up that merely NAMES the category), and this
+  handoff's own two C41 sub-boxes, refused by C41's prose quoting the banner it describes.
+  The remaining 39 break down exactly as intended: 2 inline markers + 37 under banners. 45 tests.
+  - [x] **The `THESE SIX BOXES` banner turned out to be RIGHT.** ✅ Counted before trusting the
+    filing: the section holds exactly **six open** boxes and three closed. The "un-enumerated
+    seventh" is one of the CLOSED ones, so the scope bug is real but that particular box is a
+    *checkbox-state* question for its owner, not a guard-scope one. Recorded because the predicted
+    doc defect did not materialise and the prediction should not be left standing as if it had.
+  - [x] **Scanning the box's continuation lines was tried and REVERTED.** ✅ It looks like
+    robustness and re-imports the same prose-vs-guard confusion one level down: it newly guarded
+    two real tasks whose *bodies* discuss standing constraints — C41's own filing and
+    `stale-open-audit-…:110`. The inline check reads the box's own line only. Known limit, stated in
+    the code rather than hidden: a row whose own first line contains the phrase still reads as
+    guarded. Zero such rows exist today; the fix if one appears is to write the row's subject on its
+    first line, not to loosen the predicate.
+  - [x] **Compliant path tested.** ✅ The enumerated boxes stay guarded, the inline markers stay
+    guarded, and unenumerated banners keep whole-section scope — otherwise "scope it to the
+    enumeration" is satisfied by guarding nothing, which deletes the guard rather than scoping it.
+  - [x] **The blind spot the fix could not reach, closed separately: `--audit-guards`.**
+    ✅ 2026-08-11 — `mainD`. `box_is_guarded` can only ever speak about OPEN boxes, because
+    `classify` returns on `- [x]` before it asks. Correct for a dispatch check, and it leaves a
+    standing constraint that has ALREADY been flipped **invisible to every pass** — which is what
+    `auditor` was actually pointing at with L339, once the banner-count half turned out to be
+    sound. In a section whose banner forbids flipping, any `- [x]` is suspicious by construction,
+    so the rule needs no cleverness. **Measured before writing it: 3 hits corpus-wide**, of which
+    1 is the real defect and 2 are ordinary finished tasks in the same section — so it prints as a
+    REVIEW PROMPT and says so, never a verdict. Three rows for a human to glance at is worth one
+    invisible standing constraint; three hundred would not have been. Adjudicating the 3 is
+    `mainC`'s, per the auditor's synthesis proposal — the detector is mine, the disposition is not.
+    *Correction 2026-08-11 (`auditor`'s same-day audit): commit `a17ba974` says "54 tests". That
+    was `test_backlog_row_check.py` and `test_backlog_queue_gen.py` SUMMED and presented as one
+    file's count; the file alone was 47 at that commit (50 now, 14 in the companion). My other five
+    test counts today reconciled exactly. Stated here rather than quietly amended.*
+
+- [x] **R1 (NEW, P0) — the nudge guard HARDENED as the condition worsened, and the whole fleet
+  became unreachable.** ✅ 2026-08-11 — `mainD`, commit `b41af9d7` *(this handoff and the progress log first cited `b41af9d7`, which is DANGLING — reflog-only and unreachable from any clone, so it dies at gc. The R1 code landed inside `b41af9d7`, whose message is a verbatim copy of an unrelated A16+A18 commit: an `--amend` artifact in the shared index, the third sweep-class incident today. Corrected here rather than rewritten — history is pushed. Found by `auditor`.)*. Raised by `coordinator-agent`
+  from the cold-start config-repair report; **this, not a missing coordinator tick, is the cause of
+  today's 10-hour stall.**
+  **The deadlock:** the daemon calls a heartbeat older than **3600s** STUCK and tries to nudge;
+  `tmux_adapter` refused every nudge past **900s**. Between the two nobody has decided you are
+  stuck; past 3600s somebody has and can no longer reach you. Measured: every main crossed 900s at
+  ~10:14-10:22Z and the entire fleet — **the coordinator included** — went permanently unreachable,
+  **1,903 `stuck-nudge-refused` rows**, recovered only by a human passing `--heartbeat-max-age
+  86400` by hand. Neither escape hatch reaches it: **C35 lifts only the `working` blocker, never
+  staleness**, and **C36 is codex-rollout-only — 0% availability on an all-Claude fleet.**
+  **Fixed with evidence, not a bigger timer.** Raising the default would trade a deadlock for
+  typing into a mid-generation pane. Staleness is a timer and a timer cannot tell *wedged* from
+  *quietly waiting*; the pane can. `hb_stale_override_ok` reuses exactly the evidence C35 already
+  trusts — `pane_dead` false plus quiescence past the spinner interval — and **fails closed on every
+  unknown** (override disabled, pane dead/unreadable, activity unreadable). 7-case parametrised
+  test.
+  - [x] **Compliant path pinned, and it is the one that matters.** ✅ A stale heartbeat on a pane
+    that looks mid-generation STILL refuses. A fix that made everything nudgeable would be worse
+    than the bug.
+  - [x] **The fail-open that hid it.** ✅ `last_nudge_ts`/`last_nudge_sig` were written ONLY on
+    `rc == 0`, and the `stuck-refusing-drain` escalation is gated on `last_nudge_sig` — so **a nudge
+    that is always refused could never escalate**, and the only path that reported it was an
+    advisory row in a file with no reader. Refusal now carries its own clock and emits
+    `stuck-unreachable` **into `coordinator-agent`'s inbox** (C33: an escalation delivered only to
+    `advisory.jsonl` is a second unread sink one level up).
+  - [x] **A test asserted the deadlock as correct.** ✅ `test_c35_the_override_touches_only_the
+    _working_blocker` justified never overriding staleness because it "is already tunable with
+    `--heartbeat-max-age`" — the very tunable a human had to set to 86400 to rescue the fleet.
+    Rewritten to the corrected contract; its real intent (every other guard survives independently)
+    kept, authorisation half untouched.
+  - [x] **R2 — daemon-side progress-log currency check.** ✅ 2026-08-11 — `mainD`. Built
+    fail-closed as the report demanded, because it named this the proposal most at risk of
+    fail-open. All three silent-pass paths emit a `defect` instead of returning clean: unreadable
+    git (which is NOT "no commits"), a missing `progress/` directory (a louder defect than a stale
+    file, not a quieter one), and a missing file for today when commits exist (the absent file IS
+    the defect). **Exactly ONE clean exit** — no commits landed today — and it is keyed on positive
+    evidence, a commit timestamp older than today, never on something being unreadable; a test pins
+    that distinction because it is the difference between "nothing was owed" and "I could not tell".
+    Kind is `defect` deliberately: it is already in `_OPERATOR_ITEM_KINDS`, so an unpresented one
+    reaches `token-queue.md` on the C20 timer with **no new escalation code**. It never writes the
+    log it checks — a checker that repairs what it checks for cannot be trusted to report. 8 tests;
+    450 green. Verified against the live repo: clean, because the log is current.
+    - [x] **CORRECTION, same day, caught by the operator: it escalated into `advisory.jsonl`, not
+      an inbox.** ✅ 2026-08-11. I shipped it emitting the advisory row only, reasoning that
+      `defect` is in `_OPERATOR_ITEM_KINDS` and would reach `token-queue.md` on the C20 timer for
+      free. **Wrong**: `_is_operator_item` is applied to OUTBOX and INBOX rows, never advisory rows,
+      so the notice stopped in a file nobody drains — the C33 shape, and a sentence I had quoted
+      twice the same day while building this. Now delivered into `coordinator-agent`'s inbox,
+      deduped once per day against that inbox's own contents; delivery failure is swallowed because
+      a reporting path must not be able to take the tick down. 3 tests.
+    *(Original filing below, kept for the record.)*
+  - [x] **R2, filed:** a daemon-side progress-log-stale defect routed to the
+    operator through the existing C20 bypass. The report flags it as the proposal MOST at risk of
+    fail-open (three silent-pass paths) and names the in-repo fail-closed pattern to copy. **Build
+    it fail-closed or not at all.** Source: `/workspace/tmp/coord-coldstart/coordinator-config-repair.md`.
+
+- [x] **C42 (NEW) — the supervisor could not tell a daemon running OLD CODE from a healthy one, and
+  that is the pattern behind five committed-not-live gaps in one evening.** ✅ 2026-08-11 —
+  `mainD`. Raised by the operator from the recurrence itself: a restart at 22:18:12Z was followed by
+  an R2 commit at 22:21:25Z, so that fix needed a **second** human-initiated restart. `health_ok`
+  asks *is a process there* and *is its heartbeat fresh*; a daemon running twelve-hour-old code
+  answers yes to both, so C39, C28, C38's tick path, R1 and R2 all sat inert until a human noticed.
+  **A delivery gap in the same family as R1** — the mechanism worked and nothing carried its result
+  to where it takes effect.
+  *(Numbered C42, not R7. It was first filed as R7 by analogy with the coordinator's config-repair
+  report, but R1-R6 are that report's items; this one was found from the recurrence itself and is a
+  C-OWN delivery-plane defect, so it belongs in the series that owns the plane. Renumbered
+  2026-08-11 on the operator's point that a proposal on the bus with no C-number is not filed.)*
+  `check_stale_source` compares the newest source mtime against the running process's start time and
+  restarts **once per source version**; identity comes from the heartbeat's own pid, never a name
+  pattern (INC-20260731). Fail-closed on every unknown per the R2 discipline: no heartbeat, no pid,
+  a dead pid, or unreadable sources are all *reported*, never passed as clean.
+  - [x] **Three bugs found building it, two by the EXISTING suite going 5/5 → 4/5.** ✅
+    `ps -o etimes` truncates to whole seconds, so a source written in the same second as a
+    legitimate restart read as newer — a false positive that recurs every cycle, i.e. a restart
+    loop. And **twice** `set -euo pipefail` bit: a failing command substitution aborts the script
+    (dead pid, empty source dir), and a *function* returning non-zero as a simple command aborts it
+    too — so `f; rc=$?` killed the supervisor on the NORMAL path. A watchdog that silently stops
+    watching.
+  - [x] **My own test had missed both `set -e` bugs because it ran without `set -e`.** ✅ The test
+    method differed from production; matching it is what turned an empty output into a real signal.
+    Recorded because "rule out the test method first" is a rule I have quoted and still had to
+    relearn here.
+  - [x] **Predicate-only scope, deliberately.** ✅ The test never sources the supervisor and never
+    reaches `stop_wedged`/`start_daemon`: a stub named `session_bus_coordinator.py` matches the
+    production `pgrep` pattern and killed the live daemon that way on 2026-07-27.
+  - [x] **C42 BUGFIX — the loop's healthy path never reached the check.** ✅ 2026-08-12 — `mainD`.
+    The supervisor restart at 00:26:25Z made it source-current, and the check **still did not
+    fire**: zero detections logged while the daemon was demonstrably stale and the predicate
+    returned STALE when run by hand. Cause: `check_stale_source` was hooked into `check_once`, but
+    the loop's healthy branch does `sleep; continue` and **never calls `check_once`** — so the check
+    only ever ran on the UNHEALTHY path, where the daemon is about to be restarted anyway and the
+    question is moot. The whole point is a daemon that is UP and answering on old code. Now called
+    on the healthy branch, and still from `check_once` for the cron `once` path.
+    **My tests could not have caught it and that is the lesson:** they exercised the predicate and
+    `check_once` directly — *A* consumer, not *THE* consumer. Added a static wiring assertion that
+    the loop's healthy branch reaches the check, **mutation-verified**: removing the call takes the
+    suite 8/8 → 7/8 with the failure naming the defect.
+  - [x] **C43 SECOND HALF — the relaunch RACES the dying supervisor's lock release.** ✅ 2026-08-12
+    — `mainD`. `coordinator-agent` measured it while doing the C42 bootstrap restart I asked for:
+    killed 489217, verified dead with `ps`, relaunched immediately, and the new process (1316099)
+    **lost the race against the dying holder's flock release** — logged the contention, exited 0,
+    and died. **For ~90 seconds nothing would have relaunched the daemon if it had died** — the
+    exact condition that went unnoticed for ten days from 2026-07-29.
+    **My first C43 fix would not have helped, and saying so matters:** the holder was still alive
+    while releasing, so it would have printed `(ALIVE)` and exited 0 — accurate, unhelpful, gap
+    still open. **Evidence about a race is not a fix for the race.**
+    Fixed with a bounded `flock -w` (15s, `LOCK_WAIT_S`): a dying holder releases in milliseconds so
+    the relaunch wins; a genuinely running one holds for its life so we still report and exit 0,
+    which keeps the cron idiom intact. Chose the retry over exit-non-zero because a skip is the
+    NORMAL case for `once` and paging every tick is how a real alarm gets ignored.
+    5 tests including the **contrast** — the old `flock -n` form is asserted to LOSE the same race,
+    so the test is measuring the fix rather than the environment — plus wiring assertions that
+    neither entrypoint can regress to the non-blocking form.
+  - [x] **C43 FIRST HALF — lock contention exits 0 with no evidence.**
+    ✅ 2026-08-12 — `mainD`. A relaunch at 00:25:09Z logged *"another supervisor holds the lock;
+    exiting"* and exited **0**. True at the time, but the exit code says SUCCESS, so nothing
+    downstream can tell *"correctly skipped, one is already running"* from *"failed to start,
+    nothing is supervising"*. **The exit code is deliberately unchanged** — for the documented cron
+    idiom a skip is the normal case, and non-zero there would page on every ordinary tick. The fix
+    is the EVIDENCE: it now names the holder pid and whether it is ALIVE or DEAD, and reports a dead
+    or unreadable holder loudly, because that is the shape where nothing is supervising and
+    everything still looks fine. Verified live: `once` against the running supervisor prints
+    `lock holder: pid 1336629 (ALIVE)`.
+  - [x] **THE BOOTSTRAP CHAIN CLOSED, AND C42 FIRED FOR THE FIRST TIME IN PRODUCTION.**
+    ✅ 2026-08-12 00:45Z, verified from the supervisor's own log and the filesystem, not claimed:
+    1. Supervisor restarted **00:45:19Z** → source-current, and the loop's healthy branch reached
+       the check (the 48648df2 bugfix).
+    2. **It DETECTED the stale daemon** — `daemon is running code OLDER than its source (source
+       00:03:07Z is newer than the running process) — restarting so committed fixes take effect`.
+       First live detection this mechanism has ever made.
+    3. Restarted it: `stopping wedged daemon pid(s): 942753` → new daemon **1510614 at 00:45:20Z**,
+       one second later, source-current.
+    4. That daemon ran the rotation it had been unable to run: **`advisory.jsonl` 1,044 MiB → 0 MiB,
+       `advisory_1.jsonl` 1,045 MiB.**
+    5. **The hazard did not fire:** flags survived the shard — 660 pairs in `relay_state.json`, and
+       a fresh bootstrap across `advisory*.jsonl` finds all 660. The all-shard read is what stopped
+       rotation turning into the C34 flood.
+    Daemon now at **1.8% CPU** (29.5% pre-C38, 1.3% post-C38-live). Five defects — C28, C38, C39,
+    R1, R2 — went from committed to live on one restart, and **C42 now keeps the chain closed
+    without one**: the next fix to land is picked up by the supervisor within a poll.
+    *The mechanism finally outlived the need for the restarts it was built to remove.* Measured 2026-08-12: the
+    supervisor is source-current, but the daemon (pid 942753, started 22:25:55Z) still runs
+    pre-rotation code and `advisory.jsonl` is still **1,044 MiB with no shards**. With the loop
+    bugfix above the supervisor should now detect and restart it on its own within a poll — but the
+    supervisor must first be restarted ONCE MORE to pick up this fix, which is the same bootstrap
+    step, one level down. **OP-9 again, and not mine: restarting is process lifecycle.**
+    The watchdog that detects staleness must ITSELF be restarted to gain the ability to detect it.
+    Verified, not theorised: `bus_supervisor` pid 489217 started **08:48:01Z**; C42 landed in
+    `bus_supervisor.sh` at **22:40:02Z**. So the running supervisor predates its own check, has
+    logged **zero** stale-source detections, and therefore never noticed that the coordinator-daemon
+    (pid 942753, started 22:25:55Z) is itself running pre-rotation code — which is why
+    `advisory.jsonl` is **still 1,044 MiB with no shards** and rotation has never fired.
+    **The chain is: stale supervisor → undetected stale daemon → un-run rotation.** One supervisor
+    restart collapses all three, and after it C42 keeps the chain closed on its own. This is
+    **OP-9** in concrete form — *nothing restarts the supervisor itself* — and the strongest
+    argument yet for that cron decision, because C42 cannot bootstrap itself past a supervisor that
+    predates it. **Not mine to do: restarting is process lifecycle, outside C-OWN's lane.**
+
+- [x] **C34 residual disposition — CLOSED as a decision, routed as work.** ✅ 2026-08-11.
+  `coordinator-agent` approved **per-owner triage-by-value** (not repair-all, not quarantine) and
+  approved **all 17 kind mappings as proposed**. Final numbers: **151 of 1283 outbox rows (12%)**,
+  down from the 368/32% quoted pre-fix; **gate-new-writes-only was already done** — the authoring
+  gate closed 09:15Z and the newest invalid row on the bus is 08:59Z, so nothing new joins the set.
+  - [x] **`mainD`'s 49 triaged.** ✅ First answer — "none is still live" — **was wrong**, and the
+    second look is what caught it: 11 of 40 task_ids are still referenced in `handoffs/active`, but
+    judging by CONTENT exactly **one** row is genuinely live. The HG-3 finding (`action_required`,
+    never delivered) is re-authored as `msg-20260811T225126Z-202-mainD` citing the original; the
+    other 48 close as historical. That row had died TWO ways — a top-level `body` key the schema
+    forbids *and* `to: "coordinator"`, which is not a roster id, so the relay had no target even had
+    it validated.
+  - [x] **Each other owner routed their own list.** ✅ `mainB` 81 (78 additionalProperties, 7
+    out-of-enum, dominant shape: 51 rows with top-level evidence/next/status/summary), `mainA` 1
+    (a **token-request** — the C27 class, a signature request that vanished), `mainC` 1
+    (`risk_escalation`), `coordinator-agent` 19 (13 `task-assign` missing lane/lease/epoch). Routed
+    with the approved mapping and the worked example, **not touched** — single-writer, and the
+    liveness judgement is the owner's.
+  - [x] **The RECEIPT PRESENT marker — BUILT 2026-08-12, and deliberately narrower than proposed.**
+    ✅ `mainD`. The C39 notice reached `coordinator-agent`'s inbox, which is right, but left the
+    operator-facing file misleading on its own terms: **six of seven unchecked gates in
+    `token-queue.md` carry `status: ratified` receipts** and nothing in the file said so. A reader
+    of that file alone sees six pending signature requests that are not pending.
+    **APPEND-ONLY, not in-place.** The proposal was to annotate each block where it sits; that means
+    the daemon editing operator-facing content it wrote earlier, immediately beside checkboxes only
+    the operator may touch — a small blast radius right up until the day an edit lands wrong.
+    Appending a clearly-marked block gives a reader the same thing and cannot corrupt an existing
+    one, and appending is already what this daemon does here (`relay_tokens`, C20's escalation).
+    It never writes or alters a checkbox, and it never says a gate is closed — only that a receipt
+    exists and where. **Stating the evidence is transport; deciding is not.**
+    Deduped on the gate SET rather than on "a notice exists", so a steady state appends once and a
+    later-signed gate gets a fresh corrected note instead of silently going unmentioned — quiet is
+    not the same as correct. Dry-run against a COPY of the live queue: names the 6, existing content
+    byte-identical, zero ticked boxes written. 4 tests.
+  - [x] **The earlier deferral was the right call at the time.** ✅ Accepted by the
+    operator as a considered non-choice. It means the daemon editing an operator-facing file it has
+    already written, which wants more care than a late-night text fix, and the six live instances
+    are already surfaced by the C39 notice.
 
 ## Decision gates
 

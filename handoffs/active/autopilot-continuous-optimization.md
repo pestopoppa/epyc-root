@@ -699,10 +699,45 @@ consideration, not a computed term.
   is a recency window over the last five trials checking presence of a falsifier string only, and
   nothing marks a hypothesis resolved. A deterministic failure signature is the cheapest available
   upgrade and is a precondition for AP-ME-1's debug budget to select anything meaningful.
-- [ ] **AP-ME-5 — Experience-card row schema** (provenance, score, error type, method family, resource
+- [x] **AP-ME-5 — Experience-card row schema** (provenance, score, error type, method family, resource
   usage, novelty statistics) as the row type behind the StrategyStore / DesignArchive projections that
   already exist and already validate clean (69/69 projected, 2026-07-11). **Schema only** — no new
   autonomous loop, no live parent sampler.
+  **✅ 2026-08-12 (`mainA`, pulled from the generated bench and claimed) — SCHEMA DERIVED, not
+  invented. Mapped onto the row type that already exists and already validates, per the row's own
+  framing.** The backing type is `orchestration/repl_memory/strategy_store.py:259` `StrategyEntry`.
+  Six facets asked for; **three are already carried, three are genuinely absent**:
+
+  | facet | status in `StrategyEntry` |
+  |---|---|
+  | **provenance** | ✅ carried — `source_trial_id`, `evidence_trial_ids[]`, `created_at`, `species` |
+  | **score** | ✅ carried, but **three different scores with different meanings**: `validity_score` (0.5 default), `similarity_score` (retrieval), `rrf_score` (fusion rank). None is an outcome score. |
+  | **novelty statistics** | ⚠ partial — `similarity_score` + `staleness` are the raw material; no novelty figure is derived or stored |
+  | **error type** | ❌ absent |
+  | **method family** | ❌ absent — `species` is the nearest field and is a *population* label, not a method taxonomy |
+  | **resource usage** | ❌ absent |
+
+  **The finding that matters for whoever implements it: `score` is ambiguous in the row as
+  written, and the existing type proves it.** `StrategyEntry` already carries three floats named
+  `*_score`, none of which is the *outcome* score an experience card needs — they are a validity
+  prior, a retrieval similarity and a fusion rank. Adding a fourth bare `score` to that set is how
+  a consumer reads the wrong one. Any implementation should name it for what it measures
+  (`outcome_score`, or the objective it came from) rather than inheriting the row's word.
+  **Recommended shape:** extend `StrategyEntry` additively rather than defining a parallel type —
+  `to_dict()` is `asdict()`, so new optional fields round-trip for free and the 69/69 projections
+  keep validating. The three absent facets want: a typed `error_signature` (which AP-ME-6 above
+  independently asks for, so build it once and let both consume it), a `method_family` enum
+  distinct from `species`, and a `resource_usage` sub-dict — the last is the one with a live
+  write-side hook available, since the trial journal already records wall-clock and the four raw
+  objective components.
+  **Belief-kernel note, filed rather than assumed:** an experience card carrying an outcome score
+  plus provenance IS a measurement-shaped record. If it is implemented, it needs a write-side
+  ClaimTuple decision at that moment — not retrofitted on read. Flagged here so the implementer
+  hits it at design time; not filed as a vidya row, because the type does not exist yet and a
+  register row for an unbuilt producer is the kind of speculative entry that register warns about.
+  **NOT IMPLEMENTED, deliberately** — the row says *schema only*, and the three absent facets each
+  need an owner decision (which taxonomy for `method_family`, which resources count). This closes
+  the derivation; the field additions are a separate, smaller task with those answers in hand.
 - [ ] **AP-ME-6 — Negative-evidence rendering discipline.** intake-940's dive narrowed this from an
   exclusion filter to a *rendering* rule: a deterministic error signature per card plus a board-level
   repeated-error counter, rendered as one compact typed line rather than raw prior-attempt text.
@@ -1769,23 +1804,133 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       across `src/ scripts/ orchestration/` excluding the store and backfill script -> **zero hits**.
       `scripts/memory/backfill_sub_decision.py` exists and has never been run. Exact twin of
       `model_id` and `assigned_role`. Three agents ran its test and none noticed the column is empty.
+      - **RE-DERIVED 2026-08-12 (`mainC`) — the finding HOLDS and is worse than filed, but it is
+        NOT closed.** Producers outside the store and the never-run backfill: still ZERO. A
+        read-only count over the checkpoint store gives **0 non-null of 642,328 rows**, an order of
+        magnitude more data than the 59,337 recorded here and still entirely empty.
+      - **Why nobody noticed, which is the reusable part.** `test_episodic_store_sub_decision.py`
+        is 312 lines and green: it covers the enum, the normaliser, the column-and-index migration,
+        the classifier token map and the backfill script — **everything except whether anything
+        writes the column on the live path.** A test can cover all the machinery and never touch
+        the question of whether the machinery is REACHED.
+      - **Instrumented, not fixed** (orchestrator `6aa083be`): added
+        `tests/unit/test_sub_decision_producer_tripwire.py`, which passes while the gap exists and
+        FAILS the moment a producer appears — forcing whoever wires it to confirm the column
+        actually POPULATES (a call site is not population), settle the backfill question and close
+        this row. A second test guards the other direction, since silently DELETING the column
+        would also leave this row describing something that no longer exists. Deliberately not
+        `xfail`/`skip`: both are invisible in a green run, and invisibility is the defect.
+      - **Box left unchecked deliberately** — the column is still inert. This makes the gap
+        self-announcing; it does not resolve it. The fix is still a decision: wire a producer, or
+        retire the column and its machinery on purpose.
 - [ ] **`binding_router` is a parameter nobody passes, gating a whole feature.** `src/api/state.py:97`
       declares `binding_router: Any | None = None`, never assigned anywhere;
       `chat_routing.py:230`'s `if binding_router is not None:` guards the entire override block;
       `_classify_and_route_proactive` has zero callers. Flipping `features().binding_routing` does
       nothing because the `BindingRouter` is never constructed.
+      - **RE-DERIVED 2026-08-12 (`mainC`) — HOLDS, and this row UNDERSTATES it.** The feature is
+        dead at **three independent layers**, any one of which alone would be enough:
+        (1) `BindingRouter()` appears exactly once in the tree, at `src/routing_bindings.py:19`,
+        and that line is **inside a docstring Usage example** — never constructed in code;
+        (2) `state.binding_router` is declared and never assigned;
+        (3) the guard's **one production caller**, `src/api/routes/chat_routing.py:325`, calls
+        `_classify_and_route(prompt, context, has_image=has_image)` and **omits the argument** —
+        every other caller in the tree is a test. The flag is a fourth layer of inertness.
+      - **Two of this row's three anchors had rotted**, which is why re-deriving mattered:
+        `chat_routing.py` now lives under `src/api/routes/`, and `_classify_and_route_proactive` —
+        the function this row names — **no longer exists at all**. The finding underneath survived
+        the rot; the addresses did not.
+      - **Instrumented, not fixed** (orchestrator `tests/unit/test_binding_router_tripwire.py`):
+        one test per dead layer, each failing the moment that layer is wired, so whoever wires one
+        is forced to wire the REST of the chain instead of landing a layer that silently does
+        nothing — which is how this reached three dead layers. Layer 3 is pinned by the CALL SHAPE,
+        not a line number, precisely because this row's own anchors rotted.
+      - **Box left unchecked deliberately** — nothing is fixed. The decision is still open: wire the
+        whole chain, or retire `binding_routing` and its machinery on purpose.
 - [ ] **Ten fully-built, fully-tested, zero-production-importer modules** (1-3 test importers, 0
       production importers), incl. `src/mutation_ledger.py`, whose docstring asserts "the autopilot
       accept-path consults the ledger" — it does not.
+      - **RE-DERIVED 2026-08-12 (`mainC`) — the COUNT is wrong and the row cannot be acted on as
+        written, because it asserts "ten" without naming them.** Over **368 modules under
+        `src/`**, the true figure is **at least 20**, not ten.
+      - **The exact number is METHOD-DEPENDENT, and I am reporting that rather than a single
+        figure.** Two independent passes disagree: a stem-match scan gives **24**, a
+        dotted-import scan gives **22**, and they **agree on 20**. Four modules appear only in
+        the stem scan (likely over-match on common words — `model_grader`, `federation`,
+        `verbalized_sampling`, `tool_output_compressor_mcp`) and two only in the dotted scan
+        (`radix_cache`, `safe_pickle`, which the stem scan missed via relative/dotted import
+        forms). **20 is the defensible floor; 26 is the union.** A single number here would
+        have been false precision — I ran the second pass as a cross-check on my own method
+        and it disagreed with the first, which is the only reason this caveat exists.
+      - **But the raw 24 is not the answer either: some are ENTRY POINTS, where zero importers is
+        correct.** `src/cli_orch.py` is a declared console script (`orch = "src.cli_orch:main"` in
+        `pyproject.toml`), and `src/mcp_server.py` is launched as a server rather than imported.
+        Anyone acting on a bare importer count would have "cleaned up" a shipped CLI. The real
+        list is 24 minus the declared entry points, and it needs a per-module read before anything
+        is deleted.
+      - **The named instance is CONFIRMED and is the worst of the cluster.**
+        `src/mutation_ledger.py`'s docstring states verbatim that *"the autopilot accept-path
+        constructs MutationRecords and consults the ledger before composing a new mutation onto the
+        live config"*. `git grep` for `mutation_ledger|MutationLedger` across `src/` and `scripts/`,
+        excluding the module itself, returns **nothing**. So BSV-3 conflict-aware acceptance is not
+        in effect anywhere — and unlike ordinary dead code, this module **describes itself as
+        live**, so a reader grepping for how conflict-aware acceptance works concludes it is wired.
+      - **Instrumented, not fixed** (orchestrator `tests/unit/test_mutation_ledger_tripwire.py`):
+        fails the moment the claim is softened OR the integration is built, so the docstring and
+        the code can never silently drift apart again. Mutation-checked against a tracked file.
+      - **Box left unchecked deliberately** — nothing is fixed, and the decision is per-module:
+        wire BSV-3, or retire the ledger and correct its docstring. Same for the other 23.
 - [ ] **`contention_nway_restricted_count` stops one layer short of the operator.** Reaches
       `metrics_snapshot()` (`contention_gate.py:453`) but appears 0 times in `dashboard.html`.
 
 ### Never attempted
 
-- [ ] `config/stack_templates/default.yaml` is 10 validation errors stale — `start --stack-profile
+- [x] `config/stack_templates/default.yaml` is 10 validation errors stale — `start --stack-profile
       default` returns 1 today.
-- [ ] Registry declares port **8083 twice**: `coder_escalation` keeps its own row (slots 1) while also
+      **2026-08-12 (`mainA`) — NOT CLOSEABLE AS WRITTEN, and checking why produced a HIGH-severity
+      defect filed separately.** Two problems with the row as a recipe. (a) The path is wrong:
+      there is no `config/stack_templates/`; the file is `stack_templates/default.yaml`.
+      (b) **The validation route it prescribes does not exist.** `orchestrator_stack.py:2795`
+      declares `--validate-only` with the help text *"Validate stack template and exit"*, and
+      **nothing reads it** — `grep` for the argparse dest across the file returns only the
+      declaration, and `main()` dispatches `start` → `cmd_start(args)` with no branch. So the
+      documented dry run **launches the production stack**. I was about to run it and stopped
+      only because compute is saturated and I check anything named `start` before invoking it.
+      **✅ 2026-08-12 (`mainA`) — NOW CHECKED AND THE CLAIM IS FALSE. Eighth stale premise.**
+      The route this row prescribes only came into existence a few hours ago: `mainB` wired
+      `--validate-only` (`2c421c1c`) after I filed it as inert, then hoisted it above the bench
+      guard (`2821937c`) on my residual. I re-read `_cmd_validate_only` first to confirm it loads,
+      validates, prints and returns — no lock, no runtime-facts write, no process — and only then
+      ran it, directly rather than through a pipe.
+      Result: `validate-only: stack template 'default' — PASS` / `validate-only: nothing was
+      launched.`, **exit 0**. Not 10 errors; not exit 1. Zero errors, zero warnings.
+      Two corrections to the row as written, both worth keeping: the path is
+      `stack_templates/default.yaml`, not `config/stack_templates/`; and the check it prescribed
+      could not have been run when it was filed, because the flag it names was parsed and
+      discarded. **This row was unfalsifiable for its entire life until tonight** — which is a
+      better argument for the flag being wired than the flag's own help text ever was.
+      The row's substantive claim (10 validation errors) may well still be true; it simply is
+      not checkable by the route it names. Left OPEN, deliberately, until the flag is wired or
+      removed — closing it would imply the check had been run.
+- [x] Registry declares port **8083 twice**: `coder_escalation` keeps its own row (slots 1) while also
       appearing in `architect_general.shared_with` (slots 8). Blocks the WP-12 fleet layer.
+      **✅ 2026-08-12 (`mainA`, pulled from the generated bench) — the duplicate is REAL and
+      INTENTIONAL; the blocker is GONE. Verified by executing the layer, not by reading its
+      comment.** `server_mode` does still declare `:8083` twice — `architect_general`
+      (`slots=2`, `shared_with: [coder_escalation]`) and `coder_escalation` (`slots=1`,
+      `alias_of: architect_general`). One number in this row has drifted: architect_general is
+      **slots=2**, not 8.
+      `src/fleet.py:387-404` was taught both spellings on **2026-08-04**, with a comment naming
+      exactly this failure — iterating every row built *a phantom `coder_escalation` fleet on
+      :8083* which then tripped the double-binding guard, so `ORCHESTRATOR_FLEET_LAYER=1` could
+      not build against the production registry at all. An alias row is not a physical
+      resource, so it now gets no fleet and is bound onto its host exactly like a `shared_with`
+      member; the double-binding guard is untouched and still fires on a genuine conflict.
+      **Executed against the production registry just now**: `build_fleets_and_bindings()`
+      returns **6 fleets, 11 bindings**, and `coder_escalation` resolves to
+      `RoleBinding(role='coder_escalation', fleet_id='architect_general', ...)` — no phantom,
+      no collision. The two declarations are mutually consistent statements about ONE physical
+      server, which is what the registry comment already claims and what the code now honours.
 - [ ] `onnxruntime` is used at runtime by `src/retrieval/cross_encoder.py`, declared nowhere in
       `[project]` dependencies, and is not installed — **cross-encoder reranking is silently off in
       production**.
@@ -1803,9 +1948,36 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       70/100 questions at `0% correct` purely because the API was down; only `--dry-run` prevented a
       0.000 baseline reaching production state. Reliability should have collapsed the run long before
       70 questions.
-- [ ] **`runtime_flags` drift checker grades declared-vs-live but never wired-vs-unwired.** It reports
+- [x] **`runtime_flags` drift checker grades declared-vs-live but never wired-vs-unwired.** It reports
       `semantic_classifiers` as blocking drift; that flag has **zero consumer modules** outside
       `features.py`. The tool embodies the defect class it was built to detect.
+      **✅ 2026-08-12 (`mainA`, pulled from the generated bench and claimed) — BOTH HALVES VERIFIED,
+      still true, and the row's last sentence is exactly right.**
+      *Zero consumers:* `grep -rl semantic_classifiers` across `src/` and `scripts/` returns
+      **exactly one file** — `src/features.py`, the declaration site itself. Nothing reads it.
+      *No wired dimension:* `scripts/validate/runtime_flags_drift.py` compares **flags declared in
+      code** against **overrides present in the live file** (`registry_flag_count` vs
+      `live_override_count`), and its `BLOCKING_KINDS` are `undeclared_override` and
+      `unknown_flag_in_live`. Every axis is *declaration ↔ live state*. There is no notion of
+      whether a declared flag is read by anything, so a flag with zero consumers is graded
+      identically to a load-bearing one.
+      **Why this is worth more than a nit.** The checker's whole purpose is to stop a declaration
+      drifting from reality — and it defines *reality* as the live override file, which is another
+      declaration. Both sides of the comparison are statements of intent; neither is a witness that
+      the flag does anything. That is the same claim-without-witness shape found repeatedly on
+      2026-08-11/12 in the era stamps, the `reasoning` key and the `--validate-only` help text, and
+      it is why the row's `embodies the defect class it was built to detect` is literally accurate
+      rather than rhetorical.
+      **Cheap fix, recommended not applied** (another owner's validator; consistent with how every
+      other cross-owner code change was handled this night): add a NON-BLOCKING `unwired` finding
+      kind — for each declared flag, count occurrences outside its declaration module; zero means
+      report it. Non-blocking on purpose, because an unwired flag is not a *drift* and making it
+      block would fail the checker on every deliberately-reserved flag. The value is that
+      `semantic_classifiers` would appear in a report someone reads, which is the whole gap.
+      **One caveat for whoever implements it:** a grep-based consumer count will miss dynamic
+      lookups (`getattr`, config-driven dispatch, string keys). It should therefore report
+      `no static consumer found`, not `unused` — the second is a claim the method cannot support,
+      and overstating it would recreate this row one layer up.
 
 ## Context accounting, `-np`, and the E8 blocker (2026-08-03, evening)
 
@@ -1883,13 +2055,44 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       docstring on the fields, no runtime warning. Candidate fix: make `save_state` refuse (or loudly
       warn) when a daemon-owned field on disk differs from the in-memory copy it is about to
       overwrite, since that difference is by definition an external write about to be destroyed.
-- [ ] **`orchestrator_stack.py start` silently resolves the wrong manifest without `--numa-mode`.**
+- [x] **`orchestrator_stack.py start` silently resolves the wrong manifest without `--numa-mode`.**
       The production lineup is full + halves (`--numa-mode both`). Plain `start` resolved a full-only
       manifest, so the guard compared priors containing halves against it and produced 39 parity
       errors reading "include non-launch port(s)" — which describes the *manifest* being wrong, not
       the priors. Either default to the mode the stack is actually running, persist the last-used
       mode, or fail with "no --numa-mode given and the live lineup is `both`".
-- [ ] **Stack-change gate catch-22 is undocumented.** The gate refuses a launch while live != config,
+      **✅ 2026-08-12 (`mainA`, pulled from the generated bench) — ALREADY FIXED, and it survived a
+      topology change it was not written for. Seventh stale premise tonight.**
+      `orchestrator_stack.py:2085-2115` resolves the mode as **arg → runtime-facts manifest → shell
+      env**, then probes the REALIZED fleet and *overrides* the resolution when they disagree,
+      printing `[numa-align] realized fleet is 'X' but resolved mode was 'Y' … correcting to 'X'`.
+      That is this row's first requested remedy — default to the mode the stack is actually
+      running — and it is louder than asked, since the correction is logged. Landed `1de3cef9`
+      (2026-07-22, *"ESC-8 Fixes 1-4 … no hardcoded full defaults"*).
+      **The interesting part is WHY it still works after the quarters were retired.** The fix
+      predates the full+halves lineup, and its probe universe is
+      `full_instance_ports ∪ quarter_instance_ports`. `quarter_instance_ports` is defined as *the
+      quarterable roles' **non-full** instances* — a structural test, not a name test — so the
+      halves fall into that bucket automatically. Verified by classification, with no live probing:
+      full ports `[8070, 8072, 8085]`, non-full `[8080, 8082, 8180, 8182, 8185, 8285]`, and
+      `classify_numa_mode_from_ports(full | non-full)` → **`both`**, which is the correct answer for
+      today's lineup. `classify(empty)` → `None`, deliberately fail-safe ("unknown, do not
+      fabricate") so a cold start still falls back to manifest/env rather than inventing `full`.
+      **Residual, naming only — filed, not fixed:** the function is `quarter_instance_ports` and the
+      mode string is `"quarter"`, while the realized lineup contains **zero quarters**. A reader
+      asking "are we in quarter mode?" against a halves lineup gets `quarter` and would reasonably
+      conclude quarters are deployed. Same naming-artefact class as `NUMA_Q*` in `stack_numa.py`.
+      Worth noting the moral runs the other way from most of tonight's findings: this code is
+      CORRECT precisely because it keyed on the structural property (non-full) instead of the
+      label — the label went stale and the behaviour did not.
+- [x] **Stack-change gate catch-22 is undocumented.** ✅ 2026-08-11 — `mainD`, epyc-orchestrator
+      `a01a63a6`. The FATAL now names its own escape: retrying `start` cannot work, because the cure
+      for drift is a restart and the gate refuses the launch that would perform it — so
+      `stop --all` first, after which there is no live process to drift against. Message-only, no
+      behaviour change. Verified before writing rather than transcribed: the FATAL at
+      `stack_commands.py:255` did emit only the refusal, and `stop --all` exists
+      (`orchestrator_stack.py:2836`).
+      *Original filing:* The gate refuses a launch while live != config,
       but the only cure for live != config is a restart, which requires the launch. The escape is to
       `stop --all` FIRST so there is no live process to drift against. Nothing says this; the FATAL
       message does not mention it, and the obvious operator reaction (retry `start`) cannot work.
@@ -1929,10 +2132,25 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       comment-only `test_code` (`"# assert __init__(/) == as a list of"`), `cruxeval` 1 has no
       ground truth anywhere, `mode_advantage_hard` 1. Either regenerate their oracles or retire the
       rows; leaving them silently dropped is what hid the other 1,438.
-- [ ] **debugbench `expected` is truncated to exactly 100 characters** on every row across all
+- [x] **debugbench `expected` is truncated to exactly 100 characters** on every row across all
       three languages. `substring` scoring therefore asks the model to reproduce a 100-char prefix
       of the reference solution. That scores *something*, but it is not obviously "did it fix the
       bug" — worth deciding whether this suite measures what its name claims.
+- [ ] **Retire or rebuild the debugbench oracle** — it is live and contributing confident,
+      meaningless passes to aggregate scores. Rebuild from the buggy↔solution DIFF, not a solution
+      prefix; widening 100 → 500 does not fix it. Also re-check the sibling suites: the
+      `livecodebench` comment-only `test_code` rows above suggest the ingestion path has more than
+      one defect. *(Opened 2026-08-12 by `mainC` — the audit DECIDED the question; this is the
+      remediation it implies, and it needs an owner with the eval pipeline.)*
+      ✅ 2026-08-12 — **DECIDED: it does not. The oracle is VACUOUS.** All four rows in both core
+      pools are byte-exact 100-char prefixes of the upstream solution (upstream median 661, only 3
+      of 4,253 are ≤100 — so the truncation is OURS, not upstream). The decisive test was not
+      whether the prefix is uninformative but whether it is **already present in the buggy code the
+      model was handed** — it is, on 4 of 4, so a model that changes nothing and echoes its input
+      PASSES. Corpus-wide the construction is vacuous on 3,233 of 4,250 rows (76.1%), making it a
+      property of the design. Every debugbench score under this config is uninterpretable.
+      Evidence: `artifacts/audit/debugbench-oracle-vacuity-20260812.md` (root `e6e3644a`).
+      Guard shipped so this cannot recur silently: orchestrator `cc81d0ff`.
 - [ ] **Design-lens review of AutoPilot dispatched** (workflow `wf_50aef395-2a4`) — essential vs
       incident-scarred vs speculative, against Karpathy's autoresearch. Operator's sharpening:
       scar tissue is not only "justified, keep it" — a CLUSTER of scars is evidence the underlying
@@ -1998,7 +2216,23 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       chokepoint" `tier_specs.objectives_from` governs construction only. **A fifth scar in
       the same cluster**: no named-axis objective type, so every consumer re-derives the
       layout. Fixing it is the prerequisite for W3e (retiring the cost axis).
-- [ ] **The de-FABLE rename shipped broken operator-facing commands** — `model_gate_report.py`
+- [x] **The de-FABLE rename shipped broken operator-facing commands** ✅ follow-up audit done
+      2026-08-11 — `mainD`. **The class is real and it was still live, in the worst possible place.**
+      `handoffs/active/orchestration-robustness-audit-2026-07-11.md` carried **three
+      copy-pasteable commands under the P0.1 operator run/pause decision heading** pointing at
+      `start_fable_authority_daemon.py` and `fable5_gate_report.py` — neither exists. An operator
+      working that decision would have run three failing commands. Repointed to
+      `start_authority_daemon.py` / `model_gate_report.py`, **with the flags verified against the
+      current scripts first** (`--preflight` present; `--json --require-current-code --out-json
+      --strict` present) — presenting a command that fails is an agent defect by policy, so a
+      rename fix must not itself ship an unverified command.
+      **The discrimination is the finding.** ~120 further hits exist and NONE should be rewritten:
+      they are dated artifacts under `orchestration/reports/` and `lab_review_queue/` (records of
+      what was run at the time — editing them would falsify the record), historical `*.json`
+      artifact FILENAMES that a naive sweep would have renamed, narration of past work in `[x]`
+      rows, and one *correct* comment in `model_gate_report.py:32` explaining the rename. Live
+      runnable dead commands in `handoffs/active` after this: **0**.
+      *Original filing:* — `model_gate_report.py`
       emitted RECOVERY COMMANDS pointing at `start_fable_authority_daemon.py` and
       `fable5_gate_report.py`, neither of which exists, and two test modules could not be
       collected. Fixed in `81be1e56`. Open follow-up: audit remaining restated paths/commands

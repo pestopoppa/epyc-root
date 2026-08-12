@@ -354,3 +354,533 @@ def test_a_task_that_merely_mentions_not_doing_something_is_still_dispatchable(
     p = _handoff(tmp_path, "## Tasks\n"
                  "- [ ] Add a guard so the applicator does not restart a live role\n")
     assert _classify_row(p, 2)[0] == 0
+
+
+# ------------------------------------------------------------------- C41 guard scope
+#
+# `section_is_guarded` took the nearest preceding heading, searched the whole span for
+# the guard phrase, and returned ONE blanket bool for every box under it. Wrong both
+# ways, and both faces were measured on the live corpus:
+#   * false REFUSAL — an inline per-box marker bled forward onto unrelated rows, and
+#     PROSE ABOUT guards guarded whatever followed it. `standardized-stack-…:244`
+#     ("Finish W4 swap-CI…") and `stale-open-audit-…:269` ("read-certify the remaining
+#     ~918") were both real dispatchable work, refused. mainC adjudicated 6 of these.
+#   * false PERMIT — a standing-constraint box outside a banner's enumeration still
+#     read as guarded, so every repair pass skipped it.
+
+def _guarded(tmp_path: Path, body: str, needle: str) -> bool:
+    path = tmp_path / "h.md"
+    path.write_text(body, encoding="utf-8")
+    lineno = next(i for i, l in enumerate(body.splitlines(), 1) if needle in l)
+    return brc.box_is_guarded(path, lineno)
+
+
+_ENUMERATED = """## Outstanding Work
+
+> **⚠ THESE TWO BOXES ARE STANDING CONSTRAINTS, NOT TASKS — DO NOT DISPATCH OR FLIP THEM.**
+> Checking one asserts an ongoing constraint has been permanently satisfied.
+
+- [ ] FIRST keep the thing switched off until an operator says otherwise
+- [x] a closed box that the count must not spend
+- [ ] SECOND keep the other thing under review
+- [ ] THIRD a genuinely dispatchable task that the banner never claimed
+"""
+
+
+def test_an_enumerating_banner_covers_exactly_what_it_enumerates(tmp_path: Path) -> None:
+    """The false-PERMIT face. 'THESE TWO BOXES' must reach two boxes, not the section."""
+    assert _guarded(tmp_path, _ENUMERATED, "FIRST")
+    assert _guarded(tmp_path, _ENUMERATED, "SECOND")
+    assert not _guarded(tmp_path, _ENUMERATED, "THIRD"), \
+        "a box beyond the banner's own count is NOT covered by it"
+
+
+def test_the_count_is_spent_on_open_boxes_only(tmp_path: Path) -> None:
+    """`classify` returns on `- [x]` before it ever asks, so closed boxes are not what
+    a banner is rationing. If the closed box consumed a slot, SECOND would fall out of
+    scope and a real standing constraint would go unguarded."""
+    assert _guarded(tmp_path, _ENUMERATED, "SECOND")
+
+
+def test_an_unenumerated_banner_still_covers_the_whole_section(tmp_path: Path) -> None:
+    """The compliant path, and the one that makes this a re-scoping rather than a
+    deletion: most banners in the corpus say 'THESE BOXES' with no count, and their
+    behaviour is deliberately unchanged."""
+    body = """## Reopen Checklist
+
+> **⚠ THESE BOXES ARE UNCHECKED BY DESIGN — DO NOT DISPATCH OR FLIP THEM.**
+
+- [ ] FIRST re-read the doc end to end
+- [ ] LATER a box far below, still under the same heading
+"""
+    assert _guarded(tmp_path, body, "FIRST")
+    assert _guarded(tmp_path, body, "LATER")
+
+
+def test_an_inline_marker_guards_its_own_box_and_does_not_bleed_forward(
+        tmp_path: Path) -> None:
+    """The false-REFUSAL face, measured at `standardized-stack-…:232` guarding `:244`."""
+    body = """## Work
+
+- [ ] *(STANDING CONSTRAINT — not a dispatchable task; do not flip.)*
+- [ ] LATER Finish W4 swap-CI so representative stack changes prove generated output
+"""
+    assert _guarded(tmp_path, body, "STANDING CONSTRAINT")
+    assert not _guarded(tmp_path, body, "LATER"), \
+        "a marker written on one box must not speak for the next one"
+
+
+def test_prose_about_guards_is_not_a_guard(tmp_path: Path) -> None:
+    """Measured at `stale-open-audit-…:269`, refused by a table cell 140 lines above
+    that merely NAMES the category. The blockquote requirement is what separates a
+    banner from a sentence about banners."""
+    body = """## Audit
+
+    | **NOT A TASK** — reusable checklist or standing constraint | **36** |
+    (`Reopen Checklist`, `Rules For New Tests`) and standing constraints under headings.
+
+- [ ] LATER read-certify the remaining ~918 open boxes
+"""
+    assert not _guarded(tmp_path, body, "LATER")
+
+
+def test_a_row_that_discusses_constraints_is_not_itself_one(tmp_path: Path) -> None:
+    """Why the inline check reads the box's own line ONLY. Scanning continuation lines
+    looks like robustness and re-imports the same prose-vs-guard confusion one level
+    down: it newly guarded C41's own filing and `stale-open-audit-…:110`, both real
+    tasks whose BODIES discuss standing constraints."""
+    body = """## Work
+
+- [ ] LATER Fix the predicate so an un-enumerated box is no longer exempted
+  by every tool pass. The banner says STANDING CONSTRAINTS but the seventh box
+  is not covered, and DO NOT DISPATCH bleeds forward onto unrelated rows.
+"""
+    assert not _guarded(tmp_path, body, "LATER")
+
+
+def test_numeric_and_word_counts_are_both_understood(tmp_path: Path) -> None:
+    for count in ("2", "TWO", "two"):
+        body = f"""## Work
+
+> **⚠ THESE {count} BOXES ARE STANDING CONSTRAINTS — DO NOT DISPATCH OR FLIP THEM.**
+
+- [ ] FIRST a standing rule
+- [ ] SECOND another standing rule
+- [ ] THIRD a real task
+"""
+        assert _guarded(tmp_path, body, "FIRST"), count
+        assert _guarded(tmp_path, body, "SECOND"), count
+        assert not _guarded(tmp_path, body, "THIRD"), count
+
+
+def test_a_wrapped_banner_still_yields_its_count(tmp_path: Path) -> None:
+    """The live banner wraps over nine blockquote lines and states its count on the
+    first. Reading only the matching line would lose the count on the other shape."""
+    body = """## Work
+
+> **⚠ DO NOT DISPATCH OR FLIP THEM.**
+> Every open box here is a rule with no completion state.
+> THESE TWO BOXES ARE STANDING CONSTRAINTS, noted by `auditor`.
+
+- [ ] FIRST a standing rule
+- [ ] SECOND another standing rule
+- [ ] THIRD a real task
+"""
+    assert _guarded(tmp_path, body, "FIRST")
+    assert not _guarded(tmp_path, body, "THIRD")
+
+
+def test_audit_guards_finds_a_standing_constraint_that_was_flipped(tmp_path: Path) -> None:
+    """C41 follow-up. `box_is_guarded` can only speak about OPEN boxes — `classify`
+    returns on `- [x]` before it asks — so a standing constraint ALREADY flipped closed
+    is invisible to every pass. That is exactly how `model-stack-…:339` sat closed under
+    a DO-NOT-FLIP banner. In a section whose banner forbids flipping, any `- [x]` is
+    suspicious by construction, so the rule needs no cleverness.
+    """
+    (tmp_path / "guarded.md").write_text("""## Outstanding Work
+
+> **⚠ THESE BOXES ARE STANDING CONSTRAINTS — DO NOT DISPATCH OR FLIP THEM.**
+
+- [ ] keep the thing switched off until an operator says otherwise
+- [x] FLIPPED treat the helper modules as frozen
+""", encoding="utf-8")
+    (tmp_path / "plain.md").write_text("""## Work
+
+- [x] an ordinary finished task in a section with no banner
+""", encoding="utf-8")
+
+    hits = brc.closed_boxes_under_a_guard(tmp_path)
+    assert [(p.name, n) for p, n, _ in hits] == [("guarded.md", 6)], hits
+    assert "FLIPPED" in hits[0][2]
+
+
+def test_audit_guards_is_silent_when_nothing_is_flipped_under_a_banner(
+        tmp_path: Path) -> None:
+    """The compliant path. A guarded section with only OPEN boxes must report nothing,
+    or the check becomes noise and stops being read — and an unguarded section's closed
+    boxes are none of its business."""
+    (tmp_path / "clean.md").write_text("""## Outstanding Work
+
+> **⚠ THESE BOXES ARE UNCHECKED BY DESIGN — DO NOT DISPATCH OR FLIP THEM.**
+
+- [ ] a standing rule
+- [ ] another standing rule
+
+## Delivered
+
+- [x] a real task, closed, in a section with no banner
+""", encoding="utf-8")
+    assert brc.closed_boxes_under_a_guard(tmp_path) == []
+
+
+# --------------------------------------------------------------------------------
+# 2026-08-11 (`mainC`) — a banner must reach a section's DESCENDANTS, and the
+# corruption invariant must NOT inherit that reach. Both pinned, because they are
+# deliberately different and a future reader will be tempted to unify them.
+# --------------------------------------------------------------------------------
+
+
+def _phased(tmp_path):
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "plan.md").write_text(
+        "## Phased Work Plan\n"
+        "> **⛔ CLOSED APPENDIX — DEPRIORITIZED PLAN. Do not dispatch from the phases below.**\n"
+        "\n"
+        "### Phase 0\n"
+        "- [ ] Shelved step one\n"
+        "- [x] A read that really was done\n"
+        "\n"
+        "### Phase 1\n"
+        "- [ ] Shelved step two\n"
+        "\n"
+        "## Live Work\n"
+        "- [ ] A genuinely dispatchable task\n",
+        encoding="utf-8")
+    return d / "plan.md"
+
+
+def test_a_parent_banner_reaches_boxes_in_child_sections(tmp_path) -> None:
+    """The blind spot that made phased plans undeclarable.
+
+    Measured on cpu-shape-specialized-gemv-decode.md: a CLOSED APPENDIX banner under
+    `## Phased Work Plan` covered ZERO of the 36 open boxes beneath it, because
+    `### Phase 0` opened a new section three lines later.
+    """
+    p = _phased(tmp_path)
+    assert brc.box_is_guarded(p, 5) is True, "banner must reach `### Phase 0`"
+    assert brc.box_is_guarded(p, 9) is True, "banner must reach `### Phase 1`"
+
+
+def test_a_sibling_section_banner_does_not_leak_forward(tmp_path) -> None:
+    """Scope still ends at the section boundary — this is not a blanket widening."""
+    p = _phased(tmp_path)
+    assert brc.box_is_guarded(p, 13) is False, "`## Live Work` is a sibling, not a descendant"
+
+
+def test_the_corruption_invariant_keeps_the_FLAT_span(tmp_path) -> None:
+    """A deprioritized plan's `- [x]` boxes are correct history, not corruption.
+
+    Dispatch exclusion is generous; a corruption ACCUSATION is conservative. If these
+    two ever share a scope rule, the 6 completed boxes under the GEMV appendix get
+    reported as defects forever.
+    """
+    p = _phased(tmp_path)
+    hits = brc.closed_boxes_under_a_guard(p.parent)
+    assert hits == [], "a parent banner must NOT make child [x] boxes read as corruption"
+
+
+def test_audit_standing_finds_a_flipped_rule_with_no_banner(tmp_path) -> None:
+    """The miss that took the count 7 -> 11, then 12.
+
+    Only 7 files in handoffs/active/ carry a guard phrase, so a rule flipped closed
+    in an unbannered file is invisible to box_is_guarded, to --audit-guards, and to
+    every dispatch pass. `inference` independently confirmed one such box
+    (autokernel-research-loop.md:2659) that the banner-based pass cannot see.
+    """
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True)
+    (d / "plain.md").write_text(
+        "## Notes\n"                                   # NO banner anywhere
+        "- [x] Do not download the OCR models as bench swaps\n"
+        "- [x] Keep routing default-off until an operator decision\n"
+        "- [x] Port the SQLite reader\n",              # ordinary finished task
+        encoding="utf-8")
+    hits = brc.closed_standing_constraints(d)
+    found = {(ln, kind) for _p, ln, kind, _b in hits}
+    assert (2, "PROHIBITION") in found
+    assert (3, "STANDING") in found
+    assert not any(ln == 4 for ln, _ in found), "an ordinary finished task is not a constraint"
+
+
+def test_audit_standing_reuses_classify_predicates_not_new_ones(tmp_path) -> None:
+    """A second definition of 'standing constraint' would be a second source of truth.
+
+    Pins the reuse: anything classify() would REFUSE to dispatch as a standing
+    constraint while open must be recognised by this audit once closed. That
+    equivalence is the whole point — the tool already knew how to spot these and
+    structurally never asked the question of a closed box.
+    """
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True)
+    text = "Keep production routing default-off until an explicit operator decision"
+    (d / "open.md").write_text(f"## S\n- [ ] {text}\n", encoding="utf-8")
+    (d / "closed.md").write_text(f"## S\n- [x] {text}\n", encoding="utf-8")
+
+    code, _ = brc.classify(d / "open.md", 2, " ", text, "S")
+    assert code == 2, "classify must refuse this while OPEN"
+    assert [h[1] for h in brc.closed_standing_constraints(d)] == [2], \
+        "the same text, once CLOSED, must be caught by the audit"
+
+
+# --------------------------------------------------------------------------------
+# 2026-08-12 — the two screener blind spots `mainD` found by working the bench.
+# Both are DECLARATIONS the row makes about itself, which a form-based screen could
+# not read. Each is pinned in BOTH directions, because mainD's C41 caveat is that a
+# loosened pattern refuses real work: "a row that says the word OPERATOR in its body
+# is not an operator row; a row whose text STARTS with OPERATOR: is."
+# --------------------------------------------------------------------------------
+
+
+def _one_row(tmp_path, text):
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "r.md").write_text(f"## Open\n- [ ] {text}\n", encoding="utf-8")
+    return d / "r.md"
+
+
+def test_an_owner_prefixed_row_is_refused(tmp_path) -> None:
+    """The measured instance: handoff-index-and-backlog-graph.md:44 screened DISPATCHABLE.
+
+    It opens `**OPERATOR:` and describes a host-level cron change. Dispatchable means
+    WELL-FORMED, not YOURS-TO-DO.
+    """
+    p = _one_row(tmp_path, "**OPERATOR: nothing restarts `hub_supervisor.sh` if it dies.** Found dead.")
+    code, reasons = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 2
+    assert "DECLARES ITS OWNER" in reasons[0]
+
+
+def test_merely_mentioning_an_operator_is_NOT_refused(tmp_path) -> None:
+    """mainD's caveat, pinned. Prefix, not substring.
+
+    This is the exact over-reach that C41 produced twice in one hour: a row whose BODY
+    discusses a thing is not a row that IS the thing.
+    """
+    p = _one_row(tmp_path, "Add a column recording which operator signed each ratification")
+    code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 0, "a row that merely mentions an operator must stay dispatchable"
+
+
+def test_a_dependency_written_into_the_row_text_is_refused(tmp_path) -> None:
+    """blocking_children() looks one indent DOWN and cannot see this.
+
+    Measured instance: "Rationalize supervision with OP-9's resolution", where OP-9 is
+    an OPEN operator decision — so the row screened dispatchable while its precondition
+    was undecided.
+    """
+    p = _one_row(tmp_path, "Rationalize supervision with OP-9's resolution: one lifecycle story")
+    code, reasons = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 2
+    assert "DECLARES A DEPENDENCY" in reasons[0]
+
+
+def test_gated_on_a_named_reference_is_refused(tmp_path) -> None:
+    """The other live shape, verbatim from the corpus: "Gated on AR-3 Package D completion"."""
+    p = _one_row(tmp_path, "A/B test LateOn vs GTE-ModernColBERT-v1. Gated on AR-3 Package D completion.")
+    code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 2
+
+
+def test_a_bare_pending_does_not_refuse(tmp_path) -> None:
+    """`pending` alone is deliberately NOT a dependency signal.
+
+    It is a mood, not a reference, and including it would refuse real work — which this
+    file's settled rule calls the costlier error. The pattern requires a NAMED reference.
+    """
+    p = _one_row(tmp_path, "Write the pending section of the migration guide")
+    code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 0
+
+
+def test_a_row_gated_on_an_unevaluated_predicate_is_refused(tmp_path) -> None:
+    """mainD's THIRD signal, and the one with a live reproduction behind it.
+
+    `model-stack-update-pipeline-audit.md:628` screened DISPATCHABLE while reading
+    "Direct benchmark runtime enforcement ONLY IF promotion-gate coverage proves
+    insufficient". Nobody had assessed insufficiency, so the work was UNAUTHORISED —
+    and two agents pulled that row independently, hours apart, avoiding it only by
+    reading the text after the tool said go.
+    """
+    p = _one_row(tmp_path,
+                 "Direct benchmark runtime enforcement only if promotion-gate coverage "
+                 "proves insufficient")
+    code, reasons = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 2
+    assert "GATES ITSELF" in reasons[0]
+
+
+def test_a_bare_only_if_does_NOT_refuse(tmp_path) -> None:
+    """The narrowness that makes the signal safe, pinned.
+
+    59 of 1,255 open boxes contain a bare `only if`/`only after`, and most are ordinary
+    sequencing notes. Refusing on the phrase alone would withhold real work — the
+    costlier error by this file's settled rule. The gate must name an UNEVALUATED
+    PREDICATE (prove/show/demonstrate/confirm), not merely a condition.
+    """
+    p = _one_row(tmp_path, "Run the export only after the nightly batch completes")
+    code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 0, "a plain sequencing condition must stay dispatchable"
+
+
+def test_a_proof_verb_without_an_only_gate_does_NOT_refuse(tmp_path) -> None:
+    """The other half of the conjunction. Both halves are required."""
+    p = _one_row(tmp_path, "Write the report that shows how the scheduler behaves under load")
+    code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 0
+
+
+# ---------------------------------------------------------------------------
+# Adjudication markers make the standing-constraint sweep CONVERGE (2026-08-12, `mainC`).
+#
+# The sweep is a review prompt, and one that re-reports the same already-judged boxes
+# every run is one people stop reading — worse, it invites a second agent to re-split a
+# box a first agent deliberately left closed. A POSITIVE marker written into the handoff
+# (same principle as the do-not-dispatch declaration) records who judged it and when.
+# These pin that it suppresses ONLY marked boxes, in both directions.
+# ---------------------------------------------------------------------------
+
+def _adjudication_handoff(tmp_path, body: str):
+    d = tmp_path / "active"; d.mkdir(exist_ok=True)
+    (d / "h.md").write_text("## Work\n\n" + body + "\n", encoding="utf-8")
+    return d
+
+
+def test_an_unmarked_flipped_prohibition_is_still_reported(tmp_path):
+    """Detection must not narrow. This is the defect the sweep exists to find."""
+    root = _adjudication_handoff(tmp_path, "- [x] Do not churn the seeding rewards module.")
+    assert len(brc.closed_standing_constraints(root)) == 1
+
+
+def test_an_ADJUDICATED_marker_under_the_box_suppresses_it(tmp_path):
+    """The 'read it, the rule is genuinely spent' outcome."""
+    root = _adjudication_handoff(tmp_path,
+        "- [x] Do not rebuild the C++ accelerator — its source is gone.\n"
+        "  *(ADJUDICATED 2026-08-12 by `mainC` — deliberately left CLOSED. Moot: upstream\n"
+        "  supersedes it outright, so there is no live action left to forbid.)*")
+    assert brc.closed_standing_constraints(root) == []
+
+
+def test_a_SPLIT_marker_on_the_FOLLOWING_box_suppresses_the_completion_record(tmp_path):
+    """The other legitimate outcome — and the one a naive reading misses.
+
+    A SPLIT marker is written under the box it CREATES (the re-opened rule), not under
+    the completion record it demotes. Found by running the sweep: the ADJUDICATED form
+    demoted correctly and all three SPLIT forms did not.
+    """
+    root = _adjudication_handoff(tmp_path,
+        "- [x] Do NOT run the 10% epsilon-greedy exploration ✅ 2026-07-29 — already have them.\n"
+        "- [ ] **STANDING — do NOT run the 10% epsilon-greedy exploration in production.**\n"
+        "  *(SPLIT 2026-08-12 by `mainC`. The ✅ recorded the DECISION; the prohibition is live.)*")
+    assert brc.closed_standing_constraints(root) == []
+
+
+def test_removing_the_marker_makes_the_box_reappear(tmp_path):
+    """Mutation, stated as a test: suppression is keyed to the marker, nothing else."""
+    marked = ("- [x] Do not churn the module.\n"
+              "  *(ADJUDICATED 2026-08-12 by `mainC` — deliberately left CLOSED.)*")
+    assert brc.closed_standing_constraints(_adjudication_handoff(tmp_path, marked)) == []
+    bare = marked.replace("*(ADJUDICATED 2026-08-12 by", "*(Note by")
+    assert len(brc.closed_standing_constraints(_adjudication_handoff(tmp_path, bare))) == 1
+
+
+def test_an_undated_or_unsigned_marker_does_not_suppress(tmp_path):
+    """Auditable suppression, not a magic word: the marker must carry a date AND an author."""
+    for weak in ("*(ADJUDICATED — left closed.)*",
+                 "*(SPLIT by `mainC`.)*",
+                 "*(ADJUDICATED 2026-08-12 — left closed.)*"):
+        root = _adjudication_handoff(tmp_path, f"- [x] Do not churn the module.\n  {weak}")
+        assert len(brc.closed_standing_constraints(root)) == 1, weak
+
+
+# --- Dependency-Graph signal (mainD, 2026-08-12) -----------------------------
+# The general half of the HG-3 finding, made executable: a block declared in the
+# file's Dependency Graph section, invisible to the row text AND to
+# blocking_children(). Helper name is deliberately distinct from _one_row /
+# _phased / _adjudication_handoff — an appended helper that shadows an existing
+# one silently breaks unrelated passing tests (mainC, same night).
+
+def _graph_handoff(tmp_path, graph: str, tasks: str):
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / "g.md"
+    p.write_text(f"## Prioritized Task List\n{tasks}\n## Dependency Graph\n\n```text\n{graph}\n```\n",
+                 encoding="utf-8")
+    return p
+
+
+_HG_TASKS = ("- [ ] **HG-1 — Threshold policy** from H4/H5 curves.\n"
+             "- [ ] **HG-3 — Protected-action list** aligned with existing SafetyGate.\n")
+
+
+def test_a_block_declared_only_in_the_dependency_graph_is_refused(tmp_path) -> None:
+    """The live reproduction: reviewer-escalation-and-human-gate-policy.md:22.
+
+    HG-3 reads as an ordinary ready task; the graph one section down puts it
+    downstream of HG-1, whose box is open. The dispatch queue served it as `none`
+    lane with NO blocker precisely because nothing in the row or its children says so.
+    """
+    p = _graph_handoff(tmp_path, "H4 curves + H5 winners -> HG-1 -> HG-2/HG-3 -> HG-8", _HG_TASKS)
+    code, reasons = brc.classify(p, 3, " ", brc._boxes(p)[1][2], "Prioritized Task List")
+    assert code == 2
+    assert "DEPENDENCY GRAPH" in reasons[0]
+    assert "HG-1" in reasons[0]
+
+
+def test_closing_the_prerequisite_clears_the_graph_block(tmp_path) -> None:
+    """Mutation test: the signal must depend on the prerequisite's STATE.
+
+    If it fires with HG-1 closed too, it is keyed on the graph alone and would
+    refuse work forever.
+    """
+    p = _graph_handoff(tmp_path, "HG-1 -> HG-3", _HG_TASKS.replace("- [ ] **HG-1", "- [x] **HG-1"))
+    assert brc.blocking_dependency_graph(p, 3, brc._boxes(p)[1][2]) is None
+
+
+def test_a_row_that_merely_MENTIONS_a_downstream_id_is_not_treated_as_it(tmp_path) -> None:
+    """Prefix, never substring — the standing caveat, applied to task ids."""
+    p = _graph_handoff(tmp_path, "HG-1 -> HG-3",
+                       _HG_TASKS + "- [ ] Align the protected list with HG-3 semantics.\n")
+    assert brc.blocking_dependency_graph(p, 4, brc._boxes(p)[2][2]) is None
+
+
+def test_no_dependency_graph_section_means_no_signal(tmp_path) -> None:
+    """An arrow anywhere in the file is not a dependency graph."""
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / "n.md"
+    p.write_text("## Notes\n\nHG-1 -> HG-3 is the rough order.\n\n"
+                 "## Prioritized Task List\n" + _HG_TASKS, encoding="utf-8")
+    assert brc.blocking_dependency_graph(p, 7, brc._boxes(p)[1][2]) is None
+
+
+def test_an_unresolvable_prerequisite_fails_TOWARD_dispatchable(tmp_path) -> None:
+    """Settled rule of this file: refusing real work is the costlier error.
+
+    A prerequisite with no box of its own must NOT invent a block.
+    """
+    p = _graph_handoff(tmp_path, "H4 curves + H5 winners -> HG-3",
+                       "- [ ] **HG-3 — Protected-action list** aligned with SafetyGate.\n")
+    assert brc.blocking_dependency_graph(p, 2, brc._boxes(p)[0][2]) is None
+
+
+def test_every_id_inherits_every_upstream_stage_on_the_line(tmp_path) -> None:
+    """`A -> B -> C`: C is blocked by A as well as B, not only its neighbour."""
+    p = _graph_handoff(tmp_path, "HG-1 -> HG-2 -> HG-8",
+                       "- [ ] **HG-1 — Threshold policy.**\n"
+                       "- [x] **HG-2 — Verifier rule.**\n"
+                       "- [ ] **HG-8 — Policy A/B.**\n")
+    prereqs = brc.dependency_prereqs(p.read_text(encoding="utf-8").splitlines())
+    assert prereqs["HG-8"] == {"HG-1", "HG-2"}
+    hit = brc.blocking_dependency_graph(p, 4, brc._boxes(p)[2][2])
+    assert hit is not None and hit[1] == "HG-1"   # skips the CLOSED HG-2, finds open HG-1

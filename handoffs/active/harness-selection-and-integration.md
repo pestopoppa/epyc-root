@@ -249,7 +249,9 @@ every candidate harness cooperates by writing **body fields** on `/v1/chat/compl
 API reads no headers other than the `x-task-id` tag. That makes the request model's field policy and
 its error path the whole contract. Both are currently wrong in a way that is silent.
 
-- [ ] **HS-OD-1 — Standard OpenAI body fields are silently dropped.** `response_format` and
+- [x] **HS-OD-1 — Standard OpenAI body fields are silently dropped.** ✅ 2026-08-12
+  (`auditor`, pulled from the generated bench and claimed; orchestrator `cbe551e8`)
+  `response_format` and
   `max_completion_tokens` have **zero occurrences anywhere under `src/api/`**, and
   `OpenAIChatRequest` (`src/api/models/openai.py:39`) declares no `model_config` / `class Config` and
   no `extra` policy — so pydantic v2's default `extra='ignore'` discards them without error.
@@ -258,7 +260,22 @@ its error path the whole contract. Both are currently wrong in a way that is sil
   missing feature so much as a missing *refusal*: unknown fields that change output semantics must be
   rejected, not ignored. Decide per field — implement, or reject with a 4xx naming the field — and add
   a test that a body field the API does not honour cannot be accepted silently.
-- [ ] **HS-OD-2 — Backend failures are returned as assistant content with HTTP 200.**
+  **Done.** Per-field decision as the row asks: `max_completion_tokens` **implemented** (alias →
+  `max_tokens`; both supplied → 422); `response_format` and the other unhonoured semantic fields
+  (`n`≠1, `stop`, `logprobs`/`top_logprobs`, `logit_bias`, penalties, legacy `functions`/
+  `function_call`) **refused with a 422 naming the field** — value-sensitively, so explicit no-ops
+  (`n=1`, penalty `0.0`, `{"type":"text"}`, empty lists) and non-semantic extras (`user`,
+  `metadata`, `stream_options`) still pass, keeping SDK clients that spell out defaults working.
+  JSON-mode support itself remains unimplemented BY DECISION: the seam now answers with a
+  diagnostic instead of prose-with-a-200; implementing it is backend feature work needing
+  inference validation — file its own task if a harness actually needs it.
+  Guards both directions (refusal fires AND compliant path passes):
+  `tests/unit/test_openai_semantic_field_refusal.py`, 30 tests, plus the 897-test
+  compat/chat/request slice green. **Committed, NOT LIVE**: the running `:8000` uvicorn serves
+  the old request model until the API reload at the inference session's own boundary
+  (reload-ownership rule) — reload routed via bus, not executed here.
+- [x] **HS-OD-2 — Backend failures are returned as assistant content with HTTP 200.** ✅ 2026-08-11
+  (`mainB`, orchestrator `a4e398fc`)
   `src/api/routes/openai_compat.py:776-777` catches **every** exception into
   `response_text = f"[ERROR] Backend failed: {e}"`, then falls through to
   `return OpenAIChatResponse(...)`. A downstream harness sees a successful completion whose text
@@ -268,3 +285,22 @@ its error path the whole contract. Both are currently wrong in a way that is sil
   through `:8000` has been scoring backend outages as low-quality generations. Map backend failures to
   a real HTTP error status; if a soft-fail path is genuinely wanted, it must be opt-in and flagged in
   the response, never the default.
+  **Done.** `HTTPException` and `ContentionDenied` now propagate (the former includes the 503 for
+  uninitialised primitives raised a few lines above, which the blanket handler was swallowing into a
+  200; the latter reaches its app-level 503 + `Retry-After` + `failure_provenance` handler instead of
+  arriving as a model answer). Everything else maps to **502** — this route is a gateway in front of
+  the llama.cpp fleet, so the fault is the upstream's. No opt-in soft-fail path was added; nothing
+  asked for one, and adding an unused escape hatch to a seam this load-bearing invites its own
+  regression.
+  **Scope note — the streaming path had the same defect and is fixed in the same change.** The
+  finding cites only the non-streaming line, but the identical fail-open sat at three further sites
+  (vision, direct call, REPL generation) plus the `primitives is None` case. Fixing only the cited
+  line would have left every streaming client — the OpenAI SDK default for most harnesses — still
+  corrupted while this box read done. A stream cannot retract its 200 (headers precede the
+  generator), so those now emit a terminal SSE `error` event and stop, rather than streaming the
+  error as assistant content and closing with `finish_reason: "stop"`.
+  Guards: `tests/unit/test_openai_compat_backend_failure_status.py`, asserting **both** directions.
+  The three failure-path tests were verified to FAIL against pre-fix HEAD in a detached worktree; the
+  two success-path tests pass in both, which is the point — a failure-only guard would pass just as
+  happily if the route began erroring on everything. 292 passed across all tests touching this route.
+  **HS-OD-1 deliberately untouched** per the lane brief; it remains open at its own box above.

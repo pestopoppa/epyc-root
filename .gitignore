@@ -64,13 +64,43 @@ site_src/subsystems/research/
 data/handoff_timeline.json
 data/handoff_timeline.json.tmp.*
 
-# Session bus: high-churn runtime state, not version-controlled.
-# advisory.jsonl grows ~1 record/agent/tick; the coordinator-daemon heartbeat
-# rewrites every tick. M3/M4 evidence is cited as a summary artifact, never the
-# raw log. Agent-owned heartbeats stay tracked — they are written at task
-# boundaries, not on a timer.
-coordination/session-bus/advisory.jsonl
-coordination/session-bus/heartbeats/coordinator-daemon.json
+# Session bus: high-churn RUNTIME state, not version-controlled.
+#
+# Widened 2026-08-12 (guard-universe-and-worktree-isolation P1/2, C45
+# precedent — the same untrack-and-gitignore ruling already applied to
+# logs/agent_audit.log: tracked, append-only, written by every agent,
+# conflicting on essentially every cross-branch merge with zero
+# informational benefit from being in git history). The original narrower
+# rule below kept agent-owned heartbeats/cursors/inbox/outbox tracked on the
+# theory that task-boundary writes are infrequent enough to version; in
+# practice all of it churns as uncommitted state continuously — five mains
+# writing concurrently produced 89 git-tracked bus files in permanent merge
+# contention, all night, across a single 21-conflict merge. Runtime
+# coordination state wants exactly ONE live instance and zero versioning of
+# its churn; the queue/routing PROTOCOL (BUS_PROTOCOL.md), the durable task
+# briefs (tasks/*.md) and the operator trust surfaces (tokens/token-queue.md,
+# tokens/unblock.md, tokens/unblock.pins.json) are unaffected and stay
+# tracked — this block ignores instance state, not the contract.
+#
+# advisory.jsonl (+ rotated advisory_<n>.jsonl shards) grows ~1 record/agent/
+# tick; the coordinator-daemon heartbeat rewrites every tick; inbox/outbox/
+# cursors/heartbeats/claims are per-agent runtime files rewritten or appended
+# on every bus interaction. M3/M4 evidence is cited as a summary artifact,
+# never the raw log.
+coordination/session-bus/advisory*.jsonl
+# Daemon-owned per-tick state. `boundary_state.json` was listed alone; the other
+# three are the same kind of file and were left untracked-but-not-ignored, which
+# is the shape that rides into another agent's `git add -A` on a shared tree.
+coordination/session-bus/boundary_state.json
+coordination/session-bus/relay_state.json
+coordination/session-bus/stuck_state.json
+coordination/session-bus/scheduling_recommendation_state.json
+coordination/session-bus/adapter-ledger.jsonl
+coordination/session-bus/inbox/
+coordination/session-bus/outbox/
+coordination/session-bus/cursors/
+coordination/session-bus/heartbeats/
+coordination/session-bus/claims/
 logs/bus_supervisor.out
 logs/bus_supervisor.pid
 logs/coordinator_daemon.log
@@ -92,3 +122,31 @@ artifacts/operator/*operational_baseline_candidate*.json
 .vidya/ledger.jsonl.repair
 .vidya/state.sqlite
 .vidya/projections/
+
+# Generated handoff-index sidecars (A19). `scripts/handoffs/index_state.py` derives
+# both of these from the index files and the handoffs themselves — they are a VIEW,
+# never a source, and regenerating is a single command. Tracking them made every main
+# that ran index_state.py collide with the other three on a file none of them authored,
+# which is why index_state.py had to be restricted to one session. The dashboard already
+# treats absence as "index_state.py has never run in this checkout" and degrades to
+# "no graph" (dashboard/panels.py, absence_means), so untracking costs nothing there.
+handoffs/active/.index-state.json
+handoffs/active/.index-graph.json
+
+# Linked git worktrees (29 of them, incl. inference's live campaign trees).
+#
+# THIS ENTRY DOES NOT PROTECT THEM. Measured 2026-08-12, not assumed:
+#   git clean -nd    -> 0 entries          (ignored, so not a candidate)
+#   git clean -ndx   -> "Would skip repository" x29  (git skips nested repos)
+#   git clean -nffdx -> "Would remove worktrees/"    (BEFORE *and AFTER* this entry)
+# `-x` re-includes ignored paths and `-ff` defeats the nested-repo skip, so the
+# only thing standing between `git clean -ffdx` and 29 live worktrees is that
+# nobody types the second `f`. Ignoring is for STATUS HYGIENE here — it removes
+# 29 untracked lines from every `git status` — not for safety.
+worktrees/
+
+# Append-only audit trail written concurrently by every agent (C45). Tracked until
+# 2026-08-12: it conflicted on essentially every cross-branch merge, because both
+# sides always append at the tail so a textual merge cannot interleave them. Read via
+# scripts/utils/agent_log_analyze.sh; nothing reads it out of git history.
+logs/agent_audit.log

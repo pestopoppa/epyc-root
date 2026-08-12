@@ -224,10 +224,26 @@ items, that produces N byte-identical messages — 19 identical `triage-disposit
 rows once made up 40% of a 48-item queue. This is **protocol shape, not a send bug**: 19 distinct
 corr_ids, 19 distinct ids, relayed 1:1. Do not "fix" it in `tmux_adapter.py`.
 
-Standing rule: **before writing the same payload against a second `corr_id`, write it once and
-reference it.** A disposition that is genuinely per-item carries per-item content; if it does not,
-the items wanted one answer and the queue should say so rather than repeat it. A reader who cannot
-tell N answers from one answer repeated N times has lost the signal the queue exists to carry.
+**The 2026-07-29 rule was NOT PERFORMABLE, and is replaced (C23, 2026-08-11).** It said *"before
+writing the same payload against a second `corr_id`, write it once and reference it"* — while no
+mechanism to reference it existed. Clearing triage took one `corr_id` per item, full stop, so a
+session holding one answer for N items had no compliant way to send it once. It failed within
+hours: measured from one careful main, 3 byte-identical payloads at 17:41Z and 6 more at 17:44Z
+differing only in `corr_id` — **nine in ten minutes, by someone following the rule correctly.**
+Fan-out multiplies it, since N dispositions × M routing targets is N×M triage entries fleet-wide.
+Two failures in ten minutes is the rule being the defect, not the sender.
+
+Standing rule, now performable: **one answer, one row.** A message may carry `corr_ids: [<id>,
+<id>, …]` alongside or instead of the scalar `corr_id`, and it clears every id it names. The scalar
+is unchanged and is still correct for a genuinely per-item answer.
+
+What has NOT changed, and is the reason the bulk form is scoped rather than general: a disposition
+that is genuinely per-item carries per-item content, so **N distinct answers still want N rows**.
+Use `corr_ids` only when one answer really does cover every id listed. A reader who cannot tell N
+answers from one answer repeated N times has lost the signal the queue exists to carry — and a bulk
+row that flattens N different answers into one loses it just as thoroughly, in the other direction.
+A bare bulk ack is still receipt, not action: `action_required` items keep appearing until
+dispositioned. Bulk changes the arity, never the semantics.
 
 **Operator-script receipt convention (proposed; the scanner is inert until adopted).** A script in
 `artifacts/operator/` may declare its gate with a header line `# BUS-GATE: <gate-id>`. On a

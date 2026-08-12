@@ -83,7 +83,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 - [x] Add `**Lifecycle**: live` to `llama-cpp-dsa-contribution` (board over-flags it superseded) ✅ 2026-07-18
 - [x] Cross-link the MI210 GPU speed campaign into `qwen36-27b-cpu-feasibility` (parked-on-CPU ≠ dead model) ✅ 2026-07-18
 - [x] Surface the fired reopen-triggers (gpu-drafter MI210-gate, minddr DGX→MI210, sarathi batched-decode E1/E2) with dated notes + reactivate `- [ ]` tasks in each handoff ✅ 2026-07-18
-- [ ] Re-anchor GEMV to its 2 live graph-fusion tasks; move the deprioritized SIMD Phase 0–5 plan to a closed appendix
+- [x] Re-anchor GEMV to its 2 live graph-fusion tasks; move the deprioritized SIMD Phase 0–5 plan to a closed appendix ✅ 2026-08-11 (`mainC`, root `9ed95b4d`) — the two live boxes (fuse expert gate+up; fuse the attn QKV cluster, both frontdoor Q8_0, both cutting barrier COUNT) are now the file's whole live surface, and the Phased Work Plan sits under a CLOSED APPENDIX declaration. Measured effect: the handoff presents **2** rows on the generated bench instead of **28**. **The 26 stale rows are still NOT closed and must not be** — the certification coupling is recorded on the GEMV handoff, and closing them ahead of the re-anchor would destroy the evidence separating the shelved plan from the live lever. Placing the banner also exposed a real tool blind spot: a `##` banner did not reach boxes under its own `###` children, so a phased plan could not be declared at all; fixed in the same commit with tests.
   - **VERIFIED 2026-07-29 (`auditor`), handed to the CPU-lane owner — NOT executed here**, because this
     section is headed *"no checkbox flips on the audited handoffs"* and the move would effectively close
     26 boxes. **The recommendation is correct and the target handoff says so itself:** line 5 reads
@@ -107,6 +107,12 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 - [x] Surface the SLIDERS reopen precondition (KB-RAG K7 certified 2026-06-13) as a fired-but-needs-operator-decision note ✅ 2026-07-18
 - [x] **Publish the current dispatch-inventory baseline ✅ 2026-07-29**: [`BACKLOG-DISPATCH-QUEUE.md`](../../coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md) reports **1,103 unchecked active-handoff tasks at sweep start** and **~232 none-lane, unblocked tasks dispatchable now**. This supersedes the historical `≈544` heuristic; it is an inventory count, not an exact audited live/stale partition. The exact partition remains open below.
 - [ ] **NEW 2026-07-29 — Extend the stale-open audit to an exact current live/stale partition, then present a derived dashboard field with audit date and source.** The original 22 audited handoffs now contain 208 open tasks (vs 173 at audit time); current lifecycle parsing identifies only 58 high-precision parked/superseded rows, so neither source can certify the remaining 949-or-fewer tasks as live.
+  *STATE 2026-08-12 (`auditor`): the read-certification tranches ARE this row's engine — T4–T7
+  (2026-08-11/12, artifacts `read-certification-tranche{4..7}-*.md`, records at L269 below) have
+  certified 389 rows ≈41% of the ~918-row backlog with per-row LIVE/DEAD/GATED/REWRITE verdicts
+  and adjudicated DEAD lists; blended dead-rate 25%, and dead-rate tracks time-since-last-audit,
+  not file size. The dashboard-field half remains genuinely open (needs the partition to finish).
+  Remaining tranches are the row's live work; the "58 high-precision rows" framing is superseded.*
 - [ ] Extend the audit to the ~105 un-flagged open handoffs to convert "≤544" into an exact live count
   - **PARTIAL 2026-07-29 (`auditor`) — the exactly-certifiable part is done, and it is small; automated
     exact stale-detection is EXHAUSTED.** Parsed every `- [ ]` box in `handoffs/active/`: **992 raw
@@ -268,6 +274,40 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     65). Reading is the only route, and its rate is now measured. Stop looking for a shortcut.
   - [ ] **REMAINS OPEN:** read-certify the remaining ~918. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
+    - [x] **Tranche 7 — the tail, complete: 13 of 13 rows in 8 small files ✅ 2026-08-12 (`auditor`)**
+      **6 LIVE / 6 GATED / 1 REWRITE / 0 DEAD** — the tail is clean; wp12 ran the recurrence check on
+      itself correctly in-file. Elevated: HS-OD-1 is a LIVE unfixed API defect (response_format
+      silently dropped, zero src/api hits, spot-verified). Evidence:
+      `artifacts/audit/read-certification-tranche7-20260812.md`. **Cumulative T4-T7: 389 rows, ~42%
+      of backlog, 24% blended dead. Non-live-owner certification COMPLETE** — the remaining ~918-row
+      program continues only via live-owner files (policy-skipped) or the post-merge regenerated queue.
+    - [x] **Tranche 6 — 8 smaller bench-feeding handoffs, complete: 48 of 48 rows certified ✅ 2026-08-12 (`auditor`, overnight)**
+      (vidya 12, UTM 10, tri-role 7, within-role-placement 6, triattention 4, tool-output-compression 4,
+      attention-matching 4, laguna-s21 1). **20 LIVE / 8 DEAD / 19 GATED / 1 REWRITE** after main-thread
+      adjudication AMENDED one certifier verdict (WP-8 zero-callers claim refuted: eval_tower.py:1694 calls
+      the helper). Evidence: `artifacts/audit/read-certification-tranche6-20260812.md`. HEADLINE: the
+      Attention-Matching Track-2 native integration is claimed-deployed-but-DROPPED (Gate-3-PASSED prose vs
+      not-ancestor commits + explicit v6 removal comment) with the re-port-or-decline decision owned by
+      NOBODY; SC12 write-side hook window was MISSED at the v9 freeze (receipt carries zero claim wiring).
+      Cumulative T4-T6: 376 rows, ~41% of backlog, blended 25% dead.
+    - [x] **Tranche 5 — the next 4 bench-feeding handoffs, complete: 97 of 97 rows certified ✅ 2026-08-12 (`auditor`, overnight)**
+      (`multimodal-pipeline` 22, `canonical-judge-suite-revamp` 24, `eval-tower-verification` 27,
+      `architect-model-selection-bench` 24). **50 LIVE (52%) / 9 DEAD (9%) / 36 GATED / 2 REWRITE** — full
+      evidence in `artifacts/audit/read-certification-tranche5-20260812.md`. The dead-rate collapse vs T4
+      (33%→9%) proves staleness tracks TIME-SINCE-LAST-AUDIT, not file size. Cumulative T4+T5: 328 rows,
+      26% dead; backlog ~36% certified. Seven priority flags routed (S-15 truncation on the LIVE vision
+      model; execution-gate contradiction; AXA-1 GPU-residency drift; L166/L206 duplicate + index
+      first-row blindness; row_check false-positive class; EV-8 reject-path template; kvquant verdict gap
+      — auditor takes the last).
+    - [x] **Tranche 4 — the 4 highest-count bench-feeding handoffs, complete: 231 of 231 rows certified ✅ 2026-08-12 (`auditor`, overnight)**
+      (`decision-aware-routing` 34, `autopilot-continuous-optimization` 62, `rocm-verify-profile-backend` 49,
+      `numa-topology-cutover-resume-20260730` 86). **90 LIVE (39%) / 76 DEAD (33%) / 51 GATED / 10 REWRITE /
+      3 UNRESOLVED / 1 standing-constraint** — full evidence in
+      `artifacts/audit/read-certification-tranche4-20260812.md`; owners flip their own DEAD rows from that
+      record. Live-rate spread 24-66% per file (T1-T3 priors re-confirmed: reading, not sampling). Two
+      cross-cutting finds outrank the rows: the AutoKernel effect gate cannot structurally pass a CPU-decode
+      win (threshold 10 vs martingale ceiling 5.5687 - routed URGENT to inference), and a new defect class:
+      rows resolved by LATER checked entries in the SAME file, never reconciled back.
     - [x] **Tranche 3 — the 6 orphan handoffs, complete: 18 of 18 boxes certified, 0 DEAD ✅ 2026-07-29 (`auditor`)**
       (`agent-collab-rnd-harness`, `autopilot-authority-autoenable-proposal`, `core-v2-design-note-2026-07-23`,
       `qwen-mtp-llamacpp-port`, `re4-protocol-redesign`, `stale-open-audit-2026-07-18`).

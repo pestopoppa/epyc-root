@@ -10,7 +10,9 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import sys
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -1512,7 +1514,11 @@ def test_p1b_status_marks_a_dead_daemon_stale_not_working(
     assert coordinator.main(["--bus-root", str(bus_root), "status"]) == 0
     out = capsys.readouterr().out
 
-    assert "DAEMON IS NOT RUNNING" in out
+    # C37 changed the rendering: the verdict now LEADS in one word instead of
+    # being a parenthetical spliced into `state=`. The contract this test guards
+    # — a dead daemon must not read as working — is unchanged.
+    assert out.splitlines()[0] == "coordinator-daemon: DEAD"
+    assert f"pid {dead} does not exist" in out
     assert f"pid={dead}" in out, "the evidence itself is preserved, only annotated"
 
 
@@ -1566,7 +1572,7 @@ def test_c26_a_prboot_heartbeat_is_stale_even_when_its_pid_is_alive(
     assert coordinator.main(["--bus-root", str(bus_root), "status"]) == 0
     out = capsys.readouterr().out
 
-    assert "DAEMON IS NOT RUNNING" in out
+    assert out.splitlines()[0] == "coordinator-daemon: DEAD"
     assert "recycled" in out
 
 
@@ -1577,13 +1583,21 @@ def test_c26_boot_check_is_unknowable_not_false_without_proc_uptime(tmp_path: Pa
 
 
 def test_c26_a_post_boot_heartbeat_is_not_flagged(
-        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    # This test is about the BOOT check, so the C37 identity check is isolated out:
+    # the heartbeat here is written by pytest, not by a daemon, so its cmdline
+    # legitimately does not name session_bus_coordinator. Verified separately
+    # against the live daemon, which reports "is the coordinator-daemon".
+    monkeypatch.setattr(coordinator, "process_cmdline",
+                        lambda _p: "python session_bus_coordinator.py run")
     coordinator._write_heartbeat(bus_root, epoch=13, state="working", note="advisory")
 
     assert coordinator.main(["--bus-root", str(bus_root), "status"]) == 0
     out = capsys.readouterr().out
 
     assert "state=working" in out and "recycled" not in out
+    assert out.splitlines()[0] == "coordinator-daemon: HEALTHY"
 
 
 # ------------------------------------------- C33: a refused gate must reach a reader
@@ -1768,6 +1782,11 @@ def test_c34_partial_validation_warns_on_the_SUCCESS_path_too(
     jsonschema — the 6-key check) while the daemon runs under the orchestrator venv
     (full schema). A message can pass authoring and be refused at relay, and nobody is
     told. 217 of 341 live outbox rows were in exactly that state.
+
+    2026-08-11: the DEGRADE ITSELF is now reachable only when the schema grows a
+    construct the vendored validator refuses (`_validator` no longer returns None
+    merely because jsonschema is missing). This test keeps guarding that last
+    resort — it must still announce itself rather than pass silently.
     """
     monkeypatch.setattr(bus, "_validator", lambda *_a: None)
     row = _message("alice", "bob", "finding", seq=1)
@@ -1776,7 +1795,7 @@ def test_c34_partial_validation_warns_on_the_SUCCESS_path_too(
     bus.validate_row(bus_root, row, "msg")       # must NOT raise — it is a degradation
 
     err = capsys.readouterr().err
-    assert "jsonschema is unavailable" in err
+    assert "no validator could be built" in err
     assert "required keys ONLY" in err
     assert "coordinator-daemon DOES validate in full" in err
 
@@ -1789,7 +1808,7 @@ def test_c34_partial_validation_still_raises_on_a_missing_required_key(
 
     with pytest.raises(bus.BusError, match="missing required field"):
         bus.validate_row(bus_root, {"schema_version": "x", "id": "y"}, "msg")
-    assert "jsonschema is unavailable" in capsys.readouterr().err
+    assert "no validator could be built" in capsys.readouterr().err
 
 
 def test_c34_full_validation_stays_silent(
@@ -1893,3 +1912,1755 @@ def test_claim_does_not_disturb_the_single_writer_lint(bus_root: Path) -> None:
     bus.main(["--bus-root", str(bus_root), "claim", "--agent", "alice", "--row", "a row"])
 
     assert bus.main(["--bus-root", str(bus_root), "validate"]) == 0
+
+
+# --------------------------------------------------------------------- C34
+#
+# C34: agents author under /usr/bin/python3 (no jsonschema) and the daemon
+# relays under the orchestrator venv (jsonschema 4.26), so for as long as
+# `_validator` returned None without jsonschema the two sides applied DIFFERENT
+# rules — 368 of 1137 live outbox rows passed authoring and were refused at
+# relay. `session_bus` now falls back to a vendored draft-7 subset. These tests
+# exist to prove the fallback is not a second, subtly different rulebook: what
+# it accepts and rejects must match jsonschema exactly, or C34 has merely moved.
+
+SCHEMA_DEFINITIONS = ("msg", "queue_row")
+
+
+def _live_schema() -> dict:
+    return json.loads((LIVE_BUS_ROOT / "session_bus.schema.json").read_text(encoding="utf-8"))
+
+
+def _sub_schema(schema: dict, definition: str) -> dict:
+    return {"$schema": schema["$schema"], "definitions": schema["definitions"],
+            "$ref": f"#/definitions/{definition}"}
+
+
+def _error_set(validator, row: dict) -> set:
+    """(path, failing keyword) pairs — comparable across implementations, unlike
+    the human-facing message text."""
+    return {("/".join(str(p) for p in e.path), e.validator) for e in validator.iter_errors(row)}
+
+
+def _reference_validator(definition: str):
+    jsonschema = pytest.importorskip("jsonschema", reason="reference validator not installed")
+    return jsonschema.Draft7Validator(_sub_schema(_live_schema(), definition))
+
+
+def _vendored(definition: str) -> bus._MiniDraft7Validator:
+    return bus._MiniDraft7Validator(_sub_schema(_live_schema(), definition))
+
+
+VALID_MSG = {
+    "schema_version": "session_bus.msg.v1",
+    "id": "msg-20260811T090000Z-1-mainD",
+    "ts": "2026-08-11T09:00:00+00:00",
+    "from": "mainD",
+    "to": "coordinator-agent",
+    "kind": "status",
+}
+
+VALID_QUEUE_ROW = {
+    "schema_version": "session_bus.queue.v1",
+    "ts": "2026-08-11T09:00:00+00:00",
+    "task_id": "c-own-round-4",
+    "status": "READY",
+    "lane": "none",
+    "gating": "none",
+    "epoch": 14,
+}
+
+
+def _mutants() -> list[tuple[str, str, dict]]:
+    """A battery aimed at every assertion keyword the live schema uses, plus the
+    real per-kind `allOf`/`if`/`then` payload rules."""
+    cases: list[tuple[str, str, dict]] = [("msg", "pristine", dict(VALID_MSG)),
+                                          ("queue_row", "pristine", dict(VALID_QUEUE_ROW))]
+    for definition, base in (("msg", VALID_MSG), ("queue_row", VALID_QUEUE_ROW)):
+        for key in base:
+            cases.append((definition, f"drop:{key}", {k: v for k, v in base.items() if k != key}))
+            cases.append((definition, f"nulled:{key}", {**base, key: None}))
+            cases.append((definition, f"numbered:{key}", {**base, key: 7}))
+            cases.append((definition, f"listed:{key}", {**base, key: []}))
+            cases.append((definition, f"emptied:{key}", {**base, key: ""}))
+    cases += [
+        # additionalProperties — the 217-row `_renamed_from` class, and friends.
+        ("msg", "extra:_renamed_from", {**VALID_MSG, "_renamed_from": "claude-main"}),
+        ("msg", "extra:several", {**VALID_MSG, "summary": "s", "status": "done", "next": "x"}),
+        ("queue_row", "extra:one", {**VALID_QUEUE_ROW, "note": "hi"}),
+        # enum
+        ("msg", "kind:blocker", {**VALID_MSG, "kind": "blocker"}),
+        ("msg", "kind:decision", {**VALID_MSG, "kind": "decision"}),
+        ("queue_row", "lane:tpu", {**VALID_QUEUE_ROW, "lane": "tpu"}),
+        ("queue_row", "status:bogus", {**VALID_QUEUE_ROW, "status": "PARTIALLY_DONE"}),
+        # const
+        ("msg", "schema_version:v2", {**VALID_MSG, "schema_version": "session_bus.msg.v2"}),
+        # pattern
+        ("msg", "id:malformed", {**VALID_MSG, "id": "msg-2026-08-11-1-mainD"}),
+        ("msg", "id:ok", {**VALID_MSG, "id": "msg-20260811T090000Z-42-coordinator-agent"}),
+        ("msg", "priority:P9", {**VALID_MSG, "priority": "P9"}),
+        ("msg", "priority:P0", {**VALID_MSG, "priority": "P0"}),
+        ("queue_row", "task_id:leading-dot", {**VALID_QUEUE_ROW, "task_id": ".hidden"}),
+        # boolean / number types
+        ("msg", "requires_ack:string", {**VALID_MSG, "requires_ack": "yes"}),
+        ("msg", "requires_ack:true", {**VALID_MSG, "requires_ack": True}),
+        ("msg", "action_required:one", {**VALID_MSG, "action_required": 1}),
+        # exclusiveMinimum / minimum / integer
+        ("msg", "ack_deadline:zero", {**VALID_MSG, "ack_deadline_s": 0}),
+        ("msg", "ack_deadline:positive", {**VALID_MSG, "ack_deadline_s": 30}),
+        ("queue_row", "epoch:negative", {**VALID_QUEUE_ROW, "epoch": -1}),
+        ("queue_row", "epoch:float", {**VALID_QUEUE_ROW, "epoch": 2.5}),
+        ("queue_row", "epoch:whole-float", {**VALID_QUEUE_ROW, "epoch": 2.0}),
+        ("queue_row", "epoch:bool", {**VALID_QUEUE_ROW, "epoch": True}),
+        ("queue_row", "max_attempts:zero", {**VALID_QUEUE_ROW, "max_attempts": 0}),
+        # nullable union type
+        ("queue_row", "owner:null", {**VALID_QUEUE_ROW, "owner": None}),
+        ("queue_row", "owner:number", {**VALID_QUEUE_ROW, "owner": 3}),
+        # array: items / minItems / uniqueItems
+        ("msg", "routing:empty", {**VALID_MSG, "needs_routing_to": []}),
+        ("msg", "routing:dupes", {**VALID_MSG, "needs_routing_to": ["mainA", "mainA"]}),
+        ("msg", "routing:blank", {**VALID_MSG, "needs_routing_to": [""]}),
+        ("msg", "routing:number", {**VALID_MSG, "needs_routing_to": [1]}),
+        ("msg", "routing:ok", {**VALID_MSG, "needs_routing_to": ["mainA", "auditor"]}),
+        ("queue_row", "depends_on:mixed", {**VALID_QUEUE_ROW, "depends_on": ["a", 2]}),
+        # per-kind allOf/if/then payload rules
+        ("msg", "assign:no-payload", {**VALID_MSG, "kind": "task-assign", "task_id": "t"}),
+        ("msg", "assign:payload-thin",
+         {**VALID_MSG, "kind": "task-assign", "task_id": "t", "payload": {"lane": "none"}}),
+        ("msg", "assign:payload-full",
+         {**VALID_MSG, "kind": "task-assign", "task_id": "t",
+          "payload": {"lane": "none", "lease_expires_ts": "2026-08-11T10:00:00+00:00",
+                      "epoch": 14}}),
+        ("msg", "assign:lane-bogus",
+         {**VALID_MSG, "kind": "task-assign", "task_id": "t",
+          "payload": {"lane": "quantum", "lease_expires_ts": "x", "epoch": 14}}),
+        ("msg", "assign:no-task_id",
+         {**VALID_MSG, "kind": "task-assign",
+          "payload": {"lane": "none", "lease_expires_ts": "x", "epoch": 14}}),
+        ("msg", "token:no-validated",
+         {**VALID_MSG, "kind": "token-request",
+          "payload": {"gate_id": "g", "block_ref": "b"}}),
+        ("msg", "token:validated-thin",
+         {**VALID_MSG, "kind": "token-request",
+          "payload": {"gate_id": "g", "block_ref": "b", "validated": {"cmd": "true"}}}),
+        ("msg", "token:full",
+         {**VALID_MSG, "kind": "token-request",
+          "payload": {"gate_id": "g", "block_ref": "b",
+                      "validated": {"cmd": "true", "dry_run_exit": 0,
+                                    "dry_run_evidence": "ok"}}}),
+        ("msg", "reprioritize:thin",
+         {**VALID_MSG, "kind": "reprioritize", "payload": {"task_id": "t"}}),
+        ("msg", "reprioritize:bad-scope",
+         {**VALID_MSG, "kind": "reprioritize",
+          "payload": {"task_id": "t", "new_priority": "P1", "scope": "everywhere"}}),
+        ("msg", "revoke:no-reason",
+         {**VALID_MSG, "kind": "lease-revoke", "task_id": "t", "payload": {}}),
+        ("msg", "propose:thin",
+         {**VALID_MSG, "kind": "task-propose", "task_id": "t", "payload": {"lane": "none"}}),
+        ("msg", "propose:full",
+         {**VALID_MSG, "kind": "task-propose", "task_id": "t",
+          "payload": {"lane": "none", "gating": "none", "spec_ref": "h.md#a",
+                      "summary": "s"}}),
+        ("msg", "propose:est-negative",
+         {**VALID_MSG, "kind": "task-propose", "task_id": "t",
+          "payload": {"lane": "none", "gating": "none", "spec_ref": "h.md#a",
+                      "summary": "s", "est_wall_clock_h": -1}}),
+        # payload must be an object at all
+        ("msg", "payload:string", {**VALID_MSG, "payload": "not an object"}),
+        # non-object instances entirely
+        ("msg", "instance:list", []),
+        ("msg", "instance:string", "nope"),
+    ]
+    return cases
+
+
+@pytest.mark.parametrize("definition,label,row", [(d, l, r) for d, l, r in _mutants()],
+                         ids=[f"{d}-{l}" for d, l, _ in _mutants()])
+def test_vendored_validator_matches_jsonschema_on_a_mutant_battery(
+        definition: str, label: str, row) -> None:
+    """Verdict AND error set must agree. Verdict alone would pass a fallback that
+    rejects for the wrong reason, and the reason is what the author reads."""
+    reference, vendored = _reference_validator(definition), _vendored(definition)
+    assert vendored.is_valid(row) == reference.is_valid(row), (
+        f"{definition}/{label}: vendored says valid={vendored.is_valid(row)}, "
+        f"jsonschema says valid={reference.is_valid(row)}")
+    assert _error_set(vendored, row) == _error_set(reference, row), f"{definition}/{label}"
+
+
+def test_vendored_validator_matches_jsonschema_on_the_whole_live_bus() -> None:
+    """The corpus that mattered: every row actually on the bus. Read-only.
+
+    A synthetic battery can only test the failure modes its author imagined;
+    12 days of real agent output is the sample that found `_renamed_from`.
+    """
+    rows: list[tuple[str, str, dict]] = []
+    for area, definition in (("outbox", "msg"), ("inbox", "msg"), ("queue.jsonl", "queue_row")):
+        paths = ([LIVE_BUS_ROOT / area] if area.endswith(".jsonl")
+                 else sorted((LIVE_BUS_ROOT / area).glob("*.jsonl")))
+        for path in paths:
+            if not path.exists():
+                continue
+            for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                if not line.strip():
+                    continue
+                try:
+                    rows.append((f"{path.name}:{lineno}", definition, json.loads(line)))
+                except json.JSONDecodeError:
+                    continue
+    # WAS `assert len(rows) > 500` — a proxy for "this comparison is not vacuous",
+    # and it encoded the corpus size at authoring time. On 2026-08-12 the bus runtime
+    # was wiped and the corpus fell to ~100 rows, so the guard fired TRULY: it refused
+    # to validate a truncated corpus and call it agreement. But the corpus did not
+    # regrow — it kept shrinking — so a fixed floor would have stayed red forever,
+    # which trains readers to ignore it. Lowering the number would have been face 1
+    # committed in reverse.
+    #
+    # So assert the PROPERTY the number was proxying: THE READER SAW EVERYTHING THAT
+    # IS THERE. That is scale-free, survives a wipe, and is strictly stronger — it is
+    # face 14 (the reader dropped part of the input and said nothing) turned on this
+    # test's own reader. Counted independently, by a different method than the loop
+    # above, so a bug in that loop cannot satisfy its own check.
+    on_disk = 0
+    for area in ("outbox", "inbox", "queue.jsonl"):
+        target = LIVE_BUS_ROOT / area
+        for path in ([target] if area.endswith(".jsonl") else sorted(target.glob("*.jsonl"))):
+            if path.exists():
+                on_disk += sum(1 for ln in path.read_bytes().split(b"\n") if ln.strip())
+    unparsable = on_disk - len(rows)
+    assert rows, "live bus corpus is EMPTY — agreement over nothing is not agreement"
+    assert unparsable == 0, (
+        f"reader dropped {unparsable} of {on_disk} non-empty lines — every line on the "
+        f"bus must be validated or the agreement is over a corpus this test narrowed itself")
+
+    validators = {d: (_reference_validator(d), _vendored(d)) for d in SCHEMA_DEFINITIONS}
+    disagreements = []
+    for where, definition, row in rows:
+        reference, vendored = validators[definition]
+        if _error_set(vendored, row) != _error_set(reference, row):
+            disagreements.append((where, sorted(_error_set(vendored, row)),
+                                  sorted(_error_set(reference, row))))
+    assert not disagreements, f"{len(disagreements)} disagreements, first: {disagreements[0]}"
+
+
+def test_vendored_validator_refuses_a_schema_it_would_only_partly_enforce() -> None:
+    """The fail-open this whole fix exists to close, one level up: a validator
+    that ignores the keyword it does not know reports PASS on a row that
+    violates it. Construction must refuse instead."""
+    schema = _live_schema()
+    schema["definitions"]["msg"]["properties"]["ts"]["format"] = "date-time"
+    with pytest.raises(bus._UnsupportedSchema, match="format"):
+        bus._MiniDraft7Validator(_sub_schema(schema, "msg"))
+
+    schema = _live_schema()
+    schema["definitions"]["msg"]["properties"]["from"]["$ref"] = "https://example.com/x.json"
+    with pytest.raises(bus._UnsupportedSchema, match=r"\$ref"):
+        bus._MiniDraft7Validator(_sub_schema(schema, "msg"))
+
+
+@pytest.fixture()
+def no_jsonschema(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Reproduce the authoring interpreter: `import jsonschema` raises."""
+    monkeypatch.setitem(sys.modules, "jsonschema", None)
+    with pytest.raises(ImportError):
+        import jsonschema  # noqa: F401
+
+
+def test_authoring_without_jsonschema_still_applies_the_full_schema(
+        bus_root: Path, no_jsonschema: None) -> None:
+    """C34 itself. Before the fix this row appended cleanly under
+    /usr/bin/python3 and was then refused at relay, forever, silently."""
+    _provision(bus_root, *AGENTS)
+    assert bus._validator(_live_schema(), "msg").__class__ is bus._MiniDraft7Validator
+
+    with pytest.raises(bus.BusError, match="Additional properties"):
+        bus.validate_row(LIVE_BUS_ROOT, {**VALID_MSG, "summary": "routing intent as prose"}, "msg")
+    with pytest.raises(bus.BusError, match="not one of"):
+        bus.validate_row(LIVE_BUS_ROOT, {**VALID_MSG, "kind": "blocker"}, "msg")
+    with pytest.raises(bus.BusError, match="required property"):
+        bus.validate_row(LIVE_BUS_ROOT, {**VALID_MSG, "kind": "task-assign", "task_id": "t",
+                                         "payload": {"lane": "none"}}, "msg")
+
+
+def test_authoring_without_jsonschema_still_accepts_a_compliant_row(
+        bus_root: Path, no_jsonschema: None, capsys: pytest.CaptureFixture[str]) -> None:
+    """The other direction, and the one that takes the fleet down if it is wrong:
+    a guard that forbids its own idiom passes review and breaks production. The
+    documented `append` command must keep working, silently, with no jsonschema.
+    """
+    _provision(bus_root, *AGENTS)
+    capsys.readouterr()
+
+    assert bus.main(["--bus-root", str(bus_root), "append", "--agent", "alice",
+                     "--target", "outbox", "--json",
+                     json.dumps({"to": "bob", "kind": "status",
+                                 "payload": {"summary": "still here"}})]) == 0
+    captured = capsys.readouterr()
+    assert "WARNING" not in captured.err, captured.err
+
+    written = _read_jsonl(bus_root / "outbox" / "alice.jsonl")
+    assert len(written) == 1 and written[0]["kind"] == "status"
+    # And the daemon's own full-schema check agrees, which is the whole point.
+    bus.validate_row(bus_root, written[0], "msg")
+
+
+def test_append_refuses_an_unrelayable_row_at_the_author(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Failing at the author is the correct place: the rows this refuses were
+    never being delivered anyway, they were just being written."""
+    _provision(bus_root, *AGENTS)
+
+    assert bus.main(["--bus-root", str(bus_root), "append", "--agent", "alice",
+                     "--target", "outbox", "--json",
+                     json.dumps({"to": "bob", "kind": "blocker"})]) != 0
+    assert not _read_jsonl(bus_root / "outbox" / "alice.jsonl")
+
+
+def test_renamed_from_is_accepted_so_the_migrated_rows_can_be_delivered() -> None:
+    """C34 second half. The 2026-07-29 roster rename wrote `_renamed_from` onto
+    the 217 rows it rewrote; `additionalProperties: false` forbade it, so relay
+    refused every one of them — five operator token-requests among them, stranded
+    two weeks. Stripping the field was the alternative and is not available: an
+    outbox has exactly one writer and it is not the daemon. So the schema accepts
+    the provenance, and this test is what stops a future tidy-up from re-breaking
+    delivery by deleting the property as 'unused'.
+    """
+    for definition in ("msg",):
+        vendored = _vendored(definition)
+        assert vendored.is_valid({**VALID_MSG, "_renamed_from": "claude-main"})
+        # Still typed, not a hole: it is a non-empty string or nothing.
+        assert not vendored.is_valid({**VALID_MSG, "_renamed_from": ""})
+        assert not vendored.is_valid({**VALID_MSG, "_renamed_from": 7})
+    # Unrelated stray keys stay refused — this widened the schema by one field,
+    # not into a bag of anything.
+    assert not _vendored("msg").is_valid({**VALID_MSG, "_renamed_to": "x"})
+    assert not _vendored("queue_row").is_valid({**VALID_QUEUE_ROW, "_renamed_from": "codex"})
+
+
+def test_no_live_outbox_row_is_still_blocked_by_renamed_from() -> None:
+    """The measurement that justified the change, kept as a regression: every one
+    of the 217 rows must now pass, and this fails loudly if the property is
+    narrowed later in a way the real corpus does not satisfy."""
+    validator = _vendored("msg")
+    blocked = []
+    for path in sorted((LIVE_BUS_ROOT / "outbox").glob("*.jsonl")):
+        for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if "_renamed_from" not in row:
+                continue
+            reasons = {e.validator for e in validator.iter_errors(row)}
+            if reasons:
+                blocked.append((f"{path.name}:{lineno}", sorted(reasons)))
+    assert not blocked, f"{len(blocked)} migrated rows still unrelayable, first: {blocked[0]}"
+
+
+# --------------------------------------------------------------- C37 / C38
+#
+# The coordinator-daemon was dead from 2026-08-01T05:42:54Z to 2026-08-11T08:48:02Z
+# — 243.1h, measured as the gap in advisory.jsonl — and nothing noticed. P1b had
+# already added a pid check, so the interesting question was why that was not
+# enough. Two independent holes, both reproduced against the real module before
+# either was touched:
+#   * `os.kill(pid, 0)` proves a process EXISTS, not that it is this daemon. The
+#     boot check closes that only across a reboot; within one boot the number can
+#     be re-issued to anything. A heartbeat naming pid 1 (/sbin/init) reported
+#     `state=working`.
+#   * heartbeat age was printed and never judged, so `age=876736s` and `age=19s`
+#     produced the same verdict: none.
+
+def _hb_file(root: Path, pid: int, *, age_s: float, state: str = "working") -> Path:
+    path = root / "heartbeats" / "coordinator-daemon.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"agent": "coordinator-daemon", "epoch": 13, "pid": pid,
+                                "state": state, "note": "advisory", "task_id": None}),
+                    encoding="utf-8")
+    stamp = time.time() - age_s
+    os.utime(path, (stamp, stamp))
+    return path
+
+
+def test_daemon_liveness_rejects_a_recycled_pid(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The C37 hole. Existence is not identity."""
+    monkeypatch.setattr(coordinator, "process_cmdline", lambda pid: "/sbin/init splash")
+    alive, why = coordinator.daemon_liveness({"pid": os.getpid()})
+    assert alive is False
+    assert "recycled" in why and "/sbin/init" in why
+
+
+def test_daemon_liveness_accepts_the_real_daemon(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The compliant path. A guard that cannot recognise its own process would
+    report every healthy daemon dead and send someone to restart a singleton."""
+    monkeypatch.setattr(coordinator, "process_cmdline",
+                        lambda pid: "/venv/bin/python /repo/scripts/coordination/"
+                                    "session_bus_coordinator.py run")
+    alive, why = coordinator.daemon_liveness({"pid": os.getpid()})
+    assert alive is True and "coordinator-daemon" in why
+
+
+def test_daemon_liveness_states_doubt_when_identity_is_unverifiable(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """No /proc is a portability fact, not evidence of death — but the doubt is
+    reported rather than dropped."""
+    monkeypatch.setattr(coordinator, "process_cmdline", lambda pid: None)
+    alive, why = coordinator.daemon_liveness({"pid": os.getpid()})
+    assert alive is True and "identity unverifiable" in why
+
+
+def test_process_cmdline_reads_this_process_and_survives_a_dead_pid(tmp_path: Path) -> None:
+    mine = coordinator.process_cmdline(os.getpid())
+    if mine is not None:                       # skip where /proc is absent
+        assert "python" in mine.lower() or "pytest" in mine.lower()
+    assert coordinator.process_cmdline(999_999_999, proc_root=tmp_path) is None
+
+
+@pytest.mark.parametrize("age_s,tick_s,expected", [
+    (0, 45, True), (45, 45, True), (449, 45, True), (451, 45, False),
+    (876_736, 45, False),                      # the ten-day heartbeat, judged
+    (119, 1, True), (121, 1, False),           # 120s floor, so a fast tick is not jumpy
+])
+def test_heartbeat_freshness_is_a_verdict_not_a_number(
+        age_s: float, tick_s: float, expected: bool) -> None:
+    fresh, why = coordinator.heartbeat_freshness(age_s, tick_s)
+    assert fresh is expected
+    assert f"{age_s:.0f}s old" in why
+
+
+def test_daemon_verdict_worst_signal_wins(bus_root: Path,
+                                          monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(coordinator, "heartbeat_predates_boot", lambda *_a, **_k: False)
+
+    def verdict(pid: int, age_s: float, cmdline: str | None) -> str:
+        monkeypatch.setattr(coordinator, "process_cmdline", lambda _p: cmdline)
+        path = _hb_file(bus_root, pid, age_s=age_s)
+        hb = json.loads(path.read_text(encoding="utf-8"))
+        return coordinator.daemon_verdict(hb, path.stat().st_mtime, 45.0)[0]
+
+    daemon = "python session_bus_coordinator.py run"
+    assert verdict(os.getpid(), 10, daemon) == "HEALTHY"
+    # Alive, correct process, but has not ticked in ten days: wedged is not healthy.
+    assert verdict(os.getpid(), 876_736, daemon) == "STALE"
+    # Alive, but it is something else entirely.
+    assert verdict(os.getpid(), 10, "/sbin/init splash") == "DEAD"
+    # Dead pid outranks everything.
+    assert verdict(999_999_999, 10, None) == "DEAD"
+    # Unusable pid is reported as unknown, never rendered as either.
+    monkeypatch.setattr(coordinator, "process_cmdline", lambda _p: daemon)
+    path = _hb_file(bus_root, 0, age_s=10)
+    hb = json.loads(path.read_text(encoding="utf-8"))
+    hb["pid"] = None
+    assert coordinator.daemon_verdict(hb, path.stat().st_mtime, 45.0)[0] == "UNKNOWN"
+
+
+def test_status_leads_with_the_verdict_in_one_word(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """The rendering defect, not just the logic one: the old output differed
+    between healthy and ten-days-dead only by a parenthetical several fields into
+    a dense line, and for ten days nobody read the difference."""
+    _provision(bus_root, *AGENTS)
+    monkeypatch.setattr(coordinator, "heartbeat_predates_boot", lambda *_a, **_k: False)
+    monkeypatch.setattr(coordinator, "process_cmdline", lambda _p: "/sbin/init splash")
+    _hb_file(bus_root, os.getpid(), age_s=876_736)
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+    capsys.readouterr()                        # drop the _provision chatter
+
+    args = coordinator.build_parser().parse_args(
+        ["--bus-root", str(bus_root), "status", "--exit-nonzero-if-unhealthy"])
+    assert coordinator.cmd_status(args) == 1
+    out = capsys.readouterr().out
+    assert out.splitlines()[0] == "coordinator-daemon: DEAD"
+    assert "recycled" in out and "876736s old" in out
+    # Evidence is annotated, never overwritten.
+    assert "heartbeat says: state=working" in out
+
+
+def test_status_reports_healthy_and_exits_zero_for_a_live_daemon(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """The other direction, and the one that matters operationally: a false DEAD
+    sends someone to restart a running singleton."""
+    _provision(bus_root, *AGENTS)
+    monkeypatch.setattr(coordinator, "heartbeat_predates_boot", lambda *_a, **_k: False)
+    monkeypatch.setattr(coordinator, "process_cmdline",
+                        lambda _p: "python session_bus_coordinator.py run")
+    _hb_file(bus_root, os.getpid(), age_s=12)
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+    capsys.readouterr()                        # drop the _provision chatter
+
+    args = coordinator.build_parser().parse_args(
+        ["--bus-root", str(bus_root), "status", "--exit-nonzero-if-unhealthy"])
+    assert coordinator.cmd_status(args) == 0
+    assert capsys.readouterr().out.splitlines()[0] == "coordinator-daemon: HEALTHY"
+
+
+def test_status_default_exit_code_is_unchanged_for_existing_readers(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Without the flag, status stays exit 0 even when DEAD — the coordinator-agent
+    reads it by eye and nothing should start failing because of a new verdict."""
+    _provision(bus_root, *AGENTS)
+    monkeypatch.setattr(coordinator, "heartbeat_predates_boot", lambda *_a, **_k: False)
+    monkeypatch.setattr(coordinator, "process_cmdline", lambda _p: None)
+    _hb_file(bus_root, 999_999_999, age_s=876_736)
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+    capsys.readouterr()                        # drop the _provision chatter
+
+    args = coordinator.build_parser().parse_args(["--bus-root", str(bus_root), "status"])
+    assert coordinator.cmd_status(args) == 0
+    assert capsys.readouterr().out.splitlines()[0] == "coordinator-daemon: DEAD"
+
+
+def test_status_says_dead_when_there_is_no_heartbeat_at_all(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """A missing heartbeat used to print 'no coordinator-daemon heartbeat' through
+    a bare `except Exception`, which also swallowed every other failure."""
+    _provision(bus_root, *AGENTS)
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+    capsys.readouterr()                        # drop the _provision chatter
+    args = coordinator.build_parser().parse_args(["--bus-root", str(bus_root), "status"])
+    assert coordinator.cmd_status(args) == 0
+    assert capsys.readouterr().out.splitlines()[0] == "coordinator-daemon: DEAD"
+
+
+@pytest.mark.parametrize("body,n,expected_total,expected_tail", [
+    ("", 5, 0, []),
+    ("a\n", 5, 1, ["a"]),
+    ("a\nb\nc\n", 2, 3, ["b", "c"]),
+    ("a\nb\nc", 2, 2, ["b", "c"]),              # no trailing newline
+    ("a\n\n\nb\n", 5, 4, ["a", "b"]),           # blank lines skipped in the tail
+])
+def test_count_and_tail_matches_a_naive_read(tmp_path: Path, body: str, n: int,
+                                             expected_total: int,
+                                             expected_tail: list[str]) -> None:
+    """C38: status parsed a 1,028 MiB / 2,986,358-row advisory.jsonl into ~6.6 GiB
+    of dicts to print five lines. Cheap is only worth having if it is identical."""
+    path = tmp_path / "advisory.jsonl"
+    path.write_text(body, encoding="utf-8")
+    total, tail = _count_and_tail_probe(path, n)
+    assert (total, tail) == (expected_total, expected_tail)
+
+
+def _count_and_tail_probe(path: Path, n: int) -> tuple[int, list[str]]:
+    # Exercised at a small block size too, so the backwards walk is actually
+    # multi-block in the test rather than always fitting in one read.
+    big = coordinator._count_and_tail(path, n)
+    small = coordinator._count_and_tail(path, n, block=2)
+    assert big == small, f"block size changed the answer: {big} vs {small}"
+    return big
+
+
+def test_count_and_tail_is_bounded_on_a_large_file(tmp_path: Path) -> None:
+    path = tmp_path / "advisory.jsonl"
+    path.write_text("".join(f'{{"i": {i}}}\n' for i in range(50_000)), encoding="utf-8")
+    total, tail = coordinator._count_and_tail(path, 3)
+    assert total == 50_000
+    assert tail == ['{"i": 49997}', '{"i": 49998}', '{"i": 49999}']
+    assert coordinator._count_and_tail(tmp_path / "absent.jsonl", 3) == (0, [])
+
+
+# ----------------------------------------------------------------------- C39
+#
+# `relay_tokens` deduped only on "is the gate string already in token-queue.md" and
+# had no notion of a gate being SPENT. Both C27 gates sat presented as unchecked
+# pending requests while carrying `status: ratified` receipts from 2026-07-29, so
+# the operator was being asked to sign what they had already signed — and for the
+# E8 gate, whose ratified work then aborted, a re-signature would have read as
+# authorisation for a cross-era re-run. Deleting the rows does not stick: the next
+# tick re-presents them.
+
+def _c39_token_request(gate: str, sender: str = "alice", tid: str = "t1") -> dict:
+    return {"schema_version": bus.MSG_SCHEMA_VERSION, "id": f"msg-20260811T100000Z-1-{sender}",
+            "ts": "2026-08-11T10:00:00+00:00", "from": sender, "to": "coordinator-agent",
+            "kind": "token-request", "task_id": tid,
+            "payload": {"gate_id": gate, "block_ref": "h.md#a",
+                        "validated": {"cmd": "true", "dry_run_exit": 0,
+                                      "dry_run_evidence": "ok"}}}
+
+
+def _write_receipt(directory: Path, gate: str, status: str) -> Path:
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"{gate}.json"
+    path.write_text(json.dumps({"gate_id": gate, "status": status}), encoding="utf-8")
+    return path
+
+
+def test_spent_receipt_is_found_only_for_a_status_that_means_signed(tmp_path: Path) -> None:
+    for status in ("ratified", "spent", "applied", "attested", "granted", "RATIFIED"):
+        _write_receipt(tmp_path, "G", status)
+        assert coordinator.spent_receipt_for("G", tmp_path) is not None, status
+    for status in ("pending", "draft", "requested", "", "revoked"):
+        _write_receipt(tmp_path, "G", status)
+        assert coordinator.spent_receipt_for("G", tmp_path) is None, status
+    assert coordinator.spent_receipt_for("NEVER-FILED", tmp_path) is None
+    (tmp_path / "TORN.json").write_text("{not json", encoding="utf-8")
+    assert coordinator.spent_receipt_for("TORN", tmp_path) is None
+
+
+def test_a_spent_gate_is_ANNOTATED_and_never_suppressed(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The load-bearing direction. A relay that silently withholds a gate because it
+    believes the gate is spent is the C3/C6/C8 fail-open family aimed at the operator
+    path — and a withheld signature request is precisely what C27 was. The block must
+    still be presented; the receipt is named beside it and the human decides.
+    """
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-X-20260729", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+
+    blocks, _ = coordinator.relay_tokens(
+        bus_root, {"t1": [_c39_token_request("RATIFY-X-20260729")]}, {}, 14)
+
+    assert len(blocks) == 1, "the gate is still PRESENTED — suppression would re-create C27"
+    body = blocks[0]
+    assert "- [ ] **RATIFY-X-20260729**" in body, "still an unchecked box the operator can sign"
+    assert "already exists" in body and "status: ratified" in body
+    assert "receipts/RATIFY-X-20260729.json" in body, "names WHERE, so the claim is checkable"
+
+
+def test_an_unspent_gate_is_presented_with_no_annotation(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The compliant path. Every ordinary gate must be untouched by this — an
+    annotation on a gate that is genuinely pending would train the operator to
+    ignore the warning, which is how a real one gets signed twice anyway."""
+    receipts = tmp_path / "receipts"
+    receipts.mkdir()
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+
+    blocks, _ = coordinator.relay_tokens(
+        bus_root, {"t1": [_c39_token_request("RATIFY-FRESH-20260811")]}, {}, 14)
+
+    assert len(blocks) == 1
+    assert "already exists" not in blocks[0] and "⚠" not in blocks[0]
+
+
+def test_a_gate_already_in_the_queue_gets_a_notice_because_the_block_is_never_rewritten(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Both live C27 gates are in this state: presented BEFORE their receipt existed.
+    The daemon does not edit token-queue.md, so the annotation can never reach them —
+    it has to be said on the bus instead."""
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-OLD-20260729", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = bus_root / "tokens" / "token-queue.md"
+    tq.parent.mkdir(parents=True, exist_ok=True)
+    tq.write_text("### RATIFY-OLD-20260729\n\n- [ ] **RATIFY-OLD-20260729** — old\n",
+                  encoding="utf-8")
+
+    blocks, extra = coordinator.relay_tokens(
+        bus_root, {"t1": [_c39_token_request("RATIFY-OLD-20260729")]}, {}, 14)
+
+    assert blocks == [], "already presented — the daemon must not duplicate or rewrite it"
+    spent = [r for r in extra if r.get("check") == "token-gate-looks-spent"]
+    assert len(spent) == 1, extra
+    assert spent[0]["gate_id"] == "RATIFY-OLD-20260729"
+    assert "SURFACE IT TO THE OPERATOR" in spent[0]["detail"]
+
+
+def test_backfill_indexes_only_spent_receipts_for_known_gates(
+        bus_root: Path, tmp_path: Path) -> None:
+    """The one-shot exists so the 55-file / 55.7 MB scan is paid ONCE. Doing it on the
+    45s tick would be a fresh instance of C38, which this same module already carries."""
+    _provision(bus_root, "alice")
+    _append(bus_root / "outbox" / "alice.jsonl", _c39_token_request("RATIFY-REAL-20260729"))
+    source, receipts = tmp_path / "operator", tmp_path / "receipts"
+    source.mkdir()
+    (source / "ratify_real_odd_name.json").write_text(
+        json.dumps({"protocol_id": "p", "status": "ratified",
+                    "human_attestation": "RATIFY-REAL-20260729"}), encoding="utf-8")
+    (source / "still_pending.json").write_text(
+        json.dumps({"status": "pending", "gate": "RATIFY-REAL-20260729"}), encoding="utf-8")
+    (source / "unrelated.json").write_text(
+        json.dumps({"status": "ratified", "about": "SOMETHING-ELSE"}), encoding="utf-8")
+
+    dry = coordinator.backfill_receipts(bus_root, source, receipts, dry_run=True)
+    assert [g for g, _, _ in dry] == ["RATIFY-REAL-20260729"]
+    assert not receipts.exists(), "--dry-run must write nothing"
+
+    coordinator.backfill_receipts(bus_root, source, receipts)
+    found = coordinator.spent_receipt_for("RATIFY-REAL-20260729", receipts)
+    assert found is not None and found[1] == "ratified"
+    indexed = json.loads((receipts / "RATIFY-REAL-20260729.json").read_text())
+    assert indexed["receipt"].endswith("ratify_real_odd_name.json"), \
+        "a POINTER, not a copy — an operator signature must not get a second source of truth"
+
+
+def test_a_spent_gate_notice_is_not_mislabelled_as_never_presented(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The regression C39 could easily have introduced. The inbox-notice loop used to
+    consume EVERY advisory row carrying a gate_id and label it
+    `token-request-not-presented` — true while `token-prevalidation` was the only such
+    row. A "looks already signed" row rendered as "was never presented" would send the
+    coordinator to chase a gate that is sitting in the queue, unchecked, right now.
+    """
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-OLD-20260729", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    _provision(bus_root, "alice", "coordinator-agent")
+    _append(bus_root / "outbox" / "alice.jsonl", _c39_token_request("RATIFY-OLD-20260729"))
+    # ...and an unvalidated request, which IS the C33 "never presented" case.
+    unvalidated = _c39_token_request("RATIFY-UNVALIDATED-20260811")
+    unvalidated["payload"]["validated"] = {}
+    _append(bus_root / "outbox" / "alice.jsonl", unvalidated)
+    tq = bus_root / "tokens" / "token-queue.md"
+    tq.parent.mkdir(parents=True, exist_ok=True)
+    tq.write_text("- [ ] **RATIFY-OLD-20260729** — presented earlier\n", encoding="utf-8")
+
+    coordinator.relay_token_blocks(bus_root, _load_bus_config(bus_root), 14)
+
+    notices = {(r.get("payload") or {}).get("event"): (r.get("payload") or {})
+               for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event")}
+    assert notices["token-gate-looks-spent"]["gate_id"] == "RATIFY-OLD-20260729"
+    assert "IS in token-queue.md" in notices["token-gate-looks-spent"]["action"]
+    assert notices["token-request-not-presented"]["gate_id"] == "RATIFY-UNVALIDATED-20260811"
+    assert "is NOT in token-queue.md" in notices["token-request-not-presented"]["action"]
+
+
+def _load_bus_config(bus_root: Path) -> dict:
+    return coordinator._load_config(bus_root)
+
+
+def test_backfill_check_catches_a_signed_gate_with_no_keyed_receipt(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """C39's write side is a CONVENTION, not a mechanism. Measured 2026-08-11: 2 of 24
+    `ratify_*.sh` scripts write `receipts/<GATE_ID>.json` at `--attest` time. The other
+    22 are each one forgotten copy-paste from re-creating C39 for their gate, and
+    nothing would say so — the relay would simply present a signed gate as pending
+    again. `--check` catches that whichever script signed it, so the guarantee stops
+    depending on the next author remembering 14 lines.
+    """
+    _provision(bus_root, "alice")
+    _append(bus_root / "outbox" / "alice.jsonl", _c39_token_request("RATIFY-SIGNED-20260811"))
+    # cmd_backfill_receipts derives its source from REPO_ROOT/artifacts/operator,
+    # so the fixture has to sit where the command will actually look.
+    source = tmp_path / "artifacts" / "operator"
+    receipts = source / "receipts"
+    source.mkdir(parents=True)
+    (source / "ratify_signed.json").write_text(
+        json.dumps({"status": "ratified", "human_attestation": "RATIFY-SIGNED-20260811"}),
+        encoding="utf-8")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(coordinator, "_read_epoch", lambda *_a, **_k: 14)
+
+    args = coordinator.build_parser().parse_args(
+        ["--bus-root", str(bus_root), "backfill-receipts", "--check"])
+    capsys.readouterr()
+    assert coordinator.cmd_backfill_receipts(args) == 1, "drift must FAIL, not merely report"
+    out = capsys.readouterr().out
+    assert "RATIFY-SIGNED-20260811" in out and "no keyed receipt" in out
+    assert not receipts.exists(), "--check must not silently repair what it is checking for"
+
+    # Indexed -> clean, exit 0. Without this the check passes by always failing.
+    coordinator.backfill_receipts(bus_root, source, receipts)
+    capsys.readouterr()
+    assert coordinator.cmd_backfill_receipts(args) == 0
+    clean = capsys.readouterr().out
+    assert "index is current" in clean
+    # The success line must state its SCOPE. This check derives its gate set from
+    # token-requests in the bus outboxes, so it cannot see a receipt for a gate the
+    # bus never carried — `auditor` measured three such gates on 2026-08-11 while
+    # this printed a clean verdict. A pass that reads as an all-clear for something
+    # it never examined is the fail-open shape C39 itself was.
+    assert "gates the bus has seen" in clean
+    assert "check_ratifier_receipt_contract.sh" in clean, \
+        "name the check that covers the other half, or the gap is invisible again"
+
+
+# ----------------------------------------------------------------------- C40
+#
+# When the daemon came back from its 243h outage it relayed 703 messages in one
+# burst. mainA and mainB, spawned minutes earlier, drained that backlog and BOTH
+# self-assigned `p2-5l-stack-numa-doc-debt` — work auditor had completed on
+# 2026-07-29 as ae40ee8b. Nothing was delivered wrongly (that is C28's subject);
+# the delivery was correct and the AGE was invisible. `ts` sits inside each JSON
+# body and nowhere else, so a session with no history cannot tell this minute's
+# assignment from twelve-day-old mail, and both read as instructions.
+
+def _aged_msg(hours: float, *, task: str, sender: str = "bob") -> dict:
+    stamp = datetime.now(timezone.utc) - timedelta(hours=hours)
+    # A schema-VALID task-assign: the C34 validator refuses a thin one, and a fixture
+    # that could not survive `validate_row` would not prove anything about drained rows.
+    return {"schema_version": bus.MSG_SCHEMA_VERSION,
+            "id": f"msg-20260811T100000Z-{int(hours)}-{sender}", "ts": stamp.isoformat(),
+            "from": sender, "to": "alice", "kind": "task-assign", "task_id": task,
+            "payload": {"lane": "none", "lease_expires_ts": stamp.isoformat(), "epoch": 14}}
+
+
+def test_drain_flags_a_stale_relayed_backlog_on_stderr(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The incident, reproduced. The old assignment must be called out; the fresh
+    one must not, or the warning is noise and stops being read."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "alice.jsonl",
+            _aged_msg(24 * 12 + 3, task="p2-5l-stack-numa-doc-debt", sender="auditor"))
+    _append(bus_root / "inbox" / "alice.jsonl", _aged_msg(0, task="live-work"))
+    capsys.readouterr()
+
+    assert bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"]) == 0
+    err = capsys.readouterr().err
+
+    assert "1 of 2 message(s) are OLDER THAN 24h" in err
+    assert "p2-5l-stack-numa-doc-debt" in err and "12.1d old" in err
+    assert "live-work" not in err, "a current message must not be flagged"
+
+
+def test_drain_keeps_stdout_as_clean_jsonl(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The constraint that decided WHERE the signal goes. Stdout is JSONL and
+    consumers parse it; the msg schema sets additionalProperties: false, so
+    decorating the rows would make anything that re-validates a drained row start
+    failing — the exact class of defect C34 was."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "alice.jsonl", _aged_msg(24 * 30, task="ancient"))
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"])
+    out = capsys.readouterr().out
+
+    rows = [json.loads(line) for line in out.splitlines() if line.strip()]
+    assert len(rows) == 1
+    for row in rows:
+        bus.validate_row(bus_root, row, "msg")      # still schema-valid, undecorated
+
+
+def test_drain_says_nothing_when_everything_is_current(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The compliant path. A banner on every drain trains the reader to skip it,
+    which is how the real one gets missed."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "alice.jsonl", _aged_msg(1, task="recent"))
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"])
+    assert "OLDER THAN" not in capsys.readouterr().err
+
+
+def test_stale_threshold_is_tunable_and_a_broken_ts_is_never_a_verdict(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "alice.jsonl", _aged_msg(2, task="two-hours-old"))
+    torn = _aged_msg(99, task="unparseable")
+    torn["ts"] = "not a timestamp"
+    _append(bus_root / "inbox" / "alice.jsonl", torn)
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice",
+              "--stale-after-h", "1"])
+    err = capsys.readouterr().err
+    assert "two-hours-old" in err
+    # A ts it cannot read is reported as neither fresh nor stale — inventing an age
+    # would be a claim the record does not support.
+    assert "unparseable" not in err
+    assert bus.message_age_h({"ts": "not a timestamp"}) is None
+
+
+def test_triage_marks_a_stale_item_without_touching_the_fence_digest(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The age goes on the `via:` line, NOT inside `body`. The fence's byte count and
+    sha256 are computed over `body` so a downstream truncation is provable; decorating
+    the body would force the digest to cover text the sender never wrote."""
+    _provision(bus_root, *AGENTS)
+    old = _aged_msg(24 * 12, task="stale-routed")
+    old["needs_routing_to"] = ["alice"]
+    old["action_required"] = True
+    _append(bus_root / "outbox" / "bob.jsonl", old)
+    capsys.readouterr()
+
+    bus.print_triage(bus_root, "alice")
+    out = capsys.readouterr().out
+
+    assert "DAYS OLD" in out
+    fenced = out.split("--- BEGIN", 1)[1]
+    body = fenced.split("\n{", 1)[1]
+    body = "{" + body.split("\n--- END", 1)[0]
+    assert "DAYS OLD" not in body, "the integrity-covered body must be the sender's bytes"
+    assert json.loads(body)["task_id"] == "stale-routed"
+
+
+# ----------------------------------------------------------------------- C23
+#
+# Clearing triage took one `corr_id` per item, so a session holding ONE answer for
+# N routed items had no compliant way to send it once. BUS_PROTOCOL.md told authors
+# to "write it once and reference it" while no mechanism to reference it existed —
+# the rule was not performable. Measured 2026-07-29 from a careful main: 3
+# byte-identical payloads at 17:41Z, 6 more at 17:44Z differing only in `corr_id`.
+# Nine in ten minutes, hours after the discipline rule was codified. Two failures
+# in ten minutes is the rule being the defect, not the sender.
+
+def _routed(msg_id: str, task: str, sender: str = "bob") -> dict:
+    return {"schema_version": bus.MSG_SCHEMA_VERSION, "id": msg_id,
+            "ts": "2026-08-11T10:00:00+00:00", "from": sender, "to": "alice",
+            "kind": "finding", "task_id": task,
+            "needs_routing_to": ["alice"], "action_required": True}
+
+
+def test_one_row_can_disposition_many_routed_items(bus_root: Path) -> None:
+    """The fix. One answer, one row, N ids cleared."""
+    _provision(bus_root, *AGENTS)
+    ids = [f"msg-20260811T10000{i}Z-{i}-bob" for i in range(3)]
+    for i, mid in enumerate(ids):
+        _append(bus_root / "inbox" / "alice.jsonl", _routed(mid, f"task-{i}"))
+    assert len(bus.routed_view(bus_root, "alice")["pending"]) == 3
+
+    _append(bus_root / "outbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T110000Z-9-alice",
+        "ts": "2026-08-11T11:00:00+00:00", "from": "alice", "to": "bob", "kind": "ack",
+        "corr_ids": ids, "payload": {"disposition": "done", "note": "all three superseded"}})
+
+    view = bus.routed_view(bus_root, "alice")
+    assert view["pending"] == [] and view["acked_awaiting_action"] == []
+
+
+def test_the_scalar_corr_id_still_works_unchanged(bus_root: Path) -> None:
+    """Backward compatibility, and the compliant path. This is purely additive: the
+    scalar is still right for a genuinely per-item answer, and every row already on
+    the bus uses it."""
+    _provision(bus_root, *AGENTS)
+    _append(bus_root / "inbox" / "alice.jsonl", _routed("msg-20260811T100000Z-1-bob", "t1"))
+    _append(bus_root / "inbox" / "alice.jsonl", _routed("msg-20260811T100001Z-2-bob", "t2"))
+
+    _append(bus_root / "outbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T110000Z-9-alice",
+        "ts": "2026-08-11T11:00:00+00:00", "from": "alice", "to": "bob", "kind": "ack",
+        "corr_id": "msg-20260811T100000Z-1-bob", "payload": {"disposition": "done"}})
+
+    pending = bus.routed_view(bus_root, "alice")["pending"]
+    assert [bus.logical_id(e["row"]) for e in pending] == ["msg-20260811T100001Z-2-bob"], \
+        "one scalar disposition must clear exactly one item — no wider, no narrower"
+
+
+def test_corr_ids_clears_only_what_it_lists(bus_root: Path) -> None:
+    """The direction that would make this dangerous. 'Bulk' must not mean 'all'."""
+    _provision(bus_root, *AGENTS)
+    ids = [f"msg-20260811T10000{i}Z-{i}-bob" for i in range(3)]
+    for i, mid in enumerate(ids):
+        _append(bus_root / "inbox" / "alice.jsonl", _routed(mid, f"task-{i}"))
+
+    _append(bus_root / "outbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T110000Z-9-alice",
+        "ts": "2026-08-11T11:00:00+00:00", "from": "alice", "to": "bob", "kind": "ack",
+        "corr_ids": ids[:2], "payload": {"disposition": "done"}})
+
+    pending = bus.routed_view(bus_root, "alice")["pending"]
+    assert [bus.logical_id(e["row"]) for e in pending] == [ids[2]]
+
+
+def test_a_bare_bulk_ack_is_receipt_not_action(bus_root: Path) -> None:
+    """The bulk form must not become a loophole around the rule it sits inside: an
+    `action_required` message KEEPS APPEARING after a bare ack, because
+    acknowledgement is receipt, not action. Bulk changes the arity, not the semantics.
+    """
+    _provision(bus_root, *AGENTS)
+    ids = [f"msg-20260811T10000{i}Z-{i}-bob" for i in range(2)]
+    for i, mid in enumerate(ids):
+        _append(bus_root / "inbox" / "alice.jsonl", _routed(mid, f"task-{i}"))
+
+    _append(bus_root / "outbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T110000Z-9-alice",
+        "ts": "2026-08-11T11:00:00+00:00", "from": "alice", "to": "bob", "kind": "ack",
+        "corr_ids": ids, "payload": {"seen": True}})          # no disposition
+
+    view = bus.routed_view(bus_root, "alice")
+    assert view["pending"] == []
+    assert len(view["acked_awaiting_action"]) == 2, "bare acks are receipt, in bulk too"
+
+
+def test_corr_ids_is_schema_valid_and_typed(bus_root: Path) -> None:
+    base = {"schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T110000Z-1-alice",
+            "ts": "2026-08-11T11:00:00+00:00", "from": "alice", "to": "bob", "kind": "ack"}
+    bus.validate_row(LIVE_BUS_ROOT, {**base, "corr_ids": ["a", "b"]}, "msg")
+    for bad in ([], ["a", "a"], [""], [1], "not-a-list"):
+        with pytest.raises(bus.BusError):
+            bus.validate_row(LIVE_BUS_ROOT, {**base, "corr_ids": bad}, "msg")
+
+
+def test_the_triage_trailer_advertises_the_bulk_form_when_it_is_needed(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The previous instruction implied one row per item was the only way, which is
+    how someone following it correctly sent nine identical payloads in ten minutes."""
+    _provision(bus_root, *AGENTS)
+    for i in range(2):
+        _append(bus_root / "inbox" / "alice.jsonl",
+                _routed(f"msg-20260811T10000{i}Z-{i}-bob", f"task-{i}"))
+    capsys.readouterr()
+    bus.print_triage(bus_root, "alice")
+    assert "corr_ids:" in capsys.readouterr().out
+
+    # ...and stays quiet for a single item, where the bulk form is just noise.
+    _provision(bus_root, "coordinator-agent")
+    _append(bus_root / "inbox" / "coordinator-agent.jsonl",
+            {**_routed("msg-20260811T100009Z-9-bob", "solo"), "to": "coordinator-agent",
+             "needs_routing_to": ["coordinator-agent"]})
+    capsys.readouterr()
+    bus.print_triage(bus_root, "coordinator-agent")
+    out = capsys.readouterr().out
+    assert "1 item(s)" in out and "corr_ids:" not in out
+
+
+# ----------------------------------------------------------------- C28 / C38
+#
+# Two defects that turned out to be one defect: both asked "what has this daemon
+# already done" and both answered by re-reading the thing it had acted on.
+#   C28 — relay idempotency was `relayed_src` checked against the RECIPIENT'S
+#     INBOX, so an absent or truncated destination read as "never relayed". The
+#     2026-07-29 roster rename (`git mv inbox/<old> inbox/<new>`) made the running
+#     daemon re-deliver its entire relay history into recreated old-id inboxes.
+#     Generally: any operation that moves, truncates, rotates or restores an inbox.
+#   C38 — `already_flagged` re-read advisory.jsonl in full every 45s. Measured:
+#     1,028 MiB / 3,001,866 rows parsed per tick to rebuild a set of 637 pairs.
+
+def _relayed_into(root: Path, agent: str, src: str) -> None:
+    _append(root / "inbox" / f"{agent}.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": f"msg-20260811T120000Z-9-{agent}",
+        "ts": "2026-08-11T12:00:00+00:00", "from": "bob", "to": agent, "kind": "status",
+        "relayed_src": src})
+
+
+def test_moving_an_inbox_no_longer_re_floods_it(bus_root: Path) -> None:
+    """C28's exact trigger, reproduced. The rename is not the only one — this is
+    every move, truncate, rotate or restore."""
+    _provision(bus_root, "alice")
+    _relayed_into(bus_root, "alice", "msg-20260728T090000Z-1-bob")
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+
+    state = coordinator.load_relay_state(bus_root, ["alice"])
+    assert state["bootstrapped"] is True
+    assert state["delivered"]["alice"] == {"msg-20260728T090000Z-1-bob"}
+    coordinator.save_relay_state(bus_root, state)
+
+    # The destructive operation: the inbox is moved away and recreated empty.
+    (bus_root / "inbox" / "alice.jsonl").write_text("", encoding="utf-8")
+
+    after = coordinator.load_relay_state(bus_root, ["alice"])
+    assert after["bootstrapped"] is False
+    assert after["delivered"]["alice"] == {"msg-20260728T090000Z-1-bob"}, \
+        "the ledger, not the destination file, is what remembers the delivery"
+
+
+def test_a_missing_ledger_degrades_to_the_old_behaviour_not_to_a_re_flood(
+        bus_root: Path) -> None:
+    """The fail-safe direction, and the reason bootstrap reads the inboxes. A lost
+    or corrupt ledger must fall back to reading what is ACTUALLY THERE — today's
+    semantics — rather than to an empty set, which would re-deliver everything."""
+    _provision(bus_root, "alice")
+    _relayed_into(bus_root, "alice", "msg-20260728T090000Z-1-bob")
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+
+    for corrupt in ("", "{not json", json.dumps({"schema_version": "session_bus.relay_state.v99"})):
+        (bus_root / "relay_state.json").write_text(corrupt, encoding="utf-8")
+        state = coordinator.load_relay_state(bus_root, ["alice"])
+        assert state["bootstrapped"] is True, corrupt[:20]
+        assert state["delivered"]["alice"] == {"msg-20260728T090000Z-1-bob"}, \
+            "a torn ledger must never read as 'nothing was ever delivered'"
+
+
+def test_flagged_pairs_survive_without_re_reading_the_advisory(bus_root: Path) -> None:
+    """C38. Once the ledger exists the advisory is not read at all — which is the
+    whole point, since it is 1,028 MiB and the answer is 637 pairs."""
+    _provision(bus_root, "alice")
+    _append(bus_root / "advisory.jsonl",
+            {"relayed_src": "msg-1", "unreachable": "schema-invalid"})
+    _append(bus_root / "advisory.jsonl",
+            {"relayed_src": "msg-2", "unreachable": "handler:relay_tokens"})
+
+    state = coordinator.load_relay_state(bus_root, ["alice"])
+    assert state["flagged"] == {("msg-1", "schema-invalid"), ("msg-2", "handler:relay_tokens")}
+    coordinator.save_relay_state(bus_root, state)
+
+    # Truncating the advisory must not resurrect the flags — they are the daemon's
+    # own record now, in a place a rotation cannot erase.
+    (bus_root / "advisory.jsonl").write_text("", encoding="utf-8")
+    after = coordinator.load_relay_state(bus_root, ["alice"])
+    assert after["flagged"] == state["flagged"]
+    assert after["bootstrapped"] is False
+
+
+def test_relay_persists_the_ledger_and_stays_idempotent_across_ticks(
+        bus_root: Path) -> None:
+    """End to end, and the compliant path: a second tick over the same outbox must
+    deliver NOTHING new — that is the property C28 exists to protect, and 'never
+    re-flood' is trivially satisfied by never delivering at all."""
+    _provision(bus_root, "alice", "bob", "coordinator-agent")
+    _append(bus_root / "outbox" / "bob.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T120000Z-1-bob",
+        "ts": "2026-08-11T12:00:00+00:00", "from": "bob", "to": "alice", "kind": "status",
+        "payload": {"detail": "hello"}})
+    config = coordinator._load_config(bus_root)
+    roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
+
+    coordinator.relay_outbox_messages(bus_root, roster, 14, config)
+    first = _read_jsonl(bus_root / "inbox" / "alice.jsonl")
+    assert len(first) == 1 and first[0]["relayed_src"] == "msg-20260811T120000Z-1-bob", \
+        "the message must actually be delivered — this is the direction that matters"
+    assert (bus_root / "relay_state.json").exists()
+
+    coordinator.relay_outbox_messages(bus_root, roster, 14, config)
+    assert _read_jsonl(bus_root / "inbox" / "alice.jsonl") == first, "second tick must be a no-op"
+
+
+def _daemon_hb(root: Path, pid: int, age_s: float) -> None:
+    path = root / "heartbeats" / f"{bus.COORDINATOR_DAEMON}.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"agent": bus.COORDINATOR_DAEMON, "pid": pid,
+                                "state": "working", "epoch": 14}), encoding="utf-8")
+    stamp = time.time() - age_s
+    os.utime(path, (stamp, stamp))
+
+
+def test_drain_warns_every_agent_when_the_daemon_is_not_serving(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """C37's second half. The identity and freshness checks fixed the REPORT, but the
+    report was pull-only and for 243 hours nobody pulled — and the supervisor that
+    would have noticed was dead too. Every agent runs `drain` at every task boundary,
+    so the check runs there: the outage becomes visible within ONE boundary.
+    """
+    _provision(bus_root, *AGENTS)
+    _daemon_hb(bus_root, 999_999_999, age_s=10)          # dead pid
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"])
+    err = capsys.readouterr().err
+    assert "COORDINATOR-DAEMON IS NOT SERVING" in err
+    assert "does not exist" in err
+
+
+def test_the_warning_fires_on_an_EMPTY_drain_too(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The case that matters most, and the one an early return would have missed:
+    '(no new messages)' is exactly what a dead relay looks like from inside an
+    agent — an all-clear that is really a silence."""
+    _provision(bus_root, *AGENTS)
+    _daemon_hb(bus_root, 999_999_999, age_s=10)
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"])
+    captured = capsys.readouterr()
+    assert "(no new messages for alice)" in captured.out
+    assert "COORDINATOR-DAEMON IS NOT SERVING" in captured.err
+
+
+def test_a_wedged_daemon_holding_its_pid_is_not_serving(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Alive is not the same as serving. A wedged daemon keeps its pid and stops
+    ticking, which is indistinguishable from healthy if you only check the pid."""
+    _provision(bus_root, *AGENTS)
+    monkeypatch.setattr(bus, "daemon_argv", lambda _p: "python session_bus_coordinator.py run")
+    _daemon_hb(bus_root, os.getpid(), age_s=876_736)     # ten days
+    ok, why = bus.daemon_is_serving(bus_root)
+    assert ok is False and "WEDGED" in why
+
+
+def test_a_healthy_daemon_is_silent(bus_root: Path, monkeypatch: pytest.MonkeyPatch,
+                                    capsys: pytest.CaptureFixture[str]) -> None:
+    """The compliant path, and the one that decides whether the warning gets read at
+    all: a banner on every drain trains the fleet to skip it."""
+    _provision(bus_root, *AGENTS)
+    monkeypatch.setattr(bus, "daemon_argv", lambda _p: "python session_bus_coordinator.py run")
+    _daemon_hb(bus_root, os.getpid(), age_s=12)
+    capsys.readouterr()
+
+    bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"])
+    assert "NOT SERVING" not in capsys.readouterr().err
+    ok, _ = bus.daemon_is_serving(bus_root)
+    assert ok is True
+
+
+def test_a_recycled_pid_is_not_a_serving_daemon(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The agent-side copy must carry the identity check too, or it reports every
+    recycled pid as a healthy bus."""
+    _provision(bus_root, *AGENTS)
+    _daemon_hb(bus_root, 1, age_s=10)                    # pid 1 is /sbin/init
+    ok, why = bus.daemon_is_serving(bus_root)
+    if Path("/proc/1/cmdline").exists():
+        assert ok is False and "recycled" in why
+
+
+def test_an_always_refused_nudge_eventually_escalates(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """R1's second half, and the fail-open that hid the first. `last_nudge_ts` and
+    `last_nudge_sig` are written ONLY on rc == 0, and the stuck-refusing-drain
+    escalation is gated on `last_nudge_sig` — so an agent whose nudges are ALWAYS
+    refused could never escalate, however long it stayed unreachable. The one path
+    that reported it was an advisory row, and advisory.jsonl has no reader. Measured
+    2026-08-11: 1,903 refusals accumulated while the whole fleet sat unreachable and
+    nothing escalated. That is the C3/C6/C8 shape inside the escalation path itself.
+    """
+    _provision(bus_root, "alice", "coordinator-agent")
+    _append(bus_root / "inbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T120000Z-1-bob",
+        "ts": "2026-08-11T12:00:00+00:00", "from": "bob", "to": "alice", "kind": "status",
+        "payload": {"x": 1}})
+    _heartbeat(bus_root, "alice", "idle")
+    roster = [{"id": "alice", "role": "main", "endpoint": "tmux:agent:alice"},
+              {"id": "coordinator-agent", "role": "coordinator",
+               "endpoint": "tmux:agent:coordinator-agent"}]
+    monkeypatch.setattr(coordinator, "_STUCK_ESCALATION_INTERVAL_S", 1.0)
+    monkeypatch.setattr(coordinator, "_STUCK_REFUSAL_RETRY_S", 0.0)
+
+    refused = lambda *_a, **_k: (2, "REFUSING: heartbeat is 40000s stale (> 900s)")
+    # pane_fn -> (active, detail); False means "not generating", so proceed.
+    alive = lambda *_a, **_k: (False, "pane quiet 1200s, settled at its prompt")
+
+    # The clock must ADVANCE between ticks: escalation is gated on how long the
+    # agent has been unreachable, which is the property under test.
+    base = time.time() + 7200
+    seen = []
+    for tick in range(3):
+        seen += coordinator.resolve_stuck_agents(
+            bus_root, roster, 14, nudge_fn=refused, pane_fn=alive,
+            now=base + tick * 60)
+
+    kinds = [r.get("kind") for r in seen]
+    assert "stuck-nudge-refused" in kinds, "the refusal itself is still recorded"
+    assert "stuck-unreachable" in kinds, \
+        "a guard refusing forever must ESCALATE — refusal is not the system working"
+
+    notice = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+              if (r.get("payload") or {}).get("event") == "stuck-unreachable"]
+    assert notice, "advisory.jsonl has no reader — the escalation must reach an inbox"
+    assert notice[0]["payload"]["agent"] == "alice"
+    assert "R1 deadlock" in notice[0]["payload"]["action"]
+
+
+def test_a_successful_nudge_does_not_escalate(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The compliant path. Escalating on a nudge that worked would train the
+    coordinator to ignore the notice, which is how the real one gets missed."""
+    _provision(bus_root, "alice", "coordinator-agent")
+    _append(bus_root / "inbox" / "alice.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION, "id": "msg-20260811T120000Z-1-bob",
+        "ts": "2026-08-11T12:00:00+00:00", "from": "bob", "to": "alice", "kind": "status",
+        "payload": {"x": 1}})
+    _heartbeat(bus_root, "alice", "idle")
+    roster = [{"id": "alice", "role": "main", "endpoint": "tmux:agent:alice"},
+              {"id": "coordinator-agent", "role": "coordinator",
+               "endpoint": "tmux:agent:coordinator-agent"}]
+
+    seen = coordinator.resolve_stuck_agents(
+        bus_root, roster, 14, nudge_fn=lambda *_a, **_k: (0, "sent"),
+        pane_fn=lambda *_a, **_k: (False, "pane quiet, settled at its prompt"),
+        now=time.time() + 7200)
+
+    assert "stuck-nudged" in [r.get("kind") for r in seen]
+    assert "stuck-unreachable" not in [r.get("kind") for r in seen]
+    assert not [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+                if (r.get("payload") or {}).get("event") == "stuck-unreachable"]
+
+
+# ------------------------------------------------------------------------- R2
+#
+# F1: a day of commits with nothing written to progress/<YYYY-MM>/<today>.md is
+# invisible to the operator — the dashboard counts checkbox state, so
+# committed-but-unlogged work reads as a day where nothing happened. Measured
+# 2026-08-11: open went 1283 -> 1293 while done went 2274 -> 2294 and the board
+# looked flat. The report specifying this flagged it as the proposal MOST at risk
+# of fail-open, with three silent-pass paths, and said build it fail-closed or not
+# at all. These tests are that requirement.
+
+def _git_repo(tmp_path: Path, commit_iso: str) -> Path:
+    import subprocess as sp
+    root = tmp_path / "repo"
+    (root / "progress").mkdir(parents=True)
+    sp.run(["git", "init", "-q", str(root)], check=True)
+    for k, v in (("user.email", "t@t"), ("user.name", "t")):
+        sp.run(["git", "-C", str(root), "config", k, v], check=True)
+    (root / "f.txt").write_text("x", encoding="utf-8")
+    sp.run(["git", "-C", str(root), "add", "f.txt"], check=True)
+    sp.run(["git", "-C", str(root), "commit", "-q", "-m", "c"], check=True,
+           env={**os.environ, "GIT_AUTHOR_DATE": commit_iso, "GIT_COMMITTER_DATE": commit_iso})
+    return root
+
+
+def test_r2_fails_closed_when_git_cannot_be_read(bus_root: Path, tmp_path: Path) -> None:
+    """Silent-pass path 1. An unreadable git is NOT 'no commits' — reporting it as
+    clean is precisely the fail-open this was built to avoid."""
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=tmp_path / "not-a-repo")
+    assert len(rows) == 1
+    assert rows[0]["check"] == "progress-log-check-skipped"
+    assert rows[0]["kind"] == "defect", "must be a defect kind — that is what reaches the operator"
+    assert "not a clean one" in rows[0]["detail"]
+
+
+def test_r2_fails_closed_when_the_progress_directory_is_missing(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Silent-pass path 2. A missing directory is a LOUDER defect than a stale file,
+    not a quieter one."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", tmp_path / "absent")
+    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "does not exist" in rows[0]["detail"]
+
+
+def test_r2_fails_closed_when_todays_file_is_missing(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Silent-pass path 3, and the one most likely to be written wrong: an absent
+    file is the DEFECT, never 'nothing due'."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "does not exist" in rows[0]["detail"] and "not\n" not in rows[0]["detail"]
+
+
+def test_r2_flags_commits_that_landed_after_the_last_entry(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The defect itself: work landing while the log stands still."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    stamp = datetime.fromtimestamp(now, timezone.utc)
+    entry = root / "progress" / f"{stamp:%Y-%m}" / f"{stamp:%Y-%m-%d}.md"
+    entry.parent.mkdir(parents=True)
+    entry.write_text("# today\n", encoding="utf-8")
+    old = now - 6 * 3600
+    os.utime(entry, (old, old))
+
+    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert rows[0]["stale_h"] >= 4.0
+    assert "reads to the operator as a day where nothing happened" in rows[0]["detail"]
+
+
+def test_r2_is_silent_when_the_log_is_current(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The compliant path. A check that fires on a well-run day trains the reader to
+    ignore it, which is how the real one gets missed."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now - 3600, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    stamp = datetime.fromtimestamp(now, timezone.utc)
+    entry = root / "progress" / f"{stamp:%Y-%m}" / f"{stamp:%Y-%m-%d}.md"
+    entry.parent.mkdir(parents=True)
+    entry.write_text("# today\n", encoding="utf-8")     # written now, after the commit
+
+    assert coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root) == []
+
+
+def test_r2_is_silent_on_a_day_with_no_commits(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The ONE clean exit, and it is keyed on POSITIVE evidence — a commit timestamp
+    older than today — never on something being unreadable. Nothing is owed for a day
+    nobody worked."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now - 4 * 86400, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    assert coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root) == []
+
+
+def test_r2_never_writes_the_thing_it_checks(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A checker that fixes what it checks for cannot be trusted to report — the rule
+    --audit-guards and backfill-receipts --check already follow."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    before = sorted(p.name for p in (root / "progress").rglob("*"))
+    coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert sorted(p.name for p in (root / "progress").rglob("*")) == before
+
+
+def test_r2_defect_kind_reaches_the_operator_path_without_new_code() -> None:
+    """The reason this is a `defect` and not a bespoke kind: `defect` is already in
+    _OPERATOR_ITEM_KINDS, so an unpresented one reaches token-queue.md on the C20
+    timer with no new escalation code."""
+    assert "defect" in coordinator._OPERATOR_ITEM_KINDS
+
+
+def test_r2_delivers_into_an_inbox_not_only_advisory(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """R2 CORRECTION, same day, caught by the operator. This first shipped emitting
+    the advisory row only, reasoning that `defect` is in _OPERATOR_ITEM_KINDS and
+    would reach token-queue.md on the C20 timer for free. Wrong: `_is_operator_item`
+    is applied to OUTBOX and INBOX rows, never advisory rows — so the notice went to
+    advisory.jsonl and stopped. That is the C33 shape, quoted twice the same day
+    while building this.
+    """
+    _provision(bus_root, "alice", "coordinator-agent")
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+
+    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert rows and rows[0]["check"] == "progress-log-stale"
+
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event") == "progress-log-stale"]
+    assert notices, "the defect must reach a queue somebody drains"
+    assert "invisible to the operator" in notices[0]["payload"]["action"]
+
+
+def test_r2_does_not_re_deliver_the_same_day_every_tick(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A 45s tick must not turn a true finding into the advisory flood C34 measured.
+    Deduped against the coordinator's own inbox — the notice's durable trace."""
+    _provision(bus_root, "alice", "coordinator-agent")
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+
+    for _ in range(5):
+        coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event") == "progress-log-stale"]
+    assert len(notices) == 1, f"one notice per day, got {len(notices)}"
+
+
+def test_r2_delivery_failure_never_breaks_the_tick(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Reporting must not be able to take the daemon down. A check that can break the
+    tick is worse than a missed notice."""
+    now = time.time()
+    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
+    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    monkeypatch.setattr(coordinator, "_append_inbox",
+                        lambda *_a, **_k: (_ for _ in ()).throw(OSError("disk full")))
+
+    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    assert rows and rows[0]["check"] == "progress-log-stale", \
+        "the advisory row still comes back even when delivery fails"
+
+
+def test_advisory_rotates_once_it_passes_the_bound(bus_root: Path) -> None:
+    """advisory.jsonl reached 1,041 MiB / 3,003,126 rows with nothing rotating it."""
+    live = bus_root / "advisory.jsonl"
+    live.write_text("x" * 2048, encoding="utf-8")
+
+    assert coordinator.rotate_advisory(bus_root, 14, max_bytes=10_000) == [], \
+        "under the bound is a no-op"
+
+    rows = coordinator.rotate_advisory(bus_root, 14, max_bytes=1024)
+    assert rows and rows[0]["kind"] == "advisory-rotated"
+    assert (bus_root / "advisory_1.jsonl").exists(), "renamed, never truncated"
+    assert live.exists() and live.stat().st_size == 0, "a fresh live file takes over"
+
+    (bus_root / "advisory.jsonl").write_text("y" * 2048, encoding="utf-8")
+    coordinator.rotate_advisory(bus_root, 14, max_bytes=1024)
+    assert (bus_root / "advisory_2.jsonl").exists(), "shards number upward"
+
+
+def test_bootstrap_reads_every_shard_or_rotation_re_floods(bus_root: Path) -> None:
+    """The hazard rotation introduces, and the reason C28 had to land first. A
+    bootstrap that read only the live file would lose every flag raised before the
+    last rotation and re-flag all of them — turning housekeeping into the C34 flood
+    it was meant to prevent."""
+    _provision(bus_root, "alice")
+    _append(bus_root / "advisory.jsonl", {"relayed_src": "old-1", "unreachable": "schema-invalid"})
+    coordinator.rotate_advisory(bus_root, 14, max_bytes=1)
+    _append(bus_root / "advisory.jsonl", {"relayed_src": "new-1", "unreachable": "schema-invalid"})
+
+    state = coordinator.load_relay_state(bus_root, ["alice"])
+    assert state["bootstrapped"] is True
+    assert ("old-1", "schema-invalid") in state["flagged"], \
+        "a flag in a ROTATED shard must survive — otherwise it is re-flagged forever"
+    assert ("new-1", "schema-invalid") in state["flagged"]
+
+
+def test_rotation_failure_never_stops_the_tick(bus_root: Path,
+                                               monkeypatch: pytest.MonkeyPatch) -> None:
+    """Housekeeping must not be able to take delivery down."""
+    (bus_root / "advisory.jsonl").write_text("x" * 4096, encoding="utf-8")
+    monkeypatch.setattr(Path, "rename",
+                        lambda *_a, **_k: (_ for _ in ()).throw(OSError("read-only fs")))
+    rows = coordinator.rotate_advisory(bus_root, 14, max_bytes=1024)
+    assert rows and rows[0]["kind"] == "advisory-rotation-failed"
+
+
+def test_c39_advice_never_instructs_an_agent_across_the_trust_boundary(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """C39-advice, 2026-08-11, raised by `coordinator-agent` against my own tooling.
+
+    The notice used to say "verify the receipt, then tick or remove the block
+    yourself". That instructs the ONE action the coordinator is specifically
+    forbidden to take: token-queue.md's header reserves the checkbox to the operator
+    ("Nobody but the operator touches a checkbox") and agents/coordinator-agent.md
+    says "Never tick a checkbox". A coordinator following its own tooling would have
+    breached the human-only boundary — and the advice is persuasive precisely
+    because it comes from the delivery plane. Tooling that contradicts the trust
+    boundary is worse than tooling with a wrong number in it.
+
+    Removing is not the safe alternative either: the block plus its unticked box is
+    the only in-file record that a gate was PRESENTED; the receipt records only the
+    signing.
+
+    Asserted against the PRODUCED NOTICE, not the module source: the source
+    legitimately quotes the old wording to explain the defect, and a guard that
+    forbids its own documentation is the guard-forbids-its-own-idiom trap.
+    """
+    _provision(bus_root, "alice", "coordinator-agent")
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-OLD-20260729", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = bus_root / "tokens" / "token-queue.md"
+    tq.parent.mkdir(parents=True, exist_ok=True)
+    tq.write_text("- [ ] **RATIFY-OLD-20260729** — presented earlier\n", encoding="utf-8")
+    _append(bus_root / "outbox" / "alice.jsonl", _c39_token_request("RATIFY-OLD-20260729"))
+
+    _, extra = coordinator.relay_tokens(
+        bus_root, {"t1": [_c39_token_request("RATIFY-OLD-20260729")]}, {}, 14)
+    coordinator.relay_token_blocks(bus_root, coordinator._load_config(bus_root), 14)
+
+    texts = [str(r.get("detail", "")) for r in extra if r.get("check") == "token-gate-looks-spent"]
+    texts += [str((r.get("payload") or {}).get("action", ""))
+              for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+              if (r.get("payload") or {}).get("event") == "token-gate-looks-spent"]
+    assert texts, "the notice must exist at all"
+    for text in texts:
+        low = text.lower()
+        # POLARITY, not substring. The corrected text legitimately says "do NOT tick
+        # or remove", so a bare substring check fails on the fix itself — the same
+        # trap as a guard forbidding its own documentation. What must hold is that
+        # every mention of ticking is a prohibition.
+        if "tick" in low:
+            assert "do not tick" in low, f"mentions ticking without forbidding it: {text[:140]}"
+        assert "yourself" not in low, f"reads as an instruction to act: {text[:140]}"
+        # ...and it must still name the action that IS permitted. "Do not tick" with
+        # no alternative is how a real signal gets ignored.
+        assert "surface it to the operator" in low, f"no permitted action named: {text[:120]}"
+
+
+# ------------------------------------------------------- C39 deferred half
+#
+# The C39 notice reached coordinator-agent's inbox, which is right, but left the
+# OPERATOR-FACING file misleading on its own terms: six of seven unchecked gates in
+# token-queue.md carried `status: ratified` receipts and nothing in the file said
+# so. A reader of that file alone sees six pending signature requests that are not
+# pending.
+
+def _queue_with(root: Path, *gates: str) -> Path:
+    tq = root / "tokens" / "token-queue.md"
+    tq.parent.mkdir(parents=True, exist_ok=True)
+    tq.write_text("# Operator token queue\n\n" +
+                  "".join(f"### {g}\n\n- [ ] **{g}** — requested\n\n" for g in gates),
+                  encoding="utf-8")
+    return tq
+
+
+def test_spent_gate_notice_names_signed_gates_without_touching_a_checkbox(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """APPEND-ONLY, deliberately narrower than what was proposed. Annotating each
+    block in place means the daemon editing operator-facing content it wrote
+    earlier, right next to checkboxes only the operator may touch. Appending
+    achieves the same thing for a reader and cannot corrupt an existing block."""
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-SIGNED-1", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = _queue_with(bus_root, "RATIFY-SIGNED-1", "RATIFY-GENUINELY-PENDING")
+    before = tq.read_text(encoding="utf-8")
+
+    rows = coordinator.note_spent_gates_in_queue(bus_root, 14)
+
+    assert rows and rows[0]["kind"] == "spent-gate-notice"
+    assert rows[0]["gates"] == ["RATIFY-SIGNED-1"]
+    after = tq.read_text(encoding="utf-8")
+    assert after.startswith(before), "append-only: existing content is byte-identical"
+    assert "RATIFY-SIGNED-1" in after.replace(before, "")
+    assert "RATIFY-GENUINELY-PENDING" not in after.replace(before, ""), \
+        "an unsigned gate must not be named as signed"
+    # The whole point: it states evidence, it never decides.
+    assert "- [x]" not in after, "the daemon must never write a ticked box"
+    assert after.count("- [ ] **RATIFY-SIGNED-1**") == 1, "no checkbox was altered"
+
+
+def test_spent_gate_notice_does_not_repeat_every_tick(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A 45s tick appending the same notice forever is the advisory flood C34
+    measured, aimed at the operator's own file."""
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-SIGNED-1", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = _queue_with(bus_root, "RATIFY-SIGNED-1")
+
+    first = coordinator.note_spent_gates_in_queue(bus_root, 14)
+    for _ in range(4):
+        assert coordinator.note_spent_gates_in_queue(bus_root, 14) == []
+    assert first and tq.read_text(encoding="utf-8").count("Daemon notice") == 1
+
+
+def test_a_newly_spent_gate_gets_a_fresh_corrected_notice(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Dedupe is on the gate SET, not on 'a notice exists'. Keying on mere presence
+    would leave a later-signed gate silently unmentioned — quiet is not the same as
+    correct."""
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-SIGNED-1", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = _queue_with(bus_root, "RATIFY-SIGNED-1", "RATIFY-SIGNED-2")
+    coordinator.note_spent_gates_in_queue(bus_root, 14)
+
+    _write_receipt(receipts, "RATIFY-SIGNED-2", "ratified")     # signed later
+    rows = coordinator.note_spent_gates_in_queue(bus_root, 14)
+    assert rows and rows[0]["gates"] == ["RATIFY-SIGNED-1", "RATIFY-SIGNED-2"]
+    assert tq.read_text(encoding="utf-8").count("Daemon notice") == 2
+
+
+def test_no_notice_when_nothing_is_spent(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The compliant path. A file that gains a daemon block on an ordinary day
+    trains the operator to skim past it."""
+    receipts = tmp_path / "receipts"
+    receipts.mkdir()
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = _queue_with(bus_root, "RATIFY-GENUINELY-PENDING")
+    before = tq.read_text(encoding="utf-8")
+
+    assert coordinator.note_spent_gates_in_queue(bus_root, 14) == []
+    assert tq.read_text(encoding="utf-8") == before
+
+
+# --- C44: the token relay is withdrawal-blind (mainD, 2026-08-12) -------------
+# Sibling of C39's receipt-blindness, found the same way: an escalation chasing
+# the operator about a gate that was not live. Helper name kept distinct from
+# _queue_with / _routed / _aged_msg — an appended helper that shadows an existing
+# one silently breaks unrelated passing tests.
+
+def _outbox_msgs(root: Path, agent: str, *msgs: dict) -> None:
+    ob = root / "outbox"
+    ob.mkdir(parents=True, exist_ok=True)
+    with (ob / f"{agent}.jsonl").open("a", encoding="utf-8") as fh:
+        for m in msgs:
+            fh.write(json.dumps(m) + "\n")
+
+
+def _request(gate: str, task: str, ts: str, agent: str = "mainD") -> dict:
+    return {"id": f"req-{gate}", "from": agent, "kind": "token-request", "task_id": task,
+            "ts": ts, "payload": {"gate_id": gate}}
+
+
+def _complete(task: str, ts: str, agent: str = "mainD") -> dict:
+    return {"id": f"done-{task}-{ts}", "from": agent, "kind": "task-complete",
+            "task_id": task, "ts": ts, "payload": {"disposition": "done"}}
+
+
+def test_an_explicitly_withdrawn_gate_is_named_authoritatively(bus_root: Path) -> None:
+    """Tier 1: the requester said so, keyed to the gate id."""
+    tq = _queue_with(bus_root, "GATE-A")
+    _outbox_msgs(bus_root, "mainD",
+                 _request("GATE-A", "t1", "2026-08-12T01:00:00+00:00"),
+                 {"id": "w1", "from": "mainD", "kind": "status", "task_id": "t1",
+                  "ts": "2026-08-12T01:30:00+00:00", "payload": {"withdraws_gate": "GATE-A"}})
+    hits = coordinator.withdrawn_or_stale_gates(bus_root, tq.read_text(encoding="utf-8"))
+    assert [(g, v) for g, v, _ in hits] == [("GATE-A", "WITHDRAWN")]
+
+
+def test_a_requester_who_moved_on_is_a_DISCREPANCY_not_a_withdrawal(bus_root: Path) -> None:
+    """Tier 2, and the verdict must NOT claim withdrawal.
+
+    The real case carried no gate_id — it was a task-complete on the request's own
+    task_id — so a gate_id-keyed matcher would have detected nothing and passed
+    vacuously. The wording matters: too broad a signal SUPPRESSES a live operator ask.
+    """
+    tq = _queue_with(bus_root, "GATE-B")
+    _outbox_msgs(bus_root, "mainD",
+                 _request("GATE-B", "t2", "2026-08-12T01:21:10+00:00"),
+                 _complete("t2", "2026-08-12T01:41:39+00:00"))
+    hits = coordinator.withdrawn_or_stale_gates(bus_root, tq.read_text(encoding="utf-8"))
+    assert [(g, v) for g, v, _ in hits] == [("GATE-B", "REQUESTER-MOVED-ON")]
+
+
+def test_a_live_gate_is_left_alone(bus_root: Path) -> None:
+    """Mutation: no later task-complete, no signal. Suppressing a live ask is this
+    defect inverted, and worse."""
+    tq = _queue_with(bus_root, "GATE-C")
+    _outbox_msgs(bus_root, "mainD", _request("GATE-C", "t3", "2026-08-12T01:00:00+00:00"))
+    assert coordinator.withdrawn_or_stale_gates(bus_root, tq.read_text(encoding="utf-8")) == []
+
+
+def test_a_task_complete_BEFORE_the_request_does_not_flag(bus_root: Path) -> None:
+    """Ordering is load-bearing: re-requesting after finishing a prior round is normal."""
+    tq = _queue_with(bus_root, "GATE-D")
+    _outbox_msgs(bus_root, "mainD",
+                 _complete("t4", "2026-08-12T00:30:00+00:00"),
+                 _request("GATE-D", "t4", "2026-08-12T01:00:00+00:00"))
+    assert coordinator.withdrawn_or_stale_gates(bus_root, tq.read_text(encoding="utf-8")) == []
+
+
+def test_another_agents_task_complete_does_not_withdraw_your_gate(bus_root: Path) -> None:
+    """Author identity is load-bearing too."""
+    tq = _queue_with(bus_root, "GATE-E")
+    _outbox_msgs(bus_root, "mainD", _request("GATE-E", "t5", "2026-08-12T01:00:00+00:00"))
+    _outbox_msgs(bus_root, "mainA", _complete("t5", "2026-08-12T02:00:00+00:00", agent="mainA"))
+    assert coordinator.withdrawn_or_stale_gates(bus_root, tq.read_text(encoding="utf-8")) == []
+
+
+def test_the_notice_never_ticks_a_checkbox_and_does_not_repeat(bus_root: Path) -> None:
+    tq = _queue_with(bus_root, "GATE-F")
+    _outbox_msgs(bus_root, "mainD",
+                 _request("GATE-F", "t6", "2026-08-12T01:00:00+00:00"),
+                 _complete("t6", "2026-08-12T01:30:00+00:00"))
+    first = coordinator.note_withdrawn_gates_in_queue(bus_root, epoch=1)
+    body = tq.read_text(encoding="utf-8")
+    assert first and first[0]["kind"] == "withdrawn-gate-notice"
+    assert "- [ ] **GATE-F**" in body and "- [x]" not in body   # never ticks
+    assert "REQUESTER-MOVED-ON" in body
+    assert coordinator.note_withdrawn_gates_in_queue(bus_root, epoch=2) == []   # deduped
+
+
+def test_an_unreadable_cursor_degrades_to_replay_rather_than_crashing(tmp_path: Path) -> None:
+    """Three states, not two (`mainB`, 2026-08-12).
+
+    A cursor can be MISSING, CORRUPT, or PRESENT-BUT-UNREADABLE. The first two
+    already defaulted to 0 (replay). The third raised OSError out of the drain, so
+    the agent neither replayed nor skipped — it crashed, and presented as a stuck
+    agent. Only the first two were covered.
+    """
+    cursors = tmp_path / "cursors"
+    cursors.mkdir(parents=True)
+    cur = cursors / "ghost.json"
+
+    cur.write_text('{"offset": 42}', encoding="utf-8")
+    assert bus._cursor_get(tmp_path, "ghost") == 42
+
+    os.chmod(cur, 0o000)
+    try:
+        assert bus._cursor_get(tmp_path, "ghost") == 0, "unreadable must degrade to replay"
+    finally:
+        os.chmod(cur, 0o644)
+
+    cur.write_text("not json", encoding="utf-8")
+    assert bus._cursor_get(tmp_path, "ghost") == 0
+    cur.unlink()
+    assert bus._cursor_get(tmp_path, "ghost") == 0
+
+
+def test_cursor_read_survives_the_file_vanishing_after_the_exists_check(tmp_path: Path) -> None:
+    """TOCTOU the `exists()` check opens: on a bus whose runtime is wiped mid-flight
+    the file can disappear between the check and the read. FileNotFoundError is an
+    OSError, so the same fix closes it — 0 (replay), never a crash."""
+    cursors = tmp_path / "cursors"
+    cursors.mkdir(parents=True)
+    cur = cursors / "vanish.json"
+    cur.write_text('{"offset": 7}', encoding="utf-8")
+
+    real_read = Path.read_text
+
+    def vanishing(self, *a, **k):
+        if self == cur:
+            cur.unlink(missing_ok=True)
+            raise FileNotFoundError(2, "No such file or directory", str(cur))
+        return real_read(self, *a, **k)
+
+    try:
+        Path.read_text = vanishing            # type: ignore[method-assign]
+        assert bus._cursor_get(tmp_path, "vanish") == 0
+    finally:
+        Path.read_text = real_read            # type: ignore[method-assign]

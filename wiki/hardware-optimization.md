@@ -2,6 +2,15 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
+**Last compiled**: 2026-08-12 (adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Sources**: 102+ documents
+
+## Compiled Update — 2026-08-11: production kernel freezes to v9; AutoKernel's own harness hardens against cutover risk
+
+> **MERGE NOTE 2026-08-12 (coordinator).** Both sides below are preserved; I did
+> not adjudicate. The block above is the local-fleet text, the block below is the
+> origin/AutoKernel text. OWNERS: reconcile and delete this note.
+
 **Last compiled**: 2026-08-12 (adds executable AutoKernel reward-integrity evidence; prior findings retained)
 **Sources**: 102+ documents
 
@@ -33,7 +42,13 @@ receipt predates producer-authored belief rows and is never retrofitted.
 
 ## Compiled Update — 2026-08-12 (INF-03 live campaign and GPU-claim scope)
 
-**Confidence: verified receipts and process/claim teardown; partial campaign, no controller ranking.**
+**Confidence: verified — freeze receipts, certification results, and the AutoKernel hardening checkpoint are read directly from `progress/2026-08/2026-08-11.md` and the operator-authorized promotion procedure. The five-control calibration and first CPU candidate campaign this hardening enables are explicitly IN-PROGRESS, not run yet.**
+
+Production is frozen at `production-consolidated-v9` (canonical tree `/mnt/raid0/llm/llama.cpp`, tip `0db32c06e3e550065b78311a6031ef3dd2c4f27c`, `llama-server --version` `10125`), following the project's own four-step experimental-branch workflow: the operator-authorized candidate `2ac4b32a0` was repaired to final tip, rebuilt, and re-run through CPU/HIP linkage, architecture/backend/loader/recurrent tests, incumbent-role ABBA, quality, topology, packaging, and rollback gates. v8 (`67a433bf45a8a091d83b4ea0b32ff0735fd51800`, binary `10107`) remains the rollback anchor. Region-locked certification: architect native MTP 53.306 t/s median, coder cap-0 30.313 t/s, vision 96.598 t/s; DeepSeek-V4-Flash Q8 DSpark `-np 1` passes exact cap-0/cap-3 parity (cap 3: 18 drafted / 9 accepted; multi-slot stays disabled pending an upstream cache defect); Qwen3.6-27B Q8 DFlash is capability-functional and 2.458× faster overall (every prompt class ≥2.149×) but pooled acceptance is 35.954% against the ratified 60% floor, so P-DFLASH-LINEUP-1 keeps that lane disabled without blocking the v9 release itself. A faster promotion-cycle design (target 45-60 min via sealed resident cohorts + exact-parity packs, documented in `epyc-inference-research/docs/design/kernel-promotion-resident-fast-path.md`) is designed but not yet implemented (V9-8).
+
+**AutoKernel's non-inference hardening checkpoint landed the same day** (`epyc-inference-research` `eda8de1a`; trusted experimental `llama-bench` instrument `0492c231` on `experimental-v9-autokernel-t1-hardening`, directly above frozen v9): candidate configure/build and every T1 arm now fail closed through native Landlock/seccomp/cgroup-v2 confinement with fresh process identity and verified inter-arm teardown; T0/T1 pin all three reward-bearing translation units to the reviewed measurement anchor, and hardened T1 rotates input content, buffer/context addresses, and validates bitwise logits through an untimed same-content replica — preventing repeated-buffer evidence from entering a campaign; Proposal-v3 now validates external numeric priors; the off-campaign authoring contract enforces prompt-leak refusal, PUBLIC/SEALED diagnostics, priced context budgets, and reversible compaction. The native C6 sandbox (Landlock ABI 6 write confinement, seccomp syscall denial, non-root exec, rlimits, per-invocation cgroup-v2 leaf) now covers candidate-controlled configure/build/T0/T1, not just the evaluator. AK-TR-4 refuses mixed/pooled quant labels on its per-quant roofline surface (Q4_K/Q8_0 are `COULD_NOT_CHECK` rather than borrowed from another quant); AK-X-3 derives its `min_measurable_us` floor from local A/A spread rather than borrowed vendor numbers; AK-X-5 requires per-partition CPU frequency/package-energy attestation in the host receipt (missing data is `COULD_NOT_CHECK`, never silently zero); AK-X-6 adds a turn-budget stopping rule requiring two crossing e-processes with no rank/promote authority of its own. 3,730 tests passed (one declared expected failure); the experimental CPU instrument built and linked against its own v9 build closure. **No model execution or inference ran.** AutoKernel's harness already proved the value of the hardening the same day it landed: it refused a stale-instrument receipt post-freeze rather than silently scoring against a superseded kernel (`data/autokernel_controls_3pct_20260811_v9_hardened_instrument_receipt_refused/`).
+
+**Explicitly IN-PROGRESS, not settled as of this compile**: the v9/hardened five-control calibration, the first real CPU candidate campaign and matched proposal archive, lane-depth rank calibration and package coupling, GPU baseline-honesty/profiler work, and the frontier-model AK-LE-1/2/3 items are all still open. A belief-substrate gap was flagged the same day the freeze landed: kernel promotion qualification/certification writers still need a prospective ClaimTuple write hook (see [Knowledge Management](knowledge-management.md) §Belief Kernel) — no read-side provenance was retrofitted into the already-completed v9 promotion artifacts.
 
 The availability-conditioned AgentKernelArena campaign is now executing from the source-bound,
 restart-safe r4 identity after two fail-closed attempts. R1 is invalid because a dotted task path
@@ -55,6 +70,14 @@ claims only around vendor/final measurement windows. During KernelFoundry delibe
 0% GPU use, 0% VRAM, no KFD PID, and no active claim, so other governed GPU work may use those
 intervals without compromising the campaign.
 
+**Downstream v8-pin debt surfaced by a same-day audit** (see [Agent Architecture](agent-architecture.md) and [Knowledge Management](knowledge-management.md) for the audit methodology): several surfaces still assumed v8 as current after the freeze. `gpu_shadow_lane` family hard preflight blockers pin `10107`/`67a433bf4` (dormant behind a default-off feature flag, so this blocks on first enable under v9, not today); `reasoning_effort_certifications.yaml` pins `active_kernel_era: production-consolidated-v8` (dormant only because its cert map is empty); several research-repo runners fail closed on v8 pins, and `validate_model_tensors.sh` **silently prefers** a v8 build when both exist rather than erroring (a mis-prefer, not a crash); open next-action text in `cpu-shape-specialized-gemv-decode.md`, `qwen-mtp-llamacpp-port.md`, `numa-topology-cutover-resume-20260730.md`, and `docs/reference/architect-bench-runbook.md` still instructs "start from v8" — following any of them literally now violates the project's own four-step kernel workflow (step 1: pull the *current* production tip). Verified clean: `scripts/session/verify_llama_cpp.sh` already enforces v9 correctly on branch/commit/version-line pins, and no phantom/invented instrument-era id was found in either repo's live code.
+
+### The CPU-decode lever is barrier count, not more SIMD
+
+> **MERGE NOTE 2026-08-12 (coordinator).** Both sides below are preserved; I did
+> not adjudicate. The block above is the local-fleet text, the block below is the
+> origin/AutoKernel text. OWNERS: reconcile and delete this note.
+
 The campaign-wide claim substrate also had a separate expiry-observability defect: the CPU-region
 claim quoted `CampaignSpec.max_hold_s`, but the MI210 claim omitted it, so its payload never carried
 `expires_at` and the existing check returned `COULD_NOT_CHECK` forever. Research main `accff01f`
@@ -75,382 +98,21 @@ or ranking for an incomplete matrix. The full integrated AutoKernel regression a
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact campaign, receipt, process, and claim-window evidence
 - [Vidya adapter source table](../scripts/vidya/adapters/README.md) — producer-side round-trip measurement status and no-backfill boundary
 
-## Compiled Update — 2026-08-12 (current-v9 controls and CPU IQK boundary)
+`cpu-shape-specialized-gemv-decode.md` carried 38 open boxes, of which 36 belonged to a shelved 8×8 SIMD micro-kernel plan — now retained as a closed appendix (profiling and negative results kept, not deleted) rather than backlog. The re-anchor rests on this file's own profiling, confirmed by an earlier independent finding (`fable5-window2-findings-05`, 2026-07-03): **frontdoor Q8_0 decode is barrier/op-count-bound at 13.8% of 460 GB/s — not bandwidth-bound** — and **45% of Q4_K decode cycles sit in the libomp barrier at 96 threads**. The live surface is now 2 boxes, both cutting barrier *count* rather than adding SIMD throughput per barrier: fuse the expert gate+up operators (frontdoor Q8_0, one fusion cluster already measured **+2.6%**) and fuse the attention QKV cluster (frontdoor Q8_0). Combined estimate +10–15% decode; neither has run — both need a dedicated inference window. This narrows rather than contradicts the standing 8×8 GEMM SIMD finding elsewhere on this page: SIMD throughput-per-op is real at 1 thread, but for frontdoor Q8_0 decode at production thread counts the binding constraint is op *count*.
 
-**Confidence: verified measured controls and fail-closed preflight; no CPU candidate result.**
+Alongside the re-anchor, `cpu-kernel-env-flags-inventory.md` added an "Effect on trace interpretation" column across all 24 flags — the file previously recorded which flags exist but not what a profile should *look like* when one is intentionally unset, so an intentionally-disabled fast path was reading as a defect. Load-bearing rows: `GGML_Q8_0_8X8`/`_AVX` off means the **legacy GEMV path is the correct, expected observation** (the 8×8 kernel only wins at 1 thread, +31.8%, and is bandwidth-saturated at 12–96 threads); `GGML_NUMA_REPACK_INTERLEAVE` is the only default-**ON** row, so interleaved pages are the *baseline*, and `=0` emits a startup `GGML_LOG_INFO` line that must be read before attributing any placement finding to the host; `GGML_NUMA_WEIGHTS` is a variance signature (±19–22%) before it is a speed signature; `GGML_NUMA_MIRROR` is compile-time, so its absence from an env dump proves nothing about whether it is active.
 
-AutoKernel's current frozen-v9 control bundle is now accepted under the clean hardened instrument.
-Calibration solved B_min=`10` and φ=`0.03578502357852242`; positive, neutral, wrong-work, A/A, and
-historical-win controls all satisfied their declared behavior (`5/5`), the historical IQK replay
-promoted at `+26.6050%`, and the bundle reports `may_rank=true`. A deterministic composition defect
-appeared only after the six inference legs had completed: `CampaignBinding.change_class` was missing.
-The repaired evaluator recomposed the immutable raw vectors without inference and bound every input
-hash plus `inference_executed=false` in a separate attestation. This preserves the distinction between
-recovering deterministic evaluation and rerunning measurements.
+A companion GPU-side static probe (`rocm-verify-profile-backend.md`, RVP-T0-2/T0-5, landed 2026-08-10 evening) falsified a standing "MFMA is basically absent from our kernels" worry without claiming runtime hotness: **57 of 134 gfx90a kernel disassemblies contain MFMA instructions, 38 of those also contain `mul_mat`**. A companion classification of `init_tensor_uniform` call sites (56 total: 44 symmetric, 9 one-sided, 3 asymmetric) confirms an existing caveat that the negate metamorphic transform is near-useless on most of our test sites. `RVP-T0-1`, the one probe that loads the GPU (a saturating GEMM at up to the 300 W cap for 60 s), was explicitly **held by direct operator instruction** ("do not run any inference") rather than found blocked — the card was idle at hold time, so this is a scheduling decision, not a discovered contention issue; reopen on an authorized GPU-load window.
 
-The first full-host CPU IQK campaign is prepared against that bundle, including proposal-v3 and an
-exact recipe-frame physical envelope. Its corrected live attempt nevertheless produced no candidate
-measurement: preflight refused at host uptime `13.47 days`, beyond the ratified one-week ceiling,
-before claim, build, or benchmark. The next valid empirical sequence is therefore a compliant reboot,
-the prepared CPU IQK replay, construction of the first real matched completed-proposal archive, then
-the least-commitment evaluation observe-only. The new archive builder is ready but correctly cannot
-turn the preflight-refused journal into completed-proposal evidence.
+### Source References (2026-08-11)
 
-Three complete repetitions of the offline AK6 fault matrix passed 1,971/1,971 tests without inference,
-covering journal recovery, claim-owner death/reclaim, live-holder non-preemption and revocation, and
-receipt/hash/source tamper refusal. This establishes offline acceptance, not a real campaign rehearsal;
-the latter remains open and must produce its own empirical receipts.
-
-The Kernel-R&D hub now surfaces this state from durable producers rather than a fixed historical
-allowlist. Its live contract shows the attested frozen-v9 anchor, `8/8` instrument preflight, accepted
-`5/5` controls, GPU replay `NOT_REPRODUCED`, and implementation `900cb5c6`; a missing production
-attestation is a loud alarm. The registry now uses the panel-specific `/api/kernel/health` probe:
-transport remains HTTP 200 while semantic health correctly returns HTTP 503 until champion, headroom,
-and release package are reported by the reboot-gated real campaign. AK9 speech-kernel-set projection
-remains a separate follow-up.
-
-The OP-11 source audit also reduced the approval request to its genuine two-file core on parent
-`a4cb04ca`: `quantize.cu` plus `test-backend-ops.cpp`, `+1795/-64`, plain-diff SHA-256
-`6dcec2b44322470fd76cbbd1e6223cd5a204b8352339b80189d3c06aa1cbbebf`. The audit found no
-critical/high hazard and retained the 172/172 Q4_K final matrix, 5,184/5,184 stateful result, and
-sensitivity/specificity 1.0. This is a recommendation only; the experimental commit remains forbidden
-until the operator approves OP-11.
-
-### Source References (2026-08-12 current-v9 controls)
-
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact control receipts, archive-builder boundary, and Step-3 gate
-- [Current campaign state](../handoffs/active/CURRENT-CAMPAIGN.md) — live reboot-gated execution order
-- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — measured values, hashes, composition recovery, and fail-closed CPU chronology
-- [Kernel-R&D operational-truth audit](../artifacts/audit/kernel-rnd-dashboard-operational-truth-20260812.md) — selector, producer, health, and production-attestation findings
-
-## Compiled Update — 2026-08-12 (clean instrument and governed GPU replay)
-
-**Confidence: verified committed provenance, live smoke, and governed replay; no promotion claim.**
-
-AutoKernel's current measurement instrument is now a clean one-commit overlay on frozen v9:
-`a4cb04ca8f92fa4d665684490f609b380f9b5e96` has `0db32c06e3e550065b78311a6031ef3dd2c4f27c`
-as its sole parent and changes only `llama-bench.cpp` plus its README. Its real CPU smoke emitted the
-required hybrid-sync, thread-set, escape-check, unsynchronized-sample, and device-sync receipts under
-an exact 0–95 claim, then released that claim. A pinned, networkless, read-only package-power broker
-also made the source/binary/model/topology/storage/production/package-power preflight all-PASS without
-changing the root-owned powercap permissions.
-
-An independent governed frozen-v9 replay of the runtime-gated async-prefetch path then produced
-positive deltas in all 20 paired blocks, but the median was only **+1.2442303249%** and the minimum
-**+0.6788501205%**, below the predeclared **2%** contribution floor. Its verdict is therefore
-`NOT_REPRODUCED`, not a banked kernel win. The result reinforces the gate's intended distinction:
-consistent direction does not substitute for a predeclared material-effect threshold.
-
-### Source References (2026-08-12 clean instrument and replay)
-
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — instrument identity, control dependency order, and replay verdict
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C6 instrument provenance and receipt-integrity boundary
-- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes, CPU smoke, package-power broker, and governed GPU result
-
-## Compiled Update — 2026-08-12 (AutoKernel diagnostic provenance)
-
-**Confidence: verified receipt/source audit; no inference or campaign claim.**
-
-RVP-T0-1, AK-BH-1/2/3, and AK-LN-2/AK-X-5a have durable diagnostic receipts and retain bounded
-hardware, provider, factorial, flash-attention, and lane-proxy findings. They do not collectively
-establish current AutoKernel campaign authority: several bind an experimental binary without a clean
-committed source/build manifest, while the shared experimental tree is dirty. A receipt field naming
-frozen v9 is not a substitute for the exact source, tree, build, library, and binary identities.
-
-The operational dependency order is consequently provenance first: reproduce the hardened instrument
-from clean committed source, run fresh frozen-v9 controls, run the full-host CPU IQK proposal, then
-construct the real matched completed-proposal archive and evaluate it observe-only. Existing diagnostics
-remain valid in their declared scope; synthetic archives remain regression tests.
-
-AK-DEL-1 is a distinct, commit-backed scope-reduction diagnostic rather than campaign evidence. Its
-preserved trace report placed all three admitted kernel families in the existing-path bucket and selects
-catalogue expansion before a novel generator. The finding is bounded to that corpus and does not claim
-that every workload lacks a novel-kernel opportunity.
-
-### Source References (2026-08-12 provenance audit)
-
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — campaign dependency order and matched-archive gates
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — diagnostic receipt authority boundary
-- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes and source-provenance audit
-
-## Compiled Update — 2026-08-11 (AutoKernel Arena audit and real-controller smoke)
-
-**Confidence: verified audit and diagnostic-smoke behavior; no matched-campaign or promotion claim.**
-
-The fixed AgentKernelArena authoring panel now distinguishes two authorities mechanically. The full
-comparison remains eight arms and refuses at **6/8** because licensed, commit-pinned EvoEngineer and
-ARGUS implementations are unavailable. A separately named available-source panel is ready at
-**6/6**, but its receipt forbids implying an eight-arm result, ranking partial full-panel evidence,
-or authorizing promotion. Both no-execution audits bind the same task, source identities, evaluator,
-and 2h/8h/32h budget schedule.
-
-A real one-iteration/two-branch KernelFoundry smoke found two defects that static coverage missed:
-copied workspaces lacked the repository import root, then concurrent model branches raced in the
-shared Arena evaluator. The repaired v3 run completed two GPT-5.6 Sol/high calls under a cleanly
-released MI210 claim, passed centralized compilation and correctness, and admitted all four baseline
-and four optimized timing cases. Its average speedup was **0.998668**, but the receipt is diagnostic,
-non-rankable, and explicitly does not imply the matched campaign. The dashboard now projects this
-empirical state separately from generic probe inventory and preserves those authority limits.
-
-The K-Search, Xe-Forge, and GEAK-v1 one-iteration smokes subsequently completed the same centralized
-compile, correctness, and 4/4 baseline plus 4/4 optimized timing boundary and released their MI210
-claims. Their observed average speedups were respectively **1.003368**, **0.999612**, and
-**0.995595**. Those values remain non-rankable smoke telemetry: the smokes establish executable
-integration, not comparative controller quality or a matched-campaign result.
-
-The Claude/Codex actor-critic path also reached a terminal integration smoke after repairs for
-response parsing, contained candidate paths, nested-sandbox launch, and container stdin. Its actor
-runs inside a digest-pinned, read-only-root container with only the task workspace writable. The
-v5 completed planner, actor, and critic and reached centralized evaluation, but the evaluator worker
-used `/usr/bin/python3` without pytest. Its apparent correctness failure and zero timing cases are
-therefore infrastructure evidence, not evidence against the candidate. The authoring path was real,
-but candidate correctness remained unknown until replay with the pinned ROCm evaluator Python and
-package identity. That replay passed centralized compilation and correctness plus all
-4/4 baseline and 4/4 optimized timing cases under the pinned ROCm evaluator. Its average speedup was
-**0.993603**—non-rankable diagnostic telemetry that closes executable integration, not a controller
-quality or promotion claim.
-
-### Source References (2026-08-11 Arena audit/smoke)
-
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — fixed-panel coverage, source gates, receipt hashes, and live next actions
-- [AutoKernel progress, 2026-08-11](../progress/2026-08/2026-08-11.md) — failed-smoke chronology, repairs, v3 measurements, and non-rankable scope
-- [Dashboard contract](../dashboard/README.md) — current-state snapshot and separation of audit, available-source, and empirical-smoke authority
-
-## Compiled Update — 2026-08-11 (AutoKernel C6 live-host sandbox)
-
-**Confidence: verified live-host containment behavior; no inference or performance claim.**
-
-AutoKernel's real kernel-authoring path now has a host-native, fail-closed C6 boundary rather than the
-older devcontainer-only bwrap/unshare prototype. The evaluator provisions only a narrow
-`/sys/fs/cgroup/autokernel` parent, creates a fresh per-invocation leaf, and keeps candidate execution
-non-root under Landlock write confinement, seccomp signal/network/namespace denial, finite resource
-limits, and descendant-draining teardown. Missing or unwritable delegation refuses before candidate
-spawn; there is no `allow_unsandboxed` or environment escape on the live campaign path.
-
-The live red-team probe on this host exercised Landlock ABI 6 as uid 1000. A write inside the
-candidate tree succeeded, while an outside write and evaluator-receipt forgery failed; host signalling
-and socket creation returned `EPERM`; and teardown killed an escaped descendant, proved empty cgroup
-membership, and removed the invocation leaf. This closes the C6 host-readiness gate without weakening
-the standing rule that a sandbox claim must name and exercise its actual syscall and filesystem
-controls. No inference or production-stack change was needed.
-
-### Source References (2026-08-11 C6 host sandbox)
-
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — dated C6 closure and live red-team outcomes
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — syscall-confinement acceptance contract and live campaign ownership
-- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — host provisioning, path wiring, verification scope, and no-inference boundary
-
-## Compiled Update — 2026-08-11 (gfx90a WGM and authoring-loop boundary)
-
-**Confidence: verified diagnostic microbenchmark and real-MMQ negative; no five-control performance
-claim.**
-
-A gfx90a work-group-mapping proxy found a real, bounded locality signal: WGM16 improved the synthetic
-L2-sensitive kernel by **9.823%** versus no mapping across 240 balanced samples per cell, with a paired
-bootstrap 95% CI of **9.754–9.977%** and bit-exact correctness. WGM8 and WGM32 were close; WGM2
-regressed. The result selects none/8/16/32 for the real MMQ launch-order sweep. It does not establish
-that the gain transfers to MMQ, because the proxy deliberately isolates locality rather than the full
-quantized kernel.
-
-The admitted real-MMQ transfer test then falsified that transfer. Its first pilot was a no-op because
-CDNA stream-k bypassed the initial remap; r2 moved pure tile-order decoding into stream-k. All six
-none/2/4/8/16/32 cells passed **43/43** Q4_K correctness cases, but WGM0 remained fastest and every
-nonzero mapping regressed wall time by **1.286–4.050%**. WGM8 reduced all-MMQ TCC hit rate from
-**67.304% to 59.849%** while read requests stayed nearly flat (**+0.201%**), and Q4_K alone lost
-**7.903 percentage points**. G17 is therefore `CLOSED_NO_GO`; the uncommitted negative source is not a
-promotion candidate, and the budget returns to the already-filed G15 elementwise/norm fusion lever.
-The aborted trace-period counter pilot is excluded; successful counter-only captures are admitted.
-
-The surrounding authoring loop now has three missing control-plane pieces: a versioned C5 seed corpus
-with matched-budget RE-Bench log-time scoring, a prospective GEAK/Arena belief writer, and a gfx90a
-FP8 target whose contract explicitly distinguishes authoring/emulation from unavailable MI210 native
-FP8 matrix execution. A taxonomy audit also corrected an old citation conflation: KernelBench is a
-kernel-generation benchmark, while the 9/9 bug-detection result belongs to a separate seeded-fuzzing
-paper. RE-Bench contributes its scoring protocol, not its H100 task environment.
-
-ROCm 7+ upgrades now have a fail-closed compile gate for the known LLVM unroll regression: pass
-`-mllvm --amdgpu-unroll-threshold-local=600` through `CMAKE_HIP_FLAGS`, retain the compile command that
-proves it reached HIP compilation, and compare only from an experimental branch. The current ROCm 6.2
-stack is unchanged.
-
-The authorized frozen-v9 five-control run did not reach inference. Its preflight passed source and
-copied-binary identity but failed because the selected binary omitted six hardened runtime receipts;
-package power was also unreadable. That is instrument evidence, not a performance result. The next
-attempt must use a receipt-emitting hardened build and pass package-power preflight before taking a
-claim.
-
-### Source References (2026-08-11 WGM/authoring closeout)
-
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — G17 negative disposition, G18 seed, and the failed-closed v9 control preflight
-- [MI210 MFMA compute-bound paths](../handoffs/active/mi210-mfma-compute-bound-paths.md) — admitted proxy and real-MMQ receipts, hashes, and next lever
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — C5, RE-Bench, FP8, taxonomy and upgrade gates
-- [ROCm upgrade checklist](../docs/runbooks/rocm-upgrade-checklist.md) — experimental-branch build and validation contract
-- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — commit identities, receipt hash and no-inference boundary
-
-## Compiled Update — 2026-08-11 (Q4_K MMQ correction and expert ceiling)
-
-**Confidence: verified local correctness and matched historical measurement; experimental source is
-not a durable candidate until operator-approved commit/push.**
-
-The gfx90a Q4_K failure was not MFMA-specific: both the old force-MMQ MFMA and DP4A arms passed only
-18/43 cases. The shared mechanism was Q8 activation staging. Q4_K's affine reconstruction multiplied
-the quantized/dequantized Q8 values in its dot term but used the original float activation sum for the
-min correction. Computing both from the same dequantized Q8 population fixed the ordinary and scatter
-DS4 paths. Four final arms—default, force-rocBLAS, force-MMQ MFMA, and force-MMQ DP4A—then passed
-172/172 cases at unchanged κ=1.5, maximum error ratio 1.228272. The receipt is retained; the source
-change remains approval-gated in the experimental tree.
-
-AutoKernel also gained a non-synthetic held-out task from local history. The new descriptor is honest
-about the missing original July 4 command (`historical_command_recovered=false`), pins a replacement
-surface, and seals the human patch until terminal candidate state. Across five matched blocks, the
-human GDN bf16 patch raised mean `speed_tg` from 155.4233734 to 188.4099002, a 21.223659% expert
-ceiling; same-binary expert-off stayed at parity with the parent (-0.105875%). With no terminal
-AutoKernel candidate, candidate-to-expert scoring remains `COULD_NOT_CHECK` rather than inventing a
-comparison.
-
-Hostile same-shape distributions and checker isolation are now durable research gates, but their
-two-case ROCm smoke is non-evidence: the producer is uncommitted and no receipt was retained. The
-smoke showed both modes passing 2/2 selected `SOFT_MAX` rows with claim release and four samples;
-campaign evidence waits for an operator-approved producer identity and fresh replay.
-
-INF-37's alternative IQ2 profiler path is now instrumented but not yet evidence-bearing. A manual
-Omniperf 2.0.1 / `rocprof` v1 smoke reached gfx90a and produced 260 dispatch rows, while the governed
-runner retained a clean failure receipt: frozen-v9 `test-backend-ops` lacks the required
-`--suite-seed` and `--repeat-suite` flags, so it refused before profiling. This separates tool
-reachability from a reproducible counter claim. The seeded IQ2 capture remains open until the
-experimental producer obtains an operator-approved durable identity and the same runner passes.
-
-## Compiled Update — 2026-08-11 (AutoKernel input-sensitivity boundary)
-
-**Confidence: verified implementation; live smoke is non-evidence until the producer has a durable
-commit identity.**
-
-AutoKernel now screens task populations on two independent axes before treating correctness cases as
-meaningful: materialized inputs and reference outputs must vary across at least three seeds, and they
-must also respond to identity, ×3, ×0.01, and negate transforms. Missing coverage, mixed suite
-versions, a non-reference population, or an untrusted producer fails closed. The research reducer and
-claim-aware runner are durable in research commit `000a2686` / `main` merge `f3c6b24a`.
-
-A `SOFT_MAX` smoke returned PASS over 2,544 observations and 1,484 units with no unscoreable units,
-while holding and releasing the CPU claim. It does **not** support a correctness or corpus-quality
-claim: its `0db32c06e` suite identity names the committed parent while the materialized `AK_SENS_V1`
-producer remains uncommitted. Producer-dependent rows stay open until an operator-approved producer
-commit and fresh matched replay. This is the practical rule: an internally consistent receipt cannot
-be durable evidence when the code that produced it is absent from the identity it cites.
-
-The same audit invalidated promotion of the old RVP-C5-R observation: exact 2026-07-04 argv and raw
-matched parent/human-patch evidence are gone, so a fresh retained replay is required.
-
-## Compiled Update — 2026-08-11 (AutoKernel live correctness controls)
-
-**Confidence: mixed — verified correctness-instrument acceptance on CPU; single-run GPU microbench
-observations with retained receipts, not production or cross-surface performance claims.**
-
-AutoKernel's stateful correctness pass now treats carried state as part of the result rather than
-checking only ordinary outputs. For every selected recurrent/cache-backed case, the candidate and
-reference must begin with byte-identical explicit state inputs, neither execution may mutate those
-input buffers, and at least one final-state tensor must be included in the compared output set. A
-missing receipt or any missing leg fails closed.
-
-The first live pass used suite seed `4711` and accepted **5,184/5,184** cases across `SSM_SCAN`,
-`SSM_CONV`, `FLASH_ATTN_EXT`, and `GATED_DELTA_NET`. Every `AK_STATE_V1` receipt carried
-`initial_equal=1`, `input_immutable=1`, and one or more final outputs. The result validates the
-instrument path; it does not make the experimental producer durable. Those producer changes remain
-uncommitted pending explicit operator approval, and the v9/hardened performance calibration is a
-separate next step.
-
-The other live C2 axes now agree with that stateful result: the layout pass accepted **1,048/1,048**
-offset, stride-gap, and transpose cases, while the seed-`4711` value pass accepted **779/779** cases
-across `SOFT_MAX`, `ARGSORT`, `TOP_K`, and `SOLVE_TRI`, with identity, ×3, ×0.01, and negate all
-completed. The `SOFT_MAX` checker required one important correction before acceptance: its invariant
-must include implicit attention sink mass, not demand that only explicit output cells sum to one.
-
-The predeclared clock-pinning discriminator also resolved negatively. During a 60-second 8192³ gfx90a
-GEMM, 242 samples held 1700 MHz for 99.5868% of the window while throughput reached 41.904 TFLOP/s;
-power peaked at only 200 W against the 300 W cap. The card did not approach the cap, so clock excursion
-is not a live variance source under this saturation workload and a privileged
-`--setperfdeterminism` control would add operational authority without solving an observed problem.
-
-The next correctness layer is now live as an independent host-double oracle. It decodes Q4_0, Q8_0,
-Q4_K, and Q6_K directly from GGUF wire bytes and emits
-`fp64_error_ratio/host-double-gguf-wire/v1`, avoiding project quantization helpers on the reference
-side. Five representative CPU cases, the dedicated broadcast regression, 31 real parser tests, and
-the property self-test's 5/5 planted plus 5/5 clean cases passed.
-
-The broad matrix first uncovered a real non-contiguous coverage bug in the oracle itself: quantized
-rows must be read through the tensor's `nb[1..3]` strides, not as one packed span. After that repair,
-the fixed forced-dispatch matrix preserved a much sharper negative result. Force-rocBLAS passed
-**43/43** Q4_K cases with maximum error ratio **1.2283**; force-MMQ passed **18/43**, failed 25, and
-reached **3.0361**. The remaining failures are therefore MMQ-specific stock correctness failures.
-Keep κ fixed at 1.5, retain rocBLAS as the control, and do not rank the MMQ surface until corrected.
-
-The baseline-honesty probes also reject global defaults. In AK-BH-1, best-heuristic hipBLASLt beat
-rocBLAS at only three of nine prefill shapes, while its throughput ratio ranged from **0.734× to
-1.322×**; future vendor baselines must choose the strongest library per exact shape. AK-BH-2 then
-completed all eight explicitly pinned flash-attention × ROCWMMA × MMQ-MFMA arms on one 0.5B Q4_K_M
-prefill surface. Flash attention on won each build pair, MMQ-MFMA was slower, and `r1m0-fa-on` won at
-24,647.316788 t/s. That is a surface-local observation, not authority to change global build defaults.
-
-A clean-source sustained AK-BH-1 replication strengthened that result from a short screen to a
-55.17-second loaded window: 30,000 repetitions per provider per shape, 221 device samples, 86.43% at
-1700 MHz, and 241 W peak. hipBLASLt won 4/9 shapes with a 0.7445×–1.3162× ratio range; all nine
-winner directions matched the prior replay. This confirms per-shape provider selection under sustained
-load and does not create a global hipBLASLt or rocBLAS default.
-
-Ranking now also has a device-local absolute-duration admission. RVP-C3-5 derives a
-**250,090,903 ns** minimum complete repetition window from the first nominal-SCLK observation in the
-RVP-T0-1 gfx90a receipt. Missing, foreign-device, malformed, or shorter live GPU windows receive no
-speed rank even if their relative noise looks small. The focused implementation tests pass 11/11.
-The experimental producer is still uncommitted under its explicit per-commit approval boundary.
-
-C4 now crosses from deterministic profile evidence into the authoring loop without granting the
-profile authority over a decision. The hash-bound `profile_context.py` bridge emits a priced discovery
-block plus a framework-neutral `c4_evaluator_observation.v1`; both are `diagnostic_only`, retain the
-report/manifest/formal-profile hashes, and cannot write a verdict or rank. Prompt hygiene also excludes
-sealed evaluator paths. The generalized capture runner holds mapping and formal invocations to one
-backend process, validates exact argv and quant selection, retains every artifact on failure, and uses
-the existing deterministic report rather than exposing raw profiler text to the agent.
-
-The first live op-level captures bound what that signal can presently say. At fixed
-`m=16,n=1,k=256`, Q4_K and Q8_0 both produced complete fill → requantize → `mul_mat_vec_q` sequences.
-Matvec occupied **41.95% versus 40.92%** of wall time and averaged about **5.72 versus 5.50 µs** per
-dispatch. This small surface neither explains the 35→50 Q4_K roofline rung nor attributes unpack work
-inside the fused kernel, so the representative-shape counter/source-timer question remains open.
-IQ2_XXS is a durable tool boundary: ten unprofiled repetitions pass, but active `rocprofv2` capture
-exits 139 even in one process. That failed receipt is evidence about profiler scope, not an
-architectural bandwidth floor; the next IQ2 probe must use a non-`rocprofv2` device timer/counter path.
-
-CPU baseline honesty now has the same exact-surface rule. On Qwen2.5-Coder-0.5B Q4_K_M prefill,
-implicit AUTO measured **5,569.96 t/s**, explicit flash-attention ON **5,451.90 t/s**, and explicit
-OFF **2,741.09 t/s** across randomized 30-repetition hardened arms. AUTO behaves like ON here, but
-that observation does not authorize an implicit or portable default. The evaluator now requires both
-provider arms on one identical model/quant/op/shape/dtype/build/factor surface, selects by declared
-metric direction, and rejects any transfer to a different candidate surface.
-
-The historical CPU fan-out shapes are execution capacity, not ranking capacity. Against the
-full-machine anchor/IQK-off/flash-attention-off order, depth 4 retained Spearman 1.0, but depths 8,
-16, 32, and 48 fell to 0.5. More decisively, every split failed the predeclared combined
-package-power/frequency acceptance: maximum anchor lane-position deviations ranged from **16.28% to
-77.43%** against a 10% limit, while loaded-frequency ratios ranged from **0.743 to 0.829**. The first
-real CPU candidate must therefore rank on the full host unless a narrower change-class calibration
-later clears the same gates.
-
-Two Q4_K MMQ diagnostics narrowed the still-open correctness repair without fixing it. Disabling the
-gfx90a MFMA route and forcing DP4A still failed **25/43** cases (maximum ratio 3.0178), excluding an
-MFMA-only defect. A Q4_K-only least-squares refinement of the per-32 Q8 activation scale also failed
-**25/43** (maximum ratio 2.8834) and was reverted. The clean 43/43 rocBLAS control and fixed κ=1.5
-remain; the search must move below both the implementation choice and a one-parameter scale repair.
-
-### Source References (2026-08-11 AutoKernel correctness)
-
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — live checkpoint,
-  baseline-honesty receipts, independent fp64 oracle, and next calibration step.
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C2-5 triad
-  contract, MMQ-isolated Q4_K finding, duration-window admission, and producer boundary.
-- [Progress 2026-08-11](../progress/2026-08/2026-08-11.md) — exact live counts, seed, receipt flags,
-  C4 receipt hashes and bounded results, runner paths, fixed-gate dispatch finding, and verification
-  results.
-
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the v9 freeze narrative, certification results, and the AutoKernel non-inference hardening checkpoint (§"production-consolidated-v9 final freeze", §"AutoKernel non-inference hardening checkpoint")
+- [`artifacts/audit/completion-flurry-wiring-audit-20260811.md`](../artifacts/audit/completion-flurry-wiring-audit-20260811.md) §C — the stale-by-v9 sweep across three repos, with per-surface owner triage
+- [`artifacts/operator/ratify_v9_final_freeze_20260811.json`](../artifacts/operator/ratify_v9_final_freeze_20260811.json) — the operator freeze ratification receipt
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — the native C6 sandbox extension and AK-TR-4/AK-X-3/AK-X-5/AK-X-6 hardening controls
+- [`handoffs/active/cpu-shape-specialized-gemv-decode.md`](../handoffs/active/cpu-shape-specialized-gemv-decode.md) — A17 re-anchor to the barrier-count lever
+- [`handoffs/active/cpu-kernel-env-flags-inventory.md`](../handoffs/active/cpu-kernel-env-flags-inventory.md) — A18 trace-interpretation column, all 24 flags
+- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — RVP-T0-1 hold, RVP-T0-2/T0-5 static probe results
 ## Compiled Update — 2026-08-03 (the AMD deficit is a QUANT deficit, not a device deficit; and the compute roofline, finally computed)
 
 **Confidence: mixed and stated per claim — the attainment ladder is `observation` (our own measured
@@ -550,7 +212,11 @@ inside `FeatureGFX9`; AMD's own CDNA2 doc says so; and our tree already calls th
 genuinely lacks is the **async DMA engine** and the **SMEM-operand matrix instruction** — different
 limitations with different consequences. Meanwhile AITER's supported-hardware table lists **no
 MI210/MI250/gfx90a, not even experimental** (consumer RDNA parts rank ahead of our datacenter card),
-TileLang is CDNA3-limited, and the quantization×kernel co-design school is ROCm-excluded across the
+TileLang is **gfx90a-reachable** (corrected 2026-08-11: GEAK's own KB tags it `gens: [gfx90a,
+gfx942]`, "validated on MI250"; our `rocm-verify-profile-backend.md` had this right and the earlier
+"CDNA3-limited" line here contradicted both — the same stale claim survives in
+`autokernel-research-loop.md`'s `cdna2-abandoned-by-vendor-and-quant-schools` HARD_CONSTRAINT,
+routed to its owner), and the quantization×kernel co-design school is ROCm-excluded across the
 board. **Nobody will port anything to this card for us**, which is the premise the autokernel program
 exists to answer — not a reason to stop.
 
@@ -559,7 +225,6 @@ partitions registers across waves — 4 producers 893 TFLOPs vs 0 producers **16
 ping-pong** over 4-wave interleave (~90% of the performance at ¼ the code); **swizzle HBM-side, not
 LDS-side**; HIPCC **will not feed AGPRs to MFMA** even though the hardware allows it; and grid-swizzle
 WGM must be **swept, not set** (+9.6% at 8, **−13.9% at 32**).
-
 ## Compiled Update — 2026-07-31 (gfx90a ARGSORT defect: a green test suite hid an invalid kernel launch)
 
 **Confidence: verified — measured on this host, third-party repo, production kernel untouched.**
@@ -610,7 +275,6 @@ versioned dependency** (pins: qwentts.cpp `abab6b3b`, ggml fork `c044c6f0`, bina
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §15c, the ARGSORT mechanism, the 74/74 / 292/292 counts, and the 13.2% HIP-graphs figure
 - [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — task S-6a (the ARGSORT fix closure) and S-3 (the one-line FP8-guard patch, a related but distinct third-party build fix on the same fork)
 - [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — row **N27** (speech)
-
 ## Compiled Update — 2026-07-30 (NUMA placement defect; the E5 quarters-vs-full verdict is RETRACTED)
 
 Two of the 2026-07-24 findings below are **withdrawn, not revised**. The E5 W0 grid measured
@@ -672,7 +336,6 @@ gate a keep / revert / deploy / promote decision.
 - **The `stack_numa.py` wiring change is NOT authorised.** The file carries corrected
   comments only and is deliberately behaviourally unchanged, pending the inference owner
   and the stack gates.
-
 ## Compiled Update — 2026-07-29 (GPU topology ground truth; E5 still scout-only)
 
 This pass records two corrections and one **status clarification that supersedes any
@@ -767,7 +430,6 @@ device-local placement question is **unmeasured** and is labelled as such below.
   invalidity, W4 raw-fallback demotion, Stage-B prune plan hash.
 - [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the topology-correction arc
   and the P2-5j/k/l/m filings, plus the FG-4b terminal entry.
-
 ## Compiled Update — 2026-07-24
 
 The E5 NUMA×batch sweep (design frozen 2026-07-23) executed its W0 non-decision-grade scout across all four production model groups — the first empirical read of the full (N-instances × K-batch) grid since the v7/iqk kernel and the fleet-layer/lineup-restoration changes. In parallel, the GPU-only np×context throughput study was extended from the 122B-IQ2 architect candidate to all three GPU-fitting architect arms, producing the first cross-architecture comparison of how batching interacts with reasoning-budget/context length. Confidence: `observation` throughout — W0 is scout-grade by design (host uptime 20 days exceeded the one-week decision-grade policy, hence `--allow-host-health-warning`), and the np×context numbers are pre-`P-GPU-1` GPU throughput.
@@ -822,7 +484,6 @@ The E5 NUMA×batch sweep (design frozen 2026-07-23) executed its W0 non-decision
 - [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — E5 sweep design, harness (`server_numa_np_sweep.py`, 121-cell pre-registered grid), W0 scout execution + results across all four model groups.
 - [reasoning-effort-levels.md](../handoffs/active/reasoning-effort-levels.md) §TB-6-exec — the cross-candidate np×context throughput surface (A1/A3/A4), architecture-dependence findings, per-arm router rules.
 - [progress 2026-07-23](../progress/2026-07/2026-07-23.md), [progress 2026-07-24](../progress/2026-07/2026-07-24.md) — W0 execution log, instrument-chain fixes (think-truncation → production chat template, GPU-coexistence mode), overnight A2/RP-5 run.
-
 ## Compiled Update — 2026-07-20
 
 New CPU-prefill and GPU-kernel evidence sharpens the roofline picture: **CPU decode is bandwidth-exhausted, but CPU *prefill* is a distinct, still-open compute-bound regime**, and the GPU *raw-speed* frontier is now considered structurally exhausted (the live GPU frontier is residency/teleport, not more kernel speed). All 2026-07 GPU throughput numbers remain **observation-grade** pending production-named `P-GPU-1` certification on `production-consolidated-v8`.
@@ -850,7 +511,6 @@ New CPU-prefill and GPU-kernel evidence sharpens the roofline picture: **CPU dec
 - [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — GPU raw-speed frontier exhausted; residency/teleport is the live frontier.
 - [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) + [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md) — GDN serial-dependency finding + measured no-go closeout.
 - [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — E5 NUMA×batch 2D sweep spec.
-
 ## Summary
 
 The entire project is built around the AMD EPYC 9655 "Turin" processor: 96 physical cores (192 threads), 1.13 TB DDR5-5600 ECC across 12 memory channels (~460 GB/s theoretical bandwidth), and true 512-bit AVX-512 (not Intel's double-pumped variant). The storage layer is a 2x Solidigm P44 Pro 2TB NVMe RAID0 array delivering 12.5 GB/s sequential reads, enabling a 280 GB model to be mmap'd in about 22 seconds.
@@ -860,13 +520,11 @@ The single most impactful optimization discovered in this project is NUMA-aware 
 Three runtime settings are non-negotiable: OMP_NUM_THREADS=1 (llama.cpp handles its own parallelism; nested OpenMP can halve throughput), numactl --interleave=all for single-instance models (distributes data across all 12 channels), and using only physical cores (hyperthreading hurts inference due to cache contention). The production stack uses taskset -c for NUMA pinning since numactl --membind is blocked in the container environment, relying on first-touch memory policy instead.
 
 The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture. HOT models (~701 GB with multi-instance copies) are always resident with --mlock, eliminating 15-90 second cold-start penalties. WARM models load on demand via mmap from NVMe (~12 GB/s, so a 140 GB model loads in ~12 seconds). COLD models remain on disk. The 120 GB OS SSD is strictly protected -- a December 2025 incident where Claude Code filled /tmp/claude with 20 GB crashed the machine, prompting a three-layer defense (bind mount, real-time monitoring, emergency cleanup). Another incident in January 2026 demonstrated that pytest -n auto on a 192-thread machine spawns 192 workers, each loading ~3 GB of embedding models, exhausting the full 1.13 TB of RAM.
-
 ## 2026-07-19 Update — certification boundary after v7 readiness
 
 - `P-GPU-1` is now ratified, but only production-named kernels can produce decision-grade MI210 throughput claims. Existing experimental-v7 Gate-R/K35/AXA rows remain observations and, at this 2026-07-19 boundary, required reruns on `production-consolidated-v7` with hardware, binary identity, host-interference, repetition, prompt/decode, draft-counter, and cleanup fields present. Current reruns must use the current production kernel named above. Sources: [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [P-GPU-1 amendment draft](../docs/reference/p-gpu-1-amendment-draft-2026-07-19.md), [v7 promotion](../handoffs/active/v7-promotion.md).
 - OP-2 closed the CPU-regression check under the canonical measurement boundary: canonical CPU rows require the codified recipe, clean preflight, exact binary/repo identity, and attestation; ungrammatical numbers remain observations even when repeatable. This preserves the distinction between validating the candidate and certifying a production claim. Sources: [OP-2 canonical bench package](../docs/reference/op-2-canonical-bench-window-package-2026-07-18.md), [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
 - The practical implication is a two-stage GPU record: use experimental-v7 measurements to choose and debug levers, then rerun the promoted production-named kernel before using throughput to gate deployment, rollback, or promotion. Sources: [v7 promotion](../handoffs/active/v7-promotion.md), [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [Gemma v7 kernel techniques](../handoffs/active/gemma-challenge-kernel-techniques-v7.md).
-
 ## Key Findings
 
 ### 2026-07-16 — v7 refreshed candidate clears K5/readiness; MI210 validation must use candidate shared libraries
@@ -1009,7 +667,6 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - **Single-instance batched decode (CPU14) has still never been measured to claim grade; the first scout points to `-np 8` as the candidate operating point but with severe tail-latency cost**. A non-decision-grade scout (host uptime >1 week, `numa_balancing=0`, so `decision_grade=false`) showed Qwen3.6-35B-A3B Q8_0 peaking at `-np 8` (≈1816 tasks/h, +41% aggregate vs `-np 1`) while p95 latency rose ~3.8×; the dense Qwen3.6-27B Q8 control scaled *more strongly* through `-np 8`. `-np 16` regressed on both. The durable P-BENCH-3 harness (`server_np_sweep.py`) and E2 eval-driver A/B coordinator (`e2_eval_driver_ab.py`) are staged in the clean-window manifest, fail closed under host-health warnings, and verify server PIDs are dead post-run — but a reboot/quiesce window is still required before any keep/kill claim. Pitfall recorded: MoE batching is weaker than dense (distinct tokens hit distinct experts → expert-weight traffic grows with batch), so a dense control is mandatory and the 9.6× rep-1 TTFT amplification under concurrent prefill must be reported separately from steady-state per-stream decode. [batched-decode-measurement.md, fable5-findings-06-kernel-and-concurrency.md]
 - **The eval-batch activation window now has claim-grade smoke/rollback evidence, but the default path is still unchanged.** Root `f755dbc4` added the stdlib handoff dashboard hub/timeline builder/tests, orchestrator `132c595d` finalized `handoff_dashboard` service/link and env propagation, and the `status=smoke_passed_rolled_back` activation window launched `eval_batch_frontdoor` on port `18070`, attested `eval_batch_serving=true` on API workers, passed smoke (`ok`), hit the expected tap port, then rolled back and stopped the frontdoor. Representative quality/reliability/throughput telemetry remains the next gate before any default EvalTower path change. [progress 2026-07-05](../progress/2026-07/2026-07-05.md), [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md)
 - **UniRL (Tencent Hunyuan) is a DGX-gated watch-item, not_applicable on CPU-only EPYC (2026-06-20)**. UniRL is a multi-GPU RL post-training framework (Ray DevicePool + FSDP + Transfer-Queue weight sync) for diffusion/AR/multimodal generators — training code only, no inference/serving path, and no benchmark numbers in its README (all observations, never decision-gating). It cannot run on the CPU-only stack: the blocker is the absence of a *training* GPU. Two forward-looking transfer hooks were flagged-not-dismissed: (a) its diffusion-RL algorithm Flow-DPPO could one day fine-tune the deployed `sd_server` image role, and (b) its LLM-targeted token-level trust-region variants (CPPO/DRPO; arXiv 2606.10968 / 2606.09821) could seed a future on-prem LLM RL track — neither exists today (current "learned" tracks are supervised routing classifiers, not policy-gradient RL). Confidence: external/DGX-gated. [gpu-acceleration-path.md, intake-709]
-
 ## 2026-06-13 Update — What Is Actually Exhausted
 
 The Fable 5 kernel review draws a sharper boundary than earlier shorthand. Batch=1 decode micro-optimization is genuinely exhausted under the current evidence: the CPU is compute-idle but per-thread bandwidth saturated, so kernels that stream the same bytes faster do not change the bottleneck. That closure does not exhaust the hardware program.
@@ -1025,7 +682,6 @@ Five live angles remain:
 The MI210 hypothesis also changes emphasis. Dense frontdoor residency remains plausible, but GPU-as-eval-engine may compound more quickly: faster promotion evals increase statistical power per day, which directly addresses the evidence-plane bottleneck.
 
 Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-06-kernel-and-concurrency.md), [Fable 5 serving and GPU](../handoffs/completed/fable5-findings-03-serving-and-gpu.md), [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md).
-
 ## Actionable for EPYC
 
 - **Deployed NUMA configuration**: Frontdoor (4x48t quarters, ~50.8 t/s), coder_escalation (4x48t quarters, ~43.3 t/s), architect_general (1x96t node0, 4.3 t/s), architect_coding (1x96t node0, 7.0 t/s), ingest (1x96t node0, ~12 t/s). Total model footprint ~515 GB.
@@ -1035,13 +691,11 @@ Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-
 - **Architect 2-instance opportunity**: Qwen3.5-122B-A10B at 69 GB could run 2x96t for ~2x aggregate if architect throughput bottlenecks. Currently single-instance.
 - **Qwen3.5 hybrids are 2-3.6x faster than pure MoE at 122B+ scale** due to recurrent layers avoiding KV cache bandwidth costs. Consider replacing remaining MoE architect roles with hybrids if quality permits.
 - **Always sweep before deploying**: The bench_all_spec_sweeps.sh script produces comprehensive verification. Single-run extrapolations have been wrong by up to 3.6x.
-
 ## 2026-06-15 Update — Benchmark Boundaries Stayed Narrow
 
 - **Canonical measurement now treats historical speed claims as observations unless the protocol is explicit.** The publication draft and public-results draft both separate protocol-tagged rows from claim-grade rows, so throughput claims can no longer float free of reps, date, and attestation. The public-results generator also emits a public-scrub surface so complete protocol metadata cannot accidentally promote rows that still expose local paths, loopback endpoints, internal role aliases, or operator/internal workflow terms. Sources: [canonical-cpu-benchmarking-methodology-draft.md](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md), [public-results-draft.md](../docs/publication/public-results-draft.md).
 - **Serving truth is generated, not hand-curated.** The live stack contract now flows through generated stack priors and exact holder accounting, which means hardware conclusions need to align with the actual launched topology instead of static model tables or stale role maps. Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md).
 - **Batch=1 closure does not imply batch/eval closure.** Fable 5’s serving work keeps continuous batching and `-np` sweeps as separate measurements, so the remaining performance question is still the effect of concurrent prefill and eval fanout, not more extrapolation from the kernel-level decode result. Sources: [canonical-cpu-benchmarking-methodology-draft.md](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md), [public-results-draft.md](../docs/publication/public-results-draft.md).
-
 ## Open Questions
 
 - **Does a gfx90a vLLM beat llama.cpp-HIP's quantized ceiling?** The matched-precision fp16 head-to-head is settled (vLLM +11% per-stream / +24% batched, and the ~47% ceiling is proven a Q4_K MMQ-dequant artifact), but **quantized-vs-quantized** (vLLM AWQ/fp8 vs llama.cpp Q4/Q8) — where llama.cpp's gap actually lives — is unmeasured because it needs vLLM quant weights. A deployment-scale Gemma-3-27B comparison (~100–190 GB downloads, now feasible post-reclaim) is gated on the 8B result being surprising.
@@ -1059,7 +713,6 @@ Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-
 - Consumer AMD GPU: RX 7900 XTX ($750-900, 24GB, ROCm stable, ~130 t/s decode 7B Q4) is the best budget option for hybrid MoE offloading. ROCm HIP compatibility with `-ot` tensor overrides is **unconfirmed**.
 - CPU+GPU hybrid MoE expert offloading (`-ot "exps=CPU"`, `--n-cpu-moe N`) is production-ready in llama.cpp. PCIe latency is the bottleneck, not CPU compute speed. Two-tier expert cache proposal (#20757) shows 12-14 t/s vs 0.5-1 t/s pure CPU offload -- most impactful pending feature for discrete GPU setups.
 - For short-context single-token decode, NUMA 4-way CPU may remain competitive with GPU since decode is memory-bandwidth-bound. GPU most beneficial for prefill (always compute-bound) and long-context decode (attention becomes compute-bound at >50% of per-token time).
-
 ## Related Categories
 
 - [Benchmark Methodology](benchmark-methodology.md) -- all benchmark results depend on hardware configuration
@@ -1069,7 +722,6 @@ Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-
 - [Local Inference](local-inference.md) -- llama-server launch parameters are hardware-optimized
 - [Quantization](quantization.md) -- Q4_K MMQ dequant cost on gfx90a, NVFP4/STQ1_0/TQ3 CPU vs GPU quant paths
 - [KV Cache Optimization](kv-cache.md) -- KV cache quant (Hadamard rotation auto in v6; TurboQuant TBQ3/TBQ4 watch)
-
 ## Source References
 
 - [Chapter 01: Hardware System](/workspace/docs/infrastructure/01-hardware-system.md) -- EPYC 9655 specifications, runtime optimizations, baseline performance
@@ -1110,7 +762,6 @@ Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-
 - [Kernel reconciliation audit (pre-v7)](../handoffs/completed/kernel-reconciliation-audit.md) -- READ-ONLY git audit: fork point `f8cc15f16`; GPU (`ggml-cuda`) and CPU/server (`ggml-cpu/iqk` + `tools/server/*` + `src/llama-kv-*`) subsystems are DISJOINT (only shared file `hip.h` is byte-identical → no-op conflict); experimental was missing the iqk CPU GEMM subsystem (7 commits/40,541 ins) + 3 server/CPU items, prod was missing the 4 gfx90a GPU opts; nothing valid stranded; `a8afd338` is a thread marker not a git ref
 - [Tree-draft forward-port plan — Phase-1a result](../handoffs/active/tree-draft-forward-port-plan.md) -- v7-candidate build `46f876c12` (v6+iqk + 4 GPU opts + tree-draft, clean HIP compile/link); DySpec engine bit-identical to linear draft but net-negative vs plain and dominated by embedded MTP → SHELVED
 - [Progress 2026-07-06 — v7-candidate + GPU speed levers](../progress/2026-07/2026-07-06-v7-candidate-and-gpu-levers.md) -- v7-candidate reconciliation (zero-conflict, stale-fork bug closed); experimental-kernel-workflow + production-kernel-immutability governance (`a37fc7f5`); verified aggregate spec sheet (frontdoor 408 @B32) with bf16-state ON/OFF regression-validation on the reconciled kernel (27B +20.1%, 35B-A3B +17.7%); MTP-F16 +60.2%; verified temp→α curves + reproducibility root-cause
-
 ## 2026-04-23 Additions
 
 ### CPU throughput levers — post-TIDE deprecation landscape
@@ -1166,7 +817,6 @@ These become the baseline for CPU3 Phase 0 measurements under the new `cpu-infer
 - [Single-Instance System Tuning](/workspace/handoffs/completed/single-instance-system-tuning.md) -- new 2026-04-23, NPS/THP/hugepages/barrier/IRQ audit, projected 15–40% alone
 - [CPU Inference Optimization Index](/workspace/handoffs/active/cpu-inference-optimization-index.md) -- new 2026-04-23, backlog umbrella for all unimplemented CPU throughput techniques (CPU1–CPU14)
 - [HSD + Hierarchical Self-Speculation](/workspace/handoffs/completed/hsd-hierarchical-self-speculation.md) -- SSM checkpoint overhead analysis, self-speculation failure modes
-
 ## 2026-04-23 late-session measurement update (supersedes projections above)
 
 Phase 0 of the CPU optimization coordinated pickup executed 2026-04-23 with `perf record --call-graph dwarf` (installed via user sudo), on `llama.cpp-experimental` at `cpu-optimization/backlog-2026-04-23` (HEAD `9e048fbc1`). Findings materially revise the earlier-in-this-document projections:
@@ -1277,7 +927,6 @@ Going forward: when `perf report` shows a large overhead percentage inside a qua
 - `handoffs/active/intra-process-tensor-parallel-decode.md` — Phase 0 gate-passed annotation + data.
 
 ---
-
 ## 2026-04-24 late: Phase 1.4 shipped, fusion track closed, Zen 5 VNNI surprise
 
 Outcome of the CPU optimization sprint's software-level phase on NPS4:
@@ -1375,7 +1024,6 @@ Gradient test on 2026-04-24 — flipping the dispatcher to use the existing `*_g
 Conclusion: the plumbing is sound but the kernel side is missing. Writing hand-optimized AVX-512BW 8x8 repacked GEMV kernels for Q8_0 (biggest win: 77% cycle share, simplest kernel) and Q6_K (18% on Q4_K_M dense, more complex due to 4+2 bit unpack) is the next real software-level lever after L3aaN. Use AVX-512BW width (`_mm512_maddubs_epi16` + `_mm512_madd_epi16`) — NOT VPDPBUSD — because Zen 5's maddubs has 2/cycle throughput vs VNNI's 1/cycle. Expected gain: +40-70% on Q8 decode, +7-10% on Q4_K_M dense.
 
 Effort: 4-6 hours per kernel. Deferred pending L3aaN reboot (higher ROI, zero code risk).
-
 ## 2026-04-24 Session 15 update — Q8_0 8x8 AVX-512BW kernel landed; ceiling is NOT BW-bound
 
 The 2026-04-24 morning entry above predicted "+40-70% on Q8 decode" from a hand-written AVX-512BW 8x8 Q8_0 kernel. Session 15 in the afternoon implemented that kernel and found the prediction was **partly right and partly wrong**, with two important corrections:
@@ -1424,7 +1072,6 @@ The Q6_K and Q5_K 8x8 AVX-512BW kernels from the morning's recommendation remain
 ### General lesson — backend-buffer NUMA placement
 
 `ggml_aligned_malloc` returns unfaulted anonymous pages that get pinned to whichever NUMA node first-touches them. For the CPU_REPACK buffer, that meant all 26 GB on node 0 → 96-thread reads through one node's memory controllers → 2.8× regression. The fix (`mbind(buffer, size, MPOL_INTERLEAVE, all_nodes)` inside the buffer-type allocator, gated on `ggml_is_numa()`) is general and worth applying to every backend buffer type that holds large multi-thread-read working sets. Reference impl: commit `e84a5c82f` on `cpu-optimization/q8-8x8-avx512bw`.
-
 ## 2026-04-24 Session 15 part 4-5 — perf profile + graph-rewrite probe
 
 After the kernel + NUMA fix (parts 1-3 above) the throughput ceiling on Qwen3.6-27B Q8_0 sat at 4.4 t/s and the user pushed back on the "BW-saturated" framing. Sessions 15 parts 4 and 5 ran a `perf record --call-graph dwarf` profile and tried two graph-level rewrites; both disproved the simple-fix hypothesis and clarified the actual ceiling.
@@ -1486,7 +1133,6 @@ The CPU2 lineage closes here for Q8 specifically. Production-side moves (Q4_K_M 
   - `0467a5c17` env-gated parallel RMS_NORM (default off, net-negative)
 
 All correct, env-gated for safety, PPL-preserved.
-
 ## 2026-04-26 additions
 
 ### Bottleneck class follows the QUANT, not the model size
@@ -1563,7 +1209,6 @@ Historical 2026-04-25 claim: `--numa distribute` regresses Qwen3.6-35B Q8_0 from
 - `handoffs/active/cpu-optimization-thesis-pause-2026-04-26.md` — companion doc
 - `llama.cpp-experimental:af2e45de4` — kill-switch
 - `llama.cpp-experimental:8cb04da9d` — NUMA_WEIGHTS per-region mbind fix
-
 ## 2026-04-26 evening: L3-as-NUMA evaluated and rejected
 
 The user's pre-recorded "next gate after NPS4 software levers exhausted" — switching the BIOS NUMA Nodes Per Socket setting from NPS4 (4 nodes × 3 CCDs) to L3-as-NUMA (12 nodes × 1 CCD) — was tested in this session. **Outcome: catastrophic regression on every measured config; reverted.**
@@ -1641,7 +1286,6 @@ L3aaN is **rejected** for this stack. Production NUMA topology is **NPS4 going f
 - `data/cpu_optimization/2026-04-26-l3aan/` — 16 raw bench logs, plus `concurrent12/SUMMARY.md`
 - `memory/project_l3aan_reverted.md` — auto-memory entry (per-NUMA replication caveat noted)
 - Literature: Broadcom L3 LLC as NUMA, HPC Advisory Council EPYC Tuning Guide, llama.cpp #1437, #11744, #12289, Phoronix EPYC 9005 HPC tuning
-
 ## 2026-04-26 late evening — Post-revert findings (CRITICAL)
 
 After the user's manual BIOS revert from L3aaN back to NPS4, the post-revert verification surfaced three findings that revise the framing of all earlier 2026-04 CPU optimization work:
@@ -1677,7 +1321,6 @@ Confirmed by user 2026-04-26: the sysctl.d file is intact, `systemd-sysctl` repo
 - `memory/project_raid_numa_split_nps4.md` — RAID/NUMA split + recommended interleave config
 - `memory/feedback_numa_balancing_self_reset.md` — sysctl drift caveat
 - `memory/feedback_canonical_baseline_protocol.md` (extended) — cold-vs-warmed protocol distinction
-
 ## 2026-04-26 late evening — Compounding matrix downgrades all prior CPU wins
 
 User-requested methodology check ("verify lever compounding"). Most prior optimization wins were sub-baseline artifacts. Full data: `data/cpu_optimization/2026-04-26-compounding/SUMMARY.md`.
@@ -1710,7 +1353,6 @@ Production deployment should be **model-aware**: `--mmap 0 + --interleave=all` i
 2. **CPU24 attribution scope simplifies**: there's no measurable EP regression on >150B to attribute. Open question becomes "what's the proper-canonical ceiling for REAP-246B (5.94 t/s)" rather than "why does EP regress".
 3. **CPU19 Tutel 2DH motivation evaporates**: was specifically to fix the >150B EP regression, which doesn't exist on proper canonical.
 4. **Production push roadmap simplifies**: the "+17% production gain" was largely illusory; the actual gain is the canonical config change (+44% on Q8_0, +39% on gemma) which requires no code, just per-model deployment config.
-
 ## 2026-04-26 late-evening — CPU21 OpenMP affinity universal lever + CPU24 perf-record correction
 
 ### CPU21 OpenMP runtime/scheduling matrix sweep — universal +3-8% lever found
@@ -1783,7 +1425,6 @@ Phase 0 quick probe sweep `-ub` (microbatch / chunk-prefill granularity) on Code
 ### CPU2 Session 16 — Q6_K AVX-512BW dispatcher scaffolding
 
 Given CPU24 perf-record shows `ggml_vec_dot_q6_K_q8_K` is the second-largest cycle consumer (15.64% on REAP-246B), Q6_K AVX-512BW SIMD is the highest-ROI remaining optimization. Session 16 landed dispatcher scaffolding (env-gated `GGML_Q6_K_8X8_AVX=1`, stub falls through to generic). Full SIMD algorithm design documented in handoff for follow-up session. Estimated +2-5% on Q4_K_M decode once body lands.
-
 ## 2026-04-28 — GPU-day kernel-DSL primer (intake-497, TileLang puzzles + parent project)
 
 Forward-looking entry, not actionable on current CPU stack. Compiled so the GPU-acquisition wave starts with a kernel-DSL evaluation matrix already in place.
@@ -1820,7 +1461,6 @@ Forward-looking entry, not actionable on current CPU stack. Compiled so the GPU-
 - [tilelang-puzzles-kernel-dsl.md](../research/deep-dives/tilelang-puzzles-kernel-dsl.md) — full deep-dive with kernel-family matrix, AMD path, BitBLAS connection, risk register
 - [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — parent GPU-gated handoff (2026-04-28 deep-dive integration section)
 - intake-458 (FlashInfer), intake-465 (CUTLASS), intake-466 (Triton), intake-464 (FA3) — adjacent GPU-day kernel-DSL entries from 2026-04-26 curriculum batch
-
 ## Updates — 2026-04-28
 
 Consolidation pass over the CPU20→CPU25 rigor-and-attribution wave plus toolchain (CPU11/CPU12) and runtime (CPU21) finalization. Closure scope is narrowed throughout: low-level levers are exhausted **for the single-user single-socket NPS4 decode regime**, not globally.
@@ -1929,7 +1569,6 @@ v5 cherry-pick candidates have all passed PPL bit-exactness:
 - [`handoffs/active/gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — GPU parked, vLLM+Dflash, DGX Spark cost-effective, TileLang/BitBLAS GPU-day
 - [`research/deep-dives/tilelang-puzzles-kernel-dsl.md`](../research/deep-dives/tilelang-puzzles-kernel-dsl.md) — kernel-DSL evaluation matrix, BitBLAS path, AMD MI300X relevance
 - intake-497 — TileLang puzzles (medium relevance, worth_investigating)
-
 ## 2026-04-29 Update — CPU4 Phase 1 op-coalesced barriers + Phase 0 design pause
 
 ### CPU4 op-coalesced barriers (Phase 1) — TESTED, NO-GO (framing revised 2026-04-29 evening — Remediation Phase A)
@@ -1977,7 +1616,6 @@ Recommended pivot to higher-leverage activities:
 4. **Higher-level mechanism research** — model-level fusions, quant layouts
 
 This represents an honest acknowledgment that the within-ggml CPU-optimization design space is largely exhausted at the current hardware, and pivoting research direction is more productive than further squeezing existing levers.
-
 ## 2026-04-30 Update — v5 Cleanup Audit COMPLETE
 
 ### `production-consolidated-v5` branch ready
@@ -2071,7 +1709,6 @@ BOLT profile: collected from a DeepSeek-R1-1.5B instrumented run (~1 min; covers
 **Next gate**: orchestrator wiring (binary_path + env per role in model_registry.yaml). Blocked on user authorization; deployment-draft at `handoffs/active/model-registry-v5-deployment-draft.yaml` is the staging document.
 
 Source: [progress/2026-04/2026-04-30.md section "v5 kernel push + PGO/BOLT production binaries"](../progress/2026-04/2026-04-30.md)
-
 ## 2026-05-04 Update — host_prereqs persistence + per-NUMA-node concurrent scaling
 
 ### Canonical OMP env stack persistence
@@ -2110,7 +1747,6 @@ Phase A.1 PPL gate: 5/5 production models bit-exact under `GGML_Q6_K_8X8_AVX=1` 
 Phase A.2 perf gate at 96t under canonical recipe: aggregate geomean **-0.28%**, REAP-246B regresses **-1.01%** (z>0). Gate FAILS — kernel is correct but BW-saturated at 96t (consistent with `project_q8_8x8_avx512bw_outcome` "+1-3% at 12-96t (BW-saturated)" pattern). Q6_K kernel kept env-gated default-OFF in `production-consolidated-v5`. Phase B (Q5_K body) and Phase C (blanket Q{5,6,8}_K default-on flip) **de-prioritized** — the compounding rationale for blanket flip is falsified.
 
 The +31.8% single-thread benefit (per `project_q8_8x8_avx512bw_outcome`) remains opt-in via `GGML_Q6_K_8X8_AVX=1` for low-thread workloads. Source: [data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md](../../epyc-inference-research/data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md).
-
 ## 2026-05-08 Update — Sakana TwELL / SparseLM (intake-529/530/531) — design-reference-only
 
 Sakana AI released [arxiv:2603.23198 "Sparser, Faster, Lighter Transformer Language Models"](../research/intake_index.yaml) (2026-03-24) along with a [publication blog](https://pub.sakana.ai/sparser-faster-llms/) and [github.com/SakanaAI/sparser-faster-llms](https://github.com/SakanaAI/sparser-faster-llms). The technique: L1 regularization on FFN hidden activations during from-scratch pretraining induces >99% average activation sparsity at iso-quality; a custom Hopper-only (SM 90A) fused CUDA kernel with the **TwELL (Tile-wise ELLPACK)** packing format avoids materializing the dense post-ReLU hidden vector. Reported gains: +17–20% inference, +7–22% training, 19–28% peak memory reductions on 0.5B / 1B / 1.5B (the **2B configuration shows a +22.3% memory regression** in Table 1, anomalous and unexplained), all vs dense BF16. Hardware: NVIDIA H100 PCIe.
@@ -2130,7 +1766,6 @@ Sakana AI released [arxiv:2603.23198 "Sparser, Faster, Lighter Transformer Langu
 **Refined re-surface triggers**: (1) finetune-from-existing-weights variant (paper's own future work); (2) **combined sparse + INT4/Q4_K kernel result vs Q4_K_M dense baseline** — the apples-to-apples we need; (3) MoE variant of TwELL — could compound on Qwen3 30B-A3B; (4) Qwen-family or DeepSeek-family checkpoint released using this recipe; (5) CPU port by anyone demonstrating BW savings under indirect-addressed gather on EPYC-class chip; (6) internal pretraining-from-scratch campaign in our project; (7) sorted-bucket repack format lands in ggml for unrelated reason — trailing-skip / TwELL packing become reusable design references (shared with intake-528 trigger #1).
 
 **Source**: [research/deep-dives/sakana-sparser-faster-llms-deep-dive.md](../research/deep-dives/sakana-sparser-faster-llms-deep-dive.md) — full source-level audit (paper Section 1–6 + actual TwELL CUDA source + HF checkpoint configs + repo metadata via GitHub API). Cross-references: intake-528 (Kolinko Effort Engine, same dynamic-activation-sparsity neighborhood); intake-474 / intake-493 / intake-511 (Sakana lab cluster: Trinity, Conductor, KAME); intake-467 (MegaBlocks, block-sparse MoE GEMM at structured-block granularity vs unstructured-weight here). Handoff anchor: [`cpu-shape-specialized-gemv-decode.md`](../handoffs/active/cpu-shape-specialized-gemv-decode.md) Research Intake Update + Deep-Dive Addendum sections.
-
 ## 2026-05-08 Update — NUMA full XOR quarters (worker_general gemma4 swap)
 
 The 2026-05-08 worker_general → gemma4-26B-A4B MTP swap (see [Speculative Decoding § Production deployment](speculative-decoding.md#production-deployment-landed-2026-05-08)) surfaced a long-standing latent issue in the orchestrator's NUMA design: **`--only worker_general` brings up 1 full-NUMA-node instance + 4 quarter instances, and the 5 share overlapping CPU sets**. The full instance pins to CPUs 0-95 (all physical cores); the 4 quarters split into Q0A (0-23+SMT) / Q0B (24-47+SMT) / Q1A (48-71+SMT) / Q1B (72-95+SMT) — together also covering 0-95.
@@ -2144,7 +1779,6 @@ Pre-2026-05-08 (Qwen3-Coder-30B-A3B with `-t 24` per the 1.5B-era leftover), thi
 **Generalizes to any role with `-t` matching the canonical recipe**: any future role launched with full-canonical thread counts will hit the same overlap if its `NUMA_CONFIG` declares both a full-NUMA-node entry and quarter entries. The pattern is to restructure the role's instance list to one or the other, never both, gated by operator intent.
 
 **Cross-references**: [progress/2026-05/2026-05-08.md § session 2 § Phase 3](../progress/2026-05/2026-05-08.md), commit `e205309` (epyc-orchestrator).
-
 ## CPU decode roofline measurement — BW math + AMD-correct counters (2026-05-28)
 
 Two reference numbers that anchor any CPU decode performance claim on this host:
@@ -2162,13 +1796,11 @@ The roofline audit handoff is **blocked at Status: DRAFT** until Phase 0 counter
 **Decision rule (consistent across all referencing docs)**: achieved FLOPS < 10% of ~9.2 TFLOPS FP32 socket theoretical AND achieved DRAM BW > 70% of 614 GB/s socket theoretical → BW-bound; diffusion-LM port variants (Nemotron-LD Variant B TiDAR-pattern, C1/C2 hybrids) have FLOPS margin worth converting.
 
 Sources: [`handoffs/completed/cpu-decode-flops-roofline-audit.md`](../handoffs/completed/cpu-decode-flops-roofline-audit.md) · [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md` §10](../research/deep-dives/nemotron-labs-diffusion-tri-mode.md) · `feedback_canonical_baseline_protocol` · `feedback_no_concurrent_inference` · `progress/2026-05/2026-05-28.md` §research-intake-batch §Phase-6/7.
-
 ## CPU15 / CPU20 active-surface correction (2026-05-28)
 
 The handoff compaction pass corrected a recurring CPU-optimization ambiguity: completed CPU15 expert-parallelism infrastructure is not a production default. The active CPU15 handoff now treats EP as default-off infrastructure that requires CPU20-compliant canonical revalidation before any deployment claim is revived. Old frontdoor EP win/regression claims were softened across the CPU index, environment-flag inventory, NPS reboot runbook, MoE-Spec notes, and master-index history so future agents do not treat superseded measurements as current rollout instructions.
 
 The practical rule for hardware work is unchanged but now easier to find: CPU20 protocol compliance and current bottleneck proof are prerequisites for reopening TP/EP/kernel levers. The completed ledgers remain useful evidence, but the active handoffs hold the current gates and revalidation checklist. Sources: [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md), [`large-moe-expert-parallelism-completed-through-2026-05-28.md`](../handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md), [`cpu-benchmark-rigor-and-revalidation.md`](../handoffs/completed/cpu-benchmark-rigor-and-revalidation.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).
-
 ## 2026-06-03 — Agentic ROCm kernel authoring on MI210 (GEAK family, intake-660–679)
 
 The GPU path (previously "parked behind hardware acquisition") gained a concrete near-term program when an **AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB, ~July 2026)** entered scope and the operator set a goal of **authoring custom HIP/Triton kernels** for the EPYC stack via a **train-free agentic verify→profile→refine loop** (we cannot retrain a kernel model on one MI210). A 20-entry research-intake sweep (intake-660–679) of the LLM-GPU-kernel-generation literature produced the synthesis below.
@@ -2184,7 +1816,6 @@ The GPU path (previously "parked behind hardware acquisition") gained a concrete
 **Standing caveat:** all AMD numbers (intake-674–679) are vendor-reported (AMD authors agent + benchmark + hardware) with no third-party reproduction; treat as provisional until reproduced on our own gfx90a. The first action when the card racks is reproducing GEAK-eval's MI250X numbers on the MI210.
 
 Sources: [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) (full reasoning + freshness appendix with GEAK repo pins) · [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) · [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) · `research/intake_index.yaml` intake-660–679 · master-handoff-index queue #62 · `progress/2026-06/2026-06-03.md`.
-
 ## 2026-07-11 — MI210 HIP graph capture for inference decode (first empirical benefits)
 
 First end-to-end measurement of **HIP graph capture** (`GGML_HIP_GRAPHS=ON` → `USE_CUDA_GRAPH`) on the MI210 for *inference decode* (distinct from the GEAK kernel-authoring program above). Runtime toggle: `GGML_CUDA_DISABLE_GRAPHS=1` = direct dispatch. Arch gate `cc < GGML_CUDA_CC_AMPERE(800)` cannot trip on AMD (`cc` is offset by `0x1000000`, so MI210 CDNA2 = `0x100090a`); `MUL_MAT_ID` (MoE) does **not** disable graphs for quantized single-token decode (`mmvq_mmid_max=8`, `ne[2]=1`). All numbers observation-grade (MEASUREMENT.md), `build-hip` @ `46f876c12`, ROCm 6.2, Q8.
@@ -2200,7 +1831,6 @@ First end-to-end measurement of **HIP graph capture** (`GGML_HIP_GRAPHS=ON` → 
 - The MI210 GPU can be idle while the **host CPU** is the confound — the MTP draft loop's per-step token/h_row round-trip runs on the CPU, so production CPU load depresses/scatters spec-dec throughput even with the model fully on the GPU.
 
 Sources: [`handoffs/active/gemma-challenge-kernel-techniques-v7.md`](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) (K2 empirical tables + Kernel-Optimization Levers + Non-gemma4 generalization) · [`handoffs/active/speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) · [`progress/2026-07/2026-07-11.md`](../progress/2026-07/2026-07-11.md) · `project_mi210_hip_graph_capture` (memory) · `feedback_pair_speed_with_correctness_check` · `feedback_verify_test_method_before_calling_it_a_bug`.
-
 ## 2026-07-17 — Large cross-run CPU-decode "regressions" were transient host state, not source (K34/K24)
 
 A v7-promotion guardrail chased apparent v7 CPU non-spec base-decode regressions (architect `-9.24%`, frontdoor `-6.55%`) and root-caused them to **host/runtime state, not a kernel-source regression** — a recurring trap when A/B benches straddle different host conditions.
@@ -2219,7 +1849,6 @@ A v7-promotion guardrail chased apparent v7 CPU non-spec base-decode regressions
 - **The stale-assumption pattern is the durable lesson: a conditional stub with a written expiry that nobody re-checked.** `iqk_stubs.cpp:8-12` states plainly — *"The registry shows ZERO use of IQ-quants … If/when we adopt IQ-quants (e.g. future GLM IQ2), these MUST be replaced with the real ik kernels — do not leave them stubbed for a quant we deploy."* That was accurate when written; four IQ-quant models were subsequently added and the condition was never revisited. The generalizable guard is that a type/capability whitelist gated on "what the registry currently contains" needs an automated check against the live registry, not a comment. Sources: [iqk-iquant-enablement.md](../handoffs/active/iqk-iquant-enablement.md), [iqk-port.md](../handoffs/completed/iqk-port.md), [tq3-quantization-evaluation.md](../handoffs/active/tq3-quantization-evaluation.md).
 
 - **What was folded from ik_llama at v6/v7 was the GEMM kernel subsystem, not the format plumbing — and the distinction decides where trellis can be evaluated.** Verified at `production-consolidated-v7 @ 6ad45fa3f`: zero references to `IQ2_KT`/`IQ4_KT` in our `ggml.h` enum, zero rows in the `ggml.c` `type_traits` table, and no KT option in `llama-quantize`. Our binary can therefore neither **produce** nor **load** a KT GGUF (the types are synthetic casts at 153-158 against `GGML_TYPE_COUNT = 43`), while `ik_llama.cpp` can do both. That is why a KT evaluation must currently run in that tree as a measurement instrument — which does not reopen its deprecation as a *serving* path. Sources: [iqk-iquant-enablement.md](../handoffs/active/iqk-iquant-enablement.md), [tq3-quantization-evaluation.md](../handoffs/active/tq3-quantization-evaluation.md), [v7-promotion.md](../handoffs/active/v7-promotion.md).
-
 ## Compiled Update — 2026-08-09 (what a production engine's chunked-GDN recurrence actually looks like; and the profiler-capture mode our tooling survives is the one that yields attribution)
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled from dive-verified intake entries read against upstream source on 2026-08-09. Nothing here has been compiled or run on gfx90a; treat every portability statement as a hypothesis with a named test.
@@ -2237,7 +1866,6 @@ A v7-promotion guardrail chased apparent v7 CPU non-spec base-decode regressions
 - **A profiler-triage report layer can be separated from its trace parser, which is what makes a ROCm port cheap.** In the reference implementation the renderers take `rows: Sequence[dict]` with parsing delegated to sibling modules, so adopting the report contract (kernel / overlap-opportunity / fuse-pattern tables, rows at or above a 1.0% cumulative GPU-time share, source-backed matching explicitly *not* fuzzy, and a bounded `high`/`medium`/`low` confidence vocabulary) requires building only a `rocprofv2` row adapter. This also **de-risks by subtraction**: confining the model to a similarity note and a catalog comparison, rather than reading raw counters, shrinks the trusted surface of the highest-risk item in the profiler-backend plan. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), [autokernel-research-loop.md](../handoffs/active/autokernel-research-loop.md), intake-1026.
 
 - **A kernel-time-share table is structurally blind to an entire class of bottleneck.** The reference catalog excludes "host-only scheduler, event-loop, executor, offload, and load-path patterns" *by written policy*, so a host/device transfer cost has no row and cannot surface. Any analogue we build must widen that scope deliberately or pair it with a host-side catalog. Sources: [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), intake-1029, intake-1027 (`stage1-unverified` — no figure from it may be cited).
-
 ## Compiled Update — 2026-08-10: the gfx90a kernel-agent program re-aimed, and a claim compiled here retired
 
 > Freshness sweep of the agentic-kernel-authoring program (the sweep this handoff mandates at every
@@ -2333,3 +1961,396 @@ A v7-promotion guardrail chased apparent v7 CPU non-spec base-decode regressions
 - [`handoffs/active/mi210-mfma-compute-bound-paths.md`](../handoffs/active/mi210-mfma-compute-bound-paths.md) — the fragment-layout identity, the arch-independent HipKittens lessons and the vendor ridge-point error
 - [`handoffs/active/mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the attainment ladder behind the fp16 re-target and its calibration caveat
 - [`research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md`](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md) §9 — the freshness appendix this sweep executes
+## Compiled Update — 2026-08-12 (INF-03 live campaign and GPU-claim scope)
+
+**Confidence: verified receipts and process/claim teardown; partial campaign, no controller ranking.**
+
+The availability-conditioned AgentKernelArena campaign is now executing from a source-bound,
+restart-safe r3 identity after two fail-closed attempts. R1 is invalid because a dotted task path
+escaped the exact workspace and claim release was incomplete. R2 proved the containment repair on its
+baseline, then stopped when the strict parser rejected provider JSON with extra fields. The integrated
+provider schemas retain that strict parser rather than weakening it.
+
+R3's starting-state baseline and Claude/Codex 2h and 8h checkpoints are terminal. Both controller
+checkpoints passed centralized compilation and correctness with four valid baseline and four valid
+optimized timing cases; their diagnostic speedups were `0.9859560018476856` and
+`0.8878376233551375`. These terminal cells are restart inputs, not a panel ranking.
+
+The attempted 32h checkpoint exposed a separate resource-governance defect: the cell held its MI210
+claim while planner/actor work did not use the GPU. The owner stopped only the captured runner,
+released its exact claim, and removed its exact surviving actor container. R3 is paused with the 2h
+and 8h cells banked. Before resume, device claims must surround the centralized evaluator's actual GPU
+windows rather than the whole controller wall-time budget.
+
+### Source References (2026-08-12 INF-03 checkpoint)
+
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r1/r2 invalidation boundaries, r3 receipts, and claim-scope task
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact campaign, receipt, process, claim, and measured-speedup evidence
+- [Vidya adapter source table](../scripts/vidya/adapters/README.md) — producer-side round-trip measurement status and no-backfill boundary
+## Compiled Update — 2026-08-12 (current-v9 controls and CPU IQK boundary)
+
+**Confidence: verified measured controls and fail-closed preflight; no CPU candidate result.**
+
+AutoKernel's current frozen-v9 control bundle is now accepted under the clean hardened instrument.
+Calibration solved B_min=`10` and φ=`0.03578502357852242`; positive, neutral, wrong-work, A/A, and
+historical-win controls all satisfied their declared behavior (`5/5`), the historical IQK replay
+promoted at `+26.6050%`, and the bundle reports `may_rank=true`. A deterministic composition defect
+appeared only after the six inference legs had completed: `CampaignBinding.change_class` was missing.
+The repaired evaluator recomposed the immutable raw vectors without inference and bound every input
+hash plus `inference_executed=false` in a separate attestation. This preserves the distinction between
+recovering deterministic evaluation and rerunning measurements.
+
+The first full-host CPU IQK campaign is prepared against that bundle, including proposal-v3 and an
+exact recipe-frame physical envelope. Its corrected live attempt nevertheless produced no candidate
+measurement: preflight refused at host uptime `13.47 days`, beyond the ratified one-week ceiling,
+before claim, build, or benchmark. The next valid empirical sequence is therefore a compliant reboot,
+the prepared CPU IQK replay, construction of the first real matched completed-proposal archive, then
+the least-commitment evaluation observe-only. The new archive builder is ready but correctly cannot
+turn the preflight-refused journal into completed-proposal evidence.
+
+Three complete repetitions of the offline AK6 fault matrix passed 1,971/1,971 tests without inference,
+covering journal recovery, claim-owner death/reclaim, live-holder non-preemption and revocation, and
+receipt/hash/source tamper refusal. This establishes offline acceptance, not a real campaign rehearsal;
+the latter remains open and must produce its own empirical receipts.
+
+The Kernel-R&D hub now surfaces this state from durable producers rather than a fixed historical
+allowlist. Its live contract shows the attested frozen-v9 anchor, `8/8` instrument preflight, accepted
+`5/5` controls, GPU replay `NOT_REPRODUCED`, and implementation `900cb5c6`; a missing production
+attestation is a loud alarm. The registry now uses the panel-specific `/api/kernel/health` probe:
+transport remains HTTP 200 while semantic health correctly returns HTTP 503 until champion, headroom,
+and release package are reported by the reboot-gated real campaign. AK9 speech-kernel-set projection
+remains a separate follow-up.
+
+The OP-11 source audit also reduced the approval request to its genuine two-file core on parent
+`a4cb04ca`: `quantize.cu` plus `test-backend-ops.cpp`, `+1795/-64`, plain-diff SHA-256
+`6dcec2b44322470fd76cbbd1e6223cd5a204b8352339b80189d3c06aa1cbbebf`. The audit found no
+critical/high hazard and retained the 172/172 Q4_K final matrix, 5,184/5,184 stateful result, and
+sensitivity/specificity 1.0. This is a recommendation only; the experimental commit remains forbidden
+until the operator approves OP-11.
+
+### Source References (2026-08-12 current-v9 controls)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact control receipts, archive-builder boundary, and Step-3 gate
+- [Current campaign state](../handoffs/active/CURRENT-CAMPAIGN.md) — live reboot-gated execution order
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — measured values, hashes, composition recovery, and fail-closed CPU chronology
+- [Kernel-R&D operational-truth audit](../artifacts/audit/kernel-rnd-dashboard-operational-truth-20260812.md) — selector, producer, health, and production-attestation findings
+## Compiled Update — 2026-08-12 (clean instrument and governed GPU replay)
+
+**Confidence: verified committed provenance, live smoke, and governed replay; no promotion claim.**
+
+AutoKernel's current measurement instrument is now a clean one-commit overlay on frozen v9:
+`a4cb04ca8f92fa4d665684490f609b380f9b5e96` has `0db32c06e3e550065b78311a6031ef3dd2c4f27c`
+as its sole parent and changes only `llama-bench.cpp` plus its README. Its real CPU smoke emitted the
+required hybrid-sync, thread-set, escape-check, unsynchronized-sample, and device-sync receipts under
+an exact 0–95 claim, then released that claim. A pinned, networkless, read-only package-power broker
+also made the source/binary/model/topology/storage/production/package-power preflight all-PASS without
+changing the root-owned powercap permissions.
+
+An independent governed frozen-v9 replay of the runtime-gated async-prefetch path then produced
+positive deltas in all 20 paired blocks, but the median was only **+1.2442303249%** and the minimum
+**+0.6788501205%**, below the predeclared **2%** contribution floor. Its verdict is therefore
+`NOT_REPRODUCED`, not a banked kernel win. The result reinforces the gate's intended distinction:
+consistent direction does not substitute for a predeclared material-effect threshold.
+
+### Source References (2026-08-12 clean instrument and replay)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — instrument identity, control dependency order, and replay verdict
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C6 instrument provenance and receipt-integrity boundary
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes, CPU smoke, package-power broker, and governed GPU result
+## Compiled Update — 2026-08-12 (AutoKernel diagnostic provenance)
+
+**Confidence: verified receipt/source audit; no inference or campaign claim.**
+
+RVP-T0-1, AK-BH-1/2/3, and AK-LN-2/AK-X-5a have durable diagnostic receipts and retain bounded
+hardware, provider, factorial, flash-attention, and lane-proxy findings. They do not collectively
+establish current AutoKernel campaign authority: several bind an experimental binary without a clean
+committed source/build manifest, while the shared experimental tree is dirty. A receipt field naming
+frozen v9 is not a substitute for the exact source, tree, build, library, and binary identities.
+
+The operational dependency order is consequently provenance first: reproduce the hardened instrument
+from clean committed source, run fresh frozen-v9 controls, run the full-host CPU IQK proposal, then
+construct the real matched completed-proposal archive and evaluate it observe-only. Existing diagnostics
+remain valid in their declared scope; synthetic archives remain regression tests.
+
+AK-DEL-1 is a distinct, commit-backed scope-reduction diagnostic rather than campaign evidence. Its
+preserved trace report placed all three admitted kernel families in the existing-path bucket and selects
+catalogue expansion before a novel generator. The finding is bounded to that corpus and does not claim
+that every workload lacks a novel-kernel opportunity.
+
+### Source References (2026-08-12 provenance audit)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — campaign dependency order and matched-archive gates
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — diagnostic receipt authority boundary
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes and source-provenance audit
+## Compiled Update — 2026-08-11 (AutoKernel Arena audit and real-controller smoke)
+
+**Confidence: verified audit and diagnostic-smoke behavior; no matched-campaign or promotion claim.**
+
+The fixed AgentKernelArena authoring panel now distinguishes two authorities mechanically. The full
+comparison remains eight arms and refuses at **6/8** because licensed, commit-pinned EvoEngineer and
+ARGUS implementations are unavailable. A separately named available-source panel is ready at
+**6/6**, but its receipt forbids implying an eight-arm result, ranking partial full-panel evidence,
+or authorizing promotion. Both no-execution audits bind the same task, source identities, evaluator,
+and 2h/8h/32h budget schedule.
+
+A real one-iteration/two-branch KernelFoundry smoke found two defects that static coverage missed:
+copied workspaces lacked the repository import root, then concurrent model branches raced in the
+shared Arena evaluator. The repaired v3 run completed two GPT-5.6 Sol/high calls under a cleanly
+released MI210 claim, passed centralized compilation and correctness, and admitted all four baseline
+and four optimized timing cases. Its average speedup was **0.998668**, but the receipt is diagnostic,
+non-rankable, and explicitly does not imply the matched campaign. The dashboard now projects this
+empirical state separately from generic probe inventory and preserves those authority limits.
+
+The K-Search, Xe-Forge, and GEAK-v1 one-iteration smokes subsequently completed the same centralized
+compile, correctness, and 4/4 baseline plus 4/4 optimized timing boundary and released their MI210
+claims. Their observed average speedups were respectively **1.003368**, **0.999612**, and
+**0.995595**. Those values remain non-rankable smoke telemetry: the smokes establish executable
+integration, not comparative controller quality or a matched-campaign result.
+
+The Claude/Codex actor-critic path also reached a terminal integration smoke after repairs for
+response parsing, contained candidate paths, nested-sandbox launch, and container stdin. Its actor
+runs inside a digest-pinned, read-only-root container with only the task workspace writable. The
+v5 completed planner, actor, and critic and reached centralized evaluation, but the evaluator worker
+used `/usr/bin/python3` without pytest. Its apparent correctness failure and zero timing cases are
+therefore infrastructure evidence, not evidence against the candidate. The authoring path was real,
+but candidate correctness remained unknown until replay with the pinned ROCm evaluator Python and
+package identity. That replay passed centralized compilation and correctness plus all
+4/4 baseline and 4/4 optimized timing cases under the pinned ROCm evaluator. Its average speedup was
+**0.993603**—non-rankable diagnostic telemetry that closes executable integration, not a controller
+quality or promotion claim.
+
+### Source References (2026-08-11 Arena audit/smoke)
+
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — fixed-panel coverage, source gates, receipt hashes, and live next actions
+- [AutoKernel progress, 2026-08-11](../progress/2026-08/2026-08-11.md) — failed-smoke chronology, repairs, v3 measurements, and non-rankable scope
+- [Dashboard contract](../dashboard/README.md) — current-state snapshot and separation of audit, available-source, and empirical-smoke authority
+## Compiled Update — 2026-08-11 (AutoKernel C6 live-host sandbox)
+
+**Confidence: verified live-host containment behavior; no inference or performance claim.**
+
+AutoKernel's real kernel-authoring path now has a host-native, fail-closed C6 boundary rather than the
+older devcontainer-only bwrap/unshare prototype. The evaluator provisions only a narrow
+`/sys/fs/cgroup/autokernel` parent, creates a fresh per-invocation leaf, and keeps candidate execution
+non-root under Landlock write confinement, seccomp signal/network/namespace denial, finite resource
+limits, and descendant-draining teardown. Missing or unwritable delegation refuses before candidate
+spawn; there is no `allow_unsandboxed` or environment escape on the live campaign path.
+
+The live red-team probe on this host exercised Landlock ABI 6 as uid 1000. A write inside the
+candidate tree succeeded, while an outside write and evaluator-receipt forgery failed; host signalling
+and socket creation returned `EPERM`; and teardown killed an escaped descendant, proved empty cgroup
+membership, and removed the invocation leaf. This closes the C6 host-readiness gate without weakening
+the standing rule that a sandbox claim must name and exercise its actual syscall and filesystem
+controls. No inference or production-stack change was needed.
+
+### Source References (2026-08-11 C6 host sandbox)
+
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — dated C6 closure and live red-team outcomes
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — syscall-confinement acceptance contract and live campaign ownership
+- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — host provisioning, path wiring, verification scope, and no-inference boundary
+## Compiled Update — 2026-08-11 (gfx90a WGM and authoring-loop boundary)
+
+**Confidence: verified diagnostic microbenchmark and real-MMQ negative; no five-control performance
+claim.**
+
+A gfx90a work-group-mapping proxy found a real, bounded locality signal: WGM16 improved the synthetic
+L2-sensitive kernel by **9.823%** versus no mapping across 240 balanced samples per cell, with a paired
+bootstrap 95% CI of **9.754–9.977%** and bit-exact correctness. WGM8 and WGM32 were close; WGM2
+regressed. The result selects none/8/16/32 for the real MMQ launch-order sweep. It does not establish
+that the gain transfers to MMQ, because the proxy deliberately isolates locality rather than the full
+quantized kernel.
+
+The admitted real-MMQ transfer test then falsified that transfer. Its first pilot was a no-op because
+CDNA stream-k bypassed the initial remap; r2 moved pure tile-order decoding into stream-k. All six
+none/2/4/8/16/32 cells passed **43/43** Q4_K correctness cases, but WGM0 remained fastest and every
+nonzero mapping regressed wall time by **1.286–4.050%**. WGM8 reduced all-MMQ TCC hit rate from
+**67.304% to 59.849%** while read requests stayed nearly flat (**+0.201%**), and Q4_K alone lost
+**7.903 percentage points**. G17 is therefore `CLOSED_NO_GO`; the uncommitted negative source is not a
+promotion candidate, and the budget returns to the already-filed G15 elementwise/norm fusion lever.
+The aborted trace-period counter pilot is excluded; successful counter-only captures are admitted.
+
+The surrounding authoring loop now has three missing control-plane pieces: a versioned C5 seed corpus
+with matched-budget RE-Bench log-time scoring, a prospective GEAK/Arena belief writer, and a gfx90a
+FP8 target whose contract explicitly distinguishes authoring/emulation from unavailable MI210 native
+FP8 matrix execution. A taxonomy audit also corrected an old citation conflation: KernelBench is a
+kernel-generation benchmark, while the 9/9 bug-detection result belongs to a separate seeded-fuzzing
+paper. RE-Bench contributes its scoring protocol, not its H100 task environment.
+
+ROCm 7+ upgrades now have a fail-closed compile gate for the known LLVM unroll regression: pass
+`-mllvm --amdgpu-unroll-threshold-local=600` through `CMAKE_HIP_FLAGS`, retain the compile command that
+proves it reached HIP compilation, and compare only from an experimental branch. The current ROCm 6.2
+stack is unchanged.
+
+The authorized frozen-v9 five-control run did not reach inference. Its preflight passed source and
+copied-binary identity but failed because the selected binary omitted six hardened runtime receipts;
+package power was also unreadable. That is instrument evidence, not a performance result. The next
+attempt must use a receipt-emitting hardened build and pass package-power preflight before taking a
+claim.
+
+### Source References (2026-08-11 WGM/authoring closeout)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — G17 negative disposition, G18 seed, and the failed-closed v9 control preflight
+- [MI210 MFMA compute-bound paths](../handoffs/active/mi210-mfma-compute-bound-paths.md) — admitted proxy and real-MMQ receipts, hashes, and next lever
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — C5, RE-Bench, FP8, taxonomy and upgrade gates
+- [ROCm upgrade checklist](../docs/runbooks/rocm-upgrade-checklist.md) — experimental-branch build and validation contract
+- [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — commit identities, receipt hash and no-inference boundary
+## Compiled Update — 2026-08-11 (Q4_K MMQ correction and expert ceiling)
+
+**Confidence: verified local correctness and matched historical measurement; experimental source is
+not a durable candidate until operator-approved commit/push.**
+
+The gfx90a Q4_K failure was not MFMA-specific: both the old force-MMQ MFMA and DP4A arms passed only
+18/43 cases. The shared mechanism was Q8 activation staging. Q4_K's affine reconstruction multiplied
+the quantized/dequantized Q8 values in its dot term but used the original float activation sum for the
+min correction. Computing both from the same dequantized Q8 population fixed the ordinary and scatter
+DS4 paths. Four final arms—default, force-rocBLAS, force-MMQ MFMA, and force-MMQ DP4A—then passed
+172/172 cases at unchanged κ=1.5, maximum error ratio 1.228272. The receipt is retained; the source
+change remains approval-gated in the experimental tree.
+
+AutoKernel also gained a non-synthetic held-out task from local history. The new descriptor is honest
+about the missing original July 4 command (`historical_command_recovered=false`), pins a replacement
+surface, and seals the human patch until terminal candidate state. Across five matched blocks, the
+human GDN bf16 patch raised mean `speed_tg` from 155.4233734 to 188.4099002, a 21.223659% expert
+ceiling; same-binary expert-off stayed at parity with the parent (-0.105875%). With no terminal
+AutoKernel candidate, candidate-to-expert scoring remains `COULD_NOT_CHECK` rather than inventing a
+comparison.
+
+Hostile same-shape distributions and checker isolation are now durable research gates, but their
+two-case ROCm smoke is non-evidence: the producer is uncommitted and no receipt was retained. The
+smoke showed both modes passing 2/2 selected `SOFT_MAX` rows with claim release and four samples;
+campaign evidence waits for an operator-approved producer identity and fresh replay.
+
+INF-37's alternative IQ2 profiler path is now instrumented but not yet evidence-bearing. A manual
+Omniperf 2.0.1 / `rocprof` v1 smoke reached gfx90a and produced 260 dispatch rows, while the governed
+runner retained a clean failure receipt: frozen-v9 `test-backend-ops` lacks the required
+`--suite-seed` and `--repeat-suite` flags, so it refused before profiling. This separates tool
+reachability from a reproducible counter claim. The seeded IQ2 capture remains open until the
+experimental producer obtains an operator-approved durable identity and the same runner passes.
+## Compiled Update — 2026-08-11 (AutoKernel input-sensitivity boundary)
+
+**Confidence: verified implementation; live smoke is non-evidence until the producer has a durable
+commit identity.**
+
+AutoKernel now screens task populations on two independent axes before treating correctness cases as
+meaningful: materialized inputs and reference outputs must vary across at least three seeds, and they
+must also respond to identity, ×3, ×0.01, and negate transforms. Missing coverage, mixed suite
+versions, a non-reference population, or an untrusted producer fails closed. The research reducer and
+claim-aware runner are durable in research commit `000a2686` / `main` merge `f3c6b24a`.
+
+A `SOFT_MAX` smoke returned PASS over 2,544 observations and 1,484 units with no unscoreable units,
+while holding and releasing the CPU claim. It does **not** support a correctness or corpus-quality
+claim: its `0db32c06e` suite identity names the committed parent while the materialized `AK_SENS_V1`
+producer remains uncommitted. Producer-dependent rows stay open until an operator-approved producer
+commit and fresh matched replay. This is the practical rule: an internally consistent receipt cannot
+be durable evidence when the code that produced it is absent from the identity it cites.
+
+The same audit invalidated promotion of the old RVP-C5-R observation: exact 2026-07-04 argv and raw
+matched parent/human-patch evidence are gone, so a fresh retained replay is required.
+## Compiled Update — 2026-08-11 (AutoKernel live correctness controls)
+
+**Confidence: mixed — verified correctness-instrument acceptance on CPU; single-run GPU microbench
+observations with retained receipts, not production or cross-surface performance claims.**
+
+AutoKernel's stateful correctness pass now treats carried state as part of the result rather than
+checking only ordinary outputs. For every selected recurrent/cache-backed case, the candidate and
+reference must begin with byte-identical explicit state inputs, neither execution may mutate those
+input buffers, and at least one final-state tensor must be included in the compared output set. A
+missing receipt or any missing leg fails closed.
+
+The first live pass used suite seed `4711` and accepted **5,184/5,184** cases across `SSM_SCAN`,
+`SSM_CONV`, `FLASH_ATTN_EXT`, and `GATED_DELTA_NET`. Every `AK_STATE_V1` receipt carried
+`initial_equal=1`, `input_immutable=1`, and one or more final outputs. The result validates the
+instrument path; it does not make the experimental producer durable. Those producer changes remain
+uncommitted pending explicit operator approval, and the v9/hardened performance calibration is a
+separate next step.
+
+The other live C2 axes now agree with that stateful result: the layout pass accepted **1,048/1,048**
+offset, stride-gap, and transpose cases, while the seed-`4711` value pass accepted **779/779** cases
+across `SOFT_MAX`, `ARGSORT`, `TOP_K`, and `SOLVE_TRI`, with identity, ×3, ×0.01, and negate all
+completed. The `SOFT_MAX` checker required one important correction before acceptance: its invariant
+must include implicit attention sink mass, not demand that only explicit output cells sum to one.
+
+The predeclared clock-pinning discriminator also resolved negatively. During a 60-second 8192³ gfx90a
+GEMM, 242 samples held 1700 MHz for 99.5868% of the window while throughput reached 41.904 TFLOP/s;
+power peaked at only 200 W against the 300 W cap. The card did not approach the cap, so clock excursion
+is not a live variance source under this saturation workload and a privileged
+`--setperfdeterminism` control would add operational authority without solving an observed problem.
+
+The next correctness layer is now live as an independent host-double oracle. It decodes Q4_0, Q8_0,
+Q4_K, and Q6_K directly from GGUF wire bytes and emits
+`fp64_error_ratio/host-double-gguf-wire/v1`, avoiding project quantization helpers on the reference
+side. Five representative CPU cases, the dedicated broadcast regression, 31 real parser tests, and
+the property self-test's 5/5 planted plus 5/5 clean cases passed.
+
+The broad matrix first uncovered a real non-contiguous coverage bug in the oracle itself: quantized
+rows must be read through the tensor's `nb[1..3]` strides, not as one packed span. After that repair,
+the fixed forced-dispatch matrix preserved a much sharper negative result. Force-rocBLAS passed
+**43/43** Q4_K cases with maximum error ratio **1.2283**; force-MMQ passed **18/43**, failed 25, and
+reached **3.0361**. The remaining failures are therefore MMQ-specific stock correctness failures.
+Keep κ fixed at 1.5, retain rocBLAS as the control, and do not rank the MMQ surface until corrected.
+
+The baseline-honesty probes also reject global defaults. In AK-BH-1, best-heuristic hipBLASLt beat
+rocBLAS at only three of nine prefill shapes, while its throughput ratio ranged from **0.734× to
+1.322×**; future vendor baselines must choose the strongest library per exact shape. AK-BH-2 then
+completed all eight explicitly pinned flash-attention × ROCWMMA × MMQ-MFMA arms on one 0.5B Q4_K_M
+prefill surface. Flash attention on won each build pair, MMQ-MFMA was slower, and `r1m0-fa-on` won at
+24,647.316788 t/s. That is a surface-local observation, not authority to change global build defaults.
+
+A clean-source sustained AK-BH-1 replication strengthened that result from a short screen to a
+55.17-second loaded window: 30,000 repetitions per provider per shape, 221 device samples, 86.43% at
+1700 MHz, and 241 W peak. hipBLASLt won 4/9 shapes with a 0.7445×–1.3162× ratio range; all nine
+winner directions matched the prior replay. This confirms per-shape provider selection under sustained
+load and does not create a global hipBLASLt or rocBLAS default.
+
+Ranking now also has a device-local absolute-duration admission. RVP-C3-5 derives a
+**250,090,903 ns** minimum complete repetition window from the first nominal-SCLK observation in the
+RVP-T0-1 gfx90a receipt. Missing, foreign-device, malformed, or shorter live GPU windows receive no
+speed rank even if their relative noise looks small. The focused implementation tests pass 11/11.
+The experimental producer is still uncommitted under its explicit per-commit approval boundary.
+
+C4 now crosses from deterministic profile evidence into the authoring loop without granting the
+profile authority over a decision. The hash-bound `profile_context.py` bridge emits a priced discovery
+block plus a framework-neutral `c4_evaluator_observation.v1`; both are `diagnostic_only`, retain the
+report/manifest/formal-profile hashes, and cannot write a verdict or rank. Prompt hygiene also excludes
+sealed evaluator paths. The generalized capture runner holds mapping and formal invocations to one
+backend process, validates exact argv and quant selection, retains every artifact on failure, and uses
+the existing deterministic report rather than exposing raw profiler text to the agent.
+
+The first live op-level captures bound what that signal can presently say. At fixed
+`m=16,n=1,k=256`, Q4_K and Q8_0 both produced complete fill → requantize → `mul_mat_vec_q` sequences.
+Matvec occupied **41.95% versus 40.92%** of wall time and averaged about **5.72 versus 5.50 µs** per
+dispatch. This small surface neither explains the 35→50 Q4_K roofline rung nor attributes unpack work
+inside the fused kernel, so the representative-shape counter/source-timer question remains open.
+IQ2_XXS is a durable tool boundary: ten unprofiled repetitions pass, but active `rocprofv2` capture
+exits 139 even in one process. That failed receipt is evidence about profiler scope, not an
+architectural bandwidth floor; the next IQ2 probe must use a non-`rocprofv2` device timer/counter path.
+
+CPU baseline honesty now has the same exact-surface rule. On Qwen2.5-Coder-0.5B Q4_K_M prefill,
+implicit AUTO measured **5,569.96 t/s**, explicit flash-attention ON **5,451.90 t/s**, and explicit
+OFF **2,741.09 t/s** across randomized 30-repetition hardened arms. AUTO behaves like ON here, but
+that observation does not authorize an implicit or portable default. The evaluator now requires both
+provider arms on one identical model/quant/op/shape/dtype/build/factor surface, selects by declared
+metric direction, and rejects any transfer to a different candidate surface.
+
+The historical CPU fan-out shapes are execution capacity, not ranking capacity. Against the
+full-machine anchor/IQK-off/flash-attention-off order, depth 4 retained Spearman 1.0, but depths 8,
+16, 32, and 48 fell to 0.5. More decisively, every split failed the predeclared combined
+package-power/frequency acceptance: maximum anchor lane-position deviations ranged from **16.28% to
+77.43%** against a 10% limit, while loaded-frequency ratios ranged from **0.743 to 0.829**. The first
+real CPU candidate must therefore rank on the full host unless a narrower change-class calibration
+later clears the same gates.
+
+Two Q4_K MMQ diagnostics narrowed the still-open correctness repair without fixing it. Disabling the
+gfx90a MFMA route and forcing DP4A still failed **25/43** cases (maximum ratio 3.0178), excluding an
+MFMA-only defect. A Q4_K-only least-squares refinement of the per-32 Q8 activation scale also failed
+**25/43** (maximum ratio 2.8834) and was reverted. The clean 43/43 rocBLAS control and fixed κ=1.5
+remain; the search must move below both the implementation choice and a one-parameter scale repair.
+
+### Source References (2026-08-11 AutoKernel correctness)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — live checkpoint,
+  baseline-honesty receipts, independent fp64 oracle, and next calibration step.
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C2-5 triad
+  contract, MMQ-isolated Q4_K finding, duration-window admission, and producer boundary.
+- [Progress 2026-08-11](../progress/2026-08/2026-08-11.md) — exact live counts, seed, receipt flags,
+  C4 receipt hashes and bounded results, runner paths, fixed-gate dispatch finding, and verification
+  results.

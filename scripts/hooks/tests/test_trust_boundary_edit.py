@@ -106,3 +106,59 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+# ---------------------------------------------------------------------------
+# PYTEST VISIBILITY (2026-08-12, `mainC`).
+#
+# This file is named `test_*.py`, sits in a `tests/` directory, and collected
+# ZERO tests: every assertion lived in `main()` behind `if __name__ ==
+# "__main__"`. Run directly it passes all 20 checks and the guard is genuinely
+# intact — but `pytest scripts/hooks/tests/test_trust_boundary_edit.py` reported
+# "no tests ran", so the suite everyone actually runs was green while this
+# contributed nothing. Its predecessor `test_check_trust_boundary_edit.sh` is
+# meanwhile deleted (uncommitted) as part of the migration, so committing that
+# deletion would leave the trust boundary's ONLY test invisible to the runner.
+#
+# A distinct face of the vacuous-verification class: not an empty input, not a
+# too-wide key — the check is correct, complete, and passing, and is simply
+# OUTSIDE THE UNIVERSE OF THE TOOL that reports whether checks pass, while
+# wearing that tool's naming convention and directory. Nothing here weakens the
+# guard; the wrapper only makes existing coverage countable.
+# ---------------------------------------------------------------------------
+
+def test_trust_boundary_guard_passes_every_case() -> None:
+    """Makes `main()`'s 20 checks visible to pytest. Direct invocation still works."""
+    assert main() == 0, (
+        "The trust-boundary guard failed at least one case — see the PASS/FAIL lines "
+        "above. Run `python scripts/hooks/tests/test_trust_boundary_edit.py` for the "
+        "same output standalone. Do NOT 'fix' this by relaxing a case: the wildcard "
+        "entries (Annexes B/Q/G) are the ones a quoted RHS silently un-gated, and the "
+        "compliant-path cases exist so the guard cannot pass by forbidding everything.")
+
+
+# THE WRAPPER ABOVE PASSES WITH AN EMPTY CASE TABLE (`mainD`, 2026-08-12).
+#
+# `main()` returns `1 if failures else 0`, and an empty `CASES` produces no
+# failures — so `assert main() == 0` is satisfied by a guard that checked nothing.
+# Mutation-verified: emptying `CASES` leaves the wrapper reporting `1 passed`.
+#
+# That is the empty-input face reappearing one level INSIDE the fix for the
+# pytest-visibility face. Making the checks countable did not make them counted:
+# the runner now sees a test, and that test still cannot tell 19 cases from zero.
+# The floor below is what makes the count load-bearing. It is a FLOOR, not an
+# equality, so adding a case never fails it — coverage may grow, never silently
+# shrink.
+#
+# (Method note, since it nearly went the other way: the first mutation ran from a
+# temp dir outside the repo and reported `1 error`, which is neither pass nor fail.
+# A mutation the instrument cannot import is not a mutation test. Re-run in place,
+# it passed — and that pass is the defect.)
+
+def test_the_case_table_cannot_be_silently_emptied() -> None:
+    """Guards the guard: `assert main() == 0` alone is vacuous on an empty table."""
+    assert len(CASES) >= 19, (
+        f"The trust-boundary case table has SHRUNK to {len(CASES)} (floor 19). "
+        "main() returns 0 when there is nothing to fail, so losing cases makes the "
+        "wrapper pass while covering less. If a case was genuinely retired, lower "
+        "this floor deliberately in the same commit and say why.")

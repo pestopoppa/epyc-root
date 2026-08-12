@@ -16,11 +16,24 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
 
 ## Open
 
-- [ ] **Decide whether `.index-state.json` / `.index-graph.json` should be git-ignored.** They are
-  regenerated on every wrap-up, research-intake Stage 4, and handoffs/ commit, so they churn in every
-  diff. `data/handoff_timeline.json` — the same class of artifact, same producer cadence — **is**
-  ignored, so the two are inconsistent today. Argument for tracking: `--check` freshness is meaningful
-  in review. Argument against: noise. Pick one and make both artifacts follow it.
+- [x] **Decide whether `.index-state.json` / `.index-graph.json` should be git-ignored.**
+  ✅ 2026-08-11 — `mainD` (A19). **Ignored**, matching `data/handoff_timeline.json`, which is the
+  same class of artifact from the same producer at the same cadence; the two are no longer
+  inconsistent. Both sidecars are `git rm --cached`'d and listed in `.gitignore`.
+  The deciding argument was not diff noise, which is what this row weighed. It is that **four mains
+  share one clone**: every session that ran `index_state.py` rewrote a 137 KB + 114 KB pair it did
+  not author, so the four collided on a generated file and `index_state.py` had to be **restricted
+  to `mainC` alone** to stop it. A view of the indices must not be a source of merge conflict in
+  them. The "freshness is meaningful in review" argument survives intact and is better served where
+  it already lives: `--check` gates coverage/schema/freshness and must exit 0 before committing, and
+  it runs against the working tree — it never needed the file to be tracked. Verified after
+  untracking: both files still on disk, `index_state.py --check` → `0 problem(s)`. The hub already
+  declares absence as "index_state.py has never run in this checkout" and degrades to "no graph"
+  rather than failing (`dashboard/panels.py`, `absence_means`), so no consumer regressed.
+  **The `mainC`-only restriction on `index_state.py` can be lifted.**
+  Residual, deliberately not chased here: the `master-handoff-index.md` rollup block that
+  `index_state.py` also writes is still tracked and still shared, so it remains a (much smaller)
+  concurrent-edit surface — one block, not a 250 KB pair.
 - [ ] **Populate `Deps` as real dependencies are established.** 577 `ref` edges are derived from
   markdown links; only 1 `dep` edge is hand-authored. A heuristic sweep found 253 candidates and was
   rejected — the phrasing cannot disambiguate direction ("X gates Y" vs "gated by X"), so importing
@@ -33,6 +46,16 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
   docstring rules out a systemd unit ("host config is operator territory"); the documented alternative
   is the cron form `*/2 * * * * hub_supervisor.sh once`, which is idempotent and self-exits when a
   daemon is already running. Host-level change → operator's call.
+  - [x] **The "sat on stale code unnoticed" half is closed; the cron half is not.** ✅ 2026-08-11 —
+    `mainD`. `hub_supervisor.sh` now detects a hub serving code OLDER than `dashboard/` and restarts
+    it, ported from the bus supervisor's **C42**. `health_ok` only asks whether :8100 answers 200,
+    and a hub running twelve-hour-old code answers yes. This needs **no host change** — when the
+    supervisor IS running it now notices. Identity from the listening port (exact, never a name
+    pattern), fail-closed on every unknown, restart once per source version. 5 tests, predicate-only
+    so it never reaches `restart_hub`. Verified read-only against the live hub: reports **current**,
+    so no false positive on a healthy service.
+    **The parent row stays OPEN and unticked — the cron decision is untouched and still the
+    operator's.**
 
 ## Not filed, deliberately
 

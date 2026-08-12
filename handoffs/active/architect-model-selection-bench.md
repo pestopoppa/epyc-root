@@ -173,7 +173,7 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
 - [ ] **Retire or harden the saturated suites.** `general` (100% both-perfect), `thinking` (90%),
       `math` (89%) carry no discriminating information at this model tier and should not be used for
       any keep/drop read.
-- [ ] **Strip per-question calibration examples from `rubric_system_prompt`.** It names specific
+- [x] **Strip per-question calibration examples from `rubric_system_prompt`.** ✅ 2026-08-12 (`auditor`) — stripped to generic level anchors (research `9501b353`, `score_with_claude.py`; dated comparability note in-module: absolute levels break at this boundary — pre-strip runs incl. the 08-02 head-to-head were scored WITH the priming; A-vs-B under one judge version unaffected. **Owner note: if absolute judge levels ever gate a decision, an eval-instrument era row should accompany this boundary** — flagged, not self-authored). It named specific
       `question_id`s with the score they got on other models (`math/t3_q2_combinatorics` as a
       score-1 exemplar, `coder/t1_q1_algorithm` as score-0), priming the judge on identity before it
       reads the answer. Affects absolute level; harmless for A-vs-B since both arms get it.
@@ -363,7 +363,30 @@ So when thinking terminates it is roughly **quality-neutral** on this suite (bot
       still unrun.
 - [ ] **Phase 2 depth probe** — tool-using *planning* (multi-step, stateful) on the surviving arms.
       The 9-question compliance screen above is a breadth instrument and does not answer it.
-- [ ] **Record the architect decision** (checkbox-flip here) → route to AXA-1 (`mi210-big-model-and-acceleration-roadmap.md`) + the model registry.
+- [x] **Record the architect decision** (checkbox-flip here) → route to AXA-1 (`mi210-big-model-and-acceleration-roadmap.md`) + the model registry.
+  **✅ 2026-08-12 (`mainA`, pulled from the generated bench and claimed) — RECORDED. The decision
+  was taken and deployed on 2026-07-31; only this record was missing, which is why the auditor's
+  T5 flag 3 calls this row "the never-executed mechanism" behind a LIVE AXA-1 drift.**
+  **The decision, as realized in production** — read from the registry and the topology, not from
+  any narrative:
+  - `architect_general` → **`Qwen3.6-27B-MTP-Q8_0`**, GPU-resident. `stack_topology.yaml`
+    instantiates it on `GPU_HOST_LANE`.
+  - `architect_critic` → **`Qwen3.5-122B-A10B` at `Q4_K_M`**, `backend: local` (CPU), instantiated
+    on `NUMA_FULL`.
+  So the 122B was **retained as the critic on CPU Q4**, and the architect seat went to the 27B on
+  the GPU. That is the W1 cutover of 2026-07-31, and it is the same event that made the
+  `12.19 t/s` Probe-B placement record a role-attribution defect elsewhere in this repo.
+  **The drift this closes.** `mi210-big-model-and-acceleration-roadmap.md` Axis A still reads
+  *"122B UD-IQ2_M MEASURED VIABLE fully GPU-resident — 43.7 t/s single / 148.7 aggregate @B=32"*.
+  That sentence is **true as a viability measurement and false as a description of the stack**:
+  nothing serves a 122B IQ2 on the GPU, and the production 122B is CPU Q4. A reader taking Axis A
+  as roadmap status concludes the IQ2-residency path is live.
+  **Routed, not edited.** The AXA-1 correction belongs to the roadmap's owner — it is a different
+  handoff and the fix is one clause distinguishing *measured viable* from *deployed*, which the
+  owner should word. Filed on the bus rather than edited here.
+  **No registry change needed**: the registry is already correct and was the source of this record.
+  The row's "→ the model registry" leg is satisfied by verification, not by an edit — the registry
+  is what the roadmap has drifted FROM.
 
 ## R4 — OlympiadBench-numeric SATURATES too (adapter design flaw, not the ceiling-breaker claimed)
 A1 122B-IQ2 = **89.3% (134/150)** on `olympiadbench_numeric` — *higher* than its AIME'25 (71.7%), though
@@ -608,7 +631,7 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
 
 ## 2026-08-09 — OpenRSI release-state watch (research-intake Stage-2b)
 
-- [ ] **Watch FrontisAI/OpenRSI PR #2 ("feat(gym): add OpenMLE Sandbox") to a decision.** State at
+- [x] **Watch FrontisAI/OpenRSI PR #2 ("feat(gym): add OpenMLE Sandbox") to a decision.** ✅ 2026-08-11 — **TRIGGER FIRED: MERGED.** Verified live via gh api: merged=true, author_association flipped NONE→CONTRIBUTOR, upstream main pushed 2026-08-11T12:28Z; still 1 commit / 30 files (+7,617), so the merged content is byte-wise the ingest-reviewed content. The intake-940#record hard blocker (distributed grading service unpublished) has SOFTENED, not cleared — see follow-on. State at
   ingest: DRAFT, 30 files, +7,617/-0, one commit, `mergeable_state: clean`, opened 2026-08-09 from
   fork `LifeIsSoSolong/OpenRSI` branch `codex/openmle-sandbox` by an account with GitHub
   `author_association: NONE` — **not a Frontis account by any GitHub signal**. It publishes the
@@ -621,3 +644,4 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
   GRUB edit plus reboot — a host-boot change that is operator-only. The patch also ships default DB
   passwords and two internal RFC1918 worker IPs that the project's own `docs/validation.md` claims the
   public release scrubbed, which corroborates it as an unscrubbed internal snapshot.
+- [ ] **Follow-on (opened 2026-08-11, trigger-fired): assess OpenMLE Sandbox reproduction feasibility** — re-opens the intake-940#record reproducibility finding via intake-1024#record. Gates, in order: (1) worker/controller images pull from external registry (network only, any main); (2) **cgroup v1 host reconfiguration = OPERATOR decision** (host reboots are operator-only); (3) actual reproduction run = inference-lane compute. File (2) as a decision package only if (1) succeeds and the images are runnable.

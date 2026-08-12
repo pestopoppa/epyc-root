@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729",
+  "indexed_by": "backfill-receipts",
+  "receipt": "/workspace/artifacts/operator/ratify_e8_final_c1_retry_capacityfix_20260729.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

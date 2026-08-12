@@ -14,8 +14,8 @@ numbers. Metric direction: higher-better (t/s) unless a lower-better metric is e
 stated.
 
 **Kernel-provenance rule (production-named kernels ONLY).** A P-GPU-1 decision-grade claim MAY
-ONLY be produced on a **production-named kernel** (`production-consolidated-vN`; currently v8
-`67a433bf4`). Measurements on any experimental / candidate / fork kernel
+ONLY be produced on a **production-named kernel** (`production-consolidated-vN`; currently v9
+`0db32c06e`). Measurements on any experimental / candidate / fork kernel
 (`llama.cpp-experimental`, `experimental-v7-*`, branch builds) are **OBSERVATIONS ONLY**: they
 MUST NOT gate any keep / revert / deploy / promote / buy / close decision and MUST NOT be
 consumed by AutoPilot or any automated optimizer.
@@ -165,7 +165,7 @@ trade"**, which is a decision (do not build), not a failed experiment.
   during CPU stress; class stays closed; lane residency policy gains a stress-aware rule.
 
 **Decision-grade requires ALL of**: this ratified protocol; a production-named kernel (currently
-v8 `67a433bf4`) per the P-GPU-1 provenance rule; every P-GPU-1 mandatory field for the GPU half
+v9 `0db32c06e`) per the P-GPU-1 provenance rule; every P-GPU-1 mandatory field for the GPU half
 and every P-BENCH-2 requirement for the CPU half; live-affinity attestation; a contention matrix
 certified fresh for the current topology hash; the CPU fleet in its terminal PRODUCTION lineup
 (not a bench shape); a frozen corpus manifest with identical sha256 across every arm and rep;
@@ -178,3 +178,12 @@ lane-residency artifact may be retro-certified. Report median + MAD; state metri
 row; per-stream p50/p95 latency reported per side as P-BENCH-3 requires for any batched-slot
 claim. Grammar: `shed net <value> tasks/eval-wall-h at f=<f>, stress=<level> [P-SHED-1,
 n=<reps>, YYYY-MM-DD, attest <ref>]`.
+
+<!-- AMENDED per RATIFY-ANNEXG-V9-CURRENCY-20260811: the two P-GPU-1
+     kernel-currency parentheticals track the CURRENT production kernel and moved
+     v8 (67a433bf4, binary 10107) -> v9 (0db32c06e, binary 10125) at the
+     2026-08-10T23:59:00Z cutover (ratify_v9_final_freeze_20260811.json, ratified
+     2026-08-11T01:16:00Z). Decision-grade claims produced on v8 while v8 was the
+     production kernel remain decision-grade for their era; from the cutover, new
+     P-GPU-1 decision-grade claims require production-consolidated-v9. No other
+     clause of this annex is changed by this amendment. -->

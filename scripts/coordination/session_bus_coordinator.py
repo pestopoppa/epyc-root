@@ -51,6 +51,8 @@ from __future__ import annotations
 import argparse
 import fcntl
 import json
+import hashlib
+import re
 import os
 import signal
 import subprocess
@@ -58,7 +60,7 @@ import sys
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Iterable, Optional
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
@@ -80,9 +82,57 @@ from scripts.coordination.session_bus import (  # noqa: E402
 LOCK_PATH = Path("/tmp/session_bus_coordinator.lock")
 ADVISORY_SCHEMA = "session_bus.advisory.v1"
 
+# C37: the substring that must appear in /proc/<pid>/cmdline for a recorded pid to
+# be THIS daemon rather than whatever else the kernel later handed that number to.
+# Matched against the script name, not the interpreter, because the daemon runs as
+# `<venv>/bin/python <path>/session_bus_coordinator.py run` and the interpreter is
+# shared with every other tool in the venv.
+_DAEMON_MARKER = "session_bus_coordinator"
+
 # A lane is idle only when every signal agrees; unknown means busy.
+#
+# M4 (2026-08-12). `parked` is deliberately NOT in this set. `inference_load_check`
+# used to return `busy` for a device holding a loaded-but-idle model, because its
+# sensor OR-ed utilisation with VRAM residency; that made `cpu_busy` True and
+# `_eligible` rejected every queued lane row behind an idle model — 572
+# `lane cpu busy (load_class=busy)` rejections and 3h47m at zero compute on the
+# night of 2026-08-11/12. Residency is an EXCLUSION fact, not a WORK fact.
 _BUSY_LOAD_CLASSES = {"busy"}
 _UNKNOWN_IS_BUSY = True
+
+# M4 lane states. `resident` means "held and idle": it ADMITS, with a warning
+# (see `_eligible`). `unknown` means the probe could not be read and is treated
+# as busy — for EXCLUSION, unknown must mean busy.
+LANE_BUSY = "busy"
+LANE_RESIDENT = "resident"
+LANE_FREE = "free"
+LANE_UNCONFIRMED = "unconfirmed"
+LANE_UNKNOWN = "unknown"
+_LANE_STATES = frozenset({LANE_BUSY, LANE_RESIDENT, LANE_FREE, LANE_UNCONFIRMED,
+                          LANE_UNKNOWN})
+
+# How `classify_load()`'s label maps onto a lane state. `serial_ok` becomes
+# `unconfirmed` rather than `free` — it means "no positive competitor, but the
+# window is not provably quiet" — and it keeps its EXISTING scheduling polarity
+# (not busy), because tightening it here would stop the daemon advising whenever
+# pgrep is momentarily unavailable. Naming it is the change; re-deriving CPU
+# admission is not, and is not this mechanism's job.
+_CPU_STATE_BY_LOAD_CLASS = {
+    "busy": LANE_BUSY,
+    "parked": LANE_RESIDENT,
+    "quiet": LANE_FREE,
+    "serial_ok": LANE_UNCONFIRMED,
+}
+
+# Stated once, so the decision is visible where it is made and where it is read.
+_RESIDENT_ADMIT_NOTE = (
+    "lane {lane} is RESIDENT (a model is loaded and idle, not working). ADMITTED "
+    "WITH A WARNING, deliberately: admission is not acquisition — this only makes "
+    "the row pickable, and the exclusive claim (device_claim.py / cpu_region_lock) "
+    "still gates the run and is the only thing that grants the device. Rejecting "
+    "here is precisely what held the queue for 3h47m on 2026-08-11/12 behind an "
+    "idle VRAM-resident model. The holder is never preempted by this verdict."
+)
 
 
 def _utcnow_iso() -> str:
@@ -144,6 +194,12 @@ def _lane_snapshot() -> dict:
             faked = json.loads(override)
             faked.setdefault("ts", _utcnow_iso())
             faked.setdefault("none_busy", False)
+            # M4: a seam that omits the lane states must still produce a COMPLETE
+            # snapshot, or `_eligible` would read `None` and silently skip the
+            # residency branch. Derive them from the booleans the seam does set.
+            for lane_key in ("cpu", "gpu", "none"):
+                faked.setdefault(f"{lane_key}_state",
+                                 LANE_BUSY if faked.get(f"{lane_key}_busy") else LANE_FREE)
             faked["_test_seam"] = True
             return faked
         except json.JSONDecodeError:
@@ -161,11 +217,15 @@ def _lane_snapshot() -> dict:
     except Exception as exc:  # noqa: BLE001
         snapshot["cpu_error"] = str(exc)
 
-    gpu_busy = None
+    gpu_state = None
     try:
         from scripts.coordination.inference_load_check import mi210_state
         gpu = mi210_state() or {}
-        gpu_busy = gpu.get("occupied")
+        # M4: read the SPLIT verdict, not the OR. `occupied` is still published by
+        # the sensor and is still the OR of work and residency — reading it here
+        # is what conflated "a model is loaded" with "the GPU is working" and
+        # locked the gpu lane behind an idle resident model.
+        gpu_state = gpu.get("device_state")
         snapshot["gpu_signal"] = gpu
     except Exception as exc:  # noqa: BLE001
         snapshot["gpu_error"] = str(exc)
@@ -174,8 +234,19 @@ def _lane_snapshot() -> dict:
     snapshot["cpu_busy"] = (
         _UNKNOWN_IS_BUSY if load_class is None else load_class in _BUSY_LOAD_CLASSES
     )
-    snapshot["gpu_busy"] = _UNKNOWN_IS_BUSY if gpu_busy is None else bool(gpu_busy)
+    snapshot["cpu_state"] = (
+        LANE_UNKNOWN if load_class is None
+        else _CPU_STATE_BY_LOAD_CLASS.get(load_class, LANE_UNKNOWN)
+    )
+    snapshot["gpu_state"] = gpu_state if gpu_state in _LANE_STATES else LANE_UNKNOWN
+    # Only WORK makes a lane busy. `resident` and `free` do not; `unknown` does,
+    # because for exclusion an unreadable probe must fail closed.
+    snapshot["gpu_busy"] = (
+        _UNKNOWN_IS_BUSY if snapshot["gpu_state"] == LANE_UNKNOWN
+        else snapshot["gpu_state"] == LANE_BUSY
+    )
     snapshot["none_busy"] = False  # lane:none is always schedulable by definition
+    snapshot["none_state"] = LANE_FREE
     return snapshot
 
 
@@ -306,12 +377,29 @@ def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: st
         ok, why = _co_residency_verdict(row, co_ctx)
         if not ok:
             return False, why
+    # M4 ADMISSION RULE, stated where it is made rather than buried in a boolean:
+    #   BUSY      -> REJECT. Work is in flight; queueing behind it is contention.
+    #   UNKNOWN   -> REJECT. The probe could not be read; for exclusion, unknown
+    #                means busy. (Folded into `{lane}_busy` by `_lane_snapshot`.)
+    #   RESIDENT  -> ADMIT, WITH A WARNING. See `_RESIDENT_ADMIT_NOTE`.
+    #   FREE      -> ADMIT.
     lane = row.get("lane")
-    if lane in {"cpu", "gpu"} and snapshot.get(f"{lane}_busy"):
-        return False, f"lane {lane} busy (load_class={snapshot.get('load_class')})"
-    if row.get("contention_class") == "exclusive-contiguous" and snapshot.get("cpu_busy"):
-        return False, "exclusive-contiguous needs a quiet host"
-    return True, "eligible"
+    admit_note = ""
+    if lane in {"cpu", "gpu"}:
+        if snapshot.get(f"{lane}_busy"):
+            return False, (f"lane {lane} busy (load_class={snapshot.get('load_class')}, "
+                           f"lane_state={snapshot.get(f'{lane}_state')})")
+        if snapshot.get(f"{lane}_state") == LANE_RESIDENT:
+            admit_note = _RESIDENT_ADMIT_NOTE.format(lane=lane)
+    # `exclusive-contiguous` is the one class for which residency IS disqualifying:
+    # it asks for a QUIET host, and a host with a resident model is not one. This
+    # preserves the pre-M4 verdict exactly — a resident device used to classify as
+    # `busy`, so this row was rejected then too.
+    if row.get("contention_class") == "exclusive-contiguous" and (
+            snapshot.get("cpu_busy") or snapshot.get("cpu_state") == LANE_RESIDENT):
+        return False, (f"exclusive-contiguous needs a quiet host "
+                       f"(cpu_state={snapshot.get('cpu_state')})")
+    return True, ("eligible" if not admit_note else f"eligible — {admit_note}")
 
 
 _ORCH_ROOT = Path("/mnt/raid0/llm/epyc-orchestrator")
@@ -456,6 +544,11 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
             "gpu": "busy" if snapshot["gpu_busy"] else "idle",
             "none": "idle",
         },
+        # M4: the OR-collapsed `lanes` above is kept so nothing reading it breaks;
+        # `lane_states` is where residency stops being invisible.
+        "lane_states": {"cpu": snapshot.get("cpu_state"),
+                        "gpu": snapshot.get("gpu_state"),
+                        "none": snapshot.get("none_state") or LANE_FREE},
         "load_class": snapshot.get("load_class"),
         "co_residency": {"matrix_status": co_ctx.get("matrix_status"),
                          "live_roles": co_ctx.get("live_roles"),
@@ -481,6 +574,7 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
                            "reason": "already holds a live ASSIGNED/CLAIMED/RUNNING task"})
             continue
         candidates, rejections = [], []
+        admit_why: dict[str, str] = {}
         for row in latest.values():
             if row.get("task_id") in claimed_this_tick:
                 continue
@@ -493,22 +587,49 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
                 rejections.append({"task_id": row.get("task_id"),
                                    "reason": f"lane {row.get('lane')} not in {aid} roster lanes"})
                 continue
+            if why != "eligible":     # only a WARNING is worth carrying forward
+                admit_why[str(row.get("task_id"))] = why
             candidates.append(row)
         pick = _pick(candidates)
         if pick:
             claimed_this_tick.add(str(pick.get("task_id")))
+        pick_lane = (pick or {}).get("lane")
         advice.append({
             "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
             "kind": "would-assign" if pick else "would-idle",
             "agent": aid,
             "task_id": (pick or {}).get("task_id"),
             "priority": (pick or {}).get("priority"),
-            "lane": (pick or {}).get("lane"),
+            "lane": pick_lane,
             "routing_annotation": (pick or {}).get("routing_annotation"),
             "considered": len(candidates),
             "rejected": rejections[:8],
+            # M4/M1: WHY this pick, and under what host state. `admission_note` is
+            # non-empty only when the lane was admitted while RESIDENT, so the
+            # warning travels with the pick instead of being dropped on the floor.
+            "lane_state": snapshot.get(f"{pick_lane}_state") if pick_lane else None,
+            "admission_note": admit_why.get(str((pick or {}).get("task_id")), ""),
+            "top_rejection": _top_rejection(rejections),
         })
     return advice
+
+
+def _top_rejection(rejections: list[dict]) -> dict | None:
+    """The modal rejection reason, with its count. `None` when nothing was rejected.
+
+    L6 (2026-08-12): the dominant reason all night was `lane cpu not in <agent>
+    roster lanes` — 5,292 occurrences per agent — a ROSTER-CONFIG fact recomputed
+    ~1,070x/hour and delivered nowhere. Summarising it here is what carries it into
+    the M1 recommendation for free.
+    """
+    if not rejections:
+        return None
+    counts: dict[str, int] = {}
+    for rec in rejections:
+        reason = str(rec.get("reason") or "")
+        counts[reason] = counts.get(reason, 0) + 1
+    reason, count = max(counts.items(), key=lambda kv: (kv[1], kv[0]))
+    return {"reason": reason, "count": count, "of": len(rejections)}
 
 
 # ------------------------------------------------------------------- daemon
@@ -588,6 +709,318 @@ def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: i
     return [{k: v for k, v in r.items() if v is not None} for r in out]
 
 
+# C39: a gate that has ALREADY been signed must not be presented as if it had not.
+# Statuses that mean "the operator dealt with this"; anything else is not a receipt.
+_SPENT_STATUSES = frozenset({"ratified", "spent", "applied", "attested", "granted"})
+RECEIPTS_DIR = REPO_ROOT / "artifacts" / "operator" / "receipts"
+
+
+def spent_receipt_for(gate_id: str, receipts_dir: Path | None = None) -> tuple[Path, str] | None:
+    """(receipt path, status) if this gate has already been signed, else None.
+
+    C39 (2026-08-11): `relay_tokens` deduped only on "is the gate string already in
+    token-queue.md" and had no notion of a gate being SPENT, so both C27 gates sat
+    presented as unchecked pending requests while carrying `status: ratified`
+    receipts from 2026-07-29. Deleting the rows does not stick — the next tick
+    re-presents them. It asks a human to sign what they already signed, and for the
+    E8 gate (whose ratified work then aborted) a re-signature would read as
+    authorisation for a cross-era re-run.
+
+    Lookup is a SINGLE keyed read, deliberately. The receipts that exist today are
+    unkeyed — they contain the gate id at inconsistent places — and finding them
+    means scanning `artifacts/operator/*.json`, which is 55 files and 55.7 MB. Doing
+    that on a 45s tick would be a fresh instance of C38, the defect this same file
+    is already carrying (a 1 GiB re-read on the delivery hot path). So the scan is
+    paid ONCE by the `backfill-receipts` one-shot, which writes
+    `receipts/<GATE_ID>.json`, and the daemon only ever stats one path.
+    """
+    directory = RECEIPTS_DIR if receipts_dir is None else receipts_dir
+    path = directory / f"{gate_id}.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    status = str((data or {}).get("status", "")).strip().lower()
+    if status not in _SPENT_STATUSES:
+        return None
+    return path, status
+
+
+_PROGRESS_DIR = REPO_ROOT / "progress"
+_PROGRESS_STALE_H = 4.0
+
+
+def _deliver_progress_defect(bus_root: Path, epoch: int, check: str, day: str,
+                             detail: str) -> None:
+    """Put the R2 defect where somebody drains it, once per day.
+
+    Deduped against `coordinator-agent`'s OWN inbox — the notice's durable trace,
+    the same idiom C18/C33 use — so a 45s tick cannot turn a true finding into the
+    advisory flood C34 measured. Delivery failure is swallowed: this is a reporting
+    path, and a check that can take the daemon down is worse than a missed notice.
+    """
+    try:
+        rows, _ = _read_jsonl(bus_root / "inbox" / f"{COORDINATOR_AGENT}.jsonl")
+        for row in rows:
+            payload = row.get("payload") or {}
+            if payload.get("event") == check and payload.get("day") == day:
+                return
+        _append_inbox(bus_root, [{
+            "to": COORDINATOR_AGENT, "kind": "defect",
+            "payload": {"event": check, "day": day, "detail": detail,
+                        "action": "a working day with commits and no progress entry is "
+                                  "invisible to the operator — the dashboard counts checkbox "
+                                  "state, so unlogged work reads as a day where nothing "
+                                  "happened. Write the entry, or say why none is owed."}}],
+            epoch)
+    except Exception:  # noqa: BLE001 — reporting must never break the tick
+        pass
+
+
+def progress_log_currency(bus_root: Path, epoch: int, *, hours: float = _PROGRESS_STALE_H,
+                          now: float | None = None,
+                          repo_root: Path | None = None) -> list[dict]:
+    """Commits landed with no progress-log write. FAILS CLOSED, everywhere.
+
+    R2 (2026-08-11). F1: a day of commits with nothing written to
+    `progress/<YYYY-MM>/<today>.md` is invisible to the operator — the dashboard
+    counts checkbox state, so committed-but-unlogged work reads as a day where
+    nothing happened. Measured 2026-08-11: open boxes went 1283 -> 1293 while done
+    went 2274 -> 2294, and the board looked flat.
+
+    The report that specified this flagged it as the proposal MOST at risk of
+    fail-open, with three silent-pass paths, and said to build it fail-closed or not
+    at all. So every unknown emits a defect rather than returning clean:
+
+      * git unreadable / not a repo / times out  -> defect, not "no commits"
+      * `progress/` missing                      -> defect, not "nothing to check"
+      * today's file missing                     -> OVERDUE if commits exist, which
+                                                    is the whole point: the absent
+                                                    file is the defect, and treating
+                                                    absence as "nothing due" is
+                                                    exactly the fail-open shape.
+
+    Precedent for the shape: `scan_operator_receipts` returns a `*-skipped` advisory
+    rather than an all-clear when it cannot read what it needs.
+
+    **CORRECTION 2026-08-11, same day, caught by the operator.** This first shipped
+    emitting the advisory row ONLY, on the reasoning that `defect` is in
+    `_OPERATOR_ITEM_KINDS` and would therefore reach `token-queue.md` on the C20
+    timer for free. That was wrong: `_is_operator_item` is applied to OUTBOX and
+    INBOX rows, never to advisory rows, so the notice went to `advisory.jsonl` and
+    stopped there. That is the C33 shape — an escalation delivered only to a file
+    nobody drains is a second unread sink one level up from the defect it reports —
+    and it is the sentence I had quoted twice the same day while building this. So
+    the defect is now DELIVERED into `coordinator-agent`'s inbox, deduped once per
+    day against that inbox's own contents so a 45s tick cannot flood it.
+
+    Read-only: it inspects git and a file mtime and returns advisory rows. It never
+    writes the progress log — a checker that fixes what it checks for cannot be
+    trusted to report, which is the rule `--audit-guards` and
+    `backfill-receipts --check` already follow.
+    """
+    root = repo_root or REPO_ROOT
+    when = time.time() if now is None else now
+    stamp = datetime.fromtimestamp(when, timezone.utc)
+
+    day = f"{stamp:%Y-%m-%d}"
+
+    def defect(check: str, detail: str, **extra) -> list[dict]:
+        row = {"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+               "kind": "defect", "check": check, "subject": COORDINATOR_AGENT,
+               "day": day, "detail": detail, **extra}
+        _deliver_progress_defect(bus_root, epoch, check, day, detail)
+        return [row]
+
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(root), "log", "-1", "--format=%cI"],
+            capture_output=True, text=True, timeout=15)
+        head_iso = proc.stdout.strip()
+        if proc.returncode != 0 or not head_iso:
+            raise RuntimeError(proc.stderr.strip()[:200] or "git produced no output")
+        head_ts = datetime.fromisoformat(head_iso).timestamp()
+    except Exception as exc:  # noqa: BLE001 — unreadable git is NOT "no commits"
+        return defect("progress-log-check-skipped",
+                      f"cannot read git history to check progress-log currency: {exc}. "
+                      f"This is reported, not passed: an unreadable check is not a clean one.")
+
+    if not _PROGRESS_DIR.is_dir():
+        return defect("progress-log-stale",
+                      f"{_PROGRESS_DIR} does not exist, so no progress log can be written at "
+                      f"all. Reported rather than skipped — a missing directory is a louder "
+                      f"defect than a stale file, not a quieter one.")
+
+    path = _PROGRESS_DIR / f"{stamp:%Y-%m}" / f"{stamp:%Y-%m-%d}.md"
+    try:
+        written = path.stat().st_mtime
+    except OSError:
+        written = None
+
+    # No commits today at all -> genuinely nothing owed. This is the ONE clean exit,
+    # and it is keyed on positive evidence (a commit timestamp older than today),
+    # never on something being unreadable.
+    if head_ts < stamp.replace(hour=0, minute=0, second=0, microsecond=0).timestamp():
+        return []
+
+    if written is None:
+        return defect("progress-log-stale",
+                      f"commits landed today (HEAD {head_iso}) and {path.relative_to(root)} "
+                      f"does not exist. The absent file IS the defect; absence is not "
+                      f"'nothing due'.", progress_path=str(path.relative_to(root)))
+
+    if head_ts > written and (when - written) > hours * 3600.0:
+        return defect("progress-log-stale",
+                      f"HEAD committed {head_iso}; {path.relative_to(root)} last written "
+                      f"{datetime.fromtimestamp(written, timezone.utc):%H:%MZ}, "
+                      f"{(when - written) / 3600.0:.1f}h ago and BEFORE that commit. Work is "
+                      f"landing unlogged, which reads to the operator as a day where nothing "
+                      f"happened.", progress_path=str(path.relative_to(root)),
+                      stale_h=round((when - written) / 3600.0, 1))
+    return []
+
+
+_ADVISORY_MAX_BYTES = 128 * 1024 * 1024
+
+
+def rotate_advisory(bus_root: Path, epoch: int,
+                    max_bytes: int = _ADVISORY_MAX_BYTES) -> list[dict]:
+    """Shard `advisory.jsonl` once it passes `max_bytes`. Returns advisory rows.
+
+    The file reached **1,041 MiB / 3,003,126 rows** and nothing rotated it. Until
+    2026-08-11 that was also a live hot-path cost — the daemon re-parsed the whole
+    thing every 45s for `already_flagged`, ~29.5% of a core — but C38 moved that to
+    `relay_state.json`, and the restarted daemon measures **1.3%**. So this is no
+    longer a performance fix; it is the size itself, and the one remaining full read
+    (the ledger bootstrap).
+
+    ORDERING, and it is load-bearing: **C28 had to land first.** C28's own filing
+    says any operation that moves, truncates or rotates a bus file re-floods what it
+    tracked, because relay idempotency was keyed on the destination file. It is now
+    keyed on message identity in a daemon-owned ledger, so rotation is finally safe
+    — and it was not safe this morning.
+
+    Rename, never truncate: the ledger is the record, and a rotated shard is still
+    readable and greppable. `load_relay_state` bootstraps across every shard for the
+    same reason.
+    """
+    live = bus_root / "advisory.jsonl"
+    try:
+        size = live.stat().st_size
+    except OSError:
+        return []
+    if size <= max_bytes:
+        return []
+    existing = sorted(bus_root.glob("advisory_*.jsonl"))
+    nxt = 1 + max((int(p.stem.rsplit("_", 1)[-1]) for p in existing
+                   if p.stem.rsplit("_", 1)[-1].isdigit()), default=0)
+    shard = bus_root / f"advisory_{nxt}.jsonl"
+    try:
+        live.rename(shard)
+        live.touch()
+    except OSError as exc:  # noqa: BLE001 — never let housekeeping stop the tick
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "advisory-rotation-failed", "check": "advisory-rotation",
+                 "detail": f"could not rotate {live} ({size / 1048576:.0f} MiB): {exc}"}]
+    return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+             "kind": "advisory-rotated", "check": "advisory-rotation",
+             "shard": shard.name, "bytes": size,
+             "detail": f"advisory.jsonl reached {size / 1048576:.0f} MiB and was rotated to "
+                       f"{shard.name}. Readers of the flag history must read every "
+                       f"advisory*.jsonl shard, not just the live file."}]
+
+
+RELAY_STATE_SCHEMA = "session_bus.relay_state.v1"
+
+
+def _relay_state_path(bus_root: Path) -> Path:
+    return bus_root / "relay_state.json"
+
+
+def load_relay_state(bus_root: Path, ids: Iterable[str]) -> dict:
+    """The daemon's own record of what it has delivered and what it has flagged.
+
+    Closes TWO defects that turned out to be the same defect, so they are fixed
+    together rather than twice:
+
+    **C28 — relay was tracked by destination FILE, not by message identity.** The
+    idempotency key was `relayed_src` checked against the recipient's inbox, so an
+    absent or truncated destination read as "never relayed". Renaming the roster on
+    2026-07-29 meant `git mv inbox/<old> inbox/<new>`, and the running daemon
+    re-delivered its ENTIRE relay history into freshly recreated old-id inboxes.
+    Stated generally, because the rename is not the only trigger: **any operation
+    that moves, truncates, rotates or restores an inbox re-floods it** — including a
+    well-meant cleanup or a log rotation.
+
+    **C38 — `already_flagged` re-read `advisory.jsonl` in full, every 45s.** That
+    file reached 1,028 MiB / 3,001,866 rows, and the set it rebuilds has **637
+    members**. Three million rows parsed per tick to reconstruct 637 pairs, on the
+    delivery hot path, costing ~29.5% of a core continuously.
+
+    One ledger answers both, because both questions are "what has this daemon
+    already done", and the C18 rule they each half-applied says to derive that from
+    what the daemon itself leaves behind, in a place the operation cannot erase —
+    not from re-reading the thing it acted on.
+
+    BOOTSTRAP, and why it is the safe direction: with no ledger on disk the state is
+    rebuilt from the inboxes and the advisory exactly as before, then written. That
+    is today's semantics, so a lost or corrupt ledger degrades to the old behaviour
+    rather than to a re-flood — it reads what is actually there. It is paid once,
+    not per tick.
+    """
+    path = _relay_state_path(bus_root)
+    ids = list(ids)
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        if str(raw.get("schema_version")) != RELAY_STATE_SCHEMA:
+            raise ValueError(f"unknown relay_state schema {raw.get('schema_version')!r}")
+        delivered = {aid: set(map(str, raw.get("delivered", {}).get(aid, []))) for aid in ids}
+        flagged = {(str(a), str(b)) for a, b in raw.get("flagged", [])}
+        return {"delivered": delivered, "flagged": flagged, "bootstrapped": False}
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        pass
+
+    delivered = {}
+    for aid in ids:
+        rows, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl")
+        delivered[aid] = {str(r["relayed_src"]) for r in rows if r.get("relayed_src")}
+    flagged: set[tuple[str, str]] = set()
+    try:
+        # The ONLY full read of advisory.jsonl left, and it happens once per ledger
+        # lifetime rather than 80 times an hour. Streamed, because at 1 GiB the
+        # parse-everything form is itself the defect being closed.
+        # EVERY SHARD, not just the live file. Rotation renames the current
+        # advisory to `advisory_<n>.jsonl`; a bootstrap that read only
+        # `advisory.jsonl` would lose every flag raised before the last rotation
+        # and re-flag all of them — turning a housekeeping win into the C34 flood
+        # it was meant to prevent. Same rule as the autopilot journal: rotated
+        # means sharded, and a reader of a sharded log reads all shards.
+        for shard in sorted((bus_root).glob("advisory*.jsonl")):
+            with shard.open(encoding="utf-8", errors="replace") as fh:
+                for line in fh:
+                    if '"unreachable"' not in line:
+                        continue
+                    try:
+                        row = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+                    if row.get("unreachable"):
+                        flagged.add((str(row.get("relayed_src")), str(row.get("unreachable"))))
+    except OSError:  # noqa: BLE001 — a torn ledger must not stop delivery
+        pass
+    return {"delivered": delivered, "flagged": flagged, "bootstrapped": True}
+
+
+def save_relay_state(bus_root: Path, state: dict) -> None:
+    """Persist the ledger atomically. Sorted so a diff of it is readable."""
+    _write_atomic(_relay_state_path(bus_root), {
+        "schema_version": RELAY_STATE_SCHEMA,
+        "ts": _utcnow_iso(),
+        "delivered": {aid: sorted(src) for aid, src in sorted(state["delivered"].items())},
+        "flagged": sorted([list(pair) for pair in state["flagged"]]),
+    })
+
+
 def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[str, dict],
                  epoch: int) -> tuple[list[str], list[dict]]:
     """Relay token-request blocks into the token queue, verbatim.
@@ -641,11 +1074,43 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
                 continue
             if gate in existing or gate in seen:
                 self_block = None            # already presented; the hold below still applies
+                # C39: a gate presented BEFORE its receipt existed never gets the
+                # annotation above, because the block is written once and never
+                # rewritten — the daemon does not edit the operator's file. Both
+                # live C27 gates are in exactly that state. So say it on the bus
+                # instead, once per gate (`seen_spent` below dedupes durably).
+                if gate not in seen and (found := spent_receipt_for(gate)) is not None:
+                    defects.append({
+                        "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                        "kind": "defect", "check": "token-gate-looks-spent",
+                        "subject": msg.get("from"), "gate_id": gate, "msg_id": msg.get("id"),
+                        "receipt": str(found[0].relative_to(REPO_ROOT)),
+                        "detail": f"{gate} is presented UNCHECKED in token-queue.md, but "
+                                  f"{found[0].relative_to(REPO_ROOT)} reads status: {found[1]}. "
+                                  f"The operator is being asked to sign a gate that already "
+                                  f"has a receipt. SURFACE IT TO THE OPERATOR — do not tick or "
+                                  f"remove the block. Only the operator flips a checkbox "
+                                  f"(token-queue.md's own header), and removing the block would "
+                                  f"destroy the only in-file record that the gate was PRESENTED, "
+                                  f"which the receipt does not carry."})
+                seen.add(gate)
             else:
                 seen.add(gate)
+                # C39: ANNOTATE, never suppress. A relay that silently withholds a
+                # gate because it believes the gate is spent is the C3/C6/C8
+                # fail-open family aimed squarely at the operator path — a missed
+                # signature request is exactly what C27 was. So the block is
+                # presented as always and the receipt is named next to it; the
+                # human decides whether they are being asked to sign twice.
+                spent = spent_receipt_for(gate)
+                spent_note = "" if spent is None else (
+                    f"  - ⚠ **A receipt for this gate already exists** — "
+                    f"`{spent[0].relative_to(REPO_ROOT)}` reads `status: {spent[1]}`. "
+                    f"This gate looks ALREADY SIGNED; confirm before signing it again.\n")
                 self_block = (
                     f"\n### {gate}\n\n"
                     f"- [ ] **{gate}** — requested by `{msg.get('from')}` for task `{tid}`\n"
+                    f"{spent_note}"
                     f"  - block ref: `{payload.get('block_ref', '-')}`\n"
                     f"  - command (pre-validated, dry-run exit "
                     f"`{validated.get('dry_run_exit')}`):\n"
@@ -662,6 +1127,227 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
                              "epoch": epoch, "owner": row.get("owner"),
                              "operator_gates": sorted(set((row.get("operator_gates") or []) + [gate]))})
     return blocks, rows + defects
+
+
+_SPENT_NOTE_MARKER = "<!-- daemon:spent-gate-notice"
+
+
+def note_spent_gates_in_queue(bus_root: Path, epoch: int) -> list[dict]:
+    """Tell a reader of `token-queue.md` ALONE which unchecked gates are already signed.
+
+    C39's deferred half, built 2026-08-12. The notice went to `coordinator-agent`'s
+    inbox, which is right, but it left the operator-facing file misleading on its
+    own terms: **six of seven unchecked gates carry `status: ratified` receipts**, and
+    nothing in the file says so. Somebody reading only that file sees six pending
+    signature requests that are not pending.
+
+    APPEND-ONLY, and that is a deliberate narrowing of what was proposed. The
+    suggestion was to annotate each block IN PLACE with a `RECEIPT PRESENT` marker.
+    That means the daemon editing operator-facing content it wrote earlier, next to
+    checkboxes only the operator may touch — a small blast radius until the day the
+    edit lands wrong. Appending a clearly-marked block achieves the same thing for a
+    reader and cannot corrupt an existing one, and appending is already what this
+    daemon does here (`relay_tokens`, and C20's escalation).
+
+    It NEVER writes or alters a checkbox, and it never says the gate is closed — only
+    that a receipt exists and where. The operator decides what that means; stating
+    the evidence is transport, deciding is not.
+
+    Deduped on the exact gate SET, so a steady state appends once and a newly-spent
+    gate appends a fresh, corrected note rather than silently going unmentioned.
+    """
+    tq = bus_root / "tokens" / "token-queue.md"
+    try:
+        text = tq.read_text(encoding="utf-8")
+    except OSError:
+        return []
+
+    unchecked = re.findall(r"^- \[ \] \*\*([A-Za-z0-9._-]+)\*\*", text, re.M)
+    spent: list[tuple[str, str, str]] = []
+    for gate in dict.fromkeys(unchecked):
+        found = spent_receipt_for(gate)
+        if found is not None:
+            spent.append((gate, str(found[0].relative_to(REPO_ROOT)), found[1]))
+    if not spent:
+        return []
+
+    key = ",".join(sorted(g for g, _, _ in spent))
+    marker = f"{_SPENT_NOTE_MARKER} {hashlib.sha256(key.encode()).hexdigest()[:12]} -->"
+    if marker in text:
+        return []
+
+    lines = [f"\n{marker}\n",
+             "\n### ⚠ Daemon notice — these unchecked gates already have receipts\n\n",
+             "**Not a gate and not a checkbox.** The daemon never ticks or removes a block; this "
+             "is STATE, so that a reader of this file alone is not misled. Each gate below is "
+             "presented above as unchecked, and a ratified receipt for it exists on disk. Verify, "
+             "then tick or remove it yourself — that is the operator's call, not the daemon's and "
+             "not the coordinator's.\n\n"]
+    for gate, path, status in spent:
+        lines.append(f"- `{gate}` — receipt `{path}` reads `status: {status}`\n")
+    lines.append("\n")
+
+    try:
+        with tq.open("a", encoding="utf-8") as fh:
+            fh.writelines(lines)
+    except OSError as exc:  # noqa: BLE001 — a notice must never break the tick
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "spent-gate-notice-failed", "check": "token-gate-looks-spent",
+                 "detail": f"could not append the spent-gate notice to {tq}: {exc}"}]
+    return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+             "kind": "spent-gate-notice", "check": "token-gate-looks-spent",
+             "count": len(spent), "gates": sorted(g for g, _, _ in spent),
+             "detail": f"appended a notice naming {len(spent)} unchecked gate(s) that already "
+                       f"have ratified receipts, so token-queue.md is no longer misleading read "
+                       f"on its own"}]
+
+
+_WITHDRAWN_NOTE_MARKER = "<!-- daemon:withdrawn-gate-notice"
+
+
+def gate_requests(bus_root: Path) -> dict[str, tuple[str, str, str]]:
+    """{gate_id: (requester, task_id, ts)} for every gate a `token-request` minted."""
+    out: dict[str, tuple[str, str, str]] = {}
+    for f in sorted((bus_root / "outbox").glob("*.jsonl")):
+        try:
+            lines = f.read_text(encoding="utf-8", errors="replace").splitlines()
+        except OSError:
+            continue
+        for line in lines:
+            if '"token-request"' not in line:
+                continue
+            try:
+                m = json.loads(line)
+            except ValueError:
+                continue
+            gate = (m.get("payload") or {}).get("gate_id")
+            if m.get("kind") == "token-request" and isinstance(gate, str) and gate:
+                out[gate] = (m.get("from", "?"), m.get("task_id", ""), m.get("ts", ""))
+    return out
+
+
+def withdrawn_or_stale_gates(bus_root: Path, text: str) -> list[tuple[str, str, str]]:
+    """(gate, verdict, evidence) for unchecked gates whose REQUESTER has moved on.
+
+    C44 (2026-08-12), the sibling of C39's receipt-blindness and found the same way —
+    by an escalation chasing the operator about a gate that was not live. C39 taught
+    the relay to notice a gate already SIGNED; nothing taught it to notice a gate the
+    REQUESTER WITHDREW. Withdrawal leaves the block unchecked and byte-identical to a
+    live ask, so the ladder dutifully escalates it. Measured: gate
+    `APPLY-C39-KEYED-RECEIPT-E8V4-20260812` was filed 01:21:10, withdrawn 01:41:39,
+    and still escalating past deadline at 04:01 — with two known defects in the patch
+    it asks the operator to apply.
+
+    TWO TIERS, and the split is the whole design. A withdrawal signal that is too
+    broad SUPPRESSES A LIVE OPERATOR ASK, which is this defect inverted and worse, so
+    only an explicit statement is allowed to say WITHDRAWN:
+
+      1. WITHDRAWN (authoritative) — the requester said so, either `withdraws_gate:
+         <gate_id>` or `disposition: "withdrawn"` alongside a `gate_id`. Explicit,
+         keyed to the gate, and nothing else earns this verdict.
+      2. REQUESTER-MOVED-ON (advisory) — the minting `token-request` shares its
+         `task_id` and author with a LATER `task-complete` from that same author.
+         This is EVIDENCE OF A DISCREPANCY, not a withdrawal, and the wording says so:
+         it asks the reader to verify, and never claims the gate is closed.
+
+    Tier 2 exists because the real withdrawal carried NO gate_id — it was a
+    `task-complete` on the request's own `task_id`. A gate_id-keyed matcher would
+    have detected nothing and passed vacuously, which is why this is built against
+    the message that actually exists rather than the one the convention wants.
+    """
+    unchecked = re.findall(r"^- \[ \] \*\*([A-Za-z0-9._-]+)\*\*", text, re.M)
+    if not unchecked:
+        return []
+    requests = gate_requests(bus_root)
+    msgs: list[dict] = []
+    for f in sorted((bus_root / "outbox").glob("*.jsonl")):
+        try:
+            lines = f.read_text(encoding="utf-8", errors="replace").splitlines()
+        except OSError:
+            continue
+        for line in lines:
+            try:
+                msgs.append(json.loads(line))
+            except ValueError:
+                continue
+
+    found: list[tuple[str, str, str]] = []
+    for gate in dict.fromkeys(unchecked):
+        req = requests.get(gate)
+        for m in msgs:
+            p = m.get("payload") or {}
+            if p.get("withdraws_gate") == gate or (
+                    p.get("disposition") == "withdrawn" and p.get("gate_id") == gate):
+                found.append((gate, "WITHDRAWN",
+                              f"`{m.get('from','?')}` withdrew it at {m.get('ts','?')} "
+                              f"(`{m.get('id','?')}`)"))
+                break
+        else:
+            if req is None:
+                continue
+            who, task, ts = req
+            if not task:
+                continue
+            later = [m for m in msgs
+                     if m.get("kind") == "task-complete" and m.get("from") == who
+                     and m.get("task_id") == task and str(m.get("ts", "")) > ts]
+            if later:
+                m = later[0]
+                found.append((gate, "REQUESTER-MOVED-ON",
+                              f"`{who}` filed it at {ts} on task `{task}`, then reported that "
+                              f"same task complete at {m.get('ts','?')} (`{m.get('id','?')}`)"))
+    return found
+
+
+def note_withdrawn_gates_in_queue(bus_root: Path, epoch: int) -> list[dict]:
+    """Append-only notice naming unchecked gates whose requester has moved on (C44).
+
+    Same discipline as C39's spent-gate notice and for the same reason: the daemon
+    never ticks, never removes, and never edits a block it wrote earlier next to
+    checkboxes only the operator may touch. The block IS the record that a gate was
+    presented, so it stays; what changes is that the file no longer reads as though
+    the ask were live. Stating the evidence is transport; deciding is the operator's.
+    """
+    tq = bus_root / "tokens" / "token-queue.md"
+    try:
+        text = tq.read_text(encoding="utf-8")
+    except OSError:
+        return []
+    stale = withdrawn_or_stale_gates(bus_root, text)
+    if not stale:
+        return []
+
+    key = ",".join(sorted(f"{g}:{v}" for g, v, _ in stale))
+    marker = f"{_WITHDRAWN_NOTE_MARKER} {hashlib.sha256(key.encode()).hexdigest()[:12]} -->"
+    if marker in text:
+        return []
+
+    lines = [f"\n{marker}\n",
+             "\n### ⚠ Daemon notice — these unchecked gates may no longer be live asks\n\n",
+             "**Not a gate and not a checkbox.** The daemon never ticks or removes a block. "
+             "`WITHDRAWN` means the requester explicitly said so and is authoritative. "
+             "`REQUESTER-MOVED-ON` is a DISCREPANCY, not a verdict — the requester later "
+             "reported the same task complete, which usually means the ask lapsed, but only "
+             "the requester and the operator can settle it. **Verify before signing:** a "
+             "withdrawn gate asks for a signature on work its own author has stopped "
+             "standing behind.\n\n"]
+    for gate, verdict, evidence in stale:
+        lines.append(f"- `{gate}` — **{verdict}** — {evidence}\n")
+    lines.append("\n")
+
+    try:
+        with tq.open("a", encoding="utf-8") as fh:
+            fh.writelines(lines)
+    except OSError as exc:  # noqa: BLE001 — a notice must never break the tick
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "withdrawn-gate-notice-failed", "check": "token-gate-not-live",
+                 "detail": f"could not append the withdrawn-gate notice to {tq}: {exc}"}]
+    return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+             "kind": "withdrawn-gate-notice", "check": "token-gate-not-live",
+             "count": len(stale), "gates": sorted(g for g, _, _ in stale),
+             "detail": f"appended a notice naming {len(stale)} unchecked gate(s) whose "
+                       f"requester has withdrawn them or moved on, so the escalation ladder "
+                       f"and a reader of token-queue.md alone are no longer misled"}]
 
 
 def relay_token_blocks(bus_root: Path, config: dict, epoch: int) -> list[dict]:
@@ -719,25 +1405,65 @@ def relay_token_blocks(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     # Aligning the schema with the relay contract — so `append` refuses at authoring
     # time, which is the right place — is a CONTRACT change and is escalated
     # separately, not decided here.
-    seen_notice: set[str] = set()
     if COORDINATOR_AGENT in ids:
         _ca_rows, _ = _read_jsonl(bus_root / "inbox" / f"{COORDINATOR_AGENT}.jsonl")
-        seen_notice = {str((r.get("payload") or {}).get("gate_id")) for r in _ca_rows
-                       if (r.get("payload") or {}).get("event") == "token-request-not-presented"}
-        for item in advisory:
-            gate = str(item.get("gate_id") or "")
-            if not gate or gate in seen_notice:
-                continue
-            _append_inbox(bus_root, [{
-                "to": COORDINATOR_AGENT, "kind": "defect",
-                "payload": {"event": "token-request-not-presented", "gate_id": gate,
-                            "from_agent": item.get("subject"),
-                            "detail": item.get("detail"),
-                            "action": f"{gate} is NOT in token-queue.md and the operator has not "
-                                      f"been asked. Have {item.get('subject')!r} re-file it with "
-                                      f"payload.validated = {{cmd, dry_run_exit, dry_run_evidence}}"}}],
-                          epoch)
-            seen_notice.add(gate)
+
+        def _notify(check: str, event: str, action: Callable[[dict, str], str]) -> None:
+            """Emit one inbox notice per gate for one advisory CHECK, ever.
+
+            C39 (2026-08-11): this loop used to consume EVERY advisory row carrying a
+            `gate_id` and label it `token-request-not-presented`. That was true while
+            `token-prevalidation` was the only such row. It is not any more, and a
+            "looks already signed" row rendered as "was never presented" would send
+            the coordinator to chase a gate that is sitting in the queue. So the
+            check is now named on both sides — selection AND dedupe key — and adding
+            a third one cannot silently inherit the second one's wording.
+
+            The notice goes to an INBOX, not just `advisory.jsonl`, because that is
+            the whole lesson of C33: a notice delivered to a file nobody drains is a
+            second unread sink one level up from the defect it reports.
+            """
+            seen = {str((r.get("payload") or {}).get("gate_id")) for r in _ca_rows
+                    if (r.get("payload") or {}).get("event") == event}
+            for item in advisory:
+                if item.get("check") != check:
+                    continue
+                gate = str(item.get("gate_id") or "")
+                if not gate or gate in seen:
+                    continue
+                _append_inbox(bus_root, [{
+                    "to": COORDINATOR_AGENT, "kind": "defect",
+                    "payload": {"event": event, "gate_id": gate,
+                                "from_agent": item.get("subject"),
+                                "detail": item.get("detail"),
+                                "action": action(item, gate)}}], epoch)
+                seen.add(gate)
+
+        _notify("token-prevalidation", "token-request-not-presented",
+                lambda item, gate: (
+                    f"{gate} is NOT in token-queue.md and the operator has not been asked. "
+                    f"Have {item.get('subject')!r} re-file it with payload.validated = "
+                    f"{{cmd, dry_run_exit, dry_run_evidence}}"))
+        # C39-advice (2026-08-11, raised by `coordinator-agent` against this tooling):
+        # this notice used to end "verify the receipt, then tick or remove the block
+        # yourself". That instructed the ONE action the coordinator is forbidden to
+        # take — token-queue.md's header reserves the checkbox to the operator and
+        # agents/coordinator-agent.md says never tick one — and advice from the
+        # delivery plane is persuasive precisely because it is tooling. Tooling that
+        # contradicts the trust boundary is worse than tooling with a wrong number.
+        # The history lives here rather than in the payload: an operational notice
+        # should say what to do now, not narrate its own past defect.
+        _notify("token-gate-looks-spent", "token-gate-looks-spent",
+                lambda item, gate: (
+                    f"{gate} IS in token-queue.md, unchecked, but a receipt for it already "
+                    f"exists ({item.get('receipt')}). Verify the receipt and SURFACE IT TO THE "
+                    f"OPERATOR. Do not tick the box and do not delete the block: only the "
+                    f"operator flips a checkbox, and the block plus its unticked box is the only "
+                    f"in-file record that this gate was PRESENTED — the receipt records the "
+                    f"signing, not the asking."))
+
+    advisory += note_spent_gates_in_queue(bus_root, epoch)
+    advisory += note_withdrawn_gates_in_queue(bus_root, epoch)
 
     if blocks:
         tq = bus_root / "tokens" / "token-queue.md"
@@ -866,6 +1592,106 @@ def intake_proposals(bus_root: Path, latest: dict[str, dict], reports: dict[str,
                              "detail": f"lane={pl.get('lane')} gating={pl.get('gating')} "
                                        f"classification={pl.get('classification', 'unstated')}"})
     return rows, advisory
+
+
+def backfill_receipts(bus_root: Path, source_dir: Path, receipts_dir: Path,
+                      *, dry_run: bool = False) -> list[tuple[str, Path, str]]:
+    """Index the legacy unkeyed operator receipts by gate_id. Returns what it found.
+
+    C39. The receipts written before this contract existed carry the gate id at
+    inconsistent keys — `human_attestation` in one, nested elsewhere in another —
+    so the only general way to find them is to look inside the files. That is 55
+    files and 55.7 MB, which is fine ONCE and would be a fresh C38 every 45s. So it
+    lives here, in a one-shot, and never on the tick path.
+
+    Writes a pointer, not a copy: `receipts/<GATE_ID>.json` records where the real
+    receipt is and what it says. Copying would create a second source of truth for
+    an operator signature, which is the last thing that should have two.
+    """
+    gates: set[str] = set()
+    for path in sorted((bus_root / "outbox").glob("*.jsonl")):
+        rows, _ = _read_jsonl(path)
+        for row in rows:
+            if row.get("kind") == "token-request":
+                gate = (row.get("payload") or {}).get("gate_id")
+                if gate:
+                    gates.add(str(gate))
+
+    found: list[tuple[str, Path, str]] = []
+    for source in sorted(source_dir.glob("*.json")):
+        try:
+            text = source.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        hits = [g for g in gates if g in text]
+        if not hits:
+            continue
+        try:
+            status = str((json.loads(text) or {}).get("status", "")).strip().lower()
+        except (json.JSONDecodeError, AttributeError):
+            continue
+        if status not in _SPENT_STATUSES:
+            continue
+        for gate in hits:
+            found.append((gate, source, status))
+
+    if not dry_run:
+        receipts_dir.mkdir(parents=True, exist_ok=True)
+        for gate, source, status in found:
+            (receipts_dir / f"{gate}.json").write_text(
+                json.dumps({"schema_version": "session_bus.receipt_index.v1",
+                            "gate_id": gate, "status": status,
+                            "receipt": str(source), "indexed_by": "backfill-receipts"},
+                           indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return found
+
+
+def cmd_backfill_receipts(args: argparse.Namespace) -> int:
+    """One-shot: index legacy operator receipts by gate_id so the relay can see them.
+
+    `--check` exists because the write side is a CONVENTION, not a mechanism.
+    Measured 2026-08-11: 2 of 24 `ratify_*.sh` scripts write
+    `receipts/<GATE_ID>.json` at `--attest` time. The other 22 are each one
+    forgotten copy-paste away from re-creating C39 for their gate, and nothing
+    would say so — the relay would simply present a signed gate as pending again.
+    A drift check catches that whichever script signed it, so the guarantee stops
+    depending on the next author remembering 14 lines.
+    """
+    bus_root = Path(args.bus_root)
+    found = backfill_receipts(bus_root, REPO_ROOT / "artifacts" / "operator", RECEIPTS_DIR,
+                              dry_run=args.dry_run or args.check)
+    if args.check:
+        drift = [(g, s, st) for g, s, st in found if not (RECEIPTS_DIR / f"{g}.json").exists()]
+        if not drift:
+            # SCOPE, stated in the success line. `backfill_receipts` derives its gate
+            # set from token-requests in the bus outboxes, so this can only ever speak
+            # about gates the BUS has seen — correct for C39, whose whole subject is
+            # what `relay_tokens` presents, and an overclaim if reported as an
+            # all-clear. `auditor` measured the difference on 2026-08-11: three gates
+            # were signed on disk with no keyed index while this printed a clean
+            # verdict, because none of the three had ever come through as a
+            # token-request. `scripts/operator/check_ratifier_receipt_contract.sh`
+            # covers that half; the two compose and neither subsumes the other.
+            print(f"receipt index is current for gates the bus has seen — "
+                  f"{len(found)} spent gate(s), all indexed. This does NOT cover "
+                  f"receipts on disk for gates that never reached the bus; "
+                  f"scripts/operator/check_ratifier_receipt_contract.sh checks those.")
+            return 0
+        print(f"{len(drift)} SIGNED gate(s) have no keyed receipt, so the relay cannot see "
+              f"they are spent and will present them as pending:")
+        for gate, source, status in drift:
+            print(f"  {gate}\n    -> {source.relative_to(REPO_ROOT)}  (status: {status})")
+        print("Run `backfill-receipts` to index them, and have the ratifier that signed each "
+              "one write receipts/<GATE_ID>.json itself at --attest time.")
+        return 1
+    if not found:
+        print("no spent receipts matched a known gate_id")
+        return 0
+    verb = "would index" if args.dry_run else "indexed"
+    print(f"{verb} {len(found)} receipt(s):")
+    for gate, source, status in found:
+        print(f"  {gate}\n    -> {source.relative_to(REPO_ROOT)}  (status: {status})")
+    return 0
 
 
 def cmd_intake(args: argparse.Namespace) -> int:
@@ -1505,10 +2331,46 @@ def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
         except Exception as exc:  # noqa: BLE001
             # NOT zero. Skipped, loudly, and deduped so a permanently missing
             # file does not write a row every 45s.
-            sig = f"unreadable:{exc.__class__.__name__}"
+            # NAME THE MISSING PATH IN THE SIGNATURE, not just the exception class
+            # (mainD, 2026-08-12). The advisory row already carried the path in
+            # `detail`, but the signature is what gets persisted to
+            # `stuck_state.json` — the durable artifact a reader actually samples.
+            # Read there, `unreadable:FileNotFoundError` says "the bus cannot see
+            # this agent" when the truth was "cursors/<id>.json is missing and
+            # `provision --agent <id>` fixes it". Measured: the resolution ledger
+            # recorded U-1 as "the bus cannot see 7 of its 8 agents"; `mainB` was
+            # missing exactly ONE file while their heartbeat was live and current.
+            # A diagnosis that names a symptom class and hides a one-line remedy is
+            # the same shape as `mainA`'s "fold is unavailable" concealing a
+            # ModuleNotFoundError. Dedup is unaffected: same path, same signature.
+            missing = getattr(exc, "filename", None) or ""
+            if missing:
+                try:
+                    missing = str(Path(missing).relative_to(bus_root))
+                except (ValueError, TypeError):
+                    missing = str(missing)
+            # SEPARATE DISPOSABLE LOSS FROM LOSSY LOSS (`mainB`, 2026-08-12). A
+            # missing CURSOR is not blindness: `_cursor_get` returns 0, so the agent
+            # REPLAYS from zero — duplicate delivery and noise, never dropped
+            # messages — and cursors are gitignored precisely because they are
+            # disposable and self-healing. A missing OUTBOX or INBOX is different:
+            # that content existed nowhere else. Reported identically, "unreadable"
+            # read as "this agent is blind" when for a cursor the truth is closer to
+            # "this agent is loud", and that over-read is what inflated U-1.
+            kind_of_loss = ("disposable/self-healing" if missing.startswith("cursors/")
+                            else "LOSSY" if missing else "unknown")
+            note = ""
+            if kind_of_loss.startswith("disposable"):
+                note = ("A cursor is disposable: the agent replays from zero, so this "
+                        "costs duplicate delivery, not lost messages. ")
+            sig = f"unreadable:{exc.__class__.__name__}:{missing}:{kind_of_loss}"
             if rec.get("last_detect_sig") != sig:
                 row("stuck-state-unreadable", aid, detail=str(exc),
-                    action="skipped — unread not computable, NOT treated as zero")
+                    action=("skipped — unread not computable, NOT treated as zero. "
+                            f"Missing: {missing or 'unknown path'} ({kind_of_loss}). {note}"
+                            f"`session_bus.py provision --agent {aid}` recreates the file; the "
+                            "agent must then write its own heartbeat — the bus is single-writer, "
+                            "so nobody can do that for them."))
             rec["last_detect_sig"] = sig
             new_state[aid] = rec
             continue
@@ -1612,10 +2474,57 @@ def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
         else:
             # A guard said no. That is the system working; record the divergence
             # between "detected stuck" and "resolved" and try again later.
+            #
+            # R1 (2026-08-11): IT WAS NOT THE SYSTEM WORKING, AND NOTHING SAID SO.
+            # `last_nudge_ts`/`last_nudge_sig` are written ONLY on rc == 0, and the
+            # stuck-refusing-drain escalation above is gated on `last_nudge_sig` —
+            # so an agent whose nudges are ALWAYS refused could never escalate, no
+            # matter how long it stayed unreachable. The one path that reported it
+            # was an advisory row, and advisory.jsonl has no reader. Measured today:
+            # 1,903 `stuck-nudge-refused` rows accumulated while the whole fleet sat
+            # unreachable and nothing escalated. That is the C3/C6/C8 fail-open shape
+            # sitting inside the escalation path itself.
+            #
+            # So refusal now carries its own clock. A guard saying no ONCE is the
+            # system working; a guard saying no for longer than the escalation
+            # interval is the guard and the detector disagreeing about the same
+            # agent, and that disagreement is the thing a human has to see.
             rec["last_refusal_ts"] = now
+            rec["refusals"] = int(rec.get("refusals") or 0) + 1
+            rec.setdefault("first_refusal_ts", now)
             row("stuck-nudge-refused", aid, unread=unread, exit_code=rc,
                 detail=out[-500:] or "adapter refused with no output",
                 action="guard refusal respected; retried on a later tick")
+            stuck_for = now - float(rec["first_refusal_ts"])
+            last_esc = rec.get("last_unreachable_escalation_ts")
+            if (stuck_for >= _STUCK_ESCALATION_INTERVAL_S
+                    and (last_esc is None
+                         or now - float(last_esc) >= _STUCK_ESCALATION_INTERVAL_S)):
+                rec["last_unreachable_escalation_ts"] = now
+                row("stuck-unreachable", aid, unread=unread, exit_code=rc,
+                    refusals=rec["refusals"], refused_for_s=round(stuck_for),
+                    detail=f"{aid} has been detected STUCK and UNREACHABLE for "
+                           f"{stuck_for / 3600.0:.1f}h across {rec['refusals']} refused nudges. "
+                           f"The detector and the guard disagree about the same agent and "
+                           f"neither can resolve it. Last adapter output: "
+                           f"{(out[-300:] or 'no output')}",
+                    action="operator/coordinator: an agent the daemon cannot reach never "
+                           "recovers on its own")
+                # C33's lesson: an escalation delivered only to advisory.jsonl is a
+                # second unread sink one level up from the defect it reports. This one
+                # goes to a queue somebody drains.
+                if COORDINATOR_AGENT in {r.get("id") for r in roster if isinstance(r, dict)}:
+                    _append_inbox(bus_root, [{
+                        "to": COORDINATOR_AGENT, "kind": "defect",
+                        "payload": {"event": "stuck-unreachable", "agent": aid,
+                                    "refusals": rec["refusals"],
+                                    "refused_for_h": round(stuck_for / 3600.0, 1),
+                                    "detail": (out[-300:] or "adapter refused with no output"),
+                                    "action": f"{aid} is detected stuck AND cannot be nudged. "
+                                              f"Check the pane directly; if it is alive and "
+                                              f"idle this is the R1 deadlock and the adapter "
+                                              f"guard needs looking at, not the agent."}}],
+                        epoch)
         new_state[aid] = rec
 
     if new_state != prev:
@@ -2114,21 +3023,11 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
     notified = {(str(r.get("relayed_src")), str((r.get("payload") or {}).get("unreachable")))
                 for r in _ca_rows
                 if r.get("kind") == "defect" and (r.get("payload") or {}).get("unreachable")}
-    delivered_src: dict[str, set[str]] = {}
-    for aid in ids:
-        rows, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl")
-        delivered_src[aid] = {r["relayed_src"] for r in rows if r.get("relayed_src")}
-
-    # C18 dedupe: an unreachable routing recipient is flagged ONCE per (msg, rid),
-    # not once per tick — the pair is looked up in the durable advisory ledger the
-    # tick loop writes, so a restart does not re-flood it either.
-    already_flagged: set[tuple[str, str]] = set()
-    try:
-        advisory_rows, _ = _read_jsonl(bus_root / "advisory.jsonl")
-        already_flagged = {(str(r.get("relayed_src")), str(r.get("unreachable")))
-                          for r in advisory_rows if r.get("unreachable")}
-    except Exception:  # noqa: BLE001 — a torn ledger must not stop delivery
-        pass
+    # C28 + C38 (2026-08-11): both of these used to be re-derived, every tick, from
+    # the thing they describe. They now come from ONE daemon-owned ledger.
+    relay_state = load_relay_state(bus_root, ids)
+    delivered_src: dict[str, set[str]] = relay_state["delivered"]
+    already_flagged: set[tuple[str, str]] = relay_state["flagged"]
 
     advisory: list[dict] = []
     for sender in ids:
@@ -2275,6 +3174,13 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
                 advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
                                  "epoch": epoch, "kind": "relayed", "from": sender,
                                  "to": target, "relayed_src": src, "msg_kind": kind})
+
+    # C28/C38: persist AFTER the pass, so a crash mid-relay loses the ledger update
+    # rather than the delivery. Losing the update re-delivers at most one tick's
+    # worth on the next run — the destination check that bootstrap falls back to
+    # would have caught those anyway. Losing the delivery would be the real damage,
+    # and this ordering makes that impossible.
+    save_relay_state(bus_root, {"delivered": delivered_src, "flagged": already_flagged})
     return advisory
 
 
@@ -2401,11 +3307,216 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     return emitted
 
 
+# =========================================================================== M1
+#
+# DELIVER THE DAEMON'S OWN PICK TO A READER.
+#
+# The scheduler named the work and told nobody. `compute_advice()` computes a
+# CONCRETE pick per agent every tick and emits it as a `would-assign` row. On the
+# night of 2026-08-11/12, window 03:00-07:59Z: **4,602 `would-assign` rows, 100%
+# carrying a concrete `task_id`, resolving to 12 distinct `(agent, task, lane)`
+# picks — six of them repeated 756 consecutive times each**, while the fleet ran
+# at ~8-9% compute utilisation with a 3h47m window at zero. Every one of those
+# rows went to `advisory.jsonl`, whose own producer states in this file that it
+# "has no reader" (see `resolve_stuck_agents` and `relay_outbox_messages`).
+#
+# AUTHORITY. `coordinator_daemon.authority` is `manual`, and this mechanism does
+# not touch it. What is delivered is a RECOMMENDATION to `coordinator-agent` —
+# never a `task-assign` to the picked main, at any authority. There is
+# deliberately NO authority branch in this code: raising authority to `assign` is
+# a separate, operator-reserved decision, and this must not quietly become an
+# assignment path when it is taken. It also does not need one — under `assign`,
+# `apply_assignment` moves the row to ASSIGNED, the owner enters `busy_owners`,
+# the `would-assign` row stops being emitted, the signature changes, and the
+# arming counter resets before it can ever fire. The mechanism silences itself
+# structurally rather than by inspecting a config key.
+#
+# VOLUME. Six picks repeated 756 times each is what made `advisory.jsonl`
+# useless; a message repeated 756 times is a second unread sink. So: ONE row per
+# distinct `(agent, task, lane)` pick-set, emitted only after the SAME set has
+# survived `_RECOMMEND_MIN_TICKS` consecutive ticks (~15 min at the 45s tick),
+# and re-emitted only when the set CHANGES or after `_RECOMMEND_REEMIT_S` of the
+# set standing unchanged. The 4,602-row night collapses to one inbox item at
+# roughly 00:15Z.
+#
+# NON-FIRING BY CONSTRUCTION. A pick that is dispatched, superseded, or resolved
+# inside 15 minutes never fires — which is what keeps an ordinary gap between two
+# legs of a campaign quiet. A fleet with no READY work, or with every agent
+# already holding a live task, emits no `would-assign` rows at all and therefore
+# cannot fire. A check that fires on a well-run night trains everyone to ignore it.
+_SCHEDULING_STATE = "scheduling_recommendation_state.json"
+_RECOMMEND_MIN_TICKS = 20            # ~15 min at the 45 s tick
+_RECOMMEND_REEMIT_S = 6 * 3600.0     # a still-unactioned pick-set is re-raised 4x/day
+_RECOMMEND_EVENT = "scheduling-pick-undelivered"
+
+
+def _pick_signature(advice: list[dict]) -> tuple[str, list[dict]]:
+    """(signature, picks) over this tick's `would-assign` rows.
+
+    The signature is keyed on `(agent, task_id, lane)` ONLY — the identity of the
+    decision. Counts, timestamps and rejection tallies move every tick and would
+    make every tick a "new" pick-set, which is the 756x flood in another costume.
+    """
+    picks = sorted(
+        ({"agent": str(rec.get("agent")),
+          "task_id": str(rec.get("task_id")),
+          "lane": rec.get("lane"),
+          "lane_state": rec.get("lane_state"),
+          "priority": rec.get("priority"),
+          "why_picked": (f"top-priority eligible READY row in {rec.get('agent')}'s roster "
+                         f"lanes ({rec.get('considered')} candidate(s) considered, "
+                         f"priority={rec.get('priority')})"),
+          "routing_annotation": rec.get("routing_annotation"),
+          "admission_note": rec.get("admission_note") or "",
+          "top_rejection": rec.get("top_rejection")}
+         for rec in advice
+         if rec.get("kind") == "would-assign" and rec.get("task_id") and rec.get("agent")),
+        key=lambda p: (p["agent"], p["task_id"]))
+    ident = [[p["agent"], p["task_id"], p["lane"]] for p in picks]
+    sig = hashlib.sha256(json.dumps(ident, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+    return sig, picks
+
+
+def _deliver_scheduling_recommendation(bus_root: Path, config: dict, picks: list[dict],
+                                       sig: str, ticks: int, since: float, moment: float,
+                                       epoch: int, reemit_s: float) -> bool:
+    """Put the recommendation where somebody drains it. True if it was written.
+
+    R1's shape, verbatim: one `_append_inbox` of a `defect` addressed to
+    `coordinator-agent`, deduped against that inbox's OWN contents. Idempotency is
+    keyed on the notice's durable evidence rather than on the state file, so a
+    daemon restart — or a lost state file — cannot re-flood a drained inbox.
+
+    Never raises: this is a reporting path, and a checker that can take the tick
+    down is worse than a missed notice.
+    """
+    try:
+        roster_ids = {str(r.get("id")) for r in (config.get("roster") or [])
+                      if isinstance(r, dict)}
+        if COORDINATOR_AGENT not in roster_ids:
+            return False
+        rows, _ = _read_jsonl(bus_root / "inbox" / f"{COORDINATOR_AGENT}.jsonl")
+        last = None
+        for row in reversed(rows):
+            if (row.get("payload") or {}).get("event") == _RECOMMEND_EVENT:
+                last = row
+                break
+        if last is not None and (last.get("payload") or {}).get("pick_sig") == sig:
+            # Age against the payload's OWN `emitted_at`, which is the same clock
+            # `moment` comes from. The envelope `ts` is wall-clock text written by
+            # `_append_inbox`; comparing the two would silently mix clocks, and a
+            # dedupe that reads a bogus age is a dedupe that suppresses forever.
+            stamp = (last.get("payload") or {}).get("emitted_at")
+            if stamp is None:
+                try:
+                    stamp = datetime.fromisoformat(str(last.get("ts"))).timestamp()
+                except (TypeError, ValueError):
+                    return False   # unreadable stamp -> assume recent, never flood
+            if moment - float(stamp) < reemit_s:
+                return False
+        authority = _authority(config)
+        _append_inbox(bus_root, [{
+            "to": COORDINATOR_AGENT, "kind": "defect",
+            "payload": {
+                "event": _RECOMMEND_EVENT,
+                "pick_sig": sig,
+                "emitted_at": moment,
+                "authority": authority,
+                "stable_for_ticks": ticks,
+                "stable_since": datetime.fromtimestamp(
+                    since, timezone.utc).isoformat(timespec="seconds"),
+                "picks": picks,
+                "detail": (
+                    f"The daemon has computed the same {len(picks)} assignment pick(s) on "
+                    f"{ticks} consecutive ticks ({(moment - since) / 60.0:.0f} min) and "
+                    f"delivered none of them: at authority={authority!r} it MAY NOT assign. "
+                    f"Each pick names the agent, the READY task chosen for it, the lane, and "
+                    f"why. Until 2026-08-12 these went only to advisory.jsonl, which has no "
+                    f"reader — 4,602 such rows in one night while the fleet ran at ~8-9% "
+                    f"utilisation with a 3h47m window at zero."),
+                "action": (
+                    "RECOMMENDATION, NOT AN ASSIGNMENT. Dispatch these yourself, or record "
+                    "why not. The daemon's authority is unchanged and this mechanism never "
+                    "assigns at any authority. If a pick looks wrong, the queue row or the "
+                    "roster lanes are wrong rather than the pick: `top_rejection` on each "
+                    "pick names what most often blocked the runners-up, and a dominant "
+                    "`lane <x> not in <agent> roster lanes` means work exists that no live "
+                    "agent may legally receive."),
+            }}], epoch)
+        return True
+    except Exception:  # noqa: BLE001 — reporting must never break the tick
+        return False
+
+
+def deliver_scheduling_recommendation(bus_root: Path, config: dict, advice: list[dict],
+                                      epoch: int, *, now: float | None = None,
+                                      state_path: Path | None = None,
+                                      min_ticks: int = _RECOMMEND_MIN_TICKS,
+                                      reemit_s: float = _RECOMMEND_REEMIT_S) -> list[dict]:
+    """Deliver a STABLE, undelivered pick-set to `coordinator-agent`'s inbox.
+
+    Read-only with respect to the queue: it appends nothing to `queue.jsonl`,
+    writes no `task-assign`, and changes no status. It observes and reports.
+    """
+    moment = time.time() if now is None else now
+    path = Path(state_path) if state_path is not None else (bus_root / _SCHEDULING_STATE)
+    try:
+        prev = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(prev, dict):
+            prev = {}
+    except (OSError, ValueError):
+        prev = {}
+
+    sig, picks = _pick_signature(advice)
+    if not picks:
+        # THE WELL-RUN-NIGHT PATH. Nothing is being withheld, so nothing is said —
+        # and the arming counter is reset so a later pick starts from zero rather
+        # than inheriting credit from an unrelated one.
+        if prev.get("sig") is not None or prev.get("ticks"):
+            _write_atomic(path, {"sig": None, "ticks": 0, "since_ts": None,
+                                 "last_emit_sig": prev.get("last_emit_sig"),
+                                 "last_emit_ts": prev.get("last_emit_ts")})
+        return []
+
+    if prev.get("sig") == sig:
+        ticks = int(prev.get("ticks") or 0) + 1
+        since = float(prev.get("since_ts") or moment)
+    else:
+        ticks, since = 1, moment
+    state = {"sig": sig, "ticks": ticks, "since_ts": since,
+             "last_emit_sig": prev.get("last_emit_sig"),
+             "last_emit_ts": prev.get("last_emit_ts")}
+
+    emitted: list[dict] = []
+    last_ts = prev.get("last_emit_ts")
+    due = (prev.get("last_emit_sig") != sig
+           or last_ts is None
+           or moment - float(last_ts) >= reemit_s)
+    if ticks >= min_ticks and due and _deliver_scheduling_recommendation(
+            bus_root, config, picks, sig, ticks, since, moment, epoch, reemit_s):
+        state["last_emit_sig"] = sig
+        state["last_emit_ts"] = moment
+        emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                        "epoch": epoch, "kind": "scheduling-recommendation-delivered",
+                        "pick_sig": sig, "picks": len(picks), "stable_for_ticks": ticks,
+                        "to": COORDINATOR_AGENT})
+    try:
+        _write_atomic(path, state)
+    except OSError:  # noqa: PERF203 — an unwritable state file must not kill the tick
+        pass
+    return emitted
+
+
 def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     _reset_tick_cache()   # one consistent host view per tick, probed once
     config = _load_config(bus_root)
     authority = _authority(config)
-    advice = compute_advice(bus_root, config, epoch) + audit(bus_root, epoch)
+    # R2: alongside audit(), the same shape — read-only, returns advisory rows,
+    # and its `defect` kind is already in _OPERATOR_ITEM_KINDS, so an unpresented
+    # one reaches token-queue.md on the C20 timer with no new escalation code.
+    advice = (compute_advice(bus_root, config, epoch) + audit(bus_root, epoch)
+              + progress_log_currency(bus_root, epoch)
+              + rotate_advisory(bus_root, epoch))
 
     # C2 relay. Runs at EVERY authority, including manual, because delivering an
     # explicitly-addressed message is transport, not judgment — and gating it on
@@ -2441,6 +3552,10 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
         # scheduling decision, and its absence is what every one of the seven
         # documented last-hop failures had in common.
         advice += pending_operator_actions(bus_root, roster, epoch)
+        # M1: the daemon's OWN pick, delivered to a reader. Runs at EVERY
+        # authority and NEVER assigns — see the block comment above. Passed the
+        # advice list as computed at the top of this tick.
+        advice += deliver_scheduling_recommendation(bus_root, config, list(advice), epoch)
 
     if authority == "assign" and not dry_run:
         # M4. In manual/advisory mode this branch never runs, so the daemon keeps
@@ -2523,6 +3638,16 @@ def daemon_liveness(hb: dict) -> tuple[bool | None, str]:
     ``PermissionError`` means it exists under another uid — alive, not absent. An
     unusable or missing pid returns None: "I cannot tell" is reported as such, never
     silently rendered as either alive or dead.
+
+    C37 (2026-08-11): existence was not enough, and the docstring of
+    `heartbeat_predates_boot` already said why — a pid check answers "does a
+    process with that number exist", not "is it MY process". The boot check
+    closes that only ACROSS a reboot. Within one boot the recorded pid can be
+    re-issued to anything, and then this function reported a long-dead daemon as
+    alive. Reproduced against the real module: a 10-day-old heartbeat naming
+    `pid 1` printed `state=working epoch=13 pid=1 age=876736s` with no staleness
+    note at all — pid 1 is `/sbin/init`. So the pid is now checked for IDENTITY
+    against `/proc/<pid>/cmdline`, which is exact and costs one read.
     """
     pid = hb.get("pid")
     try:
@@ -2536,10 +3661,88 @@ def daemon_liveness(hb: dict) -> tuple[bool | None, str]:
     except ProcessLookupError:
         return False, f"pid {pid} does not exist"
     except PermissionError:
-        return True, f"pid {pid} exists (owned by another user)"
+        # Exists under another uid. Identity is still worth asking about, and
+        # /proc/<pid>/cmdline is world-readable on Linux.
+        return _identity_verdict(pid, f"pid {pid} exists (owned by another user)")
     except OSError as exc:
         return None, f"pid {pid} liveness unknown: {exc}"
-    return True, f"pid {pid} is alive"
+    return _identity_verdict(pid, f"pid {pid} is alive")
+
+
+def process_cmdline(pid: int, proc_root: Path = Path("/proc")) -> str | None:
+    """The argv of `pid`, space-joined, or None where that is not knowable."""
+    try:
+        raw = (proc_root / str(pid) / "cmdline").read_bytes()
+    except OSError:
+        return None
+    return raw.replace(b"\0", b" ").decode("utf-8", "replace").strip() or None
+
+
+def _identity_verdict(pid: int, existence_note: str) -> tuple[bool | None, str]:
+    """Is the process that holds `pid` actually this daemon?
+
+    Unverifiable identity returns True with the doubt STATED rather than False:
+    a missing /proc is a portability fact, not evidence of death, and reporting
+    a live daemon as dead would send someone to restart a running singleton.
+    """
+    cmdline = process_cmdline(pid)
+    if cmdline is None:
+        return True, f"{existence_note}; identity unverifiable (no /proc/{pid}/cmdline)"
+    if _DAEMON_MARKER not in cmdline:
+        return False, (f"pid {pid} exists but is running {cmdline[:60]!r}, NOT the "
+                       f"coordinator-daemon — the recorded pid was recycled")
+    return True, f"{existence_note} and is the coordinator-daemon"
+
+
+def heartbeat_freshness(age_s: float, tick_s: float,
+                        *, missed_ticks: int = 10) -> tuple[bool, str]:
+    """Has this daemon ticked recently enough to be serving the bus?
+
+    C37: age was PRINTED and never judged — `age=876717s` sat in the same line as
+    `state=working` and the reader had to notice that the number meant ten days.
+    A number a human must interpret is not a verdict, and for ten days nobody
+    interpreted it. Liveness and freshness are independent failures: a wedged
+    daemon holds its pid and stops ticking, so pid-alive must not imply healthy.
+
+    The bound is generous on purpose (ten missed ticks, floor 120s). This
+    distinguishes "dead or wedged" from "a slow tick", and a false alarm here
+    costs someone a glance at a process list.
+    """
+    limit = max(tick_s * missed_ticks, 120.0)
+    if age_s > limit:
+        return False, (f"heartbeat is {age_s:.0f}s old, past the {limit:.0f}s bound "
+                       f"({missed_ticks} missed ticks of {tick_s:.0f}s)")
+    return True, f"heartbeat is {age_s:.0f}s old"
+
+
+def daemon_verdict(hb: dict, mtime: float, tick_s: float,
+                   *, now: float | None = None) -> tuple[str, list[str]]:
+    """One word for whether the bus is being serviced, plus every reason.
+
+    DEAD / STALE / UNKNOWN / HEALTHY, worst wins. Three independent checks feed
+    it — the process exists, it is THIS process, and it has ticked recently — and
+    the whole C37 lesson is that any one of them passing tells you nothing on its
+    own. Callers print the word; they do not re-derive it.
+    """
+    age_s = (now if now is not None else time.time()) - mtime
+    reasons: list[str] = []
+
+    alive, why = daemon_liveness(hb)
+    reasons.append(why)
+    if heartbeat_predates_boot(mtime) and alive is not False:
+        alive = False
+        reasons.append("the heartbeat was last written BEFORE this host booted — "
+                       "the pid is recycled, not this daemon")
+    fresh, why_fresh = heartbeat_freshness(age_s, tick_s)
+    reasons.append(why_fresh)
+
+    if alive is False:
+        return "DEAD", reasons
+    if not fresh:
+        return "STALE", reasons
+    if alive is None:
+        return "UNKNOWN", reasons
+    return "HEALTHY", reasons
 
 
 def boot_time(proc: Path = Path("/proc/uptime")) -> float | None:
@@ -2570,41 +3773,79 @@ def heartbeat_predates_boot(mtime: float, *, slack_s: float = 60.0) -> bool | No
     return mtime < boot - slack_s
 
 
+def _count_and_tail(path: Path, n: int, *, block: int = 262_144) -> tuple[int, list[str]]:
+    """(line count, last `n` non-blank lines) without holding the file in memory.
+
+    `advisory.jsonl` reached 1,028 MiB / 2,986,358 rows. Anything on a status or
+    tick path that says "read it all, then look at the end" is a defect at that
+    size, so this counts newlines in fixed blocks and walks backwards for the
+    tail. Cost is bounded by `block`, not by the file.
+    """
+    try:
+        with path.open("rb") as fh:
+            total = 0
+            while chunk := fh.read(block):
+                total += chunk.count(b"\n")
+            size = fh.seek(0, os.SEEK_END)
+            buf, pos = b"", size
+            while pos > 0 and buf.count(b"\n") <= n:
+                step = min(block, pos)
+                pos -= step
+                fh.seek(pos)
+                buf = fh.read(step) + buf
+            lines = [ln for ln in buf.decode("utf-8", "replace").splitlines() if ln.strip()]
+            return total, lines[-n:]
+    except OSError:
+        return 0, []
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     bus_root = Path(args.bus_root)
+    config = _load_config(bus_root)
+    tick_s = float((config.get("coordinator_daemon") or {}).get("tick_s", 45))
     hb_path = _heartbeat_path(bus_root)
+    verdict = "UNKNOWN"
     try:
         hb = json.loads(hb_path.read_text(encoding="utf-8"))
         mtime = hb_path.stat().st_mtime
         age = time.time() - mtime
-        alive, why = daemon_liveness(hb)
-        if heartbeat_predates_boot(mtime) and alive is not False:
-            # The pid check is OVERRIDDEN, not merely supplemented: it is the check
-            # that is wrong in this case, because it is answering about a recycled
-            # number rather than about this daemon.
-            alive, why = False, (f"{why}, but the heartbeat was last written BEFORE this host "
-                                 f"booted — the pid is recycled, not this daemon")
-        state = str(hb.get("state"))
+        verdict, reasons = daemon_verdict(hb, mtime, tick_s)
+        # C37: the VERDICT leads, on its own line, in one word. It used to be an
+        # annotation spliced into `state=`, so the healthy and unhealthy renderings
+        # differed only by a parenthetical several fields into a dense line — and
+        # for ten days nobody read the difference. Every reason is printed under
+        # it, because "why" is what the reader acts on.
+        print(f"coordinator-daemon: {verdict}")
+        for reason in reasons:
+            print(f"  - {reason}")
         # The heartbeat's own claim is never overwritten — it is EVIDENCE, and the
-        # record of what the last daemon believed is worth keeping. It is annotated.
-        if alive is False:
-            state = f"{state} (STALE — DAEMON IS NOT RUNNING: {why})"
-        elif alive is None:
-            state = f"{state} (unverified: {why})"
-        print(f"state={state} epoch={hb.get('epoch')} pid={hb.get('pid')} "
-              f"age={age:.0f}s note={hb.get('note')!r}")
-    except Exception:  # noqa: BLE001
-        print("no coordinator-daemon heartbeat")
+        # record of what the last daemon believed is worth keeping.
+        print(f"  heartbeat says: state={hb.get('state')} epoch={hb.get('epoch')} "
+              f"pid={hb.get('pid')} age={age:.0f}s note={hb.get('note')!r}")
+    except FileNotFoundError:
+        verdict = "DEAD"
+        print(f"coordinator-daemon: {verdict}")
+        print(f"  - no heartbeat at {hb_path} — this daemon has never run here")
+    except Exception as exc:  # noqa: BLE001
+        verdict = "UNKNOWN"
+        print(f"coordinator-daemon: {verdict}")
+        print(f"  - heartbeat at {hb_path} is unreadable: {exc}")
     blockers = capability_blockers(_load_config(bus_root))
     print("M5 capabilities:")
     for b in blockers:
         print(f"  BLOCKED  {b}")
     if not blockers:
         print("  all authorised, capped and implemented")
-    rows, _ = _read_jsonl(bus_root / "advisory.jsonl")
-    print(f"advisory records: {len(rows)}")
-    for row in rows[-5:]:
-        print("  " + json.dumps(row, sort_keys=True)[:160])
+    # C38: this was `_read_jsonl(advisory.jsonl)` — a full parse of what is now a
+    # 1,028 MiB / 2,986,358-row ledger into ~6.6 GiB of dicts, taking ~9s, in
+    # order to print five lines and a count. Counting bytes and reading the tail
+    # gets the identical output for a fixed cost.
+    total, tail = _count_and_tail(bus_root / "advisory.jsonl", 5)
+    print(f"advisory records: {total}")
+    for line in tail:
+        print("  " + line[:160])
+    if args.exit_nonzero_if_unhealthy and verdict != "HEALTHY":
+        return 1
     return 0
 
 
@@ -2622,10 +3863,23 @@ def build_parser() -> argparse.ArgumentParser:
     r.set_defaults(func=cmd_run)
 
     s = sub.add_parser("status", help="daemon liveness + recent advice")
+    # C37: exit code stays 0 by default so existing readers are unaffected. The
+    # flag exists so a cron or supervisor can ACT on the verdict — the 10-day
+    # outage was not a reporting failure in the end, it was that the report was
+    # pull-only and nobody pulled.
+    s.add_argument("--exit-nonzero-if-unhealthy", action="store_true",
+                   help="exit 1 unless the daemon verdict is HEALTHY (for cron/supervisors)")
     s.set_defaults(func=cmd_status)
 
     a = sub.add_parser("audit", help="R7 integrity audit only (defects + observations)")
     a.set_defaults(func=cmd_audit)
+
+    br = sub.add_parser("backfill-receipts",
+                        help="one-shot: index legacy operator receipts by gate_id (C39)")
+    br.add_argument("--dry-run", action="store_true", help="show what would be indexed")
+    br.add_argument("--check", action="store_true",
+                    help="exit 1 if any SIGNED gate lacks a keyed receipt (drift gate for cron/CI)")
+    br.set_defaults(func=cmd_backfill_receipts)
 
     i = sub.add_parser("intake", help="one-shot: transcribe task-propose messages into READY rows")
     i.add_argument("--dry-run", action="store_true", help="show what would be admitted")

@@ -65,12 +65,13 @@ Harmless when it is not a post-reboot start. Run all of it; record every answer 
 tmux has-session -t agent 2>/dev/null || tmux new-session -d -s agent
 tmux list-windows -t agent -F '#{window_name}'
 
-# coordinator-daemon liveness + advice, and its watchdog. Bracketed pattern deliberately
-# — see the warning below.
+# coordinator-daemon liveness + advice, and its watchdog.
+# NO PROCESS NAME PATTERNS — see the warning below. `bus_supervisor.sh status` prints
+# the daemon pids AND the supervisor pid without matching on any name.
 python3 scripts/coordination/session_bus_coordinator.py status
-pgrep -af 'session_bus_coordi[n]ator'
-pgrep -af 'bus_superviso[r]\.sh'
 scripts/coordination/bus_supervisor.sh status
+# then confirm each pid it named is really alive, and how long it has been up:
+ps -o pid,lstart,args -p <pid-from-status>
 
 # production kernel identity (non-zero exit = mismatch, stop and report)
 scripts/session/verify_llama_cpp.sh
@@ -81,8 +82,10 @@ scripts/session/verify_llama_cpp.sh
 # serving stack
 python3 /mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py status
 
-# AutoPilot — load-bearing signal, see below
-pgrep -af '[a]utopilot\.py'
+# AutoPilot — load-bearing signal, see below. Take its pid from the stack status,
+# never from a name pattern; if the stack status does not surface an autopilot pid,
+# that gap is fixed THERE, not by reaching for pgrep.
+ps -o pid,lstart,args -p <autopilot-pid-from-stack-status>
 ```
 
 **Bringing up the daemon and its watchdog is YOUR job, not an escalation.** They are part of the
@@ -105,9 +108,17 @@ anomaly to investigate.
 **`status` output is not proof of life.** On 2026-07-29 it reported `state=working epoch=11
 pid=1928027 age=2157s` for a daemon that had died in the reboot: the state file is on disk and
 outlives the process that wrote it. **Always confirm with `ps -p <pid>` before believing it.**
-Equally, use a **bracketed** process pattern — a naive `pgrep -af 'session_bus_coordinator'`
-matches your own shell's command line and "finds" a daemon that is not running. Both traps were hit
-on the first cold start of this role.
+**And never reach for a process NAME PATTERN to answer it.** `pgrep`/`pkill` on a name are
+forbidden on this host (CLAUDE.md, "Process Management") and are now refused by a `PreToolUse` hook.
+This skill mandated three bracketed `pgrep` calls until 2026-08-12; **bracketing is not the fix.** It
+only stops the pattern matching your own shell — it does nothing about the actual hazard, which is
+that on a shared box any name pattern is a wildcard over *other sessions'* processes, and a guard
+process's argv necessarily contains the names it guards (`earlyoom` died that way: its command line
+is `--ignore ^(llama-server|sd-server)$`). Origin: INC-20260731, INC-20260812.
+
+Use a pid you captured or that a status command named, then `ps -o pid,lstart,args -p <pid>`.
+`lstart` is worth having: it catches the stale-process case where a fix was deployed after the
+running process started.
 
 **AutoPilot is load-bearing.** It is the representative production load generator. If it is down,
 say so *explicitly and prominently* in the report: measurements taken against a quiesced host can

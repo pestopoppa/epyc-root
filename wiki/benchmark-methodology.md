@@ -2,30 +2,36 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-11 (adds the resident kernel-promotion fast-path design and its fresh-server fallback; prior generated-eval findings retained)
-**Sources**: 110+ documents
+**Last compiled**: 2026-08-11 (adds the resident kernel-promotion fast-path design and its fresh-server fallback; prior generated-eval findings retained; concurrent-lane compile 2026-08-11: instrument-era registry closes a v9 cutover gap, an eligibility-vs-kernel-identity scope collision, the whole-file-sha-pin anti-pattern against an autonomously-written registry, and a sealed-capture scorer found systematically more permissive than its canonical counterpart — see below; earlier 2026-08-10 note: adds the generated-eval gate stack G1–G6 with human-curate as a hard node, the two-repo verifier-parity divergences incl. a vacuously-passing `code_execution` scorer, the correction that the paper this expansion was scoped from generates no tasks, and — second pass — why a regression tester cannot serve as a reward-bearing oracle, the instrument-inside-the-candidate's-tree problem, and five generalisable evaluation rules)
+**Sources**: 112+ documents
 
-## Compiled Update — 2026-08-11: keep promotion cohorts resident
+## Compiled Update — 2026-08-11: the instrument-era registry didn't track the v9 kernel cutover, and a scope collision explains why "just add a row" wasn't enough
 
-The v9 cycle exposed a methodological cost problem rather than a compute-capacity problem. The CPU
-ABBA gate spent about 26 minutes wall-clock but only about 12 minutes serving measured requests;
-launch, load, telemetry and teardown consumed 54%. The full production lineup fits concurrently in
-the available memory envelope (about 578 GiB host against a 1,069 GiB budget and 57.7 GiB GPU against
-62 GiB). Repeated teardown was therefore an instrument design choice, not a resource constraint.
+**Confidence: verified** — receipts, sha verification, and live-consumer checks read directly from operator ratification receipts, `progress/2026-08/2026-08-11.md`, and `artifacts/audit/completion-flurry-wiring-audit-20260811.md`. The item marked IN-PROGRESS below (Token 2 / `binary_version` discriminator) is drafted and verified on a copy but was **not yet signed** as of this compile — do not read it as applied.
 
-The durable successor design keeps sealed v8/v9 cohorts resident, issues request-level ABBA quartets,
-reuses a pinned exact-parity quality pack, and pairs request-local cap-0/cap-N speculation on one
-resident server. It targets a 45–60 minute complete promotion cycle instead of roughly 90–120 minutes.
-That target is prospective until implemented and ratified. Any attestation drift, resident-state
-contamination, mismatch, or other ambiguity automatically falls back to the existing fresh-server
-instrument, so speed does not weaken the proof boundary.
+### The registry amendment needed three separate signatures, not one
+
+A same-day audit found `orchestration/autopilot_state.json` `active_instrument_eras.cpu_bench` still read `E8-cpu-kernel` after production moved to `production-consolidated-v9` earlier the same day — every CPU bench stamped since the freeze inherited the wrong era, the exact `ERA_CPU_KERNEL=E6` failure shape recurring at fleet scale. Three operator ratifications were authored, dry-run validated against current HEAD, presented, and signed within the same evening: `RATIFY-CONSOLIDATED-ERA-ROWS-20260811` (four rows — `E9-cpu-kernel`, `E9-routing-reward`, `E8-cpu-bench-throttle-scope`, `E8-seeding-reward-b7-guard` — signed 21:35Z, all four applied, none struck; `instrument_eras.yaml` sha verified byte-identical to the receipt's `target_sha256_after`); `RATIFY-ANNEXG-V9-CURRENCY-20260811` (Annex G's P-GPU-1 clause — "MAY ONLY be produced on a production-named kernel … currently v8 `67a433bf4`" — updated to name v9, signed 21:34Z, both currency sites verified textually unambiguous); and `RATIFY-V9-CPU-BENCH-ERA-ADVANCE-20260811`, which exists only because the first two did not close the gap — the auditor found the *registry* amendment alone left `autopilot_state.json`'s **consumer** field still reading E8 ninety minutes after the registry itself said E9 (no code derives `cpu_bench` from the registry at runtime; the v8-era precedent script that wrote registry+state atomically had no v9 analogue). Now closed and verified live by consumers, not by file inspection: registry-deriving readers pick up `E9-cpu-kernel` directly, and the dashboard Pareto endpoint reads per-request with no process-level cache.
+
+### A durable registry-design lesson: eligibility rows and kernel-identity rows cannot share a naive lookup
+
+Folding the throttle-gate eligibility boundary (`E8-cpu-bench-throttle-scope`, a 2026-07-29 gate-semantics ruling) into the same `scope: cpu_bench` as the kernel-cutover rows creates a collision: `derive_era(cpu_bench, t)` for `t ∈ [2026-07-29, 2026-08-10)` now returns the eligibility row, not the kernel-identity row, because both share a scope and a naive latest-by-date lookup cannot tell them apart. **IN-PROGRESS** (Token 2, `RATIFY-CPU-BENCH-BINARY-VERSION-20260811`, drafted and verified against copies but not yet signed): the fix discriminates on a `binary_version` field rather than inventing a new `boundary_kind` vocabulary — a row that carries a `binary_version` is a kernel cutover, one that doesn't is an eligibility boundary — verified at the W1/W2/W4 instants (scope-only lookup returns the throttle row; binary-witnessed lookup correctly returns `E8-cpu-kernel`). The design deliberately declines to backfill a `binary_version`/commit sha onto `E5-cpu-kernel`'s note, since none was ever witnessed at the time; derivation fails closed for `[2026-06-26, 2026-07-20)` rather than assert an instrument nobody recorded — the generalizable rule being that a repair to a mis-derivation must not silently manufacture the evidence the original gap was honest about lacking.
+
+### A whole-file sha pin on an autonomously-written registry is dead on arrival
+
+`instrument_eras.yaml` is sealed into autonomously by the autopilot itself — three new eras (E14-E16) landed since 07-29 with no human in the loop — so any pre-validated token that pins the *whole file's* sha rots within hours of being authored. This killed a 07-29-authored `RATIFY-E9-ROUTING-REWARD-ERA-20260729` token on re-presentation today: its sha-pinned assert refused against the file's current (autopilot-advanced) content, even though the row it wanted to add was still genuinely missing. The generalizable fix, applied to today's three tokens: **semantic per-row preconditions** (does this exact row already exist, does the target content match) rather than a whole-file identity pin, so a token stays valid across a registry that a second, autonomous writer keeps appending to.
+
+### A same-day scorer audit found the two "near-duplicate" extractors on the sealed-capture path are not duplicates, and one is dangerously more permissive
+
+An additive, no-deletion pass over `scoring-infra-standardization.md`'s "migrate research consumers to the canonical extractor" row re-checked every remaining candidate individually rather than assuming resemblance implies equivalence. Two of five are genuinely distinct scoring domains (tag-based token-F1, PR-finding review scoring) with no migration path. The load-bearing finding: orchestrator's `debug_scorer._extract_multiple_choice_letter`, which sits on the **authority/sealed-capture** scoring path, is **not** a duplicate of canonical `extract_letter_answer` — it accepts range A–H against canonical's A–J, has no `\boxed{}` handling, and its last-resort strategy returns the **last standalone letter unconditionally**, where canonical accepts a bare letter only when exactly one candidate exists. It is therefore **systematically more permissive: it scores answers canonical declines to parse.** Unifying the two would be a scoring-outcome change requiring a re-score of affected sealed captures, not a diff, so both were left as separate implementations, each now carrying a cross-reference to the other naming the four deltas (comments only, zero behavior change). Generalizable rule for any near-duplicate-extractor audit: prove non-equivalence (or equivalence) per consumer against the scoring outcome, never against surface resemblance.
 
 ### Source References (2026-08-11)
 
-- [`kernel-promotion-resident-fast-path.md`](https://github.com/pestopoppa/epyc-inference-research/blob/main/docs/design/kernel-promotion-resident-fast-path.md) — measured overhead audit, memory-fit proof, resident schedule and fallback rules.
-- [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — V9-8 implementation/ratification task and request-local speculation contract.
-- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — v9 qualification context and durable-design checkpoint.
-
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — mainA's era-repair narrative (A5-A7, the scope-collision property, Token 2 Block A design), coordinator-agent's three signed ratifications and their consumer-state verification
+- [`artifacts/audit/completion-flurry-wiring-audit-20260811.md`](../artifacts/audit/completion-flurry-wiring-audit-20260811.md) §C (the stale-by-v9 sweep, the cpu_bench era gap and Annex G currency finding) and its Post-signature verification addendum (consumer-state table, the scope-collision property handed to Token 2)
+- [`artifacts/operator/receipts/RATIFY-CONSOLIDATED-ERA-ROWS-20260811.json`](../artifacts/operator/receipts/RATIFY-CONSOLIDATED-ERA-ROWS-20260811.json), [`RATIFY-ANNEXG-V9-CURRENCY-20260811.json`](../artifacts/operator/receipts/RATIFY-ANNEXG-V9-CURRENCY-20260811.json), [`RATIFY-V9-CPU-BENCH-ERA-ADVANCE-20260811.json`](../artifacts/operator/receipts/RATIFY-V9-CPU-BENCH-ERA-ADVANCE-20260811.json) — the three signed ratification receipts
+- [`artifacts/operator/ratify_cpu_bench_binary_version_20260811.py`](../artifacts/operator/ratify_cpu_bench_binary_version_20260811.py) — the drafted, not-yet-signed Token 2 `binary_version` discriminator
+- [`handoffs/active/scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — the additive consumer-by-consumer audit and the `debug_scorer` permissiveness finding
 ## Compiled Update — 2026-08-08: evaluate the artifact and harness that actually execute
 
 **Confidence: verified — package layouts, task counts, code paths, and local routing were checked against pinned artifacts.**
@@ -58,7 +64,6 @@ raw-source recovery.
 - [Unified Trace / Memory Service](../handoffs/active/unified-trace-memory-service.md) — UTM-V6 lifecycle and no-memory control matrix
 - [RLM Contested Claims](../handoffs/active/rlm-contested-claims-self-evaluation.md) — clean direct-context versus REPL control
 - Intakes 1007, 1008/1015, 1012, and 1021 in [the research index](../research/intake_index.yaml) — reproduced package failure, invalid memory controls, Pokee caveats, and DTAP contract
-
 ## Compiled Update — 2026-08-03 (third): a validator is only as good as the thing it actually ran
 
 **Confidence: verified — every item below was produced by a tool on this host, not inferred.**
@@ -102,7 +107,6 @@ calling the loader API directly, which returns a boolean and does nothing else.
 **When a CLI will not yield a boolean, the API underneath it usually will.** A benchmark harness built
 on a CLI inherits every one of that CLI's interactive-use assumptions, and those assumptions are rarely
 documented as constraints.
-
 ## Compiled Update — 2026-08-03 (second): three measurement traps caught in one afternoon of benchmarking
 
 **Confidence: verified — all three were caught on this host, on our own runs, within a few hours.**
@@ -129,7 +133,6 @@ documented as constraints.
 and the script continued to its reporting path. A non-compiling probe was committed looking like a working
 one. The standing screen — *"can I make this check pass by deleting the thing it inspects?"* — does not
 catch this. The complement does: **"does the thing that runs this check propagate its answer?"**
-
 ## Compiled Update — 2026-08-03: aggregation choices are attack surfaces, a citation chain that inverted its own source, and how to count an apparently-independent literature
 
 **Confidence: verified for the citation-trail and lineage findings (checked against primary sources);
@@ -225,7 +228,6 @@ published score is an integer medal count in disguise and the reported ±1.52 is
 outcome**. Three different agents sit at the same value. **No margin under ~3 medal outcomes (4.5 pp) is
 a difference.** The general rule: before comparing two scores, compute the metric's **quantum** from its
 denominator — if the margin is smaller than one countable outcome, there is nothing to compare.
-
 ## Compiled Update — 2026-07-31: a saturated suite can rank arms wrongly, an output cap can silently fail reasoning models, and "no draft path" is an OPTIMUM not a BASELINE
 
 **Confidence: verified** — the vision-suite comparison and the truncation counts are direct
@@ -284,7 +286,6 @@ determinable whether an agent may edit the digest. Needs an operator ruling.
 - [`MEASUREMENT.md`](../MEASUREMENT.md) — §3 the OPTIMUM/BASELINE/CANDIDATE claim grammar (with the Qwen3-Next-80B `--spec-type none` exemplar), §5 the production-optimal-alone promotion rule and the `bench-cpu.md` narrowing, CHANGELOG entry dated 2026-07-31
 - [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — task V-1 (the suite mis-ranking) and S-15 (the `max_tokens ≥ 1024` production-config task)
 - [Multimodal](multimodal.md) — the full MMMU vision-role decision this section's methodology findings gate
-
 ## Compiled Update — 2026-07-30 the constitution restructured, and a placement protocol born from a defect
 
 MEASUREMENT.md v2 was operator-ratified (apply 20260730T103218Z): a lean core
@@ -329,7 +330,6 @@ ledger, and the same-day conformance amendment are all in-repo.
   production-recipe P-BENCH-PLACEMENT-1 figure with the retraction preserved
   inline as an append-style comment.
   [ratify_p_bench_placement_1_v2.sh](../artifacts/operator/ratify_p_bench_placement_1_v2.sh)
-
 ## Compiled Update — 2026-07-29 two campaigns that have produced instruments, not results
 
 Two of the project's largest open campaigns reached a state that is easy to
@@ -474,7 +474,6 @@ because neither campaign has produced one.
 - [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — FG-4b decision-grade/
   proposal-only terminal, the G3 observation-only closeout, and the invocation-path tally
   divergence.
-
 ## Compiled Update — 2026-07-28 bounded recovery and targeted validation
 
 The post-v8 campaign closed three related evidence practices. First, a scorer
@@ -521,7 +520,6 @@ human-only baseline application.
 - [Architect model comparison handoff](../handoffs/active/architect-model-selection-bench.md) — sealed no-think ThinkingCap authority and the bounded Laguna FG-2V result.
 - [GPU CoT scaffold sidecar](../handoffs/active/gpu-cot-scaffold-sidecar.md) — deterministic receiver-only G3 continuation, results, and unidentifiable-control caveat.
 - [Autopilot decision-plane audit](../handoffs/active/autopilot-decision-plane-audit-2026-07-22.md) — sealed-core E8 recovery contract and unapplied baseline state.
-
 ## Compiled Update — 2026-07-26 capture-integrity boundary
 
 The Laguna architect comparison exposed an evidence defect rather than a model
@@ -551,7 +549,6 @@ open; no coding-specialist decision follows from this update.
 - [Architect model comparison handoff](../handoffs/active/architect-model-selection-bench.md) — Laguna result supersession, v4 gate, and remaining full-40/Docker work.
 - [Scoring infrastructure handoff](../handoffs/active/scoring-infra-standardization.md) — completed lossless agentic trajectory capture contract.
 - [Progress 2026-07-26](../progress/2026-07/2026-07-26.md) — capture failure modes, validation evidence, and explicit non-decision posture.
-
 ## Compiled Update — 2026-07-24
 
 Two converging threads landed this cycle: the architect-candidate benchmark reached a **well-powered, scorer-corrected NULL** across all six/seven reasoning-QA measurements (no accuracy basis for an architect model choice), and a near-miss on that same verdict — a stale answer-extractor that manufactured a false-significant result — triggered a stack-wide audit that found **~10+ independent, duplicated answer-scoring implementations**, one of which sits on the autopilot RL reward path. Confidence: `verified` for the landed scorer-standardization code (regression-tested) and the measured McNemar results; `observation` for the CPU A2/RP-5 arm (still GPU-session-coexistent, pre-final-analysis at compile time).
@@ -612,7 +609,6 @@ LCB), then the A3-vs-A4 SWE confirmation expansion (p=0.039 is 1-of-~12 comparis
 - [architect-bench-runbook.md](../docs/reference/architect-bench-runbook.md) — the codified SOP (golden rules, suite ladder, scoring discipline, the new §7 hard pre-verdict gate and §9 required Phase-2 gate).
 - [scoring-infra-standardization.md](../handoffs/active/scoring-infra-standardization.md) — the ~10+-implementation fragmentation audit, Phase 1a canonical library, Phase 2a code-execution scaffold.
 - [progress 2026-07-23](../progress/2026-07/2026-07-23.md), [progress 2026-07-24](../progress/2026-07/2026-07-24.md) — R7 discovery narrative, A2/RP-5 overnight execution.
-
 ## Compiled Update — 2026-07-21
 
 The 2026-07-20/21 eval-tower audit cycle produced the deepest instrument review to date and, in the same window, executed the largest instrument change. Two read-only audits (tower internals + the loop around the tower) surfaced **3 CRITICAL / 16 HIGH / ~55 MED-LOW** defects — most fixed the same day with tests; the question pool was **rebuilt and era-labeled E7**; the **EV-11 confidence stub was proven a phantom and neutralized**; and a 12-URL research intake added a **judge-validity cluster** (intake-874/875/876) that names a failure mode our judge-scored numbers currently cannot detect. Confidence: `verified` for the landed mechanical fixes (each with tests) and the executed E7 rebuild; `external`/`observation` for the judge-validity papers, all of which are operator-review candidates under the human-amendment-only measurement trust boundary (scoring semantics, thresholds, era handling are never agent-amended).
@@ -656,7 +652,6 @@ The 2026-07-20/21 eval-tower audit cycle produced the deepest instrument review 
 - [inference-batch-loop.md](../handoffs/active/inference-batch-loop.md) — the single-writer `/loop` that carries EV-4 to a decision-grade run.
 - [progress 2026-07-21](../progress/2026-07/2026-07-21.md) — E7 A3 execution log, B7 golden-delta, EV-CONF plumbing, the 12-URL intake summary, and the EV-4 two-phase launch.
 - intake-874 `2606.04923` (cred 4) · intake-875 `2607.05904` (cred 2) · intake-876 `2606.00093` (cred 3) — judge-validity cluster; all observation-tier, operator-review candidates.
-
 ## Compiled Update — 2026-07-20
 
 Two model-role selection benches (architect and reviewer) and the eval-tower calibration work converge on one methodological rule: **objective oracles, not model-as-judge** — the reviewer work measured model-as-judge patch-review as near-random on hard negatives, so both role-selection benches are objective-scored only. Confidence: `verified`/decision-grade for accuracy verdicts scored by objective oracles; `observation` for every throughput row (pre-`P-GPU-1`).
@@ -683,7 +678,6 @@ Two model-role selection benches (architect and reviewer) and the eval-tower cal
 - [model-probe-scoreboard.md](../docs/reference/model-probe-scoreboard.md) — living observation-grade scoreboard + stop-list.
 - [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md) — P-BENCH-3 fail-closed host-health discipline.
 - intake-862 `2604.07035` — deployment-aware multi-objective evaluation + the Qwen3-30B-A3B=0.226 harness-artifact caution.
-
 ## Summary
 
 The project uses a purpose-built 8-suite (expanded to 23-suite) benchmarking framework to evaluate models for specific roles in the multi-model orchestrator. Unlike generic leaderboard benchmarks (MMLU, HumanEval), each suite tests a capability that maps directly to an agent role: can a model follow precise formatting (instruction_precision), chain multi-step reasoning (thinking), generate working code (coder), or produce valid tool calls (agentic). 61 baseline models have been evaluated across 381 total configurations.
@@ -707,13 +701,11 @@ accept-control signoff report, while missing notes, synthesized timestamps, or
 incomplete row coverage fail closed. [GLM capability gates](../handoffs/active/glm52-reviewer-capability-gates.md)
 
 Benchmark hardening in December 2025 addressed ceiling effects where top models scored 89-93%. Every tier was bumped up one difficulty level with post-doctoral T3 questions added, spreading the score distribution meaningfully across model classes. A mode-advantage suite (90 questions) was specifically designed to produce strong routing signal for MemRL by including tasks that structurally require specific execution modes (react, REPL, delegation, specialist escalation).
-
 ## 2026-07-19 Update — claim-grade measurement and reviewer evaluation
 
 - A decision-gating number must carry metric direction, protocol id, repetitions, date, and attestation. P-GPU-1 additionally requires production-named kernel provenance and complete hardware/host/binary/model/cleanup fields; candidate-kernel rows are observations regardless of how plausible the value looks. Sources: [P-GPU-1 ratification package](../docs/reference/p-gpu-1-ratification-package-2026-07-18.md), [P-GPU-1 amendment draft](../docs/reference/p-gpu-1-amendment-draft-2026-07-19.md), [OP-2 canonical bench package](../docs/reference/op-2-canonical-bench-window-package-2026-07-18.md).
 - Reviewer evaluation exposed a separate methodology constraint: balanced samples must not mix exact-answer, substring/code-prefix, and patch-review representations under one scorer. The current path is homogeneous source suites with deterministic ground truth, explicit false-accept/false-reject accounting, and a cheap screen before any P-REV-1 confirmation. Sources: [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [reviewer model ablations](../handoffs/active/reviewer-model-ablations.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
 - Positive accept-control or judge-preference results do not substitute for hard-negative patch-review evidence. GLM's external JudgeBench/SWE results were positive, but C-CRAB P-REV-1 failed admission; the reviewer route therefore remains open research rather than a production-quality conclusion. Sources: [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [GLM accept-control signoff packet](../docs/reference/glm52-accept-control-signoff-packet-2026-07-18.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
-
 ## Key Findings
 
 ### New (2026-07-18, GLM reviewer-corpus representation guard)
@@ -844,13 +836,11 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - **≥5 reps required for sub-5% throughput deltas on this hardware**. Discovered via CPU22 Phase 3: an initial 3-rep Next-80B Q4_K_M measurement showed env=1 = 22.65 t/s vs env=0 = 21.31 t/s (+6.3%, would have been a positive signal for the work-stealing prototype). Re-running both at 5 reps converged to ~23.3 t/s (Δ -0.3%, neutral). The 3-rep result was a measurement artifact from cache-warmup state divergence between consecutive runs. **Rule**: 3 reps is fine for ≥10% deltas; for sub-5% deltas use ≥5 reps; for ≤2% claims consider ≥10 reps. Always report std alongside mean. [data/cpu_optimization/2026-04-28-cpu22-work-stealing/]
 - **First-decode TTFT amplification under concurrent prefill is class-dependent**. CPU23 Phase 2.2 measured the long-prompt-mid-stream interference scenario via `llama-server --parallel 2`: rep-1 decode under concurrent 30K-token prefill showed 9.6× TTFT amplification on sync-bound MoE Coder-30B (4.77 t/s vs baseline 47.99), 1.15× on BW-bound MoE Q8 frontdoor, 1.08× on dense/hybrid. Steady-state continuous batching is essentially baseline (±2%) on all 3 classes — rep-2-onward decodes interleave efficiently with ongoing prefill. Per-iter latency variance in single-user mode (no interference) is uniformly low (CV 0.24-0.57%), so variance alone is NOT a stall signal absent active interference — the rep-1 stall is specifically a continuous-batching scheduler-wait artifact. [cpu-context-regime-coverage.md, data/cpu_optimization/2026-04-28-cpu23-interference-metrics/]
 - **Sibling-directory `.md` references inside artifact-bundle READMEs need the agents_reference_guard hook to resolve relative-to-file-dir, not just relative-to-PROJECT_DIR**. Discovered when CPU21 Phase 2.1 README's reference to `decision.md` (sibling file in same dir) was rejected by the hook because it resolved to `$PROJECT_DIR/decision.md` (doesn't exist) instead of `$DIR/decision.md` (exists). Hook fix landed in commit `12b1e27`: try the file's own directory first, then fall back to `$PROJECT_DIR`. Strictly additive — anything that resolved before still resolves. [scripts/hooks/agents_reference_guard.sh]
-
 ## 2026-06-15 Update — Measurement Contract Tightening
 
 - **Tool-use trials must prove they actually exercised tools before the result becomes optimization signal.** The live contract now separates "model had tools available" from "model actually used the tool path" and requires per-trial invocation evidence plus a no-tool baseline comparison. Sources: [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md), [progress/2026-06/2026-06-03.md](../progress/2026-06/2026-06-03.md), [progress/2026-06/2026-06-04.md](../progress/2026-06/2026-06-04.md).
 - **Real-path canaries are mandatory.** BEP-2 showed that stub validation can pass while the real `/chat` + REPL path still fails, so the durable method is no-inference canary, one live smoke, then the broader A/B. Source: [bep-dcp-falsification-harness.md](../handoffs/active/bep-dcp-falsification-harness.md).
 - **Publication-grade claims now require protocol, reps, date, and attestation.** The canonical CPU methodology draft treats historical numbers without a protocol citation as observations, not decision gates, and the public-results draft keeps the same line between attested and historical rows. Sources: [canonical-cpu-benchmarking-methodology-draft.md](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md), [public-results-draft.md](../docs/publication/public-results-draft.md).
-
 ## Actionable for EPYC
 
 - The deterministic debug suite (577 curated + 55,871 HF-backed questions) enables fully automated regression testing and MemRL reward injection without Claude API costs. Any new model entering the stack can be benchmarked end-to-end with `run_overnight_benchmark_suite.sh`.
@@ -862,7 +852,6 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - The Scoring Verifiers 4-metric protocol (Top-1, Bottom-1, Spearman rho, MAE) should be adopted as the standard for evaluating any new verifier before it enters the RLVR pipeline. ECE and AUC tracking (EV-2, implemented) provide the calibration infrastructure.
 - Terminal-Bench's outcome-driven verification pattern should be adopted for new llama-server integration tests. Container-per-test infrastructure deferred until measured need. The task.yaml metadata pattern is worth adopting for test classification across the integration test suite.
 - Future work: dynamic lambda by task priority (interactive=higher lambda, batch=lower), multi-objective Pareto frontier maintenance, token-level cost accounting (prompt vs completion), and cache-aware cost reduction with RadixAttention.
-
 ## Scoring Verifiers Evaluation Protocol
 
 The Scoring Verifiers framework (COLM 2025, NVIDIA Research) establishes a 4-metric evaluation standard for verifier quality that goes beyond simple accuracy. Accuracy alone is insufficient: SWE-RM demonstrated empirically that two verifiers with identical accuracy can produce completely different RL training outcomes (AUC 0.805 smooth training vs AUC 0.710 training collapse).
@@ -874,7 +863,6 @@ Key results: reasoning models dominate verification by 5-9 percentage points (o3
 Benchmark datasets are available at HuggingFace `nvidia/Scoring-Verifiers`: HE-R (164 problems, ~9.6 tests/problem), HE-R+ (164, ~764 tests/problem), MBPP-R (978, ~3.0 tests/problem), and MBPP-R+ (378, ~108.5 tests/problem).
 
 > Source: [Eval Tower Verification](/workspace/handoffs/active/eval-tower-verification.md) -- intake-367/368, 4-metric protocol, reasoning model dominance, SWE-RM calibration gap
-
 ## Terminal-Bench Test Methodology Patterns
 
 Terminal-Bench 2.0 (arxiv:2601.11868) provides five patterns directly applicable to the eval and integration test infrastructure:
@@ -886,7 +874,6 @@ Terminal-Bench 2.0 (arxiv:2601.11868) provides five patterns directly applicable
 5. **Structured task.yaml metadata** -- difficulty, timeout budget, category tags, expected duration. Could inform a test registry for the integration test suite.
 
 Terminal-Bench also defines an 8-category failure taxonomy (Disobey Task Specification, Step Repetition, Context Loss, Premature Termination, and 4 others) that maps to orchestrator failure modes. The recommendation is to adopt outcome-driven verification for new llama-server integration tests, defer container-per-test infrastructure until measured need (current mock-based tests provide fast CI), and adopt task.yaml metadata for test classification.
-
 ## Tulving Episodic Memory Benchmark
 
 The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) introduces a complementary evaluation paradigm to the existing RULER/NIAH/LongBench/ZeroSCROLLS suite. Where those benchmarks test retrieval ("find the needle"), Tulving tests episodic memory: can a model track entity states across 200 chapters and order events chronologically? The benchmark generates synthetic book-like narratives with controlled ground truth (dates, locations, entity names, event contents) using a skewed geometric distribution for entity frequency, enabling multi-occurrence tracking evaluation.
@@ -907,7 +894,6 @@ Pre-generated datasets are available on Figshare (MIT license). Integration into
 > Source: [intake-408](/workspace/research/intake_index.yaml) -- arXiv 2501.13121, ICLR 2025; [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) -- routing intelligence data; [research-evaluation-index.md](/workspace/handoffs/active/research-evaluation-index.md) P3b -- integration plan
 
 > Source: [Integration Test Coverage](/workspace/handoffs/active/integration-test-coverage.md) -- intake-369, Terminal-Bench 2.0 methodology patterns, outcome-driven verification, container-per-test, three-property test design
-
 ## Math-Verify Integration for Math Benchmarks
 
 Math-Verify (HuggingFace, Apache-2.0) provides robust symbolic math comparison that addresses a critical scoring gap: current binary exact-match scoring underestimates model capability by approximately 66% on math questions (Math-Verify accuracy 0.1328 vs lm-eval-harness 0.0802 on MATH dataset). This underestimation affects routing decisions and model selection.
@@ -929,7 +915,6 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 - **Goodput is a valid concern, but not yet a live objective.** The replayable `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` fields landed as shadow telemetry. The live Pareto vector did not flip because the replay only dropped 1 of 5 legacy frontier points under the proposed policy and raw task-rate admitted a zero-quality high-rate frontier candidate. Source: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md).
 - **Publication-grade benchmark claims now require protocol, reps, date, and attestation.** The public-methodology draft uses the CPU frontdoor example where an apparent +17% improvement collapses to +1.6% under canonical controls, with the exact April 26 rows tied to named log artifacts and the older April 24 Q8 microkernel rows held to paraphrase-only unless raw repack logs are found or remeasured. Treat historical numbers without protocol IDs as observations or priors, not decision gates. Source: [canonical CPU benchmarking draft](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md).
 - **Repo-readiness scoring is deterministic evidence, not a qualitative review.** The first v1 scorer run rates the portfolio as Documented (L2), with root at Optimized (L4) and the three child repos at Documented (L2). This is useful as a backlog generator because criteria pass only on concrete artifact checks, but it does not certify artifact quality. Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
-
 ## Open Questions
 
 - Claude-as-Judge integration with graded quality scores (0-3) combined with cost penalty is implemented but disabled. Enabling it would provide richer signal than binary pass/fail + cost but adds API cost.
@@ -953,7 +938,6 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 - What is the right sequential alpha-wealth budget policy now that 52 fingerprints have spent 2.6x the default 1.0 budget — replenish wealth on confirmed discoveries (e-process style), fence by era, or hold new-fingerprint confirmations until W8 finalizes a candidate?
 - Is the W8 sparse-baseline advisory rule (per-suite regression advisory when either arm n<5 unless drop >2.5) the right resolution-aware threshold, or should per-suite gates require a minimum baseline sample before they can be terminal at all?
 - Does raising T3 coverage (currently ~2.9%, one eval-bearing trial) via planner pressure alone produce enough hard-workflow evidence to detect T1-overfit, or does the expert/hard lane need a scheduled quota like the W6 audit block?
-
 ## Related Categories
 
 - [Hardware Optimization](hardware-optimization.md) -- benchmark results directly depend on NUMA configuration, thread counts, and memory topology
@@ -963,7 +947,6 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 - [MoE Optimization](moe-optimization.md) -- expert reduction benchmarked for quality/speed trade-offs
 - [Agent Architecture](agent-architecture.md) -- meta-harness outer loop, evolve-the-harness fixed-model optimization, HLE observe-only harness metrics
 - [Autonomous Research](autonomous-research.md) -- AutoPilot sequential-verdict authority, promotion-eval gating, and the strategy-store optimization loop these benchmarks feed
-
 ## Source References
 
 - [GLM-5.2 reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md) -- GC-shadow-repair2 checklist closure, mixed-representation diagnosis, exact-answer observation, and the open matched patch-diff calibration task.
@@ -1007,7 +990,6 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 - [Gemma-Challenge Kernel Techniques → v7](../handoffs/active/gemma-challenge-kernel-techniques-v7.md) -- PPL-only gate gamed (top lossy submission held PPL but lost 15 GPQA-D / 40 MMLU-Pro) → K5 multi-suite MMLU-Pro+GPQA chat-endpoint gate at production sampling; raw `/v1/completions` attempt discarded as protocol error
 - [Inference-Batch Loop](../handoffs/active/inference-batch-loop.md) -- command-fabrication audit: authored bench/execution commands ground-truthed via `--help`/execution (schema+lint blind); 5-pass on-disk re-audit localizes fabrication to leaf commands
 - [Progress 2026-07-17](../progress/2026-07/2026-07-17.md) -- K5 chat-gate PASS + protocol-error discard, K35 matrix finalization, and the manifest command-fabrication audit + repair
-
 ## Per-model compression-tolerance curve as model-onboarding deployment gate (2026-04-30)
 
 **TL;DR**: `agent-file-prose-compression.md` (NEW handoff, HIGH priority, per intake-509 follow-up) elevates per-model compression-tolerance from a one-off A/B into a **deployment gate baked into the `/new-model` onboarding pipeline**. A model that fails ≥95% baseline compliance at the candidate compression level is flagged before reaching production.
@@ -1042,7 +1024,6 @@ Per-model curve becomes part of the model registry and enters routing decisions:
 - intake-450 — veniceai/skills (sibling SKILL.md authoring rubric)
 - intake-301 — AXI/TOON encoding (orthogonal layer)
 - [`handoffs/active/agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md) NEW — `/agent-file-compress` skill + per-model deployment gate
-
 ## 2026-05-04 Update — Probe B 4-config protocol formalized
 
 The 4-config Probe B methodology used throughout 2026-04-29/30 multi-arch coverage was applied formally on 2026-05-04 to close two `todo_or_undecided` slots in the v5 deployment draft (Qwen3.5-122B-A10B and Qwen3-Coder-REAP-246B-A35B). The protocol details are now explicit in [`handoffs/completed/qwen35-122b-a10b-arch-class-probe.md`](../handoffs/completed/qwen35-122b-a10b-arch-class-probe.md) — referenced here as the canonical methodology for any new model arch-class assignment.
@@ -1213,7 +1194,6 @@ Refactor (commit `bd2455d`):
 Result: adding a role is now 2 places (NUMA_CONFIG + ROLE_LAUNCH_META) with self-validation; removing/renaming catches dangling refs at module load instead of at launch.
 
 Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [`epyc-orchestrator` merge `a268040`](../../epyc-orchestrator/), [`handoffs/completed/qwen36-production-upgrade.md`](../handoffs/completed/qwen36-production-upgrade.md).
-
 ## 2026-05-08 — Five bench harness fixes surfaced during gemma4 evaluation
 
 The 2026-05-08 worker_general swap (gemma4-26B-A4B MTP) ran the harness end-to-end across two suites under conditions that exposed five distinct latent bugs. All were silent or partial failures pre-fix; none would have flagged in routine sweeps because each only manifests under specific config combinations.
@@ -1251,7 +1231,6 @@ The MoE expert sweep + speculative-decoding draft-model swaps in a single bench 
 - **Flag deprecation needs a sweep**: when an upstream flag is renamed, search for it across all callers. The `--lookup` rename existed in upstream's CHANGELOG but didn't propagate to our harness.
 
 Source: [progress/2026-05/2026-05-08.md § session 2 § Bench harness bugs fixed](../progress/2026-05/2026-05-08.md), commits `f106b7a` (harness fixes) + `a295618` (bench data) on `epyc-inference-research:feature/preflight-canonical-gate`.
-
 ## Agents' Last Exam (ALE) — not_applicable holds (2026-06-12)
 
 intake-690 (arxiv:2606.05405) is a 1,000+-task occupation-grounded (O*NET/SOC 2018, 13 clusters → 55 subfields) "living benchmark" for long-horizon professional agent workflows, co-developed with 250+ industry experts; frontier agents score only **2.6% full-pass at the hardest tier**. The deep-dive stress-tested the not_applicable verdict and **confirmed it** — but corrected the maturity framing: ALE *is* released and runnable (`ale_run` toolkit, 150 public tasks, deterministic leak-resistant executable graders), so it passes "released?" and "verifiable?". The blocker is the **execution substrate**: tasks require provisioned cloud **Windows/Linux VMs running real professional software, driven by CUA computer-use agents** (screenshot/click/type via an MCP GUI bridge) — categorically outside our CPU-served `llama.cpp` + REPL/`CALL(...)` text harness. The only transferable nugget is the **O*NET/SOC occupational-coverage frame** as an orthogonal Ch07 *authoring lens* (our suites index by capability/source benchmark, never by occupational coverage) — needs no ALE data or infra. The sub-1%/2.6% pass figure is **non-commensurable** with our per-suite closed-form quality scores and must not be imported as an autopilot difficulty target. Precedent: AppWorld (intake-516, a *simpler* multi-app agent benchmark) was already deferred 2026-04-30 for "feasible but no current eval gap" → ALE defers *a fortiori*.
@@ -1271,8 +1250,6 @@ Sources: [`research/deep-dives/2026-06-12-agents-last-exam.md`](../research/deep
 - **Raw percent agreement is not an adequate validation statistic for a judge, and our constitution does not currently require a better one.** arXiv:2606.00093 (Rao & Callison-Burch) shows that on non-degenerate binary judge-vs-human data Pearson/Spearman/Kendall/phi/MCC all collapse to the same number, so reporting several manufactures an illusion of corroboration; Cohen's kappa is the one common coefficient adding information, because its marginal-sensitive normalization exposes judge-vs-human positive-rate drift. Abstention handling is a **choice of estimand, not preprocessing**. A full-text search of the 878-entry intake index returned zero prior hits for kappa/Krippendorff/inter-rater, and neither MEASUREMENT.md nor MEASUREMENT_POLICY.md mentions an agreement statistic — the draft P-REV-1 reviewer grammar reports raw FA/FR/yield/CR with no chance correction. Caveat to carry: the paper does not discuss Gwet's AC1, and the kappa paradox bites hardest on the deliberately skewed near-miss corpora we build. Sources: [reviewer-calibration-accounting.md](../handoffs/active/reviewer-calibration-accounting.md), [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md), [reviewer-model-ablations.md](../handoffs/active/reviewer-model-ablations.md).
 
 - **Live-web agentic benchmarks carry a validity defect that no field of our claim grammar captures.** arXiv:2606.05241 defines Search-Time Contamination — an agent retrieving the benchmark's own metadata, question text, or answer instead of reasoning — with a three-tier severity taxonomy and up-to-4pp measured inflation across six public benchmarks, and per-agent leakage rates spanning ~0-78% depending on the retrieval stack. Our own exposure was checked and is currently **zero**: the `gaia` suite contributes 0 questions to the live pool (dataset gated and never downloaded), no web-search tool exists in `scripts/benchmark/`, `web_access` defaults False with only `frontdoor` enabling it, and the eval tower hits llama-server ports directly with no tool registry. The forward guard is to re-check if the absent-source suites are ever populated. Sources: [minddr-deep-research-mode.md](../handoffs/active/minddr-deep-research-mode.md), [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
-
-
 ## Calibration instrumentation era (compiled 2026-07-22)
 
 The eval tower crossed from accuracy-only to **decision-grade calibration** in one arc
@@ -1298,7 +1275,6 @@ audits, `progress/2026-07/2026-07-22.md`):
   `--resume-incomplete-from` (interrupted arms, dataset-sha-guarded) make long arms recoverable.
 - **REL-1 held under fire**: a mid-eval API restart burned 532 questions into *excluded error
   rows* — never scored wrong; the paired accuracy stayed honest (0.764 vs 0.762).
-
 ## Campaign terminal + instrument completion (compiled 2026-07-23)
 
 The 2026-07-22/23 measurement campaign closed with the quality gate LIVE: era-fenced reseed
@@ -1352,7 +1328,6 @@ number.
 
 Sources: `scripts/analysis/escalation_prediction_probe.py`, `scripts/analysis/comp_region_probe.py`,
 `handoffs/active/learned-routing-controller.md`, `progress/2026-07/2026-07-27.md`.
-
 ## Compiled Update — 2026-07-29: eval-instrument correctness, the (model, scaffold) unit of report, and external-figure provenance
 
 **Confidence**: verified for the first-party code/host findings (each closed by
@@ -1476,7 +1451,6 @@ cross-arm parse-failure gap reads as a quality gap.
 - [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — AREX ACU non-citability; ARC-AGI-3 public-set provenance downgrade
 - [`rlm-contested-claims-self-evaluation.md`](../handoffs/active/rlm-contested-claims-self-evaluation.md) — E3a: the external long-context arm is not a clean control
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — "Two live bugs found in our own code", execution-verification tallies, host thread census
-
 ## The crash-window brick class: how an evidence namespace becomes permanently unusable (2026-07-29)
 
 An evidence pipeline that writes durable artifacts has a failure mode distinct from "the run
@@ -1522,7 +1496,6 @@ hash anywhere). Both were verified before the reorder, not after.
 
 _Sources: `handoffs/active/session-bus-thin-dispatcher.md`; `progress/2026-07/2026-07-29.md`;
 epyc-orchestrator branch `tierc-10d-crash-window-durability` (`8cdf14f9`)._
-
 ## A saturated suite does not merely fail to separate models — it reads NULL and looks like evidence (2026-08-02)
 
 The canonical 79-question judge suite was used for keep/drop reads on the model fleet. A paired
@@ -1605,7 +1578,6 @@ Both probe serving shape from `/props` rather than assuming it.
 _Sources: `handoffs/active/architect-model-selection-bench.md`;
 `handoffs/active/canonical-judge-suite-revamp.md`; `progress/2026-08/2026-08-02.md`;
 epyc-inference-research `7d7bc8d3`._
-
 ## Same-binary A/A on the EPYC 9655: the drift is monotone, and that decides the design (2026-08-04)
 
 Four runs of **identical code** — production `llama.cpp` @ `67a433bf4` — under the ratified
@@ -1669,7 +1641,6 @@ the 2026-07-04 async-prefetch win was written to a tmp path that no longer exist
 
 _Sources: `handoffs/active/autokernel-research-loop.md`; `progress/2026-08/2026-08-04.md`;
 epyc-inference-research `6e5f33c1`._
-
 ## A cited measurement can name the wrong arm — re-derive it, then bound the defect (2026-08-04)
 
 A ratified freeze receipt recorded `whisper_cpp.measurements_anchored.wer_pct = 2.35`. That figure
@@ -1721,7 +1692,6 @@ satisfy the protocol governing it — which is the right pressure, applied struc
 _Sources: `artifacts/operator/ratify_speech_wer_correction_20260804.json`;
 `epyc-inference-research/data/speech_kernel_freeze_20260731/README.md`;
 `progress/2026-08/2026-08-04.md`; epyc-root `00792e05`; epyc-inference-research `502509a5`._
-
 ## Compiled Update — 2026-08-05: a control should be allowed to reject the experiment
 
 AutoKernel’s first proposed 2% campaign was rejected before inference because its minimum detectable
@@ -1744,7 +1714,6 @@ comparison frame, stopping rule, and objective identity therefore travel togethe
 - [Objective task-rate goodput](../handoffs/active/objective-task-rate-goodput.md)
 - [2026-08-05 progress](../progress/2026-08/2026-08-05.md)
 - Research intakes 999 and 1000 (control design and archive safeguards)
-
 ## Compiled Update — 2026-08-10: generated eval content needs a gate stack, and the paper it was scoped from has no generator
 
 > Extends the F1 real-task-corpus entries above with the DGM-expansion scoping (2026-07-17), its
@@ -1815,7 +1784,6 @@ comparison frame, stopping rule, and objective identity therefore travel togethe
 - [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the citation audit that overturned the lineage claim and the two headline claims resting on it
 - [`wiki/knowledge-management.md`](knowledge-management.md) — the intake-side defects (phantom citations, laundered ids) that produced the wrong attributions
 - [`research/deep-dives/simula-synthetic-data-generation.md`](../research/deep-dives/simula-synthetic-data-generation.md) — the double-critic and Elo-complexity mechanisms folded into G4/G5
-
 ## Compiled Update — 2026-08-10: an evaluator built from a regression tester grades the wrong thing, and the instrument is inside the candidate's tree
 
 **Confidence: verified — every `file:line` below was read directly in the frozen production tree
@@ -1886,3 +1854,23 @@ Derived from a 2026-08-10 source batch whose members converged independently on 
 - [`repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md`](../repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md) — §Methodology Rules Adopted 2026-08-10 (CH-1…CH-7) and the two zero-inference pilots
 - [`repos/epyc-inference-research/docs/chapters/07-benchmark-suite-construction.md`](../repos/epyc-inference-research/docs/chapters/07-benchmark-suite-construction.md) — quality gates 7 and 8 (source-release date; trivial-agent floor)
 - [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the research-intake session that produced them
+## Compiled Update — 2026-08-11: keep promotion cohorts resident
+
+The v9 cycle exposed a methodological cost problem rather than a compute-capacity problem. The CPU
+ABBA gate spent about 26 minutes wall-clock but only about 12 minutes serving measured requests;
+launch, load, telemetry and teardown consumed 54%. The full production lineup fits concurrently in
+the available memory envelope (about 578 GiB host against a 1,069 GiB budget and 57.7 GiB GPU against
+62 GiB). Repeated teardown was therefore an instrument design choice, not a resource constraint.
+
+The durable successor design keeps sealed v8/v9 cohorts resident, issues request-level ABBA quartets,
+reuses a pinned exact-parity quality pack, and pairs request-local cap-0/cap-N speculation on one
+resident server. It targets a 45–60 minute complete promotion cycle instead of roughly 90–120 minutes.
+That target is prospective until implemented and ratified. Any attestation drift, resident-state
+contamination, mismatch, or other ambiguity automatically falls back to the existing fresh-server
+instrument, so speed does not weaken the proof boundary.
+
+### Source References (2026-08-11)
+
+- [`kernel-promotion-resident-fast-path.md`](https://github.com/pestopoppa/epyc-inference-research/blob/main/docs/design/kernel-promotion-resident-fast-path.md) — measured overhead audit, memory-fit proof, resident schedule and fallback rules.
+- [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — V9-8 implementation/ratification task and request-local speculation contract.
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — v9 qualification context and durable-design checkpoint.

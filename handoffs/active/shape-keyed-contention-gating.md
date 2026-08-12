@@ -321,9 +321,34 @@ changed live is that the answer is now *derived* and every exclusion names its r
 - [ ] **`enumerate_feasible` gating was a category error** — it hard-refused on a stale matrix, but
       the feasibility model reads no measured cell. Now warns and proceeds, stamping
       `consumed_by_this_model: false`. The N-way path still refuses, correctly.
+      **2026-08-12 (`mainB`) — VERIFIED ALREADY IMPLEMENTED; this box appears EARNED BUT UNFLIPPED.
+      Not flipped by me — not my row; routing to the owner.** The row is written in the past tense
+      and describes code that exists, phrase for phrase, at
+      `scripts/server/contention_matrix.py:1052-1070`:
+      the staleness branch comments *"the N-way enumeration CONSUMES measured pair ratios … that
+      path still refuses"* and *"Refusing it on the freshness of evidence it never opens is a
+      **category error** … Warn loudly, stamp the status into the manifest, proceed"*, with
+      `log.warning(...)` on the `_feasibility` path only. The stamp is at `:1132`,
+      `"consumed_by_this_model": not _feas`, carrying the comment *"Stamped for BOTH models. The
+      feasibility model consumes nothing from the matrix, but a reader must still be able to see
+      what the measured evidence looked like."*
+      Verified by reading the implementation, not by matching the prose. If the owner agrees, this
+      is a one-character flip with the evidence already written above it.
 - [ ] **Bridge residual 1** — echo `GateDecision` (`admitted`/`waited_s`/`decision`/
       `candidate_topology_idx`) into `/chat` response metadata so the ROUTE-A1 smoke MEASURES the
       verdict instead of inferring it from a 503 timeout.
+      **⚠ DUPLICATE ROW — this is the same item as `BRIDGE RESIDUAL 1` at the top of this file
+      (line ~29), which carries the `Do NOT land while a calibration run is live` gate that this
+      copy does not.** Flagged 2026-08-12 (`mainB`); the two must not be worked or closed
+      independently. This is the auditor's L166/L206 duplicate class, in-file rather than
+      cross-index.
+      **STATUS (mainB, the assigned owner of the top row): CODE COMPLETE, DELIBERATELY NOT MERGED.**
+      Parked on branch `a14-gatedecision-echo` @ `a7d7bdb6` (6 files, +299/-0, 9 new tests, 127
+      passed across the gate/placement/API suites). Merge-gate verdict **AUTONOMOUS**, 6 files, none
+      human-only. Two caveats for whoever lands it: run the gate with a **three-dot** range
+      (`main...a14-gatedecision-echo`) — two-dot reports 12 files because main advanced and shows
+      later commits as deletions — and it needs a **cherry-pick, not `--ff-only`**, for the same
+      reason. Still gated on a window clear of any live calibration run against the API.
 - [ ] **Bridge residual 2** — bind the re-bench `sample_fn` to the codified bench recipe.
 - [ ] **`shapekeyed_step2_smoke.py:718` `_drive_admit_overlap_probes` is a `NotImplementedError`
       stub**, and its `DEFAULT_ANCHOR_IDX`/`DEFAULT_PROBE_ROLES` are stale (anchor idx 0 for

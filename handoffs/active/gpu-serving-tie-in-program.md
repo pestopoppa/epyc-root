@@ -63,8 +63,8 @@ config change with a rehearsed rollback, never a rebuild.
 > window reopens, and `batched-decode-measurement.md:519`'s reboot-gate line is again the operative
 > sequencing. Codex is rescoped to a **terminating pre-reboot set**; post-reboot work goes to a
 > **NEW session**.
-- [ ] **P1-1 (Codex → operator)** — pre-reboot terminating set: E8 → apply-ready ratification bundle (P0-1), FG-4b re-anchor (**P0-2 complete 2026-07-29**), commit uncommitted E5 research files (✅ done `efd0980c`) — ending in a **reboot request to the operator**, who executes the reboot (operator-only).
-- [ ] **P1-2 (POST-reboot, NEW session, inference)** — E5 W1–W4 runs + the W2 focused capture smoke + R1–R4 reads (NUMA×batch 2D grid; decides slot-fabric (N,K) provisioning — the CPU half of the coupling with the GPU np×context grids). Fresh-uptime, quiet-window per protocol. No deadline — the reboot resets the window. **When W1-W4 land, UPDATE the published E5 results artifact in place** (do not leave it showing stale W0-only scout data): republish to the SAME URL `https://claude.ai/code/artifact/b0a7785f-d618-436a-a3e2-46f2fef393aa` by passing it explicitly as `url` (a fresh session omitting this mints a new URL and breaks the operator's link), rewrite the OBSERVATION-GRADE banner (false once decision-grade figures exist; those figures need the full `MEASUREMENT.md` claim grammar), and RETAIN W0 alongside W1–W4 rather than overwriting — full requirement detail in `handoffs/active/batched-decode-measurement.md` under the `E5 W1-W4 runs` task.
+- [ ] **P1-1 (Codex → operator)** *(the trailing reboot clause is SATISFIED — the operator executed the reboot 2026-07-29 — but the set is NOT closed: P0-1's E8 ratification bundle is still open. Left unchecked and annotated 2026-08-11 by `mainC`, who does not own this row: reading "ending in a reboot request" as still-pending was the stale part, not the whole task.)* — pre-reboot terminating set: E8 → apply-ready ratification bundle (P0-1), FG-4b re-anchor (**P0-2 complete 2026-07-29**), commit uncommitted E5 research files (✅ done `efd0980c`) — ending in a **reboot request to the operator**, who executes the reboot (operator-only).
+- [ ] **P1-2 (POST-reboot, NEW session, inference)** *(⚠ SCOPE STALE — annotated 2026-08-11 by `mainC`, not closed: this row still describes E5 W1–W4 as wholly pending, but **Stage-B is COMPLETE — 31 cells, 26/31 decision-grade**. The genuine residual is the re-measure tracked at [`batched-decode-measurement.md`](batched-decode-measurement.md) §639, which is a DIFFERENT task under a different owner. Left unchecked because the row is inference-lane and not mine to close; whoever owns it should re-seed it to the residual rather than re-running Stage-B.)* — E5 W1–W4 runs + the W2 focused capture smoke + R1–R4 reads (NUMA×batch 2D grid; decides slot-fabric (N,K) provisioning — the CPU half of the coupling with the GPU np×context grids). Fresh-uptime, quiet-window per protocol. No deadline — the reboot resets the window. **When W1-W4 land, UPDATE the authoritative local E5 HTML in place** (do not leave it showing stale W0-only scout data): update `artifacts/operator/e5_w0_preliminary_results.html`, rewrite the OBSERVATION-GRADE banner (false once decision-grade figures exist; those figures need the full `MEASUREMENT.md` claim grammar), and RETAIN W0 alongside W1–W4 rather than overwriting. The sibling markdown is explicitly superseded and must not be used as generation authority. Any hosted copy is an out-of-scope presentation mirror. Full requirement detail is in `handoffs/active/batched-decode-measurement.md` under the `E5 W1-W4 runs` task.
 - [ ] **P1-3 (POST-reboot, NEW session)** — AutoPilot resume on existing CPU surfaces — gated on P0-1 (E8 signature); preconditions ✅ (`4d329002`, `24fa1399`); fresh-reseeded routing memory learns from scratch; F1 real-task grounding applies.
 
 ### Phase 2 — GPU lane build (shadow-only per D3)
@@ -89,7 +89,7 @@ config change with a rehearsed rollback, never a rebuild.
 - [x] **P2-7 — claude-gpu-lane integration commits LANDED + PUSHED** ✅ 2026-07-28 (orchestrator `e70722f0`/`a75bd98e`/`2aff58e6`/`50abc23d`/`6defe059`, pushed by the program session at wrap-up; `2aff58e6` explicitly carries the interleaved P2-6 preflight/doc hunks — nothing left riding). Integrated HEAD validated: **170 lane tests pass** across all four suites. Residual: `docs/gpu-shadow-lane.md` still dirty in the shared tree (gpu-lane mid-edit — left untouched).
 - [ ] **P2-9 (NEW 2026-07-29, W3 deferral of P2-2d) — whisper as a GPU tenant: decide W1 vs W2, downstream of the bake-off.** Refiled out of P2-2 by the operator's **W3** choice so tenant landing closes on the two verified tenants. **Nothing here is on the P3 critical path and nothing here is started.** The question left open: does whisper belong on the MI210 at all? **W1** — it stays on CPU and D2 is amended to a two-tenant GPU set (cheapest, zero risk; the ASR service already meets its duty on CPU and is not a GPU bottleneck; reclaims ~1.6 GiB of `phase2_resident_set` as a ceiling amendment, which is downstream of the **P2-5j** sweep by the same gate as every carve variant). **W2** — port to whisper.cpp on HIP: clone + HIP build + a ~1.6 GB `ggml-large-v3-turbo` download + a new launcher + a transcription-parity check against the current CPU service before any swap. **Standing recommendation: W1** — the only thing whisper gains from the GPU is throughput on a service already meeting its duty — but that judgement wants the P3 bake-off numbers in hand, which is exactly why it was deferred. **Prerequisite reading before anyone acts:** the blocker is a *capability* gap, not a config gap (P2-2d), and the ~1.6 GiB currently reserved for whisper is **fail-safe** — see the banner now committed at the head of `orchestration/gpu_shadow_lane_np_ceiling.yaml` (orchestrator **`f7a02d94`**), which exists specifically to stop the obvious wrong reaction ("whisper isn't landing, free up its VRAM"). **Do not start W2 work as a side quest**: it is a new download in the reboot-hazard class and it buys nothing the bake-off needs.
 
-- [ ] **P0-1a (THIS session)** — when Codex presents the E8 bundle: verify the MERGED wrapper tree against the review blockers (self-consistent checkout: pinned runners exist + prepare/validator CLI agreement; composite validator handles segmented T2; receipt-after-CAS semantics present — main already carries `a2e97bb0`+`4d6589a2`-line commits; hashes pinned = merged tree) before advising SAFE-TO-SIGN.
+- [ ] **P0-1a (owner: the session holding the E8 bundle review — deictic "THIS session" resolved out 2026-08-11 by `mainC`; the authoring session died 2026-07-29)** — when Codex presents the E8 bundle: verify the MERGED wrapper tree against the review blockers (self-consistent checkout: pinned runners exist + prepare/validator CLI agreement; composite validator handles segmented T2; receipt-after-CAS semantics present — main already carries `a2e97bb0`+`4d6589a2`-line commits; hashes pinned = merged tree) before advising SAFE-TO-SIGN.
 - [x] **P2-5 — D1 design provision documented** ✅ 2026-07-28 (orchestrator **`987bb780`**, `docs/gpu-shadow-lane.md` §3). The spec listed the four classes but left the provision incomplete where it gets expensive later. Now fixed: **§3.1** priority order with the class-3/4 flag names PINNED (`ORCHESTRATOR_FEATURE_GPU_LANE_SHED_BATCH`, `ORCHESTRATOR_FEATURE_GPU_LANE_FRONTDOOR_OVERFLOW`) — reserved but deliberately NOT registered in `src/features.py`, since a flag for an unbuilt feature reads as "someone can turn this on". **§3.2** what priority may and may not mean: it orders **admission, never eviction** — a higher class may be admitted ahead of queued work and may stop new lower-priority admissions, but may NOT interrupt a request already decoding, at any priority, for any class; reclaim stays quiesce-and-drain. Stated explicitly because "priority queue" ordinarily implies preemption and here it must not — the clause a naive implementation violates first. **§3.3** the reservation is enforced at load, not by reviewer memory (a binding claiming an unbuilt class is refused). **§3.4** *new design finding*: **shed-batch is partially self-defeating**. Class 3's premise is "CPU is stressed, move batch work to the GPU", but the lane is not a pure GPU resource — its host threads sit on q3's physical cores, so shedding consumes CPU in the region most likely contended under CPU stress. Bounded (8 host threads, not a 48-thread quarter) but concentrated, and shared with frontdoor 8380 / worker_general 8382+8072 / ingest 8485 / vision_escalation 8087 / architect_general 8083. Net benefit is (GPU gained − q3 CPU lost), **never measured**; the Step-4 recert already produces the pairwise inputs. Recorded so that "don't build class 3" can be a measurement outcome rather than the reversal of a shipped feature. Four tests link prose to code (class order vs spec section, unbuilt set = classes 3–4, reserved flags absent from the registry, no preemption path in the lease module).
 - [x] **P2-5a — shed-trade measurement DESIGNED** ✅ 2026-07-28 (research **`d5f5942f`**, `docs/design/p2-5a-shed-trade-measurement-spec.md`). **Design only — nothing run.** Two design decisions changed what gets measured: (1) **the metric is `task_rate`, not t/s** — §3.4's "GPU t/s gained − q3 CPU t/s lost" phrasing is not commensurable (gemma4-26B-A4B vs a 27B dense: different tokens), and `P-SPEED-OBJ` already settled the axis as task_rate with t/s demoted to host-health telemetry; my own §3.4 framing is corrected in the spec rather than inherited. (2) **the net is measured DIRECTLY**, as a paired whole-system comparison on one frozen corpus in one wall window — reconstructing it from two separately-measured halves inherits both CV≈9.1% noise terms and measures the halves under conditions that never co-occur, which is the entire phenomenon. Four arms: A0 CPU-only under stress · **A1 lane resident but IDLE** (isolates the residency tax — the control most likely skipped, and the one separating "shedding is bad" from "the lane's mere presence is bad") · A2 shed active (**A2−A0 is the answer**) · A3 GPU with CPU quiesced (exposes the GPU-side contention tax). Shed fraction **swept, not assumed** — the optimum may be interior since the residency tax is paid once while CPU displacement grows with *f*, so a single badly-chosen *f* yields a false negative. Controls: order-randomised arms, stress as a declared operating point at two levels, live-affinity verification, `drop_caches`+NUMA re-warm for the ~27 GiB tenant load, host threads fixed at 8 (SMT contention is non-linear and varying it invalidates the ceiling table), acquired q3+GPU claims, eval path only. **Pre-registered**: n≥10, MDE published with the result not after seeing it, e-process never single-trial, and **the null result is pre-registered as informative** so "no detectable trade" is a decision (don't build) rather than something re-litigated as "needs more data" once the feature exists. Crucially the measurement **does not require building class 3** — the split is harness-driven via eval-path fan-out, so a negative result is a decision, not a feature reversal.
 - [x] **P2-5b — `P-SHED-1` RATIFIED by the operator** ✅ 2026-07-28 (research **`cc6e2c92`**). No existing protocol covered a **cross-device contention trade** (P-BENCH-2 = CPU multi-instance aggregate, P-BENCH-3 = batched slot decode, P-GPU-1 = GPU throughput; none covers *work moved between devices where the mover consumes the resource it is relieving*). Operator ratified the design; a pre-validated ratification command is being packaged for the operator to execute against `MEASUREMENT.md`. **Registration is a human-only path — this session did not and will not touch that file**; ratifying a design and amending a trust boundary are two different acts. Gate G4 in the spec is cleared; no hardware gate moved.
@@ -165,14 +165,89 @@ config change with a rehearsed rollback, never a rebuild.
   `tierc-10d-crash-window-durability` is still unmerged but touches 7 files, none of them
   `stack_numa.py`, so a comment fix there cannot conflict with it. If the file owner disagrees this
   is one revert.
-  - [ ] **DECLINED, back to the filer: the two `12.19 t/s` comments (≈:104, :237).** P2-5l calls them
+  - [x] **DECLINED, back to the filer: the two `12.19 t/s` comments (≈:104, :237).** P2-5l calls them
     "likewise stale". They are MEASUREMENT RECORDS, and `MEASUREMENT.md` says append rather than
     edit; I cannot certify them stale without re-running the bench, which is not mine to run. Needs
     someone with a measurement window, or an append-only correction note.
-  - [ ] **Residual noted, not acted on: the quarter NAMES still encode the old 2-node model.**
+    **✅ 2026-08-11 (`mainA`) — RESOLVED, and no measurement window was ever required.** The decline
+    was right in principle and wrong about what P2-5l was asking. Both comments existed at
+    `22c476dd` (`ae40ee8b^`) lines 104 and 237 — confirmed by `git show`. Neither claimed a
+    *number* that had gone stale: both attributed the Probe B 2026-05-04 placement (12.19 t/s
+    single-instance vs 4.3 t/s under legacy 2× cross-NUMA) to **`architect_general`**, which stopped
+    holding it at the 2026-07-31 W1 cutover — the 122B moved to `architect_critic` and
+    `architect_general` became the GPU-resident 27B on `GPU_HOST_LANE`. That is a **role-attribution**
+    defect, fixable by reading `stack_topology.yaml`, not by re-running a bench.
+    **Commit citation corrected 2026-08-11 (`mainB`, file owner): the `≈:104` half landed at
+    orchestrator `78257261`, NOT `969244d8`.** When `mainA` checked, that hunk was an *uncommitted
+    working-tree edit of mine* — `969244d8` ("chore: refresh v9 stack derivatives") is merely the
+    tip it sat on and contains none of it (`git show 969244d8:orchestration/stack_topology.yaml`
+    still reads "ONLY if **architect_general** workload"). Untracked looks identical to committed
+    when you read the filesystem; resolve cited deliverables against git. The `≈:237` half is
+    correctly cited — `a517793c`/`53e802a5`, verified by blame.
+    The measurement itself was preserved verbatim in both places — append, never edit:
+    - `≈:104` moved with its role block out of `stack_numa.py` into
+      `orchestration/stack_topology.yaml:156-167` (via `982adb0c` → `a517793c` → `93569b69`).
+      The figures are byte-identical to `22c476dd`; the re-attribution rides as an **appended
+      parenthetical**: *"The record above was written while the 122B was architect_general;
+      post-2026-08-01 W1 cutover it is architect_critic, same model, same placement … the measured
+      figures are unchanged and are NOT re-attributable to today's architect_general, which is the
+      GPU-resident 27B."* That is exactly the append-only correction note this box asked for.
+    - `≈:237` survives as the `get_numactl_prefix` docstring at `stack_numa.py:488-497`, likewise
+      corrected by addition: it now names **`architect_CRITIC`** as the interleave=all exemplar and
+      states that citing `architect_general` *"sent readers to a membind role"*.
+    Residual: none. `12.19` now appears exactly once in `stack_numa.py`, correctly attributed.
+  - [x] **Residual CLOSED ✅ 2026-08-11 — both halves landed; P2-5l is fully done.** Quarters:
+    annotate-don't-rename (`mainC`, orchestrator `872bc851`, which also corrected its own first-pass
+    rationale after `mainA` caught it). `NUMA_NODE0`/`NUMA_NODE1`: **deleted** (`mainB`, file owner,
+    orchestrator `f4230b22`) — see finding 2 below, which `mainA` left to "the session holding the
+    file"; `mainC` had moved to `backlog-dispatch-queue-repair`, so the file owner took it.
+    Verified before deleting rather than assumed: zero imports (every surviving mention was prose),
+    and `test_stack_numa.py` had already called them deletion candidates *"once the remaining test
+    fixtures stop naming them"* — satisfied, those fixtures name them only in comments. Cpusets
+    survive verbatim as `NUMA_HALF_A`/`NUMA_HALF_B` at the correct `-t 48`; `CPU_SHAPE_CLASSES`
+    still yields all four classes. The measurement history that hung on the deleted names (E5
+    affinity artifact, the retracted 2026-04-17 `26.60/27.06` head-to-head, the pending E5 re-run
+    note) is re-anchored to the HALF FLEET block — **deleting a constant must not delete the
+    evidence taken under its shape.** 2857 passed / 7 skipped.
+    ⚠ **Unrelated red test found while validating, filed separately, do NOT close it by relaxing
+    the test:** `test_config_consolidation::test_specific_role_urls` reproduces at clean HEAD in a
+    detached worktree. It is a **true positive** — derived `stack_priors.yaml` drops frontdoor's
+    full `:8070` (`ports: [8080, 8180]`, both `cpu_shape_class: half`) while the same blob still
+    carries `cache.slots_by_port {8070: 4, …}`, so `ServerURLsConfig().frontdoor` advertises the
+    HALF `:8080` as the full instance — a region-lock **scope** error, and the same shape as the
+    drop the operator already ruled "accidental and clearly a mistake" on 2026-07-23
+    (`stack-lineup-dossier-2026-07-23.md`). Routed to `coordinator-agent`; not actioned here because
+    serving config and stack lifecycle belong to the session owning the inference.
+    <details><summary>Original filing and `mainA`'s two findings (kept for audit)</summary>
+
+  - **Residual as originally noted: the quarter NAMES still encode the old 2-node model.**
     `NUMA_Q0A`/`Q0B` read as "halves of node 0" and `Q1A`/`Q1B` as "halves of node 1", but they map
     to nodes 0/1 and 2/3. Renaming is a refactor with real blast radius across the launcher and
     should go through a `gitnexus impact` pass first — filed rather than done.
+    **2026-08-11 (`mainA`) — IN FLIGHT with `mainC`, do not double-work.** `mainC` has an uncommitted
+    `stack_numa.py` hunk closing this as an annotate-don't-rename, plus a correction to the old
+    "the quarter constants … are correctly named" line. Left to `mainC` to land and check off.
+    **The stated blast radius is gone** and was re-measured while checking: since the W1 cutover no
+    role in `stack_topology.yaml` declares a quarter (`cpu_shape` is only ever `NUMA_FULL`,
+    `NUMA_HALF_A/B`, `GPU_HOST_LANE`), so `NUMA_Q*` survives only in `stack_numa.py`'s `_CPU_SHAPES`
+    / `_SHAPE_CLASSES` tables and in test prose — no launcher path reads it.
+    Two findings handed to `mainC` rather than edited into their working tree:
+    1. **The new hunk's stated reason is factually wrong.** It says a rename would break
+       comparability because `cpu_shape` names are "a persisted join key in stack_priors entries and
+       stack manifests". What `stack_priors`/`stack_manifest` persist is `numa_instance` (an int) and
+       `cpu_shape_class` (`"quarter"`/`"half"`/`"full"`) — never the shape NAME. No artifact would
+       break. The don't-rename call still stands, on the weaker ground `mainC` also gives (nothing
+       live reads the name), but as written the comment misstates this codebase, which is the same
+       defect class P2-5l exists to close.
+    2. **`NUMA_NODE0`/`NUMA_NODE1` are the sharper hazard and are not covered.** They are declarable
+       via `_CPU_SHAPES`, unused, and carry 96 threads on a 48-physical-core cpuset — the exact
+       oversubscription `_assert_instance_invariants` fatals on (`threads != phys`). So the only
+       reachable effect of naming one is an import-time `AssertionError`. Their cpusets are already
+       `NUMA_HALF_A`/`NUMA_HALF_B` verbatim; `tests/unit/test_stack_numa.py:146` calls them
+       "deletion candidates". Deleting beats annotating here, and it is `mainC`'s call as the session
+       holding the file. — **ACTIONED by `mainB` at `f4230b22`; `mainA`'s analysis held on every
+       point when re-verified.**
+    </details>
 - [x] **P2-5m (NEW 2026-07-29; free, do at next P-SHED-1 touch) — shape A1 reporting per-role so it doubles as carve-out cost evidence.** Arm A1 already measures exactly the residual contention any SMT carve-out would need priced (GPU host threads on SMT siblings of 88-95 vs Q1B tenants on the physical cores). Archiving A1 **per-role** rather than aggregate means the reservation decision reuses it **free** instead of commissioning a second campaign. Also, independent of everything above: **P-SHED-1 should pin every q3 co-tenant state PER ARM as a declared input** — hidden arm differences confound A1 whichever tenant they involve (this is the one residual from P2-5h that survives on independent grounds). ✅ 2026-07-29 — research `38fb11ec` requires an A0/A1 per-role rate, completion/error, and latency archive plus an arm-specific co-tenant lifecycle/residency manifest; P2-5h's separate corpus/pricing repair remains open.
 
 ## Dependency graph
@@ -206,6 +281,6 @@ phase completions in `progress/`; tenancy + rebind decisions get operator decisi
 - Lane template: `docs/runbooks/vision-escalation-minicpmo-promotion.md` (State-A/B choreography) — **still valid as a template 2026-07-31; DEPRECATED as a MiniCPM-o promotion plan (weights deleted). Reuse the steps, not the literals.**
 - Registry: `epyc-inference-research/orchestration/model_registry.yaml` (master; lean is compiled)
 - Launch layer: `epyc-orchestrator/scripts/server/orchestrator_stack.py`, `stack_manifest.py`, `stack_numa.py`
-- Grids/evidence: `epyc-inference-research/artifacts/np_context_study_v8_20260727/` (v8) + `np_context_study_20260723/` (v7) + the model-selection artifact (claude.ai/code/artifact ab8d2e24)
+- Grids/evidence: `epyc-inference-research/artifacts/np_context_study_v8_20260727/` (v8) + `np_context_study_20260723/` (v7); local presentation surface `/mnt/raid0/llm/tmp/claude-artifacts/np_context_v8_decision.html` (SHA-256 `816ad5cdd532634edb48f608321fb6ffc3d5546c3ff74aa6c7b54cf0655e6e2b`). The research bundles, not the presentation surface, are evidence authority.
 - Region locks: `epyc-orchestrator/scripts/region-lock` · fabric: `heterogeneous-slot-fabric-residency.md`
 - E8 apply: `artifacts/operator/ratify_and_apply_e8_quality_baseline_v4_20260727.sh`

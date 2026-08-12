@@ -1,326 +1,295 @@
-# POST-REBOOT SESSION BRIEF
+# COORDINATOR HANDOVER BRIEF — written 2026-08-11 ~22:30Z
 
-Read this first if you are a freshly-spawned session on a host that just rebooted and you have
-zero context. It was commissioned before the reboot and is written to be self-contained — but it
-is a pointer document, not a restatement of the underlying handoffs. Go read those when a section
-tells you to.
+**If you are the incoming coordinator, read this before you run anything.** It is a pointer
+document, not a restatement of the handoffs it cites — go read those when a section says to.
 
-Authoritative sources, cited rather than duplicated below:
-- `handoffs/active/gpu-serving-tie-in-program.md` — the GPU-lane program spine (Phase 0-3).
-- `handoffs/active/batched-decode-measurement.md` — the E5 NUMA×batch sweep (§ "E5 — NUMA×batch
-  interaction sweep" and its W0-W4 sub-bullets).
-- `handoffs/active/session-bus-thin-dispatcher.md` — bus/dispatcher defect ledger; see the
-  `POST-REBOOT HANDOVER — claude-gpu-lane` block (~line 670) and the C-series items.
-- `progress/2026-07/2026-07-29.md` — claude-main's handover, "Deferred / open" section (OD-A,
-  OD-D, OD-E).
+**If you are the OUTGOING coordinator, rewriting this file at wrap-up is your JOB, not a
+courtesy.** Your successor trusts it absolutely and will start from whatever premise it states.
+The previous version of this file was dated 2026-07-29, described a post-reboot cold start that
+never happened, and named v8 as production. On the morning of 2026-08-11 a fresh coordinator read
+it and started from a false premise; recovering cost most of the morning. **A brief describing the
+fleet two sessions ago is worse than no brief, because it is believed.** Date-stamp it, state what
+you verified and what you did not, and delete anything you cannot re-verify.
 
-Nothing is mid-write. **Every session was closed by the operator before the reboot** (2026-07-29
-~13:30Z): `codex`, `claude-gpu-lane`, `fable-auditor`, `codex-bus-tests`, `claude-main` — all
-wrapped, committed and pushed first, then closed; `coordinator-agent` last. So expect an **empty
-`agent` tmux session** and zero live mains on arrival. That is the intended shape, not a fault, and
-it means the spawn plan you present is the whole fleet rather than a gap-fill.
+**The file name is historical.** This is not a post-reboot document. It is *the* coordinator
+handover.
 
-**Branch state at close — five branches remain unmerged and are yours to reconcile.** A
-wrap-up promotion sweep on 2026-07-29 merged every branch that merged cleanly and carried real
-content. What is left is *only* the conflicting set, deliberately not auto-resolved:
+---
 
-| Repo | Branch | Why it did not land |
+## 0. Check the clock before you believe anything below
+
+```
+uptime                      # 2026-08-11 22:30Z reads: up 13 days, 8:48 — NO reboot has occurred
+date -u
+```
+
+Ground truth as verified at 22:30Z 2026-08-11:
+
+| Fact | Value | How verified |
 |---|---|---|
-| epyc-root | `codex-wrapup-precompact-20260729` | doc conflict in `master-handoff-index.md` + `progress/2026-07/2026-07-29.md` |
-| epyc-orchestrator | `codex/e8-consolidated-wrapper-20260728` (9 commits) | code conflict |
-| epyc-orchestrator | `codex/e8-abort-terminal-seals-20260729` (3) | code conflict |
-| epyc-orchestrator | `codex/e8-typed-provenance-20260729` | code conflict |
-| epyc-orchestrator | `e8-v5-runtime-root-20260727` (7) | code conflict |
-| epyc-orchestrator | `tierc-10d-crash-window-durability` | code conflict |
+| Host uptime | 13 days, 8:48 — **no reboot** | `uptime` |
+| Production kernel | `production-consolidated-v9` @ `0db32c06e3e550065b78311a6031ef3dd2c4f27c`, `llama-server` version **10125** | `scripts/session/verify_llama_cpp.sh` exit 0 |
+| Rollback anchor | v8 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`, binary 10107 | `CLAUDE.md` |
+| epyc-root main tip | `d7a17f03`, **68 commits unpushed**, 266 dirty porcelain entries | `git log @{u}..`, `git status --porcelain` |
+| epyc-orchestrator tip | `f8eb36f7`, **8 unpushed**, 5 dirty | same, in `/mnt/raid0/llm/epyc-orchestrator` |
+| epyc-inference-research tip | `87c4b9c4`, **4 unpushed**, 1169 porcelain entries (largely untracked results — **never `git add` this tree wholesale**) | same |
+| Commits landed today | **75** in epyc-root, **11** in epyc-orchestrator | `git log --since='2026-08-11 00:00'` |
+| coordinator-daemon | pid **942753**, started 22:25:54 | `ps -eo pid,lstart,args` |
+| bus supervisor | pid **489217**, started 08:48:00 | same |
+| GPU (MI210) | 0% use, 0% VRAM allocated | `rocm-smi --showuse --showmemuse` |
+| Serving stack | **fully DOWN** — every component `unavailable` / `state-missing` | `orchestrator_stack.py status` |
+| AutoPilot | DOWN since 2026-07-27 | last journal activity; stack status |
 
-All five are E8-harness or E8-adjacent, i.e. the same repair chain codex left mid-sequence — so
-reconcile them **in codex's stated order** (scorer isolation → replay successor → dual binding),
-not by branch date. Three epyc-root `codex/e8-*` ratifier branches merged cleanly but produced a
-**zero-byte diff** (duplicate commits already on main) and were therefore *not* pushed — treat them
-as already landed and delete rather than re-merge. `spec-dec-mtp-refresh-2026-06-22` is fully
-merged (0 unique, 307 behind); it is a stale label, not pending work. Five orchestrator
-`dependabot/uv/*` branches are open and untouched by this sweep.
-
-**All three repos were at `0` unpushed at close.** `epyc-root` main tip `b998b0b5` (plus the
-operator-signed `MEASUREMENT.md` amendment `e6b84496`), `epyc-orchestrator` main `f7a02d94`,
-`epyc-inference-research` untouched.
+Today's richest source, and the one to read next, is
+[`progress/2026-08/2026-08-11.md`](../../../progress/2026-08/2026-08-11.md) — 851 lines, one
+section per main, each written by that main for its own lane.
 
 ---
 
-## 1. Bringup — do this before anything else
+## 1. Bringup
 
-**Nothing survives a reboot automatically. In this order:**
-
-1. **`tmux new-session -d -s agent`** — after reboot, nothing creates the `agent` tmux session,
-   and `cmd_spawn` in `tmux_adapter.py` fails closed without it (bus defect **C20**,
-   `handoffs/active/session-bus-thin-dispatcher.md` ~line 1096). This is **not** a defect when you
-   hit the refusal — it is correct fail-closed behavior on a missing session — and it is **not
-   optional**: nothing spawns until this command has run. `tmux.allow_session_creation: false`
-   means the adapter will never create the session itself; every main is a window in this one
-   session, an explicit 2026-07-27 operator requirement.
-2. **Restart the coordinator-daemon.** It is a process, not persisted state — it was at epoch 9
-   pre-reboot and does not resume itself.
-3. Expect every heartbeat to read stale and no window to be live immediately after restart, so
-   routed bus messages to not-yet-restarted mains will emit "LOOKS DEAD" advisories. That is bus
-   defect **C18**'s warning working as designed (deduped per message/recipient, so it cannot
-   flood) — not a fault. It quiets as mains come back up.
-4. **Do not "fix" an unreadable tmux session by treating it as zero live mains.** That is the
-   **C14 polarity error** (`handoffs/active/session-bus-thin-dispatcher.md` line 907 and the
-   C14/C18 polarity note at line 710): a roster row whose window cannot be matched must NOT be
-   read as "not running" — doing so hands out occupied slots. Derive liveness from what is
-   observable; never assume absence from a field nobody is maintaining.
-
-**Also verify, in the same bringup pass:**
-- `scripts/session/verify_llama_cpp.sh` — confirms the production kernel branch is still
-  `production-consolidated-v8` and untouched.
-- `region-lock status` — confirm all regions read free (nothing should still be held from
-  pre-reboot claims; q3 was held by `bench-e8-quality` pre-reboot per
-  `gpu-serving-tie-in-program.md` P2-5c gate G1 — that hold does not survive the reboot, but
-  verify rather than assume).
-- Serving stack is up (`orchestrator_stack.py status` or equivalent) and matches the intended
-  lineup.
-- AutoPilot state — it was DOWN pre-reboot (no process; last journal activity
-  `2026-07-27T08:23:07Z`), resume gated on the E8 signature per P1-3 below. Check current state,
-  don't assume it auto-resumed.
-- **Confirm uptime has freshly reset.** The P-BENCH host-health tier is uptime-gated
-  (≤1-week = decision-grade eligible); pre-reboot uptime was multi-day and had lapsed the
-  decision-grade window (`gpu-serving-tie-in-program.md` P2-5c gate G2, lapsing
-  ~2026-07-31). The reboot is what reopens this window — verify it actually did (`uptime`) before
-  treating any decision-grade run as clear to fire.
+1. **`uptime` first.** If it reads days, nothing below about "restart everything" applies to tmux
+   or the stack — only to the daemon, which dies on its own schedule.
+2. **`tmux new-session -d -s agent`** — only if the session is genuinely absent. `cmd_spawn` in
+   `tmux_adapter.py` fails closed without it (defect **C20**,
+   `handoffs/active/session-bus-thin-dispatcher.md`). That refusal is correct behavior, not a bug,
+   and it is **not optional**: nothing spawns until the session exists.
+   `tmux.allow_session_creation: false` means the adapter will never create it for you. Every main
+   is a *window* in this one session — a standing operator requirement (2026-07-27).
+   At 22:30Z the session holds windows: `coordinator`, `htop`, `btop-`, `inference`, `auditor`,
+   `mainA`, `mainB`, `mainC`, `mainD`, `fish`.
+3. **The coordinator-daemon does not survive, does not announce its own death, and `status` will
+   lie to you about it.** On 2026-08-01T05:42:54Z it died and stayed dead until 2026-08-11T08:48Z —
+   **243.1 hours**, measured as the single >1h gap in `advisory.jsonl`. Throughout, `status`
+   reported `state=working epoch=13 pid=52352`: **the state file outlives the process that wrote
+   it.** The supervisor was dead too — nothing watched the watcher.
+   - Start the **SUPERVISOR**, never the daemon by hand:
+     `nohup /mnt/raid0/llm/epyc-root/scripts/coordination/bus_supervisor.sh >/dev/null 2>&1 &`
+   - Confirm with **`ps -p <pid>`**, not with `status`.
+   - C35 (landed today, `45471692`) makes `status` fold liveness + identity + freshness into a
+     leading verdict — it now prints `pid 942753 is alive and is the coordinator-daemon`. Trust
+     that line only when you have confirmed the daemon is running the *current* source (see §3).
+4. **Do not read an unreadable tmux window as "no main there."** That is the **C14 polarity
+   error**: a roster row whose window cannot be matched must NOT be counted dead — doing so hands
+   out occupied slots. Derive liveness from what is observable; never assume absence from a field
+   nobody maintains.
 
 ---
 
-## 2. The work queued for this session, with gating stated
+## 2. C34 — the interpreter split. Read this before your first bus write.
 
-Do not run anything below out of order relative to its stated gate.
+`/usr/bin/python3` has **no `jsonschema`**; `/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python`
+has 4.26.0. Under the bare interpreter `session_bus.py validate` reports the bus schema-clean while
+the venv interpreter surfaces the real failures — that split silently refused **368 of 1137 outbox
+rows (32%)** at relay: authored, never sent, nobody told.
 
-### E5 W1-W4 (NUMA×batch sweep) — `handoffs/active/batched-decode-measurement.md`
-- **W0 is complete** (69/69 cells, all four model groups; see the "E5 W0 — EXECUTED COMPLETE"
-  entry). W1-W4 were `BLOCKED_ON_OPERATOR_SCHEDULED_REBOOT` — that block is now lifted by this
-  reboot.
-- **W2 has a hard precondition: run its focused post-fix capture smoke FIRST**, before any
-  decision-grade W2 (Gemma) sweep. Reason: the historic W0 Gemma capture had 430/430 parse
-  failures with **no raw SSE ledger** — those are unrecoverable, not re-scoreable. The smoke must
-  persist `reasoning_text` separately, require nonempty answer-text deltas when tokens were
-  generated, and prove the offline scorer can see scoreable answer text. It must pass before the
-  decision-grade W2 run, and the published artifact's W2 section (below) stays quality-invalid
-  until it does.
-- **R1-R4 (the summarizer reads that turn W1-W4 into decisions) are withheld until clean
-  decision-grade Stage-B cells exist.** Do not run them early against partial or scout data.
-- This is P1-2 in the GPU program's Phase 1 (`gpu-serving-tie-in-program.md`): "fresh-uptime,
-  quiet-window per protocol, no deadline — the reboot resets the window."
+> **Use `/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python` for every bus WRITE and every
+> `validate`.**
 
-### E8 quality baseline — codex's handover, and the critical path
-
-**Everything downstream is parked behind this.** P0-1 (the E8 baseline signature) gates AutoPilot
-resume (P1-3), which gates the P2-5f duty-cycle measurement, which gates the shed-batch decision
-rule. codex owned it and closed with the tail unfinished. Its verbatim handover, in its stated
-order — **do not reorder these three**:
-
-1. **Integrate scorer isolation first.**
-2. **Replay the successor second.**
-3. **Fix the historical-receipt / runtime-helper dual binding**, and only then rerun the audit.
-
-State at close: 279 rows clean, sidecar
-`bd89f9e4d7e0a114518a7a0a729b5ea6322ea21e02728f9fc6795db40992a424`. **Incomplete** — no
-deterministic completion, no finalizer inference, no baseline application, and no publication
-occurred. Race rows 97 / 203 / 279 remain retained for race-only retry and must never be silently
-promoted to clean rows. Failed evidence is immutable; nothing was applied.
-
-Before rerunning anything, read `fable-auditor`'s static contract audit findings in
-`coordination/session-bus/outbox/fable-auditor.jsonl` (task `e8-harness-contract-audit`) — six
-tier-A fail-open contracts, the two CRITICAL ones verified closed at pinned commit `182ccef6`.
-The point of that audit was to replace codex's serial run-discover-fix loop with one static pass;
-re-running before reading it re-enters the loop the audit exists to end.
-
-### P1-3 — AutoPilot resume (`gpu-serving-tie-in-program.md` Phase 1)
-- Gated on **P0-1, the E8 baseline signature**. Preconditions are already fixed and merged
-  (tiny-n hard-gate guard `4d329002`, kv_compaction per-role skip `24fa1399`). Fresh-reseeded
-  routing memory learns from scratch once resumed; F1 real-task grounding applies.
-
-### P2-5f — GPU-lane shed-batch duty-cycle measurement (`gpu-serving-tie-in-program.md`)
-- **POST-REBOOT ONLY. Do not start early.** The dependency chain: P0-1 (E8 signature) → AutoPilot
-  resume (P1-3) → duty cycle becomes measurable → complexity threshold becomes settable → the
-  P2-5 shed-batch decision rule becomes executable. Sampling duty cycle against a freshly-rebooted
-  or still-quiesced host returns a near-zero value and would **wrongly close class 3 (shed-batch)
-  on a measurement artifact, not a finding** — this is the exact trap the item exists to warn
-  against. Wait for AutoPilot to be running representatively, not just running.
+The 2026-08-11 coordinator lost a `task-assign` to exactly this within twenty minutes of taking the
+role — it lacked `payload.lane`, `lease_expires_ts` and `epoch`, and was silently unrelayable.
+`mainD` closed the structural half today (`035dfecf`, `cc67a493`): `_validator` falls back to a
+vendored dependency-free draft-7 subset over the same schema file and *refuses to construct* on a
+keyword it does not implement. Refusals fell **368 → 151 (32% → 13%)**. The 151 residual rows still
+need a disposition — coordinator's call.
 
 ---
 
-### Wiki compilation — DONE 2026-07-29, with one policy gap left open
+## 3. Every C-series fix is inert until the daemon is restarted
 
-All 7 queued sources were compiled at the pre-reboot wrap-up on operator instruction (`total_new`
-now `0`). Four pages updated: `inference-serving`, `hardware-optimization`,
-`benchmark-methodology`, `agent-architecture`, each with a dated *Compiled Update* section.
+This bit the fleet **five times in one evening** — C39, C28, C38's tick path, R1 and R2 were all
+committed, boxed, and not running. A closed box carrying real measurements is more misleading than
+an open one: the numbers are true and the state they imply is not.
 
-**Read this before trusting those pages**: three of the campaigns they describe are incomplete, and
-the pages say so rather than smoothing it — E8 has **no baseline signature** (numeric half complete
-at exact-stop 16/16/0, quality half T1-terminal only; every 07-27→07-29 landing is instrument
-repair, and the ratification wrapper's own verdict is *FIX-FIRST — do not sign as pushed*); the GPU
-lane is **built, inert, not activated**; E5 W1-W4 are unrun, so every carried-forward number is
-observation-grade.
+Restarts today, each by killing the pid *you captured yourself*, verifying death with `ps -p`, and
+letting the supervisor relaunch:
 
-**`requires_human_or_measured_review` — DECIDED, convention suffices (operator, 2026-07-29).**
-The manifest's `writer_evidence_policy` sets it `true`, and the four pages compiled on 2026-07-29
-are model-compiled without that review; no per-section review-flag banners were added, matching
-what recent passes on the same pages did. The operator was presented the choice — add the banners,
-or record that convention suffices — and chose **convention**. So this is settled, not pending: do
-not re-open it as a defect, do not retrofit banners to these pages, and do not treat the absent
-review as blocking any downstream use of them. If the policy field itself should change to match
-practice, that is a separate proposal against the manifest, not a fix to these four pages.
+| From | To | At | Made live |
+|---|---|---|---|
+| 496387 | **921178** | 22:18:12 | R1, C39, C28, C38 tick path |
+| 921178 | **942753** | 22:25:54 | R2 |
 
-## 3. Artifact-update obligation when E5 W1-W4 land
+Verified live *by consumers*, not by inspection: C39 fired five `token-gate-looks-spent` notices two
+seconds after start; `relay_state.json` (110 KB) now exists on disk, which is the proof C28/C38 are
+executing.
 
-When decision-grade W1-W4 results are ready, the operator-facing results artifact must be
-**updated in place, never replaced**. Full requirement text is in
-`handoffs/active/batched-decode-measurement.md` under the "E5 W1-W4 runs" task — point future
-readers there. The one detail fatal to lose: pass the existing URL explicitly —
+**`mainD` has proposed** — not yet filed as a numbered C-item — a supervisor-side check so a running
+daemon that predates its own source is detected instead of remembered, plus a cron watcher for the
+supervisor itself (`hub_supervisor.sh` was found dead 08-10, same class). It is a host-level change,
+so it is an operator ask. Route it.
+
+---
+
+## 4. R1 — the fleet had no working autonomous wake path until today
+
+Until `b1222b6e` (mainD, today) there was **no path by which a stalled main could be woken**. The
+daemon calls a heartbeat older than 3600s STUCK and nudges; `tmux_adapter.py` refused every nudge
+past 900s. Between the thresholds nobody has decided you are stuck; past 3600s somebody has and can
+no longer reach you — **the guard hardened exactly as the condition worsened.** Every main crossed
+900s at ~10:14–10:22Z and the whole fleet, coordinator included, went unreachable for ~10 hours.
+1,903 `stuck-nudge-refused` rows; recovered only by a human passing `--heartbeat-max-age 86400`.
+
+Both documented escape hatches were unavailable: C35 lifts the `working` blocker and never
+staleness; C36 is codex-rollout-only, i.e. 0% of an all-Claude fleet.
+
+**The fix.** `hb_stale_override_ok` decides on *pane evidence* — `pane_dead` false plus quiescence
+past the spinner interval, the same evidence C35 already trusts — instead of a timer. A timer cannot
+distinguish wedged from quietly waiting; the pane can. Fails closed on every unknown.
+
+**The fail-open that hid it.** `last_nudge_ts` / `last_nudge_sig` were written only on `rc == 0`
+while escalation was gated on `last_nudge_sig`, so an always-refused nudge could never escalate —
+1,903 refusals into `advisory.jsonl`, **a file with no reader**. Refusal now carries its own clock
+and escalation lands in the **coordinator's inbox**.
+
+> `--heartbeat-max-age 86400` was the manual workaround and should no longer be needed.
+> **If you find yourself reaching for it, R1 has regressed.** Say so; do not re-apply it silently.
+
+A test was asserting the bug (`test_c35_the_override_touches_only_the_working_blocker`, justifying
+the refusal because staleness "is already tunable with `--heartbeat-max-age`" — the very knob a
+human had to set to 86400 to rescue the fleet). Rewritten, intent preserved.
+
+---
+
+## 5. Roster and ownership
+
+From `coordination/session-bus/config.yaml` plus today's assignments. Briefs live in
+`coordination/session-bus/tasks/`.
+
+| Roster id | Model / effort | Lanes | Owns |
+|---|---|---|---|
+| `inference` | codex, gpt-5.6-sol high | `cpu, gpu, none` | **ALL compute and all reload rights.** Long-horizon AutoKernel goal. Never contend for the host without going through it. |
+| `auditor` | Fable 5 xhigh | `none` | Governance + audit only; dispatches its own subagents. Audits other mains' completed work. |
+| `mainA` | Opus high | `cpu, none` | E5 offline salvage + kernel-era integrity (A5/A6/A7, Token 2) |
+| `mainB` | Opus high | `gpu, none` | Orchestrator correctness, sequential lane |
+| `mainC` | Opus high | `none` | Governance / backlog / **owns the queue generator** |
+| `mainD` | Opus high | `none` | **C-OWN** — the session-bus delivery plane, `tmux_adapter.py`, the whole C-series |
+| `coordinator-agent` | — | `none` | You |
+| `codex-bus-tests` | — | — | **retired**; row kept so its history stays attached |
+
+**All non-inference lanes are `none`: no inference, no region claims, no process management.**
+`caps.max_concurrent_mains: 7`. When re-spawning, always reuse the **existing roster ids** — a fresh
+alias orphans that identity's cursor, outbox and triage `corr_id`s.
+
+---
+
+## 6. Operator decisions made 2026-08-11 — do not re-open these
+
+- **C-OWN goes to a dedicated main (`mainD`)**, not the auditor. Handoff row updated at
+  `handoffs/active/session-bus-thin-dispatcher.md:699`; brief
+  `coordination/session-bus/tasks/mainD-c-own-delivery-plane.md`.
+- **SEQ-A1 resolved as Horn A** — recompute per trial, readmitting 3 candidates (E = 11.55 / 8.70 /
+  2.74) whose evidence was being discarded. The persistence/consumer half is explicitly in `mainB`'s
+  lane. `sticky_refuted` was built neutral (defaults `False`, `43108014`) precisely so this could be
+  settled from data.
+- **The do-not-flip sweep extends to `handoffs/completed/` and `archived/` but REPORTS rather than
+  restores there.** Both trees swept and clean; nothing needed restoring.
+- **Stack / AutoPilot restore routes to `inference`, at its own boundary, after AutoKernel.** Not
+  yours to execute — reload ownership follows the inference holder.
+- **Each main writes its OWN wrap-up, per task, and the coordinator VERIFIES rather than
+  substitutes.** A coordinator reconstructing a main's day from commit messages produces a plausible
+  and wrong log. Nudge the main; never write for it.
+
+---
+
+## 7. Four ratifications signed today — and six stale checkboxes
+
+Receipts in `artifacts/operator/receipts/`, all `status: ratified`:
+
+| Gate | Effect |
+|---|---|
+| `RATIFY-ANNEXG-V9-CURRENCY-20260811` | Annex G P-GPU-1 pin v8 → v9; **zero** `currently-v8` clauses survive |
+| `RATIFY-CONSOLIDATED-ERA-ROWS-20260811` | 4 era rows: `E9-cpu-kernel`, `E9-routing-reward`, `E8-cpu-bench-throttle-scope`, `E8-seeding-reward-b7-guard`; none struck |
+| `RATIFY-V9-CPU-BENCH-ERA-ADVANCE-20260811` | Advanced the *state consumer*; verified live — `orchestration/autopilot_state.json` `cpu_bench` = `E9-cpu-kernel`. Exists only because the auditor caught a committed-not-live gap in the token signed 90 minutes earlier |
+| `RATIFY-CPU-BENCH-BINARY-VERSION-20260811` | Additive `binary_version` + `kernel_commit` on the three cpu_bench kernel-cutover rows (10098 / 10107 / 10125); resolves the `cpu_bench` scope collision. No measured value changes |
+
+> **Six gates carry a ratified receipt and still show `[ ]`** in `tokens/token-queue.md` — lines
+> **134, 144, 292, 302, 312, 322**. The receipts are authoritative; **the boxes are stale**. C39
+> annotates them (it fires `token-gate-looks-spent` rather than suppressing them) and that is
+> correct. **ONLY the operator may tick a checkbox in that file.** Surface all six; touch none.
+
+---
+
+## 8. Genuinely open, with owners
+
+- **The E8 cross-era decision package** — **UNOWNED** since `inference` handed off. Needs a
+  coordinator assignment. (`artifacts/audit/completion-flurry-wiring-audit-20260811.md`, §D.)
+- **Supervisor staleness + supervisor-of-supervisor cron** — `mainD` proposed, operator/host-level
+  ask, not yet filed as a C-item (§3).
+- **`advisory.jsonl` rotation** — 1,091,556,378 bytes / **3,003,186 rows** and growing. C38 removed
+  the per-tick full re-parse (measured ~8.9 s and ~6.6 GiB of transient dicts against a 45 s tick;
+  now `relay_state.json`, 110 KB, 0 ms, one 0.54 s bootstrap). **Rotating the ledger already on disk
+  is still unowned.** `handoffs/active/session-bus-thin-dispatcher.md:1858`.
+- **Idle compute** — GPU 0% / 0% VRAM, all regions free, serving stack fully DOWN, AutoPilot down
+  since 2026-07-27. Options were put to `inference`, which owns compute and all reload rights;
+  awaiting its boundary. Not blocking anything.
+- **C34's 151 residual refused rows** — disposition recommendation is with the coordinator.
+- **C12 / C13** landed today (`d7a17f03`) after sitting filed-not-fixed since 07-29.
+- **Counter reconciliation.** The gap is real and mechanical — `index_state` classifies *guarded*
+  and *blocked* boxes into their own buckets, a raw grep does not — so the dashboard and the
+  coordinator's churn line will contradict each other in front of the operator until it is
+  reconciled. **Re-derive both sides before quoting either; the numbers below are stamped, not
+  standing:**
+  - `python3 scripts/handoffs/index_state.py --summary` (read-only) — **as of 2026-08-12 08:40Z**:
+    174/174 handoffs owned, 0 duplicated, 0 orphaned; domain Open column sums to **1126**,
+    Blocked to **49**.
+  - raw grep `grep -rhcE '^\s*- \[ \] ' handoffs/active/*.md` — **as of the same instant**:
+    **1242 open / 2368 closed**.
+  - `--check` exits **0 with 0 problems** — verified 2026-08-12 08:40Z, and it is read-only, so
+    this one is cheap to re-run rather than trust.
+
+  *(The previous version of this bullet asserted 1203/2301 and 1275/2297 with no as-of. Three of
+  those four numbers no longer hold; the `--check` claim still did. Bare counts in a task file
+  read as standing facts and decay silently — catalogue face 12. Also note both generated sidecars
+  `handoffs/active/.index-{state,graph}.json` are currently ABSENT from disk, so nothing can
+  re-derive the rollup without running the writer, which rewrites the shared tracked rollup block
+  in `master-handoff-index.md` — that is a deliberate action, not a read.)*
+- **`mainB` A4's seven failures** — need `inference` to relaunch `--numa-mode both` and recompile
+  priors. `test_specific_role_urls` **stays red and must not be closed by relaxing it.**
+- **`mainB` A14** — GateDecision echo, done and merge-ready, parked on branch
+  `a14-gatedecision-echo` @ `a7d7bdb6` pending a merge window cleared with `inference`.
+- **`mainA` A6 operator token** (decouple `decision_grade` from the secondary trimmed window,
+  promotes 5 cells) — operator; nothing further owed by that lane until signed.
+- **E8 frozen-kernel pin** — operator. Today's v9 freeze moved the tree the E8 protocol pins. The
+  guard is working correctly; re-pinning it would re-base a measurement era.
+
+---
+
+## 9. Standing warnings
+
+- **AutoPilot is DOWN and the serving stack is fully down.** Any bench number taken now is against a
+  quiesced host, not a representative one. Sampling duty cycle here returns a near-zero value and
+  would close a decision on a measurement artifact.
+- **The P-BENCH decision-grade uptime window (≤ 1 week) has LAPSED** — 13 days and counting. It
+  gates nothing until an operator call, but do not mint a decision-grade claim against it.
+- **The backlog dispatch queue was superseded today.** `tasks/BACKLOG-DISPATCH-QUEUE.md` carries a
+  do-not-dispatch banner and is retained as evidence, not deleted — dispatch from `mainC`'s
+  generator (`scripts/coordination/backlog_queue_gen.py`, root `83eb7b94`). Re-derivation found
+  whole-queue anchor rot at **34.5%** (up from 27% on 07-29) and true dispatchable at **≤ 71 of the
+  220 rows the file advertised**.
+- **Never `git add` wholesale in a shared clone**, and never `git commit --amend` — a 4-file amend
+  swept 33 other sessions' staged files today. Recovery is `reset --soft` + pathspec re-commit.
+  Commit with `-- <paths>`.
+- **A dirty shared clone has no single author.** Attribute per hunk; an untracked working-tree edit
+  looks identical to a committed one until someone else checks the repo out.
+- **Kill only PIDs you captured yourself.** Never `pkill`/`pgrep` by name pattern on this host.
+  After killing, verify with `ps -p <pid>` before reporting success.
+
+---
+
+## 10. Bus drain
+
+At your first task boundary, and every boundary after:
 
 ```
-url: https://claude.ai/code/artifact/b0a7785f-d618-436a-a3e2-46f2fef393aa
+/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python scripts/coordination/session_bus.py \
+    drain --agent coordinator-agent --triage
+/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python scripts/coordination/session_bus.py \
+    append --agent coordinator-agent --target heartbeat \
+    --json '{"state":"working","task_id":"<id>"}'
 ```
 
-— when calling the Artifact tool to republish. Omitting `url` mints a brand-new URL and breaks
-the operator's existing link. Also required, per the linked handoff:
-- Replace the OBSERVATION-GRADE banner/framing — it becomes false once decision-grade figures
-  exist.
-- Apply the full `MEASUREMENT.md` claim grammar `(metric, protocol-id, n/reps, date,
-  attestation ref)` to the new decision-grade figures.
-- **Retain the W0 scout numbers alongside** the new figures rather than overwriting them —
-  historical numbers are era-labelled and appended per `MEASUREMENT.md`, never edited to "fix,"
-  so scout-vs-confirmed drift stays visible.
-- The W2 subsection specifically stays quality-invalid in the artifact until the W2 capture smoke
-  (§2 above) has passed and real quality data exists.
+A heartbeat written once is a birth certificate, not a liveness signal. Refresh it at every
+boundary — post-R1 it is also how the daemon decides whether it needs to come find you.
 
-Source markdown/HTML: `artifacts/operator/e5_w0_preliminary_results.md` /
-`.html`.
-
----
-
-## 4. GPU lane activation — DECIDED (operator, 2026-07-29)
-
-The GPU shadow lane is built (`gpu-serving-tie-in-program.md` P2-6 landed, P2-4 review done) but
-**not switched on**. Remaining before any activation:
-- **P2-2** — tenants land. **RESCOPED to two tenants by operator decision W3 (2026-07-29)**:
-  dense-27B (stock first) + MiniCPM-o (parked promotion runbook §Steps 1-6). **Whisper is no longer
-  part of P2-2** — it was refiled as **P2-9**, downstream of the bake-off, with W1 recommended and
-  W2 explicitly ruled out (no clone, no HIP build, no GGUF download). Current state: **P2-2a
-  dense-27B VERIFIED LANDED**; **P2-2b** MiniCPM-o artifacts verified and its Step-1 proposal
-  pre-validated; **P2-2c** (MiniCPM-o Steps 1-6) is the **sole open task**, post-reboot by the
-  runbook's own P7 rule, and still needs the runbook **P1 operator grant**. P2-2 is **NOT closed**.
-- Activation choreography, Steps 0-7 (`docs/gpu-shadow-lane.md`), operator-gated.
-- **Phase 3** — P3-1 shadow bake-off (stock-27B vs FF, scored separately per duty), P3-2 tenancy
-  decision package to the operator, **P3-3** operator three-gates sign-off — required before any
-  production traffic reaches the lane.
-
-**But before any of that: P2-5j must run first.** It sweeps host-thread placement *including
-device-local candidates* — the MI210 is `numa_node=1`, yet the only placements ever compared for
-its 8 host threads were `184-191` (SMT siblings of physical `88-95`, inside q3) vs `88-95` itself
-— **both cross-node from the GPU's own NUMA node**. Device-local placements (node-1 SMT, e.g.
-within `120-143`/`136-143` over Q0B) have **never been tried**. If a device-local placement wins,
-the entire q3 entanglement dissolves and any carve happens on Q0B instead, with untested upside on
-lane throughput. Activating on the current q3 assumption without running this sweep risks baking
-in a wrong placement and invalidating the measured serving-shape lineage that everything else
-(ceiling tables, P2-5c shed-batch arms) is built on. **Sequencing: do not carve q3, and do not
-flip the activation switch, before P2-5j runs.**
-
-**DECIDED: HYBRID — option C, "sign-off last."** Chosen by the operator 2026-07-29 via
-AskUserQuestion in the `fable-auditor` session, from the options package filed on bus task_id
-`lane-activation-decision-package`. The full option text with costs, risks and reversibility is
-reconstructible from that bus record. Decided sequence:
-
-1. **P2-2 tenant landing first** — non-contending (disk + VRAM work), and a prerequisite of every
-   measurement path since the sweep needs a tenant to serve.
-2. **Steps 0–7 activation choreography.**
-3. **P3-1/P3-2 shadow bake-off starts immediately on the INCUMBENT 184-191 placement** — tenant
-   selection is placement-relative and transfers; the P3-2 decision package must carry a
-   **placement-pending caveat on absolute latency and token-economics numbers**.
-4. **P2-5j placement sweep folds into the P2-5c campaign** as already filed.
-5. **Placement + carve (O2+O1 default per the standing topology package) + residency decided
-   TOGETHER at the verdict.**
-6. **P3-3 production sign-off LAST**, on the final placement — production never inherits a moving
-   placement.
-
-Optional early-warning attachment: a 2-arm mini-probe (incumbent vs one node-1 candidate, one
-shape, estimated 2–4h).
-
-Two clarifications from the package that correct earlier framing in this section:
-- Activating on the current placement does **not** invalidate the measured serving-shape
-  lineage — it **uses** it. Re-derivation cost triggers only if the sweep later moves the threads,
-  and it triggers then regardless of whether activation came first. What activation-first actually
-  risks is narrower: bake-off absolute numbers and production sign-off minted on a
-  possibly-suboptimal placement, raising the procedural price of moving later.
-- P2-5g (finer-region minting) does **not** change sequencing. Every carve variant is downstream
-  of the sweep by P2-5j's own gate, and carve economics matter only at residency-verdict time. It
-  blocks neither activation nor bake-off.
-
-The tension narrative above (P2-5j never having compared device-local placements, and the risk of
-baking in a wrong placement) remains valid background for *why* the sequence above is what it
-is — it is no longer an open question. Do not activate the lane, carve q3, or advance past
-P2-2/Steps 0-7 outside the decided sequence above.
-
----
-
-## 5. Known bus defects and conventions you inherit
-
-- **C20** — reboot spawn blocker, covered in full in §1 above.
-- **C11** — `handoffs/active/session-bus-thin-dispatcher.md` line 888: C9 (the `live_mains` /
-  `resolve_spawn_cap` / `cmd_spawn` change) landed and was committed (`8cbe50c0`) by the same
-  session that had just reviewed C6, on direct operator instruction — but the independent review
-  C9's own filing called for is still unpaid. Not urgent (the change is fail-closed on every
-  branch it cannot evaluate, both suites green) but a second pair of eyes is cheap now and
-  expensive later. This is a coordinator-daemon-owned call, not something to self-resolve.
-- **C-OWN — the C-series is UNOWNED.** `claude-gpu-lane` was re-tasked off it and then closed, so
-  C6/C9/C10/C14/C16/C18/C21 and all of `tmux_adapter.py` have no owner. Filed as `C-OWN` in
-  `handoffs/active/session-bus-thin-dispatcher.md` (~line 678). **Re-assigning this is the first
-  bus-side thing a new coordinator should put in a spawn plan** — the delivery plane you depend on
-  to do your own job is currently maintained by nobody.
-- **C22** — `roster_window_names()` is dead code still carrying the last-writer-wins idiom
-  (handoff ~line 682). The reviewer's residual from the C6 fix.
-- **C23** — triage disposition has no bulk-clear granularity, so N routed items produce N identical
-  payloads (handoff ~line 687). Protocol shape, not a send bug — do not "fix" it in the adapter.
-- **C11** review debt (below) and **C22/C23** are all cheap now and expensive later; they are the
-  natural first assignment for whoever takes C-OWN.
-- **C18a** — `codex-bus-tests` is still listed with `role: main` and no session. Non-urgent: the
-  liveness check works correctly regardless of whether this roster field is maintained, but it's
-  stale bookkeeping worth fixing when convenient.
-- **BUS-GATE convention** for new operator scripts: header comment `# BUS-GATE: <id>`; on apply,
-  write `<name>.receipt.json`; when a successor script is minted, mark the old one
-  `<name>.superseded`.
-- **Operator actions route over the bus as pre-validated token-requests, never pane-only.** Do not
-  hand the operator a raw command outside this path.
-- **Reload ownership**: the session holding inference executes its own API/stack reloads, at a
-  moment it chooses — never reload another session's held inference out from under it.
-
----
-
-## 6. Open handovers — already actioned, do not redo
-
-From `progress/2026-07/2026-07-29.md` ("Deferred / open"), claude-main's handover:
-- **OD-A (KTransformers)** — the simulator-scoped kill in `fable5-window2-findings-02` never
-  reached the runtime. Transferable delta is Expert Deferral (async CPU-GPU MoE overlap, ≤0.5%
-  accuracy drop), which is NOT AMX-dependent. Operator flagged as a research thread — still open,
-  no action taken yet, pick up if prioritized.
-- **OD-D (Q5_0)** — the enabling rationale was retracted: the Q4_K_M A/B that motivated it was CPU
-  (2026-05-07, pre-MI210), while upstream #1385 is ROCm — the mechanism cannot explain the result.
-  Effectively closed as a dead lead; no further action implied.
-- [x] **OD-E** — audited `intake-915` (the only non-dived KB entry) for the intake-926 fabrication mode. ✅ 2026-07-29 — core source claims verified; narrowly overstated scope was corrected; `verification` promoted to `dive-verified`. Completion record: `intake-derived-work-2026-07-25.md` ID-10e.
-
-**Explicitly do NOT redo**: claude-main's final message asked for the E5 `stage_b_prune_plan`
-provenance repair to be re-assigned, but that request was **stale when written** — the repair is
-already **COMPLETE**, landed as research commit `d61e4e8c` and root commit `dd1d0b4b` (see
-`coordination/session-bus/outbox/codex-bus-tests.jsonl` task `e5-stage-b-plan-provenance-repair`,
-and `artifacts/operator/e5_w0_preliminary_results.md` line 134 / `.html` line 296). Do not
-re-open or re-run this.
-
----
-
-## Bus drain reminder
-
-Per `CLAUDE.md` bus protocol: at your first task boundary in this session, run
-`scripts/coordination/session_bus.py drain --agent <your-roster-id>` and act on any pending
-assignments/nudges, then refresh your heartbeat
-(`session_bus.py append --agent <id> --target heartbeat --json '{"state":"working","task_id":"<id>"}'`).
-Given the C18 "LOOKS DEAD" advisories expected right after bringup (§1.3), this is doubly
-important now — it is how you stop being counted as dead.
+Contract: [`coordination/session-bus/BUS_PROTOCOL.md`](../BUS_PROTOCOL.md).
+Role file: [`agents/coordinator-agent.md`](../../../agents/coordinator-agent.md).

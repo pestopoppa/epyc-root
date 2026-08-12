@@ -253,7 +253,26 @@ mocked responses + targeted pytest). All 61 targeted seeding-scorer tests pass;
 - **Deviation from audit finding-3 literal wording:** the raw `answer` was already persisted; the substantive fix delivered is the scoring-context persistence that actually enables the stated purpose (offline re-scoring), plus a guarding test.
 
 ## Residual tasks (filed at 2026-07-22 wrap-up)
-- [ ] Unify the `_inband_error_text` / `_forced_role_serving_mismatch` local copies (seeding `3bfe2584`) with eval_tower's originals into one shared module (currently two deliberate copies)
+- [x] Unify the `_inband_error_text` / `_forced_role_serving_mismatch` local copies (seeding `3bfe2584`) with eval_tower's originals into one shared module (currently two deliberate copies) ✅ 2026-08-11 (`mainB`, `epyc-orchestrator` `46f9eacd`)
+  Now `src/autopilot_core/measurement_guards.py`, imported by both paths and re-exported under the
+  original private names so every caller and test keeps working unchanged.
+  - **Independently re-verified 2026-08-12 (`mainC`), integrity not presence:** grepping `def inband_error_text|def forced_role_serving_mismatch` across the whole orchestrator returns **exactly the two definitions in the shared module and nowhere else**, so no local copy survived the unification — the failure mode a re-export alone would hide. Consumers confirmed at `eval_tower.py:1104-1108` and `seeding_scoring.py:130-134`; 24 tests pass.
+  **Equivalence established BEFORE the move, not asserted after**: both pairs parsed to identical
+  ASTs once docstrings were stripped, so no scoring outcome changes on either path.
+  The module docstring records *why* one copy matters — these are not helpers but the predicates
+  deciding whether a response is ADMISSIBLE as a measurement of a role, and two copies of an
+  admissibility rule drift silently, surfacing only as two paths disagreeing about the same number.
+  **Caught in passing**: the first cut of the eval_tower edit replaced a line range that also held
+  `_inband_error_provenance` — an eval_tower-only helper with no seeding twin — and deleted it.
+  Three tests caught it immediately; restored verbatim and left local, since unifying it was never
+  in scope. Full suite 11785 passed / 8 failed, the same 8 that fail on main without this change.
+  - **RE-VERIFIED 2026-08-11 (`mainC`), independently, against today's tree — the 2026-07-29 audit
+    below still holds.** `--3way` is opt-in (`add_argument("--3way", ..., dest="three_way")` at
+    `:857`), the branch is `if args.three_way:` at **`:1175`**, and without it execution reaches
+    `run_batch(` at **`:1432`** and **`:1481`**. So `run_batch` remains the DEFAULT path and the
+    legacy `ComparativeResult` route is still live. **The anchors drifted** from the audit's
+    `:1173`/`:1430`/`:1479` by two lines from ordinary edits — cite this row by its text, not by
+    those numbers, which is the same anchor-rot that cost the dispatch queue 34.5% of its refs.
 - [x] `seeding_legacy.py:~331` deprecated ComparativeResult path carries the pre-guard reward-injection pattern — guard it or delete the legacy path ✅ 2026-07-29 (`epyc-orchestrator` `e108ec9f`; in-band and scorer-unavailable responses persist as infrastructure diagnostics but suppress comparative reward injection; focused seeding tests 72/72)
   - **AUDITED 2026-07-29 (`auditor`). THE PREMISE OF THIS ROW IS FALSE — "currently unused by the
     live driver" is wrong, and the correct disposition is GUARD, not delete.** Evidence, all in

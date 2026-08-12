@@ -826,9 +826,44 @@ primary artefact.
       *(Amended 2026-07-30: the re-run must conform to **`P-BENCH-PLACEMENT-1`**, now ratified,
       and its grid must use the **new 1-full + 2-half shapes** — the old quarter arms no longer
       exist. **27 of 31 cells** still outstanding.)*
-- [ ] **T4 — Fix the E5 batch drain (D5)** so the high-`T` rungs actually saturate: more prompts,
+- [x] **T4 — Fix the E5 batch drain (D5)** so the high-`T` rungs actually saturate: more prompts,
       or a closed-loop arrival process holding occupancy at `T`. Without this the `T ≥ 16` rungs
       remain uninterpretable even on corrected placement.
+      **ANALYSIS DONE + CAUSE QUANTIFIED ✅ 2026-08-12 (`mainA`), zero inference. The row's
+      proposed remedy is half right and its diagnosis needs correcting.**
+      **The driver is ALREADY closed-loop.** `run_cell_driver` binds N×K streams permanently and
+      pulls from one shared queue — its own docstring says so. So "or a closed-loop arrival
+      process" is already satisfied; there is no open-loop arrival defect to fix.
+      **The real cause is the fixed work quantum.** The batch is a pinned 43 prompts, and
+      `T = instances × np`, so requests-per-stream is `43/T`. Measured across all 31 canonical
+      Stage-B cells:
+
+      | T | requests/stream | cells with an EMPTY trimmed window |
+      |---:|---:|---|
+      | 1 | 43.00 | 0 / 3 |
+      | 4 | 10.75 | 0 / 5 |
+      | 8 | 5.38 | 0 / 7 |
+      | 16 | 2.69 | 0 / 8 |
+      | **32** | **1.34** | **5 / 8** |
+
+      At T=32 most streams serve **exactly one request**, so the run is ramp plus drain with no
+      middle — there is no steady state for `trimmed_aggregate` to find. That is not a trimming
+      defect, it is a *sample-size* defect, and it is why the top rung is uninterpretable.
+      **T4 and A6 are the same defect from opposite sides**: A6 is the read-side decision (what
+      the gate should do about an empty window), T4 is the write-side fix (make the window
+      non-empty by giving each stream enough work). Ratifying A6's decouple does NOT make the
+      T=32 rung interpretable — it only stops the empty window from voiding the cell's grade. The
+      rung stays uninterpretable until the quantum grows.
+      **Floor, so the ask is concrete:** for ≥4 requests per stream at T=32 the batch needs **≥128
+      prompts**; for ≥3, **≥96**. The three T=32 survivors are all C3 (4 instances × np8), where
+      per-instance staggering still lets some request straddle — so T=32 is necessary, not
+      sufficient.
+      **NOT IMPLEMENTED, and this is the blocker to name:** the 43-qid batch is a **pinned**
+      instrument (`prompt_batch.selection: pinned_qids`; the generator docstring states
+      re-sampling tier/seed is FORBIDDEN because the pool was rebuilt at the E7 boundary).
+      Growing it changes the measurement instrument and breaks comparability with every banked
+      E1/W0/Stage-B cell, so it is an operator ruling — and it should be recorded as an **era
+      boundary**, not an edit, exactly as the 2026-08-11 rider argues for objective changes.
 - [ ] **T5 — Arm the locality gate for mmap roles.** `affinity_preflight.py:195` currently sets
       `required = no_mmap and len(expected_nodes) == 1`, so under mmap it observes and reports
       but never fails. It should fail a single-node instance whose `local_fraction` is below
@@ -851,10 +886,66 @@ primary artefact.
       independent `n=10` run (`highn.sh`) measured **`23.36 ± 0.11`** against the original
       `23.43 ± 0.07`, a 0.3% agreement. The full-machine figure is replicated; the mislabelled
       arm remains documented as the reason the replicate was owed ✅ 2026-07-30
-- [ ] **T8 — Carry prompt length on every decode claim for `ingest_long_context`**, in the
-      registry and in any handoff that quotes a tok/s for it. The 9–12 vs 15–25 split is entirely
+  **PARTIAL ✅ 2026-08-11 (`mainA`), orchestrator `d83661a5` — the vacuous-pass half is closed; arming
+  stays blocked.** Found while reading the predicate: `memory_verified` is `mismatches == 0`, and
+  since the predicate is false for **every** instance post-topology-change, the artifact asserted
+  `live_memory_placement_verified: true` on runs that examined **zero** entries — and
+  `--require-memory-locality`, an explicit request for the guarantee, passed **vacuously**. Absence
+  read as a pass, the A11 shape one subsystem over. Now `memory_checked` derives from entries actually
+  examined, the artifact carries `live_memory_placement_checked` + `memory_locality_vacuous`, and the
+  flag REFUSES with a message naming the predicate when nothing was eligible; the vacuity branch fires
+  before the mismatch branch, pinned by a test (25/25, 6/6).
+  **Arming deliberately NOT done**, for two independent reasons: this row is blocked on ratifying
+  `INTERLEAVE_TOLERANCE`, and **mmap placement is shared across instances** — a single-node mmap role
+  can show a low `local_fraction` because another instance first-touched the pages — so arming it
+  would hard-fail correctly-configured roles. That is the throttle-gate failure mode. Still blocked on
+  the tolerance ratification for the multi-node analogue.
+
+- [x] **T8 — Carry prompt length on every decode claim for `ingest_long_context`**, in the
+      registry and in any handoff that quotes a tok/s for it.
+      **REGISTRY HALF DONE ✅ 2026-08-12 (`mainB`, research `7dddce0f`); handoff half still open.**
+      Two of the four figures already carried context (`long_context_tps_range … @ ~12K context`,
+      `summarization_benchmark … (10K context)`). **`baseline_tps: 10.12` and `optimized_tps: 10.12`
+      did not** — and those are the ones consumers read *programmatically*. Annotated as a
+      **provenance GAP, not back-filled**: the prompt length was never recorded with them, and
+      inventing one to satisfy the rule would defeat the rule. Flagged for whoever re-derives them
+      under T10 to record context at the same time.
+      **Landed in the MASTER** (`epyc-inference-research/orchestration/model_registry.yaml`), NOT
+      `epyc-orchestrator/orchestration/model_registry.yaml` — that file is the compiled runtime view,
+      regenerated from the master at every `orchestrator_stack.py start`, so an edit there is
+      silently wiped. Worth stating because the row says "in the registry" and there are two.
+      **Handoff half — surveyed, not done** (spans other owners' files, so not swept unilaterally).
+      Unqualified `ingest_long_context` tok/s quotes found in: `bulk-inference-campaign.md:83,584`
+      (`17.27 t/s`, Tulving run), `gemma-challenge-kernel-techniques-v7.md:396` (`13.89`/`14.02`
+      base decode, `23.52`/`23.27` server path), `autopilot-continuous-optimization.md:1081`
+      (`12.3 t/s/quarter`), `stack-lineup-dossier-2026-07-23.md:21` (`12.3 t/s/quarter`),
+      `within-role-placement-state-machine.md:315` (`12.34 t/s`, `~0.1 t/s`). The 9–12 vs 15–25 split is entirely
       a context-length effect. *(Amended 2026-07-30: the rule stands; the 9–12 / 15–25 bands
       themselves are IQ2_M and must be re-derived on Q4_K_M — T10.)*
+      **AUDIT DONE ✅ 2026-08-12 (`mainA`), zero inference. Three bare-quote sites, and the rule
+      is already half-implemented in one of them.**
+      **(1) `speculative-decoding-mtp-refresh.md:92` — the table ALREADY HAS a `prompt` column
+      and `ingest_long_context` is the one row that leaves it `—`.** Its neighbours carry
+      `14,059 tok` and `53,730 tok`; the 80B row quotes `17.40` and `20.06` t/s against a blank.
+      This is the cheapest possible fix — the column exists, the cell is empty — and it is the
+      most load-bearing, because a `1.15x` speculation speedup is meaningless without knowing the
+      context it was measured at. **Recoverable from that handoff's own artifact; routed to its
+      owner, not filled in by me — I will not invent a prompt length.**
+      **(2) Registry `roles.ingest_long_context.performance`** carries context where it matters
+      (`long_context_tps_range: "14.4-20.8 t/s @ ~12K context"`, `summarization_benchmark:
+      "73.8s for 464 tokens ... (10K context)"`) but `baseline_tps: 10.12` and `optimized_tps:
+      10.12` are **bare** — and 10.12 sits squarely in the 9-12 short-context band this row says
+      is a context artefact. So the registry states the rule for its long-context fields and
+      breaks it for its headline ones.
+      **(3) This handoff's own A/B/C placement table (`:209`) has no prompt column for any role.**
+      Materially the weakest of the three: every arm shares one prompt, so the `A→C` ratio the
+      table exists to establish is unaffected. The hazard is only that the absolute `12.42` /
+      `22.92` travel out of the table and get compared against a long-context number.
+      **Not edited, deliberately.** The amendment above already says the 9-12 / 15-25 bands are
+      IQ2_M and must be re-derived on Q4_K_M under **T10**, which needs compute. Annotating
+      numbers that are scheduled to be replaced is churn, and rewriting a measurement table is
+      not something to do at 3am on an append-only record. The durable half of T8 is the RULE,
+      and the rule now has three named enforcement points instead of a general instruction.
 - [x] **T9 — Operator ratification of `P-BENCH-PLACEMENT-1`.** ✅ 2026-07-30 — **RATIFIED** by
       the operator (epyc-root `07b7dcab`): registered in `MEASUREMENT.md` §2 plus the annex
       `measurement/protocols/bench-cpu.md`. `P-BENCH-3` was conformed to §1 in the same pass
@@ -867,12 +958,28 @@ primary artefact.
       artefact.** The existing 3-placement × 3-prompt-length curve is IQ2_M (24.27 GiB), which no
       role serves. Only the `tg128` point exists on Q4_K_M (45.08 GiB). Needed before any
       long-context tok/s is quoted for this role, and it feeds T8.
-- [ ] **T11 — Audit every other role for the wrong-artefact class of error.** The IQ2_M mistake
+- [x] **T11 — Audit every other role for the wrong-artefact class of error.** The IQ2_M mistake
       was not a placement bug — a benched file simply was not the file production resolves. The
       same check has already caught a second instance (`modelref_results.txt` benched
       `gemma-4-26B-A4B-it-Q4_K_M-current.gguf` where `worker_general` serves
       `gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf`). Resolve each role's GGUF through the live registry
       chain and diff it against whatever any open handoff quotes for that role.
+      **✅ 2026-08-11 (`mainA`) — DONE. Audit: [`docs/reviews/t11-wrong-artefact-audit-20260811.md`](../../docs/reviews/t11-wrong-artefact-audit-20260811.md).**
+      Resolved all 11 hot-resident roles through `model_registry_full.yaml → roles[*].model.path` and
+      diffed against every `.gguf` quoted on a role line in `handoffs/active/*.md`.
+      **One NEW instance, the third of this class**: `rao-redel-substrate-spike.md:120` records the
+      ReDel spike against `worker_general` serving `gemma-4-26B-A4B-it-Q4_K_M.gguf`, but that role
+      serves `gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf`. Both exist on disk at `16,796,010,720` (Apr 4)
+      vs `16,796,016,544` (Jun 25) — 5,824 bytes apart, which is why the class survives a casual read.
+      **The same line carries a second defect**: it says *"via ik_llama.cpp PR #1744 MTP"*, and
+      ik_llama.cpp is a fully deprecated serving path — so those observations came off a
+      non-production artefact **and** a non-production kernel. Routed to that handoff's owner rather
+      than edited: it is a historical spike record, so it needs a provenance note appended, not its
+      numbers rewritten.
+      **No other open handoff misquotes a hot-resident role's serving artefact.** 12 of the 15 raw
+      hits are false positives in two named families (drafter GGUFs on a target line; multi-role
+      lines), recorded in the audit so a mechanical version does not ship an ~80% false-positive
+      rate and train readers to ignore it.
 - [ ] **T12 — Re-decide `-c` provisioning now that its cost is measured at ~zero.** Production
       runs `-c 32768` = **12.5 %** of the 262,144-token window every deployed model was trained
       for, and `architect_general` halves that again to **8192/request** via `slots: 2` — a

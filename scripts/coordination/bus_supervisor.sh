@@ -114,8 +114,240 @@ start_daemon() {
   return 1
 }
 
+# ---------------------------------------------------------------- stale source
+#
+# 2026-08-11. FIVE fixes sat committed-not-live in one evening — C39, C28, C38's
+# tick path, R1 and R2 — because a running daemon keeps executing the code it
+# loaded at start, and nothing noticed. `health_ok` asks "is a process there" and
+# "is its heartbeat fresh"; a daemon running twelve-hour-old code answers yes to
+# both. The recurrence proved the point twice in seven minutes: a restart at
+# 22:18:12 was followed by an R2 commit at 22:21:25, so that fix ALSO needed a
+# human to notice and restart again.
+#
+# This is a delivery gap in the same family as R1: the mechanism worked, and
+# nothing carried its result to where it takes effect.
+#
+# Identity comes from the HEARTBEAT's own pid, never from a name pattern — a
+# pattern is a wildcard over other sessions' processes on this shared host
+# (INC-20260731-broad-process-pattern-kills), and the daemon already publishes
+# exactly the number we need.
+daemon_pid_from_heartbeat() {
+  python3 - "$HEARTBEAT" <<'PY_EOF' 2>/dev/null || true
+import json, sys
+try:
+    pid = json.load(open(sys.argv[1])).get("pid")
+    print(int(pid))
+except Exception:
+    pass
+PY_EOF
+}
+
+# Newest mtime across the daemon's own sources. It imports its siblings, so a
+# change to any of them is a change to what it would run.
+newest_source_mtime() {
+  stat -c %Y "$(dirname "$DAEMON")"/*.py 2>/dev/null | sort -n | tail -1
+}
+
+# 0 = the running daemon predates its source. FAIL CLOSED: every unknown returns
+# 2 (cannot tell) and the caller escalates rather than passing.
+source_is_newer_than_daemon() {
+  local pid started elapsed src now
+  # `|| true` on every capture is load-bearing, not defensive noise: this script
+  # runs under `set -euo pipefail`, where a FAILING command substitution aborts the
+  # whole supervisor. A dead pid makes `ps` fail and an empty source dir makes the
+  # `stat | sort` pipeline fail under pipefail — so without these the fail-closed
+  # branches below are unreachable and the watchdog exits instead of reporting.
+  # (Caught by test_bus_supervisor.py; my own predicate test had missed it because
+  # it ran without `set -e` — the test method differed from production.)
+  pid=$(daemon_pid_from_heartbeat || true)
+  [[ -z "$pid" ]] && return 2
+  elapsed=$(ps -p "$pid" -o etimes= 2>/dev/null | tr -d ' ' || true)
+  [[ -z "$elapsed" ]] && return 2
+  src=$(newest_source_mtime || true)
+  [[ -z "$src" ]] && return 2
+  now=$(date +%s)
+  started=$(( now - elapsed ))
+  # SKEW is not padding, it is the resolution of the measurement. `ps -o etimes`
+  # reports whole seconds, so `started` can land up to a second before the real
+  # start, and a source written in the same second as a legitimate restart would
+  # then read as NEWER than the process it produced. That false positive restarts
+  # a daemon that is already current — and it recurs every cycle, which is a
+  # restart loop, strictly worse than the staleness it thinks it is fixing.
+  # Caught by test_bus_supervisor.py, which went 5/5 -> 4/5 on the untolerated
+  # version: the pre-existing suite was defending exactly this.
+  (( src > started + STALE_SRC_SKEW_S ))
+}
+
+STALE_SRC_STATE="${LOG_DIR}/bus_supervisor.stale_src"
+# Whole-second resolution on both sides; 5s covers it with room to spare and
+# still catches a source edited even a minute after a restart.
+STALE_SRC_SKEW_S="${STALE_SRC_SKEW_S:-5}"
+# C43: how long to wait for a DYING supervisor to release the lock before giving up.
+# Covers a handover, not a coexistence — a dying holder releases in milliseconds, a
+# live one holds for its life and we still report and exit. 15s is generous for the
+# former and short enough that a cron `once` never stacks up.
+LOCK_WAIT_S="${LOCK_WAIT_S:-15}"
+
+check_stale_source() {
+  local src rc=0
+  # `|| rc=$?`, never `cmd; rc=$?`. Under `set -e` a FUNCTION returning non-zero as
+  # a simple command aborts the script, so the bare form killed the supervisor
+  # mid-`once` on every "current" and every "cannot tell" — i.e. on the normal
+  # path. That is how a watchdog silently stops watching.
+  source_is_newer_than_daemon || rc=$?
+  if (( rc == 2 )); then
+    log "STALE-SOURCE CHECK UNAVAILABLE — cannot read the daemon pid, its start time, or the"
+    log "  source mtimes. Reported, not passed: a check that cannot tell is not a clean one."
+    return 0
+  fi
+  (( rc != 0 )) && return 0
+  src=$(newest_source_mtime || true)
+  # Restart ONCE per source version. Without this a file the fleet touches often
+  # would put the supervisor in a restart loop, which is worse than the staleness.
+  if [[ -f "$STALE_SRC_STATE" ]] && [[ "$(cat "$STALE_SRC_STATE" 2>/dev/null)" == "$src" ]]; then
+    return 0
+  fi
+  log "daemon is running code OLDER than its source (source $(date -d @"$src" -u +%H:%M:%SZ)"
+  log "  is newer than the running process) — restarting so committed fixes take effect"
+  echo "$src" > "$STALE_SRC_STATE"
+  stop_wedged
+  start_daemon
+}
+
+# ------------------------------------------------------------- lock contention
+#
+# C43 (2026-08-12). A relaunch attempt at 00:25:09Z logged "another supervisor
+# holds the lock; exiting" and exited **0**. That was TRUE at the time — the old
+# supervisor was still alive — but the exit code says SUCCESS, so nothing
+# downstream can tell "correctly skipped, one is already running" from "failed to
+# start, nothing is supervising". For the documented cron idiom
+# (`*/2 * * * * bus_supervisor.sh once`) exit 0 is RIGHT and must stay: a skip is
+# the normal case and a non-zero there would page on every ordinary tick.
+#
+# So the fix is not the exit code, it is the EVIDENCE. Name who holds the lock and
+# whether that process is alive, so a reader — or a supervisor-of-supervisor — can
+# tell the two apart. An unreadable or dead holder is reported LOUDLY, because that
+# is the shape where nothing is supervising and everything still looks fine: the
+# same fail-open family as a daemon whose heartbeat outlived it.
+# C48 (2026-08-12): THE LOCK IS AUTHORITATIVE; THE PID FILE IS A CACHE OF IT.
+#
+# `status` reported "supervisor: not running" and health UNHEALTHY while pid 1510370
+# was alive, holding the lock, and had been supervising for 7h40m — because
+# $SUP_PIDFILE had vanished (cause non-git: the file was never tracked in any commit,
+# so a70dbe1a could not have removed it even in principle — auditor, verified). The
+# coordinator read UNHEALTHY, concluded the bus was unwatched, and launched a second
+# supervisor; C43's bounded flock correctly refused it as a duplicate, but the refusal
+# message could not NAME the holder because naming also read the missing pid file. The
+# diagnostic and the thing it diagnoses shared a single point of failure.
+#
+# This is C35 one layer up, in the tool that watches the watcher: C35 made daemon
+# status derive liveness from the PROCESS rather than a state file that outlives it.
+# Here liveness derives from the FLOCK, which the kernel releases on process death and
+# which no file operation can leave stale.
+
+lock_is_held() {
+  # 0 = somebody holds the lock. Uses a scratch fd so it cannot disturb fd 9.
+  exec 8>"$LOCK_FILE" 2>/dev/null || return 1
+  if flock -n 8; then flock -u 8; exec 8>&-; return 1; fi
+  exec 8>&-; return 0
+}
+
+lock_holder_pid() {
+  # WHO holds it — by scanning /proc for an fd on the lock file. Pure /proc, no lsof
+  # or fuser dependency (neither netstat nor ss exists on this host; assuming a tool
+  # is installed is how the port gate in start_orchestrator_test.sh became vacuous).
+  local target fd pid
+  target="$(readlink -f "$LOCK_FILE" 2>/dev/null || printf '%s' "$LOCK_FILE")"
+  for fd in /proc/[0-9]*/fd/*; do
+    [[ -L "$fd" ]] || continue
+    [[ "$(readlink -f "$fd" 2>/dev/null)" == "$target" ]] || continue
+    pid="${fd#/proc/}"; pid="${pid%%/*}"
+    [[ "$pid" == "$$" ]] && continue
+    printf '%s\n' "$pid"
+  done 2>/dev/null | sort -un | head -1
+}
+
+supervisor_status_line() {
+  # Lock first, pid file only as a corroborating hint — and say when they disagree,
+  # because a silent disagreement is how the stale-cache class hides.
+  local held hint holder
+  hint="$( [[ -f "$SUP_PIDFILE" ]] && cat "$SUP_PIDFILE" 2>/dev/null || true )"
+  if lock_is_held; then
+    holder="$(lock_holder_pid)"
+    if [[ -n "$holder" && -n "$hint" && "$holder" != "$hint" ]]; then
+      printf '%s (lock) — pidfile says %s, DISAGREEMENT: trust the lock\n' "$holder" "$hint"
+    elif [[ -n "$holder" ]]; then
+      printf '%s%s\n' "$holder" "$( [[ -z "$hint" ]] && printf ' (from lock; %s missing)' "$SUP_PIDFILE" )"
+    else
+      printf 'RUNNING (lock held; holder pid not resolvable from /proc)\n'
+    fi
+  else
+    if [[ -n "$hint" ]]; then
+      printf 'not running (stale %s claims %s — lock is free)\n' "$SUP_PIDFILE" "$hint"
+    else
+      printf 'not running\n'
+    fi
+  fi
+}
+
+lock_holder_report() {
+  local holder="" alive="unknown"
+  holder="$(lock_holder_pid)"
+  if [[ -n "$holder" ]] || [[ -f "$SUP_PIDFILE" ]]; then
+    [[ -n "$holder" ]] || holder="$(cat "$SUP_PIDFILE" 2>/dev/null || true)"
+  fi
+  if [[ -z "$holder" ]]; then
+    log "  lock holder: UNKNOWN — no readable $SUP_PIDFILE. Cannot confirm anything is"
+    log "  supervising. If no supervisor is running, this exit leaves the bus unwatched."
+    return 0
+  fi
+  if kill -0 "$holder" 2>/dev/null; then
+    alive="ALIVE"
+  else
+    alive="DEAD"
+  fi
+  log "  lock holder: pid $holder ($alive)"
+  if [[ "$alive" == "DEAD" ]]; then
+    log "  the recorded supervisor is NOT running, so this skip leaves the bus unwatched."
+    log "  flock releases on process death, so a dead holder means the pidfile is stale"
+    log "  rather than the lock being held — re-run once the stale pidfile is cleared."
+  fi
+}
+
+# Bounded retry on the lock, then report. C43 SECOND HALF (2026-08-12).
+#
+# The evidence fix alone was not enough, and `coordinator-agent`'s measurement is
+# why: they killed supervisor 489217, verified it dead with `ps`, relaunched
+# immediately, and the new process lost the race against the DYING supervisor's
+# flock release — logged "another supervisor holds the lock", exited 0, and died.
+# For ~90 seconds nothing would have relaunched the daemon if it had died. That is
+# the exact condition that went unnoticed for ten days from 2026-07-29.
+#
+# Note what my first C43 fix would have done here: the holder was still alive while
+# releasing, so it would have printed "lock holder: pid 489217 (ALIVE)" and exited
+# 0 — accurate, unhelpful, and the gap still open. Evidence about a race is not a
+# fix for the race.
+#
+# `flock -w` blocks until the holder releases or the timeout expires, which is
+# exactly the semantics wanted: a dying supervisor releases in milliseconds, so the
+# relaunch wins; a genuinely running one holds for its life, so we still give up
+# and report. The wait is short because the only case it needs to cover is a
+# handover, not a coexistence.
+acquire_supervisor_lock() {
+  exec 9>"$LOCK_FILE"
+  if flock -w "$LOCK_WAIT_S" 9; then
+    return 0
+  fi
+  log "another supervisor holds the lock after ${LOCK_WAIT_S}s; exiting"
+  lock_holder_report
+  return 1
+}
+
 check_once() {
-  if health_ok; then return 0; fi
+  # A HEALTHY daemon can still be the wrong daemon. Order matters: a dead one is
+  # restarted by the branch below and comes back on current source anyway, so the
+  # stale-source question only applies to one that is up and answering.
+  if health_ok; then check_stale_source; return 0; fi
   log "unhealthy (heartbeat age $(heartbeat_age_s)s, pids '$(daemon_pids | tr '\n' ' ')') — restarting"
   stop_wedged
   start_daemon
@@ -126,19 +358,17 @@ case "${1:-loop}" in
     age=$(heartbeat_age_s); pids=$(daemon_pids | tr '\n' ' ')
     printf 'daemon pids : %s\n' "${pids:-none}"
     printf 'heartbeat   : %ss old (stale after %ss)\n' "$age" "$STALE_AFTER"
-    printf 'supervisor  : %s\n' "$( [[ -f "$SUP_PIDFILE" ]] && cat "$SUP_PIDFILE" || echo 'not running')"
+    printf 'supervisor  : %s\n' "$(supervisor_status_line)"
     health_ok && printf 'health      : OK\n' || printf 'health      : UNHEALTHY\n'
     exit 0
     ;;
   once)
-    exec 9>"$LOCK_FILE"
-    flock -n 9 || { log "another supervisor holds the lock; exiting"; exit 0; }
+    acquire_supervisor_lock || exit 0
     check_once
     exit 0
     ;;
   loop)
-    exec 9>"$LOCK_FILE"
-    flock -n 9 || { log "another supervisor holds the lock; exiting"; exit 0; }
+    acquire_supervisor_lock || exit 0
     echo $$ > "$SUP_PIDFILE"
     trap 'rm -f "$SUP_PIDFILE"; log "supervisor stopped"; exit 0' TERM INT
     log "supervisor started (poll ${POLL_INTERVAL}s, stale after ${STALE_AFTER}s)"
@@ -146,6 +376,17 @@ case "${1:-loop}" in
     while true; do
       if health_ok; then
         backoff=0
+        # C42 BUGFIX 2026-08-12: this `continue` skipped check_once, which is where
+        # the stale-source check lived — so it only ever ran on the UNHEALTHY path,
+        # i.e. when the daemon was about to be restarted anyway and the question is
+        # moot. The whole point is a daemon that is UP and answering while running
+        # old code, so it has to be asked exactly here, on the healthy path.
+        # Measured: supervisor source-current from 00:26:26Z, daemon demonstrably
+        # stale, predicate returning STALE when run by hand, and ZERO detections
+        # logged. The tests passed because they exercised the predicate and
+        # check_once directly and never the loop — verifying A consumer, not THE
+        # consumer.
+        check_stale_source
         sleep "$POLL_INTERVAL"
         continue
       fi
