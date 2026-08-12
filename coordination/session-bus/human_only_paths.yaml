@@ -30,6 +30,15 @@ paths:
     glob: "agents/shared/MEASUREMENT_POLICY.md"
     why: "the agent-facing digest of that boundary; amending it amends the rules"
   - repo: epyc-root
+    glob: "CLAUDE.md"
+    why: "auto-loaded instruction surface; a wrong premise here becomes every session's truth"
+  - repo: epyc-root
+    glob: "agents/AGENT_INSTRUCTIONS.md"
+    why: "auto-loaded instruction surface; same amplifier as CLAUDE.md"
+  - repo: epyc-root
+    glob: "agents/shared/*.md"
+    why: "shared policy loaded by every role overlay; generalises the MEASUREMENT_POLICY.md entry"
+  - repo: epyc-root
     glob: "measurement/protocols/*.md"
     why: "MEASUREMENT v2 protocol annexes — same trust boundary as the core constitution"
   - repo: epyc-orchestrator
