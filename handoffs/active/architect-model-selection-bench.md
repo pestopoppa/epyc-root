@@ -363,7 +363,30 @@ So when thinking terminates it is roughly **quality-neutral** on this suite (bot
       still unrun.
 - [ ] **Phase 2 depth probe** — tool-using *planning* (multi-step, stateful) on the surviving arms.
       The 9-question compliance screen above is a breadth instrument and does not answer it.
-- [ ] **Record the architect decision** (checkbox-flip here) → route to AXA-1 (`mi210-big-model-and-acceleration-roadmap.md`) + the model registry.
+- [x] **Record the architect decision** (checkbox-flip here) → route to AXA-1 (`mi210-big-model-and-acceleration-roadmap.md`) + the model registry.
+  **✅ 2026-08-12 (`mainA`, pulled from the generated bench and claimed) — RECORDED. The decision
+  was taken and deployed on 2026-07-31; only this record was missing, which is why the auditor's
+  T5 flag 3 calls this row "the never-executed mechanism" behind a LIVE AXA-1 drift.**
+  **The decision, as realized in production** — read from the registry and the topology, not from
+  any narrative:
+  - `architect_general` → **`Qwen3.6-27B-MTP-Q8_0`**, GPU-resident. `stack_topology.yaml`
+    instantiates it on `GPU_HOST_LANE`.
+  - `architect_critic` → **`Qwen3.5-122B-A10B` at `Q4_K_M`**, `backend: local` (CPU), instantiated
+    on `NUMA_FULL`.
+  So the 122B was **retained as the critic on CPU Q4**, and the architect seat went to the 27B on
+  the GPU. That is the W1 cutover of 2026-07-31, and it is the same event that made the
+  `12.19 t/s` Probe-B placement record a role-attribution defect elsewhere in this repo.
+  **The drift this closes.** `mi210-big-model-and-acceleration-roadmap.md` Axis A still reads
+  *"122B UD-IQ2_M MEASURED VIABLE fully GPU-resident — 43.7 t/s single / 148.7 aggregate @B=32"*.
+  That sentence is **true as a viability measurement and false as a description of the stack**:
+  nothing serves a 122B IQ2 on the GPU, and the production 122B is CPU Q4. A reader taking Axis A
+  as roadmap status concludes the IQ2-residency path is live.
+  **Routed, not edited.** The AXA-1 correction belongs to the roadmap's owner — it is a different
+  handoff and the fix is one clause distinguishing *measured viable* from *deployed*, which the
+  owner should word. Filed on the bus rather than edited here.
+  **No registry change needed**: the registry is already correct and was the source of this record.
+  The row's "→ the model registry" leg is satisfied by verification, not by an edit — the registry
+  is what the roadmap has drifted FROM.
 
 ## R4 — OlympiadBench-numeric SATURATES too (adapter design flaw, not the ceiling-breaker claimed)
 A1 122B-IQ2 = **89.3% (134/150)** on `olympiadbench_numeric` — *higher* than its AIME'25 (71.7%), though

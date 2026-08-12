@@ -1815,12 +1815,42 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
 - [ ] **Ten fully-built, fully-tested, zero-production-importer modules** (1-3 test importers, 0
       production importers), incl. `src/mutation_ledger.py`, whose docstring asserts "the autopilot
       accept-path consults the ledger" — it does not.
+      - **RE-DERIVED 2026-08-12 (`mainC`) — the COUNT is wrong and the row cannot be acted on as
+        written, because it asserts "ten" without naming them.** Over **368 modules under
+        `src/`**, the true figure is **at least 20**, not ten.
+      - **The exact number is METHOD-DEPENDENT, and I am reporting that rather than a single
+        figure.** Two independent passes disagree: a stem-match scan gives **24**, a
+        dotted-import scan gives **22**, and they **agree on 20**. Four modules appear only in
+        the stem scan (likely over-match on common words — `model_grader`, `federation`,
+        `verbalized_sampling`, `tool_output_compressor_mcp`) and two only in the dotted scan
+        (`radix_cache`, `safe_pickle`, which the stem scan missed via relative/dotted import
+        forms). **20 is the defensible floor; 26 is the union.** A single number here would
+        have been false precision — I ran the second pass as a cross-check on my own method
+        and it disagreed with the first, which is the only reason this caveat exists.
+      - **But the raw 24 is not the answer either: some are ENTRY POINTS, where zero importers is
+        correct.** `src/cli_orch.py` is a declared console script (`orch = "src.cli_orch:main"` in
+        `pyproject.toml`), and `src/mcp_server.py` is launched as a server rather than imported.
+        Anyone acting on a bare importer count would have "cleaned up" a shipped CLI. The real
+        list is 24 minus the declared entry points, and it needs a per-module read before anything
+        is deleted.
+      - **The named instance is CONFIRMED and is the worst of the cluster.**
+        `src/mutation_ledger.py`'s docstring states verbatim that *"the autopilot accept-path
+        constructs MutationRecords and consults the ledger before composing a new mutation onto the
+        live config"*. `git grep` for `mutation_ledger|MutationLedger` across `src/` and `scripts/`,
+        excluding the module itself, returns **nothing**. So BSV-3 conflict-aware acceptance is not
+        in effect anywhere — and unlike ordinary dead code, this module **describes itself as
+        live**, so a reader grepping for how conflict-aware acceptance works concludes it is wired.
+      - **Instrumented, not fixed** (orchestrator `tests/unit/test_mutation_ledger_tripwire.py`):
+        fails the moment the claim is softened OR the integration is built, so the docstring and
+        the code can never silently drift apart again. Mutation-checked against a tracked file.
+      - **Box left unchecked deliberately** — nothing is fixed, and the decision is per-module:
+        wire BSV-3, or retire the ledger and correct its docstring. Same for the other 23.
 - [ ] **`contention_nway_restricted_count` stops one layer short of the operator.** Reaches
       `metrics_snapshot()` (`contention_gate.py:453`) but appears 0 times in `dashboard.html`.
 
 ### Never attempted
 
-- [ ] `config/stack_templates/default.yaml` is 10 validation errors stale — `start --stack-profile
+- [x] `config/stack_templates/default.yaml` is 10 validation errors stale — `start --stack-profile
       default` returns 1 today.
       **2026-08-12 (`mainA`) — NOT CLOSEABLE AS WRITTEN, and checking why produced a HIGH-severity
       defect filed separately.** Two problems with the row as a recipe. (a) The path is wrong:
@@ -1831,6 +1861,19 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       declaration, and `main()` dispatches `start` → `cmd_start(args)` with no branch. So the
       documented dry run **launches the production stack**. I was about to run it and stopped
       only because compute is saturated and I check anything named `start` before invoking it.
+      **✅ 2026-08-12 (`mainA`) — NOW CHECKED AND THE CLAIM IS FALSE. Eighth stale premise.**
+      The route this row prescribes only came into existence a few hours ago: `mainB` wired
+      `--validate-only` (`2c421c1c`) after I filed it as inert, then hoisted it above the bench
+      guard (`2821937c`) on my residual. I re-read `_cmd_validate_only` first to confirm it loads,
+      validates, prints and returns — no lock, no runtime-facts write, no process — and only then
+      ran it, directly rather than through a pipe.
+      Result: `validate-only: stack template 'default' — PASS` / `validate-only: nothing was
+      launched.`, **exit 0**. Not 10 errors; not exit 1. Zero errors, zero warnings.
+      Two corrections to the row as written, both worth keeping: the path is
+      `stack_templates/default.yaml`, not `config/stack_templates/`; and the check it prescribed
+      could not have been run when it was filed, because the flag it names was parsed and
+      discarded. **This row was unfalsifiable for its entire life until tonight** — which is a
+      better argument for the flag being wired than the flag's own help text ever was.
       The row's substantive claim (10 validation errors) may well still be true; it simply is
       not checkable by the route it names. Left OPEN, deliberately, until the flag is wired or
       removed — closing it would imply the check had been run.
