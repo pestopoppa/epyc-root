@@ -455,6 +455,17 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       comparison, with declared direction, scored-repetition basis, source/binary/device-claim
       identity, and immutable receipt digest. Project only those future rows through the existing
       measurement ladder. The 2026-08-12 receipts predate this hook and must never be back-filled.
+- [ ] SC29 **Wire AK-LE planner prefilter/reduction receipts before the corrected panel runs.** Add
+      producer-authored `ClaimTuple` rows for the predeclared per-cell search-persistence measures
+      (`novel_nonduplicate_count`, `prefilter_survival_count`, explicit already-optimized
+      termination, and elapsed wall time), with model/quant/effort/target-arm identity, direction,
+      scored-cell basis, exact manifest/panel/prefilter/evidence digests, and run-level locator. The
+      under-specified 2026-08-12 r1 panel remains a durable refusal and must project zero rows.
+- [ ] SC30 **Classify and wire the AutoKernel real host-process fault rehearsal before it runs
+      again.** Preserve `epyc.autokernel.host_process_fault_rehearsal.v1` as dependency evidence:
+      project each of the three recovery legs with exact source/producer/process identities and the
+      immutable receipt digest, but do not coerce PASS into a performance measurement, corroborating
+      witness, release claim, or campaign authority. Key support on the rehearsal run, not each leg.
 
 ## Dependency notes
 
