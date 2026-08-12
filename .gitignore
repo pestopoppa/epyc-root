@@ -64,13 +64,37 @@ site_src/subsystems/research/
 data/handoff_timeline.json
 data/handoff_timeline.json.tmp.*
 
-# Session bus: high-churn runtime state, not version-controlled.
-# advisory.jsonl grows ~1 record/agent/tick; the coordinator-daemon heartbeat
-# rewrites every tick. M3/M4 evidence is cited as a summary artifact, never the
-# raw log. Agent-owned heartbeats stay tracked — they are written at task
-# boundaries, not on a timer.
-coordination/session-bus/advisory.jsonl
-coordination/session-bus/heartbeats/coordinator-daemon.json
+# Session bus: high-churn RUNTIME state, not version-controlled.
+#
+# Widened 2026-08-12 (guard-universe-and-worktree-isolation P1/2, C45
+# precedent — the same untrack-and-gitignore ruling already applied to
+# logs/agent_audit.log: tracked, append-only, written by every agent,
+# conflicting on essentially every cross-branch merge with zero
+# informational benefit from being in git history). The original narrower
+# rule below kept agent-owned heartbeats/cursors/inbox/outbox tracked on the
+# theory that task-boundary writes are infrequent enough to version; in
+# practice all of it churns as uncommitted state continuously — five mains
+# writing concurrently produced 89 git-tracked bus files in permanent merge
+# contention, all night, across a single 21-conflict merge. Runtime
+# coordination state wants exactly ONE live instance and zero versioning of
+# its churn; the queue/routing PROTOCOL (BUS_PROTOCOL.md), the durable task
+# briefs (tasks/*.md) and the operator trust surfaces (tokens/token-queue.md,
+# tokens/unblock.md, tokens/unblock.pins.json) are unaffected and stay
+# tracked — this block ignores instance state, not the contract.
+#
+# advisory.jsonl (+ rotated advisory_<n>.jsonl shards) grows ~1 record/agent/
+# tick; the coordinator-daemon heartbeat rewrites every tick; inbox/outbox/
+# cursors/heartbeats/claims are per-agent runtime files rewritten or appended
+# on every bus interaction. M3/M4 evidence is cited as a summary artifact,
+# never the raw log.
+coordination/session-bus/advisory*.jsonl
+coordination/session-bus/boundary_state.json
+coordination/session-bus/adapter-ledger.jsonl
+coordination/session-bus/inbox/
+coordination/session-bus/outbox/
+coordination/session-bus/cursors/
+coordination/session-bus/heartbeats/
+coordination/session-bus/claims/
 logs/bus_supervisor.out
 logs/bus_supervisor.pid
 logs/coordinator_daemon.log
