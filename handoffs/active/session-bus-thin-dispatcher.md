@@ -2560,8 +2560,8 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   `scripts/hooks/earlyoom_audit.sh` gets its own `agent_audit-earlyoom.log` shard too, since it was a
   SEVENTH, previously-undocumented writer bypassing `agent_log.sh` entirely. New shared helper
   `scripts/utils/agent_log_read.sh` (`agent_log_files`/`agent_log_merged`, glob `agent_audit*.log`,
-  plain lexical `sort` — all entries share ts-first JSON key order so this sorts by timestamp) is
-  wired into every reader in the same commit: `agent_log.sh`'s own `agent_log_tail`/`agent_log_session`,
+  plain lexical `sort`) is wired into every reader in the same commit: `agent_log.sh`'s own
+  `agent_log_tail`/`agent_log_session`,
   `agent_log_analyze.sh` (materializes the merged stream once, rest of the script unchanged),
   `repo_readiness_scorer.py` (glob-broadened `exists_any` patterns), `session_init.sh` (updated
   echo), `scripts/backup/MANIFEST.yaml` (glob so new shards aren't silently dropped from backup
@@ -2581,6 +2581,32 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   Could not run the repo's pytest suite (no `pytest` module / venv reachable in this sandbox); verified
   `tests/validate/test_repo_readiness_scorer.py`'s exact fixture and assertions by manual replay
   instead (both pass unchanged).
+  **Correction, 2026-08-12 coordinator review of 1c6839c5:** the original claim — "all entries share
+  ts-first JSON key order, so lexical sort is a correct chronological merge" — was FALSE on the real
+  corpus; it only held on the synthetic all-JSON fixture used to verify it. Measured against the real
+  `logs/agent_audit.log` (4,402 lines): 1,167 lines are a pre-2026 bracketed format
+  (`[2025-12-15T17:12:49+01:00] TASK_END: ...`), not JSON at all, plus a handful of
+  `{"timestamp":...}`-keyed (not `"ts"`-keyed) lines from a still-older format. What `agent_log_merged`
+  actually does: **two blocks**, not one interleaved chronology — every legacy-bracket line before
+  every JSON line, because `[` (0x5B) sorts before `{` (0x7B), which matches real chronology only
+  because the bracketed format stopped being written before the JSON format started (Dec 2025
+  changeover). Within each block, ordering is correct (bracket lines keep their original append order;
+  JSON lines sort by real `ts`). **Decision: two-block ordering is ACCEPTED and documented, not fixed
+  with a timestamp-extracting parser** — nothing has written the legacy formats since Dec 2025 (a
+  frozen corpus), so a multi-format parser on the hot read path would guard against writes that will
+  never happen. Comment corrected in `scripts/utils/agent_log_read.sh`. New fixture-based regression
+  test `scripts/utils/tests/test_agent_log_merge_format.sh` mixes both formats (the ad hoc verification
+  in 1c6839c5 used only JSON, which cannot distinguish "sorts by real timestamp" from "sorts by leading
+  byte, which happens to agree here") and pins the two-block behavior explicitly: 5/5 checks pass
+  against the real `agent_log_merged`; run against a mutation that makes `agent_log_merged` return only
+  the legacy file (simulating exactly the narrowing regression this design exists to prevent), 3 of 5
+  checks correctly fail (total-line count, cross-file JSON `ts` ordering, and a fixture sanity check) —
+  but 2 of 5 ("legacy-bracket block is first, in original order" and "no bracket line appears after a
+  JSON line") still pass even under that mutation, because both properties are trivially true when
+  there are no shards to interleave. Named per the coordinator's direct question: those two are real
+  but weak checks on their own; the suite's aggregate result (and specifically checks 1/4/5) is what
+  catches the regression, and the suite as a whole correctly reports `fail=3` and exits 1 under the
+  mutation.
 - [ ] **Worktree isolation phase 2 — the cutover.** Phase 1 items 1–5 are landed above; nothing is
   migrated. `scripts/coordination/WORKTREE_MIGRATION.md` is written and `setup_main_worktrees.sh` is
   verified against a throwaway, but the five mains still share `/workspace` — which is what forced a

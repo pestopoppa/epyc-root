@@ -28,12 +28,30 @@ agent_log_files() {
   done
 }
 
-# Emit every entry across every shard, merged into one global chronological
-# stream on stdout. Both current writers (agent_log.sh's _agent_log, and
-# scripts/hooks/earlyoom_audit.sh) emit one JSON object per line with the same
-# key order — "ts" first — so a plain lexical `sort` of whole lines already
-# sorts by timestamp; ties break deterministically on the remaining fields
-# instead of on file-iteration order. No jq dependency on the merge path.
+# Emit every entry across every shard on stdout via a plain lexical `sort` of
+# whole lines. What this actually guarantees, measured against the real
+# corpus (not assumed): the two CURRENT writers (agent_log.sh's _agent_log,
+# and scripts/hooks/earlyoom_audit.sh) emit one JSON object per line with "ts"
+# as the first key, so among JSON entries a lexical sort of whole lines does
+# sort by timestamp (ties break deterministically on the remaining fields
+# instead of on file-iteration order). But the frozen legacy `agent_audit.log`
+# also contains ~1,200 pre-2026 lines in an older, non-JSON bracketed format
+# (`[2025-12-15T17:12:49+01:00] TASK_END: ...`) and a handful of `{"timestamp":
+# ...}`-keyed (not "ts"-keyed) JSON lines from a third, even older format.
+# Lexical sort does NOT parse timestamps across these formats — it happens to
+# put every bracketed line before every JSON line only because `[` (0x5B) sorts
+# before `{` (0x7B) in the byte-for-byte comparison, and that ACCIDENTALLY
+# matches chronology only because the bracketed format stopped being written
+# before the JSON format started. The merge is correctly described as: one
+# block of legacy-format entries (in their original, already-chronological
+# append order) followed by one block of "ts"-first JSON entries (sorted
+# chronologically among themselves) — not a single interleaved chronology.
+# Decision (2026-08-12): two-block ordering is accepted and documented, not
+# fixed, because nothing has written the legacy formats since Dec 2025 (a
+# frozen corpus) and a timestamp-extracting parser for three formats on this
+# read path is not worth building for entries that will never again interleave
+# with new writes. See scripts/utils/tests/test_agent_log_merge_format.sh for
+# a fixture that pins this exact behavior. No jq dependency on the merge path.
 agent_log_merged() {
   local dir="${1:-${LOG_DIR:-.}}"
   local -a files=()
