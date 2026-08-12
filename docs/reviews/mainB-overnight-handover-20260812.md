@@ -57,8 +57,10 @@ advanced past the branch point), and run the gate with a **three-dot** range.
 3. **P0-0** — derived `stack_priors.yaml` had dropped the `NUMA_FULL` instance of **every**
    quarterable fleet (8070/8072/8085), so a HALF is advertised as the full instance: a region-lock
    *scope* error. Same triplet the operator ruled "accidental and clearly a mistake" on 2026-07-23.
-4. **Eight distinct ways a check passes for the wrong reason**, from five agents in one night, now one
-   citable artifact. Probably the most reusable thing produced.
+4. **Nine distinct ways a check passes for the wrong reason**, from five agents in one night, now one
+   citable artifact. Probably the most reusable thing produced. (The ninth is mine and was caught by
+   the `auditor` in this very handover: my hash-verification pass resolved root hashes against the
+   orchestrator repo — right key, wrong universe — and reported eight valid commits as BAD.)
 5. **Two rows were confounded, not defects** — the manifest "empty lineup" and the priors state were
    *faithful records of a degraded reality*, indistinguishable from corruption unless you check what
    was running when they were written. Several pre-reboot rows may be describing the outage.
@@ -124,6 +126,11 @@ Flagged for the single package. Nothing here is actionable by an agent.
    any policy, and **0** are excluded by mistake. Human-amendment-only.
 3. **E8 frozen-kernel era** — Option A already chosen (pin E8 to a v8 worktree). Needs (1) to execute.
    Re-pinning to v9 instead would re-base a measurement era.
+   **⚠ Disambiguation (flagged by the `auditor`, and worth doing before the package is assembled):**
+   this is **not** the same as their morning-note "E8 final-c1" item, which is about retiring the
+   unspent 2026-07-27 quality-baseline **apply token**. Two different E8 items, adjacent names,
+   different decisions — mine is an *instrument pin*, theirs is a *token retirement*. Do not merge
+   them into one line.
 4. **P0-0 is a recurrence**, not a fresh bug: 8070/8072/8085 is the exact triplet ruled on 2026-07-23.
    Worth knowing it came back.
 

@@ -1,4 +1,4 @@
-# Verification failure catalogue — eight ways a check passes for the wrong reason
+# Verification failure catalogue — nine ways a check passes for the wrong reason
 
 **Status**: reference · **Created**: 2026-08-12 · **Owner**: `mainB` (compiled), fleet (contributed)
 **Origin**: measured, not theorised — every face below is an instance that actually occurred on this
@@ -10,7 +10,7 @@ A failing check is cheap: it tells you something and you fix it. **A check that 
 reason is expensive, because it also supplies confidence.** It is indistinguishable from a real pass
 at the point where someone acts on it.
 
-In one night, five agents independently produced eight distinct mechanisms for this. That rate is the
+In one night, five agents independently produced nine distinct mechanisms for this. That rate is the
 argument for a catalogue: the fleet already knew "verify your work", and knowing it prevented none of
 these. What was missing was a set of *specific questions to ask of a specific check*.
 
@@ -19,14 +19,14 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 > **Mutation-test the guard. Change the code so the property is genuinely violated, and confirm the
 > check FAILS. If you cannot make it fail, it is not a guard.**
 >
-> Then two follow-ups, because three of the eight faces survive that test: is the mutation **visible**
+> Then two follow-ups, because three of the nine faces survive that test: is the mutation **visible**
 > to the tool doing the looking, and is the check **counted** by the tool that reports pass/fail?
 
 ---
 
-## The eight faces
+## The nine faces
 
-Each has a different tell and a different test. **None of the eight tests catches the others** — that
+Each has a different tell and a different test. **None of the nine tests catches the others** — that
 is why they are catalogued separately rather than collapsed into "be careful".
 
 ### 1. EMPTY input — the check cannot fail
@@ -140,6 +140,23 @@ Caught only because all-zeros is the vacuous-read signature.
 *Test*: never let `2>/dev/null` feed a counter. Ask with a command that cannot answer
 plausibly-but-wrongly — here `git ls-files -u`, which reports index truth rather than a parsed string.
 *Related*: a piped `pytest` gating on the tail exit code is the same shape.
+
+### 9. RIGHT key, WRONG universe
+
+Kin to face 5, but the probe is fine and the *scope* is wrong: you ask a correct question of the
+wrong corpus.
+
+*Instance*: verifying a handover's commit list, `git cat-file -t <hash>` was run for every hash — but
+a `cd` earlier in the same shell invocation persisted, so root-repo hashes were resolved against the
+**orchestrator** repo. Eight valid hashes reported `BAD`. The key (the hash) was right; the universe
+(the repo) was wrong. Caught because eight consecutive failures in a list that had just been read out
+of `git log` is not a plausible shape.
+
+*Test*: bind the scope explicitly rather than inheriting it — `git -C <repo> cat-file -t <hash>`, not
+a bare command after a `cd`. In a multi-repo tree, **a lookup that does not name its repo is not a
+lookup**. Generally: state the corpus in the query, and treat a run of identical failures as a scope
+bug before a content bug.
+*Fails*: CLOSED and LOUD — a false alarm, and in a handover it would have discredited a correct list.
 
 ---
 
