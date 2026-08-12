@@ -2804,10 +2804,14 @@ cannot retrigger the expensive gate unchanged.
   ambient loader-path risk, and ggml generations. The exact final focused suite passed **28 tests**.
   Live contract v2 proves `3/3` trees, `4/4` binaries, `4/4` links, and `4/4` ELF linkage without
   executing a production binary; it remains fail-closed on the two residuals below.
-  - [ ] **Resolve or explicitly retain the frozen llama working-tree cleanliness alarm.** The three
-    untracked paths are user-owned and preserved; classify them for ignore/tracking/removal outside
-    this session before the complete-set fold may return clean. Do not mutate the frozen tree merely
-    to make the dashboard green.
+  - [x] **Resolve or explicitly retain the frozen llama working-tree cleanliness alarm.** ✅
+    2026-08-12 — retained, with no production-tree mutation. The two January-era nested repositories
+    are clean third-party source caches: Eigen at `251bff28859af2ed2d5bdf14034175f03cafffc7` and
+    Boost.Odeint at `9e75be5d9e435739b086aee928736fc241e77a4a`; classify both as ignore/cache rather
+    than production source. `.gitnexusignore` is a July-era repo-local parser policy and is a candidate
+    for deliberate tracking in the next versioned experimental tree or its agent overlay, not an
+    in-place frozen-v9 commit. The dashboard must continue to report v9 dirty until a future authorized
+    versioning or cleanup action resolves those paths.
   - [ ] **OP-17 — Decide whether to attest llama.cpp's ggml generation for the frozen-v9 set.**
     - **Context:** the live tree reports ggml `0.16.0`, but the v9 operator attestation does not state
       an expected ggml generation. The dashboard therefore proves only `2/3` and reports `SET NOT
@@ -2819,9 +2823,10 @@ cannot retrigger the expensive gate unchanged.
       accept that the complete-set fold cannot become intact.
     - **Default:** Option B; no attestation or production state changes.
   - [ ] **After OP-16's reboot, re-check the live dashboard process environment.** Durable host and
-    devcontainer configuration is clean, but the current long-lived process inherited two stale
-    ggml-bearing `LD_LIBRARY_PATH` entries. Require `ambient_library_path.clean=true`; do not treat a
-    clean dashboard process as proof about every launcher.
+    devcontainer configuration are clean. The dashboard hub was already reloaded cleanly before the
+    reboot decision (PID `2478391`, `LD_LIBRARY_PATH` absent), replacing the earlier long-lived process
+    that inherited two ggml-bearing entries. Still require a fresh post-reboot
+    `ambient_library_path.clean=true`; one clean dashboard process is not proof about every launcher.
 
 **Exit:** campaigns produce correct, idempotent, operator-executable release packages and never write
 production.

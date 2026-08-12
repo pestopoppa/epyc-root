@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T06:25:04Z",
+  "generated_at": "2026-08-12T06:28:48Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4147,13 +4147,13 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 212,
+      "closed": 213,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-12",
       "next_action": "After a compliant reboot, run full-host CPU IQK; then materialize and evaluate the matched archive",
-      "open": 23,
+      "open": 22,
       "state": "active",
       "track": "autokernel research loop"
     },
