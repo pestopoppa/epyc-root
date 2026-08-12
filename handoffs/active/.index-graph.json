@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T01:58:07Z",
+  "generated_at": "2026-08-12T02:28:24Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4054,13 +4054,13 @@
       "track": "tool use eval contract"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "closed": 45,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
-      "last_advanced": "2026-08-11",
+      "last_advanced": "2026-08-12",
       "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
       "open": 13,
       "state": "active",
@@ -4147,13 +4147,13 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 196,
+      "closed": 197,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-12",
-      "next_action": "After a compliant reboot, run full-host CPU IQK; then materialize and evaluate the matched archive",
-      "open": 23,
+      "next_action": "Land evaluation-event and source-candidate execution; then run reboot-gated CPU IQK and build the matched archive",
+      "open": 27,
       "state": "active",
       "track": "autokernel research loop"
     },
