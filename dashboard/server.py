@@ -1459,6 +1459,7 @@ def _production_kernel_summary(attestation_path: Path,
         checkout_error = str(exc)
     expected_branch = data.get("production_branch")
     expected_head = data.get("production_head")
+    working_tree = _working_tree_state(production_repo)
     return {
         "available": True,
         "decision": data.get("decision"),
@@ -1479,6 +1480,7 @@ def _production_kernel_summary(attestation_path: Path,
             "matches_attestation": (observed_branch == expected_branch
                                     and observed_head == expected_head),
             "error": checkout_error,
+            **working_tree,
         },
     }
 
@@ -1531,6 +1533,25 @@ def _binary_identity(label: str, path: Path, expected_sha256: str | None) -> dic
             "matches": matches, "error": error}
 
 
+def _working_tree_state(repo: Path) -> dict:
+    """Three-valued working-tree cleanliness, including untracked paths."""
+    try:
+        status = subprocess.run(
+            ["git", "-C", str(repo), "status", "--porcelain=v1",
+             "--untracked-files=all"], capture_output=True, text=True,
+            timeout=5.0, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {"clean": None, "dirty_count": None, "dirty_paths": [],
+                "status_error": str(exc)}
+    if status.returncode != 0:
+        return {"clean": None, "dirty_count": None, "dirty_paths": [],
+                "status_error": (status.stderr.strip()
+                                 or f"git status exited {status.returncode}")}
+    rows = [row for row in status.stdout.splitlines() if row]
+    return {"clean": not rows, "dirty_count": len(rows),
+            "dirty_paths": rows[:20], "status_error": None}
+
+
 def _checkout_identity(repo: Path, expected_branch: str | None,
                        expected_head: str | None) -> dict:
     """Live branch/head of a kernel tree vs what the attestation froze."""
@@ -1559,7 +1580,8 @@ def _checkout_identity(repo: Path, expected_branch: str | None,
         matches = (observed_branch == expected_branch and observed_head == expected_head)
     return {"path": str(repo), "branch": observed_branch, "head": observed_head,
             "expected_branch": expected_branch, "expected_head": expected_head,
-            "matches_attestation": matches, "error": error}
+            "matches_attestation": matches, "error": error,
+            **_working_tree_state(repo)}
 
 
 def _ggml_generation_identity(repo: Path, expected: str | None) -> dict:
@@ -1829,6 +1851,9 @@ def production_kernel_set(attestation_path: Path | None = None,
                     "version": llama.get("version"), "ggml": llama.get("ggml"),
                     "ggml_generation": llama_generation,
                     "matches_attestation": llama_ck.get("matches_attestation"),
+                    "working_tree_clean": llama_ck.get("clean"),
+                    "dirty_count": llama_ck.get("dirty_count"),
+                    "dirty_paths": llama_ck.get("dirty_paths") or [],
                     "error": llama.get("error") or llama_ck.get("error")})
     for kernel in speech.get("kernels", []):
         tree = Path(kernel.get("tree") or "/nonexistent")
@@ -1839,6 +1864,9 @@ def production_kernel_set(attestation_path: Path | None = None,
             "version": None, "ggml": kernel.get("ggml"),
             "ggml_generation": _ggml_generation_identity(tree, kernel.get("ggml")),
             "matches_attestation": (kernel.get("checkout") or {}).get("matches_attestation"),
+            "working_tree_clean": (kernel.get("checkout") or {}).get("clean"),
+            "dirty_count": (kernel.get("checkout") or {}).get("dirty_count"),
+            "dirty_paths": (kernel.get("checkout") or {}).get("dirty_paths") or [],
             "error": kernel.get("error") or (kernel.get("checkout") or {}).get("error")})
 
     if not llama.get("available"):
@@ -1851,6 +1879,12 @@ def production_kernel_set(attestation_path: Path | None = None,
             alarms.append(f"{member['title']}: tree does NOT match attestation (drift)")
         elif member.get("available") and member.get("matches_attestation") is None:
             alarms.append(f"{member['title']}: tree identity could not be established")
+        if member.get("working_tree_clean") is False:
+            alarms.append(
+                f"{member['title']}: frozen working tree is DIRTY "
+                f"({member.get('dirty_count')} paths; no mutation performed by dashboard)")
+        elif member.get("available") and member.get("working_tree_clean") is None:
+            alarms.append(f"{member['title']}: working-tree cleanliness unverified")
         generation = member.get("ggml_generation") or {}
         if generation.get("matches") is False:
             alarms.append(f"{member['title']}: GGML GENERATION DRIFT")
@@ -1929,6 +1963,7 @@ def production_kernel_set(attestation_path: Path | None = None,
         # can rely on.
         "intact": (llama.get("available") is True and speech.get("available") is True
                    and trees_proven == len(members) == 3
+                   and all(m.get("working_tree_clean") is True for m in members)
                    and proven == len(binaries) == 4
                    and links_ok == len(stable_links) == 4
                    and linkage_ok == len(linkage) == 4

@@ -87,6 +87,25 @@ def test_a_tree_at_the_wrong_commit_is_reported(tmp_path: Path) -> None:
     assert any("does NOT match attestation" in a for a in result["alarms"])
 
 
+def test_untracked_content_in_a_frozen_tree_is_a_distinct_alarm(tmp_path: Path,
+                                                                monkeypatch) -> None:
+    """Commit identity does not prove the checkout is pristine."""
+    repo = tmp_path / "llama"
+    repo.mkdir()
+    import subprocess
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    (repo / "tracked").write_text("frozen\n", encoding="utf-8")
+    subprocess.run(["git", "-C", str(repo), "add", "tracked"], check=True)
+    env = {"GIT_AUTHOR_NAME": "test", "GIT_AUTHOR_EMAIL": "test@example.invalid",
+           "GIT_COMMITTER_NAME": "test", "GIT_COMMITTER_EMAIL": "test@example.invalid"}
+    subprocess.run(["git", "-C", str(repo), "commit", "-q", "-m", "freeze"],
+                   check=True, env=env)
+    (repo / "untracked").write_text("do not delete\n", encoding="utf-8")
+    state = S._working_tree_state(repo)
+    assert state["clean"] is False and state["dirty_count"] == 1
+    assert state["dirty_paths"] == ["?? untracked"]
+
+
 def test_an_attested_binary_missing_from_disk_is_reported(tmp_path: Path) -> None:
     result = S.production_kernel_set(
         speech_attestation_path=_speech_with(

@@ -290,6 +290,12 @@ function renderCurrentState(d){
       h+='<div class="detail">'+esc(m.title||'—')+' · '+esc(m.branch||'—')+' <code>'
         +esc((m.head||'').slice(0,12))+'</code>'+ggml+' · '+st
         +(m.error?' <span class="fail">'+esc(m.error)+'</span>':'')+'</div>';
+      if(m.working_tree_clean===false){
+        h+='<div class="detail fail">working tree DIRTY · '+esc(m.dirty_count==null?'—':m.dirty_count)+' paths'
+          +((m.dirty_paths||[]).length?' · <code>'+esc(m.dirty_paths.join(', '))+'</code>':'')+'</div>';
+      } else if(m.working_tree_clean===true){
+        h+='<div class="detail ok">working tree clean</div>';
+      } else h+='<div class="detail fail">working-tree cleanliness unverified</div>';
     });
     (kset.binaries||[]).forEach(function(b){
       const st=b.matches===true?'<span class="ok">digest ok</span>'
