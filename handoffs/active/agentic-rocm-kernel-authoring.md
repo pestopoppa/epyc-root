@@ -125,7 +125,9 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
   phase_solver.py, kernel.cpp}`, a 45-line kernel over rocprofv3 PMC counters, ~40 min GPU on gfx90a.
   **Do not assume the CDNA3 answer (64 banks / 2 phases of 32 lanes) transfers** — whether gfx90a is 32 or
   64 banks decides whether HK's `>>7 <<3` swizzle constants transfer at all. Blocked on profiler tooling
-  (below).
+  (below). **Still blocked as of 2026-08-12 (mainB), despite the "RESOLVED" note below**: the side-load
+  provides ROCProfiler 2.0 and **no `rocprofv3`**, which is the instrument this line names. Verify the
+  counters are reachable via `rocprofv2` before booking the ~40 min GPU window.
 - **`rocm-flash-attn` as an enabling path**, re-assessed: an adaptation layer with no kernel code of its
   own, but genuine tested code with honest defect annotations. Judged on whether it improves performance,
   not on whether it contains kernels.
@@ -187,7 +189,23 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
 - [x] Re-target the program objective from the Q8 rung to the fp16 rung, with a banded per-lever ceiling (K1–K12) ✅ 2026-08-03
 - [ ] Register **ARGUS** (arXiv 2604.18616, 99–104% of hand-optimised assembly on MI300X) as a controller candidate alongside EvoEngineer / KernelFoundry / K-Search / Xe-Forge / GEAK
 - [ ] Read GEAK's `landscape/` + `languages/` sections as an external check on our seven-school taxonomy (vendor-maintained, covers hipkittens/tilelang/mojo/cutlass/flydsl)
-- [ ] Resolve the profiler-tooling blocker on the host (rocprofv2/rocprof/omniperf/rocm-bandwidth-test) — C4 and the LDS bank/phase solver are both gated on it
+- [x] Resolve the profiler-tooling blocker on the host (rocprofv2/rocprof/omniperf/rocm-bandwidth-test) — C4 and the LDS bank/phase solver are both gated on it ✅ 2026-08-12 (mainB)
+  — **re-verified live, not inherited from the 2026-08-03 note.** Through
+  `source /mnt/raid0/llm/tools/rocm-profilers-6.2/env.sh`: `rocprof` and `rocprofv2` both report
+  `ROCm 6.2.0-66 / ROCProfiler 2.0`, `rocm-bandwidth-test` responds to argument parsing, and
+  `omniperf` resolves on PATH but **does not run** — it exits on missing Python deps
+  (`astunparse==1.6.2`, `colorlover`, `dash>=1.12.0`), exactly as line ~138 predicted, so its
+  deliberate deferral stands and is accurate. **Note for anyone re-checking this**: none of these
+  are on the default `PATH` and none are under `/opt/rocm` — that is by design (extraction, so the
+  shared bind mount is untouched). Probing `PATH` or `/opt/rocm` returns a confident *absent* for
+  all five. Source the env or you are measuring the wrong universe.
+- [ ] **`rocprofv3` is absent and the LDS bank/phase solver names it specifically.** The side-load is
+  a ROCm 6.2 extraction and tops out at ROCProfiler 2.0; the solver is described at line ~125 as
+  "a 45-line kernel over **rocprofv3** PMC counters". So line ~138's "the LDS bank/phase solver and
+  the C4 analyzer are unblocked on tooling" is **true of C4 and not of the solver** — C4's cheapest
+  path is explicitly LLM-reads-raw-`rocprof`, which works today. **Next action** before anyone spends
+  the ~40 min GPU on the solver row: establish whether its counters are reachable through
+  `rocprofv2`, or whether it needs a ROCm 6.3+ `rocprofv3`. Unevaluated, not impossible.
 - [ ] Run HipKittens' LDS bank/phase solver method on gfx90a (~40 min GPU) to establish whether our silicon is 32 or 64 banks — decides whether HK's swizzle constants transfer at all
 - [ ] Add `-mllvm --amdgpu-unroll-threshold-local=600` to the build-flag checklist as a **precondition of any ROCm 7+ upgrade** (llama.cpp #19984, 3.7–5× prefill regression; does not affect our ROCm 6.2 today)
 - [x] **GEAK-family freshness sweep completed ✅ 2026-07-29**: refreshed the deep-dive appendix from AMD's current AgentKernelArena/GEAKv3 reports. AKA now publishes 214 tasks and a 44-task MI300X comparison; this is vendor/CDNA3 evidence only and does not close the MI210/gfx90a reproduction gap. [Freshness appendix](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md#9-freshness-appendix-sweep-at-each-handoff-audit--when-the-mi210-racks).
