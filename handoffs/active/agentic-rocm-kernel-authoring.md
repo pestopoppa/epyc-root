@@ -354,8 +354,31 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     regression tests for dotted task ids, external writes, and exact-signal cleanup before r2. The
     r2 baseline then completed in the dot-free hash-bound cell without creating an escaped sibling;
     its first controller checkpoint started only after that live containment regression passed.
+  - [x] **Enforce the exact planner/critic response schemas at the provider boundary before spending
+    another INF-03 checkpoint.** ✅ 2026-08-12 — r2 is immutable and invalid: its baseline completed
+    safely, but the first Claude planner returned structurally valid JSON with extra fields that the
+    strict four-field parser correctly refused. Research `298bab0c`, pin advances `98f7658f` and
+    `6f599ed0`, plus the fresh r3 audit now bind provider-enforced planner and critic schemas without
+    weakening the parser. Focused actor/critic tests passed **21/21** and the controller slice passed
+    **540/540**. The r3 audit is ready at **6/6** over four tasks with authority still limited to an
+    availability-conditioned diagnostic; self-hash
+    `b8d966ee7581f2a2fe4ee7e8c2eb7e314514bc4f888f22635dfa23d9ec4ce6dc`.
   - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints when
-    inference is authorized; interpret it only as an availability-conditioned diagnostic.
+    inference is authorized; interpret it only as an availability-conditioned diagnostic. The r3
+    campaign is active at
+    `/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-six-arm-20260812-r3`: baseline and the
+    Claude/Codex 2h and 8h checkpoints are terminal, each with compilation/correctness pass and 4/4
+    baseline plus 4/4 optimized cases. Their diagnostic speedups are `0.9859560018476856` and
+    `0.8878376233551375`, with belief-receipt self-hashes `05cb70a0d6f670796f93bdc06c4a681578d044f7929839688a4b2c5b7a491370`
+    and `4c01642993c1120eac4885714e3e2780845e618913c11676c6decef290fded61`. The campaign is paused:
+    the owner stopped only captured runner PID `2700055`, released 32h claim
+    `akd-3bb920d345bf4caa`, and removed the exact surviving actor container after observing that the
+    runner held MI210 authority across non-GPU planner/actor time. The incomplete 32h cell is not
+    evidence; the two terminal checkpoints remain banked and partial cells remain non-rankable.
+  - [ ] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows before
+    resuming r3.** Planner, actor, and critic inference/editing must not reserve the device while the
+    GPU is idle. Preserve the terminal 2h/8h cells, abandon only the incomplete 32h workspace under
+    the restart-safe contract, and regression-test claim release/reacquisition around evaluation.
   - [ ] Obtain exact licensed source releases for EvoEngineer and ARGUS, then port their real
     controller policies through the same governed adapter contract; namesake substitutes are not
     admissible.

@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 399
+      "open": 400
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -85,14 +85,14 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 47,
+      "closed": 48,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 3,
+      "open": 4,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 50
+      "total": 52
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 0,
@@ -2359,7 +2359,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Repair dotted-path containment and SIGTERM claim release; then restart the 6/6 diagnostic under a new campaign ID",
+      "next_action": "Narrow MI210 claims to evaluator windows, then resume r3 from the two verified terminal checkpoints",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {

@@ -2,8 +2,26 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-12 (adds SC27 prospective live-control/replay belief wiring; prior AutoKernel Arena and promotion-track findings retained)
+**Last compiled**: 2026-08-12 (records the first live post-hook GEAK/Arena beliefs; SC27 and prior promotion-track findings retained)
 **Sources**: 36 documents
+
+## Compiled Update — 2026-08-12 (first live GEAK/Arena belief rows)
+
+The producer-side GEAK/Arena boundary has crossed from prospective wiring to live evidence. INF-03
+r3's terminal Claude/Codex 2h and 8h checkpoints each wrote two measurements: correctness pass rate
+and timing-harness validity rate. The generic adapter projects only those producer-authored rows
+through the shared ladder; it does not infer speedup, campaign rank, or promotion authority from the
+receipts. Earlier pre-hook smokes remain deliberately unprojected.
+
+This is also a useful example of why storage and resource authority are distinct. Terminal cells can
+remain durable, restart-safe evidence while the wider campaign pauses to repair over-broad GPU claim
+scope. No read-side reconstruction is needed, and no invalid/incomplete cell enters the belief set.
+
+### Source References (2026-08-12 live Arena rows)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20's live receipt boundary
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — current write/read status and no-backfill rule
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact terminal receipts and paused-campaign chronology
 
 ## Compiled Update — 2026-08-12 (AutoKernel governed receipts)
 
