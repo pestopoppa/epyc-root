@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T03:49:44Z",
+  "generated_at": "2026-08-12T04:00:27Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4147,7 +4147,7 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 201,
+      "closed": 202,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",

@@ -77,6 +77,28 @@ missing, dry-run, or mismatched bindings fail closed and parameter candidates ca
 exact-main C3/source-authority/correctness/execution suite passed **444 tests with 132 subtests**.
 No inference, GPU capture, benchmark, or kernel build ran.
 
+## Follow-up offline closeout lifecycle
+
+Research `main` advanced to `4a5f7361a565513a17cb4c372511184f885fed9f`. The new operator-only
+closeout seam joins the injected lean sequencer's schema-bound composed champion to the existing
+readiness reducer, dry-run T3 runner, and package assembler. Success is one fsynced, schema-validated
+`RELEASE_PACKAGE_READY` journal record. The seam is outside Campaign #1's import closure, accepts no
+release-mode T3 request, and has no build, benchmark, inference, process, clock, command-execution, or
+production-write capability.
+
+Architecture fixtures carry `evidence_class=architecture_regression_fixture` and
+`empirical_claim=false` in both the durable request/package lifecycle. They prove wiring and recovery,
+not empirical kernel performance or release eligibility. Restart after either the request or package
+is idempotent; resource preemption, identity tamper, and compiler failure produce durable terminal
+records rather than a package.
+
+Independent verification from exact commit `4a5f7361` passed **1,692 tests** across closeout,
+release preflight/readiness/T3/package/plan, champion/journal, campaign-footprint, schemas, source
+authority, and correctness. A separate pytest invocation of `release/test_closeout.py` passed
+**12 tests with 2 subtests**. No inference, build, profiler capture, stack operation, or production
+kernel action occurred. The real end-to-end package campaign and real restart/crash/preemption/tamper
+rehearsal remain open.
+
 ## Remaining empirical work
 
 After the already-filed compliant-reboot dependency is satisfied, run AK6.5 Step 3's full-host CPU

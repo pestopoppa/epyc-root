@@ -56,6 +56,14 @@ through measured, hash-bound bindings to the exact candidate source and evaluato
 dry-run capture, or identity drift is verdict-bearing `COULD_NOT_CHECK`. The exact-main C3,
 correctness, and execution slice passed **444 tests with 132 subtests**. This closes implementation
 authority only: no EPYC workload capture, candidate timing, whole-model exit, or inference ran.
+Research `4a5f7361` closes the remaining offline integration seam from the lean sequencer's
+schema-bound composed champion through readiness, dry-run T3, and one validated
+`RELEASE_PACKAGE_READY` journal record. The closeout is operator-triggered, unreachable from Campaign
+#1, accepts dry-run T3 only, and owns no process, build, inference, clock, or production-write
+capability. Architecture fixtures are durably labelled `architecture_regression_fixture` with
+`empirical_claim=false`; they prove lifecycle wiring and recovery only. The independently repeated
+focused suite passed **1,692 tests**, including restart, resource-preemption, tamper, schema, and
+campaign-import-boundary coverage. This does not satisfy either AK6 empirical campaign item.
 INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
 VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
 Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
@@ -2671,6 +2679,12 @@ cannot retrigger the expensive gate unchanged.
 - [x] Route the cutover request through the bus to whoever owns inference (§11.3). ✅ 2026-08-03
 - [x] Render the package as a four-part decision package (`OPERATING_CONSTRAINTS.md:69-78`). ✅ 2026-08-03
 - [ ] Run an end-to-end campaign that stops at a validated package with zero production writes.
+  - [x] **Complete the offline operator-closeout integration fixture.** ✅ 2026-08-12 — research
+    `4a5f7361` runs the injected lean sequencer through a schema-bound composed champion, readiness,
+    dry-run T3, and a validated `RELEASE_PACKAGE_READY` record. It is unreachable from Campaign #1,
+    cannot build, infer, execute processes, or write production, and labels architecture fixtures
+    `empirical_claim=false`. The independently repeated focused suite passed **1,692 tests**. This is
+    regression evidence only and does not close the parent empirical campaign task.
 - [ ] Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
   fault-injection tests are prerequisites, not substitutes for a campaign rehearsal with durable
   empirical receipts.
