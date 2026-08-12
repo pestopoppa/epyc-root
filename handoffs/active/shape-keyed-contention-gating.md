@@ -391,6 +391,35 @@ verdict is the current production shape.
       (*"You can use the cpu lane — that's where the contention you're discussing lies"*), so this no
       longer waits on an owner. It was OP-21 in the master operator queue; the decision is answered and
       the row is retired. Remaining work is execution, not authorisation.
+      **DRY-RUN 2026-08-12 — DO NOT run `contention_matrix.py run` for this.** The operator called the
+      dry run rather than spending a post-reboot window, and it paid for itself:
+      `_select_live_pair_instances` returns the first **disjoint** live combination and takes **no
+      geometry argument** — there is no `--geometry`/`--overlap`/`--pair-ports` flag. Under the standard
+      `--numa-mode both` lineup it selects `(8080, 8285)`, which reproduces the shipped 1.89 disjoint row
+      **verbatim**. Running it post-reboot would have re-answered the wrong question on a clean host.
+      Use `bench-nway` instead: it reads ports straight from a hand-authored manifest with no
+      disjointness check, so it can pin the true overlapping halves `8080 + 8185`, and it runs
+      `samples=3` with CV rather than `run`'s hardcoded `samples: 1`. Pair it with an `8080 + 8285`
+      disjoint control **in the same window**. The `topology_hash` in the manifest must equal what
+      `contention_matrix.py validate` prints.
+- [x] **Refuse a contention ratio derived from a timed-out bench leg** ✅ 2026-08-12 — orchestrator
+      `792ef3d8`. Found by the dry run above. `_http_bench` returns `(0.0, 0.0)` on timeout and
+      `par_time = max(...)` discarded it while `total_tokens` still counted both legs. The error is
+      **one-directional**: measured at 5 s solo legs, a timeout on the leg that would have dominated
+      `max()` is *invisible* (ratio 1.00, identical to a healthy run) and the other shape reads 2.00 —
+      no input of this shape can produce a false `block`, they all read `allow`. Fixed at both
+      `_bench_pair` and `_bench_nway`; the latter is the path this re-bench will use. Mutation-tested
+      per site, 125 contention tests green.
+- [ ] **`contention_matrix.py run --roles …` TRUNCATES the matrix** — `pairs` is in
+      `_EMITTER_OWNED_SECTIONS`, so `_carry_forward_sections` does not preserve unmeasured rows: 3 pairs
+      in, 1 out. Against `DEFAULT_OUTPUT` that would destroy 14 of 15 measured rows and degrade the
+      admission gate to fail-closed for every other pair. Never invoke it against the default output,
+      and never invoke the script bare (no subcommand ⇒ `cmd_run` with `dry_run=False`).
+- [ ] **The contention artifact carries no host-health provenance** — `_host_metadata()` collects
+      `uptime` and `kernel` and `_emit_yaml` then writes only `host: <hostname>`, discarding both. There
+      is no `host_health_warnings` or `decision_grade` field, and `verdict` is stamped with `samples: 1`
+      regardless. A run at today's 14.1 d uptime would be indistinguishable from a clean-host
+      measurement. `server_np_sweep.py:300 host_health_warnings()` is the correct pattern to copy.
 - [ ] **Retire the stale `q*` nomenclature on half-sized instances** — a reader seeing `q0` on a
       48-thread instance infers a quarter. It already caused one agent to describe this live defect as
       a legacy one.
