@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """hardware_backfill.py — bounded backfill queue runner + queue-empty detector.
 
-WHY (task hardware-idle-supervisor, verified at source 2026-08-12). On the
-overnight run, 19 READY compute-gated tasks existed, nothing translated them
-into queued jobs, the hardware sat idle 3h47m, and the daemon wrote 590
+WHY (task hardware-idle-supervisor; history CORRECTED 2026-08-12 after
+mainB's pick-validity analysis). On the overnight run the daemon wrote 590
 consecutive all-idle records into coordination/session-bus/advisory.jsonl —
-which nothing reads. The gap was never "no detector"; it was "nothing turns
-READY work into something that actually claims CPU, and nothing surfaces the
-gap to somewhere a human or agent will see it."
+which nothing reads — each CLAIMING 19 tasks READY. Post-hoc analysis showed
+that claim was a STALE PICKER VIEW, not a live backlog: 811 advisory records
+resolve to nine distinct rows from one handoff file, and four of the six
+sampled picks had been closed for fourteen days at emission. Separately, a
+3h47m window (00:57–04:44Z) carries NO compute receipt of any kind — an
+unwitnessed interval, not a measured idle one — and receipted utilisation for
+the night was ~8–9%. The real gap this runner closes is unchanged by the
+correction: nothing turns genuinely-ready work into something that actually
+claims CPU, and nothing surfaces THAT gap where anyone will see it. But the
+backlog the original brief cited was inflated by the picker defect (C50),
+and this header says so rather than republishing it.
 
 DESIGN: the detector below watches the QUEUE (this file's own queue.jsonl),
 NOT the hardware. Hardware occupancy is `region-lock status`'s business and
