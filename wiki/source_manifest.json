@@ -10,9 +10,9 @@
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-08-12T19:59:40Z",
   "mode": "full",
-  "scan_time": "2026-08-12T20:07:51Z",
+  "scan_time": "2026-08-12T20:14:20Z",
   "schema_version": 1,
-  "source_set_hash": "b45258e71dd43e374639704377810971fcd8c892d5dcfa25926298ddce80c54d",
+  "source_set_hash": "1b5a1e10faeab7b1f5f5a9531a5ff43c3c5cb8f44147fe1ddd6b682c53144366",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f461b74f817d2abf2e2b180e4a357dc0889c7944dcbf791e54ab7d57d5d24931",
-      "modified": "2026-08-12T20:05:18Z",
+      "content_hash": "92e1f6f016b9137a67774b8dd363f4a3ebc18c932bab8095f1bb8f4a7da0214d",
+      "modified": "2026-08-12T20:14:11Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 375315,
+      "size": 375410,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -264,7 +264,7 @@
     },
     {
       "content_hash": "58f36fa35efbf79ffecad829d66559545009766b7e543ce86fd1166d8ad54ca9",
-      "modified": "2026-08-12T09:37:06Z",
+      "modified": "2026-08-12T20:13:39Z",
       "path": "handoffs/active/deepseek-v4-flash-0731-dspark.md",
       "size": 18161,
       "title": "DeepSeek-V4-Flash 0731 \u2014 Q8 Serving + DSpark Speculative Decoding",
@@ -1167,10 +1167,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5f20f249b5aeb41e84f4eee1bdfe4af7003123333802dba59fe2b54dacee4b6b",
-      "modified": "2026-08-12T20:00:30Z",
+      "content_hash": "9a93dab22491b4c85d17b5f2f28e1844a10002d88e3fd7de43163a11812456fa",
+      "modified": "2026-08-12T20:13:40Z",
       "path": "handoffs/active/session-bus-thin-dispatcher.md",
-      "size": 249889,
+      "size": 251773,
       "title": "Session Bus + Thin Coordinator \u2014 N-main-thread control structure",
       "type": "handoff-active"
     },
@@ -1344,7 +1344,7 @@
     },
     {
       "content_hash": "38e8cca801b30acfd8cb2dc579b3bbb2cab9de848a5eea6c30e655197ab88ca1",
-      "modified": "2026-08-12T20:07:48Z",
+      "modified": "2026-08-12T20:12:18Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
       "size": 61537,
       "title": "Vidya Belief-Substrate Program",
@@ -6007,18 +6007,18 @@
       "type": "progress"
     },
     {
-      "content_hash": "c8e3b46d60d6ac907ae0d01da4de6294fcc7cb34fbcb74ae48370b7b16a1d6bf",
-      "modified": "2026-08-12T09:37:06Z",
+      "content_hash": "f8c600884ddb414cf4f06ebaa68f3811b8a562f35f7f112a0a97d4a68b60a60d",
+      "modified": "2026-08-12T20:13:39Z",
       "path": "progress/2026-08/2026-08-11.md",
-      "size": 279585,
+      "size": 279958,
       "title": "2026-08-11",
       "type": "progress"
     },
     {
-      "content_hash": "da0a5d6390f3f4b21abcb8470b8f73fdc8c61bd1154ea41efc20af6a0d36c1a2",
-      "modified": "2026-08-12T20:06:28Z",
+      "content_hash": "77749cf891944b4c16ed7bc9e858d2c1d3a8d1e86fc439fac14f91526e6b1e7e",
+      "modified": "2026-08-12T20:12:18Z",
       "path": "progress/2026-08/2026-08-12.md",
-      "size": 484069,
+      "size": 484070,
       "title": "2026-08-12",
       "type": "progress"
     },
