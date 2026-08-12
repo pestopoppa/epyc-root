@@ -133,7 +133,11 @@ them.
 | L5 | **`olympiadbench_hard`** | **the real non-saturated discriminator** | 155 | Expression/Tuple/set items (`math_symbolic` sympy scorer). 64–69% for frontier-ish models — genuine headroom. Needs budget ≥ 32768 (some models loop/ramble longer). |
 | A | **thinking ablation** (`--reasoning on/off`) | is the native `<think>` channel worth it? | 50 | see §6 |
 | B | **effort / `--reasoning-budget`** | can native thinking be made safe/cheap? | 50 | see §6; ref [`reasoning-effort-levels.md`](../../handoffs/active/reasoning-effort-levels.md) |
-| P2 | **SWE-bench-Verified agentic** (FAIL_TO_PASS) | the architect's *actual job*: tool-using multi-step planning | — | operator-gated design; objective oracle, no model-judge |
+| P2a | **HumanEval** | validation rung for the code-execution scorer | 164 | canonical solutions must pass before an arm result is trusted; saturated on the prior three-arm read, so it is not a selector |
+| P2b | **LCB-hard** | contest-algorithmics discriminator | 53 | cached historical window is contamination-suspect; use the newer-window refresh before making a new decision-grade comparison |
+| P2c | **BCB-hard** | library/API regression discriminator | 90 oracle-eligible | use as a regression/deployment screen, not a family-ranking proxy when it is non-discriminating |
+| P2d | **SWE-oracle** (objective FAIL_TO_PASS) | realistic repository bug-fix rung | 40 | full capture/provenance required; model-harness pair and denominator stay bound to the evidence |
+| P2e | **SWE-bench/tau-bench agentic** | the architect's actual multi-turn planning/tool-use job | — | harness exists but a live run is operator-gated; objective oracle, no model-judge |
 
 **Datasets (HF, cached):** `TIGER-Lab/MMLU-Pro`, `ankner/gpqa` (main 448 — Diamond membership recovered
 from `hendrydong/gpqa_diamond`, 198), `opencompass/AIME2025` (30, 2025-only — *not* 2024, which predates
@@ -272,14 +276,15 @@ the non-termination severity was 18% vs 50% across two models, so certify each m
 > The bench answers "is quality different?" The deploy decision also weighs "what does it cost to *operate*?"
 > A quality tie is the branch where operating cost wins — usually for the dual-resident option.
 
-> **REQUIRED GATE (2026-07-24): reasoning-QA cannot decide a keep/drop on its own — P2 tool-use/coding is
+> **REQUIRED GATE (2026-07-29): reasoning-QA cannot decide a keep/drop on its own — P2 tool-use/coding is
 > mandatory before any architect verdict.** The L1–L4 ladder is math/science-QA; the architect's *real job*
 > is planning, decomposition, tool-use, and long-context synthesis, which QA does not test — and a saturated
 > or QA-tied result can hide a capability gap that only shows under agentic load ([[feedback_eval_saturation_masks_model_gap]]).
-> So a null on L4 is **necessary but not sufficient** to drop a candidate: you must also run P2. **P2 harness
-> status (2026-07-24): NOT built** — LiveCodeBench/BigCodeBench need the `datasets` lib + a sandboxed
-> code-execution scorer; agentic SWE-bench/tau-bench needs a multi-turn tool-loop harness. Building it is a
-> prerequisite, not an optional follow-on.
+> So a null on L4 is **necessary but not sufficient** to drop a candidate: use the built coding ladder
+> (P2a→P2d) with its canonical/gold validation gates, then run P2e if a surviving arm needs its actual job
+> validated. The code-execution scorer and multi-turn agentic harness are built; **only live agentic execution
+> remains operator-gated**. Run GPU coding arms model-major and one at a time, with the current SMT-sibling
+> affinity policy, so a host-placement change cannot masquerade as a model result.
 
 ---
 
@@ -374,7 +379,7 @@ is self-describing. Era-stamp; append, never overwrite historical numbers (MEASU
 - [ ] Thinking ablation + budget-cap (§6) if the native channel is in question.
 - [ ] Paired McNemar / bootstrap per suite (§8), era-stamped.
 - [ ] Decision framework applied (§9); if quality ties, deployment-robustness assessed explicitly.
-- [ ] P2 tool-use (SWE-bench agentic) if a survivor needs its *actual job* validated (operator-gated).
+- [ ] P2a→P2d coding ladder is validated for the candidate; P2e tool-use (SWE-bench agentic) runs if a survivor needs its *actual job* validated (operator-gated).
 - [ ] Verdict recorded in the handoff; registry-change note opened (do **not** edit the live registry —
       operator-gated).
 
