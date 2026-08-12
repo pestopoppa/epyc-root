@@ -199,6 +199,27 @@ run_lab_shadow_if_quiet() {
   # 1. Check inference load
   source "$SCRIPT_DIR/inference_guard.sh"
 
+  # AUD-7 (2026-08-12): REFUSE TO LAUNCH ON AN UNMEASURED HOST.
+  #
+  # The guard used to fail OPEN: a missing pgrep, argv drift, a renamed binary or a
+  # /proc read error all summed to 0GB and printed "No heavy inference detected",
+  # after which this wrapper launched a full agent workload on top of a live 200GB
+  # inference run. The guard is now three-valued and says so; the only correct
+  # response to `failed` is to stop. An unmeasured host is not a quiet host.
+  if [[ "${NIGHTSHIFT_GUARD_STATE:-failed}" != "measured" ]]; then
+    echo "[wrapper] ==================================================================="
+    echo "[wrapper] REFUSING TO RUN: the inference guard could not MEASURE this host."
+    echo "[wrapper]   state  : ${NIGHTSHIFT_GUARD_STATE:-<unset — guard did not run>}"
+    echo "[wrapper]   reason : ${NIGHTSHIFT_GUARD_REASON:-<none reported>}"
+    echo "[wrapper]   memavail: ${NIGHTSHIFT_MEMAVAIL_GB:-unknown}GB"
+    echo "[wrapper] Nightshift would otherwise launch an agent workload that could land on"
+    echo "[wrapper] top of a live multi-hundred-GB inference run. 'Cannot tell' is not 'idle'."
+    echo "[wrapper] Fix the measurement (is pgrep present? has the server binary been"
+    echo "[wrapper] renamed? is /proc readable?) and re-run."
+    echo "[wrapper] ==================================================================="
+    exit 4
+  fi
+
   # 1.5. Feed F2 self-running lab jobs. Active-safe deterministic monitors run
   # even during live AutoPilot/llama serving; model-backed jobs remain quiet-window
   # only and write review queue artifacts in epyc-orchestrator.
@@ -232,7 +253,14 @@ run_lab_shadow_if_quiet() {
   fi
 
   echo "=== Nightshift Run Complete: $(date -Iseconds) ==="
-} 2>&1 | tee "$LOGFILE"
+# AUD-7: the braces run in a SUBSHELL because of the pipe, so an `exit` inside them
+# is the subshell's status, not this script's. Capture it — otherwise the guard's
+# refusal above would exit 4 into a pipeline whose visible status is tee's 0, and
+# the systemd unit (or any caller) would record a clean run.
+} 2>&1 | tee "$LOGFILE" || wrapper_rc=$?
+wrapper_rc="${wrapper_rc:-0}"
 
 # Prune logs older than 30 days
 find "$LOG_DIR" -name "*.log" -mtime +30 -delete 2>/dev/null || true
+
+exit "$wrapper_rc"
