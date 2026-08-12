@@ -137,6 +137,14 @@ def _stub(adapter, monkeypatch, tmp_path: Path, *, target="throwaway:pane",
 
     monkeypatch.setattr(adapter, "_tmux", fake_tmux)
     monkeypatch.setattr(adapter, "_composer_text", lambda _t: composer)
+    # C53 (2026-08-12): emptiness is now judged on the WHOLE composer row, read
+    # separately from `_composer_text` (which stays cursor-anchored for fragment
+    # matching). Both are driven from the one `composer` fixture value so a case
+    # cannot accidentally describe two different panes.
+    monkeypatch.setattr(adapter, "_read_composer_row",
+                        lambda _t, _faint=False: (None, composer[1]) if composer[1]
+                        else ((composer[0] or "").rsplit("\n", 1)[-1], None))
+    monkeypatch.setattr(adapter, "composer_faint_is_placeholder", lambda _cfg, _a: False)
     # Poisoned: the doorbell path must never touch either — see the C45 block
     # and test_doorbell_does_not_consult_the_heartbeat_* below.
     monkeypatch.setattr(adapter, "heartbeat", _poison("heartbeat"))
@@ -295,8 +303,15 @@ def test_doorbell_refuses_when_sendkeys_message_call_fails(
     adapter = _load("sendfail")
     _stub(adapter, monkeypatch, tmp_path, composer=("", None), sendkeys_ok=False)
     assert adapter.cmd_doorbell(_A()) == adapter.EX_MISCONFIG
-    assert "send-keys message failed" in capsys.readouterr().err
-    assert not adapter.LEDGER.exists()
+    # C51 routes every post-typing failure through one loud exit that also rolls the
+    # text back and records the non-delivery; the wording moved with it.
+    err = capsys.readouterr().err
+    assert "NOT DELIVERED" in err and "send-keys message" in err
+    # The non-delivery IS recorded now — that is C51's point, and it is what makes a
+    # failed ring answerable from durable state instead of only from an exit code
+    # nobody kept. What must never appear is a `doorbell` row for a ring that failed.
+    rows = [json.loads(ln) for ln in adapter.LEDGER.read_text().splitlines() if ln.strip()]
+    assert [r["kind"] for r in rows] == ["doorbell-undelivered"]
 
 
 def test_doorbell_is_never_rate_limited(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
