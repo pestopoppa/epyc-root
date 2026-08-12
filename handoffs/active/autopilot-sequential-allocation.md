@@ -56,7 +56,22 @@ outcome.
 
 ## Two defects in the verdict machinery
 
-- [ ] **SEQ-A — the `refuted` label is STICKY.** `state_name()`
+- [x] **SEQ-A — DISSOLVED, not fixed** ✅ 2026-08-12 (`mainB` subagent). Closing the parent to match its
+      children: SEQ-A0 landed the neutral mechanism (`43108014`) and SEQ-A1 is VOID, so this box was the
+      last thing still presenting a refuted premise as open work. Re-derived rather than inherited:
+      `f2ad030e` is an ancestor of orchestrator HEAD, its axis attribution is live in
+      `scripts/analysis/readjudicate_sequential_candidates.py`, and `pytest -k "readjudicate or
+      sequential_verdict"` → **54 passed, 5 skipped**. **Residual defect found and fixed while
+      verifying**: that script's MODULE DOCSTRING still asserted *"56 of 393 … The label is STICKY"* as
+      fact — `f2ad030e` corrected the code and the inline comment and left the docstring, which is the
+      first thing a reader sees and the source every later citation of "56 of 393" came from. Retracted
+      in place (not deleted, so the still-true `70902e4b665474e7` bullet above it cannot be re-read as
+      evidence for staleness). Live question remains **SEQ-B1**, with the operator.
+
+      **Original filing preserved verbatim below — read it only together with the ⚠ premise correction
+      that follows it; the two are one record and the claim does not survive without the correction.**
+
+      **SEQ-A (as originally filed) — the `refuted` label is STICKY.** `state_name()`
       (`sequential_verdict.py:131-138`) is a pure function of current state, so a candidate that
       outgrows the kill condition should read `accumulating` again. It does not: **56 of 393 trials
       carry `state="refuted"` while `E >= budget_min_e` and `k >= budget`** — the persisted label

@@ -235,9 +235,9 @@ gate (production reward path / agentic build). See [[project_architect_model_sel
 
 _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
 
-- [ ] Add an **`ordered_subsequence`** verifier to the canonical `answer_scoring` library: given an ordered concept list, lemmatize the completion and check all concepts appear as an ordered subsequence; return graded coverage in [0,1] plus a binary all-in-order flag. Must land in the canonical library — not an 11th bespoke scorer — with unit tests for lemma-boundary and repeated-concept cases.
-  - [ ] **Dependency decision (2026-07-29):** the research benchmark environment has no `spacy` installation or pinned English model, while the canonical scorer intentionally has only stdlib import dependencies. Do not silently substitute stemming for the specified lemmatization. Choose either a pinned, reproducible lemmatizer dependency with model/data provenance, or explicitly amend this task to a documented dependency-free lexical verifier; then add the helper without changing the critical generic `score_response()` dispatcher (GitNexus: 60 exact upstream impacts, CRITICAL).
-- [ ] **Implement BOTH Ordered Rate and Coverage-with-order, not one.** An earlier note called them redundant; the dive **overturned** that — they diverge by up to **26.5 pts** on weak models (Qwen2-0.5B 30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so both carry distinct signal exactly in the small/quantized regime we care about.
+- [x] Add an **`ordered_subsequence`** verifier to the canonical `answer_scoring` library: given an ordered concept list, lemmatize the completion and check all concepts appear as an ordered subsequence; return graded coverage in [0,1] plus a binary all-in-order flag. Must land in the canonical library — not an 11th bespoke scorer — with unit tests for lemma-boundary and repeated-concept cases. ✅ 2026-08-12 (verified by `mainB` subagent; **the work landed under its other tracking id and these rows were never ticked** — research `9cc8db2d`, filed as ID-7 in [`intake-derived-work-2026-07-25.md:86`](intake-derived-work-2026-07-25.md), which IS closed). `score_ordered_subsequence` at `scripts/benchmark/answer_scoring.py:383` in the canonical library, not a new scorer; returns `coverage`, `coverage_in_order`, `all_in_order`, `missing`, `lemmatized`. Re-derived rather than inherited: `git log -S score_ordered_subsequence` → one commit, working tree clean against it, `pytest scripts/benchmark/test_answer_scoring.py` → **12 passed**. Lemma-boundary case is `test_ordered_subsequence_multiword_contiguous` (hyphen/split forms), repeated-concept case is `test_ordered_subsequence_duplicates_need_repeats`. Empty concept list raises rather than scoring 1.0.
+  - [x] **Dependency decision (2026-07-29):** the research benchmark environment has no `spacy` installation or pinned English model, while the canonical scorer intentionally has only stdlib import dependencies. Do not silently substitute stemming for the specified lemmatization. Choose either a pinned, reproducible lemmatizer dependency with model/data provenance, or explicitly amend this task to a documented dependency-free lexical verifier; then add the helper without changing the critical generic `score_response()` dispatcher (GitNexus: 60 exact upstream impacts, CRITICAL). ✅ 2026-08-12 — **resolved as the second horn, dependency-free by default.** `_lemma_tokens` tries spaCy lazily and falls back to `[a-z0-9]+` surface matching, with the choice reported per call as `lemmatized: bool` rather than hidden; the fallback direction is conservative (it can MISS an inflected variant, never false-match), so an unlemmatized environment under-scores rather than inflating. No stemming substitution. **Deviation from this row, stated rather than buried**: it did touch `score_response()` — but additively, a new `if scoring_method == "ordered_subsequence"` arm reachable only by that method, so the 60 upstream callers cannot take the new branch. Pinned by `test_ordered_subsequence_dispatch_binary_arm` and by the full file staying 12/12 green.
+- [x] **Implement BOTH Ordered Rate and Coverage-with-order, not one.** An earlier note called them redundant; the dive **overturned** that — they diverge by up to **26.5 pts** on weak models (Qwen2-0.5B 30.84 vs 57.34; Phi3-mini 49.54 vs 62.04) and converge only at 405B, so both carry distinct signal exactly in the small/quantized regime we care about. ✅ 2026-08-12 — both shipped and distinguishable: `all_in_order` is the paper's Ordered Rate (binary), `coverage_in_order` is Coverage-with-order (graded, longest in-order chain by DP over all occurrence positions so an early out-of-order mention cannot shadow a later in-order one), and order-blind `coverage` is carried alongside as the third. `test_ordered_subsequence_basic_directions` pins the divergence direction: all concepts present but out of order holds `coverage` at 1.0 while the ordered metrics drop.
 - [ ] Source is **ACL 2025 Main and an Outstanding Paper** (arXiv 2506.15629) — our 43-question `instruction_precision` suite has **no ordering/sequence verifier of any kind**. Known fragility: spaCy-lemmatization dependence (same class as the substring/comma brittleness). **Confound to record**: the paper's leaderboard runs 32 open models at 4-bit against full-precision API arms — do not cite that table itself as quant-quality evidence.
 
 ## 2026-08-03 — intake Stage-2b: audit our own eval paths for HARNESS-LEVEL answer leakage
@@ -261,14 +261,66 @@ reward-hacking cases across 6 benchmarks — roughly 3× prior audits. Separatel
 maintains its own quarantine section for submissions annotated *"Test-set feedback"*, one of which would
 otherwise have ranked #1 by 7 medal outcomes.
 
-- [ ] **Audit our eval fan-out and scorer paths against the harness-level list.** Specifically: does any
+- [x] **Audit our eval fan-out and scorer paths against the harness-level list.** Specifically: does any
   prompt-assembly path put reference answers, gold patches, or oracle metadata into a context the model
   under test can read? Does any scorer path let a candidate observe its own grade before the run ends?
-- [ ] **Check the working tree the agent sees.** Our own repo carries `CLAUDE.md`, `AGENTS.md` and skill
+  ✅ 2026-08-12 (`mainB` subagent) — **prompt assembly is CLEAN; the leak is not in the prompt, it is in
+  the filesystem** (next box). Verified every `_row_to_prompt` construction site in
+  `scripts/benchmark/dataset_adapter_modules/{general,coding,math_adapter,reasoning,vision_agentic}.py`
+  (17 sites): `expected` / `answer` / `canonical_solution` / `test` / `scoring_config.test_code` /
+  `metadata.bug_explanation` are computed alongside the prompt and never concatenated into it. The
+  dispatch is the narrow surface it should be — `eval_tower.py:_generate_question` builds `call_kwargs`
+  from `dispatch_prompt` plus `force_role`/`force_mode`/`image_path`/`tools`/`n_probs` only; `expected`
+  is read into a local for scoring and is not among them. Two by-design inclusions, recorded so nobody
+  re-reports them: MBPP puts up to 3 test cases in the prompt as hints (standard MBPP protocol; its
+  `expected` is only the function name), and CRUXEval input-prediction shows the output because
+  predicting the input from the output *is* the task.
+  **Grade observation: none in-run.** Scoring runs in `_score_generation` after the candidate's request
+  has already returned, so there is no channel back into the same generation. The rubric-judge path is
+  the only one holding `expected_contains`, and it is a separate `force_mode="direct"`,
+  `allow_delegation=False` call gated on `check_cross_family(generator_model, role)` — the judge sees
+  the reference, the candidate never does. PromptForge trace feedback
+  (`eval_tower_trace_feedback.py`) is cross-trial prompt optimisation, not an in-run channel.
+  *Not audited* (named rather than implied clean): `recall()`'s episodic-memory payload, which returns
+  past-task Q-values and could in principle carry a prior trial's outcome for the same question.
+- [x] **Check the working tree the agent sees.** Our own repo carries `CLAUDE.md`, `AGENTS.md` and skill
   files at paths an evaluated agent would naturally read — the exact shape of the solution-injection
   case. Establish what is visible during an eval run, not what we intended to be visible
-- [ ] **Record the finding either way.** "Audited, no leakage found" is a result worth having on file;
-  an unaudited harness is not evidence of a clean one
+  ✅ 2026-08-12 (`mainB` subagent) — **the answer key is inside the evaluated model's allowed read root.**
+  `REPLEnvironment.ALLOWED_FILE_PATHS` and the live `read_file` both resolve to
+  `['/mnt/raid0/llm/', '/tmp/']`, and the question pool lives at
+  `/mnt/raid0/llm/epyc-inference-research/benchmarks/prompts/question_pool.jsonl` — 1.35 GB, **79,479
+  rows of which 78,341 carry a non-empty `expected`**, mode `0664`, each row a single JSON object
+  holding both the verbatim `prompt` and its `expected`. The REPL surface advertised to the model
+  (`src/prompt_builders/constants.py`) offers `grep(pattern, file_path=...)`, `peek(n, file_path=...)`,
+  `list_dir(path)` and `CALL(name, **kw)` + `list_tools()`, so one `grep` of its own prompt text against
+  that path returns the row containing its own answer. **Proven functionally, not by reading**:
+  `_validate_file_path(pool)` → `(True, None)`; `orchestration.tools.system.read_file(pool)` returns
+  content. This is exposure, not an observed exploit — no claim is made that any run did it, and the
+  tool-use suite's `get_eval_secret` sentinel counts tool calls, not pool reads.
+  **Corroboration that the threat model is already ours**: `src/builtin_tools.py:_register_eval_tools`
+  documents minting eval secrets to "a tmpfs path outside read_file's allowed roots, so the eval harness
+  can read ground truth while the model-under-test cannot grep it from the repo" — solved for that one
+  tool, unsolved for the 78,341-row pool.
+  **Second, distinct defect found while proving the first**: `orchestration/tools/system.py:_is_path_allowed`
+  gates on `os.path.abspath`, which does **not** resolve symlinks. Demonstrated: a symlink at
+  `/mnt/raid0/llm/tmp/<probe> → /etc/passwd` passed the check and `read_file` returned `/etc/passwd`
+  (probe removed). The REPL's own `_validate_file_path` uses `realpath` and correctly refused the same
+  path — so the two gates that share an allow-list do not share its enforcement.
+  *Reachability caveat, stated because it bounds the severity*: this needs the model to be in REPL mode
+  with the tool surface attached. `build_react_prompt`'s whitelist also lists `read_file`/`list_directory`,
+  but that builder has **no caller outside `src/prompt_builders/`** — dead in the serving path, so ReAct
+  is not a second route today.
+- [x] **Record the finding either way.** "Audited, no leakage found" is a result worth having on file;
+  an unaudited harness is not evidence of a clean one ✅ 2026-08-12 (`mainB` subagent) — recorded above.
+  Verdict in one line: **prompt assembly and the judge path are clean; the harness-level exposure is
+  filesystem reach, and it is real and reachable.** Two remediation options, neither taken here because
+  both touch a production read path and this row authorised an audit, not a fix:
+  (a) move `question_pool.jsonl` (and designed-core files) outside `llm_root` — the same tmpfs pattern
+  `eval_secret.py` already uses, cheapest and matches an existing precedent;
+  (b) narrow `ALLOWED_FILE_PATHS` during eval runs via the existing `ORCHESTRATOR_EDIT_ROOT` task-root
+  isolation, which already restricts the REPL to a scratch root when active.
+  Independently of the choice, `_is_path_allowed` should use `realpath` like its REPL counterpart.
 
 **Correction carried from the dive, so it is not restated:** the audit does **not** cover MLE-bench, and
 it makes no leaderboard-status claim. An earlier framing of it as "plausibly the cause of the MLE-Bench
