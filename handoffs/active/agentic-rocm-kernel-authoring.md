@@ -1,11 +1,11 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: supervise seven-arm r15 to a terminal aggregate from its dedicated immutable
-worktree, then validate its complete receipt chain before comparison. Never reuse r4-r14 or aggregate the
+**Next action (2026-08-12)**: supervise retry-hardened seven-arm r17 to a terminal aggregate from its dedicated immutable
+worktree, then validate its complete receipt chain before comparison. Never reuse r4-r16 or aggregate the
 one-task pilot into the panel.
 The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r14 source-identity refusal; seven-arm r15 live from immutable `03f9ae69`)
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r15 structured-output exhaustion; bounded retry landed; seven-arm r17 live from immutable `eb1de388`)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -546,11 +546,31 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     ran. The actor cell therefore emitted no admitted cell receipt or panel aggregate. All eight device
     claims have released receipts; 14 captured PIDs are absent; and all 12 recorded controller/model/
     evaluator cgroups are verified empty and removed. R14 is permanently invalid and non-rankable.
-  - [ ] **Drive seven-arm r15 to a terminal aggregate and validate the complete receipt chain.** R15 runs
-    from dedicated clean worktree/branch `run/inf03-available-source-seven-arm-r15-20260812` at
-    `03f9ae69`; do not edit, prune, or compact it mid-campaign. After terminal receipt, recheck every
-    model, evaluation, claim, sampler, sandbox, teardown, runtime-temp scrub, source identity, and
-    state-scrub edge before comparison. Never resume r4-r14.
+  - [x] **Close seven-arm r15 as a transient structured-output failure with complete teardown.** ✅
+    2026-08-12 — r15 completed the baseline plus four compilation/correctness-4/4 controller-feedback
+    windows, then Claude call ordinal `0010` returned non-timeout exit `1` with exact subtype
+    `error_max_structured_output_retries` and terminal reason `structured_output_retry_exhausted` after
+    five provider-internal attempts. No actor-cell receipt or aggregate was admitted, so r15 is
+    permanently non-rankable. All **7/7** device claims released, all **13** captured PIDs were absent,
+    every recorded cgroup was empty and removed, and the immutable source worktree remained clean at
+    `03f9ae69`.
+  - [x] **Add one bounded, receipt-visible retry for exact structured-output exhaustion and refresh the
+    campaign pin.** ✅ 2026-08-12 — research `537163d5` retries exactly once only for the recognized
+    non-timeout Claude wrapper failure, journals the first and retry attempts separately, and leaves
+    arbitrary non-zero exits and timeouts fail-closed. Research `eb1de388` refreshes the actor-critic
+    campaign identity to those bytes. The admitted Python 3.12 environment passed the full AutoKernel
+    suite: **5,682 tests with one expected failure**. Both commits are pushed and on research `main`.
+  - [x] **Preserve seven-arm r16 as a pre-claim source-identity refusal.** ✅ 2026-08-12 — its static
+    audit observed the new actor entrypoint but the campaign still expected the pre-repair digest, so it
+    refused before controller inference, GPU execution, or device-claim acquisition. The corrected pin
+    is `eb1de388`; r16 carries no empirical or comparison authority.
+  - [ ] **Drive retry-hardened seven-arm r17 to a terminal aggregate and validate the complete receipt
+    chain.** R17 runs from dedicated immutable clean branch/worktree
+    `run/inf03-available-source-seven-arm-r17-20260812` at `eb1de388`; its static audit is `ready` at
+    7/7 and execution is live. Do not edit, prune, compact, stop, or infer a result from the worktree
+    mid-campaign. After terminal receipt, recheck every model/retry, evaluation, claim, sampler, sandbox,
+    teardown, runtime-temp scrub, source identity, and state-scrub edge before comparison. Never resume
+    r4-r16.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims

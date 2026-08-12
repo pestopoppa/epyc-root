@@ -46,6 +46,15 @@ capture, source, hypothesis-store, and physical-envelope inputs are materialized
 commands compose successfully in 12 steps with `state=dry_run_composed` and `executed=false`; no
 inference was performed by this checkpoint. A live matched
 archive still requires two post-reboot clean DECIDED runs.
+The separate availability-conditioned seven-arm controller campaign now runs from an immutable source
+worktree. R15 is terminal-invalid and non-rankable after Claude exhausted its structured-output retries;
+its 7/7 claims released, all 13 captured PIDs were dead, and every cgroup was empty and removed. Research
+`537163d5` adds one exact-cause, receipt-visible retry without retrying timeouts or arbitrary failures;
+`eb1de388` refreshes the campaign pin. The full admitted Python 3.12 AutoKernel suite passed **5,682
+tests with one expected failure**. R16 then refused before claim or inference on the stale expected
+entrypoint identity. Fresh immutable r17 is live from clean `eb1de388`; it has no result authority until
+its terminal receipt chain is complete. This controller comparison is diagnostic and does not replace
+the post-reboot IQK/matched-archive sequence.
 Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
 The live campaign consumes an immutable content-addressed source patch before claim acquisition,
 applies it only through the guarded worktree boundary, and records the exact clean source/build,
@@ -4206,6 +4215,10 @@ will spend kernel-authoring budget rediscovering ports.
   `epyc-inference-research/data/autokernel/prior_art/ak-del-1-k25-q8-mmvq-n1-20260717/`, research
   commit `df02169e`. The catalogue was refreshed against frozen v9 and generic `mul` matching was
   tightened so it cannot misclassify RMSNorm/MUL/RoPE fusion rows.
+- [ ] **AK-DEL-2 — Review and integrate the next bounded gfx90a prior-art catalogue expansion.** The
+  isolated research commit `677a2eec` is proposed work only: review its source/licence pins, catalogue
+  classifications, tests, and interaction with current research `main` before landing it. Do not cite
+  it as an integrated catalogue or use it to route a campaign until that review completes.
 
 Implementation evidence for AK-CAT-1–5 and AK-KM-1 is
 `epyc-inference-research/scripts/kernel_rnd/autokernel/prior_art.py`, its reviewed JSON seed catalogue,
