@@ -2795,10 +2795,10 @@ improve dashboard health.
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — receipt/log findings, teardown, dashboard
   projection, and derived-actionable sweep.
 
-## Compiled Update — 2026-08-12 (AutoKernel 122B decode routing and ROCm provider boundary)
+## Compiled Update — 2026-08-12 (AutoKernel paired decode routing and ROCm provider execution)
 
-**Confidence: verified diagnostic receipt and deterministic source-bound replay on one frozen-v9
-Qwen3.5-122B-A10B UD-IQ2_M p0/tg128 surface; no candidate comparison or release authority.**
+**Confidence: verified diagnostic receipts and deterministic source-bound replays on frozen-v9 122B
+IQ2 and 35B Q8 p0/tg128 surfaces; no causal cross-model comparison or release authority.**
 
 The first governed real-model decode attribution localizes this surface away from the earlier GDN
 hypothesis. At 37.057131 tok/s, summed kernel time is 59.9524% matrix-vector work, 8.0084%
@@ -2808,14 +2808,24 @@ routes 69.3283% of captured time to existing paths, 2.3187% to bounded forward-p
 25.3907% to unmatched families, so the deterministic next scope is catalogue/dispatch work before a
 broader novel-kernel generator.
 
+The governed 35B Q8 sibling control passed at 81.582817 tok/s. Its device time is 42.3760% MMV,
+12.9820% quantize, 6.2201% RMSNorm, 5.5143% FlashAttention, 2.7359% copy, and 1.7678% GDN. Its
+router assigns 62.4344% of captured time to four existing families, 2.7359% to two forward-port
+families, and 33.0644% to ten unmatched families, retaining novel-generator scope because unmatched
+family count remains larger. The pair supports low GDN priority on both exact surfaces but does not
+identify a causal model or quant effect: model size, active parameters, quantization, and dispatch mix
+differ. Routing therefore remains workload-specific and the decisions must not be pooled.
+
 The software-addressable ROCm boundary is now explicit. AutoKernel targets llama-owned kernels and
 dispatch first, then exact-shape rocBLAS/hipBLASLt/CK choice, then standalone Triton/HIP replacements
 integrated through experimental `llama_gpu`. It may fork a source-available ROCm module only in an
 isolated content-addressed build and only when profiling proves that module is the limiter. Serving
 concurrency and scheduling remain separate `serving_runtime` campaigns. Shared `/opt/rocm` is never
 mutated, and opaque vendor binaries may be baselines or dependencies but never champion source. The
-existing provider validator enforces identity and protected-prefix/champion boundaries; acquisition,
-build, isolated installation, execution, linkage, and teardown remain a separately filed lifecycle.
+provider executor at research `a54e36ba` now requires clean pinned source, exact source/tree/tracked-
+file, licence, toolchain, executable and linkage identities, explicit authorization, a no-network
+sandbox, expected outputs, and teardown receipts. Its results remain diagnostic/nonbankable until
+integrated through an experimental `llama_gpu` candidate.
 
 The controller/capture plane advanced without changing those authority limits. R17 is retained only as
 terminal-noncomplete diagnostic history after its EvoEngineer constructor omitted governed source
@@ -2828,8 +2838,8 @@ hook; reference or synthetic tensors cannot substitute.
 
 ### Source References (2026-08-12 AutoKernel decode and providers)
 
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C4-4a
-  identities, attribution, released claims, and deterministic router result.
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — paired
+  RVP-C4-4a/4b identities, attribution, released claims, and deterministic router results.
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — operator-approved ROCm
   target hierarchy, provider/champion boundary, and isolated module lifecycle task.
 - [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r17 repair,

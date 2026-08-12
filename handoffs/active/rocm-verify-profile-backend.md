@@ -640,22 +640,6 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   commit or push occurred. The implementation remains a local diagnostic, the smoke remains
   non-evidence, and producer-dependent closure remains unavailable unless the operator reopens it.
 
-  **Exact OP-11 audit — 2026-08-12, decision still open.** The preserved experimental checkout has
-  HEAD `0db32c06e`, an index exactly matching pushed `0492c2319a79e9bcc4edaa1bfb6af5a096276ab7`,
-  and no untracked files. Its full four-file unstaged diff hashes to
-  `b317f27807cc4ce1107a453d693eb7a3c92dc69fb6182ab094834e50404f81d5` with patch-id
-  `af2183d2ce8de8702dbf05ef41e920fa606ace5c`. Two llama-bench files duplicate the already pushed
-  hardened instrument `a4cb04ca`, so the recommended genuine OP-11 history is a two-file commit on
-  parent `a4cb04ca`: `ggml/src/ggml-cuda/quantize.cu` plus `tests/test-backend-ops.cpp`,
-  `+1795/-64`, plain-diff SHA-256
-  `6dcec2b44322470fd76cbbd1e6223cd5a204b8352339b80189d3c06aa1cbbebf`, patch-id
-  `d2938e29`. The audit found no critical/high hazard; the Q4_K final receipt remains 172/172 PASS
-  (SHA-256 `355bdcf169cb8682d2f56e1754b321f770a0fe3c0bbc5f6e1dc58eaffb443fb2`), the stateful campaign
-  remains 5,184/5,184, and sensitivity/specificity remain 1.0. **Recommendation remains Option A for
-  this exact two-file core; no commit or push is authorized until the operator approves OP-11.**
-
-- [x] **RVP-C2-11 — superseded by RVP-C4-4.** The --gen-tokens patch this row parked was landed independently as research `c38bf49a` (main `1527ea49`) with the phase field and the governed decode capture (RVP-C4-4a); the parked patch artifact remains for provenance. ✅ 2026-08-12
-
 - [x] **RVP-C4-4 — Make the rocprof-v1 attribution workload phase explicit.** ✅ 2026-08-12 —
   research `c38bf49a` (promoted to `main` as `1527ea49`) adds `--gen-tokens`, preserves the historical
   prefill-only default, threads the requested generation count to `llama-bench -n`, rejects negative
@@ -676,7 +660,24 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     decoding. Replay classified 11 admitted families / **69.3283%** of captured time as existing-path
     work, two / **2.3187%** as forward-port candidates, and eight / **25.3907%** as unmatched. The
     deterministic recommendation is `expand_catalogue_before_novel_generator`; this is routing,
-    not a performance verdict.- [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
+    not a performance verdict.
+  - [x] **RVP-C4-4b — Capture and route the governed 35B Q8 decode control.** ✅ 2026-08-12 — the
+    source-bound p0/tg128 run on Qwen3.6-35B-A3B-MTP-Q8_0 passed at **81.582817 tok/s**. Summed device
+    time was MMV **42.3760%**, quantize **12.9820%**, RMSNorm **6.2201%**, FlashAttention **5.5143%**,
+    copy **2.7359%**, and GDN **1.7678%**. Receipt
+    `/mnt/raid0/llm/autokernel/probes/rvp-c4-4a-35b-q8-decode-20260812T194500Z/receipt.json`, file
+    SHA-256 `0ca812e34c8c7c939c9b9d5eac90941dcad603236a7fbed85ade3c839316d2ce`; CSV SHA-256
+    `670819fbd7b33094bba4a8904667196d6eccade78296c8d0a632aa3fd29d18dd`. Sixty-one device samples
+    covered the measurement window and both claims released cleanly. Its deterministic replay routes
+    four families / **62.4344%** of captured time to existing paths, two / **2.7359%** to forward-port
+    candidates, and ten / **33.0644%** to unmatched work, yielding `retain_novel_generator_scope`.
+    Paired outputs are `rvp-c4-4a-iq2-decode-20260812-prior-art.json` (SHA-256
+    `8037bf5eec8b7be71d29f2714ee1469dc83dc7e7ab6d2063b379b874e22025ec`) and
+    `rvp-c4-4a-q8-decode-20260812-prior-art.json` (SHA-256
+    `c5a6190f0c6d6c6ff6c606f3b3a9640e08c0688381e6fe178f188f20c62163fd`). This sibling control
+    corroborates low GDN priority, but model size, active parameters, and quant differ, so it is not a
+    causal model/quant comparison and the two workload-specific router decisions must not be pooled.
+- [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
   the value distribution. This is the anti-shape-detection device, and it targets something we
   actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can
   learn to satisfy without being correct. The durable research reducer/runner is in `1a4d7dca`

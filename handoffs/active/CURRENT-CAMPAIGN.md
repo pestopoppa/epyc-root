@@ -18,8 +18,9 @@
 > `b0d6f79f` prospectively emits strict feedback-only belief rows. R18 runs from dedicated clean
 > source `17b9208d8cc27e1af99408655b91401110b6acc6`; its baseline is complete and its first actor cell
 > is active. **Do not edit its worktree, infer a result from partial receipts, aggregate, rank, bank,
-> promote, release, or resume r4–r17.** Research `main` is later at `6103bde8` only because the
-> non-executing rocprof-v1 router was merged after r18's source was sealed. Owner:
+> promote, release, or resume r4–r17.** Research `main` is later at `a54e36ba` only because the
+> non-executing rocprof-v1 router and governed source-available ROCm provider lifecycle were merged
+> after r18's source was sealed. Neither is part of r18. Owner:
 > [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) INF-03.
 
 > **🟡 2026-08-12 — INF-03 R14 FAILED CLOSED ON SOURCE-IDENTITY DRIFT; SEVEN-ARM R15 IS
