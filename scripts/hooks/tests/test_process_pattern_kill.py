@@ -120,3 +120,17 @@ def test_a_path_argument_actually_scans_that_path() -> None:
     scan = str(HOOKS / "process_pattern_kill_scan.py")
     r = subprocess.run([sys.executable, scan, name], input="", capture_output=True, text=True)
     assert r.returncode == 0 and r.stdout.startswith("kill-pattern"), (r.stdout, r.stderr)
+
+
+def test_narrowed_to_pkill_only_pgrep_passes_the_hook() -> None:
+    """Operator decision 2026-08-12 (C46 aftermath): pgrep SELECTS, it does not
+    kill. The scanner still classifies it (grep-pattern) but the hook allows it —
+    read-only sensing (coordinator bringup, inference_load_check) must not be
+    blocked. This test pins the narrowing so it cannot be silently re-widened
+    (or un-narrowed) without the change announcing itself.
+    """
+    import json
+    payload = json.dumps({"tool_input": {"command": "pgrep -af llama-server"}})
+    r = subprocess.run(["bash", str(HOOKS / "check_process_pattern_kill.sh")],
+                       input=payload, capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr

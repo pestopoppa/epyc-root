@@ -24,8 +24,8 @@ SCAN="$(dirname "${BASH_SOURCE[0]}")/process_pattern_kill_scan.py"
 # still refuse a literal `pkill`/`pgrep` at a command position, because a missed
 # pattern kill costs another session's work and a false block costs a rephrase.
 if ! command -v python3 >/dev/null 2>&1 || [[ ! -f "$SCAN" ]]; then
-  if echo "$CMD" | grep -qE '(^|[;&|]|\s)(pkill|pgrep)\s'; then
-    echo "BLOCKED: the pattern-kill scanner is unavailable and this command invokes pkill/pgrep." >&2
+  if echo "$CMD" | grep -qE '(^|[;&|]|\s)(pkill)\s'; then
+    echo "BLOCKED: the pattern-kill scanner is unavailable and this command invokes pkill." >&2
     echo "Refusing rather than guessing. Kill a PID you captured yourself, or use TaskStop." >&2
     exit 2
   fi
@@ -46,16 +46,17 @@ case "$VERDICT" in
     exit 2
     ;;
   grep-pattern)
-    echo "BLOCKED: pgrep against a NAME PATTERN. The rule covers pgrep too, because the PIDs it" >&2
-    echo "returns are what gets killed next — the selection is the dangerous step, not the signal." >&2
-    echo "" >&2
-    echo "Use instead: a pid you captured at launch, pgrep -P <ppid> / -s <sid> (pid-scoped), or" >&2
-    echo "ps -o pid,lstart,args -p <pid> to inspect one process you already own." >&2
-    exit 2
+    # NARROWED TO pkill-ONLY, operator decision 2026-08-12 (C46 aftermath): pgrep
+    # SELECTS, it does not kill — blocking it collided with legitimate read-only
+    # sensing (the coordinator skill's bringup, inference_load_check.py, the
+    # daemon itself) and forced a doc rewrite to accommodate an unapproved scope.
+    # The CLAUDE.md rule still counsels against pgrep name patterns; enforcement
+    # here covers the kill. Selection feeding a kill is caught at the kill.
+    exit 0
     ;;
   SCANNER-FAILED)
-    if echo "$CMD" | grep -qE '(^|[;&|]|\s)(pkill|pgrep)\s'; then
-      echo "BLOCKED: the pattern-kill scanner errored and this command invokes pkill/pgrep." >&2
+    if echo "$CMD" | grep -qE '(^|[;&|]|\s)(pkill)\s'; then
+      echo "BLOCKED: the pattern-kill scanner errored and this command invokes pkill." >&2
       echo "Refusing rather than guessing." >&2
       exit 2
     fi
