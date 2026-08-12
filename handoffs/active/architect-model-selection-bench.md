@@ -800,12 +800,33 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
   dequant cost. Practical read: on GPU take **Q8_0** — better quality, +0.9 GiB VRAM, no throughput
   penalty. A quant choice justified on CPU evidence does not transfer to GPU.
 
-- [ ] **Does production GPU serving leave ~13% of decode on the table with `-fa on`?** The incumbent
-  measured **12.9% faster decode with `-fa 0`** (101.44 vs 90.86 tg128, far outside a ±0.9 stddev),
-  replicating the known gfx90a pattern — but `architect_bench_gpu_lib.sh` launches `-ngl all -fa on`.
-  **Do not act on this without a server-arm check**: it is a base-decode `llama-bench` reading, and FA
-  interacts with both MTP and long-context KV, either of which could reverse it. LFM is `-fa 1`-optimal
-  on every metric, so this is incumbent-specific.
+- [ ] **`-fa 0` measured 12.9% faster decode for gemma4 on gfx90a — FORWARD-relevant, not a live
+  production defect.** Corrected framing (`mainC`, 2026-08-12): I first wrote this as "production GPU
+  serving may leave 13% on the table". It is not — **`worker_general` is not GPU-served today**
+  (`stack_priors.yaml`: `device: null`, `n_gpu_layers: null`). The GPU-served roles are
+  `architect_general`, `coder_escalation`, `vision_escalation` and `worker_vision`. What I measured is a
+  *bench* launcher (`architect_bench_gpu_lib.sh`, `-ngl all -fa on`) on a model production serves on CPU.
+  It still matters for two reasons: the operator confirms `worker_general` **may move to GPU in future**,
+  and the `-fa 0` advantage replicates a known gfx90a/CDNA2 pattern that could apply to the roles which
+  *are* GPU-served. Reading: 101.44 vs 90.86 tg128, far outside a ±0.9 stddev.
+  **Do not act on it without a server-arm check** — it is base-decode `llama-bench`, and FA interacts
+  with both MTP and long-context KV, either of which could reverse it. LFM is `-fa 1`-optimal on every
+  metric, so this is gemma-specific.
+
+- [ ] **WG-LFM-5 — we may have benched the wrong family member. Check for a NON-REASONING LFM2.5-2.6B.**
+  Raised by the operator asking whether the verbosity is documented upstream (2026-08-12). It is not
+  documented as an LFM2.5 defect — Liquid AI claim the *opposite*, that LFM2.5-1.2B-Thinking needs
+  **fewer** output tokens than Qwen3-1.7B in thinking mode. But their own guidance is decisive for us:
+  they recommend the **`-Instruct`** variant "for standard chat and creative writing, where reasoning
+  traces might add unnecessary latency" — which is precisely the `worker_general` profile and precisely
+  the 15.2× token-count penalty we measured.
+  So the WG-LFM-2 conclusion should be stated more narrowly than I did: **`LFM2.5-2.6B` as benched has a
+  habit it cannot switch off** — but the vendor ships a variant intended for exactly this use case, and
+  we never tested it. `LFM2.5-1.2B-Instruct` certainly exists; whether a **2.6B** Instruct exists is
+  **unconfirmed** — a web search was inconclusive and one source suggests LFM2 scores are reported using
+  instruct variants in non-thinking mode, which does not settle it. **Resolve by checking the LiquidAI HF
+  org directly, not by inference.** If a 2.6B non-reasoning variant exists, it is the candidate that
+  should have been benched, and the whole verdict needs re-running against it before LFM2.5 is dismissed.
 
 - [ ] **Any eval harness pointed at LFM2.5 MUST apply its chat template or it will UNDER-SCORE it.**
   A first correctness pass using *raw completion* made LFM look wrong on a sequence item — it emitted
