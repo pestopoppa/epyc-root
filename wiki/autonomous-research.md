@@ -1042,3 +1042,59 @@ broaden those contracts in opposite directions.
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning r9-r11 checklist, next terminal gate, and authority boundary
 - [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — separation from the matched-archive and champion gates
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commits, artifact hashes, ratios, and cleanup evidence
+
+## Compiled Update — 2026-08-12: feedback is part of the loop only when the next planner consumes it
+
+**Confidence: verified for the live controller behavior and confinement failures; neither measured
+ratio is a performance claim.** R12 supplied the first direct proof that AutoKernel's critic output is
+causal input to later search rather than terminal narration. The first correct candidate measured
+`0.9967805648538064×` and received `revise`. The next planner cited that exact result, prohibited the
+rejected unmasked-fastpath mechanism, corrected an infeasible autotune suggestion against the pinned
+launcher contract, and proposed a distinct shared-offset/vectorized-streaming mechanism. The second
+correct candidate measured `1.0059084616458236×` and received `accept`. Both ratios were explicitly
+inside noise; the evidence is mechanism diversity under measured feedback, not speedup.
+
+The same attempt exposed a boundary rule: a confined child must not independently reconstruct evidence
+the parent already owns. R12 finished all six model calls and three brokered evaluations, then failed
+while the controller re-opened `/usr/bin/docker` to rebuild host runtime identity. The repair makes the
+parent's self-hashed model-receipt chain authoritative and validates the producer's actual flat receipt
+layout. The fresh r13 attempt then exposed another instance of the same capability class: Claude tried
+to create `/mnt/raid0/llm/tmp/claude-1000` outside its admitted runtime paths. The baseline and first
+planner receipt persisted, every captured PID died, and all controller/model cgroups were verified empty
+and removed. The repair now refuses inherited host scratch, stages a fresh call-scoped temp/runtime
+directory inside the governed workspace, records its relative path and non-inheritance in the model
+sandbox receipt, and verifies removal. It still needs a campaign-pin refresh and fresh live proof.
+Both failed attempts remain partial and non-rankable.
+
+The broader design lesson is that a controller loop needs three explicit interfaces: feedback carried
+forward as bounded structured state, host attestations produced once at the authority boundary that can
+read them, and runtime directories staged prospectively inside the child sandbox. Recomputing any of
+these implicitly turns a successful model/evaluator sequence into a late non-terminal failure.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 attempt ledger, receipt authority, and fresh-attempt gate
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — feedback-memory completion evidence and separation from archive/champion authority
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact r12/r13 receipts, hashes, measurements, failure paths, and teardown evidence
+
+## Compiled Update — 2026-08-12: repair derived evidence semantics before spending the empirical run
+
+**Confidence: verified for the current implementation gaps.** AutoKernel's matched-archive machinery is
+implemented, but its prepared IQK inputs still fail six semantics/provenance requirements: proposal-v4
+identity does not mechanically govern every derived seed and frame; the held-out regime is a placeholder;
+the control reducer can consume the intervention falsifier; intervention/control diagnostics can clone
+semantics rather than derive them independently; AP-WM/report output does not yet fail closed on real-only
+archive provenance; and there is no exact command that regenerates both v4 input trees byte-for-byte.
+
+These are not reasons to postpone the program until after reboot. They are precisely the class of cheap,
+offline defects that must close before a reboot-gated campaign: otherwise a clean empirical run can still
+produce an archive that the downstream evaluator must refuse. The durable rule is **rehearse the evidence
+product, not just the executable**. Every identity-derived field, held-out distinction, falsifier, semantic
+diagnostic, provenance edge, and regeneration command must survive exact current-schema replay before
+spending the measurement window.
+
+### Source References
+
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-WM-2a task-level repair contract and real-archive boundary
+- [`handoffs/active/CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — live pre-reboot ordering and refusal posture
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — audit finding-to-task mapping and no-inference wrap boundary

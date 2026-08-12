@@ -7,26 +7,34 @@
 
 ---
 
-> **🟡 2026-08-12 — INF-03 AVAILABLE-SOURCE 7/7 ATTEMPT R11 IS LIVE; FIRST FULL REAL
-> ACTOR-CRITIC LOOP COMPLETE.** R9 stopped before Claude when broker `sendall()` selected a denied
-> `sendto`; r10 banked its starting evaluation and completed the first real Claude planner request,
-> then refused when staged model state was counted as a task mutation. Research `6270ebc1`,
-> `cd1303b9`, `eb00c411`, `2525f2f7`, and `7b20b5d6` close those implementation and pinning seams.
-> R11 has now completed starting evaluation, Claude planning, a digest-pinned Docker Codex actor,
-> candidate GPU evaluation, and Claude critique. The candidate passed compilation/correctness but
-> regressed to `0.993531469254354×`; the critic selected `revise`, the starting source was restored,
-> and iteration 2 began. **Do not interpret, aggregate, rank, bank, promote, or release from this live
-> partial.** Owner: [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) INF-03.
+> **🟡 2026-08-12 — INF-03 R12 PROVED LIVE FEEDBACK PROPAGATION; R13 EXPOSED THE NEXT
+> CONFINED-RUNTIME GAP.** R12 iteration one measured `0.9967805648538064×` and received `revise`;
+> iteration two explicitly rejected that mechanism, proposed a distinct shared-offset/vectorized path,
+> measured `1.0059084616458236×`, and received `accept`. Both compiled and passed correctness, and
+> both ratios remain inside noise. R12 then failed final receipt construction by reopening
+> `/usr/bin/docker` inside the confined controller; research `4b516e9f` and pin `f316bf31` move host
+> attestation to the parent broker. Seven-arm r13 completed baseline and persisted planner receipt
+> ordinal `0001`, then failed `EACCES` creating `/mnt/raid0/llm/tmp/claude-1000`; all captured PIDs are
+> dead and all controller/model cgroups were verified empty and removed. Research `268115ad` now stages,
+> receipts, and scrubs a call-scoped runtime-temp directory under the governed workspace; its campaign
+> pin remains to be refreshed. **R12 and r13 are immutable partial/non-rankable attempts. Pin the repair
+> and launch fresh; do not aggregate,
+> rank, bank, promote, or release either partial.** Owner:
+> [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) INF-03.
 
-> **🟡 2026-08-12 — AUTOKERNEL V9 CONTROLS PASS; CPU IQK WAITS ONLY FOR THE RATIFIED REBOOT
-> GATE.** `ak-controls-v9-a4cb04ca-20260812-r2` is an accepted `5/5`, `may_rank=true` control
+> **🟡 2026-08-12 — AUTOKERNEL V9 CONTROLS PASS; SIX AK-WM INPUT/PROVENANCE DEFECTS MUST
+> CLOSE BEFORE THE RATIFIED REBOOT.** `ak-controls-v9-a4cb04ca-20260812-r2` is an accepted `5/5`, `may_rank=true` control
 > bundle under frozen v9 and hardened instrument `a4cb04ca8`; the historical IQK arm promoted.
 > The prepared full-host CPU IQK campaign then refused before claim/build/benchmark because uptime
 > was `13.47 days`, beyond the one-week measurement ceiling. Preserve the journal and current bundle;
 > the deployed Kernel-R&D surface now reports frozen v9, `8/8` preflight, `5/5` controls, GPU
 > `NOT_REPRODUCED`, and the reboot-gated refusal from durable evidence. Its global data-health verdict
 > remains absent until the real campaign can report champion, headroom, and release-package state.
-> **OP-16 recommends an orderly reboot after all mains wrap.** Post-reboot, create the `agent` tmux
+> An audit found six non-operator implementation defects: proposal identity-derived seed/frame drift,
+> a placeholder held-out regime, the wrong control falsifier reducer, cloned diagnostic semantics,
+> missing real-only AP-WM/report provenance, and no exact proposal-v4 regeneration command. Close all
+> six and regenerate the v4 input trees before reboot. **OP-16 recommends an orderly reboot after all
+> mains wrap.** Post-reboot, create the `agent` tmux
 > session required by session-bus C20 before respawning the established roster; then rerun CPU IQK,
 > construct the real matched archive, and execute the
 > least-commitment analysis observe-only. Owner: [autokernel-research-loop.md](autokernel-research-loop.md)

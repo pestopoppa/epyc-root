@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** V9 CONTROLS 5/5 PASS / CPU IQK READY AFTER REQUIRED REBOOT / MATCHED ARCHIVE NEXT — updated 2026-08-12
+**Status:** V9 CONTROLS 5/5 PASS / AK-WM PRE-REBOOT REPAIR REQUIRED / MATCHED ARCHIVE NEXT — updated 2026-08-12
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -195,16 +195,25 @@ The run-specific CPU/GPU authorizations do not extend to producer commits, promo
 actions. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
 
-The concurrent GPU-side INF-03 path has not changed that evidence posture. Research `6270ebc1`,
-`cd1303b9`, `eb00c411`, `2525f2f7`, and `7b20b5d6` close the controller-side evaluator import,
-inherited-descriptor broker write, semantic-task/state separation, and pinning defects exposed by
-r8-r10. R9 stopped pre-Claude when `socket.sendall()` selected denied `sendto`; r10 completed the
-starting evaluation and first real Claude planner request, then refused because staged model state
-was misclassified as a task mutation. Fresh r11 is live and has completed its first full real
-planner→Docker Codex actor→centralized GPU evaluation→critic loop. The candidate passed
-compilation/correctness but regressed to `average_speedup=0.993531469254354`; the critic selected
-`revise`, the starting source was restored, and iteration 2 began. R9/r10 are immutable partials and
-r11 remains incomplete and non-rankable. None can satisfy AK-WM-2a or any proposal/champion gate.
+The concurrent GPU-side INF-03 path has not changed that evidence posture. R12 supplied the first live
+proof that measured critic feedback changes the next planner proposal: iteration one compiled and
+passed correctness at `average_speedup=0.9967805648538064`, the critic selected `revise`, and
+iteration two explicitly rejected the first unmasked-fastpath mechanism before proposing a distinct
+shared-offset/vectorized-streaming mechanism. That candidate also compiled and passed correctness at
+`average_speedup=1.0059084616458236`; the critic selected `accept` while correctly stating that the
+0.6% ratio remained inside noise. R12 then failed during final receipt construction because the
+confined controller re-hashed `/usr/bin/docker` even though host runtime attestation belongs to the
+parent broker. Research `4b516e9f` moves that authority to the parent model-receipt chain and repairs
+validation of the flat model-receipt layout; `f316bf31` pins the repair. The full AutoKernel suite
+passed 5,660 tests with one expected failure. R12 is immutable partial/non-rankable evidence of loop
+behavior, not performance. Seven-arm r13 then completed its baseline and persisted planner model receipt
+ordinal `0001`, but the confined Claude runtime failed `mkdir '/mnt/raid0/llm/tmp/claude-1000'` with
+`EACCES`. All captured PIDs are dead and every controller/model cgroup was verified empty and removed.
+R13 is therefore a terminal immutable partial with no controller cell receipt or aggregate, and remains
+non-rankable. Research `268115ad` replaces inherited host scratch with a fresh call-scoped runtime
+directory inside the governed workspace, records its relative path and non-inheritance in the model
+sandbox receipt, and verifies removal. The campaign manifest still needs to pin that commit before a
+fresh attempt. Neither r12 nor r13 can satisfy AK-WM-2a or any proposal/champion gate.
 
 **Read-only evidence-authority audit (2026-08-12):** the RVP-T0-1 saturation pair and the
 AK-BH-1/2/3 plus AK-LN-2/AK-X-5a receipts are durable diagnostic evidence. They retain commands,
@@ -311,6 +320,21 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   has no terminal aggregate, and carries no comparison, belief, bank, champion, promotion, or release
   authority. Terminal receipt-chain validation remains owned by
   [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md).
+- [x] **AK-AUD-13 — Prove measured critic feedback changes the next live proposal and close the
+  confined host-runtime re-hash defect.** ✅ 2026-08-12 — r12 iteration one measured
+  `0.9967805648538064×` and received `revise`; iteration two named and rejected that mechanism,
+  proposed a distinct shared-offset/vectorized-streaming path, measured `1.0059084616458236×`, and
+  received `accept`. Both candidates compiled and passed 4/4 correctness, and both ratios remain
+  inside noise. R12 then failed while constructing the final receipt because the confined controller
+  reopened `/usr/bin/docker`. Research `4b516e9f` makes the parent broker receipt chain authoritative
+  for host runtime identity and validates the actual flat model-receipt layout; `f316bf31` refreshes
+  the campaign pin. The full AutoKernel suite passed 5,660 tests with one expected failure. Seven-arm r13
+  subsequently failed after baseline and planner receipt ordinal `0001` because confined Claude could not
+  create `/mnt/raid0/llm/tmp/claude-1000`; its captured PIDs are dead and its controller/model cgroups
+  were verified empty and removed. Research `268115ad` now creates an exact call-scoped runtime/temp
+  directory under the governed workspace, binds its non-inheritance and relative path in the sandbox
+  receipt, and removes it after the model call. R13 remains a terminal immutable partial/non-rankable
+  attempt; the repair must be pinned and proven by a fresh campaign.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
@@ -2847,6 +2871,24 @@ evaluator or its own scope, and T1 may legally guide search.
     statement. A dry-run followed by execute under the same campaign identity remains idempotent: one
     OPENED record is retained and separate composition/live authorizations are journaled so the archive
     can bind the live spend exactly. The post-rebase suite passed **5,599 tests** with one expected failure.
+  - [ ] **Repair identity-derived seed and frame binding before the reboot campaign.** Regenerate every
+    capture seed, target/non-target frame, and dependent digest from the final proposal-v4 identity;
+    refuse a plan, journal record, or archive projection whose copied values disagree with that derivation.
+  - [ ] **Replace the placeholder held-out regime with a genuinely withheld prospective regime.** The
+    held-out outcome must come from a predeclared regime excluded from proposal construction and tuning;
+    relabelling or replaying the construction regime must fail archive admission.
+  - [ ] **Make the control reducer evaluate the control proposal's own falsifier.** Bind the falsifier,
+    reducer inputs, result, and authorization to the control hypothesis identity; refuse intervention-
+    reducer reuse or any cross-proposal falsifier drift.
+  - [ ] **Eliminate cloned diagnostic semantics across the intervention/control pair.** Produce each
+    campaign's diagnostic block from its own native journal outcomes and verify its semantic frame;
+    byte-cloned labels, values, or meanings must not satisfy the matched one-factor contract.
+  - [ ] **Close the real-only AP-WM/report provenance gap.** Make observe-only AP-WM and its report reject
+    fixture/synthetic/dry-run inputs and bind the exact real archive, source campaigns, projection plan,
+    evaluator version, and output digest so a report cannot outlive or impersonate its evidence.
+  - [ ] **Publish one exact proposal-v4 regeneration command.** Add and test the repository-relative,
+    copy-pasteable command that rebuilds both IQK proposal/capture/source/hypothesis input trees from
+    authoritative committed inputs byte-for-byte; document expected output hashes and refuse drift.
 - [ ] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol,
   matched-intervention validation, per-regime/surface results, noise floor, robust sign error, and
   recoding stability. Until real evidence shows invariant independent signal, do not add weakness,

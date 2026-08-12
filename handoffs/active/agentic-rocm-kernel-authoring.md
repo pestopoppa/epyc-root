@@ -1,11 +1,11 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: supervise the fresh r11 governed 7/7 attempt to its terminal aggregate,
-then validate the complete receipt chain before any comparison. Never reuse r4-r10 or aggregate the
+**Next action (2026-08-12)**: pin the confined Claude runtime-temp repair, then launch a fresh governed
+7/7 attempt and validate its complete receipt chain before comparison. Never reuse r4-r13 or aggregate the
 one-task pilot into the panel.
 The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r9-r11 first complete actor-critic loop checkpoint)
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r12 feedback proof; seven-arm r13 Claude runtime-path refusal)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -505,17 +505,35 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     the starting-state evaluation and completed the first real Claude planner request, then correctly
     stopped before actor execution when its mutation guard counted the controller's staged session and
     config as task source. The ephemeral state was scrubbed. Research `2525f2f7` separates semantic
-    task files from model state and `7b20b5d6` refreshes the manifest pin. Fresh r11 has completed one
-    full real planner → digest-pinned Docker Codex actor → centralized GPU evaluation → Claude
-    critic loop. The candidate passed compilation and 4/4 correctness but regressed to
-    `average_speedup=0.993531469254354`; the critic selected `revise`, the measured starting source was
-    restored, and iteration 2 began. R9/r10 remain immutable partial diagnostics, and r11 remains live,
-    incomplete, non-rankable, and without aggregate, belief, bank, champion, promotion, or release
-    authority.
-  - [ ] **Complete and validate INF-03 r11 before interpreting the available-source panel.** Allow the
-    already-running attempt to reach a terminal aggregate, verify every model/evaluation/claim/sampler/
-    sandbox chain and state scrub, then interpret only the complete availability-conditioned result.
-    Never resume or aggregate r4-r10.
+    task files from model state and `7b20b5d6` refreshes the manifest pin. R11 completed the first full
+    real planner → digest-pinned Docker Codex actor → centralized GPU evaluation → Claude critic
+    loop, but was stopped as an immutable non-rankable partial after repeated mechanisms exposed the
+    missing feedback seam.
+  - [x] **Close r11 without interpreting it and prove measured critic feedback alters the next live
+    proposal.** ✅ 2026-08-12 — r12 iteration one compiled and passed 4/4 correctness at
+    `average_speedup=0.9967805648538064`; its critic selected `revise`. Iteration two's planner cited
+    that exact measurement, forbade the rejected unmasked-fastpath mechanism, corrected the infeasible
+    autotune suggestion from the fixed launcher contract, and proposed a distinct shared-offset/
+    vectorized-streaming mechanism. It also compiled and passed 4/4 correctness at
+    `average_speedup=1.0059084616458236`; the critic selected `accept` while acknowledging that the
+    ratio remained inside noise. This proves feedback propagation, not a kernel speedup.
+  - [x] **Move host actor-runtime attestation out of the confined controller and pin the repair.** ✅
+    2026-08-12 — after all six model calls and three brokered evaluations, r12 finalization failed by
+    reopening `/usr/bin/docker` inside Landlock. Research `4b516e9f` makes the parent model-receipt
+    chain authoritative for host runtime identity and validates the actual flat model-receipt layout;
+    `f316bf31` pins the source. The full AutoKernel suite passed 5,660 tests with one expected failure.
+  - [x] **Close INF-03 seven-arm r13 as an immutable partial and identify its confined-runtime failure.**
+    ✅ 2026-08-12 — the baseline completed and planner model receipt ordinal `0001` persisted, then
+    Claude failed exactly `EACCES: permission denied, mkdir '/mnt/raid0/llm/tmp/claude-1000'` before a
+    completed planner response. All captured PIDs are dead and every controller/model cgroup was verified
+    empty and removed. R13 has no controller cell receipt or aggregate and is permanently non-rankable.
+  - [x] **Repair the confined Claude runtime temp path.** ✅ 2026-08-12 — research `268115ad` refuses
+    inherited host scratch for direct model clients, creates a fresh call-scoped directory under the
+    governed workspace, binds the relative path plus `ambient_host_temp_inherited=false` into the model
+    sandbox receipt, and verifies deletion after every call. The campaign manifest still pins its parent.
+  - [ ] **Pin `268115ad` and launch a fresh seven-arm attempt.** Require a terminal aggregate and validate
+    every model, evaluation, claim, sampler, sandbox, teardown, runtime-temp scrub, and state-scrub edge
+    before interpretation. Never resume r4-r13.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims
