@@ -1793,6 +1793,25 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `chat_routing.py:230`'s `if binding_router is not None:` guards the entire override block;
       `_classify_and_route_proactive` has zero callers. Flipping `features().binding_routing` does
       nothing because the `BindingRouter` is never constructed.
+      - **RE-DERIVED 2026-08-12 (`mainC`) — HOLDS, and this row UNDERSTATES it.** The feature is
+        dead at **three independent layers**, any one of which alone would be enough:
+        (1) `BindingRouter()` appears exactly once in the tree, at `src/routing_bindings.py:19`,
+        and that line is **inside a docstring Usage example** — never constructed in code;
+        (2) `state.binding_router` is declared and never assigned;
+        (3) the guard's **one production caller**, `src/api/routes/chat_routing.py:325`, calls
+        `_classify_and_route(prompt, context, has_image=has_image)` and **omits the argument** —
+        every other caller in the tree is a test. The flag is a fourth layer of inertness.
+      - **Two of this row's three anchors had rotted**, which is why re-deriving mattered:
+        `chat_routing.py` now lives under `src/api/routes/`, and `_classify_and_route_proactive` —
+        the function this row names — **no longer exists at all**. The finding underneath survived
+        the rot; the addresses did not.
+      - **Instrumented, not fixed** (orchestrator `tests/unit/test_binding_router_tripwire.py`):
+        one test per dead layer, each failing the moment that layer is wired, so whoever wires one
+        is forced to wire the REST of the chain instead of landing a layer that silently does
+        nothing — which is how this reached three dead layers. Layer 3 is pinned by the CALL SHAPE,
+        not a line number, precisely because this row's own anchors rotted.
+      - **Box left unchecked deliberately** — nothing is fixed. The decision is still open: wire the
+        whole chain, or retire `binding_routing` and its machinery on purpose.
 - [ ] **Ten fully-built, fully-tested, zero-production-importer modules** (1-3 test importers, 0
       production importers), incl. `src/mutation_ledger.py`, whose docstring asserts "the autopilot
       accept-path consults the ledger" — it does not.
