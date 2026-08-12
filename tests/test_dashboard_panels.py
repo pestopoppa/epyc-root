@@ -874,8 +874,30 @@ class KernelActivityContextTest(unittest.TestCase):
                 "campaign_id": "controls-current", "inference_executed": False,
             }), encoding="utf-8")
 
+            panel_path = root / "campaigns" / "ak-le-r3" / "panel" / "panel.json"
+            panel_path.parent.mkdir(parents=True)
+            panel_path.write_text(json.dumps({
+                "schema": "epyc.autokernel.loop_experiment_planner_panel.v1",
+                "experiment_id": "ak-le-r3", "status": "complete",
+                "capture_mode": "measured_model_output",
+                "authority": "observe_only_no_campaign_ranking_champion_or_release_authority",
+                "observations": [{"cell_id": f"cell-{n}"} for n in range(8)],
+            }), encoding="utf-8")
+            rehearsal_path = root / "rehearsals" / "fault-r1" / "receipt.json"
+            rehearsal_path.parent.mkdir(parents=True)
+            rehearsal_path.write_text(json.dumps({
+                "schema": "epyc.autokernel.host_process_fault_rehearsal.v1",
+                "campaign_id": "fault-r1", "status": "PASS",
+                "capture_mode": "measured_host_process_rehearsal",
+                "process_selection": "captured_children_only_no_name_pattern_scan",
+                "live_claim_root_touched": False,
+                "authority": {"promotion": False},
+                "legs": [{"name": name, "status": "PASS"}
+                         for name in ("restart", "revocation", "tamper")],
+            }), encoding="utf-8")
+
             state = server.autokernel_current_state(
-                probes.parent, attestation, production, root / "controls")
+                probes.parent, attestation, production, root / "controls", root)
 
         self.assertEqual(state["fixed_campaign"]["status"], "refused")
         self.assertEqual(state["fixed_campaign"]["ready_arms"], 6)
@@ -903,6 +925,13 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertAlmostEqual(
             state["gpu_prefetch_replay"]["median_relative_delta"], 0.0124423)
         self.assertEqual(state["gpu_prefetch_replay"]["device_sample_count"], 2544)
+        self.assertEqual(state["loop_engineering"]["panel_status"], "complete")
+        self.assertEqual(state["loop_engineering"]["completed_cells"], 8)
+        self.assertFalse(state["loop_engineering"]["reduced"])
+        self.assertIn("not a result", state["loop_engineering"]["note"])
+        self.assertEqual(state["fault_rehearsal"]["status"], "PASS")
+        self.assertEqual(state["fault_rehearsal"]["passed_legs"], 3)
+        self.assertFalse(state["fault_rehearsal"]["live_claim_root_touched"])
         self.assertTrue(
             state["production_kernel"]["checkout"]["matches_attestation"])
         self.assertIn("AutoKernel initialization excluded",
@@ -925,13 +954,15 @@ class KernelActivityContextTest(unittest.TestCase):
             root = Path(td)
             state = server.autokernel_current_state(
                 root / "no-probes", root / "no-attestation.json",
-                root / "no-production-repo", root / "no-controls")
+                root / "no-production-repo", root / "no-controls", root / "no-state")
         self.assertFalse(state["fixed_campaign"]["available"])
         self.assertFalse(state["available_source_diagnostic"]["available"])
         self.assertFalse(state["empirical_smoke"]["available"])
         self.assertFalse(state["instrument_preflight"]["available"])
         self.assertFalse(state["decision_controls"]["available"])
         self.assertFalse(state["gpu_prefetch_replay"]["available"])
+        self.assertFalse(state["loop_engineering"]["available"])
+        self.assertFalse(state["fault_rehearsal"]["available"])
         self.assertFalse(state["production_kernel"]["available"])
         self.assertFalse(state["promotion_claim"])
 

@@ -250,6 +250,7 @@ function renderCurrentState(d){
   const avail=s.available_source_diagnostic||{}, smoke=s.empirical_smoke||{};
   const controls=s.decision_controls||{}, preflight=s.instrument_preflight||{};
   const replay=s.gpu_prefetch_replay||{}, coverage=s.receipt_coverage||{};
+  const loop=s.loop_engineering||{}, fault=s.fault_rehearsal||{};
   let h='<div class="state-grid">';
 
   h+='<div class="state-card production"><h3>Production kernel · operator attestation</h3>';
@@ -352,6 +353,26 @@ function renderCurrentState(d){
     h+='<div class="detail">measured on <code>'+esc(replay.source_branch||"—")+'</code> @ <code>'+esc((replay.source_commit||"").slice(0,12))+'</code> · no promotion authority</div>';
   } else h+='<div class="muted">ROCm replay receipt unavailable: '+esc(replay.error||"not found")+'</div>';
   h+=evidenceLine(replay)+'</div>';
+
+  h+='<div class="state-card"><h3>Loop engineering · AK-LE-1/2</h3>';
+  if(loop.available){
+    const complete=loop.panel_status==="complete"&&loop.completed_cells===loop.total_cells;
+    h+='<div class="headline '+(loop.reduced?'ok':'sec-refused')+'">'+esc(loop.completed_cells+' / '+loop.total_cells)+' cells · '+esc(String(loop.panel_status||"unknown").toUpperCase())+'</div>';
+    h+='<div class="detail">'+(loop.reduced?esc(loop.belief_measurement_count)+' producer-authored observations':'REDUCTION PENDING — raw hypotheses are not a result')+'</div>';
+    h+='<div class="detail">'+esc(loop.note||"")+'</div>';
+    if(!complete) h+='<div class="detail fail">matched panel incomplete; do not compare arms</div>';
+  } else h+='<div class="muted">AK-LE panel unavailable: '+esc(loop.error||"not found")+'</div>';
+  h+=evidenceLine(loop);
+  if(loop.reduction_evidence) h+='<div class="evidence">reduction: <code>'+esc(loop.reduction_evidence)+'</code></div>';
+  h+='</div>';
+
+  h+='<div class="state-card"><h3>Host-process fault rehearsal</h3>';
+  if(fault.available){
+    h+='<div class="headline '+(fault.status==="PASS"?'ok':'fail')+'">'+esc(String(fault.status||"unknown"))+' · '+esc(fault.passed_legs+' / '+fault.total_legs)+' legs</div>';
+    h+='<div class="detail">captured children only · live claim root touched: '+esc(String(fault.live_claim_root_touched))+'</div>';
+    h+='<div class="detail">'+esc(fault.note||"")+'</div>';
+  } else h+='<div class="muted">fault rehearsal unavailable: '+esc(fault.error||"not found")+'</div>';
+  h+=evidenceLine(fault)+'</div>';
 
   h+='<div class="state-card"><h3>Fixed controller campaign · 8 arms</h3>';
   if(fixed.available){

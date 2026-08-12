@@ -1106,6 +1106,86 @@ def _latest_autokernel_receipt(root: Path, filename: str,
     return None, None, f"no {schema} receipt found below {root}"
 
 
+def _loop_engineering_summary(root: Path) -> dict:
+    """Report the newest measured AK-LE panel and whether it was reduced.
+
+    This is file-state plus producer-authored status only.  A complete panel is
+    not itself a result: the externally pinned prefilter/reducer must publish a
+    reduction before the dashboard may call any planner metric observed.
+    """
+    try:
+        paths = list((root / "campaigns").glob("*/panel/panel.json"))
+    except OSError as exc:
+        return {"available": False, "error": str(exc)}
+    paths.sort(key=lambda path: _iso_mtime(path) or "", reverse=True)
+    for path in paths:
+        _, panel, error = _read_json_object(path, "AK-LE panel")
+        if error or panel is None or panel.get("schema") != \
+                "epyc.autokernel.loop_experiment_planner_panel.v1":
+            continue
+        observations = panel.get("observations")
+        observations = observations if isinstance(observations, list) else []
+        campaign_root = path.parent.parent
+        reductions = sorted(campaign_root.glob("planner-reduction*.json"),
+                            key=lambda row: _iso_mtime(row) or "", reverse=True)
+        reduction_path = None
+        reduction = None
+        for candidate in reductions:
+            _, value, _ = _read_json_object(candidate, "AK-LE reduction")
+            if isinstance(value, dict) and value.get("schema") == \
+                    "epyc.autokernel.loop_experiment_planner_reduction.v1":
+                reduction_path, reduction = candidate, value
+                break
+        return {
+            "available": True,
+            "campaign_id": panel.get("experiment_id"),
+            "panel_status": panel.get("status"),
+            "completed_cells": len(observations),
+            "total_cells": 8,
+            "capture_mode": panel.get("capture_mode"),
+            "reduced": reduction is not None,
+            "reduction_sha256": (reduction.get("reduction_sha256")
+                                 if reduction else None),
+            "belief_measurement_count": (len(reduction.get("belief_measurements", []))
+                                         if reduction else 0),
+            "authority": panel.get("authority"),
+            "evidence": str(path),
+            "reduction_evidence": str(reduction_path) if reduction_path else None,
+            "note": ("complete raw panel, not a result; no empirical interpretation until the "
+                     "pinned prefilter/reducer publishes a reduction")
+                    if reduction is None else
+                    "planner-only AK-LE-1/2 observation; no ranking or promotion authority",
+        }
+    return {"available": False, "error": f"no AK-LE panel found below {root / 'campaigns'}"}
+
+
+def _fault_rehearsal_summary(root: Path) -> dict:
+    """Project the newest real host-process rehearsal without grading it."""
+    path, data, error = _latest_autokernel_receipt(
+        root / "rehearsals", "receipt.json",
+        "epyc.autokernel.host_process_fault_rehearsal.v1")
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    legs = data.get("legs") if isinstance(data.get("legs"), list) else []
+    return {
+        "available": True,
+        "campaign_id": data.get("campaign_id"),
+        "status": data.get("status"),
+        "capture_mode": data.get("capture_mode"),
+        "passed_legs": sum(1 for leg in legs
+                           if isinstance(leg, dict) and leg.get("status") == "PASS"),
+        "total_legs": len(legs),
+        "live_claim_root_touched": data.get("live_claim_root_touched"),
+        "process_selection": data.get("process_selection"),
+        "authority": data.get("authority"),
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+        "note": ("dependency evidence for crash/restart, revocation, teardown, and "
+                 "tamper handling; not a performance or release verdict"),
+    }
+
+
 def _campaign_audit_summary(path: Path | None, data: dict | None,
                             error: str | None) -> dict:
     """Project a controller audit receipt without inventing a verdict."""
@@ -1852,7 +1932,8 @@ def production_kernel_set(attestation_path: Path | None = None,
 def autokernel_current_state(probe_root: Path | None = None,
                              attestation_path: Path | None = None,
                              production_repo: Path | None = None,
-                             control_root: Path | None = None) -> dict:
+                             control_root: Path | None = None,
+                             state_root: Path | None = None) -> dict:
     """Evidence-backed current posture, separate from runtime liveness.
 
     These receipts describe audits and a diagnostic smoke.  They cannot certify
@@ -1860,6 +1941,7 @@ def autokernel_current_state(probe_root: Path | None = None,
     """
     probe_root = probe_root or AUTOKERNEL_PROBE_ROOT
     control_root = control_root or AUTOKERNEL_CONTROL_ROOT
+    state_root = state_root or AUTOKERNEL_STATE_ROOT
     attestation_path = attestation_path or PRODUCTION_KERNEL_ATTESTATION
     production_repo = production_repo or PRODUCTION_KERNEL_REPO
     fixed_path, fixed, fixed_err = _latest_autokernel_receipt(
@@ -1896,6 +1978,8 @@ def autokernel_current_state(probe_root: Path | None = None,
             control_path, control, control_err, production_head),
         "gpu_prefetch_replay": _gpu_replay_summary(
             replay_path, replay, replay_err),
+        "loop_engineering": _loop_engineering_summary(state_root),
+        "fault_rehearsal": _fault_rehearsal_summary(state_root),
         # SCOPE, DECLARED (KRD-AUDIT-20260812). This panel projects a CURATED set of
         # receipt schemas, not everything under the probe root — measured at audit time:
         # 5 schemas projected, 29 further schemas across 98 receipt files present on
@@ -1938,7 +2022,7 @@ def autokernel_activity(repo: Path | None = None,
         "durable_state": _autokernel_journal_inventory(state_root),
         "probe_receipts": _autokernel_probe_receipts(state_root),
         "current_state": autokernel_current_state(
-            probe_root, attestation_path, production_repo, control_root),
+            probe_root, attestation_path, production_repo, control_root, state_root),
     }
 
 

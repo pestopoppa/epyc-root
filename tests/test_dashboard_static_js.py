@@ -173,6 +173,8 @@ class StaticJsTest(unittest.TestCase):
             decision_controls: {available: false},
             instrument_preflight: {available: false},
             gpu_prefetch_replay: {available: false},
+            loop_engineering: {available: false},
+            fault_rehearsal: {available: false},
             fixed_campaign: {available: false},
             available_source_diagnostic: {available: false},
             empirical_smoke: {available: false},
