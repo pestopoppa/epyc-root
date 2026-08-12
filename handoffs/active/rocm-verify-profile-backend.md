@@ -638,6 +638,32 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   (SHA-256 `355bdcf169cb8682d2f56e1754b321f770a0fe3c0bbc5f6e1dc58eaffb443fb2`), the stateful campaign
   remains 5,184/5,184, and sensitivity/specificity remain 1.0. **Recommendation remains Option A for
   this exact two-file core; no commit or push is authorized until the operator approves OP-11.**
+
+  **OP-11 RESOLVED 2026-08-12 — operator selected Option B (decline for now).** No experimental
+  commit or push. The implementation is retained as a local diagnostic; the smoke at
+  `omniperf-iq2xxs-v1-smoke-20260811T1238Z` remains non-evidence. Removed from the master-index
+  operator decision queue.
+
+  Rationale, and it changed on measurement rather than on policy: OP-11's capability is a *seeded
+  synthetic-shape* producer (`--suite-seed` / `--repeat-suite`). The IQ2 question it was blocking
+  does not need one. Two findings, both verified 2026-08-12 against artifacts already on disk:
+  - **The occupancy half is already answered.** All 65 IQ2_XXS `mul_mat_vec_q` dispatches in the
+    existing smoke's `pmc_perf.csv` carry `Arch_VGPR=64`, `Accum_VGPR=0`, `SGPR=32`,
+    `LDS_Per_Workgroup=512`, `Workgroup_Size=128`, `Scratch_Per_Workitem=0`, invariant across six
+    grid sizes. On gfx90a's 512 unified VGPRs that is 8 waves/SIMD — the hardware maximum. **IQ2_XXS
+    MMVQ is not occupancy-limited**, and zero scratch means the codebook gather causes no register
+    spill. This corroborates the `a8afd338` L3 correction on a genuinely different quant: the
+    remaining question is gather latency-hiding, not dequant compute and not occupancy.
+  - **The real-model path needs no seed flags.** `run_autokernel_rocprofv1_attribution.py` takes
+    none, already passed on the same `qwen35moe` architecture (K28, 21,896 dispatches), and runs
+    against the real `Qwen3.5-122B-A10B-UD-IQ2_M.gguf`.
+
+  Counter-caveat, measured: rocprof-v1's `SQ_WAVES`, `SQ_BUSY_CYCLES`, `SQ_INSTS_VMEM_RD`,
+  `SQ_INSTS_VALU_INT32` and `SQ_INSTS_SALU` all read **exactly 0** on every IQ2 row on this box —
+  the `env.sh` caveat is real. TCC counters are healthy. So a governed *counter-level* op
+  differential still has no path, since `rocprofv2` segfaults on IQ2_XXS. That gap is what OP-11
+  would have addressed, and it is deliberately left open: reopen OP-11 only if a counter-level
+  differential becomes decision-gating, not to unblock the latency question.
 - [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
   the value distribution. This is the anti-shape-detection device, and it targets something we
   actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can
