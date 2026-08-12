@@ -2618,11 +2618,15 @@ cannot retrigger the expensive gate unchanged.
 - [x] Route the cutover request through the bus to whoever owns inference (§11.3). ✅ 2026-08-03
 - [x] Render the package as a four-part decision package (`OPERATING_CONSTRAINTS.md:69-78`). ✅ 2026-08-03
 - [ ] Run an end-to-end campaign that stops at a validated package with zero production writes.
-- [x] Run repeated restart/crash/resource-preemption/tamper fault injections. ✅ 2026-08-11 — the
-  complete 3,811-test no-inference suite exercised torn-journal restart recovery, sequence continuity,
-  real killed-holder claim reclamation, live-holder non-preemption, mid-run revocation, owned-child
-  timeout/failure teardown with verified death, cgroup descendant cleanup, source/instrument tamper,
-  and captured-output corruption. These tests use owned fixture processes and never touch production.
+- [ ] Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
+  fault-injection tests are prerequisites, not substitutes for a campaign rehearsal with durable
+  empirical receipts.
+  - [x] **Complete the offline fault-injection acceptance matrix.** ✅ 2026-08-12 — research
+    `900cb5c6` ran three repetitions of a 657-test matrix: **1,971/1,971 PASS**, no inference. The
+    journal, GPU claim, CPU claim, hypotheses, Arena cell runner, statistics, C3 compiler, and physical
+    bounds suites cover torn-write/restart recovery, exact-owned-PID crash/reclaim, live-holder
+    non-preemption and revocation, plus receipt/hash/source tamper refusal. The broader 4,078-test
+    suite passed once with one expected failure. This closes offline acceptance only.
 - [x] Give the operator surface a freshness and health contract, not just data. Today's `/kernel` page is
   **absence-tolerant over a missing directory** — it renders clean when its producer is dead, which is
   the exact shape of AutoPilot dying at trial 1302 and staying dead ~23 h with every dashboard green.
@@ -2913,6 +2917,20 @@ nothing wrong. We held no claim.**
       one-week uptime ceiling in `measurement/protocols/kernel-research.md` and `bench-cpu.md` is the
       sole remaining preflight blocker. Reuse the accepted v9 control bundle and exact recipe frame;
       preserve the journal and require claim/build/benchmark evidence rather than bypassing preflight.
+  - [ ] **OP-16 — Operator decision package: authorize the orderly reboot.**
+    - **Context:** CPU IQK preflight measured host uptime at approximately `13.48 days`; the ratified
+      seven-day ceiling requires a reboot before further search measurement. The refusal occurred
+      before inference, claim, build, or benchmark, and every current artifact is wrapped and pushed.
+    - **Option A — authorize an orderly reboot now (recommended):** preserve the accepted v9 control
+      bundle and journal, reboot after all mains report ready, bootstrap the `agent` tmux session per
+      session-bus C20, respawn the established roster, then rerun the prepared campaign. This is the
+      shortest compliant path and is reversible operationally; reboot downtime is the cost.
+    - **Option B — postpone the reboot:** leave the host and production stack as-is. AutoKernel CPU
+      measurement remains fail-closed; no result or resource consumption occurs, but the empirical
+      chain cannot advance.
+    - **Recommendation:** Option A. All pre-reboot durability obligations are satisfied and no useful
+      protocol-compliant CPU candidate measurement can proceed at the current uptime.
+    - **Default:** Option B; preflight continues to refuse and no inference runs.
 - [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
       characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
       serving. The claim reason alone decides it.

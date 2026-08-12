@@ -4,7 +4,7 @@
       "blocked": 4,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 402
+      "open": 404
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -132,11 +132,11 @@
       "closed": 194,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 21,
+      "open": 23,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 216
+      "total": 218
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,

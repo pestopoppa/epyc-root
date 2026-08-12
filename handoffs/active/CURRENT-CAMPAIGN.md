@@ -12,7 +12,9 @@
 > bundle under frozen v9 and hardened instrument `a4cb04ca8`; the historical IQK arm promoted.
 > The prepared full-host CPU IQK campaign then refused before claim/build/benchmark because uptime
 > was `13.47 days`, beyond the one-week measurement ceiling. Preserve the journal and current bundle;
-> after a compliant reboot, rerun CPU IQK, construct the real matched archive, and execute the
+> **OP-16 recommends an orderly reboot after all mains wrap.** Post-reboot, create the `agent` tmux
+> session required by session-bus C20 before respawning the established roster; then rerun CPU IQK,
+> construct the real matched archive, and execute the
 > least-commitment analysis observe-only. Owner: [autokernel-research-loop.md](autokernel-research-loop.md)
 > §AK6.5 Step 3.
 

@@ -26,6 +26,11 @@ the prepared CPU IQK replay, construction of the first real matched completed-pr
 the least-commitment evaluation observe-only. The new archive builder is ready but correctly cannot
 turn the preflight-refused journal into completed-proposal evidence.
 
+Three complete repetitions of the offline AK6 fault matrix passed 1,971/1,971 tests without inference,
+covering journal recovery, claim-owner death/reclaim, live-holder non-preemption and revocation, and
+receipt/hash/source tamper refusal. This establishes offline acceptance, not a real campaign rehearsal;
+the latter remains open and must produce its own empirical receipts.
+
 ### Source References (2026-08-12 current-v9 controls)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact control receipts, archive-builder boundary, and Step-3 gate

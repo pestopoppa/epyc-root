@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T01:15:07Z",
+  "generated_at": "2026-08-12T01:18:59Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4153,7 +4153,7 @@
       "id": "INF-06",
       "last_advanced": "2026-08-12",
       "next_action": "After a compliant reboot, run full-host CPU IQK; then materialize and evaluate the matched archive",
-      "open": 21,
+      "open": 23,
       "state": "active",
       "track": "autokernel research loop"
     },
