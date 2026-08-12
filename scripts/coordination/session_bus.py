@@ -1354,15 +1354,44 @@ def cmd_claim(args: argparse.Namespace) -> int:
         # only its owner may drop it, so auto-expiry here would break the one property
         # that makes the O_EXCL scheme sound. Marking is enough: it makes the lock
         # visible to the owner and to whoever is blocked.
+        # OWNER LIVENESS BEATS AGE (2026-08-12, `mainC`). The 24h rule cannot see the
+        # case that actually bit this fleet: 18 claims on the books at dawn, 16 of them
+        # taken THAT NIGHT — so unmarked — while their owners had gone idle and stated
+        # in writing, repeatedly, that they held no claims. Age answers "how long has
+        # this been here"; the question a blocked reader has is "is anyone working it".
+        #
+        # So the owner's heartbeat is read as a POSITIVE signal, the same way the
+        # dispatch generator reads a do-not-dispatch declaration rather than inferring
+        # from absence. An idle owner is not proof the row is abandoned, which is why
+        # this still only MARKS — a claim is single-writer and only its owner may drop
+        # it, so auto-expiry here would break the one property making O_EXCL sound.
+        # It distinguishes the two cases age conflates: at the time this was written,
+        # `mainA` was idle with 4 claims (residue, and they had said so) while the
+        # `auditor` was working with 13 (possibly live). Age alone marked NEITHER.
+        heartbeats = bus_root / "heartbeats"
+
+        def _owner_state(agent: str) -> tuple:
+            try:
+                hb = json.loads((heartbeats / f"{agent}.json").read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError, TypeError):
+                return None, None
+            return hb.get("state"), hb.get("ts")
+
         now = datetime.now(timezone.utc)
         for r in rows:
-            mark = ""
+            marks = []
             try:
                 age_h = (now - datetime.fromisoformat(r.get("ts"))).total_seconds() / 3600.0
                 if age_h >= 24:
-                    mark = f"  [STALE {age_h:.0f}h — owner should release or re-affirm]"
+                    marks.append(f"STALE {age_h:.0f}h — owner should release or re-affirm")
             except (TypeError, ValueError):
-                mark = "  [unparseable ts]"
+                marks.append("unparseable ts")
+            state, hb_ts = _owner_state(r.get("agent"))
+            if state == "idle":
+                marks.append(f"OWNER IDLE since {hb_ts} — likely residue, owner should release")
+            elif state is None:
+                marks.append("OWNER HAS NO HEARTBEAT — cannot tell if this is being worked")
+            mark = ("  [" + " | ".join(marks) + "]") if marks else ""
             print(f"{r.get('agent'):18s} {r.get('ts')}  {r.get('row')}{mark}")
         return 0
 
