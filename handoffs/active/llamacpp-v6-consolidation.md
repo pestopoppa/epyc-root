@@ -101,7 +101,10 @@ MTP bench tooling, tree/DySpec speculation, fail-closed-spec, tree-spec capacity
       — see [§ SWA slot-reuse verification — 2026-08-12](#swa-slot-reuse-verification--2026-08-12). The pair does
       not merely duplicate upstream; it **replaces** upstream's per-sequence check with a per-sequence-**blind**
       one, so it is a regression to carry forward, not a feature to port.
-- [ ] `--moe-n-expert` Hard-Mask CLI tool (`86901388a`).
+- [x] `--moe-n-expert` Hard-Mask CLI tool (`86901388a`). **Verdict: DROP — v9 already does this with a stock
+      flag.** ✅ 2026-08-12 — `--override-kv <arch>.expert_used_count=int:N`; see
+      [§ `--moe-n-expert` verification — 2026-08-12](#--moe-n-expert-verification--2026-08-12). Keep the
+      commit's *findings* (the quality cliff), drop the code.
 - [ ] Differential-Transformer-V2 arch (`36ceed44d` / `23973ea66`) — eval-gated, not in deployed registry.
 - [ ] Streaming KV context-shift controls (`632ce0f92`).
 - [ ] Paged-attn upstream-overlap.
@@ -161,6 +164,40 @@ that a production incident occurred; it is the reason the pair must not be resur
 **Action**: none. Row closed as DROP. If SWA reuse is ever revisited, the question to ask is whether upstream's
 backward-looking test is too conservative for speculative decode (the fork's original motivation) — and any such
 change must keep the `seq_get(idx)` lookup.
+
+## `--moe-n-expert` verification — 2026-08-12
+
+Same read-only method as the SWA entry above. `86901388a1246311` is **not** an ancestor of v9 (verified with
+`git merge-base --is-ancestor` against `0db32c06e3e550065b78311a6031ef3dd2c4f27c`, with v8 and the v9 tip
+themselves as positive controls, because a bare `--is-ancestor` that errors also exits non-zero and would have
+looked identical to a true negative).
+
+**The capability is already in stock v9 — it needs no patch, only a flag.**
+
+| | fork `86901388a` | stock v9 |
+|---|---|---|
+| how | `cparams.moe_n_expert_override` slices `selected_experts`/`weights` down to N *after* the router picked `n_expert_used` | `--override-kv <arch>.expert_used_count=int:N` lowers `hparams.n_expert_used` itself at load |
+| where | new code in `build_moe_ffn` (`llama-graph.cpp`), plus `llama.h` / `common/arg.cpp` / `llama-cparams.h` | `llama_model_loader::get_key` consults `kv_overrides` for **every** key (`llama-model-loader.cpp:406-410`), and `LLM_KV_EXPERT_USED_COUNT` = `"%s.expert_used_count"` (`llama-arch.cpp:193`) |
+| effect | top-k stays `n_expert_used`, then the first N are kept | `ggml_argsort_top_k(selection_probs, N)` selects N directly (`llama-graph.cpp:1984`) |
+| cost | two extra `ggml_cont` copies per MoE layer per token | none |
+
+**Why the two give the same numbers.** `ggml_argsort_top_k` is `ggml_argsort(..., GGML_SORT_ORDER_DESC)`
+followed by a view of the first k (`ggml.c:5373-5379`), so the experts come back in descending probability
+order and *the first N of the top-M are exactly the top-N*. Both paths then softmax / `norm_w`-normalise over
+that same N-element set, so the routing weights match. The fork's version is therefore not a different
+algorithm — it is the same algorithm reached later in the graph, at the price of two `ggml_cont` copies.
+
+**Do not drop the knowledge with the code.** The commit message carries measurements that are still the only
+expert-count/quality data we have, and they are re-derivable on v9 with the stock flag:
+
+- Qwen3-Coder-480B-A35B 2.5 → 3.7 t/s (+48%) · GLM-4.6-355B-A32B 2.2 → 3.0 (+36%) ·
+  Qwen3-Coder-30B-A3B 26.6 → 33.6 (+26%) · Qwen3-VL-30B-A3B 32.2 → 38.9 (+21%), AOCL BLIS 5.0 on this host.
+- Quality: **excellent at 50% of default experts, degraded at 25%, gibberish at 12.5%.**
+- Era caveat: these are v4/v5-era numbers under a since-superseded build; they are observation-grade and would
+  need a v9 re-run under the canonical protocol before gating any serving decision.
+
+**Action**: none in the kernel. If expert-count reduction is ever wanted in production it is a launcher-argument
+change, not a fork commit — which also means it is available on the **frozen** v9 without violating the freeze.
 
 ---
 
