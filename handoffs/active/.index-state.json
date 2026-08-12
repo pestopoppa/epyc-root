@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 217,
+      "closed": 219,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 239
+      "total": 241
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
@@ -2390,7 +2390,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "After a compliant reboot, run full-host CPU IQK; then materialize and evaluate the matched archive",
+      "next_action": "After reboot, run the bound IQK intervention and A/A control; then project and evaluate the real matched archive",
       "track": "autokernel research loop"
     },
     "INF-07": {
