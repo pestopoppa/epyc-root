@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 11,
+      "blocked": 12,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 360
+      "open": 358
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -16,7 +16,7 @@
       "blocked": 9,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 283
+      "open": 275
     },
     "reviewer-control-plane-index.md": {
       "blocked": 11,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 47,
       "oldest_advance": "2026-07-29",
-      "open": 311
+      "open": 309
     },
     "user-facing-harness-index.md": {
       "blocked": 3,
@@ -96,14 +96,14 @@
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 1,
-      "closed": 1,
+      "closed": 2,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-08-12",
       "open": 2,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-04",
       "state": "active",
-      "total": 4
+      "total": 5
     },
     "architect-model-selection-bench.md": {
       "blocked": 0,
@@ -129,25 +129,25 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 215,
+      "closed": 217,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 237
+      "total": 239
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
-      "closed": 139,
+      "closed": 140,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 56,
+      "open": 58,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
       "state": "active",
-      "total": 195
+      "total": 198
     },
     "autopilot-control-plane-integration.md": {
       "blocked": 0,
@@ -184,10 +184,10 @@
     },
     "autopilot-sequential-allocation.md": {
       "blocked": 0,
-      "closed": 6,
+      "closed": 7,
       "guarded": 0,
-      "last_advanced": "2026-08-11",
-      "open": 12,
+      "last_advanced": "2026-08-12",
+      "open": 11,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-04",
       "state": "active",
@@ -844,10 +844,10 @@
     },
     "intake-derived-work-2026-07-25.md": {
       "blocked": 0,
-      "closed": 25,
+      "closed": 26,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 17,
+      "open": 16,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-29",
       "state": "active",
@@ -965,25 +965,25 @@
     },
     "llamacpp-v6-consolidation.md": {
       "blocked": 0,
-      "closed": 9,
+      "closed": 11,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 5,
+      "last_advanced": "2026-08-12",
+      "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-32",
       "state": "active",
       "total": 14
     },
     "log-linear-gated-deltanet-readiness.md": {
-      "blocked": 0,
-      "closed": 0,
+      "blocked": 1,
+      "closed": 3,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-08-12",
       "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-33",
       "state": "active",
-      "total": 3
+      "total": 7
     },
     "loops-and-dashboards-audit-2026-07-05.md": {
       "blocked": 0,
@@ -1482,14 +1482,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 70,
+      "closed": 72,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 17,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 87
+      "total": 89
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -1559,10 +1559,10 @@
     },
     "scoring-infra-standardization.md": {
       "blocked": 0,
-      "closed": 16,
+      "closed": 22,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 17,
+      "open": 11,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-42",
       "state": "active",
@@ -1592,14 +1592,14 @@
     },
     "session-bus-thin-dispatcher.md": {
       "blocked": 0,
-      "closed": 130,
+      "closed": 136,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 31,
+      "open": 27,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-34",
       "state": "active",
-      "total": 161
+      "total": 163
     },
     "shape-keyed-contention-gating.md": {
       "blocked": 0,
@@ -1757,14 +1757,14 @@
     },
     "tq3-quantization-evaluation.md": {
       "blocked": 1,
-      "closed": 15,
+      "closed": 16,
       "guarded": 0,
-      "last_advanced": "2026-08-03",
+      "last_advanced": "2026-08-12",
       "open": 12,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-54",
       "state": "active",
-      "total": 28
+      "total": 29
     },
     "tree-draft-forward-port-plan.md": {
       "blocked": 0,
@@ -1834,14 +1834,14 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 54,
+      "closed": 55,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 14,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 68
+      "total": 69
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
