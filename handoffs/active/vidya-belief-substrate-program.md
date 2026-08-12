@@ -487,6 +487,11 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       project each of the three recovery legs with exact source/producer/process identities and the
       immutable receipt digest, but do not coerce PASS into a performance measurement, corroborating
       witness, release claim, or campaign authority. Key support on the rehearsal run, not each leg.
+- [ ] SC31 **Wire AK-LE-3 scaffold-panel measurements on the write side before any successor panel.**
+      Emit one exact model/scaffold speedup row per complete correct cell with scored-case basis,
+      manifest/evaluator/task/candidate/claim identities, and observation-only authority. Add a root
+      adapter that re-derives the panel and cell hashes plus every speedup; never retrofit r1, whose
+      terminal aggregate predates the hook.
 
 ## Dependency notes
 
