@@ -42,6 +42,8 @@ def test_all_three_kernels_are_projected() -> None:
     assert len(result["members"]) == 3
     assert any("whisper" in t for t in titles) and any("qwentts" in t for t in titles)
     assert result["expected_binaries"] == 4
+    assert result["stable_links_proven"] == 4
+    assert result["linkage_proven"] == 4
 
 
 def test_llama_identity_is_NOT_read_from_the_speech_attestation(tmp_path: Path) -> None:
@@ -175,3 +177,70 @@ def test_not_reported_sections_are_flagged_not_silently_empty() -> None:
     silent = {n for n, s in payload["sections"].items()
               if isinstance(s, dict) and s.get("status") == "not_reported"}
     assert silent <= unreported, f"not_reported sections missing from freshness: {silent - unreported}"
+
+
+def test_stable_link_drift_is_loud_and_breaks_the_fold(tmp_path: Path) -> None:
+    wrong = tmp_path / "wrong"
+    wrong.mkdir()
+    links = {name: dict(spec) for name, spec in S.PRODUCTION_KERNEL_SLOTS.items()}
+    drift = tmp_path / "cpu"
+    drift.symlink_to(wrong)
+    links["cpu"] = {**links["cpu"], "stable_link": drift}
+    result = S.production_kernel_set(kernel_slots=links)
+    assert result["intact"] is False
+    assert any("STABLE LINK DRIFT" in alarm for alarm in result["alarms"])
+
+
+def test_foreign_ggml_linkage_is_loud(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    binary = tmp_path / "binary"
+    binary.write_bytes(b"ELF fixture")
+    foreign = tmp_path / "foreign" / "libggml.so.0"
+    foreign.parent.mkdir()
+    foreign.write_bytes(b"")
+
+    class Result:
+        returncode = 0
+        stderr = ""
+        stdout = f"libggml.so.0 => {foreign} (0x1)\n"
+
+    monkeypatch.setattr(S.subprocess, "run", lambda *a, **kw: Result())
+    result = S._linked_library_identity("fixture", binary, tmp_path / "expected")
+    assert result["matches"] is False
+    assert "FOREIGN GGML LINKAGE" in result["error"]
+
+
+def test_ldd_failure_is_unverified_not_green(monkeypatch: pytest.MonkeyPatch,
+                                              tmp_path: Path) -> None:
+    binary = tmp_path / "binary"
+    binary.write_bytes(b"ELF fixture")
+
+    class Result:
+        returncode = 1
+        stderr = "not a dynamic executable"
+        stdout = ""
+
+    monkeypatch.setattr(S.subprocess, "run", lambda *a, **kw: Result())
+    result = S._linked_library_identity("fixture", binary, tmp_path)
+    assert result["matches"] is None
+    assert "unverifiable" in result["error"]
+
+
+def test_wrong_ggml_generation_is_loud(tmp_path: Path) -> None:
+    tree = tmp_path / "kernel" / "ggml"
+    tree.mkdir(parents=True)
+    (tree / "CMakeLists.txt").write_text(
+        "set(GGML_VERSION_MAJOR 0)\nset(GGML_VERSION_MINOR 17)\n"
+        "set(GGML_VERSION_PATCH 0)\n", encoding="utf-8")
+    result = S._ggml_generation_identity(tree.parent, "0.18.0")
+    assert result["matches"] is False
+    assert "GENERATION DRIFT" in result["error"]
+
+
+def test_unattested_llama_ggml_generation_keeps_the_fold_pessimistic() -> None:
+    """The v9 operator artifact currently omits ggml; the page must say so, not infer."""
+    result = S.production_kernel_set()
+    llama = next(m for m in result["members"] if m["key"] == "llama_cpp")
+    assert llama["ggml_generation"]["observed"] == "0.16.0"
+    assert llama["ggml_generation"]["matches"] is None
+    assert result["intact"] is False
+    assert any("ggml generation unverified" in alarm for alarm in result["alarms"])

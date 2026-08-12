@@ -274,12 +274,17 @@ function renderCurrentState(d){
     h+='<div class="headline '+(intact?'ok':'fail')+'">'+(intact?'SET INTACT':'SET NOT PROVEN')+'</div>';
     h+='<div class="detail">'+esc(kset.trees_matching+'/'+kset.expected_kernels)+' trees match attestation · '
       +esc(kset.binaries_proven+'/'+kset.expected_binaries)+' binaries proven'
+      +' · '+esc(kset.stable_links_proven+'/4')+' stable links'
+      +' · '+esc(kset.linkage_proven+'/4')+' loader proofs'
+      +' · '+esc(kset.ggml_generations_proven+'/'+kset.expected_kernels)+' ggml generations proven'
       +(kset.binaries_unverified?' · <span class="fail">'+esc(kset.binaries_unverified)+' UNVERIFIED</span>':'')+'</div>';
     (kset.members||[]).forEach(function(m){
       const st=m.matches_attestation===true?'<span class="ok">matches</span>'
         :(m.matches_attestation===false?'<span class="fail">DRIFT</span>':'<span class="fail">unverified</span>');
       h+='<div class="detail">'+esc(m.title||'—')+' · '+esc(m.branch||'—')+' <code>'
         +esc((m.head||'').slice(0,12))+'</code>'+(m.ggml?' · ggml '+esc(m.ggml):' · <span class="fail">ggml not attested</span>')+' · '+st
+        +((m.ggml_generation||{}).observed?' · observed '+esc(m.ggml_generation.observed):'')
+        +((m.ggml_generation||{}).matches===false?' · <span class="fail">GGML DRIFT</span>':'')
         +(m.error?' <span class="fail">'+esc(m.error)+'</span>':'')+'</div>';
     });
     (kset.binaries||[]).forEach(function(b){
@@ -288,6 +293,18 @@ function renderCurrentState(d){
       h+='<div class="detail">'+esc(b.label||'—')+' · '+st
         +(b.observed_sha256?' <code>'+esc(b.observed_sha256.slice(0,12))+'</code>':'')
         +(b.error?' <span class="fail">'+esc(b.error)+'</span>':'')+'</div>';
+    });
+    (kset.stable_links||[]).forEach(function(l){
+      const st=l.matches===true?'<span class="ok">target ok</span>'
+        :(l.matches===false?'<span class="fail">LINK DRIFT</span>':'<span class="fail">unverified</span>');
+      h+='<div class="detail">stable '+esc(l.slot||'—')+' · '+st+' · <code>'+esc(l.path||'—')+'</code> → <code>'
+        +esc(l.resolved_target||l.raw_target||'—')+'</code>'+(l.error?' <span class="fail">'+esc(l.error)+'</span>':'')+'</div>';
+    });
+    (kset.linkage||[]).forEach(function(l){
+      const st=l.matches===true?'<span class="ok">tree-local</span>'
+        :(l.matches===false?'<span class="fail">FOREIGN GGML</span>':'<span class="fail">unverified</span>');
+      h+='<div class="detail">loader '+esc(l.label||'—')+' · '+st+' · required <code>'+esc(l.required_library_root||'—')+'</code>'
+        +(l.error?' <span class="fail">'+esc(l.error)+'</span>':'')+'</div>';
     });
     (kset.alarms||[]).forEach(function(a){
       h+='<div class="detail fail">⚠ '+esc(a)+'</div>';
