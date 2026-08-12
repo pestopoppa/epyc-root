@@ -34,7 +34,7 @@
       "port": 8100,
       "path": "/kernel",
       "owner_repo": "epyc-root",
-      "health_path": "/health",
+      "health_path": "/api/kernel/health",
       "blurb": "AutoKernel MI210 loop (contract-backed)"
     },
     {

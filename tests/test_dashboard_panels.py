@@ -28,6 +28,7 @@ import subprocess
 import tempfile
 import types
 import unittest
+from unittest import mock
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -114,8 +115,8 @@ class _KernelFile:
         return False
 
 
-def _fake_hub(name="fake_hub", *, funcs=None, routes=None, extra_funcs=(),
-              drop=()):
+def _fake_hub(name="fake_hub", *, funcs=None, routes=None, health_routes=None,
+              extra_funcs=(), drop=()):
     """A synthetic module shaped like the hub, for the registry's NEGATIVE controls.
 
     Built from the real registry so the controls stay honest when a panel is added:
@@ -127,10 +128,19 @@ def _fake_hub(name="fake_hub", *, funcs=None, routes=None, extra_funcs=(),
     funcs = [f for f in funcs if f not in drop] + list(extra_funcs)
     exec("\n".join(f"def {f}(*a, **k):\n    return {{}}\n" for f in funcs),
          mod.__dict__)
+    exec("\n".join(
+        f"def {src.health_func}(*a, **k):\n    return 200, {{}}"
+        for src in panels.PANELS.values() if src.health_func), mod.__dict__)
     if routes is None:
         routes = {s.route: s.payload_func for s in panels.PANELS.values()
                   if s.route and s.payload_func not in drop}
     mod.API_ROUTES = {route: getattr(mod, fn) for route, fn in routes.items()}
+    if health_routes is None:
+        health_routes = {src.health_route: src.health_func
+                         for src in panels.PANELS.values() if src.health_route}
+    mod.PANEL_HEALTH_ROUTES = {
+        route: getattr(mod, fn) for route, fn in health_routes.items()
+    }
     return mod
 
 
@@ -180,6 +190,26 @@ class RegistryTotalityTest(unittest.TestCase):
         routes["/api/ghost"] = "kernel_payload"
         gaps = panels.registry_gaps(_fake_hub(routes=routes))
         self.assertEqual(gaps["unregistered_routes"], ["/api/ghost"])
+
+    def test_an_unregistered_panel_health_route_is_a_gap(self):
+        gaps = panels.registry_gaps(_fake_hub(health_routes={
+            "/api/kernel/health": "kernel_data_health",
+            "/api/ghost/health": "kernel_data_health",
+        }))
+        self.assertEqual(gaps["unregistered_health_routes"],
+                         ["/api/ghost/health"])
+
+    def test_a_missing_panel_health_route_is_a_gap(self):
+        gaps = panels.registry_gaps(_fake_hub(health_routes={}))
+        self.assertTrue(any("/api/kernel/health" in message
+                            for message in gaps["health_route_mismatch"]), gaps)
+
+    def test_a_panel_health_route_bound_to_the_wrong_reader_is_a_gap(self):
+        gaps = panels.registry_gaps(_fake_hub(health_routes={
+            "/api/kernel/health": "board_payload",
+        }))
+        self.assertTrue(any("kernel_data_health" in message
+                            for message in gaps["health_route_mismatch"]), gaps)
 
     def test_the_baseline_fake_hub_is_clean(self):
         """COMPLIANT-PATH CONTROL: the fixture the negative controls mutate is
@@ -1063,6 +1093,62 @@ class HealthPayloadFoldTest(unittest.TestCase):
                          panels.REPORTING_OBSERVED)
 
 
+class KernelDataHealthProbeTest(unittest.TestCase):
+    """The directory probe reads Kernel-R&D data health, not hub transport."""
+
+    def test_absent_export_is_http_503_with_an_absent_verdict(self):
+        with _KernelFile(None):
+            status_code, body = server.kernel_data_health()
+        self.assertEqual(status_code, 503)
+        self.assertEqual(body["status"], panels.STATUS_ABSENT)
+        self.assertEqual(body["probe"], "panel-data")
+        self.assertEqual(body["panel"], "kernel")
+        self.assertEqual(body["freshness"]["reporting"],
+                         panels.REPORTING_ABSENT)
+        self.assertEqual(body["transport_health"], "/health")
+        self.assertEqual(body["global_health"], "/api/health")
+
+    def test_partial_contract_is_http_503_and_names_unreported_sections(self):
+        doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=("campaign",))
+        with _KernelFile(doc):
+            status_code, body = server.kernel_data_health()
+        self.assertEqual(status_code, 503)
+        self.assertEqual(body["status"], panels.STATUS_ABSENT)
+        self.assertEqual(body["freshness"]["reporting"],
+                         panels.REPORTING_OBSERVED)
+        self.assertIn("champion", body["freshness"]["unreported"])
+        self.assertIn("section(s)", body["status_set_by"]["why"])
+
+    def test_fully_reported_current_contract_is_http_200(self):
+        doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=_V2_SECTIONS)
+        with _KernelFile(doc):
+            status_code, body = server.kernel_data_health()
+        self.assertEqual(status_code, 200)
+        self.assertEqual(body["status"], panels.STATUS_OK)
+        self.assertIsNone(body["status_set_by"])
+        self.assertEqual(body["freshness"]["reporting"],
+                         panels.REPORTING_OBSERVED)
+        self.assertEqual(body["freshness"]["unreported"], [])
+
+    def test_probe_never_calls_the_global_fold_or_all_panel_readers(self):
+        doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=_V2_SECTIONS)
+        with (_KernelFile(doc),
+              mock.patch.object(server, "health_payload",
+                                side_effect=AssertionError("global recursion")),
+              mock.patch.object(server, "panel_envelopes",
+                                side_effect=AssertionError("all-panel recursion"))):
+            status_code, body = server.kernel_data_health()
+        self.assertEqual((status_code, body["status"]), (200, panels.STATUS_OK))
+
+    def test_dashboard_registry_selects_the_data_probe_only_for_kernel(self):
+        registry = json.loads(server.DASHBOARD_REGISTRY_JSON.read_text())
+        paths = {entry["id"]: entry["health_path"]
+                 for entry in registry["dashboards"]}
+        self.assertEqual(paths["kernel"], "/api/kernel/health")
+        self.assertEqual(paths["handoffs"], "/health")
+        self.assertEqual(paths["machine"], "/health")
+
+
 # --------------------------------------------------------------------------- #
 # 6. The transport plane must stay separate from the producer plane
 # --------------------------------------------------------------------------- #
@@ -1161,6 +1247,19 @@ class RouteTableTest(unittest.TestCase):
     def test_the_detail_route_is_bound_without_an_adapter(self):
         self.assertIs(server.API_ROUTES_WITH_STATUS["/api/handoff_detail"],
                       server.detail_payload)
+
+    def test_panel_health_routes_are_enumerated_and_registry_bound(self):
+        self.assertIs(server.PANEL_HEALTH_ROUTES["/api/kernel/health"],
+                      server.kernel_data_health)
+        src = panels.source("kernel")
+        self.assertEqual(src.health_route, "/api/kernel/health")
+        self.assertEqual(src.health_func, "kernel_data_health")
+
+    def test_panel_health_routes_do_not_collide_with_dispatch_tables(self):
+        ordinary = (set(server.API_ROUTES) | set(server.API_ROUTES_WITH_STATUS)
+                    | set(server.PROBE_ROUTES) | set(server.HTML_ROUTES)
+                    | set(server.ASSET_ROUTES))
+        self.assertEqual(set(server.PANEL_HEALTH_ROUTES) & ordinary, set())
 
     def test_html_routes_are_disjoint_from_api_routes(self):
         self.assertEqual(set(server.HTML_ROUTES) & set(server.API_ROUTES), set())

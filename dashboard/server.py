@@ -17,12 +17,13 @@ GET /api/handoff_detail?id=  full card + scrubbed markdown body (lazy modal load
 GET /api/handoff_timeline    the git-derived timeline artifact (+ freshness)
 GET /api/handoff_graph       the index dependency/liveness graph (+ freshness)
 GET /api/kernel              the kernel-R&D dashboard contract (+ freshness)
+GET /api/kernel/health       Kernel-R&D producer/data health only (non-recursive)
 GET /machine                 the machine / live-inference page (data plane: :8000 API)
 GET /autopilot               the autopilot-loop page (data plane: :8000 API)
 GET /nav.js                  the ONE shared cross-dashboard nav, with the registry
                              injected ahead of it as ``window.__EPYC_DASHBOARDS``
 GET /api/dashboards          the dashboard directory (dashboard/registry.json) plus a
-                             live 127.0.0.1 transport probe per (port, health_path)
+                             live 127.0.0.1 probe per declared (port, health_path)
 GET /bus                     the session-bus page (static HTML, re-read per request)
 GET /api/bus                 roster, per-agent liveness, inbox depth, operator tokens (+ alarms)
 GET /api/queue               folded work queue (latest row per task_id) + invariant alarms
@@ -587,6 +588,40 @@ def _kernel_contract_freshness(data: dict, *, artifact_present: bool = True) -> 
     """
     return _panel_envelope("kernel", _kernel_observation(
         data, artifact_present=artifact_present))
+
+
+def kernel_data_health() -> tuple[int, dict]:
+    """Kernel-R&D's panel-specific producer/data-health probe.
+
+    This intentionally reads only the AutoKernel terminal contract and folds only
+    the ``kernel`` envelope. It never calls :func:`health_payload` or
+    :func:`panel_envelopes`, so a registry consumer may probe this route without
+    recursing through the global ``/api/health`` fold (which includes the
+    dashboard directory, whose Kernel-R&D row points back here).
+
+    HTTP 200 means the contract is fully reported and current. ``absent`` and
+    ``degraded`` both return HTTP 503 for simple health-check clients; the JSON
+    body preserves the three-valued verdict and the complete freshness envelope,
+    including partial ``unreported`` sections.
+    """
+    present, data = _read_kernel_contract()
+    env = _kernel_contract_freshness(data, artifact_present=present)
+    verdict = panels.fold(
+        {"kernel": env}, registry={"kernel": panels.source("kernel")})
+    payload = {
+        "status": verdict["status"],
+        "probe": "panel-data",
+        "panel": "kernel",
+        "data_route": panels.source("kernel").route,
+        "transport_health": "/health",
+        "global_health": "/api/health",
+        "status_set_by": verdict["status_set_by"],
+        "worst": verdict["worst"],
+        "attention": verdict["attention"],
+        "absent": verdict["absent"],
+        "freshness": env,
+    }
+    return (200 if verdict["status"] == panels.STATUS_OK else 503), payload
 
 
 def _load_file_activity() -> dict:
@@ -1815,13 +1850,13 @@ def benchmark_artifacts_payload() -> dict:
 # --------------------------------------------------------- dashboard directory
 #
 # RTG-47 Phase 0. ``dashboard/registry.json`` is the SSOT list of dashboard
-# surfaces; this panel serves it with a live transport probe per unique
+# surfaces; this panel serves it with a live health-path probe per unique
 # ``(port, health_path)``.
 #
-# THE PROBE IS NOT FOLDED INTO ``/api/health``. A down :8000 is a fact about the
-# orchestrator, and ``scripts/dashboard/hub_supervisor.sh`` restarts THIS hub on a
-# non-ok ``/health`` body — the same rule that keeps a dead AutoKernel loop from
-# putting the dashboard into a restart loop applies here, one process further out.
+# THESE PROBES ARE NOT FOLDED INTO ``/api/health``. A down :8000 is a fact about
+# the orchestrator, while Kernel-R&D's own health_path is already a projection of
+# the kernel envelope. Folding either back in would create a recursive or duplicate
+# verdict. The supervisor itself continues to poll only transport ``/health``.
 _DASHBOARDS_TTL_S = 15.0
 _DASHBOARD_PROBE_TIMEOUT_S = 1.5
 _dashboards_lock = threading.Lock()
@@ -1859,10 +1894,12 @@ def registry_dashboards() -> list:
 
 
 def _probe_health(port: int, health_path: str) -> dict:
-    """One ``127.0.0.1`` transport probe → ``{ok, status_code, latency_ms, error}``.
+    """One ``127.0.0.1`` health-path probe → status/latency/error.
 
-    LOOPBACK ONLY and stdlib-only. This says a server is answering, nothing about
-    whether its producers are reporting — the same boundary ``/health`` holds here.
+    LOOPBACK ONLY and stdlib-only. Semantics belong to the registry entry's
+    ``health_path``: most declare transport-only ``/health``; Kernel-R&D declares
+    its panel-specific producer/data-health route. This reader deliberately uses
+    the HTTP status so it remains compatible with both kinds.
     """
     url = f"http://127.0.0.1:{port}{health_path}"
     started = time.monotonic()
@@ -1930,8 +1967,10 @@ def _build_dashboard_directory() -> dict:
         "registry_present": bool(present),
         "count": len(rows),
         "dashboards": rows,
-        "probe_note": ("probes are LOOPBACK TRANSPORT readings of each server's "
-                       "health_path; they are cached with this payload for "
+        "probe_note": ("probes are LOOPBACK readings of each entry's declared "
+                       "health_path (transport-only unless the entry explicitly "
+                       "names a panel-data probe); they are cached with this "
+                       "payload for "
                        f"{_DASHBOARDS_TTL_S:.0f}s and never enter /api/health"),
         "error": None,
     }
@@ -2214,6 +2253,16 @@ API_ROUTES_WITH_STATUS = {
     "/api/handoff_detail": detail_payload,
 }
 
+#: Panel-specific DATA health. Separate from ``PROBE_ROUTES`` because these
+#: handlers may return 503 when a producer is absent/degraded; the supervisor must
+#: never poll them. Separate from ``API_ROUTES`` because handlers return an
+#: explicit ``(status, payload)``. Each route is declared on its existing
+#: ``PanelSource`` via ``health_route``/``health_func`` and is checked by
+#: ``panels.registry_gaps`` without creating a duplicate panel in the global fold.
+PANEL_HEALTH_ROUTES = {
+    "/api/kernel/health": kernel_data_health,
+}
+
 #: The supervisor's transport probe. In its OWN table, not ``API_ROUTES``: it is
 #: not a panel over a producer, and it must never carry a producer's verdict (see
 #: the module docstring — the supervisor restarts the hub on a non-ok body). It is
@@ -2278,6 +2327,9 @@ class _Handler(BaseHTTPRequestHandler):
             elif route in API_ROUTES_WITH_STATUS:
                 qs = parse_qs(parsed.query)
                 status, payload = API_ROUTES_WITH_STATUS[route]((qs.get("id") or [""])[0])
+                self._send_json(payload, status=status)
+            elif route in PANEL_HEALTH_ROUTES:
+                status, payload = PANEL_HEALTH_ROUTES[route]()
                 self._send_json(payload, status=status)
             else:
                 self._send_json({"error": "not found", "path": route}, status=404)
