@@ -2660,6 +2660,10 @@ nothing wrong. We held no claim.**
       **117 under load**, against a required 80. The gate is now evaluated only at `load/core ≥ 0.25`;
       a preflight that reads it at idle aborts on a perfectly healthy machine. Followed for the
       claimed probe. ✅ 2026-08-05
+      *(ADJUDICATED 2026-08-12 by `mainC` — deliberately left CLOSED. Reads as a prohibition to the
+      standing-constraint sweep, but the rule is already enforced in CODE (the gate is evaluated only
+      at `load/core ≥ 0.25`), and Steps 0–2 are a linear campaign preflight, not a per-pickup
+      checklist. The ✅ records compliance for the claimed probe. Do not re-open on a future sweep.)*
 
 ### Step 1 — answer the one open measurement question (≈20 min, cheap, do it first)
 

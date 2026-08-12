@@ -2132,10 +2132,25 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       comment-only `test_code` (`"# assert __init__(/) == as a list of"`), `cruxeval` 1 has no
       ground truth anywhere, `mode_advantage_hard` 1. Either regenerate their oracles or retire the
       rows; leaving them silently dropped is what hid the other 1,438.
-- [ ] **debugbench `expected` is truncated to exactly 100 characters** on every row across all
+- [x] **debugbench `expected` is truncated to exactly 100 characters** on every row across all
       three languages. `substring` scoring therefore asks the model to reproduce a 100-char prefix
       of the reference solution. That scores *something*, but it is not obviously "did it fix the
       bug" — worth deciding whether this suite measures what its name claims.
+- [ ] **Retire or rebuild the debugbench oracle** — it is live and contributing confident,
+      meaningless passes to aggregate scores. Rebuild from the buggy↔solution DIFF, not a solution
+      prefix; widening 100 → 500 does not fix it. Also re-check the sibling suites: the
+      `livecodebench` comment-only `test_code` rows above suggest the ingestion path has more than
+      one defect. *(Opened 2026-08-12 by `mainC` — the audit DECIDED the question; this is the
+      remediation it implies, and it needs an owner with the eval pipeline.)*
+      ✅ 2026-08-12 — **DECIDED: it does not. The oracle is VACUOUS.** All four rows in both core
+      pools are byte-exact 100-char prefixes of the upstream solution (upstream median 661, only 3
+      of 4,253 are ≤100 — so the truncation is OURS, not upstream). The decisive test was not
+      whether the prefix is uninformative but whether it is **already present in the buggy code the
+      model was handed** — it is, on 4 of 4, so a model that changes nothing and echoes its input
+      PASSES. Corpus-wide the construction is vacuous on 3,233 of 4,250 rows (76.1%), making it a
+      property of the design. Every debugbench score under this config is uninterpretable.
+      Evidence: `artifacts/audit/debugbench-oracle-vacuity-20260812.md` (root `e6e3644a`).
+      Guard shipped so this cannot recur silently: orchestrator `cc81d0ff`.
 - [ ] **Design-lens review of AutoPilot dispatched** (workflow `wf_50aef395-2a4`) — essential vs
       incident-scarred vs speculative, against Karpathy's autoresearch. Operator's sharpening:
       scar tissue is not only "justified, keep it" — a CLUSTER of scars is evidence the underlying
