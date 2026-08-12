@@ -139,6 +139,21 @@ HIP build" and "the build reported success" are fully compatible with a full-CPU
 linkage guard, non-zero VRAM sampled during the run, and a KFD process count
 (`agents/shared/OPERATING_CONSTRAINTS.md` § Inference and Benchmarks; CLAUDE.md § Debugging).
 
+## INC-20260806-pytest-api-escape
+On 2026-08-05 at 13:04:46Z,
+`test_cmd_start_infers_missing_numa_mode_from_realized_fleet` mocked llama-server starts but missed
+the separate `start_orchestrator` lifecycle boundary. The unit test therefore launched a real
+six-worker uvicorn listener on production port 8000. Two earlier cross-role-lock tests had also
+written `ORCHESTRATOR_TMP_DIR` directly into `os.environ` instead of using pytest's restoring
+monkeypatch, so the escaped API inherited both `PYTEST_CURRENT_TEST` and a pytest temporary lock
+directory. It remained the stack-tracked production API for more than 21 hours and served real
+traffic while reading placement leases from test files. The dashboard made the split-brain visible:
+HTML is reread on every request and showed the new legend, while the stale Python workers still
+returned old matrix-filtered cells. Fixes: the lifecycle test now mocks `start_orchestrator`, parent
+test environment writes restore automatically, and `start_orchestrator` refuses to spawn from
+pytest while `subprocess.Popen` is still the real callable. Rule fed: a test of a stack lifecycle command
+must mock every process boundary, and the production API launcher fails closed under pytest.
+
 ## INC-20260812-compacting-read-as-idle
 A session COMPACTING its context renders identically to an idle one: the goal line, the "Pursuing
 goal" timer and the background-terminal count all disappear together, leaving a bare status line
