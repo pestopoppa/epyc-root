@@ -2,8 +2,34 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-11 (AutoKernel's own measurement-integrity hardening lands with no inference run yet; AutoPilot's v10 multi-tier baseline is sealed and applied while the loop stays stopped; a sequential-allocation mechanism ships deliberately neutral on the question it exists to let the operator answer — see below; earlier 2026-08-10 note: adds the transfer-ratio synthesis — every cheap lane is a proxy whose transfer function is free to record now and impossible to backfill — plus lanes-screen/full-instance-verifies, the three false concurrency constraints, and the rescued-vs-persistent refinement split)
-**Sources**: 101+ documents
+**Last compiled**: 2026-08-12 (AutoKernel's first governed K-Search pilot reached a real model request but failed before a response; the fail-closed dependency ladder and zero-performance-claim boundary are compiled below; earlier findings retained)
+**Sources**: 104+ documents
+
+## Compiled Update — 2026-08-12: a failed pilot can validate autonomy plumbing without becoming kernel evidence
+
+**Confidence: verified for the captured failure ladder and teardown state; no kernel-performance claim.**
+
+AutoKernel's first governed one-task/K-Search pilot advanced through twelve immutable attempts. R1-r11
+successively exposed missing task-source provenance, controller import identity, Python extension and
+package closure, exact Git/null/config dependencies, and writable transient CLI state. Each defect was
+repaired narrowly rather than by broadening the controller to the host environment. R12 then started
+the real Codex client and attempted the response request, but five retries ended in `Operation not
+permitted` before a completed response. This is evidence that the autonomous controller path reached
+its model boundary; it is not evidence that the model authored a candidate or that a kernel improved.
+
+The claim boundary is the durable finding. A dependency-repair ladder may prove that isolation is
+fail-closed and that teardown works, but it cannot be ranked, aggregated, banked, or promoted as an
+optimization result. No completed model response, candidate, speedup, matched archive, or campaign
+aggregate exists for r1-r12. The next step is therefore an exact-cell retry after a least-authority
+transport-policy repair, followed by verification of the terminal pilot receipt, broker feedback,
+activation, claim/release, sampler, ephemeral-state scrub, and empty/removed cgroup. Only that receipt
+can unlock the 7/7 availability-conditioned panel.
+
+### Source References (2026-08-12 governed pilot)
+
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — exact r1-r12 failure chain, authority boundary, and retry gates
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-9 system-level disposition and prohibition on upgrading failed attempts into evidence
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — research branch identity, captured transport failure, and teardown checkpoint
 
 ## Compiled Update — 2026-08-11: two autonomous loops hardened their own measurement integrity before running anything
 

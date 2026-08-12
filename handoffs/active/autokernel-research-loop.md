@@ -256,6 +256,15 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   `/mnt/raid0/llm/autokernel/probes/inf03-isolation-available-source-reaudit-20260812-r3/receipt.json`
   (self-hash `5fa93695…`, file SHA-256 `082d977f…`). A fresh one-task/one-arm live pilot remains the
   empirical gate; r4 remains immutable invalid history and is never resumed.
+- [x] **AK-AUD-9 — Drive the isolated INF-03 pilot to a real model request without upgrading failed
+  engineering attempts into evidence.** ✅ 2026-08-12 — research branch
+  `integrate/inf03-isolation-merge-20260812` at `569a8c42` implements the bounded diagnostic-pilot
+  authority and the exact controller dependency grants exposed successively by r1-r11. R12 reached the
+  real Codex client and retried the response request for about 60 seconds, but the sandboxed transport
+  failed with `Operation not permitted` before any completed response. All twelve attempts remain
+  non-rankable engineering diagnostics; there is no candidate, kernel speedup, campaign aggregate,
+  banked proposal, or promotion claim. The exact attempt ladder and next repair live in
+  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md).
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it

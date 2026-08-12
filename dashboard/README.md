@@ -197,6 +197,14 @@ The v2 static audit is still readiness evidence only: controller/GPU execution i
 false, ARGUS remains excluded from the separate 8/8 panel, and a fresh isolated
 one-task/one-arm pilot is required before another campaign starts.
 
+The first governed one-task/K-Search pilot ladder (`r1` through `r12`, 2026-08-12)
+did not produce a terminal pilot receipt. R12 reached the real Codex client, but
+the sandboxed response request exhausted five retries with `Operation not
+permitted` before a completed model response. The current view therefore must
+not infer a kernel result from the probe directories: it continues to show the
+7/7 static readiness audit and no empirical pilot claim. Projection of the new
+`epyc.autokernel.arena_diagnostic_pilot.v1` contract is tracked in INF-03.
+
 `current_state.hip_decision_grade` is a curated projection of the terminal
 `hip-silu-decision-grade-20260812-r6/receipt.json`. The hub verifies the receipt's
 self-hash, exact producer/schema/task, complete 24-case correctness vector,
