@@ -2884,6 +2884,17 @@ from that seat.
   quiet log is what a healthy fleet also looks like. The `flock` single-instance guard is in place,
   so a supervisor can safely relaunch it unconditionally. `bus_supervisor.sh` is the pattern; it was
   not extended from this seat because it has a live owner in a parallel session.
+- [x] **WT-1 — the five `.orphan-20260812T1035Z` backup checkouts could write into the LIVE lanes.**
+      ✅ 2026-08-12 — neutralised, non-destructively. Each backup dir's `.git` file still held the
+      OLD RELATIVE pointer (`../../../../../../workspace/.git/worktrees/<id>`), which resolves to the
+      **same admin directory the repaired live lane now uses** — so a stray `git add`/`commit` run
+      inside a backup would have landed in the live lane's index, and `git status` in the live lane
+      would have shown work nobody did there. Verified by reading both pointer files.
+      Remedy: each `.git` renamed to `.git.disabled-20260812`. Every byte of content is preserved,
+      the directories are now inert to git, and the change is reversible by renaming back.
+      **`git worktree prune` is NOT the tool here** — these are unregistered, and a prune from the
+      deep path is what destroyed all five lanes on 2026-08-12 in the first place. Whether to delete
+      the 25 directories outright remains an operator call; the hazard does not wait on it.
 
 ## Reporting instructions
 
