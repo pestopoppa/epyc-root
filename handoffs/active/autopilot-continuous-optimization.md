@@ -2057,6 +2057,30 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `state_write_lock`, and re-reads the file after writing to prove the stamp survived.
 
 ### New tasks
+- [x] **Eval fan-out silently collapsed for every NUMA mode except `quarter`.** ✅ 2026-08-12 —
+  orchestrator `2f9bd733`. `eval_tower.py:1693` tested `stack_numa_mode == "quarter"` and everything
+  else fell through the same branch, so `full`, `both`, **unset** and any typo were indistinguishable.
+  Replaced with a TOTAL resolution returning `(mode, reason)` where reason ∈ {declared, unset,
+  unrecognised} and unknown resolves to a sentinel asserted **not** to be a member of the valid set —
+  "I could not tell" is now a structural result rather than a fall-through.
+  **The dispatch premise was wrong and the subagent corrected it:** `half` is NOT a mode. The
+  vocabulary is `{full, quarter, both}` (`scripts/server/stack_numa_mode.py:9`); `half` is a
+  `cpu_shape_class`, so a halves-only fleet launched as `--numa-mode quarter` was never hitting this.
+  What was hitting it is `both`, `full`, unset and typos. *(Verified by `mainC`: the mode set really
+  is those three, and the live resolver returns `unrecognised` for `half`/`typo-mode`, `unset` for
+  `""`/`None`, and is case-insensitive.)*
+  **Two judgement calls worth keeping.** The conservative RETURN VALUE was deliberately kept — WP-14
+  fails closed to the bound when the manifest is phantom, and that is a real safety property; only the
+  SILENCE was the defect, so unknown now emits one `log.error` naming the reason, the role, the bound
+  held, and **the disjoint live subset that was forfeited**. And RAISING was rejected on call-site
+  grounds: the sole caller wraps this in `except Exception: caps.append(1)`, so a raise would have been
+  converted straight back into a silent 1 — the same bug wearing a `raise`.
+  Tests: 29, top-level and reporter-counted; author mutation-checked both directions (3 failed / 26
+  passed, and 7 failed / 22 passed on a second mutant), restored to 29 passed.
+- [ ] **Queue-hygiene correction, routed to the coordinator:** the B-bucket cited
+  `numa-topology-cutover-resume-20260730.md:327` for this defect. That row is **P1-7
+  `vision_escalation` has a PHANTOM 5-port fleet** — a different item, still open and untouched. The
+  code defect was real; the row pointer was not. Screening caught it before dispatch.
 
 - [ ] **External processes must never write daemon-owned state fields while the daemon lives.**
       `save_state(merge_control=True)` re-reads only `_EXTERNAL_CONTROL_FIELDS` (`paused`,
