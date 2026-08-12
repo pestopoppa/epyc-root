@@ -2218,6 +2218,35 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `state_write_lock`, and re-reads the file after writing to prove the stamp survived.
 
 ### New tasks
+- [ ] **P1 — THE CONTENTION MATRIX ADMITS A DIFFERENTLY-MEASURED PRIOR AS A ROLE-PAIR VERDICT.**
+  `scripts/server/contention_matrix.py:306-313` has **inverted marker polarity**: when it substitutes
+  a DISJOINT-quarter geometry for a downed primary it returns `(a, b, None)` — **no marker** — and it
+  sets `"overlap_measured"` only in the FAITHFUL overlapping case. *(Verified by `mainC` at the
+  source.)* So the marker fires on the honest measurement and is absent on the substituted one.
+  **The consequence is already shipped.** `orchestration/contention_matrix.yaml:129-136` carries
+  `frontdoor` + `ingest_long_context` measured on `regions [q0,q1]` vs `[q2,q3]` — **disjoint** —
+  giving `ratio 1.89, verdict "allow"`, unmarked. The codebase states the stakes itself
+  (`src/scheduling/contention.py:528-536`): *the SAME pair overlapping node0-half primaries is 0.37
+  BLOCK, on disjoint quarters 1.716 ALLOW — a role-keyed lookup cannot tell them apart.* `Pair`
+  carries roles/ratio/verdict/samples/note and **no geometry**, and `pair_policy` keys on bare role
+  names. The same file's `triples:` section still calls that pair catastrophic.
+  So a favourable-geometry measurement enters the LIVE ADMISSION GATE as a general role-pair verdict.
+  Repair is not small — mark, refuse, or reroute to `n_way`, possibly re-bench — so it is REPORTED,
+  not fixed. **UNOWNED, needs the contention-gate owner.** Same subsystem and same class as the
+  `contention_nway_restricted_count` label defect filed above: a value whose name asserts more than
+  the measurement supports.
+- [x] **Sweep for tests that DEFEND defects — done, and the class is largely already swept.**
+  ✅ 2026-08-12, orchestrator `02c9a9f4`. Method: 785 tracked test files / 13,042 test functions,
+  calibrated by asking git which recent commits had to DELETE an existing assertion — the fingerprint
+  of this class (21 since 2026-08-05, two direct hits used as templates). One repair: a route-ordering
+  test asserting `404` under its own `# TODO: Fix route ordering` — `/sessions/search` sat below
+  `/sessions/{session_id}`, so the search handler was unreachable dead code. Hoisted; the test now
+  asserts 200 and a second test pins router ordering structurally.
+  **The negative result is the more useful half:** the priority subsystems are exceptionally hardened
+  and repeatedly narrate their own flipped assertions (*"This test previously asserted the opposite,
+  and that assertion WAS the defect"*). Seven false alarms were resolved and RECORDED so nobody
+  re-opens them. Five further candidates reported with evidence and confidence, and the sweeper
+  DOWNGRADED two of its own deep-read claims after checking them against source.
 - [x] **MemRL reward-poisoning blast radius — ASSESSED.** ✅ 2026-08-12, orchestrator `5d494c2d`.
   **THE HEADLINE IS THAT K IS UNCOMPUTABLE.** Infra-sourced `False` and wrong-answer `False` are
   **byte-identical everywhere they are stored**, for three independent reasons each sufficient alone:
