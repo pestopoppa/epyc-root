@@ -101,6 +101,26 @@ must be re-run before it can gate anything · **OUT OF SCOPE** = not a P-GPU-1 c
 | 8 | `batched_decode/e5-gemma-nomtp-v9-20260812T0800Z/`, `.../e5-gemma-crossbinary-repair-20260812T0745Z/` | production v9 | ✓ | ✗ | ✓ | ✓ | — | **VOID — zero measurements** (see §3.1) |
 | 9 | `judge_suite_headtohead_20260802/` | production **v8** `b10107-67a433bf4` | ✗ | ✗ | ✗ | ✓ `live_shape.json props.build_info` | ✗ — device `"MI210 ROCm0"` is **hardcoded in the harness** (`run_judge_suite.py:167`), never verified against the live server | **OBSERVATION-GRADE** as a GPU claim; quality-instrument scope otherwise |
 | 10 | `kernel-v9-candidate/promotion-plan-20260810/production-v9-gpu-cert-run-locked/` | production **v9** `0db32c06e`, branch `production-consolidated-v9` | **✓** `commands.sh:5` + `guard_state.json` | **✓** `--list-devices` → `ROCm0: AMD Instinct MI210 (65520 MiB…)` | **✓** `/mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server` | **✓** `guard_state.json.git.binary.head` `0db32c06e`, `production_named_kernel: true` | **✓** `rocm` snapshots at 5 phases incl. `before_launch` / `after_cleanup`, with clocks + power + temp | **CERTIFIABLE** (see §3.2) |
+| 11 | `gpu-mi210/qwen36-27b-q8-dflash-pgpu1-v9/cert-run-20260811-locked/run-20260811T010339Z/` | production **v9** `0db32c06e`, branch `production-consolidated-v9` | **✓** `binary_identity.json.environment.LD_LIBRARY_PATH = "/mnt/raid0/llm/llama.cpp/build-hip/bin:/opt/rocm/lib"` + per-rep `environment.json` | **✓** `hardware_state.json` (live `rocminfo`) | **✓** + **binary sha256** `21cfb750dc0ba4b3add0674fcb9dd061d77b3604ebf8e1d063ba0e2c51902feb` | **✓** `git.commit.stdout 0db32c06e3e550065b78311a6031ef3dd2c4f27c` | **✓** `vram_pid_util_samples`, `rocm_{clocks,power,temp}_before_after`, `cleanup_proof` — all graded `present` | **CERTIFIABLE** (see §3.2a) |
+
+Additional in-window GPU-attributed artifacts found in the extended sweep, **not** individually
+field-audited here because **no live decision cites them** (verified in §4) — listed so the
+enumeration is honest about its own edges, and flagged for audit before any of them is ever cited:
+
+- **epyc-root `/workspace/artifacts/gpu-aux-baselines/`** (all 2026-08-12): `a3_bge_mi210_20260812.jsonl`
+  (`"backend":"ROCm"`, `"ngl":99`); `a9_stage{1,2}_result.json` + `a9_gfx90a_training_viability_20260812.md`
+  (`torch 2.5.1+rocm6.2`, `hip 6.2.41133`, sampled `peak_vram_torch_mb`); `a10_iq2_decode_attribution_20260812.md`
+  (rocprof-v1, `-ngl 99`, 39.40 t/s). `a10_iq2_vgpr_lever_20260812.md` and
+  `artifacts/audit/autokernel-static-probes-20260810.md` are **static disassembly** — zero GPU time,
+  so the linkage hazard cannot apply.
+- **`data/kernel-v9-candidate/promotion-plan-20260810/`** — the non-`-locked` siblings
+  `v9-gpu-smoke-{plan,run}` and `production-v9-gpu-cert-{plan,run}`.
+- **`data/gfx90a-counters/gfx90a-counters-20260803.txt`** — hardware counter dump, not a claim.
+- **`/workspace/artifacts/operator/v9-qualification-20260810T235723Z-0db32c06e/summary.json`** —
+  carries `hip_server_sha256` and decode_tps figures but is already flagged `decision_grade: false`.
+- **`data/speech_kernel_freeze_20260731/`** — contains MI210 GPU STT arms, but it is a *preservation
+  copy*; the measurements predate the window. Out of scope, recorded to prevent a future sweep
+  re-flagging it.
 
 ### 3.1 The two VOID runs — not measurements, and a trap in them
 
@@ -149,6 +169,93 @@ phase=after_cleanup after server termination"`), not values — a grep for `LD_L
 `guard_state.json`). A verifier that reads only the summary would wrongly fail this run. That is an
 argument for the field-3 amendment already queued for operator ratification (plan Phase 5,
 *"P-GPU-1 amendment text"*): name a **verifier-produced linkage receipt** at a fixed path.
+
+### 3.2a The second certifiable artifact — and a machine verifier nobody pointed at the window
+
+`data/gpu-mi210/qwen36-27b-q8-dflash-pgpu1-v9/cert-run-20260811-locked/run-20260811T010339Z/` is the
+most completely evidenced GPU run in the window. It is the only artifact carrying the **full
+outside-the-binary kit** the constitution asks for: `binary_identity.json` (binary path + **sha256**
++ `environment.LD_LIBRARY_PATH` + `git.branch`/`git.commit` stdout), `hardware_state.json` (live
+`rocminfo`), per-rep `environment.json`, `pre_execution_binding.json` / `post_execution_binding.json`,
+and `guard_state.json`.
+
+Its `summary.json.status` is `"failed"` — the DFlash lane was ruled ineligible (pooled acceptance
+below the `0.60` P-DFLASH-LINEUP-1 floor). **That is a properly certified negative result, not a
+failed measurement**, and it is the correct outcome to have banked.
+
+**It also contains a checked-in machine verifier's verdict.** `completeness_audit.json` records
+`"overall": "complete"` with all **13** required P-GPU-1 fields `present` —
+`binary_model_identity`, `production_named_kernel_identity`, `rocm_clocks_before_after`,
+`rocm_power_before_after`, `rocm_temp_before_after`, `vram_pid_util_samples`, `cleanup_proof`,
+`post_cleanup_vram_sample`, `warmup_discard_policy`, `rep_count`, `result_grammar`,
+`cpu_interference_policy`, `summary_json`. The verifier is
+`epyc-inference-research/scripts/benchmark/pgpu1_artifact_completeness_audit.py`, and it emits
+exactly the verdict this Phase 7 was chartered to produce: `"recommendation":
+"retro_cert_candidate"` or `"rerun_required"`.
+
+**Nobody ran it across the window.** Doing so is cheap, read-only, and should be the standing gate
+— but *not before the defect below is fixed*.
+
+### 3.2a-bis The verifier's field-3 check is vacuous — demonstrated, not asserted
+
+`pgpu1_artifact_completeness_audit.py:243-246` computes
+`state = "present" if matches else "missing"`, where `matches` is **any** hit among a rule's
+pattern tuple. The `binary_model_identity` rule (`:73-84`) ORs six patterns:
+
+```
+r"llama-server", r"llama\.cpp-experimental", r"\.gguf\b", r"rev-parse", r"ld_library_path", r"rocm0"
+```
+
+So an artifact containing the string `llama-server` **passes field 3 without banking
+`LD_LIBRARY_PATH` at all** — the exact field this entire audit exists to check. Two further
+consequences: the scanner reads *every file in the directory*, so shipping the harness source is
+enough to match `ld_library_path` even when no artifact records a value; and
+`llama\.cpp-experimental` is a **positive** identity pattern, so an experimental-kernel path counts
+*toward* completeness while `:16-21` makes it disqualifying.
+
+Demonstrated on a known-deficient artifact (read-only, 2026-08-12):
+
+```
+$ python3 scripts/benchmark/pgpu1_artifact_completeness_audit.py data/vision_mmmu_cutover_20260731
+binary_model_identity: present
+  matched: ['llama-server', 'llama\\.cpp-experimental', '\\.gguf\\b', 'ld_library_path', 'rocm0']
+```
+
+`results.json` for that campaign banks **no** `LD_LIBRARY_PATH` (§3, row 2) — the `ld_library_path`
+hit comes from `harness.py:242`, the source line that *sets* it. The verifier graded field 3
+**present** on an artifact that fails it.
+
+**No wrong conclusion resulted here** — the artifact was still correctly graded `incomplete` overall
+(`missing_required_fields`: `summary_json`, `rocm_clocks_before_after`,
+`production_named_kernel_identity`, `warmup_discard_policy`, `rep_count`, `cpu_interference_policy`,
+`cleanup_proof`, `post_cleanup_vram_sample`) because eight other fields were absent. The exposure is
+an artifact that is complete in every field *except* the linkage one: it would be stamped
+`retro_cert_candidate`. This is the **"KEY too wide"** member of the vacuous-verification family —
+a check that passes for a reason unrelated to what it is testing. Fix proposed in §7.
+
+### 3.2b The stronger pattern already in this repo — `autokernel_controls_*`
+
+The in-window AutoKernel control campaigns (`data/autokernel_controls_20260805/`,
+`data/autokernel_controls_3pct_20260805/`) are **CPU** runs (`libggml-cpu.so`, no HIP), so they are
+outside P-GPU-1. They are recorded here because they solve the field-3 problem more completely than
+row 10 does, and the amendment should copy them rather than invent something:
+
+- **`linkage.copy.txt` + `linkage.production.txt`** — banked, per-library resolved-path receipts
+  (`ldd` output), one for the pinned copy and one for production, so the two can be diffed. This is
+  the artifact shape that `gpu_coresidency`'s unfalsifiable `ggml_linkage_verified: true` boolean
+  should have been.
+- **`anchor_binary_copy/`** — the binary *and all its ggml libraries* are **copied into the
+  campaign directory**, and `linkage.copy.txt` proves every `libggml-*.so.0` resolved to that copy
+  (`.../data/autokernel_controls_20260805/anchor_binary_copy/libggml-cpu.so.0`). Resolution is
+  self-contained, so INC-20260731 is impossible **and** the exact binary survives for replay — a
+  property row 10 does not have (§3.4: the experimental `bin/` holds seven build numbers and its
+  identity at run time is unrecoverable).
+- Alongside: `claim_receipt.json`, `region_claim.jsonl`, `host.json`, `preflight.json`,
+  `campaign_declaration.json`, `runtime-source-label.json`.
+
+For GPU the same pattern needs one addition `ldd` cannot supply — because llama.cpp **dlopens**
+`libggml-hip.so`, a link-time receipt does not prove the HIP backend was *loaded*. Pair it with the
+row-10 `--list-devices` capture and a during-run VRAM/KFD sample.
 
 ### 3.3 Cross-cutting field findings
 
@@ -319,15 +426,23 @@ Stated plainly, because a retro-certification that overstates its own coverage i
    HEAD `acfc9d95`, epyc-inference-research `main`). Those 780 were caught **only** by the
    git-commit-window method.
 
-   The consequence cuts both ways and defines the true blind spot: a bare `llama-bench` file — a
-   model name, a t/s column, a build number, no date, no `--device`, no `ROCm`/`MI210` string —
-   that was **run in-window but committed outside it** (or never committed) is invisible to all
-   three methods simultaneously. That this is a live possibility rather than a theoretical one is
-   shown by the converse, observed here: the in-window `git log` surfaced dozens of directories
-   whose campaign dates are `20260716`/`20260717`, i.e. **bulk commits move old files into the
-   window**, so commit date and run date are demonstrably decoupled in this repo. `llama-bench`
-   defaults leave no env, no device, and no timestamp in its output, so nothing in such a file
-   would betray it.
+   **The specific "bare `llama-bench`" fear is smaller than expected — corrected on measurement.**
+   Of 83 in-window-added `llama-bench` outputs (75 research, 8 root), **zero** lack both axes: a
+   `llama-bench` markdown table *structurally* emits `backend` and `ngl` columns, so it always
+   carries a device signal. The residual is **date-only: 12 files**, and all 12 were caught anyway
+   via their directory name. `llama-bench` output is therefore **not** the blind spot this audit
+   feared.
+
+   **The real blind spot is the decoupling of commit date from run date**, and it cuts both ways.
+   The in-window `git log` surfaced dozens of directories whose campaign dates are
+   `20260716`/`20260717` — bulk commits move old files *into* the window — so conversely, an
+   in-window run committed after 2026-08-13, or never committed, is invisible to method 1 entirely,
+   and the 780 undated/deviceless files are exactly the population that would hide it. Residual
+   uncovered set: **60 research-repo files sit in a path with no date stamp anywhere** (chiefly
+   `data/batched_decode/e5_manifests*/`), and 831 in-window additions were excluded by the
+   extension filter altogether — including the `.time` sidecars beside every bench `.md`, and
+   `.tsv`/`.manifest`/`.sha256` files that are genuine measurement outputs. Those were never
+   classified.
 2. **mtime is not evidence in this repo.** Both working paths are one shared clone; checkouts and
    merges rewrite mtimes wholesale. A `find -newermt 2026-07-31` sweep of `benchmarks/results/`
    returned only two directories, which is demonstrably an artifact of checkout order, not the truth.
@@ -336,10 +451,26 @@ Stated plainly, because a retro-certification that overstates its own coverage i
 3. **Uncommitted and scratch artifacts are out of reach.** Anything that lived only under
    `/mnt/raid0/llm/tmp/` and was never migrated is gone or unfindable — which is exactly the failure
    `MEASUREMENT.md:169` records (152 of 158 scratch paths still existed on 2026-08-02; **six did
-   not**). Those six are permanently outside any retro-certification.
+   not**). Those six are permanently outside any retro-certification. This class has already
+   destroyed at least one GPU result: `data/autokernel_aa_20260804/README.md:11-14` records that
+   *"the 2026-07-04 async-prefetch win — the one real result this project ever produced — was
+   written to `/mnt/raid0/llm/tmp/mi210-build/campaign/kernel_rnd_results.jsonl`, and that directory
+   no longer exists."* That loss is **outside this window** (2026-07-04), so it changes no verdict
+   above; it is cited as proof that the blind spot is real rather than theoretical.
 4. **Absence of an env field cannot distinguish "not recorded" from "not applicable".** For a CPU
    run the missing ROCm fields are correct; the audit resolved this by reading each artifact's
    declared protocol, but a purely mechanical sweep could not.
+
+4b. **Marker-based device attribution is unreliable in BOTH directions, so every call above was
+   made by reading `server_argv` / a bench `backend` column / a server log — never by counting
+   markers.** Two proofs from this window:
+   `data/deepseek-v4-flash/iq3-dspark-quick-20260811T063729Z` scores *maximally* GPU by marker count
+   (262 `ROCm`, 100 `rocm-smi`, 42 `VRAM`) yet ran with the GPU **explicitly masked off**
+   (`ROCR_VISIBLE_DEVICES=-1 HIP_VISIBLE_DEVICES=-1`) — the markers are the tenancy guard sampling,
+   not compute. Inversely, `judge_suite_headtohead_20260802` reads as non-GPU until
+   `run_judge_suite.py:167`. And in `kernel-v9-candidate/.../v9-quality-run`, 272 `ngl` hits are the
+   *ignored* flag: the server log's first line is `warning: no usable GPU found, --gpu-layers option
+   will be ignored`. **A marker-count sweep would have misclassified at least three campaigns here.**
 5. **The window is defined by process inheritance, not wall-clock.** Because long-lived containers
    keep the pre-fix path indefinitely (§1), a run *after* 2026-08-12 in an old container is equally
    exposed. This audit certifies a time range; it does not certify the future.
@@ -363,7 +494,13 @@ git identity, and rocm snapshots before and after.
 | **1** | `baseline_tps 30.87` · `contended_tps 19.81` · `vram_gib 36.7` (`gpu_coresidency_20260731`) | `model_registry.yaml:2478` etc. → `q_scorer` baselines, `routing_hints` throughput priors | Throughput + residency class · experimental kernel · no LD_LIB, no commit, no version · unfalsifiable linkage assertion · `n=3` against a −35.8% claim (P-BENCH-1 needs n≥5) · **artifact self-declares "no gate"** |
 | **2** | `decode 112.20 vs 214.54 t/s median` and `vram_mb_total 21061` (`vision_mmmu_cutover_20260731`) | `model_registry.yaml:2231-2238` — vision role VRAM budget and speed characterisation | Throughput + residency class · experimental kernel · no banked LD_LIB. **The accuracy half of the same artifact does not need re-running — see §4/C1.** |
 | **3** | `36/42 · 35/42 · 33/42 · 31/42` (`vision_quality_42q_20260731`) | `multimodal-pipeline.md:492`, `wiki/multimodal.md:557-563` — MiniCPM-o deprecation, ~22 GB weights deleted | Accuracy class, so **not** a linkage re-run. Re-run only if the deletion is ever revisited; the real defect is that the artifact carries **no `_meta` at all** and is cited by numbers rather than by path |
-| — | **Not to be re-run** | | v9 GPU certification (§3.2) is certifiable · `mi210-*` substrate receipts are non-llama.cpp (§4/C3) · the two VOID runs contain nothing to re-run · `judge_suite`, `vision_kv_q8_ab` accuracy numbers are device-invariant |
+| — | **Not to be re-run** | | v9 GPU certification (§3.2) and the DFlash P-GPU-1 cert run (§3.2a) are certifiable · `mi210-*` substrate receipts are non-llama.cpp (§4/C3) · the two VOID runs contain nothing to re-run · `judge_suite`, `vision_kv_q8_ab` accuracy numbers are device-invariant · the `artifacts/gpu-aux-baselines/` set is uncited, so nothing gates on it today |
+
+**Zero-inference work that should precede any re-run.** Fix
+`pgpu1_artifact_completeness_audit.py` per §7 item 8, then run it across the full in-window set and
+bank the verdicts. It is read-only, costs no GPU time, and converts this prose audit into a
+reproducible gate. Doing it in the other order would stamp `retro_cert_candidate` on artifacts that
+fail field 3.
 
 **A cheaper alternative to re-running #1 and #2**, offered because both are contended-throughput
 numbers whose *sign* nobody disputes: re-measure only the un-contended `baseline_tps` for
@@ -405,15 +542,34 @@ approval can be a single yes/no.
    concrete argument: the one compliant run in the window would **fail** a summary-only verifier
    because its evidence lives in `commands.sh` / `guard_state.json`. The amendment should name a
    verifier-produced **linkage receipt at a fixed path within the run directory**, and should
-   explicitly retire the unfalsifiable `ggml_linkage_verified: true` boolean shape.
+   explicitly retire the unfalsifiable `ggml_linkage_verified: true` boolean shape. §3.2b supplies a
+   working precedent already in this repo — `autokernel_controls_*`'s `linkage.copy.txt` +
+   `anchor_binary_copy/` — which the amendment can adopt rather than design from scratch, provided
+   it adds a loaded-backend capture (`--list-devices`) since `ldd` cannot see a `dlopen`.
+
+8. **`epyc-inference-research/scripts/benchmark/pgpu1_artifact_completeness_audit.py:73-84,243-246`**
+   — the `binary_model_identity` rule ORs six patterns and marks the field `present` on any single
+   hit, so an artifact banking **no `LD_LIBRARY_PATH`** passes field 3 (demonstrated in §3.2a-bis).
+   Propose: split `ld_library_path` (and a backend-list pattern) into **their own required rules**
+   so they must each match independently; restrict the scan for those rules to result/receipt files
+   rather than the whole directory, so harness source cannot satisfy them; and **remove
+   `llama\.cpp-experimental` from the positive pattern set** — it belongs in `near_patterns`, where
+   the `production_named_kernel_identity` rule already correctly places it. Add a mutation test that
+   garbles the banked `LD_LIBRARY_PATH` in a fixture and **asserts the audit turns `incomplete`**
+   (`test_pgpu1_artifact_completeness_audit.py` exists alongside it). This is a code fix, not an
+   index or registry edit — it needs review, not operator ratification, but it is listed here
+   because it changes what a governance gate accepts.
 
 ---
 
 ## 8. Bottom line
 
-Of the ten in-window GPU-attributed artifact groups, **one is certifiable** (the v9 promotion GPU
-certification — and it is the one carrying the largest stake), **five are observation-grade**, two
-are out of P-GPU-1's claim class, and two are void.
+Of the eleven in-window GPU-attributed artifact groups audited in detail, **two are certifiable** —
+the v9 promotion GPU certification (§3.2) and the DFlash P-GPU-1 cert run (§3.2a), which together
+carry the largest stakes in the window — **five are observation-grade**, two are out of P-GPU-1's
+claim class, and two are void. A further set of in-window GPU artifacts in
+`/workspace/artifacts/gpu-aux-baselines/` and the `kernel-v9-candidate` plan siblings was
+enumerated but not field-audited, because no live decision cites them.
 
 **Nothing in this audit shows any measured number to be wrong.** The three vision harnesses
 defeated the linkage hazard by prepending their HIP build directory; they simply did not bank the
@@ -426,3 +582,9 @@ citations rest on artifacts that cannot be certified**, and one of them
 re-run — accuracy is invariant to which device executed, and the hazard's precondition did not hold.
 The vision-cutover **throughput and VRAM** numbers, and the `architect_general` co-residency
 throughput priors, **do** — before they continue to gate.
+
+**The cheapest durable win in this audit is not a re-run at all.** A P-GPU-1 completeness verifier
+already exists, already emits `retro_cert_candidate` / `rerun_required`, and already ran clean on
+the two certifiable artifacts. It was never pointed at the window, and its field-3 check is
+currently vacuous. Fix it (§7 item 8), run it across the set, and the next retro-certification is a
+command instead of a document.
