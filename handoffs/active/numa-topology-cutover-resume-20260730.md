@@ -309,7 +309,7 @@ the machine.
       vacuously. **Operator has chosen HARD-FAIL.** Blocked on ratifying
       `INTERLEAVE_TOLERANCE` (P2-3 item B.2), because a multi-node check needs a
       tolerance to check against.
-- [ ] **P1-3. SUPERSEDE the `dual-half-negative` seed strategy.**
+- [x] **P1-3. SUPERSEDE the `dual-half-negative` seed strategy.** ✅ 2026-08-12 — `mainD`. orchestrator `6dd3248d`. Superseded, never edited: **27 insertions, 0 deletions**, which is the machine proof the 2026-06-28 operator prior is untouched. Used the store's own append-only idempotent mechanism rather than inventing a `superseded_by` column. The prior's FIRST clause is refuted too — it calls dual-half 'negative at about 0.5x', while the 2026-07-30 fleet grid measures 2 halves ABOVE 4 quarters at every matched stream count (72.83/52.90, 98.81/81.00, 127.94/108.39).
       `scripts/autopilot/operator_seed_strategies.yaml:353` — `confidence: high`,
       operator-seeded, no TTL, insight "quarters remain the granularity". It
       **forbids the topology we just deployed**. It is a *learned prior*:
@@ -317,7 +317,7 @@ the machine.
 - [ ] **P1-4. `stack_templates/default.yaml` is a 4th hand-maintained copy of the
       topology.** Its parity gate already fails 7 ways. Either derive it from the
       single source or delete it — a fourth copy is how the drift started.
-- [ ] **P1-5. `src/registry/registry_validator.py` never cross-checks
+- [x] **P1-5. `src/registry/registry_validator.py` never cross-checks ✅ 2026-08-12 — `mainD`. orchestrator `7d4f96d2`. Cross-check added and wired into `validate_all`, reached by the one production caller (`stack_commands.py:1289` in `cmd_start`). **Premise corrected**: a PARTIAL guard already existed — `stack_manifest.validate_declaration_parity()` — but it iterates `NUMA_CONFIG.items()` and is structurally blind to a registry declaring a fleet the topology never heard of, which is P1-7's phantom-fleet shape. Both directions now covered, plus duplicate ports, `numa_instances` vs `len(numa_ports)`, and primary port vs full-instance port. 23 tests, counted by the runner (tests/unit 12039 → 12062); an empty/unloadable topology is an ERROR, never silent agreement.
       `numa_ports` against `NUMA_CONFIG`.** This is **the missing guard that
       allowed months of drift**. Add it; it is the cheapest permanent fix in this
       list.
@@ -337,7 +337,7 @@ the machine.
       machine. Confirm the two test-only references
       (`tests/unit/test_dynamic_stack.py:177`,
       `tests/unit/test_stack_templates_v2.py:234`) and delete.
-- [ ] **P1-10. Add a pre-commit check for `REQUIRED_SOURCE_ARTIFACTS` staleness.**
+- [x] **P1-10. Add a pre-commit check for `REQUIRED_SOURCE_ARTIFACTS` staleness.** ✅ 2026-08-12 — `mainD`. orchestrator `65d55ea4`. Reads the GIT INDEX, not the worktree — at commit time the question is what the commit will contain. Blame is scoped (staged paths ERROR, inherited debt WARNs, `--staleness-strict` promotes) because **3 of 9 pins are stale at HEAD right now** and an unconditional gate would push people to `--no-verify`, which also skips the PII and hermes-drift hooks. All three fail-open paths are loud and tested: empty section, unresolvable path, staged deletion. 103 → 127 tests. NOT wired — hook registration is operator territory; the exact line is in the commit message.
       `scripts/validate/stack_change_guard.py:40` — a commit touching any of those
       files **silently blocks `orchestrator_stack.py start`** until the priors are
       recompiled, with no warning at commit time. **Two occurrences today from two
@@ -1550,3 +1550,22 @@ ADDENDUM 2 and converts the loose conclusions in those appends into task lines.
 Repo hygiene surfaced by this window is filed as **NIB2-60..63** in
 [`non-inference-backlog.md`](non-inference-backlog.md) — not acted on here because a stack start
 was in flight and several items touch the shared clone.
+
+### Discovered 2026-08-12 while working P1-3 / P1-5 / P1-10 (`mainD`)
+
+- [ ] **Propagate the `dual-half-negative` supersession to the LIVE strategy store.** The YAML is the
+  record; `orchestration/repl_memory/strategies/strategies.db` is what AutoPilot reads. Until
+  `scripts/autopilot/seed_operator_strategies.py --apply` runs (dry run: 1 insert, 47 skipped) a
+  restarted AutoPilot still reads the stale quarter-granularity prior. Needs a live BGE embedder, so it
+  belongs to whoever owns that service. **Time-sensitive for the same reason P1-3 was.**
+- [ ] **`retrieve_conventions` orders `created_at ASC`, so a superseding row is always reached LAST.**
+  Today `limit=3` reaches neither dual-half row, but if that limit is raised the superseded row is read
+  BEFORE its supersession. Rank conventions newest-first, or honour a `supersedes` key.
+- [ ] **Regenerate `orchestration/derived/stack_priors.yaml`** — 3 of 9 `REQUIRED_SOURCE_ARTIFACTS` pins
+  (`orchestrator_stack`, `stack_numa`, `stack_topology`) are stale at HEAD, which is why
+  `orchestrator_stack.py start` refuses to launch. Deliberately out of scope for the P1-10 fix (separate
+  act, separate file set).
+- [ ] **The `backend:` → `verify_ggml_linkage` invariant is enforced by ONE TEST, not the loader.**
+  `stack_manifest.py:318` forces only `ld_library_path_mode`; `:338` defaults the flag to `False`. Delete
+  a flag line from `launch_manifest.yaml` and the loader says nothing —
+  `tests/unit/test_aux_service_env.py:128` is the only thing that would notice.
