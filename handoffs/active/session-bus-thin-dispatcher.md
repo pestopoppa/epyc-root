@@ -2209,7 +2209,24 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     or unreadable holder loudly, because that is the shape where nothing is supervising and
     everything still looks fine. Verified live: `once` against the running supervisor prints
     `lock holder: pid 1336629 (ALIVE)`.
-  - [ ] **The bootstrap chain — still open, and now one link shorter.** Measured 2026-08-12: the
+  - [x] **THE BOOTSTRAP CHAIN CLOSED, AND C42 FIRED FOR THE FIRST TIME IN PRODUCTION.**
+    ✅ 2026-08-12 00:45Z, verified from the supervisor's own log and the filesystem, not claimed:
+    1. Supervisor restarted **00:45:19Z** → source-current, and the loop's healthy branch reached
+       the check (the 48648df2 bugfix).
+    2. **It DETECTED the stale daemon** — `daemon is running code OLDER than its source (source
+       00:03:07Z is newer than the running process) — restarting so committed fixes take effect`.
+       First live detection this mechanism has ever made.
+    3. Restarted it: `stopping wedged daemon pid(s): 942753` → new daemon **1510614 at 00:45:20Z**,
+       one second later, source-current.
+    4. That daemon ran the rotation it had been unable to run: **`advisory.jsonl` 1,044 MiB → 0 MiB,
+       `advisory_1.jsonl` 1,045 MiB.**
+    5. **The hazard did not fire:** flags survived the shard — 660 pairs in `relay_state.json`, and
+       a fresh bootstrap across `advisory*.jsonl` finds all 660. The all-shard read is what stopped
+       rotation turning into the C34 flood.
+    Daemon now at **1.8% CPU** (29.5% pre-C38, 1.3% post-C38-live). Five defects — C28, C38, C39,
+    R1, R2 — went from committed to live on one restart, and **C42 now keeps the chain closed
+    without one**: the next fix to land is picked up by the supervisor within a poll.
+    *The mechanism finally outlived the need for the restarts it was built to remove.* Measured 2026-08-12: the
     supervisor is source-current, but the daemon (pid 942753, started 22:25:55Z) still runs
     pre-rotation code and `advisory.jsonl` is still **1,044 MiB with no shards**. With the loop
     bugfix above the supervisor should now detect and restart it on its own within a poll — but the
