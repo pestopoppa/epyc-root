@@ -43,7 +43,9 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-15 | Approve or decline one experimental commit for the Q4_K branchless scale/min decoder before a clean governed replay | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 | OP-16 | Authorize an orderly host reboot after wrap-up so the ratified uptime gate permits the prepared CPU IQK campaign | [autokernel-research-loop.md](autokernel-research-loop.md) AK6.5 Step 3 | 2026-08-12 |
 | OP-17 | Amend frozen-v9 attestation with llama ggml `0.16.0`, or retain an intentionally unverified complete-kernel-set fold | [autokernel-research-loop.md](autokernel-research-loop.md) AK6 dashboard residual | 2026-08-12 |
-| OP-18 | Autopilot health-check retry is unbounded (`sleep; continue`, no cap/latch): cap-and-latch after N (risks needing overnight operator resume on a transient blip) vs escalate-loudly-after-N. Ruling, not code — flagged UNOWNED by mainC batch C | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | 2026-08-12 |
+| OP-19 | Rule the E8 chain retired (or not): B9/B10 are BLOCKED-AND-LIKELY-MOOT — their source evidence was destroyed and the era advanced to E9 on 2026-08-11, so both boxes wait on this ruling alone | [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) | 2026-08-12 |
+| OP-20 | One ruling on `task_failed` scoring applied to BOTH producers (`eval_tower:1339` excludes it; the seeding path scores it WRONG) — until it lands, quality numbers are not comparable across producers. Auditor recommends: non-infra → WRONG in both, infra → EXCLUDED in both | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | 2026-08-12 |
+| OP-21 | Assign a compute-lane owner + inference region claim for the operator-authorised contention re-bench (must measure the OVERLAPPING geometry; the disjoint number is already on file) — all mains wrapped, so no lane can self-claim it | [shape-keyed-contention-gating.md](shape-keyed-contention-gating.md) | 2026-08-12 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
@@ -71,7 +73,7 @@ nobody is moving.
 | pipeline-integration | 5 | 50 | 1 | 2026-07-29 |
 | research-evaluation | 49 | 292 | 9 | 2026-07-29 |
 | reviewer-control-plane | 9 | 30 | 11 | 2026-07-29 |
-| routing-and-optimization | 48 | 392 | 18 | 2026-07-29 |
+| routing-and-optimization | 48 | 396 | 18 | 2026-07-29 |
 | user-facing-harness | 7 | 39 | 3 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

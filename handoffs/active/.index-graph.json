@@ -3497,7 +3497,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T13:57:35Z",
+  "generated_at": "2026-08-12T14:00:07Z",
   "nodes": [
     {
       "age_days": 13,
@@ -5023,7 +5023,7 @@
     {
       "age_days": 0,
       "blocked": 2,
-      "closed": 159,
+      "closed": 160,
       "domain": "routing-and-optimization",
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",
@@ -5457,8 +5457,8 @@
       "handoff": "shape-keyed-contention-gating.md",
       "id": "RTG-35",
       "last_advanced": "2026-08-01",
-      "next_action": "Echo GateDecision into /chat response metadata (admitted/waited_s/decision/topology_idx)",
-      "open": 8,
+      "next_action": "Fix inverted marker polarity at contention_matrix.py:306-313 \u2014 substituted disjoint pairs enter the matrix unmarked (auditor-verified, live)",
+      "open": 12,
       "state": "active",
       "track": "shape keyed contention gating"
     },

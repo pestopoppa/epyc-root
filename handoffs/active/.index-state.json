@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 392
+      "open": 396
     },
     "user-facing-harness-index.md": {
       "blocked": 3,
@@ -140,14 +140,14 @@
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
-      "closed": 159,
+      "closed": 160,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 66,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
       "state": "active",
-      "total": 227
+      "total": 228
     },
     "autopilot-control-plane-integration.md": {
       "blocked": 0,
@@ -1628,11 +1628,11 @@
       "closed": 8,
       "guarded": 0,
       "last_advanced": "2026-08-01",
-      "open": 8,
+      "open": 12,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-35",
       "state": "active",
-      "total": 16
+      "total": 20
     },
     "sliders-local-validation.md": {
       "blocked": 1,
@@ -3298,7 +3298,7 @@
       "id": "RTG-35",
       "index": "routing-and-optimization-index.md",
       "line": 47,
-      "next_action": "Echo GateDecision into /chat response metadata (admitted/waited_s/decision/topology_idx)",
+      "next_action": "Fix inverted marker polarity at contention_matrix.py:306-313 \u2014 substituted disjoint pairs enter the matrix unmarked (auditor-verified, live)",
       "track": "shape keyed contention gating"
     },
     "RTG-36": {

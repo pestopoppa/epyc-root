@@ -2583,6 +2583,13 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
   rebuild, which is a measurement-instrument boundary (`eval_tower` stamps instrument identity) and
   needs scheduling by the pool owner. Until then the 4 debugbench rows in `core_v2` still score
   vacuously, and **historical debugbench scores remain uninterpretable and were not re-derived**.
+- [x] **Cite-check disposition upgraded NO SIGNAL → POSSIBLY INVERTED** ✅ 2026-08-12 (`auditor`,
+  root `5f223428`) — addendum appended to
+  [`artifacts/audit/debugbench-oracle-vacuity-20260812.md`](../../artifacts/audit/debugbench-oracle-vacuity-20260812.md).
+  "No signal" understates a both-directions oracle: one that passes wrong answers *and fails right
+  ones* can rank a worse model **above** a better one, so any debugbench-backed comparison on record
+  may be actively backwards rather than merely uninformative. Applies to every such citation until
+  the pool owner schedules the rebuild.
 - [ ] **Residual guard gap:** `vacuous_rows()` only inspects the substring family, so a *programmatic*
   row whose oracle is input-satisfiable would not be flagged. Debugbench is covered by its own build
   gate; nothing generic covers that class.

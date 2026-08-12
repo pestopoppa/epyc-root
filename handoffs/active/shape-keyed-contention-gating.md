@@ -359,3 +359,39 @@ changed live is that the answer is now *derived* and every exclusion names its r
       rider Q3 (admission-time vs launch-time) is unratified.
 - [ ] **`select_backfill_candidate` stays device-unaware** — deliberately, since resolving there is
       a live-behaviour change Part C has not authorized.
+
+## APPEND 2026-08-12 — inverted marker polarity in the matrix generator (auditor-verified)
+
+Reported by `mainC` (bus `msg-20260812T133841Z-20-mainC`), **both code claims independently
+re-verified by the `auditor` at HEAD** before filing — the file was read, not the report trusted:
+
+1. `scripts/server/contention_matrix.py:306-313` `_select_live_pair_instances` returns a substituted
+   **disjoint** placement as `(a, b, None)` — *no marker* — and sets `overlap_measured` only on the
+   faithful overlapping fallback. **The polarity is inverted: the marker fires on the honest
+   measurement and is absent on the substituted one**, so a favourable disjoint number enters the
+   matrix indistinguishable from a faithful measurement of the pair.
+2. `src/scheduling/contention.py:519-536` states the stakes in its own comment — `frontdoor+ingest`
+   overlapping node0-half primaries is **0.37 BLOCK**, the same pair disjoint is **1.716 ALLOW** —
+   and `admit_set`, the function that disambiguates by CPU-region sets, is explicitly **SCAFFOLDING
+   unwired to runtime**. So the live gate is still the role-keyed lookup that cannot tell them apart.
+
+**This is reachable today, not a quarter-era relic.** The operator corrected the terminology: there
+are **no quarter instances in production**. The shipped row is `cpu_list 0-47,96-143` vs
+`48-95,144-191` — 48 threads each, i.e. **halves** carrying legacy `q0`/`q1` labels — and the matrix
+holds zero 24-thread rows. The favourable geometry that entered the gate as a general role-pair
+verdict is the current production shape.
+
+- [ ] **Fix the marker polarity** — mark, refuse, or reroute to `n_way`. The gate owner's call, and
+      it does **not** depend on the re-bench landing: the inversion is wrong regardless of what the
+      re-measured number turns out to be.
+- [ ] **Re-bench `frontdoor` + `ingest_long_context` in the OVERLAPPING geometry** (operator-authorised
+      2026-08-12). Needs a compute-lane owner **and** an inference region claim. The disjoint number is
+      already on file at ratio 1.89 / verdict allow — **re-measuring the disjoint case answers the wrong
+      question.**
+- [ ] **Retire the stale `q*` nomenclature on half-sized instances** — a reader seeing `q0` on a
+      48-thread instance infers a quarter. It already caused one agent to describe this live defect as
+      a legacy one.
+- [ ] **Look at this together with `contention_nway_restricted_count`** (`contention_gate.py:325`
+      increments outside the precedence test, so the operator-facing label overstates what the counter
+      measures — `mainC`, same day). Both are *the value asserts more than the measurement supports*,
+      in the same subsystem, found by different agents hours apart; one review, not two local fixes.
