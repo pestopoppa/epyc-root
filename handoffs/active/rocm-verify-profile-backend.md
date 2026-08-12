@@ -1,17 +1,13 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
-**Status**: ACTIVE HARDENING — Q4_K MMQ corrected locally; oracle producer evidence remains approval-gated
-**Created**: 2026-06-03 · **Updated**: 2026-08-12 (diagnostic receipt/provenance audit)
+**Status**: ACTIVE HARDENING — phase-explicit rocprof landed; real decode and C3/C5 capture remain
+**Created**: 2026-06-03 · **Updated**: 2026-08-12 (phase-explicit attribution repair)
 
-> **NEXT ACTION (2026-08-11): `RVP-C2-7/C2-8/C2-9` — after OP-11 approves the exact experimental
-> producer commit, rerun sensitivity, hostile-distribution, and checker-isolation evidence on its
-> durable suite identity.** The research reducers/runners are durable; the live oracle-integrity smoke
-> is intentionally non-evidence because its producer is uncommitted. The experimental implementation
-> and Q4_K MMQ repair must not be committed or pushed without explicit user approval per that tree's
-> `AGENTS.md`. The two static
-> probes (`RVP-T0-2`, `RVP-T0-5`) remain complete and independently re-verified. **`RVP-T0-1` is now
-> complete:** the live card never approached its 300 W cap, so the clock-pinning branch and AK-OP-2
-> are closed. Everything else in §2026-08-10 is CPU-only or static and runs today.
+> **NEXT ACTION (2026-08-12): after INF-03 r15 releases the MI210, run the governed real-model
+> decode attribution in RVP-C4-4a, then capture the real EPYC C3/C5 workload evidence.** OP-11 was
+> resolved as Option B (decline for now), so C2-7/C2-8/C2-9 remain deliberately open unless the
+> operator explicitly reopens the experimental producer. The research reducers/runners remain
+> durable; the old oracle-integrity smoke remains non-evidence.
 >
 > **Evidence-authority boundary (2026-08-12):** RVP-T0-1 and its v9 replication are durable
 > hardware-saturation diagnostics, and AK-BH-1/2/3 plus AK-LN-2/AK-X-5a are durable bounded
@@ -35,9 +31,9 @@
   **408 tests + 15 subtests PASS**. This confirms RVP-C6-2/3/4 and RVP-C3-4/5. That audit correctly
   reopened RVP-C6-6/10 because their static detector corpus and ranked-unit machinery did not satisfy
   the empirical acceptance text; the later executable gfx90a r3 receipt below closes both rows.
-  RVP-C2-8/9 also remain open: their reducers and claim-aware runners are complete, but the full
-  acceptance contract still needs an OP-11-authorized committed seeded producer and fresh matched
-  evidence. No implementation-only test upgraded empirical authority.
+  RVP-C2-8/9 also remain open: their reducers and claim-aware runners are complete, but OP-11 declined
+  the committed seeded producer needed for fresh matched evidence. No implementation-only test
+  upgraded empirical authority.
 **Categories**: hardware_optimization, benchmark_methodology, tool_implementation, inference_serving
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked; ROCm 6.2 bind-mounted; llama.cpp HIP build verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`). This backend is now **ACTIVE** (priority MEDIUM). Runnable first tasks: (1) install/pin `pytorch-triton-rocm` matched to ROCm 6.2 + verify gfx90a matmul (intake-760); (2) stand up `rocprof-compute` gfx90a metric subset (C4); (3) the honest-vendor-baseline candidates that are gfx90a-*reachable* — **BitBLAS/TileLang low-bit GEMM** (intake-497/tilelang-puzzles), **NOT AITER** (gfx942-only, intake-759). GPU claim grade follows P-GPU-1; profiling a live server remains the inference owner's scheduling boundary. [was: "~July 2026; nothing executes until the card racks" — stale]
 **Priority**: MEDIUM (the substrate for [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md))
@@ -634,37 +630,26 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   inputs, at least three seeds, all four identity/×3/×0.01/negate transforms, and measurable input
   and reference-output movement on both the seed and transform axes. The 14 focused reducer tests
   pass. This parent row remains open because the `AK_SENS_V1` producer is still an uncommitted change
-  in `llama.cpp-experimental`; commit/push requires explicit operator approval, followed by a fresh
-  matched run whose suite identity includes that durable producer commit.
+  in `llama.cpp-experimental`; OP-11 declined that commit for now. Reopen only with explicit operator
+  approval, followed by a fresh matched run whose suite identity includes the durable producer commit.
 
   - [x] **RVP-C2-7a — Build the two-axis research reducer and claim-aware runner.** ✅ 2026-08-11 —
     research commit `000a2686`, promoted to `main` via `f3c6b24a`; the focused reducer passes 14/14.
 
-  **OP-11 decision package.** Context: repository policy requires explicit operator approval for each
-  commit/push in `llama.cpp-experimental`, and the current sensitivity/oracle producers plus Q4_K
-  repair cannot identify themselves durably. Option A: approve one exact reviewed commit/push, then
-  rerun the matched sensitivity and oracle-integrity screens (small, reversible source-history change;
-  makes their suite identity honest and preserves the repaired MMQ source).
-  Option B: decline the commit and retain the implementation only as a local diagnostic
-  (zero publication risk; all producer-dependent rows remain open and the smoke remains non-evidence).
-  **Recommendation: A**, after reviewing the exact experimental diff, because the research consumer
-  and the full research suite plus live repairs are green, while a durable producer identity is the
-  only remaining instrumentation dependency. **Default:** no experimental commit or push; no
-  producer-dependent closure.
+  **OP-11 RESOLVED 2026-08-12 — operator selected Option B (decline for now).** No experimental
+  commit or push occurred. The implementation remains a local diagnostic, the smoke remains
+  non-evidence, and producer-dependent closure remains unavailable unless the operator reopens it.
 
-  **Exact OP-11 audit — 2026-08-12, decision still open.** The preserved experimental checkout has
-  HEAD `0db32c06e`, an index exactly matching pushed `0492c2319a79e9bcc4edaa1bfb6af5a096276ab7`,
-  and no untracked files. Its full four-file unstaged diff hashes to
-  `b317f27807cc4ce1107a453d693eb7a3c92dc69fb6182ab094834e50404f81d5` with patch-id
-  `af2183d2ce8de8702dbf05ef41e920fa606ace5c`. Two llama-bench files duplicate the already pushed
-  hardened instrument `a4cb04ca`, so the recommended genuine OP-11 history is a two-file commit on
-  parent `a4cb04ca`: `ggml/src/ggml-cuda/quantize.cu` plus `tests/test-backend-ops.cpp`,
-  `+1795/-64`, plain-diff SHA-256
-  `6dcec2b44322470fd76cbbd1e6223cd5a204b8352339b80189d3c06aa1cbbebf`, patch-id
-  `d2938e29`. The audit found no critical/high hazard; the Q4_K final receipt remains 172/172 PASS
-  (SHA-256 `355bdcf169cb8682d2f56e1754b321f770a0fe3c0bbc5f6e1dc58eaffb443fb2`), the stateful campaign
-  remains 5,184/5,184, and sensitivity/specificity remain 1.0. **Recommendation remains Option A for
-  this exact two-file core; no commit or push is authorized until the operator approves OP-11.**
+- [x] **RVP-C4-4 — Make the rocprof-v1 attribution workload phase explicit.** ✅ 2026-08-12 —
+  research `c38bf49a` (promoted to `main` as `1527ea49`) adds `--gen-tokens`, preserves the historical
+  prefill-only default, threads the requested generation count to `llama-bench -n`, rejects negative
+  values, and records both `gen_tokens` and `phase: prefill|prefill+decode` in every receipt. K28's
+  historical prefill result needs no relabelling. The focused producer suite passes 12/12 and the
+  AutoKernel README suite passes 17/17.
+  - [ ] **RVP-C4-4a — Capture governed real-model decode attribution.** After INF-03 r15 releases
+    the MI210, run the repaired producer with `--gen-tokens 128` against the real 122B MoE model and
+    retain the claim, device, source, binary, linkage, profiler, model, phase, and receipt identities.
+    The earlier `iq2xxs-decode-nongoverned-20260812T1306Z` capture remains non-authoritative.
 - [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
   the value distribution. This is the anti-shape-detection device, and it targets something we
   actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can
