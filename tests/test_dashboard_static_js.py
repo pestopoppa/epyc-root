@@ -207,6 +207,43 @@ class StaticJsTest(unittest.TestCase):
             fault_rehearsal: {available: false},
             fixed_campaign: {available: false},
             available_source_diagnostic: {available: false},
+            diagnostic_pilot: {
+              available: true, status: "pass", arm_id: "k_search",
+              model_call_count: 6,
+              task_id: "instruction2triton.rocmbench.test_add_kernel",
+              broker_evaluation_count: 1,
+              pass_compilation: true, pass_correctness: true,
+              valid_optimized_cases: 4, valid_baseline_cases: 4,
+              average_speedup: 1.0019039030109136,
+              released_measurement_windows: 3,
+              measurement_windows: [
+                {phase: "vendor_baseline", sample_count: 11},
+                {phase: "controller_intermediate_evaluation", sample_count: 21},
+                {phase: "centralized_final_evaluation", sample_count: 21}
+              ],
+              controller_writable_devices: ["/dev/null"],
+              controller_cgroup_verified_empty: true,
+              controller_cgroup_removed: true,
+              evaluator_sandboxes: [{
+                phase: "controller_intermediate_evaluation",
+                evaluator_network_profile: "deny_all",
+                evaluator_devices: ["/dev/kfd", "/dev/dri/renderD128", "/dev/null"],
+                evaluator_cgroup_verified_empty: true,
+                evaluator_cgroup_removed: true
+              }, {
+                phase: "centralized_final_evaluation",
+                evaluator_network_profile: "deny_all",
+                evaluator_devices: ["/dev/kfd", "/dev/dri/renderD128", "/dev/null"],
+                evaluator_cgroup_verified_empty: true,
+                evaluator_cgroup_removed: true
+              }],
+              authority_verified: true,
+              matched_campaign_result_implied: false,
+              rankable: false, belief_update_authority: false,
+              promotion_authority: false,
+              note: "terminal one-task compatibility pilot only",
+              evidence: "/probes/pilot-r15/diagnostic-pilot-receipt.json"
+            },
             empirical_smoke: {available: false},
             receipt_coverage: {note: "CURATED VIEW", projected_schemas: ["one.v1"]}
           }}
@@ -226,6 +263,9 @@ if (!__stateHtml.includes("Production kernel SET")) {{
 for (const expected of ["ggml observed 0.16.0", "not attested",
                         "dashboard process only", "CURATED VIEW",
                         "AK-LE-3 scaffold", "INF-03", "ROCm diagnostics",
+                        "Governed Arena pilot", "6 model calls",
+                        "deny_all", "/dev/kfd,/dev/dri/renderD128,/dev/null",
+                        "NO CAMPAIGN AUTHORITY", "promotion/release false",
                         "STOPPED · DIAGNOSTIC HISTORY ONLY",
                         "campaign evidence invalid", "resume forbidden",
                         "64 intermediate evaluations escaped claim windows",

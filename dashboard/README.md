@@ -193,17 +193,20 @@ visible while labelling the campaign evidence invalid.
 The available-source readiness card prefers the v2 `receipt.json` contract, which
 admits exact-source EvoEngineer and reports the current **7/7** diagnostic panel;
 the former v1 `available-source-six-arm.json` lookup remains a historical fallback.
-The v2 static audit is still readiness evidence only: controller/GPU execution is
-false, ARGUS remains excluded from the separate 8/8 panel, and a fresh isolated
-one-task/one-arm pilot is required before another campaign starts.
+The v2 static audit remains readiness evidence only: controller/GPU execution is
+false and ARGUS remains excluded from the separate 8/8 panel. The separate r15
+pilot below now satisfies the isolated one-task gate for starting a fresh 7/7 campaign.
 
-The first governed one-task/K-Search pilot ladder (`r1` through `r12`, 2026-08-12)
-did not produce a terminal pilot receipt. R12 reached the real Codex client, but
-the sandboxed response request exhausted five retries with `Operation not
-permitted` before a completed model response. The current view therefore must
-not infer a kernel result from the probe directories: it continues to show the
-7/7 static readiness audit and no empirical pilot claim. Projection of the new
-`epyc.autokernel.arena_diagnostic_pilot.v1` contract is tracked in INF-03.
+The governed one-task/K-Search pilot ladder (`r1` through `r15`, 2026-08-12) now
+has one terminal compatibility receipt. R13 and r14 remain invalid validator
+failures; r15 completed one task and one round with six `gpt-5.6-sol:high` calls,
+one brokered intermediate evaluation, and a final centralized evaluation. The
+`epyc.autokernel.arena_diagnostic_pilot.v1` card verifies the receipt self-hash
+and explicit no-authority constraints before rendering producer `PASS`, final
+compile/correctness, sampler-window releases, controller device blindness, and
+cgroup teardown. Its loud `NO CAMPAIGN AUTHORITY` boundary is load-bearing:
+the pilot does not imply a matched campaign, rank a controller, update belief,
+or authorize promotion/release. The separate 7/7 panel remains the next campaign.
 
 `current_state.hip_decision_grade` is a curated projection of the terminal
 `hip-silu-decision-grade-20260812-r6/receipt.json`. The hub verifies the receipt's

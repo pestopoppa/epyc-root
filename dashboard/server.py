@@ -178,6 +178,8 @@ AUTOKERNEL_HIP_DECISION_SCHEMA = "epyc.autokernel.hip_decision_grade.v1"
 AUTOKERNEL_HIP_DECISION_PRODUCER = "autokernel.controller.hip_decision_grade/v1"
 AUTOKERNEL_HIP_DECISION_AUTHORITY = \
     "task_local_rank_no_release_or_promotion_authority"
+AUTOKERNEL_DIAGNOSTIC_PILOT_SCHEMA = \
+    "epyc.autokernel.arena_diagnostic_pilot.v1"
 PRODUCTION_KERNEL_ATTESTATION = Path(os.environ.get(
     "PRODUCTION_KERNEL_ATTESTATION",
     str(REPO / "artifacts/operator/ratify_v9_final_freeze_20260811.json")))
@@ -2017,6 +2019,189 @@ def _gpu_replay_summary(path: Path | None, data: dict | None,
     }
 
 
+def _diagnostic_pilot_summary(path: Path | None, data: dict | None,
+                              error: str | None) -> dict:
+    """Project a governed Arena pilot without manufacturing campaign authority."""
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    expected_hash = data.get("receipt_sha256")
+    observed_hash = _canonical_receipt_hash(data)
+    if not isinstance(expected_hash, str) or expected_hash != observed_hash:
+        return {
+            "available": False,
+            "evidence": str(path) if path else None,
+            "error": "diagnostic pilot receipt self-hash mismatch",
+        }
+    constraints = (data.get("constraints")
+                   if isinstance(data.get("constraints"), dict) else {})
+    checkpoint = (data.get("checkpoint")
+                  if isinstance(data.get("checkpoint"), dict) else {})
+    evaluation = (checkpoint.get("evaluation")
+                  if isinstance(checkpoint.get("evaluation"), dict) else {})
+    broker = (checkpoint.get("broker_evaluation_chain")
+              if isinstance(checkpoint.get("broker_evaluation_chain"), dict) else {})
+    sandbox = (checkpoint.get("controller_sandbox_execution")
+               if isinstance(checkpoint.get("controller_sandbox_execution"), dict) else {})
+    activation = (sandbox.get("activation_receipt")
+                  if isinstance(sandbox.get("activation_receipt"), dict) else {})
+    teardown_record = (sandbox.get("teardown_receipt")
+                       if isinstance(sandbox.get("teardown_receipt"), dict) else {})
+    teardown = (teardown_record.get("teardown")
+                if isinstance(teardown_record.get("teardown"), dict) else {})
+    windows = (checkpoint.get("measurement_windows")
+               if isinstance(checkpoint.get("measurement_windows"), list) else [])
+    window_samples = []
+    released_windows = 0
+    for window in windows:
+        if not isinstance(window, dict):
+            continue
+        sampling = (window.get("device_sampling")
+                    if isinstance(window.get("device_sampling"), dict) else {})
+        released = (window.get("device_claim_released")
+                    if isinstance(window.get("device_claim_released"), dict) else {})
+        evaluator = (window.get("evaluator_execution_receipt")
+                     if isinstance(window.get("evaluator_execution_receipt"), dict) else {})
+        evaluator_activation = (evaluator.get("activation_receipt")
+                                if isinstance(evaluator.get("activation_receipt"), dict) else {})
+        evaluator_teardown = (evaluator.get("teardown_receipt")
+                              if isinstance(evaluator.get("teardown_receipt"), dict) else {})
+        window_samples.append({
+            "phase": window.get("phase"),
+            "sample_count": sampling.get("sample_count"),
+            "evaluator_network_profile": evaluator_activation.get("network_profile"),
+            "evaluator_devices": evaluator_activation.get("writable_device_paths", []),
+            "evaluator_cgroup_verified_empty": evaluator_teardown.get("verified_empty"),
+            "evaluator_cgroup_removed": evaluator_teardown.get("removed"),
+        })
+        if released.get("released_at"):
+            released_windows += 1
+    artifacts = (checkpoint.get("artifacts")
+                 if isinstance(checkpoint.get("artifacts"), dict) else {})
+    # Intermediate windows are hash-bound cell artifacts rather than duplicated
+    # into the terminal receipt. Admit only exact, regular, self-hash-valid files
+    # whose bytes match the terminal artifact map.
+    if path is not None:
+        cells_root = path.parent / "cells"
+        for rel, expected_artifact_hash in artifacts.items():
+            rel_path = Path(rel)
+            if (not rel.startswith("controller-evaluation-windows/")
+                    or not rel.endswith("-measurement.json")
+                    or rel_path.is_absolute() or ".." in rel_path.parts
+                    or not isinstance(expected_artifact_hash, str)):
+                continue
+            try:
+                cell_roots = [row for row in cells_root.iterdir()
+                              if row.is_dir() and not row.is_symlink()]
+            except OSError:
+                cell_roots = []
+            for cell_root in cell_roots:
+                candidate = cell_root / rel_path
+                try:
+                    raw = candidate.read_bytes()
+                except OSError:
+                    continue
+                if candidate.is_symlink() or hashlib.sha256(raw).hexdigest() != \
+                        expected_artifact_hash:
+                    continue
+                try:
+                    value = json.loads(raw)
+                except (UnicodeError, json.JSONDecodeError):
+                    continue
+                if (not isinstance(value, dict)
+                        or value.get("schema") !=
+                        "epyc.autokernel.arena_gpu_measurement_window.v1"
+                        or value.get("receipt_sha256") !=
+                        _canonical_receipt_hash(value)):
+                    continue
+                sampling = (value.get("device_sampling")
+                            if isinstance(value.get("device_sampling"), dict) else {})
+                released = (value.get("device_claim_released")
+                            if isinstance(value.get("device_claim_released"), dict) else {})
+                evaluator = (value.get("evaluator_execution_receipt")
+                             if isinstance(value.get("evaluator_execution_receipt"), dict) else {})
+                evaluator_activation = (evaluator.get("activation_receipt")
+                                        if isinstance(evaluator.get("activation_receipt"), dict) else {})
+                evaluator_teardown = (evaluator.get("teardown_receipt")
+                                      if isinstance(evaluator.get("teardown_receipt"), dict) else {})
+                window_samples.append({
+                    "phase": value.get("phase"),
+                    "sample_count": sampling.get("sample_count"),
+                    "evaluator_network_profile": evaluator_activation.get("network_profile"),
+                    "evaluator_devices": evaluator_activation.get("writable_device_paths", []),
+                    "evaluator_cgroup_verified_empty": evaluator_teardown.get("verified_empty"),
+                    "evaluator_cgroup_removed": evaluator_teardown.get("removed"),
+                })
+                if released.get("released_at"):
+                    released_windows += 1
+                break
+    phase_order = {"vendor_baseline": 0,
+                   "controller_intermediate_evaluation": 1,
+                   "centralized_final_evaluation": 2}
+    window_samples.sort(key=lambda row: phase_order.get(row.get("phase"), 99))
+    evaluator_sandboxes = [
+        {key: row.get(key) for key in (
+            "phase", "evaluator_network_profile", "evaluator_devices",
+            "evaluator_cgroup_verified_empty", "evaluator_cgroup_removed")}
+        for row in window_samples if row.get("evaluator_network_profile")
+    ]
+    model_call_count = sum(
+        1 for name in artifacts
+        if name.startswith("workspace/.autokernel-upstream-controller/")
+        and name.endswith("-model-output.txt")
+    )
+    belief_receipt = (checkpoint.get("belief_receipt")
+                      if isinstance(checkpoint.get("belief_receipt"), dict) else {})
+    belief_source = (belief_receipt.get("source")
+                     if isinstance(belief_receipt.get("source"), dict) else {})
+    model_ids = (belief_source.get("model_ids")
+                 if isinstance(belief_source.get("model_ids"), list) else [])
+    authority_verified = (
+        data.get("authority") ==
+        "compatibility_only_no_ranking_or_promotion_authority"
+        and constraints.get("one_task") is True
+        and constraints.get("one_controller_arm") is True
+        and constraints.get("matched_campaign_result_implied") is False
+        and constraints.get("cross_controller_ranking_authority") is False
+        and constraints.get("belief_update_authority") is False
+        and constraints.get("promotion_authority") is False
+    )
+    return {
+        "available": True,
+        "status": data.get("status"),
+        "campaign_id": data.get("campaign_id"),
+        "attempt_id": data.get("attempt_id"),
+        "task_id": data.get("task_id"),
+        "arm_id": data.get("arm_id"),
+        "model_id": model_ids[0] if model_ids else None,
+        "model_call_count": model_call_count,
+        "broker_evaluation_count": broker.get("evaluation_count"),
+        "pass_compilation": evaluation.get("pass_compilation"),
+        "pass_correctness": evaluation.get("pass_correctness"),
+        "valid_baseline_cases": evaluation.get("valid_baseline_cases"),
+        "valid_optimized_cases": evaluation.get("valid_optimized_cases"),
+        "average_speedup": evaluation.get("average_speedup"),
+        "measurement_windows": window_samples,
+        "released_measurement_windows": released_windows,
+        "evaluator_sandboxes": evaluator_sandboxes,
+        "controller_writable_devices": activation.get("writable_device_paths", []),
+        "controller_cgroup_verified_empty": teardown.get("verified_empty"),
+        "controller_cgroup_removed": teardown.get("removed"),
+        "authority": data.get("authority"),
+        "authority_verified": authority_verified,
+        "matched_campaign_result_implied": False,
+        "rankable": False,
+        "belief_update_authority": False,
+        "promotion_authority": False,
+        "receipt_sha256": expected_hash,
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+        "note": ("terminal one-task/one-arm compatibility pilot only; it does not "
+                 "rank controllers, update belief, imply a matched campaign, or "
+                 "authorize promotion/release"),
+    }
+
+
 #: The receipt schemas this panel knows how to project. Kept as a named constant so
 #: the page can DECLARE its own coverage rather than implying completeness by silence.
 _PROJECTED_RECEIPT_SCHEMAS = {
@@ -2024,6 +2209,7 @@ _PROJECTED_RECEIPT_SCHEMAS = {
     "epyc.autokernel.arena_available_source_campaign_audit.v1",
     "epyc.autokernel.arena_available_source_campaign_audit.v2",
     "epyc.autokernel.arena_diagnostic_smoke.v1",
+    AUTOKERNEL_DIAGNOSTIC_PILOT_SCHEMA,
     "epyc.autokernel.live_control_preflight.v1",
     "epyc.autokernel.async_prefetch_replay.v1",
     "epyc.autokernel.arena_campaign_run_manifest.v1",
@@ -2631,6 +2817,9 @@ def autokernel_current_state(probe_root: Path | None = None,
     smoke_path, smoke, smoke_err = _latest_autokernel_receipt(
         probe_root, "smoke-receipt.json",
         "epyc.autokernel.arena_diagnostic_smoke.v1")
+    pilot_path, pilot, pilot_err = _latest_autokernel_receipt(
+        probe_root, "diagnostic-pilot-receipt.json",
+        AUTOKERNEL_DIAGNOSTIC_PILOT_SCHEMA)
     preflight_path, preflight, preflight_err = _latest_autokernel_receipt(
         probe_root, "preflight.json",
         "epyc.autokernel.live_control_preflight.v1")
@@ -2693,6 +2882,8 @@ def autokernel_current_state(probe_root: Path | None = None,
             available_path, available, available_err),
         "empirical_smoke": _smoke_receipt_summary(
             smoke_path, smoke, smoke_err),
+        "diagnostic_pilot": _diagnostic_pilot_summary(
+            pilot_path, pilot, pilot_err),
         "instrument_preflight": _control_preflight_summary(
             preflight_path, preflight, preflight_err),
         "decision_controls": _control_summary(

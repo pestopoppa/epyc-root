@@ -12,7 +12,7 @@
 |----|-------|---------|-------------|------|
 | INF-01 | 01 speculative decoding | [01-speculative-decoding.md](01-speculative-decoding.md) | Retire this compatibility pointer and redirect its external citations to the live spec-decode handoffs | — |
 | INF-02 | agent collab rnd harness | [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md) | (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (--backend local, custo… | — |
-| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Resolve r12's sandboxed Codex transport denial, then rerun the exact one-task/K-Search pilot to a terminal receipt | INF-48, EVL-47 |
+| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Begin the fresh governed 7/7 availability-conditioned panel from the r15-proven isolated execution path | INF-48, EVL-47 |
 | INF-04 | angelslim techniques evaluation | [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) | BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist | — |
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | After reboot, run the bound IQK intervention and A/A control; then project and evaluate the real matched archive | INF-22, INF-48, EVL-47 |

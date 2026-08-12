@@ -248,6 +248,7 @@ function renderCurrentState(d){
   const box=$("#current-state"), s=((d._activity||{}).current_state||{});
   const prod=s.production_kernel||{}, fixed=s.fixed_campaign||{};
   const avail=s.available_source_diagnostic||{}, smoke=s.empirical_smoke||{};
+  const pilot=s.diagnostic_pilot||{};
   const controls=s.decision_controls||{}, preflight=s.instrument_preflight||{};
   const replay=s.gpu_prefetch_replay||{}, coverage=s.receipt_coverage||{};
   const loop=s.loop_engineering||{}, fault=s.fault_rehearsal||{};
@@ -497,6 +498,21 @@ function renderCurrentState(d){
     h+='<div class="detail">controller/GPU command '+(avail.controller_or_gpu_command_executed?'executed':'not executed')+'</div>';
   } else h+='<div class="muted">available-source audit unavailable: '+esc(avail.error||"not found")+'</div>';
   h+=evidenceLine(avail)+'</div>';
+
+  h+='<div class="state-card"><h3>Governed Arena pilot · compatibility only</h3>';
+  if(pilot.available){
+    const verified=pilot.authority_verified===true;
+    const terminal=pilot.status==="pass"&&verified;
+    h+='<div class="headline '+(terminal?'ok':'fail')+'">'+esc(String(pilot.status||"unknown").toUpperCase())+' · '+esc(pilot.arm_id||"—")+' · '+esc(pilot.model_call_count==null?"—":pilot.model_call_count)+' model calls</div>';
+    h+='<div class="detail"><code>'+esc(pilot.task_id||"—")+'</code> · brokered intermediate evaluations '+esc(pilot.broker_evaluation_count==null?"—":pilot.broker_evaluation_count)+'</div>';
+    h+='<div class="detail">final compile/correctness '+esc(String(pilot.pass_compilation))+' / '+esc(String(pilot.pass_correctness))+' · cases '+esc((pilot.valid_optimized_cases==null?"—":pilot.valid_optimized_cases)+' / '+(pilot.valid_baseline_cases==null?"—":pilot.valid_baseline_cases))+' · diagnostic ratio '+esc(pilot.average_speedup==null?"—":num(pilot.average_speedup,10)+'×')+'</div>';
+    h+='<div class="detail">released parent measurement windows '+esc(pilot.released_measurement_windows+' / '+(pilot.measurement_windows||[]).length)+' · samples '+esc((pilot.measurement_windows||[]).map(function(w){return (w.phase||"window")+":"+(w.sample_count==null?"—":w.sample_count);}).join(' · ')||"—")+'</div>';
+    h+='<div class="detail">controller devices <code>'+esc((pilot.controller_writable_devices||[]).join(', ')||"none")+'</code> · cgroup empty/removed '+esc(String(pilot.controller_cgroup_verified_empty))+' / '+esc(String(pilot.controller_cgroup_removed))+'</div>';
+    h+='<div class="detail">evaluator sandboxes '+esc((pilot.evaluator_sandboxes||[]).map(function(e){return (e.phase||"evaluation")+':'+(e.evaluator_network_profile||"—")+':'+(e.evaluator_devices||[]).join(',')+':cgroup='+String(e.evaluator_cgroup_verified_empty)+'/'+String(e.evaluator_cgroup_removed);}).join(' · ')||"unavailable")+'</div>';
+    h+='<div class="detail fail"><b>NO CAMPAIGN AUTHORITY.</b> matched result '+esc(String(pilot.matched_campaign_result_implied))+' · rankable '+esc(String(pilot.rankable))+' · belief update '+esc(String(pilot.belief_update_authority))+' · promotion/release '+esc(String(pilot.promotion_authority))+'</div>';
+    h+='<div class="detail">'+esc(pilot.note||"")+'</div>';
+  } else h+='<div class="muted">governed diagnostic pilot unavailable: '+esc(pilot.error||"not found")+'</div>';
+  h+=evidenceLine(pilot)+'</div>';
 
   h+='<div class="state-card"><h3>Empirical smoke · '+esc(smoke.controller_id||"controller")+'</h3>';
   if(smoke.available){

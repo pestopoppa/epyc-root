@@ -4,7 +4,7 @@
       "blocked": 13,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 358
+      "open": 356
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -85,10 +85,10 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 1,
-      "closed": 57,
+      "closed": 59,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 5,
+      "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 225,
+      "closed": 226,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 247
+      "total": 248
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
@@ -2394,7 +2394,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Resolve r12's sandboxed Codex transport denial, then rerun the exact one-task/K-Search pilot to a terminal receipt",
+      "next_action": "Begin the fresh governed 7/7 availability-conditioned panel from the r15-proven isolated execution path",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {

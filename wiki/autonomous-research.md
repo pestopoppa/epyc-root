@@ -2,7 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-12 (AutoKernel's first governed K-Search pilot reached a real model request but failed before a response; the fail-closed dependency ladder and zero-performance-claim boundary are compiled below; earlier findings retained)
+**Last compiled**: 2026-08-12 (AutoKernel's governed K-Search pilot reached a terminal compatibility pass at r15; isolation and no-authority findings are compiled below; earlier findings retained)
 **Sources**: 104+ documents
 
 ## Compiled Update — 2026-08-12: a failed pilot can validate autonomy plumbing without becoming kernel evidence
@@ -30,6 +30,29 @@ can unlock the 7/7 availability-conditioned panel.
 - [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — exact r1-r12 failure chain, authority boundary, and retry gates
 - [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-9 system-level disposition and prohibition on upgrading failed attempts into evidence
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — research branch identity, captured transport failure, and teardown checkpoint
+
+## Compiled Update — 2026-08-12: a terminal pilot proves execution compatibility, not comparative merit
+
+**Confidence: verified for the r15 receipt, isolation, and teardown; diagnostic-only for timing.**
+
+R15 closed the governed one-task/K-Search compatibility gate after two more fail-closed validator
+attempts. Exactly six `gpt-5.6-sol:high` calls produced one brokered intermediate evaluation and a final
+centralized evaluation. Both compiled, passed all four correctness/timing cases, and returned ratios
+near 1.0. Those ratios are telemetry about this one task, not controller or kernel ranking evidence.
+
+The more durable result is the authority-preserving execution shape. The parent owned three short GPU
+windows with 11/21/21 in-window samples and matched releases. The controller saw only `/dev/null`, both
+evaluators were deny-network with exact GPU device grants, all cgroups were empty and removed, and the
+ephemeral Codex home was scrubbed. The terminal receipt explicitly denies matched-campaign, ranking,
+belief-update, promotion, and release authority. This is the correct boundary for an autonomous-loop
+compatibility pilot: success unlocks the fresh 7/7 panel, but it cannot be silently promoted into a
+comparative conclusion.
+
+### Source References (2026-08-12 terminal pilot)
+
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r13-r15 dispositions, terminal receipt, isolation, and next panel gate
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-10 system-level authority disposition
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact hashes, validation counts, and research-main identity
 
 ## Compiled Update — 2026-08-11: two autonomous loops hardened their own measurement integrity before running anything
 

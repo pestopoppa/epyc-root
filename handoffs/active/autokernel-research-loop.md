@@ -265,6 +265,19 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   non-rankable engineering diagnostics; there is no candidate, kernel speedup, campaign aggregate,
   banked proposal, or promotion claim. The exact attempt ladder and next repair live in
   [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md).
+- [x] **AK-AUD-10 — Close the governed INF-03 compatibility pilot and preserve its non-authority
+  boundary.** ✅ 2026-08-12 — research main `15c61ed5` contains the complete broker/controller/
+  evaluator isolation stack and the r13/r14 validator repairs. R15 completed exactly one task and one
+  K-Search round with six `gpt-5.6-sol:high` calls. Its single brokered intermediate and final
+  evaluations both passed compilation/correctness 4/4, with diagnostic ratios `1.0033912745` and
+  `1.0019039030`; those ratios cannot rank a controller or kernel. Baseline/intermediate/final sampler
+  windows contain 11/21/21 observations and matched released claim IDs. Controller and evaluator
+  cgroups were verified empty and removed, ephemeral Codex state was scrubbed, the controller admitted
+  only `/dev/null`, and both evaluators were deny-network with exact GPU devices. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/inf03-mi210-isolated-k-search-pilot-20260812-r15/diagnostic-pilot-receipt.json`
+  (self/file SHA-256 `3425cf57…` / `eb53de38…`). This is compatibility evidence only: no matched
+  campaign, ranking, belief, proposal-bank, champion, promotion, or release authority exists. The next
+  empirical step is the fresh 7/7 availability-conditioned panel.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
