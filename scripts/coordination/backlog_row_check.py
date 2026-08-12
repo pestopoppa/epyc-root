@@ -542,6 +542,46 @@ def closed_boxes_under_a_guard(root: Path = HANDOFFS) -> list[tuple[Path, int, s
     return hits
 
 
+#: A POSITIVE adjudication marker written into the handoff by whoever read the box.
+#: Two legitimate outcomes of reading a closed standing-constraint-shaped box: the rule
+#: is genuinely spent (ADJUDICATED ... left CLOSED), or the live half was re-opened on
+#: its own line (SPLIT). Either way the box has been judged and should stop being
+#: re-reported. Records who and when, so this is auditable suppression, not silent.
+_ADJUDICATED = re.compile(
+    r"\*\(\s*(?:ADJUDICATED|SPLIT)\s+\d{4}-\d{2}-\d{2}\s+by\b", re.I)
+
+
+def _box_with_continuations(path: Path, lineno: int) -> str:
+    """The whole box including wrapped/indented continuation lines.
+
+    The marker is written UNDER the box it judges, so a first-line-only view cannot
+    see it — the same truncation that made the generator's completion-record
+    discriminator silently inert until it was mutation-checked.
+    """
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:                                            # pragma: no cover
+        return ""
+    out, i = [lines[lineno - 1]], lineno
+    while i < len(lines):
+        nxt = lines[i]
+        if not nxt.strip() or nxt.lstrip().startswith("#"):
+            break
+        if _BOX.match(nxt):
+            # A SPLIT marker is written under the box it CREATES — the re-opened rule —
+            # not under the completion record it demotes. Found by running this: the
+            # ADJUDICATED form (written under its own box) demoted correctly and all
+            # three SPLIT forms did not, which is the same first-line/continuation
+            # truncation one level out. So look one box ahead, and ONLY for a SPLIT.
+            nxt_full = _box_with_continuations(path, i + 1)
+            if re.search(r"\*\(\s*SPLIT\s+\d{4}-\d{2}-\d{2}\s+by\b", nxt_full, re.I):
+                out.append(nxt_full)
+            break
+        out.append(nxt)
+        i += 1
+    return " ".join(out)
+
+
 def closed_standing_constraints(root: Path = HANDOFFS) -> list[tuple[Path, int, str, str]]:
     """CLOSED boxes that are standing-constraint shaped — BANNER OR NO BANNER.
 
@@ -564,11 +604,34 @@ def closed_standing_constraints(root: Path = HANDOFFS) -> list[tuple[Path, int, 
     audit. REVIEW PROMPT, not a verdict: measured 9 candidates, 4 genuine after
     reading each. Mass-restoring on this signal would repeat the 6 false positives
     that trusting a pattern over a reading already produced once.
+
+    CONVERGENCE, ADDED 2026-08-12 (`mainC`). A review prompt that re-reports the same
+    already-judged boxes every run is one people stop reading, and worse, invites a
+    second agent to re-split a box a first agent deliberately left closed. So a box
+    carrying an ADJUDICATION MARKER is dropped from the report.
+
+    The marker is a POSITIVE declaration written into the handoff — the same principle
+    the generator's do-not-dispatch signal uses, and for the same reason: absence
+    cannot be asserted, a written verdict can. It records WHO judged it and WHEN, so
+    it is auditable rather than a silent suppression, and the two shapes are exactly
+    the two legitimate outcomes of reading one of these boxes:
+
+      * `*(ADJUDICATED <date> by \\`agent\\` — deliberately left CLOSED …)*` — read, and
+        the rule is genuinely spent (declared moot, or already enforced in code).
+      * `*(SPLIT <date> by \\`agent\\` …)*` — the live rule was re-opened on its own line,
+        so the checked box beside it is now purely a completion record.
+
+    This does NOT narrow detection: an unmarked flipped rule is reported exactly as
+    before, and removing a marker makes its box reappear. Five boxes were adjudicated
+    on 2026-08-12 (3 split, 2 left closed), which is why the corpus count goes to 0
+    rather than staying at 5 forever.
     """
     hits: list[tuple[Path, int, str, str]] = []
     for path in sorted(root.glob("*.md")):
         for lineno, state, body, _head in _boxes(path):
             if state != "x":
+                continue
+            if _ADJUDICATED.search(_box_with_continuations(path, lineno)):
                 continue
             if _PROHIBITION.match(body):
                 hits.append((path, lineno, "PROHIBITION", body))

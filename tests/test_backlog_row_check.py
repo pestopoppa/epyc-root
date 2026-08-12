@@ -738,3 +738,66 @@ def test_a_proof_verb_without_an_only_gate_does_NOT_refuse(tmp_path) -> None:
     p = _one_row(tmp_path, "Write the report that shows how the scheduler behaves under load")
     code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
     assert code == 0
+
+
+# ---------------------------------------------------------------------------
+# Adjudication markers make the standing-constraint sweep CONVERGE (2026-08-12, `mainC`).
+#
+# The sweep is a review prompt, and one that re-reports the same already-judged boxes
+# every run is one people stop reading — worse, it invites a second agent to re-split a
+# box a first agent deliberately left closed. A POSITIVE marker written into the handoff
+# (same principle as the do-not-dispatch declaration) records who judged it and when.
+# These pin that it suppresses ONLY marked boxes, in both directions.
+# ---------------------------------------------------------------------------
+
+def _adjudication_handoff(tmp_path, body: str):
+    d = tmp_path / "active"; d.mkdir(exist_ok=True)
+    (d / "h.md").write_text("## Work\n\n" + body + "\n", encoding="utf-8")
+    return d
+
+
+def test_an_unmarked_flipped_prohibition_is_still_reported(tmp_path):
+    """Detection must not narrow. This is the defect the sweep exists to find."""
+    root = _adjudication_handoff(tmp_path, "- [x] Do not churn the seeding rewards module.")
+    assert len(brc.closed_standing_constraints(root)) == 1
+
+
+def test_an_ADJUDICATED_marker_under_the_box_suppresses_it(tmp_path):
+    """The 'read it, the rule is genuinely spent' outcome."""
+    root = _adjudication_handoff(tmp_path,
+        "- [x] Do not rebuild the C++ accelerator — its source is gone.\n"
+        "  *(ADJUDICATED 2026-08-12 by `mainC` — deliberately left CLOSED. Moot: upstream\n"
+        "  supersedes it outright, so there is no live action left to forbid.)*")
+    assert brc.closed_standing_constraints(root) == []
+
+
+def test_a_SPLIT_marker_on_the_FOLLOWING_box_suppresses_the_completion_record(tmp_path):
+    """The other legitimate outcome — and the one a naive reading misses.
+
+    A SPLIT marker is written under the box it CREATES (the re-opened rule), not under
+    the completion record it demotes. Found by running the sweep: the ADJUDICATED form
+    demoted correctly and all three SPLIT forms did not.
+    """
+    root = _adjudication_handoff(tmp_path,
+        "- [x] Do NOT run the 10% epsilon-greedy exploration ✅ 2026-07-29 — already have them.\n"
+        "- [ ] **STANDING — do NOT run the 10% epsilon-greedy exploration in production.**\n"
+        "  *(SPLIT 2026-08-12 by `mainC`. The ✅ recorded the DECISION; the prohibition is live.)*")
+    assert brc.closed_standing_constraints(root) == []
+
+
+def test_removing_the_marker_makes_the_box_reappear(tmp_path):
+    """Mutation, stated as a test: suppression is keyed to the marker, nothing else."""
+    marked = ("- [x] Do not churn the module.\n"
+              "  *(ADJUDICATED 2026-08-12 by `mainC` — deliberately left CLOSED.)*")
+    assert brc.closed_standing_constraints(_adjudication_handoff(tmp_path, marked)) == []
+    bare = marked.replace("*(ADJUDICATED 2026-08-12 by", "*(Note by")
+    assert len(brc.closed_standing_constraints(_adjudication_handoff(tmp_path, bare))) == 1
+
+
+def test_an_undated_or_unsigned_marker_does_not_suppress(tmp_path):
+    """Auditable suppression, not a magic word: the marker must carry a date AND an author."""
+    for weak in ("*(ADJUDICATED — left closed.)*",
+                 "*(SPLIT by `mainC`.)*",
+                 "*(ADJUDICATED 2026-08-12 — left closed.)*"):
+        root = _adjudication_handoff(tmp_path, f"- [x] Do not churn the module.\n  {weak}")
+        assert len(brc.closed_standing_constraints(root)) == 1, weak
