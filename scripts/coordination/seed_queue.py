@@ -21,6 +21,15 @@ It writes ONLY `task-propose` messages to the proposing agent's own outbox —
 never `queue.jsonl`, which belongs to the coordinator-daemon. Admission is a
 separate, deliberate step: `session_bus_coordinator.py intake`.
 
+EVERY PROPOSAL CARRIES ITS TWO RECEIPTS (2026-08-12). The daemon's automatic
+dispatch refuses any row without `screened_by` and a resolvable
+`expected_occupancy`, and before this the live queue had ZERO rows with either —
+so the gate would have refused everything for ever. Both are derived here, at
+birth, by `row_intake` (one rule, three birth sites). A row whose screen does not
+come back DISPATCHABLE is not proposed; a row whose occupancy cannot be derived
+honestly is proposed WITHOUT the field, so the gate refuses it and a human
+dispatches it by hand. See `row_intake.estimate_occupancy` for the four rules.
+
 Usage:
     seed_queue.py --handoff agent-file-prose-compression.md --dry-run
     seed_queue.py --handoff agent-file-prose-compression.md --limit 12 --agent claude-main
@@ -35,6 +44,9 @@ import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import row_intake  # noqa: E402  (path-relative sibling, same directory)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HANDOFFS = REPO_ROOT / "handoffs" / "active"
@@ -131,10 +143,36 @@ def cmd_seed(args: argparse.Namespace) -> int:
     if args.limit:
         seedable = seedable[: args.limit]
 
+    # THE TWO RECEIPTS, derived at birth. The screener's stderr is NOT captured
+    # anywhere on this path (row_intake.screen inherits it) — swallowing it is the
+    # exact defect fixed on 2026-08-12, because `2>/dev/null` makes a rotted anchor
+    # read identically to a clean pass.
+    admitted, refused = [], []
+    for i in seedable:
+        result = row_intake.screen(row=i["summary"])
+        i["screen"] = result
+        if not result.ready:
+            refused.append(i)
+            continue
+        # None when no rule applies. Left OFF the payload in that case — never a
+        # fabricated 0.0. The daemon then refuses the row and a human dispatches it.
+        i["expected_occupancy"] = row_intake.estimate_occupancy(
+            i["summary"], lane=i["lane"], gating=i["gating"])
+        admitted.append(i)
+    seedable = admitted
+
     print(f"{handoff.name}: {len(items)} open, {len(seedable)} to propose, "
-          f"{len(skipped)} skipped\n")
+          f"{len(skipped)} unclassifiable, {len(refused)} refused by the screener\n")
     for i in seedable:
         print(f"  + {i['task_id']:<52} lane={i['lane']:<5} gating={i['gating']:<5} — {i['reason']}")
+        print(f"      screen: {i['screen'].verdict} · {row_intake.occupancy_note(i['expected_occupancy'])}")
+    if refused:
+        print()
+        print(f"  {len(refused)} row(s) NOT proposed — the screener did not return "
+              f"{row_intake.READY_VERDICT}:")
+        for i in refused:
+            tail = " (needs re-anchoring by a human)" if i["screen"].needs_reanchor else ""
+            print(f"  ! {i['task_id']:<52} {i['screen'].verdict}{tail}")
     if skipped:
         print()
         for i in skipped[: args.show_skipped]:
@@ -145,6 +183,12 @@ def cmd_seed(args: argparse.Namespace) -> int:
 
     if args.dry_run:
         print("\nNothing written (--dry-run).")
+        return 0
+    if not seedable:
+        # Do not so much as TOUCH the outbox. Appending nothing still creates the
+        # file, and an empty outbox that did not exist before reads as "this agent
+        # proposed and everything was consumed" to anything that folds the bus.
+        print("\nNothing to propose — no row passed the screener.")
         return 0
 
     out = BUS_ROOT / "outbox" / f"{args.agent}.jsonl"
@@ -160,9 +204,15 @@ def cmd_seed(args: argparse.Namespace) -> int:
                 "task_id": i["task_id"],
                 "payload": {"lane": i["lane"], "gating": i["gating"],
                             "spec_ref": i["spec_ref"], "summary": i["summary"],
+                            "task_text": i["summary"],
                             "priority": args.priority,
                             "priority_class": "background-churn",
                             "contention_class": "resumable",
+                            "screened_by": i["screen"].receipt,
+                            # ABSENT, not zero, when no rule applies — see
+                            # row_intake.estimate_occupancy rule 4.
+                            **({"expected_occupancy": i["expected_occupancy"]}
+                               if i["expected_occupancy"] else {}),
                             "classification": f"heuristic: {i['reason']}"}}) + "\n")
     print(f"\nproposed {len(seedable)} task(s) into outbox/{args.agent}.jsonl")
     print("Admit them with:  scripts/coordination/session_bus_coordinator.py intake --dry-run")

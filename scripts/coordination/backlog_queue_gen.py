@@ -119,6 +119,9 @@ _SPEC = importlib.util.spec_from_file_location(
 brc = importlib.util.module_from_spec(_SPEC)
 _SPEC.loader.exec_module(brc)
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import row_intake  # noqa: E402  (path-relative sibling, same directory)
+
 # `file.md:LINE`, as the queue writes it.
 _REF = re.compile(r"`([A-Za-z0-9._-]+\.md):(\d+)`")
 
@@ -130,8 +133,25 @@ _DISPOSITIONED = re.compile(
     r"~~|✅\s*CLOSED|⛔\s*BLOCKED|DO NOT DISPATCH|TEMPLATE|WITHDRAWN", re.I)
 
 
-def verdicts(handoffs: Path = HANDOFFS) -> list[dict]:
-    """Classify every OPEN box under `handoffs`. Closed boxes are not work."""
+def verdicts(handoffs: Path = HANDOFFS, *, screen: bool = False) -> list[dict]:
+    """Classify every OPEN box under `handoffs`. Closed boxes are not work.
+
+    `screen=True` additionally runs the SCREENER ITSELF (`backlog_row_check.py`, as a
+    subprocess, stderr inherited and never suppressed) over each row that classified
+    clean, and records the receipt on the row as `screened_by`. That receipt is what
+    the coordinator-daemon's `dispatch_gate` demands before it will auto-dispatch
+    anything — before 2026-08-12 nothing produced one, so the gate refused every row
+    on the live queue and the dispatch loop was inert.
+
+    It is off by default because it costs one subprocess per row (~22 ms), which the
+    audit paths (`--summary`, `--quarantine`, `--audit-procedures`) do not need. The
+    BENCH needs it, because the bench is what a dispatcher reads.
+
+    A row whose screen does NOT come back DISPATCHABLE is forced off the bench here,
+    even if the in-process `classify` liked it. The two agreeing is the normal case;
+    where they disagree, the row is recorded as needing re-anchoring rather than
+    quietly dispatched on the more permissive of two answers.
+    """
     out = []
     for path in sorted(handoffs.glob("*.md")):
         for lineno, state, body, head in brc._boxes(path):
@@ -139,10 +159,29 @@ def verdicts(handoffs: Path = HANDOFFS) -> list[dict]:
                 continue
             code, reasons = brc.classify(path, lineno, state, body, head)
             declared = brc.box_is_guarded(path, lineno)
+            dispatchable = code == 0
+            receipt, verdict, needs_reanchor = None, None, False
+            if screen and dispatchable:
+                result = row_intake.screen(ref=f"{path.name}:{lineno}")
+                receipt, verdict = result.receipt, result.verdict
+                needs_reanchor = result.needs_reanchor
+                if not result.ready:
+                    dispatchable = False
+                    reasons = [f"screener returned {result.verdict}, not "
+                               f"{row_intake.READY_VERDICT}"] + reasons
+            # lane/gating are DELIBERATELY not inferred here (see the module
+            # docstring), so only a duration the row STATES ITSELF can produce an
+            # occupancy at this site. Everything else is left with no field at all —
+            # never a fabricated 0.0 — and is hand-dispatch-only until a human or a
+            # lane-aware proposer supplies the number.
+            occupancy = row_intake.estimate_occupancy(body) if dispatchable else None
             out.append({
                 "file": path.name, "line": lineno, "text": body, "head": head,
-                "dispatchable": code == 0, "reasons": reasons,
-                "kind": _reason_kind(code, reasons),
+                "dispatchable": dispatchable, "reasons": reasons,
+                "kind": _reason_kind(code, reasons) if dispatchable or code else "screen-refused",
+                "screened_by": receipt, "screen_verdict": verdict,
+                "needs_reanchor": needs_reanchor,
+                "expected_occupancy": occupancy,
                 # Positive declaration in the handoff vs. our own inference. Kept
                 # separate on purpose: conflating them is what let an undeclared
                 # procedure look identical to a screened-and-cleared task.
@@ -240,6 +279,14 @@ def render(rows: list[dict]) -> str:
            "mislabels a `cpu`-lane row as `none` sends a main at a task it cannot run. Those",
            "stay human-authored in BACKLOG-DISPATCH-QUEUE.md.",
            "",
+           "Each row carries the two receipts the coordinator-daemon's `dispatch_gate`",
+           "demands: a `screened_by` line proving `backlog_row_check.py` ran on it, and an",
+           "occupancy line. **A row whose occupancy line says NO occupancy is hand-dispatch",
+           "only** — nothing here can derive its duration honestly (this generator does not",
+           "infer lane, so only a duration the row STATES can produce one), and inventing a",
+           "number is how a card got fed 40-second sweeps while reading idle (F-14). Decide",
+           "the number yourself and put it on the row when you dispatch it.",
+           "",
            f"**{len(live)} rows dispatchable IN SHAPE, across {len(by_file)} files.**",
            "",
            "That number is not a backlog estimate and must not be quoted as one. It counts",
@@ -258,9 +305,26 @@ def render(rows: list[dict]) -> str:
             out.append(f"- L{r['line']}{warn} — {r['text']}")
             out.append(f"    - claim: `session_bus.py claim --agent <id> --row "
                        f"{brc.claim_key(r['text'])!r}`")
+            if r.get("screened_by"):
+                out.append(f"    - screened_by: `{r['screened_by']}`")
+            out.append(f"    - {row_intake.occupancy_note(r.get('expected_occupancy'))}")
             if r["kind"] == "warned":
                 for reason in r["reasons"]:
                     out.append(f"    - {reason}")
+        out.append("")
+
+    held = [r for r in rows if not r["dispatchable"] and r.get("screen_verdict")
+            and r["screen_verdict"] != row_intake.READY_VERDICT]
+    if held:
+        out += ["## Held — the screener refused these; they are NOT on the bench", "",
+                "Each classified clean in-process but the screener disagreed. A row marked",
+                "*needs re-anchoring* could not be RESOLVED at all (anchor rot, unresolvable,",
+                "ambiguous) — re-anchor it by text before dispatching it. This list exists so a",
+                "refusal is visible rather than an absence, because an absence is exactly what",
+                "the queue could never audit.", ""]
+        for r in held:
+            tail = "  — needs re-anchoring by a human" if r.get("needs_reanchor") else ""
+            out.append(f"- {r['file']}:L{r['line']}  [{r['screen_verdict']}]{tail} — {r['text'][:96]}")
         out.append("")
     return "\n".join(out)
 
@@ -417,7 +481,10 @@ def main(argv: list[str] | None = None) -> int:
             print(line)
         return 1 if total else 0
 
-    rows = verdicts()
+    # Screening costs one subprocess per clean row, so only the BENCH pays for it —
+    # it is the only output a dispatcher acts on, and the only one whose rows need a
+    # `screened_by` receipt to pass the daemon's gate.
+    rows = verdicts(screen=args.generate)
     if args.quarantine:
         print(render_quarantine(rows))
         return 0

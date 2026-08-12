@@ -84,6 +84,7 @@ from scripts.coordination.session_bus import (  # noqa: E402
     row_occupancy_h,
     validate_row,
 )
+from scripts.coordination import row_intake  # noqa: E402
 
 LOCK_PATH = Path("/tmp/session_bus_coordinator.lock")
 ADVISORY_SCHEMA = "session_bus.advisory.v1"
@@ -737,8 +738,14 @@ def spec_ref_with_content_anchor(spec_ref: str | None,
     return f"{rel}#L{hint},{_ANCHOR_KEY}={anchor}"
 
 
-def _carry_spec_ref(row: dict | None) -> dict:
-    """`{"spec_ref": ...}` to splat into a REWRITE of an existing queue row, or `{}`.
+#: Fields that are the ROW'S IDENTITY AND ITS RECEIPTS, not its state. Every rewrite
+#: must carry them forward or the fold destroys them — see `_carry_row_identity`.
+_IDENTITY_FIELDS = ("spec_ref", "task_text", "screened_by", "expected_occupancy",
+                    "est_wall_clock_h")
+
+
+def _carry_row_identity(row: dict | None) -> dict:
+    """The identity/receipt fields to splat into a REWRITE of a queue row, or `{}`.
 
     C50b, found while checking whether C50 does anything on the live bus: IT DOES NOT.
     `fold_queue` is last-write-wins over WHOLE rows, and seven of the eight places
@@ -759,9 +766,32 @@ def _carry_spec_ref(row: dict | None) -> dict:
     is the omission being made consistent with the existing intent, not a new policy.
     Without it the whole anchoring mechanism is theatre: 20 of 21 rows reach
     `_eligible` with nothing to dereference and dispatch unconditionally.
+
+    WIDENED 2026-08-12, and the widening is the same bug found a second time. C50b
+    fixed `spec_ref` alone; `task_text`, `screened_by` and `expected_occupancy` were
+    added to the row schema afterwards and every one of these eight rewrite sites
+    drops them for exactly the same reason. That makes populating them at intake
+    VACUOUS: a row is born screened and estimated, gets assigned once, and folds back
+    to READY (via stale-requeue or a released lease) carrying neither — at which point
+    `dispatch_gate` refuses it for ever and the loop is inert again, one status change
+    later than before. `est_wall_clock_h` rides along because `row_occupancy_h` reads
+    it as the legacy occupancy source and `stall_ladder` derives lease grace from it.
+
+    These are the fields that describe WHAT THE TASK IS and WHAT WAS CHECKED ABOUT IT.
+    Status, owner, lease and attempt describe where it currently sits and are
+    correctly rebuilt per row. `_carry_spec_ref` remains as an alias: it is the
+    narrower name for what is now the same operation.
     """
-    ref = (row or {}).get("spec_ref")
-    return {"spec_ref": ref} if ref else {}
+    src = row or {}
+    # TRUTHINESS, not `is not None`: an empty string, an empty dict or a 0.0 must splat
+    # to NOTHING. Writing a null/empty key would overwrite a good value on a later fold
+    # (the original C50b requirement), and a 0.0 occupancy is unusable to the gate
+    # anyway — carrying it forward would only make an absent estimate look answered.
+    return {k: src[k] for k in _IDENTITY_FIELDS if src.get(k)}
+
+
+#: Back-compatible alias — the pre-2026-08-12 name for the same splat.
+_carry_spec_ref = _carry_row_identity
 
 
 def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: str,
@@ -1221,10 +1251,13 @@ def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: i
             continue
         status = row.get("status")
         base = {k: row.get(k) for k in ("lane", "gating", "owner", "priority", "priority_class",
-                                        "contention_class", "role_affinity", "spec_ref",
-                                        "est_wall_clock_h", "operator_gates", "depends_on",
+                                        "contention_class", "role_affinity",
+                                        "operator_gates", "depends_on",
                                         "max_attempts", "attempt", "replay_eligible")
                 if row.get(k) is not None}
+        # Identity + receipts ride every rewrite, from ONE list, so transcription
+        # cannot drift from the seven other rewrite sites (see _carry_row_identity).
+        base.update(_carry_row_identity(row))
         kinds = [m.get("kind") for m in msgs]
 
         if "task-complete" in kinds:
@@ -1791,7 +1824,7 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
                              "task_id": tid, "status": "HELD_OP_GATE",
                              "lane": row.get("lane"), "gating": row.get("gating"),
                              "epoch": epoch, "owner": row.get("owner"),
-                             **_carry_spec_ref(row),
+                             **_carry_row_identity(row),
                              "operator_gates": sorted(set((row.get("operator_gates") or []) + [gate]))})
     return blocks, rows + defects
 
@@ -2192,7 +2225,7 @@ def process_revocations(config: dict, latest: dict[str, dict], reports: dict[str
                 "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(), "task_id": tid,
                 "status": row.get("status"), "lane": row.get("lane"), "gating": row.get("gating"),
                 "epoch": epoch, "owner": row.get("owner"), "revoking": True,
-                "lease_expires_ts": row.get("lease_expires_ts"), **_carry_spec_ref(row),
+                "lease_expires_ts": row.get("lease_expires_ts"), **_carry_row_identity(row),
                 "attempt": row.get("attempt"), "priority": row.get("priority")})
             nudges.append({"to": row.get("owner"), "kind": "nudge", "task_id": tid,
                            "corr_id": f"revoke-{tid}-{epoch}",
@@ -2227,6 +2260,28 @@ def intake_proposals(bus_root: Path, latest: dict[str, dict], reports: dict[str,
     a one-shot the operator or an agent invokes: `session_bus_coordinator.py
     intake`. Seeding the queue is a decision, not something a daemon should start
     doing on its own.
+
+    THE TWO RECEIPTS ARE COMPLETED HERE IF THE PROPOSER OMITTED THEM (2026-08-12).
+    This is the LAST place a row can acquire them, because it is the place the row
+    is born: `dispatch_gate` refuses any row without `screened_by` and a resolvable
+    `expected_occupancy`, and measured on the live bus that was all 21 rows — a
+    fail-closed gate with no producer behind it, i.e. an off switch.
+
+      * NO `screened_by` -> this runs `backlog_row_check.py` on the proposal's own
+        text (or its `spec_ref`, converted to `file.md:LINE`) and records the
+        receipt. A verdict that is not DISPATCHABLE does NOT become a READY row: it
+        is admitted as `INFRA_BLOCKED` with the verdict in `failure_reason`, so it
+        is visible and re-anchorable instead of silently dropped or silently
+        dispatched. `INFRA_BLOCKED` is the queue's EXISTING word for "not
+        re-assignable without a human" — nothing new was invented here.
+      * NO `expected_occupancy` -> `row_intake.estimate_occupancy` derives one, or
+        returns None and the field is LEFT OFF. A row with no occupancy is a row a
+        human must dispatch by hand; a fabricated 0.0 would re-create F-14 while
+        looking answered.
+
+    This does not cross the daemon's bright line. Screening is a mechanical re-read
+    of what the proposer asserted, not a judgment about whether the work is wanted,
+    and it happens in a one-shot the operator invokes — never on the tick.
     """
     rows: list[dict] = []
     advisory: list[dict] = []
@@ -2267,12 +2322,57 @@ def intake_proposals(bus_root: Path, latest: dict[str, dict], reports: dict[str,
             # A proposal's `summary` IS the row text when nothing better was given.
             if not row.get("task_text") and pl.get("summary"):
                 row["task_text"] = pl["summary"]
+
+            note = ""
+            if not row.get("screened_by"):
+                result = _screen_proposal(row)
+                if result is not None:
+                    row["screened_by"] = result.receipt
+                    if not result.ready:
+                        row["status"] = row_intake.NEEDS_REANCHOR_STATUS
+                        row["failure_reason"] = (
+                            f"screener returned {result.verdict}; not admitted READY. "
+                            + ("Re-anchor this row by TEXT and re-propose it."
+                               if result.needs_reanchor else
+                               "The row resolved but is not dispatchable work."))
+                        note = f" screen={result.verdict}->{row['status']}"
+            if not isinstance(row.get("expected_occupancy"), dict):
+                occ = row_intake.estimate_occupancy(
+                    row.get("task_text") or "", lane=row.get("lane"),
+                    gating=row.get("gating"), declared_h=row.get("est_wall_clock_h"))
+                # ABSENT when None. Never 0.0 — see row_intake.estimate_occupancy rule 4.
+                if occ:
+                    row["expected_occupancy"] = occ
+                else:
+                    note += " occupancy=NONE(hand-dispatch-only)"
+
             rows.append(row)
             advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
                              "epoch": epoch, "kind": "intake", "task_id": tid,
                              "detail": f"lane={pl.get('lane')} gating={pl.get('gating')} "
-                                       f"classification={pl.get('classification', 'unstated')}"})
+                                       f"classification={pl.get('classification', 'unstated')}"
+                                       f"{note}"})
     return rows, advisory
+
+
+#: `handoffs/active/foo.md#L405` (with or without C50b's `,box=` suffix) -> `foo.md:405`.
+_SPEC_REF_ANCHOR = re.compile(r"([A-Za-z0-9._-]+\.md)#L(\d+)")
+
+
+def _screen_proposal(row: dict) -> Optional[row_intake.ScreenResult]:
+    """Screen a proposal that arrived with no receipt. None if there is nothing to screen.
+
+    Prefers the row TEXT, because the text is the dispatch identity and the line
+    number is a hint that rots (34.5% queue-wide). Falls back to the `spec_ref`
+    anchor only when the proposal carried no text at all.
+    """
+    text = (row.get("task_text") or "").strip()
+    if text:
+        return row_intake.screen(row=text)
+    m = _SPEC_REF_ANCHOR.search(str(row.get("spec_ref") or ""))
+    if m:
+        return row_intake.screen(ref=f"{m.group(1)}:{m.group(2)}")
+    return None
 
 
 def backfill_receipts(bus_root: Path, source_dir: Path, receipts_dir: Path,
@@ -2475,7 +2575,7 @@ def auto_yield(config: dict, latest: dict[str, dict], snapshot: dict, token_text
                 "task_id": holder["task_id"], "status": holder.get("status"),
                 "lane": lane, "gating": holder.get("gating"), "epoch": epoch,
                 "owner": holder.get("owner"), "revoking": True,
-                "lease_expires_ts": holder.get("lease_expires_ts"), **_carry_spec_ref(holder),
+                "lease_expires_ts": holder.get("lease_expires_ts"), **_carry_row_identity(holder),
                 "attempt": holder.get("attempt"), "priority": holder.get("priority")})
             nudges.append({"to": holder.get("owner"), "kind": "nudge",
                            "task_id": holder["task_id"],
@@ -2516,7 +2616,7 @@ def settle_drained(latest: dict[str, dict], agents: dict[str, dict], epoch: int)
                     "status": "READY", "lane": row.get("lane"), "gating": row.get("gating"),
                     "epoch": epoch, "owner": None, "revoking": False,
                     "priority": row.get("priority"), "attempt": row.get("attempt"),
-                    **_carry_spec_ref(row),
+                    **_carry_row_identity(row),
                     "failure_reason": "lease released on revocation (drained at boundary)"})
     return out
 
@@ -2555,8 +2655,13 @@ def stall_ladder(bus_root: Path, latest: dict[str, dict], agents: dict[str, dict
             except ValueError:
                 expired = False
 
-        if row.get("lane") in {"cpu", "gpu"} and row.get("est_wall_clock_h"):
-            grace = float(row["est_wall_clock_h"]) * 3600.0 * margin
+        # Occupancy via the SHARED resolver, not the raw legacy field: since 2026-08-12
+        # rows carry `expected_occupancy.est_h` and `est_wall_clock_h` is the fallback,
+        # so reading only the latter would give a bench row the flat none-lane grace and
+        # declare a healthy multi-hour sweep hard-stalled.
+        occupancy_h = row_occupancy_h(row)
+        if row.get("lane") in {"cpu", "gpu"} and occupancy_h:
+            grace = float(occupancy_h) * 3600.0 * margin
         else:
             grace = float(row.get("heartbeat_grace_s") or none_grace)
         hb_age = agent.get("age_s")
@@ -2576,14 +2681,14 @@ def stall_ladder(bus_root: Path, latest: dict[str, dict], agents: dict[str, dict
                                    "task_id": tid, "status": "INFRA_BLOCKED",
                                    "lane": row.get("lane"), "gating": row.get("gating"),
                                    "epoch": epoch, "attempt": attempt,
-                                   **_carry_spec_ref(row),
+                                   **_carry_row_identity(row),
                                    "failure_reason": "attempts exhausted after lease expiry"})
             else:
                 queue_rows.append({"schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
                                    "task_id": tid, "status": "STALE_REQUEUED",
                                    "lane": row.get("lane"), "gating": row.get("gating"),
                                    "epoch": epoch, "owner": None, "attempt": attempt,
-                                   **_carry_spec_ref(row),
+                                   **_carry_row_identity(row),
                                    "failure_reason": "lease expired"})
                 advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
                                  "epoch": epoch, "kind": "defect", "check": "hard-stall",
@@ -4131,7 +4236,7 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
             "status": "ASSIGNED", "lane": row.get("lane"), "gating": row.get("gating"),
             "epoch": epoch, "owner": agent, "priority": row.get("priority"),
             "lease_expires_ts": expires.isoformat(timespec="seconds"),
-            **_carry_spec_ref(row),
+            **_carry_row_identity(row),
             "attempt": int(row.get("attempt") or 0)})
         _append_inbox(bus_root, [{"to": agent, "kind": "task-assign", "task_id": tid,
                                   "assignee": agent, "action_required": True,
