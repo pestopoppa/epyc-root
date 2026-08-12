@@ -2076,6 +2076,16 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `0.0` but labels it a PLACEHOLDER and logs at ERROR, and carries `quality_measured`,
       `infra_failed_count` and a reason histogram. An all-wrong run and an all-infra run share a
       `quality` and differ everywhere else — which is exactly the 2026-08-03 incident's blind spot.
+  - [ ] **PRE-EXISTING: `eval_tower` and the seeding path DISAGREE about a `task_failure`, so the same
+    failure yields different quality depending on which subsystem measured it.** `eval_tower:1339`
+    excludes every row whose disposition is not `SCORED` — including `task_failed`; the seeding path
+    scores a non-infra `task_failure` as WRONG. Both are defensible in isolation and that is exactly
+    why it survived: neither looks wrong on its own. But it makes a quality number NON-COMPARABLE
+    across the two producers, which is a measurement-comparability defect rather than a bug in
+    either. Surfaced by the B4 work and NOT introduced by it — the new disposition taxonomy is what
+    made the disagreement legible. *(Verified by `mainC`: an HTTP-400 client error and an unparseable
+    200 body both classify `task_failed`, and `legacy_error_type` maps that to `task_failure`.)*
+    Needs one ruling, applied to both, rather than two local fixes.
   - [ ] **OPERATOR DECISION, deliberately not taken by the subagent:** `:1960` also says reliability
     should have collapsed the run long before 70 questions. Early abort is a live-control-loop policy
     change — *how many consecutive infra-failed rows should abort an in-flight batch, and abort or
