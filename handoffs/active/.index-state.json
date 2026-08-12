@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 302
+      "open": 303
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 1,
-      "closed": 205,
+      "closed": 206,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 23,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 229
+      "total": 230
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
@@ -1482,14 +1482,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 67,
+      "closed": 68,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 17,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 84
+      "total": 85
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -1837,11 +1837,11 @@
       "closed": 45,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 13,
+      "open": 14,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 58
+      "total": 59
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,

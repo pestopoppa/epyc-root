@@ -63,7 +63,8 @@ gate this program has already passed.
 
 ### Open work — start here
 
-Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC10`, `SC11`, `SC7`, `SC6-HAZARD`) and
+Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC10`, `SC11`, `SC7`, `SC6-HAZARD`,
+`SC28`) and
 **Consumption** (`SC12-ENTRY`, `SC14-B`, `SC15`, `SC16`, `SC17`). Everything else is complete and lives in the completed sibling
 linked under Completed Scope.
 
@@ -448,6 +449,12 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       tuple. Focused producer tests pass 23/23 and adapter tests 24/24. The 2026-08-12 smoke, controls,
       and GPU replay predate the hook and remain deliberately unprojected; only future receipts may
       enter this source.
+- [ ] SC28 **Wire RVP-T0-1 saturation and AK-BH-1 vendor-baseline diagnostics on the write side
+      before either runs again.** Emit separate producer-authored measurements for sustained GEMM
+      throughput, nominal-clock hold fraction, peak power/headroom, and each exact-shape provider
+      comparison, with declared direction, scored-repetition basis, source/binary/device-claim
+      identity, and immutable receipt digest. Project only those future rows through the existing
+      measurement ladder. The 2026-08-12 receipts predate this hook and must never be back-filled.
 
 ## Dependency notes
 
