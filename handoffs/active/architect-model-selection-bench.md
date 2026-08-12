@@ -697,7 +697,47 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
   a thinking-off incumbent at ~40 t/s delivers its ~12 answer tokens in ~0.3 s. **A 1.7× decode-rate
   advantage does not survive a 27× token-count disadvantage.**
 
-  **Three limits on that arithmetic, stated so nobody over-reads it.** (1) These five prompts are
+  **SUPERSEDED BY MEASUREMENT 2026-08-12** — research `7b2426c7`, evidence in
+  `benchmarks/results/scout/wg-lfm-1-thinking-toggle-20260812/` (76 files, replayable). The estimate
+  below was **directionally right and quantitatively wrong**; keep it only to see the correction.
+
+  | arm | gen tokens (5 prompts) | wall (prefill+decode) | mean t/s |
+  |---|---:|---:|---:|
+  | gemma thinking **ON** | 902 | 48.18 s | 19.20 |
+  | gemma thinking **OFF** (production) | **33** | **2.97 s** | 19.40 |
+  | LFM2.5-2.6B Q4_K_M | 501 | 12.89 s | 40.34 |
+
+  **Production gemma is ~4.3× faster to an answer than LFM2.5 — not the ~31× I estimated.** Correctness
+  with thinking off is **5/5**, identical answers to the thinking-on run, and a repeat reproduced both
+  gemma conditions token-for-token. Three reasons the estimate was off: the chars/4 proxy undercounted
+  **both** sides (gemma 902 measured vs ~599 inferred, LFM 501 vs ~398); answers are ~6.6 tok/prompt not
+  ~12; and, the real error, I applied a rate near LFM's to gemma's tokens — gemma decodes at 19.4 t/s and
+  pays ~0.26 s prefill per call on a 26B MoE. LFM's per-token advantage is actually **2.08×**, larger
+  than the 1.7× cited, and still swamped by a 15× token-count gap.
+
+  **The toggle is real and is a PREFILL, not an instruction** — template line 359,
+  `{%- if not enable_thinking | default(false) -%}` appends an immediately-closed empty thought channel.
+  Note the template's own default is *suppressed*; llama.cpp overrides it to true
+  (`common/chat.h:261`), which is why the scout got thinking without asking for it. Production path
+  traced end-to-end: `stack_priors.yaml` → `reasoning: 'off'` (four roles — `worker_general`,
+  `toolrunner`, `worker_explore`, `worker_math`) → `--reasoning off` → the exact prompt measured.
+
+  **Verdict direction is unchanged and if anything firmer**: the harness could not exercise gemma4's MTP
+  self-speculation, so **production gemma is faster than measured**, widening the gap in the incumbent's
+  favour. And WG-LFM-2's answer is now confirmed from two independent directions — LFM2.5's template
+  unconditionally prefills `<think>` with no `enable_thinking` kwarg. The incumbent can be turned off;
+  the challenger, as shipped, cannot.
+
+- [ ] **MEASUREMENT TRAP — `llama-cli` / `llama-completion` SILENTLY IGNORE `-rea off`.** In those
+  tools `default_template_kwargs` is consumed only by `common_chat_format_example`, so the flag parses,
+  is accepted, and changes nothing — verified: `-rea off` still rendered the 31-token thinking-ON
+  prompt. `llama-server` *does* honour it (`server-context.cpp:1463` → `server-common.cpp:1064` →
+  `chat.cpp:895`). **Never reproduce production thinking state with the CLI flag** — render the prompt
+  and pass it raw, and prove the render by diffing token sequences. This silently fabricates
+  thinking-on numbers while labelling them thinking-off, in the direction that flatters a reasoning
+  model. Worth codifying wherever the canonical bench recipes live.
+
+  **Three limits on the SUPERSEDED estimate, kept for the record.** (1) These five prompts are
   deliberately terse — "reply with only the city name" — which is the WORST case for a reasoning model,
   because a fixed reasoning block is amortised over a 1-token answer; real `worker_general` traffic with
   longer outputs will show a much smaller ratio. (2) ~4 chars/token is an approximation and the two
