@@ -70,10 +70,12 @@ Neither signs anything. Trust boundaries are human-only (`coordination/session-b
 - **Never spend the main thread on focused execution work.** Docs, briefs, edits, code,
   research, analysis → subagents; the main thread's scarce resource is attention to task
   boundaries. Keep on-thread: bus state, priority decisions, dispatch/nudges, decision
-  packages, review/acceptance of delegated work, integration. Every subagent result is
-  PROPOSED work — review evidence and diffs before accepting; match subagent model/effort to
-  the task. Origin: INC-20260728-idle-mains. An idle main with an empty queue is a coordination
-  failure (`agents/shared/SESSION_LIFECYCLE.md`).
+  packages, review/acceptance of delegated work, integration. The fan-out mechanics — 3–5
+  concurrent subagents, model/effort matching, every result PROPOSED until reviewed — are canonical
+  in `agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out*, which binds every main;
+  this guardrail is its strict case and admits no exception for the coordinator. Origin:
+  INC-20260728-idle-mains. An idle main with an empty queue is a coordination failure
+  (`agents/shared/SESSION_LIFECYCLE.md`).
 - **Session lifecycle at a boundary** — canonical contract
   `agents/shared/SESSION_LIFECYCLE.md`: related next task → keep context and dispatch; disjoint
   → wrap up, `/clear`, dispatch; nothing assignable → close. `/clear` needs BOTH conditions and

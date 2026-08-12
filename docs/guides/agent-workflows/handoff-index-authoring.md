@@ -13,7 +13,7 @@ Exactly one table shape, in every domain index:
 ```
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| INF-07 | deepseek v4 flash 0731 dspark | [deepseek-v4-flash-0731-dspark.md](deepseek-v4-flash-0731-dspark.md) | Q8 baseline on production v8 before any kernel work | — |
+| INF-07 | deepseek v4 flash 0731 dspark | [<handoff>.md](<handoff>.md) | Q8 baseline on production v8 before any kernel work | — |
 ```
 
 - **`ID`** — `<DOMAIN>-NN`, stable and never reused. Cite the ID, not a line number: line anchors rot

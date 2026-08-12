@@ -153,6 +153,12 @@ table is in [`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.m
 
 ## Agents & Automation
 
+- **Fan out subagents by default — always, not only when a dispatch says so.** Your own thread is for
+  review, integration and task boundaries; execution (implementation, docs, research, analysis,
+  verification harnesses) goes to **3–5 subagents running concurrently**, model and effort matched to
+  the task. Every subagent result is PROPOSED work — review evidence and diffs before accepting. A main
+  working serially is a defect in the agent files, not a nudge target. Operator, 2026-08-12: *"this
+  should ALWAYS be the case."* Full rule: [Parallel Subagent Fan-Out](agents/shared/OPERATING_CONSTRAINTS.md#parallel-subagent-fan-out--the-default-working-mode-of-every-main).
 - **No intake entries, handoff stubs, or index modifications via sub-agents without explicit user approval.**
 - **Codex delegation & long-horizon throughput contract**: `agents/shared/OPERATING_CONSTRAINTS.md` → *Codex Delegation & Long-Horizon Throughput*.
 - **Bus drain (M1)**: at every task boundary run `scripts/coordination/session_bus.py drain --agent <your-roster-id> --triage`; act on assignments/nudges; write acks to **your own** outbox with `corr_id` for routed items; never write another agent's file. Contract: [`coordination/session-bus/BUS_PROTOCOL.md`](coordination/session-bus/BUS_PROTOCOL.md).

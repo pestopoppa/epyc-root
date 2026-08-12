@@ -33,6 +33,10 @@ Use the canonical [repository map](../CLAUDE.md#repository-map) and dependency m
   classification, no swallowed exceptions, small testable changes — are canonical in
   `agents/shared/ENGINEERING_STANDARDS.md` (read-order item 3), not restated here.
 - Decisions gate on **claims**, not observations: a performance/quality number must cite a `MEASUREMENT.md` protocol; historical numbers are era-labeled first (`agents/shared/MEASUREMENT_POLICY.md`). Never edit historical records to "fix" them — append.
+- **Fan out by default.** A main's own thread is for review, integration and task boundaries;
+  execution goes to 3–5 concurrent subagents, model and effort matched to the task, and every result
+  is PROPOSED work until its evidence and diffs are reviewed. Working serially is the defect. Full
+  rule: [Parallel Subagent Fan-Out](shared/OPERATING_CONSTRAINTS.md#parallel-subagent-fan-out--the-default-working-mode-of-every-main).
 - **Default is ACT — escalation must earn itself.** Before deferring, escalating, or writing a "Deferred /
   Open / Awaiting operator" item, name the specific decision only the operator can make, or the external
   event you await, in one sentence. If you cannot, **finish the work**. Find a bug → fix it; find a gap →

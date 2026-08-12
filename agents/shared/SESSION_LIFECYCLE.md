@@ -66,4 +66,8 @@ execution work — that is dispatched to subagents so the main thread keeps its 
 boundaries (origin: INC-20260728-idle-mains). Full coordinator-side rule and duties:
 `agents/coordinator-agent.md` → Guardrails.
 
+This is the strict case of a fleet-wide default, not a coordinator privilege: EVERY main fans
+execution out to 3–5 concurrent subagents and keeps its own thread for review, integration and
+boundaries. Canonical rule: `agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out*.
+
 Incident narratives: `docs/reference/agent-config/INCIDENT_LOG.md`.

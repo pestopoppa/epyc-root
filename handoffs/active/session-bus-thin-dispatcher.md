@@ -2566,6 +2566,20 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   reboot** — OP-16 was declined by the operator, so this is queued, not gated. Its own task id
   (`guard-universe-and-worktree-isolation`) still has no handoff of its own; give it one at cutover
   or fold it here permanently.
+- [ ] **"This main is working serially" must become an observable condition, not something the
+  operator has to notice.** The fan-out default is now durable
+  (`agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out*, operator 2026-08-12), but
+  nothing on this plane distinguishes a main that dispatched five concurrent subagents from one that
+  did the same work on its own thread — so the only detector is the operator saying so, which is how
+  it ran unchallenged to 1,070 open backlog items. Build it on the C36 substrate, per backend: for
+  Codex mains the rollout files already separate parent from child (`thread_source != 'subagent'`,
+  fail closed on absence) and the parent holds FINISHED subagent fds open, so concurrent-child count
+  is readable from the parent's fds; for Claude mains use signal #3 (`claude agents --json`) because
+  their subagents run IN-PROCESS — which is also why **CPU delta is INVALID here** (C36 constraint:
+  a main burned 17% CPU sitting at its prompt). Deliverable: per-main concurrent-subagent count over
+  a window, exposed where `probe`/`rebuild` already report liveness. The defect signal is sustained
+  zero children while the main's queue is non-empty. Same shape as C35/C36 — the RUNTIME decides,
+  not the agent's self-report — so it inherits their fail-closed and UNAVAILABLE-fallback rules.
 
 ## Decision gates
 

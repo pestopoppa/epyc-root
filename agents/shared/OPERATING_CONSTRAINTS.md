@@ -138,9 +138,36 @@ Delivery: Claude Code sessions use the AskUserQuestion tool with the recommended
 
 Exception: pure factual gaps (a missing credential, an ambiguous file reference) may be asked directly — this contract governs choices among alternatives, not fact retrieval.
 
+## Parallel Subagent Fan-Out — the default working mode of every main
+
+**Fan-out is the permanent default of every main, not a per-task reminder.** Operator, 2026-08-12, on
+being told the coordinator had "told the mains to fan out subagents rather than working serially":
+***"this should ALWAYS be the case."*** It binds every main, in every harness, on every dispatch —
+including the dispatches whose nudge says nothing about subagents.
+
+- **The main thread does review, integration, and task boundaries.** Execution — implementation,
+  docs, research, analysis, verification harnesses — goes to subagents.
+- **3–5 subagents run CONCURRENTLY.** Independent work issued one agent at a time is serial working
+  with extra steps; put the independent calls in one block.
+- **Match subagent model and effort to the task** (`agents/README.md` → Model Routing (Task-Based);
+  Codex-side sizing in the section below).
+- **Every subagent result is PROPOSED work.** Review its evidence and diffs before accepting it.
+- **A main observed working serially is a defect in these files, not a nudge target.** Fix it here.
+  A rule that lives in dispatch nudges is a per-task favour that disappears the moment a nudge
+  omits it.
+
+*Origin: 2026-08-12. "Use subagents" had been carried inside individual dispatch nudges, so it bound
+only the tasks whose nudge happened to repeat it. Measured cost that day: **1,070 open backlog
+items** — distinct unchecked task rows across the six domain indices — while all five mains worked
+coordination plumbing, largely serially.*
+
+Coordinator-side strict form (its main thread spends NO time on execution work):
+`agents/coordinator-agent.md` → Guardrails.
+
 ## Codex Delegation & Long-Horizon Throughput
 
 (Moved here 2026-07-30 from CLAUDE.md — Codex-audience policy; CLAUDE.md keeps a pointer.)
+Harness-specific sizing and scheduling for the fan-out default above.
 
 - In Codex sessions, keep the main thread on high-level decomposition, risk and ownership
   decisions, reviewing and accepting delegated work, integration, and operator communication.
