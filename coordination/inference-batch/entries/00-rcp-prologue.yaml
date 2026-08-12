@@ -41,7 +41,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio — architect_general Qwen3.5-122B-A10B-Q4 / frontdoor Qwen3.6-35B-A3B-Q8 / gemma-4-26B-A4B workers; reviewer aliased to CPU architect_general (A3); GLM-5.2 NOT resident"
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -55,7 +55,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -78,7 +78,7 @@
     #  stragglers, `stop --all` first. The command below is the POST-RELAUNCH preflight only; all 4 clauses are real/verified.)
     command: >
       scripts/server/affinity_preflight.py --require-memory-locality &&
-      scripts/server/preflight_gate.py --expected-topology-hash 8c8cfcbb13d2611d --require-servers --json &&
+      scripts/server/preflight_gate.py --expected-topology-hash 171f86f9188211e9 --require-servers --json &&
       scripts/validate/attest_orchestrator_workers.py --min-workers 6 --expect-feature review_decision_shadow &&
       scripts/validate/attest_flags.py
     cwd: /mnt/raid0/llm/epyc-orchestrator
@@ -96,14 +96,14 @@
     expected: >
       Reference lineup live==config on all six API workers; live affinity matches
       NUMA_CONFIG for every role; preflight_gate attestation JSON records topology
-      hash 8c8cfcbb13d2611d fresh; review_decision_shadow=ON confirmed on ALL 6
+      hash 171f86f9188211e9 fresh; review_decision_shadow=ON confirmed on ALL 6
       uvicorn workers via per-worker flag introspection; review_decision_enforce OFF.
     gate_table:
       - gate: "Is the reference lineup live==config AND is review_decision_shadow=ON on ALL 6 workers AND topology attested fresh?"
-        evidence: "three-gates check; affinity_preflight live-affinity pass; preflight_gate.py attestation JSON (topology 8c8cfcbb13d2611d, servers up, matrix fresh); attest_orchestrator_workers.py 6/6 with feature review_decision_shadow; attest_flags.py no env diffs"
+        evidence: "three-gates check; affinity_preflight live-affinity pass; preflight_gate.py attestation JSON (topology 171f86f9188211e9, servers up, matrix fresh); attest_orchestrator_workers.py 6/6 with feature review_decision_shadow; attest_flags.py no env diffs"
         fork:
           pass:
-            rule: "6/6 workers report review_decision_shadow=ON AND enforce=OFF AND live affinity == NUMA_CONFIG for all roles AND topology hash == 8c8cfcbb13d2611d"
+            rule: "6/6 workers report review_decision_shadow=ON AND enforce=OFF AND live affinity == NUMA_CONFIG for all roles AND topology hash == 171f86f9188211e9"
             action:
               - "flip RCP-W1 checkbox in bulk-inference-campaign.md"
               - "record attestation JSON path + per-worker flag table"
@@ -139,7 +139,7 @@
     journal_quarantine_rule: >
       record lineup id, kernel era, topology hash, per-worker shadow-flag state (6/6
       required), enforce=OFF; quarantine the whole prologue diagnostic_only if flag
-      attestation is not 6/6 or topology hash != 8c8cfcbb13d2611d.
+      attestation is not 6/6 or topology hash != 171f86f9188211e9.
     era_stamp: "instrument-era-2026-06-12-post-measurement-constitution"
 
 - schema_version: inference_batch.entry.v1
@@ -169,7 +169,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (unchanged from RCP-W1); reviewer = CPU architect_general alias (A3)"
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -183,7 +183,7 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -299,7 +299,7 @@
 
   preconditions:
     stack_lineup: "REFERENCE trio (unchanged); reviewer = CPU architect_general alias (A3)"
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -311,9 +311,9 @@
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
       - OP-6a

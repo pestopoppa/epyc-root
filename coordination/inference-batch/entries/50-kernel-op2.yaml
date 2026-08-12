@@ -40,7 +40,7 @@
   priority: P2
   preconditions:
     stack_lineup: "single-instance llama-bench, frontdoor Qwen3.6-27B Q8_0; experimental fusion build vs v6 baseline"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -51,7 +51,7 @@
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -141,7 +141,7 @@
   priority: P1
   preconditions:
     stack_lineup: "canonical v6 stack (all hot roles on the v6 binary, GGML_IQK=1); post-reboot host"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flag_attestation: all_workers
@@ -154,7 +154,7 @@
       max_uptime_days: 1
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -245,7 +245,7 @@
   priority: P3
   preconditions:
     stack_lineup: "single-instance bench, ONE model loaded at a time (sequential); Strand + Rust toolchain"
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -258,7 +258,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
