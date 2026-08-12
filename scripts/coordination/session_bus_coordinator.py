@@ -49,6 +49,7 @@ Run:
 from __future__ import annotations
 
 import argparse
+import difflib
 import fcntl
 import json
 import hashlib
@@ -377,12 +378,188 @@ def _gates_granted(row: dict, token_text: str) -> bool:
 # flagged, because refusing real work on a bad pointer is the costlier error — the
 # settled rule in `backlog_row_check.py`.
 
-_SPEC_LINE = re.compile(r"#L(\d+)\s*$")
-_SPEC_BOX = re.compile(r"^\s*- \[( |x|X)\]")
+_SPEC_BOX = re.compile(r"^\s*- \[( |x|X)\]\s*(.*)$")
 
 
-def spec_ref_state(spec_ref: str, repo_root: Path | None = None) -> tuple[str, str]:
-    """(state, detail) for a `path#Lnnn` reference. state in {open, closed, unresolved}.
+# C50b (2026-08-12): A LINE NUMBER IS NOT AN IDENTITY.
+#
+# C50 above closed half the defect: the queue is now dereferenced, so a positively
+# CLOSED box refuses dispatch. The half it did NOT close is that the dereference is
+# anchored on `file:line`, and line numbers rot the moment anyone edits the file
+# above the anchor. The dereference is therefore only as good as its pointer, and
+# the pointer decays with every commit.
+#
+# MEASURED, on the live queue and the real file, not hypothesised
+# (`handoffs/active/opendataloader-pipeline-integration.md`, eleven rows seeded
+# 2026-07-27 against the file as of c942728e):
+#
+#     stored anchor   at SEED time (c942728e)          at HEAD 2026-08-12
+#     L405            - [ ] Clone opendataloader-...   `    ├─ Simple text page` (tree art)
+#     L463            - [ ] If/when LLM-based chun...  a prose bullet
+#     L511 L512 L513  three `- [ ]` boxes              three prose sub-bullets
+#     L534            - [ ] Bench **LiteParse-loca...  a prose sub-bullet
+#     L557 L612 L615  three `- [ ]` boxes              prose / a table rule / prose
+#     L626 L628       two `- [ ]` boxes                a `###` heading / prose
+#
+# ELEVEN of eleven. Every one was a real checkbox when it was seeded and not one of
+# them is a checkbox now. The pre-C50b resolver calls all eleven "anchor rot →
+# unresolved → dispatchable", which is the safe direction but throws the verdict
+# away: `L405` in particular has NOT rotted in any meaningful sense — its box is
+# alive at line 416, was ticked `- [x] ... ✅ 2026-08-12`, and is exactly the kind of
+# row C50 exists to refuse. The line-anchored resolver cannot see that.
+#
+# The same rot is visible inside a single task_id. `opendataloader-pipeline-
+# integration--013-L534` carries an ordinal (013) AND a line (L534) that disagree —
+# box #13 is at line 59 — because both halves were computed at seed time and neither
+# is ever re-derived. Two stale encodings of the same pointer do not make one good one.
+#
+# THE FIX: identify a row by something stable about the ROW ITSELF — the text of its
+# checkbox — and demote the line number to a HINT used only to make the common case
+# O(1). The spec_ref grammar grows one optional, comma-separated fragment part:
+#
+#     handoffs/active/foo.md#L534                       legacy, still honoured verbatim
+#     handoffs/active/foo.md#L534,box=<slug>~<digest>   line HINT + content anchor
+#
+# `<digest>` is 8 hex of sha256 over the NORMALIZED checkbox text; `<slug>` is the
+# first 48 chars of that same text as `[a-z0-9-]`. Two fields because they fail
+# differently and we want both failure modes covered: the digest is exact and
+# collision-free but one-way, so it cannot recognise a box whose wording was edited;
+# the slug is lossy but comparable, so a truncated/extended rewording is still
+# matchable. The slug also makes the ref legible to a human reading advisory.jsonl,
+# which a bare hash never is.
+#
+# NORMALIZATION IS THE LOAD-BEARING PART. It deliberately erases:
+#   * the `- [ ]` / `- [x]` marker — so a box keeps ONE identity across the
+#     open→closed transition. This is not cosmetic: the transition we must detect is
+#     precisely the one that changes the marker, so an identity that included it
+#     would go not-found at the exact moment it mattered.
+#   * everything from `✅` onward — a box is ticked by appending `✅ 2026-08-12
+#     (mainB): cloned to ...`, i.e. closing a box REWRITES its text. Measured on the
+#     file above: 7 of 7 boxes in the Phase-1 block carry such a suffix.
+#   * markdown decoration and link targets (`**x**`, `` `x` ``, `[t](u)` → `t`),
+#     case and whitespace runs — all of which get churned by ordinary editing
+#     without changing which task the row means.
+#
+# FAIL-DIRECTION IS PRESERVED, AND IS WHY THE TIERS EXIST. Only a box we have
+# POSITIVELY identified may refuse dispatch. So the strong tiers (exact digest,
+# whole-slug/prefix relation, both requiring uniqueness) are trusted to report
+# `closed`; the weak tier (difflib similarity) is NOT — a fuzzy hit on a closed box
+# downgrades to `unresolved`, stays dispatchable, and says so in the detail. That
+# asymmetry is deliberate: a wrong relocation onto a closed box would refuse real
+# work, which is the costlier error (the settled rule in `backlog_row_check.py`),
+# whereas a wrong relocation onto an open box costs nothing at all.
+#
+# Evidence the weak tier must not be trusted: best-ratio matching of the eleven
+# seeded texts against HEAD returns 1.000 for three of them and 0.204 for `L626`,
+# whose "best" match is an unrelated CLOSED box at line 59. A threshold low enough
+# to catch the reworded ones is low enough to swallow that, so the fuzzy tier is
+# informational only.
+
+_ANCHOR_KEY = "box"
+_ANCHOR_SLUG_LEN = 48            # chars of normalized text kept in the ref, human-legible
+_ANCHOR_DIGEST_LEN = 8           # hex of sha256 over the FULL normalized text
+_PREFIX_MIN_SLUG = 24            # a prefix relation shorter than this is not evidence
+_FUZZY_ACCEPT = 0.90             # difflib floor; informational tier only, never refuses
+_FUZZY_MARGIN = 0.05             # …and it must beat the runner-up by this much
+_RELOCATED_PHRASE = "relocated from"   # built into details AND matched by `_eligible`
+
+# Anchors whose identification is strong enough to REFUSE dispatch. Anything not in
+# this set may still report a line, but a `- [x]` found that way is reported as
+# unresolved rather than closed. Keep this set narrow on purpose.
+_TRUSTED_FOR_CLOSED = frozenset({"line-only", "hint", "exact", "exact-multi",
+                                 "prefix", "prefix-multi"})
+
+_NORM_DONE = re.compile(r"\s*(?:✅|:white_check_mark:).*$")
+_NORM_LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
+_NORM_DECOR = re.compile(r"[`*_~]+")
+_NORM_TRAIL = re.compile(r"[\s.,;:!?—–-]+$")
+_SLUG_SEP = re.compile(r"[^a-z0-9]+")
+_HEXDIGITS = frozenset("0123456789abcdef")
+
+
+def normalize_box_text(text: str) -> str:
+    """The identity of a checkbox: its text with everything churn-prone removed.
+
+    Input is the text AFTER the `- [ ]` marker (group 2 of `_SPEC_BOX`), so the tick
+    state is already gone by construction — see the block comment above for why that
+    is required rather than convenient.
+    """
+    t = _NORM_DONE.sub("", text)
+    t = _NORM_LINK.sub(r"\1", t)
+    t = _NORM_DECOR.sub("", t)
+    t = " ".join(t.split()).casefold()
+    return _NORM_TRAIL.sub("", t)
+
+
+def _box_slug(norm: str) -> str:
+    return _SLUG_SEP.sub("-", norm).strip("-")[:_ANCHOR_SLUG_LEN].strip("-")
+
+
+def _box_digest(norm: str) -> str:
+    return hashlib.sha256(norm.encode("utf-8")).hexdigest()[:_ANCHOR_DIGEST_LEN]
+
+
+def box_anchor(box_text: str) -> str:
+    """`<slug>~<digest>` for one checkbox's text — the value of the `box=` part."""
+    norm = normalize_box_text(box_text)
+    return f"{_box_slug(norm)}~{_box_digest(norm)}"
+
+
+def _split_anchor(value: str) -> tuple[str, str]:
+    """`<slug>~<digest>` -> (slug, digest). Tolerates either half being absent."""
+    value = value.strip().lower()
+    if not value:
+        return "", ""
+    head, sep, tail = value.rpartition("~")
+    if sep and head and tail and set(tail) <= _HEXDIGITS:
+        return head, tail
+    if set(value) <= _HEXDIGITS:      # a bare digest, e.g. hand-written
+        return "", value
+    return value, ""                  # a bare slug
+
+
+def _parse_spec_ref(spec_ref: str) -> tuple[str, Optional[int], str, str]:
+    """`path#L12,box=slug~dead` -> ('path', 12, 'slug', 'dead').
+
+    Unknown fragment parts are IGNORED rather than rejected, so the two refs already
+    on the live bus that use a plain markdown fragment (`...#milestones`, `h.md#a`)
+    keep resolving to "no line anchor" exactly as they did before, and so a later
+    fragment key can be added without a flag day.
+    """
+    rel, _, frag = spec_ref.partition("#")
+    line: Optional[int] = None
+    slug = digest = ""
+    for part in frag.split(","):
+        part = part.strip()
+        if len(part) > 1 and part[0] in "Ll" and part[1:].isdigit():
+            line = int(part[1:])
+        elif part.lower().startswith(_ANCHOR_KEY + "="):
+            slug, digest = _split_anchor(part.split("=", 1)[1])
+    return rel.strip(), line, slug, digest
+
+
+def _prefix_related(a: str, b: str) -> bool:
+    """One slug is a prefix of the other, over enough characters to mean something.
+
+    This is the tier that catches the measured `L405` case: the box was seeded as
+    `clone opendataloader-bench repo (mit license, 200 pdfs via git lfs)` and reads
+    `clone opendataloader-bench repo` at HEAD — a 0.63 similarity ratio (too low to
+    trust) but an unambiguous 31-character prefix relation (strong).
+    """
+    if not a or not b:
+        return False
+    shorter, longer = (a, b) if len(a) <= len(b) else (b, a)
+    return len(shorter) >= _PREFIX_MIN_SLUG and longer.startswith(shorter)
+
+
+def _spec_lookup(spec_ref: str,
+                 repo_root: Path | None = None) -> tuple[Optional[int], str, str, str]:
+    """(line, tick, method, detail) — the whole anchor resolution, one pass over the file.
+
+    `line` is 1-based or None; `tick` is `''`|`' '`|`'x'`; `method` names HOW it was
+    found (see `_TRUSTED_FOR_CLOSED`); `detail` is the human-readable account and is
+    the only thing that reaches an operator, so it must stay honest about which tier
+    answered.
 
     `repo_root` resolves at CALL time, not at import. Written first as
     `repo_root: Path = REPO_ROOT`, which binds the default when the module loads —
@@ -394,24 +571,193 @@ def spec_ref_state(spec_ref: str, repo_root: Path | None = None) -> tuple[str, s
     """
     if repo_root is None:
         repo_root = REPO_ROOT
-    if not spec_ref:
-        return "unresolved", "no spec_ref"
-    m = _SPEC_LINE.search(spec_ref)
-    rel = spec_ref[: m.start()] if m else spec_ref
-    path = repo_root / rel
+    ref = str(spec_ref or "")
+    if not ref:
+        return None, "", "no-ref", "no spec_ref"
+    rel, hint, slug, digest = _parse_spec_ref(ref)
+    if not rel:
+        return None, "", "no-ref", "no spec_ref"
     try:
-        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        lines = (repo_root / rel).read_text(encoding="utf-8", errors="replace").splitlines()
     except OSError as exc:
-        return "unresolved", f"unreadable {rel}: {exc.__class__.__name__}"
+        return None, "", "unreadable", f"unreadable {rel}: {exc.__class__.__name__}"
+
+    # ---- LEGACY REF: nothing to relocate WITH, so behave exactly as before. A bare
+    # `#Lnnn` carries no statement about what used to be on that line, and inventing
+    # one on read is the mistake this whole block exists to avoid. Byte-identical
+    # verdicts and detail strings for every ref already on the bus.
+    if not (slug or digest):
+        if hint is None:
+            return None, "", "no-line", f"{rel}: no line anchor"
+        if hint < 1 or hint > len(lines):
+            return None, "", "line-rot", f"{rel}: line {hint} beyond EOF ({len(lines)} lines)"
+        m = _SPEC_BOX.match(lines[hint - 1])
+        if not m:
+            return None, "", "line-rot", f"{rel}:{hint} is not a checkbox — anchor rot"
+        return hint, m.group(1).lower(), "line-only", f"{rel}:{hint}"
+
+    # ---- ANCHORED REF: the line is a hint and nothing more.
+    boxes: list[tuple[int, str, str, str, str]] = []   # (line, tick, norm, slug, digest)
+    for i, line_text in enumerate(lines, 1):
+        m = _SPEC_BOX.match(line_text)
+        if not m:
+            continue
+        norm = normalize_box_text(m.group(2))
+        boxes.append((i, m.group(1).lower(), norm, _box_slug(norm), _box_digest(norm)))
+    if not boxes:
+        return None, "", "not-found", f"{rel}: file has no checkboxes at all"
+
+    def _hit(box: tuple[int, str, str, str, str], method: str, why: str = "") -> tuple:
+        n, tick = box[0], box[1]
+        note = ", ".join(p for p in (why, (f"{_RELOCATED_PHRASE} L{hint}"
+                                           if hint is not None and n != hint else "")) if p)
+        return n, tick, method, (f"{rel}:{n} ({method}: {note})" if note else f"{rel}:{n}")
+
+    # Tier 1 — exact digest over the full normalized text. Strongest available.
+    exact = [b for b in boxes if b[4] == digest] if digest else []
+    if len(exact) == 1:
+        return _hit(exact[0], "hint" if exact[0][0] == hint else "exact")
+    if len(exact) > 1:
+        # Duplicate checkbox TEXT is real in these files ("Publish results in
+        # progress log" appears more than once). Prefer the hint if it is one of
+        # them; otherwise answer only when every candidate agrees on tick state,
+        # because then the verdict does not depend on which one we picked.
+        on_hint = [b for b in exact if b[0] == hint]
+        if on_hint:
+            return _hit(on_hint[0], "hint")
+        if len({b[1] for b in exact}) == 1:
+            return _hit(exact[0], "exact-multi", f"{len(exact)} identical boxes, all agree")
+        return None, "", "ambiguous", (
+            f"{rel}: {len(exact)} boxes carry this anchor and they DISAGREE on tick "
+            f"state (lines {', '.join(str(b[0]) for b in exact)}) — will not guess")
+
+    # Tier 2 — slug equality, then prefix relation. Catches the reworded box: a
+    # closing edit that appends or truncates leaves the head of the text intact.
+    if slug:
+        related = [b for b in boxes if _prefix_related(b[3], slug)]
+        equal = [b for b in related if b[3] == slug]
+        chosen = equal or related
+        if len(chosen) == 1:
+            return _hit(chosen[0], "prefix",
+                        "text edited since seeding" if chosen[0][4] != digest else "")
+        if len(chosen) > 1 and len({b[1] for b in chosen}) == 1:
+            near = min(chosen, key=lambda b: abs(b[0] - (hint if hint is not None else b[0])))
+            return _hit(near, "prefix-multi", f"{len(chosen)} candidates, all agree")
+
+    # Tier 3 — similarity. INFORMATIONAL ONLY: `spec_ref_state` refuses to let this
+    # tier report `closed`, because the measured worst case (`L626`) picks an
+    # unrelated closed box at 0.204 and a threshold that admits the real rewordings
+    # admits that too. Reported so an operator can re-anchor the row by hand.
+    if slug:
+        scored = sorted(((difflib.SequenceMatcher(None, slug, b[3]).ratio(), b) for b in boxes),
+                        key=lambda pair: (-pair[0], pair[1][0]))
+        best_ratio, best = scored[0]
+        runner_up = scored[1][0] if len(scored) > 1 else 0.0
+        if best_ratio >= _FUZZY_ACCEPT and best_ratio - runner_up >= _FUZZY_MARGIN:
+            return _hit(best, "fuzzy", f"similarity {best_ratio:.2f}")
+
+    return None, "", "not-found", (
+        f"{rel}: anchored box `{slug or digest}` is not in the file any more "
+        f"({len(boxes)} checkboxes scanned, hint L{hint}) — re-anchor this row")
+
+
+def locate_spec_box(spec_ref: str,
+                    repo_root: Path | None = None) -> tuple[Optional[int], str, str]:
+    """Where is this row's checkbox NOW? -> (line | None, method, detail).
+
+    THE point of C50b: given a `spec_ref` and the file it names, find the intended
+    checkbox even if the file has been rewritten around it, and say plainly when it
+    cannot be found rather than pretending the stale line number still means
+    something. `method` is the honesty channel — `hint` (nothing moved), `exact` /
+    `prefix` (relocated, trustworthy), `fuzzy` (relocated, a guess), `ambiguous` /
+    `not-found` / `line-rot` / `unreadable` / `no-line` / `no-ref` (no answer).
+    """
+    line, _tick, method, detail = _spec_lookup(spec_ref, repo_root)
+    return line, method, detail
+
+
+def spec_ref_state(spec_ref: str, repo_root: Path | None = None) -> tuple[str, str]:
+    """(state, detail) for a spec reference. state in {open, closed, unresolved}.
+
+    Unchanged contract, wider reach: it now answers for a box that MOVED. The one
+    added rule is the fail-direction guard — a `- [x]` found by the weak tier is
+    reported `unresolved`, not `closed`, so it keeps dispatching. Refusing real work
+    on a guessed pointer is the costlier error; being told "this probably closed, go
+    look" costs an operator one glance.
+    """
+    line, tick, method, detail = _spec_lookup(spec_ref, repo_root)
+    if line is None:
+        return "unresolved", detail
+    if tick == "x" and method not in _TRUSTED_FOR_CLOSED:
+        return "unresolved", (f"{detail} — box is CLOSED there, but it was located by a "
+                              f"weak match; not trusted to refuse dispatch, re-anchor this row")
+    return ("closed" if tick == "x" else "open"), detail
+
+
+def spec_ref_with_content_anchor(spec_ref: str | None,
+                                 repo_root: Path | None = None) -> str | None:
+    """Stamp the content anchor onto a `path#Lnnn` ref AT SEED TIME. Idempotent.
+
+    This is the write side, and it is the half that cannot be retrofitted: the text
+    a row referred to WHEN IT WAS SEEDED is knowable only then. The eleven rotted
+    rows measured above are unrecoverable from the queue alone precisely because
+    nobody wrote it down — reconstructing them needs `git show <seed-commit>:<file>`
+    and a human to confirm each one. Stamping is cheap and permanent; inventing the
+    anchor later would claim knowledge the seed never had.
+
+    Returns the ref unchanged (never raises) when there is nothing to stamp: no ref,
+    an anchor already present, no line hint, an unreadable file, or a line that is
+    not a checkbox. A ref that cannot be anchored is left exactly as it was rather
+    than being decorated with a guess.
+    """
+    if repo_root is None:
+        repo_root = REPO_ROOT
+    ref = str(spec_ref or "")
+    if not ref:
+        return spec_ref
+    rel, hint, slug, digest = _parse_spec_ref(ref)
+    if not rel or hint is None or slug or digest:
+        return spec_ref
+    try:
+        lines = (repo_root / rel).read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return spec_ref
+    if not 1 <= hint <= len(lines):
+        return spec_ref
+    m = _SPEC_BOX.match(lines[hint - 1])
     if not m:
-        return "unresolved", f"{rel}: no line anchor"
-    n = int(m.group(1))
-    if n < 1 or n > len(lines):
-        return "unresolved", f"{rel}: line {n} beyond EOF ({len(lines)} lines)"
-    box = _SPEC_BOX.match(lines[n - 1])
-    if not box:
-        return "unresolved", f"{rel}:{n} is not a checkbox — anchor rot"
-    return ("closed" if box.group(1).lower() == "x" else "open"), f"{rel}:{n}"
+        return spec_ref
+    anchor = box_anchor(m.group(2))
+    if anchor.startswith("~"):        # empty checkbox text — nothing stable to anchor on
+        return spec_ref
+    return f"{rel}#L{hint},{_ANCHOR_KEY}={anchor}"
+
+
+def _carry_spec_ref(row: dict | None) -> dict:
+    """`{"spec_ref": ...}` to splat into a REWRITE of an existing queue row, or `{}`.
+
+    C50b, found while checking whether C50 does anything on the live bus: IT DOES NOT.
+    `fold_queue` is last-write-wins over WHOLE rows, and seven of the eight places
+    that rewrite a row — hold-on-gate, lease-revoke, auto-yield, settle-drained, the
+    two stall-ladder branches, and `apply_assignment` — rebuild it field by field and
+    simply omit `spec_ref`. So the reference survives exactly until the row's first
+    status change and is gone forever after.
+
+    Measured on `coordination/session-bus/queue.jsonl` at 2026-08-12: 20 of 60
+    records carry a spec_ref, but after folding only 1 of 21 live rows does. Trace of
+    one row, which is the whole defect in three lines:
+
+        2026-07-27 READY           spec_ref=handoffs/active/opendataloader-…md#L405
+        2026-08-12 ASSIGNED        spec_ref=None
+        2026-08-12 STALE_REQUEUED  spec_ref=None
+
+    `transcribe` already carries it (its `base` names `spec_ref` explicitly), so this
+    is the omission being made consistent with the existing intent, not a new policy.
+    Without it the whole anchoring mechanism is theatre: 20 of 21 rows reach
+    `_eligible` with nothing to dereference and dispatch unconditionally.
+    """
+    ref = (row or {}).get("spec_ref")
+    return {"spec_ref": ref} if ref else {}
 
 
 def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: str,
@@ -424,6 +770,18 @@ def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: st
     spec_state, spec_detail = spec_ref_state(str(row.get("spec_ref") or ""))
     if spec_state == "closed":
         return False, f"spec_ref box is already CLOSED at HEAD ({spec_detail})"
+    # C50b: a row that dispatched on a pointer we could not resolve, or on a box we
+    # had to RELOCATE, must not do so silently — silence is how eleven rotted anchors
+    # survived from 2026-07-27 to 2026-08-12 unnoticed. The note rides out on the
+    # advisory record's `admission_note`, which is where an operator would see it.
+    # Matched on `_RELOCATED_PHRASE`, the same constant `_spec_lookup` builds the
+    # detail from, so the two cannot drift apart into a check that never fires.
+    anchor_note = ""
+    if row.get("spec_ref"):
+        if spec_state == "unresolved":
+            anchor_note = f"spec_ref UNRESOLVED, dispatching anyway ({spec_detail})"
+        elif _RELOCATED_PHRASE in spec_detail:
+            anchor_note = f"spec_ref anchor drifted ({spec_detail})"
     for dep in row.get("depends_on") or []:
         dep_row = latest.get(dep)
         if not dep_row or dep_row.get("status") not in {"DONE_PASS", "DONE_MARGINAL_OBS"}:
@@ -434,7 +792,7 @@ def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: st
     # banked outputs, so it occupies no lane and needs no claim. Gating it on
     # lane occupancy would queue work that cannot possibly contend.
     if row.get("replay_eligible"):
-        return True, "eligible (replay_eligible — no lane, no claim needed)"
+        return True, _admit("eligible (replay_eligible — no lane, no claim needed)", anchor_note)
     # R3: measured per-role-pair co-residency, not just binary lane occupancy.
     if co_ctx is not None:
         ok, why = _co_residency_verdict(row, co_ctx)
@@ -462,7 +820,17 @@ def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: st
             snapshot.get("cpu_busy") or snapshot.get("cpu_state") == LANE_RESIDENT):
         return False, (f"exclusive-contiguous needs a quiet host "
                        f"(cpu_state={snapshot.get('cpu_state')})")
-    return True, ("eligible" if not admit_note else f"eligible — {admit_note}")
+    return True, _admit("eligible" if not admit_note else f"eligible — {admit_note}",
+                        anchor_note)
+
+
+def _admit(verdict: str, anchor_note: str) -> str:
+    """Attach a C50b anchor caveat to an ADMISSION. Never changes the admission itself.
+
+    Separate from the verdict on purpose: the note must be incapable of turning an
+    admit into a refusal, so it is concatenated after the decision is already made.
+    """
+    return f"{verdict} — {anchor_note}" if anchor_note else verdict
 
 
 _ORCH_ROOT = Path("/mnt/raid0/llm/epyc-orchestrator")
@@ -1313,6 +1681,7 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
                              "task_id": tid, "status": "HELD_OP_GATE",
                              "lane": row.get("lane"), "gating": row.get("gating"),
                              "epoch": epoch, "owner": row.get("owner"),
+                             **_carry_spec_ref(row),
                              "operator_gates": sorted(set((row.get("operator_gates") or []) + [gate]))})
     return blocks, rows + defects
 
@@ -1713,7 +2082,7 @@ def process_revocations(config: dict, latest: dict[str, dict], reports: dict[str
                 "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(), "task_id": tid,
                 "status": row.get("status"), "lane": row.get("lane"), "gating": row.get("gating"),
                 "epoch": epoch, "owner": row.get("owner"), "revoking": True,
-                "lease_expires_ts": row.get("lease_expires_ts"),
+                "lease_expires_ts": row.get("lease_expires_ts"), **_carry_spec_ref(row),
                 "attempt": row.get("attempt"), "priority": row.get("priority")})
             nudges.append({"to": row.get("owner"), "kind": "nudge", "task_id": tid,
                            "corr_id": f"revoke-{tid}-{epoch}",
@@ -1766,10 +2135,16 @@ def intake_proposals(bus_root: Path, latest: dict[str, dict], reports: dict[str,
                 continue
             seen.add(tid)
             pl = msg.get("payload") or {}
+            # C50b: stamp the checkbox's CONTENT anchor onto the ref here, at the one
+            # moment the answer is knowable. A proposal names `file#Lnnn`; three weeks
+            # of edits later that line is a tree-diagram branch and the row is
+            # unresolvable forever (measured: 11 of 11 rows on
+            # `opendataloader-pipeline-integration.md`). No-op when the payload has no
+            # ref, no line, or a line that is not a checkbox.
             row = {"schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(), "task_id": tid,
                    "status": "READY", "lane": pl.get("lane"), "gating": pl.get("gating"),
                    "epoch": epoch, "origin": f"proposed-by:{msg.get('from')}",
-                   "spec_ref": pl.get("spec_ref")}
+                   "spec_ref": spec_ref_with_content_anchor(pl.get("spec_ref"))}
             for key in ("priority", "priority_class", "contention_class", "role_affinity",
                         "est_wall_clock_h", "replay_eligible"):
                 if pl.get(key) is not None:
@@ -1982,7 +2357,7 @@ def auto_yield(config: dict, latest: dict[str, dict], snapshot: dict, token_text
                 "task_id": holder["task_id"], "status": holder.get("status"),
                 "lane": lane, "gating": holder.get("gating"), "epoch": epoch,
                 "owner": holder.get("owner"), "revoking": True,
-                "lease_expires_ts": holder.get("lease_expires_ts"),
+                "lease_expires_ts": holder.get("lease_expires_ts"), **_carry_spec_ref(holder),
                 "attempt": holder.get("attempt"), "priority": holder.get("priority")})
             nudges.append({"to": holder.get("owner"), "kind": "nudge",
                            "task_id": holder["task_id"],
@@ -2023,6 +2398,7 @@ def settle_drained(latest: dict[str, dict], agents: dict[str, dict], epoch: int)
                     "status": "READY", "lane": row.get("lane"), "gating": row.get("gating"),
                     "epoch": epoch, "owner": None, "revoking": False,
                     "priority": row.get("priority"), "attempt": row.get("attempt"),
+                    **_carry_spec_ref(row),
                     "failure_reason": "lease released on revocation (drained at boundary)"})
     return out
 
@@ -2082,12 +2458,14 @@ def stall_ladder(bus_root: Path, latest: dict[str, dict], agents: dict[str, dict
                                    "task_id": tid, "status": "INFRA_BLOCKED",
                                    "lane": row.get("lane"), "gating": row.get("gating"),
                                    "epoch": epoch, "attempt": attempt,
+                                   **_carry_spec_ref(row),
                                    "failure_reason": "attempts exhausted after lease expiry"})
             else:
                 queue_rows.append({"schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
                                    "task_id": tid, "status": "STALE_REQUEUED",
                                    "lane": row.get("lane"), "gating": row.get("gating"),
                                    "epoch": epoch, "owner": None, "attempt": attempt,
+                                   **_carry_spec_ref(row),
                                    "failure_reason": "lease expired"})
                 advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
                                  "epoch": epoch, "kind": "defect", "check": "hard-stall",
@@ -3500,6 +3878,7 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
             "status": "ASSIGNED", "lane": row.get("lane"), "gating": row.get("gating"),
             "epoch": epoch, "owner": agent, "priority": row.get("priority"),
             "lease_expires_ts": expires.isoformat(timespec="seconds"),
+            **_carry_spec_ref(row),
             "attempt": int(row.get("attempt") or 0)})
         _append_inbox(bus_root, [{"to": agent, "kind": "task-assign", "task_id": tid,
                                   "requires_ack": True, "ack_deadline_s": 600,

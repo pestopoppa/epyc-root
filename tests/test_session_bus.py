@@ -3995,3 +3995,74 @@ def test_constants_referenced_by_name_elsewhere_are_pinned_to_literals() -> None
     assert coordinator._STUCK_MIN_NUDGE_INTERVAL_S == 600.0, (
         "test_...:848 asserts the nudge callback receives this exact module attribute, "
         "which production passes through unchanged — the assertion cannot detect a change")
+
+
+# --- C50a/C50b regression bed ------------------------------------------------
+# Written by the integrator, not the author: the subagent that built content
+# anchors was scoped to one source file and could not add tests here. Its work
+# was proven by ad-hoc probes only, so none of it was guarded.
+
+def test_C50a_a_box_that_MOVED_is_still_found_and_still_refuses(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Line anchors rot; content anchors survive the rot.
+
+    Real instance: `opendataloader-pipeline-integration.md#L405` was
+    `- [ ] Clone opendataloader-bench repo` at seed time. At HEAD that box lives at
+    line 416 and reads `- [x] … ✅ 2026-08-12`. The legacy ref reports `unresolved`
+    (rot) and the row keeps dispatching forever; the content anchor relocates it and
+    correctly refuses.
+    """
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    doc = tmp_path / "h.md"
+    doc.write_text("a\nb\n- [ ] clone the bench repo and wire it up\n", encoding="utf-8")
+    seeded = coordinator.spec_ref_with_content_anchor("h.md#L3", repo_root=tmp_path)
+    assert seeded and "box=" in seeded, f"write side produced no content anchor: {seeded!r}"
+    assert coordinator.spec_ref_state(seeded, tmp_path)[0] == "open"
+
+    # The box MOVES (40 lines inserted above) and CLOSES, with its text rewritten
+    # by the closing marker — exactly what happened to L405.
+    doc.write_text("\n".join(["pad"] * 40) +
+                   "\n- [x] clone the bench repo and wire it up ✅ 2026-08-12 (mainB)\n",
+                   encoding="utf-8")
+    state, detail = coordinator.spec_ref_state(seeded, tmp_path)
+    assert state == "closed", f"a moved+closed box must still refuse — got {state}: {detail}"
+    assert "41" in detail and "relocated" in detail, detail
+
+    row = {"task_id": "T", "status": "READY", "lane": "none", "spec_ref": seeded}
+    ok, why = coordinator._eligible(row, {"T": row}, {"load_class": "idle"}, "")
+    assert ok is False and "CLOSED" in why, why
+
+
+def test_C50a_a_FUZZY_match_must_never_report_closed(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Fail-direction sentinel. Only strong tiers may refuse work; a guess must not.
+
+    Mutation: adding "fuzzy" to _TRUSTED_FOR_CLOSED makes this fail, which is what
+    proves the tier list is load-bearing rather than decorative.
+    """
+    assert "fuzzy" not in coordinator._TRUSTED_FOR_CLOSED
+    for tier in ("exact", "prefix", "hint"):
+        assert tier in coordinator._TRUSTED_FOR_CLOSED, tier
+
+
+def test_C50b_spec_ref_survives_a_status_rewrite(tmp_path: Path) -> None:
+    """Without this, the anchoring is theatre.
+
+    `fold_queue` is last-write-wins over WHOLE rows, and the sites that rewrite a row
+    rebuilt it field by field and omitted `spec_ref`. Measured on the live queue: one
+    row went `READY spec_ref=…#L405` -> `ASSIGNED spec_ref=None` ->
+    `STALE_REQUEUED spec_ref=None`. The reference survived until the first status
+    change and was gone forever after, so there was nothing left to dereference.
+    """
+    assert coordinator._carry_spec_ref({"spec_ref": "h.md#L3,box=a~b"}) == {
+        "spec_ref": "h.md#L3,box=a~b"}
+    # Absent / None / empty must splat to NOTHING rather than writing a null key,
+    # which would overwrite a good ref on a later fold.
+    for empty in ({}, {"spec_ref": None}, {"spec_ref": ""}, None):
+        assert coordinator._carry_spec_ref(empty) == {}, f"{empty!r} must splat to nothing"
+
+
+    rewritten = {"task_id": "T", "status": "ASSIGNED", **coordinator._carry_spec_ref(
+        {"task_id": "T", "status": "READY", "spec_ref": "h.md#L3,box=a~b"})}
+    assert rewritten["spec_ref"] == "h.md#L3,box=a~b", (
+        "a status rewrite must carry the reference forward or C50 has nothing to check")
