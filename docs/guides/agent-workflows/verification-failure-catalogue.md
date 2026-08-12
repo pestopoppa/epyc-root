@@ -19,7 +19,7 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 > **Mutation-test the guard. Change the code so the property is genuinely violated, and confirm the
 > check FAILS. If you cannot make it fail, it is not a guard.**
 >
-> **Then ask: does mutation-testing actually reach this one?** For six of the twelve adjudicated so far it does not (faces 13 and 14 are not yet assessed — `mainB`'s call), and
+> **Then ask: does mutation-testing actually reach this one?** For **eight of the fourteen** it does not, and
 > those are the dangerous ones — a reader reaching for the standard remedy needs to know exactly where
 > it fails silently. Framing owed to `mainC` and the `auditor`, who pointed out that the useful answer
 > is a **partition with reasons**, not a numerator; membership re-adjudicated 2026-08-12, and `mainC`
@@ -29,14 +29,17 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 >
 > *The instrument cannot see the mutation* —
 > **5** (probe untracked, `git grep` blind to it) · **9** (mutation lands in one repo, the query asks
-> another) · **7** (the check is never run, so nothing can fail it).
+> another) · **7** (the check is never run, so nothing can fail it) ·
+> **14** (the input is truncated before the check ever reads it — a mutation landing in the dropped
+> portion is never seen, and one landing in the retained portion tells you nothing about the loss).
 >
 > *The mutation produces no distinguishable signal* —
-> **8** (a failed command laundered to `0` looks exactly like a real `0`, so the mutated run and the
+> **13** (the label is a CONSTANT, so mutating the code cannot move it — face 8 one layer up, at the
+> reporting surface rather than the measurement) · **8** (a failed command laundered to `0` looks exactly like a real `0`, so the mutated run and the
 > healthy run report identically).
 >
 > *The check is right about the wrong thing* —
-> **11** (sound, but models a different subsystem than the one that broke) · **12** (sound when run;
+**11** (sound, but models a different subsystem than the one that broke) · **12** (sound when run;
 > there is **no observable at write time at all**, so a mutation test at authoring passes forever
 > while the claim rots).
 >
