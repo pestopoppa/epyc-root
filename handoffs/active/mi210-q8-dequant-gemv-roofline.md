@@ -251,8 +251,29 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
     SHA-256 `fdf355ebc933f3cf20def077cdcc7b998c0072295c00c97b977ad32358c284e2`.
     This is not evidence of an architectural floor. Keep the kill-criterion open and switch the next
     probe to a non-`rocprofv2` device timer/counter path rather than retrying the same crash.
-  - [ ] **IQ2 tool-boundary follow-up:** capture the same seeded IQ2_XXS shape through a
+  - [x] **IQ2 tool-boundary follow-up:** capture the same seeded IQ2_XXS shape through a
     non-`rocprofv2` device-timer/counter path and retain the failed receipt as the negative control.
+    ✅ 2026-08-12 — done by a different route than the row assumed, so read the caveats. The
+    non-`rocprofv2` path is `rocprof` v1 device timestamps, which needs **no seed flags**, so OP-11
+    was never on this critical path (OP-11 subsequently DECLINED, Option B). Governed run on the real
+    122B UD-IQ2_M passed: `/mnt/raid0/llm/autokernel/probes/iq2xxs-rocprofv1-attribution-20260812T1302Z`,
+    residency proven during (VRAM 57→58%, GPU 99–100%). Full analysis:
+    [`artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md`](../../artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md).
+    **Three caveats that matter more than the capture:** (1) the governed runner hardcodes `-n 0`, so
+    that run is **prefill-only** — the decode GEMV numbers come from a **non-governed** companion run
+    (`iq2xxs-decode-nongoverned-20260812T1306Z`); fix filed as RVP-C2-11 with a verified patch.
+    (2) IQ2_XXS decode is **16.42%** of decode kernel time, median 85.60 µs across 6,063 dispatches.
+    (3) The earlier "not occupancy-limited" reading was from the **synthetic** smoke's
+    `<…,false,false>` variant at `Arch_VGPR=64`; production MoE decode runs `<…,true,false>` at
+    `Arch_VGPR=80` → **6 waves/SIMD, 75% of max**. Scratch 0 in both, so no spill.
+  - [ ] **IQ2 VGPR-pressure lever (NEW, derived from the above):** the mm_ids IQ2_XXS decode kernel
+    allocates 80 arch VGPRs; dropping to ≤64 would restore 8 waves/SIMD (+33% occupancy) with zero
+    spill risk at the current scratch=0. Establish whether the extra 16 registers are inherent to the
+    codebook gather + sign unpack or incidental to the mm_ids wrapper. This is the one concrete,
+    testable lever the whole A10 capture surfaced — read the ISA from the shipped code object first
+    (`roc-obj-ls`/`llvm-readelf --notes`), which needs no GPU window.
+  - [ ] **Re-run the decode attribution under governance** once RVP-C2-11's `--gen-tokens` patch
+    lands, so the 16.42% decode figure carries a durable receipt instead of a non-governed probe.
     The Omniperf 2.0.1 / `rocprof` v1 fallback is now durable in research, but its first governed run
     correctly failed compatibility before profiling: clean frozen-v9 `test-backend-ops` at
     `0db32c06` does not implement `--suite-seed` or `--repeat-suite`. The failed receipt retains the

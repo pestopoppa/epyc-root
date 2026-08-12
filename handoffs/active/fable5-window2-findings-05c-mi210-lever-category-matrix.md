@@ -252,6 +252,7 @@ Ordered highest-ROI-first. Each item: **one decisive experiment** → **acceptan
 - [ ] **Mamba2-hybrid** (Nemotron-Cascade-2 frontdoor candidate) — float32 SSM state (~2× traffic), 88% recurrent; must **not** inherit delta-net GDN verdicts (`--mamba-ssm-dtype` is its own recurrent-traffic knob).
 - [ ] **Lightning / linear-attention hybrid** (Ring, bailingmoe_linear) — a third distinct linear kernel, neither delta-net nor Mamba2.
 - [ ] **VL split** (ViT vision-**encoder** prefill = compute-bound MFMA target; VL decoder = full MoE/dense decode; spec-dec mmproj-forbidden) — currently hidden inside "Auxiliary(vision)."
+  - [ ] **VL vision-encoder prefill baseline — the unrun half of A3.** 2026-08-12 ran the BGE encode half only (13 GPU points, `artifacts/gpu-aux-baselines/a3_bge_mi210_20260812.jsonl`, commit `182f30b6`): bge-m3 Q8_0 and f16 land within noise at every sequence point, so **the quant lever is inert on encode** and buys memory, not speed. The VL prefill half was never run and is the compute-bound MFMA regime where L16's bf16-vs-Q8 crossover is actually testable — the row's own ⚙︎corrected note says VL prefill, not the decode tail, is the correct auxiliary analog. Needs a GPU window; nothing blocks it.
 - [ ] **Ultra-sparse MoE** (MiniMax-M2, 256-of-8) — where expert-gather/scatter and the mmid dispatch behave very differently than at A3B/A4B.
 - [ ] **ASR / speech encoder-decoder** (Whisper large-v3-turbo) — conv frontend + bidirectional encoder + cross-attention decoder fits none of the 6 buckets.
 

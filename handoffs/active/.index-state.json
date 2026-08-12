@@ -4,7 +4,7 @@
       "blocked": 12,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 357
+      "open": 358
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -16,7 +16,7 @@
       "blocked": 9,
       "handoffs": 49,
       "oldest_advance": "2026-07-29",
-      "open": 288
+      "open": 292
     },
     "reviewer-control-plane-index.md": {
       "blocked": 11,
@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 388
+      "open": 391
     },
     "user-facing-harness-index.md": {
       "blocked": 3,
@@ -140,14 +140,14 @@
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
-      "closed": 153,
+      "closed": 154,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 62,
+      "open": 65,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
       "state": "active",
-      "total": 217
+      "total": 221
     },
     "autopilot-control-plane-integration.md": {
       "blocked": 0,
@@ -638,11 +638,11 @@
       "closed": 11,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 18,
+      "open": 19,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-48",
       "state": "active",
-      "total": 29
+      "total": 30
     },
     "frontier-f1-real-task-corpus.md": {
       "blocked": 0,
@@ -671,11 +671,11 @@
       "closed": 4,
       "guarded": 0,
       "last_advanced": "2026-07-30",
-      "open": 1,
+      "open": 4,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-25",
       "state": "active",
-      "total": 5
+      "total": 8
     },
     "frontier-f4-continuity-backup.md": {
       "blocked": 0,
@@ -1053,14 +1053,14 @@
     },
     "mi210-q8-dequant-gemv-roofline.md": {
       "blocked": 0,
-      "closed": 14,
+      "closed": 15,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 7,
+      "open": 8,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-37",
       "state": "active",
-      "total": 21
+      "total": 23
     },
     "minddr-deep-research-mode.md": {
       "blocked": 2,
@@ -2351,7 +2351,7 @@
       "id": "EVL-48",
       "index": "research-evaluation-index.md",
       "line": 60,
-      "next_action": "L12 \u2014 n-gram/prompt-lookup on GPU: 27B-Q8 + fp16 over code/JSON/prose sets, sweeping the three ngram spec types",
+      "next_action": "Run the VL vision-encoder prefill baseline \u2014 the unrun half of A3; BGE encode half landed 2026-08-12",
       "track": "fable5 window2 findings 05c mi210 lever cate"
     },
     "EVL-49": {
