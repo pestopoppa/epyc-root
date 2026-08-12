@@ -159,7 +159,14 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [ ] Parser-quality comparison: evaluate LightOnOCR-2-1B only as a structural/table/reading-order parser candidate against docling-fast; speed is secondary and not a standalone reopen reason.
 - [ ] Measure LightOnOCR latency only inside the parser-quality comparison above, after structural/table/reading-order scoring says the swap is useful.
 - [ ] Implement three-way routing: ODL local (simple) → ODL hybrid (tables) → LightOnOCR (scanned)
-- [x] Clone opendataloader-bench, add our pipeline as custom engine ✅ 2026-07-17 (Wave-2 B3): `epyc-inference-research/scripts/benchmark/odl_bench/` — deterministic pdftotext/ODL-local/LiteParse prediction-producer engines (structural/table/reading-order/speed); 15/15 tests; model-gated rows → Wave-3 manifest stubs
+- [x] Clone opendataloader-bench, add our pipeline as custom engine ✅ 2026-07-17 (Wave-2 B3): `epyc-inference-research/scripts/benchmark/odl_bench/` — deterministic pdftotext/ODL-local/LiteParse prediction-producer engines (structural/table/reading-order/speed); 15/15 tests; model-gated rows → Wave-3 manifest stubs.
+  **Correction 2026-08-12 (mainB): this row was compound and only half-evidenced.** It claims
+  "Clone opendataloader-bench, **add our pipeline as custom engine**", but every artifact cited
+  covers the *engine* half only. The *clone* half was never done — corroborated by this handoff's
+  own line ~385 ("the actual `/mnt/raid0/llm/opendataloader-bench` Git LFS dataset is still
+  absent"), which contradicts this `[x]` and sat beside it for 26 days. The clone landed
+  2026-08-12 under § Benchmark Suite Integration. **A compound row takes the checkbox of its
+  easiest clause** — split conjunctions into one row per verifiable claim.
 - [ ] Run comparison on 200 PDFs: our pipeline vs ODL local vs ODL hybrid vs docling vs marker
 - [ ] Publish results in progress log
 
@@ -383,6 +390,10 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - `dataset_adapters.get_adapter("document_extraction")` now returns the lazy wrapper. This CRITICAL fanout symbol was handled in the main thread after GitNexus refresh because `get_adapter` affects 15 benchmark processes (`impactedCount=38`, risk `CRITICAL`).
 - Validation: `python3 -m py_compile` on touched research files; fatal ruff slice (`E9,F401,F821,F822,F823`) passed; full-file ruff remains blocked by pre-existing unrelated `dataset_adapters.py` F841/F541 lint debt; focused pytest slice passed (`147 passed`); direct registry smoke confirmed absent local dataset reports `0` rows rather than a registration failure.
 - Remaining evidence gate: the actual `/mnt/raid0/llm/opendataloader-bench` Git LFS dataset is still absent, so no 200-PDF baseline has been run.
+  **Resolved 2026-08-12 (mainB)**: the dataset is now present — 200 PDFs at
+  `/mnt/raid0/llm/opendataloader-bench-upstream` (Apache-2.0, no LFS). Note the path: it is *not*
+  `/mnt/raid0/llm/opendataloader-bench`, which holds OmniDocBench. The baseline run remains
+  outstanding and is the open row below; only the missing-dataset blocker is cleared.
 
 **Target routing architecture**:
 ```
@@ -402,7 +413,24 @@ PDF Input
 **Goal**: Add opendataloader-bench's 200-PDF dataset to our benchmark infrastructure
 **Effort**: Small
 
-- [ ] Clone opendataloader-bench repo (MIT license, 200 PDFs via Git LFS)
+- [x] Clone opendataloader-bench repo ✅ 2026-08-12 (mainB): cloned to
+  **`/mnt/raid0/llm/opendataloader-bench-upstream`** @ `7af1d8f`, 180M, **exactly 200 PDFs** in
+  `pdfs/` verified as real payload (all `%PDF-1.6`, smallest 251 KB, mean 184 KB — no LFS pointer
+  stubs), `ground-truth/` present. **Three corrections to this row's own premise, all measured:**
+  (a) license is **Apache-2.0**, not MIT — `LICENSE` line 1 reads `Apache License Version 2.0`;
+  (b) there is **no Git LFS** — `git lfs ls-files` returns 0 and upstream carries a
+  `chore/remove-lfs-integrate-bench` branch, so a plain clone is now sufficient;
+  (c) the entrypoint recorded below as `uv run src/run.py` does not exist — the repo has no `src/`.
+- [ ] **NAME COLLISION — do not resolve `opendataloader-bench` by path.** The pre-existing directory
+  `/mnt/raid0/llm/opendataloader-bench` is a clone of a **different project**: `git remote -v` gives
+  `github.com/opendatalab/OmniDocBench` @ `147cd5a`, Apache-2.0, 211 PDFs, with an `OmniDocBench_CLA.md`.
+  Every prose reference to `/mnt/raid0/llm/opendataloader-bench` in this handoff (lines ~302–310, ~385)
+  therefore describes **OmniDocBench's** `pdf_validation.py` and `demo_data/`, not this repo's.
+  Anyone testing "is opendataloader-bench cloned?" by checking that path gets **yes**, with 211 real
+  PDFs — the right key in the wrong universe (face 9,
+  [`verification-failure-catalogue.md`](../../docs/guides/agent-workflows/verification-failure-catalogue.md)).
+  **Next action**: decide whether to rename the OmniDocBench clone or re-point the prose; until then
+  cite the two datasets by their full distinct paths, never by the bare name.
 - [x] Add `document_extraction` suite to the benchmark adapter path consumed by `question_pool.py`
 - [x] Adapt ground truth format (Markdown references → our scoring contract)
 - [x] Scoring methods: NID (reading order), TEDS (table DOM), MHS (heading hierarchy)
