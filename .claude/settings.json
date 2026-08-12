@@ -34,6 +34,11 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_process_pattern_kill.sh\""
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_operator_apply_copy.sh\"",
+            "timeout": 10
           }
         ]
       },
