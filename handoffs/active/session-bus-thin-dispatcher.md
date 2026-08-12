@@ -2465,8 +2465,8 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   - [ ] **Establish whether the READY set is cached or re-derived per tick**, and re-anchor picks on
     row identity rather than `file:line`. Anchor rot alone accounts for one of the six, and every
     advisory row inherits whichever defect this is.
-- [ ] **Reporting-unit rule for any scheduler/backlog figure — write it into the shared
-  constraints.** Derived from the C50 retraction: the "4,602 pending picks" headline counted
+- [x] **Reporting-unit rule for any scheduler/backlog figure — write it into the shared
+  constraints.** ✅ 2026-08-12 — landed as `## Reporting Units` in `agents/shared/OPERATING_CONSTRAINTS.md`, with the C50 origin and the N/M/K decomposition stated as binding form.** Derived from the C50 retraction: the "4,602 pending picks" headline counted
   **records, not work**. Standing form: *"N records resolving to M distinct rows, of which K were
   dispatchable at emission."* K is the only one of the three that was ever a claim about the fleet,
   and it is the one nobody computed. Applies to queue depth, backlog size and advisory volume alike;
