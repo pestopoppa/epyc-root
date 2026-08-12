@@ -30,7 +30,7 @@ intervals without compromising the campaign.
 ### Source References (2026-08-12 INF-03 checkpoint)
 
 - [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r1/r2 invalidation boundaries, r4 receipt state, and claim-window closure
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C3/C6 device-state and integrity contracts revalidated on current research main
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C3/C6 contracts revalidated on current research main, including reopened empirical corpus gates
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact campaign, receipt, process, and claim-window evidence
 - [Vidya adapter source table](../scripts/vidya/adapters/README.md) — producer-side round-trip measurement status and no-backfill boundary
 
