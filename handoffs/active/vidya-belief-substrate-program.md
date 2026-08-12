@@ -77,6 +77,33 @@ deliberately — decide them, do not just implement them.
 
 ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?)
 
+- [ ] **SC19 — wire `ChatResponse.contention_gate` (A14) on the write side, BEFORE the branch
+      lands.** Filed 2026-08-12 by `mainB`, the author of the change, at the change — the property
+      that makes a write-side hook trustworthy at all. The surface echoes the contention
+      `GateDecision` per request (`admitted`, `waited_s`, `decision`, `candidate_topology_idx`, plus
+      a `gate_decisions` list for multi-pass requests). **It is a producer by definition:** its
+      entire stated purpose is to convert an inferred verdict into a measured one — ROUTE-A1 today
+      infers admit-vs-queue from a fail-closed 503 timeout, and `queued_then_admitted`
+      (`admitted=True` with `waited_s > 0`) is *structurally invisible* to that proxy.
+      **The window is now and it is narrow:** the code is parked on `a14-gatedecision-echo` @
+      `a7d7bdb6` and NOT yet merged. Wiring the write side is cheap while it is unmerged and
+      permanent afterwards; retrofitting the read side is impossible, per the standing rule.
+      **Locator trap, specific to this source:** the natural locator is the request/chat id, but one
+      request can emit MULTIPLE decisions — the `_dispatch` path records every candidate tried, not
+      just the winner, deliberately, so the probe can see the walk down the placement priority
+      order. A naive per-decision count therefore reads ONE request as N independent witnesses. Key
+      on the request, not the decision. (Same class as the run-level trap `mainA` recorded for the
+      affinity-preflight source, and as the `benchmarks/results` same-harness case.)
+      **Price it first** per the P2 discipline before any bulk adapter: the surface emits nothing
+      until the branch lands, so the honest state today is `candidate — ready, unwritten`, not
+      `live`. Source-table row added in `scripts/vidya/adapters/README.md`.
+      **Self-caught, and the trigger is worth keeping:** I built this surface earlier tonight and
+      filed no wiring task until `mainA` published the right test — *"you touched a producer", not
+      "you thought about producers"*. A checklist keyed on the diff catches it; one keyed on intent
+      does not. Four instances in one day (v9 freeze receipt, mainA's affinity-preflight surface,
+      this one, and the standing `benchmarks/results` proof) says the rule is known and the trigger
+      is what is missing.
+
 - [x] SC1 **Measured the gap rather than assuming it.** The substrate models only what we READ:
       across 4,224 beliefs the Q axis is `Hinted 3,503 · Verified 709 · Q0 12` and **zero at
       Witnessed**, because spec §4.5 reserves Q4 for a protocol-admissible measurement with durable
