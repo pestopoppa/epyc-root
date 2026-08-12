@@ -429,6 +429,13 @@ section costs **zero GPU and zero local inference**.
   immutable append-order archive with state-continuity checks; rescued/persistent/failed/regressed is
   mechanically derived from the correctness transition, incorrect turns cannot carry a speed rank,
   and every observation retains its evidence reference and content hash. AK-X-6 is its first consumer.
+- [x] **AK-LE-0 — Implement the static experiment contracts and selected-task-safe scaffold for
+  AK-LE-1/2/3.** ✅ 2026-08-12 — research main `51742ebd` integrates the effort/persistence,
+  proximate-target, direct-implement, split-implement, and split-exploit arm contracts. Every scaffold
+  consumes the same independently SHA-256-bound selected-task artifact; planner-only `PROPOSE … do
+  not implement it yet` text is excluded. The accepted full AutoKernel suite passed **5,464 tests
+  with one expected failure**. This closes static wiring only; AK-LE-1/2/3 remain open until their
+  budget-matched model runs produce empirical results.
 - [ ] **AK-LE-1 — Reasoning-effort × search-persistence experiment.** Hold champion, retrieval context
   and PROPOSE prompt fixed; sweep only the planner's effort knob. Measure **search** outcomes, not
   answer quality: count of novel non-duplicate hypotheses, count of explicit "this is already

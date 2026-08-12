@@ -64,6 +64,21 @@ capability. Architecture fixtures are durably labelled `architecture_regression_
 `empirical_claim=false`; they prove lifecycle wiring and recovery only. The independently repeated
 focused suite passed **1,692 tests**, including restart, resource-preemption, tamper, schema, and
 campaign-import-boundary coverage. This does not satisfy either AK6 empirical campaign item.
+Research `5d7a408b` adds the immutable archive/resume half of source-candidate correctness
+prerequisites. A source campaign must preload one content-addressed package containing the raw
+sensitivity, hostile-distribution, and checker-isolation CSV bytes before any claim, then re-run the
+trusted reducers against the exact completed source, binary, and evaluator identities before T0.
+Dry-run packages cannot authorize execution, parameter proposals reject the package, and restart
+reuses the same embedded bytes. Research `51742ebd` adds the campaign-reachable fresh producer with
+durable invocation/completion records and restart-safe reuse. The exact `5d7a408b` archive slice
+passed **308 tests**; the accepted integrated AutoKernel suite passed **5,464 tests with one expected
+failure**. These are static/fault-injection results, not a real source-candidate capture.
+Root `d2cd8639`, `748e2aff`, `205b9444`, and `10e3ab77` also complete the bounded Kernel-R&D
+dashboard audit: the live contract projects all seven AutoKernel sections and the complete frozen
+kernel set, including three trees, four attested binaries, four stable links, non-executing tree-local
+ELF linkage, and ggml-generation checks. The live fold intentionally remains not-proven while llama's
+observed ggml `0.16.0` lacks human attestation and the pre-reboot dashboard process carries a stale
+ggml-bearing `LD_LIBRARY_PATH`; it does not convert either unknown into green state.
 INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
 VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
 Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
@@ -2517,6 +2532,17 @@ revoked, and be seen — without inference or production mutation.
 - [x] Record absolute single-stream, batched/aggregate, latency, variability, capacity, mechanism, and
   numeric correctness margins where the campaign requires them. ✅ 2026-08-03 (correctness + statistics)
 - [x] Implement T0/T1/T2 adapters for llama CPU/GPU first; STT/TTS after their protocols exist. ✅ 2026-08-03 (STT/TTS deferred to AK9 as designed)
+- [x] **Add an immutable archive/resume package for source-candidate T0 prerequisites.** ✅
+  2026-08-12 — research `5d7a408b` snapshots the raw sensitivity, hostile-distribution, and
+  checker-isolation CSV bytes before claim, verifies package/receipt/document hashes, and re-runs the
+  trusted reducers against the exact completed source, binary, and evaluator identities before T0.
+  Dry-run packages cannot authorize execution and parameter proposals reject them. The independent
+  package/campaign/footprint slice passed **308 tests**.
+- [x] **Complete full-suite acceptance and promotion of the fresh-source prerequisite capture
+  adapter.** ✅ 2026-08-12 — research main `51742ebd` makes the producer campaign-reachable, journals
+  invocation/completion identity, resumes without duplicate producer calls, and binds the resulting
+  strict package before claim. The correctly discovered full AutoKernel suite passed **5,464 tests
+  with one expected failure**. No real source candidate, kernel build, profile, or inference ran.
 - [x] Implement the e-process reducer, pre-committed stopping rule enforcement, and the anchor gate. ✅ 2026-08-03 (evaluator/statistics.py; alpha derived, none supplied)
 - [x] Red-team the evaluator with deliberately wrong, test-shape-specialized, fake-score, fallback,
   cache-gaming, scope-under-declaring, and timeout/leak candidates. ✅ 2026-08-03
@@ -2723,9 +2749,27 @@ cannot retrigger the expensive gate unchanged.
   `champion`, `headroom`, and `release_package` sections. The promoted hub remains supervised by PID
   `1689063` with hub PID `1689100`; no global-health recursion or unrelated timeline state enters the
   panel result.
-- [ ] Extend production-kernel-set projection from the attested llama.cpp v9 anchor to the separately
-  frozen whisper.cpp and qwentts.cpp identities when AK9 consumes those backends; do not imply the
-  current llama campaign governs speech kernels.
+- [x] Extend production-kernel-set projection from the attested llama.cpp v9 anchor to the separately
+  frozen whisper.cpp and qwentts.cpp identities; do not imply the current llama campaign governs
+  speech kernels. ✅ 2026-08-12 — root `d2cd8639`, `205b9444`, and `10e3ab77` project the independently
+  frozen three-tree/four-binary set, all four stable serving links, non-executing `readelf` linkage,
+  ambient loader-path risk, and ggml generations. The exact final focused suite passed **28 tests**.
+  Live contract v2 proves `3/3` trees, `4/4` binaries, `4/4` links, and `4/4` ELF linkage without
+  executing a production binary; it remains fail-closed on the two residuals below.
+  - [ ] **OP-17 — Decide whether to attest llama.cpp's ggml generation for the frozen-v9 set.**
+    - **Context:** the live tree reports ggml `0.16.0`, but the v9 operator attestation does not state
+      an expected ggml generation. The dashboard therefore proves only `2/3` and reports `SET NOT
+      PROVEN`; deriving expected authority from the observed tree would be circular.
+    - **Option A — amend the frozen-v9 attestation after independent verification (recommended):**
+      bind expected llama ggml `0.16.0` through the human-only measurement trust boundary, then let
+      the existing comparison prove or refute it.
+    - **Option B — retain the current attestation:** keep llama generation explicitly unverified and
+      accept that the complete-set fold cannot become intact.
+    - **Default:** Option B; no attestation or production state changes.
+  - [ ] **After OP-16's reboot, re-check the live dashboard process environment.** Durable host and
+    devcontainer configuration is clean, but the current long-lived process inherited two stale
+    ggml-bearing `LD_LIBRARY_PATH` entries. Require `ambient_library_path.clean=true`; do not treat a
+    clean dashboard process as proof about every launcher.
 
 **Exit:** campaigns produce correct, idempotent, operator-executable release packages and never write
 production.
