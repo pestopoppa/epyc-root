@@ -182,6 +182,11 @@ STALE_SRC_STATE="${LOG_DIR}/bus_supervisor.stale_src"
 # Whole-second resolution on both sides; 5s covers it with room to spare and
 # still catches a source edited even a minute after a restart.
 STALE_SRC_SKEW_S="${STALE_SRC_SKEW_S:-5}"
+# C43: how long to wait for a DYING supervisor to release the lock before giving up.
+# Covers a handover, not a coexistence — a dying holder releases in milliseconds, a
+# live one holds for its life and we still report and exit. 15s is generous for the
+# former and short enough that a cron `once` never stacks up.
+LOCK_WAIT_S="${LOCK_WAIT_S:-15}"
 
 check_stale_source() {
   local src rc=0
@@ -247,6 +252,35 @@ lock_holder_report() {
   fi
 }
 
+# Bounded retry on the lock, then report. C43 SECOND HALF (2026-08-12).
+#
+# The evidence fix alone was not enough, and `coordinator-agent`'s measurement is
+# why: they killed supervisor 489217, verified it dead with `ps`, relaunched
+# immediately, and the new process lost the race against the DYING supervisor's
+# flock release — logged "another supervisor holds the lock", exited 0, and died.
+# For ~90 seconds nothing would have relaunched the daemon if it had died. That is
+# the exact condition that went unnoticed for ten days from 2026-07-29.
+#
+# Note what my first C43 fix would have done here: the holder was still alive while
+# releasing, so it would have printed "lock holder: pid 489217 (ALIVE)" and exited
+# 0 — accurate, unhelpful, and the gap still open. Evidence about a race is not a
+# fix for the race.
+#
+# `flock -w` blocks until the holder releases or the timeout expires, which is
+# exactly the semantics wanted: a dying supervisor releases in milliseconds, so the
+# relaunch wins; a genuinely running one holds for its life, so we still give up
+# and report. The wait is short because the only case it needs to cover is a
+# handover, not a coexistence.
+acquire_supervisor_lock() {
+  exec 9>"$LOCK_FILE"
+  if flock -w "$LOCK_WAIT_S" 9; then
+    return 0
+  fi
+  log "another supervisor holds the lock after ${LOCK_WAIT_S}s; exiting"
+  lock_holder_report
+  return 1
+}
+
 check_once() {
   # A HEALTHY daemon can still be the wrong daemon. Order matters: a dead one is
   # restarted by the branch below and comes back on current source anyway, so the
@@ -267,14 +301,12 @@ case "${1:-loop}" in
     exit 0
     ;;
   once)
-    exec 9>"$LOCK_FILE"
-    flock -n 9 || { log "another supervisor holds the lock; exiting"; lock_holder_report; exit 0; }
+    acquire_supervisor_lock || exit 0
     check_once
     exit 0
     ;;
   loop)
-    exec 9>"$LOCK_FILE"
-    flock -n 9 || { log "another supervisor holds the lock; exiting"; lock_holder_report; exit 0; }
+    acquire_supervisor_lock || exit 0
     echo $$ > "$SUP_PIDFILE"
     trap 'rm -f "$SUP_PIDFILE"; log "supervisor stopped"; exit 0' TERM INT
     log "supervisor started (poll ${POLL_INTERVAL}s, stale after ${STALE_AFTER}s)"

@@ -2183,7 +2183,23 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     `check_once` directly — *A* consumer, not *THE* consumer. Added a static wiring assertion that
     the loop's healthy branch reaches the check, **mutation-verified**: removing the call takes the
     suite 8/8 → 7/8 with the failure naming the defect.
-  - [x] **C43 (NEW, from `coordinator-agent`) — lock contention exits 0 with no evidence.**
+  - [x] **C43 SECOND HALF — the relaunch RACES the dying supervisor's lock release.** ✅ 2026-08-12
+    — `mainD`. `coordinator-agent` measured it while doing the C42 bootstrap restart I asked for:
+    killed 489217, verified dead with `ps`, relaunched immediately, and the new process (1316099)
+    **lost the race against the dying holder's flock release** — logged the contention, exited 0,
+    and died. **For ~90 seconds nothing would have relaunched the daemon if it had died** — the
+    exact condition that went unnoticed for ten days from 2026-07-29.
+    **My first C43 fix would not have helped, and saying so matters:** the holder was still alive
+    while releasing, so it would have printed `(ALIVE)` and exited 0 — accurate, unhelpful, gap
+    still open. **Evidence about a race is not a fix for the race.**
+    Fixed with a bounded `flock -w` (15s, `LOCK_WAIT_S`): a dying holder releases in milliseconds so
+    the relaunch wins; a genuinely running one holds for its life so we still report and exit 0,
+    which keeps the cron idiom intact. Chose the retry over exit-non-zero because a skip is the
+    NORMAL case for `once` and paging every tick is how a real alarm gets ignored.
+    5 tests including the **contrast** — the old `flock -n` form is asserted to LOSE the same race,
+    so the test is measuring the fix rather than the environment — plus wiring assertions that
+    neither entrypoint can regress to the non-blocking form.
+  - [x] **C43 FIRST HALF — lock contention exits 0 with no evidence.**
     ✅ 2026-08-12 — `mainD`. A relaunch at 00:25:09Z logged *"another supervisor holds the lock;
     exiting"* and exited **0**. True at the time, but the exit code says SUCCESS, so nothing
     downstream can tell *"correctly skipped, one is already running"* from *"failed to start,
