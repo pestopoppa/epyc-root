@@ -189,8 +189,10 @@ AUTOKERNEL_READINESS_COMMITS = (
      "retry-hardened seven-arm controller"),
     ("sc33_reward_integrity_v2", "aa331993",
      "prospective SC33 reward-integrity belief producer"),
-    ("c3_c5_capture_mapping", "7f29ee15",
-     "governed C3/C5 tensor capture and k228/k175 mapping"),
+    ("c3_c5_capture_mapping", "9673132b",
+     "governed C3/C5 tensor-capture window and k228/k175 mapping"),
+    ("sc36_intermediate_beliefs", "b0d6f79f",
+     "prospective feedback-only intermediate evaluator beliefs"),
     ("ak_del_2_catalogue", "35f10715",
      "bounded gfx90a prior-art catalogue expansion"),
 )
@@ -1671,22 +1673,10 @@ def _autokernel_implementation_readiness(repo: Path) -> dict:
     by_id = {row["id"]: row for row in capabilities}
     pending = [
         {
-            "id": "SC33-v2", "title": "Fresh reward-integrity v2 receipt",
-            "implementation_ready": by_id["sc33_reward_integrity_v2"]["integrated"],
-            "next_evidence": ("Run the executable gfx90a corpus with the prospective hook; "
-                              "the admitted v1 receipt cannot be back-filled."),
-        },
-        {
             "id": "C3-C5", "title": "Real EPYC tensor captures and mappings",
             "implementation_ready": by_id["c3_c5_capture_mapping"]["integrated"],
-            "next_evidence": ("Capture the real-model tensor surface, then admit one exact k228 "
+            "next_evidence": ("Provide exact real-model hook manifests, then admit one k228 "
                               "trace and the ordered multi-trace k175 component graph."),
-        },
-        {
-            "id": "AK-DEL-2", "title": "Bounded gfx90a catalogue expansion",
-            "implementation_ready": by_id["ak_del_2_catalogue"]["integrated"],
-            "next_evidence": ("Reconcile the active handoff review gate before this integrated "
-                              "catalogue can route a campaign."),
         },
     ]
     return {

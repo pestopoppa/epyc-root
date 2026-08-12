@@ -1,11 +1,10 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: patch the EvoEngineer evaluator-constructor drift exposed by terminal-
-noncomplete r17, then launch a fresh immutable attempt and validate its complete receipt chain before
-comparison. Never resume r4-r17 or aggregate a partial attempt into the panel.
+**Next action (2026-08-12)**: preserve immutable r18 while it runs, then validate its terminal receipt
+chain before any comparison. Never resume r4-r17 or aggregate a partial attempt into the panel.
 The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r17 terminal-noncomplete after EvoEngineer evaluator-constructor drift)
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r18 live from immutable source after r17 evaluator repair)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -572,9 +571,12 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     required keyword-only `source_paths`. Exact campaign PIDs `1842347`, `1920709`, `1921055`, and
     `1966010` are dead; final claim `akd-6b60fb2f7d1449e2` released. Preserve the valid diagnostic
     checkpoints, but never aggregate, rank, bank, promote, or resume r17.
-    - [ ] **Patch the EvoEngineer evaluator-constructor call and launch a fresh immutable successor.**
-      Add a regression that reaches controller construction with the governed source-path binding,
-      refresh every affected source/entrypoint pin, then re-run all seven arms from a clean worktree.
+    - [x] **Patch the EvoEngineer evaluator-constructor call and launch a fresh immutable successor.**
+      ✅ 2026-08-12 — research `381bc55e` wires governed `source_paths` through EvoEngineer, GEAK,
+      K-Search, KernelFoundry, and Xe-Forge; `11bccd41` refreshes affected entrypoint pins. Research
+      `b0d6f79f` adds prospective intermediate evaluator belief rows and strict feedback-only reading.
+      Fresh r18 is sealed at `17b9208d`, its baseline is complete, and its first actor cell is active;
+      that live state grants no aggregate, rank, bank, champion, promotion, or release authority.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims
@@ -616,6 +618,18 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
   to AITER MLA prefill but has no pinned gfx90a HSA image or proved LSE/ABI contract, while composite
   `k175` requires missing component-graph/multi-trace support. Both now return typed structural
   mismatches rather than a similar-looking single kernel.
+- [x] **Harden the governed C3/C5 real-capture seam and bind its observation window.** ✅ 2026-08-12
+  — research `7b3cc6f4`, `a865bd7c`, and `300647bd` bind live-produced gfx90a inventory, KFD
+  producer ancestry, exact sampler-window overlap, immutable acquire/release claim slices, frozen
+  source paths, and selected-entry-only Apex admission. Focused validation passed 27 tests and the
+  evaluator regression passed 1,579 tests. This closes the capture mechanism, not the model-specific
+  tensor evidence.
+- [ ] **Provide the exact k228 model-tensor capture hook manifest and run the governed capture.** The
+  hook must execute the real model surface and emit the source/model/process/window identities the
+  C3/C5 provider validates; a HyRA reference tensor or synthetic fixture cannot substitute.
+- [ ] **Provide the exact k175 ordered multi-trace capture hook manifest and run the governed capture.**
+  The hook must preserve the router → top8/count/rank → dispatch → routed/shared experts →
+  weighted-undispatch graph; a single similar-looking kernel cannot satisfy the composite case.
 - [x] **GEAK-family freshness sweep completed ✅ 2026-08-03** (research-intake Stage-2b): GEAK v4 retains a current gfx90a KB (`perf_knowledge/hardware/cdna2_mi200/`, `updated: 2026-06-08`) and 40 gfx90a capability entries; all published evaluation remains gfx942. Scoping caveat amended above; "677/678/679 are a coverage regression" **retired** — for GEAK proper it is unpublished coverage. `v1.0.0 @ 4ffba15a` pinned.
 - [x] Re-target the program objective from the Q8 rung to the fp16 rung, with a banded per-lever ceiling (K1–K12) ✅ 2026-08-03
 - [x] Register **ARGUS** (arXiv 2604.18616) as a controller candidate alongside EvoEngineer /
