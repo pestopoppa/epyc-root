@@ -3497,7 +3497,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T14:00:07Z",
+  "generated_at": "2026-08-12T15:40:30Z",
   "nodes": [
     {
       "age_days": 13,
@@ -5023,13 +5023,13 @@
     {
       "age_days": 0,
       "blocked": 2,
-      "closed": 160,
+      "closed": 161,
       "domain": "routing-and-optimization",
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",
       "last_advanced": "2026-08-12",
       "next_action": "Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped",
-      "open": 66,
+      "open": 67,
       "state": "active",
       "track": "autopilot continuous optimization"
     },

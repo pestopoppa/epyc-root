@@ -385,9 +385,12 @@ verdict is the current production shape.
       it does **not** depend on the re-bench landing: the inversion is wrong regardless of what the
       re-measured number turns out to be.
 - [ ] **Re-bench `frontdoor` + `ingest_long_context` in the OVERLAPPING geometry** (operator-authorised
-      2026-08-12). Needs a compute-lane owner **and** an inference region claim. The disjoint number is
-      already on file at ratio 1.89 / verdict allow — **re-measuring the disjoint case answers the wrong
-      question.**
+      2026-08-12). The disjoint number is already on file at ratio 1.89 / verdict allow — **re-measuring
+      the disjoint case answers the wrong question.**
+      **Lane assigned 2026-08-12**: the operator granted `mainC` the CPU lane for exactly this
+      (*"You can use the cpu lane — that's where the contention you're discussing lies"*), so this no
+      longer waits on an owner. It was OP-21 in the master operator queue; the decision is answered and
+      the row is retired. Remaining work is execution, not authorisation.
 - [ ] **Retire the stale `q*` nomenclature on half-sized instances** — a reader seeing `q0` on a
       48-thread instance infers a quarter. It already caused one agent to describe this live defect as
       a legacy one.

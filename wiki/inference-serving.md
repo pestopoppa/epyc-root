@@ -1094,3 +1094,54 @@ graph that feeds it.
 - [`ratify_v9_final_freeze_20260811.json`](../artifacts/operator/ratify_v9_final_freeze_20260811.json) — ratified kernel identity and rollback boundary.
 - [`v9-kernel-promotion-attestation.json`](../handoffs/active/v9-kernel-promotion-attestation.json) — frozen CPU/HIP and production certification evidence map.
 - [orchestrator `74c68a2a`](https://github.com/pestopoppa/epyc-orchestrator/commit/74c68a2a8e01a0f4a8c93a49fa32c0b85494f501) and [`969244d8`](https://github.com/pestopoppa/epyc-orchestrator/commit/969244d8015155c0193ad2780313a858df3f0ba1) — circular-import repair and regenerated derivatives.
+
+## Three ggml generations in one fleet: why `prepend` is right for llama and wrong for speech (2026-08-12)
+
+The production kernel set runs **three different ggml generations** — llama.cpp (v9), whisper.cpp
+(0.18.0, STT) and qwentts.cpp (0.17.0, TTS). A binary that inherits another tree's ggml runs silently
+wrong, so `scripts/server/stack_env.py` composes `LD_LIBRARY_PATH` in **two modes**, and the choice
+between them is not stylistic:
+
+- **`prepend`** — declared paths lead, the ambient value is kept behind them. Correct for **every
+  llama-server role**, because the ambient path *is* the CPU llama tree and is a legitimate fallback.
+  The loader takes the first directory containing a matching soname, so the GPU tree wins for every
+  library it actually ships — and `build-hip/bin` ships all four, including `libggml-hip.so.0`.
+- **`replace`** — declared paths are the *whole* value. Required for any binary from a tree with its
+  own ggml generation. `stack_manifest.py:318` defaults to `replace` whenever a service declares
+  `backend:`, and speech paths are **backend-derived** (`backend_ld_library_path`), not read from the
+  manifest's `ld_library_path` (which is empty for both speech services).
+
+**Why prepending cannot rescue a speech kernel.** Prepending llama's tree in front of whisper's does
+not produce a clean failure — it produces a **mixed load**: `libggml`, `libggml-cpu` and `libggml-base`
+resolve from llama's 0.16.0 while `libggml-hip` resolves from whisper's 0.18.0, because llama's tree
+ships the first three and not the fourth. Two ABI generations in one process. The mixed outcome is worse
+than a clean failure precisely because it starts and produces numbers.
+
+**Verifying this is itself a trap — measure the launcher's environment, not your shell.** Two distinct
+false findings came from getting this wrong on 2026-08-12:
+
+1. Running `ldd` in an **agent shell** shows llama's GPU binary resolving CPU ggml, which reads as a P1
+   "production runs on CPU". It is an artifact: the shell has only the ambient path; the launcher
+   prepends `build-hip/bin`. The falsifier was throughput — ~50 t/s on a 27B is impossible on CPU.
+2. Calling `build_service_env()` on the **raw manifest spec** reports `paths=[]` for whisper and tts,
+   which reads as "replace mode declared but never applied". Also an artifact: it skips the
+   backend-resolution step the launcher runs first.
+
+`verify_speech_kernels.sh` encodes the distinction properly — it runs **two** checks, a *launch-recipe*
+check (is the frozen tree self-sufficient?) and an *ambient* check (is this shell poisoned?). Both are
+RC=1, and they answer different questions. A launch-recipe pass with an ambient fail means production is
+fine and hand-run measurement is not.
+
+**Committed is not deployed.** The ambient poisoning had a correct fix committed on 2026-07-31
+(`136894e8`, dropping CPU-only llama dirs from the global `LD_LIBRARY_PATH`; both `/etc/environment` and
+`.devcontainer/devcontainer.json` carry the clean value). It was still not live on 2026-08-12: container
+PID 1 started 2026-07-29, two days *before* the fix, and a `containerEnv` change only takes effect on
+rebuild. Reading a committed file and concluding a running process has the fix is the general trap —
+check the process, not the repo.
+
+**Source references**
+- `scripts/server/stack_env.py` — `compose_ld_library_path`, `build_service_env`, and the mode contract
+- `scripts/server/stack_manifest.py:318` — `replace` default when `backend:` is declared
+- `scripts/server/orchestrator_stack.py:2337-2344,2479` — backend resolution and `verify_ggml_linkage`
+- `scripts/session/verify_speech_kernels.sh` — the two-check design and INC-20260731 rationale
+- `progress/2026-08/2026-08-12.md` — the two false findings and their retraction
