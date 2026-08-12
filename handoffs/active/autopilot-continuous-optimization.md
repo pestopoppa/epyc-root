@@ -2210,7 +2210,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
   `vision_escalation` has a PHANTOM 5-port fleet** — a different item, still open and untouched. The
   code defect was real; the row pointer was not. Screening caught it before dispatch.
 
-- [ ] **External processes must never write daemon-owned state fields while the daemon lives.**
+- [x] **External processes must never write daemon-owned state fields while the daemon lives.**
       `save_state(merge_control=True)` re-reads only `_EXTERNAL_CONTROL_FIELDS` (`paused`,
       `pause_reason`, `_in_cache_flush`) and rewrites everything else — including `baseline_state`,
       `quality_history_by_tier`, the frontier and pareto fields — from the daemon's memory. Any
@@ -2220,6 +2220,35 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       docstring on the fields, no runtime warning. Candidate fix: make `save_state` refuse (or loudly
       warn) when a daemon-owned field on disk differs from the in-memory copy it is about to
       overwrite, since that difference is by definition an external write about to be destroyed.
+      ✅ 2026-08-12 — orchestrator `a395d7eb`. It WAS prose: no guard, no runtime check, no test. The
+      only enforcement anywhere was two hand-rolled per-script gates (one `pgrep`, one `flock`) that
+      each protect only the file they live in — the shape `check_operator_apply_copy.sh` exists to
+      defeat, since copying the script copies away the gate.
+      **Layer 1 asks the KERNEL, not the caller.** The daemon is by construction the holder of the
+      flock on `.autopilot.lock`, and `/proc/locks` names that holder's PID — so *"am I the owner?"*
+      is answered by the kernel rather than by anything a caller declares about itself. Wired into the
+      single `save_state` funnel every whole-file write passes through.
+      **Layer 2 lives in the victim, so there is nothing in the violator to patch out** — and its
+      witness is the sharp part: *a daemon-owned field changed on disk SINCE THIS PROCESS LAST WROTE
+      IT*, not "disk differs from memory", which every normal daemon save trips. Mutation M2 replaced
+      it with the naive disk-vs-memory form and killed both negative controls, proving the distinction
+      load-bearing. It quarantines the doomed values and logs ERROR rather than refusing the daemon's
+      save — stranding trial state is the worse failure, so the result is *recoverable and attributed*
+      rather than *prevented*. 19 tests incl. a real-subprocess lock holder; M1 (remove the call) 2
+      failed / 17 passed, restored 19. *(`mainC` verified the tests and the kernel-authority design.)*
+- [ ] **NEW, LIVE, OPERATOR-FACING: a dashboard `resume` that clears a `skip_action_loop` halt is
+  SILENTLY REVERTED at the daemon's next save.** `src/api/routes/dashboard.py:3272-3279` writes
+  `consecutive_skip_actions`, `last_invalid_action/reason/status`, `_dispatch_deficiency`,
+  `_meta_halt_reason` and `consecutive_meta_actions` — **by design, while the daemon lives**. None of
+  those are in `_EXTERNAL_CONTROL_FIELDS`, which is only `superseded`, `paused`, `pause_reason`,
+  `_in_cache_flush` (+ the pause-lease fields another agent is adding right now). *(Verified by
+  `mainC` against both sites.)* So the operator clicks resume, sees it succeed, and the halt returns.
+  Found while building the guard; **not previously filed**. Layer 2 now names it in an ERROR log
+  instead of losing it silently, which is the surfacing that was missing — but the FIX is a ruling:
+  are those counters CONTROL state (add to the merge set) or DAEMON state (the dashboard must stop
+  clearing them)? Both files are mid-edit by the pause-lease agent, so this needs sequencing, not a
+  race. **UNOWNED.**
+
 - [x] **`orchestrator_stack.py start` silently resolves the wrong manifest without `--numa-mode`.**
       The production lineup is full + halves (`--numa-mode both`). Plain `start` resolved a full-only
       manifest, so the guard compared priors containing halves against it and produced 39 parity
