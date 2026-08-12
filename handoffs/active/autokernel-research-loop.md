@@ -55,13 +55,17 @@ tests with one expected failure**. R16 then refused before claim or inference on
 entrypoint identity. Fresh immutable r17 reached a valid 32h actor/critic checkpoint at diagnostic
 speedup `1.004404445111776` with compile/correctness **4/4**, but terminated noncomplete when the next
 EvoEngineer 2h cell called `ArenaWorkspaceEvaluator.__init__` without required keyword-only
-`source_paths`. Its exact campaign PIDs are dead and final device claim released. R17 is partial and
-non-rankable. Research `381bc55e`/`11bccd41` repaired and repinned source-path construction across the
-five affected controllers; `b0d6f79f` prospectively captures and strictly projects feedback-only
-intermediate evaluator beliefs. Fresh immutable r18 is sealed at `17b9208d`; its baseline is complete
-and its first actor cell is active. Partial r18 evidence grants no comparison, aggregate, rank, bank,
-champion, promotion, or release authority. This controller comparison remains diagnostic and does not
-replace the post-reboot IQK/matched-archive sequence.
+`source_paths`. Research `381bc55e`/`11bccd41` repaired and repinned that construction, and
+`b0d6f79f` prospectively captures feedback-only intermediate evaluator beliefs. R18 then completed
+its baseline and full Claude/Codex 2h loop, but the parent refused the cell fail-closed after mutable
+host `~/.claude/.claude.json` changed following its staged copy. No actor-cell receipt or aggregate
+was admitted; r18 is terminal-noncomplete and non-rankable. Research `0b1fdbe9` now binds the source
+identity at copy time, verifies the copied bytes, and emits a staged-input receipt; **596 controller
+tests passed**. Fresh immutable r19 is live from exact clean source `0b1fdbe9`; its ready 7/7 audit,
+completed baseline, and active first actor cell grant no comparison authority. Research `dfe265a1`
+separately specifies the safe controller-overlap architecture and required overlap A/A gate, but does
+not enable overlap in r19. This controller comparison remains diagnostic and does not replace the
+post-reboot IQK/matched-archive sequence.
 Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
 The live campaign consumes an immutable content-addressed source patch before claim acquisition,
 applies it only through the guarded worktree boundary, and records the exact clean source/build,

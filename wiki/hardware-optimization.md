@@ -5,6 +5,47 @@
 **Last compiled**: 2026-08-12 (adds the INF-03 r4 integrity retraction and broker/isolation boundary; the AK-D39 ROCm-provider boundary; sustained AK-BH-1 vendor-baseline replication, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 102+ documents
 
+## Compiled Update — 2026-08-12 (r18→r19 staged-input recovery and Q4_K_M decode routing)
+
+**Confidence: verified local campaign receipts, tests, and diagnostic profiling; no partial Arena
+result is rankable and no rocprof attribution is a candidate speedup.**
+
+The availability-conditioned seven-arm controller campaign remains fail-closed. R18 finished its
+baseline and full Claude/Codex 2h loop, including four compile/correctness-4/4 evaluations, but its
+parent re-opened mutable host `~/.claude/.claude.json` after copying it into the scrubbed cell. A
+normal host-config change therefore invalidated admission after controller exit. No actor-cell
+receipt or aggregate exists, so r18 is permanently non-rankable. Research `0b1fdbe9` now verifies
+the host source immediately before copying, verifies the staged bytes, and receipts that immutable
+copy instead of re-hashing later mutable host state; the controller suite passed 596 tests. R19 is
+live from clean exact `0b1fdbe9`, with a ready 7/7 audit, completed baseline, and active first actor
+cell. Those partial files still grant no panel comparison authority.
+
+The campaign remains sequential on purpose. Research `dfe265a1` specifies the smallest safe overlap
+architecture—deterministic isolated lanes, serial per-lane checkpoints, exact MI210 claims only around
+evaluator windows—plus the missing gates: bounded contention waits, inherited attempt lease,
+PID/start-tick cancellation, lane confinement, manifest-v3 validation, disjoint CPU placement, and
+an overlap A/A noise bound. That contract is filed for implementation after r19; it is not retrofitted
+into an immutable live attempt.
+
+The Q4_K_M diagnostic reinforces the workload-local targeting split. A 122B three-shard preflight
+failed safely before profile capture and released both claims. The governed 35B Q4_K_M p0/tg128
+fallback passed at 70.19648 tok/s; summed device time was MMV 46.0984%, quantization 10.6058%,
+RMSNorm 5.7346%, FlashAttention 5.2539%, copy 2.8384%, and GDN only 1.6451%. The source-bound
+prior-art reducer routed six families / 59.9639% to existing paths, two / 2.8384% to forward ports,
+and eleven / 36.4956% to unmatched work, retaining novel-generator scope for this exact workload.
+This is diagnostic routing, not a cross-quant causal comparison.
+
+### Source References (2026-08-12 r19/Q4 checkpoint)
+
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r18
+  disposition, copy-time identity repair, r19 live boundary, and overlap implementation task
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — exact Q4_K_M
+  receipts, attribution shares, claim teardown, and prior-art routing
+- [Current campaign state](../handoffs/active/CURRENT-CAMPAIGN.md) — immutable attempt boundary and
+  prohibited partial-result upgrades
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — self-contained campaign and profiling
+  evidence ledger
+
 ## Compiled Update — 2026-08-12 (ROCm modules are providers, not champions)
 
 **Confidence: verified local measurements plus an operator-accepted governance decision.**

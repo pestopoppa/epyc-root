@@ -4,7 +4,7 @@
       "blocked": 12,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 358
+      "open": 359
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -85,14 +85,14 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 77,
+      "closed": 80,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 5,
+      "open": 6,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 82
+      "total": 86
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 1,
@@ -1504,14 +1504,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 77,
+      "closed": 78,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 16,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 93
+      "total": 94
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -2394,7 +2394,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Preserve live r18, then validate its terminal receipt chain before any comparison",
+      "next_action": "Preserve live r19, then validate its terminal receipt chain before any comparison",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {
