@@ -1784,8 +1784,37 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
 
 - [ ] `config/stack_templates/default.yaml` is 10 validation errors stale — `start --stack-profile
       default` returns 1 today.
-- [ ] Registry declares port **8083 twice**: `coder_escalation` keeps its own row (slots 1) while also
+      **2026-08-12 (`mainA`) — NOT CLOSEABLE AS WRITTEN, and checking why produced a HIGH-severity
+      defect filed separately.** Two problems with the row as a recipe. (a) The path is wrong:
+      there is no `config/stack_templates/`; the file is `stack_templates/default.yaml`.
+      (b) **The validation route it prescribes does not exist.** `orchestrator_stack.py:2795`
+      declares `--validate-only` with the help text *"Validate stack template and exit"*, and
+      **nothing reads it** — `grep` for the argparse dest across the file returns only the
+      declaration, and `main()` dispatches `start` → `cmd_start(args)` with no branch. So the
+      documented dry run **launches the production stack**. I was about to run it and stopped
+      only because compute is saturated and I check anything named `start` before invoking it.
+      The row's substantive claim (10 validation errors) may well still be true; it simply is
+      not checkable by the route it names. Left OPEN, deliberately, until the flag is wired or
+      removed — closing it would imply the check had been run.
+- [x] Registry declares port **8083 twice**: `coder_escalation` keeps its own row (slots 1) while also
       appearing in `architect_general.shared_with` (slots 8). Blocks the WP-12 fleet layer.
+      **✅ 2026-08-12 (`mainA`, pulled from the generated bench) — the duplicate is REAL and
+      INTENTIONAL; the blocker is GONE. Verified by executing the layer, not by reading its
+      comment.** `server_mode` does still declare `:8083` twice — `architect_general`
+      (`slots=2`, `shared_with: [coder_escalation]`) and `coder_escalation` (`slots=1`,
+      `alias_of: architect_general`). One number in this row has drifted: architect_general is
+      **slots=2**, not 8.
+      `src/fleet.py:387-404` was taught both spellings on **2026-08-04**, with a comment naming
+      exactly this failure — iterating every row built *a phantom `coder_escalation` fleet on
+      :8083* which then tripped the double-binding guard, so `ORCHESTRATOR_FLEET_LAYER=1` could
+      not build against the production registry at all. An alias row is not a physical
+      resource, so it now gets no fleet and is bound onto its host exactly like a `shared_with`
+      member; the double-binding guard is untouched and still fires on a genuine conflict.
+      **Executed against the production registry just now**: `build_fleets_and_bindings()`
+      returns **6 fleets, 11 bindings**, and `coder_escalation` resolves to
+      `RoleBinding(role='coder_escalation', fleet_id='architect_general', ...)` — no phantom,
+      no collision. The two declarations are mutually consistent statements about ONE physical
+      server, which is what the registry comment already claims and what the code now honours.
 - [ ] `onnxruntime` is used at runtime by `src/retrieval/cross_encoder.py`, declared nowhere in
       `[project]` dependencies, and is not installed — **cross-encoder reranking is silently off in
       production**.
