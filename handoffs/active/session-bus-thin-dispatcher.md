@@ -2434,7 +2434,7 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   figure withdrawn as **not reproducible**; and one coordinator self-criticism withdrawn because it
   could not be verified at all. *A metric can flag candidates; only the artifact settles them.*
 
-- [ ] **C49 — the operator escalation misclassifies `action_required`, and reported 11 items when
+- [x] **C49 — the operator escalation misclassifies `action_required`, and reported 11 items when
   there were zero.** FILED 2026-08-12 by `coordinator-agent`, **unfixed**. The daemon escalated 11
   operator items; a full parse of the same 17-item standing queue found **zero** needing the human.
   The 11 is reproducible exactly as *every item with `action_required: true` (12) minus `kind: status`
@@ -2446,6 +2446,25 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   or `severity == CRITICAL`), 7 overlap** — the two predicates are nearly disjoint. An escalation
   that fires on a well-run night trains everyone to ignore it, which is the same failure as not
   checking, one level up.
+    ✅ 2026-08-12 — `mainD`. **An operator item is now DECLARED, not inferred.**
+    `payload.operator_signature_needed: true`, plus `kind == "token-request"`, which stays because a
+    token IS the operator's signature — dropping it would fix the false positives by making the
+    channel silent, the failure that matters most. Dropped: `kind: defect` and
+    `severity/priority == CRITICAL`, both of which inferred operator-ness from fields meaning
+    something adjacent. Measured before and after on the live bus: 267 rows, 116 `action_required`,
+    **8 → 0** classified as operator items, and every one of those 8 was `kind: defect` — *not one
+    was a `token-request`*. An agent can no longer escalate to the operator by owing itself a next step.
+    **MIGRATION COST, stated because it is the risk you named:** nothing written before today carries
+    the marker, so a genuine non-token operator need will now go unescalated until its author declares
+    it. In this corpus that is exactly one row; `token-request` still qualifies structurally, which is
+    why the compliant path is unaffected.
+    **What the consumer check caught that the unit tests did not:** narrowing the predicate broke
+    `test_c20_bypass…`, whose fixture relied on `kind: defect` qualifying. Fixed at the FIXTURE (it
+    now declares) rather than by widening the predicate back. My first attempt defaulted the
+    declaration inside the shared `_op_msg` helper and broke `test_c27c_…_stay_quiet` — a fixture
+    change that deleted the distinction another test existed to check. Declaration is now per-caller.
+    Mutation-verified both directions: restore the old inference → 2 fail; silence `token-request` →
+    the compliant-path test fails. 315 pass.
   - [ ] **The fix is a POSITIVE marker, not a tightened negative.** Neither predicate can be repaired
     by exclusion: `action_required` over-fires and the kind-set under-fires, so a sender who needs the
     operator has no way to say so. Add an explicit sender-set field (the `needs_routing_to` /

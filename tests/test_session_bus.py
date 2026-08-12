@@ -1068,6 +1068,12 @@ def test_c19_detection_advisory_is_deduped_across_ticks(bus_root: Path) -> None:
 
 
 def _op_msg(kind: str, *, mid: str, ts: str, **payload) -> dict:
+    """Fixture message. Pass `operator_signature_needed=True` when the test needs the
+    row CLASSIFIED as an operator item — C49 made that a declaration, not an inference
+    from `kind`. Deliberately NOT defaulted: `test_c27c_..._stay_quiet` asserts that
+    non-operator traffic stays quiet, and defaulting it here would delete the very
+    distinction that test exists to check.
+    """
     row = _message("alice", "coordinator-agent", kind, seq=1)
     row["id"] = mid
     row["ts"] = ts
@@ -1122,6 +1128,7 @@ def test_c20_bypass_appends_a_checkboxless_block_and_is_idempotent(bus_root: Pat
     _provision(bus_root, *AGENTS)
     _append(bus_root / "inbox" / "coordinator-agent.jsonl",
             _op_msg("defect", mid="m-42", ts=_iso(4 * 3600),
+                    operator_signature_needed=True,
                     detail="Human amendment required. No further inference permitted"))
     nudge = _RecordingNudge(rc=2, out="refused")
     tq = bus_root / "tokens" / "token-queue.md"
@@ -3760,3 +3767,66 @@ def test_C50_probe_fails_if_the_dereference_is_removed(
     ok, _ = coordinator._eligible(stale, latest, snap, tok)
     assert ok is True, ("with the dereference stubbed out the stale row dispatches again — "
                         "if it does not, the refusal above came from somewhere else")
+
+
+# --- C49: an operator item is DECLARED, never inferred ------------------------
+
+def test_C49_a_critical_defect_is_not_an_operator_item() -> None:
+    """The false-positive class. Measured on the live bus: 8 rows satisfied the old
+    predicate and every one was `kind: defect` — fleet-internal engineering, not a
+    signature request. Urgency is not the-human-must-decide."""
+    assert coordinator._is_operator_item(
+        {"kind": "defect", "action_required": True,
+         "payload": {"severity": "CRITICAL", "summary": "x"}}) is False
+
+
+def test_C49_an_agent_owing_ITSELF_a_next_step_does_not_escalate() -> None:
+    """The exact question the coordinator set: can an agent accidentally escalate to
+    the operator by owing itself a next step? 116 of 267 live rows carry
+    action_required; it means SOME NAMED AGENT acts next, not the operator."""
+    for kind in ("status", "finding", "task-complete", "ack", "task-assign"):
+        assert coordinator._is_operator_item(
+            {"kind": kind, "action_required": True, "payload": {"priority": "P0"}}) is False
+
+
+def test_C49_THE_COMPLIANT_PATH_a_token_request_still_escalates() -> None:
+    """Both-directions requirement, stated by the coordinator: do NOT fix the false
+    positives by making the channel silent. A token IS the operator's signature, so
+    `token-request` qualifies structurally and must keep qualifying."""
+    assert coordinator._is_operator_item(
+        {"kind": "token-request",
+         "payload": {"gate_id": "APPLY-X-20260812", "command": "bash ratify_x.sh --attest"}}) is True
+
+
+def test_C49_a_declared_marker_escalates_regardless_of_kind() -> None:
+    """The positive marker: the author declares it rather than the daemon guessing."""
+    assert coordinator._is_operator_item(
+        {"kind": "decision-request", "payload": {"operator_signature_needed": True}}) is True
+    # Declaration must be the literal True, not any truthy smell.
+    for v in ("true", 1, "yes", None, False):
+        assert coordinator._is_operator_item(
+            {"kind": "status", "payload": {"operator_signature_needed": v}}) is False
+
+
+def test_C49_live_corpus_has_no_operator_items_and_the_corpus_is_real() -> None:
+    """Consumer-level regression over the real inbox.
+
+    HONEST BOUND: this proves the FALSE-POSITIVE half only. The live corpus contains
+    ZERO token-requests, so it structurally cannot exercise the compliant path — the
+    same shape as the defect `unevidenced_operator_outbox` documents, where a net
+    searched a set that could not contain what it looked for. The compliant path is
+    covered by the constructed test above, and that split is deliberate.
+    """
+    root = LIVE_BUS_ROOT / "inbox"
+    rows = []
+    for path in sorted(root.glob("*.jsonl")):
+        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            if line.strip():
+                try:
+                    rows.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
+    assert len(rows) > 50, f"live inbox corpus looks truncated ({len(rows)} rows)"
+    assert any(r.get("action_required") for r in rows), "corpus carries no action_required at all"
+    flagged = [r for r in rows if coordinator._is_operator_item(r)]
+    assert flagged == [], f"{len(flagged)} live rows misclassified as operator items"

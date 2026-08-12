@@ -2778,13 +2778,31 @@ def _msg_age_s(row: dict, now: float) -> float | None:
 
 
 def _is_operator_item(row: dict) -> bool:
+    """Does this row need THE HUMAN OPERATOR? Declared, never inferred (C49).
+
+    MEASURED 2026-08-12 on the live bus: 267 inbox rows, 116 carrying
+    `action_required`, 8 satisfying the old predicate, 7 overlapping — near-disjoint
+    sets, so items were misclassified in BOTH directions. And every one of those 8 was
+    `kind: defect`; **not one was a `token-request`**, which is the only kind that means
+    a human must sign. The escalation reported "11 operator-decision items unread past
+    deadline" and a parse of all 17 found ZERO genuine operator items.
+
+    The old predicate inferred operator-ness from fields meaning something ADJACENT:
+    `kind in {token-request, defect}` swept in fleet-internal engineering defects, and
+    `severity/priority == CRITICAL` swept in anything urgent. Urgent is not the same as
+    the-human-must-decide, and a defect is work for an agent.
+
+    So: a POSITIVE marker the author sets deliberately, plus the one kind that IS an
+    operator gate by definition. `token-request` stays because a token IS the operator's
+    signature — dropping it would fix the false positives by making the channel silent,
+    which is the failure that matters most.
+
+    An agent can no longer escalate to the operator by owing itself a next step.
+    """
     payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
-    if row.get("kind") in _OPERATOR_ITEM_KINDS:
+    if payload.get("operator_signature_needed") is True:
         return True
-    for key in ("severity", "priority"):
-        if str(payload.get(key) or row.get(key) or "").strip().upper() == "CRITICAL":
-            return True
-    return False
+    return row.get("kind") == "token-request"
 
 
 def unevidenced_operator_outbox(bus_root: Path, roster: list[dict]) -> list[dict]:
