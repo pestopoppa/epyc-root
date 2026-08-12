@@ -173,7 +173,7 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
 - [ ] **Retire or harden the saturated suites.** `general` (100% both-perfect), `thinking` (90%),
       `math` (89%) carry no discriminating information at this model tier and should not be used for
       any keep/drop read.
-- [ ] **Strip per-question calibration examples from `rubric_system_prompt`.** It names specific
+- [x] **Strip per-question calibration examples from `rubric_system_prompt`.** ✅ 2026-08-12 (`auditor`) — stripped to generic level anchors (research `9501b353`, `score_with_claude.py`; dated comparability note in-module: absolute levels break at this boundary — pre-strip runs incl. the 08-02 head-to-head were scored WITH the priming; A-vs-B under one judge version unaffected. **Owner note: if absolute judge levels ever gate a decision, an eval-instrument era row should accompany this boundary** — flagged, not self-authored). It named specific
       `question_id`s with the score they got on other models (`math/t3_q2_combinatorics` as a
       score-1 exemplar, `coder/t1_q1_algorithm` as score-0), priming the judge on identity before it
       reads the answer. Affects absolute level; harmless for A-vs-B since both arms get it.
