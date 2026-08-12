@@ -355,12 +355,63 @@ def _gates_granted(row: dict, token_text: str) -> bool:
     return True
 
 
+# C50 (2026-08-12): THE QUEUE IS A SNAPSHOT AND NOTHING RECONCILED IT.
+#
+# `status: READY` is written at seed time and only changes when an agent moves it.
+# `_eligible` checked status, deps, gates, lane and load — all from the QUEUE ROW —
+# and never opened `spec_ref`. The reference was carried into messages and never
+# dereferenced, so a row whose checkbox closed on 2026-07-29 stayed READY forever and
+# its line anchor rotted undetected, because no code path existed that could detect it.
+#
+# Measured by `mainB`: 811 advisory records resolving to NINE distinct rows, all from
+# one handoff file, the same five re-picked 134-135 times each; 86% named a row already
+# closed or rotted at the moment it was picked. The advisory volume was TICK RATE, not
+# backlog. The proof arrived as my own assignment: task_id
+# `opendataloader-pipeline-integration--013-L534`, whose two halves DISAGREE — box #13
+# is at line 59, and L534 is a prose bullet. Both were computed at seed time from a file
+# that has since been rewritten, and neither is re-derived.
+#
+# Fails toward NOT-dispatchable only when the anchor positively resolves to a CLOSED
+# box. An unresolvable ref (file moved, no line, malformed) is left dispatchable and
+# flagged, because refusing real work on a bad pointer is the costlier error — the
+# settled rule in `backlog_row_check.py`.
+
+_SPEC_LINE = re.compile(r"#L(\d+)\s*$")
+_SPEC_BOX = re.compile(r"^\s*- \[( |x|X)\]")
+
+
+def spec_ref_state(spec_ref: str, repo_root: Path = REPO_ROOT) -> tuple[str, str]:
+    """(state, detail) for a `path#Lnnn` reference. state in {open, closed, unresolved}."""
+    if not spec_ref:
+        return "unresolved", "no spec_ref"
+    m = _SPEC_LINE.search(spec_ref)
+    rel = spec_ref[: m.start()] if m else spec_ref
+    path = repo_root / rel
+    try:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError as exc:
+        return "unresolved", f"unreadable {rel}: {exc.__class__.__name__}"
+    if not m:
+        return "unresolved", f"{rel}: no line anchor"
+    n = int(m.group(1))
+    if n < 1 or n > len(lines):
+        return "unresolved", f"{rel}: line {n} beyond EOF ({len(lines)} lines)"
+    box = _SPEC_BOX.match(lines[n - 1])
+    if not box:
+        return "unresolved", f"{rel}:{n} is not a checkbox — anchor rot"
+    return ("closed" if box.group(1).lower() == "x" else "open"), f"{rel}:{n}"
+
+
 def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: str,
               co_ctx: dict | None = None) -> tuple[bool, str]:
     if row.get("revoking"):
         return False, "lease is being handed back (draining) — not re-assignable while held"
     if row.get("status") != "READY":
         return False, f"status={row.get('status')}"
+    # C50: dereference the anchor. Only a POSITIVELY closed box refuses.
+    spec_state, spec_detail = spec_ref_state(str(row.get("spec_ref") or ""))
+    if spec_state == "closed":
+        return False, f"spec_ref box is already CLOSED at HEAD ({spec_detail})"
     for dep in row.get("depends_on") or []:
         dep_row = latest.get(dep)
         if not dep_row or dep_row.get("status") not in {"DONE_PASS", "DONE_MARGINAL_OBS"}:

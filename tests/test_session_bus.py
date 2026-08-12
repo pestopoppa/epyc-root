@@ -3664,3 +3664,33 @@ def test_cursor_read_survives_the_file_vanishing_after_the_exists_check(tmp_path
         assert bus._cursor_get(tmp_path, "vanish") == 0
     finally:
         Path.read_text = real_read            # type: ignore[method-assign]
+
+
+def test_a_closed_spec_ref_box_is_refused_at_pick_time(tmp_path: Path) -> None:
+    """C50: the queue was a snapshot nothing reconciled.
+
+    `_eligible` checked status/deps/gates/lane/load — all from the QUEUE ROW — and
+    never opened `spec_ref`. A row whose checkbox closed on 2026-07-29 stayed READY
+    forever. Measured by `mainB`: 811 records resolving to NINE distinct rows, 86%
+    naming a row already closed or rotted when picked.
+    """
+    h = tmp_path / "h.md"
+    h.write_text("intro\n- [x] done thing\n- [ ] open thing\nprose line\n", encoding="utf-8")
+    assert coordinator.spec_ref_state("h.md#L2", tmp_path)[0] == "closed"
+    assert coordinator.spec_ref_state("h.md#L3", tmp_path)[0] == "open"
+
+
+def test_anchor_rot_is_UNRESOLVED_not_closed_so_it_still_dispatches(tmp_path: Path) -> None:
+    """Fail toward dispatchable on a bad pointer — refusing real work is costlier.
+
+    The live instance: `opendataloader-pipeline-integration--013-L534` pointed at a
+    PROSE bullet, and its two id halves disagreed (box #13 is at line 59). Rot must
+    be reported, not silently treated as done.
+    """
+    h = tmp_path / "h.md"
+    h.write_text("intro\n- [x] done\nprose, not a checkbox\n", encoding="utf-8")
+    state, detail = coordinator.spec_ref_state("h.md#L3", tmp_path)
+    assert state == "unresolved" and "anchor rot" in detail
+    assert coordinator.spec_ref_state("h.md#L99", tmp_path)[0] == "unresolved"
+    assert coordinator.spec_ref_state("missing.md#L1", tmp_path)[0] == "unresolved"
+    assert coordinator.spec_ref_state("", tmp_path)[0] == "unresolved"
