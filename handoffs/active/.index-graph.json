@@ -3465,7 +3465,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T10:00:13Z",
+  "generated_at": "2026-08-12T10:14:39Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4068,7 +4068,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 54,
+      "closed": 55,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
@@ -4159,7 +4159,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 215,
+      "closed": 216,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
@@ -4627,7 +4627,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 70,
+      "closed": 71,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",

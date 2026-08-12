@@ -2,8 +2,33 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-12 (adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Last compiled**: 2026-08-12 (adds the AK-D39 ROCm-provider boundary; sustained AK-BH-1 vendor-baseline replication, INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 102+ documents
+
+## Compiled Update — 2026-08-12 (ROCm modules are providers, not champions)
+
+**Confidence: verified local measurements plus an operator-accepted governance decision.**
+
+The NVIDIA/CUDA efficiency gap cannot be assigned to one software layer. Dense FP16 on the MI210
+reaches 62.6% of spec bandwidth while local vLLM-ROCm reaches 69.2%; hipBLASLt versus rocBLAS spans
+roughly 0.73x–1.32x across exact prefill shapes. That makes provider and algorithm selection a real,
+shape-specific search surface. The much larger fall to 21.3% for MoE Q8 and 10.3% for MoE IQ2 lies
+mainly in custom low-bit packing, dequant/MMQ, layout, gather, and dispatch paths rather than ordinary
+dense GEMM. Build/integration policy is also material: the measured flash-attention/rocWMMA/MMQ-MFMA
+factorial spans about 18.7k–24.6k t/s on one surface.
+
+AK-D39 therefore permits AutoKernel to search exact-shape rocBLAS/hipBLASLt/CK selection, compiler
+flags, launch topology, standalone Triton/HIP kernels, and isolated source-available ROCm module
+forks. These artifacts are governed candidate providers, not independent champion source trees. A
+win becomes bankable only through an experimental `llama_gpu` integration with exact operator,
+captured-workload, and whole-model evidence; the champion remains the deployable `llama.cpp`
+lineage. Shared `/opt/rocm` mutation and opaque-binary champion source are forbidden.
+
+### Source References (2026-08-12 ROCm-provider boundary)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — AK-D39 and the binding provider/integration rules
+- [System-wide kernel optimization design](../docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md) — mutation hierarchy and hardware caveat
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — measured rationale and operator acceptance
 
 ## Compiled Update — 2026-08-11: production kernel freezes to v9; AutoKernel's own harness hardens against cutover risk
 
@@ -13,6 +38,35 @@
 
 **Last compiled**: 2026-08-12 (adds executable AutoKernel reward-integrity evidence; prior findings retained)
 **Sources**: 102+ documents
+
+## Compiled Update — 2026-08-12 (governed raw-HIP compatibility arm)
+
+**Confidence: verified compile/correctness/harness compatibility on one public Torch2HIP task;
+observation-only and not a performance ranking.**
+
+AutoKernel now has a smallest end-to-end raw-HIP authoring seam on the physical MI210. The producer
+admits only a true Torch2HIP task from clean Apache-2.0 AgentKernelArena commit `2dbbf1d3`, hashes the
+task, candidate, evaluator, Ninja and hipcc identities, and compiles GPU-blind for gfx90a. It holds
+separate short MI210 claims only around the vendor baseline and centralized final evaluation and
+releases both even on failure or polite interruption.
+
+The post-contract SiLU r4 proof compiled and passed **11/11 public correctness cases** plus **11/11
+timing-harness cases**. Its receipt self-hash is
+`1cb7087f715a2a9ac28b187a3f2d25c41be6a82279ca4fb254ac9b481805bc48`; the independent belief reader
+re-derived the two producer-written fractions, window/sampler digests, distinct released claims,
+and observation-only boundary. The measured Torch-eager ratio is not rankable: public shapes are not
+sealed and the run binds no honest vendor baseline. C2/C6 sealed/unseen cases and a C3 vendor baseline
+remain mandatory before any HIP candidate can be ranked or proposed for an experimental llama.cpp
+branch.
+
+### Source References (2026-08-12 raw-HIP arm)
+
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — arm acceptance,
+  exact authority boundary, and residual decision-grade gate
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — task identity, claims, test counts, and
+  immutable r4 receipt hashes
+- [Vidya source register](../scripts/vidya/adapters/README.md) — prospective write/read contract and
+  no-backfill boundary
 
 ## Compiled Update — 2026-08-12 (executable reward-integrity corpus)
 
