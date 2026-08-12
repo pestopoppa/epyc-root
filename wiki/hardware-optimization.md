@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-12 (adds INF-03's live restart-safe checkpoint and evaluator-window claim correction; current-v9 controls, CPU IQK boundary, and prior findings retained)
+**Last compiled**: 2026-08-12 (adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained)
 **Sources**: 102+ documents
 
 ## Compiled Update — 2026-08-12 (INF-03 live campaign and GPU-claim scope)
@@ -347,6 +347,12 @@ rocBLAS at only three of nine prefill shapes, while its throughput ratio ranged 
 completed all eight explicitly pinned flash-attention × ROCWMMA × MMQ-MFMA arms on one 0.5B Q4_K_M
 prefill surface. Flash attention on won each build pair, MMQ-MFMA was slower, and `r1m0-fa-on` won at
 24,647.316788 t/s. That is a surface-local observation, not authority to change global build defaults.
+
+A clean-source sustained AK-BH-1 replication strengthened that result from a short screen to a
+55.17-second loaded window: 30,000 repetitions per provider per shape, 221 device samples, 86.43% at
+1700 MHz, and 241 W peak. hipBLASLt won 4/9 shapes with a 0.7445×–1.3162× ratio range; all nine
+winner directions matched the prior replay. This confirms per-shape provider selection under sustained
+load and does not create a global hipBLASLt or rocBLAS default.
 
 Ranking now also has a device-local absolute-duration admission. RVP-C3-5 derives a
 **250,090,903 ns** minimum complete repetition window from the first nominal-SCLK observation in the

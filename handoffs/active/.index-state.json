@@ -109,7 +109,7 @@
       "blocked": 0,
       "closed": 61,
       "guarded": 0,
-      "last_advanced": "2026-08-03",
+      "last_advanced": "2026-08-12",
       "open": 22,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-02",
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 213,
+      "closed": 214,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 235
+      "total": 236
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,

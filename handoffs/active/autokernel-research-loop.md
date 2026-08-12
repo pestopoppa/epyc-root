@@ -4124,6 +4124,17 @@ GPU cost before any GPU claim is filed.
   The near-parity win count drifted by one shape, but the shape-specific baseline conclusion did not.
   Receipt: `/mnt/raid0/llm/autokernel/campaigns/ak-bh-1-20260812T0448Z/receipt.json`, SHA-256
   `5daa79e7bc12cec1e9358b8166f08a7586bb0d5ba7885832bb47d96af82c7dc1`.
+- [x] **AK-BH-1a — Sustain the nine-shape vendor-baseline comparison long enough to attest loaded
+  device state.** ✅ 2026-08-12 — a clean detached research checkout at `26ca88dc` rebuilt the existing
+  comparator, then ran **30,000 timed repetitions per provider per shape** under canonical claim
+  `akd-f6f696e03b8d468c`. The 55.17-second sampling window retained 221 samples at 250 ms cadence
+  (maximum gap 0.250991 s), 86.43% at 1700 MHz, 165 W median / 241 W maximum power, and 62 C maximum
+  temperature. hipBLASLt won 4/9 shapes; its exact-shape ratio to rocBLAS ranged 0.7444927062× to
+  1.3162041222×. All nine winner directions matched the earlier short replay, with mean absolute ratio
+  drift 0.00721 and maximum 0.01556, so the shape-specific strongest-baseline conclusion survives
+  sustained load. Both exact PIDs were dead after terminal release at `2026-08-12T08:26:49.465889Z`.
+  Receipt: `/mnt/raid0/llm/autokernel/campaigns/ak-bh-1-sustained-r2-20260812T0824Z/receipt.json`,
+  SHA-256 `f8e09c77dffe7767af3bb1d1d85f2f4866155dcf677a331fa0e458111a42c855`.
 - [x] **AK-BH-2 — Baseline-honesty factorial: `-fa 0|1` × `ROCWMMA_FATTN` × `MMQ_MFMA`.** ✅ 2026-08-11
   **Correction to a standing project assumption**: `llama-bench`'s `-fa` default is
   `LLAMA_FLASH_ATTN_TYPE_AUTO`, not `0` — verified at `tools/llama-bench/llama-bench.cpp:389` in the

@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T08:19:35Z",
+  "generated_at": "2026-08-12T08:29:51Z",
   "nodes": [
     {
       "age_days": 13,
@@ -3469,13 +3469,13 @@
       "track": "agent file prose compression"
     },
     {
-      "age_days": 9,
+      "age_days": 0,
       "blocked": 0,
       "closed": 61,
       "domain": "research-evaluation",
       "handoff": "architect-model-selection-bench.md",
       "id": "EVL-02",
-      "last_advanced": "2026-08-03",
+      "last_advanced": "2026-08-12",
       "next_action": "Complete the full paired GPU `gpqa_diamond_cot` arm or close it by the standing ROI rule",
       "open": 22,
       "state": "active",
@@ -4147,7 +4147,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 213,
+      "closed": 214,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
