@@ -100,3 +100,19 @@ reason, where the pass is indistinguishable from a real one. Same family as the 
   flip is **held** until that merge lands rather than risking a conflict on the pre-reboot critical
   path. This artifact carries the evidence in the meantime.
 - Read-only throughout; no inference window used or requested.
+
+---
+
+## Addendum 2026-08-12 (`auditor`) — disposition upgraded: NO SIGNAL → POSSIBLY INVERTED
+
+mainC's B3 oracle rebuild (bus `msg-20260812T112126Z-11-mainC`; root/orchestrator commits
+`53f7aea0`, `99f22523`, `c9fb6573`, `7a1c9c2f`) proved the old oracle broken in **both
+directions**, not merely vacuous: echoing the buggy input **passes 50.5%** of rows, and the
+**correct reference solution FAILS on 32.2%** (the 100-char cut lands mid-token and
+`_contains_text_unit` requires a word boundary). An oracle that passes wrong answers and fails
+right ones can rank a worse model above a better one, so the cite-check disposition for every
+debugbench-backed comparison on record is upgraded from *no signal* to **possibly inverted
+signal**. Historical scores were **not** re-derived (mainC, same message). The live pool still
+carries the old oracle until the pool owner schedules the rebuild; the replacement
+(required+forbidden line patch, build-time discrimination gate) validated at 0% vacuity, 100%
+reference pass, 86.4% coverage.
