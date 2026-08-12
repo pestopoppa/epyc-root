@@ -86,8 +86,31 @@ per-tensor clipping for W3(a).
 
 **gfx90a is training-viable.** Autograd, LoRA adapters, bf16, AdamW and the TRL API path all
 execute on the MI210 with device residency proven by external sampling during the run.
-The W3 training-viability gate is met for LoRA/SFT. Not yet demonstrated: GRPO end-to-end,
-and 4-bit QLoRA (needs `bitsandbytes`, absent).
+The W3 training-viability gate is met for LoRA/SFT. Not yet demonstrated: GRPO end-to-end.
+
+## 4-bit QLoRA — `bitsandbytes` installed 2026-08-12, and 4-bit does NOT work
+
+`bitsandbytes 0.50.0` installs and imports, and `bnb.nn.Linear4bit` exists. **Both are false
+positives.** The wheel warns `No prebuilt binary for ROCm 6.2, loading ROCm 6.4 instead`, and a
+real NF4 load fails on device:
+
+```
+Error no kernel image is available for execution on the device at line 74 in file /src/csrc/ops.cu
+```
+
+The prebuilt ships no gfx90a code object for our ROCm 6.2. Import-and-attribute checks pass while
+the kernel is absent — verify the *consumer*, not the presence of the module.
+
+Two routes, and the second may retire the first:
+1. **Source build** — `hipcc 6.2.41133`, cmake and make are all present, so
+   `cmake -DCOMPUTE_BACKEND=hip -DBNB_ROCM_ARCH=gfx90a` is viable. NOT started: a parallel compile
+   is CPU work and mainA holds four CPU regions for the E5 Stage-B re-measurement. Queued behind
+   that release, not blocked on a decision.
+2. **4-bit is probably unnecessary for W3(a).** Arithmetic, not measurement: a 9B-class base at
+   bf16 is ~18 GB of weights; LoRA at the 1.75% trainable ratio measured above is ~157M params,
+   so ~1.3 GB of AdamW state and ~0.3 GB of gradients. Call it ~22–25 GB with activations against
+   the MI210's 64 GB. **Plain bf16 LoRA on a 9B fits with room to spare** — the "Q" in QLoRA buys
+   nothing here. Worth confirming against a real 9B before relying on it.
 
 Harnesses: `/workspace/tmp/a9_stage1_lora_smoke.py`, `/workspace/tmp/a9_stage2_trl_sft.py`,
 runner `/workspace/tmp/a9_run_stage1.sh`. Raw: `a9_stage{1,2}_result.json`,
