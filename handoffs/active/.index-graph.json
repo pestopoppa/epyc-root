@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T05:44:17Z",
+  "generated_at": "2026-08-12T06:25:04Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4056,13 +4056,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 45,
+      "closed": 47,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-12",
       "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
-      "open": 16,
+      "open": 14,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -4108,13 +4108,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 39,
+      "closed": 41,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
       "next_action": "Run the governed 6/6 diagnostic; keep the 8-arm panel refused pending licensed EvoEngineer and ARGUS sources",
-      "open": 7,
+      "open": 5,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4147,7 +4147,7 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 208,
+      "closed": 212,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",

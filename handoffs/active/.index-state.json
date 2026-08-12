@@ -4,7 +4,7 @@
       "blocked": 4,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 404
+      "open": 402
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 305
+      "open": 303
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -85,10 +85,10 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 39,
+      "closed": 41,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 7,
+      "open": 5,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 1,
-      "closed": 208,
+      "closed": 212,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 23,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 232
+      "total": 236
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
@@ -1834,10 +1834,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 45,
+      "closed": 47,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 16,
+      "open": 14,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
