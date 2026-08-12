@@ -801,3 +801,86 @@ def test_an_undated_or_unsigned_marker_does_not_suppress(tmp_path):
                  "*(ADJUDICATED 2026-08-12 — left closed.)*"):
         root = _adjudication_handoff(tmp_path, f"- [x] Do not churn the module.\n  {weak}")
         assert len(brc.closed_standing_constraints(root)) == 1, weak
+
+
+# --- Dependency-Graph signal (mainD, 2026-08-12) -----------------------------
+# The general half of the HG-3 finding, made executable: a block declared in the
+# file's Dependency Graph section, invisible to the row text AND to
+# blocking_children(). Helper name is deliberately distinct from _one_row /
+# _phased / _adjudication_handoff — an appended helper that shadows an existing
+# one silently breaks unrelated passing tests (mainC, same night).
+
+def _graph_handoff(tmp_path, graph: str, tasks: str):
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / "g.md"
+    p.write_text(f"## Prioritized Task List\n{tasks}\n## Dependency Graph\n\n```text\n{graph}\n```\n",
+                 encoding="utf-8")
+    return p
+
+
+_HG_TASKS = ("- [ ] **HG-1 — Threshold policy** from H4/H5 curves.\n"
+             "- [ ] **HG-3 — Protected-action list** aligned with existing SafetyGate.\n")
+
+
+def test_a_block_declared_only_in_the_dependency_graph_is_refused(tmp_path) -> None:
+    """The live reproduction: reviewer-escalation-and-human-gate-policy.md:22.
+
+    HG-3 reads as an ordinary ready task; the graph one section down puts it
+    downstream of HG-1, whose box is open. The dispatch queue served it as `none`
+    lane with NO blocker precisely because nothing in the row or its children says so.
+    """
+    p = _graph_handoff(tmp_path, "H4 curves + H5 winners -> HG-1 -> HG-2/HG-3 -> HG-8", _HG_TASKS)
+    code, reasons = brc.classify(p, 3, " ", brc._boxes(p)[1][2], "Prioritized Task List")
+    assert code == 2
+    assert "DEPENDENCY GRAPH" in reasons[0]
+    assert "HG-1" in reasons[0]
+
+
+def test_closing_the_prerequisite_clears_the_graph_block(tmp_path) -> None:
+    """Mutation test: the signal must depend on the prerequisite's STATE.
+
+    If it fires with HG-1 closed too, it is keyed on the graph alone and would
+    refuse work forever.
+    """
+    p = _graph_handoff(tmp_path, "HG-1 -> HG-3", _HG_TASKS.replace("- [ ] **HG-1", "- [x] **HG-1"))
+    assert brc.blocking_dependency_graph(p, 3, brc._boxes(p)[1][2]) is None
+
+
+def test_a_row_that_merely_MENTIONS_a_downstream_id_is_not_treated_as_it(tmp_path) -> None:
+    """Prefix, never substring — the standing caveat, applied to task ids."""
+    p = _graph_handoff(tmp_path, "HG-1 -> HG-3",
+                       _HG_TASKS + "- [ ] Align the protected list with HG-3 semantics.\n")
+    assert brc.blocking_dependency_graph(p, 4, brc._boxes(p)[2][2]) is None
+
+
+def test_no_dependency_graph_section_means_no_signal(tmp_path) -> None:
+    """An arrow anywhere in the file is not a dependency graph."""
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / "n.md"
+    p.write_text("## Notes\n\nHG-1 -> HG-3 is the rough order.\n\n"
+                 "## Prioritized Task List\n" + _HG_TASKS, encoding="utf-8")
+    assert brc.blocking_dependency_graph(p, 7, brc._boxes(p)[1][2]) is None
+
+
+def test_an_unresolvable_prerequisite_fails_TOWARD_dispatchable(tmp_path) -> None:
+    """Settled rule of this file: refusing real work is the costlier error.
+
+    A prerequisite with no box of its own must NOT invent a block.
+    """
+    p = _graph_handoff(tmp_path, "H4 curves + H5 winners -> HG-3",
+                       "- [ ] **HG-3 — Protected-action list** aligned with SafetyGate.\n")
+    assert brc.blocking_dependency_graph(p, 2, brc._boxes(p)[0][2]) is None
+
+
+def test_every_id_inherits_every_upstream_stage_on_the_line(tmp_path) -> None:
+    """`A -> B -> C`: C is blocked by A as well as B, not only its neighbour."""
+    p = _graph_handoff(tmp_path, "HG-1 -> HG-2 -> HG-8",
+                       "- [ ] **HG-1 — Threshold policy.**\n"
+                       "- [x] **HG-2 — Verifier rule.**\n"
+                       "- [ ] **HG-8 — Policy A/B.**\n")
+    prereqs = brc.dependency_prereqs(p.read_text(encoding="utf-8").splitlines())
+    assert prereqs["HG-8"] == {"HG-1", "HG-2"}
+    hit = brc.blocking_dependency_graph(p, 4, brc._boxes(p)[2][2])
+    assert hit is not None and hit[1] == "HG-1"   # skips the CLOSED HG-2, finds open HG-1

@@ -400,6 +400,83 @@ def child_boxes(path: Path, lineno: int) -> list[tuple[int, str, str]]:
     return out
 
 
+# FOURTH signal of the same family (`mainD`, 2026-08-12), and the one a handoff
+# author explicitly asked for: a dependency declared in the file's own **Dependency
+# Graph** block, which neither the row text nor `blocking_children` can see.
+#
+# Live reproduction, and the reason this exists: `reviewer-escalation-and-human-gate-
+# policy.md:22` (HG-3) reads as an ordinary ready task. The file's graph one section
+# down reads `H4 curves + H5 winners → HG-1 → HG-2/HG-3 → HG-8`, and HG-1's box is
+# OPEN — so HG-3 is blocked, and `BACKLOG-DISPATCH-QUEUE.md` TOP-40 #6 served it as
+# `none` lane with NO blocker. The handoff's own child box named the defect and the
+# general rule: *queue classification should consult the owning handoff's dependency
+# graph, not just the checkbox.* This is that rule, executable.
+#
+# NARROW BY CONSTRUCTION, per the standing caveat — every one of these must hold:
+#   * the file has a `## Dependency Graph` heading (not any arrow anywhere);
+#   * the box's text STARTS with its own task id (prefix, never substring), so a row
+#     merely mentioning HG-1 is not treated as being HG-1;
+#   * the prerequisite has its OWN box in the same file and that box is OPEN.
+# A prerequisite with no box is NOT a refusal: this file's settled rule is that
+# refusing real work is the costlier error, so an unresolvable id fails toward
+# dispatchable rather than inventing a block.
+_ARROW = re.compile(r"→|->")
+_TASK_ID = re.compile(r"\b([A-Z]{1,6}-\d+)\b")
+_TASK_ID_PREFIX = re.compile(r"^\**\s*([A-Z]{1,6}-\d+)\b")
+_DEP_GRAPH_HEAD = re.compile(r"^#{1,6}\s+.*dependency graph", re.I)
+
+
+def _dep_graph_lines(lines: list[str]) -> list[str]:
+    """Lines under a `## Dependency Graph` heading, up to the next heading."""
+    out, grab = [], False
+    for line in lines:
+        if line.startswith("#"):
+            grab = bool(_DEP_GRAPH_HEAD.match(line))
+            continue
+        if grab:
+            out.append(line)
+    return out
+
+
+def dependency_prereqs(lines: list[str]) -> dict[str, set[str]]:
+    """{task_id: {ids that must land first}} parsed from the Dependency Graph block.
+
+    A stage may name several ids (`HG-2/HG-3`, `H4 curves + H5 winners`); every id in
+    a stage inherits every id in every stage to its left on that line.
+    """
+    prereqs: dict[str, set[str]] = {}
+    for line in _dep_graph_lines(lines):
+        if not _ARROW.search(line):
+            continue
+        upstream: set[str] = set()
+        for stage in _ARROW.split(line):
+            ids = set(_TASK_ID.findall(stage))
+            for tid in ids:
+                prereqs.setdefault(tid, set()).update(upstream)
+            upstream |= ids
+    return prereqs
+
+
+def blocking_dependency_graph(path: Path, lineno: int, body: str):
+    """(own_id, open_prereq_id, prereq_lineno) if the graph blocks this box."""
+    own = _TASK_ID_PREFIX.match(body)
+    if not own:
+        return None
+    own_id = own.group(1)
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    prereqs = dependency_prereqs(lines).get(own_id)
+    if not prereqs:
+        return None
+    for i, line in enumerate(lines, 1):
+        box = _BOX.match(line)
+        if not box or "]" not in line:
+            continue
+        cand = _TASK_ID_PREFIX.match(line.split("]", 1)[1].strip())
+        if cand and cand.group(1) in prereqs and box.group(1) != "x":
+            return own_id, cand.group(1), i
+    return None
+
+
 def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple[int, list[str]]:
     """(exit_code, reasons). Advisory: it explains, it does not decide for you."""
     reasons = []
@@ -424,6 +501,15 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple
                    f"{state_note}",
                    "parent-only screening is exactly how the dispatch queue served blocked rows "
                    "as immediately dispatchable; this tool descends one level"]
+    depgraph = blocking_dependency_graph(path, lineno, body)
+    if depgraph:
+        own_id, prereq, pline = depgraph
+        return 2, [f"BLOCKED BY THIS FILE'S DEPENDENCY GRAPH — it reads {own_id} downstream of "
+                   f"{prereq}, and {prereq}'s own box at {path.name}:{pline} is still OPEN",
+                   "the block is in neither the row's text nor a child box, so both the row screen "
+                   "and blocking_children() read it as ready — this is the shape that let the "
+                   "dispatch queue serve a blocked row as `none` lane with no blocker",
+                   "confirm the prerequisite landed, or take the prerequisite instead"]
     lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     start = max((i for i, l in enumerate(lines[:lineno]) if l.startswith("#")), default=0)
     disclaimer = _OWNER_DISCLAIM.search("\n".join(lines[start:start + 3]))
