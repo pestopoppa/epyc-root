@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 400
+      "open": 399
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -85,10 +85,10 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 48,
+      "closed": 49,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 4,
+      "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
@@ -1482,14 +1482,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 67,
+      "closed": 68,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 17,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 84
+      "total": 85
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -2359,7 +2359,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Narrow MI210 claims to evaluator windows, then resume r3 from the two verified terminal checkpoints",
+      "next_action": "Complete live r4 six-arm campaign; rank only its terminal 6/6 panel",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {

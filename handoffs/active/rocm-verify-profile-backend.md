@@ -29,6 +29,14 @@
 - [x] **RVP-AUD-1 — Audit diagnostic receipt durability versus source/build provenance.** RVP-T0-1,
   AK-BH-1/2/3, and AK-LN-2/AK-X-5a retain their bounded findings; missing clean source/build identity
   is now explicit and blocks their use as AutoKernel campaign authority. ✅ 2026-08-12
+- [x] **RVP-AUD-2 — Reconcile implemented C3/C6 rows against current research main.** ✅ 2026-08-12 —
+  clean detached research `26ca88dc` revalidated `microbench.py`, `physical_bounds.py`,
+  `reward_hack_scan.py`, `devices.py`, `oracle_integrity.py`, and the generated import footprint at
+  **408 tests + 15 subtests PASS**. This confirms the existing completed state of RVP-C6-2/3/4/6/10
+  and RVP-C3-4/5; their implementation lineage is retained in `eda8de1a`, `ba986e49`, `c7fbfdd3`,
+  `5fbd471b`, and `1094ff6b`. RVP-C2-8/9 remain open deliberately: their reducers and claim-aware
+  runners are complete, but the full acceptance contract still needs an OP-11-authorized committed
+  seeded producer and fresh matched evidence. No implementation-only test upgraded that authority.
 **Categories**: hardware_optimization, benchmark_methodology, tool_implementation, inference_serving
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked; ROCm 6.2 bind-mounted; llama.cpp HIP build verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`). This backend is now **ACTIVE** (priority MEDIUM). Runnable first tasks: (1) install/pin `pytorch-triton-rocm` matched to ROCm 6.2 + verify gfx90a matmul (intake-760); (2) stand up `rocprof-compute` gfx90a metric subset (C4); (3) the honest-vendor-baseline candidates that are gfx90a-*reachable* — **BitBLAS/TileLang low-bit GEMM** (intake-497/tilelang-puzzles), **NOT AITER** (gfx942-only, intake-759). GPU claim grade follows P-GPU-1; profiling a live server remains the inference owner's scheduling boundary. [was: "~July 2026; nothing executes until the card racks" — stale]
 **Priority**: MEDIUM (the substrate for [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md))
