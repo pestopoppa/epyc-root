@@ -88,7 +88,13 @@
         },
         "payload": {
           "type": "object",
-          "description": "kind-specific; see per-kind rules below"
+          "description": "kind-specific; see per-kind rules below",
+          "properties": {
+            "operator_signature_needed": {
+              "type": "boolean",
+              "description": "C49 (2026-08-12): author-set POSITIVE marker — true means this message needs A HUMAN'S signature, not a named agent's action. Deliberately declared here at the generic `payload` level, not inside a per-kind `allOf` branch, because it is legal on ANY kind, not one. Replaces an INFERRED predicate (`kind in {token-request, defect}` OR `severity`/`priority == CRITICAL`) measured 2026-08-12 against 267 live inbox rows: 116 carried `action_required` (agent-action, never operator), only 8 satisfied the old predicate, and just 7 overlapped — near-disjoint in both directions. Every one of those 8 was `kind: defect` (fleet-internal engineering work); not one was a `token-request`, the only kind that IS an operator gate by definition. `_is_operator_item` (scripts/coordination/session_bus_coordinator.py) is now `payload.operator_signature_needed is True` OR `kind == 'token-request'` — token-request stays because a token IS the operator's signature, and dropping it would silence that channel. Absent or false is the default: `action_required`/`needs_routing_to` route to a named agent, never the operator, and CRITICAL severity does not imply operator-ness either."
+            }
+          }
         },
         "relayed_src": {
           "type": "string",

@@ -188,6 +188,40 @@ message id and carries **no checkbox**: the daemon relays, only the operator sig
 which hop failed — "never reached the inbox" and "sat unread" have different repairs. A last-hop
 net that depends on the hop before it having worked is not a net.
 
+## Operator items are DECLARED, not inferred (C49, 2026-08-12)
+
+"Unread `token-request` / `defect` / CRITICAL" (the C20 predicate above) is **superseded.** Measured
+2026-08-12 over 267 live inbox rows: 116 carried `action_required` (which means a NAMED AGENT must
+act next, never the operator), only 8 satisfied that old predicate, and just 7 overlapped —
+near-disjoint sets, misclassifying in both directions. Every one of those 8 was `kind: defect` —
+fleet-internal engineering work — and **not one was a `token-request`**, the only kind that genuinely
+means a human must sign something. The daemon had escalated "11 operator-decision items unread past
+deadline"; a parse of all 17 found **zero** genuine operator items.
+
+An item reaches the operator if, and only if, one of two things is true:
+
+- **`kind: token-request`** — a token IS the operator's signature, so this kind is an operator gate
+  by definition and needs no additional marker.
+- **`payload.operator_signature_needed: true`** — set deliberately by the author. This is the only
+  way any other kind reaches the operator.
+
+Three things this deliberately is NOT:
+
+- **`action_required: true` does NOT reach the operator.** It means the routed-to agent(s)
+  (`needs_routing_to`, else a concrete `to`) must act — see "Routing intent is structural, not
+  prose" above. Most `action_required` traffic is one main asking another to do something; the
+  operator is not in that loop by default.
+- **Urgency is not operator-ness.** `severity`/`priority: CRITICAL` means act soon, not "a human
+  must decide." An urgent engineering item still routes to an agent unless the marker is set.
+- **`kind: defect` is not, on its own, an operator item.** It is fleet-internal engineering work,
+  even at CRITICAL severity. If a defect genuinely needs a human's call, set
+  `payload.operator_signature_needed: true` on it explicitly — the kind alone no longer implies it.
+
+Enforced by `_is_operator_item()` in `scripts/coordination/session_bus_coordinator.py`, which the
+C19/C20/C27 escalation paths above all call: a message without the marker and without
+`kind: token-request` will not reach the last-hop escalation, no matter how urgent it looks. An
+agent can no longer escalate to the operator by owing itself a next step.
+
 ## Gate presentation is transport, and transport runs at every authority (C27, 2026-07-29)
 
 Two operator SIGNATURE REQUESTS filed on 2026-07-29 were never presented to anyone:
