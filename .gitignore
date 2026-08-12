@@ -150,3 +150,13 @@ worktrees/
 # sides always append at the tail so a textual merge cannot interleave them. Read via
 # scripts/utils/agent_log_analyze.sh; nothing reads it out of git history.
 logs/agent_audit.log
+
+# wrap-up 2026-08-12: runtime logs and merge artifacts. Same reasoning as C45
+# (agent_audit.log): append-only or tool-generated files that every agent touches are a
+# permanent merge tax with no read-side value in git.
+llama.log
+main.log
+cache/
+logs/*.out
+logs/*.stale_src
+*.orig
