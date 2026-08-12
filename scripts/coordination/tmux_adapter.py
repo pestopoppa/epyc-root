@@ -697,6 +697,42 @@ def _await_composer_consumed(target: str, baseline: str, timeout_s: float,
         time.sleep(_VERIFY_POLL_S)
 
 
+# C55/H-2, 2026-08-12. A CLAUDE COMPOSER HOLDING QUEUED TEXT IGNORES A BARE KEY.
+#
+# Measured against live panes 2026-08-12: with text queued in the composer,
+# `Enter`, `C-m`, `C-u` and `BSpace` each left the text EXACTLY where it was,
+# re-read and confirmed. Sending an ordinary character first, waiting
+# `_WAKE_SETTLE_S`, and only then the key, works — verified by emptying mainC's
+# and mainD's composers, both of which resumed work immediately afterwards.
+#
+# The wake character is a SPACE, chosen because it is inert for every key this
+# is used with: it rides harmlessly into a submitted message, and `C-u` kills
+# the whole line regardless of what is on it.
+#
+# THE HONEST CAVEAT. If the key does NOT take, the pane is then holding
+# `text + " "` rather than `text` — the wake character is a real edit to the
+# composer, not a probe. That is tolerable here and ONLY here because every
+# caller verifies by BASELINE DELTA (`_await_composer_consumed` /
+# `_await_composer_empty` compare against the pre-typing baseline or against
+# emptiness), never by matching the payload string. A verifier that asked "does
+# the composer still hold exactly what I typed?" would be made to lie by this
+# helper; none does, and none may be added.
+def _press_key_with_wake(target: str, key: str) -> tuple[int, str]:
+    """Wake character, settle, then ``key``. (rc, detail-on-failure).
+
+    Returns the FIRST non-zero rc with a message naming which of the two
+    send-keys calls failed, so a caller can report it without guessing.
+    """
+    rc, out = _tmux("send-keys", "-t", target, " ")
+    if rc != 0:
+        return rc, f"send-keys wake-character failed: {out}"
+    time.sleep(_WAKE_SETTLE_S)
+    rc, out = _tmux("send-keys", "-t", target, key)
+    if rc != 0:
+        return rc, f"send-keys {key} failed: {out}"
+    return 0, ""
+
+
 def _clear_own_pending(target: str, baseline: str,
                        faint_is_placeholder: bool = False) -> tuple[bool, str | None]:
     """Ctrl-U, then PROVE the composer came back to ``baseline``. (cleared, detail).
@@ -704,14 +740,21 @@ def _clear_own_pending(target: str, baseline: str,
     ONLY legitimate because the caller established, before typing, that the composer
     was empty — so the text being cleared is this adapter's own. NEVER send Ctrl-C to
     a Codex pane: the second one exits the session and destroys the window (it has
-    destroyed a main before). Ctrl-U alone clears a composer.
+    destroyed a main before).
+
+    H-2, 2026-08-12: this sent a BARE `C-u`, which C55 measured to be a NO-OP on a
+    Claude composer holding queued text. So every failed delivery stranded its payload
+    — and that residue then tripped the pre-typing composer-empty guard on every LATER
+    nudge and doorbell to the same main, which is the F-34 refusal loop re-arming
+    itself from its own rollback. Routed through `_press_key_with_wake` (read its
+    caveat block) so the rollback can actually succeed.
 
     Returns cleared=False on ANY doubt, including an unreadable pane. A rollback that
     cannot prove it worked is reported as a strand, not as a cleanup.
     """
-    rc, out = _tmux("send-keys", "-t", target, "C-u")
+    rc, detail = _press_key_with_wake(target, "C-u")
     if rc != 0:
-        return False, f"send-keys C-u failed: {out}"
+        return False, detail
     ok, observed, failure = _await_composer_consumed(target, baseline, _VERIFY_TIMEOUT_S,
                                                      faint_is_placeholder=faint_is_placeholder)
     if failure:
@@ -741,9 +784,11 @@ def _fail_after_typing(kind: str, agent: str, target: str, baseline: str,
     else:
         print(f"  ROLLBACK FAILED: {detail}. TEXT IS STILL PENDING IN {target} and will "
               f"look to that main like an instruction it was given and declined. Clear it "
-              f"with `tmux send-keys -t {target} C-u` (NEVER C-c on a Codex pane) or let "
-              f"whoever is there submit it. `tmux_adapter.py pending` lists every pane in "
-              f"this state.", file=sys.stderr)
+              f"with `tmux_adapter.py clear --agent {agent} --expect '<the text>'` (which "
+              f"sends the C55 wake character first — a BARE `tmux send-keys C-u` is a "
+              f"measured NO-OP on a Claude composer, and NEVER C-c on a Codex pane) or "
+              f"let whoever is there submit it. `tmux_adapter.py pending` lists every "
+              f"pane in this state.", file=sys.stderr)
     record(f"{kind}-undelivered", agent,
            f"{stage}: {why}"[:400], target=target, stage=stage,
            rollback="cleared" if cleared else "FAILED", rollback_detail=detail,
@@ -2084,8 +2129,10 @@ def cmd_nudge(args: argparse.Namespace) -> int:
         print(f"REFUSING: pane {p['target']} composer already holds pending input "
               f"{baseline.strip()[:120]!r}. Typing after it and pressing Enter would submit "
               f"THAT text as well, and this adapter cannot tell operator-typed input from "
-              f"text an earlier delivery left behind. Clear it with Ctrl-U (NEVER Ctrl-C on "
-              f"a Codex pane) or let whoever is typing submit it, then retry. "
+              f"text an earlier delivery left behind. Clear it with `tmux_adapter.py clear "
+              f"--agent {args.agent} --expect '<the text>'` (a BARE Ctrl-U is a measured "
+              f"no-op on a Claude composer; NEVER Ctrl-C on a Codex pane) or let whoever "
+              f"is typing submit it, then retry. "
               f"`tmux_adapter.py pending` lists every pane in this state.", file=sys.stderr)
         return EX_BLOCKED
 
@@ -2581,29 +2628,18 @@ def _composer_action(args: argparse.Namespace, verb: str) -> int:
         print(f"would {verb} {args.agent} at {target}: {pending!r}")
         return 0
 
-    # C55: a Claude composer holding queued text ignores a BARE keystroke. Measured
-    # 2026-08-12 against live panes: `Enter`, `C-m`, `C-u` and `BSpace` each left the
-    # text exactly where it was, re-read and confirmed. Sending any ORDINARY CHARACTER
-    # first, and only then the key, submits — verified by emptying mainC's and mainD's
-    # composers, both of which resumed work immediately afterwards.
-    #
-    # So the wake character is not cosmetic; without it `submit` and `clear` cannot
-    # succeed at all. They failed HONESTLY before this (the post-action re-read caught
-    # it every time and never claimed success), which is why nothing was lost — but an
-    # operator was left pressing keys by hand for an hour because the tool could only
-    # report its own failure. NEVER C-c — see the C54 block.
-    #
-    # The wake character is a SPACE, which is inert for `submit` (it rides into the
-    # submitted text harmlessly) and for `clear` (C-u kills the whole line regardless).
+    # C55: a Claude composer holding queued text ignores a BARE keystroke, so the
+    # wake character is not cosmetic — without it `submit` and `clear` cannot succeed
+    # at all. They failed HONESTLY before this (the post-action re-read caught it every
+    # time and never claimed success), which is why nothing was lost — but an operator
+    # was left pressing keys by hand for an hour because the tool could only report its
+    # own failure. NEVER C-c — see the C54 block. The measurement, the choice of a
+    # SPACE, and the honest caveat about a failed press leaving `text + " "` behind all
+    # live at `_press_key_with_wake`, which H-2 also put on the rollback path.
     key = "C-u" if verb == "clear" else "Enter"
-    rc, out = _tmux("send-keys", "-t", target, " ")
+    rc, detail = _press_key_with_wake(target, key)
     if rc != 0:
-        print(f"send-keys wake-character failed: {out}", file=sys.stderr)
-        return EX_MISCONFIG
-    time.sleep(_WAKE_SETTLE_S)
-    rc, out = _tmux("send-keys", "-t", target, key)
-    if rc != 0:
-        print(f"send-keys {key} failed: {out}", file=sys.stderr)
+        print(detail, file=sys.stderr)
         return EX_MISCONFIG
 
     empty, observed, failure = _await_composer_empty(target, _VERIFY_TIMEOUT_S,

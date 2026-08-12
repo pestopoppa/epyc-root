@@ -786,4 +786,10 @@ def test_no_path_through_clear_or_submit_can_emit_ctrl_c(live_bus, argv, acts, m
     assert bool(keys) is acts, f"expected acts={acts}, sent {keys}"
     assert not any("C-c" in str(a) or "^C" in str(a) for a in keys), keys
     if acts:
-        assert all(a[-1] in ("C-u", "Enter") for a in keys), keys
+        # C55 (2026-08-12) added the wake character: a bare key is a measured no-op
+        # on a Claude composer holding queued text, so " " legitimately precedes the
+        # real key. Widened to admit it — the invariant under test is the C-c
+        # PROHIBITION above, and pinning the exact key spelling here made this
+        # assertion fail on a correct fix instead of on a dangerous one.
+        assert all(a[-1] in (" ", "C-u", "Enter") for a in keys), keys
+        assert keys[-1][-1] in ("C-u", "Enter"), keys

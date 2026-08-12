@@ -2166,3 +2166,64 @@ def test_c56_no_tuple_is_sliced_where_a_string_was_meant() -> None:
                  and isinstance(n.slice, ast.Slice)]
     assert not offenders, (f"tuple literals sliced at lines {offenders} — a truncation "
                            f"that was meant for a string is truncating a tuple")
+
+
+# ---------------------------------------------------------------------------
+# H-2, 2026-08-12. THE ROLLBACK COULD NOT CLEAR, SO IT RE-ARMED ITS OWN DEADLOCK.
+#
+# `_clear_own_pending` sent a BARE `C-u`, which C55 measured to be a NO-OP on a
+# Claude composer holding queued text. Every failed delivery therefore stranded
+# its payload, and the strand then tripped the pre-typing composer-empty guard on
+# every LATER nudge and doorbell to the same main. The refusal loop was being fed
+# by the very code written to prevent it.
+def test_h2_the_rollback_sends_the_wake_character_before_ctrl_u(monkeypatch) -> None:
+    adapter = _load("h2_rollback")
+    sent: list[tuple] = []
+
+    def fake_tmux(*args):
+        sent.append(args)
+        return 0, ""
+
+    monkeypatch.setattr(adapter, "_tmux", fake_tmux)
+    monkeypatch.setattr(adapter, "_WAKE_SETTLE_S", 0.0)
+    monkeypatch.setattr(adapter, "_await_composer_consumed",
+                        lambda *a, **k: (True, "", None))
+    cleared, _ = adapter._clear_own_pending("sess:win", "› ")
+    assert cleared
+    keys = [a[-1] for a in sent if a and a[0] == "send-keys"]
+    assert keys == [" ", "C-u"], (
+        f"rollback sent {keys!r} — a bare C-u is a measured no-op on a Claude "
+        f"composer, so the payload stays stranded and re-arms the F-34 refusal loop")
+
+
+def test_h2_a_failed_wake_character_is_reported_and_never_read_as_cleared(monkeypatch) -> None:
+    """Fail closed on the FIRST send-keys too: a rollback that could not even press
+    a key must be a strand, not a cleanup."""
+    adapter = _load("h2_wakefail")
+    monkeypatch.setattr(adapter, "_tmux", lambda *a: (1, "no such pane"))
+    monkeypatch.setattr(adapter, "_WAKE_SETTLE_S", 0.0)
+    cleared, detail = adapter._clear_own_pending("sess:win", "› ")
+    assert cleared is False
+    assert "wake-character" in (detail or "")
+
+
+def test_h2_both_key_paths_go_through_one_helper() -> None:
+    """Structural: `_clear_own_pending` and `_composer_action` must both press keys
+    via `_press_key_with_wake`. A second hand-rolled wake sequence is how the two
+    paths drift apart again — one of them silently losing the wake character is
+    exactly the defect H-2 repairs."""
+    import ast
+    tree = _adapter_ast()
+    fns = {n.name: n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)}
+    for name in ("_clear_own_pending", "_composer_action"):
+        body = fns[name]
+        calls = {c.func.id for c in ast.walk(body)
+                 if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)}
+        assert "_press_key_with_wake" in calls, f"{name} does not use the wake helper"
+        raw = [c for c in ast.walk(body)
+               if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)
+               and c.func.id == "_tmux"
+               and any(isinstance(a, ast.Constant) and a.value == "send-keys" for a in c.args)]
+        assert not raw, (f"{name} still calls _tmux send-keys directly at lines "
+                         f"{[c.lineno for c in raw]} — route it through "
+                         f"_press_key_with_wake or the wake character will be lost again")
