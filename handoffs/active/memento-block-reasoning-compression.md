@@ -138,12 +138,33 @@ Ran all 5 tests against Qwen3-1.7B-Q8_0 (`llama.cpp-experimental/build-diff-test
 **LoRA config**: rank=16, alpha=32, dropout=0.05, targets=[q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj]. ~393K trainable params for 1.7B model (0.02% of base).
 
 **Model ladder** (CPU-feasible validation path):
+> ⚠️ **BOTH numeric columns below are WRONG and must not be planned against** (`mainC`, 2026-08-12,
+> from the UFH-03 smoke). Retained only so the correction is legible.
+>
+> **`LoRA Params` omits `num_hidden_layers`.** For Qwen3-0.6B the measured trainable count is
+> **8,257,536**, not 197K — **42× low**. Independently re-derived: r=16 over the six listed targets gives
+> q 49,152 + k 32,768 + v 32,768 + o 49,152 + gate 65,536 + up 65,536 = **294,912 per layer × 28 layers
+> = 8,257,536**, matching the measurement exactly. The other three rows are computed the same way and are
+> therefore also wrong; they are **not** corrected here because each needs its own layer count and
+> head/intermediate dims, and inventing them would repeat the original error.
+>
+> **`Est. Time/Epoch` is optimistic by more than an order of magnitude.** Measured **4.74 s/sample**
+> (Qwen3-0.6B, seq 1024, bf16, grad-checkpointed, 24 cores). Against the S2 corpus of 228,557 samples
+> that is **~301 h/epoch at seq 1024** — versus the ~19 h claimed. The design calls for **seq 4096**
+> (~4× cost) and **2 epochs**, i.e. ~2,400 h; even granting a generous 4× full-machine speedup over the
+> one-region measurement, ~600 h. Scout-grade and grad-checkpointing costs ~30%, so treat the exact
+> multiplier as soft — but the gap is 15–30×, not a rounding error.
+>
+> **Consequence: the "Feasible?" column is unsupported.** If the 0.6B *smoke* row is really ~300 h, the
+> 1.7B "validation target" is not a validation target on CPU. **Re-derive this ladder before committing
+> any schedule to it**, and treat GPU or a corpus subsample as the live options.
+
 | Model | BF16 Mem | LoRA Params | Est. Time/Epoch | Feasible? |
 |-------|----------|-------------|-----------------|-----------|
-| Qwen3-0.6B | 1.2 GB | 197K | ~19h | Yes (smoke test) |
-| Qwen3-1.7B | 3.4 GB | 393K | ~54h | Yes (validation target) |
-| Qwen3-8B | 16 GB | 786K | ~11 days | Marginal |
-| Qwen3-32B | 64 GB | 983K | ~42 days | No — requires GPU QLoRA |
+| Qwen3-0.6B | 1.2 GB | ~~197K~~ **8.26M measured** | ~~19h~~ **~301h @seq1024 measured** | ⚠️ re-derive |
+| Qwen3-1.7B | 3.4 GB | ~~393K~~ wrong, re-derive | ~~54h~~ wrong, re-derive | ⚠️ re-derive |
+| Qwen3-8B | 16 GB | ~~786K~~ wrong, re-derive | ~~11 days~~ wrong, re-derive | ⚠️ re-derive |
+| Qwen3-32B | 64 GB | ~~983K~~ wrong, re-derive | ~~42 days~~ wrong, re-derive | No — requires GPU QLoRA |
 
 **Blockers**: `peft`, `trl` packages not installed (pip install). 32B requires GPU — CPU training is infeasible at production scale. Recommend: validate on 1.7B (CPU), then rent GPU time for 32B QLoRA.
 
@@ -188,7 +209,43 @@ Ran all 5 tests against Qwen3-1.7B-Q8_0 (`llama.cpp-experimental/build-diff-test
 
 - [x] S1 llama.cpp block-masking feasibility + runtime validation (5/5 tests PASS, 2026-04-14) ✅
 - [ ] S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)
+      **Pipeline PROVEN end-to-end 2026-08-12** (`mainC`, research `c62ba27e`) — but the table stays
+      empty deliberately. At **16 optimizer steps** a format-compliance number would read ~0% and would
+      later be cited as *"Memento format learning failed"*; that column needs a real run, not a smoke.
+      The one solid figure is **compression ratio 5.91×** (corpus block:summary tokens, 300 records) —
+      a dataset ground-truth property with no model involved. Loss 1.354 → 1.249 is a drift, **not** a
+      convergence claim. Adapter verified real: 336 tensors all finite, **168/168 `lora_B` off zero
+      init**, so weights genuinely updated.
 - [ ] S2 validation target: Qwen3-1.7B LoRA (promote/stop decision)
-- [ ] Install peft/trl; run memento_sft.py real Stage-1 job
+      ⚠️ **Feasibility unproven — see the corrected ladder above.** At the measured 4.74 s/sample the
+      0.6B *smoke* model implies ~301 h/epoch at seq 1024; the 1.7B "validation target" is not a
+      validation target on CPU under those numbers. Re-derive before scheduling.
+- [x] Install peft/trl; run memento_sft.py real Stage-1 job ✅ 2026-08-12 — shared persistent venv at
+      `/mnt/raid0/llm/venvs/ml-training` (torch 2.13.0+cpu, transformers 5.15.0, peft 0.20.0, trl 1.9.2).
+      Deliberately **not** under `/tmp`: the earlier GRPO venv was lost to `/tmp` cleanup.
+      **The stated blocker was not the real one.** `peft`/`trl` were missing, but the training path was a
+      SKELETON — `get_peft_model()` sat commented out behind `# TODO: Uncomment when peft is installed`,
+      so installing the packages would never have produced a LoRA run.
+
+- [x] **Repair `memento_sft.py` — six pre-existing defects, none of which a passing run would reveal**
+      ✅ 2026-08-12, research `c62ba27e`. (1) **LoRA never applied** — the optimizer collected all 596M
+      base params while the script printed "LoRA"; it was silently running a full fine-tune.
+      (2) **`resize_token_embeddings` SHRANK the vocab** 151936→151673: Qwen3 ships reserved slots so the
+      four memento tokens already fit, and the resize destroyed 263 embedding rows plus the tied
+      output-head rows. (3) **The final adapter save was a TODO** — a completed run persisted nothing.
+      (4) **Labels covered the prompt**, training the model to generate problem statements.
+      (5) **Subsets drawn from shard 0 only**, and shards are domain-clustered, so `--max-samples 100`
+      yielded 100% `code` rather than the intended mix. (6) **The LoRA param estimate omitted
+      `num_hidden_layers`** — the 42× error that propagated into this handoff's ladder.
+      Plus one introduced and caught in the same session: 3/128 records have prompts ≥ seq_len, so after
+      truncation every label is `-100` and `cross_entropy` returns **nan** (first smoke printed
+      `avg loss: nan`). The gradient was verified *zero* rather than nan, so no adapter was poisoned, but
+      the metric was worthless. Now dropped with a logged count plus a non-finite-loss guard before
+      `backward()`.
+      Verified by 14 pytest-collected tests with a mutation harness, **10/10 mutants killed**. The first
+      pass had **4 survivors and the tests were fixed, not the scoreboard** — including removing two of
+      the author's own "fixes" (`enable_input_require_grads()`, an fp32 upcast loop) that were measured
+      **not** load-bearing on this stack, and rewriting one vacuous test that re-derived a value instead
+      of calling the function under test.
 - [ ] S3 deployment integration (BLOCKED on S2 pass): wire block masking flag into orchestrator_stack.py
 - [ ] S3: Fold/Unfold toggle + short-m@k voting + Hadamard+q4_0 stacking

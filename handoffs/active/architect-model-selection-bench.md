@@ -706,6 +706,30 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
   incumbent's thinking-off behaviour was inferred from config, not measured; a thinking-off run would
   confirm the ~0.3 s side. The direction is not in doubt, the magnitude is prompt-dependent.
 
+- [ ] **WG-LFM-3 — Can LFM2.5-2.6B be accelerated by speculative decoding?** (operator question,
+  2026-08-12.) **Read the ratio caveat before spending a window on this.** Spec-dec raises tokens per
+  SECOND; the term currently deciding this verdict is tokens per TASK (WG-LFM-2, ~27× overhead). A
+  realistic 1.5–2.5× spec-dec gain cannot close a 27× count gap, because the drafter still has to emit
+  every reasoning token. So this is **not** a route to rescuing the candidate — but it IS the right way
+  to establish its best-case ceiling, and it becomes decisive if real `worker_general` traffic (longer
+  answers) shrinks the count gap enough for rate to matter again.
+  Concrete path: **`LFM2.5-1.2B` exists** and is the obvious same-family drafter. Two cautions. (1) The
+  size ratio is poor — 1.2B drafting for 2.6B is ~2.2×, where spec-dec normally wants ~10×; draft cost
+  plausibly eats the gain, so this may be net-negative. (2) **Vocabulary identity must be PROVEN, not
+  assumed** from the shared `LFM2.5` name — the existing note that LFM2.5's 128K `lfm2` BPE rules it out
+  as a drafter *for other targets* says nothing about 1.2B↔2.6B compatibility. Per standing policy,
+  **measure acceptance rate α before investing**: a low α makes the whole path net-negative regardless
+  of ratio. Note the incumbent already has MTP self-drafting, so this only equalises an existing
+  advantage rather than creating a new one.
+
+- [ ] **WG-LFM-4 — Compare both arms on GPU** (operator instruction, 2026-08-12). LFM2.5-2.6B Q4_K_M is
+  1.70 GiB resident and fits the MI210 trivially, so this is cheap to run and the CPU-only comparison is
+  genuinely incomplete without it. Two things to carry in: (a) the reasoning-token finding is a property
+  of the MODEL, not the hardware, so GPU changes the rate and not the count — WG-LFM-2 must be settled
+  either way; (b) the incumbent must run with its production MTP path, which `llama-bench` cannot
+  exercise, so this needs a `llama-server` arm to be a fair comparison rather than a repeat of the
+  base-decode-only limitation. Blocked on the GPU lane (not `mainC`'s) and on OP-16 for decision-grade.
+
 - [x] **`GGML_IQK_Q8_0=1` is load-bearing for any Q8_0 arm** ✅ 2026-08-12 — without it the Q8_0 run
   logged no `[iqk] ACTIVE` line at all: pp 539.24→870.47 (+61%), tg 15.75→24.97 (+58%). A Q8_0 bench
   omitting it is not top-optimized and must not be published as one. `canonical_recipe.py` already

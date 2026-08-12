@@ -79,6 +79,7 @@ Keep this table current. It is the answer to "has anyone already looked at this?
 | wiki pages | *(not a class)* | **live** as dependency edges, never claims | `wiki_dependents.py` |
 | `benchmarks/results` (2,605 files) | measurement | **rejected on evidence** — 0/200 sampled carry the full tuple; would add ~4,500 claims that gate nothing | — |
 | llama-bench sweeps | measurement | candidate — needs a write-side hook first | — |
+| LoRA/SFT training runs (`memento_sft.py`, Stage-1/2) | measurement | candidate — **wire the write side NOW, while the producer is being built** (`mainC`, 2026-08-12). First real run landed 2026-08-12 emitting s/sample, trainable-param count, per-quarter loss and an adapter-integrity check (finite tensors, `lora_B` off zero init). Retrofitting is impossible: a tuple invented on read would claim warrant the run never captured — the `benchmarks/results` lesson one row up | — |
 | speech kernel (whisper/qwentts) runs | measurement | candidate — unexamined | — |
 | kernel promotion/certification and K35 paired kernel/speculation receipts | measurement | candidate — v9 candidate, production GPU, DFlash/DSpark, and IQ3 quick-pair receipts exist, but producers have no ClaimTuple write hook; do not retrofit on read | — |
 | model artifact acquisition/integrity receipts | measurement | candidate — downloads currently preserve repo/revision, bytes and hashes only in session prose; add a prospective ClaimTuple write hook before the next acquisition | — |
