@@ -1948,9 +1948,36 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       70/100 questions at `0% correct` purely because the API was down; only `--dry-run` prevented a
       0.000 baseline reaching production state. Reliability should have collapsed the run long before
       70 questions.
-- [ ] **`runtime_flags` drift checker grades declared-vs-live but never wired-vs-unwired.** It reports
+- [x] **`runtime_flags` drift checker grades declared-vs-live but never wired-vs-unwired.** It reports
       `semantic_classifiers` as blocking drift; that flag has **zero consumer modules** outside
       `features.py`. The tool embodies the defect class it was built to detect.
+      **✅ 2026-08-12 (`mainA`, pulled from the generated bench and claimed) — BOTH HALVES VERIFIED,
+      still true, and the row's last sentence is exactly right.**
+      *Zero consumers:* `grep -rl semantic_classifiers` across `src/` and `scripts/` returns
+      **exactly one file** — `src/features.py`, the declaration site itself. Nothing reads it.
+      *No wired dimension:* `scripts/validate/runtime_flags_drift.py` compares **flags declared in
+      code** against **overrides present in the live file** (`registry_flag_count` vs
+      `live_override_count`), and its `BLOCKING_KINDS` are `undeclared_override` and
+      `unknown_flag_in_live`. Every axis is *declaration ↔ live state*. There is no notion of
+      whether a declared flag is read by anything, so a flag with zero consumers is graded
+      identically to a load-bearing one.
+      **Why this is worth more than a nit.** The checker's whole purpose is to stop a declaration
+      drifting from reality — and it defines *reality* as the live override file, which is another
+      declaration. Both sides of the comparison are statements of intent; neither is a witness that
+      the flag does anything. That is the same claim-without-witness shape found repeatedly on
+      2026-08-11/12 in the era stamps, the `reasoning` key and the `--validate-only` help text, and
+      it is why the row's `embodies the defect class it was built to detect` is literally accurate
+      rather than rhetorical.
+      **Cheap fix, recommended not applied** (another owner's validator; consistent with how every
+      other cross-owner code change was handled this night): add a NON-BLOCKING `unwired` finding
+      kind — for each declared flag, count occurrences outside its declaration module; zero means
+      report it. Non-blocking on purpose, because an unwired flag is not a *drift* and making it
+      block would fail the checker on every deliberately-reserved flag. The value is that
+      `semantic_classifiers` would appear in a report someone reads, which is the whole gap.
+      **One caveat for whoever implements it:** a grep-based consumer count will miss dynamic
+      lookups (`getattr`, config-driven dispatch, string keys). It should therefore report
+      `no static consumer found`, not `unused` — the second is a claim the method cannot support,
+      and overstating it would recreate this row one layer up.
 
 ## Context accounting, `-np`, and the E8 blocker (2026-08-03, evening)
 
