@@ -676,6 +676,65 @@ non-reasoning by design. Incumbent is unchanged: `worker_general` = `gemma-4-26B
       stop and report — the reset premise is wrong and nothing downstream is worth running.
       Bar to beat: **33 tokens / 2.97 s** (production incumbent, measured 2026-08-12).
 
+- [x] **WG-LFMI-1 — the gate PASSES: the `-Instruct` variant does not reason** ✅ 2026-08-12.
+      Evidence `epyc-inference-research/benchmarks/results/scout/wg-lfmi-1-2-20260812/` (43 files,
+      commit `38315212`). Template (both GGUFs byte-identical, sha256 `f05bf4b9…`): generation prompt
+      is `<|im_start|>assistant\n` — **no `<think>` prefill**, and **no `enable_thinking` kwarg because
+      none is needed**. The only thinking branch is `keep_past_thinking` (default false), which strips
+      `</think>` from PAST turns — history hygiene, not a prefill. Render proven rather than assumed:
+      llama.cpp's own minja render matches the hand render token-for-token (25 tokens).
+      Token counts, five reference prompts, temp 0 / seed 42, every run stopping on **EOS** not the cap:
+      **36 generated tokens** for BOTH quants (3,3,14,14,2) against the incumbent's **33** — 1.09x,
+      parity, and **13.9x fewer than the abandoned 2.6B's 501**. Zero `<think>` strings in ten outputs.
+
+- [x] **WG-LFMI-2 GPU arms** ✅ 2026-08-12, `-fa` swept rather than assumed, 3 rounds, order rotated,
+      `taskset -c 184-191 -ngl 99 -r 5`:
+
+      | quant | fa | pp512 | tg512 | peak VRAM |
+      |---|--:|--:|--:|--:|
+      | Q4_K_M | 1 | 15012.59 ±1578.93 | 431.18 ±7.03 | 1.389 GB |
+      | Q8_0 | **1** | **19129.88 ±1085.62** | **442.07 ±7.70** | 1.905 GB |
+
+      **Max-opt is `-fa 1` for both quants — OPPOSITE to gemma4 on the same GPU**, so the `-fa` setting
+      is per-model and must never be inherited. **Q8_0 beats Q4_K_M on GPU** (+2.5% tg512, +27% pp512),
+      confirming and strengthening the recorded CPU→GPU quant inversion.
+      **The number that decides it**: 36 tok @ 442.07 = **81.4 ms to answer** vs the incumbent's 33 tok
+      @ 100.54 = 328.2 ms → **4.0x**; crediting gemma's 1.44x MTP, 227.9 ms → **2.8x**. `llama-bench`
+      cannot exercise MTP, so **2.8x is the honest column to argue against** — and unlike the 2.6B,
+      **the token ratio does not eat the win**.
+      Residency proven three ways (`ldd` cannot): linkage PASS with the ambient path REPLACED not
+      appended; `Device 0: AMD Instinct MI210, gfx90a` and `backend = ROCm` in every row; sampled
+      **while the bench PID was alive** — VRAM 1.39/1.90 GB, GPU 95-99%, `kfd_clients=1` with the KFD
+      PID equal to the captured bench PID, and live `Cpus_allowed_list = 184-191`. One first-line
+      sample read `0-191` — the pre-`exec` window before `taskset` applied — and was explained rather
+      than dropped.
+
+- [ ] **WG-LFMI-2b — CPU arms, still owed.** Deferred because a sibling agent was saturating 176 cores
+      for the OP-24 corpus migration. Cheap to add once the host is quiet.
+
+- [ ] **QUALITY IS NOW THE OPEN QUESTION, and the current probe is the wrong instrument.**
+      Correctness was **3/5** on the reference prompts: both arithmetic items wrong on BOTH quants
+      (`17*23` → 4931/4935, correct 391; marbles → 360/456, correct 72). Different wrong answers per
+      quant, so **capability, not a quantization artifact**.
+      **But two of those five prompts are arithmetic, and a model should not be doing arithmetic** —
+      operator, 2026-08-12: *"there are deterministic tools for that sort of thing."* So this is 3/3 on
+      non-arithmetic and 0/2 on a capability that should be tool-routed. The verdict is **unresolved,
+      not negative**: build a correctness set from actual `worker_general` traffic rather than five
+      prompts inherited from a different question.
+      Two structural findings surfaced while checking this, both filed below.
+
+- [ ] **NO DETERMINISTIC COMPUTE TOOL EXISTS for a worker to route arithmetic to.** `src/tools/` holds
+      `code/` (lint, run_tests), `data/`, `file/`, `web/`, `vision/`, `knowledge.py` — no calculator,
+      no Python exec, no code interpreter. So arithmetic currently falls to the model **by default,
+      not by design**. That is a gap in the stack, not in the candidate.
+
+- [ ] **NO CORRECTNESS SIGNAL CAN TRIGGER ESCALATION on the `general` chain.** The chain exists —
+      `worker_general → frontdoor → architect_general → architect_critic`, `max_escalations: 3` — but
+      its triggers are only `error_categories: [timeout, inference_error]` and `explicit_request`.
+      A confidently-wrong but well-formed answer is a **successful inference**, so it never escalates
+      and is returned unchallenged. This is escalate-on-failure, not review-every-result; the
+      distinction matters exactly where a small model is weakest.
+
 - [ ] **WG-LFMI-2 — CPU + GPU decode, interleaved, both quants.** Report pp/tg with stddev, peak
       resident, **and tokens-per-task** — a t/s table alone is what nearly banked the wrong verdict last
       time. Reuse the harness under `benchmarks/results/scout/wg-lfm-1-20260812/` (replayable).
@@ -691,6 +750,35 @@ non-reasoning by design. Incumbent is unchanged: `worker_general` = `gemma-4-26B
       ratio problem is worse, not better — a same-family drafter would have to be tiny. **Measure
       acceptance rate α before investing**, per standing policy, and prove vocabulary identity rather
       than inferring it from a shared model-family name.
+
+- [ ] **WG-LFMI-5 — RE-OPEN the 2.6B reasoning variant on a RESIDENCY argument, not a rate argument.**
+      Raised by the operator 2026-08-12 after the 2.6B had already been rejected, and it is a different
+      question from the one that rejected it. The rejection compared like-for-like hardware
+      (GPU-vs-GPU, CPU-vs-CPU), which is methodologically tidy and **operationally wrong**: the
+      incumbent is **CPU-served today**, and at 26.3% of the MI210 it cannot casually become
+      GPU-resident, because the card already carries `architect_general`, `coder_escalation`,
+      `vision_escalation` and `worker_vision`.
+
+      | model | VRAM | % of MI210 |
+      |---|---:|---:|
+      | gemma4-26B-A4B Q4_K_M | 17,213 MiB | **26.3%** |
+      | LFM2.5-2.6B Q4_K_M | 2,126 MiB | **3.2%** |
+      | LFM2.5-1.2B-Instruct Q4_K_M | 695 MiB | 1.1% |
+
+      Time-to-answer in the configuration each would ACTUALLY be deployed in: LFM2.5-2.6B on GPU is
+      501 tok / 225.11 t/s = **2.23 s**; the incumbent on CPU is 33 tok / 19.40 t/s = **1.70 s** decode
+      but **2.97 s** measured wall including prefill. That is a wash — not the 4.3x deficit on record.
+      **The 15.2x token penalty is affordable precisely because the small model can be resident where
+      the incumbent cannot.**
+
+      Two caveats before anyone banks this. (1) The 3.2% figure UNDERSTATES the constraint: KV cache and
+      concurrency scale with slots, not weights, so the real test is co-residency with the existing four
+      GPU roles under load, not weights in isolation. (2) 2.23 s vs 1.70-2.97 s is close enough that it
+      needs a measurement, not this arithmetic.
+
+      **Weights were deleted but are exactly recoverable** — `model_registry.yaml` `lfm25_26b_q4km` /
+      `lfm25_26b_q8_0` carry pinned revision `b421ad1d549afeda6a0fb2ad3a697cb5a7879adc` and both
+      SHA-256 digests. Re-fetch from the ledger; do not re-derive from a fresh `main`.
 
 ### Traps this row has already paid for — do not rediscover them
 
