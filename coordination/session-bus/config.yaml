@@ -66,8 +66,15 @@ roster:
   # dispatched to them. lanes:[none] deliberately: the CPU is already contended by inference (E8)
   # and mainA (E5), and none-lane work is the only kind that can be dispatched instantly at any
   # moment, which is exactly what an anti-idle reserve needs to be.
-  - {id: mainC,             role: main,              lanes: [none],           endpoint: "tmux:agent:mainC",      drain: boundary}
-  - {id: mainD,             role: main,              lanes: [none],           endpoint: "tmux:agent:mainD",      drain: boundary}   # was `fable-auditor` until 2026-07-29
+  - {id: mainC,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainC",      drain: boundary}
+  - {id: mainD,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainD",      drain: boundary}   # was `fable-auditor` until 2026-07-29
+  # Added by coordinator-agent 2026-08-12 on operator instruction. The hardware-idle
+  # backfill runner (5af987ef) detects idle compute with queued compute-gated work and
+  # files it. Without this row its appends fail CLOSED with the roster error - it was
+  # working and mute. role: service because it is a runner, not a session: it has no
+  # tmux window and nothing nudges it. lanes:[none] - it OBSERVES and REPORTS idle
+  # hardware; it never claims a device or launches a job.
+  - {id: hardware-backfill, role: service,           lanes: [none],           endpoint: "monitor:file",          drain: none}
 
 authority:
   within_lane: [self]
@@ -80,7 +87,13 @@ authority:
 coordinator_daemon:
   tick_s: 45
   lookahead: 1
-  authority: manual        # manual (M1) | advisory (M3) | assign (M4)
+  authority: assign        # manual (M1) | advisory (M3) | assign (M4)
+  # RAISED manual->assign by operator decision 2026-08-12. Rationale: the daemon
+  # emitted 4,602 would-assign rows in one night, every one carrying a concrete
+  # task_id, and delivered none - fleet ran at ~8-9% utilisation with a 3h47m
+  # window at zero. M1 (e9a11f08) routes the pick to coordinator-agent's inbox and
+  # silences itself structurally once assign lands: apply_assignment moves the row
+  # out of READY, the would-assign stops, the signature changes.
   epoch: 0
 
 # Live tmux topology (operator requirement, 2026-07-27): every spawned main is a
