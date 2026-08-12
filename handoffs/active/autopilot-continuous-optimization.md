@@ -2218,6 +2218,44 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `state_write_lock`, and re-reads the file after writing to prove the stamp survived.
 
 ### New tasks
+- [x] **MemRL reward-poisoning blast radius — ASSESSED.** ✅ 2026-08-12, orchestrator `5d494c2d`.
+  **THE HEADLINE IS THAT K IS UNCOMPUTABLE.** Infra-sourced `False` and wrong-answer `False` are
+  **byte-identical everywhere they are stored**, for three independent reasons each sufficient alone:
+  the injected reward context carries no disposition/error/status field at all; `source` is dropped at
+  write time (`q_scorer.py:1922-1938` hardcodes `source="external"`); and the update branch rewrites
+  `q_value` in place without recomputing `outcome`, so a poisoned 0.0 folded onto a success row still
+  reads `outcome='success'`. Per `§ Reporting Units`: **12,444 records resolving to 7,937 distinct
+  rows, of which K were infra-sourced — K UNCOMPUTABLE**, so there is NO headline damage figure in
+  either direction. Not "small" — *unknown*.
+  **AND THE DAMAGE IS MOSTLY INERT, BY ARITHMETIC.** `q_scorer.py:1906` is
+  `initial_q = 0.5 + reward*0.5`, so `reward=0.0` lands at **exactly 0.5 — neutral**. *(Verified by
+  `mainC`.)* 7,499 of 7,941 external failure rows sit at 0.5 with `update_count=0`: they clear the
+  retrieval floor, never outrank anything, and fail `should_use_learned`'s observed test. The effect
+  is a push toward the rule-based fallback — a **conservative** failure, not a misroute.
+  **Structural mitigation, verified on the incident day:** `/chat/reward` is served by the SAME API as
+  `/chat`, so when the API is down the injection is down too and nothing is written. 2026-08-03 shows
+  8 stores and 1 update all day — no burst matching a 70-question 0% run.
+  **What can actually move a decision:** the 419 live rows that took an in-place TD update from an
+  external 0.0 (typically 1.0 → 0.9), and `q_value` used as a SAMPLE WEIGHT in
+  `extract_training_data.py`. Small, but real.
+- [ ] **LARGER ADJACENT DEFECT, SAME CLASS, NOT COVERED BY `2f41c3ad` — the live-serving path.**
+  `src/api/routes/chat.py:1203` catches a live backend `Exception`, logs `log_task_completed(
+  success=False)` and calls `score_completed_task`. That path uses `failure_reward = -0.5`
+  (`q_scorer.py:1040`), giving `initial_q = 0.25` — **below `min_q_value = 0.3`, so the memory is
+  DROPPED FROM RETRIEVAL ENTIRELY.** *(Verified by `mainC` at all three sites.)* Measured: 624 of 634
+  live `progress_log` failure rows and 5,657 of 6,176 `legacy` rows sit under the floor, on a corpus of
+  592,887 legacy routing rows. **Same defect class as the one we just fixed, with far more
+  behavioural teeth and an order of magnitude more data — a transient backend blip permanently
+  evicts that memory.** UNOWNED.
+- [ ] **Close the write-side provenance gap — this is why the assessment above is unresolvable.**
+  `seeding_injection.py`'s context builder must carry `disposition` / `infra_reason` / `http_status`
+  on every reward, so the next occurrence IS filterable. Verbatim the belief-kernel rule: wiring the
+  **write** is cheap and permanent; retrofitting the **read** is impossible.
+- [ ] **Operator decision on the 419 update-path rows.** The progress log records `old_q` for each, so
+  the depression is arithmetically reversible — but reversing it would also undo every LEGITIMATE
+  wrong-answer signal in the same set, and no predicate separates them. Recommended: materialise the
+  419 `(memory_id, old_q, new_q, ts)` as a read-only artifact and let the operator decide. **Do NOT
+  purge** — a purge needs a predicate and there is none; any proxy destroys real negative signal.
 - [x] **Eval fan-out silently collapsed for every NUMA mode except `quarter`.** ✅ 2026-08-12 —
   orchestrator `2f9bd733`. `eval_tower.py:1693` tested `stack_numa_mode == "quarter"` and everything
   else fell through the same branch, so `full`, `both`, **unset** and any typo were indistinguishable.
