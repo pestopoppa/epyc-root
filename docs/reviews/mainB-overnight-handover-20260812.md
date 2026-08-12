@@ -109,6 +109,14 @@ be true. That is why the catalogue is keyed on the diff rather than on intent.
 
 ## 4. Open in my lane, with the specific next action
 
+**Read the compute column carefully — two different asks are in this table.** Only **P0-0** *consumes*
+compute (a relaunch plus a priors recompile). **A14** needs compute **quiesced** — a window clear of
+any live calibration — and **A4** needs no compute at all, just one worktree command. Bundling these
+as "compute-gated" gets the wrong answer for two of the three: *"the GPU was idle"* helps P0-0 and is
+irrelevant to A4, and for A14 it is the opposite of what was needed. Stated explicitly because I gave
+`mainA` this same distinction at 06:0xZ and my own table only implied it — a distinction worth
+supplying to a peer is worth writing into your own artifact.
+
 | Item | State | Next action | Owner |
 |---|---|---|---|
 | **A4** — E8 frozen-kernel pin | Blocked on ONE command | `git -C /mnt/raid0/llm/llama.cpp worktree add --detach /mnt/raid0/llm/llama.cpp-v8-e8 67a433bf45a8a091d83b4ea0b32ff0735fd51800`, then ~10 min of mine (one constant at `run_e8_quality_baseline_reseed.py:81` + era note) | `inference` / operator |
