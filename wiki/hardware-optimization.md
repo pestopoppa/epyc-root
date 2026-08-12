@@ -15,17 +15,32 @@ escaped the exact workspace and claim release was incomplete. R2 proved the cont
 baseline, then stopped when the strict parser rejected provider JSON with extra fields. The integrated
 provider schemas retain that strict parser rather than weakening it.
 
-At the 2026-08-12 stale-state audit, r4's starting-state baseline and full Claude/Codex 2h/8h/32h
-arm were terminal; its aggregate receipt self-hash is
+At the immutable 2026-08-12 wrap boundary, **4/64 checkpoints** and **2/24 cells** were terminal:
+r4's starting-state baseline and full Claude/Codex 2h/8h/32h arm. Their **8/8** vendor/final
+measurement windows released, retaining **183** numeric samples across **44.728 claimed
+GPU-seconds**; the grouped completed-cell receipt self-hash is
 `fbaa5b5796d89d1d214b281d57d611f78242084ec9cb86408156983e73add285`. KernelFoundry 2h was in
-remote controller deliberation. These terminal cells are restart inputs, not a panel ranking; only a
-terminal full 6/6 panel may rank controllers.
+remote controller deliberation. The partial matrix has no campaign aggregate. These terminal cells
+are restart inputs, not a panel ranking; only a terminal full 6/6 panel may rank controllers.
 
 R4 closes the resource-governance defect exposed by r3. Its manifest binds
 `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, and MI210
 claims only around vendor/final measurement windows. During KernelFoundry deliberation the audit found
 0% GPU use, 0% VRAM, no KFD PID, and no active claim, so other governed GPU work may use those
 intervals without compromising the campaign.
+
+The campaign-wide claim substrate also had a separate expiry-observability defect: the CPU-region
+claim quoted `CampaignSpec.max_hold_s`, but the MI210 claim omitted it, so its payload never carried
+`expires_at` and the existing check returned `COULD_NOT_CHECK` forever. Research main `accff01f`
+now binds both claims to that single declared window; focused tests pass **199/199**, including
+mutation controls for a missing or hard-coded value. Expiry remains advisory: it can trigger a
+revocation request and holder-owned quiesce-and-drain, never a forced steal.
+
+Root main `e91c17d4` makes the Kernel-R&D hub project this partial state fail closed. It selects the
+newest hash-valid attempt by semantic completed-checkpoint time, distinguishes attempt identity and
+output root, verifies completed checkpoint/cell and claim-window receipts, and exposes no aggregate
+or ranking for an incomplete matrix. The full integrated AutoKernel regression at research main was
+**5,542 passed, 1 expected failure, and 2,235 subtests passed**.
 
 ### Source References (2026-08-12 INF-03 checkpoint)
 
