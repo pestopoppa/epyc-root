@@ -378,8 +378,9 @@ def _capture(event: dict) -> dict | None:
 def _reduction(event: dict, capture: dict) -> tuple[float, str] | None:
     performance = event["performance"]
     raw = performance["raw_samples"]
-    if not raw or event["claim_grammar"]["reps"] != len(raw):
+    if not raw:
         return None
+    arm_reps = event["claim_grammar"]["reps"]
     raw_digest = content_hash(raw)
     if (capture.get("raw_samples_sha256") != raw_digest
             or performance.get("raw_samples_ref") != f"sha256:{raw_digest}"):
@@ -398,8 +399,8 @@ def _reduction(event: dict, capture: dict) -> tuple[float, str] | None:
                 or (segment == "base" and extension is not None)
                 or (segment == "extension" and not _positive_int(extension))
                 or (measured_at is not None and not _utc_timestamp(measured_at))
-                or not isinstance(anchors, list) or not anchors
-                or not isinstance(candidates, list) or not candidates
+                or not isinstance(anchors, list) or len(anchors) != arm_reps
+                or not isinstance(candidates, list) or len(candidates) != arm_reps
                 or any(not _finite(value) for value in anchors + candidates)):
             return None
         seen.add(block_index)
