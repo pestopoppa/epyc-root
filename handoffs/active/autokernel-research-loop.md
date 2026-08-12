@@ -31,6 +31,19 @@ but live preflight correctly refused before claim, build, or benchmark because h
 `13.47 days`, beyond the ratified one-week ceiling. After a compliant reboot, run the full-host CPU
 IQK proposal, materialize the real matched archive, then run the least-commitment evaluation
 observe-only.
+Research `58b8d66a` and `948a95a4` close the no-inference producer gap in that next step. The live
+campaign now requires a prospective least-commitment capture plan for the IQK parameter path,
+journals the measured diagnostic/outcome block, and can project two clean completed campaigns into
+the strict matched archive and onward to the sequencer/release rehearsal. Capture plans no longer
+accept decorative receipt ids: they resolve one absolute SHA-pinned diagnostic-source file and
+mechanically rederive every canonical and recoded diagnostic. Archive admission also refuses an
+exploratory result and binds the exact proposal statement to one durable `HYPOTHESIS_OPENED` plus the
+selected `HYPOTHESIS_CLAIM_AUTHORIZED` record. The exact intervention and A/A control proposal,
+capture, source, hypothesis-store, and physical-envelope inputs are materialized under
+`/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/` and
+`/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812/`. Both bound commands compose
+successfully with `executed=false`; no inference was performed by this checkpoint. A live matched
+archive still requires two post-reboot clean DECIDED runs.
 Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
 The live campaign consumes an immutable content-addressed source patch before claim acquisition,
 applies it only through the guarded worktree boundary, and records the exact clean source/build,
@@ -2711,6 +2724,19 @@ evaluator or its own scope, and T1 may legally guide search.
     mismatched, and literal empirical inputs fail closed. The receipt/footprint slice passed **98/98**
     and the integrated canonical AutoKernel suite exited zero. The parent remains open until CPU IQK
     and a matched completed control/intervention pair supply the real records.
+  - [x] **Materialize the exact prospective IQK intervention/control producer inputs.** ✅ 2026-08-12 —
+    research `58b8d66a`/`948a95a4` adds the live capture-plan producer and mechanical diagnostic-source
+    compiler, then materializes the intervention and A/A control proposals, SHA-bound source receipts,
+    capture plans, stated hypothesis stores, and control-specific physical envelope under the two
+    durable campaign roots. `evidence_path_rehearsal.py` resolves those exact files, proves one changed
+    factor, validates both hypothesis statements/falsifiers, reproduces the control proposal byte for
+    byte, and reaches the architecture-only `RELEASE_PACKAGE_READY` seam without inference.
+  - [x] **Require a bound typed hypothesis before a completed proposal may enter the archive.** ✅
+    2026-08-12 — archive admission now refuses exploratory campaign records and requires the terminal
+    authorization to resolve by exact hypothesis id, campaign id, ledger sequence, payload, and proposal
+    statement. A dry-run followed by execute under the same campaign identity remains idempotent: one
+    OPENED record is retained and separate composition/live authorizations are journaled so the archive
+    can bind the live spend exactly. The post-rebase suite passed **5,599 tests** with one expected failure.
 - [ ] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol,
   matched-intervention validation, per-regime/surface results, noise floor, robust sign error, and
   recoding stability. Until real evidence shows invariant independent signal, do not add weakness,
@@ -3138,10 +3164,13 @@ future sweep.)*
       fail-closed STOP_STATE records remain in
       `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/events.jsonl`.
   - [x] **Recover and validate the exact current dry-run invocation.** ✅ 2026-08-12 — the recovered
-    command exits zero without host mutation and composes 13 current-code steps / 10 pairs with the
-    accepted 3% floor, B_min 10, CPU `0-95`, and required `--nominal-khz 2500000`. The durable command
-    is recorded in `progress/2026-08/2026-08-12.md`; the separate governed execute invocation still
-    requires OP-16 and a fresh post-reboot preflight.
+    intervention and matched A/A commands exit zero without host mutation, bind their exact
+    `--least-commitment-capture-plan`, `--hypothesis`, and `--hypothesis-store` inputs, and compose the
+    current-code steps with the accepted 3% floor, B_min 10, CPU `0-95`, and required
+    `--nominal-khz 2500000`. Dry-run authorization does not consume the live authorization: identical
+    execute-mode pickup appends a distinct typed spend record. Both durable commands are recorded in
+    `progress/2026-08/2026-08-12.md`; governed execution still requires OP-16 and fresh post-reboot
+    preflight.
 - [ ] **After a compliant host reboot, rerun the prepared full-host CPU IQK campaign.** The ratified
       one-week uptime ceiling in `measurement/protocols/kernel-research.md` and `bench-cpu.md` is the
       sole remaining preflight blocker. Reuse the accepted v9 control bundle and exact recipe frame;
