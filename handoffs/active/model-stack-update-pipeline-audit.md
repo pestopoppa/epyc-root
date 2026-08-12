@@ -635,3 +635,15 @@ Use focused extra tests for each W2 consumer pass. Do not run AutoPilot or llama
 
 - [ ] (620 follow-up — deferred, operator-gated) Wire a compile-blocking strict known-gap for null `ctx_model_max` in `_descriptor_gaps`. Deliberately NOT done in `13112f77` (the field extension) because it would flip the strict promotion gate to error for every not-yet-populated model on the launcher path (CRITICAL blast radius). Populate native `ctx_max` first, then enable.
 - [ ] **scripts.server circular-import fail-open flake** (filed 2026-07-24): `runtime_facts_manifest`/`stack_paths`/`stack_manifest` raise partially-initialized ImportErrors under several entry orders (visible as `runtime-facts selected-servers read failed (ImportError: cannot import name ...)` WARNs in orchestrator_stack/dashboard/eval output; made `expected_stack_services()` fall open to the unfiltered list inside pytest — documented in-test in `test_dashboard_helpers.py::test_expected_stack_services_are_numa_mode_filtered`). Untangle the import cycle so stack-truth readers import cleanly from any entry point; the fail-open then stops masking filter behavior.
+  **2026-08-12 (`mainB`) — the CYCLE IS ALREADY GONE; the fail-open it justified was not.** Re-derived:
+  3 bare imports and 4 package-order imports of `runtime_facts_manifest` / `stack_paths` /
+  `stack_manifest` / `orchestrator_stack` all import cleanly, so the row's stated cause no longer
+  reproduces (the `scripts/server/` → `src/config/` move is the likely fix). What remained was the
+  residue: `expected_stack_services()` logged BOTH degraded paths at `logger.debug` —
+  filter-failure → unfiltered list (other modes' ports render as "expected"), manifest-unavailable →
+  `[]` (renders as a healthy empty stack). Silence is what made them masks. Both now warn, naming the
+  substitution and the cause; the fail-open is KEPT because dropping the panel is worse than
+  over-reporting it. orchestrator `48a685f0`, 6 tests incl. a negative control that the healthy
+  path stays silent and a pin that the cycle stays fixed.
+  **Left open deliberately:** the literal ask is "untangle the import cycle", which I did not do — I
+  found it already untangled. Owner closes on the evidence, not on my say-so.
