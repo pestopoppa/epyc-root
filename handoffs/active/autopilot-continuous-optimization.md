@@ -1950,12 +1950,36 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       docstring on the fields, no runtime warning. Candidate fix: make `save_state` refuse (or loudly
       warn) when a daemon-owned field on disk differs from the in-memory copy it is about to
       overwrite, since that difference is by definition an external write about to be destroyed.
-- [ ] **`orchestrator_stack.py start` silently resolves the wrong manifest without `--numa-mode`.**
+- [x] **`orchestrator_stack.py start` silently resolves the wrong manifest without `--numa-mode`.**
       The production lineup is full + halves (`--numa-mode both`). Plain `start` resolved a full-only
       manifest, so the guard compared priors containing halves against it and produced 39 parity
       errors reading "include non-launch port(s)" — which describes the *manifest* being wrong, not
       the priors. Either default to the mode the stack is actually running, persist the last-used
       mode, or fail with "no --numa-mode given and the live lineup is `both`".
+      **✅ 2026-08-12 (`mainA`, pulled from the generated bench) — ALREADY FIXED, and it survived a
+      topology change it was not written for. Seventh stale premise tonight.**
+      `orchestrator_stack.py:2085-2115` resolves the mode as **arg → runtime-facts manifest → shell
+      env**, then probes the REALIZED fleet and *overrides* the resolution when they disagree,
+      printing `[numa-align] realized fleet is 'X' but resolved mode was 'Y' … correcting to 'X'`.
+      That is this row's first requested remedy — default to the mode the stack is actually
+      running — and it is louder than asked, since the correction is logged. Landed `1de3cef9`
+      (2026-07-22, *"ESC-8 Fixes 1-4 … no hardcoded full defaults"*).
+      **The interesting part is WHY it still works after the quarters were retired.** The fix
+      predates the full+halves lineup, and its probe universe is
+      `full_instance_ports ∪ quarter_instance_ports`. `quarter_instance_ports` is defined as *the
+      quarterable roles' **non-full** instances* — a structural test, not a name test — so the
+      halves fall into that bucket automatically. Verified by classification, with no live probing:
+      full ports `[8070, 8072, 8085]`, non-full `[8080, 8082, 8180, 8182, 8185, 8285]`, and
+      `classify_numa_mode_from_ports(full | non-full)` → **`both`**, which is the correct answer for
+      today's lineup. `classify(empty)` → `None`, deliberately fail-safe ("unknown, do not
+      fabricate") so a cold start still falls back to manifest/env rather than inventing `full`.
+      **Residual, naming only — filed, not fixed:** the function is `quarter_instance_ports` and the
+      mode string is `"quarter"`, while the realized lineup contains **zero quarters**. A reader
+      asking "are we in quarter mode?" against a halves lineup gets `quarter` and would reasonably
+      conclude quarters are deployed. Same naming-artefact class as `NUMA_Q*` in `stack_numa.py`.
+      Worth noting the moral runs the other way from most of tonight's findings: this code is
+      CORRECT precisely because it keyed on the structural property (non-full) instead of the
+      label — the label went stale and the behaviour did not.
 - [x] **Stack-change gate catch-22 is undocumented.** ✅ 2026-08-11 — `mainD`, epyc-orchestrator
       `a01a63a6`. The FATAL now names its own escape: retrying `start` cannot work, because the cure
       for drift is a restart and the gate refuses the launch that would perform it — so
