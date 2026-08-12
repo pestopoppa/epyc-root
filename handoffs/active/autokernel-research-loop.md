@@ -2663,7 +2663,7 @@ evaluator or its own scope, and T1 may legally guide search.
   bytes is refused. The AP-WM-1 evaluator is implemented as an observe-only module outside the campaign
   import path and exposes no selector/champion/T2/T3 mutation API.
 - [ ] **AK-WM-2a — Materialize the first real matched completed-proposal archive.** After Step 3
-  writes real proposal-v3 plus clean DECIDED terminal journal/evaluation records, deterministically
+  writes real proposal-v4 plus clean DECIDED terminal journal/evaluation records, deterministically
   join them with the strict builder and retain the archive plus build manifest. Synthetic fixtures
   remain regression tests and cannot populate the archive.
   - [x] **Implement the strict real-archive builder.** ✅ 2026-08-12 — research `900cb5c6` adds
@@ -3134,7 +3134,7 @@ future sweep.)*
 - [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
       characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
       serving. The claim reason alone decides it.
-- [ ] **Reproduce a known-real CPU win as candidate #1 — the IQK replay.** It is a proposal-v3
+- [ ] **Reproduce a known-real CPU win as candidate #1 — the IQK replay.** It is a proposal-v4
       `change_class: parameter` comparison with candidate `ggml_iqk=1` and anchor `ggml_iqk=0`;
       `campaign.py` now projects that registered arm-local variant into the exact dry-run commands.
       A null result on a known win is diagnostic of the *harness*; a null on a novel idea tells you
@@ -3166,7 +3166,7 @@ python3 -m scripts.kernel_rnd.autokernel.campaign --dry-run \
     --model <production-representative GGUF> --candidate <patch-or-branch>
 # read all 12 steps, THEN:
 python3 -m scripts.kernel_rnd.autokernel.campaign --execute --i-hold-the-host \
-    --model <same> --candidate <same> --proposal-manifest <proposal-v3.json> \
+    --model <same> --candidate <same> --proposal-manifest <proposal-v4.json> \
     --journal-root <durable, NOT a scratch path> \
     [--hypothesis akh-... --hypothesis-store <path>]
 ```

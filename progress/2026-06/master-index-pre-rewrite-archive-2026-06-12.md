@@ -18,7 +18,7 @@
 |---------------|----------------|
 | Routing, orchestration, autopilot, stack config | [routing-and-optimization-index.md](routing-and-optimization-index.md) |
 | Inference speed, benchmarks, model acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) |
-| Agent UX, conversation management, frontend | [hermes-agent-index.md](hermes-agent-index.md) |
+| Agent UX, conversation management, frontend | [user-facing-harness-index.md](user-facing-harness-index.md) |
 | Pre-production research, evaluation, monitoring | [research-evaluation-index.md](research-evaluation-index.md) |
 | New capability pipelines (vision, PDF, Lean, TTS) | [pipeline-integration-index.md](pipeline-integration-index.md) |
 | Single-instance CPU throughput, OpenMP, NUMA, kernel flags | [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md) |
@@ -40,14 +40,14 @@ Highest-impact work across all domains. Each item points to where the details li
 | 2a | ~~MED~~ | ~~CF Phase 1+/2c/3a/3b~~ ✅ 2026-04-05 (code complete, 4 feature flags, 32 tests). Phase 2c ByteRover enhancement designed (intake-267). | [routing-and-optimization-index](routing-and-optimization-index.md) CF |
 | 2b | MED | CF Phase 2a/2b eval + Phase 3c quality monitor (need inference) → Package C/D | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 2 |
 | 3 | HIGH | RI-10–12 routing rollout (shadow → enforce) → Package D | [routing-and-optimization-index](routing-and-optimization-index.md) P6 |
-| 4 | ~~HIGH~~ | ~~B1/B2/B3/B5/B6/B7 conversation management~~ ✅ 2026-04-05 (6 modules, 99 tests, 4 feature flags) | [hermes-agent-index](hermes-agent-index.md) P0 |
+| 4 | ~~HIGH~~ | ~~B1/B2/B3/B5/B6/B7 conversation management~~ ✅ 2026-04-05 (6 modules, 99 tests, 4 feature flags) | [user-facing-harness-index](user-facing-harness-index.md) P0 |
 | 4a | ~~MED~~ | ~~Brevity prompt upgrade~~ ✅ Actions 12-15 done, TALE eval 2026-04-11 (static limits kept) | [research-evaluation-index](research-evaluation-index.md) P0.5 |
 | 5 | ~~MED~~ | ~~TrimR deployment~~ Package B ✅ 2026-04-10 (thinking +6pp GPQA, tool A/B +4pp, WS-3 validated) | [research-evaluation-index](research-evaluation-index.md) P0 |
 | 6 | ~~MED~~ | ~~Tool output compression~~ Phase 2 native ✅ 2026-04-05, A/B ✅ 2026-04-10 (+4pp REPL, suite-dependent) | [research-evaluation-index](research-evaluation-index.md) P1 |
 | 7 | MED | OpenDataLoader PDF integration | [pipeline-integration-index](pipeline-integration-index.md) P1 |
 | 8 | ~~MED~~ | ~~CC local integration~~ Phase 0 ✅ 2026-04-05. Phases 1-3 **demoted to stub** 2026-04-11 — superseded by Hermes outer shell. Archived. | [claude-code-local-constellation-routing.md](../archived/claude-code-local-constellation-routing.md) |
 | 9 | LOW | Multimodal vision live validation | [pipeline-integration-index](pipeline-integration-index.md) P0 |
-| 10 | LOW | Hermes outer shell Phase 2 (routing API done, skills done, streaming validated. Auth deferred.) | [hermes-agent-index](hermes-agent-index.md) P2 |
+| 10 | LOW | Hermes outer shell Phase 2 (routing API done, skills done, streaming validated. Auth deferred.) | [user-facing-harness-index](user-facing-harness-index.md) P2 |
 | 11 | ~~MED~~ | ~~GEPA PromptForge integration~~ AP-18/19/20 ✅ 2026-04-12 (DSPy signatures + GEPA adapter + folded into AR-3 Package D). AP-21 conditional on AR-3 data. | [routing-and-optimization-index](routing-and-optimization-index.md) P10 |
 | 12 | ~~MED~~ | ~~Autopilot controller upgrades~~ AP-22/23/24/25 ✅ 2026-04-12 (memory + criticism + RLM config). AP-26/27 → Package H | [routing-and-optimization-index](routing-and-optimization-index.md) P11 |
 | 13 | ~~MED~~ | ~~Context folding provenance~~ CF-P1–P4 ✅ 2026-04-12 (all 4 implemented) | [routing-and-optimization-index](routing-and-optimization-index.md) P10b |
@@ -119,7 +119,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | Routing/autopilot/stack/web-search plus blocked reset-retrain work | AR-3 relaunch remains HIGH; RI-10 canary active; learned routing shadow window pending; `retrain-routing-models.md` is correctly tracked as BLOCKED after episodic-memory reset. |
 | Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | Acceleration, KV, model-eval, Engram, GPU-drafter, completed negative spikes | KV compaction and selection active; GLM/DSA/lightning/streaming/δ-mem pending; Engram Track A closed negative and Track B remains a GPU-gated research bet; peer-verifier speculation closed no-go. |
 | CPU Inference Optimization | [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md) | CPU throughput backlog plus completed CPU design notes | CPU20 rigor gate enforced; low-ROI CPU4/CPU22/wdata design notes moved to completed; MoE-Spec remains the primary live algorithmic CPU lever. |
-| Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | Hermes shell, upstream release integration, local image plugin | B1-B7 complete; outer shell auth deferred; Hermes upstream bump/checklist pending; local `image_generate` now points to ERNIE/sd-server. |
+| Agent Integration | [user-facing-harness-index.md](user-facing-harness-index.md) | Hermes shell, upstream release integration, local image plugin | B1-B7 complete; outer shell auth deferred; Hermes upstream bump/checklist pending; local `image_generate` now points to ERNIE/sd-server. |
 | Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | Research/eval suites, verification, memory, skill efficacy | Tool/reasoning compression mostly implemented with inference-gated eval tails; Tulving/Scoring-Verifiers/RoPE/diversity/skill-efficacy code landed with Package K runs pending. |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | Vision/PDF/Lean/TTS/KB-RAG/local image generation | ERNIE image generation is production on CPU; PDF/Lean/TTS remain active; KB-RAG K7/K-RAG-1 validation is inference-gated. |
 

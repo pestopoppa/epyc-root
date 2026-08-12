@@ -3497,7 +3497,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T13:25:32Z",
+  "generated_at": "2026-08-12T13:36:51Z",
   "nodes": [
     {
       "age_days": 13,
@@ -3814,13 +3814,13 @@
     {
       "age_days": 13,
       "blocked": 0,
-      "closed": 4,
+      "closed": 5,
       "domain": "research-evaluation",
       "handoff": "frontier-f3-data-flywheel.md",
       "id": "EVL-25",
       "last_advanced": "2026-07-30",
       "next_action": "W3 \u2014 GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate is now satisfied by 100 trusted reviewed triage\u2026",
-      "open": 1,
+      "open": 3,
       "state": "active",
       "track": "frontier f3 data flywheel"
     },
@@ -4118,8 +4118,8 @@
       "handoff": "fable5-window2-findings-05c-mi210-lever-category-matrix.md",
       "id": "EVL-48",
       "last_advanced": "2026-08-12",
-      "next_action": "L12 \u2014 n-gram/prompt-lookup on GPU: 27B-Q8 + fp16 over code/JSON/prose sets, sweeping the three ngram spec types",
-      "open": 18,
+      "next_action": "Run the VL vision-encoder prefill baseline \u2014 the unrun half of A3; BGE encode half landed 2026-08-12",
+      "open": 19,
       "state": "active",
       "track": "fable5 window2 findings 05c mi210 lever cate"
     },
@@ -4540,15 +4540,15 @@
       "track": "mi210 big model and acceleration roadmap"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
-      "closed": 14,
+      "closed": 16,
       "domain": "inference-research",
       "handoff": "mi210-q8-dequant-gemv-roofline.md",
       "id": "INF-37",
-      "last_advanced": "2026-08-11",
+      "last_advanced": "2026-08-12",
       "next_action": "Resolve approval; clean-replay Q4_K branchless decode and durable IQ2 model paths",
-      "open": 7,
+      "open": 8,
       "state": "active",
       "track": "mi210 q8 dequant gemv roofline"
     },
@@ -5023,13 +5023,13 @@
     {
       "age_days": 0,
       "blocked": 2,
-      "closed": 153,
+      "closed": 157,
       "domain": "routing-and-optimization",
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",
       "last_advanced": "2026-08-12",
       "next_action": "Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped",
-      "open": 62,
+      "open": 65,
       "state": "active",
       "track": "autopilot continuous optimization"
     },

@@ -266,12 +266,21 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
     (3) The earlier "not occupancy-limited" reading was from the **synthetic** smoke's
     `<…,false,false>` variant at `Arch_VGPR=64`; production MoE decode runs `<…,true,false>` at
     `Arch_VGPR=80` → **6 waves/SIMD, 75% of max**. Scratch 0 in both, so no spill.
-  - [ ] **IQ2 VGPR-pressure lever (NEW, derived from the above):** the mm_ids IQ2_XXS decode kernel
-    allocates 80 arch VGPRs; dropping to ≤64 would restore 8 waves/SIMD (+33% occupancy) with zero
-    spill risk at the current scratch=0. Establish whether the extra 16 registers are inherent to the
-    codebook gather + sign unpack or incidental to the mm_ids wrapper. This is the one concrete,
-    testable lever the whole A10 capture surfaced — read the ISA from the shipped code object first
-    (`roc-obj-ls`/`llvm-readelf --notes`), which needs no GPU window.
+  - [x] **IQ2 VGPR-pressure lever — ISA read done, zero GPU time** ✅ 2026-08-12. Read statically from
+    the shipped `libggml-hip.so.0.16.0` (clean frozen-v9 `0db32c06e`). Full table:
+    [`artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md`](../../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md).
+    True counts are **63** (`<…,false,false>`, 8 waves) and **78** (`<…,true,false>`, 6 waves) — `rocprof`
+    had reported 64/80, which is the allocation-granularity rounding, not the true count. **The mm_ids
+    wrapper is NOT the cost:** Q8_0 runs the identical wrapper in **25** VGPRs, so the 78 is IQ2_XXS's own
+    dequant state. **But "codebook ⇒ expensive" is also wrong** — IQ4_NL is 38 and IQ1_S 42, while block
+    quant Q3_K is the table's worst at 88; pressure tracks per-block state-machine complexity, not the
+    lookup. **IQ4_XS sits at exactly 64 on this same wrapper**, so the 8-wave target is proven reachable
+    and IQ2_XXS is 14 registers over. Constraint: spill is 0 everywhere, so there is no slack — any
+    reduction attempt must report `vgpr_spill_count` beside occupancy or it is not evidence.
+  - [ ] **Disassembly diff `<IQ2_XXS,1,true,false>` vs `<IQ4_XS,1,true,false>`** to locate the extra live
+    values. Still zero-GPU; code objects extracted under `/workspace/tmp/co/` (target `0035.elf`).
+    Note this only licenses a *try*: decode is bandwidth/latency-bound (85.60 µs median, 6% spread), so
+    +2 waves helps only if latency remains to hide.
   - [ ] **Re-run the decode attribution under governance** once RVP-C2-11's `--gen-tokens` patch
     lands, so the 16.42% decode figure carries a durable receipt instead of a non-governed probe.
     The Omniperf 2.0.1 / `rocprof` v1 fallback is now durable in research, but its first governed run

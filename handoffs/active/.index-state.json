@@ -16,7 +16,7 @@
       "blocked": 9,
       "handoffs": 49,
       "oldest_advance": "2026-07-29",
-      "open": 292
+      "open": 291
     },
     "reviewer-control-plane-index.md": {
       "blocked": 11,
@@ -140,14 +140,14 @@
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
-      "closed": 154,
+      "closed": 157,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 65,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
       "state": "active",
-      "total": 221
+      "total": 224
     },
     "autopilot-control-plane-integration.md": {
       "blocked": 0,
@@ -668,10 +668,10 @@
     },
     "frontier-f3-data-flywheel.md": {
       "blocked": 0,
-      "closed": 4,
+      "closed": 5,
       "guarded": 0,
       "last_advanced": "2026-07-30",
-      "open": 4,
+      "open": 3,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-25",
       "state": "active",
@@ -1053,14 +1053,14 @@
     },
     "mi210-q8-dequant-gemv-roofline.md": {
       "blocked": 0,
-      "closed": 15,
+      "closed": 16,
       "guarded": 0,
-      "last_advanced": "2026-08-11",
+      "last_advanced": "2026-08-12",
       "open": 8,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-37",
       "state": "active",
-      "total": 23
+      "total": 24
     },
     "minddr-deep-research-mode.md": {
       "blocked": 2,
