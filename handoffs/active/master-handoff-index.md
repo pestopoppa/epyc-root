@@ -45,6 +45,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-17 | Amend frozen-v9 attestation with llama ggml `0.16.0`, or retain an intentionally unverified complete-kernel-set fold | [autokernel-research-loop.md](autokernel-research-loop.md) AK6 dashboard residual | 2026-08-12 |
 | OP-19 | Rule the E8 chain retired (or not): B9/B10 are BLOCKED-AND-LIKELY-MOOT — their source evidence was destroyed and the era advanced to E9 on 2026-08-11, so both boxes wait on this ruling alone | [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) | 2026-08-12 |
 | OP-20 | One ruling on `task_failed` scoring applied to BOTH producers (`eval_tower:1339` excludes it; the seeding path scores it WRONG) — until it lands, quality numbers are not comparable across producers. Auditor recommends: non-infra → WRONG in both, infra → EXCLUDED in both | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | 2026-08-12 |
+| OP-24 | Adopt the trained `[Q]`/`[D]` ColBERT prefixes in KB-RAG — which requires **re-embedding the whole KB corpus** — or accept the current off-distribution retrieval. Measured: omitting the prefix perturbs MaxSim **25× more than INT8 quantization** (1.63e-01 vs 6.60e-03) and changes top-1 on **37.5%** of queries. Index and query paths are mutually consistent today, so a one-sided fix is strictly worse; that is what makes it a migration, not a patch. Also gates whether published BEIR deltas forecast production | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) PREFIX-1 | 2026-08-12 |
 | OP-22 | Rebuild the devcontainer to deploy `136894e8` (2026-07-31, drops CPU-only llama dirs from the global `LD_LIBRARY_PATH`). Committed but NOT live: container PID 1 started 2026-07-29, so every shell inherits the pre-fix `containerEnv` and hand-run speech binaries silently load mixed ggml generations. Production serving is unaffected; host/container lifecycle is operator-only | [ggml-linkage-and-speech-kernels](../../scripts/session/verify_speech_kernels.sh) | 2026-08-12 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
@@ -70,10 +71,10 @@ nobody is moving.
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
 | inference-research | 53 | 358 | 12 | 2026-07-29 |
-| pipeline-integration | 5 | 49 | 1 | 2026-07-29 |
+| pipeline-integration | 5 | 50 | 1 | 2026-07-29 |
 | research-evaluation | 49 | 292 | 9 | 2026-07-29 |
 | reviewer-control-plane | 9 | 30 | 11 | 2026-07-29 |
-| routing-and-optimization | 48 | 397 | 18 | 2026-07-29 |
+| routing-and-optimization | 48 | 399 | 18 | 2026-07-29 |
 | user-facing-harness | 7 | 39 | 3 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

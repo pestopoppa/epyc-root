@@ -10,7 +10,7 @@
       "blocked": 1,
       "handoffs": 5,
       "oldest_advance": "2026-07-29",
-      "open": 49
+      "open": 50
     },
     "research-evaluation-index.md": {
       "blocked": 9,
@@ -283,14 +283,14 @@
     },
     "colbert-reranker-web-research.md": {
       "blocked": 1,
-      "closed": 12,
+      "closed": 14,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 7,
+      "open": 8,
       "owner_index": "pipeline-integration-index.md",
       "row_id": "PIP-01",
       "state": "active",
-      "total": 20
+      "total": 23
     },
     "contention-model-device-and-load-axes-rider.md": {
       "blocked": 0,
@@ -1627,7 +1627,7 @@
       "blocked": 0,
       "closed": 9,
       "guarded": 0,
-      "last_advanced": "2026-08-01",
+      "last_advanced": "2026-08-12",
       "open": 14,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-35",

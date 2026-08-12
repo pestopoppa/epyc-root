@@ -475,12 +475,51 @@ quality tradeoff.
    accepted" caveat on it is retired as far as latency is concerned. Its open gates are now parity
    (already passed, 2.72e-03 max cosine divergence) and the inference-gated A/B — nothing else.
 
-- [ ] **S4d**: Carry the same ONNX intra-op bound to the two *live* retrieval encoders —
+- [x] **S4d**: Carry the same ONNX intra-op bound to the two *live* retrieval encoders —
   `src/retrieval/colbert_encoder.py` (KB-RAG first-stage MaxSim) and `src/retrieval/cross_encoder.py`
-  (K9 rerank). Both build `InferenceSession` with no `SessionOptions`, both are on by default (verified
-  loadable 2026-08-12), and both run the same tiny-batch shape that made the 192-thread pool a 1.8–2.3×
-  penalty here. Owned by `internal-kb-rag.md` (K9), not this handoff — routed for scheduling, not to be
-  executed in this file.
+  (K9 rerank). ✅ 2026-08-12 — orchestrator `faee5e75`. **The two bounds deliberately DIFFER and must not
+  be unified**: the optimum is call-shape dependent. `colbert_encoder.encode()` is one single-row pass
+  (best 4, 8 within 3%); `cross_encoder.score_pairs()` feeds N rows in one `run()` and measures best at
+  **16**, where copying the sibling's 8 costs ~40% at batch=50. Output is bit-identical bounded vs
+  unbounded. A test guards against a future "harmonisation" of the constants.
+
+- [x] **S3b-parity**: LateOn ONNX↔PyLate numerical parity, previously skipped with `--no-parity`
+  ✅ 2026-08-12. **PASS** — max per-token cosine divergence **8.24e-03** against the `PARITY_TOLERANCE
+  = 1e-2` the sibling Reason-mxbai export was judged at. The decisive step was decomposing FP32 from
+  INT8: the **FP32 export matches the reference at 2.38e-07** (float32 epsilon), which proves the graph
+  computes what the reference computes and attributes 100% of the INT8 residual to quantization noise
+  rather than a wrong graph. Verified against genuine `pylate.models.ColBERT`, not a reimplementation.
+  Negative control: the deployed GTE graph on identical ids diverges by 1.19–1.25, ~1000× the observed
+  figure, so a graph agreeing to 1e-3 cannot be GTE. One caveat recorded: under *pylate-native*
+  tokenization the per-token tail reaches 1.98e-02 on a single outlier token; production does not use
+  that regime and FP32 parity attributes it to quantization.
+
+- [ ] **PREFIX-1 — the encoder never applies the trained `[Q]`/`[D]` prefix tokens, and this is
+  larger than everything else on this page.** `colbert_encoder.encode(text, max_tokens)` has **no
+  query/document parameter at all**, so it cannot express the distinction even in principle; it feeds
+  raw tokenized text straight to the graph. Both LateOn and the deployed GTE declare
+  `query_prefix "[Q] "` / `document_prefix "[D] "` with dedicated **trained** token ids (50368/50369)
+  that pylate inserts at index 1. Measured on the reference model, no ONNX involved:
+
+  | perturbation | max abs ΔMaxSim | top-1 agreement |
+  |---|---|---|
+  | INT8 quantization | 6.60e-03 | 100% |
+  | **missing `[Q]`/`[D]` prefix** | **1.63e-01** | **62.5%** |
+
+  Dropping the prefix is **25× more perturbing than quantization** and changes top-1 on **37.5%** of
+  queries. **Do NOT fix one side only.** Indexing (`kb_rag.py:311`, `:434`) and query (`kb_rag.py:567`)
+  both go through the same prefix-less path, so they are mutually *consistent* — just off-distribution
+  from training. Adding `[Q]` to queries alone would mismatch the stored index and make retrieval
+  strictly worse. Correct adoption requires **re-embedding the entire KB corpus**, which is why this is
+  an operator decision (OP-24) and not a code fix.
+
+- [ ] **PREFIX-2 — confirm whether the published BEIR deltas transfer before banking any model swap.**
+  The BEIR figures on this page (GTE 54.67, ColBERT-Zero 55.43, and the LateOn delta) are **published
+  vendor scores**, measured with the models used as designed, i.e. **with** the prefixes. Production runs
+  them without. So a swap chosen on those deltas would be chasing a gain measured under conditions our
+  deployment does not reproduce. This does not necessarily bias the *relative* A/B — the defect hits both
+  arms — but it does mean the absolute gain is unproven here. Resolve PREFIX-1 before treating any BEIR
+  delta as a production forecast.
 
 ### Expand — Local fine-tune (newly unblocked)
 
