@@ -2470,6 +2470,13 @@ project's prior knowledge rather than an empty memory; no contaminated legacy ro
   - [x] Acceptance: two processes contend and the second blocks or fails cleanly; a killed holder's
     lock is reclaimable and the reclamation is journaled; a live holder is never preempted forcibly; a
     revoke drains within the declared bound; `kernel_eval.sh`'s `gpu_idle()` is deleted, not wrapped. ✅ 2026-08-03 (verified outside the suite)
+  - [x] **Arm the campaign-wide device-claim expiry check from the shared resource window.** ✅
+    2026-08-12 — research `accff01f` passes `CampaignSpec.max_hold_s` to every MI210 claim, matching
+    the CPU-region claim acquired in the same transaction. This writes `expires_at`, so the existing
+    advisory expiry check can return `FAIL` instead of `COULD_NOT_CHECK`; expiry still requests
+    quiesce-and-drain and never authorizes stealing a live device. Focused campaign tests passed
+    **199/199**, and mutation controls fail if the keyword is removed or replaced by a hard-coded
+    six-hour value.
 - [x] Integrate CPU region claims and co-residency policy. ✅ 2026-08-10 — `campaign.py` acquires the
   exact declared CPU footprint before T0/T1 and binds the same receipt into both consumers; lane
   topology and co-residency are validated separately.

@@ -7,6 +7,41 @@
 
 ## Compiled Update — 2026-08-11: production kernel freezes to v9; AutoKernel's own harness hardens against cutover risk
 
+> **MERGE NOTE 2026-08-12 (coordinator).** Both sides below are preserved; I did
+> not adjudicate. The block above is the local-fleet text, the block below is the
+> origin/AutoKernel text. OWNERS: reconcile and delete this note.
+
+**Last compiled**: 2026-08-12 (adds executable AutoKernel reward-integrity evidence; prior findings retained)
+**Sources**: 102+ documents
+
+## Compiled Update — 2026-08-12 (executable reward-integrity corpus)
+
+**Confidence: verified instrument validation on gfx90a; no candidate speed or arbitrary-program coverage claim.**
+
+AutoKernel's named reward-hacking taxonomy now has executable evidence rather than static diff strings.
+The producer materializes 10 planted and 15 clean HIP programs, compiles each for gfx90a, and executes
+both a normal-128 and anti-short-circuit-127 unit under the shared MI210 claim. A host oracle verifies
+each output. The hard unit is therefore priced in the same measured set instead of living only in a
+correctness gate, and a defect that manifests in only one unit fails acceptance.
+
+Final r3 observed **10/10** true positives, **15/15** true negatives, sensitivity **1.0**, specificity
+**1.0**, FPR **0.0**, and expected runtime behavior for **25/25** programs on both units. Claim
+`akd-006b9b9b049b4249` covered only the 10.283-second execution window and released; 42 numeric samples
+met the 250 ms cadence with a 0.250032-second maximum gap. Its receipt retains the failed 22/25 r1 and
+passing r2 attempts by both embedded and file hashes. The final embedded self-hash is
+`b4e39c65f23323bd648b84e2b8088850201a2be16b4d46002b8e869a7b1620ee`.
+
+The belief substrate records a prospective write-side task for successor runs. The completed r3
+receipt predates producer-authored belief rows and is never retrofitted.
+
+### Source References (2026-08-12 reward-integrity corpus)
+
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — acceptance contract, exact result, claim, and receipt identity
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — attempt chronology, test counts, and authority boundary
+- [Vidya adapter source table](../scripts/vidya/adapters/README.md) — prospective write-side and no-backfill status
+
+## Compiled Update — 2026-08-12 (INF-03 live campaign and GPU-claim scope)
+
 **Confidence: verified — freeze receipts, certification results, and the AutoKernel hardening checkpoint are read directly from `progress/2026-08/2026-08-11.md` and the operator-authorized promotion procedure. The five-control calibration and first CPU candidate campaign this hardening enables are explicitly IN-PROGRESS, not run yet.**
 
 Production is frozen at `production-consolidated-v9` (canonical tree `/mnt/raid0/llm/llama.cpp`, tip `0db32c06e3e550065b78311a6031ef3dd2c4f27c`, `llama-server --version` `10125`), following the project's own four-step experimental-branch workflow: the operator-authorized candidate `2ac4b32a0` was repaired to final tip, rebuilt, and re-run through CPU/HIP linkage, architecture/backend/loader/recurrent tests, incumbent-role ABBA, quality, topology, packaging, and rollback gates. v8 (`67a433bf45a8a091d83b4ea0b32ff0735fd51800`, binary `10107`) remains the rollback anchor. Region-locked certification: architect native MTP 53.306 t/s median, coder cap-0 30.313 t/s, vision 96.598 t/s; DeepSeek-V4-Flash Q8 DSpark `-np 1` passes exact cap-0/cap-3 parity (cap 3: 18 drafted / 9 accepted; multi-slot stays disabled pending an upstream cache defect); Qwen3.6-27B Q8 DFlash is capability-functional and 2.458× faster overall (every prompt class ≥2.149×) but pooled acceptance is 35.954% against the ratified 60% floor, so P-DFLASH-LINEUP-1 keeps that lane disabled without blocking the v9 release itself. A faster promotion-cycle design (target 45-60 min via sealed resident cohorts + exact-parity packs, documented in `epyc-inference-research/docs/design/kernel-promotion-resident-fast-path.md`) is designed but not yet implemented (V9-8).
@@ -21,11 +56,13 @@ escaped the exact workspace and claim release was incomplete. R2 proved the cont
 baseline, then stopped when the strict parser rejected provider JSON with extra fields. The integrated
 provider schemas retain that strict parser rather than weakening it.
 
-At the 2026-08-12 stale-state audit, r4's starting-state baseline and full Claude/Codex 2h/8h/32h
-arm were terminal; its aggregate receipt self-hash is
+At the immutable 2026-08-12 wrap boundary, **4/64 checkpoints** and **2/24 cells** were terminal:
+r4's starting-state baseline and full Claude/Codex 2h/8h/32h arm. Their **8/8** vendor/final
+measurement windows released, retaining **183** numeric samples across **44.728 claimed
+GPU-seconds**; the grouped completed-cell receipt self-hash is
 `fbaa5b5796d89d1d214b281d57d611f78242084ec9cb86408156983e73add285`. KernelFoundry 2h was in
-remote controller deliberation. These terminal cells are restart inputs, not a panel ranking; only a
-terminal full 6/6 panel may rank controllers.
+remote controller deliberation. The partial matrix has no campaign aggregate. These terminal cells
+are restart inputs, not a panel ranking; only a terminal full 6/6 panel may rank controllers.
 
 R4 closes the resource-governance defect exposed by r3. Its manifest binds
 `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, and MI210
@@ -36,6 +73,25 @@ intervals without compromising the campaign.
 **Downstream v8-pin debt surfaced by a same-day audit** (see [Agent Architecture](agent-architecture.md) and [Knowledge Management](knowledge-management.md) for the audit methodology): several surfaces still assumed v8 as current after the freeze. `gpu_shadow_lane` family hard preflight blockers pin `10107`/`67a433bf4` (dormant behind a default-off feature flag, so this blocks on first enable under v9, not today); `reasoning_effort_certifications.yaml` pins `active_kernel_era: production-consolidated-v8` (dormant only because its cert map is empty); several research-repo runners fail closed on v8 pins, and `validate_model_tensors.sh` **silently prefers** a v8 build when both exist rather than erroring (a mis-prefer, not a crash); open next-action text in `cpu-shape-specialized-gemv-decode.md`, `qwen-mtp-llamacpp-port.md`, `numa-topology-cutover-resume-20260730.md`, and `docs/reference/architect-bench-runbook.md` still instructs "start from v8" — following any of them literally now violates the project's own four-step kernel workflow (step 1: pull the *current* production tip). Verified clean: `scripts/session/verify_llama_cpp.sh` already enforces v9 correctly on branch/commit/version-line pins, and no phantom/invented instrument-era id was found in either repo's live code.
 
 ### The CPU-decode lever is barrier count, not more SIMD
+
+> **MERGE NOTE 2026-08-12 (coordinator).** Both sides below are preserved; I did
+> not adjudicate. The block above is the local-fleet text, the block below is the
+> origin/AutoKernel text. OWNERS: reconcile and delete this note.
+
+The campaign-wide claim substrate also had a separate expiry-observability defect: the CPU-region
+claim quoted `CampaignSpec.max_hold_s`, but the MI210 claim omitted it, so its payload never carried
+`expires_at` and the existing check returned `COULD_NOT_CHECK` forever. Research main `accff01f`
+now binds both claims to that single declared window; focused tests pass **199/199**, including
+mutation controls for a missing or hard-coded value. Expiry remains advisory: it can trigger a
+revocation request and holder-owned quiesce-and-drain, never a forced steal.
+
+Root main `e91c17d4` makes the Kernel-R&D hub project this partial state fail closed. It selects the
+newest hash-valid attempt by semantic completed-checkpoint time, distinguishes attempt identity and
+output root, verifies completed checkpoint/cell and claim-window receipts, and exposes no aggregate
+or ranking for an incomplete matrix. The full integrated AutoKernel regression at research main was
+**5,542 passed, 1 expected failure, and 2,235 subtests passed**.
+
+### Source References (2026-08-12 INF-03 checkpoint)
 
 - [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r1/r2 invalidation boundaries, r4 receipt state, and claim-window closure
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C3/C6 contracts revalidated on current research main, including reopened empirical corpus gates

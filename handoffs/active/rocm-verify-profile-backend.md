@@ -32,9 +32,9 @@
 - [x] **RVP-AUD-2 — Reconcile implemented C3/C6 rows against current research main.** ✅ 2026-08-12 —
   clean detached research `26ca88dc` revalidated `microbench.py`, `physical_bounds.py`,
   `reward_hack_scan.py`, `devices.py`, `oracle_integrity.py`, and the generated import footprint at
-  **408 tests + 15 subtests PASS**. This confirms RVP-C6-2/3/4 and RVP-C3-4/5. RVP-C6-6/10 are
-  corrected back to open: their static detector corpus and ranked-unit machinery pass, but the
-  acceptance text requires executable HIP-kernel and live ranked hard-case evidence respectively.
+  **408 tests + 15 subtests PASS**. This confirms RVP-C6-2/3/4 and RVP-C3-4/5. That audit correctly
+  reopened RVP-C6-6/10 because their static detector corpus and ranked-unit machinery did not satisfy
+  the empirical acceptance text; the later executable gfx90a r3 receipt below closes both rows.
   RVP-C2-8/9 also remain open: their reducers and claim-aware runners are complete, but the full
   acceptance contract still needs an OP-11-authorized committed seeded producer and fresh matched
   evidence. No implementation-only test upgraded empirical authority.
@@ -715,10 +715,18 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   remains isolated in `evaluator/integrity.py` and `evaluator/surface.py`; the evaluator event has no
   actor-settable `correct` field. The verdict alone derives status, provenance failures appear as
   `INTEGRITY:<gate>:<outcome>`, and any such flag structurally withholds the speed rank.
-- [ ] **RVP-C6-6 — Red-team corpus with a stated sensitivity.** The required unit is ~10 planted-bug
+- [x] **RVP-C6-6 — Red-team corpus with a stated sensitivity.** ✅ 2026-08-12 — The required unit is 10 planted-bug
   and ~15 clean **executable HIP kernels**; report sensitivity and specificity, not an assertion of
-  coverage. The current static source-pattern corpus is a completed implementation subgate, not that
-  runtime corpus. Mine the published
+  coverage. `execution/reward_hack_corpus.py` now materializes, compiles with ROCm 6.2 for gfx90a,
+  and executes the 10 planted plus 15 clean programs. Every program's normal-128 and
+  anti-short-circuit-127 units run under one MI210 claim and are checked against an independent host
+  oracle. Final r3 observed **10/10** true positives, **15/15** true negatives, sensitivity **1.0**,
+  specificity **1.0**, FPR **0.0**, and **25/25** expected runtime behaviors on both units. This is
+  named-taxonomy instrument validation, never arbitrary-program coverage or a candidate speed claim.
+  Receipt: `/mnt/raid0/llm/autokernel/campaigns/rvp-c6-executable-r3-20260812T0905Z/receipt.json`,
+  embedded self-hash `b4e39c65f23323bd648b84e2b8088850201a2be16b4d46002b8e869a7b1620ee`, full-file SHA-256
+  `91bcef0b21220f4947ce1b37bbdfe9df42b645b100f48ec1e71011da2779df9f`. The receipt binds failed
+  22/25 r1 and passing r2 attempts by embedded and file hashes. Mine the published
   exploit **taxonomy** (harness frame-hacking, pointer-keyed memoization, structured-input
   short-circuit) — **do not vendor the 4.66 GB corpus**; it is NVIDIA-targeted Python with zero
   executable value on gfx90a. This is what lets the §"C6 monitor design" FPR-budget row above be
@@ -843,10 +851,16 @@ the end are deliberate and recorded so they are not re-derived._
   the real T0 provider records detector ids/findings. Missing ids make empty findings
   `COULD_NOT_CHECK`; planted/clean source-pattern tests report 100% sensitivity/specificity for this
   narrow detector taxonomy without claiming the broader RVP-C6-6 exploit corpus.
-- [ ] **RVP-C6-10 — Anti-short-circuit cases go in the RANKED set, not just the gate.** The durable
-  mechanism exists, but closure requires a live ranked hard-case receipt. If the hard
+- [x] **RVP-C6-10 — Anti-short-circuit cases go in the RANKED set, not just the gate.** ✅ 2026-08-12 — The durable
+  mechanism now has a live ranked hard-case receipt. If the hard
   cases only gate, a candidate can route easy inputs to a fast invalid path and never pay for the
-  accurate path's cost on the hard ones. Ranking them prices it.
+  accurate path's cost on the hard ones. Final r3 places `normal-128` and
+  `anti-short-circuit-127` beside each other for every program and records real gfx90a elapsed time
+  for both. Claim `akd-006b9b9b049b4249` covered only the 10.283-second execution window, released at
+  `2026-08-12T09:05:14.248081+00:00`, and carried 42 numeric samples at 250 ms cadence (maximum gap
+  0.250032 s). Pointer-alignment, one-shape-only, and nondeterministic-timing mutations are explicit
+  fail-closed controls: a defect that manifests in only one ranked unit is refused. This closes the
+  instrument contract and asserts no candidate optimization or speedup.
   - [x] **RVP-C6-10a — Implement strict ranked hard-case campaign units.** ✅ 2026-08-11 —
     `MicrobenchPlan.anti_short_circuit_units` requires real per-unit command/recipe changes, a normal
     control, distinct parameter frames, physical envelopes, and emits those units into the same

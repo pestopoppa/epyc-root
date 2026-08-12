@@ -1,0 +1,3442 @@
+{
+  "domains": {
+    "inference-research-index.md": {
+      "blocked": 3,
+      "handoffs": 53,
+      "oldest_advance": "2026-07-29",
+      "open": 399
+    },
+    "pipeline-integration-index.md": {
+      "blocked": 0,
+      "handoffs": 5,
+      "oldest_advance": "2026-07-29",
+      "open": 51
+    },
+    "research-evaluation-index.md": {
+      "blocked": 0,
+      "handoffs": 48,
+      "oldest_advance": "2026-07-29",
+      "open": 301
+    },
+    "reviewer-control-plane-index.md": {
+      "blocked": 1,
+      "handoffs": 9,
+      "oldest_advance": "2026-07-29",
+      "open": 41
+    },
+    "routing-and-optimization-index.md": {
+      "blocked": 1,
+      "handoffs": 47,
+      "oldest_advance": "2026-07-29",
+      "open": 326
+    },
+    "user-facing-harness-index.md": {
+      "blocked": 0,
+      "handoffs": 7,
+      "oldest_advance": "2026-07-29",
+      "open": 44
+    }
+  },
+  "duplicates": {},
+  "handoffs": {
+    "01-speculative-decoding.md": {
+      "blocked": 0,
+      "closed": 2,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-01",
+      "state": "active",
+      "total": 2
+    },
+    "agent-collab-rnd-harness.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-02",
+      "state": "active",
+      "total": 5
+    },
+    "agent-file-prose-compression.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 2,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-01",
+      "state": "active",
+      "total": 2
+    },
+    "agent-world-env-synthesis.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 0,
+      "last_advanced": "2026-08-05",
+      "open": 5,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-01",
+      "state": "active",
+      "total": 9
+    },
+    "agentic-rocm-kernel-authoring.md": {
+      "blocked": 0,
+      "closed": 51,
+      "guarded": 0,
+      "last_advanced": "2026-08-12",
+      "open": 3,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-03",
+      "state": "active",
+      "total": 54
+    },
+    "angelslim-techniques-evaluation.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-04",
+      "state": "active",
+      "total": 4
+    },
+    "architect-model-selection-bench.md": {
+      "blocked": 0,
+      "closed": 61,
+      "guarded": 0,
+      "last_advanced": "2026-08-12",
+      "open": 22,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-02",
+      "state": "active",
+      "total": 83
+    },
+    "attention-matching-kv-compaction.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-05",
+      "state": "active",
+      "total": 5
+    },
+    "autokernel-research-loop.md": {
+      "blocked": 0,
+      "closed": 215,
+      "guarded": 0,
+      "last_advanced": "2026-08-12",
+      "open": 22,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-06",
+      "state": "active",
+      "total": 237
+    },
+    "autopilot-continuous-optimization.md": {
+      "blocked": 0,
+      "closed": 131,
+      "guarded": 0,
+      "last_advanced": "2026-08-11",
+      "open": 63,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-02",
+      "state": "active",
+      "total": 194
+    },
+    "autopilot-control-plane-integration.md": {
+      "blocked": 0,
+      "closed": 12,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 2,
+      "owner_index": "reviewer-control-plane-index.md",
+      "row_id": "REV-01",
+      "state": "active",
+      "total": 14
+    },
+    "autopilot-dashboard-fidelity-audit-2026-07-22.md": {
+      "blocked": 0,
+      "closed": 8,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 8,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-03",
+      "state": "active",
+      "total": 16
+    },
+    "autopilot-decision-plane-audit-2026-07-22.md": {
+      "blocked": 0,
+      "closed": 34,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 9,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-03",
+      "state": "active",
+      "total": 43
+    },
+    "autopilot-sequential-allocation.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 0,
+      "last_advanced": "2026-08-04",
+      "open": 12,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-04",
+      "state": "active",
+      "total": 16
+    },
+    "backlog-roi-audit-2026-07-14.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 4,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-05",
+      "state": "active",
+      "total": 5
+    },
+    "batched-decode-measurement.md": {
+      "blocked": 0,
+      "closed": 26,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 15,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-07",
+      "state": "active",
+      "total": 41
+    },
+    "batched-edit-parallel-apply.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-04",
+      "state": "active",
+      "total": 7
+    },
+    "benchmark-results-dashboard.md": {
+      "blocked": 0,
+      "closed": 7,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 0,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-06",
+      "state": "active",
+      "total": 7
+    },
+    "bep-dcp-falsification-harness.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 2,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-05",
+      "state": "active",
+      "total": 6
+    },
+    "bulk-inference-campaign.md": {
+      "blocked": 0,
+      "closed": 6,
+      "guarded": 0,
+      "last_advanced": "2026-08-09",
+      "open": 4,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-07",
+      "state": "active",
+      "total": 10
+    },
+    "canonical-judge-suite-revamp.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-08-03",
+      "open": 24,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-08",
+      "state": "active",
+      "total": 24
+    },
+    "capability-registry-and-promotion.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 0,
+      "last_advanced": "2026-08-05",
+      "open": 2,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-06",
+      "state": "active",
+      "total": 6
+    },
+    "colbert-reranker-web-research.md": {
+      "blocked": 0,
+      "closed": 10,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 9,
+      "owner_index": "pipeline-integration-index.md",
+      "row_id": "PIP-01",
+      "state": "active",
+      "total": 19
+    },
+    "contention-model-device-and-load-axes-rider.md": {
+      "blocked": 0,
+      "closed": 8,
+      "guarded": 0,
+      "last_advanced": "2026-08-03",
+      "open": 1,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-07",
+      "state": "active",
+      "total": 9
+    },
+    "context-folding-progressive.md": {
+      "blocked": 0,
+      "closed": 9,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 14,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-08",
+      "state": "active",
+      "total": 23
+    },
+    "cpu-prefill-compute-large-models.md": {
+      "blocked": 0,
+      "closed": 27,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-09",
+      "state": "active",
+      "total": 28
+    },
+    "cpu-shape-specialized-gemv-decode.md": {
+      "blocked": 0,
+      "closed": 7,
+      "guarded": 9,
+      "last_advanced": "2026-07-30",
+      "open": 26,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-10",
+      "state": "active",
+      "total": 42
+    },
+    "dashboard-architecture-restructure.md": {
+      "blocked": 0,
+      "closed": 12,
+      "guarded": 0,
+      "last_advanced": "2026-08-10",
+      "open": 15,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-47",
+      "state": "active",
+      "total": 27
+    },
+    "decision-aware-routing.md": {
+      "blocked": 1,
+      "closed": 39,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 32,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-09",
+      "state": "active",
+      "total": 72
+    },
+    "deepseek-v4-flash-0731-dspark.md": {
+      "blocked": 0,
+      "closed": 23,
+      "guarded": 0,
+      "last_advanced": "2026-08-11",
+      "open": 14,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-11",
+      "state": "active",
+      "total": 37
+    },
+    "delegation-context-preassembly.md": {
+      "blocked": 0,
+      "closed": 6,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-10",
+      "state": "active",
+      "total": 8
+    },
+    "delta-mem-reproduction.md": {
+      "blocked": 0,
+      "closed": 2,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-12",
+      "state": "active",
+      "total": 6
+    },
+    "design-backlog-triage-2026-07-23.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 0,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-09",
+      "state": "active",
+      "total": 0
+    },
+    "document-parser-table-bench.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 15,
+      "owner_index": "pipeline-integration-index.md",
+      "row_id": "PIP-02",
+      "state": "active",
+      "total": 18
+    },
+    "dynamic-stack-concurrency.md": {
+      "blocked": 0,
+      "closed": 7,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 6,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-11",
+      "state": "active",
+      "total": 13
+    },
+    "engram-conditional-memory.md": {
+      "blocked": 1,
+      "closed": 5,
+      "guarded": 0,
+      "last_advanced": "2026-08-03",
+      "open": 7,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-13",
+      "state": "active",
+      "total": 13
+    },
+    "episodic-memory-integrity.md": {
+      "blocked": 0,
+      "closed": 38,
+      "guarded": 0,
+      "last_advanced": "2026-08-04",
+      "open": 5,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-10",
+      "state": "active",
+      "total": 43
+    },
+    "ernie-image-turbo-evaluation.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "pipeline-integration-index.md",
+      "row_id": "PIP-03",
+      "state": "active",
+      "total": 7
+    },
+    "esc8-stack-restart-landmine-audit-2026-07-22.md": {
+      "blocked": 0,
+      "closed": 12,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-12",
+      "state": "active",
+      "total": 12
+    },
+    "eval-benchmark-cost-reduction.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-11",
+      "state": "active",
+      "total": 6
+    },
+    "eval-tower-architecture-audit-2026-07-20.md": {
+      "blocked": 0,
+      "closed": 38,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 5,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-12",
+      "state": "active",
+      "total": 43
+    },
+    "eval-tower-loop-robustness-audit-2026-07-20.md": {
+      "blocked": 0,
+      "closed": 21,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-13",
+      "state": "active",
+      "total": 23
+    },
+    "eval-tower-verification.md": {
+      "blocked": 0,
+      "closed": 45,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 27,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-14",
+      "state": "active",
+      "total": 72
+    },
+    "evidence-plane-event-sourcing-and-narrative.md": {
+      "blocked": 0,
+      "closed": 6,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-13",
+      "state": "active",
+      "total": 8
+    },
+    "evidence-plane-instrument-repair.md": {
+      "blocked": 0,
+      "closed": 6,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-15",
+      "state": "active",
+      "total": 9
+    },
+    "evidence-plane-ledger-and-sequential-verdicts.md": {
+      "blocked": 0,
+      "closed": 13,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-16",
+      "state": "active",
+      "total": 14
+    },
+    "fable5-architecture-review-2.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-17",
+      "state": "active",
+      "total": 1
+    },
+    "fable5-window2-findings-00-executive-summary.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-18",
+      "state": "active",
+      "total": 1
+    },
+    "fable5-window2-findings-01-optimizer-integrity.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-19",
+      "state": "active",
+      "total": 2
+    },
+    "fable5-window2-findings-02-heterogeneous-gpu.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 7,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-20",
+      "state": "active",
+      "total": 10
+    },
+    "fable5-window2-findings-03-portfolio-and-master-queue.md": {
+      "blocked": 0,
+      "closed": 5,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 13,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-21",
+      "state": "active",
+      "total": 18
+    },
+    "fable5-window2-findings-05-intake-sweep-and-roofline.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-22",
+      "state": "active",
+      "total": 1
+    },
+    "fable5-window2-findings-05b-mi210-inference-architecture.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-14",
+      "state": "active",
+      "total": 1
+    },
+    "fable5-window2-findings-05c-mi210-lever-category-matrix.md": {
+      "blocked": 0,
+      "closed": 10,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 19,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-48",
+      "state": "active",
+      "total": 29
+    },
+    "frontier-f1-real-task-corpus.md": {
+      "blocked": 0,
+      "closed": 10,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-23",
+      "state": "active",
+      "total": 10
+    },
+    "frontier-f2-self-running-lab.md": {
+      "blocked": 0,
+      "closed": 11,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-24",
+      "state": "active",
+      "total": 13
+    },
+    "frontier-f3-data-flywheel.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 1,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-25",
+      "state": "active",
+      "total": 5
+    },
+    "frontier-f4-continuity-backup.md": {
+      "blocked": 0,
+      "closed": 2,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-26",
+      "state": "active",
+      "total": 4
+    },
+    "frontier-f6-upstream-publication.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-27",
+      "state": "active",
+      "total": 4
+    },
+    "gemma-challenge-kernel-techniques-v7.md": {
+      "blocked": 0,
+      "closed": 109,
+      "guarded": 0,
+      "last_advanced": "2026-08-11",
+      "open": 7,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-16",
+      "state": "active",
+      "total": 116
+    },
+    "glm51-reap-cpu-evaluation.md": {
+      "blocked": 0,
+      "closed": 27,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 11,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-17",
+      "state": "active",
+      "total": 38
+    },
+    "glm52-reviewer-capability-gates.md": {
+      "blocked": 0,
+      "closed": 48,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 5,
+      "owner_index": "reviewer-control-plane-index.md",
+      "row_id": "REV-02",
+      "state": "active",
+      "total": 53
+    },
+    "gpu-acceleration-path.md": {
+      "blocked": 0,
+      "closed": 12,
+      "guarded": 0,
+      "last_advanced": "2026-08-03",
+      "open": 8,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-18",
+      "state": "active",
+      "total": 20
+    },
+    "gpu-cot-scaffold-sidecar.md": {
+      "blocked": 0,
+      "closed": 7,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-19",
+      "state": "active",
+      "total": 8
+    },
+    "gpu-drafter-control-redesign.md": {
+      "blocked": 0,
+      "closed": 14,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-20",
+      "state": "active",
+      "total": 16
+    },
+    "gpu-drafter-mi200-investigation.md": {
+      "blocked": 0,
+      "closed": 11,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-21",
+      "state": "active",
+      "total": 13
+    },
+    "gpu-serving-tie-in-program.md": {
+      "blocked": 0,
+      "closed": 37,
+      "guarded": 0,
+      "last_advanced": "2026-08-11",
+      "open": 25,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-22",
+      "state": "active",
+      "total": 62
+    },
+    "granite-97m-r2-bench-plan.md": {
+      "blocked": 0,
+      "closed": 5,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-28",
+      "state": "active",
+      "total": 5
+    },
+    "handoff-index-and-backlog-graph.md": {
+      "blocked": 0,
+      "closed": 5,
+      "guarded": 0,
+      "last_advanced": "2026-08-11",
+      "open": 5,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-46",
+      "state": "active",
+      "total": 10
+    },
+    "harness-selection-and-integration.md": {
+      "blocked": 0,
+      "closed": 14,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 4,
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-01",
+      "state": "active",
+      "total": 18
+    },
+    "hermes-outer-shell.md": {
+      "blocked": 0,
+      "closed": 19,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 11,
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-02",
+      "state": "active",
+      "total": 30
+    },
+    "heterogeneous-slot-fabric-residency.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 10,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-23",
+      "state": "active",
+      "total": 11
+    },
+    "inference-batch-loop.md": {
+      "blocked": 0,
+      "closed": 15,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 13,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-24",
+      "state": "active",
+      "total": 28
+    },
+    "intake-derived-work-2026-07-25.md": {
+      "blocked": 0,
+      "closed": 23,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 19,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-29",
+      "state": "active",
+      "total": 42
+    },
+    "integration-test-coverage.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 5,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-30",
+      "state": "active",
+      "total": 5
+    },
+    "internal-interaction-lifecycle.md": {
+      "blocked": 0,
+      "closed": 27,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 5,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-14",
+      "state": "active",
+      "total": 32
+    },
+    "internal-kb-rag.md": {
+      "blocked": 0,
+      "closed": 22,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 7,
+      "owner_index": "pipeline-integration-index.md",
+      "row_id": "PIP-04",
+      "state": "active",
+      "total": 29
+    },
+    "intra-process-tensor-parallel-decode.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 5,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-25",
+      "state": "active",
+      "total": 5
+    },
+    "iqk-iquant-enablement.md": {
+      "blocked": 0,
+      "closed": 14,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 3,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-26",
+      "state": "active",
+      "total": 17
+    },
+    "laguna-s21-cpu-port.md": {
+      "blocked": 0,
+      "closed": 11,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 1,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-28",
+      "state": "active",
+      "total": 12
+    },
+    "large-moe-expert-parallelism.md": {
+      "blocked": 0,
+      "closed": 2,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-29",
+      "state": "active",
+      "total": 5
+    },
+    "learned-routing-controller.md": {
+      "blocked": 0,
+      "closed": 34,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 20,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-15",
+      "state": "active",
+      "total": 54
+    },
+    "lightning-attention-port.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-30",
+      "state": "active",
+      "total": 4
+    },
+    "llama-cpp-dsa-contribution.md": {
+      "blocked": 0,
+      "closed": 6,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-31",
+      "state": "active",
+      "total": 10
+    },
+    "llamacpp-v6-consolidation.md": {
+      "blocked": 0,
+      "closed": 9,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 5,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-32",
+      "state": "active",
+      "total": 14
+    },
+    "log-linear-gated-deltanet-readiness.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-33",
+      "state": "active",
+      "total": 3
+    },
+    "loops-and-dashboards-audit-2026-07-05.md": {
+      "blocked": 0,
+      "closed": 44,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-16",
+      "state": "active",
+      "total": 45
+    },
+    "mathsmith-hc-formalizer-eval.md": {
+      "blocked": 0,
+      "closed": 6,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 15,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-31",
+      "state": "active",
+      "total": 21
+    },
+    "memento-block-reasoning-compression.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 5,
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-03",
+      "state": "active",
+      "total": 6
+    },
+    "meta-harness-optimization.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-32",
+      "state": "active",
+      "total": 1
+    },
+    "mi210-big-model-and-acceleration-roadmap.md": {
+      "blocked": 0,
+      "closed": 50,
+      "guarded": 0,
+      "last_advanced": "2026-08-11",
+      "open": 4,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-34",
+      "state": "active",
+      "total": 54
+    },
+    "mi210-q8-dequant-gemv-roofline.md": {
+      "blocked": 0,
+      "closed": 14,
+      "guarded": 0,
+      "last_advanced": "2026-08-11",
+      "open": 7,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-37",
+      "state": "active",
+      "total": 21
+    },
+    "minddr-deep-research-mode.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 9,
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-04",
+      "state": "active",
+      "total": 12
+    },
+    "model-capability-descriptors.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-17",
+      "state": "active",
+      "total": 5
+    },
+    "model-stack-change-standardization-audit.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 7,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-18",
+      "state": "active",
+      "total": 11
+    },
+    "model-stack-single-source-update-pipeline.md": {
+      "blocked": 0,
+      "closed": 5,
+      "guarded": 6,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-19",
+      "state": "active",
+      "total": 11
+    },
+    "model-stack-update-pipeline-audit.md": {
+      "blocked": 0,
+      "closed": 5,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-20",
+      "state": "active",
+      "total": 8
+    },
+    "moe-aggregate-deployment-wins-brief.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-39",
+      "state": "active",
+      "total": 1
+    },
+    "moe-spec-cpu-spec-dec-integration.md": {
+      "blocked": 0,
+      "closed": 2,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-40",
+      "state": "active",
+      "total": 3
+    },
+    "multi-file-coding-completion-capability.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-21",
+      "state": "active",
+      "total": 7
+    },
+    "multimodal-pipeline.md": {
+      "blocked": 0,
+      "closed": 27,
+      "guarded": 0,
+      "last_advanced": "2026-08-03",
+      "open": 22,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-41",
+      "state": "active",
+      "total": 49
+    },
+    "multiscreen-attention-evaluation.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-42",
+      "state": "active",
+      "total": 5
+    },
+    "non-inference-backlog.md": {
+      "blocked": 0,
+      "closed": 51,
+      "guarded": 0,
+      "last_advanced": "2026-07-31",
+      "open": 9,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-22",
+      "state": "active",
+      "total": 60
+    },
+    "numa-placement-defect-20260730.md": {
+      "blocked": 0,
+      "closed": 33,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 7,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-43",
+      "state": "active",
+      "total": 40
+    },
+    "numa-prefill-decode-disaggregation.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-44",
+      "state": "active",
+      "total": 1
+    },
+    "numa-topology-cutover-resume-20260730.md": {
+      "blocked": 2,
+      "closed": 54,
+      "guarded": 0,
+      "last_advanced": "2026-08-01",
+      "open": 84,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-45",
+      "state": "active",
+      "total": 140
+    },
+    "objective-task-rate-goodput.md": {
+      "blocked": 0,
+      "closed": 12,
+      "guarded": 0,
+      "last_advanced": "2026-08-04",
+      "open": 6,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-23",
+      "state": "active",
+      "total": 18
+    },
+    "opendataloader-pipeline-integration.md": {
+      "blocked": 0,
+      "closed": 44,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 16,
+      "owner_index": "pipeline-integration-index.md",
+      "row_id": "PIP-05",
+      "state": "active",
+      "total": 60
+    },
+    "orchestration-robustness-audit-2026-07-11.md": {
+      "blocked": 0,
+      "closed": 46,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 5,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-24",
+      "state": "active",
+      "total": 51
+    },
+    "orchestrator-nps4-48x4-notes.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-25",
+      "state": "active",
+      "total": 1
+    },
+    "outer-coordinator-learned-head.md": {
+      "blocked": 0,
+      "closed": 6,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-26",
+      "state": "active",
+      "total": 6
+    },
+    "per-request-reasoning-budget.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-33",
+      "state": "active",
+      "total": 6
+    },
+    "prompt-construction-determinism.md": {
+      "blocked": 0,
+      "closed": 2,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-27",
+      "state": "active",
+      "total": 4
+    },
+    "qwen-mtp-llamacpp-port.md": {
+      "blocked": 0,
+      "closed": 6,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-46",
+      "state": "active",
+      "total": 8
+    },
+    "qwen36-27b-cpu-feasibility.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-47",
+      "state": "active",
+      "total": 5
+    },
+    "rao-redel-substrate-spike.md": {
+      "blocked": 0,
+      "closed": 6,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 6,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-34",
+      "state": "active",
+      "total": 12
+    },
+    "re4-protocol-redesign.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-35",
+      "state": "active",
+      "total": 7
+    },
+    "reasoning-compression.md": {
+      "blocked": 0,
+      "closed": 23,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 5,
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-05",
+      "state": "active",
+      "total": 28
+    },
+    "reasoning-effort-levels.md": {
+      "blocked": 0,
+      "closed": 8,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 18,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-28",
+      "state": "active",
+      "total": 26
+    },
+    "repl-session-memory-maturity.md": {
+      "blocked": 0,
+      "closed": 9,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 8,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-36",
+      "state": "active",
+      "total": 17
+    },
+    "repl-turn-efficiency.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 13,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-37",
+      "state": "active",
+      "total": 16
+    },
+    "repo-readiness-scorer.md": {
+      "blocked": 0,
+      "closed": 6,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-38",
+      "state": "active",
+      "total": 8
+    },
+    "retrain-routing-models.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-29",
+      "state": "active",
+      "total": 7
+    },
+    "reviewer-calibration-accounting.md": {
+      "blocked": 0,
+      "closed": 8,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 4,
+      "owner_index": "reviewer-control-plane-index.md",
+      "row_id": "REV-03",
+      "state": "active",
+      "total": 12
+    },
+    "reviewer-decision-plane.md": {
+      "blocked": 0,
+      "closed": 11,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "reviewer-control-plane-index.md",
+      "row_id": "REV-04",
+      "state": "active",
+      "total": 12
+    },
+    "reviewer-escalation-and-human-gate-policy.md": {
+      "blocked": 1,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 8,
+      "owner_index": "reviewer-control-plane-index.md",
+      "row_id": "REV-05",
+      "state": "active",
+      "total": 10
+    },
+    "reviewer-latency-and-sampling-budget.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 7,
+      "owner_index": "reviewer-control-plane-index.md",
+      "row_id": "REV-06",
+      "state": "active",
+      "total": 10
+    },
+    "reviewer-model-ablations.md": {
+      "blocked": 0,
+      "closed": 12,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 9,
+      "owner_index": "reviewer-control-plane-index.md",
+      "row_id": "REV-07",
+      "state": "active",
+      "total": 21
+    },
+    "reviewer-trace-materialization.md": {
+      "blocked": 0,
+      "closed": 9,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "reviewer-control-plane-index.md",
+      "row_id": "REV-08",
+      "state": "active",
+      "total": 10
+    },
+    "reviewer-typed-artifacts.md": {
+      "blocked": 0,
+      "closed": 11,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "reviewer-control-plane-index.md",
+      "row_id": "REV-09",
+      "state": "active",
+      "total": 15
+    },
+    "rlm-contested-claims-self-evaluation.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 5,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-39",
+      "state": "active",
+      "total": 8
+    },
+    "rocm-verify-profile-backend.md": {
+      "blocked": 0,
+      "closed": 70,
+      "guarded": 0,
+      "last_advanced": "2026-08-12",
+      "open": 17,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-48",
+      "state": "active",
+      "total": 87
+    },
+    "routing-intelligence.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 9,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-30",
+      "state": "active",
+      "total": 9
+    },
+    "routing-truth-restoration.md": {
+      "blocked": 0,
+      "closed": 9,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-31",
+      "state": "active",
+      "total": 9
+    },
+    "safetygate-rlvr-provenance-audit-2026-07-22.md": {
+      "blocked": 0,
+      "closed": 9,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-40",
+      "state": "active",
+      "total": 9
+    },
+    "sarathi-serve-cpu-evaluation.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-49",
+      "state": "active",
+      "total": 2
+    },
+    "scaffold-autopilot-cost-lever-deployment.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 12,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-32",
+      "state": "active",
+      "total": 16
+    },
+    "scorer-fork-drift-audit-2026-07-22.md": {
+      "blocked": 0,
+      "closed": 5,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-41",
+      "state": "active",
+      "total": 8
+    },
+    "scoring-infra-standardization.md": {
+      "blocked": 0,
+      "closed": 15,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 18,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-42",
+      "state": "active",
+      "total": 33
+    },
+    "searxng-search-backend.md": {
+      "blocked": 0,
+      "closed": 19,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-33",
+      "state": "active",
+      "total": 23
+    },
+    "security-review-skill.md": {
+      "blocked": 0,
+      "closed": 2,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 6,
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-06",
+      "state": "active",
+      "total": 8
+    },
+    "session-bus-thin-dispatcher.md": {
+      "blocked": 0,
+      "closed": 60,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 24,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-34",
+      "state": "active",
+      "total": 84
+    },
+    "shape-keyed-contention-gating.md": {
+      "blocked": 0,
+      "closed": 8,
+      "guarded": 0,
+      "last_advanced": "2026-08-01",
+      "open": 8,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-35",
+      "state": "active",
+      "total": 16
+    },
+    "sliders-local-validation.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 9,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-43",
+      "state": "active",
+      "total": 9
+    },
+    "speculative-decoding-mtp-refresh.md": {
+      "blocked": 0,
+      "closed": 30,
+      "guarded": 0,
+      "last_advanced": "2026-07-31",
+      "open": 12,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-50",
+      "state": "active",
+      "total": 42
+    },
+    "stack-change-governance-pipeline.md": {
+      "blocked": 0,
+      "closed": 5,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-36",
+      "state": "active",
+      "total": 6
+    },
+    "stack-lineup-dossier-2026-07-23.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 0,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-37",
+      "state": "active",
+      "total": 0
+    },
+    "stale-open-audit-2026-07-18.md": {
+      "blocked": 0,
+      "closed": 8,
+      "guarded": 1,
+      "last_advanced": "2026-07-29",
+      "open": 6,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-44",
+      "state": "active",
+      "total": 15
+    },
+    "standardized-stack-update-pipeline-finalization.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 3,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-38",
+      "state": "active",
+      "total": 8
+    },
+    "strand-rust-coder-rustevo2-verification.md": {
+      "blocked": 0,
+      "closed": 2,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-45",
+      "state": "active",
+      "total": 5
+    },
+    "streaming-llm-baseline.md": {
+      "blocked": 0,
+      "closed": 4,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-51",
+      "state": "active",
+      "total": 8
+    },
+    "summary-token-attention-readiness.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-52",
+      "state": "active",
+      "total": 4
+    },
+    "swarm-dataset-distillation.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-39",
+      "state": "blocked",
+      "total": 3
+    },
+    "tidar-one-pass-variant-b.md": {
+      "blocked": 0,
+      "closed": 1,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 3,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-53",
+      "state": "active",
+      "total": 4
+    },
+    "tool-output-compression.md": {
+      "blocked": 0,
+      "closed": 15,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "user-facing-harness-index.md",
+      "row_id": "UFH-07",
+      "state": "active",
+      "total": 19
+    },
+    "tool-use-eval-contract.md": {
+      "blocked": 0,
+      "closed": 7,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 2,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-46",
+      "state": "active",
+      "total": 9
+    },
+    "tq3-quantization-evaluation.md": {
+      "blocked": 0,
+      "closed": 15,
+      "guarded": 0,
+      "last_advanced": "2026-08-03",
+      "open": 13,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-54",
+      "state": "active",
+      "total": 28
+    },
+    "tree-draft-forward-port-plan.md": {
+      "blocked": 0,
+      "closed": 8,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-55",
+      "state": "active",
+      "total": 8
+    },
+    "tri-role-coordinator-architecture.md": {
+      "blocked": 0,
+      "closed": 21,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 7,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-40",
+      "state": "active",
+      "total": 28
+    },
+    "triattention-kv-selection.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 4,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-56",
+      "state": "active",
+      "total": 4
+    },
+    "unified-trace-memory-service.md": {
+      "blocked": 0,
+      "closed": 21,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 10,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-41",
+      "state": "active",
+      "total": 31
+    },
+    "v7-promotion.md": {
+      "blocked": 0,
+      "closed": 11,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 0,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-57",
+      "state": "active",
+      "total": 11
+    },
+    "v9-kernel-per-request-speculative-params.md": {
+      "blocked": 0,
+      "closed": 7,
+      "guarded": 0,
+      "last_advanced": "2026-08-11",
+      "open": 1,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-58",
+      "state": "active",
+      "total": 8
+    },
+    "vidya-belief-substrate-program.md": {
+      "blocked": 0,
+      "closed": 52,
+      "guarded": 0,
+      "last_advanced": "2026-08-12",
+      "open": 14,
+      "owner_index": "research-evaluation-index.md",
+      "row_id": "EVL-47",
+      "state": "active",
+      "total": 66
+    },
+    "within-role-placement-state-machine.md": {
+      "blocked": 0,
+      "closed": 14,
+      "guarded": 0,
+      "last_advanced": "2026-07-30",
+      "open": 6,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-42",
+      "state": "active",
+      "total": 20
+    },
+    "wp12-fleet-layer-design.md": {
+      "blocked": 0,
+      "closed": 14,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-43",
+      "state": "active",
+      "total": 15
+    },
+    "wp9-wp10-lineup-event-prep.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 0,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-44",
+      "state": "active",
+      "total": 0
+    },
+    "x-mas-text-routing.md": {
+      "blocked": 0,
+      "closed": 2,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "routing-and-optimization-index.md",
+      "row_id": "RTG-45",
+      "state": "active",
+      "total": 3
+    },
+    "yarn-context-extension-research.md": {
+      "blocked": 0,
+      "closed": 0,
+      "guarded": 0,
+      "last_advanced": "2026-07-29",
+      "open": 1,
+      "owner_index": "inference-research-index.md",
+      "row_id": "INF-59",
+      "state": "active",
+      "total": 1
+    }
+  },
+  "rows": {
+    "EVL-01": {
+      "deps": [],
+      "handoff": "agent-file-prose-compression.md",
+      "id": "EVL-01",
+      "index": "research-evaluation-index.md",
+      "line": 13,
+      "next_action": "AFC-P5.E3 \u2014 run the n=30 compliance campaign. READY but HELD (operator: \"I will tell",
+      "track": "agent file prose compression"
+    },
+    "EVL-02": {
+      "deps": [],
+      "handoff": "architect-model-selection-bench.md",
+      "id": "EVL-02",
+      "index": "research-evaluation-index.md",
+      "line": 14,
+      "next_action": "Complete the full paired GPU `gpqa_diamond_cot` arm or close it by the standing ROI rule",
+      "track": "architect model selection bench"
+    },
+    "EVL-03": {
+      "deps": [],
+      "handoff": "autopilot-decision-plane-audit-2026-07-22.md",
+      "id": "EVL-03",
+      "index": "research-evaluation-index.md",
+      "line": 15,
+      "next_action": "E8 RE-ARM (2026-07-26) \u2014 AutoPilot E8 baseline reseed = the gating task of the post-v8",
+      "track": "autopilot decision plane audit 2026 07 22"
+    },
+    "EVL-04": {
+      "deps": [],
+      "handoff": "autopilot-sequential-allocation.md",
+      "id": "EVL-04",
+      "index": "research-evaluation-index.md",
+      "line": 16,
+      "next_action": "SEQ-A: make the refuted label sticky in state_name() so re-adjudication cannot silently un-refute",
+      "track": "autopilot sequential allocation"
+    },
+    "EVL-05": {
+      "deps": [],
+      "handoff": "backlog-roi-audit-2026-07-14.md",
+      "id": "EVL-05",
+      "index": "research-evaluation-index.md",
+      "line": 17,
+      "next_action": "RE-1 \u00b7 Math-Verify scoring flip + re-baseline (S, med-ROI; intake-377/379) \u2014 the math_verify scorer is landed in orchestrator but zero pool\u2026",
+      "track": "backlog roi audit 2026 07 14"
+    },
+    "EVL-06": {
+      "deps": [],
+      "handoff": "benchmark-results-dashboard.md",
+      "id": "EVL-06",
+      "index": "research-evaluation-index.md",
+      "line": 18,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "benchmark results dashboard"
+    },
+    "EVL-07": {
+      "deps": [],
+      "handoff": "bulk-inference-campaign.md",
+      "id": "EVL-07",
+      "index": "research-evaluation-index.md",
+      "line": 19,
+      "next_action": "K-LCM-1 \u2014 LongCoT-Mini calibration run (~500-easy deterministic long-horizon suite)",
+      "track": "bulk inference campaign"
+    },
+    "EVL-08": {
+      "deps": [],
+      "handoff": "canonical-judge-suite-revamp.md",
+      "id": "EVL-08",
+      "index": "research-evaluation-index.md",
+      "line": 20,
+      "next_action": "CJ-1a \u2014 corpus is already cached (gpqa_diamond 198 rows); build the judge slate from it",
+      "track": "canonical judge suite revamp"
+    },
+    "EVL-09": {
+      "deps": [],
+      "handoff": "design-backlog-triage-2026-07-23.md",
+      "id": "EVL-09",
+      "index": "research-evaluation-index.md",
+      "line": 21,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "design backlog triage 2026 07 23"
+    },
+    "EVL-10": {
+      "deps": [],
+      "handoff": "episodic-memory-integrity.md",
+      "id": "EVL-10",
+      "index": "research-evaluation-index.md",
+      "line": 22,
+      "next_action": "M-11a \u2014 first re-distil; INFERENCE-gated, do not run without an approved window",
+      "track": "episodic memory integrity"
+    },
+    "EVL-11": {
+      "deps": [],
+      "handoff": "eval-benchmark-cost-reduction.md",
+      "id": "EVL-11",
+      "index": "research-evaluation-index.md",
+      "line": 23,
+      "next_action": "BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies",
+      "track": "eval benchmark cost reduction"
+    },
+    "EVL-12": {
+      "deps": [],
+      "handoff": "eval-tower-architecture-audit-2026-07-20.md",
+      "id": "EVL-12",
+      "index": "research-evaluation-index.md",
+      "line": 24,
+      "next_action": "A2 agent SCORE-02/XREPO-1/PATH-1 \u2014 make module identity deterministic. (PARTIAL \u2705 2026-07-20: the debug_scorer leg landed in 2a41c0bc \u2014 see\u2026",
+      "track": "eval tower architecture audit 2026 07 20"
+    },
+    "EVL-13": {
+      "deps": [],
+      "handoff": "eval-tower-loop-robustness-audit-2026-07-20.md",
+      "id": "EVL-13",
+      "index": "research-evaluation-index.md",
+      "line": 25,
+      "next_action": "H2.v8 \u2014 remeasure the contention matrix under frozen v8 after E8 quality collection \u2014 live dashboard topology and region-lock payloads alre\u2026",
+      "track": "eval tower loop robustness audit 2026 07 20"
+    },
+    "EVL-14": {
+      "deps": [],
+      "handoff": "eval-tower-verification.md",
+      "id": "EVL-14",
+      "index": "research-evaluation-index.md",
+      "line": 26,
+      "next_action": "EV-4 \u2014 decision-grade HE-R+ calibration baseline through the inference-batch loop, after contention recert",
+      "track": "eval tower verification"
+    },
+    "EVL-15": {
+      "deps": [],
+      "handoff": "evidence-plane-instrument-repair.md",
+      "id": "EVL-15",
+      "index": "research-evaluation-index.md",
+      "line": 27,
+      "next_action": "W5 \u2014 designed core_v2 (impl 2.1, 2\u20133 days + calibration): benchmarks/prompts/core_v2.jsonl (~40 items, per-item p\u22080.2,0.8, stratified), ver\u2026",
+      "track": "evidence plane instrument repair"
+    },
+    "EVL-16": {
+      "deps": [],
+      "handoff": "evidence-plane-ledger-and-sequential-verdicts.md",
+      "id": "EVL-16",
+      "index": "research-evaluation-index.md",
+      "line": 28,
+      "next_action": "W8b \u2014 live candidate evidence after guard deploy: continue W8 candidate attempts under the live selectable-action coordinator plus outcome-\u2026",
+      "track": "evidence plane ledger and sequential verdict"
+    },
+    "EVL-17": {
+      "deps": [],
+      "handoff": "fable5-architecture-review-2.md",
+      "id": "EVL-17",
+      "index": "research-evaluation-index.md",
+      "line": 29,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "fable5 architecture review 2"
+    },
+    "EVL-18": {
+      "deps": [],
+      "handoff": "fable5-window2-findings-00-executive-summary.md",
+      "id": "EVL-18",
+      "index": "research-evaluation-index.md",
+      "line": 30,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "fable5 window2 findings 00 executive summary"
+    },
+    "EVL-19": {
+      "deps": [],
+      "handoff": "fable5-window2-findings-01-optimizer-integrity.md",
+      "id": "EVL-19",
+      "index": "research-evaluation-index.md",
+      "line": 31,
+      "next_action": "R2-current \u2014 accrue a current-era, trusted per-question ledger sufficient for a reproducible \u226540-item core selection. Do not promote the Ju\u2026",
+      "track": "fable5 window2 findings 01 optimizer integri"
+    },
+    "EVL-20": {
+      "deps": [],
+      "handoff": "fable5-window2-findings-02-heterogeneous-gpu.md",
+      "id": "EVL-20",
+      "index": "research-evaluation-index.md",
+      "line": 32,
+      "next_action": "F1 \u2014 per-split GPU/CPU timing under static -cmoe on one MoE model; report",
+      "track": "fable5 window2 findings 02 heterogeneous gpu"
+    },
+    "EVL-21": {
+      "deps": [],
+      "handoff": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+      "id": "EVL-21",
+      "index": "research-evaluation-index.md",
+      "line": 33,
+      "next_action": "G1 \u00b7 Ratify P-GPU-1 (operator; measurement trust boundary \u2014 human-amendment-only). findings-02 \u00a75",
+      "track": "fable5 window2 findings 03 portfolio and mas"
+    },
+    "EVL-22": {
+      "deps": [],
+      "handoff": "fable5-window2-findings-05-intake-sweep-and-roofline.md",
+      "id": "EVL-22",
+      "index": "research-evaluation-index.md",
+      "line": 34,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "fable5 window2 findings 05 intake sweep and"
+    },
+    "EVL-23": {
+      "deps": [],
+      "handoff": "frontier-f1-real-task-corpus.md",
+      "id": "EVL-23",
+      "index": "research-evaluation-index.md",
+      "line": 35,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "frontier f1 real task corpus"
+    },
+    "EVL-24": {
+      "deps": [],
+      "handoff": "frontier-f2-self-running-lab.md",
+      "id": "EVL-24",
+      "index": "research-evaluation-index.md",
+      "line": 36,
+      "next_action": "W3 \u2014 reliability ladder (ongoing): scripts/lab/promote_job.py enforcing shadow \u2192 reviewed \u2192 autonomous from logged stats (shadow \u226510 runs s\u2026",
+      "track": "frontier f2 self running lab"
+    },
+    "EVL-25": {
+      "deps": [],
+      "handoff": "frontier-f3-data-flywheel.md",
+      "id": "EVL-25",
+      "index": "research-evaluation-index.md",
+      "line": 37,
+      "next_action": "W3 \u2014 GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate is now satisfied by 100 trusted reviewed triage\u2026",
+      "track": "frontier f3 data flywheel"
+    },
+    "EVL-26": {
+      "deps": [],
+      "handoff": "frontier-f4-continuity-backup.md",
+      "id": "EVL-26",
+      "index": "research-evaluation-index.md",
+      "line": 38,
+      "next_action": "W2 \u2014 the job (half day): scripts/backup/backup_critical.sh \u2014 restic preferred (dedupe+encryption, open-source) or snapshot-copy fallback. T\u2026",
+      "track": "frontier f4 continuity backup"
+    },
+    "EVL-27": {
+      "deps": [],
+      "handoff": "frontier-f6-upstream-publication.md",
+      "id": "EVL-27",
+      "index": "research-evaluation-index.md",
+      "line": 39,
+      "next_action": "W1 \u2014 D2 PR spearhead (1\u20132 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-processing sparse path the PR author asked for help\u2026",
+      "track": "frontier f6 upstream publication"
+    },
+    "EVL-28": {
+      "deps": [],
+      "handoff": "granite-97m-r2-bench-plan.md",
+      "id": "EVL-28",
+      "index": "research-evaluation-index.md",
+      "line": 40,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "granite 97m r2 bench plan"
+    },
+    "EVL-29": {
+      "deps": [],
+      "handoff": "intake-derived-work-2026-07-25.md",
+      "id": "EVL-29",
+      "index": "research-evaluation-index.md",
+      "line": 41,
+      "next_action": "ID-2 \u2014 pin the gepa dependency; installed is 0.0.26 and unpinned",
+      "track": "intake derived work 2026 07 25"
+    },
+    "EVL-30": {
+      "deps": [],
+      "handoff": "integration-test-coverage.md",
+      "id": "EVL-30",
+      "index": "research-evaluation-index.md",
+      "line": 42,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "integration test coverage"
+    },
+    "EVL-31": {
+      "deps": [],
+      "handoff": "mathsmith-hc-formalizer-eval.md",
+      "id": "EVL-31",
+      "index": "research-evaluation-index.md",
+      "line": 43,
+      "next_action": "If no GGUF exists, convert from HF weights (convert_hf_to_gguf.py + llama-quantize, Q4_K_M and Q8_0)",
+      "track": "mathsmith hc formalizer eval"
+    },
+    "EVL-32": {
+      "deps": [],
+      "handoff": "meta-harness-optimization.md",
+      "id": "EVL-32",
+      "index": "research-evaluation-index.md",
+      "line": 44,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "meta harness optimization"
+    },
+    "EVL-33": {
+      "deps": [],
+      "handoff": "per-request-reasoning-budget.md",
+      "id": "EVL-33",
+      "index": "research-evaluation-index.md",
+      "line": 45,
+      "next_action": "Step 3: implement fix (force </think> / suppress think scaffold at budget=0 for hybrid SSM), needs running server",
+      "track": "per request reasoning budget"
+    },
+    "EVL-34": {
+      "deps": [],
+      "handoff": "rao-redel-substrate-spike.md",
+      "id": "EVL-34",
+      "index": "research-evaluation-index.md",
+      "line": 46,
+      "next_action": "Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation",
+      "track": "rao redel substrate spike"
+    },
+    "EVL-35": {
+      "deps": [],
+      "handoff": "re4-protocol-redesign.md",
+      "id": "EVL-35",
+      "index": "research-evaluation-index.md",
+      "line": 47,
+      "next_action": "RE-4.2 \u2014 non-saturation probe (operator quiet-window, current v8 topology re-attested, autopilot stopped): frontdoor-only, two-phase, R=409\u2026",
+      "track": "re4 protocol redesign"
+    },
+    "EVL-36": {
+      "deps": [],
+      "handoff": "repl-session-memory-maturity.md",
+      "id": "EVL-36",
+      "index": "research-evaluation-index.md",
+      "line": 48,
+      "next_action": "D-a5 \u2014 If DataFrame persistence is ever wanted, use a typed columnar codec, not the",
+      "track": "repl session memory maturity"
+    },
+    "EVL-37": {
+      "deps": [],
+      "handoff": "repl-turn-efficiency.md",
+      "id": "EVL-37",
+      "index": "research-evaluation-index.md",
+      "line": 49,
+      "next_action": "S4 Omega A/B: measure turns per task, token cost per task, and accuracy delta. This gates suggestion, verbosity, and any extra tool-surface\u2026",
+      "track": "repl turn efficiency"
+    },
+    "EVL-38": {
+      "deps": [],
+      "handoff": "repo-readiness-scorer.md",
+      "id": "EVL-38",
+      "index": "research-evaluation-index.md",
+      "line": 50,
+      "next_action": "Close remaining root L5.self_optimizing_loop gap (13-item queue)",
+      "track": "repo readiness scorer"
+    },
+    "EVL-39": {
+      "deps": [],
+      "handoff": "rlm-contested-claims-self-evaluation.md",
+      "id": "EVL-39",
+      "index": "research-evaluation-index.md",
+      "line": 51,
+      "next_action": "E1 \u2014 RESCOPED BY E0: measure Base vs Depth-1 first, not depth-1 vs depth-2. E0 showed",
+      "track": "rlm contested claims self evaluation"
+    },
+    "EVL-40": {
+      "deps": [],
+      "handoff": "safetygate-rlvr-provenance-audit-2026-07-22.md",
+      "id": "EVL-40",
+      "index": "research-evaluation-index.md",
+      "line": 52,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "safetygate rlvr provenance audit 2026 07 22"
+    },
+    "EVL-41": {
+      "deps": [],
+      "handoff": "scorer-fork-drift-audit-2026-07-22.md",
+      "id": "EVL-41",
+      "index": "research-evaluation-index.md",
+      "line": 53,
+      "next_action": "Unify the _inband_error_text / _forced_role_serving_mismatch local copies (seeding 3bfe2584) with eval_tower's originals into one shared mo\u2026",
+      "track": "scorer fork drift audit 2026 07 22"
+    },
+    "EVL-42": {
+      "deps": [],
+      "handoff": "scoring-infra-standardization.md",
+      "id": "EVL-42",
+      "index": "research-evaluation-index.md",
+      "line": 54,
+      "next_action": "1b \u2014 migrate research consumers to the canonical lib and delete each duplicate extractor",
+      "track": "scoring infra standardization"
+    },
+    "EVL-43": {
+      "deps": [],
+      "handoff": "sliders-local-validation.md",
+      "id": "EVL-43",
+      "index": "research-evaluation-index.md",
+      "line": 55,
+      "next_action": "Operator decision: KB-RAG K7 precondition fired \u2014 evaluate SLIDERS DB+SQL alternative (Phase 0 falsification) now, or keep parked?",
+      "track": "sliders local validation"
+    },
+    "EVL-44": {
+      "deps": [],
+      "handoff": "stale-open-audit-2026-07-18.md",
+      "id": "EVL-44",
+      "index": "research-evaluation-index.md",
+      "line": 56,
+      "next_action": "Re-anchor GEMV to its 2 live graph-fusion tasks; move the deprioritized SIMD Phase 0\u20135 plan to a closed appendix",
+      "track": "stale open audit 2026 07 18"
+    },
+    "EVL-45": {
+      "deps": [],
+      "handoff": "strand-rust-coder-rustevo2-verification.md",
+      "id": "EVL-45",
+      "index": "research-evaluation-index.md",
+      "line": 57,
+      "next_action": "Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential",
+      "track": "strand rust coder rustevo2 verification"
+    },
+    "EVL-46": {
+      "deps": [],
+      "handoff": "tool-use-eval-contract.md",
+      "id": "EVL-46",
+      "index": "research-evaluation-index.md",
+      "line": 58,
+      "next_action": "TU-DTAP-1 \u2014 Import a reviewed, bounded Apache-2.0 DTAP subset into a disposable local runner.",
+      "track": "tool use eval contract"
+    },
+    "EVL-47": {
+      "deps": [],
+      "handoff": "vidya-belief-substrate-program.md",
+      "id": "EVL-47",
+      "index": "research-evaluation-index.md",
+      "line": 59,
+      "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
+      "track": "vidya belief substrate program"
+    },
+    "EVL-48": {
+      "deps": [],
+      "handoff": "fable5-window2-findings-05c-mi210-lever-category-matrix.md",
+      "id": "EVL-48",
+      "index": "research-evaluation-index.md",
+      "line": 60,
+      "next_action": "L12 \u2014 n-gram/prompt-lookup on GPU: 27B-Q8 + fp16 over code/JSON/prose sets, sweeping the three ngram spec types",
+      "track": "fable5 window2 findings 05c mi210 lever cate"
+    },
+    "INF-01": {
+      "deps": [],
+      "handoff": "01-speculative-decoding.md",
+      "id": "INF-01",
+      "index": "inference-research-index.md",
+      "line": 13,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "01 speculative decoding"
+    },
+    "INF-02": {
+      "deps": [],
+      "handoff": "agent-collab-rnd-harness.md",
+      "id": "INF-02",
+      "index": "inference-research-index.md",
+      "line": 14,
+      "next_action": "(Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (--backend local, custo\u2026",
+      "track": "agent collab rnd harness"
+    },
+    "INF-03": {
+      "deps": [
+        "INF-48",
+        "EVL-47"
+      ],
+      "handoff": "agentic-rocm-kernel-authoring.md",
+      "id": "INF-03",
+      "index": "inference-research-index.md",
+      "line": 15,
+      "next_action": "Complete live r4 six-arm campaign; rank only its terminal 6/6 panel",
+      "track": "agentic rocm kernel authoring"
+    },
+    "INF-04": {
+      "deps": [],
+      "handoff": "angelslim-techniques-evaluation.md",
+      "id": "INF-04",
+      "index": "inference-research-index.md",
+      "line": 16,
+      "next_action": "BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist",
+      "track": "angelslim techniques evaluation"
+    },
+    "INF-05": {
+      "deps": [],
+      "handoff": "attention-matching-kv-compaction.md",
+      "id": "INF-05",
+      "index": "inference-research-index.md",
+      "line": 17,
+      "next_action": "P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated",
+      "track": "attention matching kv compaction"
+    },
+    "INF-06": {
+      "deps": [
+        "INF-22",
+        "INF-48",
+        "EVL-47"
+      ],
+      "handoff": "autokernel-research-loop.md",
+      "id": "INF-06",
+      "index": "inference-research-index.md",
+      "line": 18,
+      "next_action": "After a compliant reboot, run full-host CPU IQK; then materialize and evaluate the matched archive",
+      "track": "autokernel research loop"
+    },
+    "INF-07": {
+      "deps": [],
+      "handoff": "batched-decode-measurement.md",
+      "id": "INF-07",
+      "index": "inference-research-index.md",
+      "line": 19,
+      "next_action": "E5 \u2014 the never-measured NUMA\u00d7batch 2D sweep; needs a post-promotion quiet window",
+      "track": "batched decode measurement"
+    },
+    "INF-09": {
+      "deps": [],
+      "handoff": "cpu-prefill-compute-large-models.md",
+      "id": "INF-09",
+      "index": "inference-research-index.md",
+      "line": 20,
+      "next_action": "PC-4 \u2014 experimental qwen35 prefill barrier/graph-fusion prototype:",
+      "track": "cpu prefill compute large models"
+    },
+    "INF-10": {
+      "deps": [],
+      "handoff": "cpu-shape-specialized-gemv-decode.md",
+      "id": "INF-10",
+      "index": "inference-research-index.md",
+      "line": 21,
+      "next_action": "Measure tinyBLAS on/off first (Phase 0) \u2014 sgemm.cpp is already compiled in, so it confounds every later A/B",
+      "track": "cpu shape specialized gemv decode"
+    },
+    "INF-11": {
+      "deps": [],
+      "handoff": "deepseek-v4-flash-0731-dspark.md",
+      "id": "INF-11",
+      "index": "inference-research-index.md",
+      "line": 22,
+      "next_action": "Run the matched standardized-versus-control DFlash throughput, acceptance and exact-parity comparison",
+      "track": "deepseek v4 flash 0731 dspark"
+    },
+    "INF-12": {
+      "deps": [],
+      "handoff": "delta-mem-reproduction.md",
+      "id": "INF-12",
+      "index": "inference-research-index.md",
+      "line": 23,
+      "next_action": "Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible)",
+      "track": "delta mem reproduction"
+    },
+    "INF-13": {
+      "deps": [],
+      "handoff": "engram-conditional-memory.md",
+      "id": "INF-13",
+      "index": "inference-research-index.md",
+      "line": 24,
+      "next_action": "Make k budget-conditional rather than fixed (intake-936 rider)",
+      "track": "engram conditional memory"
+    },
+    "INF-14": {
+      "deps": [],
+      "handoff": "fable5-window2-findings-05b-mi210-inference-architecture.md",
+      "id": "INF-14",
+      "index": "inference-research-index.md",
+      "line": 25,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "fable5 window2 findings 05b mi210 inference"
+    },
+    "INF-16": {
+      "deps": [],
+      "handoff": "gemma-challenge-kernel-techniques-v7.md",
+      "id": "INF-16",
+      "index": "inference-research-index.md",
+      "line": 26,
+      "next_action": "K10 \u2014 (follow-up) Lever A quiet-host re-eval: on a quiesced host (fresh-server/run, fprintf(stderr) keylog to confirm the nodes0 collision\u2026",
+      "track": "gemma challenge kernel techniques v7"
+    },
+    "INF-17": {
+      "deps": [],
+      "handoff": "glm51-reap-cpu-evaluation.md",
+      "id": "INF-17",
+      "index": "inference-research-index.md",
+      "line": 27,
+      "next_action": "Run the five-prompt short-context smoke (greeting, code, reasoning, structured, tool-call) \u2014 one positive is not a set",
+      "track": "glm51 reap cpu evaluation"
+    },
+    "INF-18": {
+      "deps": [],
+      "handoff": "gpu-acceleration-path.md",
+      "id": "INF-18",
+      "index": "inference-research-index.md",
+      "line": 28,
+      "next_action": "Explain the bidirectional-only mechanism before this becomes a placement input",
+      "track": "gpu acceleration path"
+    },
+    "INF-19": {
+      "deps": [],
+      "handoff": "gpu-cot-scaffold-sidecar.md",
+      "id": "INF-19",
+      "index": "inference-research-index.md",
+      "line": 29,
+      "next_action": "G3-4 \u2014 future decision instrument (separate from G3-3). Select and run a decision-grade,",
+      "track": "gpu cot scaffold sidecar"
+    },
+    "INF-20": {
+      "deps": [],
+      "handoff": "gpu-drafter-control-redesign.md",
+      "id": "INF-20",
+      "index": "inference-research-index.md",
+      "line": 30,
+      "next_action": "DR-3 \u2014 broader K2 admission runner/package: build the dry-run-first K2",
+      "track": "gpu drafter control redesign"
+    },
+    "INF-21": {
+      "deps": [],
+      "handoff": "gpu-drafter-mi200-investigation.md",
+      "id": "INF-21",
+      "index": "inference-research-index.md",
+      "line": 31,
+      "next_action": "Re-anchor to the live next step: Stage-1 end-to-end speedup / co-residency redesign (Stage 4 stays blocked on failed Stages 1\u20133)",
+      "track": "gpu drafter mi200 investigation"
+    },
+    "INF-22": {
+      "deps": [],
+      "handoff": "gpu-serving-tie-in-program.md",
+      "id": "INF-22",
+      "index": "inference-research-index.md",
+      "line": 32,
+      "next_action": "P0-1 (operator) \u2014 run the E8 ratification once Codex presents the apply-ready D4 bundle",
+      "track": "gpu serving tie in program"
+    },
+    "INF-23": {
+      "deps": [],
+      "handoff": "heterogeneous-slot-fabric-residency.md",
+      "id": "INF-23",
+      "index": "inference-research-index.md",
+      "line": 33,
+      "next_action": "Model GPU host threads as a fabric slot (gpu-host) \u2014 design only, gated on the residency verdict",
+      "track": "heterogeneous slot fabric residency"
+    },
+    "INF-24": {
+      "deps": [],
+      "handoff": "inference-batch-loop.md",
+      "id": "INF-24",
+      "index": "inference-research-index.md",
+      "line": 34,
+      "next_action": "P0 RCP prologue \u2014 RCP-W1 (reference relaunch + preflight), RCP-W2 (ledger materialize), RCP-W3 (calibration smoke) \u2014 gated OP-6a/6b + OP-st\u2026",
+      "track": "inference batch loop"
+    },
+    "INF-25": {
+      "deps": [],
+      "handoff": "intra-process-tensor-parallel-decode.md",
+      "id": "INF-25",
+      "index": "inference-research-index.md",
+      "line": 35,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "intra process tensor parallel decode"
+    },
+    "INF-26": {
+      "deps": [],
+      "handoff": "iqk-iquant-enablement.md",
+      "id": "INF-26",
+      "index": "inference-research-index.md",
+      "line": 36,
+      "next_action": "T2 \u2014 Gate trellis in ik_llama.cpp, not in our tree. /mnt/raid0/llm/ik_llama.cpp is already on disk and is the reference implementation. Bui\u2026",
+      "track": "iqk iquant enablement"
+    },
+    "INF-28": {
+      "deps": [],
+      "handoff": "laguna-s21-cpu-port.md",
+      "id": "INF-28",
+      "index": "inference-research-index.md",
+      "line": 37,
+      "next_action": "L-9P \u2014 conditional CPU throughput/config discovery. The prepared",
+      "track": "laguna s21 cpu port"
+    },
+    "INF-29": {
+      "deps": [],
+      "handoff": "large-moe-expert-parallelism.md",
+      "id": "INF-29",
+      "index": "inference-research-index.md",
+      "line": 38,
+      "next_action": "CPU15-REVAL \u2014 Fresh canonical matrix if reopening: before enabling EP anywhere, run:",
+      "track": "large moe expert parallelism"
+    },
+    "INF-30": {
+      "deps": [],
+      "handoff": "lightning-attention-port.md",
+      "id": "INF-30",
+      "index": "inference-research-index.md",
+      "line": 39,
+      "next_action": "LQ-2 broader quality eval: if keeping a math/reasoning role, run a focused AIME/MATH/GPQA-style bundle with reasoning_budget=0, exact promp\u2026",
+      "track": "lightning attention port"
+    },
+    "INF-31": {
+      "deps": [],
+      "handoff": "llama-cpp-dsa-contribution.md",
+      "id": "INF-31",
+      "index": "inference-research-index.md",
+      "line": 40,
+      "next_action": "D4 \u2014 root-cause the HIP bf16 LIGHTNING_INDEXER numerical failure (flaky, ERR\u22481.0,",
+      "track": "llama cpp dsa contribution"
+    },
+    "INF-32": {
+      "deps": [],
+      "handoff": "llamacpp-v6-consolidation.md",
+      "id": "INF-32",
+      "index": "inference-research-index.md",
+      "line": 41,
+      "next_action": "SWA slot-reuse fixes (d1c72d7fc / 603702769) \u2014 verify vs upstream SWA before drop.",
+      "track": "llamacpp v6 consolidation"
+    },
+    "INF-33": {
+      "deps": [],
+      "handoff": "log-linear-gated-deltanet-readiness.md",
+      "id": "INF-33",
+      "index": "inference-research-index.md",
+      "line": 42,
+      "next_action": "Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size)",
+      "track": "log linear gated deltanet readiness"
+    },
+    "INF-34": {
+      "deps": [],
+      "handoff": "mi210-big-model-and-acceleration-roadmap.md",
+      "id": "INF-34",
+      "index": "inference-research-index.md",
+      "line": 43,
+      "next_action": "DR-3 broader K2 admission runner/package: implement the dry-run-first K2",
+      "track": "mi210 big model and acceleration roadmap"
+    },
+    "INF-37": {
+      "deps": [
+        "INF-48",
+        "EVL-47"
+      ],
+      "handoff": "mi210-q8-dequant-gemv-roofline.md",
+      "id": "INF-37",
+      "index": "inference-research-index.md",
+      "line": 44,
+      "next_action": "Resolve approval; clean-replay Q4_K branchless decode and durable IQ2 model paths",
+      "track": "mi210 q8 dequant gemv roofline"
+    },
+    "INF-39": {
+      "deps": [],
+      "handoff": "moe-aggregate-deployment-wins-brief.md",
+      "id": "INF-39",
+      "index": "inference-research-index.md",
+      "line": 45,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "moe aggregate deployment wins brief"
+    },
+    "INF-40": {
+      "deps": [],
+      "handoff": "moe-spec-cpu-spec-dec-integration.md",
+      "id": "INF-40",
+      "index": "inference-research-index.md",
+      "line": 46,
+      "next_action": "Current live-MTP MoE verifier B-sweep: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bi\u2026",
+      "track": "moe spec cpu spec dec integration"
+    },
+    "INF-41": {
+      "deps": [],
+      "handoff": "multimodal-pipeline.md",
+      "id": "INF-41",
+      "index": "inference-research-index.md",
+      "line": 47,
+      "next_action": "S-9 \u2014 wire start_tts() into orchestrator_stack.py (port 9002 reserved); capability exists, wiring does not",
+      "track": "multimodal pipeline"
+    },
+    "INF-42": {
+      "deps": [],
+      "handoff": "multiscreen-attention-evaluation.md",
+      "id": "INF-42",
+      "index": "inference-research-index.md",
+      "line": 48,
+      "next_action": "HRM-1: Pull huggingface.co/sapientinc/HRM-Text-1B and run a fair head-to-head against Qwen3.5-1.7B-Instruct on our benchmark suite (MMLU, A\u2026",
+      "track": "multiscreen attention evaluation"
+    },
+    "INF-43": {
+      "deps": [],
+      "handoff": "numa-placement-defect-20260730.md",
+      "id": "INF-43",
+      "index": "inference-research-index.md",
+      "line": 49,
+      "next_action": "T3 \u2014 Re-run the 27 confounded E5 cells on declared placement. Per model the grid must",
+      "track": "numa placement defect"
+    },
+    "INF-44": {
+      "deps": [],
+      "handoff": "numa-prefill-decode-disaggregation.md",
+      "id": "INF-44",
+      "index": "inference-research-index.md",
+      "line": 50,
+      "next_action": "BLOCKED: feasibility-gated (xGMI KV-transfer falsification); reopen on multi-tenant shift",
+      "track": "numa prefill decode disaggregation"
+    },
+    "INF-45": {
+      "deps": [],
+      "handoff": "numa-topology-cutover-resume-20260730.md",
+      "id": "INF-45",
+      "index": "inference-research-index.md",
+      "line": 51,
+      "next_action": "P0-1 \u2014 fix the 30 net-new breaking tests across 14 files; this blocks the commit",
+      "track": "numa topology cutover resume"
+    },
+    "INF-46": {
+      "deps": [],
+      "handoff": "qwen-mtp-llamacpp-port.md",
+      "id": "INF-46",
+      "index": "inference-research-index.md",
+      "line": 52,
+      "next_action": "P6b Operator-gated fresh-v8-experimental model-load + gate bench on unsloth/Qwen3.6-35B-A3B-MTP-GGUF, with matched Q4 no-spec vs Q4-MTP art\u2026",
+      "track": "qwen mtp llamacpp port"
+    },
+    "INF-47": {
+      "deps": [],
+      "handoff": "qwen36-27b-cpu-feasibility.md",
+      "id": "INF-47",
+      "index": "inference-research-index.md",
+      "line": 53,
+      "next_action": "P1 CPU throughput probe (single-instance + NUMA-4-way) on Qwen3.6-27B Q4_K_M - inference-blocked; PARKED 2026-07-14, reopen only if 27B bec\u2026",
+      "track": "qwen36 27b cpu feasibility"
+    },
+    "INF-48": {
+      "deps": [
+        "EVL-47"
+      ],
+      "handoff": "rocm-verify-profile-backend.md",
+      "id": "INF-48",
+      "index": "inference-research-index.md",
+      "line": 54,
+      "next_action": "Bind clean producer provenance; replay C2/C5, then capture EPYC workloads and add gfx90a k228/k175 adapters",
+      "track": "rocm verify profile backend"
+    },
+    "INF-49": {
+      "deps": [],
+      "handoff": "sarathi-serve-cpu-evaluation.md",
+      "id": "INF-49",
+      "index": "inference-research-index.md",
+      "line": 55,
+      "next_action": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (batched-decode E2 keep-candidate = the fired multi-tenant trigg\u2026",
+      "track": "sarathi serve cpu evaluation"
+    },
+    "INF-50": {
+      "deps": [],
+      "handoff": "speculative-decoding-mtp-refresh.md",
+      "id": "INF-50",
+      "index": "inference-research-index.md",
+      "line": 56,
+      "next_action": "SW-2 \u2014 confirm SW-1 against a live server when a lane is free and no protected bench region is held: POST a completion carrying speculative\u2026",
+      "track": "speculative decoding mtp refresh"
+    },
+    "INF-51": {
+      "deps": [],
+      "handoff": "streaming-llm-baseline.md",
+      "id": "INF-51",
+      "index": "inference-research-index.md",
+      "line": 57,
+      "next_action": "Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models",
+      "track": "streaming llm baseline"
+    },
+    "INF-52": {
+      "deps": [],
+      "handoff": "summary-token-attention-readiness.md",
+      "id": "INF-52",
+      "index": "inference-research-index.md",
+      "line": 58,
+      "next_action": "Gate A \u2014 Pretrained checkpoint of a model we serve (Qwen2.5/3.5/3.6 family, or any base we already deploy) released with KSA-style summary\u2026",
+      "track": "summary token attention readiness"
+    },
+    "INF-53": {
+      "deps": [],
+      "handoff": "tidar-one-pass-variant-b.md",
+      "id": "INF-53",
+      "index": "inference-research-index.md",
+      "line": 59,
+      "next_action": "W2 \u2014 checkpoint gate + Q4 quality validation (bench-only when gate fires): watch for a Q4_K_M-quantizable TiDAR-class checkpoint (none exis\u2026",
+      "track": "tidar one pass variant b"
+    },
+    "INF-54": {
+      "deps": [],
+      "handoff": "tq3-quantization-evaluation.md",
+      "id": "INF-54",
+      "index": "inference-research-index.md",
+      "line": 60,
+      "next_action": "Prototype faithful ChunkKV on a fresh llama.cpp-experimental tree",
+      "track": "tq3 quantization evaluation"
+    },
+    "INF-55": {
+      "deps": [],
+      "handoff": "tree-draft-forward-port-plan.md",
+      "id": "INF-55",
+      "index": "inference-research-index.md",
+      "line": 61,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "tree draft forward port plan"
+    },
+    "INF-56": {
+      "deps": [],
+      "handoff": "triattention-kv-selection.md",
+      "id": "INF-56",
+      "index": "inference-research-index.md",
+      "line": 62,
+      "next_action": "S8 autopilot exploration: sweep keep_ratio and layer_weights per production role; persist Pareto profiles with quality, speed, cost, and re\u2026",
+      "track": "triattention kv selection"
+    },
+    "INF-57": {
+      "deps": [],
+      "handoff": "v7-promotion.md",
+      "id": "INF-57",
+      "index": "inference-research-index.md",
+      "line": 63,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "v7 promotion"
+    },
+    "INF-58": {
+      "deps": [
+        "INF-11"
+      ],
+      "handoff": "v9-kernel-per-request-speculative-params.md",
+      "id": "INF-58",
+      "index": "inference-research-index.md",
+      "line": 64,
+      "next_action": "Implement and prospectively ratify the sealed resident promotion fast path with fresh-server fallback",
+      "track": "v9 kernel per request speculative params"
+    },
+    "INF-59": {
+      "deps": [],
+      "handoff": "yarn-context-extension-research.md",
+      "id": "INF-59",
+      "index": "inference-research-index.md",
+      "line": 65,
+      "next_action": "QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss",
+      "track": "yarn context extension research"
+    },
+    "PIP-01": {
+      "deps": [],
+      "handoff": "colbert-reranker-web-research.md",
+      "id": "PIP-01",
+      "index": "pipeline-integration-index.md",
+      "line": 13,
+      "next_action": "S5: Implement reranker \u2014 HOLD as of 2026-06-12 gate analysis. Add reranking to research.py, gated behind web_research_rerank flag, only if\u2026",
+      "track": "colbert reranker web research"
+    },
+    "PIP-02": {
+      "deps": [],
+      "handoff": "document-parser-table-bench.md",
+      "id": "PIP-02",
+      "index": "pipeline-integration-index.md",
+      "line": 14,
+      "next_action": "Resolve PP-DocLayoutV3 weights and record cache path + size \u2014 a separate download from the GGUF",
+      "track": "document parser table bench"
+    },
+    "PIP-03": {
+      "deps": [],
+      "handoff": "ernie-image-turbo-evaluation.md",
+      "id": "PIP-03",
+      "index": "pipeline-integration-index.md",
+      "line": 15,
+      "next_action": "Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs",
+      "track": "ernie image turbo evaluation"
+    },
+    "PIP-04": {
+      "deps": [],
+      "handoff": "internal-kb-rag.md",
+      "id": "PIP-04",
+      "index": "pipeline-integration-index.md",
+      "line": 16,
+      "next_action": "K8 (LOW priority, defer): wikilink learning-loop scorer (NEW 2026-04-28, from intake-492). Flywheel's auto-wikilink suggestion uses an acce\u2026",
+      "track": "internal kb rag"
+    },
+    "PIP-05": {
+      "deps": [],
+      "handoff": "opendataloader-pipeline-integration.md",
+      "id": "PIP-05",
+      "index": "pipeline-integration-index.md",
+      "line": 17,
+      "next_action": "Evaluate LightOnOCR-2-1B as a structural/table/reading-order parser against docling-fast",
+      "track": "opendataloader pipeline integration"
+    },
+    "REV-01": {
+      "deps": [],
+      "handoff": "autopilot-control-plane-integration.md",
+      "id": "REV-01",
+      "index": "reviewer-control-plane-index.md",
+      "line": 13,
+      "next_action": "AP-3 \u2014 Classes 2/4 (spec-dec composition; per-role KV config): restart-scoped launch-arg knobs (--spec-type set, --spec-draft-n-max, tree w\u2026",
+      "track": "autopilot control plane integration"
+    },
+    "REV-02": {
+      "deps": [],
+      "handoff": "glm52-reviewer-capability-gates.md",
+      "id": "REV-02",
+      "index": "reviewer-control-plane-index.md",
+      "line": 14,
+      "next_action": "GC-1a \u2014 Strict-IF / typed-emission claim-grade gate (P-REV-1): rerun on the approved claim-grade reviewer corpus/K-of-M protocol after the\u2026",
+      "track": "glm52 reviewer capability gates"
+    },
+    "REV-03": {
+      "deps": [],
+      "handoff": "reviewer-calibration-accounting.md",
+      "id": "REV-03",
+      "index": "reviewer-control-plane-index.md",
+      "line": 15,
+      "next_action": "RC-6a \u2014 operator PR + sign-off (human-amendment-only): land the drafted P-REV-1 blocks into MEASUREMENT.md \u00a71/\u00a72/\u00a73 via PR-reviewed amendme\u2026",
+      "track": "reviewer calibration accounting"
+    },
+    "REV-04": {
+      "deps": [],
+      "handoff": "reviewer-decision-plane.md",
+      "id": "REV-04",
+      "index": "reviewer-control-plane-index.md",
+      "line": 16,
+      "next_action": "RD-12 \u2014 Per-decision latency_ms + token accounting in artifact + trace (feeds H-LB); tests incl. parse-failure fallback counting; 50-questi\u2026",
+      "track": "reviewer decision plane"
+    },
+    "REV-05": {
+      "deps": [],
+      "handoff": "reviewer-escalation-and-human-gate-policy.md",
+      "id": "REV-05",
+      "index": "reviewer-control-plane-index.md",
+      "line": 17,
+      "next_action": "HG-1 \u2014 Threshold policy from H4/H5 reliability-by-confidence-bucket curves (per-domain).",
+      "track": "reviewer escalation and human gate policy"
+    },
+    "REV-06": {
+      "deps": [],
+      "handoff": "reviewer-latency-and-sampling-budget.md",
+      "id": "REV-06",
+      "index": "reviewer-control-plane-index.md",
+      "line": 18,
+      "next_action": "LB-1 \u2014 Reproduce + attribute the regression: which calls dominate (plan-review prompt count vs prompt length vs architect queueing) on the\u2026",
+      "track": "reviewer latency and sampling budget"
+    },
+    "REV-07": {
+      "deps": [],
+      "handoff": "reviewer-model-ablations.md",
+      "id": "REV-07",
+      "index": "reviewer-control-plane-index.md",
+      "line": 19,
+      "next_action": "RM-2 \u2014 Anchor arms (guaranteed confirmation-tier): A0 gates-only (objective-verifier floor); A1 self-review (status quo alias); A3 same-fam\u2026",
+      "track": "reviewer model ablations"
+    },
+    "REV-08": {
+      "deps": [],
+      "handoff": "reviewer-trace-materialization.md",
+      "id": "REV-08",
+      "index": "reviewer-control-plane-index.md",
+      "line": 20,
+      "next_action": "TM-8 \u2014 Coverage gate: % of review invocations producing trace rows over a 50-question replay \u2014 must be ~100% before H4 starts. Also verify\u2026",
+      "track": "reviewer trace materialization"
+    },
+    "REV-09": {
+      "deps": [],
+      "handoff": "reviewer-typed-artifacts.md",
+      "id": "REV-09",
+      "index": "reviewer-control-plane-index.md",
+      "line": 21,
+      "next_action": "Adopt benchmrk's annotation envelope as the dual-gold schema. Its status:\"invalid\" decoys give us a negative-control axis we do not have an\u2026",
+      "track": "reviewer typed artifacts"
+    },
+    "RTG-01": {
+      "deps": [],
+      "handoff": "agent-world-env-synthesis.md",
+      "id": "RTG-01",
+      "index": "routing-and-optimization-index.md",
+      "line": 13,
+      "next_action": "Run the AW-6 48h bootstrap discovery (\u226550 envs / \u2265500 tools / \u2265500 tasks) with incremental persistence",
+      "track": "agent world env synthesis"
+    },
+    "RTG-02": {
+      "deps": [],
+      "handoff": "autopilot-continuous-optimization.md",
+      "id": "RTG-02",
+      "index": "routing-and-optimization-index.md",
+      "line": 14,
+      "next_action": "Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped",
+      "track": "autopilot continuous optimization"
+    },
+    "RTG-03": {
+      "deps": [],
+      "handoff": "autopilot-dashboard-fidelity-audit-2026-07-22.md",
+      "id": "RTG-03",
+      "index": "routing-and-optimization-index.md",
+      "line": 15,
+      "next_action": "C1 fix #2 Manifest writer intent-not-realized gap \u2014 writer lives in",
+      "track": "autopilot dashboard fidelity audit 2026 07 2"
+    },
+    "RTG-04": {
+      "deps": [],
+      "handoff": "batched-edit-parallel-apply.md",
+      "id": "RTG-04",
+      "index": "routing-and-optimization-index.md",
+      "line": 16,
+      "next_action": "BEP-2 / J8 \u2014 CPU latency A/B for the legacy structured patchset path. Head-to-head bench: batch-edit mode vs interleaved Root LM loop on a\u2026",
+      "track": "batched edit parallel apply"
+    },
+    "RTG-05": {
+      "deps": [],
+      "handoff": "bep-dcp-falsification-harness.md",
+      "id": "RTG-05",
+      "index": "routing-and-optimization-index.md",
+      "line": 17,
+      "next_action": "DCP-6 deploy attestation + inference gate: launch-code provenance is satisfied (server_launch_git_sha=eeb8cce, ancestor of 2e2e0d3 and 756c\u2026",
+      "track": "bep dcp falsification harness"
+    },
+    "RTG-06": {
+      "deps": [],
+      "handoff": "capability-registry-and-promotion.md",
+      "id": "RTG-06",
+      "index": "routing-and-optimization-index.md",
+      "line": 18,
+      "next_action": "W3 \u2014 build config_applicator.restart_role() for safe role restarts (~2-3d, pauses autopilot)",
+      "track": "capability registry and promotion"
+    },
+    "RTG-07": {
+      "deps": [
+        "INF-07"
+      ],
+      "handoff": "contention-model-device-and-load-axes-rider.md",
+      "id": "RTG-07",
+      "index": "routing-and-optimization-index.md",
+      "line": 19,
+      "next_action": "Q4 \u2014 decide whether the interference model needs INF-07's E5 NUMA\u00d7batch data first",
+      "track": "contention model device and load axes rider"
+    },
+    "RTG-08": {
+      "deps": [],
+      "handoff": "context-folding-progressive.md",
+      "id": "RTG-08",
+      "index": "routing-and-optimization-index.md",
+      "line": 20,
+      "next_action": "CF-L5 maximum-compression validation: run the L5 single-sentence-per-segment compression check only if it answers a current production ques\u2026",
+      "track": "context folding progressive"
+    },
+    "RTG-09": {
+      "deps": [],
+      "handoff": "decision-aware-routing.md",
+      "id": "RTG-09",
+      "index": "routing-and-optimization-index.md",
+      "line": 21,
+      "next_action": "Implement the SPO+ (Smart Predict-then-Optimize) loss",
+      "track": "decision aware routing"
+    },
+    "RTG-10": {
+      "deps": [],
+      "handoff": "delegation-context-preassembly.md",
+      "id": "RTG-10",
+      "index": "routing-and-optimization-index.md",
+      "line": 22,
+      "next_action": "DCP-6 \u2014 Eval. Measure on a delegation-heavy workload: prefill tokens, end-to-end latency, top-up count, bundle-build latency, downstream an\u2026",
+      "track": "delegation context preassembly"
+    },
+    "RTG-11": {
+      "deps": [],
+      "handoff": "dynamic-stack-concurrency.md",
+      "id": "RTG-11",
+      "index": "routing-and-optimization-index.md",
+      "line": 23,
+      "next_action": "DS-6-live \u2014 QuarterScheduler revalidation gate: parked. Only implement dynamic quarter reassignment if future DS-E1-equivalent evidence sho\u2026",
+      "track": "dynamic stack concurrency"
+    },
+    "RTG-12": {
+      "deps": [],
+      "handoff": "esc8-stack-restart-landmine-audit-2026-07-22.md",
+      "id": "RTG-12",
+      "index": "routing-and-optimization-index.md",
+      "line": 24,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "esc8 stack restart landmine audit 2026 07 22"
+    },
+    "RTG-13": {
+      "deps": [],
+      "handoff": "evidence-plane-event-sourcing-and-narrative.md",
+      "id": "RTG-13",
+      "index": "routing-and-optimization-index.md",
+      "line": 25,
+      "next_action": "W3 \u2014 rotation snapshots (impl 3.2, ~1 day): journal segments per 1000 trials chained with a snapshot row (full reconstructed view + policy\u2026",
+      "track": "evidence plane event sourcing and narrative"
+    },
+    "RTG-14": {
+      "deps": [],
+      "handoff": "internal-interaction-lifecycle.md",
+      "id": "RTG-14",
+      "index": "routing-and-optimization-index.md",
+      "line": 26,
+      "next_action": "P3-3. Shadow/optimization calibration: use consult_gate_probe on T2/T3 hard workflow slices to compare always-consult vs targeted-gate beha\u2026",
+      "track": "internal interaction lifecycle"
+    },
+    "RTG-15": {
+      "deps": [],
+      "handoff": "learned-routing-controller.md",
+      "id": "RTG-15",
+      "index": "routing-and-optimization-index.md",
+      "line": 27,
+      "next_action": "EP-5 \u2014 re-run the probe only after the outcome-label defects are fixed",
+      "track": "learned routing controller"
+    },
+    "RTG-16": {
+      "deps": [],
+      "handoff": "loops-and-dashboards-audit-2026-07-05.md",
+      "id": "RTG-16",
+      "index": "routing-and-optimization-index.md",
+      "line": 28,
+      "next_action": "Fix real_suite_v1 discriminability BEFORE certifying OP-1 (forward work from the audit above) \u2014 root-cause the run-instability first (two r\u2026",
+      "track": "loops and dashboards audit 2026 07 05"
+    },
+    "RTG-17": {
+      "deps": [],
+      "handoff": "model-capability-descriptors.md",
+      "id": "RTG-17",
+      "index": "routing-and-optimization-index.md",
+      "line": 29,
+      "next_action": "W5 \u2014 GATED tail: unified cascade (Phase 3) (2\u20133 weeks IF ever opened): one calibrated bilinear P(success \\| task_features, model_descriptor\u2026",
+      "track": "model capability descriptors"
+    },
+    "RTG-18": {
+      "deps": [],
+      "handoff": "model-stack-change-standardization-audit.md",
+      "id": "RTG-18",
+      "index": "routing-and-optimization-index.md",
+      "line": 30,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "model stack change standardization audit"
+    },
+    "RTG-19": {
+      "deps": [],
+      "handoff": "model-stack-single-source-update-pipeline.md",
+      "id": "RTG-19",
+      "index": "routing-and-optimization-index.md",
+      "line": 31,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "model stack single source update pipeline"
+    },
+    "RTG-20": {
+      "deps": [],
+      "handoff": "model-stack-update-pipeline-audit.md",
+      "id": "RTG-20",
+      "index": "routing-and-optimization-index.md",
+      "line": 32,
+      "next_action": "Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient",
+      "track": "model stack update pipeline audit"
+    },
+    "RTG-21": {
+      "deps": [],
+      "handoff": "multi-file-coding-completion-capability.md",
+      "id": "RTG-21",
+      "index": "routing-and-optimization-index.md",
+      "line": 33,
+      "next_action": "If a coder-role A/B is authorized, use bartowski's Q8_0 (34.38 GB) for a quant-matched run against the incumbent 35.21 GB frontdoor. This a\u2026",
+      "track": "multi file coding completion capability"
+    },
+    "RTG-22": {
+      "deps": [],
+      "handoff": "non-inference-backlog.md",
+      "id": "RTG-22",
+      "index": "routing-and-optimization-index.md",
+      "line": 34,
+      "next_action": "NIB2-18: DS-6 QuarterScheduler revalidation gate \u2014 dynamic-stack-concurrency.md(dynamic-stack-concurrency.md) DS-6-live. Do not treat as co\u2026",
+      "track": "non inference backlog"
+    },
+    "RTG-23": {
+      "deps": [],
+      "handoff": "objective-task-rate-goodput.md",
+      "id": "RTG-23",
+      "index": "routing-and-optimization-index.md",
+      "line": 35,
+      "next_action": "W3d \u2014 the 2026-06-13 hold conditions were superseded, not satisfied; close them out",
+      "track": "objective task rate goodput"
+    },
+    "RTG-24": {
+      "deps": [],
+      "handoff": "orchestration-robustness-audit-2026-07-11.md",
+      "id": "RTG-24",
+      "index": "routing-and-optimization-index.md",
+      "line": 36,
+      "next_action": "P0.1 operator run/pause decision on autopilot candidate species",
+      "track": "orchestration robustness audit 2026 07 11"
+    },
+    "RTG-25": {
+      "deps": [],
+      "handoff": "orchestrator-nps4-48x4-notes.md",
+      "id": "RTG-25",
+      "index": "routing-and-optimization-index.md",
+      "line": 37,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "orchestrator nps4 48x4 notes"
+    },
+    "RTG-26": {
+      "deps": [],
+      "handoff": "outer-coordinator-learned-head.md",
+      "id": "RTG-26",
+      "index": "routing-and-optimization-index.md",
+      "line": 38,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "outer coordinator learned head"
+    },
+    "RTG-27": {
+      "deps": [],
+      "handoff": "prompt-construction-determinism.md",
+      "id": "RTG-27",
+      "index": "routing-and-optimization-index.md",
+      "line": 39,
+      "next_action": "D3 \u2014 manual canonical bench (sampling quality cert) (clean window; certifies #1\u20133). Greedy\u2192sampled(0.1\u20130.3)+seed shifts output behavior. Ce\u2026",
+      "track": "prompt construction determinism"
+    },
+    "RTG-28": {
+      "deps": [],
+      "handoff": "reasoning-effort-levels.md",
+      "id": "RTG-28",
+      "index": "routing-and-optimization-index.md",
+      "line": 40,
+      "next_action": "TB-1 \u2014 per-model budget curve on a truncation-inducing suite",
+      "track": "reasoning effort levels"
+    },
+    "RTG-29": {
+      "deps": [],
+      "handoff": "retrain-routing-models.md",
+      "id": "RTG-29",
+      "index": "routing-and-optimization-index.md",
+      "line": 41,
+      "next_action": "Operator decision: run a --keep-enabled bracket to actually enable live routing",
+      "track": "retrain routing models"
+    },
+    "RTG-30": {
+      "deps": [],
+      "handoff": "routing-intelligence.md",
+      "id": "RTG-30",
+      "index": "routing-and-optimization-index.md",
+      "line": 42,
+      "next_action": "RI-10 \u2014 Shadow-to-enforce canary decision: current canary is configured as 25% enforce / 75% shadow on frontdoor, worker_general, and worke\u2026",
+      "track": "routing intelligence"
+    },
+    "RTG-31": {
+      "deps": [],
+      "handoff": "routing-truth-restoration.md",
+      "id": "RTG-31",
+      "index": "routing-and-optimization-index.md",
+      "line": 43,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "routing truth restoration"
+    },
+    "RTG-32": {
+      "deps": [],
+      "handoff": "scaffold-autopilot-cost-lever-deployment.md",
+      "id": "RTG-32",
+      "index": "routing-and-optimization-index.md",
+      "line": 44,
+      "next_action": "T0.1 \u2014 Coordinate with the live autopilot agent. Confirm the daemon is idle/handed-back before any scripts/autopilot/ or registry edit. Get\u2026",
+      "track": "scaffold autopilot cost lever deployment"
+    },
+    "RTG-33": {
+      "deps": [],
+      "handoff": "searxng-search-backend.md",
+      "id": "RTG-33",
+      "index": "routing-and-optimization-index.md",
+      "line": 45,
+      "next_action": "SX-5: Load test \u2014 Folded into AR-3 Package D. Web_research sentinel suite (50q) provides realistic load validation. Post-AR-3: analyze engi\u2026",
+      "track": "searxng search backend"
+    },
+    "RTG-34": {
+      "deps": [],
+      "handoff": "session-bus-thin-dispatcher.md",
+      "id": "RTG-34",
+      "index": "routing-and-optimization-index.md",
+      "line": 46,
+      "next_action": "R1a \u2014 the end-to-end bench claim never fired; wiring exists but is inference-gated",
+      "track": "session bus thin dispatcher"
+    },
+    "RTG-35": {
+      "deps": [],
+      "handoff": "shape-keyed-contention-gating.md",
+      "id": "RTG-35",
+      "index": "routing-and-optimization-index.md",
+      "line": 47,
+      "next_action": "Echo GateDecision into /chat response metadata (admitted/waited_s/decision/topology_idx)",
+      "track": "shape keyed contention gating"
+    },
+    "RTG-36": {
+      "deps": [],
+      "handoff": "stack-change-governance-pipeline.md",
+      "id": "RTG-36",
+      "index": "routing-and-optimization-index.md",
+      "line": 48,
+      "next_action": "W4 - Consumer migration: continue migrating remaining stack-sensitive consumers to generated stack priors or explicit degraded fallbacks. U\u2026",
+      "track": "stack change governance pipeline"
+    },
+    "RTG-37": {
+      "deps": [],
+      "handoff": "stack-lineup-dossier-2026-07-23.md",
+      "id": "RTG-37",
+      "index": "routing-and-optimization-index.md",
+      "line": 49,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "stack lineup dossier 2026 07 23"
+    },
+    "RTG-38": {
+      "deps": [],
+      "handoff": "standardized-stack-update-pipeline-finalization.md",
+      "id": "RTG-38",
+      "index": "routing-and-optimization-index.md",
+      "line": 50,
+      "next_action": "SS-BENCH-GATE \u2014 a stack reload must check for a running CPU bench, not just autopilot.",
+      "track": "standardized stack update pipeline finalizat"
+    },
+    "RTG-39": {
+      "deps": [],
+      "handoff": "swarm-dataset-distillation.md",
+      "id": "RTG-39",
+      "index": "routing-and-optimization-index.md",
+      "line": 51,
+      "next_action": "BLOCKED on strand Phase B \u2014 correct the premise first: distillation objective is ~2pp, the teacher-prompting change is ~38pp",
+      "track": "swarm dataset distillation"
+    },
+    "RTG-40": {
+      "deps": [],
+      "handoff": "tri-role-coordinator-architecture.md",
+      "id": "RTG-40",
+      "index": "routing-and-optimization-index.md",
+      "line": 52,
+      "next_action": "TR-4.1 In routing.py, compose role with model selection: per-role model-affinity table OR independent role+model softmax (per TR-1.3 decisi\u2026",
+      "track": "tri role coordinator architecture"
+    },
+    "RTG-41": {
+      "deps": [],
+      "handoff": "unified-trace-memory-service.md",
+      "id": "RTG-41",
+      "index": "routing-and-optimization-index.md",
+      "line": 53,
+      "next_action": "T7 (optional): Hermes session ingest \u2014 Walk ~/.hermes/sessions/.json if present, normalize into events. Gated on whether Hermes goes into p\u2026",
+      "track": "unified trace memory service"
+    },
+    "RTG-42": {
+      "deps": [],
+      "handoff": "within-role-placement-state-machine.md",
+      "id": "RTG-42",
+      "index": "routing-and-optimization-index.md",
+      "line": 54,
+      "next_action": "WP-6 / WP-7 full ratification - inference-gated, awaiting operator approval + measurement",
+      "track": "within role placement state machine"
+    },
+    "RTG-43": {
+      "deps": [],
+      "handoff": "wp12-fleet-layer-design.md",
+      "id": "RTG-43",
+      "index": "routing-and-optimization-index.md",
+      "line": 55,
+      "next_action": "Post-soak \u00a75 cleanup (code + tests as ONE change): retire the legacy per-role build path \u2014 ServerURLsConfig URL ownership, Fix-A delegation\u2026",
+      "track": "wp12 fleet layer design"
+    },
+    "RTG-44": {
+      "deps": [],
+      "handoff": "wp9-wp10-lineup-event-prep.md",
+      "id": "RTG-44",
+      "index": "routing-and-optimization-index.md",
+      "line": 56,
+      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "track": "wp9 wp10 lineup event prep"
+    },
+    "RTG-45": {
+      "deps": [],
+      "handoff": "x-mas-text-routing.md",
+      "id": "RTG-45",
+      "index": "routing-and-optimization-index.md",
+      "line": 57,
+      "next_action": "Monitor post-enable live telemetry for unexpected domain regressions, latency regressions, or guard bypasses; rollback is xmas_routing.mode\u2026",
+      "track": "x mas text routing"
+    },
+    "RTG-46": {
+      "deps": [],
+      "handoff": "handoff-index-and-backlog-graph.md",
+      "id": "RTG-46",
+      "index": "routing-and-optimization-index.md",
+      "line": 58,
+      "next_action": "Decide whether .index-state.json / .index-graph.json are git-ignored \u2014 timeline artifact already is",
+      "track": "handoff index and backlog graph"
+    },
+    "RTG-47": {
+      "deps": [],
+      "handoff": "dashboard-architecture-restructure.md",
+      "id": "RTG-47",
+      "index": "routing-and-optimization-index.md",
+      "line": 59,
+      "next_action": "Land fix-10 retention overlay; re-eyeball live \u2191/\u2193 under real load; run old+new in parallel toward the Phase 1b call",
+      "track": "dashboard architecture restructure"
+    },
+    "UFH-01": {
+      "deps": [],
+      "handoff": "harness-selection-and-integration.md",
+      "id": "UFH-01",
+      "index": "user-facing-harness-index.md",
+      "line": 13,
+      "next_action": "HS-OD-2 \u2014 openai_compat.py:776-777 returns backend failures as HTTP 200 assistant content; map to a real error status",
+      "track": "harness selection and integration"
+    },
+    "UFH-02": {
+      "deps": [],
+      "handoff": "hermes-outer-shell.md",
+      "id": "UFH-02",
+      "index": "user-facing-harness-index.md",
+      "line": 14,
+      "next_action": "Multi-turn context (references prior answer)",
+      "track": "hermes outer shell"
+    },
+    "UFH-03": {
+      "deps": [],
+      "handoff": "memento-block-reasoning-compression.md",
+      "id": "UFH-03",
+      "index": "user-facing-harness-index.md",
+      "line": 15,
+      "next_action": "S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)",
+      "track": "memento block reasoning compression"
+    },
+    "UFH-04": {
+      "deps": [],
+      "handoff": "minddr-deep-research-mode.md",
+      "id": "UFH-04",
+      "index": "user-facing-harness-index.md",
+      "line": 16,
+      "next_action": "Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) \u2014 BLOCKED 2026-07-29: GPU is id\u2026",
+      "track": "minddr deep research mode"
+    },
+    "UFH-05": {
+      "deps": [],
+      "handoff": "reasoning-compression.md",
+      "id": "UFH-05",
+      "index": "user-facing-harness-index.md",
+      "line": 17,
+      "next_action": "If validated: implement enforce mode (route easy\u2192worker, hard\u2192architect)",
+      "track": "reasoning compression"
+    },
+    "UFH-06": {
+      "deps": [],
+      "handoff": "security-review-skill.md",
+      "id": "UFH-06",
+      "index": "user-facing-harness-index.md",
+      "line": 18,
+      "next_action": "GATE-0 production-reachability, ordered BEFORE exploitability. CodeCrucible short-circuits on whether the code path is reachable in product\u2026",
+      "track": "security review skill"
+    },
+    "UFH-07": {
+      "deps": [],
+      "handoff": "tool-output-compression.md",
+      "id": "UFH-07",
+      "index": "user-facing-harness-index.md",
+      "line": 19,
+      "next_action": "P4e \u2014 Decision gate: roll-out scope (no time estimate; data-driven). After 1 week of P4c data, decide per-command: (i) promote to default (\u2026",
+      "track": "tool output compression"
+    }
+  },
+  "schema": "index_state.v1"
+}

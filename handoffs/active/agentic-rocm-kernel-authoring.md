@@ -130,6 +130,14 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
   (below). **Still blocked as of 2026-08-12 (mainB), despite the "RESOLVED" note below**: the side-load
   provides ROCProfiler 2.0 and **no `rocprofv3`**, which is the instrument this line names. Verify the
   counters are reachable via `rocprofv2` before booking the ~40 min GPU window.
+
+> **MERGE NOTE 2026-08-12 (coordinator).** Both sides below are preserved; I did
+> not adjudicate. The block above is the local-fleet text, the block below is the
+> origin/AutoKernel text. OWNERS: reconcile and delete this note.
+
+  64 banks decides whether HK's `>>7 <<3` swizzle constants transfer at all. **Completed through the
+  compatible rocprofv2 counter path on 2026-08-11**: the r4 receipt measured 32 banks and eight phase
+  cliques of eight lanes. The upstream script's rocprofv3 spelling was not a hard dependency.
 - **`rocm-flash-attn` as an enabling path**, re-assessed: an adaptation layer with no kernel code of its
   own, but genuine tested code with honest defect annotations. Judged on whether it improves performance,
   not on whether it contains kernels.
@@ -139,7 +147,25 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
   workaround `-mllvm --amdgpu-unroll-threshold-local=600`. We are on ROCm 6.2 so this does not bite today;
   it belongs on the build-flag checklist **before any ROCm upgrade**.
 
-**Profiler tooling — RESOLVED 2026-08-03 (was a blocker).** `rocprofv2`, `rocprof` and `rocm-bandwidth-test` are now available, version-matched to ROCm 6.2.0-66, side-loaded by extraction rather than installed so nothing in the shared `/opt/rocm` bind mount changed: `source /mnt/raid0/llm/tools/rocm-profilers-6.2/env.sh`. **The gfx90a counter taxonomy is proven** — 465 counters across 12 blocks, enumerated on our own card, including every counter this program already cites. Details, per-block collection limits, and the two path quirks: [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md). The LDS bank/phase solver and the C4 analyzer are unblocked on tooling. `omniperf` 2.0.1 now runs through a sealed Python environment; its governed IQ2 fallback is implemented but waits on the OP-11 seeded producer identity.
+**Profiler tooling — RESOLVED FOR THE CURRENT C4 AND LDS SURFACES.** `rocprofv2`, `rocprof` and
+`rocm-bandwidth-test` are available, version-matched to ROCm 6.2.0-66, side-loaded by extraction
+rather than installed so nothing in the shared `/opt/rocm` bind mount changed:
+`source /mnt/raid0/llm/tools/rocm-profilers-6.2/env.sh`. **The gfx90a counter taxonomy is proven** —
+465 counters across 12 blocks, enumerated on our own card, including every counter this program
+already cites. Details, per-block collection limits, and the two path quirks:
+[`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md). This unblocks C4's existing
+`rocprofv2` path. The LDS solver was also successfully adapted to rocprofv2; its r4 receipt binds the
+exact commands, tool and binary hashes, 372 bank dispatches and 6,048 phase dispatches. `rocprofv3`
+remains absent but is not a blocker for that completed surface. The governed IQ2 Omniperf fallback
+remains separately gated by the OP-11 producer identity.
+
+- [x] Resolve the side-loaded ROCm 6.2 profiler-tool availability for C4. ✅ 2026-08-12 — live
+  version checks confirm `rocprof`/`rocprofv2` at ROCProfiler 2.0 and a runnable argument parser for
+  `rocm-bandwidth-test`. These tools are intentionally absent from the default PATH and `/opt/rocm`.
+- [x] **Establish whether the LDS bank/phase counters are reachable through `rocprofv2`.** ✅
+  2026-08-12 — reconciled against the already-terminal r4 empirical receipt: rocprofv2 captured 372
+  bank and 6,048 phase dispatches and the solver derived 32 banks plus eight phase cliques. Receipt
+  SHA-256 `ae1d833c704bdae9a78767d0fc0b927298d6d1dfdb31a0ea11c34058dc525987`.
 
 ## Open questions (decided ones live in the deep dive §5)
 - Which controller wins on gfx90a? Unknown until the AgentKernelArena A/B runs on the MI210 with EPYC ops.
@@ -368,11 +394,13 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
   - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints and
     interpret it only as an availability-conditioned diagnostic. The corrected r4 campaign is live
     at `/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-six-arm-20260812-r4`. At the
-    2026-08-12 stale-state audit, the starting baseline and all three Claude/Codex checkpoints were
-    terminal; the aggregate Claude/Codex receipt self-hash is
+    2026-08-12 wrap boundary, **4/64 checkpoints** and **2/24 cells** were terminal: the starting
+    baseline and all three Claude/Codex checkpoints. Their eight vendor/final measurement windows
+    all released, retaining **183** numeric samples across **44.728 claimed GPU-seconds**. The
+    grouped completed-cell Claude/Codex receipt self-hash is
     `fbaa5b5796d89d1d214b281d57d611f78242084ec9cb86408156983e73add285`, and KernelFoundry 2h was
-    in controller deliberation. Partial results remain non-rankable; rank only the terminal full 6/6
-    panel.
+    in controller deliberation. The partial attempt has no aggregate and remains non-rankable; rank
+    only the terminal full 6/6 panel.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims

@@ -202,6 +202,12 @@ deliberately — decide them, do not just implement them.
       A1/A3/A4 v9 panel carries native captures, exact claims, pinned source/manifest digests and
       an attestation, but no producer-authored `ClaimTuple` row. Add write-side rows plus a strict
       adapter before any successor run; the completed panel remains pre-hook and emits zero.
+- [ ] **SC33 — Wire the executable AutoKernel reward-integrity corpus prospectively.** The 2026-08-12
+      RVP-C6-6/C6-10 r3 receipt is real measurement evidence—detector sensitivity/specificity/FPR
+      and normal/hard gfx90a elapsed time under a released MI210 claim—but predates producer-authored
+      `belief_measurements` and must never be reconstructed on read. Before any successor run, emit
+      rows with exact source/binary/case/ranked-unit/claim identities and preserve the
+      `instrument validation only; no candidate speed claim` authority boundary.
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input
