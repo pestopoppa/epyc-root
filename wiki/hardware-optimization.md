@@ -31,11 +31,20 @@ covering journal recovery, claim-owner death/reclaim, live-holder non-preemption
 receipt/hash/source tamper refusal. This establishes offline acceptance, not a real campaign rehearsal;
 the latter remains open and must produce its own empirical receipts.
 
+The Kernel-R&D hub now surfaces this state from durable producers rather than a fixed historical
+allowlist. Its live contract shows the attested frozen-v9 anchor, `8/8` instrument preflight, accepted
+`5/5` controls, GPU replay `NOT_REPRODUCED`, and implementation `900cb5c6`; a missing production
+attestation is a loud alarm. The Kernel-R&D panel's health contribution correctly remains absent
+while champion, headroom, and release package are unreported: only the reboot-gated real campaign may
+create those facts. A panel-specific data-health probe and AK9 speech-kernel-set projection remain
+separate follow-ups.
+
 ### Source References (2026-08-12 current-v9 controls)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact control receipts, archive-builder boundary, and Step-3 gate
 - [Current campaign state](../handoffs/active/CURRENT-CAMPAIGN.md) — live reboot-gated execution order
 - [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — measured values, hashes, composition recovery, and fail-closed CPU chronology
+- [Kernel-R&D operational-truth audit](../artifacts/audit/kernel-rnd-dashboard-operational-truth-20260812.md) — selector, producer, health, and production-attestation findings
 
 ## Compiled Update — 2026-08-12 (clean instrument and governed GPU replay)
 

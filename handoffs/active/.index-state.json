@@ -4,7 +4,7 @@
       "blocked": 4,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 404
+      "open": 405
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 1,
-      "closed": 194,
+      "closed": 195,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 23,
+      "open": 24,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 218
+      "total": 220
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,

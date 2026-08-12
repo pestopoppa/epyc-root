@@ -2638,11 +2638,22 @@ cannot retrigger the expensive gate unchanged.
   `ANCHOR_MOVED`, phase-trade exceptions), resource claims held, and release-package state. Version the
   contract explicitly, keep it absence-tolerant as the current page is, preserve the freshness envelope,
   and point `KERNEL_DASHBOARD_JSON` at a durable path rather than the missing scratch directory. ✅ 2026-08-03
-- [ ] **Repair the Kernel-R&D dashboard's current-receipt selector and live runs producer.** The
-  2026-08-12 audit verified the production-v9 identity is correct, but the selector does not discover
-  the current v9 control/probe receipts and the runs producer is absent, so the page cannot yet show
-  this checkpoint as current runtime truth. Land the bounded post-hold producer/selector repair with
-  the registry health probe, freshness envelope, and static-JavaScript test intact.
+- [x] **Repair the Kernel-R&D dashboard's current-receipt selector and live runs producer.** ✅
+  2026-08-12 — root `572f33af` adds schema-selected current receipts and a loud missing-attestation
+  alarm; `d76b6ee1` binds the supervised hub to the clean deployed checkout; `5bae9d3f` closes the
+  inherited supervisor lock FD in the detached hub. Live `/api/kernel`
+  reports frozen production v9, `8/8` instrument preflight, `5/5` accepted controls, the GPU replay's
+  honest `NOT_REPRODUCED` verdict, and implementation head `900cb5c6`. The terminal v2 campaign
+  export is fresh and names the reboot-gated preflight refusal; **85/85** focused deployment tests
+  pass. The Kernel-R&D panel's `/api/health` contribution remains `absent` because `champion`,
+  `headroom`, and `release_package` are correctly `not_reported` until a real campaign completes,
+  not because the dashboard producer is stale.
+- [ ] Add a non-recursive, panel-specific Kernel-R&D data-health probe so registry consumers can
+  distinguish hub transport health from AutoKernel producer health without recursing through the
+  global `/api/health` fold.
+- [ ] Extend production-kernel-set projection from the attested llama.cpp v9 anchor to the separately
+  frozen whisper.cpp and qwentts.cpp identities when AK9 consumes those backends; do not imply the
+  current llama campaign governs speech kernels.
 
 **Exit:** campaigns produce correct, idempotent, operator-executable release packages and never write
 production.

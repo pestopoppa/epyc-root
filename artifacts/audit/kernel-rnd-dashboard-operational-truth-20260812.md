@@ -291,3 +291,32 @@ preflight are selected by exact schema.
   `agentic-rocm-kernel-authoring.md`, and the kernel-specific profiling handoffs remain discoverable
   through the handoff board. The Kernel-R&D page now shows the ROCm evidence it can warrant (device
   sampler, paired replay, claim release); it must not synthesize progress from open prose rows.
+
+---
+
+# Deployment addendum — promoted and observed live (2026-08-12)
+
+The implementation landed on root `main` as `572f33af`; deployment binding landed as `d76b6ee1`;
+supervisor lock-FD isolation landed as `5bae9d3f`.
+The deployed checkout is
+`/mnt/raid0/llm/autokernel/worktrees/promote-kernel-rnd-dashboard-20260812`, and the focused promotion
+suite passed **85/85**. No inference or kernel-tree write was part of deployment.
+
+The durable live supervisor is PID `1669388` and the hub is PID `1669429`, each detached into its
+own session. The hub has FD 9 closed; only the supervisor owns `/tmp/hub_supervisor_8100.lock`.
+Repeated health polls passed and `/health` reports transport `ok`.
+
+Live `/api/kernel` exposes:
+
+- frozen `production-consolidated-v9` at `0db32c06e3e550065b78311a6031ef3dd2c4f27c`;
+- instrument preflight `8/8 PASS` and current controls `5/5`, `may_rank=true`;
+- GPU replay `NOT_REPRODUCED` at its predeclared 2% floor despite 20/20 positive blocks; and
+- AutoKernel implementation head `900cb5c6`.
+
+The terminal v2 export is fresh and reports the CPU IQK campaign as `preflight_refused` at the
+one-week uptime gate. The Kernel-R&D panel's `/api/health` contribution and current `status_set_by`
+remain `absent` because the contract explicitly leaves `champion`, `headroom`, and `release_package`
+unreported. Those are empirical outputs of the reboot-gated real campaign; calibration,
+implementation commits, and diagnostic receipts cannot fill them. Timeline is a separate
+root-dashboard health input outside this audit's scope. **OP-16 and the post-reboot empirical sequence
+are unchanged.**

@@ -12,6 +12,9 @@
 > bundle under frozen v9 and hardened instrument `a4cb04ca8`; the historical IQK arm promoted.
 > The prepared full-host CPU IQK campaign then refused before claim/build/benchmark because uptime
 > was `13.47 days`, beyond the one-week measurement ceiling. Preserve the journal and current bundle;
+> the deployed Kernel-R&D surface now reports frozen v9, `8/8` preflight, `5/5` controls, GPU
+> `NOT_REPRODUCED`, and the reboot-gated refusal from durable evidence. Its global data-health verdict
+> remains absent until the real campaign can report champion, headroom, and release-package state.
 > **OP-16 recommends an orderly reboot after all mains wrap.** Post-reboot, create the `agent` tmux
 > session required by session-bus C20 before respawning the established roster; then rerun CPU IQK,
 > construct the real matched archive, and execute the
