@@ -2472,7 +2472,23 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   and it is the one nobody computed. Applies to queue depth, backlog size and advisory volume alike;
   a figure quoted without its distinct-row and dispatchable-at-emission denominators is the same
   error. Belongs in `agents/shared/OPERATING_CONSTRAINTS.md` beside the existing claim-grammar rules.
-- [ ] **`advisory*.jsonl` rotation keeps no durable history.** C38's rotation is correct and closed,
+- [x] **`advisory*.jsonl` rotation keeps no durable history** ✅ 2026-08-12 (`mainB`) — sealed
+  shards now archive OUTSIDE the repo and carry their own denominators.
+  `advisory_archive_root()` (env `EPYC_BUS_ARCHIVE_ROOT`, default
+  `/mnt/raid0/llm/bus-archive/advisory`) puts the record where `git clean -x` cannot reach it;
+  `_archive_advisory_shard` copies-then-**verifies by sha256** rather than trusting that a copy
+  which exists is a copy which arrived, and writes a ~1 KB `*.digest.json` beside it **even when
+  the copy fails** — the digest survives disk pressure a 128 MiB shard will not.
+  `summarize_advisory_shard` records the standing form: **N** pick records, **M** distinct rows,
+  and per-row `first_ts`/`last_ts`. **K is deliberately left `None`.** Whether a pick was
+  dispatchable *at emission* depends on the handoff file's state at that timestamp — which is
+  recoverable from git precisely because the per-pick timestamps are preserved, so the digest
+  carries K's inputs and names the method rather than inventing a number that would silently be
+  computed against today's file. Verified against the live shard: the code re-derives **811
+  records → 9 distinct rows** independently, matching the hand adjudication. Mutation-tested three
+  ways — a corrupted copy reports `archived: False`, an empty shard yields 0/0 rather than an
+  inherited count, and N and M are proven able to differ (8 records over 2 rows). *A history that
+  only exists in `clean -x` fodder is not a history.** C38's rotation is correct and closed,
   but the shards land **inside the repo and gitignored** (`.gitignore`: `coordination/session-bus/
   advisory*.jsonl`), which makes the entire scheduler record `git clean -x` fodder. It was destroyed
   on 2026-08-12: the earliest surviving record is **08:20:31Z**, which is precisely why the 4,602

@@ -54,6 +54,7 @@ import json
 import hashlib
 import re
 import os
+import shutil
 import signal
 import subprocess
 import sys
@@ -380,8 +381,19 @@ _SPEC_LINE = re.compile(r"#L(\d+)\s*$")
 _SPEC_BOX = re.compile(r"^\s*- \[( |x|X)\]")
 
 
-def spec_ref_state(spec_ref: str, repo_root: Path = REPO_ROOT) -> tuple[str, str]:
-    """(state, detail) for a `path#Lnnn` reference. state in {open, closed, unresolved}."""
+def spec_ref_state(spec_ref: str, repo_root: Path | None = None) -> tuple[str, str]:
+    """(state, detail) for a `path#Lnnn` reference. state in {open, closed, unresolved}.
+
+    `repo_root` resolves at CALL time, not at import. Written first as
+    `repo_root: Path = REPO_ROOT`, which binds the default when the module loads —
+    so the consumer always resolved against the real repo and no test could vary it.
+    The isolated helper tests passed a root explicitly and therefore never exercised
+    the default; only the consumer-level probe reached it, and it dispatched a stale
+    row while every helper test stayed green. Late binding is what makes the probe
+    able to see what the code actually does.
+    """
+    if repo_root is None:
+        repo_root = REPO_ROOT
     if not spec_ref:
         return "unresolved", "no spec_ref"
     m = _SPEC_LINE.search(spec_ref)
@@ -962,6 +974,9 @@ def rotate_advisory(bus_root: Path, epoch: int,
         return []
     if size <= max_bytes:
         return []
+    # Sealed shards are archived OUTSIDE the repo and summarised before this
+    # function returns — see `_archive_advisory_shard`. Rotation being correct is
+    # not the same as the history surviving it.
     existing = sorted(bus_root.glob("advisory_*.jsonl"))
     nxt = 1 + max((int(p.stem.rsplit("_", 1)[-1]) for p in existing
                    if p.stem.rsplit("_", 1)[-1].isdigit()), default=0)
@@ -973,12 +988,134 @@ def rotate_advisory(bus_root: Path, epoch: int,
         return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
                  "kind": "advisory-rotation-failed", "check": "advisory-rotation",
                  "detail": f"could not rotate {live} ({size / 1048576:.0f} MiB): {exc}"}]
-    return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
-             "kind": "advisory-rotated", "check": "advisory-rotation",
-             "shard": shard.name, "bytes": size,
-             "detail": f"advisory.jsonl reached {size / 1048576:.0f} MiB and was rotated to "
-                       f"{shard.name}. Readers of the flag history must read every "
-                       f"advisory*.jsonl shard, not just the live file."}]
+    row = {"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+           "kind": "advisory-rotated", "check": "advisory-rotation",
+           "shard": shard.name, "bytes": size,
+           "detail": f"advisory.jsonl reached {size / 1048576:.0f} MiB and was rotated to "
+                     f"{shard.name}. Readers of the flag history must read every "
+                     f"advisory*.jsonl shard, not just the live file."}
+    row.update(_archive_advisory_shard(shard, epoch))
+    return [row]
+
+
+_ADVISORY_ARCHIVE_ENV = "EPYC_BUS_ARCHIVE_ROOT"
+_ADVISORY_ARCHIVE_DEFAULT = Path("/mnt/raid0/llm/bus-archive/advisory")
+
+
+def advisory_archive_root() -> Path:
+    """Where sealed shards go to survive. MUST resolve outside the repo.
+
+    The in-repo shard is gitignored (`coordination/session-bus/advisory*.jsonl`),
+    so the entire scheduler decision record is `git clean -x` fodder. It was
+    destroyed on 2026-08-12 — the earliest surviving record was 08:20:31Z, which
+    is why the 4,602 figure the fleet acted on for hours is now unreproducible by
+    construction. **A history that only exists in `clean -x` fodder is not a
+    history.** Rotation was already correct; correct rotation of a deletable file
+    still loses the file.
+    """
+    raw = os.environ.get(_ADVISORY_ARCHIVE_ENV, "").strip()
+    return Path(raw) if raw else _ADVISORY_ARCHIVE_DEFAULT
+
+
+def summarize_advisory_shard(path: Path) -> dict:
+    """The three denominators, computed once while the shard still exists.
+
+    A COUNT OF RECORDS IS NOT A COUNT OF WORK. The standing form is
+    *"N records resolving to M distinct rows, of which K were dispatchable at
+    emission"* — and only K was ever a claim about the fleet. Quoting N alone is
+    what turned 811 re-emissions of 9 rows into a 4,602-row backlog nobody had.
+
+    N and M are computed here. **K is deliberately not guessed**: whether a pick
+    was dispatchable when it was emitted depends on the handoff file's state at
+    that timestamp, which lives in git and is therefore durable *provided the
+    per-pick timestamps survive* — which is exactly what `first_ts`/`last_ts`
+    below preserve. Recording a K computed from today's file would date-shift the
+    denominator and read as authoritative, so the digest carries the inputs for K
+    and names the method instead of inventing the number.
+    """
+    n = 0
+    picks: dict[str, dict] = {}
+    malformed = 0
+    try:
+        with path.open("r", encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                if not line.strip():
+                    continue
+                try:
+                    rec = json.loads(line)
+                except Exception:  # noqa: BLE001 — a bad line must not lose the shard
+                    malformed += 1
+                    continue
+                if rec.get("kind") not in ("would-assign", "assign", "pick"):
+                    continue
+                n += 1
+                tid = rec.get("task_id")
+                if not tid:
+                    continue
+                ts = rec.get("ts") or ""
+                slot = picks.setdefault(tid, {"n": 0, "first_ts": ts, "last_ts": ts})
+                slot["n"] += 1
+                if ts and (not slot["first_ts"] or ts < slot["first_ts"]):
+                    slot["first_ts"] = ts
+                if ts and ts > slot["last_ts"]:
+                    slot["last_ts"] = ts
+    except OSError as exc:  # noqa: BLE001
+        return {"summary_error": str(exc)}
+    return {
+        "pick_records": n,                                   # N
+        "distinct_rows": len(picks),                         # M
+        "dispatchable_at_emission": None,                    # K — see docstring
+        "k_method": ("resolve each task_id's handoff row as of first_ts via git; "
+                     "K is the count that was an open, non-rotted checkbox then"),
+        "malformed_lines": malformed,
+        "picks": {t: picks[t] for t in sorted(picks, key=lambda k: -picks[k]["n"])[:64]},
+    }
+
+
+def _archive_advisory_shard(shard: Path, epoch: int) -> dict:
+    """Copy a sealed shard outside the repo and write its digest beside it.
+
+    Copy-then-verify rather than move: the in-repo shard stays readable for
+    `load_relay_state`, which bootstraps across every shard. Verification is by
+    content hash — a copy that exists is not a copy that arrived, and this whole
+    item exists because a file's presence was assumed rather than checked.
+
+    The digest is written even when the copy fails. It is ~1 KB against a shard
+    of up to 128 MiB, so it survives disk pressure that the shard will not, and
+    it carries the denominators rather than the raw count.
+    """
+    out: dict = {}
+    digest = summarize_advisory_shard(shard)
+    out["shard_summary"] = digest
+    root = advisory_archive_root()
+    try:
+        root.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:  # noqa: BLE001 — never let housekeeping stop the tick
+        out["archived"] = False
+        out["archive_error"] = f"could not create {root}: {exc}"
+        return out
+    dest = root / shard.name
+    try:
+        src_sha = hashlib.sha256(shard.read_bytes()).hexdigest()
+        shutil.copyfile(shard, dest)
+        ok = hashlib.sha256(dest.read_bytes()).hexdigest() == src_sha
+        out["archived"] = ok
+        out["archive_path"] = str(dest)
+        out["archive_sha256"] = src_sha
+        if not ok:
+            out["archive_error"] = "sha256 mismatch after copy; archive not trustworthy"
+    except OSError as exc:  # noqa: BLE001
+        out["archived"] = False
+        out["archive_error"] = f"could not archive to {dest}: {exc}"
+    try:
+        (root / f"{shard.stem}.digest.json").write_text(
+            json.dumps({"shard": shard.name, "epoch": epoch, "ts": _utcnow_iso(),
+                        **digest}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        out["digest_written"] = True
+    except OSError as exc:  # noqa: BLE001
+        out["digest_written"] = False
+        out["digest_error"] = str(exc)
+    return out
 
 
 RELAY_STATE_SCHEMA = "session_bus.relay_state.v1"
