@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 396
+      "open": 397
     },
     "user-facing-harness-index.md": {
       "blocked": 3,
@@ -140,14 +140,14 @@
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
-      "closed": 160,
+      "closed": 161,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 66,
+      "open": 67,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
       "state": "active",
-      "total": 228
+      "total": 230
     },
     "autopilot-control-plane-integration.md": {
       "blocked": 0,

@@ -5,6 +5,47 @@
 **Last compiled**: 2026-08-12 (the episodic-index leak is **not** a text-format problem — that was fixed by a prior reseed; it is a single unobserved field value splitting writer paths at 99.973% purity; the standing integrity gate that was supposed to catch it had been comparing embeddings against a string that was never embedded; and an eval fan-out collapsed for every NUMA mode except one because a branch swallowed the rest — see below; earlier 2026-08-09 note: adds routing-memory namespace isolation; retains the 2026-07-31 throughput-prior and contention-surface updates)
 **Sources**: 75+ documents (adds the 2026-08-12 episodic-leak decision and its gate repair; retains the 2026-08-09 measured repair receipt and campaign checkpoint, the 2026-07-31 throughput-prior, 2026-07-05 RI-10, and earlier routing evidence)
 
+## Compiled Update — 2026-08-12 (second pass): the same defect was repairable in one subsystem and permanently unrepairable in the other, and only provenance decided which
+
+An eval scoring bug wrote infrastructure failures into the learned router as quality signal —
+`success_reward(False)` for an HTTP 400, a timeout, an unparseable body, an empty reply. A capacity
+fact was recorded as a permanent verdict about a role's competence. The write path is now fixed at
+both producers.
+
+**The durable lesson is not the bug. It is that the same bug produced two opposite answers to "can we
+undo it?", in one system, on the same day.**
+
+- **Seeding path — unrepairable, provably.** Infra-sourced `False` and wrong-answer `False` are
+  byte-identical everywhere they are stored, for three independent reasons: the injected reward context
+  carried no disposition field, `source` was discarded at write time, and the update branch rewrote
+  `q_value` without recomputing `outcome`. There is no predicate that separates them, so there is no
+  purge — and any proxy (`tokens_generated == 0`) destroys genuine negative signal to remove neutral
+  noise. **K is uncomputable. Not small — unknown.**
+- **Live-serving path — repairable.** The `work.answer` payload survived and carries a structural
+  `[ERROR: …]` banner. 260 of 11,918 failure records resolve to 580 distinct rows, of which **565 are
+  classifiable and were sitting below the retrieval floor**. A dry-run of `(memory_id, current_q,
+  proposed_q, evidence)` makes the repair executable and reversible without touching the store.
+
+Same defect, same day, same codebase. The only difference is whether anyone wrote down *why* a value
+was written at the moment it was written. **Wiring provenance on the write side is cheap and permanent;
+reconstructing it on the read side is impossible** — not expensive, impossible.
+
+Two corollaries worth carrying:
+
+- **Arithmetic can make a scary defect inert, and you have to check rather than assume.** On the seeding
+  path `initial_q = 0.5 + reward*0.5`, so a poisoned `0.0` lands at exactly **0.5 — neutral**. Those rows
+  never outrank anything; the effect is a push toward the rule-based fallback, a conservative failure.
+  On the live path the same class used `failure_reward = -0.5` → `initial_q = 0.25`, **below the 0.3
+  retrieval floor**, so a transient backend blip *evicted the memory entirely*. Identical framing,
+  opposite blast radius, decided by two constants.
+- **A substring classifier does not merely miss infra failures — it invents them.** The legacy fallback
+  flagged 23 tasks as infrastructure purely because `"1.503s"` contains `"503"`, and every one of its
+  live-journal hits was that. Classify structurally (transport reason, provenance class, HTTP status,
+  in-band banner); keep substrings as a last resort you expect to be wrong in both directions.
+
+Sources: `handoffs/active/autopilot-continuous-optimization.md`; epyc-orchestrator `2f41c3ad`,
+`5d494c2d`, `ba11d8b0`; `artifacts/audit/memrl_live_serving_infra_reward_dryrun_20260812.json`.
+
 ## Compiled Update — 2026-08-12: the leak moved from format to field, and the gate that should have caught it was measuring the wrong string
 
 **Confidence: verified** — row counts are live store queries; the gate defect is a code-level finding with a test-count delta.
