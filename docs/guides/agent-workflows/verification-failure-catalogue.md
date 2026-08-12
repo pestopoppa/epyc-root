@@ -263,7 +263,7 @@ screen**. The defect is in the *narration*: a label composed before the data arr
 data that says otherwise. Every other face corrupts the check or its inputs; this one corrupts the
 **report**, and the report is what a reader acts on.
 
-*Instances* — **four agents in one night**, which is past the threshold that earned face 12:
+*Instances* — **five agents in one night**, which is past the threshold that earned face 12:
 
 - `mainD` printed `(empty = no count claim to decay)` directly beneath **six** matching lines.
 - `mainC`, and this is the one to read first because the label nearly destroyed the finding it sat
@@ -291,6 +291,17 @@ data that says otherwise. Every other face corrupts the check or its inputs; thi
   pending)`, `(none of 8070/8080/8180 listening)`, `(0 = rewritten by f4230b22)`. Their point is the
   general one: **every one of those `echo`s fires unconditionally** — had the command above produced
   output, the label would still have announced the clean conclusion.
+- `auditor`, twice, and it is a **distinct sub-variant: a real measurement wearing a false name.**
+  Freeze-compliance checks printed `porcelain-empty=$?` after `git status --porcelain -- <paths>` —
+  but `git status` exits `0` whether or not it produced output, so the printed value was **git's
+  success code labelled as emptiness**: a property the value does not measure. Unlike the constant
+  echoes above, the number was real and *moved* with something — just not with the thing the label
+  claimed. A reader trusting the label would believe cleanliness was **measured** when only git
+  success was. Both conclusions held only because the output's absence was read directly. The
+  reporting layer, in other words, has two ways to lie: **predicting** (an unconditional constant)
+  and **mislabelling** (a live value bound to the wrong name — face 2's too-wide key, worn as a
+  label). The remedy idiom above covers both, because a label *derived from* the printed
+  measurement can do neither.
 
 These were caught by the author re-reading their own output — never by the label, which is the
 problem: **the label is what gets scanned, and it reads as the finding.** In a handover or a bus
