@@ -48,7 +48,7 @@ and it is yours"* and names nobody. Patch `artifacts/operator/e8v4_keyed_receipt
 | W4 `migration_status` | coordinator | — | overnight | **NO ARTIFACT** — named only in mainB's handover |
 | toc L449 build half — needs the A/B owner's artifact **event schema** | auditor | Schema supplied, half certified | overnight | `40aa9d38`, `723a3539` |
 | HS-OD-1 activation (refuse unhonoured OpenAI body fields) | inference | Activated at inference's own boundary | 02:16Z | orch `cbe551e8` (pushed) + 30 tests |
-| E5 re-measurement, T3/T10/T12, Stage-B re-run, `stack_numa` cpuset fix | mainA | Post-reboot compute | overnight, compute-gated | `docs/reviews/mainA-morning-handover-20260812.md` L171-181 |
+| E5 re-measurement (gemma non-MTP arm) | mainA | **CLOSED** — 18/18 cells, error_rate 0.0, 43/43 req/cell, observation-grade (13d18h uptime voids decision-grade). Remaining E5 rows T3/T10/T12/`stack_numa` still compute-gated. | research `703a80a2` + `4cca1bd7`, orchestrator `efbbbbe9`, root `23a323a0` |
 | **8 stale claims older than 300 h**, all from the 2026-07-29 fleet death — `inference` **5**, `auditor` 1, `mainB` 1, `mainD` 1. An agent can only release its own | each holder | All 8 released | since 2026-07-29 (**~13 days**) | `progress/2026-08/2026-08-12.md:1256-1259` |
 | ↳ **`inference`'s dead claim has been sitting on `mainC`'s assigned work (A10) all night** — *"1b. Migrate research consumers … delete each duplicate extractor"* | inference | Claim released, A10 unblocked | ~13 days | `progress/2026-08/2026-08-12.md:1263-1265` |
 | `autopilot-decision-plane-audit:307` — producing an "after" runs BigCodeBench test code | inference (compute) | Re-run under deterministic code scoring | overnight | `progress/2026-08/2026-08-12.md:1858-1863` |
@@ -113,7 +113,7 @@ also hold ratified receipts and are part of the six unticked boxes in O-5.
 | `steer`, rescoped to `authority.cross_main` | auditor | `authority.cross_main: [operator, coordinator-agent]` exists at `config.yaml:73`; **no `steer` implementation found** anywhere in `scripts/coordination/` | **NO ARTIFACT** |
 | Worktree cutover (P2 — P1 landed) | — | P1 machinery landed (`724b5f85`, `dc5317d7`, `8de1f2c7`, `8b308468`, `a70dbe1a`, `5df3c9eb`). Cutover itself not started; **no owner named** | see §4 |
 | MMLU-Pro hardened control | mainB → handed over | mainB `idle`, out of context, package delivered, 2 rulings pending (§2). GPU verified free: `rocm-smi` GPU use **0%**, zero KFD PIDs | research `4dbc9840` |
-| E5 gemma no-MTP, CPU lane | mainA | **Genuinely running**: 4 `llama-server` PIDs started 08:25:1x–08:25:2xZ at 2762–3329 %CPU; load average 151.5. CPU lane `busy`, queue depth 21 | live `ps`; `advisory.jsonl` saturation records |
+| E5 gemma no-MTP, CPU lane | mainA | **TERMINAL, not running** — driver 2854220 exited; 18/18 cells banked, 0% error; no servers of mine remain, ports 19380-19383 clear. The `load 151.5 / 4 PIDs` reading was the run mid-flight and is now stale. | `703a80a2`, `4cca1bd7` |
 
 ---
 
