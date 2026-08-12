@@ -238,6 +238,8 @@ function renderCurrentState(d){
   const box=$("#current-state"), s=((d._activity||{}).current_state||{});
   const prod=s.production_kernel||{}, fixed=s.fixed_campaign||{};
   const avail=s.available_source_diagnostic||{}, smoke=s.empirical_smoke||{};
+  const controls=s.decision_controls||{}, preflight=s.instrument_preflight||{};
+  const replay=s.gpu_prefetch_replay||{};
   let h='<div class="state-grid">';
 
   h+='<div class="state-card production"><h3>Production kernel · operator attestation</h3>';
@@ -249,8 +251,39 @@ function renderCurrentState(d){
     const checkoutState=checkout.error?'<span class="fail">unavailable: '+esc(checkout.error)+'</span>':(checkout.matches_attestation?'<span class="ok">matches attestation</span>':'<span class="fail">does not match attestation</span>');
     h+='<div class="detail">canonical checkout '+checkoutState+'</div>';
     if(prod.scope) h+='<div class="detail">scope: '+esc(prod.scope)+'</div>';
-  } else h+='<div class="muted">freeze attestation unavailable: '+esc(prod.error||"not found")+'</div>';
+  } else {
+    h+='<div class="headline fail">ATTESTATION UNAVAILABLE</div>';
+    h+='<div class="detail fail">Production identity is unasserted; do not infer freeze or checkout state.</div>';
+    h+='<div class="detail">'+esc(prod.error||"attestation not found")+'</div>';
+  }
   h+=evidenceLine(prod)+'</div>';
+
+  h+='<div class="state-card"><h3>CPU evaluator controls · decision gate</h3>';
+  if(controls.available){
+    const p=controls.panel||{};
+    const ctlClass=controls.may_rank?'ok':'fail';
+    h+='<div class="headline '+ctlClass+'">'+esc(controls.marker||"—")+' controls · '+(controls.may_rank?'MAY RANK':'RANKING BLOCKED')+'</div>';
+    h+='<div class="detail">positive '+esc(p.positive||"—")+' · neutral '+esc(p.neutral||"—")+' · degraded negative '+esc(p.degraded_negative||"—")+' · A/A '+esc(p.aa||"—")+' · historical replay '+esc(p.historical_replay||"—")+'</div>';
+    const pf=preflight.available?(esc(preflight.passed_checks)+" / "+esc(preflight.total_checks)+" "+esc(preflight.status||"unknown")):"unavailable";
+    h+='<div class="detail">trusted-instrument preflight '+pf+' · instrument <code>'+esc((controls.measurement_instrument_commit||"").slice(0,12))+'</code></div>';
+    h+='<div class="detail">production anchor <code>'+esc((controls.production_source_commit||"").slice(0,12))+'</code> · '+(controls.anchor_matches_production?'<span class="ok">matches current freeze</span>':'<span class="fail">does not match current freeze</span>')+'</div>';
+    h+='<div class="detail">calibration '+(controls.calibration_accepted?'accepted':'not accepted')+' · B_min '+esc(controls.b_min_blocks==null?'—':controls.b_min_blocks)+' · noise floor '+esc(controls.noise_floor==null?'—':num(controls.noise_floor*100,3)+'%')+'</div>';
+    if(controls.composition_inference_executed===false) h+='<div class="detail">final composition reused completed raw vectors; recovery itself ran no inference</div>';
+  } else h+='<div class="sec-refused">decision-control receipt unavailable: '+esc(controls.error||"not found")+'</div>';
+  h+=evidenceLine(controls);
+  if(preflight.evidence) h+='<div class="evidence">preflight: <code>'+esc(preflight.evidence)+'</code></div>';
+  h+='</div>';
+
+  h+='<div class="state-card"><h3>ROCm replay · async Q8 prefetch</h3>';
+  if(replay.available){
+    const blocks=esc(replay.blocks==null?'—':replay.blocks);
+    const positive=replay.all_blocks_positive?(blocks+' / '+blocks+' positive'):'not all blocks positive';
+    h+='<div class="headline sec-refused">'+esc(String(replay.verdict||"unknown").toUpperCase())+'</div>';
+    h+='<div class="detail">'+positive+' · median '+esc(replay.median_relative_delta==null?'—':(replay.median_relative_delta*100).toFixed(4)+'%')+' · required floor '+esc(replay.contribution_floor==null?'—':(replay.contribution_floor*100).toFixed(2)+'%')+'</div>';
+    h+='<div class="detail">'+esc(replay.device_id||"ROCm device")+' · '+esc(replay.device_sample_count==null?'—':replay.device_sample_count)+' device samples · claim released '+esc(replay.device_claim_released_at||"—")+'</div>';
+    h+='<div class="detail">measured on <code>'+esc(replay.source_branch||"—")+'</code> @ <code>'+esc((replay.source_commit||"").slice(0,12))+'</code> · no promotion authority</div>';
+  } else h+='<div class="muted">ROCm replay receipt unavailable: '+esc(replay.error||"not found")+'</div>';
+  h+=evidenceLine(replay)+'</div>';
 
   h+='<div class="state-card"><h3>Fixed controller campaign · 8 arms</h3>';
   if(fixed.available){
@@ -296,6 +329,7 @@ function renderActivity(d){
     const head=commits[0];
     h+='<div><code>'+esc(head.short_sha||"")+'</code> '+esc(head.subject||"")+'</div>';
     h+='<div class="muted" style="margin-top:4px">'+esc(head.committed_at||"—")+' · '+esc(shortAge(head.committed_at))+'</div>';
+    h+='<div class="muted" style="margin-top:4px">'+esc(impl.scope||"")+'</div>';
     h+='<details style="margin-top:8px"><summary class="muted">recent AutoKernel commits ('+commits.length+')</summary><ul class="activity-list">';
     for(const c of commits) h+='<li><code>'+esc(c.short_sha||"")+'</code> '+esc(c.subject||"")+'</li>';
     h+='</ul></details>';
