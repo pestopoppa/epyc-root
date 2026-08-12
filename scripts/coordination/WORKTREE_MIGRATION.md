@@ -161,15 +161,42 @@ directories on the research side** (`epyc-inference-research`) — accumulated
 exactly this way, from throwaway task worktrees that were deleted without
 `git worktree remove`.
 
-**Rule: `git worktree prune` at every `/wrap-up`**, for every repo a main
-touched that session — cheap (a metadata-only sweep, no effect on worktrees
-still genuinely in use), and it is the direct fix for the 53-orphan finding.
-`setup_main_worktrees.sh` itself validates before creating anything
-(`validate_mains_root()`) rather than pruning automatically — a script that
-silently prunes on every invocation could remove a worktree an operator
-intentionally left registered but temporarily unmounted; refusing and
-naming the problem is the same fail-closed posture the rest of this task's
-hooks use, not a new one invented here.
+### NEVER `git worktree prune` (rule withdrawn 2026-08-12)
+
+An earlier revision of this document prescribed **`git worktree prune` at
+every `/wrap-up`** as the fix for the 53-orphan finding. **That rule is
+withdrawn and must not be reinstated.** It is a loaded gun, not hygiene.
+
+Why: this repository is reachable at two path depths that name ONE
+directory (`/workspace`, a bind alias, and `/mnt/raid0/llm/epyc-root`).
+git records each worktree with a `gitdir` pointer written for the depth it
+was registered from. Reached by the *other* name, a relative pointer
+resolves to a path that does not exist — and `prune` deletes the
+administrative record of every worktree whose pointer it cannot resolve.
+Run once from the deep path, it destroyed **all five lane worktrees'**
+registrations at once. Three registrations had to be repaired by hand on
+2026-08-12 and must not be re-broken. `prune` cannot tell "this worktree is
+gone" from "I am standing somewhere that cannot see it", and it acts
+destructively on both.
+
+The orphan finding it was aimed at is real but is a *different* repo's
+(`epyc-inference-research`) one-off cleanup, done deliberately with the
+list read first — not a standing per-wrap-up sweep of every repo.
+
+**Do this instead — a lane-ENTRY check, not an exit sweep.** When a main
+starts work (or at any point it wants to confirm it is in the right place):
+
+```bash
+python3 scripts/coordination/check_lane_worktree.py --strict
+```
+
+Read-only. Exit 0 = you are in your lane (or only runtime-plane state
+changed, which correctly belongs in the shared clone); exit 3 = you are
+changing versioned WORK in the shared clone and should move to your lane
+worktree; exit 4 = location undeterminable, fail-closed. It reports; it
+never deletes. `setup_main_worktrees.sh` keeps the same posture:
+`validate_mains_root()` refuses and names the problem rather than pruning
+anything.
 
 ## The inference gap
 

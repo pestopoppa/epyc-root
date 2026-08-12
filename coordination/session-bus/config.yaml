@@ -4,6 +4,13 @@ schema_version: session_bus.config.v1
 
 # Adding a main = 1 roster row + 4 files (inbox/outbox/heartbeat/cursor).
 # Roster rows are slot-shaped so a future local-model main is just another row.
+# `worktree:` (added 2026-08-12, phase 3 B4) is the directory `tmux_adapter.py spawn`
+# starts the main in. Policy-as-data: the adapter reads this key and holds no table of
+# agent names. A row WITHOUT the key spawns in the shared clone /workspace — deliberate
+# for `coordinator-agent` (reads across everyone, owns no lane) and `inference` (whose
+# lane is ~302 commits behind; moving it is its own reconciliation task). A row WITH the
+# key whose directory is missing REFUSES to spawn rather than silently using the shared
+# clone: `scripts/coordination/setup_main_worktrees.sh <agent>` recreates it.
 roster:
   # Window renamed to `codex-inference` by the operator 2026-07-28 to disambiguate it from
   # codex-bus-tests. The bare `tmux:agent` endpoint then resolved to nothing — the adapter
@@ -22,7 +29,7 @@ roster:
   # would orphan all of it AND leave the old row drawing "LOOKS DEAD" advisories forever.
   # endpoint monitor:file -> tmux:agent:claude-main so it can actually be nudged: monitor:file has
   # no push delivery, which `validate` flags precisely because assigned work rots unread there.
-  - {id: mainA,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainA",      drain: boundary}   # was `claude-main` until 2026-07-29
+  - {id: mainA,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainA",      drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/mainA}   # was `claude-main` until 2026-07-29
   # Renamed window 0 `claude` -> `coordinator` and re-pointed monitor:file -> tmux 2026-07-29:
   # monitor:file has NO push delivery, which `validate` flagged precisely because assigned
   # work rots unread there. The id stays `coordinator-agent` — it is the authority name in
@@ -42,7 +49,7 @@ roster:
   # P2-2 tenant landing starts PRE-reboot rather than deferring. Re-using the same roster id
   # deliberately — its inbox still holds the undelivered lane-activation decision, so a fresh
   # session in this slot drains it rather than needing it re-relayed.
-  - {id: mainB,             role: main,              lanes: [gpu, none],      endpoint: "tmux:agent:mainB",      drain: boundary}   # was `claude-gpu-lane` until 2026-07-29
+  - {id: mainB,             role: main,              lanes: [gpu, none],      endpoint: "tmux:agent:mainB",      drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/mainB}   # was `claude-gpu-lane` until 2026-07-29
   # Added by coordinator-agent 2026-07-28 on operator direction. Fable 5 at xhigh effort,
   # Originally spawned 2026-07-28 as a READ-ONLY auditor of the E8 harness contract set:
   # three consecutive failed-closed cycles had each surfaced a DIFFERENT defect in a different
@@ -59,15 +66,15 @@ roster:
   #
   # lanes: [none] STILL HOLDS and is unchanged: it must never take an inference lane or a region
   # claim. Owning the delivery plane is not a licence to contend for the host.
-  - {id: auditor,           role: reviewer,          lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary}
+  - {id: auditor,           role: reviewer,          lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/auditor}
   # Added by coordinator-agent 2026-07-29 on operator direction: 293 tasks closed in the last 7
   # days against a target of 1000+, and the binding constraint is idle mains, not throughput per
   # main. mainC/mainD exist purely to churn backlog — they take whatever unblocked handoff work is
   # dispatched to them. lanes:[none] deliberately: the CPU is already contended by inference (E8)
   # and mainA (E5), and none-lane work is the only kind that can be dispatched instantly at any
   # moment, which is exactly what an anti-idle reserve needs to be.
-  - {id: mainC,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainC",      drain: boundary}
-  - {id: mainD,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainD",      drain: boundary}   # was `fable-auditor` until 2026-07-29
+  - {id: mainC,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainC",      drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/mainC}
+  - {id: mainD,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainD",      drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/mainD}   # was `fable-auditor` until 2026-07-29
   # Added by coordinator-agent 2026-08-12 on operator instruction. The hardware-idle
   # backfill runner (5af987ef) detects idle compute with queued compute-gated work and
   # files it. Without this row its appends fail CLOSED with the roster error - it was

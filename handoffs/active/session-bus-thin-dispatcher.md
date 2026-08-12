@@ -2634,13 +2634,28 @@ one-live-instance assumption. If that task gets its own handoff, move these five
         faces 12/13/14 — is already durable in
         `docs/guides/agent-workflows/verification-failure-catalogue.md`, so compiling now would
         largely restate it. The two non-mainA sources still deserve a pass.
-  - [ ] **Close the `repos/` gap, or record that it stays open.** Worktree phase 2 isolates
-        `epyc-root` per agent, but `repos/<name>` is a **symlink out** of every lane worktree, so
-        `epyc-orchestrator` and `epyc-inference-research` remain one shared clone regardless of
-        which worktree an agent sits in. Measured cost 2026-08-12: three subagents editing one
-        shared orchestrator clone held apart only by file-disjoint ownership and a no-commit rule,
-        and a `git add` into a mid-cherry-pick index putting 42 files into another agent's commit.
-        Phase 2 does **not** cover the sub-repos and should not be read as if it does. Phase 1 items 1–5 are landed above; nothing is
+  - [x] **Close the `repos/` gap, or record that it stays open.** ✅ 2026-08-12 — **RECORDED AS
+        EXPLICITLY OPEN** (phase 3, B5). Decision: the sub-repos stay ONE shared clone; per-main
+        sub-repo worktrees are a separate program, not a rider on this one. What holds them apart
+        remains file-disjoint ownership plus the no-commit rule — a discipline, not a structure, and
+        it has already failed once (`git add` into a mid-cherry-pick index put 42 files into another
+        agent's commit). Concretely: `repos/epyc-orchestrator` and `repos/epyc-inference-research`
+        are symlinks OUT of every lane worktree to `/mnt/raid0/llm/<name>`, so lane isolation covers
+        `epyc-root` **only**. Anyone reading "mains are isolated" must read it as *epyc-root is
+        isolated*. Cost of closing it, for whoever picks it up: two more worktree fleets (10 more
+        worktrees), two more promotion paths per wrap-up, and `clone-repos.sh` would have to stop
+        being a symlink farm. Not attempted here.
+  - [x] **`unblock_artifact.py` stays pinned to `/workspace` — a decision, not an oversight.**
+        ✅ 2026-08-12 (phase 3, B6). `REPO_ROOT = Path("/workspace")` at
+        `scripts/coordination/unblock_artifact.py:74` and the literal
+        `bash /workspace/artifacts/operator/unblock.sh` it prints at `:206` are DELIBERATELY not
+        routed through the canonical-root helper the rest of the B-series unified. Reason: this is
+        the **operator trust surface**. The artifact tells a human one command to paste, and the
+        gates it applies mutate global state. A path that varies with whichever worktree generated
+        the file would mean the operator's command depends on which agent happened to render it —
+        and a lane worktree's checkout can be behind `main`, so the rendered `unblock.sh` could be
+        a stale one. One fixed, human-recognisable spelling is the property worth having here;
+        derivability is not. Do not "fix" this to match the other five call sites.
 
 - [ ] **Per-agent shards for the concurrently-appended log files.** Option 2 from the
   `agent_audit.log` adjudication, which untracking deliberately did not implement. Untracking removed
