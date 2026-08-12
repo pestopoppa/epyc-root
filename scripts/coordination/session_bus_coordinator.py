@@ -2349,13 +2349,28 @@ def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
                     missing = str(Path(missing).relative_to(bus_root))
                 except (ValueError, TypeError):
                     missing = str(missing)
-            sig = f"unreadable:{exc.__class__.__name__}:{missing}"
+            # SEPARATE DISPOSABLE LOSS FROM LOSSY LOSS (`mainB`, 2026-08-12). A
+            # missing CURSOR is not blindness: `_cursor_get` returns 0, so the agent
+            # REPLAYS from zero — duplicate delivery and noise, never dropped
+            # messages — and cursors are gitignored precisely because they are
+            # disposable and self-healing. A missing OUTBOX or INBOX is different:
+            # that content existed nowhere else. Reported identically, "unreadable"
+            # read as "this agent is blind" when for a cursor the truth is closer to
+            # "this agent is loud", and that over-read is what inflated U-1.
+            kind_of_loss = ("disposable/self-healing" if missing.startswith("cursors/")
+                            else "LOSSY" if missing else "unknown")
+            note = ""
+            if kind_of_loss.startswith("disposable"):
+                note = ("A cursor is disposable: the agent replays from zero, so this "
+                        "costs duplicate delivery, not lost messages. ")
+            sig = f"unreadable:{exc.__class__.__name__}:{missing}:{kind_of_loss}"
             if rec.get("last_detect_sig") != sig:
                 row("stuck-state-unreadable", aid, detail=str(exc),
-                    action=(f"skipped — unread not computable, NOT treated as zero. "
-                            f"Missing: {missing or 'unknown path'}. If this is a wiped or "
-                            f"never-provisioned agent, `session_bus.py provision --agent {aid}` "
-                            f"recreates it; the agent must then write its own heartbeat."))
+                    action=("skipped — unread not computable, NOT treated as zero. "
+                            f"Missing: {missing or 'unknown path'} ({kind_of_loss}). {note}"
+                            f"`session_bus.py provision --agent {aid}` recreates the file; the "
+                            "agent must then write its own heartbeat — the bus is single-writer, "
+                            "so nobody can do that for them."))
             rec["last_detect_sig"] = sig
             new_state[aid] = rec
             continue

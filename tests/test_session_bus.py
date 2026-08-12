@@ -3613,3 +3613,54 @@ def test_the_notice_never_ticks_a_checkbox_and_does_not_repeat(bus_root: Path) -
     assert "- [ ] **GATE-F**" in body and "- [x]" not in body   # never ticks
     assert "REQUESTER-MOVED-ON" in body
     assert coordinator.note_withdrawn_gates_in_queue(bus_root, epoch=2) == []   # deduped
+
+
+def test_an_unreadable_cursor_degrades_to_replay_rather_than_crashing(tmp_path: Path) -> None:
+    """Three states, not two (`mainB`, 2026-08-12).
+
+    A cursor can be MISSING, CORRUPT, or PRESENT-BUT-UNREADABLE. The first two
+    already defaulted to 0 (replay). The third raised OSError out of the drain, so
+    the agent neither replayed nor skipped — it crashed, and presented as a stuck
+    agent. Only the first two were covered.
+    """
+    cursors = tmp_path / "cursors"
+    cursors.mkdir(parents=True)
+    cur = cursors / "ghost.json"
+
+    cur.write_text('{"offset": 42}', encoding="utf-8")
+    assert bus._cursor_get(tmp_path, "ghost") == 42
+
+    os.chmod(cur, 0o000)
+    try:
+        assert bus._cursor_get(tmp_path, "ghost") == 0, "unreadable must degrade to replay"
+    finally:
+        os.chmod(cur, 0o644)
+
+    cur.write_text("not json", encoding="utf-8")
+    assert bus._cursor_get(tmp_path, "ghost") == 0
+    cur.unlink()
+    assert bus._cursor_get(tmp_path, "ghost") == 0
+
+
+def test_cursor_read_survives_the_file_vanishing_after_the_exists_check(tmp_path: Path) -> None:
+    """TOCTOU the `exists()` check opens: on a bus whose runtime is wiped mid-flight
+    the file can disappear between the check and the read. FileNotFoundError is an
+    OSError, so the same fix closes it — 0 (replay), never a crash."""
+    cursors = tmp_path / "cursors"
+    cursors.mkdir(parents=True)
+    cur = cursors / "vanish.json"
+    cur.write_text('{"offset": 7}', encoding="utf-8")
+
+    real_read = Path.read_text
+
+    def vanishing(self, *a, **k):
+        if self == cur:
+            cur.unlink(missing_ok=True)
+            raise FileNotFoundError(2, "No such file or directory", str(cur))
+        return real_read(self, *a, **k)
+
+    try:
+        Path.read_text = vanishing            # type: ignore[method-assign]
+        assert bus._cursor_get(tmp_path, "vanish") == 0
+    finally:
+        Path.read_text = real_read            # type: ignore[method-assign]

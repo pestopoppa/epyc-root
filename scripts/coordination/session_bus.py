@@ -1101,12 +1101,28 @@ def _cursor_path(bus_root: Path, agent: str) -> Path:
 
 
 def _cursor_get(bus_root: Path, agent: str) -> int:
+    """Read position, defaulting to 0 — which REPLAYS rather than skips.
+
+    THREE STATES, NOT TWO (`mainB`, 2026-08-12, routed rather than committed because
+    the fix belonged with the loaded test suite). A cursor can be MISSING (handled:
+    replay), CORRUPT (handled: replay), or PRESENT-BUT-UNREADABLE — bad mode, bad ACL,
+    I/O error. That last one raised `OSError` straight out of the drain, so the agent
+    neither replayed nor skipped: it CRASHED, and presented as a stuck agent, which is
+    the exact signature improved at cc81c119. Only two of the three were covered.
+
+    `OSError` also closes a TOCTOU hole the `exists()` check opens: on a bus whose
+    runtime was wiped mid-flight, the file can vanish between the check and the read,
+    and `FileNotFoundError` is an `OSError`.
+
+    Defaulting to 0 is the deliberate fail-SAFE direction, verified by `mainB` on
+    themselves: a lost cursor costs duplicate delivery and noise, never lost messages.
+    """
     path = _cursor_path(bus_root, agent)
-    if not path.exists():
-        return 0
     try:
+        if not path.exists():
+            return 0
         return int(json.loads(path.read_text(encoding="utf-8")).get("offset", 0))
-    except (json.JSONDecodeError, ValueError, TypeError):
+    except (json.JSONDecodeError, ValueError, TypeError, OSError):
         return 0
 
 
