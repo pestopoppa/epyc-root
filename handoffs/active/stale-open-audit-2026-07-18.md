@@ -268,6 +268,15 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     65). Reading is the only route, and its rate is now measured. Stop looking for a shortcut.
   - [ ] **REMAINS OPEN:** read-certify the remaining ~918. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
+    - [x] **Tranche 4 — the 4 highest-count bench-feeding handoffs, complete: 231 of 231 rows certified ✅ 2026-08-12 (`auditor`, overnight)**
+      (`decision-aware-routing` 34, `autopilot-continuous-optimization` 62, `rocm-verify-profile-backend` 49,
+      `numa-topology-cutover-resume-20260730` 86). **90 LIVE (39%) / 76 DEAD (33%) / 51 GATED / 10 REWRITE /
+      3 UNRESOLVED / 1 standing-constraint** — full evidence in
+      `artifacts/audit/read-certification-tranche4-20260812.md`; owners flip their own DEAD rows from that
+      record. Live-rate spread 24-66% per file (T1-T3 priors re-confirmed: reading, not sampling). Two
+      cross-cutting finds outrank the rows: the AutoKernel effect gate cannot structurally pass a CPU-decode
+      win (threshold 10 vs martingale ceiling 5.5687 - routed URGENT to inference), and a new defect class:
+      rows resolved by LATER checked entries in the SAME file, never reconciled back.
     - [x] **Tranche 3 — the 6 orphan handoffs, complete: 18 of 18 boxes certified, 0 DEAD ✅ 2026-07-29 (`auditor`)**
       (`agent-collab-rnd-harness`, `autopilot-authority-autoenable-proposal`, `core-v2-design-note-2026-07-23`,
       `qwen-mtp-llamacpp-port`, `re4-protocol-redesign`, `stale-open-audit-2026-07-18`).
