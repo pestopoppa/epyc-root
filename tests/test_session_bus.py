@@ -3502,3 +3502,91 @@ def test_no_notice_when_nothing_is_spent(
 
     assert coordinator.note_spent_gates_in_queue(bus_root, 14) == []
     assert tq.read_text(encoding="utf-8") == before
+
+
+# --- C44: the token relay is withdrawal-blind (mainD, 2026-08-12) -------------
+# Sibling of C39's receipt-blindness, found the same way: an escalation chasing
+# the operator about a gate that was not live. Helper name kept distinct from
+# _queue_with / _routed / _aged_msg — an appended helper that shadows an existing
+# one silently breaks unrelated passing tests.
+
+def _outbox_msgs(root: Path, agent: str, *msgs: dict) -> None:
+    ob = root / "outbox"
+    ob.mkdir(parents=True, exist_ok=True)
+    with (ob / f"{agent}.jsonl").open("a", encoding="utf-8") as fh:
+        for m in msgs:
+            fh.write(json.dumps(m) + "\n")
+
+
+def _request(gate: str, task: str, ts: str, agent: str = "mainD") -> dict:
+    return {"id": f"req-{gate}", "from": agent, "kind": "token-request", "task_id": task,
+            "ts": ts, "payload": {"gate_id": gate}}
+
+
+def _complete(task: str, ts: str, agent: str = "mainD") -> dict:
+    return {"id": f"done-{task}-{ts}", "from": agent, "kind": "task-complete",
+            "task_id": task, "ts": ts, "payload": {"disposition": "done"}}
+
+
+def test_an_explicitly_withdrawn_gate_is_named_authoritatively(bus_root: Path) -> None:
+    """Tier 1: the requester said so, keyed to the gate id."""
+    tq = _queue_with(bus_root, "GATE-A")
+    _outbox_msgs(bus_root, "mainD",
+                 _request("GATE-A", "t1", "2026-08-12T01:00:00+00:00"),
+                 {"id": "w1", "from": "mainD", "kind": "status", "task_id": "t1",
+                  "ts": "2026-08-12T01:30:00+00:00", "payload": {"withdraws_gate": "GATE-A"}})
+    hits = coordinator.withdrawn_or_stale_gates(bus_root, tq.read_text(encoding="utf-8"))
+    assert [(g, v) for g, v, _ in hits] == [("GATE-A", "WITHDRAWN")]
+
+
+def test_a_requester_who_moved_on_is_a_DISCREPANCY_not_a_withdrawal(bus_root: Path) -> None:
+    """Tier 2, and the verdict must NOT claim withdrawal.
+
+    The real case carried no gate_id — it was a task-complete on the request's own
+    task_id — so a gate_id-keyed matcher would have detected nothing and passed
+    vacuously. The wording matters: too broad a signal SUPPRESSES a live operator ask.
+    """
+    tq = _queue_with(bus_root, "GATE-B")
+    _outbox_msgs(bus_root, "mainD",
+                 _request("GATE-B", "t2", "2026-08-12T01:21:10+00:00"),
+                 _complete("t2", "2026-08-12T01:41:39+00:00"))
+    hits = coordinator.withdrawn_or_stale_gates(bus_root, tq.read_text(encoding="utf-8"))
+    assert [(g, v) for g, v, _ in hits] == [("GATE-B", "REQUESTER-MOVED-ON")]
+
+
+def test_a_live_gate_is_left_alone(bus_root: Path) -> None:
+    """Mutation: no later task-complete, no signal. Suppressing a live ask is this
+    defect inverted, and worse."""
+    tq = _queue_with(bus_root, "GATE-C")
+    _outbox_msgs(bus_root, "mainD", _request("GATE-C", "t3", "2026-08-12T01:00:00+00:00"))
+    assert coordinator.withdrawn_or_stale_gates(bus_root, tq.read_text(encoding="utf-8")) == []
+
+
+def test_a_task_complete_BEFORE_the_request_does_not_flag(bus_root: Path) -> None:
+    """Ordering is load-bearing: re-requesting after finishing a prior round is normal."""
+    tq = _queue_with(bus_root, "GATE-D")
+    _outbox_msgs(bus_root, "mainD",
+                 _complete("t4", "2026-08-12T00:30:00+00:00"),
+                 _request("GATE-D", "t4", "2026-08-12T01:00:00+00:00"))
+    assert coordinator.withdrawn_or_stale_gates(bus_root, tq.read_text(encoding="utf-8")) == []
+
+
+def test_another_agents_task_complete_does_not_withdraw_your_gate(bus_root: Path) -> None:
+    """Author identity is load-bearing too."""
+    tq = _queue_with(bus_root, "GATE-E")
+    _outbox_msgs(bus_root, "mainD", _request("GATE-E", "t5", "2026-08-12T01:00:00+00:00"))
+    _outbox_msgs(bus_root, "mainA", _complete("t5", "2026-08-12T02:00:00+00:00", agent="mainA"))
+    assert coordinator.withdrawn_or_stale_gates(bus_root, tq.read_text(encoding="utf-8")) == []
+
+
+def test_the_notice_never_ticks_a_checkbox_and_does_not_repeat(bus_root: Path) -> None:
+    tq = _queue_with(bus_root, "GATE-F")
+    _outbox_msgs(bus_root, "mainD",
+                 _request("GATE-F", "t6", "2026-08-12T01:00:00+00:00"),
+                 _complete("t6", "2026-08-12T01:30:00+00:00"))
+    first = coordinator.note_withdrawn_gates_in_queue(bus_root, epoch=1)
+    body = tq.read_text(encoding="utf-8")
+    assert first and first[0]["kind"] == "withdrawn-gate-notice"
+    assert "- [ ] **GATE-F**" in body and "- [x]" not in body   # never ticks
+    assert "REQUESTER-MOVED-ON" in body
+    assert coordinator.note_withdrawn_gates_in_queue(bus_root, epoch=2) == []   # deduped

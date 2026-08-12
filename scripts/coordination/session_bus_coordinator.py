@@ -1090,6 +1090,154 @@ def note_spent_gates_in_queue(bus_root: Path, epoch: int) -> list[dict]:
                        f"on its own"}]
 
 
+_WITHDRAWN_NOTE_MARKER = "<!-- daemon:withdrawn-gate-notice"
+
+
+def gate_requests(bus_root: Path) -> dict[str, tuple[str, str, str]]:
+    """{gate_id: (requester, task_id, ts)} for every gate a `token-request` minted."""
+    out: dict[str, tuple[str, str, str]] = {}
+    for f in sorted((bus_root / "outbox").glob("*.jsonl")):
+        try:
+            lines = f.read_text(encoding="utf-8", errors="replace").splitlines()
+        except OSError:
+            continue
+        for line in lines:
+            if '"token-request"' not in line:
+                continue
+            try:
+                m = json.loads(line)
+            except ValueError:
+                continue
+            gate = (m.get("payload") or {}).get("gate_id")
+            if m.get("kind") == "token-request" and isinstance(gate, str) and gate:
+                out[gate] = (m.get("from", "?"), m.get("task_id", ""), m.get("ts", ""))
+    return out
+
+
+def withdrawn_or_stale_gates(bus_root: Path, text: str) -> list[tuple[str, str, str]]:
+    """(gate, verdict, evidence) for unchecked gates whose REQUESTER has moved on.
+
+    C44 (2026-08-12), the sibling of C39's receipt-blindness and found the same way —
+    by an escalation chasing the operator about a gate that was not live. C39 taught
+    the relay to notice a gate already SIGNED; nothing taught it to notice a gate the
+    REQUESTER WITHDREW. Withdrawal leaves the block unchecked and byte-identical to a
+    live ask, so the ladder dutifully escalates it. Measured: gate
+    `APPLY-C39-KEYED-RECEIPT-E8V4-20260812` was filed 01:21:10, withdrawn 01:41:39,
+    and still escalating past deadline at 04:01 — with two known defects in the patch
+    it asks the operator to apply.
+
+    TWO TIERS, and the split is the whole design. A withdrawal signal that is too
+    broad SUPPRESSES A LIVE OPERATOR ASK, which is this defect inverted and worse, so
+    only an explicit statement is allowed to say WITHDRAWN:
+
+      1. WITHDRAWN (authoritative) — the requester said so, either `withdraws_gate:
+         <gate_id>` or `disposition: "withdrawn"` alongside a `gate_id`. Explicit,
+         keyed to the gate, and nothing else earns this verdict.
+      2. REQUESTER-MOVED-ON (advisory) — the minting `token-request` shares its
+         `task_id` and author with a LATER `task-complete` from that same author.
+         This is EVIDENCE OF A DISCREPANCY, not a withdrawal, and the wording says so:
+         it asks the reader to verify, and never claims the gate is closed.
+
+    Tier 2 exists because the real withdrawal carried NO gate_id — it was a
+    `task-complete` on the request's own `task_id`. A gate_id-keyed matcher would
+    have detected nothing and passed vacuously, which is why this is built against
+    the message that actually exists rather than the one the convention wants.
+    """
+    unchecked = re.findall(r"^- \[ \] \*\*([A-Za-z0-9._-]+)\*\*", text, re.M)
+    if not unchecked:
+        return []
+    requests = gate_requests(bus_root)
+    msgs: list[dict] = []
+    for f in sorted((bus_root / "outbox").glob("*.jsonl")):
+        try:
+            lines = f.read_text(encoding="utf-8", errors="replace").splitlines()
+        except OSError:
+            continue
+        for line in lines:
+            try:
+                msgs.append(json.loads(line))
+            except ValueError:
+                continue
+
+    found: list[tuple[str, str, str]] = []
+    for gate in dict.fromkeys(unchecked):
+        req = requests.get(gate)
+        for m in msgs:
+            p = m.get("payload") or {}
+            if p.get("withdraws_gate") == gate or (
+                    p.get("disposition") == "withdrawn" and p.get("gate_id") == gate):
+                found.append((gate, "WITHDRAWN",
+                              f"`{m.get('from','?')}` withdrew it at {m.get('ts','?')} "
+                              f"(`{m.get('id','?')}`)"))
+                break
+        else:
+            if req is None:
+                continue
+            who, task, ts = req
+            if not task:
+                continue
+            later = [m for m in msgs
+                     if m.get("kind") == "task-complete" and m.get("from") == who
+                     and m.get("task_id") == task and str(m.get("ts", "")) > ts]
+            if later:
+                m = later[0]
+                found.append((gate, "REQUESTER-MOVED-ON",
+                              f"`{who}` filed it at {ts} on task `{task}`, then reported that "
+                              f"same task complete at {m.get('ts','?')} (`{m.get('id','?')}`)"))
+    return found
+
+
+def note_withdrawn_gates_in_queue(bus_root: Path, epoch: int) -> list[dict]:
+    """Append-only notice naming unchecked gates whose requester has moved on (C44).
+
+    Same discipline as C39's spent-gate notice and for the same reason: the daemon
+    never ticks, never removes, and never edits a block it wrote earlier next to
+    checkboxes only the operator may touch. The block IS the record that a gate was
+    presented, so it stays; what changes is that the file no longer reads as though
+    the ask were live. Stating the evidence is transport; deciding is the operator's.
+    """
+    tq = bus_root / "tokens" / "token-queue.md"
+    try:
+        text = tq.read_text(encoding="utf-8")
+    except OSError:
+        return []
+    stale = withdrawn_or_stale_gates(bus_root, text)
+    if not stale:
+        return []
+
+    key = ",".join(sorted(f"{g}:{v}" for g, v, _ in stale))
+    marker = f"{_WITHDRAWN_NOTE_MARKER} {hashlib.sha256(key.encode()).hexdigest()[:12]} -->"
+    if marker in text:
+        return []
+
+    lines = [f"\n{marker}\n",
+             "\n### ⚠ Daemon notice — these unchecked gates may no longer be live asks\n\n",
+             "**Not a gate and not a checkbox.** The daemon never ticks or removes a block. "
+             "`WITHDRAWN` means the requester explicitly said so and is authoritative. "
+             "`REQUESTER-MOVED-ON` is a DISCREPANCY, not a verdict — the requester later "
+             "reported the same task complete, which usually means the ask lapsed, but only "
+             "the requester and the operator can settle it. **Verify before signing:** a "
+             "withdrawn gate asks for a signature on work its own author has stopped "
+             "standing behind.\n\n"]
+    for gate, verdict, evidence in stale:
+        lines.append(f"- `{gate}` — **{verdict}** — {evidence}\n")
+    lines.append("\n")
+
+    try:
+        with tq.open("a", encoding="utf-8") as fh:
+            fh.writelines(lines)
+    except OSError as exc:  # noqa: BLE001 — a notice must never break the tick
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "withdrawn-gate-notice-failed", "check": "token-gate-not-live",
+                 "detail": f"could not append the withdrawn-gate notice to {tq}: {exc}"}]
+    return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+             "kind": "withdrawn-gate-notice", "check": "token-gate-not-live",
+             "count": len(stale), "gates": sorted(g for g, _, _ in stale),
+             "detail": f"appended a notice naming {len(stale)} unchecked gate(s) whose "
+                       f"requester has withdrawn them or moved on, so the escalation ladder "
+                       f"and a reader of token-queue.md alone are no longer misled"}]
+
+
 def relay_token_blocks(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     """C27 (2026-07-29): present operator gates at EVERY authority, not just `assign`.
 
@@ -1203,6 +1351,7 @@ def relay_token_blocks(bus_root: Path, config: dict, epoch: int) -> list[dict]:
                     f"signing, not the asking."))
 
     advisory += note_spent_gates_in_queue(bus_root, epoch)
+    advisory += note_withdrawn_gates_in_queue(bus_root, epoch)
 
     if blocks:
         tq = bus_root / "tokens" / "token-queue.md"
