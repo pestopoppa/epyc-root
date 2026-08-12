@@ -85,14 +85,14 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 62,
+      "closed": 65,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 65
+      "total": 68
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 1,
@@ -2394,7 +2394,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Trace r6's exact campaign/standalone differential; patch the root cause, prove the Claude cell, then launch fresh 7/7",
+      "next_action": "Remove controller-side Arena evaluator imports, prove the exact Claude cell, then launch a fresh governed 7/7",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {

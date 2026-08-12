@@ -3491,7 +3491,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T15:22:50Z",
+  "generated_at": "2026-08-12T15:50:08Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4159,12 +4159,12 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 62,
+      "closed": 65,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Trace r6's exact campaign/standalone differential; patch the root cause, prove the Claude cell, then launch fresh 7/7",
+      "next_action": "Remove controller-side Arena evaluator imports, prove the exact Claude cell, then launch a fresh governed 7/7",
       "open": 3,
       "state": "active",
       "track": "agentic rocm kernel authoring"

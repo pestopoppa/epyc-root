@@ -1,11 +1,11 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: trace r6's exact campaign-versus-standalone differential, identify and
-patch the root cause, prove the exact Claude actor-critic cell, then launch a fresh 7/7 attempt. Never
-reuse r4-r6 or aggregate the one-task pilot into the panel.
+**Next action (2026-08-12)**: remove the controller-side Arena evaluator dependency, prove the exact
+Claude actor-critic cell, then launch a fresh governed 7/7 attempt. Never reuse r4-r8 or aggregate the
+one-task pilot into the panel.
 The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r5/r6 Claude sandbox differential checkpoint)
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r7/r8 per-process model-broker checkpoint)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -476,9 +476,29 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     stdout/stderr. R6 included all ten new runtime paths and used source `916cdc92`, yet reproduced r5;
     its controller cgroup was verified empty and removed. Neither attempt has an aggregate, controller
     ranking, belief update, proposal-bank entry, champion, or release authority.
-  - [ ] Trace r6's exact campaign-versus-standalone differential, identify and patch the root cause,
-    prove the exact Claude cell under the campaign sandbox, then launch a fresh governed 7/7 attempt.
-    Never resume or reuse r4-r6.
+  - [x] **Trace r6's exact campaign-versus-standalone differential and repair the process-bound model
+    sandbox boundary.** ✅ 2026-08-12 — `/proc/self/*` Landlock rules were bound to the controller PID,
+    so its forked Claude child still received `EACCES`. Research `43ba6263` leaves the controller in a
+    deny-network broker-only sandbox, launches each read-only model client in its own outbound sandbox
+    so `/proc/self/*` binds to the actual CLI PID, preserves the digest-pinned single-writable-bind
+    Docker boundary for the Codex actor, and journals model/evaluation receipts through the parent.
+    Targeted validation passed **77/77**; the pinned full AutoKernel suite passed **5,655** tests with
+    one expected failure.
+  - [x] **Refresh the actor pin and preserve r7's pre-execution refusal.** ✅ 2026-08-12 — research
+    `a3fcea3c` pins the repaired actor entrypoint. R7 correctly refused the stale prior pin before any
+    controller or GPU command; its audit file SHA-256 is
+    `45c4ae3dbb563dfebd20715238407b304cdbdd98f96dfc841cae310d2dd017b0` and its receipt self-hash is
+    `0f0b9000b4a2647e68db493c751769f4f845db4bce6d089a0aa15d3e10b7cfab`.
+  - [x] **Preserve r8 as an immutable partial, non-rankable implementation diagnostic.** ✅ 2026-08-12
+    — the 7/7 audit passed and the starting-state baseline completed, but the first actor cell exited
+    before Claude inference because the broker-backed controller unnecessarily constructed
+    `ArenaWorkspaceEvaluator`, importing unavailable `yaml` and the pinned vendor evaluator inside the
+    broker-only Python environment. The controller cgroup teardown is hash-bound, verified empty, and
+    removed. R8 has no aggregate, ranking, belief, proposal-bank, champion, promotion, or release
+    authority.
+  - [ ] Remove the broker-backed controller's unnecessary Arena evaluator import, prove the exact
+    Claude cell under the campaign sandbox, then launch a fresh governed 7/7 attempt. Never resume or
+    reuse r4-r8.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims

@@ -982,3 +982,30 @@ Expected failure output is not evidence that discovery aborted.
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 differential and fresh-attempt gate
 - [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AutoKernel completion audit and evidence-authority boundary
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact r5/r6 and probe paths, hashes, and validation caveats
+
+## Compiled Update — 2026-08-12: bind self-referential sandbox paths to the process that consumes them
+
+**Confidence: verified.** The r5/r6 Claude failure was not another missing fixed path. Landlock bound
+the controller's literal `/proc/self/*` grants to the controller PID, so a forked model process could
+not use those paths as its own. The repair separates responsibilities: a deny-network controller talks
+only to the authenticated parent broker, while each read-only model client enters its own outbound
+sandbox and the writable actor retains its digest-pinned container. The parent remains the only process
+that owns evaluation and GPU claims.
+
+Two fail-closed attempts then narrowed the next defect. R7 rejected a stale actor pin before controller
+or GPU execution. R8 passed the refreshed 7/7 static audit and completed its starting-state baseline,
+but the first actor cell failed before Claude inference because the broker-backed controller still
+constructed the vendor Arena evaluator and imported `yaml`. This dependency is architecturally
+unnecessary: evaluation already belongs to the parent broker. Both attempts remain partial diagnostics
+without aggregate, ranking, belief, proposal-bank, champion, promotion, or release authority.
+
+The reusable rule is broader than AutoKernel: self-referential filesystem paths are process-bound
+capabilities. A sandbox policy prepared in a parent cannot safely stand in for the child's `/proc/self`,
+and moving work behind a broker should remove the corresponding dependency from the broker client—not
+carry a second implementation of it inside the confined process.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 checklist, r7/r8 authority boundary, and fresh-attempt gate
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — matched-archive dependency and separation from AK-WM-2 evidence
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact research commits, receipt hashes, failure transcript, and cleanup evidence

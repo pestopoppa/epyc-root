@@ -195,6 +195,13 @@ The run-specific CPU/GPU authorizations do not extend to producer commits, promo
 actions. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
 
+The concurrent GPU-side INF-03 path has not changed that evidence posture. Research `43ba6263` and
+`a3fcea3c` repaired the process-bound model sandbox and refreshed the actor pin. R7 then refused a
+stale pin before controller or GPU execution; r8 passed its 7/7 static audit and completed the
+starting-state baseline, but its first actor cell failed before Claude inference because the
+broker-backed controller unnecessarily imported the Arena evaluator and unavailable `yaml`. Both
+attempts are immutable diagnostics and cannot satisfy AK-WM-2a or any proposal/champion gate.
+
 **Read-only evidence-authority audit (2026-08-12):** the RVP-T0-1 saturation pair and the
 AK-BH-1/2/3 plus AK-LN-2/AK-X-5a receipts are durable diagnostic evidence. They retain commands,
 binary or source hashes, and their bounded results, but they do not all bind a committed, clean
