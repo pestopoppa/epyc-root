@@ -42,7 +42,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-11 | Approve or decline the audited two-file producer/Q4_K core on `a4cb04ca`; exact diff SHA-256 `6dcec2b4…`, recommendation approve | [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md) RVP-C2-7 | 2026-08-11 |
 | OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 | OP-13 | Ratify a P2-5j placement amendment or require a full P-BENCH-PLACEMENT-1 composite; the old four-arm design is observation-only | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) P2-5j | 2026-08-11 |
-| OP-14 | Grant or decline a temporary readable `energy_uj` window, restored to `0400`; without it the required package-energy gate remains COULD_NOT_CHECK | [autokernel-research-loop.md](autokernel-research-loop.md) AK6.5 Step 2 | 2026-08-11 |
 | OP-15 | Approve or decline one experimental commit for the Q4_K branchless scale/min decoder before a clean governed replay | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 | OP-16 | Authorize an orderly host reboot after wrap-up so the ratified uptime gate permits the prepared CPU IQK campaign | [autokernel-research-loop.md](autokernel-research-loop.md) AK6.5 Step 3 | 2026-08-12 |
 | OP-17 | Amend frozen-v9 attestation with llama ggml `0.16.0`, or retain an intentionally unverified complete-kernel-set fold | [autokernel-research-loop.md](autokernel-research-loop.md) AK6 dashboard residual | 2026-08-12 |
@@ -69,7 +68,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 53 | 401 | 4 | 2026-07-29 |
+| inference-research | 53 | 401 | 3 | 2026-07-29 |
 | pipeline-integration | 5 | 51 | 0 | 2026-07-29 |
 | research-evaluation | 48 | 303 | 0 | 2026-07-29 |
 | reviewer-control-plane | 9 | 41 | 1 | 2026-07-29 |
