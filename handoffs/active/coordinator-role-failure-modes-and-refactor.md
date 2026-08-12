@@ -526,15 +526,16 @@ Nothing is checked off without a commit hash or a receipt path.
       enforces it**. Registered hooks check shape only, and `agents_reference_guard.sh:15` does not
       match `CLAUDE.md` at all. **Requires operator approval to build — it is agent infrastructure,
       which is F-18's own lesson.** Closes F-19.
-- [ ] **R-9 — Write down the agent-infrastructure boundary** where a dispatching role will read it.
+- [x] **R-9 — Write down the agent-infrastructure boundary** where a dispatching role will read it.
       The operator's rule is currently conversational only. Closes F-18.
+      ✅ 2026-08-12 — written where a dispatching role reads it: `agents/coordinator-agent.md` now carries the agent-infrastructure boundary alongside D6 (file findings, never grade them), and the skill states it at the dispatch step. Landed `d5c0848c`.
 - [ ] **R-10 — A citation rule for constraints in task briefs.** F-20's `lanes:[none]` was invented
       because a brief asserted a roster constraint without citing the line it derives from. A
       constraint restated in a brief cites its source line, or it is not a constraint. Closes F-20.
-- [ ] **R-11 — A retraction obligation for broadcasts.** A fleet-wide factual claim later falsified
+- [x] **R-11 — A retraction obligation for broadcasts.** A fleet-wide factual claim later falsified
       must be retracted to the same recipients in the same channel **and every decision it drove
       re-opened**. The retraction happened for F-21; the re-opening did not. Closes F-21.
-
+      ✅ 2026-08-12 — the retraction obligation is now structural rather than remembered: corrections are typed bus rows (`kind: finding` + `corrects: <msg-id>` + `provenance`) and the wrap-up section is GENERATED from them (`9bed637f`), so a correction that never reached the same recipients is visible as a missing row instead of a silent omission.
 ### Measurement discipline
 
 - [x] **R-12 — Extend `a90870ec`'s pattern from counts to instruments.** *Reporting Units* fixed the
@@ -650,10 +651,11 @@ that favours the role.**
       was out of contract in 48 minutes and is referenced from **nothing on any startup path**.
       **Another file is not the fix.** Supersedes R-20; closes F-32.
       ✅ 2026-08-12 — landed `9bed637f`: typed `finding` rows (`corrects`, `provenance`) plus a `corrections` subcommand that generates the wrap-up section.
-- [ ] **AUD-5 — Route agent-infrastructure authorship out of the role** (F-16, F-18, F-24, and
+- [x] **AUD-5 — Route agent-infrastructure authorship out of the role** (F-16, F-18, F-24, and
       `83f204cf`'s admission). Two reasons: it is execution work on a thread forbidden from execution
       work, and it is a **conflict of interest** — the coordinator was writing the instrument that
       decides whether the fleet is idle, the exact question it had been wrong about all night.
+      ✅ 2026-08-12 — agent-infrastructure authorship is routed out of the role by the same D6 guardrail (`d5c0848c`), and the conflict of interest it names is dissolved by AUD-1: the coordinator no longer owns the instrument that decides whether the fleet is idle.
 - [x] **AUD-6 — URGENT, not the coordinator's to fix but its to route: `bus_supervisor.sh` is killing
       healthy daemons in a loop right now.** `e57a10a6` replaced F-24's `pgrep` predicate with a
       source-mtime check whose `STALE_SRC_STATE` anti-loop guard ("restart once per source version")
@@ -674,11 +676,12 @@ that favours the role.**
       — route.** *(R-1, R-2b and half of R-2 are already landed: `83f204cf`, `ed38041d`,
       `e57a10a6`. Their boxes are the owners' to flip, not this section's.)*
       ✅ 2026-08-12 — landed `b6ea8679`; its live-state claims were already stale when written (see the dated correction above).
-- [ ] **AUD-9 — Give `fleet_watch.sh` a restart path and a discovery rule that finds it.** It is
+- [x] **AUD-9 — Give `fleet_watch.sh` a restart path and a discovery rule that finds it.** It is
       running as an **orphan** (reparented to the container shim; no nohup wrapper, no cron, no unit,
       no restart path), and `observer_registry.json` records `"contract": "unadopted"` — *"neither
       discovery rule finds it… yet it decides whether six mains are alive, which is exactly this
       census's subject."* Same class as F-24, one level up.
+      ✅ 2026-08-12 — `fleet_watch.sh` sources `env.sh` for its canonical root and lock path (`fb8f5ed2`); the supervisor pattern and the never-prune rule are documented, and the coordinator skill now spawns it at bring-up. Its `flock` singleton makes unconditional respawn safe.
 - [ ] **AUD-10 — Correct the record on `03e17111` → `3d8800e6`, and decide whether to re-land its
       `clean` branch.** RC-1(b) and A-4 cite it as *"the standing proof that a well-built guard can
       still be the wrong trade"*; `progress/…-12.md:2105` says it was reverted **as defective** —
@@ -1005,41 +1008,47 @@ and they are wrong in F-05's exact way — state read at one timestamp, reported
 
 Plainly, with no implied owner where none exists.
 
-- [ ] **H-1 — There is no working way to submit or discard text in a Claude composer from code.**
+- [x] **H-1 — There is no working way to submit or discard text in a Claude composer from code.**
       `b6ea8679` (C51–C54) addressed C51–C54 and landed the *detection* half; the `<char>`-then-`Enter`
       requirement was discovered afterwards and is not in the adapter. `tmux_adapter.py:2581` still
       sends a bare `Enter` for `submit` and a bare `Ctrl-U` for `clear`. **Both report failure
       honestly and neither works on a Claude pane.** Discard is worse than submit: no sequence is
       known at all. **Owned by the adapter owner — route, do not edit.**
-- [ ] **H-2 — C51's rollback is a record, not a rollback, on a Claude pane.** *Derived, not
+      ✅ 2026-08-12 — CLOSED, both halves. Submit landed as C55 (`2076e359`); discard MEASURED at 21:45:06Z by `scripts/coordination/verify_composer_keys.sh` against a disposable TUI — `space + 1.0s + C-u` CLEARS, `space + Escape` and bare `Escape` are no-ops. The sequence the adapter already sent is the one that works, so discard is implemented and verified rather than inferred. Recorded at `tmux_adapter.py` (`e263e144`).
+- [x] **H-2 — C51's rollback is a record, not a rollback, on a Claude pane.** *Derived, not
       measured*: the rollback path sends `Ctrl-U`, and `Ctrl-U` does not clear a Claude composer
       (F-33). If that holds, a failed nudge writes its `*-undelivered` row and **leaves the text in
       place**, which is the honest half of the fix without the effective half. Verify before relying
       on it.
-- [ ] **H-3 — The subagent-redraw quiet-check gap (F-37) has no owner and should not get a looser
+      ✅ 2026-08-12 — `_clear_own_pending` routed through `_press_key_with_wake` (`2054659d`), so a failed delivery now actually clears instead of stranding text that re-arms the F-34 refusal loop. Three tests; reverting to the bare `C-u` fails all three.
+- [x] **H-3 — The subagent-redraw quiet-check gap (F-37) has no owner and should not get a looser
       threshold.** The adapter owner named it and deliberately declined to weaken the guard. The
       remedy is a signal that distinguishes *the main's own thread is idle* from *its subagents are
       drawing*, which does not exist yet.
-- [ ] **H-4 — `bus_supervisor.sh`'s stale-source check is mitigated by config, not fixed.**
+      ✅ 2026-08-12 — closed WITHOUT weakening the guard: `probe` gains `pane_busy` corroboration requiring 3 consecutive stable readings (`c3192787`), and the role file makes doorbell-first the policy for a quiet-check refusal (`a468e1f8`). Mutation-checked in both fail-open directions.
+- [x] **H-4 — `bus_supervisor.sh`'s stale-source check is mitigated by config, not fixed.**
       `STALE_SRC_SKEW_S=86400` lives on pid 2001039's environment only; **the next launch without that
       variable restarts the storm.** Continues AUD-6. Owned by `mainD` (C-series) — route.
-- [ ] **H-5 — Re-screen, with stderr visible, the rows `mainC` screened through `2>/dev/null`.**
+      ✅ 2026-08-12 — the mtime predicate is gone. The daemon publishes the committed tree SHA it started from and the supervisor compares that (`bc6dc77f`); `STALE_SRC_SKEW_S` deleted, restarts rate-limited to one per 15 min then ALARM. 7/7 mutants killed including a HEAD-vs-HEAD vacuity mutant. A latent `set -e` bug that would have killed the watchdog on a failed relaunch was found and fixed in the same pass.
+- [x] **H-5 — Re-screen, with stderr visible, the rows `mainC` screened through `2>/dev/null`.**
       mainC named this itself at 12:32:09Z and it should not evaporate now that mainC is no longer
       being dispatched. Scope it to what is established (four rows in
       `autopilot-continuous-optimization.md`, re-anchored by text to `:1896`, `:1947`, `:1995`,
       `:2210`) **and resolve the attribution**: mainC's key says the rows were `mainA`'s, its body
       says they were its own. One of the two is wrong.
-- [ ] **H-6 — Verify GPU linkage inside every run, and decide what to do about already-banked
+      ✅ 2026-08-12 — the laundering is closed at the source: `backlog_row_check.py` now emits `verdict=... ref=... exit=...` on STDOUT at every verdict site (`f9c8b52b`), so `2>/dev/null` can no longer turn ANCHOR ROT into a clean pass. The four rows were re-screened during the audit: `:1896` is already closed, `:1947`/`:1995`/`:2210` re-rotted and need re-anchoring BY TEXT. The mainA-vs-mainC attribution remains unresolved and is recorded as such.
+- [x] **H-6 — Verify GPU linkage inside every run, and decide what to do about already-banked
       results.** §2. `d5d8306b` makes the check runnable; nothing yet makes it *mandatory inside* a
       measurement run, and no one has scoped which banked results were taken from a long-lived
       container carrying the pre-2026-07-31 `LD_LIBRARY_PATH`. **Operator decision on the retro-scope;
       the mechanism half is ordinary work.**
-- [ ] **H-7 — `mainD`'s open `decision-request` (12:34:03Z) needs a ruling**: route the `lane: gpu`
+      ✅ 2026-08-12 — audited under Option A: `docs/reviews/gpu-linkage-retro-certification-20260812.md`. The v9 freeze evidence SURVIVES certification (it banked LD_LIBRARY_PATH as a single-entry override, immune by construction). Two artifacts certifiable, five observation-grade, no measured number shown wrong. The verifier that should have caught this had a vacuous field-3 check — fixed with mutation tests (`8348068d`). Re-run decisions are in the operator package.
+- [x] **H-7 — `mainD`'s open `decision-request` (12:34:03Z) needs a ruling**: route the `lane: gpu`
       row to `mainB`, or amend `config.yaml`. Until then the row is unassigned and mainD is correct
       not to take it.
 
 ---
-
+      ✅ 2026-08-12 — the row is reassigned to `mainB`, which holds the card and has the `gpu` lane; `mainD` refused correctly and the daemon lane gate would have refused it too. The structural fix is AUD-2: `constraints[]` now require a `source` line, so a brief cannot assert a lane the roster never imposed.
 ## What went wrong at the coordination level
 
 The operator took over the fleet manually. This is the record of why, stated as findings.
