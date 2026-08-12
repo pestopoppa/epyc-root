@@ -2665,6 +2665,16 @@ evaluator or its own scope, and T1 may legally guide search.
     resources, nonempty pairs, and hash-bound diagnostic, outcome, and matched one-factor receipts.
     Missing, synthetic, mismatched-frame, direction-drifted, or receipt-tampered inputs fail closed.
     The canonical AutoKernel suite passed 4,078 tests with one expected failure.
+  - [x] **Implement governed atomic producers for the three archive receipts.** ✅ 2026-08-12 —
+    research `e8de8bfa` adds the non-test `least_commitment_receipts.py` projection path for
+    `least_commitment_diagnostics.v1`, `least_commitment_outcome.v1`, and
+    `matched_one_factor_intervention.v1`. A projection plan may copy only JSON-pointer values from
+    explicitly SHA-256-pinned real journal records; it requires at least two distinct clean completed
+    campaigns, mechanically proves exactly one changed factor, publishes atomically, and validates
+    its output through the unchanged strict archive builder. Synthetic, fixture, dry-run, incomplete,
+    mismatched, and literal empirical inputs fail closed. The receipt/footprint slice passed **98/98**
+    and the integrated canonical AutoKernel suite exited zero. The parent remains open until CPU IQK
+    and a matched completed control/intervention pair supply the real records.
 - [ ] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol,
   matched-intervention validation, per-regime/surface results, noise floor, robust sign error, and
   recoding stability. Until real evidence shows invariant independent signal, do not add weakness,
@@ -2748,6 +2758,13 @@ cannot retrigger the expensive gate unchanged.
   pass. The Kernel-R&D panel's `/api/health` contribution remains `absent` because `champion`,
   `headroom`, and `release_package` are correctly `not_reported` until a real campaign completes,
   not because the dashboard producer is stale.
+- [x] **Execute the Kernel-R&D current-state renderer in the static-JavaScript gate and restore the
+  complete evidence view.** ✅ 2026-08-12 — root `2183cf1e` fixes a free-identifier runtime failure
+  that parsed successfully but stopped rendering before controls, empirical gates, activity, and all
+  seven contract sections. The regression harness now executes the renderer against the minimum
+  production-set wire shape and requires full blocking-condition detail plus distinct tree identity,
+  observed/attested ggml, non-executing ELF linkage, and dashboard-process ambient-path claims.
+  `tests.test_dashboard_static_js` passed **28/28**.
 - [x] Add a non-recursive, panel-specific Kernel-R&D data-health probe so registry consumers can
   distinguish hub transport health from AutoKernel producer health without recursing through the
   global `/api/health` fold. ✅ 2026-08-12 — root `6188197f` moves the registry probe from
@@ -3047,6 +3064,11 @@ nothing wrong. We held no claim.**
       acquired a claim, built a candidate, or benchmarked. The append-only proposal and both
       fail-closed STOP_STATE records remain in
       `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/events.jsonl`.
+  - [x] **Recover and validate the exact current dry-run invocation.** ✅ 2026-08-12 — the recovered
+    command exits zero without host mutation and composes 13 current-code steps / 10 pairs with the
+    accepted 3% floor, B_min 10, CPU `0-95`, and required `--nominal-khz 2500000`. The durable command
+    is recorded in `progress/2026-08/2026-08-12.md`; the separate governed execute invocation still
+    requires OP-16 and a fresh post-reboot preflight.
 - [ ] **After a compliant host reboot, rerun the prepared full-host CPU IQK campaign.** The ratified
       one-week uptime ceiling in `measurement/protocols/kernel-research.md` and `bench-cpu.md` is the
       sole remaining preflight blocker. Reuse the accepted v9 control bundle and exact recipe frame;

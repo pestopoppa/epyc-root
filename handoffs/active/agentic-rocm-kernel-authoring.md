@@ -436,6 +436,13 @@ section costs **zero GPU and zero local inference**.
   not implement it yet` text is excluded. The accepted full AutoKernel suite passed **5,464 tests
   with one expected failure**. This closes static wiring only; AK-LE-1/2/3 remain open until their
   budget-matched model runs produce empirical results.
+- [x] **Add the governed execution bridge for the AK-LE-1/2 planner panel.** ✅ 2026-08-12 —
+  research `98f642cd` compiles exact `ExperimentContract` model/quant/effort cells, resolves and
+  hashes the Claude/Codex CLI, executes each cell in a captured read-only process group, and seals
+  the exact prompt, argv, stdout, stderr, last message, timing, and strict parsed observation. It
+  has observe-only authority and cannot mutate a campaign, rank, select a champion, or release.
+  Focused runner tests passed **16/16**, the controller slice passed **487/487**, and the integrated
+  canonical AutoKernel suite exited zero.
 - [ ] **AK-LE-1 — Reasoning-effort × search-persistence experiment.** Hold champion, retrieval context
   and PROPOSE prompt fixed; sweep only the planner's effort knob. Measure **search** outcomes, not
   answer quality: count of novel non-duplicate hypotheses, count of explicit "this is already
@@ -469,6 +476,12 @@ section costs **zero GPU and zero local inference**.
     objective is the missing piece. AgentKernelArena's `@register_agent` adapter pattern (Decision
     Snapshot item 2) is the substrate for registering the arms. So the increment is roles 3 and 4 plus
     a throughput-aware selection objective, not a new controller.
+  - [ ] **Implement a governed same-model direct-implement versus implement-then-exploit
+    authoring/evaluation seam before running this panel.** The current Arena fixes controller roles
+    and GPU checkpoint semantics, while the existing Claude/Codex boundary fixes Claude as a
+    read-only planner/critic and Codex as the workspace-writing actor. Neither can produce the
+    matched scaffold comparison without confounding model role and evaluator path; research
+    `98f642cd` therefore refuses AK-LE-3 explicitly rather than fabricating an arm.
 - [x] **AK-LE-4 — Context discipline: a priced context budget and a reversible compaction protocol.**
   (a) A per-round context-budget table with an explicit **never-bulk-read** rule, so the loop cannot
   spend its window on a file it will not use. (b) A research-log compaction step that writes a

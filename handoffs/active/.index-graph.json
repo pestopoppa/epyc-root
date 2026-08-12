@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T04:50:48Z",
+  "generated_at": "2026-08-12T05:17:28Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4108,13 +4108,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 38,
+      "closed": 39,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
       "next_action": "Run the governed 6/6 diagnostic; keep the 8-arm panel refused pending licensed EvoEngineer and ARGUS sources",
-      "open": 6,
+      "open": 7,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4147,7 +4147,7 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 206,
+      "closed": 208,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
@@ -4615,7 +4615,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 68,
+      "closed": 67,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
