@@ -1191,3 +1191,13 @@ Both halves of the 67-vs-72 / 9-vs-24 discrepancy pair resolve, in different way
 Closed as **unadjudicable** (first half) and **not-a-defect** (second half). The general lesson is
 the one already in this file: a bare count with no stated predicate is not a measurement, and two
 such counts cannot be compared.
+
+#### Update, 2026-08-12 21:22Z — the four call sites are FIXED
+
+`013f35ce` ("tmux_adapter: repair the four mangled `_fail_after_typing` call sites (C56)") landed
+from a parallel session minutes after the entry above was written. Verified at HEAD: none of the
+four mangled forms remains in `scripts/coordination/tmux_adapter.py`. The defect entry is kept as
+written — it is the record of what was found and why it mattered — and is now **CLOSED by C56**.
+The Phase-2 mutation check (garble one site deliberately, assert the harness sees it) is still
+owed, because what is proven so far is that the text is right, not that anything would have caught
+it being wrong.
