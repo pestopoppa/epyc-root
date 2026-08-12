@@ -2418,3 +2418,37 @@ remain; the search must move below both the implementation choice and a one-para
 - [Progress 2026-08-11](../progress/2026-08/2026-08-11.md) — exact live counts, seed, receipt flags,
   C4 receipt hashes and bounded results, runner paths, fixed-gate dispatch finding, and verification
   results.
+
+## Compiled Update — 2026-08-12 (AutoKernel raw-HIP decision-grade arm)
+
+**Confidence: witnessed correctness and attested task-local timing on one MI210/gfx90a surface; no
+llama.cpp integration, release, or production-promotion authority.**
+
+The raw-HIP authoring arm now has a decision-grade evaluation path rather than only public smoke
+evidence. Candidate source is sealed before a 24-case hostile suite is generated; an independent
+host-double parent oracle retains expected values; and two differently poisoned output buffers must
+be completely overwritten and bitwise repeatable. The C6 worker is restricted to exact audited ROCm
+device nodes and must leave all sandbox cgroups empty.
+
+The terminal r6 campaign passed all 24 correctness cases with maximum absolute error
+`1.2280521204388606e-6`. Its exact C3 comparator was one full-graph, zero-break Torch-Inductor ROCm
+evaluation of the same SiLU expression and tensor. Across 20 randomized paired blocks with 30,000
+launches per arm per block, every one of the 40 arm windows independently exceeded the gfx90a
+`250,090,903 ns` duration floor; median speedup was `1.0769349742x`, all 20 signs were positive, and
+the predeclared anytime-valid e-process crossed threshold 20 at block 9. An earlier r4 result is
+superseded because its roughly 2 ms arm windows were below that floor.
+
+The receipt's scope is deliberately narrow: it ranks this task-local HIP candidate against the exact
+provider only. Experimental llama integration and whole-model gates remain mandatory before the
+result can support a release or production proposal. The belief-substrate adapter independently
+re-derives the sealed correctness row and exact-provider speedup row and fails closed on sub-floor
+timing or invented promotion authority.
+
+### Source References (2026-08-12 AutoKernel raw-HIP arm)
+
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — sealed-suite,
+  provider, per-arm admission, e-process, and authority contract.
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — strict
+  decision-receipt read-path acceptance and fail-closed cases.
+- [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — r1–r6 chronology, receipt identities,
+  measured outcome, implementation commit, and validation counts.
