@@ -415,11 +415,34 @@ verdict is the current production shape.
       in, 1 out. Against `DEFAULT_OUTPUT` that would destroy 14 of 15 measured rows and degrade the
       admission gate to fail-closed for every other pair. Never invoke it against the default output,
       and never invoke the script bare (no subcommand ⇒ `cmd_run` with `dry_run=False`).
-- [ ] **The contention artifact carries no host-health provenance** — `_host_metadata()` collects
-      `uptime` and `kernel` and `_emit_yaml` then writes only `host: <hostname>`, discarding both. There
-      is no `host_health_warnings` or `decision_grade` field, and `verdict` is stamped with `samples: 1`
-      regardless. A run at today's 14.1 d uptime would be indistinguishable from a clean-host
-      measurement. `server_np_sweep.py:300 host_health_warnings()` is the correct pattern to copy.
+- [x] **The contention artifact carries no host-health provenance** ✅ 2026-08-12 — orchestrator
+      `77e5a214`. `_host_metadata()` collected `uptime` and `kernel` and `_emit_yaml` discarded both,
+      so a run at 14.1 d uptime was indistinguishable from a clean-host one. Now emits `host_kernel`,
+      `host_uptime`, `host_health_status`, `host_health_warnings`, `decision_grade` and
+      `decision_grade_blockers`. **The rules are IMPORTED from `server_np_sweep.py:host_health_warnings`,
+      not re-implemented** — one authority, so the two harnesses cannot drift into disagreeing about
+      what "clean" means. Verified live against today's host: `status: warn`, `decision_grade: false`,
+      blocker = the uptime rule. **Fail-safe throughout**: probe failure, an unreadable `/proc/uptime`,
+      a missing probe, or a pre-existing matrix all render `unknown` + `false`, never clean. The
+      `/proc/uptime` case is the sharp one — `host_health_warnings` guards its uptime branch with an
+      `isinstance` check, so an unreadable input produces **no warning at all** and would have rendered
+      as a clean host without the explicit refusal. 17 pytest-collected tests, **13/13 mutations
+      detected**, 151 contention tests green, purely additive (690 insertions, 0 deletions).
+
+- [ ] **Tighten the llama-process waiver: it cannot tell a lineup member from a FOREIGN server.**
+      `77e5a214` records `existing llama processes present during attestation` as a warning but waives it
+      from *gating*, and that waiver is correct in principle — a contention matrix benches the live
+      stack, so those processes are the **instrument**, not contamination; gating on them would make
+      `decision_grade` permanently unreachable and the field decorative. The waiver is also well built:
+      it is derived by re-running the rules against an attestation with the instrument elided, never by
+      string-matching a warning, so a reworded rule reclassifies itself.
+      **The hole is that "the instrument" is not distinguished from "someone else's server."** On this
+      shared host that is a live condition, not a hypothetical — the probe read
+      `llama_processes_at_attestation: 1` with a load average of 13.7 while sibling agents were working.
+      A foreign server is exactly the contamination a contention measurement must not absorb, and the
+      current waiver makes it invisible to the gate. Fix: compare the observed process set against the
+      expected lineup (stack manifest / `stack_priors`) and gate on the UNEXPECTED remainder rather than
+      waiving the whole class. Until then the documented limit stands and is recorded in the artifact.
 - [ ] **Retire the stale `q*` nomenclature on half-sized instances** — a reader seeing `q0` on a
       48-thread instance infers a quarter. It already caused one agent to describe this live defect as
       a legacy one.

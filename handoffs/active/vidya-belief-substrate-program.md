@@ -263,6 +263,15 @@ deliberately — decide them, do not just implement them.
 - [ ] SC11 Survey the remaining candidate sources named in the register — llama-bench sweeps and the
       speech-kernel (whisper/qwentts) runs. Both need a write-side hook before a reader is worth
       anything; price each with the ~50-record sample before building
+- [ ] SC21 **The contention matrix became gradeable on 2026-08-12 — wire it while the producer is warm**
+      (filed by `mainC`; the emitting change is orchestrator `77e5a214`, landed hours earlier). Before
+      that commit the artifact carried a bare `verdict: allow/block` with no warrant, which is precisely
+      the shape that cannot be graded. It now emits `decision_grade`, `decision_grade_blockers` and
+      `host_health_warnings`, so a ClaimTuple can be projected honestly. **Carry the scope limit into the
+      adapter, not just the docs**: `decision_grade` attests HOST STATE only — every pair is still
+      `samples: 1`, so a projection that reads `decision_grade: true` as "this ratio is statistically
+      solid" would manufacture confidence the run never had. The blockers list is the useful field: it
+      names *why* a run is ungradeable, which is exactly what a refuted/conflicted disposition needs.
 - [ ] SC20 **LoRA/SFT training runs need a write-side ClaimTuple hook — filed 2026-08-12 by `mainC`
       at the moment the producer became real, not afterwards.** `memento_sft.py` had never completed a
       run until 2026-08-12 (its `get_peft_model()` was commented out behind a TODO), so it emits
