@@ -163,6 +163,111 @@ def hip_receipt():
     return value
 
 
+def hip_decision_receipt():
+    campaign = "hip-silu-decision-grade-fixture-r1"
+
+    def window(phase, claim_id):
+        opened = {"claim_id": claim_id, "device_id": "mi210_0",
+                  "campaign_id": campaign, "released_at": None}
+        released = {**opened, "released_at": "2026-08-12T10:22:00Z"}
+        sampling = {"sample_count": 2, "samples": [{"sclk_mhz": 800.0},
+                                                      {"sclk_mhz": 1700.0}]}
+        sampling["sha256"] = aux._canonical_sha256(sampling)
+        value = {"schema": aux._HIP_WINDOW_SCHEMA, "phase": phase,
+                 "campaign_id": campaign, "task_id": "torch2hip/gpumode/16636_SiLU",
+                 "status": "complete", "device_claim_open": opened,
+                 "device_claim_released": released, "device_sampling": sampling}
+        value["receipt_sha256"] = aux._canonical_sha256(value)
+        return value
+
+    blocks = [{"block_index": index,
+               "order": "anchor_first" if index % 2 == 0 else "candidate_first",
+               "candidate_ns": 9_200.0, "anchor_ns": 9_936.0,
+               "candidate_measured_duration_ns": 276_000_000.0,
+               "anchor_measured_duration_ns": 298_080_000.0}
+              for index in range(20)]
+    speedup = 9_936.0 / 9_200.0
+    checks = [{"outcome": "PASS", "reasons": ["fixture"]} for _ in range(40)]
+    cases = [{"case_id": f"s{index:02d}", "shape": [255 + index],
+              "distribution": f"d{index:02d}"} for index in range(24)]
+    correctness_cases = [{"case_id": row["case_id"], "passed": True,
+                          "max_abs_error": 1e-7} for row in cases]
+    sandbox = {}
+    for phase, devices in (("compile", []),
+                           ("correctness", ["/dev/kfd", "/dev/dri/renderD128"]),
+                           ("timing", ["/dev/kfd", "/dev/dri/renderD128"])):
+        sandbox[phase] = {
+            "activation": {"euid": 1000, "writable_device_paths": devices},
+            "teardown": {"verified_empty": True, "removed": True}}
+    rows = [
+        {"measurement_id": "hip_sealed_correctness_pass_rate",
+         "metric": "autokernel_hip_sealed_correctness_pass_rate", "value": 1.0,
+         "unit": "fraction", "metric_direction": "higher_better",
+         "category": "CANDIDATE",
+         "claim": "Fraction of sealed hostile host-double SiLU cases passed",
+         "reps": 24, "reps_basis": "sealed_hostile_cases"},
+        {"measurement_id": "hip_exact_provider_speedup",
+         "metric": "autokernel_hip_speedup_vs_exact_torch_rocm_compile",
+         "value": speedup, "unit": "ratio", "metric_direction": "higher_better",
+         "category": "CANDIDATE",
+         "claim": "Median paired-block speedup over exact Torch-ROCm-compile SiLU",
+         "reps": 20, "reps_basis": "paired_randomized_blocks"},
+    ]
+    value = {
+        "schema": aux._HIP_DECISION_SCHEMA, "status": "complete",
+        "authority": aux._HIP_DECISION_AUTHORITY, "campaign_id": campaign,
+        "ended_at": "2026-08-12T10:22:00Z",
+        "producer": {"producer_id": aux._HIP_DECISION_PRODUCER,
+                     "path": "/repo/scripts/kernel_rnd/autokernel/controller/hip_decision_grade.py",
+                     "sha256": "a" * 64},
+        "candidate": {"sha256": "b" * 64, "unchanged_at_terminal": True},
+        "task": {"schema": aux._HIP_TASK_SCHEMA,
+                 "task_id": "torch2hip/gpumode/16636_SiLU",
+                 "target": {"gpu_model": "MI210", "gfx_arch": "gfx90a"},
+                 "vendor_identity": {"clean": True, "commit": aux._HIP_VENDOR_COMMIT}},
+        "sealed_suite": {"suite_id": "sealed_silu_boundary_host_double/v1",
+                         "suite_seed_generated_after_candidate_seal": True,
+                         "exact_shapes_disclosed_after_candidate_seal": True,
+                         "cases": cases},
+        "correctness": {"oracle": "independent_host_double_stable_silu/v1",
+                        "all_passed": True, "passed": 24, "total": 24,
+                        "bitwise_repeatability_required": True,
+                        "two_distinct_output_poisons": ["nan", -12345.25],
+                        "cases": correctness_cases},
+        "integrity": {"clean": True, "candidate_never_received_expected_outputs": True,
+                      "static_scan": {"clean": True, "findings": []},
+                      "sandbox": sandbox},
+        "timing": {"provider": {"provider_id": aux._HIP_DECISION_PROVIDER,
+                                 "expression": "x * torch.sigmoid(x)",
+                                 "backend": "inductor", "fullgraph": True,
+                                 "dynamic": False, "graph_count": 1,
+                                 "graph_break_count": 0,
+                                 "implementation_identity": {"tree_sha256": "c" * 64}},
+                   "blocks": blocks, "block_count": 20, "repetitions_per_arm": 30_000,
+                   "ranked_duration_admission": {"all_arms_passed": True,
+                                                "minimum_ns": 250_090_903,
+                                                "minimum_observed_ns": 276_000_000.0,
+                                                "checks": checks},
+                   "median_speedup": speedup,
+                   "e_process": {"construction_id":
+                                 "sign_martingale_predictable_lambda/v1",
+                                 "threshold": 20.0, "first_crossing_block": 9,
+                                 "signs": [1.0] * 20},
+                   "candidate_beats_exact_provider": True},
+        "decision": {"rankable_against_exact_task_local_provider": True,
+                     "candidate_beats_exact_provider": True,
+                     "release_or_promotion_authority": False,
+                     "experimental_llama_integration_required_before_any_release": True},
+        "constraints": {"production_tree_touched": False, "frozen_kernel_built": False,
+                        "promotion_authority": False, "shared_rocm_mutated": False},
+        "measurement_windows": [window("sealed_correctness", "akd-one"),
+                                window("exact_provider_timing", "akd-two")],
+        "belief_measurements": rows,
+    }
+    value["receipt_sha256"] = aux._canonical_sha256(value)
+    return value
+
+
 def p2_receipt():
     shape = {"np_slots": 8, "slot_context_tokens": 8192,
              "total_context_tokens": 65536, "mtp": False}
@@ -969,6 +1074,34 @@ def test_hip_row_or_claim_tamper_is_refused():
     source.pop("receipt_sha256")
     source["receipt_sha256"] = aux._canonical_sha256(source)
     with pytest.raises(ct.ProjectionError, match="do not exactly rederive"):
+        aux.native_rows(source)
+
+
+def test_hip_decision_rows_rederive_task_local_rank_without_release_authority():
+    source = hip_decision_receipt()
+    projected = tuple(aux.project(row) for row in aux.native_rows(
+        source, receipt_locator="campaign:r6/receipt.json",
+        receipt_sha256="e" * 64, attestation_present=True))
+    assert len(projected) == 2
+    assert all(row.extra["hip_decision_receipt_identity_sha256"]
+               == source["receipt_sha256"] for row in projected)
+    assert all(row.protocol_id == aux._HIP_DECISION_SCHEMA for row in projected)
+    assert all(ct.grade(row)[:2] == ("Witnessed", "Attested") for row in projected)
+
+
+def test_hip_decision_sub_floor_or_release_authority_is_refused():
+    source = hip_decision_receipt()
+    source["timing"]["blocks"][0]["candidate_measured_duration_ns"] = 2_000_000.0
+    source.pop("receipt_sha256")
+    source["receipt_sha256"] = aux._canonical_sha256(source)
+    with pytest.raises(ct.ProjectionError, match="sub-floor"):
+        aux.native_rows(source)
+
+    source = hip_decision_receipt()
+    source["decision"]["release_or_promotion_authority"] = True
+    source.pop("receipt_sha256")
+    source["receipt_sha256"] = aux._canonical_sha256(source)
+    with pytest.raises(ct.ProjectionError, match="no-release"):
         aux.native_rows(source)
 
     source = hip_receipt()

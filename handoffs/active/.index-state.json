@@ -4,7 +4,7 @@
       "blocked": 12,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 358
+      "open": 357
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -1482,10 +1482,10 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 72,
+      "closed": 73,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 17,
+      "open": 16,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
@@ -1834,14 +1834,14 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 55,
+      "closed": 56,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 14,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 69
+      "total": 70
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
