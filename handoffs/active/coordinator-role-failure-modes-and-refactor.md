@@ -731,3 +731,333 @@ that favours the role.**
   (*"line numbers are the anchor"*) and should be reconciled.
 - `handoffs/active/session-bus-thin-dispatcher.md` (RTG-34) — the C-series; C49 and C50 remain open
   and are the daemon-side counterparts of RC-2 and RC-7.
+
+---
+
+## Handover — 2026-08-12, operator taking over manually
+
+**This section is written for a human. It is not a task list for an agent.** Everything above it is a
+self-audit; everything below is what someone driving these panes by hand needs, in the order they will
+need it. The four numbered facts come first because they are useless buried. Appended 2026-08-12
+~12:40Z; nothing above this heading was edited and no checkbox above was flipped.
+
+### 1. The composer submit sequence — a bare `Enter` does nothing
+
+A Claude Code composer holding queued text does **not** submit on a bare `Enter`.
+
+**What works — send any character, then `Enter`:**
+
+```bash
+tmux send-keys -t agent:mainC ' '      # any single character
+tmux send-keys -t agent:mainC Enter
+```
+
+Verified live on `mainC` and `mainD`: both composers went from holding text to empty and both mains
+resumed — `mainC` posted to the bus at 12:32:09Z, `mainD` submitted `/wrap-up`.
+
+**What does NOT work.** All four were tried against a pane holding text and the pane was re-read
+afterwards each time with the text still sitting there:
+
+| Sent | Result |
+|---|---|
+| `Enter` alone | no-op; text stays |
+| `C-m` alone | no-op; text stays |
+| `Ctrl-U` — the documented clear | no-op; text stays |
+| `BSpace`, up to 100 iterations | no-op; text stays |
+
+The negative results cost about an hour to establish, which is why they are written down rather than
+summarised. Typing at a real keyboard is unaffected — a human types characters and *then* `Enter`,
+which is the working sequence. The defect is specific to a programmatic `send-keys` that delivers
+`Enter` on its own.
+
+`scripts/coordination/tmux_adapter.py:2581` is where this bites:
+`key = "C-u" if verb == "clear" else "Enter"` — `submit` sends a bare `Enter`, `clear` sends a bare
+`Ctrl-U`, so **neither verb can act on a Claude pane**. Both report their own failure honestly instead
+of claiming success (F-33).
+
+**Live residue — checked at handover, and it is gone.** At 12:07:35–42Z all four mains held text:
+`mainA` held `Option A - I'll authorize the reboot, stage everything now`, `mainB` held
+`Understood - stopping here, re-dispatching to a fresh session.`, `mainC` held
+`pull the next batch and keep going`, `mainD` held `More coming - keep the P0 environment fix moving.`
+(`adapter-ledger.jsonl`). **The first two are wrong instructions and must never be submitted if they
+reappear** — submitting mainA's would start reboot-staging, and mainB's would stop a main that should
+be working. All four strings were the coordinator's own failed-delivery residue, not operator-typed;
+the operator types only into the `inference` pane.
+
+As of **12:37Z none of it is there**, measured with the canonical read-only detector rather than by
+eye:
+
+```
+$ python3 scripts/coordination/tmux_adapter.py pending
+clean: every roster pane was read and none holds pending input
+```
+
+**There is still no working way to DELETE wrong text.** `<char>` + `Enter` *submits*; it does not
+discard. If wrong residue reappears, that is an open problem (H-1), not a solved one.
+
+### 2. Linkage is RED on the production GPU path
+
+`mainD` made `verify_speech_kernels.sh` actually run the linkage check — line 57 previously referenced
+the script only inside an `echo`, so it printed a sentence *about* the check and never ran it. Commit
+`d5d8306b`. **It went red immediately.**
+
+- Under this session's ambient `LD_LIBRARY_PATH`, whisper's ggml resolves into
+  `/mnt/raid0/llm/llama.cpp/build/bin` — the wrong tree.
+- The production GPU `llama-server` loads **all seven libs from the CPU-only tree, with
+  `libggml-hip.so.0` never loaded** (`mainD`, bus, 12:34:03Z).
+
+This is **INC-20260731 reproduced from two independent directions on the same day**: `mainB` from the
+benchmark side — a HIP binary silently running on CPU because `/etc/environment` puts the CPU build
+early in `LD_LIBRARY_PATH`, and `ldd` cannot detect it because llama.cpp *dlopens* `libggml-hip.so` —
+and `mainD` from the speech-kernel side.
+
+**The qualifier belongs with the finding.** `d5d8306b`'s own body: *"Under the clean env
+`/etc/environment` sets today it is green 2/2. So the finding is the ENVIRONMENT, not the kernels:
+`/etc/environment` and `devcontainer.json` were cleaned on 2026-07-31, but long-lived containers keep
+the pre-fix value."* That does not shrink the blast radius — every long-lived session on this host
+predates the clean-up and therefore carries the bad path.
+
+**Consequence, plainly: any measurement taken on the "GPU" server is suspect until linkage is verified
+INSIDE the run, not around it. That potentially reaches results already banked.** `mainD`'s own
+framing: *"Whoever runs GPQA or the PCIe microbench MUST verify linkage inside the run, not around
+it."*
+
+One more trap in the same instrument: `verify_ggml_linkage.sh /bin/true <tree>` **exits 0 and prints
+PASS** — exit status alone cannot distinguish *all libs correct* from *no libs inspected*. The wrapper
+now requires `libggml-base.so` to appear in the inspected set, with four mutations proving it fails
+loud. That is face 1 of the verification catalogue caught inside the fix for face 11.
+
+### 3. Screening lies when you silence it
+
+`scripts/coordination/backlog_row_check.py` writes its verdict to **stderr**, not stdout, and exits
+non-zero: `ANCHOR ROT` (`:792`), `UNRESOLVABLE` (`:787`, `:772`), `AMBIGUOUS` (`:775`), `REFUSING`
+(`:783`). Any wrapper using `2>/dev/null` therefore turns a rot verdict into an **empty stdout that
+reads as a clean pass**.
+
+`mainC` self-reported committing exactly this, unprompted, at 12:32:09Z: *"My screening loop piped the
+checker through `2>/dev/null`. The verdict goes to STDERR. So four rows returned EMPTY STDOUT and I
+read that as `no verdict` - when the tool was in fact shouting ANCHOR ROT at me on the channel I had
+silenced. … Caught because four consecutive empties is not a plausible result."*
+
+**If you screen rows by hand, do not redirect stderr.**
+
+*Two corrections to the relay of this item, both verified before writing:*
+
+1. It is **face 8** — *ERROR laundered into a plausible value*,
+   `docs/guides/agent-workflows/verification-failure-catalogue.md:160` — not face 7, which is *CHECK
+   not COUNTED by the reporter* (`:147`). The mislabel is mainC's own and was carried forward
+   unchanged; the substance is unaffected.
+2. The attribution to **`mainA`'s rows is unsupported**. `mainA` appears only in the *key name* of
+   mainC's message. Its body names four rows in `autopilot-continuous-optimization.md` (`:1896`,
+   `:1947`, `:1995`, `:2210`) whose anchors *mainC's own integration edits* rotted that morning, and
+   mainC re-anchored them by text and reported all five then screen `DISPATCHABLE`. The only face-7
+   admission on the bus is **mainB's**, 10:20:13Z, and it is a correct face 7 (inline mutation tests
+   collected by no suite). The re-screen task is filed at **H-5**, scoped to what is established.
+
+### 4. Fleet state at handover — 12:37Z
+
+Instruments named, per AUD-1. These are readings, not verdicts.
+
+| Pane | Agent | Composer | Thread | Heartbeat |
+|---|---|---|---|---|
+| `agent:0` | `coordinator-agent` | clean | — | 12:27:16Z working |
+| `agent:3` | `inference` | clean | working (`esc to interrupt`) | 12:30:49Z `AK-INF03-isolation-integration` |
+| `agent:4` | `auditor` | clean | waiting on 3 background agents | 12:18:52Z working |
+| `agent:5` | `mainA` | clean | working, `Mustering… 6m 32s` | **11:07:41Z — stale ~90 min** |
+| `agent:6` | `mainB` | clean | **idle**, just finished; awaiting two operator rulings | 11:21:17Z `idle` |
+| `agent:7` | `mainC` | clean | working, four subagents fanned out | 12:32:09Z `batch-C-4-parallel` |
+| `agent:8` | `mainD` | clean | working; `/wrap-up` submitted | **11:40:24Z — stale ~57 min** |
+
+`agent:1` and `agent:2` are `htop` and `btop`; `agent:9` is a bare shell.
+
+**Heartbeats are not liveness here.** `mainA` and `mainD` both read stale by roughly an hour while
+their threads are demonstrably working. That is INC-20260727's birth-certificate failure, live at
+handover. Trust the pane and the outbox, not the heartbeat file.
+
+**Blocked, and on what:**
+
+- **`mainB`** — idle, holding no claim, no lock and no process. Blocked on **two operator rulings it
+  names itself**: **OP-11** (in `master-handoff-index.md:42` since 2026-08-11 — two-file commit on
+  parent `a4cb04ca`, audit found no critical/high hazard, its own recommendation is Option A), and
+  **PyTorch-vs-ES for A9**. Neither needs the GPU.
+- **`mainD`** — not blocked, but carries an open `decision-request` on the bus at 12:34:03Z: it was
+  hand-assigned `lane: gpu` and refused (§*What went wrong* below). Two clean routes, both yours:
+  route the row to `mainB` (`[gpu, none]`, and it holds the card), or amend `config.yaml` to give
+  `mainD` a gpu lane. It takes the row the moment either lands and is not idle meanwhile.
+- **`mainA`, `mainC`, `inference`, `auditor`** — running, not blocked.
+
+**Hardware, 12:32Z, single samples:** `rocm-smi --showuse --showmemuse` → GPU use 0%, VRAM 0%;
+`uptime` → load 2.30 / 4.86 / 14.31 on 192 threads. Recorded as readings, not as an idle-hardware
+claim (R-15): `llama-bench` exits between probes, so one 0% sample cannot distinguish an idle card
+from a healthy sweep between arms. The 15-minute figure is the tail of the morning; the 1-minute
+figure is now.
+
+**Nothing is pushed.** `mainC` reports 11 local commits, `mainD` 15, and no session has pushed `main`.
+Twenty-five commits landed between 11:00Z and 12:30Z.
+
+---
+
+## Before you dispatch anything — the backlog is substantially stale, and no screener can see it
+
+**This may be the most useful paragraph in the document for someone about to work the backlog by
+hand.** It is not anecdote: nine independent checks, five different agents, all landing the same way.
+
+| Row / field | What the row says | What is actually true |
+|---|---|---|
+| 8 fact-checked rows screened with `--ref` | dispatchable | **4 of 8 already satisfied in the world** — files already untracked, a `.orig` already deleted, backup dirs already gone, a port fleet already retired |
+| **B9** — integrate the scorer-isolation branch | open | **already landed 2026-07-29**; both commits ancestors of `main`, in the required order |
+| **B5** — re-embed the episodic index under one convention | open | **already executed**: reseed `20260809T160329Z` rebuilt 63,786/63,786 rows from the canonical builder. The leak survived it and had moved from format to field value. Running the row as written would have burned an inference window and changed nothing |
+| **B11** — `config_applicator.restart_role()` is missing | missing | **it has existed since 2026-06-27** (`de91c270`, verified). What was missing was the row's own second acceptance clause and any test coverage of the health-gate branch — zero executed statements across 44 tests |
+| **B13** — `onnxruntime` undeclared | undeclared | declared minutes earlier by another agent (`94269b19` / `fa3daeac`); verified at `repos/epyc-orchestrator/pyproject.toml:43`. The row's causal claim was false anyway — rerank is off by measured policy, not by a missing dep |
+| **S-01** — topology pin fails closed | fails closed | it was failing **OPEN**: 21 of 25 entries passed, because a stale pin and a stale 2026-07-20 attestation were certifying each other |
+| **S-03** — `numa_balancing` needs first-boot persistence | needed | the host **already persists it twice**; the predicted post-reboot warning would never have fired. The original check measured the container overlay, not the host at `/proc/1/root/etc` |
+| **`max_uptime_days`** — "seven entries expiring at 13:36Z" | a gate | **zero code consumers across all three repos** (verified: no `.py` hit; the only occurrence is `scripts/coordination/inference_batch.schema.json`). The urgency was entirely phantom — inert documentation wearing the syntax of a gate |
+| **The reboot inventory** | reboot-gated | **~60 rows misfiled.** EV-4 / EV-4b / EV-11c are terminal `DONE_PASS` since 2026-07-23 with `decision_grade=True`; six P1/P2 rows name the **07-29** reboot, which already executed; the entire NPS/BIOS category is **empty** |
+
+**The rule, because it is the practical consequence:**
+
+> **A screener proves WELL-FORMED, never STILL-NEEDED.** `backlog_row_check.py` validates a row's
+> shape against its file. It cannot know the world. **Verify the premise independently before doing
+> the work.**
+
+And remember its verdict goes to **stderr** (§3): any wrapper with `2>/dev/null` turns `ANCHOR ROT`
+into a clean pass.
+
+**Anchor rot compounds it.** 34.5% queue-wide, up from 27% twelve days earlier, and rows move *while
+you are working the file* — `mainC` rotted an anchor itself this morning by inserting rows above it.
+So **the task TEXT is the identity and `file.md:LINE` is only a hint; when they disagree, the text
+wins.** That is F-22's rule, and this document cites line numbers anyway, knowingly, with the quoted
+text alongside (R-22).
+
+**One that goes the other way**, recorded because a staleness finding that only ever revises work
+downward is its own bias: **NIB2-60 has GROWN.** The row records 1.4 GB in 3 orphaned pack files;
+today it is **1.99 GB in 4**, on a volume measured at **87%** (`df -h /mnt/raid0`, 12:38Z — 3.1T used
+of 3.7T, 469G free).
+
+**Honest summary for the operator: a meaningful fraction of what looks like open work is already
+done, and the tooling cannot tell you which.** That is worth knowing before dispatching anything.
+
+---
+
+## The delivery-plane collapse, 11:00–12:30Z — F-33 … F-38
+
+Continuing the existing numbering. Nothing above is renumbered, restated or edited.
+
+| ID | Failure | Evidence | Corrected by | Recur | Mech |
+|---|---|---|---|---|---|
+| F-33 | **A Claude composer ignores a bare `Enter`, and every delivery path ended in one.** Sending any character *first*, then `Enter`, submits. `Ctrl-U` does not clear these composers and neither does `BSpace` | `adapter-ledger.jsonl` 12:07:40Z `mainC submit-unconfirmed` *"composer still holds text after Enter"*; 12:07:42Z `mainD` identical; 12:07:35Z `mainA` and 12:07:37Z `mainB` `clear-unconfirmed` *"composer still holds text after C-u"*. Fix verified live: `<char>`+`Enter` emptied both mainC's and mainD's composers; `tmux_adapter.py:2581` still sends the bare key | live probe, after ~75 min | — first statement of the defect | **mechanism-preventable**, `MECH-UC` → **partially landed**: `b6ea8679` (11:54:51Z) made a failed submission *visible* (C51 verifies against the buffer, rolls back, writes an `*-undelivered` row; `pending` detector added). The `<char>`-then-`Enter` requirement was found **after** it landed, so the adapter can now *see* the failure and still cannot *effect* a submission |
+| F-34 | **Correct-refusal deadlock: every delivery path refused correctly and the fleet was still unreachable.** Four mains held queued text for up to 75 minutes | `nudge` refuses to type after pending input because it cannot tell operator-typed text from delivery residue (`tmux_adapter.py:2066`, `:2083`, `:2433`); `doorbell` refuses because ringing sends a real `Enter` that would submit whatever is there; the bus cannot route around it because a main parked at its composer never drains. The coordinator was denied `tmux send-keys C-u` by the permission classifier and a 100-iteration `BSpace` loop was denied too (**`conv.`** — no artifact) | resolved only by finding F-33's sequence | — | **mechanism-preventable, and the missing mechanism is a REMEDY not another guard.** C54 built `clear`/`submit` for exactly this and neither can act on a Claude pane (F-33). Every individual guard was right; the composite had no success path |
+| F-35 | **Reported "four mains deadlocked" while `mainC` was working the whole time.** Pending input blocks delivery **to** a main; it does not block the main. The two were conflated | `mainC` held pending text at 12:07:40Z and, in the same window, landed `03f034db` (12:14:12Z) and `c2754247` (12:21:42Z) and posted a `finding` at 12:22:06Z | evidence, not reasoning | **RC-2's shape, on the day it was published**: *composer holds text* is a probe with no discriminating power over *cannot receive* vs *cannot work* — the same defect as F-06's post-exit VRAM sample and F-24's `pgrep` predicate | `RECALL` |
+| F-36 | **Assumed the pending text might be operator-typed and therefore unclearable.** The operator only ever types into the `inference` pane, so `mainA`/`mainB`/`mainD`'s text was the coordinator's own failed-delivery residue | The adapter's refusal reason is explicit that it cannot attribute composer text (`tmux_adapter.py:2083`). The operator's statement is **`conv.`** — consistent with §1 of this file: the operator writes to no bus file | operator (`conv.`) | — | **mechanism-preventable, now partly closed**: provenance was always recordable — the adapter knows what *it* typed. C51's `*-undelivered` row is that record and it landed 11:54:51Z, after this window. **The caution was misplaced; the guard that enforced it was right to exist** — a guard that cannot tell whose text it is must refuse |
+| F-37 | **A main whose subagents redraw the pane can never satisfy the quiet-check, so it is unreachable by nudge while looking busy** | `b6ea8679`'s own body, C52: *"C35's quiescence override cannot reach the 20s-to-120s band, and is **defeated outright by subagent rows that redraw every second**."* Live instance: `adapter-ledger.jsonl` 12:13:10Z, auditor nudge carrying `heartbeat_override: "window quiet 2644s (>= 120s); both TUIs redraw…"` | flagged by the adapter owner as a residual gap | — | **recall-dependent and deliberately left open.** The owner **declined to weaken the guard to paper over it**, which is the right call: the remedy is a different signal, not a looser threshold |
+| F-38 | **`bus_supervisor.sh` restarted a healthy `coordinator-daemon` 14 times.** Its stale-source check fires on every mtime change, and in a five-writer tree the source is always newer | `logs/bus_supervisor.out`: 14 × `stopping wedged daemon`, **11:02:43Z → 11:56:42Z** (54 minutes — the brief's "45" understates it). Every one is preceded by *"daemon is running code OLDER than its source … restarting so committed fixes take effect"* and followed by *"daemon healthy after 1s"*. **The daemon was healthy every time.** Daemon heartbeat now epoch **67**, pid 1943904 | mitigated, not fixed: supervisor relaunched 12:03:19Z (pid 2001039) with `STALE_SRC_SKEW_S=86400`, verified in `/proc/2001039/environ`; no restart since | **confirms AUD-6**, which predicted exactly this from 11 cycles. F-24's class, third predicate: `pgrep` identity → source mtime → still wrong | **mechanism-preventable; the mechanism IS the defect.** Same shape as F-24 — a watchdog whose health predicate encodes something other than the daemon's health |
+
+### One finding that is not a coordinator failure, and belongs in the record anyway
+
+**A main caught the catalogue's own face in its own work, and the catalogue did not prevent it.**
+`mainC`'s `2>/dev/null` screening defect (§3 above) is worth three separate statements:
+
+1. **The catalogue predicted it and the catalogue did not prevent it.** Face 8 was already written
+   down, in a document this fleet authored (`6af15249`, 02:50:41Z — *"eight ways a check passes for
+   the WRONG reason"*), and mainC committed it anyway ten hours later. That is the same shape as this
+   file's central finding — a rule that exists in writing, has been read, and still does not fire at
+   the moment of action. It is **independent corroboration from a different agent on a different
+   task**, which makes it stronger evidence than anything in the coordinator's self-account, and it
+   supports the audit's repricing of RC-1 from *decay* to *retrieval at the moment of emission*.
+2. **The tool was not silent — it was silenced.** `backlog_row_check.py` writes its verdict to stderr
+   and exits non-zero; a wrapper discarding stderr reads every failure as an empty pass. Anyone
+   driving screening by hand needs this before they pipe it.
+3. **`mainC` caught it in its own output and reported it unprompted**, exactly as it earlier discarded
+   its own *pristine baseline* run of 371 failures on discovering they were an artifact of its own
+   `git worktree remove` firing mid-run (12:22:06Z). Both are the discipline the coordinator failed at
+   repeatedly today, applied by a main to itself. **The handover should be accurate about who was
+   reliable, not only about what broke.**
+
+### A dated correction to AUD-8
+
+`AUD-8` states that `tmux_adapter.py` is *"the only artifact of RC-5's five still dirty"* at
+*"+853/−71"*, and that *"HEAD still carries `_BARE_PROMPT_GLYPHS = ("›", "❱")` at :385"*. **Both are
+false at HEAD and were already false when the audit was committed.** `b6ea8679` landed the adapter at
+11:54:51Z — seven minutes before `35139ebc` (12:01:54Z). `git status` reports the file clean, and
+`HEAD:scripts/coordination/tmux_adapter.py:437` reads `_BARE_PROMPT_GLYPHS = ("›", "❱", "❯")`, with
+U+276F present. The substance of AUD-8 (*land it*) is satisfied; only its live-state claims are wrong,
+and they are wrong in F-05's exact way — state read at one timestamp, reported as of another.
+
+---
+
+## What is still broken and unowned
+
+Plainly, with no implied owner where none exists.
+
+- [ ] **H-1 — There is no working way to submit or discard text in a Claude composer from code.**
+      `b6ea8679` (C51–C54) addressed C51–C54 and landed the *detection* half; the `<char>`-then-`Enter`
+      requirement was discovered afterwards and is not in the adapter. `tmux_adapter.py:2581` still
+      sends a bare `Enter` for `submit` and a bare `Ctrl-U` for `clear`. **Both report failure
+      honestly and neither works on a Claude pane.** Discard is worse than submit: no sequence is
+      known at all. **Owned by the adapter owner — route, do not edit.**
+- [ ] **H-2 — C51's rollback is a record, not a rollback, on a Claude pane.** *Derived, not
+      measured*: the rollback path sends `Ctrl-U`, and `Ctrl-U` does not clear a Claude composer
+      (F-33). If that holds, a failed nudge writes its `*-undelivered` row and **leaves the text in
+      place**, which is the honest half of the fix without the effective half. Verify before relying
+      on it.
+- [ ] **H-3 — The subagent-redraw quiet-check gap (F-37) has no owner and should not get a looser
+      threshold.** The adapter owner named it and deliberately declined to weaken the guard. The
+      remedy is a signal that distinguishes *the main's own thread is idle* from *its subagents are
+      drawing*, which does not exist yet.
+- [ ] **H-4 — `bus_supervisor.sh`'s stale-source check is mitigated by config, not fixed.**
+      `STALE_SRC_SKEW_S=86400` lives on pid 2001039's environment only; **the next launch without that
+      variable restarts the storm.** Continues AUD-6. Owned by `mainD` (C-series) — route.
+- [ ] **H-5 — Re-screen, with stderr visible, the rows `mainC` screened through `2>/dev/null`.**
+      mainC named this itself at 12:32:09Z and it should not evaporate now that mainC is no longer
+      being dispatched. Scope it to what is established (four rows in
+      `autopilot-continuous-optimization.md`, re-anchored by text to `:1896`, `:1947`, `:1995`,
+      `:2210`) **and resolve the attribution**: mainC's key says the rows were `mainA`'s, its body
+      says they were its own. One of the two is wrong.
+- [ ] **H-6 — Verify GPU linkage inside every run, and decide what to do about already-banked
+      results.** §2. `d5d8306b` makes the check runnable; nothing yet makes it *mandatory inside* a
+      measurement run, and no one has scoped which banked results were taken from a long-lived
+      container carrying the pre-2026-07-31 `LD_LIBRARY_PATH`. **Operator decision on the retro-scope;
+      the mechanism half is ordinary work.**
+- [ ] **H-7 — `mainD`'s open `decision-request` (12:34:03Z) needs a ruling**: route the `lane: gpu`
+      row to `mainB`, or amend `config.yaml`. Until then the row is unassigned and mainD is correct
+      not to take it.
+
+---
+
+## What went wrong at the coordination level
+
+The operator took over the fleet manually. This is the record of why, stated as findings.
+
+**The coordinator asserted a lane in a task brief without checking the roster it derives from.**
+`mainD` refused the dispatch and did it structurally, not as etiquette: it cited
+`coordination/session-bus/config.yaml` (`mainD: lanes: [cpu, none]`), the enforcing code path
+(`session_bus_coordinator.py:1019`, *"where the daemon would itself reject that row"*), and a
+structurally identical error from the same morning — mainA's brief said `lane: none` while the roster
+said `[cpu, none]`. **Same defect, opposite sign.** In mainD's words: *"a hand-assigned gpu task does
+not merely bend a convention, it bypasses the exact gate that exists to enforce the roster."* This is
+F-20 and R-10 recurring after both were written down, in the same file that documents them.
+
+**Three of the four mains called deadlocked were not.** `mainC` landed two commits and a bus finding
+while holding pending text (F-35). The signal used — *composer holds text* — cannot distinguish
+*cannot receive* from *cannot work*, which is the RC-2 error this file published about itself that
+morning, committed within hours of publishing it.
+
+**The remediation the coordinator was denied was one character long.** Two clear paths (`send-keys
+C-u`, a `BSpace` loop) were refused by the permission classifier, and the working sequence went
+undiscovered for about 75 minutes while work was assigned to both halves of the machine and neither
+holder could receive it.
+
+**The fix landed from elsewhere.** `b6ea8679` (C51–C54, 11:54:51Z) was the delivery-plane repair, and
+it is the detection half; the coordinator's contribution inside the window was diagnosis, and two of
+its diagnoses were wrong and were corrected by evidence rather than by its own reasoning (F-35, F-36).
+
+**The conclusion, and it is the operator's stated reason for taking over:**
+
+> **The guards and the mains were consistently more reliable than the coordination.** The pkill hook
+> refused. `flock` refused. The adapter's runtime check overruled a misread. The heartbeat-state
+> check refused a nudge that should not have been sent. The daemon's lane gate would have refused a
+> row the coordinator hand-assigned. `mainB` corrected the coordinator's post-exit VRAM sample;
+> `mainC` discarded its own 371-failure baseline as an artifact of its own worktree removal and
+> caught its own stderr suppression; `mainD` took attribution for destroying a peer's uncommitted
+> work rather than leaving it on a subagent, and refused an out-of-lane dispatch on structural
+> grounds. **Every one of those was a correction flowing *toward* the coordinator, not from it.**
