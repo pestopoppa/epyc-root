@@ -38,8 +38,42 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
+# REPO_ROOT is retained for anything that legitimately wants "wherever this
+# copy of the repo lives" (there is none left in this module after the fix
+# below, but it costs nothing to keep and other modules still import the
+# pattern). It must NEVER be used to derive the bus root — see get_bus_root().
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_BUS_ROOT = REPO_ROOT / "coordination" / "session-bus"
+
+
+def get_bus_root() -> Path:
+    """Resolve the ONE canonical session-bus root.
+
+    Deliberately NOT __file__-relative. Under the worktree-per-main model
+    (scripts/coordination/WORKTREE_MIGRATION.md), every main runs this exact
+    script from its own worktree checkout, at a different filesystem path --
+    a Path(__file__).resolve().parents[2] resolution (the old code here)
+    would therefore derive FIVE independently-mutating bus directories, one
+    per worktree, instead of the single shared runtime plane the whole
+    protocol assumes: one queue, one set of per-agent cursors, one
+    single-writer rule per file. There is exactly one live bus. It lives at
+    the canonical /workspace checkout -- the versioned WORK happens in
+    per-main worktrees, but the coordination RUNTIME plane does not fork.
+    Every worktree's copy of this module must resolve to that same path.
+
+    EPYC_BUS_ROOT overrides this, for tests only -- production code paths
+    (agents, the coordinator-daemon, the hooks) never set it. Most tests
+    instead isolate via an explicit --bus-root / bus_root argument (see
+    tests/test_session_bus.py's tmp_path-based fixture); the env var exists
+    for callers that cannot thread an argument through (e.g. shelling out to
+    this script from a test without controlling its argv).
+    """
+    override = os.environ.get("EPYC_BUS_ROOT")
+    if override:
+        return Path(override)
+    return Path("/workspace/coordination/session-bus")
+
+
+DEFAULT_BUS_ROOT = get_bus_root()
 
 COORDINATOR_DAEMON = "coordinator-daemon"
 
@@ -1632,6 +1666,10 @@ def cmd_provision(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="session_bus.py", description=__doc__.split("\n")[0])
     p.add_argument("--bus-root", default=str(DEFAULT_BUS_ROOT))
+    p.add_argument("--print-root", action="store_true",
+                    help="print the resolved canonical bus root (get_bus_root()) and exit; "
+                         "does not require a subcommand -- handled before subparser dispatch "
+                         "so this works standalone, e.g. from a fresh worktree checkout")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     ap = sub.add_parser("append", help="append a schema-validated row to a file you own")
@@ -1690,6 +1728,13 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Optional[list[str]] = None) -> int:
+    # --print-root is handled before the subparsers' `required=True` check so
+    # it works with no subcommand at all (`session_bus.py --print-root`) --
+    # the verification idiom a fresh worktree checkout is expected to run.
+    raw = list(sys.argv[1:] if argv is None else argv)
+    if "--print-root" in raw:
+        print(get_bus_root())
+        return 0
     args = build_parser().parse_args(argv)
     try:
         return args.func(args)
