@@ -268,6 +268,15 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     65). Reading is the only route, and its rate is now measured. Stop looking for a shortcut.
   - [ ] **REMAINS OPEN:** read-certify the remaining ~918. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
+    - [x] **Tranche 5 — the next 4 bench-feeding handoffs, complete: 97 of 97 rows certified ✅ 2026-08-12 (`auditor`, overnight)**
+      (`multimodal-pipeline` 22, `canonical-judge-suite-revamp` 24, `eval-tower-verification` 27,
+      `architect-model-selection-bench` 24). **50 LIVE (52%) / 9 DEAD (9%) / 36 GATED / 2 REWRITE** — full
+      evidence in `artifacts/audit/read-certification-tranche5-20260812.md`. The dead-rate collapse vs T4
+      (33%→9%) proves staleness tracks TIME-SINCE-LAST-AUDIT, not file size. Cumulative T4+T5: 328 rows,
+      26% dead; backlog ~36% certified. Seven priority flags routed (S-15 truncation on the LIVE vision
+      model; execution-gate contradiction; AXA-1 GPU-residency drift; L166/L206 duplicate + index
+      first-row blindness; row_check false-positive class; EV-8 reject-path template; kvquant verdict gap
+      — auditor takes the last).
     - [x] **Tranche 4 — the 4 highest-count bench-feeding handoffs, complete: 231 of 231 rows certified ✅ 2026-08-12 (`auditor`, overnight)**
       (`decision-aware-routing` 34, `autopilot-continuous-optimization` 62, `rocm-verify-profile-backend` 49,
       `numa-topology-cutover-resume-20260730` 86). **90 LIVE (39%) / 76 DEAD (33%) / 51 GATED / 10 REWRITE /
