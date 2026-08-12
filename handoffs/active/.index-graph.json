@@ -13,6 +13,21 @@
   },
   "edges": [
     {
+      "from": "EVL-49",
+      "kind": "dep",
+      "to": "INF-06"
+    },
+    {
+      "from": "EVL-49",
+      "kind": "dep",
+      "to": "INF-07"
+    },
+    {
+      "from": "EVL-49",
+      "kind": "dep",
+      "to": "RTG-46"
+    },
+    {
       "from": "INF-03",
       "kind": "dep",
       "to": "INF-48"
@@ -61,6 +76,11 @@
       "from": "RTG-07",
       "kind": "dep",
       "to": "INF-07"
+    },
+    {
+      "from": "RTG-48",
+      "kind": "dep",
+      "to": "RTG-34"
     },
     {
       "from": "EVL-02",
@@ -2351,6 +2371,12 @@
     {
       "from": "RTG-02",
       "kind": "ref",
+      "to": "PIP-04",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
       "to": "RTG-01",
       "weight": 4
     },
@@ -2646,7 +2672,7 @@
       "from": "RTG-15",
       "kind": "ref",
       "to": "EVL-10",
-      "weight": 2
+      "weight": 4
     },
     {
       "from": "RTG-15",
@@ -3465,7 +3491,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T11:52:58Z",
+  "generated_at": "2026-08-12T12:36:28Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4081,15 +4107,28 @@
     {
       "age_days": 14,
       "blocked": 0,
-      "closed": 10,
+      "closed": 11,
       "domain": "research-evaluation",
       "handoff": "fable5-window2-findings-05c-mi210-lever-category-matrix.md",
       "id": "EVL-48",
       "last_advanced": "2026-07-29",
       "next_action": "L12 \u2014 n-gram/prompt-lookup on GPU: 27B-Q8 + fp16 over code/JSON/prose sets, sweeping the three ngram spec types",
-      "open": 19,
+      "open": 18,
       "state": "active",
       "track": "fable5 window2 findings 05c mi210 lever cate"
+    },
+    {
+      "age_days": null,
+      "blocked": 0,
+      "closed": 3,
+      "domain": "research-evaluation",
+      "handoff": "reboot-gated-inventory-and-staging.md",
+      "id": "EVL-49",
+      "last_advanced": null,
+      "next_action": "S-01 \u2014 re-pin the 25 uptime-capped inference-batch entries to the v9 era and the live topology hash",
+      "open": 17,
+      "state": "active",
+      "track": "reboot gated inventory and staging"
     },
     {
       "age_days": 14,
@@ -4536,13 +4575,13 @@
     {
       "age_days": 9,
       "blocked": 0,
-      "closed": 27,
+      "closed": 28,
       "domain": "inference-research",
       "handoff": "multimodal-pipeline.md",
       "id": "INF-41",
       "last_advanced": "2026-08-03",
       "next_action": "S-9 \u2014 wire start_tts() into orchestrator_stack.py (port 9002 reserved); capability exists, wiring does not",
-      "open": 22,
+      "open": 21,
       "state": "active",
       "track": "multimodal pipeline"
     },
@@ -4977,14 +5016,14 @@
     },
     {
       "age_days": 0,
-      "blocked": 0,
-      "closed": 141,
+      "blocked": 2,
+      "closed": 148,
       "domain": "routing-and-optimization",
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",
       "last_advanced": "2026-08-12",
       "next_action": "Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped",
-      "open": 59,
+      "open": 61,
       "state": "active",
       "track": "autopilot continuous optimization"
     },
@@ -5029,8 +5068,8 @@
     },
     {
       "age_days": 7,
-      "blocked": 0,
-      "closed": 4,
+      "blocked": 1,
+      "closed": 5,
       "domain": "routing-and-optimization",
       "handoff": "capability-registry-and-promotion.md",
       "id": "RTG-06",
@@ -5146,14 +5185,14 @@
     },
     {
       "age_days": 1,
-      "blocked": 1,
-      "closed": 33,
+      "blocked": 2,
+      "closed": 35,
       "domain": "routing-and-optimization",
       "handoff": "learned-routing-controller.md",
       "id": "RTG-15",
       "last_advanced": "2026-08-11",
       "next_action": "EP-5 \u2014 re-run the probe only after the outcome-label defects are fixed",
-      "open": 19,
+      "open": 21,
       "state": "active",
       "track": "learned routing controller"
     },
@@ -5244,7 +5283,7 @@
       "id": "RTG-22",
       "last_advanced": "2026-07-31",
       "next_action": "NIB2-18: DS-6 QuarterScheduler revalidation gate \u2014 dynamic-stack-concurrency.md(dynamic-stack-concurrency.md) DS-6-live. Do not treat as co\u2026",
-      "open": 9,
+      "open": 17,
       "state": "active",
       "track": "non inference backlog"
     },
@@ -5400,7 +5439,7 @@
       "id": "RTG-34",
       "last_advanced": "2026-08-12",
       "next_action": "C-OWN \u2014 continue the C-series control-plane work (mainD's lane); R1a's bench is inference-gated but does NOT gate the handoff",
-      "open": 27,
+      "open": 32,
       "state": "active",
       "track": "session bus thin dispatcher"
     },
@@ -5569,9 +5608,22 @@
       "id": "RTG-47",
       "last_advanced": "2026-08-12",
       "next_action": "Take the Phase 1b call \u2014 fix-10 retention and the view-plane consolidation both landed 2026-08-10; parallel-run evidence is in hand",
-      "open": 13,
+      "open": 14,
       "state": "active",
       "track": "dashboard architecture restructure"
+    },
+    {
+      "age_days": null,
+      "blocked": 0,
+      "closed": 0,
+      "domain": "routing-and-optimization",
+      "handoff": "coordinator-role-failure-modes-and-refactor.md",
+      "id": "RTG-48",
+      "last_advanced": null,
+      "next_action": "Auditor: audit the Mech column \u2014 a MECH claim holds only if the mechanism would have REFUSED that specific failure; mutation-test it",
+      "open": 48,
+      "state": "active",
+      "track": "coordinator role failure modes"
     },
     {
       "age_days": 0,

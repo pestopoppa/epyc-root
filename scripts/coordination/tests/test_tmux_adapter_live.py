@@ -342,13 +342,25 @@ def test_live() -> None:
             # ...and the threshold is really consulted: the SAME pane in the SAME
             # state stays blocked when the bar is above its quiet time. Without this
             # the case above would pass equally for "always override".
-            p_q_strict = m.probe(cfg, "quiet", 20.0, 900.0, 3600.0)
+            #
+            # C52 (2026-08-12): the pane's generation MARKER is now the first thing
+            # consulted, and this fixture pane renders none — so without isolating it
+            # the claim would be contradicted by the marker and these two checks would
+            # be measuring C52 rather than C35's threshold. Making the marker
+            # UNREADABLE is the honest isolation: it is exactly the branch in which
+            # quiescence is still the deciding signal, which is the residual role C52
+            # left this threshold.
+            p_q_strict = m.probe(cfg, "quiet", 20.0, 900.0, 3600.0,
+                                 pane_busy_fn=lambda _t: (None, "marker unreadable — isolating C35's "
+                                         "quiescence arithmetic (see C52)"))
             check(p_q_strict["heartbeat_override_applied"] is False,
                   "the same pane stays blocked when the threshold is above its quiet time")
             check(not p_q_strict["nudge_ok"], "and is not nudge_ok")
 
             # Disabling the override restores the pre-C35 behaviour exactly.
-            p_q_off = m.probe(cfg, "quiet", 20.0, 900.0, 0.0)
+            p_q_off = m.probe(cfg, "quiet", 20.0, 900.0, 0.0,
+                              pane_busy_fn=lambda _t: (None, "marker unreadable — isolating C35's "
+                                         "quiescence arithmetic (see C52)"))
             check(p_q_off["heartbeat_override_applied"] is False and not p_q_off["nudge_ok"],
                   "a 0 threshold disables the override entirely (pre-C35 behaviour)")
 

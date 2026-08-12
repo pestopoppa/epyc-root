@@ -201,6 +201,84 @@ estimates.
 
 ---
 
+## 2026-08-12 supplement — observers that cannot say "I cannot tell"
+
+Filed by the class-sweep that followed the coordinator-daemon watchdog blindness: `bus_supervisor.sh`
+identified its target with `pgrep -f "session_bus_coordinator\.py run"`, the live daemon's argv had
+`--bus-root <path>` between `.py` and `run`, so a **healthy, actively heartbeating** daemon read as
+dead forever and the watchdog relaunch-looped every ~10s for hours before anyone noticed. Root cause
+is not the regex: the guard could not observe the thing it guards and **nothing detected that**, and
+two states existed where three were needed.
+
+All zero-inference. Each row below is a distinct file that collapses "cannot observe" into a definite
+verdict. **Enforced, not remembered**: `tests/test_observer_contract.py` reads
+[`scripts/coordination/observer_registry.json`](../../scripts/coordination/observer_registry.json),
+discovers these files structurally, and goes RED if a line here is checked off or deleted without the
+migration landing. Reference adoption: `scripts/coordination/backfill_supervisor.sh`. Contract:
+[`scripts/coordination/observer_guard.sh`](../../scripts/coordination/observer_guard.sh).
+
+- [ ] **OBS-3** (HIGH): **`scripts/nightshift/inference_guard.sh` fails OPEN into a live inference
+  run.** `pgrep -f 'llama-server|llama.cpp' | xargs … || true` is summed into an RSS total, so a
+  missing `pgrep`, an argv drift, a renamed binary and an `xargs` error ALL yield 0 GB — which takes
+  the `else` branch, prints *"No heavy inference detected"*, and lets `run_wrapper.sh` launch the
+  full multi-project agent workload on top of a live 200 GB+ inference. The dangerous direction of
+  the same two-state collapse. Give it an `unknown` state and treat unknown as busy (the polarity
+  rule `inference_load_check.py` already states: *"for EXCLUSION, unknown must mean busy"*).
+- [ ] **OBS-4** (MED): **`scripts/nightshift/run_wrapper.sh:79` reproduces the specimen verbatim.**
+  `autopilot_running() { pgrep -f 'scripts/autopilot/autopilot.py start'; }` requires `start` to sit
+  immediately after the script path — exactly the adjacency that broke when a flag was inserted into
+  the daemon's command line. Any `autopilot.py --config X start` reads as "AutoPilot not running"
+  and the lab shadow jobs launch into a live AutoPilot. Also note three `skip … return 0` branches
+  keyed on hardcoded cross-repo paths: the run reports success having done none of that work.
+- [ ] **OBS-5** (MED): **`scripts/benchmark/rustevo2_bench_preflight.py` green-lights a bench against
+  a live AutoPilot.** Half-right already — a `pgrep` returncode outside `(0,1)` is treated as "could
+  not inspect" — but an EMPTY result is read as a positive "no AutoPilot", and a missing `pgrep`
+  binary raises `FileNotFoundError` out of `run()` before that handling is ever reached.
+- [ ] **OBS-6** (LOW): **`scripts/session/health_check.sh` reports unreadable as failing.** `pgrep -f
+  "claude"` is a bare substring matching any argv containing "claude", including its own caller;
+  `pgrep -f "monitor_storage"` makes a renamed monitor read as permanently absent so the check
+  permanently recommends starting a second one; and several probes use `|| echo "unknown"` then
+  COMPARE `"unknown"` against the expected value and report **FAIL** — an unreadable `/sys` node in
+  a container is scored as a misconfiguration. Report-only, but it gates session start.
+- [ ] **OBS-7** (MED): **`scripts/session/emergency_cleanup.sh:26` is a committed
+  `sudo pkill -f claude`.** The exact idiom CLAUDE.md and INC-20260731-broad-process-pattern-kills
+  forbid, on a documented shared host, behind nothing but an interactive prompt. The PreToolUse
+  pattern-kill hook cannot see it — the hook inspects the *typed* command
+  (`bash scripts/session/emergency_cleanup.sh`), not the script body — so the rule is
+  assumed-enforced here rather than enforced, unlike its sibling `check_operator_apply_copy.sh`
+  which documents that scope limit explicitly. Replace with pid-scoped termination or delete.
+- [ ] **OBS-8** (LOW): **`scripts/session/start_orchestrator_test.sh`'s port gate is vacuous on this
+  host.** `netstat` is not installed and `2>/dev/null` swallows the "command not found", so the kill
+  loop silently iterates zero times and the availability check prints `[✓] Ports 8000 and 8080
+  available` unconditionally — then launches a second `llama-server` on `:8080` and a second uvicorn
+  on `:8000`. Not hypothetical and not undiscovered: `bus_supervisor.sh` already names this file by
+  name as the cautionary example of assuming a tool is installed. Probe with `command -v` first and
+  fail loud when neither `ss` nor `netstat` nor `lsof` is available.
+- [ ] **OBS-9** (LOW): **`"esc to interrupt"` is a liveness oracle in FOUR files with no shared
+  constant** — `scripts/coordination/idle_supervisor.sh`, `scripts/coordination/idle_watch.sh`,
+  `scripts/coordination/session_bus_coordinator.py`, and (added 2026-08-12)
+  `scripts/coordination/fleet_watch.sh`. It is **vendor TUI text**: a Claude Code or
+  Codex release that rewords it breaks all of them at once, and `idle_supervisor` would then type
+  nudges into six actively-generating panes indefinitely. (Its uncapturable-pane handling is already
+  correct — *"a pane it cannot capture is UNKNOWN, never idle"* — so only the marker needs a canary.)
+  The two rosters have also already drifted: `idle_watch.sh` watches 4 mains, `idle_supervisor.sh` 6.
+  **The canary this row asks for already exists in one of the four** and is the cheapest thing to
+  lift: `fleet_watch.sh` gathers every vendor string in one named block and adds a `DETECTOR-BLIND`
+  condition — if no readable pane matches ANY known marker for PERSIST_CYCLES, it reports that the
+  vocabulary has drifted and SUPPRESSES the idle verdicts built on it, because six mains losing
+  their markers in the same cycle is a TUI release and not a fleet-wide stall. It is exercised in
+  both directions by `scripts/coordination/tests/test_fleet_watch.sh` and mutation-tested (removing
+  the guard turns the suite red). Generalising it is what closes this row.
+- [ ] **OBS-10** (LOW): **Two E8 operator ratifiers gate on an argv pattern.**
+  `artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh` and
+  `ratify_e8_empty_frontier_bootstrap_20260726.sh` both use
+  `pgrep -f '[s]cripts/autopilot/autopilot.py start'` — same start-adjacency fragility. The newer
+  `ratify_v9_cpu_bench_era_advance_20260811.sh` already migrated ("no process-pattern probe — host
+  rule: never pgrep by name"); backport that. Deliberately OUT of the observer-registry discovery
+  scope (one-shot scripts a human runs and reads once), recorded here so the finding is not lost.
+
+---
+
 ## Cross-references
 
 Canonical sources (always verify status in these files first):

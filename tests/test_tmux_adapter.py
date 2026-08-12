@@ -49,6 +49,15 @@ def _tmux(*args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(["tmux", *args], capture_output=True, text=True, timeout=15)
 
 
+def _ledger_rows(adapter) -> list[dict]:
+    """Ledger rows, tolerating absence. C51 made the ledger the place a NON-delivery
+    is recorded too, so "the file does not exist" stopped being the way to say "this
+    was not sent" — the row kind is."""
+    if not adapter.LEDGER.exists():
+        return []
+    return [json.loads(ln) for ln in adapter.LEDGER.read_text().splitlines() if ln.strip()]
+
+
 class _Args:
     agent = "shell"
     message = "still-pending"
@@ -59,11 +68,19 @@ class _Args:
     settle_s = 0.0
 
 
-def _stub_nudge(adapter, monkeypatch, composer_states, tmp_path):
+def _stub_nudge(adapter, monkeypatch, composer_states, tmp_path, baseline="\u203a "):
     """Wire cmd_nudge to a fake pane whose composer text is scripted.
 
     ``composer_states`` is consumed one entry per verification round; the last
     entry repeats, which models the bounded poll settling on a stable state.
+
+    C51 (2026-08-12): ``baseline`` is PREPENDED, because `cmd_nudge` now reads the
+    composer once BEFORE typing — it refuses to type into a composer that already
+    holds input (Enter would submit that too, and it may be the operator
+    mid-sentence), and that reading is also what the post-Enter buffer check is
+    measured against. So a scripted pane's life is now bare prompt -> typed ->
+    submitted, which is what a real one always was; the fixture just never had to
+    say so. Tests that need a NON-empty starting composer pass their own.
     """
     adapter.LEDGER = tmp_path / "adapter-ledger.jsonl"
     adapter._VERIFY_TIMEOUT_S = 0.0
@@ -73,12 +90,24 @@ def _stub_nudge(adapter, monkeypatch, composer_states, tmp_path):
     })
     calls: list[tuple[str, ...]] = []
     monkeypatch.setattr(adapter, "_tmux", lambda *args: (calls.append(args) or (0, "")))
-    seq = list(composer_states)
+    seq = [baseline] + list(composer_states)
 
     def fake_composer(_target):
         return (seq.pop(0) if len(seq) > 1 else seq[0]), None
 
     monkeypatch.setattr(adapter, "_composer_text", fake_composer)
+
+    def fake_row(_target, _faint=False):
+        text, failure = fake_composer(_target)
+        if failure:
+            return None, failure
+        return (text or "").rsplit("\n", 1)[-1], None
+
+    # C53 (2026-08-12): the WHOLE-ROW read that judges emptiness. Driven from the SAME
+    # scripted sequence as `_composer_text`, so one entry describes one pane state and
+    # the two reads can never disagree about which frame they are looking at.
+    monkeypatch.setattr(adapter, "_read_composer_row", fake_row)
+    monkeypatch.setattr(adapter, "composer_faint_is_placeholder", lambda _cfg, _a: False)
     return calls
 
 
@@ -220,8 +249,13 @@ def test_nudge_succeeds_on_a_bare_prompt(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     adapter = _load("ok_bare")
     _Args.message = "status please"
+    # "\u203a " rather than "$ ": C51's pre-typing guard asks whether the composer is
+    # EMPTY, and a shell prompt is not a TUI composer glyph. The case under test is a
+    # composer with no decoration, which "\u203a " is; using a shell prompt tested the
+    # glyph table by accident.
     calls = _stub_nudge(adapter, monkeypatch,
-                        ["$ " + _Args.message, "$ " + _Args.message + "\nSUBMITTED\n$ "], tmp_path)
+                        ["\u203a " + _Args.message,
+                         "\u203a " + _Args.message + "\nSUBMITTED\n\u203a "], tmp_path)
     assert adapter.cmd_nudge(_Args()) == 0
     assert len(calls) == 2
     assert adapter.LEDGER.exists()
@@ -233,9 +267,19 @@ def test_text_absent_before_enter_refuses_without_sending_enter(
     _Args.message = "still-pending"
     calls = _stub_nudge(adapter, monkeypatch, ["q to quit   enter to edit message"], tmp_path)
     assert adapter.cmd_nudge(_Args()) == adapter.EX_MISCONFIG
-    assert calls == [("send-keys", "-l", "-t", "throwaway:shell", "--", _Args.message)]
-    assert "did not land in the composer" in capsys.readouterr().err
-    assert not adapter.LEDGER.exists()
+    assert calls == [("send-keys", "-l", "-t", "throwaway:shell", "--", _Args.message),
+                     ("send-keys", "-t", "throwaway:shell", "C-u")]
+    err = capsys.readouterr().err
+    assert "did not land in the composer" in err
+    # The pane is a modal that eats everything, so the rollback cannot be confirmed
+    # either — and an unconfirmed rollback must be reported as a strand, loudly.
+    assert "ROLLBACK FAILED" in err
+    # C51: a failed delivery is now ROLLED BACK (Ctrl-U, never Ctrl-C) and RECORDED.
+    # The invariant this line has always pinned is unchanged and is what matters: no
+    # `nudge` row may exist for a message that was not submitted. What is new is that
+    # the non-delivery leaves evidence instead of vanishing.
+    assert not [r for r in _ledger_rows(adapter) if r["kind"] == "nudge"]
+    assert [r["kind"] for r in _ledger_rows(adapter)] == ["nudge-undelivered"]
 
 
 def test_paste_blob_before_enter_refuses_with_its_own_diagnostic(
@@ -244,9 +288,15 @@ def test_paste_blob_before_enter_refuses_with_its_own_diagnostic(
     _Args.message = "still-pending"
     calls = _stub_nudge(adapter, monkeypatch, ["› [Pasted Content 1024 chars]"], tmp_path)
     assert adapter.cmd_nudge(_Args()) == adapter.EX_MISCONFIG
-    assert calls == [("send-keys", "-l", "-t", "throwaway:shell", "--", _Args.message)]
+    assert calls == [("send-keys", "-l", "-t", "throwaway:shell", "--", _Args.message),
+                     ("send-keys", "-t", "throwaway:shell", "C-u")]
     assert "paste blob" in capsys.readouterr().err
-    assert not adapter.LEDGER.exists()
+    # C51: a failed delivery is now ROLLED BACK (Ctrl-U, never Ctrl-C) and RECORDED.
+    # The invariant this line has always pinned is unchanged and is what matters: no
+    # `nudge` row may exist for a message that was not submitted. What is new is that
+    # the non-delivery leaves evidence instead of vanishing.
+    assert not [r for r in _ledger_rows(adapter) if r["kind"] == "nudge"]
+    assert [r["kind"] for r in _ledger_rows(adapter)] == ["nudge-undelivered"]
 
 
 def test_swallowed_enter_reports_unsubmitted_and_fails_closed(
@@ -260,9 +310,15 @@ def test_swallowed_enter_reports_unsubmitted_and_fails_closed(
     assert calls == [
         ("send-keys", "-l", "-t", "throwaway:shell", "--", _Args.message),
         ("send-keys", "-t", "throwaway:shell", "Enter"),
+        ("send-keys", "-t", "throwaway:shell", "C-u"),      # C51 rollback, never C-c
     ]
     assert "text present but unsubmitted" in capsys.readouterr().err
-    assert not adapter.LEDGER.exists()
+    # C51: a failed delivery is now ROLLED BACK (Ctrl-U, never Ctrl-C) and RECORDED.
+    # The invariant this line has always pinned is unchanged and is what matters: no
+    # `nudge` row may exist for a message that was not submitted. What is new is that
+    # the non-delivery leaves evidence instead of vanishing.
+    assert not [r for r in _ledger_rows(adapter) if r["kind"] == "nudge"]
+    assert [r["kind"] for r in _ledger_rows(adapter)] == ["nudge-undelivered"]
 
 
 def test_enter_that_rewrote_the_composer_fails_closed(
@@ -279,7 +335,12 @@ def test_enter_that_rewrote_the_composer_fails_closed(
     _stub_nudge(adapter, monkeypatch, [pending, rewritten], tmp_path)
     assert adapter.cmd_nudge(_Args()) == adapter.EX_MISCONFIG
     assert "rewrote the composer" in capsys.readouterr().err
-    assert not adapter.LEDGER.exists()
+    # C51: a failed delivery is now ROLLED BACK (Ctrl-U, never Ctrl-C) and RECORDED.
+    # The invariant this line has always pinned is unchanged and is what matters: no
+    # `nudge` row may exist for a message that was not submitted. What is new is that
+    # the non-delivery leaves evidence instead of vanishing.
+    assert not [r for r in _ledger_rows(adapter) if r["kind"] == "nudge"]
+    assert [r["kind"] for r in _ledger_rows(adapter)] == ["nudge-undelivered"]
 
 
 @pytest.mark.parametrize("message", [
@@ -320,7 +381,12 @@ def test_one_frame_of_absence_during_repaint_is_not_submission(
     adapter._VERIFY_TIMEOUT_S = 0.3          # allow the poll to see the second frame
     assert adapter.cmd_nudge(_Args()) == adapter.EX_MISCONFIG
     assert "text present but unsubmitted" in capsys.readouterr().err
-    assert not adapter.LEDGER.exists()
+    # C51: a failed delivery is now ROLLED BACK (Ctrl-U, never Ctrl-C) and RECORDED.
+    # The invariant this line has always pinned is unchanged and is what matters: no
+    # `nudge` row may exist for a message that was not submitted. What is new is that
+    # the non-delivery leaves evidence instead of vanishing.
+    assert not [r for r in _ledger_rows(adapter) if r["kind"] == "nudge"]
+    assert [r["kind"] for r in _ledger_rows(adapter)] == ["nudge-undelivered"]
 
 
 def test_unreadable_pane_fails_closed(
@@ -333,8 +399,14 @@ def test_unreadable_pane_fails_closed(
     })
     monkeypatch.setattr(adapter, "_tmux", lambda *_a: (0, ""))
     monkeypatch.setattr(adapter, "_composer_text", lambda _t: (None, "no cursor position"))
+    monkeypatch.setattr(adapter, "_read_composer_row",
+                        lambda _t, _f=False: (None, "no cursor position"))
+    monkeypatch.setattr(adapter, "composer_faint_is_placeholder", lambda _cfg, _a: False)
     assert adapter.cmd_nudge(_Args()) == adapter.EX_MISCONFIG
-    assert "unavailable before Enter" in capsys.readouterr().err
+    # C51: the FIRST thing an unreadable pane now fails is the pre-typing baseline
+    # read, which is strictly earlier than the old pre-Enter check — so nothing is
+    # typed at all. Same fail-closed verdict, one step sooner.
+    assert "could not read the composer" in capsys.readouterr().err
     assert not adapter.LEDGER.exists()
 
 
@@ -475,7 +547,10 @@ def test_c6_refuses_when_the_pane_never_accepts_the_text(tmp_path: Path) -> None
             message = "this text can never land"
 
         assert adapter.cmd_nudge(Args()) == adapter.EX_MISCONFIG
-        assert not adapter.LEDGER.exists()
+        # C51: the non-delivery is now RECORDED (that is the fix — a stranded nudge
+        # used to leave no trace anywhere). What must never appear is a `nudge` row.
+        assert not [r for r in _ledger_rows(adapter) if r["kind"] == "nudge"]
+        assert [r["kind"] for r in _ledger_rows(adapter)] == ["nudge-undelivered"]
     finally:
         _tmux("kill-session", "-t", session)
         assert _tmux("has-session", "-t", session).returncode != 0
@@ -1253,7 +1328,9 @@ def _c35_probe(tag: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *,
                state: str = "working", quiet_for: float | None = 300.0,
                dead: str = "0", attached: str = "1",
                display_rc: int = 0, hb_override_quiet_s: float = 120.0,
-               hb_age_s: float = 0.0, exact_activity: float | None = None) -> dict:
+               hb_age_s: float = 0.0, exact_activity: float | None = None,
+               pane_busy: tuple = (None, "marker unreadable — isolating the quiescence "
+                                         "arithmetic these cases are about")) -> dict:
     """Probe one synthetic pane whose quiet time and heartbeat are both dialled in.
 
     `quiet_for` is expressed in SECONDS AGO and converted to the epoch stamp tmux
@@ -1297,7 +1374,13 @@ def _c35_probe(tag: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *,
         return 0, ""
 
     monkeypatch.setattr(adapter, "_tmux", fake_tmux)
-    return adapter.probe(_C35_CONFIG, "main-a", 20.0, 900.0, hb_override_quiet_s)
+    # C52 (2026-08-12): the pane's generation marker is consulted BEFORE quiescence, so
+    # every case built on this helper declares the marker UNREADABLE by default — the
+    # one branch in which the C35 threshold is still the deciding signal, and therefore
+    # the only place its arithmetic can be measured without measuring C52 instead.
+    # Cases that want the marker to speak pass their own `pane_busy`.
+    return adapter.probe(_C35_CONFIG, "main-a", 20.0, 900.0, hb_override_quiet_s,
+                         pane_busy_fn=lambda _t: pane_busy)
 
 
 def _working_blocked(p: dict) -> bool:
@@ -1536,7 +1619,16 @@ def test_c35_probe_explains_the_override_in_both_directions(
     adapter.cmd_probe(PA())
     out2 = capsys.readouterr().out
     assert "hb-override" in out2 and "not applied" in out2
-    assert "heartbeat believed" in out2
+    # C52 (2026-08-12): this used to assert the words "heartbeat believed", and that
+    # phrasing WAS the defect one layer down — a refusal that reports a stale claim as
+    # though it had been weighed and accepted. With no corroborating signal the honest
+    # answer is UNDETERMINED, and probe must print it, because a refusal nobody can
+    # tell from "it really is working" is what left an idle main unreachable for
+    # thirteen minutes. The invariant the line was defending — a refusal is never
+    # unexplained — is asserted here, harder.
+    assert "UNDETERMINED" in out2, out2
+    assert "working-claim" in out2
+    assert "not because the heartbeat was believed" in out2
 
 
 def test_c35_an_overriding_nudge_is_recorded_as_such_in_the_ledger(

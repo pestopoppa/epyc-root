@@ -4,6 +4,10 @@
 Scope (extended 2026-07-30, audit D2/D13 follow-up):
 - every role/shared file under agents/ (not just the fixed governance set)
 - docs/guides/agent-workflows/*.md
+- CLAUDE.md (added 2026-08-12): it is the ONLY file a main auto-loads at startup —
+  AGENTS.md is a symlink to it, there are no @-imports and no SessionStart hook — so
+  every digest+anchor link that makes a shared rule inheritable lives there. Those
+  anchors were the one class of governance link nothing checked.
 - anchor-bearing links (path.md#anchor): the file must exist AND the anchor must
   match a heading in it (GitHub-style slug), so a deleted section is caught.
 """
@@ -16,6 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 FIXED_FILES = [
+    ROOT / "CLAUDE.md",
     ROOT / "agents" / "README.md",
     ROOT / "agents" / "AGENT_INSTRUCTIONS.md",
     ROOT / "docs" / "guides" / "agent-workflows" / "INDEX.md",
@@ -58,6 +63,9 @@ def resolve(ref: str, src: Path) -> Path:
         return Path("/dev/null")
     cleaned = ref.split(":", 1)[0]
     if "*" in cleaned or "<" in cleaned or ">" in cleaned:
+        return Path("/dev/null")
+    # Template paths naming a shape rather than a file (progress/YYYY-MM/YYYY-MM-DD.md).
+    if any(tok in cleaned for tok in ("YYYY", "MM-DD", "NNN")):
         return Path("/dev/null")
     if cleaned.startswith("/"):
         return Path(cleaned)

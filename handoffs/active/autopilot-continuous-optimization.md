@@ -1947,6 +1947,45 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
 - [ ] `onnxruntime` is used at runtime by `src/retrieval/cross_encoder.py`, declared nowhere in
       `[project]` dependencies, and is not installed — **cross-encoder reranking is silently off in
       production**.
+  - [x] **DECLARED ✅ 2026-08-12** — orchestrator `fa3daeac` adds `onnxruntime>=1.20.0` and
+        `tokenizers>=0.22.2` to `[project] dependencies` (the sole manifest; there is no
+        `requirements*.txt`), with a provenance comment in the same style as the `matplotlib` entry.
+        `tokenizers` is the same defect: imported directly by all three encoder modules, reaching
+        the venv only transitively via `dspy -> litellm`. Six counted guards in
+        `tests/unit/test_retrieval_deps.py`, incl. a positive control that fails a synthetic
+        manifest declaring onnxruntime only in an extra — the B13 state exactly. Verified
+        read-only: `.venv/bin/python -c "import onnxruntime"` -> `ModuleNotFoundError`;
+        `/mnt/raid0/llm/models/ms-marco-minilm-l6-v2-onnx` DOES hold 8 graphs + `tokenizer.json`,
+        so the model files were never the blocker.
+  - [x] **PREMISE CORRECTED ✅ 2026-08-12 — "silently off *purely* because of the missing dep" is
+        wrong, and the two real findings are bigger.** (1) Rerank is off by **measured policy, not
+        by accident**: `kb_rag.py:60` `_RERANK_DEFAULT = _env_flag("KB_RAG_RERANK")` is False and
+        `KB_RAG_RERANK` is set nowhere, deliberately — the K7 verdict in
+        [`internal-kb-rag.md`](internal-kb-rag.md) records rerank as *"not default-safe"*; the
+        sibling `web_research_rerank` is likewise pinned off in
+        `scripts/autopilot/operator_seed_strategies.yaml`. Installing the dep will NOT turn
+        reranking on. (2) What the missing dep actually breaks is the **unconditional first-stage
+        KB-RAG path** — `src/retrieval/colbert_encoder.py` imports `onnxruntime` and is called at
+        `kb_rag.py:259,266,408,564` with no flag in front of it. That is the load-bearing breakage.
+  - [x] **FAIL-OPEN FILED ✅ 2026-08-12 — belongs to the family catalogued 2026-08-11.** All three
+        loaders (`cross_encoder.py:92`, `colbert_encoder.py:66`, `colbert_reranker.py:86`) catch
+        `ImportError`, emit one `logger.warning`, return False, and the callers return their input
+        list unmodified — no exception, no sentinel, no `ce_score` key. **Nothing in the system
+        notices**: `src/api/` contains zero references to onnx/colbert/cross_encoder, and no
+        preflight, health probe or freshness envelope asserts encoder availability.
+        `federation.encoder_status()` does compute `onnxruntime_importable` but is wired to no
+        probe. Two-vs-three-state split: `src/tools/web/research.py:1092` emits a real
+        `"reranked": <bool>` marker; the KB-RAG path emits none, so a caller cannot distinguish a
+        reranked result from a degraded one. The workaround is itself the evidence —
+        `src/retrieval/federation.py:89-176` grew a three-tier site-packages search
+        (`ensure_encoder_importable`) purely to route around the undeclared dependency, and
+        `tests/unit/test_retrieval.py:538` documents the gap in a comment instead of failing.
+  - [ ] **OPERATOR: install the two declared deps into the live orchestrator `.venv`.** The
+        declaration half is done; the install half was deliberately not run — `uv lock` / `uv sync`
+        against a live shared environment is the environment owner's call, not a subagent's.
+        `uv.lock` already resolves `onnxruntime 1.26.0` and `tokenizers 0.22.2` via the
+        `colbert-export` extra, so a re-lock should not move any version, but the two new DIRECT
+        requirements are not yet recorded in it.
 - [ ] The ~77-test retired-topology failure bucket.
 - [ ] `MEASUREMENT.md:148-158` still states the durability checker "fails on any citation resolving
       outside the repository" — now false after the retarget. Human-amendment-only; no owner assigned.
@@ -1957,7 +1996,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       trials restart the API to apply flag changes; pausing between the stop and the start leaves the
       stack with **no API**, and AutoPilot then retries `Connection refused` forever rather than
       failing loudly. Caused a live outage 2026-08-03. Nothing in the preflight or the gate detects it.
-- [ ] **An eval scores an unreachable API as WRONG, not as infra-failed.** A T1 calibration ran
+- [x] **An eval scores an unreachable API as WRONG, not as infra-failed.** A T1 calibration ran
       70/100 questions at `0% correct` purely because the API was down; only `--dry-run` prevented a
       0.000 baseline reaching production state. Reliability should have collapsed the run long before
       70 questions.
@@ -2012,12 +2051,47 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
 
 ### New tasks from this work
 
-- [ ] **An HTTP 400 / unreachable endpoint is scored as WRONG, not as infra-failed.** This is the root
+- [x] **An HTTP 400 / unreachable endpoint is scored as WRONG, not as infra-failed.** This is the root
       cause of the 2026-08-03 incident where a T1 calibration ran 70/100 questions at `0% correct`
       purely because the API was down. It is also why an oversized prompt hitting a per-slot 400 would
       appear as a permanent, misattributed quality regression rather than a capacity problem. The
       reliability floor exists but did not collapse the run until far too late. Two failure modes, one
       cause: **absence is being scored as failure.**
+      ✅ 2026-08-12 — orchestrator `2f41c3ad` (+ `49b02381`). **The duplicate at `:1960` is the same
+      defect and is closed by the same change.** The classifier was a SUBSTRING MATCH over the
+      exception's `str()` — fail-open by construction, because it had to RECOGNISE a failure to
+      exclude it. `"server error"` matched and `"client error"` did not, so a per-slot context
+      overflow (HTTP 400) was reported as a permanent quality regression, and each such row emitted
+      `success_reward(False)` into MemRL — **poisoning the learned router**, not just the score.
+      Worst case found: a `ReadTimeout("")` with an EMPTY message was scored WRONG in BOTH the
+      seeding path and eval_tower, because the error string was falsy.
+      Now classified STRUCTURALLY from `failure_reason` / `failure_provenance.class` / `_meta.reason`
+      / HTTP status / in-band `[ERROR:]` banner / empty zero-token replies, with the substring list
+      demoted to a last-resort fallback. *(Verified by `mainC`: with structural facts present,
+      connection-refused, HTTP-400-overflow, empty-message timeout and empty-answer all return
+      `infra_failed`, while a genuine wrong answer stays `scored`.)*
+      **The aggregate fix is the honest half.** Infra rows were already outside the quality
+      denominator — what was missing is that the exclusion was INVISIBLE. `quality` is a float on the
+      Pareto/SafetyGate contract and cannot become `None`, so an all-infra run now still reports
+      `0.0` but labels it a PLACEHOLDER and logs at ERROR, and carries `quality_measured`,
+      `infra_failed_count` and a reason histogram. An all-wrong run and an all-infra run share a
+      `quality` and differ everywhere else — which is exactly the 2026-08-03 incident's blind spot.
+  - [ ] **PRE-EXISTING: `eval_tower` and the seeding path DISAGREE about a `task_failure`, so the same
+    failure yields different quality depending on which subsystem measured it.** `eval_tower:1339`
+    excludes every row whose disposition is not `SCORED` — including `task_failed`; the seeding path
+    scores a non-infra `task_failure` as WRONG. Both are defensible in isolation and that is exactly
+    why it survived: neither looks wrong on its own. But it makes a quality number NON-COMPARABLE
+    across the two producers, which is a measurement-comparability defect rather than a bug in
+    either. Surfaced by the B4 work and NOT introduced by it — the new disposition taxonomy is what
+    made the disagreement legible. *(Verified by `mainC`: an HTTP-400 client error and an unparseable
+    200 body both classify `task_failed`, and `legacy_error_type` maps that to `task_failure`.)*
+    Needs one ruling, applied to both, rather than two local fixes.
+  - [ ] **OPERATOR DECISION, deliberately not taken by the subagent:** `:1960` also says reliability
+    should have collapsed the run long before 70 questions. Early abort is a live-control-loop policy
+    change — *how many consecutive infra-failed rows should abort an in-flight batch, and abort or
+    continue-and-mark?* `RELIABILITY_FLOOR = 0.8` already blocks such a run at the gate (as RETRY),
+    but only at the END, after the questions are spent. Everything not depending on that answer is done.
+
 - [ ] **Regenerate the E8 context coverage scan.** `artifacts/operator/e8_quality_context_coverage_v4_20260727.json`
       reports `required_tokens` in BYTES and was taken against the pre-2026-07-30 fleet. Every
       downstream artifact built on it — including the Options A-D decision package and the two 19 MB
@@ -2057,6 +2131,30 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `state_write_lock`, and re-reads the file after writing to prove the stamp survived.
 
 ### New tasks
+- [x] **Eval fan-out silently collapsed for every NUMA mode except `quarter`.** ✅ 2026-08-12 —
+  orchestrator `2f9bd733`. `eval_tower.py:1693` tested `stack_numa_mode == "quarter"` and everything
+  else fell through the same branch, so `full`, `both`, **unset** and any typo were indistinguishable.
+  Replaced with a TOTAL resolution returning `(mode, reason)` where reason ∈ {declared, unset,
+  unrecognised} and unknown resolves to a sentinel asserted **not** to be a member of the valid set —
+  "I could not tell" is now a structural result rather than a fall-through.
+  **The dispatch premise was wrong and the subagent corrected it:** `half` is NOT a mode. The
+  vocabulary is `{full, quarter, both}` (`scripts/server/stack_numa_mode.py:9`); `half` is a
+  `cpu_shape_class`, so a halves-only fleet launched as `--numa-mode quarter` was never hitting this.
+  What was hitting it is `both`, `full`, unset and typos. *(Verified by `mainC`: the mode set really
+  is those three, and the live resolver returns `unrecognised` for `half`/`typo-mode`, `unset` for
+  `""`/`None`, and is case-insensitive.)*
+  **Two judgement calls worth keeping.** The conservative RETURN VALUE was deliberately kept — WP-14
+  fails closed to the bound when the manifest is phantom, and that is a real safety property; only the
+  SILENCE was the defect, so unknown now emits one `log.error` naming the reason, the role, the bound
+  held, and **the disjoint live subset that was forfeited**. And RAISING was rejected on call-site
+  grounds: the sole caller wraps this in `except Exception: caps.append(1)`, so a raise would have been
+  converted straight back into a silent 1 — the same bug wearing a `raise`.
+  Tests: 29, top-level and reporter-counted; author mutation-checked both directions (3 failed / 26
+  passed, and 7 failed / 22 passed on a second mutant), restored to 29 passed.
+- [ ] **Queue-hygiene correction, routed to the coordinator:** the B-bucket cited
+  `numa-topology-cutover-resume-20260730.md:327` for this defect. That row is **P1-7
+  `vision_escalation` has a PHANTOM 5-port fleet** — a different item, still open and untouched. The
+  code defect was real; the row pointer was not. Screening caught it before dispatch.
 
 - [ ] **External processes must never write daemon-owned state fields while the daemon lives.**
       `save_state(merge_control=True)` re-reads only `_EXTERNAL_CONTROL_FIELDS` (`paused`,
@@ -2180,21 +2278,39 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       three languages. `substring` scoring therefore asks the model to reproduce a 100-char prefix
       of the reference solution. That scores *something*, but it is not obviously "did it fix the
       bug" — worth deciding whether this suite measures what its name claims.
-- [ ] **Retire or rebuild the debugbench oracle** — it is live and contributing confident,
-      meaningless passes to aggregate scores. Rebuild from the buggy↔solution DIFF, not a solution
-      prefix; widening 100 → 500 does not fix it. Also re-check the sibling suites: the
-      `livecodebench` comment-only `test_code` rows above suggest the ingestion path has more than
-      one defect. *(Opened 2026-08-12 by `mainC` — the audit DECIDED the question; this is the
-      remediation it implies, and it needs an owner with the eval pipeline.)*
-      ✅ 2026-08-12 — **DECIDED: it does not. The oracle is VACUOUS.** All four rows in both core
-      pools are byte-exact 100-char prefixes of the upstream solution (upstream median 661, only 3
-      of 4,253 are ≤100 — so the truncation is OURS, not upstream). The decisive test was not
-      whether the prefix is uninformative but whether it is **already present in the buggy code the
-      model was handed** — it is, on 4 of 4, so a model that changes nothing and echoes its input
-      PASSES. Corpus-wide the construction is vacuous on 3,233 of 4,250 rows (76.1%), making it a
-      property of the design. Every debugbench score under this config is uninterpretable.
-      Evidence: `artifacts/audit/debugbench-oracle-vacuity-20260812.md` (root `e6e3644a`).
-      Guard shipped so this cannot recur silently: orchestrator `cc81d0ff`.
+- [x] **Retire or rebuild the debugbench oracle** ✅ 2026-08-12 — **REBUILT, not retired.**
+  orchestrator `53f7aea0`, research `99f22523`, evidence `c9fb6573`.
+  **The shipped oracle was broken in BOTH DIRECTIONS AT ONCE, which the morning audit did not catch.**
+  Echoing the buggy input passes (50.5% of rows) — *and the CORRECT reference solution FAILS* (32.2%).
+  Mechanism: the 100-char cut lands mid-token and `_contains_text_unit` requires a word boundary.
+  *(Verified by `mainC` on our own four core-pool rows through the real scorer: the reference solution
+  fails on THREE of four — `new Stac`, `int dist= p`, `vector<int>>&vi` all end mid-token.)* So a
+  debugbench score is not merely uninterpretable, it is **anti-correlated on some rows**: the wrong
+  answer passes and the right answer fails. Separately, the 1,414 python rows used `code_execution`
+  with no `test_code`, a config where the scorer returns `False` unconditionally — they could never pass.
+  **The new oracle is `code_patch`**: `required_lines` (in solution, absent from buggy) +
+  `forbidden_lines` (in buggy, absent from solution). Required matches whitespace-free so re-indenting
+  does not fail a correct fix; forbidden matches as a whole normalised LINE, never a substring, because
+  buggy `return idx;` is a substring of correct `return idx + 1;`.
+  **The discrimination check is a BUILD GATE, not a report** — every row is re-scored against 3 echo
+  answers and 4 correct answers and dropped unless all 3 fail and all 4 pass. Vacuity 0% on emitted
+  rows (0.54% ungated: upstream's `illegal comment` subtype injects bugs by commenting a correct line
+  OUT, so the required text is still in the input — those 20 are dropped). Reference pass 100%.
+  Coverage 3,676/4,253 = 86.4%. Diffs are median 2 changed lines, which is why this instrument fits.
+  **Two mutations SURVIVED first** — each fixture rejected echoes via the *other* half, leaving each
+  half unpinned. Fixed by adding the two answers where each half is the only thing that can see the
+  defect. That is the mutation test doing its job on the test suite itself.
+- [ ] **The live pool still carries the OLD oracle** — the rebuild takes effect on the next pool
+  rebuild, which is a measurement-instrument boundary (`eval_tower` stamps instrument identity) and
+  needs scheduling by the pool owner. Until then the 4 debugbench rows in `core_v2` still score
+  vacuously, and **historical debugbench scores remain uninterpretable and were not re-derived**.
+- [ ] **Residual guard gap:** `vacuous_rows()` only inspects the substring family, so a *programmatic*
+  row whose oracle is input-satisfiable would not be flagged. Debugbench is covered by its own build
+  gate; nothing generic covers that class.
+- [ ] **Stated limit, not hidden:** whether an ALTERNATIVE correct repair passes is bounded by argument
+  (4-added-line cap + the prompt's "fix ONLY the bug"), not by measurement — no second reference exists
+  in the data and upstream ships no executable tests, so no oracle over this dataset can do better.
+  Test-pinned rather than left implicit.
 - [ ] **Design-lens review of AutoPilot dispatched** (workflow `wf_50aef395-2a4`) — essential vs
       incident-scarred vs speculative, against Karpathy's autoresearch. Operator's sharpening:
       scar tissue is not only "justified, keep it" — a CLUSTER of scars is evidence the underlying

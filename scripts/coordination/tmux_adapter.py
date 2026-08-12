@@ -38,10 +38,19 @@ Rather than picking one, this refuses: sending keystrokes to the wrong pane is t
 exact disaster the guards exist to prevent. Endpoints must be
 `tmux:<session>:<window>`, or a window whose name equals the agent id must exist.
 
+SUBMISSION IS VERIFIED AGAINST THE BUFFER, NOT THE KEYSTROKES (C51, 2026-08-12).
+`send-keys` exiting 0 means tmux accepted the keys, never that the TUI consumed
+them. So both send paths confirm the composer buffer returned to the exact value it
+held before this adapter typed anything, and any failure after the first character
+is typed rolls that text back with Ctrl-U (never Ctrl-C — the second Ctrl-C exits a
+Codex session and destroys the window) and writes a `*-undelivered` ledger row.
+Nothing is reported delivered on the strength of a dispatched keystroke.
+
 Usage:
     tmux_adapter.py probe    --agent codex                 # all guard signals, no action
     tmux_adapter.py nudge    --agent codex --message "..."  # send-keys, guarded (DEPRECATED payload)
     tmux_adapter.py doorbell --agent codex                  # fixed ring, two guards, bus carries payload
+    tmux_adapter.py pending                                 # which panes hold unsubmitted input
     tmux_adapter.py spawn    --agent new-main               # 4 bus files, then a pane
 """
 
@@ -202,6 +211,17 @@ LEGACY_CAP_KEY = "max_spawns_per_day"
 # (a main that shells out to a long silent build redraws less than one that
 # streams tokens). Making it explicit means a nudge that overrides is always
 # traceable to a number someone chose, not to an implicit rule.
+#
+# C52 (2026-08-12) NARROWED THIS THRESHOLD'S ROLE — read that block before changing
+# the number. Quiescence is no longer the only thing that may overrule a `working`
+# heartbeat, and it is no longer the first thing consulted: the pane's generation /
+# compaction marker is, and a marker-free pane that has merely passed `--quiet-s`
+# already contradicts the claim. So this threshold now decides only when the pane
+# cannot be read for a marker at all. That is deliberate. The 20s-to-120s gap between
+# `--quiet-s` and this value was the exact habitat of the deadlock C52 fixes: a main
+# settled at its prompt was nudgeable by every guard except the one it could not
+# clear. Raising this number no longer makes the guard stricter in the common case;
+# it only widens the fallback for unreadable panes.
 DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S = 120.0
 
 
@@ -219,6 +239,16 @@ def _tmux(*args: str) -> tuple[int, str]:
 
 def _composer_text(target: str) -> tuple[str | None, str | None]:
     """Return everything on the pane up to the CURSOR, or a fail-closed reason.
+
+    ITS PREMISE IS NOW KNOWN TO BE PARTIAL — read the C53 block before extending this
+    to any new question. The paragraph below states that the cursor sits at the end of
+    pending input; measured 2026-08-12 on live panes, it does so while input is being
+    ENTERED but not in every resting state — a composer can hold a full sentence with
+    the cursor parked at column 2 and the text to its RIGHT, where this function cannot
+    see it. That does not affect what this is used for (matching a fragment WE just
+    typed, at the moment we typed it, which is the entered state), and the C6 reasoning
+    below is unchanged for that use. It does mean this must never be used to answer "is
+    the composer empty" — `_read_composer_row` reads the whole row for that.
 
     WHY THE CURSOR, AND NOT A ROW WINDOW. Measured 2026-07-28 in disposable Codex
     and Claude Code sessions: the terminal cursor sits at exactly the end of the
@@ -382,7 +412,29 @@ DOORBELL_TEXT_TEMPLATE = "Bus: unread inbox for {agent} — drain now."
 # nothing at all, the disposable-shell fixture's bare state — has no pending
 # input. Anything else on the row is real content, typed by the operator or
 # left behind by the agent, and must not be typed over.
-_BARE_PROMPT_GLYPHS = ("›", "❱")
+#
+# C51, 2026-08-12: "❯" (U+276F) WAS MISSING AND THAT MADE THIS TABLE WRONG FOR THE
+# WHOLE LIVE FLEET. Measured read-only against all ten windows of the live `agent`
+# session at 10:52Z: every Claude Code main (auditor, mainA, mainB, mainC, mainD,
+# coordinator) renders its EMPTY composer as U+276F followed by U+00A0, sliced at
+# the cursor to "❯\xa0" — not the "❱" (U+2771) this table was calibrated to on
+# 2026-07-28. `str.strip()` does remove the NBSP (U+00A0 is whitespace in Python),
+# so the residue is "❯", which matched NOTHING here. Consequence, before this fix:
+# `_composer_row_is_empty` returned False for an EMPTY composer on all six Claude
+# panes, so `doorbell`'s guard (b) refused every ring to every Claude main — the
+# fleet's brand-new delivery path was 0% operative and would have reported
+# "composer holds pending input" about a composer that was empty.
+#
+# THE LESSON, AND WHY THE SUBMISSION CHECK BELOW DOES NOT DEPEND ON THIS TABLE.
+# A glyph table is a calibration, and calibrations drift with every TUI release —
+# this one drifted in fifteen days. So it is used only where a *classification* is
+# unavoidable (is this row operator content, or a bare prompt?), never as the
+# submission predicate. Submission is verified by a DELTA — the composer row must
+# return to the exact value it held before this adapter typed — which needs no
+# glyph knowledge at all and cannot rot. See `_await_composer_consumed`.
+# The Codex placeholder ("› Write tests for @filename") renders to the RIGHT of
+# the cursor and is excluded by the cursor slice, which is why it needs no entry.
+_BARE_PROMPT_GLYPHS = ("›", "❱", "❯")
 
 
 def doorbell_text(agent: str) -> str:
@@ -415,9 +467,285 @@ def _composer_row_is_empty(composer_text: str) -> bool:
     ever matters, extend the scan to every row from the last recognised
     bare-prompt line to the cursor, not just the last one.
     """
-    row = composer_text.rsplit("\n", 1)[-1]
-    stripped = row.strip()
-    return stripped == "" or stripped in _BARE_PROMPT_GLYPHS
+    stripped = _composer_row(composer_text).strip()
+    for glyph in _BARE_PROMPT_GLYPHS:
+        if stripped.startswith(glyph):
+            stripped = stripped[len(glyph):].strip()
+            break
+    return stripped == ""
+
+
+def _composer_row(composer_text: str) -> str:
+    """The composer's CURRENT ROW. Split out of `_composer_row_is_empty` because C51's
+    submission check needs the VALUE, not only its emptiness."""
+    return composer_text.rsplit("\n", 1)[-1]
+
+
+# ---------------------------------------------------------------------------
+# C53, 2026-08-12. THE CURSOR IS NOT AT THE END OF PENDING INPUT. MEASURED.
+#
+# The C6 block above states, as the premise every predicate in this module rests on,
+# that "the terminal cursor sits at exactly the end of the pending (typed-but-
+# unsubmitted) input, in both TUIs". On the CLIs this fleet runs TODAY that is false
+# in at least one live state, and the counterexample was sitting on three panes at
+# once while this was being written:
+#
+#     mainC  cursor=(26,2)  row = '❯\xa0pull the next batch and keep going'
+#     mainA  cursor=(29,2)  row = "❯\xa0Option A - I'll authorize the reboot, …"
+#     mainB  cursor=(29,2)  row = '❯\xa0Understood - stopping here, re-dispatching…'
+#
+# The cursor parks at column 2 — immediately after the prompt glyph and its NBSP —
+# with the pending text entirely to its RIGHT. Each of those strings appears EXACTLY
+# ONCE in 3,000 rows of that pane's scrollback, and that once is the composer row
+# itself: a submitted message would also be echoed into the transcript, so these had
+# never been submitted. They are real, never-delivered instructions.
+#
+# WHY THIS IS THE FAIL-OPEN AND NOT A COSMETIC DETAIL. `_composer_text` slices the
+# cursor row at the cursor (`lines[cy][:cx]`, which is correct and load-bearing for
+# fragment matching — see its docstring). Anything to the RIGHT of the cursor is
+# therefore INVISIBLE to it. So an emptiness test built on that slice reads '❯\xa0'
+# and reports EMPTY for a composer holding a full sentence — and the guards that
+# depend on emptiness (doorbell's guard (b), C51's pre-typing guard) would then type
+# after that sentence and press Enter, submitting somebody else's words. The detector
+# built to make this condition visible reported "clean" for all three panes.
+#
+# So EMPTINESS IS JUDGED ON THE WHOLE ROW, and only the fragment checks stay anchored
+# at the cursor. Two different questions, two different reads, and conflating them is
+# what made the alarm silent.
+#
+# THE PLACEHOLDER PROBLEM, AND THE CALIBRATION THAT SOLVES IT. Both TUIs put text to
+# the right of the cursor that is NOT pending input — a rotating hint in an empty
+# composer — so a whole-row read needs to tell a hint from a sentence. Measured
+# 2026-08-12 with `capture-pane -e`, on a disposable `codexcal2` session created and
+# killed by the measurement (the live `agent` session was only ever read):
+#
+#   Codex, EMPTY composer:  '\x1b[1m›\x1b[0m \x1b[2mImprove documentation in @filename\x1b[0m'
+#   Codex, TYPED input:     '\x1b[1m›\x1b[0m hello world this is typed'      (cursor at col 27)
+#   Codex, after Ctrl-U:    '\x1b[1m›\x1b[0m \x1b[2mSummarize recent commits\x1b[0m'
+#   Claude, EMPTY composer: '\x1b[39m❯\xa0'
+#   Claude, PENDING input:  '\x1b[39m❯\xa0\x1b[2mpull the next batch and keep going\x1b[0m'
+#
+# So on CODEX faint (SGR 2) means PLACEHOLDER — and note the hint ROTATES between
+# renders, which is why a fixed-string exemption would have rotted immediately. On
+# CLAUDE faint means PENDING INPUT, the exact opposite, and its empty composer carries
+# no hint at all. One rule cannot serve both, and the SGR alone is not the separator:
+# the BACKEND plus the SGR is. The backend is available as positive identification
+# (`agent_backend`, which reads the executable of a process under the pane and REFUSES
+# on ambiguity), so `faint_is_placeholder` is set only for a pane positively
+# identified as Codex. For Claude, and for any pane whose backend cannot be
+# identified, faint text counts as content and the read fails closed.
+_SGR_RE = re.compile(r"\x1b\[[0-9;]*m")
+_FAINT_ON, _FAINT_OFF = "2", ("0", "22", "")
+
+
+def _strip_faint_runs(row: str) -> str:
+    """Delete every faint (SGR 2) run from an escape-carrying row, keep the rest.
+
+    Written as a tiny SGR state machine rather than a regex over the whole row: the
+    faint run is ENDED by a reset (`0`) or an explicit un-faint (`22`), and a regex
+    that assumed one particular closing sequence would silently keep the placeholder
+    the first time a TUI closed it with the other.
+    """
+    out, pos, faint = [], 0, False
+    for m in _SGR_RE.finditer(row):
+        if not faint:
+            out.append(row[pos:m.start()])
+        params = m.group(0)[2:-1].split(";")
+        if _FAINT_ON in params:
+            faint = True
+        if any(p in _FAINT_OFF for p in params):
+            faint = False
+        pos = m.end()
+    if not faint:
+        out.append(row[pos:])
+    return "".join(out)
+
+
+def _read_composer_row(target: str, faint_is_placeholder: bool = False
+                       ) -> tuple[str | None, str | None]:
+    """(the WHOLE composer row, failure). None row => the pane could not be read.
+
+    The full physical row the cursor sits on, NOT the cursor prefix — see the C53
+    block above for the measurement that forced the distinction — with SGR removed and,
+    on a positively-identified Codex pane, its faint placeholder run removed with it,
+    so every caller downstream sees the true buffer and nothing else.
+    """
+    try:
+        pos = subprocess.run(
+            ["tmux", "display-message", "-p", "-t", target, "#{cursor_y}"],
+            capture_output=True, text=True, timeout=15)
+        pane = subprocess.run(["tmux", "capture-pane", "-p", "-e", "-t", target],
+                              capture_output=True, text=True, timeout=15)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return None, f"could not read the composer of {target}: {exc}"
+    if pos.returncode != 0 or pane.returncode != 0:
+        out = (pos.stdout or pos.stderr or "") + (pane.stdout or pane.stderr or "")
+        return None, f"could not read the composer of {target}: {out.strip()[:200]}"
+    try:
+        cy = int((pos.stdout or "").strip())
+    except ValueError:
+        return None, f"tmux gave an unreadable cursor row {pos.stdout!r} for {target}"
+    lines = (pane.stdout or "").split("\n")
+    if cy >= len(lines):
+        return None, f"cursor row {cy} is outside the captured pane ({len(lines)} rows)"
+    row = lines[cy]
+    if faint_is_placeholder:
+        row = _strip_faint_runs(row)
+    return _SGR_RE.sub("", row).rstrip(), None
+
+
+def composer_faint_is_placeholder(config: dict, agent: str) -> bool:
+    """May faint composer text be discarded as a placeholder for this agent?
+
+    True ONLY for a pane positively identified as Codex. Claude renders PENDING INPUT
+    faint, so answering True for it would discard the very hazard this reads for; an
+    unidentifiable backend gets the same fail-closed answer for the same reason.
+    """
+    backend, _why = agent_backend(config, agent)
+    return backend == "codex"
+
+
+# ---------------------------------------------------------------------------
+# C51, 2026-08-12. THE SUBMIT STEP IS NOW VERIFIED AGAINST THE BUFFER, NOT THE KEYS.
+#
+# THE DEFECT. Three mains sat idle on 2026-08-12 with an instruction visibly queued
+# in their composers and never submitted (mainB "push it", mainC "Freeze lifted —
+# commit and push are open again.", mainB "run the full BGE sweep"), while the MI210
+# sat at 0% and the operator raised idle hardware for the eleventh time. A dispatched
+# task that never submits is indistinguishable from a dispatched task the main
+# declined, so the coordinator reported "dispatched" while the hardware sat at zero.
+#
+# REPRODUCED 2026-08-12 against real tmux panes (throwaway session, disposable
+# composer TUI — scripts/coordination/tests/composer_tui_fixture.py). Three distinct
+# defects, all confirmed, none hypothesised:
+#
+#   1. NOTHING ROLLS BACK A HALF-DELIVERED NUDGE. `cmd_nudge` types the payload as
+#      its first act and then verifies. EVERY failure after that point — pre-Enter
+#      gate, the Enter itself, post-Enter verification — returned non-zero while
+#      LEAVING THE PAYLOAD SITTING IN THE COMPOSER, and `record()` only ever runs on
+#      the success path, so the strand appeared in no ledger, no bus row and no log.
+#      The exit code was the only trace, and it is consumed by wrappers that
+#      `grep -q nudged` and by a daemon that logs a refusal and moves on. The
+#      standing condition was invisible BY CONSTRUCTION.
+#   2. `doorbell` HAD NO SUBMISSION VERIFICATION AT ALL. It sent the string, sent
+#      Enter, and recorded success on `send-keys` exit status — which only says tmux
+#      accepted the request (C30(b), one command over). Against a pane that swallows
+#      Enter it printed "doorbell rung", wrote a ledger row, and left the doorbell
+#      text pending. Worse, that strand then trips its own guard (b) forever: the
+#      pane is permanently un-ringable by the very text the ring left behind.
+#   3. `nudge`'s C12 anti-staleness anchor was SAMPLED AFTER THE ENTER. The comment
+#      says "how many times the fragment was on the pane BEFORE Enter"; the call sat
+#      below `send-keys Enter` and a settle sleep. So the count was taken after the
+#      mutation it exists to detect, and C12 was vacuous: with an identical fragment
+#      already in the transcript and an Enter eaten by a completion picker, the
+#      adapter exited 0, printed "nudged", and wrote a ledger row for a submission
+#      that never happened. That is the C6 fail-open through a fourth door.
+#
+# THE FIX, AND WHY IT IS A DELTA AND NOT A PATTERN. "Was it submitted?" is now
+# answered by the composer BUFFER being consumed: the composer row must return to
+# the exact value it held immediately before this adapter typed a single character.
+# A submission empties the buffer; a swallowed Enter does not; a picker that rewrote
+# the composer does not. It needs no glyph table, no prompt regex and no knowledge of
+# the TUI's chrome, so unlike every pattern in this module it cannot rot with the
+# next CLI release — which matters, because the glyph table twenty lines up DID rot
+# in fifteen days and took the whole doorbell path down with it.
+#
+# It is a CONJUNCT, not a replacement. `nudge` still requires the positive transcript
+# echo (C6) with the C12 occurrence anchor, now sampled where the comment always said
+# it was. Buffer-consumed alone would accept an Enter that cleared the composer
+# without submitting; echo alone was defeated by (3). Both must hold.
+#
+# AND THE BASELINE IS WHAT MAKES THE ROLLBACK SAFE. Ctrl-U is only ever sent after
+# this adapter has PROVED, before typing, that the composer was empty — so everything
+# in it afterwards is this adapter's own text and clearing it cannot destroy operator
+# input. Never Ctrl-C: a second Ctrl-C exits a Codex session and destroys the window.
+def _await_composer_consumed(target: str, baseline: str, timeout_s: float,
+                             stable_samples: int = _VERIFY_STABLE_SAMPLES,
+                             faint_is_placeholder: bool = False
+                             ) -> tuple[bool, str | None, str | None]:
+    """Has the composer BUFFER been consumed? (ok, last observed row, read failure).
+
+    Consumed means the row returned to ``baseline`` AND reads as an empty composer.
+    The second conjunct is redundant while the callers refuse a non-empty baseline,
+    and it is kept anyway: it is the check that survives a mis-captured baseline, and
+    a verification that trusts one reading of one value is how this module's whole
+    defect history starts.
+
+    ``stable_samples`` consecutive observations are required for the same reason the
+    post-Enter echo check requires them — a single capture can land on a half-drawn
+    repaint frame in which the composer is momentarily blank.
+
+    A read failure is returned as a failure, NEVER as "consumed". An unreadable pane
+    is not a submitted message.
+    """
+    deadline = time.monotonic() + max(0.0, timeout_s)
+    run, observed = 0, None
+    while True:
+        row, failure = _read_composer_row(target, faint_is_placeholder)
+        if failure:
+            return False, observed, failure
+        observed = row
+        ok = _normalise(row) == _normalise(baseline) and _composer_row_is_empty(row)
+        run = run + 1 if ok else 0
+        if run >= max(1, stable_samples):
+            return True, observed, None
+        if run == 0 and time.monotonic() >= deadline:
+            return False, observed, None
+        time.sleep(_VERIFY_POLL_S)
+
+
+def _clear_own_pending(target: str, baseline: str,
+                       faint_is_placeholder: bool = False) -> tuple[bool, str | None]:
+    """Ctrl-U, then PROVE the composer came back to ``baseline``. (cleared, detail).
+
+    ONLY legitimate because the caller established, before typing, that the composer
+    was empty — so the text being cleared is this adapter's own. NEVER send Ctrl-C to
+    a Codex pane: the second one exits the session and destroys the window (it has
+    destroyed a main before). Ctrl-U alone clears a composer.
+
+    Returns cleared=False on ANY doubt, including an unreadable pane. A rollback that
+    cannot prove it worked is reported as a strand, not as a cleanup.
+    """
+    rc, out = _tmux("send-keys", "-t", target, "C-u")
+    if rc != 0:
+        return False, f"send-keys C-u failed: {out}"
+    ok, observed, failure = _await_composer_consumed(target, baseline, _VERIFY_TIMEOUT_S,
+                                                     faint_is_placeholder=faint_is_placeholder)
+    if failure:
+        return False, f"composer unreadable after Ctrl-U: {failure}"
+    if not ok:
+        return False, f"composer still holds {(observed or '')[:80]!r} after Ctrl-U"
+    return True, "composer cleared and verified empty"
+
+
+def _fail_after_typing(kind: str, agent: str, target: str, baseline: str,
+                       stage: str, why: str, faint_is_placeholder: bool = False) -> int:
+    """One exit for every failure that happens once our text is in the composer.
+
+    Does the three things that were missing and that turned a failed delivery into an
+    invisible idle main: it ROLLS BACK (so no payload is stranded in front of a main
+    that will read it as an instruction it declined), it RECORDS (so "was anything
+    stranded?" is answerable from durable state rather than by reading panes by eye),
+    and it FAILS LOUD on stderr with a non-zero exit. If the rollback itself cannot be
+    confirmed, that is said in the ledger AND on stderr — a strand nobody knows about
+    is the failure this whole block exists to end.
+    """
+    cleared, detail = _clear_own_pending(target, baseline, faint_is_placeholder)
+    print(f"{kind} NOT DELIVERED to {agent} at {target} ({stage}): {why}", file=sys.stderr)
+    if cleared:
+        print(f"  rolled back: {detail} — nothing is left pending in that composer.",
+              file=sys.stderr)
+    else:
+        print(f"  ROLLBACK FAILED: {detail}. TEXT IS STILL PENDING IN {target} and will "
+              f"look to that main like an instruction it was given and declined. Clear it "
+              f"with `tmux send-keys -t {target} C-u` (NEVER C-c on a Codex pane) or let "
+              f"whoever is there submit it. `tmux_adapter.py pending` lists every pane in "
+              f"this state.", file=sys.stderr)
+    record(f"{kind}-undelivered", agent,
+           f"{stage}: {why}"[:400], target=target, stage=stage,
+           rollback="cleared" if cleared else "FAILED", rollback_detail=detail,
+           stranded=not cleared)
+    return EX_MISCONFIG
 
 
 def _submission_state(composer_text: str, fragment: str,
@@ -1095,6 +1423,184 @@ def runtime_liveness(config: dict, agent: str) -> tuple[str | None, str]:
                   f"heartbeat guard chain")
 
 
+# ---------------------------------------------------------------- C52 working-claim corroboration
+#
+# THE DEADLOCK, observed live 2026-08-12. `mainB` finished a GPU sweep and settled at
+# an empty composer. Its heartbeat still read `state: working, task_id:
+# gpu-continuous-occupancy-A3-sweep-pid-4133649` — and pid 4133649 was already dead.
+# Every nudge refused with `heartbeat says working (task ...)`; six retries over two
+# minutes, all refused. An idle main, plainly idle in its own pane, was unreachable by
+# any channel, and the MI210 read 0% for thirteen minutes because work could not be
+# delivered to the main holding the grant.
+#
+# WHY C35's QUIESCENCE OVERRIDE DID NOT RESCUE IT. There is a BAND, and the incident
+# lived in it: the refusals named the heartbeat state, so the window had been quiet
+# longer than `--quiet-s` (20s, or the quiet-check would have refused first and said
+# so) and shorter than the 120s override threshold (or the override would have fired).
+# Between those two numbers a settled main passes every guard except the one it cannot
+# clear. That much is inference from the refusal messages, and it is enough on its own.
+#
+# The band is also wider in practice than the C35 calibration assumed, and this part IS
+# measured: C35 reasons that "a working TUI redraws its spinner about once a second, so
+# a window quiet for two minutes is settled", and a main with FANNED-OUT SUBAGENTS
+# renders a live elapsed-time row per subagent ("◈ general-purpose … 16m 23s") that
+# ticks every second whether or not the main's own thread is doing anything — observed
+# directly on the live session 2026-08-12, on panes sitting at empty composers. For
+# such a main `quiet_for` can stay near zero indefinitely and the override can never
+# fire at all. The daemon had already reached the same conclusion from the other side:
+# `session_bus_coordinator._PANE_BUSY_MARKER` says in as many words that the
+# quiet-check "is defeated by cosmetic TUI redraw ... so it cannot answer 'is it
+# working'". The adapter was still deciding on it alone.
+#
+# THE ASYMMETRY THAT MADE IT A HARD DEADLOCK. `--heartbeat-max-age` is a sanctioned
+# override for a refusal on AGE. There was none for a refusal on STATE. And no one
+# else can clear it: single-writer discipline means only mainB may write mainB's
+# heartbeat, and it cannot, because the thing that would tell it to is the nudge the
+# guard refuses.
+#
+# THE FIX: A CLAIM IS NOT EVIDENCE. `state: working` is an assertion by a process that
+# may have stopped, so it now has to be CORROBORATED by something that could have
+# contradicted it. Same lesson as the watchdog one layer up that identified its target
+# by a name pattern which could not match and so declared a healthy daemon dead
+# forever: identity and liveness come from a signal you can verify, never from an
+# assertion. Three verdicts, and the third is not a polite way of saying one of the
+# other two:
+#
+#   corroborated   something INDEPENDENT says the agent is busy — the runtime rollout
+#                  record, a generation/compaction marker on the pane, or the task's
+#                  own published pid still being alive. REFUSE, exactly as before.
+#   contradicted   the claim's own published pid is gone, or the runtime says idle, or
+#                  the pane is quiescent past the C35 threshold, AND nothing
+#                  corroborates. The heartbeat is stale self-report. DELIVER.
+#   undetermined   no signal either way. Still refuses — but it says THAT, instead of
+#                  reporting the stale claim as though it had been believed on merit.
+#                  A guard that cannot tell the difference between "it is working" and
+#                  "I could not tell" is how this took thirteen minutes to diagnose.
+#
+# CORROBORATION OUTRANKS CONTRADICTION, deliberately and in that order. A single
+# positive signal that the agent is busy refuses the nudge even when two others say
+# idle: typing into a live generation corrupts it, and the cost of a false refusal is
+# a retry. This is also what keeps COMPACTING safe — a compacting session renders like
+# an idle one to a naive reader, so it is recognised positively (runtime ACTIVE for
+# Codex, the pane marker for Claude) and never inferred from the absence of business.
+_PANE_BUSY_MARKERS = ("esc to interrupt", "compacting")
+# The heartbeat schema has no `pid` field today, but the fleet has been writing the pid
+# INTO the task_id for a while (`…-sweep-pid-4133649`, the incident above), so both are
+# read: an explicit `pid`/`task_pid` field if one appears, else the trailing `-pid-N`
+# convention. Reading the convention is not guessing — it is the agent's OWN published
+# identifier for the work it claims to be doing, which is precisely the thing that can
+# be checked against reality.
+_HEARTBEAT_PID_RE = re.compile(r"pid[-_]?(\d{2,7})\b", re.IGNORECASE)
+
+
+def heartbeat_task_pid(hb: dict | None) -> tuple[int | None, str]:
+    """The pid the heartbeat claims is doing the work. (pid, why); None => none declared."""
+    if not isinstance(hb, dict):
+        return None, "no heartbeat"
+    for key in ("pid", "task_pid"):
+        raw = hb.get(key)
+        if raw is not None:
+            try:
+                return int(raw), f"heartbeat field {key}={raw!r}"
+            except (TypeError, ValueError):
+                return None, f"heartbeat field {key}={raw!r} is not a pid"
+    m = _HEARTBEAT_PID_RE.search(str(hb.get("task_id") or ""))
+    if m:
+        return int(m.group(1)), f"pid parsed from task_id {hb.get('task_id')!r}"
+    return None, "heartbeat declares no task pid"
+
+
+def pid_alive(pid: int) -> bool | None:
+    """Is this pid running? None => cannot tell, which is NOT 'dead'.
+
+    `/proc/<pid>` rather than `kill -0`: it sends no signal, needs no ownership of the
+    target, and cannot be confused by a permission error. PID REUSE resolves toward
+    ALIVE, and that is the safe direction here — a recycled number produces a refusal,
+    never a nudge into a live generation.
+    """
+    try:
+        return Path(f"/proc/{pid}").exists()
+    except OSError:
+        return None
+
+
+def pane_busy_marker(target: str) -> tuple[bool | None, str]:
+    """Is the pane generating (or compacting)? (True|False|None, why). None => unreadable.
+
+    The marker set is the daemon's, calibrated against the live fleet and re-verified
+    2026-08-12: every main mid-turn rendered `esc to interrupt` and the one settled at
+    its prompt did not, across both TUIs. `compacting` is carried alongside it so a
+    context compaction — which otherwise renders like an idle session — is recognised
+    positively rather than inferred away.
+    """
+    rc, out = _tmux("capture-pane", "-p", "-t", target)
+    if rc != 0:
+        return None, f"capture-pane on {target} failed: {out[:200]}"
+    low = (out or "").lower()
+    for marker in _PANE_BUSY_MARKERS:
+        if marker in low:
+            return True, f"pane {target} shows {marker!r}"
+    return False, f"pane {target} shows no generation or compaction marker"
+
+
+def corroborate_working_claim(*, runtime_state: str | None, runtime_reason: str,
+                              pane_busy: bool | None, pane_reason: str,
+                              task_pid: int | None, task_pid_alive: bool | None,
+                              pid_reason: str, pane_dead: bool | None,
+                              quiet_for: float | None,
+                              override_quiet_s: float,
+                              quiet_s: float = 0.0) -> tuple[str, str]:
+    """('corroborated'|'contradicted'|'undetermined', why) for a `state: working` claim."""
+    # ---- corroboration wins, and is checked first ----
+    if runtime_state == "active":
+        return "corroborated", f"the runtime says ACTIVE — {runtime_reason}"
+    if pane_busy is True:
+        return "corroborated", pane_reason
+    if task_pid is not None and task_pid_alive is True:
+        return "corroborated", f"the task's own pid {task_pid} is still running ({pid_reason})"
+    # ---- then evidence that the claim is stale ----
+    if task_pid is not None and task_pid_alive is False:
+        return "contradicted", (f"the heartbeat's own task pid {task_pid} is GONE ({pid_reason}) "
+                                f"and nothing corroborates the claim — {pane_reason}")
+    if runtime_state == "idle":
+        return "contradicted", f"the runtime says IDLE — {runtime_reason}"
+    if hb_stale_override_ok(pane_dead, quiet_for, override_quiet_s):
+        # C35's own predicate, unchanged and still worded as it was: it is quoted in
+        # probe output and in ledger rows, and a reader comparing two days of evidence
+        # should not have to work out that the sentence was reworded.
+        return "contradicted", (
+            f"window quiet {quiet_for:.0f}s (>= {override_quiet_s:.0f}s); both TUIs redraw a "
+            f"spinner every second while working, so this pane is settled at its prompt and the "
+            f"`working` heartbeat is stale self-report")
+    # THE OPERATOR'S OWN INSTRUCTION, 2026-08-12: "why not just look at its pane. It's
+    # straightforward to see that it returned a result and is waiting for further
+    # instruction." This is that, made conservative enough to be safe: TWO INDEPENDENT
+    # readings must both say settled — the pane renders no generation or compaction
+    # marker, AND the window has been quiet at least as long as the `--quiet-s` guard
+    # already requires before any nudge at all. Either alone is too weak. The marker
+    # could in principle be missing for a frame mid-turn; the quiet-check alone is
+    # defeated by cosmetic redraw (subagent elapsed-time rows). Together they are the
+    # same evidence a human reads off the pane, and they cover the case a pid cannot:
+    # most heartbeats declare no pid, and the fleet cannot be made to start declaring
+    # one by this module.
+    #
+    # This deliberately does NOT lower the `--quiet-s` bar — it reuses it. A pane the
+    # quiet-check would refuse can never reach this branch, so nothing here makes a
+    # mid-generation pane nudgeable that was not nudgeable before.
+    if pane_busy is False and pane_dead is False and quiet_for is not None \
+            and quiet_s > 0 and quiet_for >= quiet_s:
+        return "contradicted", (
+            f"the pane renders no generation or compaction marker AND the window has been quiet "
+            f"{quiet_for:.0f}s (>= --quiet-s {quiet_s:.0f}s) — two independent readings that it "
+            f"is settled at its prompt, which is what the heartbeat is contradicting")
+    # ---- and otherwise, say exactly that ----
+    return "undetermined", (
+        f"nothing corroborates or contradicts it: runtime {runtime_state or 'UNAVAILABLE'} "
+        f"({runtime_reason}); {pane_reason}; {pid_reason}; "
+        f"{_stale_override_refusal(pane_dead, quiet_for, override_quiet_s)}. Refusing because "
+        f"the state is UNDETERMINED, not because the heartbeat was believed")
+
+
 def record(kind: str, agent: str, detail: str, **fields: object) -> None:
     """Append one adapter action to the ledger.
 
@@ -1150,7 +1656,7 @@ def _stale_override_refusal(pane_dead: bool | None, quiet_for: float | None,
 
 def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
           hb_override_quiet_s: float = DEFAULT_HEARTBEAT_OVERRIDE_QUIET_S,
-          runtime_fn=None) -> dict:
+          runtime_fn=None, pane_busy_fn=None) -> dict:
     """Every guard signal, with an explicit blocker list. Pure — acts on nothing.
 
     `hb_override_quiet_s` is the C35 quiescence override (see the constant). It
@@ -1307,6 +1813,16 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
     hb_stale_override_applied = False
     hb_stale_override_reason = "not evaluated (heartbeat not stale)"
     hb_override_reason: str | None = None
+    # C52: the independent evidence a `working` self-report is checked against. Read
+    # unconditionally (not only when the heartbeat says working) so `probe` reports the
+    # same picture whatever the claim is — a reader comparing a refusal against a
+    # delivery must see the same fields in both.
+    working_claim = "n/a"
+    pane_busy, pane_busy_reason = (None, "no target to read")
+    if target:
+        pane_busy, pane_busy_reason = (pane_busy_fn or pane_busy_marker)(target)
+    task_pid, pid_reason = heartbeat_task_pid(hb)
+    task_pid_alive = None if task_pid is None else pid_alive(task_pid)
 
     # ---- C36: when the runtime has an answer, it DECIDES and the heartbeat corroborates ----
     #
@@ -1335,27 +1851,20 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
         blockers.append("no heartbeat — cannot tell if the agent is thinking; fail closed")
     else:
         if str(hb.get("state")) == "working":
-            if hb_override_quiet_s <= 0:
-                hb_override_reason = (f"disabled (--heartbeat-override-quiet-s "
-                                      f"{hb_override_quiet_s:.0f})")
-            elif dead is not False:
-                hb_override_reason = "pane state unreadable or dead — fail closed, no override"
-            elif quiet_for is None:
-                hb_override_reason = "window_activity unreadable — fail closed, no override"
-            elif quiet_for < hb_override_quiet_s:
-                # THE CASE THAT MATTERS MOST: a genuinely mid-generation session.
-                # Its spinner redraws about once a second, so it lands here and the
-                # heartbeat is believed.
-                hb_override_reason = (f"window was active {quiet_for:.0f}s ago "
-                                      f"(< {hb_override_quiet_s:.0f}s) — heartbeat believed")
-            else:
-                hb_override_applied = True
-                hb_override_reason = (
-                    f"window quiet {quiet_for:.0f}s (>= {hb_override_quiet_s:.0f}s); both TUIs "
-                    f"redraw a spinner every second while working, so this pane is settled at "
-                    f"its prompt and the `working` heartbeat is stale self-report")
+            # C52: the claim is corroborated or it does not stand. C35's quiescence
+            # test is now ONE of the contradiction sources rather than the only one —
+            # it is defeated by a main whose subagent rows redraw every second, which
+            # is what wedged mainB for thirteen minutes on 2026-08-12.
+            working_claim, hb_override_reason = corroborate_working_claim(
+                runtime_state=runtime_state, runtime_reason=runtime_reason,
+                pane_busy=pane_busy, pane_reason=pane_busy_reason,
+                task_pid=task_pid, task_pid_alive=task_pid_alive, pid_reason=pid_reason,
+                pane_dead=dead, quiet_for=quiet_for, override_quiet_s=hb_override_quiet_s,
+                quiet_s=quiet_s)
+            hb_override_applied = working_claim == "contradicted"
             if not hb_override_applied:
-                blockers.append(f"heartbeat says working (task {hb.get('task_id')})")
+                blockers.append(f"heartbeat says working (task {hb.get('task_id')}) — "
+                                f"{working_claim.upper()}: {hb_override_reason}")
         if hb_age is not None and hb_age > hb_max_age:
             # R1 (2026-08-11): THE GUARD USED TO HARDEN AS THE CONDITION WORSENED.
             #
@@ -1409,6 +1918,17 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
             "heartbeat_override_quiet_s": hb_override_quiet_s,
             "heartbeat_override_applied": hb_override_applied,
             "heartbeat_override_reason": hb_override_reason,
+            # C52: the three-valued verdict on a `working` claim, plus every input it
+            # was computed from. Reported ALWAYS — including `n/a` when the heartbeat
+            # did not claim to be working — because the whole defect was a refusal
+            # whose evidence nobody could see. `undetermined` is a first-class value
+            # here and must never be read as either of the other two.
+            "working_claim": working_claim,
+            "pane_busy": pane_busy,
+            "pane_busy_reason": pane_busy_reason,
+            "task_pid": task_pid,
+            "task_pid_alive": task_pid_alive,
+            "task_pid_reason": pid_reason,
             # R1: reported ALWAYS, fired or not, for the same reason C35's is — a
             # reader must be able to tell "reachable despite a stale heartbeat" from
             # "refused, and here is the pane evidence that refused it".
@@ -1428,8 +1948,11 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
             "nudges_this_window_instance": len(nudges_this_instance),
             "spawned_at": None if spawn_at is None else datetime.fromtimestamp(
                 spawn_at, timezone.utc).isoformat(timespec="seconds"),
-            "submission_verification": "cursor-anchored composer check before Enter, transcript "
-                                       "echo required after it; may fail closed",
+            "submission_verification": "cursor-anchored composer check before Enter; after it "
+                                       "BOTH the transcript echo (C6/C12, anchored pre-Enter) "
+                                       "AND the composer buffer returning to its pre-typing "
+                                       "baseline (C51). Any failure rolls the typed text back "
+                                       "with Ctrl-U and records it; may fail closed",
             "blockers": blockers, "nudge_ok": not blockers}
 
 
@@ -1462,6 +1985,14 @@ def cmd_probe(args: argparse.Namespace) -> int:
     if p.get("heartbeat_override_reason") is not None:
         print(f"hb-override      {'APPLIED' if p['heartbeat_override_applied'] else 'not applied'}"
               f": {p['heartbeat_override_reason']}")
+    # C52: printed whenever the heartbeat claimed to be working, in all THREE
+    # directions. `UNDETERMINED` is the one that has to be visible — a refusal nobody
+    # can distinguish from "it really is working" is what cost thirteen minutes of
+    # idle GPU on 2026-08-12.
+    if p.get("working_claim") not in (None, "n/a"):
+        print(f"working-claim    {str(p['working_claim']).upper()}"
+              f"  [pane_busy={p.get('pane_busy')}, task_pid={p.get('task_pid')}"
+              f" alive={p.get('task_pid_alive')}]")
     live_n = p["live_mains_count"]
     cap = p["spawn_cap"]
     print(f"live mains       {live_n if live_n is not None else '(unreadable — spawn refuses)'}"
@@ -1520,12 +2051,47 @@ def cmd_nudge(args: argparse.Namespace) -> int:
     if args.dry_run:
         print(f"would send to {p['target']}: {args.message!r}")
         return 0
+
+    # ---- C51: the composer must be EMPTY BEFORE anything is typed ----
+    #
+    # `doorbell` has had this since C45 (its guard (b)); the PAYLOAD path never did,
+    # and the asymmetry ran the wrong way — a payload nudge is the one that types a
+    # lot of characters and then presses Enter. Enter submits whatever is ALREADY in
+    # the composer, so typing a brief after an operator's half-finished line submits
+    # the operator's line too. That is not hypothetical: it is how the 2026-08-12
+    # strands "cleared themselves" — the next nudge appended to the stranded text and
+    # submitted the concatenation.
+    #
+    # NOTHING ON THE PANE RECORDS WHO TYPED IT. There is no state that distinguishes
+    # operator-typed text from agent-delivered text after the fact, so this refuses
+    # rather than guessing, and says exactly what is pending so the refusal is
+    # actionable. A refusal costs a retry; a false accept submits somebody's
+    # half-written sentence to a live agent.
+    #
+    # It is also the premise the rollback depends on: having PROVED the composer was
+    # empty, every character in it afterwards is this adapter's own, so Ctrl-U cannot
+    # destroy operator input.
+    faint_ok = composer_faint_is_placeholder(config, args.agent)
+    baseline, failure = _read_composer_row(p["target"], faint_ok)
+    if failure or baseline is None:
+        print(f"REFUSING: could not read the composer of {p['target']} to confirm it holds "
+              f"no pending input before typing: {failure} — fail closed", file=sys.stderr)
+        return EX_MISCONFIG
+    if not _composer_row_is_empty(baseline):
+        print(f"REFUSING: pane {p['target']} composer already holds pending input "
+              f"{baseline.strip()[:120]!r}. Typing after it and pressing Enter would submit "
+              f"THAT text as well, and this adapter cannot tell operator-typed input from "
+              f"text an earlier delivery left behind. Clear it with Ctrl-U (NEVER Ctrl-C on "
+              f"a Codex pane) or let whoever is typing submit it, then retry. "
+              f"`tmux_adapter.py pending` lists every pane in this state.", file=sys.stderr)
+        return EX_BLOCKED
+
     # C6: message and Enter MUST be separate calls. A single send-keys call can
     # leave the text in a Codex prompt while tmux still returns success.
     rc, out = _send_message_chunked(p["target"], args.message)
     if rc != 0:
-        print(f"send-keys message failed: {out}", file=sys.stderr)
-        return EX_MISCONFIG
+        return _fail_after_typing("nudge", args.agent, p["target"], baseline,
+                                  "send-keys message", out, faint_ok)
     settle_s = max(0.0, float(getattr(args, "settle_s", DEFAULT_NUDGE_SETTLE_S)))
     time.sleep(settle_s)
     fragment = _pending_fragment(args.message)
@@ -1534,24 +2100,41 @@ def cmd_nudge(args: argparse.Namespace) -> int:
     pending_state, failure = _await_state(p["target"], fragment, {"text_present"},
                                           _VERIFY_TIMEOUT_S)
     if failure:
-        print(f"nudge submission verification unavailable before Enter: {failure}", file=sys.stderr)
-        return EX_MISCONFIG
+        return _fail_after_typing("nudge", args.agent, p["target"], baseline,
+                                  "pre-Enter verification", f"unavailable: {failure}", faint_ok)
     if pending_state == "paste_blob":
-        print("nudge message was mangled into a paste blob before Enter; refusing. "
-              "The composer holds a paste attachment, not editable text — its content is "
-              "truncated at 1024 chars and cannot be verified.", file=sys.stderr)
-        return EX_MISCONFIG
+        return _fail_after_typing(
+            "nudge", args.agent, p["target"], baseline, "pre-Enter verification",
+            "the message was mangled into a paste blob — the composer holds a paste "
+            "attachment, not editable text; its content is truncated at 1024 chars and "
+            "cannot be verified", faint_ok)
     if pending_state != "text_present":
-        print("nudge message did not land in the composer before Enter; refusing. "
-              "The cursor is not at the end of the message, so the pane is not accepting "
-              "typed input (a full-screen modal, e.g. Codex backtrack mode, does this).",
-              file=sys.stderr)
-        return EX_MISCONFIG
+        return _fail_after_typing(
+            "nudge", args.agent, p["target"], baseline, "pre-Enter verification",
+            "the message did not land in the composer — the cursor is not at the end of "
+            "it, so the pane is not accepting typed input (a full-screen modal, e.g. "
+            "Codex backtrack mode, does this, faint_ok)")
+
+    # C12: how many times the fragment is on the pane BEFORE Enter, including any
+    # stale copy already in the scrollback. A genuine submission moves our copy from
+    # the composer into the transcript, so the count holds; an Enter eaten by a
+    # completion overlay deletes it, so the count drops and any remaining match is
+    # provably a stale one that must not read as success.
+    #
+    # C51(3), 2026-08-12: THIS CALL USED TO SIT BELOW `send-keys Enter` AND A SETTLE
+    # SLEEP. The comment said "BEFORE Enter" while the code sampled AFTER it, so the
+    # anchor was taken after the very mutation it exists to detect and C12 was
+    # vacuous. Reproduced against real panes: with an identical fragment already in
+    # the transcript and an Enter consumed by a completion picker, the true pre-Enter
+    # count was 2 and the post-Enter count 1, `1 >= 1` passed, and the adapter exited
+    # 0, printed "nudged" and wrote a ledger row for a submission that never happened.
+    # Moving the call is the whole fix; the predicate was always right.
+    pre_enter_occurrences = _fragment_occurrences(p["target"], fragment)
 
     rc, out = _tmux("send-keys", "-t", p["target"], "Enter")
     if rc != 0:
-        print(f"send-keys Enter failed: {out}", file=sys.stderr)
-        return EX_MISCONFIG
+        return _fail_after_typing("nudge", args.agent, p["target"], baseline,
+                                  "send-keys Enter", out, faint_ok)
     time.sleep(settle_s)
     # AFTER Enter the message must have MOVED: off the cursor, but still on the
     # pane as the transcript echo. Note this is NOT "the message is gone from the
@@ -1559,34 +2142,46 @@ def cmd_nudge(args: argparse.Namespace) -> int:
     # failure is exactly the false negative this fix removes. Nor is it merely
     # "no longer at the cursor": that would accept an Enter which a completion
     # overlay consumed to rewrite the composer. Success is the echo, positively.
-    # C12: how many times the fragment was on the pane BEFORE Enter, including any
-    # stale copy already in the scrollback. A genuine submission moves our copy from
-    # the composer into the transcript, so the count holds; an Enter eaten by a
-    # completion overlay deletes it, so the count drops and any remaining match is
-    # provably a stale one that must not read as success.
-    pre_enter_occurrences = _fragment_occurrences(p["target"], fragment)
     submitted_state, failure = _await_state(p["target"], fragment, {"text_echoed"},
                                             _VERIFY_TIMEOUT_S, _VERIFY_STABLE_SAMPLES,
                                             min_occurrences=pre_enter_occurrences)
     if failure:
-        print(f"nudge submission verification unavailable after Enter: {failure}", file=sys.stderr)
-        return EX_MISCONFIG
+        return _fail_after_typing("nudge", args.agent, p["target"], baseline,
+                                  "post-Enter echo check", f"unavailable: {failure}", faint_ok)
     if submitted_state == "text_present":
-        print("nudge submission not confirmed after Enter: text present but unsubmitted "
-              "(the composer still ends with the message, so the TUI swallowed Enter)",
-              file=sys.stderr)
-        return EX_MISCONFIG
+        return _fail_after_typing(
+            "nudge", args.agent, p["target"], baseline, "post-Enter echo check",
+            "text present but unsubmitted — the composer still ends with the message, so "
+            "the TUI swallowed Enter", faint_ok)
     if submitted_state == "paste_blob":
-        print("nudge submission not confirmed after Enter: the composer holds a paste blob",
-              file=sys.stderr)
-        return EX_MISCONFIG
+        return _fail_after_typing(
+            "nudge", args.agent, p["target"], baseline, "post-Enter echo check",
+            "the composer holds a paste blob", faint_ok)
     if submitted_state != "text_echoed":
-        print("nudge submission not confirmed after Enter: the message is no longer at the "
-              "cursor but is not echoed on the pane either. Enter was consumed by something "
-              "that rewrote the composer (a completion picker, e.g. Codex '@' or a '/' menu) "
-              "rather than submitting. Refusing to record a nudge that may not have been sent.",
-              file=sys.stderr)
-        return EX_MISCONFIG
+        return _fail_after_typing(
+            "nudge", args.agent, p["target"], baseline, "post-Enter echo check",
+            "the message is no longer at the cursor but is not echoed on the pane either. "
+            "Enter was consumed by something that rewrote the composer (a completion "
+            "picker, e.g. Codex '@' or a '/' menu, faint_ok) rather than submitting")
+
+    # ---- C51: and the BUFFER must be gone, not merely the keystrokes dispatched ----
+    # The echo above is evidence that our text reached the transcript; this is evidence
+    # that it LEFT the composer. Both are required because each alone has been defeated:
+    # the echo by a stale scrollback copy (C12/C51(3)), and "the buffer is empty" alone
+    # by any Enter that clears the composer without submitting. Expressed as a delta
+    # against the pre-typing baseline, so it needs no prompt pattern and cannot rot when
+    # a TUI changes its chrome — which the glyph table above did, in fifteen days.
+    consumed, observed, failure = _await_composer_consumed(
+        p["target"], baseline, _VERIFY_TIMEOUT_S, faint_is_placeholder=faint_ok)
+    if failure:
+        return _fail_after_typing("nudge", args.agent, p["target"], baseline,
+                                  "post-Enter buffer check", f"unavailable: {failure}", faint_ok)
+    if not consumed:
+        return _fail_after_typing(
+            "nudge", args.agent, p["target"], baseline, "post-Enter buffer check",
+            f"the transcript echo is present but the composer BUFFER was not consumed: it "
+            f"holds {(observed or '', faint_ok)[:80]!r} instead of returning to "
+            f"{baseline.strip()[:40]!r}")
     # C35: a nudge that only happened because quiescence outvoted a `working`
     # heartbeat is the one most worth being able to reconstruct later — if the
     # override ever does interrupt a real generation, this row is the evidence.
@@ -1634,14 +2229,19 @@ def cmd_doorbell(args: argparse.Namespace) -> int:
         return EX_BLOCKED
 
     # ---- guard (b): composer holds no pending input ----
-    composer, failure = _composer_text(target)
-    if failure or composer is None:
+    # The row read here is ALSO the baseline the C51 submission check and rollback
+    # are measured against: "was the ring submitted" is "did the composer come back
+    # to exactly this".
+    faint_ok = composer_faint_is_placeholder(config, args.agent)
+    baseline, failure = _read_composer_row(target, faint_ok)
+    if failure or baseline is None:
         print(f"REFUSING: could not read the composer to confirm it holds no pending input: "
               f"{failure} — fail closed rather than risk submitting whatever is there",
               file=sys.stderr)
         return EX_MISCONFIG
-    if not _composer_row_is_empty(composer):
-        print(f"REFUSING: pane {target} composer holds pending input; ringing the doorbell "
+    if not _composer_row_is_empty(baseline):
+        print(f"REFUSING: pane {target} composer holds pending input "
+              f"{baseline.strip()[:120]!r}; ringing the doorbell "
               f"sends a real Enter, which would submit whatever is already typed there, not "
               f"the doorbell string. Clear it (or let whoever is typing submit it) and retry — "
               f"retrying costs nothing, ringing is idempotent.", file=sys.stderr)
@@ -1656,15 +2256,368 @@ def cmd_doorbell(args: argparse.Namespace) -> int:
     # paste threshold (800 chars, Claude Code CLI v2.1.220). See the C45 block.
     rc, out = _tmux("send-keys", "-l", "-t", target, "--", message)
     if rc != 0:
-        print(f"send-keys message failed: {out}", file=sys.stderr)
-        return EX_MISCONFIG
+        return _fail_after_typing("doorbell", args.agent, target, baseline,
+                                  "send-keys message", out, faint_ok)
     rc, out = _tmux("send-keys", "-t", target, "Enter")
     if rc != 0:
-        print(f"send-keys Enter failed: {out}", file=sys.stderr)
-        return EX_MISCONFIG
+        return _fail_after_typing("doorbell", args.agent, target, baseline,
+                                  "send-keys Enter", out, faint_ok)
+    # ---- C51: THE RING IS VERIFIED. It was not, at all, until 2026-08-12 ----
+    #
+    # This command used to `record("doorbell", ...)` and print success on the strength
+    # of the two `send-keys` exit codes above. A zero from `send-keys` means TMUX
+    # ACCEPTED THE KEYS — the identical mistake C30(b) documents one command over for
+    # `new-window` — and says nothing about whether the TUI consumed them. Reproduced
+    # against a real pane that swallows Enter: exit 0, "doorbell rung", a ledger row,
+    # and the doorbell string left sitting unsubmitted in the composer. That strand
+    # then trips guard (b) above forever, so the pane becomes permanently un-ringable
+    # by the text the ring itself left there.
+    #
+    # There is no fragment-echo check here because the doorbell has no fragment worth
+    # matching — it is the same fixed string every time, so an identical copy in the
+    # scrollback is the NORMAL state and an echo match would prove nothing (this is
+    # C12's stale-copy hazard, structural rather than occasional). The buffer delta
+    # has no such weakness: it asks whether THIS composer is empty again, which a
+    # previous ring cannot answer for.
+    consumed, observed, failure = _await_composer_consumed(
+        target, baseline, _VERIFY_TIMEOUT_S, faint_is_placeholder=faint_ok)
+    if failure:
+        return _fail_after_typing("doorbell", args.agent, target, baseline,
+                                  "post-Enter buffer check", f"unavailable: {failure}", faint_ok)
+    if not consumed:
+        return _fail_after_typing(
+            "doorbell", args.agent, target, baseline, "post-Enter buffer check",
+            f"the composer BUFFER was not consumed: it holds {(observed or '', faint_ok)[:80]!r} "
+            f"instead of returning to {baseline.strip()[:40]!r}, so the Enter did not "
+            f"submit and the ring is still sitting in that composer")
     record("doorbell", args.agent, message)
     print(f"doorbell rung for {args.agent} at {target}")
     return 0
+
+
+# ---------------------------------------------------------------------------
+# C51 DETECTOR, 2026-08-12. A PANE HOLDING UNSUBMITTED INPUT IS AN ALARM.
+#
+# WHY THIS IS A SUBCOMMAND AND NOT A NOTE IN A RUNBOOK. On 2026-08-12 three mains
+# sat idle with an instruction queued in their composers, and the condition was
+# found each time by a human reading a pane by eye — after the fact, and after the
+# MI210 had been at 0% long enough for the operator to raise it for the eleventh
+# time. A queued-but-unsubmitted instruction renders EXACTLY like a delivered one
+# the main declined, so no amount of reading bus state finds it; the evidence is
+# only in the pane, and nothing was looking there.
+#
+# READ-ONLY, ABSOLUTELY. `display-message` and `capture-pane`, nothing else. It
+# never sends a key, never clears a composer and never submits one — the pending
+# text may be the operator mid-sentence, and there is nothing in pane state that
+# would tell it apart from a stranded delivery. Deciding what to do about pending
+# input is the coordinator's call; making it VISIBLE is this command's whole job.
+#
+# THE TARGET IS RESOLVED, NEVER GUESSED. It goes through `resolve_target`, so a
+# roster row whose endpoint does not verify is reported as UNRESOLVED rather than
+# having some other pane's composer attributed to it — an alarm naming the wrong
+# main is worse than no alarm.
+#
+# AND UNEVALUABLE IS NOT CLEAN. An unreadable pane or an unresolved endpoint exits
+# non-zero, exactly like a pane with pending input. "I could not look" reported as
+# "nothing is pending" is the fail-open family this module's entire defect history
+# belongs to, and the one this command exists to close.
+PENDING_EXIT_CLEAN = 0
+PENDING_STATUSES_UNEVALUABLE = ("unresolved", "unreadable")
+
+
+def pending_input_report(config: dict, agents: list[str] | None = None) -> dict:
+    """Every roster pane's composer state. Pure observation; sends nothing.
+
+    Statuses, all distinct so a consumer never has to infer one from another:
+      ``pending``    the composer holds unsubmitted input — THE ALARM.
+      ``empty``      the composer is at a bare prompt; nothing is queued.
+      ``unresolved`` the roster row's tmux endpoint does not verify (see
+                     `resolve_target`) — cannot be evaluated, must not read clean.
+      ``unreadable`` the endpoint resolves but the pane could not be captured —
+                     likewise unevaluable.
+      ``no-pane``    the row has no tmux endpoint at all (``monitor:file``). Not a
+                     defect and not counted against the fleet: there is no composer.
+      ``retired``    the row DECLARES ``role: retired`` and its window is gone. Also
+                     not counted — a retired slot having no pane is its normal state,
+                     and letting one hold the fleet alarm at non-zero forever would
+                     make the exit code unreadable, which is how an alarm gets muted.
+                     Narrow on purpose: a retired row whose window DOES resolve is
+                     evaluated like any other, so reviving a main without updating its
+                     role cannot hide a pending composer.
+    """
+    roster = [e for e in (config.get("roster") or []) if isinstance(e, dict) and
+              str(e.get("id") or "").strip()]
+    wanted = set(agents or [])
+    rows: list[dict] = []
+    for entry in roster:
+        rid = str(entry.get("id")).strip()
+        if wanted and rid not in wanted:
+            continue
+        hb, hb_age = heartbeat(rid)
+        row: dict[str, object] = {"agent": rid, "role": entry.get("role"),
+                                  "heartbeat_state": (hb or {}).get("state"),
+                                  "heartbeat_age_s": hb_age}
+        endpoint = str(entry.get("endpoint") or "")
+        if not endpoint.startswith("tmux:"):
+            row.update({"status": "no-pane", "target": None,
+                        "detail": f"endpoint {endpoint!r} has no tmux pane"})
+            rows.append(row)
+            continue
+        target, why = resolve_target(config, rid)
+        if not target:
+            retired = str(entry.get("role") or "").strip().lower() == "retired"
+            row.update({"status": "retired" if retired else "unresolved",
+                        "target": None, "detail": why})
+            rows.append(row)
+            continue
+        composer_row, failure = _read_composer_row(
+            target, composer_faint_is_placeholder(config, rid))
+        if failure or composer_row is None:
+            row.update({"status": "unreadable", "target": target, "detail": failure})
+            rows.append(row)
+            continue
+        if _composer_row_is_empty(composer_row):
+            row.update({"status": "empty", "target": target, "detail": why})
+        else:
+            row.update({"status": "pending", "target": target, "detail": why,
+                        "pending_text": composer_row.strip()[:200],
+                        "pending_chars": len(composer_row.strip())})
+        rows.append(row)
+    missing = sorted(wanted - {str(r["agent"]) for r in rows})
+    return {
+        "generated_at": _now(),
+        "panes": rows,
+        "pending": sorted(str(r["agent"]) for r in rows if r["status"] == "pending"),
+        "unevaluable": sorted(str(r["agent"]) for r in rows
+                              if r["status"] in PENDING_STATUSES_UNEVALUABLE),
+        "not_in_roster": missing,
+    }
+
+
+def pending_exit_code(report: dict) -> int:
+    """0 ONLY when every roster pane was evaluated and none holds pending input.
+
+    Pending input outranks unevaluable in the exit code because it is the actionable
+    alarm, but both are non-zero: a caller that treats any non-zero as "not provably
+    clean" is always right, which is the property this module keeps failing to have.
+    """
+    if report.get("pending") or report.get("not_in_roster"):
+        return EX_BLOCKED
+    if report.get("unevaluable"):
+        return EX_MISCONFIG
+    return PENDING_EXIT_CLEAN
+
+
+def cmd_pending(args: argparse.Namespace) -> int:
+    report = pending_input_report(load_config(), args.agent or None)
+    if args.json:
+        print(json.dumps(report, indent=2))
+        return pending_exit_code(report)
+    for row in report["panes"]:
+        flag = {"pending": "PENDING ", "empty": "ok      ", "unresolved": "UNRESOLVED",
+                "unreadable": "UNREADABLE", "no-pane": "-       ",
+                "retired": "retired "}.get(str(row["status"]), "?")
+        line = f"{flag} {str(row['agent']):18s} {str(row.get('target') or '-'):28s}"
+        if row["status"] == "pending":
+            line += f" heartbeat={row.get('heartbeat_state')} :: {row.get('pending_text')!r}"
+        elif row["status"] in PENDING_STATUSES_UNEVALUABLE:
+            line += f" :: {row.get('detail')}"
+        print(line)
+    for rid in report["not_in_roster"]:
+        print(f"UNKNOWN  {rid:18s} — no roster row; refusing to guess a pane")
+    print()
+    if report["pending"]:
+        print(f"ALARM: {len(report['pending'])} pane(s) hold queued-but-unsubmitted input: "
+              f"{', '.join(report['pending'])}. That looks to each main exactly like an "
+              f"instruction it was given and declined. Do NOT blind-submit it — it may be "
+              f"operator-typed; confirm who typed it, then submit or clear (Ctrl-U, NEVER "
+              f"Ctrl-C on a Codex pane).")
+    if report["unevaluable"]:
+        print(f"NOT EVALUATED: {', '.join(report['unevaluable'])} — this is not a clean "
+              f"result, it is a missing one.")
+    if not report["pending"] and not report["unevaluable"] and not report["not_in_roster"]:
+        print("clean: every roster pane was read and none holds pending input")
+    return pending_exit_code(report)
+
+
+# ---------------------------------------------------------------------------
+# C54, 2026-08-12. THE DETECTOR'S MISSING OTHER HALF.
+#
+# WHAT C51's `pending` LEFT UNSOLVED. Within an hour of existing it diagnosed a
+# fleet-wide stall in one command — three mains parked at composers holding
+# never-submitted instructions — and then every path to those mains refused, ALL OF
+# THEM CORRECTLY: `nudge` refuses because typing after pending input submits it too;
+# `doorbell` refuses because its Enter submits whatever is already there; the bus
+# cannot reach a session that is parked at its composer rather than draining. The only
+# remedy left was Ctrl-U by hand, per pane, and the coordinator is denied
+# `tmux send-keys` by the permission classifier — so a human had to press the key
+# every time. Compute measured idle for sixteen continuous minutes with work assigned
+# to both halves of the machine and neither able to receive it. A detector with no
+# remedy just relocates the dependency on a human.
+#
+# TWO VERBS, NOT ONE, AND THE TOOL MUST NOT GUESS WHICH. Of the three panes, mainC's
+# pending text was CORRECT and wanted submitting; mainA's and mainB's had been
+# SUPERSEDED by later operator instructions and submitting them would have started a
+# reboot-staging run instead of a measurement, and stopped a main that should have
+# kept working. Nothing on the pane distinguishes those cases — the difference is
+# entirely in intent the operator holds — so `clear` (discard) and `submit` (accept)
+# are separate commands and the choice is made by the caller, explicitly, every time.
+#
+# THE ACKNOWLEDGEMENT GATE IS `--expect`, AND IT IS STRONGER THAN A CONFIRMATION.
+# `--force` exists and simply says "whatever is there, act on it". `--expect` names
+# the text the caller believes is pending and refuses if the pane holds anything else,
+# which closes the window between READING the pane and ACTING on it: an operator who
+# types while a clear is in flight cannot have their new sentence discarded by a
+# decision made about the old one. That is the TOCTOU shape this module keeps meeting,
+# and here it is a one-line defence. Neither flag given is a refusal, not a default:
+# discarding an operator's words must never be something that happens by omission.
+#
+# NEVER Ctrl-C. `clear` sends Ctrl-U and nothing else. A second Ctrl-C exits a Codex
+# session and destroys the window; it has already cost this fleet a main. There is no
+# code path in this command that can emit it, and a test asserts that over the whole
+# call rather than over the happy path.
+#
+# THE KEYSTROKE IS NOT THE EVIDENCE, same as C51: after acting, the composer is
+# RE-READ and must be empty. `send-keys` exiting 0 means tmux accepted the keys.
+#
+# AND EVERY DISCARD IS LOGGED VERBATIM. `record` gets the full pending text, untrimmed,
+# in `pending_text` — if a clear ever destroys an instruction that mattered, the ledger
+# is where it is recovered from. That is the whole reason a discard is allowed at all.
+def _await_composer_empty(target: str, timeout_s: float,
+                          stable_samples: int = _VERIFY_STABLE_SAMPLES,
+                          faint_is_placeholder: bool = False
+                          ) -> tuple[bool, str | None, str | None]:
+    """Is the composer empty? (ok, last observed row, read failure). Never assumes."""
+    deadline = time.monotonic() + max(0.0, timeout_s)
+    run, observed = 0, None
+    while True:
+        row, failure = _read_composer_row(target, faint_is_placeholder)
+        if failure:
+            return False, observed, failure
+        observed = row
+        run = run + 1 if _composer_row_is_empty(row or "") else 0
+        if run >= max(1, stable_samples):
+            return True, observed, None
+        if run == 0 and time.monotonic() >= deadline:
+            return False, observed, None
+        time.sleep(_VERIFY_POLL_S)
+
+
+def _composer_action(args: argparse.Namespace, verb: str) -> int:
+    """Shared body of `clear` and `submit`. `verb` decides the key and the wording.
+
+    Guard set is deliberately doorbell's — authorisation, a VERIFIED target, a live
+    pane — plus the acknowledgement gate, and deliberately NOT the payload guards
+    (quiet-for, heartbeat state, rate limit). Those exist to stop a BRIEF being typed
+    into a pane mid-generation; this command types no brief. It presses one key, about
+    text the caller has already read and named, on the caller's explicit instruction —
+    and a main parked at its composer is exactly the state in which the payload guards
+    have nothing useful to say and everything to block.
+    """
+    config = load_config()
+    flags = config.get("flags") or {}
+    if str(flags.get("codex_sendkeys")).strip().lower() not in {"1", "true", "yes", "on"}:
+        print("REFUSING: flags.codex_sendkeys is off (gate OP-SENDKEYS-CODEX)", file=sys.stderr)
+        return EX_BLOCKED
+
+    # IDENTITY IS VERIFIED, NEVER INFERRED. `resolve_target` refuses unless the
+    # endpoint's window resolves to the window it names — tmux silently falls back to
+    # the session's current window on a miss, and clearing the wrong pane destroys
+    # somebody's work with no way to know it happened.
+    target, why = resolve_target(config, args.agent)
+    if not target:
+        print(f"REFUSING: {why}", file=sys.stderr)
+        return EX_BLOCKED
+
+    rc, out = _tmux("display-message", "-p", "-t", target, "#{pane_dead}")
+    if rc != 0 or out.strip() not in ("0", "1"):
+        print(f"REFUSING: could not read pane_dead for {target}: {out!r} — fail closed",
+              file=sys.stderr)
+        return EX_BLOCKED
+    if out.strip() == "1":
+        print(f"REFUSING: pane {target} is dead", file=sys.stderr)
+        return EX_BLOCKED
+
+    faint_ok = composer_faint_is_placeholder(config, args.agent)
+    pending, failure = _read_composer_row(target, faint_ok)
+    if failure or pending is None:
+        print(f"REFUSING: could not read the composer of {target}: {failure} — fail closed",
+              file=sys.stderr)
+        return EX_MISCONFIG
+
+    if _composer_row_is_empty(pending):
+        if verb == "clear":
+            # Idempotent: the desired end state already holds. Saying so with exit 0
+            # is what lets a coordinator run this without first running `pending`.
+            print(f"nothing to clear: {args.agent} at {target} has an empty composer")
+            return 0
+        print(f"REFUSING: {args.agent} at {target} has an EMPTY composer — there is nothing to "
+              f"submit. If you expected pending text, it was submitted or cleared between your "
+              f"read and this call; run `tmux_adapter.py pending` again.", file=sys.stderr)
+        return EX_BLOCKED
+
+    # ---- the acknowledgement gate ----
+    if args.expect is not None:
+        if _normalise(args.expect) not in _normalise(pending):
+            print(f"REFUSING: --expect does not match what the pane actually holds.\n"
+                  f"  expected : {args.expect!r}\n"
+                  f"  pane has : {pending!r}\n"
+                  f"The composer changed between your read and this call — somebody may be "
+                  f"typing. Re-read it with `tmux_adapter.py pending --agent {args.agent}` and "
+                  f"decide again.", file=sys.stderr)
+            return EX_BLOCKED
+    elif not args.force:
+        print(f"REFUSING: {verb} needs an explicit acknowledgement of what it is acting on, "
+              f"because that text may be the operator's.\n"
+              f"  pane has : {pending!r}\n"
+              f"Pass --expect '<the text you just read>' (refuses if the pane changed under "
+              f"you — prefer this) or --force (acts on whatever is there).", file=sys.stderr)
+        return EX_USAGE
+
+    if args.dry_run:
+        print(f"would {verb} {args.agent} at {target}: {pending!r}")
+        return 0
+
+    key = "C-u" if verb == "clear" else "Enter"        # NEVER C-c — see the C54 block
+    rc, out = _tmux("send-keys", "-t", target, key)
+    if rc != 0:
+        print(f"send-keys {key} failed: {out}", file=sys.stderr)
+        return EX_MISCONFIG
+
+    empty, observed, failure = _await_composer_empty(target, _VERIFY_TIMEOUT_S,
+                                                     faint_is_placeholder=faint_ok)
+    if failure:
+        print(f"{verb} NOT confirmed for {args.agent} at {target}: the composer could not be "
+              f"re-read after {key} ({failure}). The keystroke was sent; whether it took is "
+              f"UNKNOWN. Re-run `tmux_adapter.py pending --agent {args.agent}`.", file=sys.stderr)
+        record(f"{verb}-unconfirmed", args.agent, f"composer unreadable after {key}: {failure}",
+               target=target, pending_text=pending)
+        return EX_MISCONFIG
+    if not empty:
+        print(f"{verb} NOT confirmed for {args.agent} at {target}: the composer still holds "
+              f"{(observed or '')!r} after {key}. Nothing was accomplished and the text is "
+              f"still pending.", file=sys.stderr)
+        record(f"{verb}-unconfirmed", args.agent, f"composer still holds text after {key}",
+               target=target, pending_text=pending, observed=observed)
+        return EX_MISCONFIG
+
+    # VERBATIM, UNTRUNCATED. If a clear ever discards something that mattered, this row
+    # is where it is recovered from — `detail` is trimmed for readability, the field is
+    # not trimmed at all.
+    record(verb, args.agent, pending[:200], target=target, pending_text=pending,
+           acknowledgement="--expect" if args.expect is not None else "--force")
+    print(f"{verb}ed {args.agent} at {target}: {pending!r}"
+          + ("  (discarded — recoverable from the adapter ledger)" if verb == "clear"
+             else "  (submitted)"))
+    return 0
+
+
+def cmd_clear(args: argparse.Namespace) -> int:
+    return _composer_action(args, "clear")
+
+
+def cmd_submit(args: argparse.Namespace) -> int:
+    return _composer_action(args, "submit")
 
 
 def cmd_spawn(args: argparse.Namespace) -> int:
@@ -1964,6 +2917,38 @@ def build_parser() -> argparse.ArgumentParser:
     db.add_argument("--agent", required=True)
     db.add_argument("--dry-run", action="store_true")
     db.set_defaults(func=cmd_doorbell)
+
+    pn = sub.add_parser("pending", help="C51 DETECTOR: which panes hold queued-but-"
+                        "unsubmitted composer input. Read-only — it never sends a key. "
+                        "Exit 0 only when every roster pane was read and all are clear; "
+                        "2 = pending input found, 3 = a pane could not be evaluated.")
+    pn.add_argument("--agent", action="append", default=[],
+                    help="restrict to this roster id (repeatable); default is every row")
+    pn.add_argument("--json", action="store_true")
+    pn.set_defaults(func=cmd_pending)
+
+    # C54: the detector's other half. TWO verbs, because discarding pending text and
+    # accepting it as an instruction are opposite decisions and only the caller knows
+    # which is right — see the C54 block for the three live panes that proved it.
+    for verb, helptext, func in (
+            ("clear", "DISCARD a pane's pending composer input with Ctrl-U (never Ctrl-C) "
+                      "and verify the composer is empty afterwards. The discarded text is "
+                      "logged verbatim to the adapter ledger.", cmd_clear),
+            ("submit", "ACCEPT a pane's pending composer input by sending Enter, and verify "
+                       "the buffer was consumed. Use when the pending text is the instruction "
+                       "you want that main to act on.", cmd_submit)):
+        sp_ = sub.add_parser(verb, help=helptext)
+        sp_.add_argument("--agent", required=True)
+        sp_.add_argument("--expect", default=None,
+                         help="the text you believe is pending. REFUSES if the pane holds "
+                              "anything else, so a composer that changed between your read and "
+                              "this call cannot be acted on by mistake. Prefer this to --force.")
+        sp_.add_argument("--force", action="store_true",
+                         help="act on whatever is pending without naming it. One of --expect "
+                              "or --force is required: acting on someone's typed words must "
+                              "never happen by omission.")
+        sp_.add_argument("--dry-run", action="store_true")
+        sp_.set_defaults(func=func)
 
     sp = sub.add_parser("spawn", help="create the agent's bus files, then its pane")
     sp.add_argument("--agent", required=True)

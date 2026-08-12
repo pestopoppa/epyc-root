@@ -103,6 +103,17 @@ Neither signs anything. Trust boundaries are human-only (`coordination/session-b
 - **Do not suppress error output** on bus writes. A silenced schema rejection is
   indistinguishable from success — the same fail-open class as defects C3/C6/C8.
 - **Verify agent state before reporting it.** Read the heartbeat and the outbox; do not infer.
+  **Three states, not two: working / compacting / idle** — a compacting session renders
+  identically to a finished one, so pane text can never clear a main. Use `tmux_adapter.py`'s
+  runtime check, and treat **an adapter refusal citing runtime state as a finding about the
+  world, not an obstacle to retry past**. When heartbeat, pane and hardware disagree, the
+  hardware wins — if it persists across samples. Full rule:
+  [`agents/shared/SESSION_LIFECYCLE.md` → *Reading another session's liveness*](shared/SESSION_LIFECYCLE.md#reading-another-sessions-liveness--three-states-not-two).
+  Origin: INC-20260812-compacting-read-as-idle.
+- **Dispatch by task TEXT, never by line number alone**, and fact-check the premise before
+  firing a main at a screened row — a screener proves WELL-FORMED, not STILL-NEEDED. Full rule:
+  [`agents/shared/OPERATING_CONSTRAINTS.md` → *Dispatching Backlog Work*](shared/OPERATING_CONSTRAINTS.md#dispatching-backlog-work--the-task-text-is-the-identity).
+  Origin: INC-20260812-dispatch-by-line-number.
 - **Standing-instruction changes are coordination events.** Nudge running mains to re-read
   `AGENTS.md`, not to act on your summary — a summary is lossy. Until a main confirms, assume
   it is on its startup copy; do not read stale behaviour as disobedience.

@@ -1,6 +1,6 @@
 schema_version: inference_batch.manifest.v1
 entry_schema_version: inference_batch.entry.v1
-generated_at: '2026-07-21T22:16:59Z'
+generated_at: '2026-08-12T11:54:37Z'
 entry_count: 52
 entries:
 - schema_version: inference_batch.entry.v1
@@ -24,7 +24,7 @@ entries:
     stack_lineup: REFERENCE trio — architect_general Qwen3.5-122B-A10B-Q4 / frontdoor
       Qwen3.6-35B-A3B-Q8 / gemma-4-26B-A4B workers; reviewer aliased to CPU architect_general
       (A3); GLM-5.2 NOT resident
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -38,7 +38,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -52,7 +52,7 @@ entries:
     protocol_id: preflight-gate.v1 + three-gates (pipeline-green != starts != live==config)
     dry_run: false
     command: 'scripts/server/affinity_preflight.py --require-memory-locality && scripts/server/preflight_gate.py
-      --expected-topology-hash 8c8cfcbb13d2611d --require-servers --json && scripts/validate/attest_orchestrator_workers.py
+      --expected-topology-hash 171f86f9188211e9 --require-servers --json && scripts/validate/attest_orchestrator_workers.py
       --min-workers 6 --expect-feature review_decision_shadow && scripts/validate/attest_flags.py
 
       '
@@ -69,7 +69,7 @@ entries:
   outcomes:
     expected: 'Reference lineup live==config on all six API workers; live affinity
       matches NUMA_CONFIG for every role; preflight_gate attestation JSON records
-      topology hash 8c8cfcbb13d2611d fresh; review_decision_shadow=ON confirmed on
+      topology hash 171f86f9188211e9 fresh; review_decision_shadow=ON confirmed on
       ALL 6 uvicorn workers via per-worker flag introspection; review_decision_enforce
       OFF.
 
@@ -78,12 +78,12 @@ entries:
     - gate: Is the reference lineup live==config AND is review_decision_shadow=ON
         on ALL 6 workers AND topology attested fresh?
       evidence: three-gates check; affinity_preflight live-affinity pass; preflight_gate.py
-        attestation JSON (topology 8c8cfcbb13d2611d, servers up, matrix fresh); attest_orchestrator_workers.py
+        attestation JSON (topology 171f86f9188211e9, servers up, matrix fresh); attest_orchestrator_workers.py
         6/6 with feature review_decision_shadow; attest_flags.py no env diffs
       fork:
         pass:
           rule: 6/6 workers report review_decision_shadow=ON AND enforce=OFF AND live
-            affinity == NUMA_CONFIG for all roles AND topology hash == 8c8cfcbb13d2611d
+            affinity == NUMA_CONFIG for all roles AND topology hash == 171f86f9188211e9
           action:
           - flip RCP-W1 checkbox in bulk-inference-campaign.md
           - record attestation JSON path + per-worker flag table
@@ -124,11 +124,11 @@ entries:
   ledger:
     journal_quarantine_rule: 'record lineup id, kernel era, topology hash, per-worker
       shadow-flag state (6/6 required), enforce=OFF; quarantine the whole prologue
-      diagnostic_only if flag attestation is not 6/6 or topology hash != 8c8cfcbb13d2611d.
+      diagnostic_only if flag attestation is not 6/6 or topology hash != 171f86f9188211e9.
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:a574e7b42374450a96b1225326248b900774580f66229b719807049e4b29b038
+  entry_hash: sha256:6b84fcb69c97fe690c4073280058f4362850939377a146e082b2787d3df3ea58
 - schema_version: inference_batch.entry.v1
   task_id: RCP-W2-paired-shadow-replay
   title: RCP-W2 — RD-12 paired shadow-OFF/ON replay (feeds TM-8 coverage + LB-1 overhead
@@ -163,7 +163,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (unchanged from RCP-W1); reviewer = CPU architect_general
       alias (A3)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -177,7 +177,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -279,7 +279,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:2ee377ab8539bd82c38a965ec770eb21377fe4097ef344786fe2e598ac9115ef
+  entry_hash: sha256:4311a4cce8eeb3abba817379d061cf0d89fcca8e8aaae749e7fe48d42221f8b4
 - schema_version: inference_batch.entry.v1
   task_id: RCP-W3-rc8-smoke-slice
   title: 'RCP-W3 — RC-8 smoke slice: first FA/FR/CR observations on nearmiss-v1 (shadow
@@ -306,7 +306,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (unchanged); reviewer = CPU architect_general alias
       (A3)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -318,9 +318,9 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
     - OP-6a
@@ -415,7 +415,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:8392b666d63b7fed6ac4626a56e5d98cd046bfb915f2694bd7f83b02b48ca221
+  entry_hash: sha256:cf50b86aed52769e067213712e8ccd8748421c538d4c46839edc4761f57c2fe4
 - schema_version: inference_batch.entry.v1
   task_id: LB-1-regression-attribution
   title: LB-1 — Reproduce + attribute the plan-review throughput regression (offline
@@ -434,7 +434,7 @@ entries:
   phase: 1
   priority: P1
   preconditions:
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     host_health:
       tier: any
     topology:
@@ -516,7 +516,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:ad0378fb4b84abb90d213d0f82edc1e108dff5e8c87e102bff2cd4ef055d74e4
+  entry_hash: sha256:821a547b64519628b12b0a458df05300a53cc06816cb2941e96d334704c139c0
 - schema_version: inference_batch.entry.v1
   task_id: LB-4-sampling-policy-ab
   title: LB-4 — Paired throughput A/B per sampling policy (observation-grade)
@@ -537,7 +537,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general
       alias (A3)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -551,7 +551,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -639,7 +639,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:06b2514356b04a912040287a7cbce791fdbce6f1a35df50732d3c7208b8557b9
+  entry_hash: sha256:5136d231f75cab5b781f6594418cca4bfca9e294f82ccd0dc7dad4757e380f7f
 - schema_version: inference_batch.entry.v1
   task_id: LB-7-baseline-floor
   title: 'LB-7 — M3 baseline floor: full plane vs single-augmented-LLM (A0/A1) on
@@ -662,7 +662,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); plane arm = CPU architect_general
       reviewer alias (A3); baselines A0 gates-only / A1 self-review
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -676,7 +676,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -769,7 +769,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:884a8517859a6dc12c7d305b525cf69832381ed3df9a57ea8ec8fca6b577347f
+  entry_hash: sha256:556cee5c969bfcefbe043ed96e745ae5bc53a5c09a3e1e028b99250734eb7dc6
 - schema_version: inference_batch.entry.v1
   task_id: RC-8-full-corpus-baseline
   title: RC-8 — Full-corpus reviewer calibration baseline on nearmiss-v1 (observation
@@ -792,7 +792,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general
       alias (A3)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -804,9 +804,9 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
     - OP-6a
@@ -894,7 +894,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:593e29a76eb201324a05a0b62354eb5c829b8f9e202a3c61be623aaa2a4f338e
+  entry_hash: sha256:c84bf055b559efa8be63e9df6450670cbad7c18efc73a2b5a79a814b90aee8a4
 - schema_version: inference_batch.entry.v1
   task_id: RD-12-full-replay
   title: RD-12 — Full paired shadow replay (only if NOT already covered by RCP-W2)
@@ -913,7 +913,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general
       alias (A3)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -927,7 +927,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -1012,7 +1012,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:4a69edeaee1d1a5291de51899e42eca2fbb45a526716253645ed31808fc5f823
+  entry_hash: sha256:237cc23d30b65e31023813d5cce5251575c1af8aea9b5effe34a5334f79aa631
 - schema_version: inference_batch.entry.v1
   task_id: RM-6-field-order-ab
   title: RM-6 — RA-8 field-order A/B (V-first vs E-first GBNF) on the leading A1 self-review
@@ -1034,7 +1034,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); leading arm = A1 self-review
       (CPU architect_general alias, A3)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -1046,7 +1046,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -1130,7 +1130,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:ed03a58a3729d0de4a8d3f8c7673b489d2729c430f603561c07708a239d9b0cd
+  entry_hash: sha256:704f56758d10a52929f0d90bc6f2cf5405b68e153538a2d6d8673f5a512fbbd8
 - schema_version: inference_batch.entry.v1
   task_id: TM-8-full-coverage
   title: TM-8 — Full trace-coverage gate (~100% of review invocations produce trace
@@ -1156,7 +1156,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch); reviewer = CPU architect_general
       alias (A3)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -1170,9 +1170,9 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
     - OP-6a
@@ -1252,7 +1252,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:1cd1cd386dfc747e9c3887d66ed150fa57d8a33881187b5c279b5316ee888e5c
+  entry_hash: sha256:51594a0e1ff8af356849f4751d946f4790304d1aa0c167e4308b78b9e93c7fd0
 - schema_version: inference_batch.entry.v1
   task_id: EV-11-math-rebaseline
   title: EV-11 — Fresh math re-baseline (GSM8K 1319 + MATH-500 500 = 1819) under math_verify
@@ -1288,7 +1288,7 @@ entries:
   priority: P1
   preconditions:
     stack_lineup: production default lineup (frontdoor + worker_general + architect_general)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
     - frontdoor
@@ -1299,7 +1299,7 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -1396,7 +1396,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-07-17-math-verify-rebaseline
-  entry_hash: sha256:b7d7ad81043e077142dbf74a569191b97fb854d974e5db4dfeb0e7f37395c7b0
+  entry_hash: sha256:920589cc216f5e0c2580fd3c4adbc5c29b25b4455f92e769048198a83e56fb4f
 - schema_version: inference_batch.entry.v1
   task_id: EV-4-calibration-baseline
   title: EV-4 — Eval-tower calibration baseline on Scoring Verifiers HE-R+ (ECE/AUC/Top-1/Bottom-1/rho/MAE)
@@ -1419,10 +1419,10 @@ entries:
   phase: 2
   priority: P1
   preconditions:
-    stack_lineup: 'production-consolidated-v7 quarter-mode lineup: frontdoor quarters
+    stack_lineup: 'production-consolidated-v9 quarter-mode lineup: frontdoor quarters
       8080/8180/8280/8380; worker_general quarters 8082/8182/8282/8382; architect_general
-      8083; canonical llama.cpp 6ad45fa3 / binary 10098'
-    kernel_era: production-consolidated-v7
+      8083; canonical llama.cpp 0db32c06e / binary 10125'
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
     - frontdoor
@@ -1433,9 +1433,9 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
     - OP-quiet-window
@@ -1519,7 +1519,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:4ee9306f00a3e26690446ded4df42b1587ecd6477452332418b891a0cd40b6fb
+  entry_hash: sha256:40f1074dd8fca4f8be19a2915356ca2a5afdecebf2fba27f1432b25569642ec9
 - schema_version: inference_batch.entry.v1
   task_id: EV-10a-skill-efficacy-ab
   title: EV-10a — Deploy + paired A/B of the AUTOPILOT_SKILL_EFFICACY_GATE (per-suite,
@@ -1547,7 +1547,7 @@ entries:
   preconditions:
     stack_lineup: production lineup reloaded with AUTOPILOT_SKILL_EFFICACY_GATE=1
       in launch env
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       AUTOPILOT_SKILL_EFFICACY_GATE: 1
     flags_forbidden:
@@ -1561,9 +1561,9 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
     - OP-quiet-window
@@ -1643,7 +1643,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:235421ad03b84c2c77af25f4a4f753148ec3aedd86b2c828d258f927bb1e0a45
+  entry_hash: sha256:2892436667a4ff5de55a35bd6f7adc35cf286afa128318116f1715a0b8883057
 - schema_version: inference_batch.entry.v1
   task_id: EV-5-thinkprm-t2-verifier
   title: EV-5 — Deploy ThinkPRM-1.5B (Q4_K_M) for T2 step-level process verification
@@ -1667,7 +1667,7 @@ entries:
   priority: P2
   preconditions:
     stack_lineup: production lineup + ThinkPRM-1.5B loaded sequentially at T2
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
     - thinkprm-1.5b-q4km
@@ -1676,7 +1676,7 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -1756,7 +1756,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:e06d39e1f8c9ad25c703f7f5111b0351d5ff2579fdc6e871a2e1b72239820339
+  entry_hash: sha256:8973b2ac0b38839ee3fa5713571eb6fa29c9a283b113855d0a9b5eca330f42d8
 - schema_version: inference_batch.entry.v1
   task_id: EV-7-ouro-t0-sentinel
   title: EV-7 — Integrate Ouro-2.6B-Thinking as T0 cross-family sentinel verifier
@@ -1781,7 +1781,7 @@ entries:
   priority: P2
   preconditions:
     stack_lineup: Ouro-2.6B transformers-CPU serial (feeds T0 sentinel)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
     - ouro-2.6b-thinking
@@ -1790,7 +1790,7 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -1867,7 +1867,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:fb5f726bf3de86584f3c259c16196374a21bdb8d0485fa463dc72271678aeef1
+  entry_hash: sha256:a3f795c439d057a845613a70b238f565eda1fb9a4b525efa23b50aa2192bb895
 - schema_version: inference_batch.entry.v1
   task_id: EV-8-diversity-redundancy
   title: EV-8 — Diversity baseline pass + Verbalized-Sampling temperature ladder +
@@ -1896,7 +1896,7 @@ entries:
   preconditions:
     stack_lineup: 4 production roles (frontdoor + worker_general + architect_general
       + coder_escalation)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
     - frontdoor
@@ -1908,9 +1908,9 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
     - OP-quiet-window
@@ -2049,7 +2049,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:a2d3fcb7f0cd9e91050fe80907bd57ebafd8eab7d2aad33802a330e26c87e368
+  entry_hash: sha256:d3021d1f91f1dfe40092dd087c7bfa277c7a9e12fe8867f077b3bbbfd22c9447
 - schema_version: inference_batch.entry.v1
   task_id: EX-0-role-aware-ab
   title: EXAMPLE — Trinity role-aware A/B eval (schema demonstration, not a real batch
@@ -2071,7 +2071,7 @@ entries:
   priority: P2
   preconditions:
     stack_lineup: production default lineup (frontdoor + coder_escalation + workers)
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v9
     flags_required:
       ORCHESTRATOR_ROLE_AWARE_ROUTING: 1
     flags_forbidden:
@@ -2085,9 +2085,9 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
     - OP-6
@@ -2159,7 +2159,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:d392afd0b6e4467ba2a4eb95f89605881bb2f2d6d2bea1779c6ddb0abc913c54
+  entry_hash: sha256:be16c6d78f5fd1334131f64e01607f652821443d6691016c7e48f5e096a96586
 - schema_version: inference_batch.entry.v1
   task_id: RE-4-longcot-mini-calibration
   title: RE-4 / K-LCM-1 — LongCoT-Mini deterministic long-horizon reasoning calibration
@@ -2187,9 +2187,9 @@ entries:
   phase: 2
   priority: P2
   preconditions:
-    stack_lineup: optimized production-consolidated-v7 quarter stack; one role fans
+    stack_lineup: optimized production-consolidated-v9 quarter stack; one role fans
       out across its four CPU quarter ports at a time
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
     - frontdoor
@@ -2199,7 +2199,7 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -2291,7 +2291,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:cad9c6d8fadf40db7fb8436a193e068ac0d0778f749cdbe4a5f2f76eb2faac95
+  entry_hash: sha256:b3088cf5aa69193fe4ac6c7fb1b558bcb0af3ff0c3fc962f64ca36985a7a4ea5
 - schema_version: inference_batch.entry.v1
   task_id: semantics-shadow-rollout
   title: Semantics-layer rollout Phase 1 — shadow-mode telemetry accumulation (CP1/CP2/CP3
@@ -2320,7 +2320,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch, no reload); reviewer = CPU
       architect_general alias (A3)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -2334,9 +2334,9 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
     - OP-6a
@@ -2427,7 +2427,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:11000c59d3bcf087d81823783ba7b35d4c229c1c4dac2d286da1e94e1d5570e8
+  entry_hash: sha256:af5cf1c699c8264a0155bd75e2d28f0371584fcc6f02407363a2f631d15aae6c
 - schema_version: inference_batch.entry.v1
   task_id: H5-RM3-screening-tier
   title: H5 / RM-3 — Reviewer screening-tier small-n sweeps over reviewer_pool_gen
@@ -2460,7 +2460,7 @@ entries:
   preconditions:
     stack_lineup: reviewer/architect/grader pairings from pool-gen; eval-tower T0/T1
       servers
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       AUTOPILOT_SCREENING_TIER_INFERENCE: 1
     flag_attestation: env_only
@@ -2469,9 +2469,9 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: any
     operator_gates:
     - OP-quiet-window
@@ -2559,7 +2559,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:0612e624f08f168a5c363082e61a7eb0991a0a1fa1973d176de473f891c91bd2
+  entry_hash: sha256:de1730beda9e197eb1659a516b14b058d615910c507743b782594a8086040ece
 - schema_version: inference_batch.entry.v1
   task_id: BULK-A7-eseries
   title: A7 — batched-decode E-series follow-ons (E3 conditional GEMM + E4 re-promotions)
@@ -2580,7 +2580,7 @@ entries:
   priority: P2
   preconditions:
     stack_lineup: single full instance, -np sweep; frontdoor A3B + dense control
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -2591,7 +2591,7 @@ entries:
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -2667,7 +2667,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:74bea640298dfca3f3121a52260e0669c9e109265b0af2ccbbaaa1e60c52f10d
+  entry_hash: sha256:12649a4ebab048572dfb8baa2bb94906dbc5f7737757f66a2d886ea26ca3c3a9
 - schema_version: inference_batch.entry.v1
   task_id: BULK-DS-E1-kv
   title: DS-E1 — dynamic-stack KV measurement (decision-ready clean-window packet)
@@ -2688,7 +2688,7 @@ entries:
   preconditions:
     stack_lineup: production default lineup (frontdoor + workers), single-instance
       measurement
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -2699,7 +2699,7 @@ entries:
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -2777,7 +2777,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:eb52f9dd3ac0340877609ac6498a48ce9813fcf23ce238e1b5ea606d2e0ab0e8
+  entry_hash: sha256:74c91a71981f877f28a379c46662a19ec8093e1496535c7722636ca4128c5596
 - schema_version: inference_batch.entry.v1
   task_id: BULK-langgraph-tm7-parity
   title: TM-7 — live real-node run_task_lg vs run_task parity
@@ -2798,7 +2798,7 @@ entries:
   preconditions:
     stack_lineup: production lineup for real-node execution; data/trace/parity_task_set.json
       present
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flags_forbidden:
@@ -2812,7 +2812,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -2884,7 +2884,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:720b210fd1ee2ba7a4e33fdaa647347c94faca0414bb8c7ca26c73f6473d6b3e
+  entry_hash: sha256:6a4af13e87844e94215408bb58f212a98a09fd74165f3e969ba9d6d280814af0
 - schema_version: inference_batch.entry.v1
   task_id: semantics-advisory-rollout
   title: Semantics-layer rollout Phase 2 — advisory mode (expose findings to the architect;
@@ -2912,7 +2912,7 @@ entries:
   preconditions:
     stack_lineup: REFERENCE trio (RCP-prologue relaunch, no reload); reviewer = CPU
       architect_general alias (A3); advisory surfacing server-side only (x_* fields)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       review_decision_shadow: 1
     flags_forbidden:
@@ -2926,7 +2926,7 @@ entries:
       tier: quiet_window
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -3021,7 +3021,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:4256785cd5a1567bdfc360f56fafb533b6d71cc99e954f7f7f5baf6f058d7198
+  entry_hash: sha256:01ef1faa3fbb2f2984f67cffded7dd1a96e11615200450b1f2628fdc75d7976e
 - schema_version: inference_batch.entry.v1
   task_id: BULK-K-EMB-1
   title: K-EMB-1 — Granite embedder bench Phase B (load/vector smoke -> Phase B)
@@ -3043,7 +3043,7 @@ entries:
   preconditions:
     stack_lineup: embedder-only servers (Granite/e5-base/BGE-M3 GGUF); no production
       role reload
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
     - granite-embedding-97m-r2
@@ -3055,7 +3055,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -3139,7 +3139,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:006adb09c3b048f7861716d78c0f94e69bca9c00aaf7fe80567b9494d7046963
+  entry_hash: sha256:a894d1bad0a8db495b6a81bfb0a382b9fc72db48d10a74a15201fe7f40005184
 - schema_version: inference_batch.entry.v1
   task_id: BULK-K-ROPE-cells
   title: K-ROPE-1 — remaining RoPE long-context cells (exact-boundary + worker path)
@@ -3161,7 +3161,7 @@ entries:
   preconditions:
     stack_lineup: clean model-batched window; frontdoor + ingest resident, worker_general
       re-attested
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flag_attestation: all_workers
@@ -3174,7 +3174,7 @@ entries:
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -3275,7 +3275,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:ca56d1f2a472db1c2cd4a30ad250b7619c6f876525248e29de2c30cfb56305fe
+  entry_hash: sha256:6a103c71d983d99db2c77d8b4c8d07506182edcf8b1638bc465f876cdd9979fd
 - schema_version: inference_batch.entry.v1
   task_id: BULK-XMAS-telemetry
   title: X-MAS — post-enable live telemetry monitor (passive rider on enforce windows)
@@ -3294,14 +3294,14 @@ entries:
   priority: P3
   preconditions:
     stack_lineup: production lineup with xmas_routing enforce active
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       xmas_routing.mode: enforce
     flag_attestation: all_workers
     host_health:
       tier: any
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: any
@@ -3370,7 +3370,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:8eebe7009cae55f66c2bd41e71ca7be15e8d910a033605593eeeabaabd989a4f
+  entry_hash: sha256:23c13eebd52e2d1230892cf638e917ce67232225d281309cf2dd1ef7037f6d1a
 - schema_version: inference_batch.entry.v1
   task_id: BULK-hermes-smokes
   title: Hermes — standalone smoke harness + reference-client + subagent single-slot
@@ -3396,7 +3396,7 @@ entries:
   preconditions:
     stack_lineup: single-slot llama-server (-np 1, context_length 32768) for Hermes;
       orchestrator role alias
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -3407,7 +3407,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -3479,7 +3479,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:ac59476bc0b6302d6c5db2932918ec9e05644b9bd93b1e40234854ea66a28626
+  entry_hash: sha256:fdc2b7c457a526bfdad78524b62c482798778c8d14cc87ed9cea4a7b558f1e8a
 - schema_version: inference_batch.entry.v1
   task_id: BULK-kbrag-autowiki-k11
   title: internal-kb-rag — K11 FTS5 lexical sweep + AutoWiki deterministic writer
@@ -3502,7 +3502,7 @@ entries:
   preconditions:
     stack_lineup: KB-RAG index resident/refreshed; no llama-server or production reload
       required
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: none
     models: []
     host_health:
@@ -3590,7 +3590,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:28fbffcfe37d0903f35733cb9a5f4f5b4988f8072999edacdcab0fffc484a382
+  entry_hash: sha256:43d58f7340a491144e46ae79edbeef328319396af4186ef43c32c988aa613b0d
 - schema_version: inference_batch.entry.v1
   task_id: ODLB-W3-01-lightonocr
   title: ODLB-W3-01 — LightOnOCR scanned/image OCR arm (OmniDocBench like-for-like)
@@ -3615,7 +3615,7 @@ entries:
   preconditions:
     stack_lineup: LightOnOCR server (config.server_urls.ocr_server; /ocr/pdf, port
       8082); odl_bench adapter
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
     - lightonocr-2-1b
@@ -3624,7 +3624,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -3703,7 +3703,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:2de89fce0573ac9db42c7e893f7b56e2f59b8ae3194b29ccd879827357d492e3
+  entry_hash: sha256:12ca5d97ec6a002a0229ff75582b26b924a60595abb7d1be84e26a58119c09c5
 - schema_version: inference_batch.entry.v1
   task_id: ODLB-W3-02-odl-hybrid
   title: ODLB-W3-02 — ODL hybrid table extraction arm (docling-fast sidecar :5002)
@@ -3726,7 +3726,7 @@ entries:
   preconditions:
     stack_lineup: opendataloader-pdf[hybrid] + sidecar 'opendataloader-pdf-hybrid
       --port 5002' live; odl_bench adapter
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       ORCHESTRATOR_ODL_TABLE_BACKEND: hybrid
     flag_attestation: env_only
@@ -3735,7 +3735,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -3810,7 +3810,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:b627d8705efe6d0df64b144ea2cd939141533faf190097e8f22a27d5f63c3a9b
+  entry_hash: sha256:820277fd71fad2146cf00a5f8f3726f7ace346d15438394aede5182a0b704cf5
 - schema_version: inference_batch.entry.v1
   task_id: ODLB-W3-03-paddleocr-vl
   title: ODLB-W3-03 — PaddleOCR-VL-1.6 VL reference arm (OmniDocBench v1.6 SOTA ceiling)
@@ -3835,7 +3835,7 @@ entries:
   preconditions:
     stack_lineup: PaddleOCR-VL-1.6 GGUF + mmproj via llama-mtmd (CPU or MI210); NEW
       Wave-3 VL engine adapter
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
     - paddleocr-vl-1.6
@@ -3844,7 +3844,7 @@ entries:
       max_uptime_days: 14
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: false
       contention_matrix: not_required
     autopilot: stopped
@@ -3922,7 +3922,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:3296f8f30812f2f81b4a342e5271a14c60796eedde7ad6520c8908cf74db4c56
+  entry_hash: sha256:6e9c6ab60d406ac5926d517d3b9a444c3ef70a26c2106e1ad7f2b96e45cfbd90
 - schema_version: inference_batch.entry.v1
   task_id: KOP2-v6iqk-canonical-verify
   title: v6+iqk canonical verification — clean post-reboot throughput bench (standing
@@ -3949,7 +3949,7 @@ entries:
   preconditions:
     stack_lineup: canonical v6 stack (all hot roles on the v6 binary, GGML_IQK=1);
       post-reboot host
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flag_attestation: all_workers
@@ -3962,7 +3962,7 @@ entries:
       max_uptime_days: 1
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -4043,7 +4043,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:a7c58e176a96f3594459b7e9412179324a9ed32bce8cd9cf5af4fe8e33a836c3
+  entry_hash: sha256:b478a1117e98cde3665c46de5326df0196b75806570e65b841e854693536f763
 - schema_version: inference_batch.entry.v1
   task_id: KOP2-frontdoor-q8-fusion-ab
   title: frontdoor Q8_0 operator/graph barrier-fusion A/B (fusion flag on/off, tg128)
@@ -4071,7 +4071,7 @@ entries:
   preconditions:
     stack_lineup: single-instance llama-bench, frontdoor Qwen3.6-27B Q8_0; experimental
       fusion build vs v6 baseline
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -4082,7 +4082,7 @@ entries:
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -4159,7 +4159,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:b1aff2ef9b4442216ea6ec56c10f722713068a35e2bae2d42d4d851c5c45483d
+  entry_hash: sha256:14fdb4e46df1f7d6443db3f721b6a31358d16c143e79a307d6ca644b352cf347
 - schema_version: inference_batch.entry.v1
   task_id: KOP2-strand-rustevo2-phaseB
   title: Strand-Rust-Coder-14B RustEvo2 Phase B — single-instance sequential bench
@@ -4186,7 +4186,7 @@ entries:
   preconditions:
     stack_lineup: single-instance bench, ONE model loaded at a time (sequential);
       Strand + Rust toolchain
-    kernel_era: production-consolidated-v6
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flag_attestation: env_only
@@ -4199,7 +4199,7 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: df373c79cc4af06f
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -4279,7 +4279,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:10f69833452484eb8555236c8f5883bcba8bf6b6e60ac98b3be6f945c3fa6584
+  entry_hash: sha256:d03fd62c762d39f1abde4643e15b20d3c4aa02a591f5e3952c08027b6e4f322a
 - schema_version: inference_batch.entry.v1
   task_id: ROUTE-A1-shapekeyed-step2
   title: A1 — shape-keyed Step-2 live smoke + flag-on bracket (disjoint admit / overlap
@@ -4308,7 +4308,7 @@ entries:
   preconditions:
     stack_lineup: production lineup, frontdoor full + quarter instances; placement
       SM enabled (PLACEMENT_STATE_MACHINE=1)
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
       PLACEMENT_STATE_MACHINE: 1
@@ -4323,9 +4323,9 @@ entries:
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates: []
     depends_on: []
@@ -4400,7 +4400,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:de79f01b63c81ca7055ba410ffe27da1496c67abe1b38983aeeb5fab17ad74c6
+  entry_hash: sha256:38e340c487fedaa8194990197c7e0bcb65cb6cb023be5eb658e40b097f49b123
 - schema_version: inference_batch.entry.v1
   task_id: ROUTE-A2-edit-transaction-ab
   title: A2 — multi-file edit-transaction routing A/B (EV-12 patch-verifier-fed)
@@ -4427,7 +4427,7 @@ entries:
   preconditions:
     stack_lineup: production lineup; coder_escalation + workers; edit-transaction
       review hook staged default-off
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
     flags_forbidden:
@@ -4441,9 +4441,9 @@ entries:
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     depends_on: []
   execution:
@@ -4519,7 +4519,7 @@ entries:
 
       '
     era_stamp: instrument-era-2026-06-12-post-measurement-constitution
-  entry_hash: sha256:796a402c8e9d38cf7dd8a8c598dfcae682273402ed19377fa02bd52c30a74343
+  entry_hash: sha256:9335aebb8f0e4fb21465dbaa2c6952c1d53bb862eed6c9fa9d714e1ccea53bd3
 - schema_version: inference_batch.entry.v1
   task_id: ROUTE-A3-j2j3-single-worker
   title: A3 — J2/J3 genuinely-live under-traffic migration probe (single-worker API)
@@ -4544,7 +4544,7 @@ entries:
   preconditions:
     stack_lineup: SINGLE-WORKER API (--workers 1) so session affinity is not confounded;
       placement SM enabled
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       GGML_IQK: 1
       PLACEMENT_STATE_MACHINE: 1
@@ -4556,9 +4556,9 @@ entries:
       max_uptime_days: 7
       cache_state: drop_caches
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates: []
     depends_on: []
@@ -4635,7 +4635,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:e09b5ee422e7899a5e3c6781255744268835cf2520068033a25f9285ec8a5e11
+  entry_hash: sha256:5562bb19b9f4e5c5093d4d87e43df9a66b8b4cefa4dd04e1159b6cdc9083baf1
 - schema_version: inference_batch.entry.v1
   task_id: P5-GC1-strict-if-typed-emission
   title: GC-1 — GLM-5.2 strict-IF / typed review_decision emission probe (GBNF-constrained

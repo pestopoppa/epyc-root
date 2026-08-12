@@ -396,6 +396,32 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
       has the right instrument in `/api/health` (the three-valued fold over `panels.py`). The `/kernel`
       PAGE is honest, so a human is not deceived; only an automated consumer of `registry.json` is.
 
+- [ ] **D-3 / OBS-2 (MED) — `hub_supervisor.sh` cannot say "I cannot tell", and its stale-source
+      check is wired to the one path that never runs.** Filed 2026-08-12 by the class-sweep
+      that followed the coordinator-daemon watchdog blindness. Two defects, one file:
+    - `health_ok()` is two-valued. A curl timeout, a removed `curl` binary, a hub moved off `:8100`
+      without `HUB_PORT`, and a genuinely dead hub are ONE value — and `cmd_loop` restarts on it, so
+      a mis-set port produces a permanent restart-into-port-conflict loop. Its neighbour in the same
+      file, `hub_source_is_newer`, is the model: a distinct `2` for every unknown, and
+      `check_hub_stale_source` explicitly reports rather than passes ("a check that cannot tell is
+      not a clean one"). Two functions, one file, opposite polarities.
+    - `check_hub_stale_source` is invoked **only** from `cmd_once`, never from `cmd_loop` — the
+      default and only long-running mode, whose healthy branch `continue`s straight past it. This is
+      the C42 bug `bus_supervisor.sh` already fixed and documented ("the tests passed because they
+      exercised the predicate and `check_once` directly and never the loop — verifying A consumer,
+      not THE consumer"), and `tests/test_hub_stale_source.sh` reproduces the same blind spot by
+      `eval`ing the two predicates and never the loop. The header meanwhile claims "when the
+      supervisor IS running, it now notices a stale hub instead of reporting it healthy", and
+      `usage()` claims "Never restarts a healthy hub" — which `cmd_once` has not done since the
+      stale-source port landed. Three comment sites assert properties the code lacks.
+    - Fix = adopt [`scripts/coordination/observer_guard.sh`](../../scripts/coordination/observer_guard.sh)
+      + the uniform `observe` entrypoint, and call the stale-source check from `cmd_loop`. Then flip
+      the row in [`scripts/coordination/observer_registry.json`](../../scripts/coordination/observer_registry.json)
+      to `contract: "v1"` and delete this line. **Not fixed in place by the sweep**: the hub
+      supervisor is a long-running script and editing a running `.sh` is its own incident class.
+      `tests/test_observer_contract.py` fails if this line is checked off or removed without the
+      registry row changing.
+
 ## Non-goals
 
 - **Not a data-fidelity fix.** The per-worker env fragmentation, inverted-topology defect, and

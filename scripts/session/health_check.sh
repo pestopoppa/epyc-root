@@ -241,6 +241,9 @@ if [ $FAIL -gt 0 ]; then
   if [ "$CPU_GOVERNOR" != "performance" ]; then
     echo "  3. Set CPU governor: echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
   fi
+  echo "  *. Apply ALL host tunables at once (governor, THP, numa_balancing,"
+  echo "     perf_event_paranoid, EPP): bash ${PROJECT_ROOT}/scripts/session/host_prep.sh --apply"
+  echo "     Boot persistence for the same set: host_prep.sh --verify-boot (install with --install-boot)"
   echo ""
   exit 1
 elif [ $WARN -gt 0 ]; then

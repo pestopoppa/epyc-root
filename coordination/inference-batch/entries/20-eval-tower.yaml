@@ -40,8 +40,8 @@
   phase: 2
   priority: P1
   preconditions:
-    stack_lineup: "production-consolidated-v7 quarter-mode lineup: frontdoor quarters 8080/8180/8280/8380; worker_general quarters 8082/8182/8282/8382; architect_general 8083; canonical llama.cpp 6ad45fa3 / binary 10098"
-    kernel_era: production-consolidated-v7
+    stack_lineup: "production-consolidated-v9 quarter-mode lineup: frontdoor quarters 8080/8180/8280/8380; worker_general quarters 8082/8182/8282/8382; architect_general 8083; canonical llama.cpp 0db32c06e / binary 10125"
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
       - frontdoor
@@ -52,9 +52,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
       - OP-quiet-window
@@ -156,7 +156,7 @@
   priority: P2
   preconditions:
     stack_lineup: "production lineup + ThinkPRM-1.5B loaded sequentially at T2"
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
       - thinkprm-1.5b-q4km
@@ -165,7 +165,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -259,7 +259,7 @@
   priority: P2
   preconditions:
     stack_lineup: "Ouro-2.6B transformers-CPU serial (feeds T0 sentinel)"
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
       - ouro-2.6b-thinking
@@ -268,7 +268,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -364,7 +364,7 @@
   priority: P2
   preconditions:
     stack_lineup: "4 production roles (frontdoor + worker_general + architect_general + coder_escalation)"
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
       - frontdoor
@@ -376,9 +376,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
       - OP-quiet-window
@@ -528,7 +528,7 @@
   priority: P2
   preconditions:
     stack_lineup: "production lineup reloaded with AUTOPILOT_SKILL_EFFICACY_GATE=1 in launch env"
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       AUTOPILOT_SKILL_EFFICACY_GATE: 1
     flags_forbidden:
@@ -542,9 +542,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: stopped
     operator_gates:
       - OP-quiet-window
@@ -647,7 +647,7 @@
   priority: P1
   preconditions:
     stack_lineup: "production default lineup (frontdoor + worker_general + architect_general)"
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
       - frontdoor
@@ -658,7 +658,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -768,8 +768,8 @@
   phase: 2
   priority: P2
   preconditions:
-    stack_lineup: "optimized production-consolidated-v7 quarter stack; one role fans out across its four CPU quarter ports at a time"
-    kernel_era: production-consolidated-v7
+    stack_lineup: "optimized production-consolidated-v9 quarter stack; one role fans out across its four CPU quarter ports at a time"
+    kernel_era: production-consolidated-v9
     flag_attestation: env_only
     models:
       - frontdoor
@@ -779,7 +779,7 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
       contention_matrix: not_required
     autopilot: stopped
@@ -907,7 +907,7 @@
   priority: P3
   preconditions:
     stack_lineup: "reviewer/architect/grader pairings from pool-gen; eval-tower T0/T1 servers"
-    kernel_era: production-consolidated-v7
+    kernel_era: production-consolidated-v9
     flags_required:
       AUTOPILOT_SCREENING_TIER_INFERENCE: 1
     flag_attestation: env_only
@@ -916,9 +916,9 @@
       max_uptime_days: 7
       cache_state: warm
     topology:
-      required_topology_hash: 8c8cfcbb13d2611d
+      required_topology_hash: 171f86f9188211e9
       live_affinity_verified: true
-      contention_matrix: v7-recert-required
+      contention_matrix: v9-recert-required
     autopilot: any
     operator_gates:
       - OP-quiet-window

@@ -196,7 +196,18 @@ Ordered highest-ROI-first. Each item: **one decisive experiment** → **acceptan
 ## 4. Gap list — queued measurements (checklist)
 
 **[U] = runnable now (flag flip / config), needs GPU only.** Highest-ROI first.
-- [ ] **N-gram / prompt-lookup on GPU** (L12) — 27B-Q8 + fp16, code/JSON/prose sets, `--spec-type ngram-simple|ngram-cache|ngram-map-k`. *(do-first, all decode categories)*
+- [x] **N-gram / prompt-lookup on GPU** (L12) — **SUPERSEDED, do not run** ✅ 2026-08-12 (`mainB`).
+  Already MEASURED and NEGATIVE at `a8afd338` (2026-07-04) — recorded in **this file's own line ~6**
+  reconciliation block: *"Every variant regresses on 27B-Q8: plain 28.4 → best ngram-simple 27.7;
+  context-only acceptance ~15% << break-even. Drop it from do-first."* The arms this row names
+  (`ngram-simple|ngram-cache|ngram-map-k`) are the arms that were measured. Re-running would consume
+  a multi-hour GPU window to reproduce a known regression.
+  **Two independent reasons it could not have run as written anyway**: (a) no fp16 27B model exists on
+  disk, so the "27B-Q8 + fp16" matrix has no fp16 arm; (b) the row still carries the *"do-first"*
+  designation that the same reconciliation explicitly retired.
+  **The live successor is L13** (corpus-static n-gram), which must clear a ~40–50% acceptance bar to
+  beat this; the trained-drafter path (MTP/EAGLE3) remains the spec route.
+  *Recorded because the checkbox and the retraction lived 193 lines apart in one file for 39 days.*
 - [x] **MTP on fp16/bf16** (L8) ✅ 2026-07-06 — MTP **+60.2%** on F16 (Qwen3.6-27B, Q8→F16 dequant proxy, α 66.9%≈Q8, mean-accept 3.00/3) vs Q8's +15.6% → BW-bound hypothesis CONFIRMED (F16 2 bytes/param → each accepted draft avoids a fatter weight read). **Caveat:** F16 abs 31.0 t/s MTP stays BELOW Q8 40.4 (MTP+MMQ) — F16 is a precision choice, not a throughput one; MTP just makes it far more affordable. TRUE-fp16 download pending to confirm real α + measure quality headroom (proxy α is Q8-valued).
 - [ ] **KV-quant single-stream long-ctx** (L14) — dense-Q8 **and** GDN full-global layers at 64k single-stream (the alive regime never measured).
 - [x] **FA-decode A/B on the MoE frontdoor** (L22) ✅ 2026-07-06 — MEASURED (35B-A3B-Q8): −fa0 single-stream (99.64>94.68, +5.2%) / −fa1 aggregate B≥16 (342.3>333.0 @B32, +2.8%). MoE crossover holds but MARGINAL (GDN suppresses the attention fraction FA targets; gemma-26B pure-MoE was +16%). Coherence PASS.

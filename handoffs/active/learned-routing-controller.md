@@ -222,6 +222,84 @@ routing classifier's own training labels, and skill-bank effectiveness.
       (frontdoor)**, and the two writer paths have failure rates differing by up to **8x**
       (coder_escalation 0.037 vs 0.288). Any embedding-based model over this store is partly a
       pipeline classifier. Decide: re-embed under one convention, or partition by convention.
+  - [x] **EPD-3-decision — DECIDED 2026-08-12: re-embed under one convention, with the convention
+        CORRECTED to drop `priority`. Partition-by-writer-path is REJECTED.** ✅ 2026-08-12
+    - **The stated cause is stale.** "The index mixes >=3 text conventions" was true when written and
+      is not true now. `reseed_episodic_store.py` run `20260809T160329Z` rebuilt **63,786 / 63,786**
+      rows from the single canonical builder `MemoryRecord.embedding_text()`
+      (`already_on_contract: 63786`, ntotal=id_map=63,786, desync 0; receipt in
+      `orchestration/repl_memory/sessions/`, narrative in `progress/2026-08/2026-08-09.md`). Only
+      **233 rows (0.36%)** have been written since. So "re-embed under one convention" has already
+      been EXECUTED — and the leak survived it. Re-running EPD-3 as written would burn an inference
+      window and change nothing; a naive re-run of the probe would still show high AUC and be
+      misread as "the reseed failed".
+    - **The leak moved from the FORMAT to a FIELD VALUE.** Verified read-only against the live
+      `episodic.db` (64,019 rows): `context.priority` takes exactly two values store-wide —
+      `interactive` (34,938) and absent (29,081) — and splits the writer paths at **99.973%**
+      purity: `interactive` ⟺ {`legacy` 30,719, `progress_log` 4,219}; absent ⟺ {`external` 28,124,
+      `seed` 940}; 17 strays. The literal token `| priority:interactive` is therefore present in one
+      pipeline's embedded text and absent from the other's, inside one format. `priority` is also
+      **not observed** — `src/orchestration/task_ir.py:81` hard-codes the default `"interactive"` —
+      so it carries ~zero task semantics and ~total writer-path identity. That is the definition of
+      a field to remove from the embedded text.
+    - **This is a LIVE retrieval defect, not only a training confound.** `canonicalize_task_ir`
+      always emits `priority`, so **every** live routing query embeds a `priority:interactive`-shaped
+      text while **45.4% of the corpus does not**. The two populations sit on systematically
+      different manifolds today, at query time.
+    - **Decision.** One convention, and the convention drops `priority` from the embedded text
+      (keep it stored; it is telemetry, not task semantics). The `task_type` segment stays — unlike
+      `priority` it carries real semantics; what is wrong there is `seeding_injection.py:65`
+      hard-coding `type:chat`, which is a writer bug to fix, not a field to drop.
+    - **REJECTED ALTERNATIVE — partition by writer path**, on five counts. (1) It *preserves* the
+      defect and makes it a permanent schema fact, so every downstream model must stay
+      partition-aware forever. (2) It costs corpus: a live (interactive-shaped) query would lose
+      reach to 29,081 rows that [`episodic-memory-integrity.md`](episodic-memory-integrity.md)
+      showed carry real decision signal (macro failure 0.1964 vs 0.2518 random / 0.1790 oracle =
+      76% of achievable headroom, permutation p = 0.0025). (3) The de-confounding it buys is not
+      established — the same file attacked the writer-path confound directly and the signal survived
+      (partial correlation unchanged at −0.875). (4) It does not work as a cheap post-filter:
+      `episodic_store.py:699` is a GLOBAL KNN with only `k*2` over-fetch and a SQLite post-filter, so
+      a convention filter silently returns fewer than `k` whenever the query's partition is a
+      minority of the top-2k. (5) A per-convention index is structural, not cheap:
+      `FAISSEmbeddingStore` binds one (index, id_map) pair and the whole publish/desync/self-heal
+      apparatus assumes exactly one. Dropping one field removes the leak at zero corpus cost.
+  - [x] **EPD-3-R4 — the standing integrity gate measured against a string that was never embedded.
+        FIXED ✅ 2026-08-12.** Found while gathering the evidence above.
+        `scripts/maintenance/check_episodic_integrity.py` hand-built `type:{t} | objective:{o}` for
+        its semantic self-match probe — no `priority:` segment — while the index was published from
+        `record_from_legacy_context(ctx).embedding_text()`, which emits one. On 54.6% of rows the
+        DECISIVE check was cosine-ing the stored vector against a different string, spending margin
+        against its own 0.90 floor; it also read `objective` only, silently dropping
+        `task_description`-keyed rows from the sample. Fixed by calling the publish function rather
+        than re-spelling it. Real callers: `scripts/session/health_check.sh` (both repos),
+        `autopilot.py` `_run_episodic_check`, `collect_multitier_incumbent_baseline.py`. Orchestrator
+        `604c70bf`; `tests/unit/test_episodic_integrity_check.py` 11 -> 14, both mutations caught.
+  - [ ] **EPD-3-R2 — no live write site produces the canonical vector, so the convention re-drifts
+        between reseeds by construction.** `MemoryRecord.embedding_text()` is called only by the
+        reseed and by the degeneracy guard. Every live vector comes from
+        `orchestration/repl_memory/embedder.py:243` `_serialize_task_ir`, which differs three ways:
+        key PRESENCE not truthiness (so it can emit `priority:None` / `type:None`), no `.strip()`,
+        no 2000-char cap, plus extra `constraints:` / `input_types:` segments. Make
+        `_serialize_task_ir` delegate to the canonical builder and add the
+        `TestOneEmbeddingConvention` analogue that `skill_bank` already has
+        (`tests/unit/test_degenerate_embedding_guard.py:290`) — today's version
+        (`tests/unit/test_memory_record.py:89`) compares two records with IDENTICAL fields and so
+        structurally cannot catch this.
+  - [ ] **EPD-3-R3 — two live writers still use foreign conventions.**
+        `scripts/benchmark/seeding_injection.py:65` hard-codes `type:chat` (even when the row's own
+        `task_type` is `math`/`coder`/`hotpotqa`) and truncates the objective to 200 chars;
+        `orchestration/repl_memory/seed_loader.py:470` embeds raw text with no prefix at all and
+        wrote the 94 post-reseed `seed` rows. Both should call the canonical builder.
+  - [ ] **OPERATOR: EPD-3-R1 — the recipe change needs an inference window, and must NOT land before
+        one.** Dropping `priority` from `embedding_text()` invalidates the 34,938 rows embedded with
+        it, so landing the code first would make live queries mismatch 100% of the store instead of
+        today's 45.4%. The re-embed and the recipe must flip together. Cost is measured, not
+        estimated: the 2026-08-09 run did 63,786 rows at **151.8 rows/s** in **~15 min end-to-end**
+        (vs ~74 min for the 2026-07-27 run at 58,281 rows), on a temporary fleet of 6 BGE processes
+        pinned across all 96 cores. The tool already fails closed —
+        `reseed_episodic_store.py:473` refuses without `--i-understand-this-re-embeds`. Sequence
+        when the window is granted: land R2+R3 -> drop `priority` from the builder -> reseed ->
+        re-run the EP-3 probe to confirm the writer-path AUC actually collapses.
 
 **Why this is the real result — REVISED 2026-07-27.** The probe asked "is failure decodable?" and
 got 0.726, which was refuted. The follow-up audit then established that EPD-1 and EPD-2 are much

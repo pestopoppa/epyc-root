@@ -63,6 +63,13 @@ Coupling edges: `.claude/dependency-map.json`.
 - **Six domain indices** carry the work, one thin row per handoff (`ID | Track | Handoff | Next action | Deps`). **Every active handoff is owned by exactly one index** — a second row is a defect. Liveness (`open`, `last_advanced`, blocked) is **generated**, never hand-written: `python3 scripts/handoffs/index_state.py` writes `handoffs/active/.index-state.json` + the master rollup; `--check` gates coverage/schema/freshness and must exit 0 before committing.
 - Standing strategic assessment (2026-06-12): `handoffs/completed/fable5-findings-*`, start at the executive summary.
 - **Checkbox discipline**: the dashboard counts checkbox state ONLY — any edit recording completed work flips `- [ ]` → `- [x]` (append `✅ YYYY-MM-DD`); mid-flight discoveries get their own task line. Full axioms: `agents/shared/SESSION_LIFECYCLE.md`.
+- **Dispatching or claiming a row: the task TEXT is the identity, `file.md:LINE` is only a hint** —
+  if they disagree the text wins; re-resolve with `scripts/coordination/backlog_row_check.py --row
+  "<text>"`. Anchor rot is structural, not carelessness (34.5% queue-wide on 2026-08-11, up from
+  27% twelve days earlier). And a screener proves **WELL-FORMED, not STILL-NEEDED** — four of eight
+  screened rows fact-checked on 2026-08-12 were already satisfied in reality, so verify the row's
+  premise before pointing a main at it. Full rule: [Dispatching Backlog
+  Work](agents/shared/OPERATING_CONSTRAINTS.md#dispatching-backlog-work--the-task-text-is-the-identity).
 - Authoring/editing an index: `docs/guides/agent-workflows/handoff-index-authoring.md` — the thin-row contract. Rows carry a pointer and a next step; **status, evidence and history never go in a row**. On completion, extract findings to docs, move to `completed/`, and delete the row.
 
 ## Dashboards
@@ -150,6 +157,19 @@ table is in [`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.m
 
 - **Always confirm metric direction** (higher/lower=better) and correct baselines before proposing fixes; identify root cause, don't patch symptoms.
 - If unsure about objective or metric semantics, ask before proceeding.
+- **A measurement whose window does not overlap the phenomenon is not evidence of its absence.**
+  Sample DURING, never after — a post-exit sample cannot distinguish *never resident* from
+  *finished*. Any idle/absent/stalled claim rests on a condition **persisting across several
+  samples**: `llama-bench` exits between probes, so 0% util and 0% VRAM are the normal reading
+  inside a healthy sweep, and one-at-a-time dispatch manufactures idle-looking hardware. Full
+  rule: [Observation
+  Windows](agents/shared/OPERATING_CONSTRAINTS.md#observation-windows--a-sample-that-misses-the-phenomenon-proves-nothing).
+- **"I invoked the HIP build" is not evidence of a HIP run, and `ldd` cannot prove one** —
+  llama.cpp *dlopens* `libggml-hip.so`, so the executable shows zero HIP linkage either way while
+  `/etc/environment` puts the CPU build early in `LD_LIBRARY_PATH` (the three-ggml-generations
+  hazard above). Prove residency: `verify_ggml_linkage.sh`, non-zero VRAM sampled during the run,
+  KFD process count. Full rule: [Inference and
+  Benchmarks](agents/shared/OPERATING_CONSTRAINTS.md#inference-and-benchmarks).
 
 ## Agents & Automation
 
@@ -164,6 +184,15 @@ table is in [`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.m
 - **Bus drain (M1)**: at every task boundary run `scripts/coordination/session_bus.py drain --agent <your-roster-id> --triage`; act on assignments/nudges; write acks to **your own** outbox with `corr_id` for routed items; never write another agent's file. Contract: [`coordination/session-bus/BUS_PROTOCOL.md`](coordination/session-bus/BUS_PROTOCOL.md).
 - **Coordinating other sessions?** Role file: [`agents/coordinator-agent.md`](agents/coordinator-agent.md). Session lifecycle (wrap-up, `/clear`, close, idle-main axiom): `agents/shared/SESSION_LIFECYCLE.md`.
 - **Refresh your heartbeat at the same boundary**: `session_bus.py append --agent <id> --target heartbeat --json '{"state":"working","task_id":"<id>"}'` (`idle`|`working`|`draining`). A heartbeat written once is a birth certificate, not a liveness signal (origin: INC-20260727-stale-heartbeat).
+- **Reading ANOTHER session's state? Three states, not two — working / compacting / idle.** A
+  session compacting its context renders IDENTICALLY to a finished one (goal line, "Pursuing goal"
+  timer and background-terminal count all vanish at once), so pane text can never clear a main.
+  The authoritative instrument is `tmux_adapter.py`'s runtime check, and **an adapter refusal
+  citing runtime state is a finding about the world, not an obstacle to retry past.** Heartbeats
+  lie in the other direction — measured 2026-08-12: `working` while 446s stale, pane idle for
+  three watcher cycles, GPU at 0%. When heartbeat, pane and hardware disagree the hardware wins,
+  provided the hardware reading persists across samples. Full rule: [Reading another session's
+  liveness](agents/shared/SESSION_LIFECYCLE.md#reading-another-sessions-liveness--three-states-not-two).
 
 ## Operator Decision Requests
 

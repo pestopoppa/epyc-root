@@ -1,0 +1,666 @@
+{
+  "schema": "epyc.deterministic_rescore_ledger.v1",
+  "generated_at": "2026-08-12T12:04:01Z",
+  "generator": "scripts/audit/deterministic_rescore_ledger.py",
+  "fail_closed": true,
+  "corrections_applied": 0,
+  "instrument": {
+    "scorer_sources_sha256": {
+      "debug_scorer": "b66a2cffcb726c4e226e723d7a385cac6a85f5c522899f40b8ff3eeccd31ce05",
+      "seeding_scoring": "fe81c6c60d42c898b5a46a803d25760c70cb25ed6456c682c3d0ab9e2dc16d65"
+    },
+    "historical_e8_scorer_sources_sha256": {
+      "debug_scorer": "90b2fe1f9d756ae584f2c4e9bffc0be3f244712828706e154e8ad41c047d475a",
+      "seeding_scoring": "fe59c4f97bcd8d977b73a11b4a014c97314d43fb4070121e77fd7cf1a48dcf3b"
+    },
+    "scorer_drifted_from_e8_pin": true,
+    "pool": {
+      "path": "/mnt/raid0/llm/epyc-inference-research/benchmarks/prompts/question_pool.jsonl",
+      "sha256": "64218c27e07400acf3b10a3cac05a410d5ee67814f353788ab75a19c84dde584"
+    },
+    "quarantined_suites": {
+      "debugbench": {
+        "reason": "pending-oracle-replacement",
+        "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+        "detail": "oracle is a 100-char solution prefix: vacuous on 76.1% of upstream rows (echoing the buggy input passes) and anti-correlated on some of ours (the reference solution FAILS 3 of our 4 core-pool rows). Rebuild in flight; re-scoring under either oracle would launder an uninterpretable verdict into an adjudicated-looking ledger."
+      }
+    },
+    "nondeterministic_methods": [
+      "llm_judge"
+    ]
+  },
+  "summary": {
+    "rows_scanned": 6746,
+    "dispositions": {
+      "agree": 5324,
+      "excluded": 1422
+    },
+    "reasons": {
+      "stored_matches_rescore": 5324,
+      "method_unrecorded": 223,
+      "quarantined_suite:pending-oracle-replacement": 20,
+      "nondeterministic_method:llm_judge": 39,
+      "answer_empty": 107,
+      "inband_infrastructure_error": 213,
+      "answer_not_persisted": 820
+    },
+    "divergences": 0,
+    "divergences_favouring_score": 0,
+    "divergences_against_score": 0,
+    "quarantined_rows": 20,
+    "inband_infrastructure_error_rows": 213,
+    "inband_infrastructure_error_by_stored_verdict": {
+      "False": 213
+    },
+    "inband_infrastructure_error_by_corpus": {
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl": 1,
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1/question_results.T1.jsonl": 8,
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1_diag/question_results.T1.jsonl": 1,
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_calibration_baseline_HE-R+/worker_general_ev4c/question_results.cal-worker_general.jsonl": 2,
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_math_rebaseline_E7c/question_results.ev11-worker_general.jsonl": 83,
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_math_rebaseline_E7c/question_results.ev11-worker_math.jsonl": 117,
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/r3_current_arm_rebaseline_20260723/question_results.T1.jsonl": 1
+    },
+    "answer_not_persisted_rows": 820,
+    "answer_not_persisted_by_corpus": {
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_calibration_baseline_HE-R+/frontdoor_ev4b/question_results.cal-frontdoor.jsonl": 820
+    },
+    "excluded_reason_by_stored_verdict": {
+      "answer_empty": {
+        "False": 107
+      },
+      "answer_not_persisted": {
+        "False": 239,
+        "True": 581
+      },
+      "inband_infrastructure_error": {
+        "False": 213
+      },
+      "method_unrecorded": {
+        "True": 54,
+        "False": 169
+      },
+      "nondeterministic_method:llm_judge": {
+        "False": 33,
+        "True": 6
+      },
+      "quarantined_suite:pending-oracle-replacement": {
+        "False": 9,
+        "True": 11
+      }
+    },
+    "quarantined_ordinals": [
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784803284721-d51a3bce-50q",
+        "ordinal": 4,
+        "question_id": "debugbench_number-of-atoms_java",
+        "stored_correct": false
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784803284721-d51a3bce-50q",
+        "ordinal": 24,
+        "question_id": "debugbench_queries-on-number-of-points-inside-a-circle_cpp",
+        "stored_correct": false
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784804872049-c8fd2b35-50q",
+        "ordinal": 4,
+        "question_id": "debugbench_number-of-atoms_java",
+        "stored_correct": false
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784804872049-c8fd2b35-50q",
+        "ordinal": 24,
+        "question_id": "debugbench_queries-on-number-of-points-inside-a-circle_cpp",
+        "stored_correct": false
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784805036094-ece25dc1-50q",
+        "ordinal": 4,
+        "question_id": "debugbench_number-of-atoms_java",
+        "stored_correct": false
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784805036094-ece25dc1-50q",
+        "ordinal": 24,
+        "question_id": "debugbench_queries-on-number-of-points-inside-a-circle_cpp",
+        "stored_correct": false
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier2/question_results.T2.jsonl",
+        "eval_batch_id": "evaltower-T2-1784806530064-74c9a994-50q",
+        "ordinal": 3,
+        "question_id": "debugbench_reduction-operations-to-make-the-array-elements-equal_java",
+        "stored_correct": true
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier2/question_results.T2.jsonl",
+        "eval_batch_id": "evaltower-T2-1784806530064-74c9a994-50q",
+        "ordinal": 8,
+        "question_id": "debugbench_relative-ranks_cpp",
+        "stored_correct": true
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier2/question_results.T2.jsonl",
+        "eval_batch_id": "evaltower-T2-1784806530064-74c9a994-50q",
+        "ordinal": 13,
+        "question_id": "debugbench_relative-ranks_cpp",
+        "stored_correct": true
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier2/question_results.T2.jsonl",
+        "eval_batch_id": "evaltower-T2-1784806530064-74c9a994-50q",
+        "ordinal": 26,
+        "question_id": "debugbench_reverse-odd-levels-of-binary-tree_cpp",
+        "stored_correct": true
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784788615128-de493af7-50q",
+        "ordinal": 1,
+        "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+        "stored_correct": true
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784789485275-003a9e86-50q",
+        "ordinal": 1,
+        "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+        "stored_correct": true
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784792402070-9bf81216-50q",
+        "ordinal": 1,
+        "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+        "stored_correct": true
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784793410538-87b640b8-50q",
+        "ordinal": 1,
+        "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+        "stored_correct": true
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1_diag/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784787924067-74d90901-50q",
+        "ordinal": 1,
+        "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+        "stored_correct": false
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier2/question_results.T2.jsonl",
+        "eval_batch_id": "evaltower-T2-1784794360705-3f063803-50q",
+        "ordinal": 11,
+        "question_id": "debugbench_special-array-with-x-elements-greater-than-or-equal-x_cpp",
+        "stored_correct": true
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier2/question_results.T2.jsonl",
+        "eval_batch_id": "evaltower-T2-1784794360705-3f063803-50q",
+        "ordinal": 25,
+        "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+        "stored_correct": true
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/r3_current_arm_rebaseline_20260723/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784824652826-df78fd14-50q",
+        "ordinal": 1,
+        "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+        "stored_correct": true
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/r3_current_arm_rebaseline_corev2_20260723/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784826048454-a6294f29-50q",
+        "ordinal": 4,
+        "question_id": "debugbench_number-of-atoms_java",
+        "stored_correct": false
+      },
+      {
+        "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/r3_current_arm_rebaseline_corev2_20260723/question_results.T1.jsonl",
+        "eval_batch_id": "evaltower-T1-1784826048454-a6294f29-50q",
+        "ordinal": 24,
+        "question_id": "debugbench_queries-on-number-of-points-inside-a-circle_cpp",
+        "stored_correct": false
+      }
+    ]
+  },
+  "per_corpus": [
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl",
+      "sha256": "394fb432750863052bd8df57d0f5177c3e360d24d06a6bb2d27f871e600235c5",
+      "rows": 150,
+      "dispositions": {
+        "agree": 66,
+        "excluded": 84
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier2/question_results.T2.jsonl",
+      "sha256": "447d8f9bd34cd65de5fcb28baddbf984f6b28de2989112b303dd243d7dc92acb",
+      "rows": 50,
+      "dispositions": {
+        "excluded": 20,
+        "agree": 30
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1/question_results.T1.jsonl",
+      "sha256": "9a9678abfa3dedcc568afcf787ba58b47046ed1f4fdd5de5643faf6d12eff6bf",
+      "rows": 200,
+      "dispositions": {
+        "agree": 128,
+        "excluded": 72
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1_diag/question_results.T1.jsonl",
+      "sha256": "c1d45f6f35ac4c2870154cc25e1d7c9861ccd1007098604a258d1372fea7c0dc",
+      "rows": 50,
+      "dispositions": {
+        "excluded": 31,
+        "agree": 19
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier2/question_results.T2.jsonl",
+      "sha256": "9ccbc965784d0040e549fb63f0e56a8aa15adf01ead2437aa5eacec464ff8e3d",
+      "rows": 50,
+      "dispositions": {
+        "agree": 34,
+        "excluded": 16
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_calibration_baseline_HE-R+/frontdoor_ev4b/question_results.cal-frontdoor.jsonl",
+      "sha256": "7c7a5a32be5bbeba05c586fd8156b61302fa01d67cfd9cc357c8d13380f2ced6",
+      "rows": 820,
+      "dispositions": {
+        "excluded": 820
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_calibration_baseline_HE-R+/frontdoor_ev4c/question_results.cal-frontdoor.jsonl",
+      "sha256": "19e6f9ebddf7a68ff75c0036c38d61fe1282efa21135675ae76ff19cfca8f2ab",
+      "rows": 820,
+      "dispositions": {
+        "agree": 820
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_calibration_baseline_HE-R+/worker_general_ev4b/question_results.cal-worker_general.jsonl",
+      "sha256": "4a420dd388ee550b2a41616f865070aa7155f021b27b8c1af9f5a9fd9513fab2",
+      "rows": 28,
+      "dispositions": {
+        "agree": 28
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_calibration_baseline_HE-R+/worker_general_ev4c/question_results.cal-worker_general.jsonl",
+      "sha256": "7b8dc910c837ccdf27f7d9663e6ab69eeaeedc8957a3058a32d2c6b4fcc9a106",
+      "rows": 820,
+      "dispositions": {
+        "agree": 817,
+        "excluded": 3
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_math_rebaseline_E7c/question_results.ev11-worker_general.jsonl",
+      "sha256": "5705081e2b285b1ab6e1e9588f6566317853088c5727c19a4fad00d1e1919cab",
+      "rows": 1819,
+      "dispositions": {
+        "agree": 1684,
+        "excluded": 135
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_math_rebaseline_E7c/question_results.ev11-worker_math.jsonl",
+      "sha256": "50ece19a75f3c0bb1ee0e850705b7f13c35eb1df48f7b63460511cd6b255fdc1",
+      "rows": 1819,
+      "dispositions": {
+        "agree": 1628,
+        "excluded": 191
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/r3_current_arm_rebaseline_20260723/question_results.T1.jsonl",
+      "sha256": "f31aa7e00c3fb1a769de93eeca52b109729c07386d50debf9d7244ae29b92c67",
+      "rows": 50,
+      "dispositions": {
+        "excluded": 14,
+        "agree": 36
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/r3_current_arm_rebaseline_corev2_20260723/question_results.T1.jsonl",
+      "sha256": "1988eb531a579892ceb54e4e0daedccedc8c068da1a9e8ea2a7166e91a2ae123",
+      "rows": 50,
+      "dispositions": {
+        "agree": 34,
+        "excluded": 16
+      }
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/real_suite_v1_eval_20260621/question_results.jsonl",
+      "sha256": "4124fa790334b7220911b21617dea54b1bdb6309c5b40c203e4c87ddaa62cc29",
+      "rows": 0,
+      "dispositions": {}
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/real_suite_v1_eval_20260706T145900Z_n12/question_results.jsonl",
+      "sha256": "4362e7c0a2517d763d737d54b20c57cf5c7ebee218d3b814802c516e28ca7f2a",
+      "rows": 0,
+      "dispositions": {}
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/real_suite_v1_eval_20260706T192007Z/question_results.jsonl",
+      "sha256": "cfe05a18087da1227dc8be837a3a8e673acd65bb1456a44d5004604f67a81892",
+      "rows": 0,
+      "dispositions": {}
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/real_suite_v1_eval_20260707T013009Z/question_results.jsonl",
+      "sha256": "87ed97cf28460da6a2b32c37c37b28f47b2f1ed07a2188240169dc56c37b83e2",
+      "rows": 0,
+      "dispositions": {}
+    },
+    {
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/vl_truth_slice_20260723/question_results.vl-truth-slice.jsonl",
+      "sha256": "694f9af79e02593ba94a803b7bb05dcbcf50d3ee6fa03365b5ad77f2260282fb",
+      "rows": 20,
+      "dispositions": {
+        "excluded": 20
+      }
+    }
+  ],
+  "divergences": [],
+  "quarantined": [
+    {
+      "ordinal": 4,
+      "question_id": "debugbench_number-of-atoms_java",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784803284721-d51a3bce-50q",
+      "label": "T1",
+      "stored_correct": false,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 24,
+      "question_id": "debugbench_queries-on-number-of-points-inside-a-circle_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784803284721-d51a3bce-50q",
+      "label": "T1",
+      "stored_correct": false,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 4,
+      "question_id": "debugbench_number-of-atoms_java",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784804872049-c8fd2b35-50q",
+      "label": "T1",
+      "stored_correct": false,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 24,
+      "question_id": "debugbench_queries-on-number-of-points-inside-a-circle_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784804872049-c8fd2b35-50q",
+      "label": "T1",
+      "stored_correct": false,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 4,
+      "question_id": "debugbench_number-of-atoms_java",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784805036094-ece25dc1-50q",
+      "label": "T1",
+      "stored_correct": false,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 24,
+      "question_id": "debugbench_queries-on-number-of-points-inside-a-circle_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784805036094-ece25dc1-50q",
+      "label": "T1",
+      "stored_correct": false,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier1/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 3,
+      "question_id": "debugbench_reduction-operations-to-make-the-array-elements-equal_java",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T2-1784806530064-74c9a994-50q",
+      "label": "T2",
+      "stored_correct": true,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier2/question_results.T2.jsonl"
+    },
+    {
+      "ordinal": 8,
+      "question_id": "debugbench_relative-ranks_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T2-1784806530064-74c9a994-50q",
+      "label": "T2",
+      "stored_correct": true,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier2/question_results.T2.jsonl"
+    },
+    {
+      "ordinal": 13,
+      "question_id": "debugbench_relative-ranks_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T2-1784806530064-74c9a994-50q",
+      "label": "T2",
+      "stored_correct": true,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier2/question_results.T2.jsonl"
+    },
+    {
+      "ordinal": 26,
+      "question_id": "debugbench_reverse-odd-levels-of-binary-tree_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T2-1784806530064-74c9a994-50q",
+      "label": "T2",
+      "stored_correct": true,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_corev2_tier2/question_results.T2.jsonl"
+    },
+    {
+      "ordinal": 1,
+      "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784788615128-de493af7-50q",
+      "label": "T1",
+      "stored_correct": true,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 1,
+      "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784789485275-003a9e86-50q",
+      "label": "T1",
+      "stored_correct": true,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 1,
+      "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784792402070-9bf81216-50q",
+      "label": "T1",
+      "stored_correct": true,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 1,
+      "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784793410538-87b640b8-50q",
+      "label": "T1",
+      "stored_correct": true,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 1,
+      "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784787924067-74d90901-50q",
+      "label": "T1",
+      "stored_correct": false,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier1_diag/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 11,
+      "question_id": "debugbench_special-array-with-x-elements-greater-than-or-equal-x_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T2-1784794360705-3f063803-50q",
+      "label": "T2",
+      "stored_correct": true,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier2/question_results.T2.jsonl"
+    },
+    {
+      "ordinal": 25,
+      "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T2-1784794360705-3f063803-50q",
+      "label": "T2",
+      "stored_correct": true,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/ev_baseline_e7_tier2/question_results.T2.jsonl"
+    },
+    {
+      "ordinal": 1,
+      "question_id": "debugbench_search-in-a-binary-search-tree_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784824652826-df78fd14-50q",
+      "label": "T1",
+      "stored_correct": true,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/r3_current_arm_rebaseline_20260723/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 4,
+      "question_id": "debugbench_number-of-atoms_java",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784826048454-a6294f29-50q",
+      "label": "T1",
+      "stored_correct": false,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/r3_current_arm_rebaseline_corev2_20260723/question_results.T1.jsonl"
+    },
+    {
+      "ordinal": 24,
+      "question_id": "debugbench_queries-on-number-of-points-inside-a-circle_cpp",
+      "suite": "debugbench",
+      "eval_batch_id": "evaltower-T1-1784826048454-a6294f29-50q",
+      "label": "T1",
+      "stored_correct": false,
+      "rescored_correct": null,
+      "applied": false,
+      "disposition": "excluded",
+      "reason": "quarantined_suite:pending-oracle-replacement",
+      "evidence": "artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+      "corpus": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/r3_current_arm_rebaseline_corev2_20260723/question_results.T1.jsonl"
+    }
+  ]
+}

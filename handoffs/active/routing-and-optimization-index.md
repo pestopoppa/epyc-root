@@ -57,6 +57,7 @@
 | RTG-45 | x mas text routing | [x-mas-text-routing.md](x-mas-text-routing.md) | Monitor post-enable live telemetry for unexpected domain regressions, latency regressions, or guard bypasses; rollback is xmas_routing.mode… | — |
 | RTG-46 | handoff index and backlog graph | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | Populate `Deps` with real dependencies as work reveals them — heuristic import was rejected | — |
 | RTG-47 | dashboard architecture restructure | [dashboard-architecture-restructure.md](dashboard-architecture-restructure.md) | Take the Phase 1b call — fix-10 retention and the view-plane consolidation both landed 2026-08-10; parallel-run evidence is in hand | — |
+| RTG-48 | coordinator role failure modes | [coordinator-role-failure-modes-and-refactor.md](coordinator-role-failure-modes-and-refactor.md) | Auditor: audit the Mech column — a MECH claim holds only if the mechanism would have REFUSED that specific failure; mutation-test it | RTG-34 |
 
 ## Cross-domain
 

@@ -31,7 +31,7 @@ priority: P2
 
 preconditions:
   stack_lineup: "production default lineup (frontdoor + coder_escalation + workers)"
-  kernel_era: production-consolidated-v6
+  kernel_era: production-consolidated-v9
   flags_required:
     ORCHESTRATOR_ROLE_AWARE_ROUTING: 1
   flags_forbidden:
@@ -45,9 +45,9 @@ preconditions:
     max_uptime_days: 7
     cache_state: warm
   topology:
-    required_topology_hash: df373c79cc4af06f
+    required_topology_hash: 171f86f9188211e9
     live_affinity_verified: true
-    contention_matrix: v7-recert-required
+    contention_matrix: v9-recert-required
   autopilot: stopped
   operator_gates:
     - OP-6

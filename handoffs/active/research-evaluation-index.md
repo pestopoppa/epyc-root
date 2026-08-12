@@ -58,6 +58,7 @@
 | EVL-46 | tool use eval contract | [tool-use-eval-contract.md](tool-use-eval-contract.md) | TU-DTAP-1 — Import a reviewed, bounded Apache-2.0 DTAP subset into a disposable local runner. | — |
 | EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | SC15 — drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>` | — |
 | EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | L12 — n-gram/prompt-lookup on GPU: 27B-Q8 + fp16 over code/JSON/prose sets, sweeping the three ngram spec types | — |
+| EVL-49 | reboot gated inventory and staging | [reboot-gated-inventory-and-staging.md](reboot-gated-inventory-and-staging.md) | S-01 — re-pin the 25 uptime-capped inference-batch entries to the v9 era and the live topology hash | INF-06, INF-07, RTG-46 |
 
 ## Cross-domain
 

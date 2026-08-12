@@ -1,20 +1,20 @@
 {
   "schema_version": "inference_batch.sources_lock.v1",
-  "generated_at": "2026-07-21T22:16:59Z",
+  "generated_at": "2026-08-12T11:54:37Z",
   "repos": {
     "epyc-root": {
       "path": "/workspace",
-      "sha": "594292a4c4b2da28c98b32cb8bdb829d7ea2e300",
+      "sha": "7d45a95b86ccc53c8cf9fdcb7857eb5391092a26",
       "dirty": true
     },
     "epyc-orchestrator": {
       "path": "/mnt/raid0/llm/epyc-orchestrator",
-      "sha": "e9d3c86452c185ccd7bbe8e16f5638b06e33f6e7",
+      "sha": "3f4b0918e604b13f0d4b96d74915564d9652328b",
       "dirty": true
     },
     "epyc-inference-research": {
       "path": "/mnt/raid0/llm/epyc-inference-research",
-      "sha": "9323213d40ede7238324592798e07bcdf0ba706c",
+      "sha": "99f225230507bcaf0a100bb9caad75d9b645a08b",
       "dirty": true
     }
   },
@@ -38,7 +38,7 @@
       "checkbox": "RCP-W1",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 617,
+      "checkbox_line": 642,
       "checkbox_anchor_count": 1,
       "checkbox_anchor_error": null,
       "resolved": true
@@ -53,7 +53,7 @@
         "handoffs/active/reviewer-latency-and-sampling-budget.md#LB-1"
       ],
       "handoff_exists": true,
-      "checkbox_line": 618,
+      "checkbox_line": 643,
       "checkbox_anchor_count": 1,
       "checkbox_anchor_error": null,
       "resolved": true
@@ -66,7 +66,7 @@
         "handoffs/active/reviewer-calibration-accounting.md#RC-8"
       ],
       "handoff_exists": true,
-      "checkbox_line": 619,
+      "checkbox_line": 644,
       "checkbox_anchor_count": 1,
       "checkbox_anchor_error": null,
       "resolved": true
@@ -169,7 +169,7 @@
         "handoffs/active/reviewer-control-plane-index.md#P5"
       ],
       "handoff_exists": true,
-      "checkbox_line": 27,
+      "checkbox_line": 38,
       "checkbox_anchor_count": 1,
       "checkbox_anchor_error": null,
       "resolved": true
@@ -373,8 +373,8 @@
       "owning_handoff": "handoffs/active/hermes-outer-shell.md",
       "checkbox": "G \u2014 Validate subagent + single-slot llama-server interaction",
       "also_flips": [
-        "handoffs/active/user-facing-harness-index.md#Reference non-Hermes client",
-        "handoffs/active/user-facing-harness-index.md#Live Hermes end-to-end smoke checklist"
+        "handoffs/active/hermes-agent-index.md#Reference non-Hermes client",
+        "handoffs/active/hermes-agent-index.md#Live Hermes end-to-end smoke checklist"
       ],
       "handoff_exists": true,
       "checkbox_line": null,
@@ -580,10 +580,10 @@
       "checkbox": "RC-9",
       "also_flips": [],
       "handoff_exists": true,
-      "checkbox_line": 30,
-      "checkbox_anchor_count": 1,
-      "checkbox_anchor_error": null,
-      "resolved": true
+      "checkbox_line": null,
+      "checkbox_anchor_count": 0,
+      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'RC-9'",
+      "resolved": false
     },
     {
       "task_id": "COORD-kernel-k-queue",
@@ -623,10 +623,10 @@
       "owning_handoff": "handoffs/active/inference-acceleration-index.md",
       "checkbox": "Operator v6 quality-gate baseline (K5 MMLU-Pro/GPQA-Diamond) -> promote banked GPU wins to v7",
       "also_flips": [],
-      "handoff_exists": true,
+      "handoff_exists": false,
       "checkbox_line": null,
       "checkbox_anchor_count": 0,
-      "checkbox_anchor_error": "missing unchecked checkbox anchor for 'Operator v6 quality-gate baseline (K5 MMLU-Pro/GPQA-Diamond) -> promote banked GPU wins to v7'",
+      "checkbox_anchor_error": null,
       "resolved": false
     },
     {

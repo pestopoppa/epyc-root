@@ -88,7 +88,22 @@ already has bare-letter handling).
       extraction impls inventoried. **No ⚠ production finding.**
 - [ ] **1c-fix (PRODUCTION-TOUCHING, GATED — scoped by the audit).** (a) Vendor the canonical `answer_scoring`
       contract into the orchestrator + a **shared golden-corpus drift test** (data-only coupling, consistent with
-      orchestrator→research being a DATA dependency). (b) Fix the latent verbose bias: `review_service.review()`
+      orchestrator→research being a DATA dependency).
+      **(a) DONE ✅ 2026-08-12** (`auditor` B15, orchestrator `39ff247b`, accepted after re-running the drift
+      suite): `answer_scoring_vendored.py` byte-verbatim from research @`9cc8db2d`, 15-row golden corpus with
+      independently-executed verdicts, sha-pinned drift test (18/18; 71/71 pre-existing debug_scorer tests
+      unaffected — purely additive, no consumer rewired). Three visible mutations all caught.
+      **(c) DONE ✅ 2026-08-12** (`auditor` B15, evidence artifact
+      [`artifacts/audit/debug-scorer-letter-inflation-quantification-20260812.md`](../../artifacts/audit/debug-scorer-letter-inflation-quantification-20260812.md),
+      epyc-root `f13b8682`): over 122 persisted eval-tower rows (46 deduped), **debug_scorer scores
+      +5.74pp raw / +4.35pp deduped higher than canonical**; ~3/4 of disagreements trace to the named
+      unconditional Strategy-5 last-letter fallback (incl. a truncated non-answer credited via a stray
+      letter). **NEW finding for the unification decision**: debug_scorer's Strategy-4 bold-letter
+      handling (`**D**`) catches answers canonical's regex misses entirely — a real capability gap, not
+      inflation; any unification must add it to canonical or lose it. debugbench (20) and
+      livecodebench-family (22) rows verified 100% substring-scored — outside the letter path, flagged
+      pending-oracle-rebuild. **(b) and (d) remain open** — (b) the 500-char review truncation, (d) the
+      dead `ChatRequest.tools` decision. (b) Fix the latent verbose bias: `review_service.review()`
       truncates the candidate to **500 chars** before judging (`review_service.py:420`) feeding `all_approved` →
       memrl reward — dormant only while `parallel_execution`/`architect_delegation` stay off, and re-enterable via
       per-request `allow_delegation=True`. (c) `debug_scorer.py:269-272` last-standalone-letter fallback is a

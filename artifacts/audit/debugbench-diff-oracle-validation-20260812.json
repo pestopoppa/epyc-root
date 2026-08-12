@@ -1,0 +1,90 @@
+{
+  "by_language": {
+    "cpp": {
+      "coverage_pct": 85.61,
+      "emitted": 1231,
+      "old_echo_pass_rate_pct": 56.95,
+      "old_reference_pass_rate_pct": 70.24,
+      "rows": 1438
+    },
+    "java": {
+      "coverage_pct": 87.22,
+      "emitted": 1222,
+      "old_echo_pass_rate_pct": 48.97,
+      "old_reference_pass_rate_pct": 65.81,
+      "rows": 1401
+    },
+    "python3": {
+      "coverage_pct": 86.49,
+      "emitted": 1223,
+      "old_echo_pass_rate_pct": 0.0,
+      "old_reference_pass_rate_pct": 0.0,
+      "rows": 1414
+    }
+  },
+  "live_pool_as_shipped": {
+    "by_language": {
+      "cpp": {
+        "echo_the_prompt_pass_rate_pct": 56.95,
+        "reference_solution_pass_rate_pct": 70.24,
+        "rows": 1438
+      },
+      "java": {
+        "echo_the_prompt_pass_rate_pct": 48.97,
+        "reference_solution_pass_rate_pct": 65.81,
+        "rows": 1401
+      },
+      "python": {
+        "echo_the_prompt_pass_rate_pct": 45.47,
+        "reference_solution_pass_rate_pct": 67.33,
+        "rows": 1414
+      }
+    },
+    "echo_the_prompt_pass_rate_pct": 50.51,
+    "path": "/mnt/raid0/llm/epyc-inference-research/benchmarks/prompts/question_pool.jsonl",
+    "reference_solution_matched": 4253,
+    "reference_solution_pass_rate_pct": 67.81,
+    "rows": 4253,
+    "scoring_methods": {
+      "substring": 4253
+    }
+  },
+  "max_required_lines": 4,
+  "new_oracle": {
+    "coverage_pct": 86.43,
+    "dropped_because_echo_would_pass": 20,
+    "dropped_because_reference_would_fail": 0,
+    "dropped_failed_validation": 20,
+    "dropped_no_buildable_patch": 557,
+    "emitted": 3676,
+    "emitted_echo_pass_rate_pct": 0.0,
+    "emitted_reference_pass_rate_pct": 100.0,
+    "ungated_echo_pass_pct": 0.54,
+    "ungated_reference_fail_pct": 0.0
+  },
+  "old_oracle": {
+    "echo_pass_rate_pct": 35.39,
+    "reference_pass_rate_pct": 45.43
+  },
+  "patch_size": {
+    "forbidden_max": 19,
+    "forbidden_mean": 2.33,
+    "forbidden_median": 2,
+    "required_max": 59,
+    "required_mean": 2.62,
+    "required_median": 2
+  },
+  "provenance": {
+    "argv": [
+      "--pool",
+      "/mnt/raid0/llm/epyc-inference-research/benchmarks/prompts/question_pool.jsonl",
+      "--report",
+      "/workspace/artifacts/audit/debugbench-diff-oracle-validation-20260812.json"
+    ],
+    "generated_at_utc": "2026-08-12T11:17:41+00:00",
+    "generator": "/mnt/raid0/llm/epyc-orchestrator/scripts/benchmark/debugbench_oracle.py",
+    "remediates": "epyc-root artifacts/audit/debugbench-oracle-vacuity-20260812.md",
+    "upstream_snapshot": "/mnt/raid0/llm/hf-home/hub/datasets--Rtian--DebugBench/snapshots/f474dcd2ad9276dfb48f96670f830da694870447/eval.json"
+  },
+  "rows": 4253
+}

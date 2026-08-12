@@ -125,3 +125,62 @@ under a composed recipe (mean accepted run length 2.36–2.67 measured at `n_max
 `ngram_mod_n_max` is a separate, independent knob. Rule fed: an acceptance-rate gate calibrated on
 draft-mtp-alone numbers will wrongly reject correctly-configured composed setups — gates on
 speculation metrics must declare the recipe they were calibrated against.
+
+## INC-20260731-ggml-linkage-silent-cpu-fallback
+Filed 2026-08-12 on reproduction; until then the primary record was epyc-inference-research
+`7f310022` and backlog row NIB2-58. `/etc/environment:5` and `devcontainer.json:57` place the
+production **CPU-only** `build/bin` EARLY in `LD_LIBRARY_PATH`, so a freshly built HIP binary
+resolved the frozen production ggml, found no GPU, and ran full-CPU **while printing
+`use gpu = 1`**. `verify_ggml_linkage.sh` reproduces it: 3 of 5 libraries came from the wrong
+tree. `ldd` is useless as a check here because llama.cpp **dlopens** `libggml-hip.so` — the
+executable shows zero HIP linkage whether the run was GPU-resident or not, so both "I invoked the
+HIP build" and "the build reported success" are fully compatible with a full-CPU run. Reproduced
+2026-08-12 during the A3 GPU baselines. Rule fed: prove device residency from OUTSIDE the binary —
+linkage guard, non-zero VRAM sampled during the run, and a KFD process count
+(`agents/shared/OPERATING_CONSTRAINTS.md` § Inference and Benchmarks; CLAUDE.md § Debugging).
+
+## INC-20260812-compacting-read-as-idle
+A session COMPACTING its context renders identically to an idle one: the goal line, the "Pursuing
+goal" timer and the background-terminal count all disappear together, leaving a bare status line
+above an empty composer. The coordinator read that pane state as *finished* for the `inference`
+main TWICE in one morning and reported it to the operator as done; the operator corrected it both
+times. The authoritative signal existed throughout — `tmux_adapter.py`'s C36 runtime check reads
+the session's own rollout JSONL and reports ACTIVE when the last record is mid-turn (`token_count`,
+`reasoning`) rather than the turn-terminal `task_complete`/`turn_aborted` — and it had already
+refused the corresponding nudges. The refusal was treated as an obstacle to work around rather
+than as the finding it was. The same morning produced the opposite error on the same fleet: at
+10:53Z `mainB`'s heartbeat read `state: working, task_id: A3-gpu-baseline…` while **446 seconds
+stale**, with the pane idle across three consecutive watcher cycles and the GPU at 0%. Rule fed:
+three liveness states, not two; the runtime check decides, an adapter refusal citing it is a
+finding about the world, and when heartbeat, pane and hardware disagree the hardware wins
+(`agents/shared/SESSION_LIFECYCLE.md` § Reading another session's liveness;
+`agents/coordinator-agent.md` Guardrails; `docs/guides/agent-workflows/coordinator-escalation.md`
+step 1; CLAUDE.md § Agents & Automation).
+
+## INC-20260812-post-exit-vram-sample
+The coordinator accused `mainB` of running a GPU benchmark on CPU fallback because a VRAM sample
+read 0%. The sample was taken AFTER `llama-bench` exited, and a post-exit sample cannot
+distinguish *never resident* from *finished* — the two worlds produce byte-identical readings.
+mainB had sampled during the run and held the evidence: VRAM 1% (~640 MB against a 637 MiB F16
+model), KFD procs 1, three consecutive samples with the PID alive. The generalisation is that
+`llama-bench` EXITS between probes, so 0% utilisation and 0% VRAM are the *normal* reading inside
+a perfectly healthy sweep and a single sample landing in that gap is sampling error; the
+dispatch-side corollary is that short one-at-a-time benches guarantee the appearance of idle
+hardware, so compute is queued back-to-back for occupancy. Rule fed: observation windows — sample
+DURING the phenomenon, and base every absence claim on a condition persisting across a stated
+number of samples (`agents/shared/OPERATING_CONSTRAINTS.md` § Observation Windows and the
+saturation clause of § Codex Delegation & Long-Horizon Throughput; CLAUDE.md § Debugging).
+
+## INC-20260812-dispatch-by-line-number
+Dispatching backlog work keyed on `file.md:LINE` broke twice in ONE batch. One pointer named an
+unrelated row — `:327` resolved to the P1-7 phantom-fleet item, not the numa-mode row it was
+dispatched as — and one had rotted because another agent inserted rows above it that same
+morning, which is not carelessness but what working in a file does. Queue-wide anchor rot had
+already been measured at 27% (2026-07-29) and re-measured at **34.5%** (2026-08-11), which is why
+`backlog_queue_gen.py` keys on verbatim box text. In the same batch, **four of eight** rows that
+PASSED `backlog_row_check.py --ref` were fact-checked and found already satisfied in reality:
+files already untracked, a `.orig` already deleted, backup directories already gone, a port fleet
+already retired. The screener validates a row's FORM against the file and cannot know the world.
+Rule fed: the task text is the identity and the line number only a hint; screen for form, then
+verify the premise independently before dispatching (`agents/shared/OPERATING_CONSTRAINTS.md` §
+Dispatching Backlog Work; `agents/coordinator-agent.md` Guardrails; CLAUDE.md § Handoff Workflow).

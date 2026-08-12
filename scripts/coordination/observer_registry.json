@@ -1,0 +1,207 @@
+{
+  "_README": [
+    "CENSUS OF EVERY OBSERVER IN THIS REPO THAT DECIDES WHETHER SOMETHING ELSE IS ALIVE.",
+    "",
+    "Enforced by tests/test_observer_contract.py. You do not opt in to this file and you",
+    "cannot forget it: the harness DISCOVERS its own subjects from the source tree by two",
+    "structural rules and fails on anything it finds that is not listed here.",
+    "",
+    "  Rule A (risk)     — a file under scripts/ or dashboard/ that identifies a process by",
+    "                      name/argv (pgrep, pidof, ps -e, ps aux) must appear below.",
+    "  Rule B (adoption) — a file that sources observer_guard.sh must appear below with",
+    "                      contract 'v1', which subjects it to the behavioural battery.",
+    "",
+    "contract values:",
+    "  v1        — adopted. Exposes `<script> observe` printing state=present|absent|",
+    "              unobservable and exiting 0|1|3. The harness runs the full battery",
+    "              against it, including that it SUPPRESSES corrective action while blind",
+    "              and still ACTS when the target is genuinely absent.",
+    "  unadopted — a known instance of the defect class, not yet migrated. MUST name an",
+    "              owning handoff and a task marker; the harness verifies an UNCHECKED",
+    "              '- [ ]' line carrying that marker really exists in that file. A deferral",
+    "              that is checked off or deleted without the migration turns this suite",
+    "              RED. Deferring is allowed; deferring silently is not.",
+    "  exempt    — reviewed and out of scope, with the reason recorded. Reviewed, not",
+    "              forgotten: the row is the review.",
+    "",
+    "Origin: 2026-08-12. bus_supervisor.sh identified the coordinator-daemon with",
+    "`pgrep -f 'session_bus_coordinator\\.py run'`; the live daemon's argv had",
+    "'--bus-root <path>' between '.py' and 'run'. The pattern matched nothing, the",
+    "watchdog declared a healthy heartbeating daemon dead FOREVER, and relaunch-looped",
+    "for hours with nobody watching. Two signals were available and it required BOTH, so",
+    "the working one was overruled by the broken one and 'cannot tell' became 'dead'."
+  ],
+  "contract_version": "v1",
+  "discovery": {
+    "roots": [
+      "scripts",
+      "dashboard"
+    ],
+    "extensions": [
+      ".sh",
+      ".py"
+    ],
+    "identity_probe_pattern": "(^|[^a-zA-Z_])(pgrep|pidof)\\b|\\bps\\s+-[a-zA-Z]*e[a-zA-Z]*\\b|ps\\s+aux",
+    "adoption_pattern": "(?m)^\\s*(source|\\.)\\s+[^\\n]*observer_guard\\.sh",
+    "skip_path_substrings": [
+      "/tests/",
+      "/test_",
+      "__pycache__"
+    ],
+    "_roots_note": [
+      "artifacts/operator/ is deliberately OUT of discovery scope: those are one-shot",
+      "ratifiers a human runs and reads once, not long-running observers whose verdict",
+      "nobody sees. Two of them do gate on an argv pattern and are recorded below as",
+      "'exempt' rows with the reason, so the finding is not lost — but a new ratifier",
+      "must not turn this suite red on an unrelated commit. A guard that forbids its own",
+      "neighbours' idiom gets deleted by the first person it blocks."
+    ],
+    "self_exclude": [
+      "scripts/coordination/observer_guard.sh"
+    ],
+    "_self_exclude_note": [
+      "The contract library itself. It matches Rule A only because its header QUOTES the",
+      "specimen's `pgrep -f` line while explaining why that shape is forbidden. Excluding it",
+      "by data, not by a special case in the test — and only this one file, so a second",
+      "'explanatory' mention elsewhere still trips the rule."
+    ],
+    "_adoption_pattern_note": [
+      "An actual `source` statement, not any MENTION of the file. Matching a bare",
+      "mention flagged this contract's own census module for quoting the library's path",
+      "in its docstring — a guard tripping on prose about itself. Rule A stays a plain",
+      "mention match on purpose: writing `pgrep` in a scripts/ file is worth a moment's",
+      "thought even in a comment, and the one file that discusses it at length is listed",
+      "in self_exclude."
+    ]
+  },
+  "observers": [
+    {
+      "id": "backfill_supervisor",
+      "script": "scripts/coordination/backfill_supervisor.sh",
+      "contract": "v1",
+      "target": "hardware_backfill.py",
+      "notes": "Reference adoption. Was the exact twin of the specimen: `runner_pids() { pgrep -f \"$RUNNER_PATTERN\"; }` + `[[ -n \"$(runner_pids)\" ]] && (( age <= STALE_AFTER ))`, and it kill -9'd every pid the pattern returned, on a shared host, on a boolean that could not distinguish dead from unseen. Its runner already published its own pid in heartbeat.json and the supervisor did not read it.",
+      "sandbox": {
+        "env": {
+          "EPYC_ROOT": "{root}",
+          "QUEUE_DIR": "{tmp}/queue",
+          "HEARTBEAT": "{heartbeat}",
+          "OG_STATE_DIR": "{tmp}/alerts",
+          "LOCK_FILE": "{tmp}/sup.lock",
+          "RUNNER_MARK": "{mark}",
+          "LOG_DIR": "{tmp}/logs",
+          "STALE_AFTER": "150",
+          "STARTUP_TIMEOUT": "2"
+        },
+        "heartbeat": "{tmp}/queue/heartbeat.json",
+        "observe_argv": [
+          "observe"
+        ]
+      },
+      "action_probe": {
+        "argv": [
+          "once"
+        ],
+        "env": {
+          "RUNNER": "{stub}",
+          "PY": "/bin/bash"
+        },
+        "marker": "{tmp}/launched.marker"
+      }
+    },
+    {
+      "id": "bus_supervisor",
+      "script": "scripts/coordination/bus_supervisor.sh",
+      "contract": "unadopted",
+      "owning_handoff": "handoffs/active/session-bus-thin-dispatcher.md",
+      "task_marker": "OBS-1",
+      "notes": "THE SPECIMEN. Being repaired in a parallel session (C49) as this row is written — the repair replaces the pattern with the heartbeat pid, which removes the instance. This row keeps the FILE enrolled so the class stays enforced afterwards: adopting observer_guard.sh + an `observe` entrypoint is what subjects it to the battery. Not edited from here; the file has a live owner."
+    },
+    {
+      "id": "hub_supervisor",
+      "script": "scripts/dashboard/hub_supervisor.sh",
+      "contract": "unadopted",
+      "owning_handoff": "handoffs/active/dashboard-architecture-restructure.md",
+      "task_marker": "OBS-2",
+      "notes": "Identity is correctly port-based (it already migrated off `pgrep -f 'dashboard\\.server .*--port 8100'`) and hub_source_is_newer() is a model three-valued predicate returning a distinct 2 for every unknown. But health_ok() is two-valued: a curl timeout, a removed curl binary, a hub moved off :8100 and a genuinely dead hub are one value, and cmd_loop restarts on it. Separately, check_hub_stale_source is called only from cmd_once and never from cmd_loop — the C42 bug the bus supervisor already fixed — while the header claims the running supervisor now notices a stale hub. Not edited from here: the hub supervisor is a long-running script and editing a running .sh is its own incident class."
+    },
+    {
+      "id": "nightshift_inference_guard",
+      "script": "scripts/nightshift/inference_guard.sh",
+      "contract": "unadopted",
+      "owning_handoff": "handoffs/active/non-inference-backlog.md",
+      "task_marker": "OBS-3",
+      "notes": "`pgrep -f 'llama-server|llama.cpp' | xargs ... || true` summed into an RSS total. Every failure mode — pgrep missing, argv drift, a renamed binary, an xargs error — yields 0 GB, which takes the else branch and prints 'No heavy inference detected'. FAIL-OPEN: run_wrapper.sh then launches the full multi-project agent workload on top of a live 200GB+ inference run. Two states where three are needed, in the dangerous direction."
+    },
+    {
+      "id": "nightshift_run_wrapper",
+      "script": "scripts/nightshift/run_wrapper.sh",
+      "contract": "unadopted",
+      "owning_handoff": "handoffs/active/non-inference-backlog.md",
+      "task_marker": "OBS-4",
+      "notes": "`autopilot_running() { pgrep -f 'scripts/autopilot/autopilot.py start'; }` requires `start` to sit immediately after the script path — the specimen's failure, verbatim. Any `autopilot.py --config X start` reads as 'AutoPilot not running' and the lab shadow jobs launch into a live AutoPilot."
+    },
+    {
+      "id": "rustevo2_bench_preflight",
+      "script": "scripts/benchmark/rustevo2_bench_preflight.py",
+      "contract": "unadopted",
+      "owning_handoff": "handoffs/active/non-inference-backlog.md",
+      "task_marker": "OBS-5",
+      "notes": "Partly right already: a pgrep returncode outside (0,1) is treated as 'could not inspect'. But an empty result is read as a positive 'no AutoPilot' and green-lights a bench against a live one, and a MISSING pgrep binary raises FileNotFoundError out of run() before reaching that handling."
+    },
+    {
+      "id": "session_health_check",
+      "script": "scripts/session/health_check.sh",
+      "contract": "unadopted",
+      "owning_handoff": "handoffs/active/non-inference-backlog.md",
+      "task_marker": "OBS-6",
+      "notes": "`pgrep -f \"claude\"` is a bare substring matching any argv containing 'claude', including its own caller. `pgrep -f \"monitor_storage\"` makes a renamed/relocated monitor read as permanently absent, so the check permanently recommends starting a second one. Several probes use `|| echo unknown` and then COMPARE 'unknown' against the expected value, reporting FAIL — an unreadable /sys node in a container is scored as a misconfiguration. Report-only, but it gates session start."
+    },
+    {
+      "id": "session_emergency_cleanup",
+      "script": "scripts/session/emergency_cleanup.sh",
+      "contract": "unadopted",
+      "owning_handoff": "handoffs/active/non-inference-backlog.md",
+      "task_marker": "OBS-7",
+      "notes": "`sudo pkill -f claude` on a documented shared host — the exact idiom CLAUDE.md and INC-20260731-broad-process-pattern-kills forbid, committed in-repo. The PreToolUse pattern-kill hook cannot see it: the hook inspects the typed command (`bash scripts/session/emergency_cleanup.sh`), not the script body, so the rule is assumed-enforced here rather than enforced. Interactive prompt is the only thing between it and every other session's processes."
+    },
+    {
+      "id": "fleet_watch",
+      "script": "scripts/coordination/fleet_watch.sh",
+      "contract": "unadopted",
+      "owning_handoff": "handoffs/active/session-bus-thin-dispatcher.md",
+      "task_marker": "OBS-11",
+      "notes": "Enrolled BY HAND: neither discovery rule finds it (it identifies no process by argv, so Rule A misses it, and it does not source observer_guard.sh, so Rule B does too) — yet it decides whether six mains are alive, which is exactly this census's subject. Its internal discipline is already three-valued: fw_classify_liveness and fw_classify_compute return 'unknown' and never collapse it to idle, an unreadable pane is reported as PANE-UNREADABLE rather than treated as idle, and a fleet-wide loss of the TUI glyph vocabulary is reported as DETECTOR-BLIND with the idle verdicts SUPPRESSED. What is missing for v1 is the uniform `observe` entrypoint and the behavioural battery. Takes no corrective action of any kind: it detects and logs, never sends keys, never kills."
+    },
+    {
+      "id": "inference_load_check",
+      "script": "scripts/coordination/inference_load_check.py",
+      "contract": "exempt",
+      "reason": "REFERENCE IMPLEMENTATION, not a gap. _pgrep returns None for 'tool unavailable' and every consumer routes that to unconfirmed/pgrep_missing; mi210_state fails closed to device_state 'unknown'; is_quiet_window names each unconfirmable signal in its reason list. It states the polarity rule this whole contract encodes: 'for EXCLUSION, unknown must mean busy; for ACCUSATION, unknown must mean silence.' Residual (argv drift reads as a positive 'none' rather than unconfirmed) is recorded under OBS-5's neighbourhood, not enforced here."
+    },
+    {
+      "id": "session_bus_coordinator",
+      "script": "scripts/coordination/session_bus_coordinator.py",
+      "contract": "exempt",
+      "reason": "REFERENCE IMPLEMENTATION. daemon_liveness returns True|False|None, handles PermissionError as alive-under-another-uid, and returns True-with-the-doubt-stated when identity is unverifiable; heartbeat_freshness keeps liveness and freshness on separate axes. This is the standard the rest of the repo is being held to."
+    },
+    {
+      "id": "hook_check_process_pattern_kill",
+      "script": "scripts/hooks/check_process_pattern_kill.sh",
+      "contract": "exempt",
+      "reason": "Matches Rule A only because it is the SCANNER FOR the idiom — its subject matter is the pattern, it observes no process and takes no corrective action against one."
+    },
+    {
+      "id": "hook_process_pattern_kill_scan",
+      "script": "scripts/hooks/process_pattern_kill_scan.py",
+      "contract": "exempt",
+      "reason": "Same as above: the scanner, not an observer."
+    },
+    {
+      "id": "operator_ratifier_autopilot_gates",
+      "script": "artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh",
+      "contract": "exempt",
+      "reason": "Out of discovery scope (one-shot operator ratifier, human reads the output once). Recorded because the finding is real: its AutoPilot precondition is `pgrep -f '[s]cripts/autopilot/autopilot.py start'`, carrying the same start-adjacency fragility as the specimen. Its sibling ratify_e8_empty_frontier_bootstrap_20260726.sh is identical, and the newer ratify_v9_cpu_bench_era_advance_20260811.sh already migrated off process patterns entirely ('host rule: never pgrep by name')."
+    }
+  ]
+}
