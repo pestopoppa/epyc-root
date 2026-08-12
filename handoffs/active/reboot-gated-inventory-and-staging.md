@@ -281,22 +281,27 @@ Not a proposal; this is the ordering the open rows already require, collected in
 
 Dispatchable now. None requires a reboot; none runs a benchmark or starts `llama-server`.
 
-- [ ] **S-01 — Re-pin all 25 uptime-capped inference-batch entries to the current era and live topology
-      hash.** They pin `kernel_era: production-consolidated-v6/v7` and `required_topology_hash:
-      8c8cfcbb13d2611d` / `df373c79cc4af06f`; production is v9 @ `0db32c06` (binary 10125) and
-      `contention_matrix.yaml:10` stamps `171f86f9188211e9`. `run_batch_entry.py` compares the topology
-      hash fail-closed, so **without this the reboot unblocks nothing in the batch loop.** Files:
-      `20-eval-tower.yaml` (8), `30-bulk-campaign.yaml` (10), `40-routing.yaml` (3),
-      `50-kernel-op2.yaml` (3), `00-example.yaml` (1). Validate with
-      `compile_inference_batch.py validate` (venv interpreter).
-- [ ] **S-02 — Re-derive the live topology hash first and record it with its derivation.** Three values
-      are in circulation (`8c8cfcbb13d2611d` pinned, `bc28e15d` recorded 07-30, `171f86f9188211e9`
-      stamped in the matrix). S-01 cannot be done correctly until one is established as live. Owner:
-      whoever owns `numa-topology-cutover-resume-20260730.md`.
-- [ ] **S-03 — Write and validate a first-boot host-prep script** (`numa_balancing=0`,
-      `perf_event_paranoid=1`, governor `performance`, verify with `health_check.sh`) and put it in the
-      post-reboot runbook as step 2. Non-interactive `sudo` is available, so this is not an operator
-      step. Optionally propose a persistent `/etc/sysctl.d` entry as a separate host-level operator ask.
+- [x] **S-01 — Re-pin all 25 uptime-capped inference-batch entries to the current era and live topology
+      hash.** ✅ 2026-08-12 (commit `b92845c2`). Re-pinned **36** entries across 7 files to
+      `171f86f9188211e9` + `kernel_era: production-consolidated-v9`, and recompiled `manifest.yaml`
+      (the artifact the loop actually reads — editing only `entries/` would have left the fix with no
+      caller). Scope was the named 25 plus 11 more carrying the identical dead pin
+      (`00-rcp-prologue.yaml` 3, `10-reviewer-plane.yaml` 8). Deliberately excluded:
+      `60-glm-decision.yaml` (experimental-candidate eras are the comparison baseline) and
+      `90-coordination-rows.yaml` (`COORD-v7-promotion` is a historical record). `compile_inference_batch.py
+      validate` → 52/52 valid. **See §10 — the "all 25 fail closed today" premise was wrong.**
+- [x] **S-02 — Re-derive the live topology hash first and record it with its derivation.** ✅ 2026-08-12.
+      Live hash **`171f86f9188211e9`**, derived through the enforcing consumers' own path
+      (`preflight_gate._live_topology_hash()` → `contention.topology_fingerprint_for_matrix(NUMA_CONFIG,
+      matrix)`); no value was copied. **Recorded as a re-runnable deriver, not a number** —
+      `scripts/coordination/derive_topology_hash.py` hard-codes no hash and carries `--check-entries`
+      (fail-closed; refuses a vacuous empty-input pass). Recording a *number* is exactly how three stale
+      values entered circulation, so the number is deliberately not the deliverable.
+- [x] **S-03 — Write and validate a first-boot host-prep script.** ✅ 2026-08-12.
+      `scripts/session/host_prep.sh` (`--check` / `--apply` / `--install-boot` / `--verify-boot`) covers
+      the **eight** settings the gates actually check (§10), not the three named here. Boot persistence
+      installed on the HOST and verified (7/7). 39 fake-root mutation tests + 7 live mutation assertions,
+      all counted and exit-gated. **See §10 — the "no `/etc/sysctl.d` entry" premise was also wrong.**
 - [ ] **S-04 — Refresh the E5 Stage-B readiness verification; it is 14 days stale.** The "45/45
       manifests dry-run clean, all 5 GGUFs present" record is dated **2026-07-29**, and
       `E5_STAGE_B_RUNBOOK.md` still pins `production-consolidated-v8 @ 67a433bf4` in its preflight table
@@ -370,6 +375,145 @@ Dispatchable now. None requires a reboot; none runs a benchmark or starts `llama
       `trl`/`peft`/`datasets`, absent from both uv envs). Pure provisioning, no host quiet needed, and it
       is the stated blocker on OP-4 — which cascades to `frontier-f3-data-flywheel.md`,
       `engram-conditional-memory.md`, `minddr-deep-research-mode.md` and the EV-9 judge model.
+
+---
+
+## 10. Corrections from executing S-01/S-02/S-03 (2026-08-12)
+
+Both headline premises in §3 and §4 were measured **from inside the container** and are wrong about the
+host. Neither error changes the conclusion that the work was worth doing; both change *what the residual
+blocker is*, so they matter for the post-reboot ordering in §8.
+
+### 10.1 §3 is inverted — the 25 entries were NOT failing closed, 21 were FALSE-PASSING
+
+`run_batch_entry.topology_gate` has **two** live-hash sources and the entries use the weaker one:
+
+* If the entry carries `topology_artifact`, live = `sha256(artifact)` — a **64**-char digest, which can
+  never equal a 16-char fingerprint. **No entry carries one.**
+* Otherwise `live` is taken **from the B4 attestation itself** (`run_batch_entry.py:681-687`), so the
+  gate compares the pin against an attestation rather than against the host.
+
+Measured through the real consumer before the fix: pin `8c8cfcbb13d2611d` → `verified=**True**`, because
+`attestations/20260720T191355.json` (2026-07-20) is stamped with that same stale hash. **A stale pin and
+a stale attestation agree with each other and both disagree with the host.** 21 entries
+(`20-eval-tower` 8, `30-bulk` 10, `40-routing` 3) were in that state; only the 4 `df373c79cc4af06f`
+entries genuinely refused, and for "no matching attestation", not "hash mismatch".
+
+The genuinely fail-closed consumer is the **other** one: `preflight_gate.check_topology_hashes(
+expected_topology_hash=…)` does an exact match against the live fingerprint, and it is invoked from
+inside `00-rcp-prologue.yaml`'s own command string. Measured: stale → `ok=False` "topology hash drift vs
+expected"; `171f86f9188211e9` → `ok=True`. That command is what **mints** the attestation the first
+consumer trusts, so the chain was: stale pin ⇒ minting refuses ⇒ no fresh attestation ⇒ the old one keeps
+certifying the old pin.
+
+**Consequence for §8 step 7:** re-pinning was necessary but is **not sufficient**. After the re-pin the
+gate returns `hash_match=true, verified=false` — an *honest* refusal reading *"no matching B4 attestation
+… execute refused"*. The residual blocker is a **fresh B4 attestation stamped `171f86f9188211e9` with
+live affinity verified**, and `preflight_gate.py` is invoked with `--require-servers`, so it needs a live
+lineup. That is genuinely post-relaunch work and belongs to `inference`. Mutation-verified 6/6: with a
+live-hash-stamped attestation the entries verify; with the old stale one they no longer do.
+
+> **Do not "fix" this by dropping a JSON into `coordination/inference-batch/attestations/`.**
+> `load_attestation()` globs every `*.json` there and takes the newest match, so a hand-written file
+> would silently re-create the false pass. The mutation tests for this were run against a temp dir for
+> exactly that reason.
+
+### 10.2 §4 is wrong — the host DOES persist `numa_balancing`, by two mechanisms
+
+`/etc/sysctl.d` inside this container is an **overlayfs** path. The host's `/etc` is a different
+filesystem, reachable at `/proc/1/root/etc` (the container shares the host PID namespace, so PID 1 is the
+host's systemd; `stat -c %d` gives 45 vs 2050). Anything checked — or written — at the container path
+says nothing about host boot. On the **host**:
+
+* `/etc/sysctl.d/99-epyc-inference.conf` → `kernel.numa_balancing = 0` (dated 2026-05-06), overriding
+  `/etc/sysctl.d/20-numa.conf` which sets it to `1`.
+* `numa-balancing-off.service`, **enabled** in `multi-user.target.wants`, re-asserts it after
+  `systemd-sysctl`.
+
+So the predicted post-reboot `numa_balancing` warning **would not have happened**. What genuinely did not
+persist: `kernel.perf_event_paranoid` (absent from all host sysctl config; reverts to 4),
+`scaling_governor`, and THP `enabled`/`defrag` — no host unit set any of them.
+
+### 10.3 What the gates actually check — eight settings, not three
+
+| Setting | Target | Checked by | Persisted at boot now? |
+|---|---|---|---|
+| `kernel.numa_balancing` | `0` | `host_health_warnings`, `health_check.sh`, `canonical_recipe` | ✅ was already (sysctl.d + unit) |
+| `kernel.perf_event_paranoid` | `≤1` | `health_check.sh`, `canonical_recipe` | ✅ **added** to host sysctl.d |
+| `scaling_governor` (all 192) | `performance` | `health_check.sh` (cpu0), `canonical_recipe` (cpu0), `cpu_bench_clean_preflight` (uniform) | ✅ **added** via `epyc-host-prep.service` |
+| THP `enabled` | `always` | `health_check.sh`, `canonical_recipe` | ✅ **added** via unit |
+| THP `defrag` | `always` | `health_check.sh`, `canonical_recipe` | ✅ **added** via unit |
+| `energy_performance_preference` | `performance`\|`balance_performance` | `cpu_bench_clean_preflight` | ✅ **added** via unit |
+| `cpufreq/boost` | `≠0` (absent OK) | `cpu_freq_static_warnings` | n/a — driver default |
+| `scaling_max_freq` (all) | `≥2500000` kHz | `cpu_freq_static_warnings` | **check-only by design** — a cap is throttle *evidence*; auto-raising it would defeat `feedback_host_throttle_check` |
+
+Not settable, reported for the runbook: uptime ≤ 7 d (reboot only), zero `llama-server`/`-bench`/`-cli`
+processes, RAM > 100 GB. Note `host_health_warnings()` *collects* `scaling_governors` but **never asserts
+it** — the governor gate lives only in `health_check.sh` / `canonical_recipe` / `cpu_bench_clean_preflight`.
+
+### 10.4 Staged vs applied
+
+**Applied to the live host: nothing but a self-restored test mutation.** All eight settings were already
+at target, so `--apply` was a no-op. The one live write was `perf_event_paranoid 1→3→1` for the mutation
+test, guarded by re-verified quiescence (0 llama processes, all 4 GLOBAL region locks free) and restored
+by an EXIT trap. Chosen because it is a *permission* gate, not a performance knob — it cannot perturb a
+throughput measurement.
+
+**Deferred to boot** (inert now; nothing started, nothing restarted, no service reloaded):
+`kernel.perf_event_paranoid = 1` appended to the host's `99-epyc-inference.conf`, and
+`/etc/systemd/system/epyc-host-prep.service` + its `multi-user.target.wants` symlink (governor, THP
+enabled/defrag, EPP). `systemd-analyze verify` parses the unit clean and every `ExecStart` body passes
+`sh -n`. **Revert** = remove those two files and the symlink under `/proc/1/root/etc/...`.
+
+> **Trap worth keeping:** the installer's first version resolved the host root to `/` because
+> `/proc/1/root` is root-traversable only and an unprivileged `[[ -d ]]` probe silently returned false.
+> It would have written the container overlay, reported success, and changed nothing at boot. Its own
+> `--verify-boot` caught it (it claimed the host did not persist `numa_balancing`, which we knew to be
+> false). It now fails closed instead, and test **H** is the regression.
+
+### 10.4a Observer-contract interaction (caught by the census hook, fixed by deletion)
+
+The first revision of `host_prep.sh` reported *"llama-family processes visible: N"* by listing process
+argv and grepping the llama binary names. That tripped Rule A of the observation contract
+(`ed38041d`) and, because the census scans **untracked** files, it blocked commits fleet-wide while the
+file was still a work in progress.
+
+**Resolved by deleting the observation, not by enrolling it** — the stronger option under
+`feedback_critique_panels_need_a_delete_lens`:
+
+* Nothing in the script branched on the count; it was decoration.
+* It was fail-open in exactly the contract's specimen shape. Under `set -o pipefail`, grep exiting 1 on a
+  genuine zero and the process lister failing outright both fall into the same `|| true` branch and print
+  `0`. **Absent and unobservable were byte-identical**, and the fail-open direction reported "nothing
+  running" when it could not see — the reading that would green-light a heavy workload onto a live model.
+* A better detector already owns the question: `server_np_sweep.find_llama_processes()` resolves
+  `/proc/<pid>/exe` instead of matching argv, and `host_health_warnings()` is what actually gates.
+  A second, worse copy of an observation this script does not consume is pure liability.
+
+Census now passes at **14 observers — unchanged**, i.e. the fix added no observer rather than legitimising
+one. Second-order note worth keeping: the replacement *comment* re-triggered the census because it quoted
+the offending idiom verbatim, discovery being a source-pattern match. The comment now describes the
+command instead of reproducing it — the same trap recorded for this hook's own commit message.
+
+### 10.5 Flagged, not fixed — the uptime cap is self-defeating (§3 / `30-bulk-campaign.yaml`)
+
+`max_uptime_days` and the host-health gate pull in opposite directions and the interaction deserves an
+owner's decision, not a patch from this lane:
+
+* An entry needing `cache_state: warm` needs an *old* host; an entry capped at `max_uptime_days: 7|14`
+  needs a *young* one. `30-bulk-campaign.yaml` has entries asserting **both**.
+* **`max_uptime_days` has ZERO code consumers.** It appears only in
+  `scripts/coordination/inference_batch.schema.json:159` (declared) and in the entry YAML — no `.py` or
+  `.sh` in epyc-root, epyc-inference-research or epyc-orchestrator ever reads it. The only uptime
+  enforcement anywhere is the hard-coded `MAX_DECISION_GRADE_UPTIME_SECONDS = 7 d` in
+  `server_np_sweep.py:57,303`. So a `14` cap cannot buy the extra week it appears to promise, and a `1`
+  cap (`50-kernel-op2.yaml:154`) buys no extra strictness either. It is inert documentation wearing the
+  syntax of a gate.
+* So the 7 entries "expiring at ~13:36Z today" were never reachable *as decision-grade* anyway, and the
+  window question is moot independently of the pin.
+* Suggested reframing for the owner: express the real requirement (`cache_state`, `quiet_window`) and
+  drop `max_uptime_days` wherever it merely duplicates the hard 7 d ceiling, so the field stops implying
+  a per-entry override that no consumer honours.
 
 ---
 
