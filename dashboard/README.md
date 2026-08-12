@@ -190,6 +190,13 @@ KernelFoundry controller made 64 intermediate evaluator calls outside the two
 durable GPU claim windows; the page keeps the partial checkpoint inventory
 visible while labelling the campaign evidence invalid.
 
+The available-source readiness card prefers the v2 `receipt.json` contract, which
+admits exact-source EvoEngineer and reports the current **7/7** diagnostic panel;
+the former v1 `available-source-six-arm.json` lookup remains a historical fallback.
+The v2 static audit is still readiness evidence only: controller/GPU execution is
+false, ARGUS remains excluded from the separate 8/8 panel, and a fresh isolated
+one-task/one-arm pilot is required before another campaign starts.
+
 `current_state.hip_decision_grade` is a curated projection of the terminal
 `hip-silu-decision-grade-20260812-r6/receipt.json`. The hub verifies the receipt's
 self-hash, exact producer/schema/task, complete 24-case correctness vector,

@@ -3491,7 +3491,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T12:47:46Z",
+  "generated_at": "2026-08-12T13:19:44Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4159,13 +4159,13 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 53,
+      "closed": 56,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Repair brokered intermediate evaluation and OS isolation; then run a fresh pilot before any new panel",
-      "open": 4,
+      "next_action": "Run one isolated task/arm pilot; require complete broker, claim, sandbox, and teardown receipts before the 7/7 panel",
+      "open": 3,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4198,7 +4198,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 223,
+      "closed": 224,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",

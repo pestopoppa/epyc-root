@@ -244,6 +244,18 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   live in [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md): parent-owned exact-PID
   AF_UNIX brokerage is necessary, while a decision-bearing pilot additionally requires controller and
   candidate OS isolation. A broker-only live run is engineering smoke, not policy evidence.
+- [x] **AK-AUD-8 — Close the INF-03 broker/isolation implementation gap and admit exact-source
+  EvoEngineer.** ✅ 2026-08-12 — integrated research tip `de7214ee` routes every intermediate/final
+  candidate through a parent-owned authenticated broker into a fresh deny-network evaluator sandbox,
+  while every non-baseline controller runs inside an exact-read/exec, device-blind, cgroup-owned
+  sandbox with one inherited peer-bound broker socket. The same integration admits the exact historical
+  MIT EvoEngineer-Full source at `1649715a…`; the pinned runtime completes its real upstream loop under
+  fixture bridges. Focused warning-strict validation passed 95/95, the pinned Evo suite passed 11/11,
+  and the pinned controller suite passed 572/572. The durable physical static audit is ready **7/7**
+  over four tasks with zero controller/GPU commands at
+  `/mnt/raid0/llm/autokernel/probes/inf03-isolation-available-source-reaudit-20260812-r3/receipt.json`
+  (self-hash `5fa93695…`, file SHA-256 `082d977f…`). A fresh one-task/one-arm live pilot remains the
+  empirical gate; r4 remains immutable invalid history and is never resumed.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
