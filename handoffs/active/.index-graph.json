@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T09:24:11Z",
+  "generated_at": "2026-08-12T09:28:38Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4108,13 +4108,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 50,
+      "closed": 51,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
       "next_action": "Complete live r4 six-arm campaign; rank only its terminal 6/6 panel",
-      "open": 4,
+      "open": 3,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },

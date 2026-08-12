@@ -126,10 +126,9 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
 - **A runnable LDS bank/phase solver** — `analysis/paper_experiments/phases/*/{bank_solver.py,
   phase_solver.py, kernel.cpp}`, a 45-line kernel over rocprofv3 PMC counters, ~40 min GPU on gfx90a.
   **Do not assume the CDNA3 answer (64 banks / 2 phases of 32 lanes) transfers** — whether gfx90a is 32 or
-  64 banks decides whether HK's `>>7 <<3` swizzle constants transfer at all. Blocked on profiler tooling
-  (below). **Still blocked as of 2026-08-12 (mainB), despite the "RESOLVED" note below**: the side-load
-  provides ROCProfiler 2.0 and **no `rocprofv3`**, which is the instrument this line names. Verify the
-  counters are reachable via `rocprofv2` before booking the ~40 min GPU window.
+  64 banks decides whether HK's `>>7 <<3` swizzle constants transfer at all. **Completed through the
+  compatible rocprofv2 counter path on 2026-08-11**: the r4 receipt measured 32 banks and eight phase
+  cliques of eight lanes. The upstream script's rocprofv3 spelling was not a hard dependency.
 - **`rocm-flash-attn` as an enabling path**, re-assessed: an adaptation layer with no kernel code of its
   own, but genuine tested code with honest defect annotations. Judged on whether it improves performance,
   not on whether it contains kernels.
@@ -139,23 +138,25 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
   workaround `-mllvm --amdgpu-unroll-threshold-local=600`. We are on ROCm 6.2 so this does not bite today;
   it belongs on the build-flag checklist **before any ROCm upgrade**.
 
-**Profiler tooling — PARTIALLY RESOLVED 2026-08-12.** `rocprofv2`, `rocprof` and
+**Profiler tooling — RESOLVED FOR THE CURRENT C4 AND LDS SURFACES.** `rocprofv2`, `rocprof` and
 `rocm-bandwidth-test` are available, version-matched to ROCm 6.2.0-66, side-loaded by extraction
 rather than installed so nothing in the shared `/opt/rocm` bind mount changed:
 `source /mnt/raid0/llm/tools/rocm-profilers-6.2/env.sh`. **The gfx90a counter taxonomy is proven** —
 465 counters across 12 blocks, enumerated on our own card, including every counter this program
 already cites. Details, per-block collection limits, and the two path quirks:
 [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md). This unblocks C4's existing
-`rocprofv2` path. It does **not** yet unblock the LDS solver: `rocprofv3` is absent, and the solver
-names it specifically. `omniperf` resolves on the side-loaded PATH but does not run without its
-sealed Python dependencies; its governed IQ2 fallback remains gated by the OP-11 producer identity.
+`rocprofv2` path. The LDS solver was also successfully adapted to rocprofv2; its r4 receipt binds the
+exact commands, tool and binary hashes, 372 bank dispatches and 6,048 phase dispatches. `rocprofv3`
+remains absent but is not a blocker for that completed surface. The governed IQ2 Omniperf fallback
+remains separately gated by the OP-11 producer identity.
 
 - [x] Resolve the side-loaded ROCm 6.2 profiler-tool availability for C4. ✅ 2026-08-12 — live
   version checks confirm `rocprof`/`rocprofv2` at ROCProfiler 2.0 and a runnable argument parser for
   `rocm-bandwidth-test`. These tools are intentionally absent from the default PATH and `/opt/rocm`.
-- [ ] **Establish whether the LDS bank/phase counters are reachable through `rocprofv2`, or require
-  ROCm 6.3+ `rocprofv3`.** Do this before spending the ~40 min GPU window; tool availability for C4
-  does not prove instrument availability for the solver.
+- [x] **Establish whether the LDS bank/phase counters are reachable through `rocprofv2`.** ✅
+  2026-08-12 — reconciled against the already-terminal r4 empirical receipt: rocprofv2 captured 372
+  bank and 6,048 phase dispatches and the solver derived 32 banks plus eight phase cliques. Receipt
+  SHA-256 `ae1d833c704bdae9a78767d0fc0b927298d6d1dfdb31a0ea11c34058dc525987`.
 
 ## Open questions (decided ones live in the deep dive §5)
 - Which controller wins on gfx90a? Unknown until the AgentKernelArena A/B runs on the MI210 with EPYC ops.
