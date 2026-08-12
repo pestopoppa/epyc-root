@@ -258,3 +258,22 @@ def test_linkage_is_read_WITHOUT_executing_the_binary() -> None:
         Path("/mnt/raid0/llm/qwentts.cpp"))
     assert "readelf" in evidence["method"] and "non-executing" in evidence["method"]
     assert "dlopen" in evidence["method"]
+
+
+def test_wrong_ggml_generation_is_loud(tmp_path: Path) -> None:
+    tree = tmp_path / "kernel" / "ggml"
+    tree.mkdir(parents=True)
+    (tree / "CMakeLists.txt").write_text(
+        "set(GGML_VERSION_MAJOR 0)\nset(GGML_VERSION_MINOR 17)\n"
+        "set(GGML_VERSION_PATCH 0)\n", encoding="utf-8")
+    result = S._ggml_generation_identity(tree.parent, "0.18.0")
+    assert result["matches"] is False
+    assert "GENERATION DRIFT" in result["error"]
+
+
+def test_unattested_llama_ggml_generation_is_unverified() -> None:
+    result = S.production_kernel_set()
+    llama = next(m for m in result["members"] if m["key"] == "llama_cpp")
+    assert llama["ggml_generation"]["observed"] == "0.16.0"
+    assert llama["ggml_generation"]["matches"] is None
+    assert any("ggml generation unverified" in alarm for alarm in result["alarms"])

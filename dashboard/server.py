@@ -1467,6 +1467,34 @@ def _checkout_identity(repo: Path, expected_branch: str | None,
             "matches_attestation": matches, "error": error}
 
 
+def _ggml_generation_identity(repo: Path, expected: str | None) -> dict:
+    """Compare attested ggml generation with the checked-out tree metadata."""
+    cmake = repo / "ggml" / "CMakeLists.txt"
+    try:
+        source = cmake.read_text(encoding="utf-8")
+    except OSError as exc:
+        return {"expected": expected, "observed": None, "matches": None,
+                "evidence": str(cmake), "error": f"ggml generation unverifiable: {exc}"}
+    fields = {}
+    for name in ("MAJOR", "MINOR", "PATCH"):
+        match = re.search(rf"set\(GGML_VERSION_{name}\s+([0-9]+)\)", source)
+        if match:
+            fields[name] = match.group(1)
+    observed = ".".join(fields.get(name, "") for name in ("MAJOR", "MINOR", "PATCH"))
+    if not observed or ".." in observed:
+        return {"expected": expected, "observed": None, "matches": None,
+                "evidence": str(cmake),
+                "error": "ggml generation unverifiable — version fields incomplete"}
+    if not expected:
+        return {"expected": None, "observed": observed, "matches": None,
+                "evidence": str(cmake),
+                "error": "ggml generation observed but not attested"}
+    matches = observed == expected
+    return {"expected": expected, "observed": observed, "matches": matches,
+            "evidence": str(cmake),
+            "error": None if matches else "GGML GENERATION DRIFT — tree differs from attestation"}
+
+
 def _speech_kernel_summary(attestation_path: Path | None = None) -> dict:
     """whisper.cpp and qwentts.cpp — the two thirds of the freeze nobody was showing.
 
@@ -1698,18 +1726,23 @@ def production_kernel_set(attestation_path: Path | None = None,
 
     members, alarms = [], []
     llama_ck = llama.get("checkout") or {}
+    llama_generation = _ggml_generation_identity(
+        production_repo or PRODUCTION_KERNEL_REPO, llama.get("ggml"))
     members.append({"key": "llama_cpp", "title": "llama.cpp",
                     "available": llama.get("available"),
                     "branch": llama.get("branch"), "head": llama.get("head"),
                     "version": llama.get("version"), "ggml": llama.get("ggml"),
+                    "ggml_generation": llama_generation,
                     "matches_attestation": llama_ck.get("matches_attestation"),
                     "error": llama.get("error") or llama_ck.get("error")})
     for kernel in speech.get("kernels", []):
+        tree = Path(kernel.get("tree") or "/nonexistent")
         members.append({
             "key": kernel.get("key"), "title": kernel.get("title"),
             "available": kernel.get("available"),
             "branch": kernel.get("branch"), "head": kernel.get("head"),
             "version": None, "ggml": kernel.get("ggml"),
+            "ggml_generation": _ggml_generation_identity(tree, kernel.get("ggml")),
             "matches_attestation": (kernel.get("checkout") or {}).get("matches_attestation"),
             "error": kernel.get("error") or (kernel.get("checkout") or {}).get("error")})
 
@@ -1723,6 +1756,11 @@ def production_kernel_set(attestation_path: Path | None = None,
             alarms.append(f"{member['title']}: tree does NOT match attestation (drift)")
         elif member.get("available") and member.get("matches_attestation") is None:
             alarms.append(f"{member['title']}: tree identity could not be established")
+        generation = member.get("ggml_generation") or {}
+        if generation.get("matches") is False:
+            alarms.append(f"{member['title']}: GGML GENERATION DRIFT")
+        elif generation.get("matches") is None:
+            alarms.append(f"{member['title']}: ggml generation unverified")
     for binary in binaries:
         if binary.get("matches") is False:
             alarms.append(f"{binary['label']}: BINARY DRIFT vs operator attestation")
@@ -1771,6 +1809,9 @@ def production_kernel_set(attestation_path: Path | None = None,
     proven = sum(1 for b in binaries if b.get("matches") is True)
     unverified = sum(1 for b in binaries if b.get("matches") is None)
     trees_proven = sum(1 for m in members if m.get("matches_attestation") is True)
+    generations_proven = sum(
+        1 for member in members
+        if (member.get("ggml_generation") or {}).get("matches") is True)
     return {
         "schema": "epyc.production_kernel_set.v1",
         "expected_kernels": 3,
@@ -1783,6 +1824,7 @@ def production_kernel_set(attestation_path: Path | None = None,
         "stable_links_ok": links_ok,
         "linkage": linkage,
         "linkage_verified": linkage_ok,
+        "ggml_generations_proven": generations_proven,
         "ambient_library_path": ambient,
         # PESSIMISTIC, and now over five independent facts rather than two: the
         # attestations, the trees, the binary digests, the stable links launchers
@@ -1795,6 +1837,7 @@ def production_kernel_set(attestation_path: Path | None = None,
                    and proven == len(binaries) == 4
                    and links_ok == len(stable_links) == 4
                    and linkage_ok == len(linkage) == 4
+                   and generations_proven == len(members) == 3
                    and ambient["clean"]),
         "alarms": alarms,
         "members": members,

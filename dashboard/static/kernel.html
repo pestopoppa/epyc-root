@@ -291,7 +291,8 @@ function renderCurrentState(d){
     });
     // Stable links and tree-local linkage go in the SAME card, not a new one.
     h+='<div class="detail">stable links '+esc((kset.stable_links_ok||0)+'/4')
-      +' · tree-local ggml linkage '+esc((kset.linkage_verified||0)+'/4')+'</div>';
+      +' · tree-local ggml linkage '+esc((kset.linkage_verified||0)+'/4')
+      +' · ggml generations '+esc((kset.ggml_generations_proven||0)+'/'+(kset.expected_kernels||3))+'</div>';
     (kset.stable_links||[]).forEach(function(l){
       const ok=l.matches_expected&&l.binary_present;
       h+='<div class="detail">link <code>'+esc(l.name||'—')+'</code> → '
