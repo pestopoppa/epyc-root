@@ -1061,3 +1061,133 @@ its diagnoses were wrong and were corrected by evidence rather than by its own r
 > caught its own stderr suppression; `mainD` took attribution for destroying a peer's uncommitted
 > work rather than leaving it on a subagent, and refused an out-of-lane dispatch on structural
 > grounds. **Every one of those was a correction flowing *toward* the coordinator, not from it.**
+
+---
+
+## Corrections — 2026-08-12 evening audit sweep
+
+Appended, not merged into the entries above, per this file's own rule (new material gets a new
+section; nothing above is renumbered or edited). Each item is a dated correction to a claim already
+in this file, with the artifact that settles it. Verified against HEAD on 2026-08-12 by the Phase-1
+implementation pass of the coordinator seat repair.
+
+### H-1 is HALF CLOSED — submit works; discard does not
+
+`2076e359` ("fix(bus): C55 — a Claude composer ignores a bare keystroke") landed the working submit
+sequence: **space wake character → 1.0s settle (`_WAKE_SETTLE_S`) → `Enter`**, at
+`scripts/coordination/tmux_adapter.py:~2598-2607`, followed by `_await_composer_empty` verification.
+Consequently:
+
+- **F-33's "the adapter still cannot effect a submission" is STALE.** It could not, at the time it
+  was written; it can now, and the sequence is live-verified in the commit.
+- **H-1 as written is STALE** — it scopes the whole submit/discard problem as open.
+
+**What remains open is DISCARD only.** `Ctrl-U` and a `BSpace` loop were *measured* as no-ops
+against a Claude composer; `Escape` is **untested** and must not be fired blind at a live main. The
+scratch-pane verification protocol (disposable `claude` TUI in a non-roster tmux window, sacrificial
+text, re-read the composer after each candidate) is the prerequisite, not the implementation. Until
+discard works, every failed delivery strands text that re-arms the F-34 refusal loop — which is why
+the next item matters more than its size suggests.
+
+### NEW DEFECT (P2, fail-closed) — four mangled `_fail_after_typing` call sites
+
+`b6ea8679` (C51–C54, the delivery-plane repair) shipped four call sites where the trailing
+`, faint_ok)` argument was absorbed **into the string literal** instead of being passed. Measured at
+HEAD in `scripts/coordination/tmux_adapter.py`:
+
+| Line | Shape of the defect |
+|---|---|
+| `:2119` | `"…Codex backtrack mode, does this, faint_ok)")` — argument swallowed by the literal |
+| `:2168` | `"…a '/' menu, faint_ok) rather than submitting")` — same, mid-sentence |
+| `:2186` | `f"holds {(observed or '', faint_ok)[:80]!r} …"` — builds a **2-tuple inside an f-string** and slices it |
+| `:2293` | `f"…it holds {(observed or '', faint_ok)[:80]!r} "` — same tuple-slice shape |
+
+(The plan file cites `:2114, 2163, 2182, 2290`; those are the same four sites, measured four to
+seven lines earlier. The line numbers above are the ones at HEAD.)
+
+**Effect, and why it is fail-closed rather than cosmetic:** `_fail_after_typing`'s signature is
+`(kind, agent, target, baseline, stage, why, faint_is_placeholder=False)`
+(`tmux_adapter.py:724-725`). With the argument absorbed, all four sites take the **default
+`False`**, so `_clear_own_pending` runs its rollback verification *without* the
+faint-is-placeholder rule — it can read a placeholder-only composer as still holding text and
+therefore **report a successful rollback as a strand** (and the converse in the ledger's
+`rollback_detail`). The two tuple-slice sites additionally garble the ledger detail: `(str, bool)[:80]`
+slices the *tuple*, so the operator-facing "it holds …" text is a Python tuple repr, not the
+observed composer content. Belongs to Phase 2 with a mutation check (garble one deliberately,
+assert the harness sees it).
+
+### H-4 CONFIRMED LIVE — and its mitigation has already evaporated
+
+`scripts/coordination/bus_supervisor.sh:362` still reads `STALE_SRC_SKEW_S="${STALE_SRC_SKEW_S:-5}"`.
+The `86400` mitigation was never in the file; it lived only on the environment of the running
+supervisor, pid `2001039`.
+
+**Correction to the correction:** as of this sweep, `/proc/2001039/environ` does not exist — that
+process is gone, and `bus_supervisor.sh status` reports `supervisor: not running` (daemon DEAD,
+heartbeat 406s old, singleton unheld). So the accurate statement is no longer "only pid 2001039's
+environment holds back the storm" but **"nothing holds it back any more: the next launch of the
+supervisor, by any path that does not export `STALE_SRC_SKEW_S`, restarts the restart storm."** H-4
+is therefore not merely open, it is armed. Fix is the Phase-5 SHA-predicate replacement (record
+`git rev-parse HEAD:scripts/coordination` in the daemon heartbeat, compare SHAs, delete
+`newest_source_mtime` / `STALE_SRC_STATE` / the `STALE_SRC_SKEW_S` knob, cap at one stale-restart
+per 15 min and then **alarm instead of loop**).
+
+### The inbox false-positive rate: 83% is the steady state, 97% was a burst window
+
+The **97%** figure in this file is a real reading, but of a **burst window**, not of the fleet's
+steady state. The steady-state, fleet-wide rate is **83%** (499 `action_required` rows, 86 of them
+sole-target; per-agent 73–89%). Quoting 97% as the standing rate overstates it.
+
+**Mechanism — two causes, both structural, neither an authoring failure:**
+
+1. **The schema has no FYI concept.** One `action_required` bit covers every target of a message,
+   so a row that genuinely needs one agent to act marks it "action required" for everyone who was
+   merely told about it. There is no way to express *reach without obligation*.
+2. **The relay erases the distinction on delivery.** `session_bus_coordinator.py:3753-56` rewrites
+   the envelope per fan-out copy — `msg["to"] = target` — so every CC copy arrives looking directly
+   addressed. The original target set is not recoverable from the delivered row.
+
+Cause 2 also means **any measurement keyed on the delivered `to:` field is vacuous**: a re-count
+during this sweep found 503 `action_required` rows and, keyed on `to:`, **100% sole-target** — which
+is not a finding about the fleet, it is the rewrite showing through. That is the empirical
+corroboration of cause 2.
+
+**Open, for the `auditor` to adjudicate (this role files, it does not grade):** a re-count on
+2026-08-12 evening grouping delivered copies by `relayed_src` (an outbox message id, per
+`session_bus_coordinator.py:~3748`) measured **503 rows / 20 non-fanned copies ≈ 96%**, which does
+not reproduce the 83%/86-sole-target figure. The two methods define "sole-target" differently
+(delivered-copy fan-out grouping vs. the audit's original target-set count) and the corpus has grown
+by four rows since. The 83% figure stands as recorded; the discrepancy is filed here rather than
+silently resolved in either direction. The Phase-4 acceptance test ("≥ the measured 83% noise
+removed") should be re-derived from whichever definition the auditor rules canonical.
+
+### AUD-16's F-23 instruction and R-19's roster contradiction are STALE
+
+Both rest on `config.yaml` describing the `auditor` as READ-ONLY. It has not, since 2026-07-29:
+`coordination/session-bus/config.yaml:46-62` marks the READ-ONLY charter as the original 2026-07-28
+spawn condition (`:47`) and explicitly supersedes it — *"NO LONGER READ-ONLY, corrected 2026-07-29.
+It adopted C-OWN — the session-bus delivery plane, including `tmux_adapter.py` and the whole
+C-series"* (`:53`) — naming the charter audit that raised the point (`:56`). `lanes: [none]` is
+unchanged and unrelated.
+
+The only surviving copy of the contradiction was charter-conflict row 1 in
+`coordination/session-bus/tasks/MAIN-GOALS.md:485-489`; it was **struck 2026-08-12** (marked
+RESOLVED in place, so rows 2 and 3 keep their numbers). Citing this as a live charter conflict is
+now an error.
+
+### F-29 is CLOSED — unadjudicable, and one half of it was never a conflict
+
+Both halves of the 67-vs-72 / 9-vs-24 discrepancy pair resolve, in different ways:
+
+- **67 vs 72 changed paths — unreproducible at any ref.** The reconcile branch measured against
+  merge-base `921113ed` yields **190** changed paths today; the lane branches yield 195–198. No ref
+  reachable now produces either 67 or 72, so neither number can be re-derived, and the
+  discrepancy cannot be adjudicated — only closed. There is nothing left to compare.
+- **9 vs 24 worktrees — dissolves; both were correct.** They answer different questions: **9** is
+  the count of worktrees pinned at the v9 freeze commit, **24** is the total number registered.
+  Neither reading was wrong and there was never a conflict to resolve — this is a units failure of
+  the *question*, not of either measurement.
+
+Closed as **unadjudicable** (first half) and **not-a-defect** (second half). The general lesson is
+the one already in this file: a bare count with no stated predicate is not a measurement, and two
+such counts cannot be compared.
