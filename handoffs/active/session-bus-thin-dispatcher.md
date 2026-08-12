@@ -2760,6 +2760,25 @@ Residuals the repair did NOT close. All four were observed in the same window; n
   a shared symlink, or make every write path assert a clean sequencer state (`CHERRY_PICK_HEAD`,
   `MERGE_HEAD`, `REBASE_HEAD` absent and no unmerged paths) before `git add`/`commit`/`checkout` in a
   shared clone. Fold into **Worktree isolation phase 2** above at cutover, or give it its own handoff.
+- [ ] **DP-5** (HIGH): **`cmd_clear`/`cmd_submit` send a BARE keystroke, and a Claude composer ignores
+  it — pin the wake character in a committed test.** The call site is one line in
+  `scripts/coordination/tmux_adapter.py` (~`:2597`): `key = "C-u" if verb == "clear" else "Enter"`.
+  Measured 2026-08-12 against live panes: `Enter`, `C-m`, `C-u` and `BSpace` each left queued text
+  exactly where it was, re-read and confirmed; sending any ORDINARY CHARACTER first and only then the
+  key submits. So the wake character is not cosmetic — without it `submit` and `clear` cannot succeed
+  at all. They failed **honestly** (the post-action re-read caught it every time and never claimed
+  success), which is why nothing was lost, but an operator spent an hour pressing keys by hand while
+  the tool could only report its own failure. **State at filing (12:52Z): a fix exists in the live
+  working tree and is UNCOMMITTED** — it introduces a `C55` block using a SPACE as the wake character
+  (inert for `submit`, irrelevant for `clear` since `C-u` kills the line regardless), but `C55` appears
+  in neither `main` nor `origin/main` and no commit references it, so a `git clean`/`checkout` on that
+  path destroys it with no reflog. This row is therefore filed for the *durable* obligation regardless
+  of whether that edit lands: (a) get the wake character committed, (b) pin it with a case in
+  `scripts/coordination/tests/composer_tui_fixture.py`, whose selectable Enter behaviour already models
+  swallow/picker/cancel and needs only a "bare key ignored, char-then-key accepted" mode, and (c)
+  mutation-test it so reverting the wake character turns the suite red. Closing this row closes the
+  actionable half of **DP-1** and **DP-2**, which were filed earlier in this same wrap-up against
+  committed state and remain accurate against it. NEVER `C-c` — see the C54 block.
 
 ## Observation contract — adoption backlog
 
