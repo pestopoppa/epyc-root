@@ -50,5 +50,37 @@ rc=0; source_is_newer_than_daemon || rc=$?; chk "source older than process -> cu
 touch -d "+1 hour" "$DAEMON"
 rc=0; source_is_newer_than_daemon || rc=$?; chk "source newer than process -> STALE" "$rc" 0
 
+
+# ---------------------------------------------------------------------------
+# THE BUG THE PREDICATE TESTS ABOVE COULD NOT CATCH (C42 bugfix, 2026-08-12).
+#
+# The check was hooked into check_once. The loop's HEALTHY branch does
+# `sleep; continue` and never calls check_once — so the check only ever ran on
+# the UNHEALTHY path, where the daemon is about to be restarted anyway and the
+# question is moot. Live evidence: supervisor source-current from 00:26:26Z, a
+# demonstrably stale daemon, the predicate returning STALE when run by hand, and
+# ZERO detections logged.
+#
+# The predicate tests all passed throughout. They verified A consumer (check_once)
+# and not THE consumer (the loop). This is a STATIC assertion about wiring, which
+# is the only kind available without running a real supervisor against a real
+# daemon — and it is exactly the assertion that was missing.
+echo
+echo "  -- wiring: the loop's healthy path must reach the check --"
+healthy_block=$(sed -n '/while true; do/,/^      fi/p' "$SUP")
+if printf '%s' "$healthy_block" | grep -q 'check_stale_source'; then
+  echo "  PASS  loop healthy branch calls check_stale_source"; pass=$((pass+1))
+else
+  echo "  FAIL  loop healthy branch does NOT call check_stale_source —"
+  echo "        a stale-but-UP daemon is invisible, which is the whole defect"
+  fail=$((fail+1))
+fi
+# ...and it must still be reachable from `once`, which cron uses.
+if sed -n '/^check_once()/,/^}/p' "$SUP" | grep -q 'check_stale_source'; then
+  echo "  PASS  check_once still calls it (the cron path)"; pass=$((pass+1))
+else
+  echo "  FAIL  check_once no longer calls it — cron `once` would stop checking"; fail=$((fail+1))
+fi
+
 echo "  ---- $pass passed, $fail failed"
 [ "$fail" -eq 0 ]

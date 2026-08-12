@@ -209,6 +209,44 @@ check_stale_source() {
   start_daemon
 }
 
+# ------------------------------------------------------------- lock contention
+#
+# C43 (2026-08-12). A relaunch attempt at 00:25:09Z logged "another supervisor
+# holds the lock; exiting" and exited **0**. That was TRUE at the time — the old
+# supervisor was still alive — but the exit code says SUCCESS, so nothing
+# downstream can tell "correctly skipped, one is already running" from "failed to
+# start, nothing is supervising". For the documented cron idiom
+# (`*/2 * * * * bus_supervisor.sh once`) exit 0 is RIGHT and must stay: a skip is
+# the normal case and a non-zero there would page on every ordinary tick.
+#
+# So the fix is not the exit code, it is the EVIDENCE. Name who holds the lock and
+# whether that process is alive, so a reader — or a supervisor-of-supervisor — can
+# tell the two apart. An unreadable or dead holder is reported LOUDLY, because that
+# is the shape where nothing is supervising and everything still looks fine: the
+# same fail-open family as a daemon whose heartbeat outlived it.
+lock_holder_report() {
+  local holder="" alive="unknown"
+  if [[ -f "$SUP_PIDFILE" ]]; then
+    holder="$(cat "$SUP_PIDFILE" 2>/dev/null || true)"
+  fi
+  if [[ -z "$holder" ]]; then
+    log "  lock holder: UNKNOWN — no readable $SUP_PIDFILE. Cannot confirm anything is"
+    log "  supervising. If no supervisor is running, this exit leaves the bus unwatched."
+    return 0
+  fi
+  if kill -0 "$holder" 2>/dev/null; then
+    alive="ALIVE"
+  else
+    alive="DEAD"
+  fi
+  log "  lock holder: pid $holder ($alive)"
+  if [[ "$alive" == "DEAD" ]]; then
+    log "  the recorded supervisor is NOT running, so this skip leaves the bus unwatched."
+    log "  flock releases on process death, so a dead holder means the pidfile is stale"
+    log "  rather than the lock being held — re-run once the stale pidfile is cleared."
+  fi
+}
+
 check_once() {
   # A HEALTHY daemon can still be the wrong daemon. Order matters: a dead one is
   # restarted by the branch below and comes back on current source anyway, so the
@@ -230,13 +268,13 @@ case "${1:-loop}" in
     ;;
   once)
     exec 9>"$LOCK_FILE"
-    flock -n 9 || { log "another supervisor holds the lock; exiting"; exit 0; }
+    flock -n 9 || { log "another supervisor holds the lock; exiting"; lock_holder_report; exit 0; }
     check_once
     exit 0
     ;;
   loop)
     exec 9>"$LOCK_FILE"
-    flock -n 9 || { log "another supervisor holds the lock; exiting"; exit 0; }
+    flock -n 9 || { log "another supervisor holds the lock; exiting"; lock_holder_report; exit 0; }
     echo $$ > "$SUP_PIDFILE"
     trap 'rm -f "$SUP_PIDFILE"; log "supervisor stopped"; exit 0' TERM INT
     log "supervisor started (poll ${POLL_INTERVAL}s, stale after ${STALE_AFTER}s)"
@@ -244,6 +282,17 @@ case "${1:-loop}" in
     while true; do
       if health_ok; then
         backoff=0
+        # C42 BUGFIX 2026-08-12: this `continue` skipped check_once, which is where
+        # the stale-source check lived — so it only ever ran on the UNHEALTHY path,
+        # i.e. when the daemon was about to be restarted anyway and the question is
+        # moot. The whole point is a daemon that is UP and answering while running
+        # old code, so it has to be asked exactly here, on the healthy path.
+        # Measured: supervisor source-current from 00:26:26Z, daemon demonstrably
+        # stale, predicate returning STALE when run by hand, and ZERO detections
+        # logged. The tests passed because they exercised the predicate and
+        # check_once directly and never the loop — verifying A consumer, not THE
+        # consumer.
+        check_stale_source
         sleep "$POLL_INTERVAL"
         continue
       fi

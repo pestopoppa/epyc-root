@@ -2171,7 +2171,34 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   - [x] **Predicate-only scope, deliberately.** ✅ The test never sources the supervisor and never
     reaches `stop_wedged`/`start_daemon`: a stub named `session_bus_coordinator.py` matches the
     production `pgrep` pattern and killed the live daemon that way on 2026-07-27.
-  - [ ] **C42 HAS A BOOTSTRAP PROBLEM, and it is live right now — measured 2026-08-12 00:1xZ.**
+  - [x] **C42 BUGFIX — the loop's healthy path never reached the check.** ✅ 2026-08-12 — `mainD`.
+    The supervisor restart at 00:26:25Z made it source-current, and the check **still did not
+    fire**: zero detections logged while the daemon was demonstrably stale and the predicate
+    returned STALE when run by hand. Cause: `check_stale_source` was hooked into `check_once`, but
+    the loop's healthy branch does `sleep; continue` and **never calls `check_once`** — so the check
+    only ever ran on the UNHEALTHY path, where the daemon is about to be restarted anyway and the
+    question is moot. The whole point is a daemon that is UP and answering on old code. Now called
+    on the healthy branch, and still from `check_once` for the cron `once` path.
+    **My tests could not have caught it and that is the lesson:** they exercised the predicate and
+    `check_once` directly — *A* consumer, not *THE* consumer. Added a static wiring assertion that
+    the loop's healthy branch reaches the check, **mutation-verified**: removing the call takes the
+    suite 8/8 → 7/8 with the failure naming the defect.
+  - [x] **C43 (NEW, from `coordinator-agent`) — lock contention exits 0 with no evidence.**
+    ✅ 2026-08-12 — `mainD`. A relaunch at 00:25:09Z logged *"another supervisor holds the lock;
+    exiting"* and exited **0**. True at the time, but the exit code says SUCCESS, so nothing
+    downstream can tell *"correctly skipped, one is already running"* from *"failed to start,
+    nothing is supervising"*. **The exit code is deliberately unchanged** — for the documented cron
+    idiom a skip is the normal case, and non-zero there would page on every ordinary tick. The fix
+    is the EVIDENCE: it now names the holder pid and whether it is ALIVE or DEAD, and reports a dead
+    or unreadable holder loudly, because that is the shape where nothing is supervising and
+    everything still looks fine. Verified live: `once` against the running supervisor prints
+    `lock holder: pid 1336629 (ALIVE)`.
+  - [ ] **The bootstrap chain — still open, and now one link shorter.** Measured 2026-08-12: the
+    supervisor is source-current, but the daemon (pid 942753, started 22:25:55Z) still runs
+    pre-rotation code and `advisory.jsonl` is still **1,044 MiB with no shards**. With the loop
+    bugfix above the supervisor should now detect and restart it on its own within a poll — but the
+    supervisor must first be restarted ONCE MORE to pick up this fix, which is the same bootstrap
+    step, one level down. **OP-9 again, and not mine: restarting is process lifecycle.**
     The watchdog that detects staleness must ITSELF be restarted to gain the ability to detect it.
     Verified, not theorised: `bus_supervisor` pid 489217 started **08:48:01Z**; C42 landed in
     `bus_supervisor.sh` at **22:40:02Z**. So the running supervisor predates its own check, has
