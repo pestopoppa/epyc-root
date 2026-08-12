@@ -629,12 +629,18 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   *instrument* is compiled from the very tree the candidate is allowed to edit. No timer redesign
   fixes that — only pinning the sources does. The gate must also refuse to be satisfied by deleting
   the file it inspects (`feedback_verify_integrity_not_presence_of_own_edit`). ✅ 2026-08-11 — the
-  reviewed measurement anchor is hardened commit `0492c231`, whose direct parent is frozen production
+  reviewed measurement anchor is hardened commit `a4cb04ca8`, whose direct parent is frozen production
   v9 `0db32c06`; the one-commit overlay changes only `llama-bench` and its README. T0, T1 open and every
   T1 invocation hash the complete three-file manifest against that named anchor and hard-refuse a
   missing, unreadable, deleted or changed file. Pinning to the reviewed overlay rather than pretending
   its intentional instrument change is byte-identical to production preserves both authorities.
-- [x] **RVP-C6-2 — Stream-escape defence.** ✅ 2026-08-11 — experimental commit `0492c231`
+- [x] **RVP-C6-1a — Finalize the clean one-parent measurement-instrument lineage.** ✅ 2026-08-12 —
+  `a4cb04ca8f92fa4d665684490f609b380f9b5e96` is clean, pushed, has frozen v9 `0db32c06` as its
+  sole parent, and is the instrument pinned by the live-control path. Its real CPU smoke emitted all
+  six required receipt families and released the exact q0–q3 claim; the all-PASS v9 preflight binds
+  source, copied binary, capability, model, topology, storage, production, and package power.
+- [x] **RVP-C6-2 — Stream-escape defence.** ✅ 2026-08-11 — the hardened lineage culminating in
+  `a4cb04ca8`
   implements the ordinary/full-device-synchronized hybrid twin and the research reducer at
   `eda8de1a` requires `hip_full_device`, retains both timing vectors, and refuses an excessive twin
   gap. Live AK-BH-2 evidence (`/mnt/raid0/llm/autokernel/probes/ak-bh-2-factorial-20260811T0952Z/receipt.json`,
@@ -688,8 +694,8 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   `llama-bench` repeats over the same input buffers with no output validation between reps — a live
   pointer-keyed-cache hole. Assert outputs are invariant across reps **and rotate the input buffer
   addresses between them**; address rotation is strictly stronger than a re-check, because it defeats
-  memoization keyed on the pointer rather than on the contents. ✅ 2026-08-11 — experimental commit
-  `0492c231` adds trusted `--autokernel-harden <seed>`: unique content per timed repetition, two
+  memoization keyed on the pointer rather than on the contents. ✅ 2026-08-11 — the hardened lineage
+  culminating in `a4cb04ca8` adds trusted `--autokernel-harden <seed>`: unique content per timed repetition, two
   simultaneously live contexts/input allocations per comparison, a same-content address-rotated
   untimed replica, and bitwise logits comparison. It exits nonzero on mismatch and exports hashes,
   addresses and working-set size; the evaluator refuses incomplete/reused receipts. The experimental

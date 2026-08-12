@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T00:10:00Z",
+  "generated_at": "2026-08-12T00:31:44Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4062,7 +4062,7 @@
       "id": "EVL-47",
       "last_advanced": "2026-08-11",
       "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
-      "open": 13,
+      "open": 14,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -4147,13 +4147,13 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 186,
+      "closed": 190,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-12",
-      "next_action": "Bind a clean hardened instrument; run v9 controls, full-host CPU IQK, then build and evaluate the matched archive",
-      "open": 21,
+      "next_action": "Run fresh v9 controls, then full-host CPU IQK and construct and evaluate the matched archive",
+      "open": 20,
       "state": "active",
       "track": "autokernel research loop"
     },
@@ -4615,7 +4615,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 64,
+      "closed": 65,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",

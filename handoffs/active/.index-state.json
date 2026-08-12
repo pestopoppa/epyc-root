@@ -4,7 +4,7 @@
       "blocked": 4,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 402
+      "open": 401
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 302
+      "open": 303
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 1,
-      "closed": 186,
+      "closed": 190,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 21,
+      "open": 20,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 208
+      "total": 211
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
@@ -1482,14 +1482,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 64,
+      "closed": 65,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 18,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 82
+      "total": 83
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -1837,11 +1837,11 @@
       "closed": 44,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 13,
+      "open": 14,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 57
+      "total": 58
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
@@ -2390,7 +2390,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "Bind a clean hardened instrument; run v9 controls, full-host CPU IQK, then build and evaluate the matched archive",
+      "next_action": "Run fresh v9 controls, then full-host CPU IQK and construct and evaluate the matched archive",
       "track": "autokernel research loop"
     },
     "INF-07": {

@@ -2,8 +2,32 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-12 (adds the AutoKernel diagnostic-provenance boundary; prior Arena, real-MMQ WGM, C6, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-12 (adds the clean AutoKernel instrument and independent v9 async-prefetch replay; prior diagnostic provenance, Arena, real-MMQ WGM, C6, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
 **Sources**: 102+ documents
+
+## Compiled Update — 2026-08-12 (clean instrument and governed GPU replay)
+
+**Confidence: verified committed provenance, live smoke, and governed replay; no promotion claim.**
+
+AutoKernel's current measurement instrument is now a clean one-commit overlay on frozen v9:
+`a4cb04ca8f92fa4d665684490f609b380f9b5e96` has `0db32c06e3e550065b78311a6031ef3dd2c4f27c`
+as its sole parent and changes only `llama-bench.cpp` plus its README. Its real CPU smoke emitted the
+required hybrid-sync, thread-set, escape-check, unsynchronized-sample, and device-sync receipts under
+an exact 0–95 claim, then released that claim. A pinned, networkless, read-only package-power broker
+also made the source/binary/model/topology/storage/production/package-power preflight all-PASS without
+changing the root-owned powercap permissions.
+
+An independent governed frozen-v9 replay of the runtime-gated async-prefetch path then produced
+positive deltas in all 20 paired blocks, but the median was only **+1.2442303249%** and the minimum
+**+0.6788501205%**, below the predeclared **2%** contribution floor. Its verdict is therefore
+`NOT_REPRODUCED`, not a banked kernel win. The result reinforces the gate's intended distinction:
+consistent direction does not substitute for a predeclared material-effect threshold.
+
+### Source References (2026-08-12 clean instrument and replay)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — instrument identity, control dependency order, and replay verdict
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C6 instrument provenance and receipt-integrity boundary
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes, CPU smoke, package-power broker, and governed GPU result
 
 ## Compiled Update — 2026-08-12 (AutoKernel diagnostic provenance)
 
