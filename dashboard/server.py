@@ -1273,76 +1273,201 @@ def _fault_rehearsal_summary(root: Path) -> dict:
     }
 
 
-def _arena_campaign_progress(root: Path) -> dict:
-    """Project verified checkpoint file state for the newest INF-03-style run.
+def _canonical_receipt_hash(value: dict) -> str:
+    payload = dict(value)
+    payload.pop("receipt_sha256", None)
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                         ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
-    Incomplete campaigns have no campaign verdict. Worker requests are shown only
-    as in-flight *markers*: their presence does not claim process liveness, success,
-    resumability, or a partial ranking.
-    """
+
+def _verified_receipt(path: Path, schemas: set[str], label: str) -> tuple[dict | None, str | None]:
+    """Read a regular JSON receipt and verify its producer-authored self-hash."""
+    if path.is_symlink() or not path.is_file():
+        return None, f"{label} is absent or not a regular file"
+    _, value, error = _read_json_object(path, label)
+    if error or not isinstance(value, dict):
+        return None, error or f"{label} is not an object"
+    if value.get("schema") not in schemas:
+        return None, f"{label} has unsupported schema"
+    expected = value.get("receipt_sha256")
+    if not isinstance(expected, str) or expected != _canonical_receipt_hash(value):
+        return None, f"{label} self-hash mismatch"
+    return value, None
+
+
+def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
+    """Verify one Arena attempt using completed receipts, never file markers."""
+    manifest, error = _verified_receipt(
+        manifest_path, {"epyc.autokernel.arena_campaign_run_manifest.v1"},
+        "Arena campaign manifest")
+    if error or manifest is None:
+        return None, error
+    run_root = manifest_path.parent
+    constraints = manifest.get("constraints")
+    if run_root.is_symlink() or manifest.get("available_source") is not True:
+        return None, "Arena output root is unsafe or not available-source"
+    if not isinstance(constraints, dict) or \
+            constraints.get("partial_results_rankable") is not False or \
+            constraints.get("aggregate_atomic_after_complete_matrix_only") is not True:
+        return None, "Arena manifest lacks fail-closed partial/aggregate constraints"
+    audit, audit_error = _verified_receipt(
+        run_root / "audit.json",
+        {"epyc.autokernel.arena_available_source_campaign_audit.v1"},
+        "Arena availability audit")
+    if audit_error or audit is None or \
+            audit.get("receipt_sha256") != manifest.get("audit_receipt_sha256"):
+        return None, audit_error or "Arena manifest/audit identity mismatch"
+
+    matrix = manifest.get("matrix") if isinstance(manifest.get("matrix"), dict) else {}
+    tasks = matrix.get("task_ids") if isinstance(matrix.get("task_ids"), list) else []
+    arms = matrix.get("arm_ids") if isinstance(matrix.get("arm_ids"), list) else []
+    checkpoints = (matrix.get("checkpoint_hours")
+                   if isinstance(matrix.get("checkpoint_hours"), list) else [])
+    if not tasks or "starting_state_baseline" not in arms or not checkpoints:
+        return None, "Arena manifest matrix is incomplete"
+    planned_checkpoints = len(tasks) * (1 + (len(arms) - 1) * len(checkpoints))
+    observations, seen = [], set()
+    belief_rows = window_count = released_windows = sample_count = 0
+    claimed_seconds = 0.0
+    latest_evidence_at = ""
+    for receipt_path in sorted(run_root.glob("execution/cells/*/checkpoint-receipt.json")):
+        receipt, receipt_error = _verified_receipt(
+            receipt_path,
+            {"epyc.autokernel.arena_checkpoint.v1", "epyc.autokernel.arena_checkpoint.v2"},
+            "Arena checkpoint")
+        if receipt_error or receipt is None or \
+                receipt.get("campaign_id") != manifest.get("campaign_id"):
+            continue
+        task_id, arm_id = receipt.get("task_id"), receipt.get("arm_id")
+        checkpoint = receipt.get("checkpoint_hours")
+        if task_id not in tasks or arm_id not in arms:
+            continue
+        if (arm_id == "starting_state_baseline" and checkpoint is not None) or \
+                (arm_id != "starting_state_baseline" and checkpoint not in checkpoints):
+            continue
+        key = (task_id, arm_id, checkpoint)
+        if key in seen:
+            continue
+
+        windows = receipt.get("measurement_windows")
+        valid_windows = 0
+        if receipt.get("schema") == "epyc.autokernel.arena_checkpoint.v2":
+            if not isinstance(windows, list) or len(windows) != 2:
+                continue
+            local_samples = 0
+            local_seconds = 0.0
+            for window in windows:
+                if not isinstance(window, dict) or \
+                        window.get("schema") != "epyc.autokernel.arena_gpu_measurement_window.v1" or \
+                        window.get("receipt_sha256") != _canonical_receipt_hash(window) or \
+                        window.get("status") != "complete":
+                    break
+                opened, released = window.get("device_claim_open"), window.get("device_claim_released")
+                sampling = window.get("device_sampling")
+                fields = ("claim_id", "campaign_id", "device_id", "acquired_at")
+                if not isinstance(opened, dict) or not isinstance(released, dict) or \
+                        any(opened.get(field) != released.get(field) for field in fields) or \
+                        not released.get("released_at") or not isinstance(sampling, dict) or \
+                        not isinstance(sampling.get("sample_count"), int) or sampling["sample_count"] <= 0:
+                    break
+                valid_windows += 1
+                local_samples += sampling["sample_count"]
+                if isinstance(sampling.get("duration_s"), (int, float)):
+                    local_seconds += float(sampling["duration_s"])
+            if valid_windows != 2:
+                continue
+            window_count += 2
+            released_windows += 2
+            sample_count += local_samples
+            claimed_seconds += local_seconds
+        else:
+            release = receipt.get("device_claim_released")
+            if not isinstance(release, dict) or not release.get("released_at"):
+                continue
+
+        seen.add(key)
+        evaluation = receipt.get("evaluation") if isinstance(receipt.get("evaluation"), dict) else {}
+        belief = receipt.get("belief_receipt") if isinstance(receipt.get("belief_receipt"), dict) else {}
+        rows = belief.get("belief_measurements") if isinstance(belief.get("belief_measurements"), list) else []
+        belief_rows += len(rows)
+        latest_evidence_at = max(latest_evidence_at, str(receipt.get("ended_at") or ""))
+        observations.append({
+            "task_id": task_id, "arm_id": arm_id, "checkpoint_hours": checkpoint,
+            "average_speedup": evaluation.get("average_speedup"),
+            "pass_compilation": evaluation.get("pass_compilation"),
+            "pass_correctness": evaluation.get("pass_correctness"),
+            "valid_baseline_cases": evaluation.get("valid_baseline_cases"),
+            "valid_optimized_cases": evaluation.get("valid_optimized_cases"),
+            "receipt_sha256": receipt.get("receipt_sha256"),
+            "ended_at": receipt.get("ended_at"), "measurement_windows": valid_windows,
+        })
+
+    cell_receipts = 0
+    for cell_path in sorted(run_root.glob("execution/cell-receipts/*.json")):
+        cell, cell_error = _verified_receipt(
+            cell_path, {"epyc.autokernel.arena_cell_runner.v3"}, "Arena cell receipt")
+        if not cell_error and cell is not None and \
+                cell.get("campaign_id") == manifest.get("campaign_id"):
+            cell_receipts += 1
+
+    aggregate_path = run_root / "execution-receipt.json"
+    aggregate_present = False
+    if aggregate_path.is_file() and not aggregate_path.is_symlink():
+        _, aggregate, aggregate_error = _read_json_object(aggregate_path, "Arena aggregate")
+        aggregate_present = bool(not aggregate_error and isinstance(aggregate, dict) and
+                                 aggregate.get("receipt_sha256") == _canonical_receipt_hash(aggregate))
+    return {
+        "available": True, "campaign_id": manifest.get("campaign_id"),
+        "attempt_id": manifest.get("receipt_sha256"), "run_directory": run_root.name,
+        "output_root": str(run_root), "authority": manifest.get("authority"),
+        "available_source": True, "tasks": len(tasks), "arms": len(arms),
+        "checkpoint_hours": checkpoints, "completed_checkpoints": len(observations),
+        "planned_checkpoints": planned_checkpoints, "completed_cells": cell_receipts,
+        "planned_cells": len(tasks) * len(arms),
+        "released_measurement_windows": released_windows,
+        "measurement_windows": window_count, "measurement_samples": sample_count,
+        "measurement_claimed_seconds": round(claimed_seconds, 3),
+        "belief_measurement_count": belief_rows, "observations": observations,
+        "terminal_aggregate_present": aggregate_present,
+        "rankable": bool(aggregate_present and len(observations) == planned_checkpoints),
+        "latest_completed_evidence_at": latest_evidence_at or None,
+        "evidence": str(manifest_path), "evidence_mtime": _iso_mtime(manifest_path),
+        "note": ("verified completed receipts only; no file marker is liveness and no "
+                 "partial observation is rankable"),
+    }, None
+
+
+def _arena_campaign_progress(root: Path) -> dict:
+    """Select the newest valid Arena attempt by verified semantic evidence time."""
     try:
         manifests = list((root / "campaigns").glob("*/campaign-manifest.json"))
     except OSError as exc:
         return {"available": False, "error": str(exc)}
-    manifests.sort(key=lambda path: _iso_mtime(path) or "", reverse=True)
+    attempts, rejected = [], 0
     for path in manifests:
-        _, manifest, error = _read_json_object(path, "Arena campaign manifest")
-        if error or manifest is None or manifest.get("schema") != \
-                "epyc.autokernel.arena_campaign_run_manifest.v1":
-            continue
-        matrix = manifest.get("matrix") if isinstance(manifest.get("matrix"), dict) else {}
-        tasks = matrix.get("task_ids") if isinstance(matrix.get("task_ids"), list) else []
-        arms = matrix.get("arm_ids") if isinstance(matrix.get("arm_ids"), list) else []
-        checkpoints = (matrix.get("checkpoint_hours")
-                       if isinstance(matrix.get("checkpoint_hours"), list) else [])
-        baseline_count = sum(1 for arm in arms if arm == "starting_state_baseline")
-        planned = len(tasks) * (baseline_count + (len(arms) - baseline_count) * len(checkpoints))
-        campaign_root = path.parent
-        receipt_paths = list(campaign_root.glob("execution/cells/*/checkpoint-receipt.json"))
-        completed = []
-        belief_rows = 0
-        released = 0
-        for receipt_path in receipt_paths:
-            _, receipt, _ = _read_json_object(receipt_path, "Arena checkpoint")
-            if not isinstance(receipt, dict) or receipt.get("schema") != \
-                    "epyc.autokernel.arena_checkpoint.v1":
-                continue
-            completed.append(receipt_path)
-            release = receipt.get("device_claim_released")
-            if isinstance(release, dict) and release.get("released_at"):
-                released += 1
-            belief = receipt.get("belief_receipt")
-            rows = belief.get("belief_measurements") if isinstance(belief, dict) else []
-            belief_rows += len(rows) if isinstance(rows, list) else 0
-        requests = list(campaign_root.glob("execution/cells/*/worker-request.json"))
-        complete_parents = {receipt.parent for receipt in completed}
-        inflight_markers = sum(1 for request in requests
-                               if request.parent not in complete_parents)
-        terminal_paths = sorted(campaign_root.glob("*aggregate*.json"),
-                                key=lambda candidate: _iso_mtime(candidate) or "",
-                                reverse=True)
-        return {
-            "available": True,
-            "campaign_id": manifest.get("campaign_id"),
-            "run_directory": campaign_root.name,
-            "authority": manifest.get("authority"),
-            "available_source": manifest.get("available_source"),
-            "tasks": len(tasks),
-            "arms": len(arms),
-            "checkpoint_hours": checkpoints,
-            "completed_checkpoints": len(completed),
-            "planned_checkpoints": planned,
-            "inflight_markers": inflight_markers,
-            "released_completed_claims": released,
-            "belief_measurement_count": belief_rows,
-            "terminal_aggregate_present": bool(terminal_paths),
-            "evidence": str(path),
-            "evidence_mtime": _iso_mtime(path),
-            "note": ("checkpoint file-state only; partial/in-flight work is not rankable and "
-                     "an in-flight marker is not a liveness claim"),
-        }
-    return {"available": False,
-            "error": f"no Arena campaign manifest found below {root / 'campaigns'}"}
+        attempt, _ = _arena_attempt(path)
+        if attempt is None:
+            rejected += 1
+        elif attempt.get("completed_checkpoints", 0):
+            attempts.append(attempt)
+        else:
+            rejected += 1
+    if not attempts:
+        return {"available": False, "rejected_attempts": rejected,
+                "error": f"no verified Arena checkpoint evidence below {root / 'campaigns'}"}
+    attempts.sort(key=lambda value: (value.get("latest_completed_evidence_at") or "",
+                                     value.get("attempt_id") or ""), reverse=True)
+    selected = dict(attempts[0])
+    selected["attempts"] = [{
+        "attempt_id": attempt["attempt_id"], "run_directory": attempt["run_directory"],
+        "output_root": attempt["output_root"],
+        "completed_checkpoints": attempt["completed_checkpoints"],
+        "completed_cells": attempt["completed_cells"],
+        "latest_completed_evidence_at": attempt["latest_completed_evidence_at"],
+    } for attempt in attempts]
+    selected["rejected_attempts"] = rejected
+    return selected
 
 
 def _scaffold_panel_summary(root: Path) -> dict:

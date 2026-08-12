@@ -402,10 +402,23 @@ function renderCurrentState(d){
   h+='<div class="state-card"><h3>INF-03 · available-source Arena progress</h3>';
   if(arena.available){
     const terminal=arena.terminal_aggregate_present===true;
-    h+='<div class="headline '+(terminal?'ok':'sec-refused')+'">'+esc(arena.completed_checkpoints+' / '+arena.planned_checkpoints)+' checkpoints · '+(terminal?'TERMINAL AGGREGATE':'INCOMPLETE')+'</div>';
-    h+='<div class="detail">'+esc(arena.tasks)+' tasks × '+esc(arena.arms)+' available arms · checkpoints <code>'+esc((arena.checkpoint_hours||[]).join('h, ')+'h')+'</code></div>';
-    h+='<div class="detail">in-flight file markers '+esc(arena.inflight_markers)+' (not liveness) · completed claim releases '+esc(arena.released_completed_claims+' / '+arena.completed_checkpoints)+' · belief rows '+esc(arena.belief_measurement_count)+'</div>';
-    h+='<div class="detail">run <code>'+esc(arena.run_directory||"—")+'</code> · '+esc(arena.note||"")+'</div>';
+    h+='<div class="headline '+(terminal?'ok':'sec-refused')+'">'+esc(arena.completed_checkpoints+' / '+arena.planned_checkpoints)+' checkpoints · '+esc(arena.completed_cells+' / '+arena.planned_cells)+' cells · '+(terminal?'TERMINAL AGGREGATE':'NO AGGREGATE')+'</div>';
+    h+='<div class="detail">'+esc(arena.tasks)+' tasks × '+esc(arena.arms)+' available arms · checkpoints <code>'+esc((arena.checkpoint_hours||[]).join('h, ')+'h')+'</code> · partial rankable: <span class="'+(arena.rankable?'fail':'ok')+'">'+esc(String(arena.rankable===true))+'</span></div>';
+    h+='<div class="detail">released measurement windows '+esc(arena.released_measurement_windows+' / '+arena.measurement_windows)+' · '+esc(arena.measurement_samples)+' sampler observations · '+esc(num(arena.measurement_claimed_seconds,6))+' claimed GPU-seconds · belief rows '+esc(arena.belief_measurement_count)+'</div>';
+    h+='<div class="detail">attempt <code>'+esc(String(arena.attempt_id||"—").slice(0,16))+'…</code> · output root <code>'+esc(arena.output_root||"—")+'</code></div>';
+    if((arena.observations||[]).length){
+      h+='<table><thead><tr><th>task</th><th>arm</th><th>checkpoint</th><th>correct</th><th>cases</th><th>speedup</th><th>window release</th><th>receipt</th></tr></thead><tbody>';
+      (arena.observations||[]).forEach(function(o){
+        h+='<tr><td><code>'+esc(o.task_id||"—")+'</code></td><td><code>'+esc(o.arm_id||"—")+'</code></td><td>'+esc(o.checkpoint_hours==null?'baseline':o.checkpoint_hours+'h')+'</td><td>'+esc(String(o.pass_correctness))+'</td><td>'+esc((o.valid_optimized_cases==null?"—":o.valid_optimized_cases)+' / '+(o.valid_baseline_cases==null?"—":o.valid_baseline_cases))+'</td><td class="num">'+esc(o.average_speedup==null?"—":num(o.average_speedup,6)+'×')+'</td><td>'+esc(o.measurement_windows?o.measurement_windows+' / '+o.measurement_windows:'legacy claim released')+'</td><td><code>'+esc(String(o.receipt_sha256||"—").slice(0,12))+'…</code></td></tr>';
+      });
+      h+='</tbody></table>';
+    }
+    if((arena.attempts||[]).length){
+      h+='<div class="detail"><b>verified attempts</b> (same logical campaign, distinct immutable receipts/output roots)</div><table><thead><tr><th>attempt</th><th>output root</th><th>checkpoints</th><th>cells</th><th>latest completed evidence</th></tr></thead><tbody>';
+      (arena.attempts||[]).forEach(function(a){ h+='<tr><td><code>'+esc(String(a.attempt_id||"—").slice(0,12))+'…</code></td><td><code>'+esc(a.output_root||"—")+'</code></td><td>'+esc(a.completed_checkpoints)+'</td><td>'+esc(a.completed_cells)+'</td><td>'+esc(a.latest_completed_evidence_at||"—")+'</td></tr>'; });
+      h+='</tbody></table>';
+    }
+    h+='<div class="detail">'+esc(arena.note||"")+' · attempts without verified checkpoint evidence '+esc(arena.rejected_attempts||0)+'</div>';
   } else h+='<div class="muted">Arena campaign evidence unavailable: '+esc(arena.error||"not found")+'</div>';
   h+=evidenceLine(arena)+'</div>';
 

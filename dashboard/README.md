@@ -146,6 +146,16 @@ this is presentation context only. It is structurally excluded from `_freshness`
 and `/api/health`, so a commit, audit, or A/A artifact cannot make an absent or
 dead campaign look alive.
 
+`current_state.arena_campaign_progress` discovers Arena attempts under the
+AutoKernel campaign root and selects the newest attempt by the semantic
+`ended_at` of a hash-verified completed checkpoint, never by directory mtime or
+worker-request markers. It verifies the manifest/audit identity, checkpoint and
+cell self-hashes, and v2 measurement-window claim/release and sampler evidence.
+The view exposes attempt receipt identities, output roots, completed
+checkpoint/cell counts, and individual observations, but an incomplete matrix
+has no aggregate and remains explicitly non-rankable. These fields are evidence
+inventory, not controller liveness and not part of Kernel-R&D health.
+
 The Kernel-R&D page executes its current-state renderer in the static-JavaScript
 suite, not just a syntax parser. This matters because the complete-kernel-set card
 once referenced a free identifier: the script parsed, the API remained complete,
