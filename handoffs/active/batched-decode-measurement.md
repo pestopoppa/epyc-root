@@ -1002,7 +1002,24 @@ but C1 and C3 are execution-blocking (must land in the harness before any decisi
   the live burst shape. The R3 current-arm re-baseline MUST run under this restored lineup.
   Contention-matrix note: big∥quarter co-run rows are pre-v7-era priors (hash-fresh,
   semantically demoted) — E5's cells re-measure the underlying physics anyway.
-- [ ] **C4 (interpretive) — relabel C1** as a provisioning candidate / E1-continuity anchor, not
+- [x] **C4 (interpretive) — relabel C1** as a provisioning candidate / E1-continuity anchor, not
   "the current production solo shape" (realized stack is quarters-only; gemma's 1×full is
   DISABLED). Optionally refresh the stale waypoint prose (line 26) to the mode-exclusive config
   list the design note already uses.
+  **✅ 2026-08-12 (`mainA`) — DONE, and the row's own premise has INVERTED. Verified against the
+  live topology, not the row.** C4 asks me to demote C1 *on the grounds that* "realized stack is
+  quarters-only". That ground is gone: `982adb0c` ("topology: retire quarters, deploy 1 full + 2
+  halves") retired them, and `stack_topology.yaml` now declares **zero quarters anywhere** —
+  `realized_shape.quarterable_roles` reads *"full (0-95, interleave=all, -t 96) + half A + half B"*,
+  and every CPU role (`frontdoor`, `ingest_long_context`, `worker_general`) instantiates exactly
+  `[NUMA_FULL, NUMA_HALF_A, NUMA_HALF_B]`.
+  **So the relabel lands on C3, not C1.** C3 (4×quarters) is the shape the E5 design note calls "the
+  status-quo production shape per audit C4" — that label is now **false**; quarters are a retired
+  shape with no production instance. C1 (1×half) and the full ARE what production runs, so C1 is no
+  longer a candidate *contrasted with* production; it is a realized shape.
+  **This makes the Stage-B headline and the deployment agree**, which is worth stating because they
+  were derived independently: Stage-B measured that **C3 loses at every clean iso-T rung in all three
+  model groups**, and production has since retired quarters entirely. The measurement did not drive
+  the retirement and the retirement did not drive the measurement — they converged.
+  *(The waypoint prose at line 26 is the 2026-07-30 `llama-bench` placement table, not the config
+  list this row expected; left unedited, as it is a measurement record.)*

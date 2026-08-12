@@ -826,9 +826,44 @@ primary artefact.
       *(Amended 2026-07-30: the re-run must conform to **`P-BENCH-PLACEMENT-1`**, now ratified,
       and its grid must use the **new 1-full + 2-half shapes** — the old quarter arms no longer
       exist. **27 of 31 cells** still outstanding.)*
-- [ ] **T4 — Fix the E5 batch drain (D5)** so the high-`T` rungs actually saturate: more prompts,
+- [x] **T4 — Fix the E5 batch drain (D5)** so the high-`T` rungs actually saturate: more prompts,
       or a closed-loop arrival process holding occupancy at `T`. Without this the `T ≥ 16` rungs
       remain uninterpretable even on corrected placement.
+      **ANALYSIS DONE + CAUSE QUANTIFIED ✅ 2026-08-12 (`mainA`), zero inference. The row's
+      proposed remedy is half right and its diagnosis needs correcting.**
+      **The driver is ALREADY closed-loop.** `run_cell_driver` binds N×K streams permanently and
+      pulls from one shared queue — its own docstring says so. So "or a closed-loop arrival
+      process" is already satisfied; there is no open-loop arrival defect to fix.
+      **The real cause is the fixed work quantum.** The batch is a pinned 43 prompts, and
+      `T = instances × np`, so requests-per-stream is `43/T`. Measured across all 31 canonical
+      Stage-B cells:
+
+      | T | requests/stream | cells with an EMPTY trimmed window |
+      |---:|---:|---|
+      | 1 | 43.00 | 0 / 3 |
+      | 4 | 10.75 | 0 / 5 |
+      | 8 | 5.38 | 0 / 7 |
+      | 16 | 2.69 | 0 / 8 |
+      | **32** | **1.34** | **5 / 8** |
+
+      At T=32 most streams serve **exactly one request**, so the run is ramp plus drain with no
+      middle — there is no steady state for `trimmed_aggregate` to find. That is not a trimming
+      defect, it is a *sample-size* defect, and it is why the top rung is uninterpretable.
+      **T4 and A6 are the same defect from opposite sides**: A6 is the read-side decision (what
+      the gate should do about an empty window), T4 is the write-side fix (make the window
+      non-empty by giving each stream enough work). Ratifying A6's decouple does NOT make the
+      T=32 rung interpretable — it only stops the empty window from voiding the cell's grade. The
+      rung stays uninterpretable until the quantum grows.
+      **Floor, so the ask is concrete:** for ≥4 requests per stream at T=32 the batch needs **≥128
+      prompts**; for ≥3, **≥96**. The three T=32 survivors are all C3 (4 instances × np8), where
+      per-instance staggering still lets some request straddle — so T=32 is necessary, not
+      sufficient.
+      **NOT IMPLEMENTED, and this is the blocker to name:** the 43-qid batch is a **pinned**
+      instrument (`prompt_batch.selection: pinned_qids`; the generator docstring states
+      re-sampling tier/seed is FORBIDDEN because the pool was rebuilt at the E7 boundary).
+      Growing it changes the measurement instrument and breaks comparability with every banked
+      E1/W0/Stage-B cell, so it is an operator ruling — and it should be recorded as an **era
+      boundary**, not an edit, exactly as the 2026-08-11 rider argues for objective changes.
 - [ ] **T5 — Arm the locality gate for mmap roles.** `affinity_preflight.py:195` currently sets
       `required = no_mmap and len(expected_nodes) == 1`, so under mmap it observes and reports
       but never fails. It should fail a single-node instance whose `local_fraction` is below
