@@ -6,7 +6,7 @@
 **Categories**: hardware_optimization, inference_serving, moe_optimization, speculative_decoding
 **Priority**: ACTIVE (MI210 installed 2026-07-02 — the acquisition trigger fired; GPU work is no longer gated). Sequencing per fable5-window2-findings-02 (fleet placement): frontdoor residency + eval-engine (one migration) → embedder/vision host → op-offload prefill → drafter farm.
 **Workstream**: Future
-**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
+**Parent index**: [`inference-research-index.md`](inference-research-index.md)
 **Related**: [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) (HIP build path), [`kv-cache-quantization.md`](../completed/kv-cache-quantization.md) (GPU KV strategy)
 
 > **Fable 5 review (2026-06-12)**: fable5-findings-03 re-ranks MI210 uses: residency → eval-engine → embedder/classifier host → prefill offload → drafter farm; all HW-GATED per operator; pre-arrival prep = P-GPU-1 protocol in /workspace/MEASUREMENT.md before first number.
