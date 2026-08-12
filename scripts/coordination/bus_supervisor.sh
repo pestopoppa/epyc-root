@@ -314,52 +314,79 @@ start_daemon() {
 # live in the identity section above, where the HEALTH path uses them too; for ten
 # days this paragraph was true of this one check and false of the rest of the file.
 
-# Newest mtime across the daemon's own sources. It imports its siblings, so a
-# change to any of them is a change to what it would run.
-newest_source_mtime() {
-  stat -c %Y "$(dirname "$DAEMON")"/*.py 2>/dev/null | sort -n | tail -1
+# H-4 (2026-08-12). THE MTIME PREDICATE IS GONE ON PURPOSE — do not reintroduce it.
+#
+# It was: newest mtime across `scripts/coordination/*.py` vs the daemon's process
+# start time, tolerated by a 5s skew (STALE_SRC_SKEW_S) and de-duplicated by a state
+# file (STALE_SRC_STATE) holding the mtime last acted on. All three are deleted.
+#
+# WHY. mtime answers "did somebody TOUCH a file", and this tree has five concurrent
+# writers: an editor save, a subagent's scratch write, a `git checkout` restoring an
+# identical file — each moves the newest mtime forward without changing one byte of
+# what a restarted daemon would execute. Measured 2026-08-12: 14 restarts of a
+# perfectly healthy daemon in 54 minutes. The state file bounded it to one restart
+# per DISTINCT mtime, which in a live tree is not a bound at all, and the only thing
+# that actually stopped the storm was an env var set on the running process.
+#
+# The question is not "was a file touched" but "is the code this process loaded the
+# code that is COMMITTED now". `git rev-parse HEAD:scripts/coordination` names the
+# tree object of the daemon's package at HEAD; it moves once per deploy and never
+# for an uncommitted touch. The daemon captures it AT PROCESS START and publishes it
+# in its heartbeat (`source_tree`, session_bus_coordinator.py `_source_tree_sha`),
+# so the comparison is between what is RUNNING and what is COMMITTED — two
+# independently-sourced values. Comparing HEAD against HEAD would agree forever.
+#
+# Identity still comes from the HEARTBEAT, never a name pattern — a pattern is a
+# wildcard over other sessions' processes on this shared host
+# (INC-20260731-broad-process-pattern-kills).
+
+# The committed tree object for the daemon's package, as it is RIGHT NOW.
+# Empty output = cannot tell (not a checkout, git absent) => UNKNOWN, never stale.
+current_source_tree() {
+  git -C "$EPYC_ROOT" rev-parse HEAD:scripts/coordination 2>/dev/null || true
 }
 
-# 0 = the running daemon predates its source. FAIL CLOSED: every unknown returns
-# 2 (cannot tell) and the caller escalates rather than passing.
-source_is_newer_than_daemon() {
-  local pid started elapsed src now
+# The marker the RUNNING daemon published at its own start. Empty = the key is
+# absent (a pre-H-4 daemon, or one that could not read git) => UNKNOWN.
+heartbeat_source_tree() {
+  python3 - "$HEARTBEAT" <<'PY_EOF' 2>/dev/null || true
+import json, sys
+try:
+    v = json.load(open(sys.argv[1])).get("source_tree")
+    if isinstance(v, str) and v.strip():
+        print(v.strip())
+except Exception:
+    pass
+PY_EOF
+}
+
+# 0 = the running daemon was launched from a DIFFERENT committed tree than HEAD.
+# 1 = current. 2 = cannot tell. FAIL CLOSED on 2: the caller reports and does not act.
+daemon_source_is_stale() {
+  local hb cur
   # `|| true` on every capture is load-bearing, not defensive noise: this script
   # runs under `set -euo pipefail`, where a FAILING command substitution aborts the
-  # whole supervisor. A dead pid makes `ps` fail and an empty source dir makes the
-  # `stat | sort` pipeline fail under pipefail — so without these the fail-closed
-  # branches below are unreachable and the watchdog exits instead of reporting.
-  # (Caught by test_bus_supervisor.py; my own predicate test had missed it because
-  # it ran without `set -e` — the test method differed from production.)
-  # C49: resolve_daemon, not the raw heartbeat pid. A recycled pid would otherwise
-  # contribute a STRANGER'S start time to this comparison — and a stranger started
-  # before the last source edit reads as "the daemon is stale", which restarts a
-  # daemon on the strength of an unrelated process's age. `alive` is the only state
-  # with a start time worth comparing; the other two return 2 (cannot tell).
+  # whole supervisor, making the fail-closed branches below unreachable.
+  # resolve_daemon, not the raw heartbeat pid: a recycled or unidentifiable process
+  # is not a daemon whose deploy marker means anything (C49).
   resolve_daemon
   [[ "$DAEMON_STATE" == "alive" ]] || return 2
-  pid="$DAEMON_PID"
-  elapsed=$(ps -p "$pid" -o etimes= 2>/dev/null | tr -d ' ' || true)
-  [[ -z "$elapsed" ]] && return 2
-  src=$(newest_source_mtime || true)
-  [[ -z "$src" ]] && return 2
-  now=$(date +%s)
-  started=$(( now - elapsed ))
-  # SKEW is not padding, it is the resolution of the measurement. `ps -o etimes`
-  # reports whole seconds, so `started` can land up to a second before the real
-  # start, and a source written in the same second as a legitimate restart would
-  # then read as NEWER than the process it produced. That false positive restarts
-  # a daemon that is already current — and it recurs every cycle, which is a
-  # restart loop, strictly worse than the staleness it thinks it is fixing.
-  # Caught by test_bus_supervisor.py, which went 5/5 -> 4/5 on the untolerated
-  # version: the pre-existing suite was defending exactly this.
-  (( src > started + STALE_SRC_SKEW_S ))
+  hb="$(heartbeat_source_tree || true)"
+  [[ -z "$hb" ]] && return 2
+  cur="$(current_source_tree || true)"
+  [[ -z "$cur" ]] && return 2
+  [[ "$hb" != "$cur" ]]
 }
 
-STALE_SRC_STATE="${LOG_DIR}/bus_supervisor.stale_src"
-# Whole-second resolution on both sides; 5s covers it with room to spare and
-# still catches a source edited even a minute after a restart.
-STALE_SRC_SKEW_S="${STALE_SRC_SKEW_S:-5}"
+# THE RATE LIMIT THAT WAS MISSING (H-4). MAX_RESTART_ATTEMPTS/backoff below covers
+# only FAILED relaunches, which is exactly why the storm never tripped it: every one
+# of the 14 restarts SUCCEEDED, so `fails` reset to 0 each time and the backoff
+# never engaged. This bounds the successful path: at most one stale-source restart
+# per RESTART_MIN_INTERVAL_S; a second stale verdict inside the window ALARMS and
+# does not restart. A predicate that keeps firing after a restart is a broken
+# predicate, and looping on it destroys the daemon it is meant to protect.
+RESTART_MIN_INTERVAL_S="${RESTART_MIN_INTERVAL_S:-900}"
+STALE_RESTART_STAMP="${STALE_RESTART_STAMP:-${LOG_DIR}/bus_supervisor.last_stale_restart}"
 # C43: how long to wait for a DYING supervisor to release the lock before giving up.
 # Covers a handover, not a coexistence — a dying holder releases in milliseconds, a
 # live one holds for its life and we still report and exit. 15s is generous for the
@@ -367,29 +394,54 @@ STALE_SRC_SKEW_S="${STALE_SRC_SKEW_S:-5}"
 LOCK_WAIT_S="${LOCK_WAIT_S:-15}"
 
 check_stale_source() {
-  local src rc=0
+  local rc=0 hb cur now last age
   # `|| rc=$?`, never `cmd; rc=$?`. Under `set -e` a FUNCTION returning non-zero as
   # a simple command aborts the script, so the bare form killed the supervisor
   # mid-`once` on every "current" and every "cannot tell" — i.e. on the normal
   # path. That is how a watchdog silently stops watching.
-  source_is_newer_than_daemon || rc=$?
+  daemon_source_is_stale || rc=$?
   if (( rc == 2 )); then
-    log "STALE-SOURCE CHECK UNAVAILABLE — cannot read the daemon pid, its start time, or the"
-    log "  source mtimes. Reported, not passed: a check that cannot tell is not a clean one."
+    log "STALE-SOURCE CHECK UNAVAILABLE — the daemon's identity, its heartbeat 'source_tree'"
+    log "  marker, or the current HEAD tree could not be read. UNKNOWN, and UNKNOWN never"
+    log "  restarts: a check that cannot tell is not a clean one, and it is not a verdict either."
     return 0
   fi
   (( rc != 0 )) && return 0
-  src=$(newest_source_mtime || true)
-  # Restart ONCE per source version. Without this a file the fleet touches often
-  # would put the supervisor in a restart loop, which is worse than the staleness.
-  if [[ -f "$STALE_SRC_STATE" ]] && [[ "$(cat "$STALE_SRC_STATE" 2>/dev/null)" == "$src" ]]; then
+  hb="$(heartbeat_source_tree || true)"
+  cur="$(current_source_tree || true)"
+
+  # THE RATE LIMIT. The stamp is written when a restart is ATTEMPTED, not when one
+  # succeeds: by the time start_daemon runs, stop_wedged has already signalled the
+  # daemon, so the attempt is the event with the blast radius. A stamp written only
+  # on success would let a repeatedly-failing stale restart kill the daemon every
+  # poll — and failed relaunches already have their own bound (MAX_RESTART_ATTEMPTS).
+  now=$(date +%s)
+  last=0
+  if [[ -f "$STALE_RESTART_STAMP" ]]; then
+    last="$(cat "$STALE_RESTART_STAMP" 2>/dev/null || echo 0)"
+    [[ "$last" =~ ^[0-9]+$ ]] || last=0
+  fi
+  age=$(( now - last ))
+  if (( last > 0 && age < RESTART_MIN_INTERVAL_S )); then
+    log "ALARM: STALE SOURCE AGAIN ${age}s AFTER THE LAST STALE-SOURCE RESTART — NOT RESTARTING."
+    log "  running tree ${hb:0:12} vs HEAD tree ${cur:0:12}; limit is one per ${RESTART_MIN_INTERVAL_S}s."
+    log "  A restart that does not clear this verdict is not fixing it. Either the daemon is"
+    log "  relaunching from a different checkout, or HEAD moved again — a human closes this."
     return 0
   fi
-  log "daemon is running code OLDER than its source (source $(date -d @"$src" -u +%H:%M:%SZ)"
-  log "  is newer than the running process) — restarting so committed fixes take effect"
-  echo "$src" > "$STALE_SRC_STATE"
+
+  log "daemon is running a DIFFERENT COMMITTED TREE than HEAD (running ${hb:0:12}, HEAD ${cur:0:12})"
+  log "  — restarting once so committed fixes take effect (next stale restart no sooner than ${RESTART_MIN_INTERVAL_S}s)"
+  echo "$now" > "$STALE_RESTART_STAMP"
   stop_wedged
-  start_daemon
+  # `|| true` is load-bearing, not tidiness. This function is called as a SIMPLE
+  # COMMAND from both consumers (the loop's healthy branch and check_once), and
+  # under `set -e` a non-zero return from a simple command aborts the whole
+  # supervisor — so a failed relaunch here would have KILLED THE WATCHDOG instead
+  # of being retried. start_daemon already logs which failure it was, and the very
+  # next poll takes the unhealthy branch, where MAX_RESTART_ATTEMPTS and the
+  # backoff apply. Same trap as the `|| rc=$?` above, one call deeper.
+  start_daemon || true
 }
 
 # ------------------------------------------------------------- lock contention

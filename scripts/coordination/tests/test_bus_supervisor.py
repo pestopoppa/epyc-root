@@ -1,7 +1,19 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """Regression tests for scripts/coordination/bus_supervisor.sh.
 
-TWO BUGS THIS EXISTS FOR.
+THREE BUGS THIS EXISTS FOR.
+
+H-4 (2026-08-12) — THE WATCHDOG RESTARTED A HEALTHY DAEMON 14 TIMES IN 54 MINUTES.
+The stale-source predicate compared the NEWEST MTIME under scripts/coordination
+against the daemon's process start time. Five sessions write that directory, so an
+editor save, a subagent scratch write or a `git checkout` restoring a byte-identical
+file each moved the mtime forward without changing a byte of what a restarted daemon
+would execute. Its one-restart-per-distinct-mtime state file was no bound in a live
+tree, and MAX_RESTART_ATTEMPTS never engaged because every one of those restarts
+SUCCEEDED. The predicate now compares the tree object the daemon captured at its own
+start (heartbeat `source_tree`) against `git rev-parse HEAD:scripts/coordination` —
+RUNNING against COMMITTED, two independently sourced values — and successful stale
+restarts are capped at one per RESTART_MIN_INTERVAL_S, then ALARM. Case (g).
 
 C49 (2026-08-12) — THE WATCHDOG COULD NOT SEE THE DAEMON. Health was
 `pgrep -f 'session_bus_coordinator\\.py run'`, which encodes THIS SUPERVISOR'S
@@ -19,7 +31,9 @@ descriptor, and a child inherits it across fork+exec, so the daemon launched by
 later `loop` logged "another supervisor holds the lock; exiting" while `status`
 reported no supervisor running. Fixed with `9>&-` on the child.
 
-ISOLATION. Own LOCK_FILE, EPYC_ROOT, BUS_ROOT, DAEMON_LOCK_FILE and DAEMON_MARKER.
+ISOLATION. Own LOCK_FILE, EPYC_ROOT, BUS_ROOT, DAEMON_LOCK_FILE, DAEMON_MARKER —
+and, since H-4, its own throwaway GIT CHECKOUT under EPYC_ROOT, because the
+predicate runs real `git rev-parse` and faking that would test the fake.
 Note how much weaker the old fourth axis had to be: DAEMON_PATTERN fed `pgrep -f`,
 a search over EVERY process on this shared host, and on 2026-07-27 a test that
 believed itself isolated killed the PRODUCTION daemon through it. DAEMON_MARKER
@@ -105,6 +119,21 @@ class Harness:
         self.stub.write_text(self._stub_source())
         self.stub.chmod(0o755)
         self.mine: list[int] = []
+        # H-4: the stale-source predicate compares the daemon's published
+        # `source_tree` marker against `git rev-parse HEAD:scripts/coordination` in
+        # EPYC_ROOT, so EPYC_ROOT has to be a REAL checkout with that path
+        # committed. Faking the git call would test the fake.
+        self.head_tree = self._git_init()
+
+    def _git_init(self) -> str:
+        ident = ["-c", "user.email=bus-sup-test@localhost", "-c", "user.name=bus-sup-test"]
+        run = lambda *a: subprocess.run(["git", "-C", str(self.root), *a],  # noqa: E731
+                                        capture_output=True, text=True)
+        run("init", "-q")
+        run(*ident, "add", "scripts/coordination")
+        run(*ident, "commit", "-qm", "stub")
+        out = run("rev-parse", "HEAD:scripts/coordination")
+        return out.stdout.strip()
 
     def _stub_source(self) -> str:
         # Mimics the real daemon on the two axes that matter: it takes
@@ -124,12 +153,18 @@ except OSError:
 with open({str(self.spawned)!r}, "a") as f:
     f.write(str(os.getpid()) + "\\n")
 hb = os.path.join(bus, "heartbeats", "coordinator-daemon.json")
+# Captured ONCE, at process start — exactly as the real daemon does (H-4). A
+# per-tick capture would always agree with HEAD and the check would be vacuous.
+source_tree = os.environ.get("STUB_SOURCE_TREE") or None
 while True:
+    payload = {{"agent": "coordinator-daemon", "state": "working", "epoch": 1,
+               "pid": os.getpid(),
+               "ts": datetime.now(timezone.utc).isoformat()}}
+    if source_tree != "OMIT":
+        payload["source_tree"] = source_tree
     tmp = hb + ".tmp"
     with open(tmp, "w") as f:
-        json.dump({{"agent": "coordinator-daemon", "state": "working", "epoch": 1,
-                   "pid": os.getpid(),
-                   "ts": datetime.now(timezone.utc).isoformat()}}, f)
+        json.dump(payload, f)
     os.replace(tmp, hb)
     time.sleep(1)
 '''
@@ -142,14 +177,18 @@ while True:
              "DAEMON": str(self.stub),
              "DAEMON_LOCK_FILE": str(self.daemon_lock),
              "DAEMON_MARKER": self.stub.name,
+             # Default: the stub publishes the tree it was committed at, i.e. the
+             # ordinary CURRENT case. Cases that want staleness override it.
+             "STUB_SOURCE_TREE": self.head_tree,
              "STARTUP_TIMEOUT": "12"}
         e.update(extra)
         return e
 
     # ---------------------------------------------------------------- helpers
-    def start_stub_like_production(self) -> int:
+    def start_stub_like_production(self, **env_extra: str) -> int:
         """Start the stub with the EXACT argv shape that broke the old pattern."""
         p = subprocess.Popen([PYTHON, str(self.stub), "--bus-root", str(self.bus), "run"],
+                             env=self.env(**env_extra),
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         self.mine.append(p.pid)
         for _ in range(60):
@@ -189,6 +228,42 @@ while True:
             if p not in self.mine:
                 self.mine.append(p)
         return pids
+
+    def kill_my_daemons(self) -> None:
+        """Stop every stub this harness started or caused to be started.
+
+        Identity-verified before every signal, exactly as the script under test
+        requires. Reaped afterwards: these are this process's children, so an
+        unreaped one lingers as a zombie with a live /proc/<pid> and reads as
+        "still running" — which then makes the NEXT stub self-exit on the daemon
+        flock and never publish. (That is not hypothetical: mutant M6 caused a
+        supervisor-initiated restart mid-case and the following start timed out,
+        vanishing 8 checks. A mutation that REMOVES checks is not a counted
+        failure, so the case has to survive the mutation it is testing.)
+        """
+        for pid in self.track_spawned() + list(self.mine):
+            if alive(pid) and self.stub.name in cmdline(pid):
+                try:
+                    os.kill(pid, 9)
+                except OSError:
+                    pass
+        for pid in list(self.mine):
+            for _ in range(40):
+                try:
+                    if os.waitpid(pid, os.WNOHANG)[0] == pid:
+                        break
+                except ChildProcessError:
+                    break
+                if not alive(pid):
+                    break
+                time.sleep(0.1)
+        # And wait for the daemon singleton lock to actually be free, which is what
+        # the next start_stub_like_production depends on.
+        for _ in range(50):
+            if subprocess.run(["flock", "-n", str(self.daemon_lock), "-c", "true"],
+                              capture_output=True).returncode == 0:
+                return
+            time.sleep(0.1)
 
     def cleanup(self) -> None:
         self.track_spawned()
@@ -386,11 +461,95 @@ def case_f_fd9_self_lockout(h: Harness) -> None:
           "a second `once` is not locked out by the daemon it previously started")
 
 
+def case_g_stale_source_restart_is_rate_limited(h: Harness) -> None:
+    """(g) H-4: stale source restarts ONCE, then ALARMS instead of looping.
+
+    The 2026-08-12 storm — 14 restarts of a healthy daemon in 54 minutes — got past
+    MAX_RESTART_ATTEMPTS because every one of those restarts SUCCEEDED: `fails`
+    reset to 0 each time and the backoff never engaged. The bound has to cover the
+    SUCCESSFUL path, so that is what this asserts. It also asserts the three
+    verdicts around it: current => untouched, marker absent => UNKNOWN => untouched.
+    """
+    print("== (g) a stale-source restart is bounded to one per window ==")
+    other = "0" * 40  # a tree that is emphatically not HEAD's
+
+    # g0: marker == HEAD tree. The normal case: nothing happens, ever.
+    pid = h.start_stub_like_production()
+    before = h.launches()
+    h.run("once")
+    check(h.launches() == before and alive(pid),
+          f"g0: a CURRENT daemon is not restarted ({before} -> {h.launches()})")
+
+    h.kill_my_daemons()
+
+    # g1: marker absent entirely (a pre-H-4 daemon). UNKNOWN never restarts —
+    # restarting on a missing key would restart every old daemon forever, which is
+    # the same storm wearing different clothes.
+    pid = h.start_stub_like_production(STUB_SOURCE_TREE="OMIT")
+    before = h.launches()
+    h.run("once", STUB_SOURCE_TREE="OMIT")
+    check(h.launches() == before and alive(pid),
+          "g1: a daemon publishing NO source_tree is UNKNOWN, not stale — untouched")
+    check("STALE-SOURCE CHECK UNAVAILABLE" in h.log_text(),
+          "g1: the unknown is reported, not silently passed")
+    # Clear the field before g2: under a mutation that treats the missing marker as
+    # STALE, the supervisor has just started a daemon of its own, and it would hold
+    # the singleton flock against g2's stub.
+    h.kill_my_daemons()
+
+    # g2: a genuinely stale daemon is restarted EXACTLY once...
+    stale_pid = h.start_stub_like_production(STUB_SOURCE_TREE=other)
+    before = h.launches()
+    r = h.run("once", STUB_SOURCE_TREE=other)
+    h.track_spawned()
+    check(h.launches() - before == 1,
+          f"g2: a stale daemon is restarted (launch lines +{h.launches() - before}, want 1)")
+    check("DIFFERENT COMMITTED TREE" in h.log_text(),
+          "g2: the log names the deploy-marker mismatch, not an mtime")
+    check(r.returncode == 0, f"g2: `once` exits 0 after the restart (rc={r.returncode})")
+    # Reap first: the stub is THIS process's child, so after SIGTERM it lingers as a
+    # zombie and /proc/<pid> still exists. Asserting on /proc without reaping would
+    # read "still alive" for a process that has already exited — the same
+    # existence-is-not-identity trap the supervisor itself guards against.
+    for _ in range(40):
+        try:
+            if os.waitpid(stale_pid, os.WNOHANG)[0] == stale_pid:
+                break
+        except ChildProcessError:
+            break
+        time.sleep(0.1)
+    check(not alive(stale_pid), f"g2: the stale daemon (pid {stale_pid}) was replaced")
+    stamp = h.root / "logs" / "bus_supervisor.last_stale_restart"
+    check(stamp.exists(), "g2: the rate-limit stamp was written")
+
+    # ...and the SECOND verdict inside the window alarms instead of restarting.
+    # The relaunched daemon is still stale (same STUB_SOURCE_TREE), so the predicate
+    # fires again — which is precisely the shape that stormed.
+    before = h.launches()
+    r2 = h.run("once", STUB_SOURCE_TREE=other)
+    log = h.log_text()
+    check(h.launches() == before,
+          f"g3: NO second restart inside the window ({before} -> {h.launches()})")
+    check("ALARM: STALE SOURCE AGAIN" in log,
+          "g3: the suppression is a LOUD alarm, not a silent skip")
+    check(r2.returncode == 0, f"g3: `once` still exits 0 (rc={r2.returncode})")
+
+    # ...and it is a WINDOW, not a permanent mute: outside it, a restart happens.
+    before = h.launches()
+    h.run("once", STUB_SOURCE_TREE=other, RESTART_MIN_INTERVAL_S="0")
+    h.track_spawned()
+    check(h.launches() - before == 1,
+          f"g4: outside the window a restart is allowed again (+{h.launches() - before})")
+
+    h.kill_my_daemons()
+
+
 def main() -> int:
     print(f"script under test: {SUP}")
     for case in (case_a_alive_daemon_is_seen, case_b_dead_daemon_relaunched_once,
                  case_c_never_kills_a_stranger, case_d_unknown_is_its_own_state,
-                 case_e_no_relaunch_storm, case_f_fd9_self_lockout):
+                 case_e_no_relaunch_storm, case_f_fd9_self_lockout,
+                 case_g_stale_source_restart_is_rate_limited):
         h = Harness()
         try:
             case(h)

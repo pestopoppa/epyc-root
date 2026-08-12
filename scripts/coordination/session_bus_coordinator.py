@@ -2573,10 +2573,60 @@ def _read_epoch(bus_root: Path) -> int:
         return 0
 
 
+# H-4 (2026-08-12): THE DEPLOY MARKER THIS PROCESS IS RUNNING.
+#
+# A running daemon executes the code it loaded at start, and nothing used to notice
+# when the tree moved on. The first attempt at noticing compared the newest MTIME
+# under scripts/coordination against the process start time — in a five-writer tree
+# that mtime changes constantly (an editor save, a subagent's scratch write, a
+# checkout), so it restarted a HEALTHY daemon 14 times in 54 minutes. mtime measures
+# "somebody touched a file", which is not the question; the question is "is the code
+# this process loaded the code that is COMMITTED now".
+#
+# `git rev-parse HEAD:scripts/coordination` answers exactly that: the tree object of
+# the daemon's own package at HEAD. It changes when a commit changes those sources
+# and NEVER for an uncommitted touch, so the predicate moves once per deploy instead
+# of once per keystroke.
+#
+# CAPTURED ONCE, AT PROCESS START — not per tick. A per-tick capture would report
+# the tree the supervisor is about to compare against and the two would agree
+# forever, which is the vacuous-check shape: the marker has to be frozen at the
+# moment the code was loaded for the comparison to mean anything.
+_SOURCE_TREE: Optional[str] = None
+_SOURCE_TREE_CAPTURED = False
+
+
+def _source_tree_sha() -> Optional[str]:
+    """The committed tree object for scripts/coordination, frozen at process start.
+
+    None when it cannot be determined (not a git checkout, git missing, detached
+    object store). The supervisor treats None/absent as UNKNOWN and never restarts
+    on it — a marker that cannot be read must not be evidence of staleness.
+    """
+    global _SOURCE_TREE, _SOURCE_TREE_CAPTURED
+    if _SOURCE_TREE_CAPTURED:
+        return _SOURCE_TREE
+    _SOURCE_TREE_CAPTURED = True
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD:scripts/coordination"],
+            capture_output=True, text=True, timeout=15,
+        )
+        sha = (proc.stdout or "").strip()
+        if proc.returncode == 0 and re.fullmatch(r"[0-9a-f]{40}", sha):
+            _SOURCE_TREE = sha
+    except Exception:  # noqa: BLE001 — unreadable is UNKNOWN, never a verdict
+        _SOURCE_TREE = None
+    return _SOURCE_TREE
+
+
 def _write_heartbeat(bus_root: Path, epoch: int, state: str, note: str = "") -> None:
     _write_atomic(_heartbeat_path(bus_root), {
         "agent": COORDINATOR_DAEMON, "state": state, "task_id": None,
         "ts": _utcnow_iso(), "epoch": epoch, "note": note, "pid": os.getpid(),
+        # The deploy marker of the code THIS process loaded. bus_supervisor.sh
+        # compares it against the current HEAD tree; a mismatch is a stale daemon.
+        "source_tree": _source_tree_sha(),
     })
 
 
@@ -4252,9 +4302,12 @@ def cmd_run(args: argparse.Namespace) -> int:
     config = _load_config(bus_root)
     tick_s = float((config.get("coordinator_daemon") or {}).get("tick_s", 45))
     epoch = _read_epoch(bus_root) + 1  # epoch fencing: a restart is a new generation
+    # Freeze the deploy marker HERE, before the first heartbeat, so every heartbeat
+    # this process ever writes reports the tree it was launched from (H-4).
+    source_tree = _source_tree_sha()
     _write_heartbeat(bus_root, epoch, "working", f"advisory tick loop, {tick_s}s")
-    print(f"coordinator-daemon: epoch={epoch} authority={_authority(config)} tick={tick_s}s",
-          file=sys.stderr)
+    print(f"coordinator-daemon: epoch={epoch} authority={_authority(config)} tick={tick_s}s "
+          f"source_tree={source_tree or 'UNKNOWN'}", file=sys.stderr)
 
     stopping = {"now": False}
 
