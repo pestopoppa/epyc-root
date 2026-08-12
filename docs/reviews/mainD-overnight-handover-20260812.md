@@ -24,6 +24,8 @@ The hashes below were attributed by **path and content**, not by author.
 | `3c6e6b6a`, `eb0df7cd`, `d73fc421` | **C34 residual disposition** — triaged by value rather than by count; of 81 rows, exactly one was worth re-filing. |
 | `28139999` | **HG-3**, and a fourth screening signal in `backlog_row_check.py` (below). |
 | `bd2e830d` | **C44** — the token relay is withdrawal-blind (below). |
+| `4007ceba` | **The trust-boundary guard's pytest wrapper passed with an empty case table.** `main()` returns `0` when there is nothing to fail. Mutation-verified; floor added. Also commits the superseded `.sh` test whose deletion `mainA` flagged as unowned. |
+| `23dc960d` | Catalogue **faces 10 and 11** — `mainB`'s sentinel-that-is-also-content, and `mainA`'s instance under the readiness-metric generalisation. |
 | `03369bb0`, `e4cb8373` | C39 keyed-receipt patch **prepared and NOT applied**, as instructed. |
 | `9ec9da54` | **Withdrew my own patch** after review found a hole in it. It stays withdrawn. |
 | `5bdf59f5`, `74855be7`, `c27fe838` | Lane write-ups, including the P0 merge resolution and the freeze-window findings. |
@@ -99,6 +101,19 @@ worth preserving.
   vocabulary.**
 - **A guard I wrote forbade its own documentation** — it grepped module source for a phrase the fix's
   own comment quotes. Rewritten to assert against the produced notice and check polarity.
+- **I told the fleet to trust `git merge-tree` for merge readiness.** It models the **index**; the
+  merge aborted on **worktree safety**, which no conflict metric inspects. `mainA` caught it. The
+  auditor and I had both run it correctly and both got the right answer to the wrong question —
+  which is why the catalogue entry it became is marked as failing *open while carrying independent
+  confirmation*. Two agents agreeing does not widen a metric's domain.
+- **A mutation test that could not fail.** Probing the trust-boundary wrapper, I ran the mutant from
+  a temp dir outside the repo; it reported `1 error` — neither pass nor fail. A mutation the
+  instrument cannot import is not a mutation test. Re-run in place it *passed*, and that pass was
+  the defect I was looking for.
+- **I echoed "uncommitted work does not survive a reboot"** and used it to justify urgency. False —
+  `/workspace` and the tmp and memory dirs are one persistent RAID. `mainA` proved it; the
+  coordinator corrected their own broadcast in the same channel. Committing is still right, but as a
+  *concurrency* argument, not a durability one.
 - **I mis-suspected four files of holding stale reverted content** (`b41af9d7`'s signature) and nearly
   raised a false alarm. I was reading *dates in the content* as the direction of the change; all four
   were the newer state.
@@ -123,3 +138,12 @@ spent the night eliminating.
 One caveat on option 1: `git rm --cached` alone will *not* untrack it, because a pathspec commit
 re-reads the worktree and resurrects the file. It needs the file absent at commit time — `mv` aside,
 commit, `mv` back — and verification with `git ls-files`, not by reading `.gitignore`.
+
+---
+
+*Updated after first publication (`mainB`'s point: a handover is a snapshot that gets
+certified while the fleet keeps moving — theirs was wrong twenty minutes after being declared
+finished). Three commits and three errors landed after this was written; they are folded in
+above rather than appended, so the lists stay readable as lists. Anyone assembling the morning
+package should re-resolve cross-references at assembly time rather than trusting any artifact's
+internal counts, including this one.*
