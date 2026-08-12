@@ -2562,7 +2562,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
     (`pareto_archive.ParetoEntry.dominates` is a thin wrapper over the same import), all six call
     routes converge on it, and `tests/unit/test_objective_rate_flip.py::test_dominates_refuses_mixed_policy_comparison`
     pins it — mutation-checked by stripping the raise and watching that test fail. Landed `afdd5d74`.
-- [ ] **NEW (2026-08-12): `hypervolume()` has the SAME silent truncation, unguarded, a few lines below
+- [x] **NEW (2026-08-12): `hypervolume()` has the SAME silent truncation, unguarded, a few lines below
   the fix — and the FIRST entry of any tier reaches it without ever passing `dominates()`.**
   `pareto_math.py:57-59` does `all(pi > ri for pi, ri in zip(point, ref_tuple))` with no length check,
   so a frontier point and a tier reference point of different dimensionality compare on the shorter
@@ -2578,6 +2578,29 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
   `dominates()`, but whoever owns pareto semantics should decide raise-vs-skip. *(Found by a `mainC`
   subagent while verifying the row above; mechanism and reachability re-derived by `mainC` before
   filing — the empty-list bypass was read out of the source, not inferred.)*
+  ✅ 2026-08-12 — orchestrator `d513f602`. Empty-list bypass REPRODUCED through the real path (a
+  malformed 3-D entry as the sole `all_entries` row of an on-disk state.json, loaded exactly as
+  production does on every process start). Two MORE reimplementations of the same bypass found in
+  `journal_reconstruction.py:327` and `journal_snapshot_replay.py:601,672`.
+  **The reasoning that mattered most: fixing `hypervolume()` ALONE would have created the swallowed-
+  raise trap.** `update()`'s sole external caller is wrapped in `except Exception: log.warning(...)`
+  (*verified by `mainC`*), so a raise landing AFTER `update()` had already mutated `self._frontiers`
+  would have left a corrupted frontier behind a warning — the same bug wearing a `raise`. Fixing the
+  ENTRY PATH FIRST, validating before any mutation, is what makes the raise safe.
+  **Policy split by call site, not one global answer:** `pareto_math` raises (matching `dominates()`);
+  `_rebuild_frontier` SKIPS + logs, because it is bulk replay of years of history on process start and
+  one malformed record must not abort loading the archive; `update()` raises, because it is a single
+  live admission. Two further siblings fixed — `median_objectives()`'s `zip(*rows)` and
+  `hypervolume_monte_carlo()`'s `point[dim]` indexing.
+  Pre-fix symptoms differed by direction and both were wrong: a SHORTER point raised an opaque
+  contextless `IndexError`; a LONGER point silently returned a wrong number (32.4 in their repro).
+  8 tests, mutation 6 failed / 2 passed → 8 passed. Full unit suite 2,939 passed, 1 pre-existing
+  unrelated failure.
+  **Honest limit:** no concrete LIVE trigger established — `objectives_from` is consistently 4-D for
+  every registered tier today, so the credible vector is a legacy or hand-edited `autopilot_state.json`
+  through the tolerant loader. Defence-in-depth for the same hazard class `dominates()` was already
+  guarded against, and labelled as such rather than oversold.
+
 - [x] **The de-FABLE rename shipped broken operator-facing commands** ✅ follow-up audit done
       2026-08-11 — `mainD`. **The class is real and it was still live, in the worst possible place.**
       `handoffs/active/orchestration-robustness-audit-2026-07-11.md` carried **three
