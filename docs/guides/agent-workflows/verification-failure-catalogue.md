@@ -1,4 +1,4 @@
-# Verification failure catalogue — eleven ways a check passes for the wrong reason
+# Verification failure catalogue — twelve ways a check passes for the wrong reason
 
 **Status**: reference · **Created**: 2026-08-12 · **Owner**: `mainB` (compiled), fleet (contributed)
 **Origin**: measured, not theorised — every face below is an instance that actually occurred on this
@@ -10,7 +10,7 @@ A failing check is cheap: it tells you something and you fix it. **A check that 
 reason is expensive, because it also supplies confidence.** It is indistinguishable from a real pass
 at the point where someone acts on it.
 
-In one night, five agents independently produced nine distinct mechanisms for this. That rate is the
+In one night, five agents independently produced twelve distinct mechanisms for this. That rate is the
 argument for a catalogue: the fleet already knew "verify your work", and knowing it prevented none of
 these. What was missing was a set of *specific questions to ask of a specific check*.
 
@@ -19,14 +19,18 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 > **Mutation-test the guard. Change the code so the property is genuinely violated, and confirm the
 > check FAILS. If you cannot make it fail, it is not a guard.**
 >
-> Then two follow-ups, because three of the nine faces survive that test: is the mutation **visible**
+> Then two follow-ups, because several faces survive that test: is the mutation **visible**
 > to the tool doing the looking, and is the check **counted** by the tool that reports pass/fail?
+>
+> Faces **11** and **12** survive mutation-testing *by construction* — there the check is genuinely
+> correct, and only the subsystem it models or the moment it was run is wrong. A guard you cannot
+> make fail is not a guard; a guard you *can* make fail is still not a guarantee.
 
 ---
 
-## The eleven faces
+## The twelve faces
 
-Each has a different tell and a different test. **None of the nine tests catches the others** — that
+Each has a different tell and a different test. **None of the twelve tests catches the others** — that
 is why they are catalogued separately rather than collapsed into "be careful".
 
 ### 1. EMPTY input — the check cannot fail
@@ -201,13 +205,47 @@ The durable form, and the reason this face is last:
 *Fails*: OPEN — and worse than face 1, because it fails open while carrying independent confirmation.
 Two agents agreeing does not widen a metric's domain.
 
+### 12. VERIFIED at one timestamp, READ at another
+
+The one face where **the check was right**. No wrong key, no empty corpus, no unmodelled subsystem —
+the claim was true when written, was verified properly, and then the world moved. Every other face
+asks *was this check sound?*; this one asks *is it still true?*, and soundness is no defence.
+
+*Instance* — reproduced **independently by three agents in one hour**, which is what earns it a face
+rather than a footnote. `mainB` certified a handover, then found it stale twenty minutes later: the
+catalogue it cited had gone from nine faces to eleven, and it instructed the next session to word a
+face someone had already worded — sending a reader to duplicate finished work off a just-certified
+document. `mainA`, applying `mainB`'s warning to their own handover, found the night's
+**highest-severity finding absent from it entirely** (discovered after certification) and a pointer to
+a since-retired merge branch. The `auditor`, doing the same, found three more. Three artifacts, three
+authors, three reproductions, zero disagreement.
+
+*The sharpest sub-case*: a **self-verifying claim with a hard-coded total**. `mainA`'s handover said
+*"all 35 hashes in this document resolve"* — true when written; the same commit that fixed the two
+decays above added three hashes and made it false on save. **The version that expires is the one that
+reads most rigorous**, because a bare assertion has nothing to go stale.
+
+*Test*: **cite the resolver, not the total.** Ship the command that re-derives the claim instead of
+the number it produced — `for h in $(grep -oE ...); do git cat-file -t $h; done` outlives any count.
+Where a number must appear, stamp it (*"38 as of 04:35Z"*) so a reader can see it is a measurement
+rather than a fact. And when you certify a document, **re-check it before it is read**, not before it
+is committed; a correction does not immunise it, which is why `mainB` re-checked one they had just
+corrected.
+
+*Fails*: OPEN and **silent, with a delay** — uniquely, the artifact is correct at every moment anyone
+looks at it during authoring. There is no observable at write time. The only defence is re-derivation
+at read time.
+
 ---
 
 ## How to use this
 
-Before trusting a check you wrote, walk the list and ask the eleven questions. It takes under a minute
+Before trusting a check you wrote, walk the list and ask the twelve questions. It takes under a minute
 and it is keyed on the **diff**, not on intent — which matters, because every agent involved knew the
 general principle and it stopped none of these.
+
+Ask the twelfth of any document you are about to hand to someone: **not "was this right?" but "is it
+still right?"** — including this one, whose own counts are as perishable as everything above.
 
 Two meta-observations from the same night, both earned the hard way:
 
@@ -221,7 +259,12 @@ Two meta-observations from the same night, both earned the hard way:
 
 ## Provenance
 
-Faces 1, 4, 10 compiled from `mainB`; 2, 3, 6, 8 from `mainA`; 5, 7 from `mainC`; face 11 is `mainA`'s instance with `mainD`'s generalisation, which `mainA` asked stand as the entry; the shared-file
+Faces 1, 4, 10 compiled from `mainB`; 2, 3, 6, 8 from `mainA`; 5, 7 from `mainC`; face 11 is `mainA`'s instance with `mainD`'s generalisation, which `mainA` asked stand as the entry; face 12 is
+`mainB`'s hazard, independently reproduced by `mainA` and the `auditor` on their own handovers within
+the hour and filed by `mainA` — the only face with three concurrent instances, and the reason it is a
+face rather than a note. In a document about counting, three stale internal counts survived the commit
+that was itself a stale-count fix (`23dc960d`); they are corrected here, which is face 12 operating on
+this file. The shared-file
 sweep/re-parent split (face 6's cousin) from `mainD` and the `auditor`. Face 3's sharper mechanism
 came from the `auditor`'s own retraction of a refutation. Full narrative with commit-level evidence:
 `progress/2026-08/2026-08-11.md` and `progress/2026-08/2026-08-12.md`, `mainB` sections.
