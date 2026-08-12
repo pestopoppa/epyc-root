@@ -336,6 +336,12 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     self-hash `7c670931628b17a1491d7f25642681f2ee17d996848c0b09032518ad58e08d5a` and file SHA-256
     `e86fbe4a4fb3f45d28d0a9ca7a62be97e021bdf710b5e2f4d7b2287644f0a623`. No controller,
     inference, build, or GPU command ran.
+  - [x] **Make the available-source campaign restart-safe before spending the 2h/8h/32h
+    budgets.** ✅ 2026-08-12 — research `971e3a00` verifies immutable audit/config/source identity,
+    atomically records completed cells and checkpoints, resumes only exact hash-matched terminal
+    work, and rejects partial, tampered, in-flight, or claim-leaking state. Focused campaign tests
+    passed **139/139**. Resume does not make partial results rankable; the terminal aggregate remains
+    the only campaign result.
   - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints when
     inference is authorized; interpret it only as an availability-conditioned diagnostic.
   - [ ] Obtain exact licensed source releases for EvoEngineer and ARGUS, then port their real
@@ -499,12 +505,14 @@ section costs **zero GPU and zero local inference**.
     objective is the missing piece. AgentKernelArena's `@register_agent` adapter pattern (Decision
     Snapshot item 2) is the substrate for registering the arms. So the increment is roles 3 and 4 plus
     a throughput-aware selection objective, not a new controller.
-  - [ ] **Implement a governed same-model direct-implement versus implement-then-exploit
-    authoring/evaluation seam before running this panel.** The current Arena fixes controller roles
-    and GPU checkpoint semantics, while the existing Claude/Codex boundary fixes Claude as a
-    read-only planner/critic and Codex as the workspace-writing actor. Neither can produce the
-    matched scaffold comparison without confounding model role and evaluator path; research
-    `98f642cd` therefore refuses AK-LE-3 explicitly rather than fabricating an arm.
+  - [x] **Implement a governed same-model direct-implement versus implement-then-exploit
+    authoring/evaluation seam before running this panel.** ✅ 2026-08-12 — research `c4434810` and
+    `230721b6` compile the exact two-model × two-scaffold panel, use the same writable Codex actor and
+    trusted Arena evaluator in every cell, isolate disposable baseline/candidate worktrees, bind
+    runtime/image/import identities, serialize MI210 claims, and clean up exact owned worktrees on
+    every exit. The focused integrated slice passed **29/29** and the controller suite passed
+    **512/512**. Empirical campaign `ak-le-3-scaffold-20260812-r1` is running; the parent remains open
+    until all four cells and the terminal reduction are sealed.
 - [x] **AK-LE-4 — Context discipline: a priced context budget and a reversible compaction protocol.**
   (a) A per-round context-budget table with an explicit **never-bulk-read** rule, so the loop cannot
   spend its window on a file it will not use. (b) A research-log compaction step that writes a
