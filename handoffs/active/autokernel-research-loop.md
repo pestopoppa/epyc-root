@@ -1,6 +1,8 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
 **Status:** V9 CONTROLS 5/5 PASS / AK-WM IMPLEMENTATION REPAIR COMPLETE / POST-REBOOT REAL ARCHIVE NEXT — updated 2026-08-12
+
+**Status:** V9 CONTROLS 5/5 PASS / CURRENT-MAIN LOOP COMPLETION IN PROGRESS / CPU IQK READY AFTER REQUIRED REBOOT — updated 2026-08-12
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -378,6 +380,41 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   `4328c37c940d125d7b11b4264b65f415c300eda0`. Seven-arm r15 runs from a dedicated clean worktree/branch
   pinned at `03f9ae69`; its 7/7 audit, baseline, and first successful real Claude planner call were present
   at this checkpoint. The live worktree and campaign must remain untouched until terminal validation.
+
+**Current-main runnable-loop audit (2026-08-12, no inference):** the accepted research baseline is
+`730adb1d31fe12eb1a49d98210f93467911aaef0`. A clean detached checkout passed the focused campaign,
+footprint, and integration suite (**308 passed, 104 subtests passed**). That proves the present
+one-candidate harness and its refusal boundaries; it does not prove the end state in §15.5. Source
+inspection found that `campaign.py` deliberately ends at a banked result, does not append a governed
+`EVALUATION_EVENT` or complete candidate record, and refuses generic source-changing proposals where
+mutation and T0 evidence are unimplemented. The sequencer/champion and release-package planes that
+historical 2026-08-03 checkboxes described were removed on 2026-08-04 and survive only at tag
+`autokernel-preserve-20260804`. The implementation order below is therefore part of the live path,
+not a reopening of empirical work:
+
+- [x] **AK-AUD-5 — Audit the runnable loop against current research `main`, not historical completion
+  narration.** ✅ 2026-08-12 — verified the live campaign boundary, generic-source refusals, removed
+  planes, preserved tag, and focused suite from a clean detached `730adb1d` checkout.
+- [ ] **AK-RUN-1 — Emit governed candidate and evaluation records from the executing campaign.** Bind
+  actual T0 property measurements and raw paired-performance evidence; append exactly once before the
+  terminal `STOP_STATE`; make append failure non-success; and keep dry runs record-free. This is the
+  producer prerequisite for Vidya SC10/SC18 and the real matched archive.
+- [ ] **AK-RUN-2 — Execute generic source candidates through a content-addressed patch binding.**
+  Validate proposal/change-class/files/symbols before mutation, apply only in an isolated experimental
+  worktree, commit exact pathspecs, build a fresh detached snapshot, derive T0 evidence, and journal the
+  immutable patch/build/candidate identity. Raw mutable paths and production trees remain forbidden.
+- [ ] **AK-RUN-3 — Restore the lean sequencer and champion-maintenance path.** Consume proposal,
+  candidate, and evaluation records; distinguish frontier/banked/champion state; compose compatible
+  members; re-evaluate the combined source snapshot; append `CHAMPION_UPDATED`; and re-anchor explicitly
+  when the production anchor moves. Never add member speedups arithmetically.
+- [ ] **AK-RUN-4 — Restore a separate operator-triggered package/release plane.** Reuse only the
+  validated plan/readiness/T3/packager parts needed to seal a champion and construct a dry-run release
+  package; keep it outside campaign-one imports, with no production mutation, signing, freeze, cutover,
+  or reload authority.
+
+The existing AK9 speech-compiler and production-kernel-set dashboard checkboxes below remain the
+single task records for those findings. Vidya SC10 and SC18 remain owned by
+`vidya-belief-substrate-program.md`; they are dependencies of AK-RUN-1, not duplicate tasks here.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
@@ -3554,6 +3591,15 @@ tree's ggml.
   adapter readiness predicates, enforces the `production-speech-vN` branch family, and reconstructs
   both independent trees from the preserved speech freeze. A focused exact-main adapter/plan/T3
   audit passed **783 tests with 132 subtests**.
+
+- [ ] Extend the release-plan compiler to the speech trees — note these two *are* independently
+  freezable, unlike CPU and GPU (§1.5). **UNBLOCKED 2026-08-03**: Annex S is ratified, so
+  `P-STT-1`/`P-TTS-1` are in force and `PHASES_BY_BACKEND` can now carry the speech phase
+  vocabulary honestly. It was withheld only because the compiler cannot grade a cell under an
+  unratified protocol; that reason is gone. Note the whole speech plane (`adapters/`) was deleted
+  on 2026-08-04 and lives at tag `autokernel-preserve-20260804` — restore from there rather than
+  rewriting. Research branch `codex/ak9-speech-compiler-20260812` at `b367d09f` is a pushed proposal
+  under primary review; this checkbox remains open until that implementation is accepted and merged.
 - [x] `Annex S` ratified — `measurement/protocols/speech.md`, 86 KB, five annexes in
   `MEASUREMENT.md`. `P-STT-1/2/3`, `P-STT-REL-1`, `P-TTS-1/2/3`, `P-TTS-REL-1` are in force; the
   four verdict grammars carry no `attest <ref>`, reconciled with Annex K's own reasoning.
