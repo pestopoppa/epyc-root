@@ -684,6 +684,28 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
   1.7–1.8× decode lead is measured against an incumbent that emits no reasoning tokens at all in
   production, while LFM2.5 has no demonstrated way to stop emitting them.
 
+  **Quantified 2026-08-12 from the committed correctness transcripts (~4 chars/token):**
+
+  | model | reasoning tok | answer tok | overhead |
+  |---|---:|---:|---:|
+  | LFM2.5 Q4_K_M | ~384 | ~14 | **27.4×** |
+  | gemma4-26B-A4B, thinking ON (*bench only, not production*) | ~599 | ~12 | 49.9× |
+
+  Note what the second row explains: the incumbent's reasoning is *more* verbose than LFM2.5's, which is
+  very plausibly **why** production sets `enable_thinking: false` for this role — an option LFM2.5 does
+  not offer. On these five prompts, LFM spends ~9.4 s of decode to deliver ~14 tokens of answer, whereas
+  a thinking-off incumbent at ~40 t/s delivers its ~12 answer tokens in ~0.3 s. **A 1.7× decode-rate
+  advantage does not survive a 27× token-count disadvantage.**
+
+  **Three limits on that arithmetic, stated so nobody over-reads it.** (1) These five prompts are
+  deliberately terse — "reply with only the city name" — which is the WORST case for a reasoning model,
+  because a fixed reasoning block is amortised over a 1-token answer; real `worker_general` traffic with
+  longer outputs will show a much smaller ratio. (2) ~4 chars/token is an approximation and the two
+  models use different tokenizers (LFM's 128K `lfm2` BPE vs gemma's), so the CROSS-model counts are
+  indicative only — the robust figure is LFM's 27.4× overhead against *its own* answer length. (3) The
+  incumbent's thinking-off behaviour was inferred from config, not measured; a thinking-off run would
+  confirm the ~0.3 s side. The direction is not in doubt, the magnitude is prompt-dependent.
+
 - [x] **`GGML_IQK_Q8_0=1` is load-bearing for any Q8_0 arm** ✅ 2026-08-12 — without it the Q8_0 run
   logged no `[iqk] ACTIVE` line at all: pp 539.24→870.47 (+61%), tg 15.75→24.97 (+58%). A Q8_0 bench
   omitting it is not top-optimized and must not be published as one. `canonical_recipe.py` already
