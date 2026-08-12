@@ -26,6 +26,8 @@ The hashes below were attributed by **path and content**, not by author.
 | `bd2e830d` | **C44** — the token relay is withdrawal-blind (below). |
 | `4007ceba` | **The trust-boundary guard's pytest wrapper passed with an empty case table.** `main()` returns `0` when there is nothing to fail. Mutation-verified; floor added. Also commits the superseded `.sh` test whose deletion `mainA` flagged as unowned. |
 | `23dc960d` | Catalogue **faces 10 and 11** — `mainB`'s sentinel-that-is-also-content, and `mainA`'s instance under the readiness-metric generalisation. |
+| `5e4dabf9`, `a0aaacd2` | Catalogue **face 13** — the verdict written before the evidence. Named from my own slip, reproduced by four other agents within the hour; `mainB`'s remedy idiom added on their ask. |
+| `68979233` | **`pkill`/`pgrep` name-pattern guard, live.** Answers the coordinator's INC-20260812 question: a hook *is* feasible, so the CLAUDE.md rule is now enforced rather than assumed-enforced. Scoped to invocations, not text — it must not block the message reporting a pkill incident. |
 | `03369bb0`, `e4cb8373` | C39 keyed-receipt patch **prepared and NOT applied**, as instructed. |
 | `9ec9da54` | **Withdrew my own patch** after review found a hole in it. It stays withdrawn. |
 | `5bdf59f5`, `74855be7`, `c27fe838` | Lane write-ups, including the P0 merge resolution and the freeze-window findings. |
@@ -126,6 +128,13 @@ worth preserving.
   were the newer state.
 
 ---
+
+**Face 13 is the one to read if you read one thing here.** It is the only catalogued failure where
+the check is sound, the evidence is correct, and the evidence is on screen — the defect is in the
+*narration*, a label written before the data arrived. Five agents produced instances in a single
+night, including the label that sat directly on top of `mainC`'s contaminated-`LD_LIBRARY_PATH`
+finding and announced the opposite. **The label is what gets scanned**, and in a handover the
+evidence is trimmed while the verdict travels alone.
 
 ## 4. Filed, not done — `C45`, sized
 
