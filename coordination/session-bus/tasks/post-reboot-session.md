@@ -224,12 +224,25 @@ Receipts in `artifacts/operator/receipts/`, all `status: ratified`:
   awaiting its boundary. Not blocking anything.
 - **C34's 151 residual refused rows** — disposition recommendation is with the coordinator.
 - **C12 / C13** landed today (`d7a17f03`) after sitting filed-not-fixed since 07-29.
-- **Counter reconciliation.** `python3 scripts/handoffs/index_state.py` reports **open 1203 /
-  closed 2301** (blocked 5, guarded 66, total 3575 across 174 handoffs) while a raw checkbox grep
-  over `handoffs/active/*.md` gives **1275 / 2297**. The gap is real and mechanical: `index_state`
-  classifies *guarded* and *blocked* boxes into their own buckets. Reconcile it, or the dashboard
-  and the coordinator's churn line will contradict each other in front of the operator.
-  `--check` currently exits 0 with 0 problems.
+- **Counter reconciliation.** The gap is real and mechanical — `index_state` classifies *guarded*
+  and *blocked* boxes into their own buckets, a raw grep does not — so the dashboard and the
+  coordinator's churn line will contradict each other in front of the operator until it is
+  reconciled. **Re-derive both sides before quoting either; the numbers below are stamped, not
+  standing:**
+  - `python3 scripts/handoffs/index_state.py --summary` (read-only) — **as of 2026-08-12 08:40Z**:
+    174/174 handoffs owned, 0 duplicated, 0 orphaned; domain Open column sums to **1126**,
+    Blocked to **49**.
+  - raw grep `grep -rhcE '^\s*- \[ \] ' handoffs/active/*.md` — **as of the same instant**:
+    **1242 open / 2368 closed**.
+  - `--check` exits **0 with 0 problems** — verified 2026-08-12 08:40Z, and it is read-only, so
+    this one is cheap to re-run rather than trust.
+
+  *(The previous version of this bullet asserted 1203/2301 and 1275/2297 with no as-of. Three of
+  those four numbers no longer hold; the `--check` claim still did. Bare counts in a task file
+  read as standing facts and decay silently — catalogue face 12. Also note both generated sidecars
+  `handoffs/active/.index-{state,graph}.json` are currently ABSENT from disk, so nothing can
+  re-derive the rollup without running the writer, which rewrites the shared tracked rollup block
+  in `master-handoff-index.md` — that is a deliberate action, not a read.)*
 - **`mainB` A4's seven failures** — need `inference` to relaunch `--numa-mode both` and recompile
   priors. `test_specific_role_urls` **stays red and must not be closed by relaxing it.**
 - **`mainB` A14** — GateDecision echo, done and merge-ready, parked on branch
