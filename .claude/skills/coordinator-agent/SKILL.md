@@ -124,6 +124,16 @@ running process started.
 say so *explicitly and prominently* in the report: measurements taken against a quiesced host can
 be artifacts, so any bench or timing result collected while AutoPilot is down is suspect.
 
+**Report that it is up or down — never how loaded it has the host.** Everything in 0b is an
+**existence** check (does this pid exist, does this tree match, is this component started), which
+is what a cold start needs and what no owner is alive yet to answer. It is not a licence to read
+dials. From Phase 1 onward the *Receipts, not dials* guardrail
+(`agents/coordinator-agent.md`) binds: the coordinator never produces a hardware or utilisation
+reading, and any %, t/s, VRAM, load or region-occupancy figure it emits is a verbatim quote
+carrying `source_msg_id` or `receipt_path`. `inference` owns compute readings; `fleet_watch` owns
+persistence-gated idle detection. Idle compute stays a **reportable condition** — you route it and
+set its urgency; you do not measure it.
+
 **The pre-reboot side is equally the coordinator's duty.** This phase describes waking up after a
 reboot already happened; going to sleep before the next one is not delegated to nobody. Before any
 reboot request reaches the operator, every main — including coordinator-agent itself — must have
@@ -304,7 +314,8 @@ Compact, scannable, no preamble:
 1. **Post-reboot reality** — tmux `agent` session + live windows (and whether you created it or
    found it); coordinator-daemon (running? epoch? supervised? — say if you restarted it, and at
    which epoch); `verify_llama_cpp.sh` verdict; region-lock holders; stack health (name the
-   dead/stopped components); **AutoPilot up or down, called out explicitly if down**.
+   dead/stopped components); **AutoPilot up or down, called out explicitly if down**. All of this
+   is **existence**, not utilisation — see the receipts rule below.
 2. **Bus state** — queue rows by status and lane; live non-terminal tasks; per-agent
    state / task / unread depth; trust-boundary integrity.
 3. **Anomalies** — `validate` warnings that matter (unreachable endpoints, non-roster files);
@@ -319,9 +330,31 @@ Compact, scannable, no preamble:
    so name what each main is being dispatched *to* — reporting that a main exists, or that it is
    idle and available, is not a dispatch plan.
 
-Escalate any choice as a decision package (`OPERATING_CONSTRAINTS.md` → *Operator Decision
-Requests*): 2–4 options with tradeoffs, a recommendation first and labelled "(Recommended)", and
-the default if no choice is made. Via `AskUserQuestion`. Never an open-ended question.
+**Receipts, not dials — the report carries no reading you took yourself.** The coordinator never
+produces a hardware or utilisation reading. Any figure with units of **%, t/s, VRAM, load, or
+region-occupancy** anywhere in this report is a **verbatim quote** carrying `source_msg_id` (the
+bus row from the owner) or `receipt_path` (a `fleet_watch.log` line or an owner-written artifact)
+— or it is not sent. `inference` owns compute readings; `fleet_watch` owns persistence-gated idle
+detection. **Idle compute is still a REPORTABLE CONDITION**: report it, route it, set its urgency
+— citing the owner's or the watcher's receipt, never a reading of your own. When the operator asks
+what the hardware is doing, the answer is a request for a receipt from the owner, not a run of the
+instrument. (Phase 0b is the sole exception, and only because it predates every owner; it checks
+existence, not utilisation.)
+
+**Escalate every choice as a decision package, written to this sentence template** — not "see the
+reference", but literally these four parts, in this order, via `AskUserQuestion`:
+
+1. **Context** — one paragraph: what is true now, and why a choice exists.
+2. **Options** — 2–4, each with its tradeoff stated on the same line.
+3. **Recommendation** — first in the list and labelled `(Recommended)`.
+4. **Default if unanswered** — what happens if the operator says nothing.
+
+Never an open-ended question. The template form is the point: `a90870ec`'s "Reporting Units" rule
+is the one prose rule in this corpus with **zero recurrences**, and it works because it changes the
+SHAPE of something you are already writing rather than asking you to remember an extra step. A
+decision package written to the template cannot silently omit the recommendation or the default,
+because their absence is visible in the shape. Canonical text: `OPERATING_CONSTRAINTS.md` →
+*Operator Decision Requests*.
 
 ## Standing rule: DRAIN BEFORE YOU SPEAK, for the life of the session
 
