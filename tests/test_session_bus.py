@@ -3409,3 +3409,96 @@ def test_c39_advice_never_instructs_an_agent_across_the_trust_boundary(
         # ...and it must still name the action that IS permitted. "Do not tick" with
         # no alternative is how a real signal gets ignored.
         assert "surface it to the operator" in low, f"no permitted action named: {text[:120]}"
+
+
+# ------------------------------------------------------- C39 deferred half
+#
+# The C39 notice reached coordinator-agent's inbox, which is right, but left the
+# OPERATOR-FACING file misleading on its own terms: six of seven unchecked gates in
+# token-queue.md carried `status: ratified` receipts and nothing in the file said
+# so. A reader of that file alone sees six pending signature requests that are not
+# pending.
+
+def _queue_with(root: Path, *gates: str) -> Path:
+    tq = root / "tokens" / "token-queue.md"
+    tq.parent.mkdir(parents=True, exist_ok=True)
+    tq.write_text("# Operator token queue\n\n" +
+                  "".join(f"### {g}\n\n- [ ] **{g}** — requested\n\n" for g in gates),
+                  encoding="utf-8")
+    return tq
+
+
+def test_spent_gate_notice_names_signed_gates_without_touching_a_checkbox(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """APPEND-ONLY, deliberately narrower than what was proposed. Annotating each
+    block in place means the daemon editing operator-facing content it wrote
+    earlier, right next to checkboxes only the operator may touch. Appending
+    achieves the same thing for a reader and cannot corrupt an existing block."""
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-SIGNED-1", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = _queue_with(bus_root, "RATIFY-SIGNED-1", "RATIFY-GENUINELY-PENDING")
+    before = tq.read_text(encoding="utf-8")
+
+    rows = coordinator.note_spent_gates_in_queue(bus_root, 14)
+
+    assert rows and rows[0]["kind"] == "spent-gate-notice"
+    assert rows[0]["gates"] == ["RATIFY-SIGNED-1"]
+    after = tq.read_text(encoding="utf-8")
+    assert after.startswith(before), "append-only: existing content is byte-identical"
+    assert "RATIFY-SIGNED-1" in after.replace(before, "")
+    assert "RATIFY-GENUINELY-PENDING" not in after.replace(before, ""), \
+        "an unsigned gate must not be named as signed"
+    # The whole point: it states evidence, it never decides.
+    assert "- [x]" not in after, "the daemon must never write a ticked box"
+    assert after.count("- [ ] **RATIFY-SIGNED-1**") == 1, "no checkbox was altered"
+
+
+def test_spent_gate_notice_does_not_repeat_every_tick(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A 45s tick appending the same notice forever is the advisory flood C34
+    measured, aimed at the operator's own file."""
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-SIGNED-1", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = _queue_with(bus_root, "RATIFY-SIGNED-1")
+
+    first = coordinator.note_spent_gates_in_queue(bus_root, 14)
+    for _ in range(4):
+        assert coordinator.note_spent_gates_in_queue(bus_root, 14) == []
+    assert first and tq.read_text(encoding="utf-8").count("Daemon notice") == 1
+
+
+def test_a_newly_spent_gate_gets_a_fresh_corrected_notice(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Dedupe is on the gate SET, not on 'a notice exists'. Keying on mere presence
+    would leave a later-signed gate silently unmentioned — quiet is not the same as
+    correct."""
+    receipts = tmp_path / "receipts"
+    _write_receipt(receipts, "RATIFY-SIGNED-1", "ratified")
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = _queue_with(bus_root, "RATIFY-SIGNED-1", "RATIFY-SIGNED-2")
+    coordinator.note_spent_gates_in_queue(bus_root, 14)
+
+    _write_receipt(receipts, "RATIFY-SIGNED-2", "ratified")     # signed later
+    rows = coordinator.note_spent_gates_in_queue(bus_root, 14)
+    assert rows and rows[0]["gates"] == ["RATIFY-SIGNED-1", "RATIFY-SIGNED-2"]
+    assert tq.read_text(encoding="utf-8").count("Daemon notice") == 2
+
+
+def test_no_notice_when_nothing_is_spent(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The compliant path. A file that gains a daemon block on an ordinary day
+    trains the operator to skim past it."""
+    receipts = tmp_path / "receipts"
+    receipts.mkdir()
+    monkeypatch.setattr(coordinator, "RECEIPTS_DIR", receipts)
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    tq = _queue_with(bus_root, "RATIFY-GENUINELY-PENDING")
+    before = tq.read_text(encoding="utf-8")
+
+    assert coordinator.note_spent_gates_in_queue(bus_root, 14) == []
+    assert tq.read_text(encoding="utf-8") == before

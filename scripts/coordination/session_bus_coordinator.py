@@ -51,6 +51,8 @@ from __future__ import annotations
 import argparse
 import fcntl
 import json
+import hashlib
+import re
 import os
 import signal
 import subprocess
@@ -1015,6 +1017,79 @@ def relay_tokens(bus_root: Path, reports: dict[str, list[dict]], latest: dict[st
     return blocks, rows + defects
 
 
+_SPENT_NOTE_MARKER = "<!-- daemon:spent-gate-notice"
+
+
+def note_spent_gates_in_queue(bus_root: Path, epoch: int) -> list[dict]:
+    """Tell a reader of `token-queue.md` ALONE which unchecked gates are already signed.
+
+    C39's deferred half, built 2026-08-12. The notice went to `coordinator-agent`'s
+    inbox, which is right, but it left the operator-facing file misleading on its
+    own terms: **six of seven unchecked gates carry `status: ratified` receipts**, and
+    nothing in the file says so. Somebody reading only that file sees six pending
+    signature requests that are not pending.
+
+    APPEND-ONLY, and that is a deliberate narrowing of what was proposed. The
+    suggestion was to annotate each block IN PLACE with a `RECEIPT PRESENT` marker.
+    That means the daemon editing operator-facing content it wrote earlier, next to
+    checkboxes only the operator may touch — a small blast radius until the day the
+    edit lands wrong. Appending a clearly-marked block achieves the same thing for a
+    reader and cannot corrupt an existing one, and appending is already what this
+    daemon does here (`relay_tokens`, and C20's escalation).
+
+    It NEVER writes or alters a checkbox, and it never says the gate is closed — only
+    that a receipt exists and where. The operator decides what that means; stating
+    the evidence is transport, deciding is not.
+
+    Deduped on the exact gate SET, so a steady state appends once and a newly-spent
+    gate appends a fresh, corrected note rather than silently going unmentioned.
+    """
+    tq = bus_root / "tokens" / "token-queue.md"
+    try:
+        text = tq.read_text(encoding="utf-8")
+    except OSError:
+        return []
+
+    unchecked = re.findall(r"^- \[ \] \*\*([A-Za-z0-9._-]+)\*\*", text, re.M)
+    spent: list[tuple[str, str, str]] = []
+    for gate in dict.fromkeys(unchecked):
+        found = spent_receipt_for(gate)
+        if found is not None:
+            spent.append((gate, str(found[0].relative_to(REPO_ROOT)), found[1]))
+    if not spent:
+        return []
+
+    key = ",".join(sorted(g for g, _, _ in spent))
+    marker = f"{_SPENT_NOTE_MARKER} {hashlib.sha256(key.encode()).hexdigest()[:12]} -->"
+    if marker in text:
+        return []
+
+    lines = [f"\n{marker}\n",
+             "\n### ⚠ Daemon notice — these unchecked gates already have receipts\n\n",
+             "**Not a gate and not a checkbox.** The daemon never ticks or removes a block; this "
+             "is STATE, so that a reader of this file alone is not misled. Each gate below is "
+             "presented above as unchecked, and a ratified receipt for it exists on disk. Verify, "
+             "then tick or remove it yourself — that is the operator's call, not the daemon's and "
+             "not the coordinator's.\n\n"]
+    for gate, path, status in spent:
+        lines.append(f"- `{gate}` — receipt `{path}` reads `status: {status}`\n")
+    lines.append("\n")
+
+    try:
+        with tq.open("a", encoding="utf-8") as fh:
+            fh.writelines(lines)
+    except OSError as exc:  # noqa: BLE001 — a notice must never break the tick
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "spent-gate-notice-failed", "check": "token-gate-looks-spent",
+                 "detail": f"could not append the spent-gate notice to {tq}: {exc}"}]
+    return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+             "kind": "spent-gate-notice", "check": "token-gate-looks-spent",
+             "count": len(spent), "gates": sorted(g for g, _, _ in spent),
+             "detail": f"appended a notice naming {len(spent)} unchecked gate(s) that already "
+                       f"have ratified receipts, so token-queue.md is no longer misleading read "
+                       f"on its own"}]
+
+
 def relay_token_blocks(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     """C27 (2026-07-29): present operator gates at EVERY authority, not just `assign`.
 
@@ -1126,6 +1201,8 @@ def relay_token_blocks(bus_root: Path, config: dict, epoch: int) -> list[dict]:
                     f"operator flips a checkbox, and the block plus its unticked box is the only "
                     f"in-file record that this gate was PRESENTED — the receipt records the "
                     f"signing, not the asking."))
+
+    advisory += note_spent_gates_in_queue(bus_root, epoch)
 
     if blocks:
         tq = bus_root / "tokens" / "token-queue.md"

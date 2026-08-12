@@ -2262,7 +2262,23 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     (`risk_escalation`), `coordinator-agent` 19 (13 `task-assign` missing lane/lease/epoch). Routed
     with the approved mapping and the worked example, **not touched** — single-writer, and the
     liveness judgement is the owner's.
-  - [x] **The in-place RECEIPT PRESENT marker was NOT built, deliberately.** ✅ Accepted by the
+  - [x] **The RECEIPT PRESENT marker — BUILT 2026-08-12, and deliberately narrower than proposed.**
+    ✅ `mainD`. The C39 notice reached `coordinator-agent`'s inbox, which is right, but left the
+    operator-facing file misleading on its own terms: **six of seven unchecked gates in
+    `token-queue.md` carry `status: ratified` receipts** and nothing in the file said so. A reader
+    of that file alone sees six pending signature requests that are not pending.
+    **APPEND-ONLY, not in-place.** The proposal was to annotate each block where it sits; that means
+    the daemon editing operator-facing content it wrote earlier, immediately beside checkboxes only
+    the operator may touch — a small blast radius right up until the day an edit lands wrong.
+    Appending a clearly-marked block gives a reader the same thing and cannot corrupt an existing
+    one, and appending is already what this daemon does here (`relay_tokens`, C20's escalation).
+    It never writes or alters a checkbox, and it never says a gate is closed — only that a receipt
+    exists and where. **Stating the evidence is transport; deciding is not.**
+    Deduped on the gate SET rather than on "a notice exists", so a steady state appends once and a
+    later-signed gate gets a fresh corrected note instead of silently going unmentioned — quiet is
+    not the same as correct. Dry-run against a COPY of the live queue: names the 6, existing content
+    byte-identical, zero ticked boxes written. 4 tests.
+  - [x] **The earlier deferral was the right call at the time.** ✅ Accepted by the
     operator as a considered non-choice. It means the daemon editing an operator-facing file it has
     already written, which wants more care than a late-night text fix, and the six live instances
     are already surfaced by the C39 notice.
