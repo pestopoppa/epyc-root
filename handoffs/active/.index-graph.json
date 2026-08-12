@@ -3491,7 +3491,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T17:34:35Z",
+  "generated_at": "2026-08-12T18:00:28Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4159,12 +4159,12 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 71,
+      "closed": 72,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Supervise r14 to a terminal aggregate, then validate its complete receipt chain before comparison",
+      "next_action": "Supervise immutable-worktree r15 to a terminal aggregate, then validate its receipt chain before comparison",
       "open": 3,
       "state": "active",
       "track": "agentic rocm kernel authoring"
@@ -4198,13 +4198,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 235,
+      "closed": 237,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-12",
-      "next_action": "Publish and test the exact proposal-v4 regeneration command, then rebuild both IQK input trees before reboot",
-      "open": 23,
+      "next_action": "After reboot, run the matched IQK evidence campaigns, generate the real v2 pair, and materialize its archive",
+      "open": 22,
       "state": "active",
       "track": "autokernel research loop"
     },

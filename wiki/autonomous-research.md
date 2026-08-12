@@ -1128,3 +1128,32 @@ implementation gap.
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r14 live checkpoint and terminal receipt-chain gate
 - [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-14 and AK-WM repair disposition
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commit and artifact hashes, call counts, evaluator receipts, and non-authority boundary
+
+## Compiled Update — 2026-08-12: immutable source identity is part of the campaign
+
+**Confidence: verified from terminal receipts and the corrected campaign launch.** Repeated successful
+model calls and evaluator windows do not make a campaign rankable when the source identity changes
+underneath them. Seven-arm r14 proved the repaired call-scoped runtime over nine model calls and four
+correct evaluator windows, but its shared source worktree advanced from audited commit `152ed0d9` to
+`03f9ae69` during the actor cell. The outer guard refused the checkpoint, no actor cell receipt or
+aggregate was admitted, and the attempt is permanently invalid. Released claims, absent captured PIDs,
+and removed empty cgroups establish cleanup; they do not recover measurement authority.
+
+The operational rule is now explicit: a live agentic-kernel campaign needs a dedicated immutable source
+worktree, not merely an initial clean-tree check. R15 follows that rule on its own clean branch/worktree
+pinned at `03f9ae69`; the research implementation series is separately published on `main` at merge
+`4328c37c`. R15 remains live and its source root must not be edited, pruned, or compacted before its
+terminal receipt chain is validated.
+
+The matched-evidence producer now follows the same discipline. A deterministic non-executing generator
+derives the intervention and control trees from one authoritative manifest, proves `ggml_iqk` is their
+only changed factor, records every content hash, and refuses overwrite or drift. Its held-out input must
+come from a distinct clean hypothesis-bound completed journal. This closes the offline implementation
+gap without pretending fixtures are empirical evidence: the real pair and least-commitment evaluation
+still wait on the post-reboot completed campaigns.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r14 terminal refusal and immutable r15 receipt-chain gate
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-14/15 and completed deterministic pair-producer task
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact campaign, teardown, publication, and live-checkpoint hashes

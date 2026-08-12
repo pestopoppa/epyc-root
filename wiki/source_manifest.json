@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-12T17:34:50Z",
+  "last_compile": "2026-08-12T18:00:55Z",
   "mode": "full",
-  "scan_time": "2026-08-12T17:34:50Z",
+  "scan_time": "2026-08-12T18:00:55Z",
   "schema_version": 1,
-  "source_set_hash": "561816d99d3d6d4fb9e692fc24525c713faa68d34d34dd8378885a88b0572447",
+  "source_set_hash": "4cd3e22a52748d6b0238aab02a500f23c172306923e94862cba59efa2c866e17",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -23,10 +23,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "97ad9c4e08ad1ce04ae642eb8089863c3bec1286b490b6181e6255d455b9dcc8",
-      "modified": "2026-08-12T17:32:44Z",
+      "content_hash": "8dde14ab39c4fb3a6b45f340a7529159796b9f835f8a08955c4173dfd287e46d",
+      "modified": "2026-08-12T17:59:31Z",
       "path": "handoffs/active/CURRENT-CAMPAIGN.md",
-      "size": 17892,
+      "size": 18579,
       "title": "Current campaign state",
       "type": "handoff-active"
     },
@@ -55,10 +55,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4d102d1c810f41a590b5f92cf50da7d17b45862244d82c77e2ac05cad0c1a222",
-      "modified": "2026-08-12T17:32:44Z",
+      "content_hash": "beb8648cd53009401f8a0a126da81962bece9607b47e49671c0838d610b58b49",
+      "modified": "2026-08-12T17:56:55Z",
       "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
-      "size": 78085,
+      "size": 78863,
       "title": "Agentic ROCm Kernel Authoring \u2014 MI210 Verify+Profile Harness",
       "type": "handoff-active"
     },
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "da5d865e348f47ecea492686493332b8f50ab059539d51cf1685b205d0fd0af5",
-      "modified": "2026-08-12T17:33:28Z",
+      "content_hash": "1c389efb04db98f962b026f0606050ecb4f34ec7af02352264bbe75534bffc6e",
+      "modified": "2026-08-12T17:59:18Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 370201,
+      "size": 371432,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -1343,10 +1343,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ccde3866610e5bc8ca875ac14849992db1e9ee427f83389d3f0bc947f72b5ea8",
-      "modified": "2026-08-12T17:32:44Z",
+      "content_hash": "06548f4187099736704eb82baa939d373dce6b57e9e13f0969303a185d081007",
+      "modified": "2026-08-12T17:56:55Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 60022,
+      "size": 60018,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -6015,10 +6015,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "71c7281e332df7455cb6a00170b2fd059bb0cce212391cc39edec79d2d7a8e28",
-      "modified": "2026-08-12T17:34:16Z",
+      "content_hash": "1ac82a0d974f64351638d2cf3eb782ca57db40955fe032b6b3adb572142b6ed9",
+      "modified": "2026-08-12T18:00:00Z",
       "path": "progress/2026-08/2026-08-12.md",
-      "size": 379806,
+      "size": 384471,
       "title": "2026-08-12",
       "type": "progress"
     },

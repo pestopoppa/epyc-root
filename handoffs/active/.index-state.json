@@ -4,7 +4,7 @@
       "blocked": 12,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 357
+      "open": 356
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -85,14 +85,14 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 71,
+      "closed": 72,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 74
+      "total": 75
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 1,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 235,
+      "closed": 237,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 23,
+      "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 258
+      "total": 259
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
@@ -2394,7 +2394,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Supervise r14 to a terminal aggregate, then validate its complete receipt chain before comparison",
+      "next_action": "Supervise immutable-worktree r15 to a terminal aggregate, then validate its receipt chain before comparison",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {
@@ -2425,7 +2425,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "Publish and test the exact proposal-v4 regeneration command, then rebuild both IQK input trees before reboot",
+      "next_action": "After reboot, run the matched IQK evidence campaigns, generate the real v2 pair, and materialize its archive",
       "track": "autokernel research loop"
     },
     "INF-07": {

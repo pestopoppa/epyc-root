@@ -226,7 +226,7 @@ deliberately — decide them, do not just implement them.
 - [ ] **SC36 — Wire AutoKernel actor-critic intermediate evaluation feedback prospectively.** R12's
       parent broker emitted hash-bound compile, 4/4 correctness, timing, speedup, evaluator, source,
       measurement-window, and released-claim evidence for each candidate, but the feedback receipts carry
-      no producer-authored `belief_measurements`. Before an r14 successor attempt, write bounded rows
+      no producer-authored `belief_measurements`. Before any successor to r15, write bounded rows
       with exact proposal/candidate/source/evaluator/claim/window identities and add a strict reader that
       preserves `controller_feedback_only`, no-ranking, no-bank, no-champion, and no-promotion authority.
       R12 remains immutable pre-hook evidence and must emit zero rows.

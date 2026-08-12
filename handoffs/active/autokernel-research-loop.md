@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** V9 CONTROLS 5/5 PASS / AK-WM PRE-REBOOT REPAIR REQUIRED / MATCHED ARCHIVE NEXT — updated 2026-08-12
+**Status:** V9 CONTROLS 5/5 PASS / AK-WM IMPLEMENTATION REPAIR COMPLETE / POST-REBOOT REAL ARCHIVE NEXT — updated 2026-08-12
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -337,14 +337,21 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   attempt; the repair must be pinned and proven by a fresh campaign.
 - [x] **AK-AUD-14 — Prove the call-scoped model runtime across repeated live calls without declaring
   the panel terminal.** ✅ 2026-08-12 — research `446a1c31` makes model runtime state call-scoped and
-  `152ed0d9` pins it into the seven-arm configuration. R14 audited ready at 7/7 on observed clean source
-  `152ed0d9`. At the checkpoint, seven model receipts had returned zero without timeout: five Claude
-  calls each recorded `ambient_host_temp_inherited=false`, a unique call-relative temp directory, and
-  verified-empty/removed cgroup teardown; two Codex actor calls also returned zero. Three chained
-  parent-owned evaluator windows were complete, compilation/correctness 4/4, at diagnostic ratios
-  `1.0059882860636864×`, `0.9942113624251266×`, and `1.0053314038021701×`. This is repeated live
-  compatibility evidence only. R14 was still in progress at this snapshot and has no terminal aggregate,
-  panel ranking, bank, champion, promotion, or release authority.
+  `152ed0d9` pins it into the seven-arm configuration. R14 ultimately returned nine model calls and four
+  compilation/correctness-4/4 evaluator windows, proving repeated runtime compatibility, but the outer
+  guard then refused the cell with `task or controller source identity changed during checkpoint
+  execution`: its audited source was `152ed0d9` and the shared source worktree advanced to `03f9ae69`
+  mid-run. No actor cell receipt or aggregate was admitted. All eight claims were released, all 14
+  captured PIDs are absent, and all 12 recorded cgroups are verified empty and removed. R14 is therefore
+  immutable, invalid, and non-rankable; its intermediate ratios carry no panel, bank, champion,
+  promotion, or release authority.
+- [x] **AK-AUD-15 — Close the pre-reboot evidence-product implementation audit and relaunch from an
+  immutable source root.** ✅ 2026-08-12 — research `03f9ae69` adds the clean completed-journal held-out
+  projector and a deterministic, non-executing IQK pair generator; the broad suite passed **5,678 tests
+  with one expected failure**. That 18-commit AutoKernel series is published on research `main` at merge
+  `4328c37c940d125d7b11b4264b65f415c300eda0`. Seven-arm r15 runs from a dedicated clean worktree/branch
+  pinned at `03f9ae69`; its 7/7 audit, baseline, and first successful real Claude planner call were present
+  at this checkpoint. The live worktree and campaign must remain untouched until terminal validation.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
@@ -2904,9 +2911,14 @@ evaluator or its own scope, and T1 may legally guide search.
     `fixture_or_unlabelled`, and emits `real` only after the archive and projector provenance validate.
     Reports now carry matched-validation, pair noise floors, and an explicit underpowered state. The
     full AutoKernel suite after this repair chain passed **5,671 tests with one expected failure**.
-  - [ ] **Publish one exact proposal-v4 regeneration command.** Add and test the repository-relative,
-    copy-pasteable command that rebuilds both IQK proposal/capture/source/hypothesis input trees from
-    authoritative committed inputs byte-for-byte; document expected output hashes and refuse drift.
+  - [x] **Publish one exact proposal-v4 regeneration command.** ✅ 2026-08-12 — research `03f9ae69`
+    adds `prepare_iqk_matched_pair.py`, a repository-relative deterministic producer that accepts one
+    authoritative manifest and atomically writes the intervention/control proposal-v4, capture,
+    diagnostic-source, held-out-outcome, and physical-envelope trees. It derives one shared frame,
+    proves `ggml_iqk` is the sole changed factor, records every input/output hash, refuses overwrite and
+    drift, rolls back the pair on failure, and rebuilds byte-identically in tests. Its held-out projector
+    accepts only a distinct clean hypothesis-bound completed journal. Real pair materialization remains
+    in parent AK-WM-2a and correctly waits for post-reboot completed journals; fixtures cannot substitute.
 - [ ] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol,
   matched-intervention validation, per-regime/surface results, noise floor, robust sign error, and
   recoding stability. Until real evidence shows invariant independent signal, do not add weakness,
