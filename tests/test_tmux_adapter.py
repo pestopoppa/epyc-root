@@ -267,7 +267,12 @@ def test_text_absent_before_enter_refuses_without_sending_enter(
     _Args.message = "still-pending"
     calls = _stub_nudge(adapter, monkeypatch, ["q to quit   enter to edit message"], tmp_path)
     assert adapter.cmd_nudge(_Args()) == adapter.EX_MISCONFIG
+    # H-2 (2026-08-12): the rollback presses the C55 wake character first — a bare
+    # `C-u` is a MEASURED no-op on a Claude composer, so without it the rollback
+    # stranded the payload and re-armed the F-34 refusal loop. Pinned as an ORDERED
+    # pair: the wake char must PRECEDE the key, not merely appear somewhere.
     assert calls == [("send-keys", "-l", "-t", "throwaway:shell", "--", _Args.message),
+                     ("send-keys", "-t", "throwaway:shell", " "),
                      ("send-keys", "-t", "throwaway:shell", "C-u")]
     err = capsys.readouterr().err
     assert "did not land in the composer" in err
@@ -288,7 +293,12 @@ def test_paste_blob_before_enter_refuses_with_its_own_diagnostic(
     _Args.message = "still-pending"
     calls = _stub_nudge(adapter, monkeypatch, ["› [Pasted Content 1024 chars]"], tmp_path)
     assert adapter.cmd_nudge(_Args()) == adapter.EX_MISCONFIG
+    # H-2 (2026-08-12): the rollback presses the C55 wake character first — a bare
+    # `C-u` is a MEASURED no-op on a Claude composer, so without it the rollback
+    # stranded the payload and re-armed the F-34 refusal loop. Pinned as an ORDERED
+    # pair: the wake char must PRECEDE the key, not merely appear somewhere.
     assert calls == [("send-keys", "-l", "-t", "throwaway:shell", "--", _Args.message),
+                     ("send-keys", "-t", "throwaway:shell", " "),
                      ("send-keys", "-t", "throwaway:shell", "C-u")]
     assert "paste blob" in capsys.readouterr().err
     # C51: a failed delivery is now ROLLED BACK (Ctrl-U, never Ctrl-C) and RECORDED.
@@ -310,6 +320,7 @@ def test_swallowed_enter_reports_unsubmitted_and_fails_closed(
     assert calls == [
         ("send-keys", "-l", "-t", "throwaway:shell", "--", _Args.message),
         ("send-keys", "-t", "throwaway:shell", "Enter"),
+        ("send-keys", "-t", "throwaway:shell", " "),        # H-2 wake char (C55)
         ("send-keys", "-t", "throwaway:shell", "C-u"),      # C51 rollback, never C-c
     ]
     assert "text present but unsubmitted" in capsys.readouterr().err
@@ -1330,7 +1341,8 @@ def _c35_probe(tag: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *,
                display_rc: int = 0, hb_override_quiet_s: float = 120.0,
                hb_age_s: float = 0.0, exact_activity: float | None = None,
                pane_busy: tuple = (None, "marker unreadable — isolating the quiescence "
-                                         "arithmetic these cases are about")) -> dict:
+                                         "arithmetic these cases are about"),
+               pane_busy_fn=None, quiet_s: float = 20.0) -> dict:
     """Probe one synthetic pane whose quiet time and heartbeat are both dialled in.
 
     `quiet_for` is expressed in SECONDS AGO and converted to the epoch stamp tmux
@@ -1379,8 +1391,11 @@ def _c35_probe(tag: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *,
     # one branch in which the C35 threshold is still the deciding signal, and therefore
     # the only place its arithmetic can be measured without measuring C52 instead.
     # Cases that want the marker to speak pass their own `pane_busy`.
-    return adapter.probe(_C35_CONFIG, "main-a", 20.0, 900.0, hb_override_quiet_s,
-                         pane_busy_fn=lambda _t: pane_busy)
+    # H-3: the corroboration sampler polls between reads. Zeroed here so the
+    # persistence LOGIC is what these cases measure, not `time.sleep`.
+    monkeypatch.setattr(adapter, "_QUIET_CORROBORATION_POLL_S", 0.0)
+    return adapter.probe(_C35_CONFIG, "main-a", quiet_s, 900.0, hb_override_quiet_s,
+                         pane_busy_fn=pane_busy_fn or (lambda _t: pane_busy))
 
 
 def _working_blocked(p: dict) -> bool:
@@ -2227,3 +2242,122 @@ def test_h2_both_key_paths_go_through_one_helper() -> None:
         assert not raw, (f"{name} still calls _tmux send-keys directly at lines "
                          f"{[c.lineno for c in raw]} — route it through "
                          f"_press_key_with_wake or the wake character will be lost again")
+
+
+# ---------------------------------------------------------------------------
+# H-3, 2026-08-12. THE QUIET-CHECK WAS UNREACHABLE-PASS FOR A MAIN THAT FANS OUT.
+#
+# `window_activity` moves on ANY pane output. A main running fanned-out subagents
+# renders a live elapsed-time row per subagent that ticks EVERY SECOND whether or
+# not the main's own thread is doing anything — observed on the live session
+# 2026-08-12 on panes sitting at empty composers. So `quiet_for` never rises and
+# no `--quiet-s` a caller would accept ever lets a nudge through: the guard could
+# not be SATISFIED, not merely rarely satisfied.
+#
+# The repair is not a looser threshold — `--quiet-s` is untouched and still
+# decides alone. It is a DIFFERENT signal: the TUI's own state line, read through
+# `pane_busy_marker`, positively saying whether it is mid-turn. Required to
+# PERSIST across 3 consecutive reads, because one capture can land on a half-drawn
+# frame — the same reason `_await_composer_consumed` requires stable samples.
+def _quiet_blocked(p: dict) -> bool:
+    return any("produced output" in b for b in p["blockers"])
+
+
+def test_h3_a_redrawing_but_idle_pane_no_longer_blocks_on_the_quiet_check(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """THE CASE THE FLEET WAS STUCK IN. Output 1s ago (subagent rows ticking), and
+    the TUI's own state line says it is not generating."""
+    p = _c35_probe("h3_idle", monkeypatch, tmp_path, state="idle", quiet_for=1.0,
+                   pane_busy=(False, "pane shows no generation or compaction marker"))
+    assert not _quiet_blocked(p), p["blockers"]
+    assert p["quiet_corroborated_idle"] is True
+    assert "3 consecutive reads" in p["quiet_corroboration_reason"]
+
+
+def test_h3_a_busy_pane_still_blocks(monkeypatch: pytest.MonkeyPatch,
+                                     tmp_path: Path) -> None:
+    """Typing into a live generation corrupts it. A pane rendering `esc to
+    interrupt` refuses exactly as before — the corroboration can only ever
+    DOWNGRADE a blocker on a positively NOT-busy pane."""
+    p = _c35_probe("h3_busy", monkeypatch, tmp_path, state="idle", quiet_for=1.0,
+                   pane_busy=(True, "pane shows 'esc to interrupt'"))
+    assert _quiet_blocked(p), p["blockers"]
+    assert p["quiet_corroborated_idle"] is False
+
+
+def test_h3_an_unreadable_pane_still_blocks(monkeypatch: pytest.MonkeyPatch,
+                                            tmp_path: Path) -> None:
+    """FAIL CLOSED. `None` is not `False`. This module's defect history is five
+    fail-opens; an unreadable marker may not become permission."""
+    p = _c35_probe("h3_unreadable", monkeypatch, tmp_path, state="idle", quiet_for=1.0,
+                   pane_busy=(None, "capture-pane failed"))
+    assert _quiet_blocked(p), p["blockers"]
+    assert p["quiet_corroborated_idle"] is False
+
+
+def test_h3_a_flapping_reading_is_not_a_reading(monkeypatch: pytest.MonkeyPatch,
+                                                tmp_path: Path) -> None:
+    """PERSISTENCE, not one sample. A pane that reads not-busy, then busy, has not
+    given a stable reading and the blocker stays — otherwise the corroboration is
+    just the half-drawn-frame hazard wearing a new name."""
+    readings = iter([(False, "no marker"), (True, "esc to interrupt"),
+                     (False, "no marker"), (False, "no marker")])
+    p = _c35_probe("h3_flap", monkeypatch, tmp_path, state="idle", quiet_for=1.0,
+                   pane_busy_fn=lambda _t: next(readings))
+    assert _quiet_blocked(p), p["blockers"]
+    assert p["quiet_corroborated_idle"] is False
+    assert "flipped" in p["quiet_corroboration_reason"]
+
+
+def test_h3_an_unreadable_later_sample_collapses_the_corroboration(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """A first read that says idle and a second the pane could not answer is NOT
+    three agreeing reads. `None` on any sample collapses the whole thing."""
+    readings = iter([(False, "no marker"), (None, "capture-pane failed"),
+                     (False, "no marker")])
+    p = _c35_probe("h3_partial", monkeypatch, tmp_path, state="idle", quiet_for=1.0,
+                   pane_busy_fn=lambda _t: next(readings))
+    assert _quiet_blocked(p), p["blockers"]
+    assert "unreadable on sample" in p["quiet_corroboration_reason"]
+
+
+def test_h3_the_quiet_threshold_itself_is_untouched(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """ANTI-VACUITY. If this were a loosened threshold, a QUIET pane would report
+    the corroboration too. It must not be evaluated at all when the quiet-check
+    passes on its own — the change adds a second signal to ONE branch."""
+    p = _c35_probe("h3_quiet", monkeypatch, tmp_path, state="idle", quiet_for=300.0,
+                   pane_busy=(False, "no marker"))
+    assert not _quiet_blocked(p), p["blockers"]
+    assert p["quiet_corroborated_idle"] is False
+    assert p["quiet_corroboration_reason"].startswith("not evaluated")
+
+
+def test_h3_exactly_three_agreeing_reads_are_required(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The sample count is the constant, and it is really consulted: two agreeing
+    reads plus a disagreeing third must NOT corroborate."""
+    adapter = _load("h3_samples")
+    monkeypatch.setattr(adapter, "_QUIET_CORROBORATION_POLL_S", 0.0)
+    readings = iter([(False, "no marker"), (False, "no marker"), (True, "esc to interrupt")])
+    stable, why = adapter.pane_busy_stable("s:w", pane_busy_fn=lambda _t: next(readings))
+    assert stable is None and "flipped" in why, why
+    assert adapter._QUIET_CORROBORATION_SAMPLES == 3
+
+
+def test_h3_a_donated_first_reading_saves_a_capture(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """`probe` has already read the marker once; the sampler must reuse it rather
+    than pay for a fourth capture on every blocked nudge."""
+    adapter = _load("h3_donate")
+    monkeypatch.setattr(adapter, "_QUIET_CORROBORATION_POLL_S", 0.0)
+    calls = []
+
+    def fn(t):
+        calls.append(t)
+        return False, "no marker"
+
+    stable, _ = adapter.pane_busy_stable("s:w", pane_busy_fn=fn, first_reading=False,
+                                         first_reason="donated")
+    assert stable is False
+    assert len(calls) == 2, f"expected 2 further captures after the donated one, got {calls}"

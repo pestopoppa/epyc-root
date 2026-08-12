@@ -132,11 +132,24 @@ def test_stale_working_claim_with_a_dead_task_pid_is_contradicted_and_delivers(t
 
 def test_the_deadlock_band_is_between_the_quiet_check_and_the_c35_threshold(tmp_path):
     """The habitat, pinned so the next reader does not have to re-derive it. Below 20s
-    the quiet-check refuses (correctly — the pane may be mid-generation). At or above
-    120s C35 already overrode. In between, pre-C52, a settled main was nudgeable by
-    every guard except the one it could not clear."""
-    m, low = _probe("band_low", tmp_path, quiet_for=5.0)
+    the quiet-check refuses UNLESS H-3 corroborates (see below). At or above 120s C35
+    already overrode. In between, pre-C52, a settled main was nudgeable by every guard
+    except the one it could not clear.
+
+    H-3 (2026-08-12) NARROWED THE LOWER EDGE. `window_activity` moves on cosmetic
+    redraw, so a main with fanned-out subagents sits below 20s forever and the
+    quiet-check was UNREACHABLE-PASS for it. The blocker is now downgraded when the
+    TUI's own state line reads NOT-busy across 3 consecutive samples. The lower edge
+    still refuses whenever that reading is unavailable, which is what this pins."""
+    m, low = _probe("band_low", tmp_path, quiet_for=5.0,
+                    pane_busy=(None, "capture-pane failed — nothing can corroborate"))
     assert any("likely mid-generation" in b for b in low["blockers"])
+    # H-3's own edge, asserted here so the two are never separated: same 5s window,
+    # but a readable and stable NOT-busy marker downgrades the blocker.
+    m, low_corroborated = _probe("band_low_corr", tmp_path, quiet_for=5.0,
+                                 pane_busy=(False, "no generation marker"))
+    assert not any("likely mid-generation" in b for b in low_corroborated["blockers"])
+    assert low_corroborated["quiet_corroborated_idle"] is True
     m, high = _probe("band_high", tmp_path, quiet_for=300.0, task_id="deep-queue")
     assert high["working_claim"] == "contradicted"      # C35 alone already handled this
     # And the band is where C52 does its work: no pid to check, but the pane says
@@ -212,14 +225,29 @@ def test_a_pid_less_main_settled_at_its_prompt_is_contradicted_by_the_pane(tmp_p
     assert p["nudge_ok"] is True, p["blockers"]
 
 
-def test_the_pane_contradiction_never_lowers_the_quiet_check_bar(tmp_path):
-    """It REUSES `--quiet-s`, it does not undercut it. A window that produced output
-    5s ago cannot reach the branch at all — and would be refused by the quiet-check
-    anyway, which is asserted here so a future edit cannot quietly separate them."""
-    m, p = _probe("panebar", tmp_path, task_id="deep-queue", quiet_for=5.0)
+def test_the_quiet_check_bar_moves_only_on_a_stable_pane_reading(tmp_path):
+    """SUPERSEDES `test_the_pane_contradiction_never_lowers_the_quiet_check_bar`
+    (C52, 2026-08-12) — renamed rather than deleted so the reversal is visible.
+
+    C52 asserted that the pane marker may never lower the quiet-check bar. H-3
+    reversed that DELIBERATELY, on measurement: `window_activity` moves on cosmetic
+    subagent redraw, so for a main that fans out the quiet-check could not be
+    satisfied at all, at any threshold. What replaced the invariant is not "the bar
+    is lower" but "a signal that cannot answer the question may be overruled by one
+    that can, if that one PERSISTS" — so the thing to pin now is the persistence
+    requirement, and that an unreadable or flapping pane still refuses."""
+    m, p = _probe("panebar", tmp_path, task_id="deep-queue", quiet_for=5.0,
+                  pane_busy=(None, "capture-pane failed"))
     assert p["working_claim"] == "undetermined"
     assert any("likely mid-generation" in b for b in p["blockers"])
     assert p["nudge_ok"] is False
+    # And a pane that is positively BUSY refuses on both counts, unchanged: typing
+    # into a live generation corrupts it, and no corroboration path may reach it.
+    m, busy = _probe("panebar_busy", tmp_path, task_id="deep-queue", quiet_for=5.0,
+                     pane_busy=(True, "pane shows 'esc to interrupt'"))
+    assert any("likely mid-generation" in b for b in busy["blockers"])
+    assert busy["quiet_corroborated_idle"] is False
+    assert busy["nudge_ok"] is False
 
 
 def test_an_unreadable_marker_cannot_produce_the_pane_contradiction(tmp_path):
@@ -258,10 +286,16 @@ def test_an_idle_heartbeat_is_unaffected_and_the_claim_is_not_evaluated(tmp_path
     assert p["nudge_ok"] is True
 
 
-def test_the_20s_quiet_check_still_refuses_a_mid_generation_pane(tmp_path):
-    """NOT WEAKENED. Even with the working claim contradicted, a window that produced
-    output 1s ago is refused by the quiet-check on an ATTACHED session."""
-    m, p = _probe("quietcheck", tmp_path, quiet_for=1.0, attached="1")
+def test_the_20s_quiet_check_still_refuses_a_pane_that_may_be_generating(tmp_path):
+    """NOT WEAKENED — narrowed, and only where a BETTER signal exists. A window that
+    produced output 1s ago is still refused whenever the TUI's own state line cannot
+    say it is idle: unreadable (here) or positively busy (above). H-3 downgrades the
+    blocker ONLY on a not-busy reading that held across 3 consecutive samples, which
+    is the case a redrawing-but-settled main is in and a generating one never is."""
+    m, p = _probe("quietcheck", tmp_path, quiet_for=1.0, attached="1",
+                  pane_busy=(None, "capture-pane failed"))
+    # `contradicted` via the heartbeat's own dead task pid — the working blocker is
+    # gone and the QUIET-CHECK is the one still refusing, which is the point.
     assert p["working_claim"] == "contradicted"
     assert any("likely mid-generation" in b for b in p["blockers"]), p["blockers"]
     assert p["nudge_ok"] is False

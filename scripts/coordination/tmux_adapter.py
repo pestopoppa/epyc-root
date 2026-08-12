@@ -935,6 +935,39 @@ def roster_entry(config: dict, agent: str) -> dict | None:
     return None
 
 
+# B4, 2026-08-12 (worktree adoption, phase 3). `spawn --command` defaulted to the
+# literal `cd /workspace && claude`, so every main it started landed in the ONE
+# shared clone — the five lane worktrees existed and had zero occupants, and the
+# concurrent-wrap-up interference they exist to prevent kept happening.
+#
+# The spawn cwd is now ROSTER-DRIVEN, not hardcoded: a roster row may carry a
+# `worktree:` key (policy-as-data, per the fabric contract — this file gains no
+# table of agent names). Rows without one keep /workspace, which is correct for
+# `coordinator-agent` (it reads across everyone and owns no lane) and `inference`
+# (its lane is 302 commits behind; moving it is its own reconciliation task).
+#
+# FAIL CLOSED on a declared-but-missing worktree. If a roster row names a lane,
+# spawning into the shared clone instead is silent re-introduction of the exact
+# defect; `setup_main_worktrees.sh <agent>` is one idempotent command away.
+SPAWN_FALLBACK_CWD = "/workspace"
+
+
+def resolve_spawn_cwd(config: dict, agent: str) -> tuple[str | None, str]:
+    """(directory to spawn in, reason). None => refuse, never silently fall back."""
+    entry = roster_entry(config, agent) or {}
+    declared = entry.get("worktree")
+    if declared in (None, "", False):
+        return SPAWN_FALLBACK_CWD, (f"{agent!r} declares no worktree — spawning in the shared "
+                                    f"clone {SPAWN_FALLBACK_CWD}")
+    declared = str(declared)
+    if not os.path.isdir(declared):
+        return None, (f"{agent!r} declares worktree {declared!r} in config.yaml but that "
+                      f"directory does not exist. Refusing to spawn it into the shared clone "
+                      f"instead — that is the collision this key exists to prevent. Create it: "
+                      f"scripts/coordination/setup_main_worktrees.sh {agent}")
+    return declared, f"{agent!r} lane worktree {declared}"
+
+
 def resolve_target(config: dict, agent: str) -> tuple[str | None, str]:
     """(tmux target, reason). None target => refuse, never guess."""
     entry = roster_entry(config, agent)
@@ -1591,6 +1624,60 @@ def pane_busy_marker(target: str) -> tuple[bool | None, str]:
     return False, f"pane {target} shows no generation or compaction marker"
 
 
+# H-3: how many CONSECUTIVE agreeing reads of `pane_busy_marker` count as a
+# reading rather than a frame. Three, matching `_VERIFY_STABLE_SAMPLES` — the
+# same hazard (a capture landing on a half-drawn repaint) answered the same way.
+# The poll gap is deliberately short: this runs inside a `probe` a caller is
+# waiting on, and the marker is a rendered row, not a slow measurement.
+_QUIET_CORROBORATION_SAMPLES = 3
+_QUIET_CORROBORATION_POLL_S = 0.4
+
+
+def pane_busy_stable(target: str | None, samples: int | None = None,
+                     poll_s: float | None = None,
+                     pane_busy_fn=None, first_reading: bool | None = None,
+                     first_reason: str = "") -> tuple[bool | None, str]:
+    """The pane-busy reading ONLY if it PERSISTED. (True|False|None, why).
+
+    ``None`` means "no stable reading" and is NOT "not busy": one disagreeing or
+    unreadable sample collapses the whole thing. That direction is deliberate —
+    every caller uses a stable ``False`` to overrule another guard, so an
+    ambiguous pane must leave that guard standing.
+
+    ``first_reading``/``first_reason`` let a caller donate a read it already
+    made, so hoisting the read out of this function costs no extra capture.
+
+    ``samples``/``poll_s`` resolve from the module globals at CALL time rather
+    than binding them as default arguments, so a test (or an operator override)
+    that rebinds the constant actually changes the behaviour instead of setting
+    a value nothing reads.
+    """
+    samples = _QUIET_CORROBORATION_SAMPLES if samples is None else samples
+    poll_s = _QUIET_CORROBORATION_POLL_S if poll_s is None else poll_s
+    if not target:
+        return None, "no target to sample"
+    fn = pane_busy_fn or pane_busy_marker
+    want, reasons = first_reading, []
+    taken = 0
+    if first_reading is not None:
+        taken, reasons = 1, [first_reason or "donated first reading"]
+    while taken < max(1, samples):
+        if taken:
+            time.sleep(max(0.0, poll_s))
+        reading, reason = fn(target)
+        taken += 1
+        if reading is None:
+            return None, f"pane unreadable on sample {taken}/{samples}: {reason}"
+        if want is None:
+            want = reading
+        elif reading != want:
+            return None, (f"pane-busy reading flipped on sample {taken}/{samples} "
+                          f"({want} -> {reading}: {reason}) — not a stable reading")
+        reasons.append(reason)
+    return want, (f"{'busy' if want else 'NOT busy'} on {taken} consecutive reads "
+                  f"({reasons[-1]})")
+
+
 def corroborate_working_claim(*, runtime_state: str | None, runtime_reason: str,
                               pane_busy: bool | None, pane_reason: str,
                               task_pid: int | None, task_pid_alive: bool | None,
@@ -1823,7 +1910,22 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
     # as a follow-up on the C35 row. Note the C35 override does NOT depend on this
     # skip: it reads quiet_for directly, which is computed regardless of attachment,
     # and a live test pins that in a DETACHED throwaway session.
+    #
+    # C52: the independent evidence a `working` self-report is checked against. Read
+    # unconditionally (not only when the heartbeat says working) so `probe` reports the
+    # same picture whatever the claim is — a reader comparing a refusal against a
+    # delivery must see the same fields in both.
+    #
+    # H-3, 2026-08-12: this read USED TO SIT BELOW the quiet-check. It is hoisted
+    # because the quiet-check now consults it — see the corroboration block there.
+    # Nothing about the reading changed, only when it happens.
+    pane_busy, pane_busy_reason = (None, "no target to read")
+    if target:
+        pane_busy, pane_busy_reason = (pane_busy_fn or pane_busy_marker)(target)
+
     quiet_check = "n/a"
+    quiet_corroboration = "not evaluated (quiet-check did not block)"
+    quiet_corroborated_idle = False
     if not target:
         pass
     elif attached is False:
@@ -1837,9 +1939,58 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
     elif quiet_for is None:
         blockers.append("could not read window_activity — fail closed")
     elif quiet_for < quiet_s:
+        # ---- H-3: THE QUIET-CHECK COULD NOT BE SATISFIED BY A MAIN THAT FANS OUT ----
+        #
+        # `window_activity` moves on ANY pane output, cosmetic or not. A main running
+        # fanned-out subagents renders a live elapsed-time row per subagent
+        # ("◈ general-purpose … 16m 23s") that ticks every second whether or not the
+        # main's own thread is doing anything — observed on the live session
+        # 2026-08-12 on panes sitting at EMPTY composers. For such a main `quiet_for`
+        # never rises, so this branch is UNREACHABLE-PASS: no amount of waiting, and
+        # no `--quiet-s` a caller would accept, ever lets a nudge through. The daemon
+        # had already written the same conclusion at `_PANE_BUSY_MARKER`: the
+        # quiet-check "is defeated by cosmetic TUI redraw ... so it cannot answer
+        # 'is it working'". The adapter was still deciding on it alone.
+        #
+        # THIS IS NOT A LOOSENED THRESHOLD. `--quiet-s` is untouched and still
+        # decides on its own; what changes is that a signal which CANNOT ANSWER the
+        # question may be overruled by one that can. `pane_busy_marker` reads Claude
+        # Code's / Codex's own state line (`esc to interrupt`, `compacting`) — the
+        # TUI positively saying whether it is mid-turn. A cosmetic repaint does not
+        # produce that marker; a real generation does. Same move as C52 one guard
+        # over: replace an inference-from-absence with a positive reading.
+        #
+        # PERSISTENCE, because a single capture can land on a half-drawn frame in
+        # which the marker row is momentarily blank — the identical hazard
+        # `_await_composer_consumed` requires `stable_samples` for. `not busy` must
+        # hold across `_QUIET_CORROBORATION_SAMPLES` consecutive reads; ONE
+        # disagreeing or unreadable read collapses the whole corroboration and the
+        # blocker stays. Fail closed on every input, as everywhere else in this
+        # module: `pane_busy is not False` (unreadable, or True) keeps the blocker
+        # without sampling at all, so the extra captures are paid for only in the
+        # case that can change the outcome.
+        #
+        # THE CHEAPER ROUTE STILL EXISTS AND IS STILL PREFERRED. `doorbell` skips
+        # this check by design (C45) and since b6ea8679 verifies its own ring
+        # against the buffer, so payload-on-bus + ring already reaches a main whose
+        # subagents are redrawing. This block is for the case where the payload IS
+        # the nudge.
         quiet_check = f"blocked: output {quiet_for:.0f}s ago"
-        blockers.append(f"window produced output {quiet_for:.0f}s ago (< {quiet_s:.0f}s) — "
-                        f"likely mid-generation")
+        if pane_busy is False:
+            stable, quiet_corroboration = pane_busy_stable(
+                target, pane_busy_fn=pane_busy_fn, first_reading=pane_busy,
+                first_reason=pane_busy_reason)
+        else:
+            stable, quiet_corroboration = None, (
+                f"not corroborated: {pane_busy_reason} — only a positively NOT-busy "
+                f"pane may overrule the quiet-check")
+        if stable is False:
+            quiet_corroborated_idle = True
+            quiet_check = (f"blocked-then-corroborated-idle: output {quiet_for:.0f}s ago, "
+                           f"but {quiet_corroboration}")
+        else:
+            blockers.append(f"window produced output {quiet_for:.0f}s ago (< {quiet_s:.0f}s) — "
+                            f"likely mid-generation; {quiet_corroboration}")
     else:
         quiet_check = f"passed: quiet for {quiet_for:.0f}s"
     # C35: the quiescence override, evaluated ONLY against the `working` blocker.
@@ -1861,14 +2012,9 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
     hb_stale_override_applied = False
     hb_stale_override_reason = "not evaluated (heartbeat not stale)"
     hb_override_reason: str | None = None
-    # C52: the independent evidence a `working` self-report is checked against. Read
-    # unconditionally (not only when the heartbeat says working) so `probe` reports the
-    # same picture whatever the claim is — a reader comparing a refusal against a
-    # delivery must see the same fields in both.
+    # `pane_busy` / `pane_busy_reason` are read ABOVE the quiet-check (H-3 hoisted
+    # them; the C52 rationale for reading them unconditionally lives there).
     working_claim = "n/a"
-    pane_busy, pane_busy_reason = (None, "no target to read")
-    if target:
-        pane_busy, pane_busy_reason = (pane_busy_fn or pane_busy_marker)(target)
     task_pid, pid_reason = heartbeat_task_pid(hb)
     task_pid_alive = None if task_pid is None else pid_alive(task_pid)
 
@@ -1958,6 +2104,13 @@ def probe(config: dict, agent: str, quiet_s: float, hb_max_age: float,
             "live_mains_reason": live_reason, "spawns_today_history_only": spawns_today,
             "pane_dead": dead, "window_quiet_for_s": quiet_for,
             "session_attached": attached, "quiet_check": quiet_check,
+            # H-3: reported ALWAYS, fired or not — same rule as C35's and C52's. A
+            # reader must be able to tell "the window was noisy and the TUI's own
+            # state line said idle across 3 reads, so the quiet blocker was
+            # downgraded" from "the window was noisy and nothing corroborated".
+            "quiet_corroborated_idle": quiet_corroborated_idle,
+            "quiet_corroboration_reason": quiet_corroboration,
+            "quiet_corroboration_samples": _QUIET_CORROBORATION_SAMPLES,
             "heartbeat_state": (hb or {}).get("state"), "heartbeat_age_s": hb_age,
             # C35: the override is reported even when it did NOT fire, so `probe`
             # explains a `working` heartbeat that was believed as well as one that
@@ -2018,6 +2171,12 @@ def cmd_probe(args: argparse.Namespace) -> int:
     print(f"window quiet     {q:.0f}s" if q is not None else "window quiet     (unreadable)")
     age = p["heartbeat_age_s"]
     print(f"quiet-check      {p['quiet_check']}")
+    # H-3: the corroboration line is printed whenever it was evaluated at all, so a
+    # downgraded quiet blocker is never invisible — the reason it was downgraded is
+    # the thing a reviewer needs, and it is a DIFFERENT signal, not a looser one.
+    if not str(p.get("quiet_corroboration_reason", "")).startswith("not evaluated"):
+        print(f"  corroboration  {p['quiet_corroboration_reason']}"
+              f"  [{_QUIET_CORROBORATION_SAMPLES} samples]")
     # C36: printed BEFORE the heartbeat, because when it has an answer it is the one
     # that decided and the heartbeat below is corroboration. `UNAVAILABLE` is printed
     # too — a reader must be able to see that this main is NOT covered by the runtime
@@ -2802,12 +2961,26 @@ def cmd_spawn(args: argparse.Namespace) -> int:
     # after the roster id, so that is exactly what the spawn must create.
     window = value if kind == "name" else args.agent
 
+    # B4: the launch command. An explicit --command always wins (a caller naming its
+    # own command is making a decision, not inheriting a default); otherwise it is
+    # derived from the roster's per-agent `worktree:` key.
+    if args.command is not None:
+        launch_cmd = args.command
+        cwd_reason = "explicit --command"
+    else:
+        cwd, cwd_reason = resolve_spawn_cwd(config, args.agent)
+        if cwd is None:
+            print(f"REFUSING: {cwd_reason}", file=sys.stderr)
+            return EX_MISCONFIG
+        launch_cmd = f"cd {cwd} && claude"
+
     if args.dry_run:
         would = [r for r in (f"inbox/{args.agent}.jsonl", f"outbox/{args.agent}.jsonl",
                              f"heartbeats/{args.agent}.json", f"cursors/{args.agent}.json")
                  if not (BUS_ROOT / r).exists()]
         print(f"would create {len(would)} bus file(s): {', '.join(would) or 'none (all present)'}")
-        print(f"would create window {session}:{window} running: {args.command}")
+        print(f"would create window {session}:{window} running: {launch_cmd}")
+        print(f"spawn cwd: {cwd_reason}")
         print("(--dry-run: nothing written, no window created)")
         return 0
 
@@ -2911,7 +3084,7 @@ def cmd_spawn(args: argparse.Namespace) -> int:
             created.append(rel)
     print(f"bus files ready ({len(created)} created: {', '.join(created) or 'all pre-existing'})")
 
-    launch = args.command
+    launch = launch_cmd
     rc, out = _tmux("new-window", "-t", session, "-n", window, launch)
     if rc != 0:
         print(f"new-window failed: {out}", file=sys.stderr)
@@ -3026,7 +3199,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("spawn", help="create the agent's bus files, then its pane")
     sp.add_argument("--agent", required=True)
-    sp.add_argument("--command", default="cd /workspace && claude")
+    sp.add_argument("--command", default=None,
+                    help="override the launch command. Default is DERIVED per-agent from the "
+                         "roster's `worktree:` key (B4): `cd <lane worktree> && claude`, "
+                         "falling back to /workspace for rows that declare no lane.")
     sp.add_argument("--dry-run", action="store_true")
     sp.set_defaults(func=cmd_spawn)
     return p
