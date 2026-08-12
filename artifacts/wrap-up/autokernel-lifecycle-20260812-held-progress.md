@@ -42,6 +42,21 @@ Both implementation branches and the integrated branch were pushed, and `069e79f
 `main`. No inference, kernel build, profiler capture, or resident-stack operation occurred in this
 checkpoint.
 
+## Follow-up release and EPYC campaign restoration
+
+Research `main` advanced again to `99fe3014f76f5d2a3dcd2bd7502a371abc0db1b0`. It restores the
+operator-triggered readiness, T3, and release-package modules as a release-local plane that is not
+reachable from the lean campaign. Pure preflight reducers consume supplied host/resource/storage
+receipts; AST-enforced boundaries deny source mutation, process execution, production writes,
+drafted-command execution, and self-triggering. Real release mode still refuses because
+`P-KERNEL-FREEZE-1` is not ratified; the restored v8/speech paths are dry-run calibration fixtures.
+
+The same merge replaces the add-only Arena task proxy with four hash-pinned EPYC-representative
+tasks: add, Llama attention, MoE GEMM, and dequantize-matmul. The six available controller arms keep
+their source/license/entrypoint pins, and the campaign still names EvoEngineer and ARGUS as missing.
+No controller or GPU campaign ran. The exact final merge suite passed **1,267 tests** with
+**849 subtests**.
+
 ## Remaining empirical work
 
 After the already-filed compliant-reboot dependency is satisfied, run AK6.5 Step 3's full-host CPU

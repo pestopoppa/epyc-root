@@ -41,6 +41,13 @@ and handles idempotent replay plus anchor reanchoring without importing campaign
 or production-write capabilities. The merge-commit package suite passed **4,530 tests** with one
 expected failure and **2,039 subtests**. These are implementation and regression results only: no
 real proposal was banked and no empirical champion was created.
+Research `99fe3014` also restores the separate operator-triggered readiness/T3/package plane without
+putting it on the campaign import path. Its release-local preflight is a pure three-way reducer over
+caller-supplied receipts; T3 and the packager have no source mutation, process execution, production
+write, or self-trigger capability. Real release mode continues to refuse the unratified
+`P-KERNEL-FREEZE-1` protocol, while dry-run fixtures preserve the v8/speech waiver, linkage,
+rollback, and transaction-calibration behavior. The final merged release-plus-Arena slice passed
+**1,267 tests** with **849 subtests**; no T3 campaign or release action ran.
 INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
 VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
 Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
@@ -2636,6 +2643,12 @@ memory, and champion maintenance without human steering.
 - [x] Dry-run the T3 compiler/validator against preserved v8 and speech freeze artifacts; **expect the
   v8 dry-run to FAIL without its waiver** and treat that as calibration. ✅ 2026-08-03
 - [x] Add failed-gate replay/cooldown/idempotence behaviour. ✅ 2026-08-03
+- [x] **Restore the release/readiness evaluator as a separate operator-triggered plane after the lean
+  refactor.** ✅ 2026-08-12 — research `99fe3014` restores readiness, generic T3, and package
+  assembly behind pure receipt inputs and injected evaluator authority. Release-local preflight
+  enforces the ratified seven-day uptime ceiling and held-resource/storage checks without reading or
+  mutating the host. The plane cannot write production, spawn/signal a process, execute a drafted
+  command, or self-trigger; release mode refuses until `P-KERNEL-FREEZE-1` is human-ratified.
 
 **Exit:** a sealed fixture champion yields one reproducible PASS/FAIL/PASS_WITH_WAIVER bundle and
 cannot retrigger the expensive gate unchanged.

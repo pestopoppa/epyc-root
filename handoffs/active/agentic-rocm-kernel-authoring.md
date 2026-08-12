@@ -318,6 +318,13 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     has `cf8b03df355a8124a1dd668293c1d7d6e839c9f176aebdcd082f073f92ba0581` /
     `625280fb92b678b8a2a24f15f9a87484a2409c0dcb94e32a777e613639f327ed` and is
     ready at 6/6. Neither audit ran a controller or GPU command.
+  - [x] **Bind a representative four-task EPYC Arena campaign instead of an add-only proxy.** ✅
+    2026-08-12 — research `99fe3014` hash-pins the existing add control plus real
+    `attention_llama`, `moe_gemm`, and `dequantize_matmul` task files under the same MI210/gfx90a,
+    elapsed-wall-time, 2h/8h/32h, and one-GPU-cell contract. The available six controller arms keep
+    their exact implementation/source/license hashes; EvoEngineer and ARGUS remain explicitly
+    unavailable rather than receiving namesake substitutes. This is static campaign authority only;
+    no controller, model, or GPU command ran.
   - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints when
     inference is authorized; interpret it only as an availability-conditioned diagnostic.
   - [ ] Obtain exact licensed source releases for EvoEngineer and ARGUS, then port their real
