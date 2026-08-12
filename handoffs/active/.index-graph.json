@@ -624,13 +624,13 @@
       "from": "EVL-29",
       "kind": "ref",
       "to": "PIP-04",
-      "weight": 5
+      "weight": 8
     },
     {
       "from": "EVL-29",
       "kind": "ref",
       "to": "PIP-05",
-      "weight": 5
+      "weight": 8
     },
     {
       "from": "EVL-29",
@@ -798,7 +798,7 @@
       "from": "EVL-42",
       "kind": "ref",
       "to": "EVL-29",
-      "weight": 2
+      "weight": 4
     },
     {
       "from": "EVL-43",
@@ -1098,7 +1098,7 @@
       "from": "INF-04",
       "kind": "ref",
       "to": "INF-54",
-      "weight": 4
+      "weight": 6
     },
     {
       "from": "INF-04",
@@ -1986,7 +1986,7 @@
       "from": "INF-54",
       "kind": "ref",
       "to": "INF-04",
-      "weight": 2
+      "weight": 4
     },
     {
       "from": "INF-54",
@@ -3465,7 +3465,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T10:00:13Z",
+  "generated_at": "2026-08-12T10:43:59Z",
   "nodes": [
     {
       "age_days": 13,
@@ -3507,15 +3507,15 @@
       "track": "autopilot decision plane audit 2026 07 22"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
-      "closed": 6,
+      "closed": 7,
       "domain": "research-evaluation",
       "handoff": "autopilot-sequential-allocation.md",
       "id": "EVL-04",
-      "last_advanced": "2026-08-11",
+      "last_advanced": "2026-08-12",
       "next_action": "SEQ-A: make the refuted label sticky in state_name() so re-adjudication cannot silently un-refute",
-      "open": 12,
+      "open": 11,
       "state": "active",
       "track": "autopilot sequential allocation"
     },
@@ -3834,13 +3834,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 25,
+      "closed": 26,
       "domain": "research-evaluation",
       "handoff": "intake-derived-work-2026-07-25.md",
       "id": "EVL-29",
       "last_advanced": "2026-08-12",
       "next_action": "ID-2 \u2014 pin the gepa dependency; installed is 0.0.26 and unpinned",
-      "open": 17,
+      "open": 16,
       "state": "active",
       "track": "intake derived work 2026 07 25"
     },
@@ -4003,13 +4003,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 16,
+      "closed": 22,
       "domain": "research-evaluation",
       "handoff": "scoring-infra-standardization.md",
       "id": "EVL-42",
       "last_advanced": "2026-08-12",
       "next_action": "1b \u2014 migrate research consumers to the canonical lib and delete each duplicate extractor",
-      "open": 17,
+      "open": 11,
       "state": "active",
       "track": "scoring infra standardization"
     },
@@ -4068,7 +4068,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 54,
+      "closed": 56,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
@@ -4131,13 +4131,13 @@
       "track": "agentic rocm kernel authoring"
     },
     {
-      "age_days": 14,
+      "age_days": 0,
       "blocked": 1,
-      "closed": 1,
+      "closed": 2,
       "domain": "inference-research",
       "handoff": "angelslim-techniques-evaluation.md",
       "id": "INF-04",
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-08-12",
       "next_action": "BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist",
       "open": 2,
       "state": "active",
@@ -4159,12 +4159,12 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 215,
+      "closed": 219,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-12",
-      "next_action": "After a compliant reboot, run full-host CPU IQK; then materialize and evaluate the matched archive",
+      "next_action": "After reboot, run the bound IQK intervention and A/A control; then project and evaluate the real matched archive",
       "open": 22,
       "state": "active",
       "track": "autokernel research loop"
@@ -4456,26 +4456,26 @@
       "track": "llama cpp dsa contribution"
     },
     {
-      "age_days": 14,
+      "age_days": 0,
       "blocked": 0,
-      "closed": 9,
+      "closed": 11,
       "domain": "inference-research",
       "handoff": "llamacpp-v6-consolidation.md",
       "id": "INF-32",
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-08-12",
       "next_action": "SWA slot-reuse fixes (d1c72d7fc / 603702769) \u2014 verify vs upstream SWA before drop.",
-      "open": 5,
+      "open": 3,
       "state": "active",
       "track": "llamacpp v6 consolidation"
     },
     {
-      "age_days": 14,
-      "blocked": 0,
-      "closed": 0,
+      "age_days": 0,
+      "blocked": 1,
+      "closed": 3,
       "domain": "inference-research",
       "handoff": "log-linear-gated-deltanet-readiness.md",
       "id": "INF-33",
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-08-12",
       "next_action": "Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size)",
       "open": 3,
       "state": "active",
@@ -4627,13 +4627,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 70,
+      "closed": 73,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-12",
       "next_action": "Bind clean producer provenance; replay C2/C5, then capture EPYC workloads and add gfx90a k228/k175 adapters",
-      "open": 17,
+      "open": 16,
       "state": "active",
       "track": "rocm verify profile backend"
     },
@@ -4703,13 +4703,13 @@
       "track": "tidar one pass variant b"
     },
     {
-      "age_days": 9,
+      "age_days": 0,
       "blocked": 1,
-      "closed": 15,
+      "closed": 16,
       "domain": "inference-research",
       "handoff": "tq3-quantization-evaluation.md",
       "id": "INF-54",
-      "last_advanced": "2026-08-03",
+      "last_advanced": "2026-08-12",
       "next_action": "Prototype faithful ChunkKV on a fresh llama.cpp-experimental tree",
       "open": 12,
       "state": "active",
@@ -4978,13 +4978,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 139,
+      "closed": 141,
       "domain": "routing-and-optimization",
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",
       "last_advanced": "2026-08-12",
       "next_action": "Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped",
-      "open": 56,
+      "open": 59,
       "state": "active",
       "track": "autopilot continuous optimization"
     },
@@ -5394,13 +5394,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 130,
+      "closed": 136,
       "domain": "routing-and-optimization",
       "handoff": "session-bus-thin-dispatcher.md",
       "id": "RTG-34",
       "last_advanced": "2026-08-12",
       "next_action": "C-OWN \u2014 continue the C-series control-plane work (mainD's lane); R1a's bench is inference-gated but does NOT gate the handoff",
-      "open": 31,
+      "open": 27,
       "state": "active",
       "track": "session bus thin dispatcher"
     },

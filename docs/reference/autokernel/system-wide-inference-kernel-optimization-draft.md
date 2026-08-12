@@ -6,6 +6,13 @@
 **Software scope:** `llama.cpp` fork, HIP backend, CPU backend, model loading/quantization, speculative decoding, serving scheduler, and the measurement/autoresearch harness  
 **Production rule:** All kernel and scheduler work remains isolated, default-off, and outside the frozen production branch until correctness, quality, repeatability, and promotion gates pass
 
+**ROCm provider rule:** AutoKernel may search exact-shape library selection, compiler flags, launch
+topology, standalone Triton/HIP kernels, and source-available ROCm modules in isolated,
+content-addressed builds. Those artifacts are candidate providers, not independent champions. A win
+must integrate through an experimental `llama_gpu` build and pass operator plus whole-model gates
+before it can join the `llama.cpp` champion. Shared `/opt/rocm` mutation is forbidden; opaque vendor
+binaries may serve only as hash-bound baselines or dependencies, never authored champion source.
+
 > The Qwen3.5-122B-A10B IQ2 comparison is only the observation that exposed the broader issue. This program is explicitly **not** a 122B-IQ2 optimization plan. It is a system-wide effort to close software-addressable efficiency gaps on both the MI210 and the EPYC host.
 
 ---
@@ -656,6 +663,19 @@ The objective is not a blind vLLM port. It is a capability audit.
 ### Important hardware caveat
 
 ROCm features written for CDNA3+ must not be treated as directly usable on the MI210. Port the algorithm, not the unsupported instruction path.
+
+### ROCm module mutation and promotion boundary
+
+Treat rocBLAS, hipBLASLt, CK/CK-Tile, rocWMMA, compiler/runtime choices, and source-available vendor
+modules as separate mechanisms during diagnosis. AutoKernel may benchmark provider/algorithm
+selection, author a standalone replacement, or fork a source-available module when a current profile
+identifies that mechanism as the limiter. Every such action occurs in a pinned isolated environment;
+the resident ROCm installation and live stack remain immutable.
+
+The deployable unit is still the experimental llama GPU candidate. Module-local speed is diagnostic
+until the exact integration is bound to captured workload tensors, correct output, and a whole-model
+result. This avoids two opposite errors: blaming every custom low-bit path on “ROCm,” and allowing a
+fast standalone module to become a champion without proving that llama.cpp can safely use it.
 
 ---
 
