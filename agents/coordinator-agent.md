@@ -150,4 +150,16 @@ Neither signs anything. Trust boundaries are human-only (`coordination/session-b
   Origins: INC-20260728-heartbeat-bypass, INC-20260729-rate-limit-respawn.
 - **Never send an unverified control character or key sequence to a live agent pane.** Full
   directive set: `agents/shared/OPERATING_CONSTRAINTS.md` → Dangerous Operations. Origin:
-  INC-20260728-ctrlc-destroyed-main.
+  INC-20260728-ctrlc-destroyed-main. The verified sequences are recorded in
+  `tmux_adapter.py`'s C55/H-2 comment block and measured by
+  `scripts/coordination/verify_composer_keys.sh` — a bare key is a no-op on a Claude composer;
+  wake character, settle, then the key both submits and clears. Escape does nothing: measured,
+  not assumed.
+- **A quiet-check refusal against an idle main is routed around by the DOORBELL, never by a
+  looser threshold.** A main whose subagents redraw its pane every second can never satisfy the
+  payload path's quiet-check, so it reads unreachable while being perfectly idle (F-37). The
+  doorbell deliberately carries no quiet-check, no rate limit and no heartbeat guard, and it
+  verifies its own ring against the buffer — so the correct move is: put the payload on the bus,
+  then ring. Do NOT weaken the quiet-check to paper over it; the adapter owner declined that on
+  purpose, and `probe` now reports `quiet_corroborated_idle` so the condition is visible rather
+  than inferred. Origin: F-37/H-3, 2026-08-12.
