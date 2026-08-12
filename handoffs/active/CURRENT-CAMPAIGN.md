@@ -7,6 +7,21 @@
 
 ---
 
+> **🟡 2026-08-12 — INF-03 R17 IS TERMINAL-NONCOMPLETE; SEVEN-ARM R18 IS LIVE FROM
+> IMMUTABLE RESEARCH `17b9208d`.** R17 preserved a valid actor/critic 32h diagnostic checkpoint
+> (`1.004404445111776`, compile/correctness 4/4; receipt SHA-256
+> `93292683c21033475697d4743bb54e95f8964a1a8abb265a8789451454f1885e`) but its next EvoEngineer
+> cell failed before controller start because the evaluator constructor omitted governed
+> `source_paths`. All exact r17 PIDs are dead and its final device claim released; r17 is immutable,
+> partial, and permanently non-rankable. Research `381bc55e`/`11bccd41` closed the constructor and
+> pin defects, `7b3cc6f4`/`a865bd7c`/`300647bd` hardened the governed C3/C5 capture seam, and
+> `b0d6f79f` prospectively emits strict feedback-only belief rows. R18 runs from dedicated clean
+> source `17b9208d8cc27e1af99408655b91401110b6acc6`; its baseline is complete and its first actor cell
+> is active. **Do not edit its worktree, infer a result from partial receipts, aggregate, rank, bank,
+> promote, release, or resume r4–r17.** Research `main` is later at `6103bde8` only because the
+> non-executing rocprof-v1 router was merged after r18's source was sealed. Owner:
+> [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) INF-03.
+
 > **🟡 2026-08-12 — INF-03 R14 FAILED CLOSED ON SOURCE-IDENTITY DRIFT; SEVEN-ARM R15 IS
 > LIVE FROM A DEDICATED IMMUTABLE WORKTREE.** R14's audit bound clean source `152ed0d9`, but that shared
 > implementation worktree advanced to `03f9ae69` while its actor cell ran. After nine successful model

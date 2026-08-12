@@ -1131,7 +1131,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-03",
-      "weight": 14
+      "weight": 12
     },
     {
       "from": "INF-06",
@@ -3486,7 +3486,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T19:42:06Z",
+  "generated_at": "2026-08-12T19:50:33Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4154,13 +4154,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 75,
+      "closed": 77,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Patch EvoEngineer source-path construction, then launch and validate a fresh immutable seven-arm attempt",
-      "open": 4,
+      "next_action": "Preserve live r18, then validate its terminal receipt chain before any comparison",
+      "open": 5,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4199,7 +4199,7 @@
       "id": "INF-06",
       "last_advanced": "2026-08-12",
       "next_action": "Run the post-reboot matched IQK intervention/control pair, then materialize and evaluate the real archive",
-      "open": 22,
+      "open": 23,
       "state": "active",
       "track": "autokernel research loop"
     },
@@ -4661,13 +4661,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 74,
+      "closed": 76,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-12",
-      "next_action": "Run governed 122B decode attribution, then capture real EPYC C3/C5 workload evidence",
-      "open": 17,
+      "next_action": "Implement exact k228/k175 model hooks, then capture governed EPYC tensors and whole-model exits",
+      "open": 16,
       "state": "active",
       "track": "rocm verify profile backend"
     },

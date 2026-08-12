@@ -1,10 +1,10 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
-**Status**: ACTIVE HARDENING — phase-explicit rocprof landed; real decode and C3/C5 capture remain
-**Created**: 2026-06-03 · **Updated**: 2026-08-12 (phase-explicit attribution repair)
+**Status**: ACTIVE HARDENING — governed 122B decode attributed; exact k228/k175 captures remain
+**Created**: 2026-06-03 · **Updated**: 2026-08-12 (122B decode attribution and router replay)
 
-> **NEXT ACTION (2026-08-12): after terminal-noncomplete INF-03 r17 cleanup, run the governed real-model
-> decode attribution in RVP-C4-4a, then capture the real EPYC C3/C5 workload evidence.** OP-11 was
+> **NEXT ACTION (2026-08-12): implement the exact k228 and k175 model-tensor hook manifests, then run
+> their governed real EPYC C3/C5 captures and matched whole-model exits.** OP-11 was
 > resolved as Option B (decline for now), so C2-7/C2-8/C2-9 remain deliberately open unless the
 > operator explicitly reopens the experimental producer. The research reducers/runners remain
 > durable; the old oracle-integrity smoke remains non-evidence.
@@ -646,10 +646,21 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   values, and records both `gen_tokens` and `phase: prefill|prefill+decode` in every receipt. K28's
   historical prefill result needs no relabelling. The focused producer suite passes 12/12 and the
   AutoKernel README suite passes 17/17.
-  - [ ] **RVP-C4-4a — Capture governed real-model decode attribution.** After INF-03 r15 releases
-    the MI210, run the repaired producer with `--gen-tokens 128` against the real 122B MoE model and
-    retain the claim, device, source, binary, linkage, profiler, model, phase, and receipt identities.
-    The earlier `iq2xxs-decode-nongoverned-20260812T1306Z` capture remains non-authoritative.
+  - [x] **RVP-C4-4a — Capture governed real-model decode attribution.** ✅ 2026-08-12 — the
+    source-bound p0/tg128 decode run on the real Qwen3.5-122B-A10B UD-IQ2_M model passed at
+    **37.057131 tok/s**. Summed device time was MMV **59.9524%**, quantize **8.0084%**, RMSNorm
+    **4.3655%**, FlashAttention **3.1458%**, copy **2.3187%**, and GDN **1.8620%**. The GDN target is
+    therefore low priority on this exact decode surface; type-specialized MMVQ is primary. Receipt
+    `/mnt/raid0/llm/autokernel/probes/rvp-c4-4a-122b-decode-20260812T192651Z/receipt.json`, file
+    SHA-256 `c7f3f5a243310021e022715b403fe0668b47145440bda00ee43ac6d84e14bed3`; CSV SHA-256
+    `e7fd3481d8c978463831391ef19c9c640907a774e34fd393c95edcc5c53e01fa`. Exact MI210 and CPU-q3
+    claims released; 58 device samples covered the measurement window.
+  - [x] **Route the RVP-C4-4a rocprof-v1 trace through the source-bound prior-art gate.** ✅ 2026-08-12
+    — research `5c8e57dc`/main `6103bde8` adds rocprof-v1 schema ingestion and frozen-v9 ggml-type
+    decoding. Replay classified 11 admitted families / **69.3283%** of captured time as existing-path
+    work, two / **2.3187%** as forward-port candidates, and eight / **25.3907%** as unmatched. The
+    deterministic recommendation is `expand_catalogue_before_novel_generator`; this is routing,
+    not a performance verdict.
 - [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
   the value distribution. This is the anti-shape-detection device, and it targets something we
   actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can

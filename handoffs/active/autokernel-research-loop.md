@@ -52,13 +52,16 @@ its 7/7 claims released, all 13 captured PIDs were dead, and every cgroup was em
 `537163d5` adds one exact-cause, receipt-visible retry without retrying timeouts or arbitrary failures;
 `eb1de388` refreshes the campaign pin. The full admitted Python 3.12 AutoKernel suite passed **5,682
 tests with one expected failure**. R16 then refused before claim or inference on the stale expected
-entrypoint identity. Fresh immutable r17 then reached a valid 32h actor/critic checkpoint at diagnostic
+entrypoint identity. Fresh immutable r17 reached a valid 32h actor/critic checkpoint at diagnostic
 speedup `1.004404445111776` with compile/correctness **4/4**, but terminated noncomplete when the next
 EvoEngineer 2h cell called `ArenaWorkspaceEvaluator.__init__` without required keyword-only
-`source_paths`. Its exact campaign PIDs are dead and final device claim released. R17 is partial,
-non-rankable evidence; the explicit patch-and-fresh-relaunch task remains in
-[`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md). This controller comparison is
-diagnostic and does not replace the post-reboot IQK/matched-archive sequence.
+`source_paths`. Its exact campaign PIDs are dead and final device claim released. R17 is partial and
+non-rankable. Research `381bc55e`/`11bccd41` repaired and repinned source-path construction across the
+five affected controllers; `b0d6f79f` prospectively captures and strictly projects feedback-only
+intermediate evaluator beliefs. Fresh immutable r18 is sealed at `17b9208d`; its baseline is complete
+and its first actor cell is active. Partial r18 evidence grants no comparison, aggregate, rank, bank,
+champion, promotion, or release authority. This controller comparison remains diagnostic and does not
+replace the post-reboot IQK/matched-archive sequence.
 Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
 The live campaign consumes an immutable content-addressed source patch before claim acquisition,
 applies it only through the guarded worktree boundary, and records the exact clean source/build,
@@ -515,6 +518,16 @@ rocBLAS/hipBLASLt/CK selection, library algorithms, compiler flags, launch topol
 Triton/HIP kernels, and source-available vendor-module kernels. That does **not** create a fourth
 kernel source tree or permit a module to bypass the deployable product:
 
+The operator-approved targeting order is explicit:
+
+1. optimize `llama.cpp`-owned kernels and dispatch first, especially low-bit and MoE losses;
+2. tune shape-aware rocBLAS, hipBLASLt, and CK/CK-Tile selection and algorithms;
+3. author standalone Triton/HIP replacements for missing or weak gfx90a paths, then integrate them
+   through an experimental `llama_gpu` candidate;
+4. fork source-available ROCm modules only in isolated builds and only after profiling proves that
+   module is the limiter; and
+5. run concurrency and scheduling hypotheses separately as `serving_runtime` campaigns.
+
 - every module build or source fork is content-addressed, source-pinned, and isolated from the
   resident stack; no campaign may write the shared `/opt/rocm`, replace a resident runtime library,
   or inherit an unbound module from `LD_LIBRARY_PATH`;
@@ -539,6 +552,12 @@ scheduler work remains a separate `serving_runtime` campaign under AK-D9/AK-D23.
   580 tests; a full 5,597-test discovery exposed four current-schema call sites, which were repaired
   and revalidated in a 419-test affected slice. The only remaining discovery error was environmental:
   the checkout Python lacks `pytest` for `test_placement_context.py`.
+- [ ] **AK-D39-2 — Implement governed source-available ROCm module execution.**
+  `execution/provider.py` currently validates source/opaque mode, immutable identity, protected-prefix
+  exclusion, and llama integration joins, but it does not acquire, build, install, or execute a pinned
+  module in an isolated content-addressed prefix. Add that lifecycle with exact source, licence,
+  toolchain, build, install, linkage, and teardown receipts; never mutate shared `/opt/rocm` or admit
+  an opaque binary as champion source.
 
 ### 1.6 The objective is per-backend, per-phase non-inferiority plus improvement
 

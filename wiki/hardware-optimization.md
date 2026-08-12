@@ -2494,3 +2494,45 @@ improve dashboard health.
   and superseded completion-audit conclusion.
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — receipt/log findings, teardown, dashboard
   projection, and derived-actionable sweep.
+
+## Compiled Update — 2026-08-12 (AutoKernel 122B decode routing and ROCm provider boundary)
+
+**Confidence: verified diagnostic receipt and deterministic source-bound replay on one frozen-v9
+Qwen3.5-122B-A10B UD-IQ2_M p0/tg128 surface; no candidate comparison or release authority.**
+
+The first governed real-model decode attribution localizes this surface away from the earlier GDN
+hypothesis. At 37.057131 tok/s, summed kernel time is 59.9524% matrix-vector work, 8.0084%
+quantization, 4.3655% RMSNorm, 3.1458% FlashAttention, 2.3187% copies, and only 1.8620% GDN. The
+source-bound prior-art replay preserves numeric ggml types only against the exact frozen-v9 enum. It
+routes 69.3283% of captured time to existing paths, 2.3187% to bounded forward-port candidates, and
+25.3907% to unmatched families, so the deterministic next scope is catalogue/dispatch work before a
+broader novel-kernel generator.
+
+The software-addressable ROCm boundary is now explicit. AutoKernel targets llama-owned kernels and
+dispatch first, then exact-shape rocBLAS/hipBLASLt/CK choice, then standalone Triton/HIP replacements
+integrated through experimental `llama_gpu`. It may fork a source-available ROCm module only in an
+isolated content-addressed build and only when profiling proves that module is the limiter. Serving
+concurrency and scheduling remain separate `serving_runtime` campaigns. Shared `/opt/rocm` is never
+mutated, and opaque vendor binaries may be baselines or dependencies but never champion source. The
+existing provider validator enforces identity and protected-prefix/champion boundaries; acquisition,
+build, isolated installation, execution, linkage, and teardown remain a separately filed lifecycle.
+
+The controller/capture plane advanced without changing those authority limits. R17 is retained only as
+terminal-noncomplete diagnostic history after its EvoEngineer constructor omitted governed source
+paths. The constructor and pins are repaired, intermediate evaluator beliefs now write and read under
+strict feedback-only authority, and r18 runs from immutable source with only baseline-complete/first-
+actor-active status at this checkpoint. The C3/C5 capture mechanism now binds KFD process ancestry,
+sampler-window overlap, immutable claim slices, frozen inputs, and exact Apex selection. Its remaining
+empirical artifacts are the real k228 single-surface hook and the ordered multi-trace k175 composite
+hook; reference or synthetic tensors cannot substitute.
+
+### Source References (2026-08-12 AutoKernel decode and providers)
+
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C4-4a
+  identities, attribution, released claims, and deterministic router result.
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — operator-approved ROCm
+  target hierarchy, provider/champion boundary, and isolated module lifecycle task.
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r17 repair,
+  immutable r18 posture, C3/C5 capture seam, and exact remaining hook artifacts.
+- [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — self-contained receipt hashes,
+  implementation commits, test counts, router replay, and authority limits.
