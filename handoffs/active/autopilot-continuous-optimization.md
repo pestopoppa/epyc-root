@@ -2246,19 +2246,30 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
 ### New tasks
 - [ ] **P1 — THE CONTENTION MATRIX ADMITS A DIFFERENTLY-MEASURED PRIOR AS A ROLE-PAIR VERDICT.**
   `scripts/server/contention_matrix.py:306-313` has **inverted marker polarity**: when it substitutes
-  a DISJOINT-quarter geometry for a downed primary it returns `(a, b, None)` — **no marker** — and it
+  a DISJOINT geometry for a downed primary it returns `(a, b, None)` — **no marker** — and it
   sets `"overlap_measured"` only in the FAITHFUL overlapping case. *(Verified by `mainC` at the
   source.)* So the marker fires on the honest measurement and is absent on the substituted one.
   **The consequence is already shipped.** `orchestration/contention_matrix.yaml:129-136` carries
-  `frontdoor` + `ingest_long_context` measured on `regions [q0,q1]` vs `[q2,q3]` — **disjoint** —
+  `frontdoor` + `ingest_long_context` measured on **disjoint HALVES** —
   giving `ratio 1.89, verdict "allow"`, unmarked. The codebase states the stakes itself
   (`src/scheduling/contention.py:528-536`): *the SAME pair overlapping node0-half primaries is 0.37
-  BLOCK, on disjoint quarters 1.716 ALLOW — a role-keyed lookup cannot tell them apart.* `Pair`
+  BLOCK, on disjoint siblings 1.716 ALLOW — a role-keyed lookup cannot tell them apart.* `Pair`
   carries roles/ratio/verdict/samples/note and **no geometry**, and `pair_policy` keys on bare role
   names. The same file's `triples:` section still calls that pair catastrophic.
   So a favourable-geometry measurement enters the LIVE ADMISSION GATE as a general role-pair verdict.
-  Repair is not small — mark, refuse, or reroute to `n_way`, possibly re-bench — so it is REPORTED,
-  not fixed. **UNOWNED, needs the contention-gate owner.** Same subsystem and same class as the
+  **TERMINOLOGY CORRECTED BY THE OPERATOR, and it makes this MORE live, not less.** I first wrote
+  "disjoint quarters". There are **no quarter instances in production** — only halves and full.
+  The shipped row is `cpu_list 0-47,96-143` vs `48-95,144-191`, **48 threads each = HALVES**,
+  carrying legacy `label: "q0"/"q1"` quarter-era naming; the matrix holds **zero** 24-thread
+  rows. *(Verified by `mainC`.)* So the favourable geometry is the CURRENT PRODUCTION SHAPE, not
+  a retired one — the bad verdict is reachable today. **Sub-finding: the `q*` labels on
+  half-sized instances are stale nomenclature that will mislead any reader — it misled me.**
+  **OPERATOR HAS AUTHORISED A RE-BENCH (2026-08-12).** That is COMPUTE and `mainC` is lane
+  `none`, so it is routed, not run here: it needs a compute-lane owner coordinating a region
+  claim through `inference`. The re-bench must measure the pair in the OVERLAPPING geometry the
+  gate will actually admit under, since the disjoint number is the one already on file.
+  Repair alongside it — mark, refuse, or reroute to `n_way` — remains the gate owner's call.
+  **UNOWNED for the code half; re-bench AUTHORISED and awaiting a compute lane.** Same subsystem and same class as the
   `contention_nway_restricted_count` label defect filed above: a value whose name asserts more than
   the measurement supports.
 - [x] **Sweep for tests that DEFEND defects — done, and the class is largely already swept.**
