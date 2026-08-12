@@ -198,6 +198,20 @@ deliberately — decide them, do not just implement them.
 - [ ] SC11 Survey the remaining candidate sources named in the register — llama-bench sweeps and the
       speech-kernel (whisper/qwentts) runs. Both need a write-side hook before a reader is worth
       anything; price each with the ~50-record sample before building
+- [ ] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
+      by `mainA`, at the moment of changing the producer rather than afterwards).
+      `affinity_preflight.py` cell mode writes `data/contention_matrix/affinity_preflight_*.json` per
+      Stage-B cell and that artifact **already gates `decision_grade`** — `live_affinity_verified` is a
+      hard gate and `--require-memory-locality` is an operator-requestable one. Anything that gates a
+      grade is exactly what the register says needs a tuple.
+      Today's change (orchestrator `74806223`, `d83661a5`) ADDED attested fields — `gpu_tenant_overlaps`,
+      `smt_only_contention` (sibling-folded, so a GPU host lane sharing physical cores stops reading as
+      disjoint), `live_memory_placement_checked`, `memory_locality_vacuous` — so the producer grew new
+      measurement surface without a tuple, which is the SC12 shape repeating a third time.
+      **Price it first** with the ~50-record sample; the corpus is small (tens of artifacts), so the
+      honest answer may be that the volume never justifies an adapter — in which case record that
+      verdict rather than leaving the row open. **Locator must be run-level, not file-level**: repeated
+      preflights of one cell are the same witness, not N.
 - [ ] SC12 **Kernel promotion validation/certification receipts need a write-side ClaimTuple hook.**
       The first bounded receipt is `artifacts/audit/v9-dspark-autokernel-base-20260810.json`; the v9
       promotion then produced K35 GPU/DSpark and DFlash production-certification summaries. The
