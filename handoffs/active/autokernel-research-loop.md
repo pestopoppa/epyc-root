@@ -31,6 +31,16 @@ but live preflight correctly refused before claim, build, or benchmark because h
 `13.47 days`, beyond the ratified one-week ceiling. After a compliant reboot, run the full-host CPU
 IQK proposal, materialize the real matched archive, then run the least-commitment evaluation
 observe-only.
+Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
+The live campaign consumes an immutable content-addressed source patch before claim acquisition,
+applies it only through the guarded worktree boundary, and records the exact clean source/build,
+ancestry, affected surface, composition evidence, and executed evaluation-event identities while
+the claim and tree are still held. A separate lean sequencer derives validated banked/frontier
+candidates, requests direct combined-candidate T0/T1/T2 evidence, maintains an exact-anchor champion,
+and handles idempotent replay plus anchor reanchoring without importing campaign execution, release,
+or production-write capabilities. The merge-commit package suite passed **4,530 tests** with one
+expected failure and **2,039 subtests**. These are implementation and regression results only: no
+real proposal was banked and no empirical champion was created.
 INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
 VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
 Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
@@ -2290,6 +2300,13 @@ can act on a waiver-bearing verdict.
   anchor before release. Missing holder identity or anchor/evaluator/claim/host drift yields a durable
   INVALID/refusal rather than an inferred PASS; append failure remains terminal without skipping
   release or STOP. The final campaign/journal/evaluator/control/execution slice passed 1,231 tests.
+- [x] **Bind source-changing proposals to an immutable source-to-candidate lifecycle.** ✅ 2026-08-12 —
+  research `069e79fd` loads the embedded content-addressed patch before preflight or claim, restricts
+  mutation to the guarded worktree API, verifies normalized paths plus content-derived hunk/symbol
+  identity, and emits one idempotent candidate record from the exact clean build snapshot, ancestry,
+  affected surface, composition evidence, release receipt, and cached evaluation-event ids. Parameter
+  proposals retain their distinct semantic bundle identity; source evidence is never reconstructed
+  after teardown.
 - [x] Implement typed research-prior, campaign-seed, constraint/negative, and legacy-import events
   (§19). ✅ 2026-08-10 — superseded by the operator-approved lean loop: proposal-v3, immutable
   proposal receipts, the prior-art catalogue, and the append-only result journal are the live record
@@ -2519,6 +2536,13 @@ evaluator or its own scope, and T1 may legally guide search.
   the oracle question. ✅ 2026-08-03 (controller/selection.py)
 - [x] Build store-guided next-experiment selection using information gain plus expected value. ✅ 2026-08-03 (incl. harvest/explore phases)
 - [x] Build champion composition and mandatory combined-candidate reevaluation. ✅ 2026-08-03 (controller/composition.py)
+- [x] **Restore the lean bank/frontier/champion sequencer on the runnable journal plane.** ✅
+  2026-08-12 — research `069e79fd` requires validated write-side banking, the complete sealed
+  backend/tool anchor, compatible file/symbol/dispatch predicates, and direct combined-candidate
+  T0/T1/T2 evidence before champion replacement. Concurrent replay is idempotent; rejected or failed
+  composition preserves the incumbent; anchor moves fail closed and reanchor only absorbs members
+  proven present by a matching sealed release receipt. Campaign, host-process, release, and production
+  mutation capabilities remain outside the sequencer import closure.
 - [x] Implement deterministic stop/plateau/budget/storage/integrity/evaluator-gap guards. ✅ 2026-08-03 (controller/guards.py; 13 stop states)
 - [x] Add planner regression fixtures proving it consults failures and does not repeat known negatives. ✅ 2026-08-03
 - [x] **Settle WHICH gate form this loop uses — the literature does not, and we should not inherit the
