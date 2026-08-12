@@ -52,9 +52,13 @@ its 7/7 claims released, all 13 captured PIDs were dead, and every cgroup was em
 `537163d5` adds one exact-cause, receipt-visible retry without retrying timeouts or arbitrary failures;
 `eb1de388` refreshes the campaign pin. The full admitted Python 3.12 AutoKernel suite passed **5,682
 tests with one expected failure**. R16 then refused before claim or inference on the stale expected
-entrypoint identity. Fresh immutable r17 is live from clean `eb1de388`; it has no result authority until
-its terminal receipt chain is complete. This controller comparison is diagnostic and does not replace
-the post-reboot IQK/matched-archive sequence.
+entrypoint identity. Fresh immutable r17 then reached a valid 32h actor/critic checkpoint at diagnostic
+speedup `1.004404445111776` with compile/correctness **4/4**, but terminated noncomplete when the next
+EvoEngineer 2h cell called `ArenaWorkspaceEvaluator.__init__` without required keyword-only
+`source_paths`. Its exact campaign PIDs are dead and final device claim released. R17 is partial,
+non-rankable evidence; the explicit patch-and-fresh-relaunch task remains in
+[`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md). This controller comparison is
+diagnostic and does not replace the post-reboot IQK/matched-archive sequence.
 Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
 The live campaign consumes an immutable content-addressed source patch before claim acquisition,
 applies it only through the guarded worktree boundary, and records the exact clean source/build,
@@ -3026,6 +3030,12 @@ cannot retrigger the expensive gate unchanged.
   production-set wire shape and requires full blocking-condition detail plus distinct tree identity,
   observed/attested ggml, non-executing ELF linkage, and dashboard-process ambient-path claims.
   `tests.test_dashboard_static_js` passed **28/28**.
+- [x] **Teach Kernel-R&D to select current v2 AutoKernel attempts and classify live versus unresolved
+  terminal state.** ✅ 2026-08-12 — root `5180663a` accepts v1/v2 manifests, uses exact PID plus process
+  start-tick identity for live state, and distinguishes curated-invalid, preflight-refused,
+  terminal-complete, and stale-or-terminal-unreported attempts rather than falling back to stale
+  six-arm r4. It also reports frozen v9 and the current implementation/readiness gates. The commit is
+  pushed on root `main`.
 - [x] **Project the terminal raw-HIP r6 decision receipt on Kernel-R&D without manufacturing a
   champion.** ✅ 2026-08-12 — the hub admits only the exact self-hashed
   `epyc.autokernel.hip_decision_grade.v1` receipt at campaign r6, verifies its producer, sealed MI210
@@ -4215,10 +4225,11 @@ will spend kernel-authoring budget rediscovering ports.
   `epyc-inference-research/data/autokernel/prior_art/ak-del-1-k25-q8-mmvq-n1-20260717/`, research
   commit `df02169e`. The catalogue was refreshed against frozen v9 and generic `mul` matching was
   tightened so it cannot misclassify RMSNorm/MUL/RoPE fusion rows.
-- [ ] **AK-DEL-2 — Review and integrate the next bounded gfx90a prior-art catalogue expansion.** The
-  isolated research commit `677a2eec` is proposed work only: review its source/licence pins, catalogue
-  classifications, tests, and interaction with current research `main` before landing it. Do not cite
-  it as an integrated catalogue or use it to route a campaign until that review completes.
+- [x] **AK-DEL-2 — Review and integrate the next bounded gfx90a prior-art catalogue expansion.** ✅
+  2026-08-12 — reviewed commit `677a2eec` landed on research `main` as `35f10715`. The bounded rows
+  cover gfx90a fused top-k MoE, gfx90a flash attention, and ROCm MMQ-versus-rocBLAS as present prior
+  art while retaining HIP `TOP_K` as unsupported; corrected source pins and the negative control remain
+  fail-closed. This expands routing knowledge only and does not manufacture candidate evidence.
 
 Implementation evidence for AK-CAT-1–5 and AK-KM-1 is
 `epyc-inference-research/scripts/kernel_rnd/autokernel/prior_art.py`, its reviewed JSON seed catalogue,

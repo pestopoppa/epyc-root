@@ -202,12 +202,15 @@ deliberately — decide them, do not just implement them.
       A1/A3/A4 v9 panel carries native captures, exact claims, pinned source/manifest digests and
       an attestation, but no producer-authored `ClaimTuple` row. Add write-side rows plus a strict
       adapter before any successor run; the completed panel remains pre-hook and emits zero.
-- [ ] **SC33 — Wire the executable AutoKernel reward-integrity corpus prospectively.** The 2026-08-12
-      RVP-C6-6/C6-10 r3 receipt is real measurement evidence—detector sensitivity/specificity/FPR
-      and normal/hard gfx90a elapsed time under a released MI210 claim—but predates producer-authored
-      `belief_measurements` and must never be reconstructed on read. Before any successor run, emit
-      rows with exact source/binary/case/ranked-unit/claim identities and preserve the
-      `instrument validation only; no candidate speed claim` authority boundary.
+- [x] **SC33 — Wire the executable AutoKernel reward-integrity corpus prospectively.** ✅ 2026-08-12 —
+      successor r4 (`rvp-c6-executable-r4-20260812T191027Z`) emitted **53** producer-authored
+      `belief_measurements`: three detector aggregates plus 50 exact case×ranked-unit elapsed-time
+      rows. Its self-hashed v2 receipt (`c9e83b2245f28816eed72f0d0380cb18e59465c82996d572e6ddfaa8306228cd`)
+      caught **10/10** planted cases, rejected **15/15** clean cases, and observed runtime behavior in
+      **25/25** cases under released MI210 claim `akd-0ee8ec07c769492f`. The strict root adapter
+      independently projected **53/53** rows across sensitivity, specificity, false-positive rate,
+      and ranked-unit gfx90a elapsed time. All remain `BASELINE` instrument-validation evidence with
+      `candidate_speed_claim=false`; the pre-hook r3 receipt remains deliberately unprojected.
 - [x] **SC34 — Wire the governed raw-HIP authoring round trip prospectively.** ✅ 2026-08-12 — the
       research producer emits separate public-correctness and timing-harness-validity fractions with
       scored-case denominators, exact source/toolchain/task/candidate identities, and two released

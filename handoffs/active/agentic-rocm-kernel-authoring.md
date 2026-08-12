@@ -1,11 +1,11 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: supervise retry-hardened seven-arm r17 to a terminal aggregate from its dedicated immutable
-worktree, then validate its complete receipt chain before comparison. Never reuse r4-r16 or aggregate the
-one-task pilot into the panel.
+**Next action (2026-08-12)**: patch the EvoEngineer evaluator-constructor drift exposed by terminal-
+noncomplete r17, then launch a fresh immutable attempt and validate its complete receipt chain before
+comparison. Never resume r4-r17 or aggregate a partial attempt into the panel.
 The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r15 structured-output exhaustion; bounded retry landed; seven-arm r17 live from immutable `eb1de388`)
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r17 terminal-noncomplete after EvoEngineer evaluator-constructor drift)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -564,13 +564,17 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     audit observed the new actor entrypoint but the campaign still expected the pre-repair digest, so it
     refused before controller inference, GPU execution, or device-claim acquisition. The corrected pin
     is `eb1de388`; r16 carries no empirical or comparison authority.
-  - [ ] **Drive retry-hardened seven-arm r17 to a terminal aggregate and validate the complete receipt
-    chain.** R17 runs from dedicated immutable clean branch/worktree
-    `run/inf03-available-source-seven-arm-r17-20260812` at `eb1de388`; its static audit is `ready` at
-    7/7 and execution is live. Do not edit, prune, compact, stop, or infer a result from the worktree
-    mid-campaign. After terminal receipt, recheck every model/retry, evaluation, claim, sampler, sandbox,
-    teardown, runtime-temp scrub, source identity, and state-scrub edge before comparison. Never resume
-    r4-r16.
+  - [ ] **Drive retry-hardened seven-arm comparison to a terminal aggregate and validate the complete
+    receipt chain.** R17 is terminal-noncomplete and non-rankable. Its valid actor/critic 32h checkpoint
+    compiled and passed correctness **4/4** at diagnostic speedup `1.004404445111776` (receipt SHA-256
+    `93292683c21033475697d4743bb54e95f8964a1a8abb265a8789451454f1885e`), but the following EvoEngineer
+    2h cell failed before controller start: `ArenaWorkspaceEvaluator.__init__` was called without the
+    required keyword-only `source_paths`. Exact campaign PIDs `1842347`, `1920709`, `1921055`, and
+    `1966010` are dead; final claim `akd-6b60fb2f7d1449e2` released. Preserve the valid diagnostic
+    checkpoints, but never aggregate, rank, bank, promote, or resume r17.
+    - [ ] **Patch the EvoEngineer evaluator-constructor call and launch a fresh immutable successor.**
+      Add a regression that reaches controller construction with the governed source-path binding,
+      refresh every affected source/entrypoint pin, then re-run all seven arms from a clean worktree.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims
