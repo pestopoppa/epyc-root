@@ -78,7 +78,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     sqlite3 \
     libdrm2 \
     libdrm-amdgpu1 \
-    libpciaccess0 \
     libelf1t64 \
     libxml2-16 \
     pciutils \
