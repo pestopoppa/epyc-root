@@ -1,7 +1,7 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
 **Status**: ACTIVE HARDENING — Q4_K MMQ corrected locally; oracle producer evidence remains approval-gated
-**Created**: 2026-06-03 · **Updated**: 2026-08-11 (RVP-C2-6b repair + C2-8/C2-9/C5-R instrumentation)
+**Created**: 2026-06-03 · **Updated**: 2026-08-12 (diagnostic receipt/provenance audit)
 
 > **NEXT ACTION (2026-08-11): `RVP-C2-7/C2-8/C2-9` — after OP-11 approves the exact experimental
 > producer commit, rerun sensitivity, hostile-distribution, and checker-isolation evidence on its
@@ -13,11 +13,22 @@
 > complete:** the live card never approached its 300 W cap, so the clock-pinning branch and AK-OP-2
 > are closed. Everything else in §2026-08-10 is CPU-only or static and runs today.
 >
+> **Evidence-authority boundary (2026-08-12):** RVP-T0-1 and its v9 replication are durable
+> hardware-saturation diagnostics, and AK-BH-1/2/3 plus AK-LN-2/AK-X-5a are durable bounded
+> diagnostic receipts. Their retained hashes and commands support those local findings, but the set
+> does not uniformly bind a committed clean source checkout and complete build manifest. Do not use
+> it as current AutoKernel calibration authority. Establish clean hardened-instrument provenance
+> first, then run frozen-v9 controls, the full-host CPU IQK campaign, and the matched archive/evaluation.
+>
 > **Correction carried with it (operator, 2026-08-10):** the phrase *"All runs operator-approved
 > (P-GPU-1)"* below is **wrong as a blanket statement**. P-GPU-1 governs the **class of claim** a GPU
 > result may carry, not permission to run; the human boundary is **freeze / cutover / promotion**.
 > What remains true and unchanged: profiling or benching a **live server** is owned by whoever owns
 > that inference, and co-residency is theirs to schedule.
+
+- [x] **RVP-AUD-1 — Audit diagnostic receipt durability versus source/build provenance.** RVP-T0-1,
+  AK-BH-1/2/3, and AK-LN-2/AK-X-5a retain their bounded findings; missing clean source/build identity
+  is now explicit and blocks their use as AutoKernel campaign authority. ✅ 2026-08-12
 **Categories**: hardware_optimization, benchmark_methodology, tool_implementation, inference_serving
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked; ROCm 6.2 bind-mounted; llama.cpp HIP build verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`). This backend is now **ACTIVE** (priority MEDIUM). Runnable first tasks: (1) install/pin `pytorch-triton-rocm` matched to ROCm 6.2 + verify gfx90a matmul (intake-760); (2) stand up `rocprof-compute` gfx90a metric subset (C4); (3) the honest-vendor-baseline candidates that are gfx90a-*reachable* — **BitBLAS/TileLang low-bit GEMM** (intake-497/tilelang-puzzles), **NOT AITER** (gfx942-only, intake-759). GPU claim grade follows P-GPU-1; profiling a live server remains the inference owner's scheduling boundary. [was: "~July 2026; nothing executes until the card racks" — stale]
 **Priority**: MEDIUM (the substrate for [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md))
