@@ -202,6 +202,40 @@ hole in it exactly where the volume is. `queue.jsonl` therefore carries `task_te
 and `expected_occupancy`, transcribed at intake from the `task-propose` payload (`summary` is the
 fallback row text).
 
+## The AUTOMATIC dispatch gate (R-16 option B, Phase 6, 2026-08-12)
+
+The daemon's between-turns tick MAY dispatch from its `assign` authority, but **only
+deterministically and only for a queue row that carries the AUD-2 evidence above**. It never
+dispatches on discretion. `dispatch_gate()` in `session_bus_coordinator.py` refuses with one of
+exactly two codes, kept apart because each is fixed by editing a **different** field:
+
+| Code | Condition | The measured failure |
+|---|---|---|
+| `unscreened` | no `screened_by` on the queue row | overnight 2026-08-11/12 the tick emitted **4,602 would-assign picks resolving to 9 distinct rows from ONE file** — nothing in the pick path had ever re-derived whether those rows were still real |
+| `no-occupancy-estimate` | no usable `expected_occupancy.est_h` (absent, unparseable, or ≤ 0) | **F-14**: a card was fed 40-second sweeps while every occupancy instrument read idle |
+
+A refused row is **reported, never skipped**: one `dispatch-refused` advisory row per row per tick
+(not per agent — per-agent emission is how 9 rows became 4,602 records), naming the `task_id`, the
+code and the reason. It is also excluded from the automatic candidate set, so the dispatchable row
+behind it is not starved; and the write path re-checks the gate, so routing around the pick cannot
+land an assignment. Occupancy resolves through `session_bus.row_occupancy_h` — the single
+definition shared by the gate, the pick ordering and the drain depth line, so the three readings
+cannot disagree.
+
+**Human/coordinator-authored dispatch through `append` is unchanged** (warn-only). A human who
+reads the warning and proceeds is making a judgment; an autonomous tick is not allowed to.
+fleet_watch stays detect-only per its own contract.
+
+**Pick ordering** (`_pick`, deterministic, readable off one sort tuple): `priority` rank first,
+then **larger `expected_occupancy.est_h` first** — between otherwise-equal candidates the daemon
+prefers the deeper work, because a tick that hands an idle main six minutes of work leaves it idle
+again inside the same tick interval while the fleet reads busy — then `task_id` as the tiebreak.
+
+**At the boundary**, `drain` prints READY depth per lane plus the summed `est_h` of everything
+in flight (`ASSIGNED`/`CLAIMED`/`RUNNING`). An in-flight row with no estimate is counted and named
+as **unknown depth, never folded in as zero** — summing it as 0 would make a loaded fleet read
+empty, which is the reading the line exists to replace.
+
 ## Corrections are typed, so an omitted one is visible (AUD-4, 2026-08-12)
 
 Five corrections were silently missing from the 2026-08-12 wrap-up — not because anyone decided to

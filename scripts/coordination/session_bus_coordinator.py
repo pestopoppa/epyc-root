@@ -81,6 +81,7 @@ from scripts.coordination.session_bus import (  # noqa: E402
     action_addressees,
     fold_queue,
     routing_targets,
+    row_occupancy_h,
     validate_row,
 )
 
@@ -946,16 +947,103 @@ def _co_residency_verdict(row: dict, ctx: dict) -> tuple[bool, str]:
 
 _PRIORITY_RANK = {"P0": 0, "P1": 1, "P2": 2, "P3": 3, "P4": 4}
 
+# ======================================================================= R-16
+#
+# THE AUTOMATIC-DISPATCH GATE (Phase 6, operator decision R-16 option B).
+#
+# The daemon holds `assign` authority, so its tick can dispatch between turns.
+# It may do so ONLY deterministically, and ONLY for a row that carries the AUD-2
+# typed evidence. Two measured failures are the reason, and each maps to exactly
+# one refusal code below:
+#
+#   * `unscreened` — overnight 2026-08-11/12 the tick emitted 4,602 would-assign
+#     picks that resolved to 9 distinct rows sourced from ONE file. Nothing in
+#     the pick path had ever re-derived whether those rows were still real;
+#     anchor rot measured 34.5% queue-wide the same week. `screened_by` is the
+#     receipt that backlog_row_check.py ran on the row's TEXT.
+#   * `no-occupancy-estimate` — F-14: a card was fed 40-second sweeps while it
+#     read idle, because no dispatch could express how long the work should hold
+#     the hardware. `expected_occupancy.est_h` is that number.
+#
+# A gated row is never silently skipped: it is REPORTED as a `dispatch-refused`
+# advisory row naming the task_id, the code and the reason, and it is excluded
+# from the automatic candidate set so the next eligible row is not starved
+# behind it. Human/coordinator-authored dispatch through `session_bus.py append`
+# keeps its warn-only behaviour — a human who reads the warning and proceeds is
+# making a judgment; this daemon is not allowed to.
+DISPATCH_GATE_UNSCREENED = "unscreened"
+DISPATCH_GATE_NO_OCCUPANCY = "no-occupancy-estimate"
+
+
+# Occupancy is resolved by `session_bus.row_occupancy_h` (imported above) through
+# the SAME fallback `_task_assign_payload` uses — typed `expected_occupancy.est_h`
+# first, then the queue's older `est_wall_clock_h`. Deliberately shared: a gate
+# that refused a row the payload builder would have typed correctly would be two
+# rules disagreeing about one field, surfacing as an unexplainable refusal rather
+# than as the defect it is.
+
+
+def dispatch_gate(row: dict) -> tuple[bool, str, str]:
+    """May the AUTOMATIC path dispatch this row? -> (ok, code, reason).
+
+    `code` is "" when ok. Screening is checked before occupancy so a row missing
+    both reports the more fundamental defect — an unscreened row's occupancy
+    estimate is an estimate of work nobody has confirmed still exists.
+    """
+    screened = row.get("screened_by")
+    if not (isinstance(screened, str) and screened.strip()):
+        return False, DISPATCH_GATE_UNSCREENED, (
+            f"refused: unscreened — queue row {row.get('task_id')!r} carries no "
+            f"`screened_by` receipt, so nothing proves backlog_row_check.py was run "
+            f"on its text. The daemon may not dispatch on an unverified row; screen it "
+            f"(scripts/coordination/backlog_row_check.py --row \"<text>\") and re-append "
+            f"the row with screened_by, or dispatch it by hand.")
+    hours = row_occupancy_h(row)
+    if hours is None or hours <= 0:
+        return False, DISPATCH_GATE_NO_OCCUPANCY, (
+            f"refused: no occupancy estimate — queue row {row.get('task_id')!r} states no "
+            f"usable `expected_occupancy.est_h` (got {hours!r}). Without it the daemon "
+            f"cannot tell hours of work from seconds of it, which is how a card was fed "
+            f"40-second sweeps while reading idle (F-14). Add expected_occupancy "
+            f"{{est_h, basis}} to the row.")
+    return True, "", "dispatchable"
+
 
 def _pick(rows: list[dict]) -> Optional[dict]:
+    """The next row for an idle agent. Deterministic, total, and readable off
+    this tuple — no scoring model, no randomness, no host state.
+
+    Ordering, first key decides:
+      1. `priority` rank (P0 < P1 < ... < P4; an unknown/absent priority sorts
+         last at rank 9). Priority is the operator-facing dial and stays first.
+      2. LARGER `expected_occupancy.est_h` first (F-14, Phase 6): between two
+         otherwise-equal candidates the daemon prefers the DEEPER work. A tick
+         that hands an idle main a six-minute task leaves it idle again inside
+         the same tick interval, and the fleet reads as busy while doing almost
+         nothing. A row with no stated occupancy sorts as 0.0, i.e. last within
+         its priority class — but note that at the automatic path such a row has
+         already been refused by `dispatch_gate`, so this only affects advisory
+         picks and hand-dispatch reading.
+      3. `task_id`, ascending, as the tiebreak that makes the result total and
+         reproducible across ticks.
+    """
     if not rows:
         return None
     return sorted(rows, key=lambda r: (_PRIORITY_RANK.get(r.get("priority"), 9),
+                                       -(row_occupancy_h(r) or 0.0),
                                        str(r.get("task_id"))))[0]
 
 
-def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
-    """What the daemon WOULD do this tick. Pure — writes nothing."""
+def compute_advice(bus_root: Path, config: dict, epoch: int,
+                   *, gate_dispatch: bool = False) -> list[dict]:
+    """What the daemon WOULD do this tick. Pure — writes nothing.
+
+    `gate_dispatch=True` applies the R-16 automatic-dispatch gate: rows without
+    the AUD-2 typed evidence are dropped from the candidate set and reported as
+    `dispatch-refused` advisory rows. Only `apply_assignment` passes it. The
+    default is False so the advisory/manual view keeps showing a human every row
+    they are still allowed to dispatch themselves.
+    """
     roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
     latest = fold_queue(bus_root)
     snapshot = lane_snapshot_cached()
@@ -998,6 +1086,10 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     # tick. Harmless while advisory, a double-assignment once M4 has authority —
     # and misleading either way, since the advice is read as a plan.
     claimed_this_tick: set[str] = set()
+    # R-16: task_id -> (code, reason) for rows the automatic gate refused. Keyed by
+    # ROW, not by (agent, row): the refusal is a property of the row, and emitting
+    # it once per agent per tick is how 4,602 records came from 9 rows.
+    gate_refusals: dict[str, tuple[str, str]] = {}
 
     for aid, agent in agents.items():
         if agent.get("role") == "coordinator-agent":
@@ -1021,6 +1113,13 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
                 rejections.append({"task_id": row.get("task_id"),
                                    "reason": f"lane {row.get('lane')} not in {aid} roster lanes"})
                 continue
+            if gate_dispatch:
+                gate_ok, gate_code, gate_reason = dispatch_gate(row)
+                if not gate_ok:
+                    gate_refusals[str(row.get("task_id"))] = (gate_code, gate_reason)
+                    rejections.append({"task_id": row.get("task_id"),
+                                       "reason": gate_reason, "gate": gate_code})
+                    continue
             if why != "eligible":     # only a WARNING is worth carrying forward
                 admit_why[str(row.get("task_id"))] = why
             candidates.append(row)
@@ -1045,6 +1144,14 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
             "admission_note": admit_why.get(str((pick or {}).get("task_id")), ""),
             "top_rejection": _top_rejection(rejections),
         })
+    # R-16: one attributable refusal per gated row per tick, AFTER the picks, so a
+    # reader of advisory.jsonl sees both what went out and what was held back and
+    # why. Sorted for a stable tick-to-tick record.
+    for tid in sorted(gate_refusals):
+        code, reason = gate_refusals[tid]
+        advice.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                       "kind": "dispatch-refused", "task_id": tid,
+                       "gate": code, "reason": reason})
     return advice
 
 
@@ -3991,7 +4098,12 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
 
     # 4. real assignment, using the same eligibility the advisory path uses
     latest = fold_queue(bus_root)
-    for rec in compute_advice(bus_root, config, epoch):
+    for rec in compute_advice(bus_root, config, epoch, gate_dispatch=True):
+        # R-16: carry the refusals out with the rest of this tick's advisory rows,
+        # so a refused row is REPORTED rather than dropped on the floor.
+        if rec.get("kind") == "dispatch-refused":
+            emitted.append(rec)
+            continue
         if rec.get("kind") != "would-assign" or not rec.get("task_id"):
             continue
         tid, agent = rec["task_id"], rec["agent"]
@@ -3999,6 +4111,18 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
             continue
         row = latest.get(tid) or {}
         if row.get("status") != "READY":
+            continue
+        # Fail closed at the WRITE, not only at the pick. The gate above runs
+        # inside compute_advice, which the advisory path also calls with the gate
+        # off; re-checking here means the only way to auto-dispatch an unscreened
+        # row is to defeat BOTH checks, and the mutation test proves each one is
+        # load-bearing on its own.
+        gate_ok, gate_code, gate_reason = dispatch_gate(row)
+        if not gate_ok:
+            emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                            "epoch": epoch, "kind": "dispatch-refused", "task_id": tid,
+                            "gate": gate_code, "agent": agent,
+                            "reason": f"{gate_reason} [refused at the write path]"})
             continue
         hold = float((config.get("leases") or {}).get("max_hold_s", 1800))
         expires = datetime.now(timezone.utc) + timedelta(seconds=hold)
