@@ -2,8 +2,35 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-12 (adds the accepted current-v9 AutoKernel controls and reboot-gated CPU IQK handoff; clean instrument, independent async-prefetch replay, prior diagnostic provenance, Arena, real-MMQ WGM, C6, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-12 (adds INF-03's live restart-safe checkpoint and evaluator-window claim correction; current-v9 controls, CPU IQK boundary, and prior findings retained)
 **Sources**: 102+ documents
+
+## Compiled Update — 2026-08-12 (INF-03 live campaign and GPU-claim scope)
+
+**Confidence: verified receipts and process/claim teardown; partial campaign, no controller ranking.**
+
+The availability-conditioned AgentKernelArena campaign is now executing from a source-bound,
+restart-safe r3 identity after two fail-closed attempts. R1 is invalid because a dotted task path
+escaped the exact workspace and claim release was incomplete. R2 proved the containment repair on its
+baseline, then stopped when the strict parser rejected provider JSON with extra fields. The integrated
+provider schemas retain that strict parser rather than weakening it.
+
+R3's starting-state baseline and Claude/Codex 2h and 8h checkpoints are terminal. Both controller
+checkpoints passed centralized compilation and correctness with four valid baseline and four valid
+optimized timing cases; their diagnostic speedups were `0.9859560018476856` and
+`0.8878376233551375`. These terminal cells are restart inputs, not a panel ranking.
+
+The attempted 32h checkpoint exposed a separate resource-governance defect: the cell held its MI210
+claim while planner/actor work did not use the GPU. The owner stopped only the captured runner,
+released its exact claim, and removed its exact surviving actor container. R3 is paused with the 2h
+and 8h cells banked. Before resume, device claims must surround the centralized evaluator's actual GPU
+windows rather than the whole controller wall-time budget.
+
+### Source References (2026-08-12 INF-03 checkpoint)
+
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r1/r2 invalidation boundaries, r3 receipts, and claim-scope task
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact campaign, receipt, process, claim, and measured-speedup evidence
+- [Vidya adapter source table](../scripts/vidya/adapters/README.md) — producer-side round-trip measurement status and no-backfill boundary
 
 ## Compiled Update — 2026-08-12 (current-v9 controls and CPU IQK boundary)
 

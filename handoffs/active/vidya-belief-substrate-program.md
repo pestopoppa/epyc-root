@@ -383,7 +383,11 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       separate directional rows with scored-repetition bases. Do not infer them later from the
       completed 2026-08-11 receipt; that record predates the hook. ✅ 2026-08-11 — research
       `controller/arena_roundtrip.py` is the prospective writer; its two rows pass the root
-      `autokernel_aux_receipt.py` projection contract end to end. Older receipts remain untouched.
+      `autokernel_aux_receipt.py` projection contract end to end. INF-03 r3's terminal 2h and 8h
+      Claude/Codex checkpoints are the first post-hook live evidence: belief receipts
+      `05cb70a0d6f670796f93bdc06c4a681578d044f7929839688a4b2c5b7a491370` and
+      `4c01642993c1120eac4885714e3e2780845e618913c11676c6decef290fded61` each carry the two
+      producer-authored rows. Older receipts remain untouched.
 - [x] SC21 **Classify GEAK/Arena preflight findings deliberately.** Source pin/license, physical
       gfx90a identity, registry shape and spoof refusal are verified findings, not ordinal
       measurements and not literature. Either declare one shared `verification` source-class ladder
