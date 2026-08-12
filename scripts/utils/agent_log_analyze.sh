@@ -13,11 +13,21 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=../lib/env.sh
 source "${SCRIPT_DIR}/../lib/env.sh"
+# shellcheck source=./agent_log_read.sh
+source "${SCRIPT_DIR}/agent_log_read.sh"
 
-LOG_FILE="${LOG_DIR}/agent_audit.log"
+# Writes are sharded one-file-per-writer (scripts/utils/agent_log.sh) to avoid
+# concurrent-append contention. Every function below must see the WHOLE fleet,
+# not one shard, or --summary/--errors/etc. silently report one agent's
+# activity as if it were everyone's. Materialize the cross-shard, timestamp-
+# merged stream into one temp file up front so the rest of this script (many
+# `$LOG_FILE` references below) is unchanged and still operates on one file.
+LOG_FILE="$(mktemp "${TMPDIR:-/tmp}/agent_audit_merged.XXXXXX")"
+trap 'rm -f "$LOG_FILE"' EXIT
+agent_log_merged "${LOG_DIR}" >"$LOG_FILE"
 
-if [[ ! -f "$LOG_FILE" ]]; then
-  echo "No audit log found at $LOG_FILE"
+if [[ ! -s "$LOG_FILE" ]]; then
+  echo "No audit log entries found under ${LOG_DIR} (checked $(agent_log_files "${LOG_DIR}" | wc -l) file(s))"
   exit 1
 fi
 
@@ -57,13 +67,13 @@ summary() {
   local sessions
   sessions=$(grep -o '"session":"[^"]*"' "$LOG_FILE" | sort -u | wc -l)
   local errors
-  errors=$(grep -c '"level":"ERROR"' "$LOG_FILE" || echo 0)
+  errors=$(grep -c '"level":"ERROR"' "$LOG_FILE" || true)
   local warnings
-  warnings=$(grep -c '"level":"WARN"' "$LOG_FILE" || echo 0)
+  warnings=$(grep -c '"level":"WARN"' "$LOG_FILE" || true)
   local commands
-  commands=$(grep -c '"cat":"CMD_INTENT"' "$LOG_FILE" || echo 0)
+  commands=$(grep -c '"cat":"CMD_INTENT"' "$LOG_FILE" || true)
   local tasks
-  tasks=$(grep -c '"cat":"TASK_START"' "$LOG_FILE" || echo 0)
+  tasks=$(grep -c '"cat":"TASK_START"' "$LOG_FILE" || true)
 
   echo "Total log entries:  $total_entries"
   echo "Unique sessions:    $sessions"
@@ -189,9 +199,9 @@ list_sessions() {
 
     local cmd_count
 
-    cmd_count=$(grep "\"session\":\"$session\"" "$LOG_FILE" | grep -c '"cat":"CMD_INTENT"' || echo 0)
+    cmd_count=$(grep "\"session\":\"$session\"" "$LOG_FILE" | grep -c '"cat":"CMD_INTENT"' || true)
     local err_count
-    err_count=$(grep "\"session\":\"$session\"" "$LOG_FILE" | grep -c '"level":"ERROR"' || echo 0)
+    err_count=$(grep "\"session\":\"$session\"" "$LOG_FILE" | grep -c '"level":"ERROR"' || true)
 
     echo -e "${GREEN}$session${NC}"
     echo "  Started: $ts"

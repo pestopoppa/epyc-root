@@ -2552,12 +2552,35 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   mechanism — the path was never tracked in any commit, so `git rm --cached` could not have deleted
   it even in principle. C48 makes it moot for *liveness*, but something deleted a live process's
   record and the cause is unestablished. Closes as either a named cause or an explicit written-off.
-- [ ] **Per-agent shards for the concurrently-appended log files.** Option 2 from the
-  `agent_audit.log` adjudication, which untracking deliberately did not implement. Untracking removed
-  the merge tax at the cost of the git copy; per-agent files remove it while keeping tracking, and the
-  same shape applies to any other all-writers-one-file artifact on this plane. Decide it as a policy
-  once rather than per-file — and note that the untrack has already converted two paths from *merge
-  contention* into *`clean -x` exposure*, which is the cost this option avoids.
+- [x] **Per-agent shards for the concurrently-appended log files.** ✅ 2026-08-12 Implemented for
+  `agent_audit.log` (the only file in scope this pass — `llama.log`/`main.log` from `334d04b3` are a
+  different producer, llama-server itself, not this bash/python plane, and stay out of scope).
+  `scripts/utils/agent_log.sh` now writes `logs/agent_audit-<AGENT_ID>.log` (falls back to
+  `agent_audit-unattributed.log` when `AGENT_ID` is unset) instead of the single shared file;
+  `scripts/hooks/earlyoom_audit.sh` gets its own `agent_audit-earlyoom.log` shard too, since it was a
+  SEVENTH, previously-undocumented writer bypassing `agent_log.sh` entirely. New shared helper
+  `scripts/utils/agent_log_read.sh` (`agent_log_files`/`agent_log_merged`, glob `agent_audit*.log`,
+  plain lexical `sort` — all entries share ts-first JSON key order so this sorts by timestamp) is
+  wired into every reader in the same commit: `agent_log.sh`'s own `agent_log_tail`/`agent_log_session`,
+  `agent_log_analyze.sh` (materializes the merged stream once, rest of the script unchanged),
+  `repo_readiness_scorer.py` (glob-broadened `exists_any` patterns), `session_init.sh` (updated
+  echo), `scripts/backup/MANIFEST.yaml` (glob so new shards aren't silently dropped from backup
+  coverage). `.gitignore` restores tracking for the shard glob (`!logs/agent_audit*.log`) — the whole
+  point, vs. the untrack-and-`clean -x`-expose precedent. Legacy `agent_audit.log` stays tracked,
+  frozen (no longer written), still read via the same glob — verified backward-compatible.
+  **Mutation-tested both directions** (scratch `LOG_DIR`, real interpreters: bash 5.2, python3.13 — no
+  venv pinned for this script, `#!/usr/bin/env python3` shebang, checked): a naive single-shard read
+  (`wc -l < agent_audit-mainA.log` or legacy-only) undercounts (1 of 4 fleet-wide entries); the merged
+  reader (`agent_log_tail`, `agent_log_analyze.sh --summary`) correctly shows all 4 across mainA,
+  mainB, earlyoom and the legacy file, from a peer (mainC) that wrote nothing itself. Also fixed a
+  latent pre-existing bug surfaced by the same test: `grep -c ... || echo 0` in `agent_log_analyze.sh`
+  double-printed on a genuine zero-match category (grep -c already emits "0" AND exits 1) — now
+  `|| true`. NOT fixed (flagged, out of scope): several other `grep | while read` pipelines in that
+  same script are still `pipefail`-fragile on an all-zero-match category; harmless today because the
+  merged stream always includes the large pre-existing legacy file, but noted for a future pass.
+  Could not run the repo's pytest suite (no `pytest` module / venv reachable in this sandbox); verified
+  `tests/validate/test_repo_readiness_scorer.py`'s exact fixture and assertions by manual replay
+  instead (both pass unchanged).
 - [ ] **Worktree isolation phase 2 — the cutover.** Phase 1 items 1–5 are landed above; nothing is
   migrated. `scripts/coordination/WORKTREE_MIGRATION.md` is written and `setup_main_worktrees.sh` is
   verified against a throwaway, but the five mains still share `/workspace` — which is what forced a

@@ -352,7 +352,7 @@ def build_criteria() -> list[Criterion]:
         exists_any(".devcontainer/**", "scripts/setup.sh", "scripts/session/session_init.sh",
                    "flake.nix", "CMakePresets.json"))
     add(3, "Debugging & Observability", "structured_obs", "Has structured logs, trace, or metrics plumbing.",
-        exists_any("scripts/halo/**", "logs/agent_audit.log", "orchestration/instrument_eras.yaml"),
+        exists_any("scripts/halo/**", "logs/agent_audit*.log", "orchestration/instrument_eras.yaml"),
         file_contains(("src/**/*.py", "scripts/**/*.py"), (r"jsonl", r"trace", r"metrics?")))
     add(3, "Security", "security_automation", "Automates secret/PII/security checks.",
         exists_any("scripts/hooks/pii_precommit.sh", ".github/workflows/*dependabot*",
@@ -411,7 +411,7 @@ def build_criteria() -> list[Criterion]:
         exists_any("scripts/session/emergency_cleanup.sh", "scripts/nightshift/inference_guard.sh",
                    "scripts/server/orchestrator_stack.py"))
     add(5, "Debugging & Observability", "closed_loop_obs", "Feeds traces/logs into closed-loop analysis.",
-        exists_any("logs/agent_audit.log", "scripts/halo/convert_tap_to_otel.py",
+        exists_any("logs/agent_audit*.log", "scripts/halo/convert_tap_to_otel.py",
                    "orchestration/repl_memory/**"))
     add(5, "Security", "autonomous_security_review", "Has agent-usable security review or policy gates.",
         exists_any("handoffs/active/security-review-skill.md", "scripts/hooks/pii_precommit.sh",

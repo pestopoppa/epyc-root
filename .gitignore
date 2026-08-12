@@ -9,7 +9,9 @@ __pycache__/
 
 # Runtime
 logs/*.log
-!logs/agent_audit.log
+# agent_audit.log (legacy, frozen) + agent_audit-<agent-id>.log (per-writer
+# shards, 2026-08-12 — scripts/utils/agent_log.sh). One glob, both kept tracked.
+!logs/agent_audit*.log
 *.db
 
 # IDE

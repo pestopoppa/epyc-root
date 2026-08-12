@@ -1,7 +1,10 @@
 #!/bin/bash
 # agent_log.sh — Append-only audit logging for AI agent actions
 # Source this file in scripts: source /path/to/scripts/utils/agent_log.sh
-# All logs are append-only to ${LOG_DIR}/agent_audit.log
+# Writes are SHARDED one-file-per-writer (see AGENT_LOG_FILE below) to remove
+# the concurrent-append merge tax that a single shared file imposes on five+
+# concurrent agents; reads are merged back across all shards (agent_log_read.sh)
+# so no reader silently narrows its view to one writer's slice.
 
 set -euo pipefail
 
@@ -9,11 +12,26 @@ set -euo pipefail
 _AGENT_LOG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=../lib/env.sh
 source "${_AGENT_LOG_DIR}/../lib/env.sh"
+# shellcheck source=./agent_log_read.sh
+source "${_AGENT_LOG_DIR}/agent_log_read.sh"
 unset _AGENT_LOG_DIR
 
 # Configuration (use LOG_DIR from env.sh)
 AGENT_LOG_DIR="${LOG_DIR}"
-AGENT_LOG_FILE="${AGENT_LOG_DIR}/agent_audit.log"
+# Per-writer shard. AGENT_ID is the fleet roster-id convention (mainA, mainB,
+# auditor, coordinator-agent, inference, ...; see scripts/coordination/hardware_backfill.py
+# and coordination/session-bus/BUS_PROTOCOL.md for the same identity). Callers
+# that have not adopted it yet fall back to a shared but still non-legacy
+# "unattributed" shard rather than reverting to the old contended file.
+# Sanitized: never trust env input verbatim in a path component.
+_AGENT_LOG_SHARD_ID="${AGENT_ID:-unattributed}"
+_AGENT_LOG_SHARD_ID="${_AGENT_LOG_SHARD_ID//[^A-Za-z0-9_.-]/_}"
+AGENT_LOG_FILE="${AGENT_LOG_DIR}/agent_audit-${_AGENT_LOG_SHARD_ID}.log"
+unset _AGENT_LOG_SHARD_ID
+# Legacy monolithic log: frozen (no longer written) as of the shard cutover,
+# kept on disk and in git for pre-cutover history. Readers still see it via
+# agent_log_files/agent_log_merged (agent_audit*.log glob), never via this var.
+AGENT_LOG_LEGACY_FILE="${AGENT_LOG_DIR}/agent_audit.log"
 AGENT_SESSION_FILE="${AGENT_LOG_DIR}/.current_session"
 
 # Ensure log directory exists
@@ -177,15 +195,20 @@ agent_session_end() {
   rm -f "$AGENT_SESSION_FILE"
 }
 
-# Helper to view recent logs
+# Helper to view recent logs — merged across ALL shards + the legacy file, not
+# just this process's own AGENT_LOG_FILE, or a concurrent peer's activity
+# (or the fleet's history before this session existed) would be invisible.
 agent_log_tail() {
   local lines="${1:-50}"
-  tail -n "$lines" "$AGENT_LOG_FILE" | jq -r '. | "\(.ts) [\(.level)] \(.cat): \(.msg)"' 2>/dev/null || tail -n "$lines" "$AGENT_LOG_FILE"
+  agent_log_merged "$AGENT_LOG_DIR" | tail -n "$lines" | jq -r '. | "\(.ts) [\(.level)] \(.cat): \(.msg)"' 2>/dev/null \
+    || agent_log_merged "$AGENT_LOG_DIR" | tail -n "$lines"
 }
 
-# Helper to view logs for current session
+# Helper to view logs for current session — a session can span shards (e.g. an
+# explicit AGENT_ID change mid-run), so this also merges across all shards.
 agent_log_session() {
-  grep "\"session\":\"$AGENT_SESSION_ID\"" "$AGENT_LOG_FILE" | jq -r '. | "\(.ts) [\(.level)] \(.cat): \(.msg)"' 2>/dev/null || grep "\"session\":\"$AGENT_SESSION_ID\"" "$AGENT_LOG_FILE"
+  agent_log_merged "$AGENT_LOG_DIR" | grep "\"session\":\"$AGENT_SESSION_ID\"" | jq -r '. | "\(.ts) [\(.level)] \(.cat): \(.msg)"' 2>/dev/null \
+    || agent_log_merged "$AGENT_LOG_DIR" | grep "\"session\":\"$AGENT_SESSION_ID\""
 }
 
 # Export functions

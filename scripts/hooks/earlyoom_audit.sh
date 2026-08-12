@@ -15,10 +15,17 @@
 # Design: fork-free on the hot path (bash parameter expansion + builtins only) —
 # it fires in the immediate aftermath of an OOM event when memory is still
 # recovering. Append-only; never blocks earlyoom.
+#
+# Shard: this is a host-level writer independent of any agent's AGENT_ID, and
+# runs concurrently with every agent's own agent_log.sh shard (scripts/utils/
+# agent_log.sh), so it gets its own dedicated shard file rather than either
+# colliding with a main's shard or reverting to the old shared monolithic log.
+# Readers merge it back in via the agent_audit*.log glob
+# (scripts/utils/agent_log_read.sh) — same "session":"earlyoom" value as before.
 set -u
 export LC_ALL=C   # byte-wise semantics for the control-char range below
 
-LOG="${EARLYOOM_AUDIT_LOG:-/mnt/raid0/llm/epyc-root/logs/agent_audit.log}"
+LOG="${EARLYOOM_AUDIT_LOG:-/mnt/raid0/llm/epyc-root/logs/agent_audit-earlyoom.log}"
 
 pid="${EARLYOOM_PID:-?}"
 name="${EARLYOOM_NAME:-?}"

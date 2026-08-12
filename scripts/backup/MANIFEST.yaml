@@ -33,8 +33,8 @@ tiers:
         - agents/
         - .claude/commands/
         - .claude/skills/
-        - logs/agent_audit.log
-      reason: "Cross-repo decisions, durable findings, agent roles, skills, and audit trail."
+        - logs/agent_audit*.log
+      reason: "Cross-repo decisions, durable findings, agent roles, skills, and audit trail (2026-08-12: writes sharded one-file-per-writer under agent_audit-<id>.log to remove concurrent-append contention; legacy agent_audit.log is frozen history. Glob covers both — a literal path here would silently drop new shards from backup coverage)."
       copy_mode: file
 
     - id: orchestrator-ledger-state
