@@ -152,12 +152,19 @@ def test_c2_relay_preserves_author_fans_out_and_is_idempotent(bus_root: Path) ->
     first = coordinator.relay_outbox_messages(bus_root, roster, epoch=7)
     assert len([row for row in first if row["kind"] == "relayed"]) == 3
     bob_rows = _read_jsonl(bus_root / "inbox" / "bob.jsonl")
-    assert {(row["relayed_src"], row["from"], row["to"]) for row in bob_rows} == {
-        (direct["id"], "alice", "bob"), (wildcard["id"], "alice", "bob"),
+    # ADDRESSING (2026-08-12): the relay no longer rewrites `to` on a fan-out copy.
+    # The DIRECT message is addressed to bob and keeps to='bob'; the WILDCARD reaches
+    # bob as a CC and keeps to='*', so bob can tell "this is mine" from "I was on the
+    # list". Until today both arrived as to='bob' and were indistinguishable — which
+    # is half of why 83% of the fleet's action_required triage was other people's work.
+    assert {(row["relayed_src"], row["from"], row["to"], row.get("cc_delivery"))
+            for row in bob_rows} == {
+        (direct["id"], "alice", "bob", None), (wildcard["id"], "alice", "*", True),
     }
     coordinator_rows = _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
-    assert [(row["relayed_src"], row["from"], row["to"]) for row in coordinator_rows] == [
-        (wildcard["id"], "alice", "coordinator-agent")
+    assert [(row["relayed_src"], row["from"], row["to"], row.get("cc_delivery"))
+            for row in coordinator_rows] == [
+        (wildcard["id"], "alice", "*", True)
     ]
     assert coordinator.relay_outbox_messages(bus_root, roster, epoch=7) == []
     assert len(_read_jsonl(bus_root / "inbox" / "bob.jsonl")) == 2
@@ -2911,7 +2918,7 @@ def test_the_triage_trailer_advertises_the_bulk_form_when_it_is_needed(
     capsys.readouterr()
     bus.print_triage(bus_root, "coordinator-agent")
     out = capsys.readouterr().out
-    assert "1 item(s)" in out and "corr_ids:" not in out
+    assert "1 MUST-ACT item(s)" in out and "corr_ids:" not in out
 
 
 # ----------------------------------------------------------------- C28 / C38

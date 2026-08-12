@@ -69,6 +69,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.coordination.session_bus import (  # noqa: E402
+    CC_DELIVERY_FIELD,
     COORDINATOR_DAEMON,
     DEFAULT_BUS_ROOT,
     MSG_SCHEMA_VERSION,
@@ -77,7 +78,9 @@ from scripts.coordination.session_bus import (  # noqa: E402
     _append_jsonl,
     _read_jsonl,
     _write_atomic,
+    action_addressees,
     fold_queue,
+    routing_targets,
     validate_row,
 )
 
@@ -2146,9 +2149,17 @@ def intake_proposals(bus_root: Path, latest: dict[str, dict], reports: dict[str,
                    "epoch": epoch, "origin": f"proposed-by:{msg.get('from')}",
                    "spec_ref": spec_ref_with_content_anchor(pl.get("spec_ref"))}
             for key in ("priority", "priority_class", "contention_class", "role_affinity",
-                        "est_wall_clock_h", "replay_eligible"):
+                        "est_wall_clock_h", "replay_eligible",
+                        # AUD-2: carry the dispatch identity + its receipts onto the
+                        # row, so the daemon's own task-assign can be typed without
+                        # re-reading the handoff at assign time (when the anchor has
+                        # already moved).
+                        "task_text", "screened_by", "expected_occupancy"):
                 if pl.get(key) is not None:
                     row[key] = pl[key]
+            # A proposal's `summary` IS the row text when nothing better was given.
+            if not row.get("task_text") and pl.get("summary"):
+                row["task_text"] = pl["summary"]
             rows.append(row)
             advisory.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
                              "epoch": epoch, "kind": "intake", "task_id": tid,
@@ -2647,7 +2658,13 @@ def _append_inbox(bus_root: Path, msgs: list[dict], epoch: int) -> list[dict]:
     """Deliver messages to recipient inboxes (daemon-owned). Returns what it wrote."""
     written = []
     for msg in msgs:
-        to = msg.get("to")
+        # `_deliver_to` separates DELIVERY from ADDRESSING (2026-08-12). A CC copy
+        # must land in the reader's inbox while keeping the ORIGINAL `to`, so the
+        # reader can tell "you were cc'd" from "this is yours". Private, stripped
+        # here: the msg schema is additionalProperties:false and nothing but the
+        # relay ever needs it.
+        msg = dict(msg)
+        to = msg.pop("_deliver_to", None) or msg.get("to")
         if not to:
             continue
         path = bus_root / "inbox" / f"{to}.jsonl"
@@ -3684,7 +3701,12 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
             # in the loop by design. An unreachable recipient (roster row gone, or
             # role retired) is a defect advisory, never a silent drop — a routing
             # field that silently discards is worse than none.
-            for rid in (row.get("needs_routing_to") or []):
+            # 2026-08-12: `assignee` and `cc` deliver too, by the identical
+            # argument — a routing field that reads like delivery and is only a
+            # hint is the shape that misleads. `routing_targets` is the ONE
+            # definition of "who must this reach", shared with triage, so the
+            # relay and the recipient's queue can never disagree about it.
+            for rid in routing_targets(row):
                 rid = str(rid)
                 if rid == sender or rid in targets:
                     continue
@@ -3746,12 +3768,28 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
                         notified.add((src, rid))
                     already_flagged.add((src, rid))
                 targets.append(rid)
+            # ADDRESSING (2026-08-12): who, if anyone, is this row's ASSIGNEE?
+            # Before today the relay set `to = target` on every fan-out copy, so
+            # 100% of delivered rows looked directly addressed and a CC was
+            # structurally indistinguishable from an assignment on arrival. That
+            # is half of why 499 action_required rows sat across the fleet's
+            # inboxes with only 86 sole-target. A legacy multi-target row has no
+            # assignee by construction — a request N agents share is nobody's —
+            # so every copy of it is a CC.
+            addressees = action_addressees(row)
+            primary = addressees[0] if len(addressees) == 1 else None
             for target in targets:
                 if src in delivered_src.get(target, set()):
                     continue
                 # Preserve the original author and payload; only the envelope is new.
                 msg = {k: v for k, v in row.items() if k not in ("id", "ts")}
-                msg["to"] = target
+                if primary is not None and target == primary:
+                    msg["to"] = target          # the assignee copy IS addressed
+                elif target == str(row.get("to") or ""):
+                    pass                        # already the addressee; leave `to`
+                else:
+                    msg[CC_DELIVERY_FIELD] = True   # reach-only: `to` stays the original
+                msg["_deliver_to"] = target
                 msg["relayed_src"] = src
                 _append_inbox(bus_root, [msg], epoch)
                 delivered_src.setdefault(target, set()).add(src)
@@ -3766,6 +3804,47 @@ def relay_outbox_messages(bus_root: Path, roster: list[dict], epoch: int,
     # and this ordering makes that impossible.
     save_relay_state(bus_root, {"delivered": delivered_src, "flagged": already_flagged})
     return advisory
+
+
+def _task_assign_payload(row: dict, epoch: int, expires) -> dict:
+    """AUD-2: the daemon's own task-assign, typed.
+
+    The daemon emits task-assign under authority `assign`, so it is subject to
+    the same vocabulary as a human author — a typed dispatch that only humans
+    have to fill in is a rule with a hole in it exactly where the volume is.
+    Everything here comes from the QUEUE ROW; nothing is invented. `task_text`
+    falls back to the spec_ref and then the task_id rather than being omitted,
+    because a dispatch with no identity is the failure this field exists to stop
+    — but the fallback SAYS it is a fallback, so a reader can tell a transcribed
+    row text from a task id wearing one.
+    """
+    payload = {
+        "lane": row.get("lane"),
+        "epoch": epoch,
+        "lease_expires_ts": expires.isoformat(timespec="seconds"),
+        "task_text": (row.get("task_text")
+                      or (f"[no task_text on the queue row; spec: {row['spec_ref']}]"
+                          if row.get("spec_ref") else
+                          f"[no task_text on the queue row; task_id: {row.get('task_id')}]")),
+    }
+    if row.get("spec_ref"):
+        payload["spec_ref"] = row["spec_ref"]
+        payload["row_ref"] = row["spec_ref"]   # HINT only — task_text is the identity
+    if row.get("screened_by"):
+        payload["screened_by"] = row["screened_by"]
+    occupancy = row.get("expected_occupancy")
+    if isinstance(occupancy, dict) and occupancy:
+        payload["expected_occupancy"] = occupancy
+    elif row.get("est_wall_clock_h") is not None:
+        # F-14: state the occupancy even when the only source is the queue's own
+        # estimate, and name that source, so nobody reads a transcription as a
+        # measurement.
+        payload["expected_occupancy"] = {
+            "est_h": float(row["est_wall_clock_h"]),
+            "basis": "queue.est_wall_clock_h (proposer's estimate, not measured)",
+            **({"gating": row["gating"]} if row.get("gating") else {}),
+        }
+    return payload
 
 
 def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
@@ -3881,10 +3960,9 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
             **_carry_spec_ref(row),
             "attempt": int(row.get("attempt") or 0)})
         _append_inbox(bus_root, [{"to": agent, "kind": "task-assign", "task_id": tid,
+                                  "assignee": agent, "action_required": True,
                                   "requires_ack": True, "ack_deadline_s": 600,
-                                  "payload": {"lane": row.get("lane"), "epoch": epoch,
-                                              "lease_expires_ts": expires.isoformat(timespec="seconds"),
-                                              **({"spec_ref": row["spec_ref"]} if row.get("spec_ref") else {})}}],
+                                  "payload": _task_assign_payload(row, epoch, expires)}],
                       epoch)
         emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
                         "kind": "assigned", "agent": agent, "task_id": tid})

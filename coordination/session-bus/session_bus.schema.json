@@ -106,6 +106,25 @@
           "description": "Migration provenance: the roster id this row was authored under, before the 2026-07-29 rename (claude-gpu-lane / claude-main / fable-auditor / codex -> the current ids). Written by the rename migration onto the 217 rows it rewrote, so `from`/`to` could be updated without losing who actually sent the message. PERMITTED 2026-08-11 (C34, second half): the migration wrote it, `additionalProperties: false` forbade it, and the relay therefore refused all 217 rows — including five operator token-requests stranded for two weeks. Stripping it was the alternative and is not available: an outbox has exactly one writer and it is not the daemon, so the choice was to accept the provenance or lose the mail. Historical only; nothing should write this field again.",
           "$comment": "Underscore-prefixed by convention: tool-written provenance, not agent-authored content."
         },
+        "assignee": {
+          "type": "string",
+          "minLength": 1,
+          "description": "ADDRESSING (2026-08-12, Phase 4): the ONE roster id that must ACT on this message. `action_required: true` REQUIRES an addressee that resolves to exactly one party — `assignee` is that field, and `append` refuses `action_required` with more than one routing target. (Transitional: a legacy row with `needs_routing_to` of length 1 and no `assignee` still resolves, so history keeps working; new rows should set `assignee`.) Measured 2026-08-12: 499 `action_required` rows sat across the fleet's inboxes and only 86 were sole-target, so 83% of what an agent had to triage was not its own — because one boolean applied to every member of `needs_routing_to` and the schema had no way to say 'read this, you owe nothing'. That way is `cc`. N agents each owing a DISTINCT action is N messages, not one message with N targets."
+        },
+        "cc": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "ADDRESSING (2026-08-12, Phase 4): REACH-ONLY readers. A cc entry never implies an action, never owes an ack or a disposition, and is cleared by advancing a cursor — it appears in `drain --triage` as a one-line FYI, never as a MUST-ACT item. Entries must be roster ids (`append` refuses unknowns). Use this for the fleet-wide report; use `assignee` for the one party that must do something."
+        },
+        "cc_delivery": {
+          "type": "boolean",
+          "description": "Tool-written marker set by the coordinator-daemon relay on a CC copy: this delivery reached you because you were on `cc`/`needs_routing_to`, NOT because you are the addressee. The copy PRESERVES the original `to` for exactly this reason — before 2026-08-12 the relay rewrote `to` to each fan-out target, so 100% of delivered rows looked directly addressed and a CC was structurally indistinguishable from an assignment."
+        },
         "needs_routing_to": {
           "type": "array",
           "items": {
@@ -118,7 +137,7 @@
         },
         "action_required": {
           "type": "boolean",
-          "description": "STRUCTURAL action intent (2026-07-29): the routed-to agents (needs_routing_to, else a concrete `to`) must ACT, not merely receive. Stays in their `triage` queue until dispositioned by an outbox row with matching corr_id that is either a substantive kind (anything but a bare ack) or an ack with payload.disposition in {done, declined, handed-off, superseded}. A bare ack marks it acked-but-unactioned and it KEEPS appearing: acknowledgment is receipt, not action. `append` refuses action_required on to='*' with needs_routing_to unset — intent with no addressee is the failure shape this field exists to kill."
+          "description": "STRUCTURAL action intent (2026-07-29). SINCE 2026-08-12 IT IS SINGULAR: exactly ONE party may owe the action, named by `assignee` (or, transitionally, a single-entry `needs_routing_to`, else a concrete `to`). `append` REFUSES `action_required: true` with more than one routing target — reach-only readers belong in `cc`. The routed-to agent must ACT, not merely receive. Stays in their `triage` queue until dispositioned by an outbox row with matching corr_id that is either a substantive kind (anything but a bare ack) or an ack with payload.disposition in {done, declined, handed-off, superseded}. A bare ack marks it acked-but-unactioned and it KEEPS appearing: acknowledgment is receipt, not action. `append` refuses action_required on to='*' with needs_routing_to unset — intent with no addressee is the failure shape this field exists to kill."
         }
       },
       "allOf": [
@@ -146,6 +165,7 @@
                   "lease_expires_ts",
                   "epoch"
                 ],
+                "description": "AUD-2 (2026-08-12): a typed dispatch vocabulary. Measured across the 55 task-assign messages on the live bus: 171 DISTINCT payload keys — which is why no content rule about a dispatch was mechanizable, and why briefs asserted constraints nobody imposed. The fields below are that vocabulary. `task_text` is REQUIRED AT AUTHORING (enforced in `cmd_append`, not by `required` here, because the 119 pre-migration task-assign rows on the live bus must keep validating — authoring-side enforcement only). `additionalProperties` is deliberately NOT false for the same reason; `append` WARNS on keys outside this vocabulary instead of refusing.",
                 "properties": {
                   "spec_ref": {
                     "type": "string"
@@ -166,6 +186,80 @@
                   "epoch": {
                     "type": "integer",
                     "minimum": 0
+                  },
+                  "task_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "REQUIRED at authoring. The dispatch IDENTITY: the backlog row's TEXT, verbatim. Not a line reference — anchor rot measured 34.5% queue-wide on 2026-08-11 (up from 27% twelve days earlier), so `file.md:LINE` names a different row every few weeks while the text keeps resolving."
+                  },
+                  "row_ref": {
+                    "type": "string",
+                    "description": "OPTIONAL HINT ONLY — `handoff.md:LINE` or `handoff.md#anchor`. Demoted from identity to hint on 2026-08-12: when it disagrees with `task_text`, the text wins. Re-resolve with scripts/coordination/backlog_row_check.py --row \"<text>\"."
+                  },
+                  "screened_by": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "RECEIPT that the row was screened before dispatch, e.g. \"backlog_row_check.py@2026-08-12T09:14Z:WELL-FORMED\". A screener proves WELL-FORMED, not STILL-NEEDED — four of eight rows screened on 2026-08-12 were already satisfied in reality — so this is evidence the check ran, never evidence the premise holds."
+                  },
+                  "expected_occupancy": {
+                    "type": "object",
+                    "required": [
+                      "est_h"
+                    ],
+                    "description": "F-14 fix: how long this work should HOLD the hardware. The coordinator queued seconds-long work at a card that needed hours of occupancy; nothing in the dispatch made the mismatch expressible, so nobody could see it. Declaring it forces the question at composition time.",
+                    "properties": {
+                      "est_h": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "basis": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "where the estimate comes from (a prior run, a queue field, a guess said out loud)"
+                      },
+                      "gating": {
+                        "enum": [
+                          "cpu",
+                          "gpu",
+                          "both",
+                          "none"
+                        ]
+                      }
+                    }
+                  },
+                  "constraints": {
+                    "description": "F-20 fix: a brief asserted `lanes: [none]` that the roster never imposed. A RESTATED constraint cites the line it derives from, or it is not a constraint — it is the author's recollection wearing the roster's authority. THE TYPED FORM IS THE ARRAY: each entry an object with `constraint` + a REQUIRED `source`. The bare-string form is legacy only (a prose blob of constraints, source unstated, which is exactly the F-20 shape) — it still validates so the 119 pre-migration rows keep working, and `append` WARNS on it.",
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "constraint",
+                            "source"
+                          ],
+                          "properties": {
+                            "constraint": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "source": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "file:line, msg id, or config key the constraint derives from"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "brief_path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Path to the full brief. REQUIRED once the payload exceeds the size cap enforced in `cmd_append` (draft-7 has no size keyword, so the cap lives in code): a dispatch too big to read in a triage report belongs in a file the assignee opens, with the row carrying the pointer."
                   }
                 }
               }
@@ -392,6 +486,53 @@
                   "classification": {
                     "type": "string",
                     "description": "how lane/gating were decided \u2014 'heuristic' means provisional"
+                  },
+                  "task_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "AUD-2: the backlog row's TEXT. Transcribed onto the queue row so the daemon's own task-assign can carry the dispatch identity without re-reading the handoff."
+                  },
+                  "screened_by": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "expected_occupancy": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "finding"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "description": "AUD-4 (2026-08-12): a finding may CORRECT an earlier message. Five corrections were silently missing from the 2026-08-12 wrap-up because a correction was indistinguishable from any other finding, so nothing could enumerate them. `corrects` makes the relation structural and `session_bus.py corrections --agent <id>` generates the wrap-up section from it; an omitted correction is now a visible omission rather than an invisible one. Both fields are OPTIONAL: an ordinary finding corrects nothing.",
+                "properties": {
+                  "corrects": {
+                    "type": "string",
+                    "pattern": "^msg-",
+                    "description": "the msg id this finding corrects"
+                  },
+                  "provenance": {
+                    "enum": [
+                      "operator-verbatim",
+                      "paraphrase",
+                      "inferred"
+                    ],
+                    "description": "how the corrected fact is known. `operator-verbatim` = the operator's own words, quotable; `paraphrase` = the operator's meaning in the author's words; `inferred` = the author's conclusion from evidence, which the operator never said."
                   }
                 }
               }
@@ -531,6 +672,20 @@
         "spec_ref": {
           "type": "string",
           "description": "spec stays OUT of the row"
+        },
+        "task_text": {
+          "type": "string",
+          "minLength": 1,
+          "description": "AUD-2 (2026-08-12): the backlog row's TEXT — the dispatch identity, carried from the task-propose payload at intake so the daemon's own `task-assign` can populate payload.task_text without re-reading the handoff. `spec_ref` remains the pointer; this is the identity."
+        },
+        "screened_by": {
+          "type": "string",
+          "minLength": 1,
+          "description": "AUD-2: receipt that backlog_row_check ran on this row before it entered the queue."
+        },
+        "expected_occupancy": {
+          "type": "object",
+          "description": "AUD-2 / F-14: how long the work should hold the hardware; copied verbatim onto the task-assign payload."
         },
         "findings": {
           "type": "array",

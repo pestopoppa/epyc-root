@@ -32,6 +32,7 @@ import hashlib
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 from datetime import datetime, timezone
@@ -620,6 +621,23 @@ def fold_queue(bus_root: Path) -> dict[str, dict]:
 ROUTING_FIELD = "needs_routing_to"
 ACTION_FIELD = "action_required"
 
+# ------------------------------------------------------------ addressing (2026-08-12)
+#
+# The schema had NO FYI CONCEPT. One `action_required` boolean applied to every
+# member of `needs_routing_to`, so a fleet-wide report marked EVERY reader as
+# owing an action — and the relay then rewrote `to` on each fan-out copy, so a CC
+# was structurally indistinguishable from an assignment on arrival. Measured
+# 2026-08-12 across the fleet's inboxes: 499 `action_required` rows, only 86
+# sole-target — 83% of what an agent had to triage was not its own (73-89%
+# per agent). A triage queue that is 83% other people's work is not read.
+#
+# The split: `assignee` is the ONE party that must act; `cc` is reach-only and
+# owes nothing. MUST-ACT items get full detail and a disposition; FYI items get
+# one line and are cleared by advancing a cursor.
+ASSIGNEE_FIELD = "assignee"
+CC_FIELD = "cc"
+CC_DELIVERY_FIELD = "cc_delivery"
+
 # What clears an action_required item: any substantive response, or an ack that
 # says WHAT HAPPENED. A bare ack is receipt, not action.
 TERMINAL_DISPOSITIONS = frozenset({"done", "declined", "handed-off", "superseded"})
@@ -637,16 +655,62 @@ def logical_id(row: dict) -> str:
     return str(row.get("relayed_src") or row.get("id") or "")
 
 
-def routing_targets(row: dict) -> list[str]:
-    """Roster ids this message is structurally routed to. Empty list = not
-    routed (ordinary mail; drain covers it)."""
+def action_addressees(row: dict) -> list[str]:
+    """The parties this row says must ACT — in precedence order.
+
+    `assignee` wins outright (it is singular by construction). Otherwise the
+    legacy resolution: `needs_routing_to` if set, else a concrete `to`. Returns
+    [] when the row asks nobody to act. A list LONGER THAN ONE is the defect this
+    refactor exists to kill: `append` refuses to write one, and triage treats a
+    legacy multi-target action row as FYI for everyone, because a request N
+    agents share is a request none of them owns.
+    """
+    if not row.get(ACTION_FIELD) and not row.get(ASSIGNEE_FIELD):
+        return []
+    assignee = row.get(ASSIGNEE_FIELD)
+    if assignee:
+        return [str(assignee)]
     targets = row.get(ROUTING_FIELD)
     if isinstance(targets, list) and targets:
         return [str(t) for t in targets]
     to = str(row.get("to") or "")
-    if row.get(ACTION_FIELD) and to and to != "*":
+    if to and to != "*":
         return [to]
     return []
+
+
+def cc_targets(row: dict) -> list[str]:
+    """Reach-only readers: the explicit `cc` list, plus every `needs_routing_to`
+    entry that is not the assignee. A routed-to agent that is not the assignee
+    was always reach-only in substance; now it is reach-only in the report."""
+    out: list[str] = []
+    cc = row.get(CC_FIELD)
+    if isinstance(cc, list):
+        out += [str(c) for c in cc]
+    acting = set(action_addressees(row)) if len(action_addressees(row)) == 1 else set()
+    targets = row.get(ROUTING_FIELD)
+    if isinstance(targets, list):
+        out += [str(t) for t in targets if str(t) not in acting]
+    seen: set[str] = set()
+    return [t for t in out if not (t in seen or seen.add(t))]
+
+
+def must_act(row: dict, agent: str) -> bool:
+    """Does `agent` personally owe an action on this row? True only for a SOLE
+    action addressee — never for one of several."""
+    addressees = action_addressees(row)
+    return len(addressees) == 1 and addressees[0] == agent
+
+
+def routing_targets(row: dict) -> list[str]:
+    """Every roster id this message must REACH — assignee, cc, and legacy
+    `needs_routing_to`. Empty list = not routed (ordinary mail; drain covers
+    it). Reaching is not acting: see `must_act` for the latter."""
+    out: list[str] = []
+    for t in action_addressees(row) + cc_targets(row):
+        if t and t not in out:
+            out.append(t)
+    return out
 
 
 def prose_routing_warnings(row: dict, roster_ids: set[str]) -> list[str]:
@@ -670,12 +734,32 @@ def prose_routing_warnings(row: dict, roster_ids: set[str]) -> list[str]:
                     f"prose routing intent is invisible to tools and was truncated away on "
                     f"2026-07-29; set {ROUTING_FIELD}: [\"{rid}\"]")
                 break
-    if not row.get(ACTION_FIELD) and (
+    # LINTER SYMMETRY, half 1 (2026-08-12): a DISPOSITION quoting the request it
+    # answers is not a new request. This lint fired on any payload matching
+    # "action required" — including an `ack` that quoted its own corr_id's text —
+    # and then told the author to SET the bit, which would have re-armed the item
+    # it was clearing. A row carrying a corr_id/corr_ids, or of kind `ack`, is by
+    # construction ABOUT an existing request; exempt it.
+    answering = bool(row.get("corr_id") or row.get("corr_ids") or row.get("kind") == "ack")
+    if not row.get(ACTION_FIELD) and not answering and (
             isinstance(payload.get("action"), str) or _ACTION_PROSE.search(text)):
         warnings.append(
             f"payload carries an action request in prose but {ACTION_FIELD} is unset — set "
-            f"{ACTION_FIELD}: true so the request sits in the recipient's triage queue until "
-            f"dispositioned instead of dying in a truncated summary")
+            f"{ACTION_FIELD}: true AND name the one party in {ASSIGNEE_FIELD} so the request "
+            f"sits in that agent's MUST-ACT queue until dispositioned instead of dying in a "
+            f"truncated summary")
+    # LINTER SYMMETRY, half 2: the MISSING opposite polarity. The lint above only
+    # ever pushed the bit ON, which is half of how 499 action_required rows
+    # accumulated with 86 sole targets. A report kind broadcast to several agents
+    # is an FYI wearing an assignment's clothes.
+    if row.get(ACTION_FIELD) and row.get("kind") in {"finding", "status", "task-complete"}:
+        addressees = action_addressees(row)
+        if len(addressees) > 1:
+            warnings.append(
+                f"kind={row.get('kind')!r} with {ACTION_FIELD} and {len(addressees)} targets "
+                f"{addressees} — this looks like FYI; use `{CC_FIELD}`. A report several agents "
+                f"read is nobody's assignment: keep {ASSIGNEE_FIELD} for the one party that "
+                f"must act (or drop {ACTION_FIELD} entirely) and cc the rest")
     return warnings
 
 
@@ -749,19 +833,55 @@ def routed_view(bus_root: Path, agent: str) -> dict[str, list[dict]]:
             else:
                 state.setdefault(lid, "acked")
 
+    # FYI is CURSOR-CLEARED, but only for rows that reached this agent as an
+    # explicit `cc` delivery. Legacy reach-only `needs_routing_to` keeps its
+    # bare-ack contract: those rows were authored under a protocol that promised
+    # "advancing a cursor never clears it", and retroactively clearing them by
+    # cursor would consume mail whose sender is still waiting on a receipt. They
+    # simply render as one-liners now instead of full bodies.
+    undrained: set[str] = set()
+    try:
+        undrained_rows, _ = _read_jsonl(bus_root / "inbox" / f"{agent}.jsonl",
+                                        _cursor_get(bus_root, agent))
+        undrained = {logical_id(r) for r in undrained_rows}
+    except Exception:  # noqa: BLE001 — a missing cursor must not hide the queue
+        undrained = {lid for lid in entries}
+
     pending: list[dict] = []
     acked_awaiting: list[dict] = []
+    fyi: list[dict] = []
     for lid in sorted(entries):
         entry = entries[lid]
+        row = entry["row"]
         status = state.get(lid)
         if status == "actioned":
             continue
+        if must_act(row, agent):
+            if status == "acked":
+                if row.get(ACTION_FIELD):
+                    acked_awaiting.append(entry)
+                continue
+            pending.append(entry)
+            continue
+        # Reach-only for this agent.
         if status == "acked":
-            if entry["row"].get(ACTION_FIELD):
-                acked_awaiting.append(entry)
+            continue
+        explicit_cc = bool(row.get(CC_DELIVERY_FIELD)) or agent in [
+            str(c) for c in (row.get(CC_FIELD) or [])]
+        # BROADCAST is the other FYI shape: a row whose action or reach went to
+        # several agents at once. That is where the measured 83% came from — nobody
+        # owns a request N agents share. A row routed to YOU ALONE keeps full
+        # detail even without an assignee, because it IS addressed to you; the
+        # collapse is for mail you got because it went to everyone.
+        broadcast = (len(action_addressees(row)) > 1
+                     or len(row.get(ROUTING_FIELD) or []) > 1)
+        if explicit_cc and entry["delivered"] and lid not in undrained:
+            continue  # cursor advance IS the disposition for a cc
+        if explicit_cc or broadcast:
+            fyi.append(entry)
             continue
         pending.append(entry)
-    return {"pending": pending, "acked_awaiting_action": acked_awaiting}
+    return {"pending": pending, "acked_awaiting_action": acked_awaiting, "fyi": fyi}
 
 
 def print_triage(bus_root: Path, agent: str) -> None:
@@ -779,7 +899,8 @@ def print_triage(bus_root: Path, agent: str) -> None:
 
     view = routed_view(bus_root, agent)
     pending, acked = view["pending"], view["acked_awaiting_action"]
-    if not pending and not acked:
+    fyi = view.get("fyi") or []
+    if not pending and not acked and not fyi:
         print(f"(triage: no routed messages awaiting {agent})")
         return
 
@@ -810,10 +931,14 @@ def print_triage(bus_root: Path, agent: str) -> None:
         print(body)
         print(f"--- END ROUTED MESSAGE {index}/{total} id={logical_id(entry['row'])} ---")
 
-    print(f"== TRIAGE STANDING QUEUE for {agent}: {total} item(s). REPRODUCED IN FULL — "
+    print(f"== TRIAGE STANDING QUEUE for {agent}: {total} MUST-ACT item(s)"
+          f"{f' + {len(fyi)} FYI' if fyi else ''}. The MUST-ACT items are REPRODUCED IN FULL — "
           f"DO NOT TRUNCATE OR SUMMARIZE: a shortened copy of this report loses routed "
           f"intent (the 2026-07-29 failure shape). Every item has an END fence; the report "
           f"ends with a COMPLETE trailer. ==")
+    if pending or acked:
+        print(f"== MUST-ACT ({total}): you are the addressee. Each needs a disposition from "
+              f"YOUR outbox. ==")
     if pending:
         print(f"-- {len(pending)} awaiting disposition --")
         for entry in pending:
@@ -823,6 +948,34 @@ def print_triage(bus_root: Path, agent: str) -> None:
               f"receipt, not action) --")
         for entry in acked:
             fenced(entry, "acked-awaiting-action")
+    if fyi:
+        # ONE LINE EACH, and that is the whole point. These reached you as a `cc`
+        # or as a broadcast; you owe NO disposition and NO ack, and an explicit cc
+        # is cleared by advancing your cursor. Measured 2026-08-12: 83% of the
+        # fleet's action_required rows were this, printed at full length inside
+        # everyone's MUST-ACT queue, which is how the queue stopped being read.
+        print(f"== FYI ({len(fyi)}): reach-only — NO disposition owed, NO ack owed. A cc "
+              f"clears when you advance your cursor. Read, or don't. ==")
+        for entry in fyi:
+            row = entry["row"]
+            summary = json.dumps(row.get("payload") or {}, sort_keys=True)
+            if len(summary) > 160:
+                summary = summary[:157] + "..."
+            marks = []
+            if not entry["delivered"]:
+                marks.append("NOT-IN-INBOX")
+            if row.get(CC_DELIVERY_FIELD):
+                marks.append("cc")
+            age = message_age_h(row)
+            if age is not None and age >= DEFAULT_STALE_AFTER_H:
+                marks.append(f"{age / 24:.1f}d-old")
+            flag = f" [{' '.join(marks)}]" if marks else ""
+            print(f"   FYI {logical_id(row)} from={row.get('from', '?')} "
+                  f"kind={row.get('kind', '?')} to={row.get('to', '?')}{flag} {summary}")
+    if not pending and not acked:
+        print(f"triage: nothing requires your action.")
+        print(f"== TRIAGE REPORT COMPLETE: 0 MUST-ACT item(s), {len(fyi)} FYI. ==")
+        return
     print(f"triage: to clear an item, append to YOUR outbox a row with corr_id=<its id> — any "
           f"substantive kind, or kind=ack with payload.disposition in "
           f"{sorted(TERMINAL_DISPOSITIONS)}. Advancing your cursor never clears this list.")
@@ -835,9 +988,9 @@ def print_triage(bus_root: Path, agent: str) -> None:
               f"corr_ids: [<id>, <id>, ...] instead of repeating the payload per id. "
               f"Use it only when the answer really is the same — N distinct answers "
               f"still want N rows.")
-    print(f"== TRIAGE REPORT COMPLETE: {total} item(s), {body_bytes} body bytes. A copy of "
-          f"this report missing any END fence or this trailer has been TRUNCATED and has "
-          f"lost routed intent. ==")
+    print(f"== TRIAGE REPORT COMPLETE: {total} MUST-ACT item(s), {body_bytes} body bytes, "
+          f"{len(fyi)} FYI. A copy of this report missing any END fence or this trailer has "
+          f"been TRUNCATED and has lost routed intent. ==")
 
 
 def _roster_roles(bus_root: Path) -> dict[str, str]:
@@ -857,6 +1010,44 @@ def _roster_roles(bus_root: Path) -> dict[str, str]:
 def _check_routing_intent(bus_root: Path, row: dict) -> None:
     """Fail-closed authoring checks for the structural routing fields."""
     targets = row.get(ROUTING_FIELD)
+    # --- addressing (2026-08-12): assignee/cc must resolve, same fail-closed
+    # posture as needs_routing_to. Routing intent that does not resolve is prose
+    # in disguise; that argument does not change with the field name.
+    named = [str(row.get(ASSIGNEE_FIELD))] if row.get(ASSIGNEE_FIELD) else []
+    named += [str(c) for c in (row.get(CC_FIELD) or [])]
+    if named:
+        roster = _roster_ids(bus_root)
+        unknown = sorted(set(named) - roster)
+        if unknown:
+            raise BusError(
+                f"{ASSIGNEE_FIELD}/{CC_FIELD} names non-roster id(s) {unknown} — an addressee "
+                f"must be resolvable (have: {', '.join(sorted(roster))})")
+        roles = _roster_roles(bus_root)
+        if row.get(ASSIGNEE_FIELD) and roles.get(str(row[ASSIGNEE_FIELD])) == "retired":
+            raise BusError(
+                f"{ASSIGNEE_FIELD} is the retired roster row {row[ASSIGNEE_FIELD]!r} — nothing "
+                f"drains a retired agent's inbox, so assigning there is a silent discard with "
+                f"extra steps. Assign to the live owner of that scope instead.")
+    if row.get(ASSIGNEE_FIELD) and row.get(ASSIGNEE_FIELD) in (row.get(CC_FIELD) or []):
+        raise BusError(
+            f"{row[ASSIGNEE_FIELD]!r} is both the {ASSIGNEE_FIELD} and on {CC_FIELD} — one "
+            f"agent, two contradictory obligations. Pick: {ASSIGNEE_FIELD} means they must "
+            f"act; {CC_FIELD} means they owe nothing.")
+
+    # THE REFUSAL (2026-08-12): one assignee per action. Measured before this
+    # landed: 499 action_required rows fleet-wide, 86 sole-target — so 83% of
+    # every agent's triage queue was somebody else's work, and the queue stopped
+    # being read. A boolean that applies to N addressees does not assign work to
+    # N agents; it assigns it to nobody.
+    if row.get(ACTION_FIELD):
+        addressees = action_addressees(row)
+        if len(addressees) > 1:
+            raise BusError(
+                f"{ACTION_FIELD} is set with {len(addressees)} routing targets {addressees} — "
+                f"one assignee per action; N agents each owing a distinct action = N messages; "
+                f"reach-only readers go in `{CC_FIELD}`. Set {ASSIGNEE_FIELD}: \"<one roster "
+                f"id>\" and move the rest to {CC_FIELD}: {sorted(set(addressees[1:]))}.")
+
     if targets:
         roster = _roster_ids(bus_root)
         unknown = sorted({str(t) for t in targets} - roster)
@@ -876,6 +1067,84 @@ def _check_routing_intent(bus_root: Path, row: dict) -> None:
             f"{ACTION_FIELD} is set but the message has no concrete addressee (to='*' and "
             f"{ROUTING_FIELD} unset) — intent with no addressee is the 2026-07-29 failure "
             f"shape; name the agent(s) in {ROUTING_FIELD}")
+
+
+# --------------------------------------------------- AUD-2: typed task-assign
+#
+# Measured 2026-08-12: 171 DISTINCT payload keys across 55 task-assign messages.
+# That is why no content rule about a dispatch was mechanizable — there was no
+# vocabulary to write a rule against, so every rule had to be prose addressed to
+# the author, and prose is not a channel tools act on.
+#
+# The schema now carries the vocabulary; these are the checks draft-7 cannot
+# express (a size cap) or must not express here (a `required` that would retro-
+# invalidate the 119 pre-migration rows on the live bus). AUTHORING-SIDE ONLY:
+# `validate` never fails on a legacy row, and the relay keeps delivering them.
+
+# A dispatch bigger than this belongs in a file. The number is the point at which
+# a task-assign stops fitting in a triage report a reader will actually read.
+TASK_ASSIGN_PAYLOAD_MAX_BYTES = 4096
+
+# The typed vocabulary. A key outside it WARNS (never refuses) — the 171-key
+# sprawl is a habit, and refusing mid-flight senders would just move the failure.
+_TASK_ASSIGN_KEYS = frozenset({
+    "lane", "lease_expires_ts", "epoch", "spec_ref", "inline_spec",
+    "task_text", "row_ref", "screened_by", "expected_occupancy", "constraints",
+    "brief_path", "operator_signature_needed",
+})
+
+
+def check_task_assign(row: dict) -> list[str]:
+    """Fail-closed authoring checks for `task-assign`. Returns WARNINGS; raises
+    BusError on the two conditions that make a dispatch unusable. Gated on
+    kind == task-assign, so no other kind is affected."""
+    if row.get("kind") != "task-assign":
+        return []
+    payload = row.get("payload")
+    if not isinstance(payload, dict):
+        raise BusError("task-assign requires a payload object")
+
+    text = payload.get("task_text")
+    if not (isinstance(text, str) and text.strip()):
+        raise BusError(
+            "task-assign payload is missing `task_text` — the dispatch IDENTITY. A "
+            "`row_ref` is a hint, not an identity: anchor rot measured 34.5% queue-wide "
+            "on 2026-08-11 (27% twelve days earlier), so `file.md:LINE` names a different "
+            "row every few weeks. Put the backlog row's TEXT in payload.task_text; "
+            "re-resolve it with scripts/coordination/backlog_row_check.py --row \"<text>\".")
+
+    size = len(json.dumps(payload, sort_keys=True).encode("utf-8"))
+    if size > TASK_ASSIGN_PAYLOAD_MAX_BYTES and not payload.get("brief_path"):
+        raise BusError(
+            f"task-assign payload is {size} bytes (cap {TASK_ASSIGN_PAYLOAD_MAX_BYTES}) and "
+            f"carries no `brief_path` — a dispatch too big to read inside a triage report "
+            f"gets read as a wall and skimmed. Write the brief to a file and send the "
+            f"pointer: payload.brief_path plus task_text, lane, lease_expires_ts, epoch.")
+
+    warnings: list[str] = []
+    unknown = sorted(set(payload) - _TASK_ASSIGN_KEYS)
+    if unknown:
+        warnings.append(
+            f"task-assign payload carries key(s) outside the typed vocabulary: {unknown} — "
+            f"171 distinct payload keys across 55 dispatches is why no content rule about a "
+            f"dispatch is mechanizable. Use {sorted(_TASK_ASSIGN_KEYS)} or put it in the brief.")
+    if isinstance(payload.get("constraints"), str):
+        warnings.append(
+            "task-assign `constraints` is a prose string — a restated constraint cites the "
+            "line it derives from or it is not a constraint (F-20: a brief asserted "
+            "`lanes: [none]` that the roster never imposed). Use the typed form: "
+            "[{\"constraint\": \"...\", \"source\": \"file:line | msg-id | config key\"}].")
+    if not payload.get("expected_occupancy"):
+        warnings.append(
+            "task-assign has no `expected_occupancy` — how long should this hold the "
+            "hardware? F-14: seconds-long work was queued at a card that needed hours, and "
+            "nothing in the dispatch made the mismatch expressible. State est_h + basis.")
+    if not payload.get("screened_by"):
+        warnings.append(
+            "task-assign has no `screened_by` receipt — run backlog_row_check.py on the row "
+            "first. (It proves WELL-FORMED, not STILL-NEEDED: four of eight rows screened on "
+            "2026-08-12 were already satisfied, so verify the premise too.)")
+    return warnings
 
 
 # ------------------------------------------------------------------ commands
@@ -931,11 +1200,12 @@ def cmd_append(args: argparse.Namespace) -> int:
     validate_row(bus_root, row, definition)
     if definition == "msg":
         _check_routing_intent(bus_root, row)
+        task_assign_warnings = check_task_assign(row)
         try:
             roster = _roster_ids(bus_root)
         except BusError:
             roster = set()
-        for warning in prose_routing_warnings(row, roster):
+        for warning in prose_routing_warnings(row, roster) + task_assign_warnings:
             print(f"session_bus: WARN {warning}", file=sys.stderr)
     _append_jsonl(path, row)
     print(f"appended -> {path.relative_to(bus_root)}  ({row.get('id') or row.get('task_id')})")
@@ -1273,6 +1543,127 @@ def _print_staleness(rows: list[dict], stale_after_h: float) -> None:
               f"  task={row.get('task_id')}  id={row.get('id')}", file=sys.stderr)
 
 
+# ------------------------------------------------- AUD-3: drain boundary checks
+#
+# `drain` is the role's ONE PROVEN CHECKPOINT. Guardrail 1 makes it mandatory at
+# every task boundary, which makes it the only place a check is certain to run —
+# every other reminder competes with retrieval-at-the-moment-of-emission and
+# loses. Three readings that were each missed repeatedly, moved to the one place
+# they cannot be missed. All three are stderr framing: stdout is JSONL.
+#
+# Each is best-effort and NEVER fails the drain — but "best-effort" is not
+# "silent": a check that cannot read its input SAYS SO, because a missing reading
+# rendered as a clean one is the failure class this whole refactor exists to close.
+
+FLEET_WATCH_LOG = "logs/fleet_watch.log"
+FLEET_WATCH_STALE_S = 900.0
+_OCCUPANCY_MARKERS = ("COMPUTE-IDLE", "IDLE-CANDIDATE")
+
+
+def _repo_root(bus_root: Path) -> Optional[Path]:
+    """The repo the bus lives in: <repo>/coordination/session-bus."""
+    try:
+        root = bus_root.resolve().parents[1]
+    except IndexError:
+        return None
+    return root if (root / ".git").exists() else None
+
+
+def _print_scripts_hygiene(bus_root: Path) -> None:
+    """Untracked/modified counts under `scripts/`. Agent infrastructure rotting
+    uncommitted in a shared tree is invisible until someone else's pathspec
+    commit sweeps it up or a checkout reverts it with no reflog."""
+    root = _repo_root(bus_root)
+    if root is None:
+        print("boundary: scripts/ hygiene UNREADABLE — no repo root above the bus root",
+              file=sys.stderr)
+        return
+    try:
+        out = subprocess.run(["git", "status", "--porcelain", "--", "scripts/"],
+                             cwd=str(root), capture_output=True, text=True, timeout=20)
+    except Exception as exc:  # noqa: BLE001
+        print(f"boundary: scripts/ hygiene UNREADABLE ({exc})", file=sys.stderr)
+        return
+    if out.returncode != 0:
+        print(f"boundary: scripts/ hygiene UNREADABLE (git exit {out.returncode}: "
+              f"{out.stderr.strip()[:120]})", file=sys.stderr)
+        return
+    lines = [l for l in out.stdout.splitlines() if l.strip()]
+    untracked = sum(1 for l in lines if l.startswith("??"))
+    modified = len(lines) - untracked
+    if not lines:
+        print(f"boundary: scripts/ clean (0 modified, 0 untracked) in {root}", file=sys.stderr)
+        return
+    print(f"boundary: scripts/ has {modified} modified + {untracked} untracked file(s) in "
+          f"{root} — commit what you changed with a PATHSPEC-limited commit before this "
+          f"boundary closes; a shared tree sweeps uncommitted hunks into whoever commits next.",
+          file=sys.stderr)
+
+
+def _print_owed_actions(bus_root: Path, agent: str) -> None:
+    """The action_required items THIS agent owes, with AGE. The triage machinery
+    already knew them; it never said how old they were, so a two-week-old
+    unanswered request read exactly like this minute's."""
+    try:
+        view = routed_view(bus_root, agent)
+    except Exception as exc:  # noqa: BLE001
+        print(f"boundary: owed-action check UNREADABLE ({exc})", file=sys.stderr)
+        return
+    owed = [e for e in (view["pending"] + view["acked_awaiting_action"])
+            if must_act(e["row"], agent)]
+    if not owed:
+        print(f"boundary: 0 action_required rows owed by {agent}.", file=sys.stderr)
+        return
+    print(f"boundary: {len(owed)} action_required row(s) OWED BY YOU and unanswered:",
+          file=sys.stderr)
+    def _age(entry: dict) -> float:
+        return message_age_h(entry["row"]) or 0.0
+    for entry in sorted(owed, key=_age, reverse=True):
+        row, age = entry["row"], message_age_h(entry["row"])
+        stamp = "age?" if age is None else (
+            f"{age / 24:.1f}d" if age >= 24 else f"{age:.0f}h")
+        print(f"   {stamp:>6} old  {row.get('kind', '?')} from {row.get('from', '?')}  "
+              f"id={logical_id(row)}", file=sys.stderr)
+
+
+def _print_fleet_watch_occupancy(bus_root: Path) -> None:
+    """The last COMPUTE-IDLE / IDLE-CANDIDATE line, VERBATIM, with its path.
+
+    The staleness guard is MANDATORY, not decoration: fleet_watch runs
+    unsupervised, so its log going quiet is indistinguishable from the fleet
+    being busy. Relaying a stale line as current is exactly the failure class
+    this refactor exists to close, and a reading whose window does not overlap
+    the phenomenon is not evidence about the phenomenon.
+    """
+    root = _repo_root(bus_root)
+    path = (root / FLEET_WATCH_LOG) if root else Path(FLEET_WATCH_LOG)
+    if not path.exists():
+        print(f"boundary: occupancy UNKNOWN — {path} does not exist (fleet_watch not "
+              f"running?). Do not report the fleet as busy or idle on this evidence.",
+              file=sys.stderr)
+        return
+    try:
+        age_s = time.time() - path.stat().st_mtime
+        line = ""
+        for raw in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            if any(m in raw for m in _OCCUPANCY_MARKERS):
+                line = raw
+    except Exception as exc:  # noqa: BLE001
+        print(f"boundary: occupancy UNREADABLE ({path}: {exc})", file=sys.stderr)
+        return
+    if age_s > FLEET_WATCH_STALE_S:
+        print(f"boundary: occupancy STALE — {path} last written {age_s / 60:.0f} min ago "
+              f"(> {FLEET_WATCH_STALE_S / 60:.0f} min). The line below is HISTORY, not the "
+              f"current state; do NOT relay it as current. Check fleet_watch is alive first.",
+              file=sys.stderr)
+    if not line:
+        print(f"boundary: no {'/'.join(_OCCUPANCY_MARKERS)} line in {path}", file=sys.stderr)
+        return
+    freshness = "STALE" if age_s > FLEET_WATCH_STALE_S else f"{age_s / 60:.0f}m old"
+    print(f"boundary: last occupancy line ({freshness}) from {path}:", file=sys.stderr)
+    print(f"   {line}", file=sys.stderr)
+
+
 def cmd_drain(args: argparse.Namespace) -> int:
     """Print this agent's inbox past its cursor and advance. The one-liner
     agents run at every task boundary."""
@@ -1334,6 +1725,12 @@ def cmd_drain(args: argparse.Namespace) -> int:
     # a silence. This is the check that would have caught the 243h outage on its
     # first task boundary.
     _print_daemon_health(bus_root)
+    # AUD-3: the three boundary readings. On EVERY drain, empty or not — the
+    # empty drain is exactly when a boundary check is most needed and least run.
+    if not getattr(args, "no_boundary_checks", False):
+        _print_scripts_hygiene(bus_root)
+        _print_owed_actions(bus_root, args.agent)
+        _print_fleet_watch_occupancy(bus_root)
     if getattr(args, "triage", False):
         print_triage(bus_root, args.agent)
     return 0
@@ -1504,6 +1901,64 @@ def cmd_triage(args: argparse.Namespace) -> int:
     # totally-bogus-id` exited 0 with no diagnostic at all.
     _require_roster_id(bus_root, args.agent)
     print_triage(bus_root, args.agent)
+    return 0
+
+
+def corrections_for(bus_root: Path, agent: str) -> list[dict]:
+    """Every `finding` in `agent`'s OWN outbox that carries payload.corrects.
+
+    AUD-4. Five corrections were silently missing from the 2026-08-12 wrap-up.
+    Not because anyone decided to omit them — because a correction looked like
+    any other finding, so nothing could enumerate them and the omission was
+    invisible on both sides. Typing the relation makes the omission visible:
+    this returns the list, the wrap-up section is generated from it, and a
+    correction that is not in the section is now a diff, not a memory lapse.
+    """
+    rows, _ = _read_jsonl(bus_root / "outbox" / f"{agent}.jsonl")
+    out: list[dict] = []
+    for row in rows:
+        if row.get("kind") != "finding":
+            continue
+        payload = row.get("payload") or {}
+        if not isinstance(payload, dict) or not payload.get("corrects"):
+            continue
+        out.append(row)
+    return out
+
+
+def cmd_corrections(args: argparse.Namespace) -> int:
+    """Generate the wrap-up corrections section from typed `finding` rows."""
+    bus_root = Path(args.bus_root)
+    _require_roster_id(bus_root, args.agent)
+    rows = corrections_for(bus_root, args.agent)
+    since = getattr(args, "since", None)
+    if since:
+        rows = [r for r in rows if str(r.get("ts") or "") >= since]
+    if args.json:
+        print(json.dumps(rows, indent=2, sort_keys=True))
+        return 0
+    if not rows:
+        print(f"(no corrections recorded by {args.agent}"
+              f"{f' since {since}' if since else ''} — no `finding` rows carry "
+              f"payload.corrects)")
+        return 0
+    print(f"## Corrections ({len(rows)})\n")
+    print(f"Generated from {args.agent}'s outbox: `kind: finding` rows carrying "
+          f"`payload.corrects`. AUD-4 — five corrections went missing from the "
+          f"2026-08-12 wrap-up because nothing could enumerate them.\n")
+    for row in rows:
+        payload = row.get("payload") or {}
+        prov = payload.get("provenance") or "provenance-unstated"
+        detail = payload.get("correction") or payload.get("detail") or payload.get(
+            "summary") or json.dumps({k: v for k, v in payload.items()
+                                      if k not in ("corrects", "provenance")}, sort_keys=True)
+        print(f"- **corrects `{payload['corrects']}`** ({prov}) — {detail}")
+        print(f"  <sub>source: `{row.get('id')}` @ {row.get('ts')}</sub>")
+    unstated = [r for r in rows if not (r.get("payload") or {}).get("provenance")]
+    if unstated:
+        print(f"\n> {len(unstated)} of these state no `provenance`. Add "
+              f"`operator-verbatim` / `paraphrase` / `inferred` — a correction whose "
+              f"standing is unstated gets read as the operator's own words.")
     return 0
 
 
@@ -1712,6 +2167,11 @@ def build_parser() -> argparse.ArgumentParser:
     dp.add_argument("--peek", action="store_true", help="print without advancing the cursor")
     dp.add_argument("--triage", action="store_true",
                     help="also print the routing standing queue (cursor-independent, in full)")
+    dp.add_argument("--no-boundary-checks", action="store_true",
+                    help="skip the AUD-3 boundary readings (scripts/ hygiene, owed "
+                         "action_required rows, last fleet_watch occupancy line). For "
+                         "tests and non-interactive callers only — an agent at a task "
+                         "boundary wants them.")
     dp.add_argument("--stale-after-h", type=float, default=DEFAULT_STALE_AFTER_H,
                     help=f"flag drained messages older than this many hours "
                          f"(default {DEFAULT_STALE_AFTER_H:g}; C40)")
@@ -1733,6 +2193,14 @@ def build_parser() -> argparse.ArgumentParser:
     pp = sub.add_parser("provision", help="create the 4 files a roster member needs (idempotent)")
     pp.add_argument("--agent", required=True)
     pp.set_defaults(func=cmd_provision)
+
+    co = sub.add_parser("corrections",
+                        help="wrap-up corrections section, generated from your own "
+                             "`finding` rows carrying payload.corrects (AUD-4)")
+    co.add_argument("--agent", required=True)
+    co.add_argument("--since", help="only rows with ts >= this ISO stamp")
+    co.add_argument("--json", action="store_true")
+    co.set_defaults(func=cmd_corrections)
 
     sp = sub.add_parser("status", help="human summary of bus state")
     sp.set_defaults(func=cmd_status)

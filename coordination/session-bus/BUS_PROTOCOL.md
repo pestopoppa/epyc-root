@@ -125,6 +125,118 @@ better. Therefore:
   only. Anyone summarizing or truncating bus traffic must preserve these two fields and must not
   truncate messages carrying them.
 
+## ONE assignee per action; everyone else is `cc` (2026-08-12)
+
+`action_required` was a boolean that applied to **every** member of `needs_routing_to`, and the
+schema had no way to say *"read this, you owe nothing"*. So a fleet-wide report marked every reader
+as owing an action. Measured across the fleet's inboxes on 2026-08-12: **499 `action_required`
+rows, only 86 sole-target — 83% of what an agent had to triage was not its own** (73–89% per
+agent). Compounding it, the relay set `msg["to"] = target` on every fan-out copy, so **100% of
+delivered rows looked directly addressed**: a CC was structurally indistinguishable from an
+assignment on arrival. A triage queue that is 83% other people's work stops being read, and then
+the 17% that *was* yours is lost too.
+
+**The fields.**
+
+- **`assignee`** (top-level, ONE roster id): the single party that must ACT. `append` refuses a
+  non-roster or retired id, and refuses an agent that is also on `cc`.
+- **`cc`** (top-level, array of roster ids): **reach-only**. Never implies an action, never owes an
+  ack or a disposition, cleared by advancing your cursor.
+- **`cc_delivery`** (tool-written): the relay stamps it on a CC copy. **A CC copy PRESERVES the
+  original `to`**; only the assignee's copy is re-addressed. If `to` is not you, the message is not
+  yours.
+- `needs_routing_to` keeps working for history. A **single-entry** list still resolves as the
+  assignee; a multi-entry one is FYI for everyone, because a request N agents share is a request
+  none of them owns.
+
+**The refusal** (`append`, fail-closed, beside the existing `to: '*'` refusal):
+
+> `action_required` with more than one routing target — **one assignee per action; N agents each
+> owing a distinct action = N messages; reach-only readers go in `cc`.**
+
+The compliant rewrite is in the error text: set `assignee: "<one roster id>"` and move the rest to
+`cc`. Do not "fix" this by dropping `action_required` from something that really is a job.
+
+**`drain --triage` splits the output.**
+
+| Section | What it is | What you owe |
+|---|---|---|
+| **MUST-ACT** | you are the `assignee` (or the sole legacy target) | full body, fenced, truncation-evident; **a disposition from your own outbox** (rule above) |
+| **FYI** | `cc`, or a broadcast several agents received | **one line each. No disposition. No ack.** A `cc` clears when you advance your cursor |
+
+A row addressed to you *alone* still gets full detail even without an `assignee` — the collapse to
+one line is for mail you received because it went to everyone.
+
+**Linter symmetry.** The prose lint no longer fires on a row carrying `corr_id`/`corr_ids` or of
+`kind: ack`: a disposition **quoting** the request it answers is not a new request, and telling its
+author to set `action_required` would re-arm the item it was clearing. The missing opposite
+polarity now exists: a `finding` / `status` / `task-complete` with `action_required` and more than
+one target warns **"this looks like FYI; use `cc`"**. The old lint only ever pushed the bit ON,
+which is half of how 499 rows accumulated with 86 sole targets.
+
+**Migration is authoring-side only.** All existing history stays valid, `validate` warns and never
+fails on a legacy row, and the relay keeps delivering pre-migration rows unchanged.
+
+## A dispatch is TYPED (AUD-2, 2026-08-12)
+
+Measured: **171 distinct payload keys across 55 `task-assign` messages.** With no vocabulary, no
+content rule about a dispatch was mechanizable — every rule had to be prose addressed to the
+author, and prose is not a channel tools act on. The `task-assign` payload now has one:
+
+| Field | Status | Why |
+|---|---|---|
+| `task_text` | **REQUIRED** (enforced in `cmd_append`) | the dispatch IDENTITY — the row's TEXT. Anchor rot measured **34.5% queue-wide** on 2026-08-11 (27% twelve days earlier): `file.md:LINE` names a different row every few weeks |
+| `row_ref` | optional **hint** | demoted from identity. When it disagrees with `task_text`, the text wins; re-resolve with `backlog_row_check.py --row "<text>"` |
+| `screened_by` | receipt | evidence `backlog_row_check` RAN. It proves WELL-FORMED, not STILL-NEEDED — four of eight rows screened on 2026-08-12 were already satisfied, so verify the premise too |
+| `expected_occupancy` | `{est_h, basis, gating}` | **F-14**: seconds-long work was queued at a card that needed hours, and nothing in the dispatch made the mismatch expressible. Declaring it forces the question at composition time |
+| `constraints[]` | each entry needs a **`source`** | **F-20**: a brief asserted `lanes: [none]` the roster never imposed. A restated constraint cites the line it derives from, or it is the author's recollection wearing the roster's authority |
+| `brief_path` | required past the size cap | draft-7 has no size keyword, so the cap lives in `cmd_append`: a payload over `TASK_ASSIGN_PAYLOAD_MAX_BYTES` with no `brief_path` is **refused**. A dispatch too big to read in a triage report belongs in a file |
+
+Missing `task_text` and oversize-without-`brief_path` are **refusals**; keys outside the vocabulary,
+a prose `constraints` string, and absent `screened_by`/`expected_occupancy` are **warnings** —
+refusing those mid-flight would move the failure rather than fix it. Gated on `kind == task-assign`;
+no other kind acquires these duties. **The daemon obeys the same vocabulary**: it emits
+`task-assign` under authority `assign` and populates every field from the queue row
+(`_task_assign_payload`), because a typed dispatch only humans have to fill in is a rule with a
+hole in it exactly where the volume is. `queue.jsonl` therefore carries `task_text`, `screened_by`
+and `expected_occupancy`, transcribed at intake from the `task-propose` payload (`summary` is the
+fallback row text).
+
+## Corrections are typed, so an omitted one is visible (AUD-4, 2026-08-12)
+
+Five corrections were silently missing from the 2026-08-12 wrap-up — not because anyone decided to
+omit them, but because a correction looked like any other `finding`, so nothing could enumerate
+them and the omission was invisible on both sides. A `finding` payload may now carry:
+
+- **`corrects: <msg-id>`** — the message this finding corrects.
+- **`provenance`** — `operator-verbatim` | `paraphrase` | `inferred`. A correction whose standing
+  is unstated gets read as the operator's own words.
+
+`python3 scripts/coordination/session_bus.py corrections --agent <id> [--since <ts>]` generates the
+wrap-up corrections section from your own outbox. A correction that is not in the section is now a
+diff, not a memory lapse.
+
+## `drain` carries the boundary checks (AUD-3, 2026-08-12)
+
+`drain` is the role's **one proven checkpoint** — Guardrail 1 makes it mandatory at every task
+boundary, which makes it the only place a check is certain to run. Every drain, empty or not, now
+prints three readings to **stderr** (stdout stays JSONL):
+
+1. **`scripts/` hygiene** — untracked/modified counts from one `git status --porcelain -- scripts/`.
+   Agent infrastructure rotting uncommitted in a shared tree is invisible until someone else's
+   pathspec commit sweeps it up or a checkout reverts it with no reflog.
+2. **`action_required` rows YOU owe, WITH AGE.** The machinery already knew them; it never said how
+   old they were, so a two-week-old unanswered request read exactly like this minute's.
+3. **The last `COMPUTE-IDLE` / `IDLE-CANDIDATE` line** from `logs/fleet_watch.log`, verbatim, with
+   its path **and a log-mtime staleness guard**. The guard is mandatory: fleet_watch runs
+   unsupervised, so its log going quiet is indistinguishable from a busy fleet, and relaying a
+   stale line as current is the exact failure class this refactor exists to close.
+
+Each is best-effort and never fails the drain — but *best-effort* is not *silent*: a check that
+cannot read its input says `UNREADABLE` / `UNKNOWN` / `STALE`, because a missing reading rendered as
+a clean one is the same failure wearing a different hat. `--no-boundary-checks` exists for tests and
+non-interactive callers; an agent at a task boundary wants them.
+
 ## Session lifecycle at a task boundary (coordinator duty)
 
 Full contract: `agents/shared/OPERATING_CONSTRAINTS.md` → *Session Lifecycle: wrap-up, clear,
