@@ -460,6 +460,13 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       receipt hash, then delegates grading to the existing measurement ladder. Every row is
       diagnostic-only and grants no campaign/promotion authority. The 2026-08-12 pre-hook receipts
       remain deliberately unprojected; successor runs are the empirical follow-up.
+  - [x] **Capture and independently project the first post-hook successor receipts.** ✅ 2026-08-12 —
+    research `75ff5767` and root `1edf47fd` align both sides with canonical `ClaimReceipt` release
+    semantics (`released_at` on the last held/draining state). RVP-T0-1 post-hook r2 emitted **4**
+    producer-authored diagnostic measurements and AK-BH-1 post-hook r1 emitted **9** exact-shape
+    measurements; the root adapter re-derived **4 + 9 ClaimTuples**. Focused producer/adapter tests
+    pass **8/8** and **12/12**, respectively. No row grants ranking, campaign, release, or production
+    authority.
 - [x] SC29 **Wire AK-LE planner prefilter/reduction receipts before the corrected panel runs.** ✅
       2026-08-12 — research `16ad9c2c` prospectively emits four self-hashed search-persistence rows
       per complete cell only after re-running the source-pinned reducer; corrected r3 produced **32**
@@ -470,6 +477,9 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       scored-cell basis, exact manifest/panel/prefilter/evidence digests, and run-level locator. The
       under-specified 2026-08-12 r1 panel remains a durable refusal and projects zero rows; the r2
       malformed-Claude-wrapper attempt failed before one complete cell and also projects zero rows.
+  - [ ] **Implement the root read-side adapter for the live AK-LE planner-reduction schema.** Re-run
+    the pinned reducer, project only producer-authored r3+ rows through the shared measurement ladder,
+    and keep r1/r2 at zero without reconstructing historical tuples.
 - [x] SC30 **Classify and wire the AutoKernel real host-process fault rehearsal before it runs
       again.** ✅ 2026-08-12 — research `5c8714a1` writes three self-hashed dependency-evidence rows
       and root `7077f1cc` independently re-derives them while refusing ClaimTuple projection. Preserve
