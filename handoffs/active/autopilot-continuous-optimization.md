@@ -1996,7 +1996,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       trials restart the API to apply flag changes; pausing between the stop and the start leaves the
       stack with **no API**, and AutoPilot then retries `Connection refused` forever rather than
       failing loudly. Caused a live outage 2026-08-03. Nothing in the preflight or the gate detects it.
-- [ ] **An eval scores an unreachable API as WRONG, not as infra-failed.** A T1 calibration ran
+- [x] **An eval scores an unreachable API as WRONG, not as infra-failed.** A T1 calibration ran
       70/100 questions at `0% correct` purely because the API was down; only `--dry-run` prevented a
       0.000 baseline reaching production state. Reliability should have collapsed the run long before
       70 questions.
@@ -2051,12 +2051,37 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
 
 ### New tasks from this work
 
-- [ ] **An HTTP 400 / unreachable endpoint is scored as WRONG, not as infra-failed.** This is the root
+- [x] **An HTTP 400 / unreachable endpoint is scored as WRONG, not as infra-failed.** This is the root
       cause of the 2026-08-03 incident where a T1 calibration ran 70/100 questions at `0% correct`
       purely because the API was down. It is also why an oversized prompt hitting a per-slot 400 would
       appear as a permanent, misattributed quality regression rather than a capacity problem. The
       reliability floor exists but did not collapse the run until far too late. Two failure modes, one
       cause: **absence is being scored as failure.**
+      ✅ 2026-08-12 — orchestrator `2f41c3ad` (+ `49b02381`). **The duplicate at `:1960` is the same
+      defect and is closed by the same change.** The classifier was a SUBSTRING MATCH over the
+      exception's `str()` — fail-open by construction, because it had to RECOGNISE a failure to
+      exclude it. `"server error"` matched and `"client error"` did not, so a per-slot context
+      overflow (HTTP 400) was reported as a permanent quality regression, and each such row emitted
+      `success_reward(False)` into MemRL — **poisoning the learned router**, not just the score.
+      Worst case found: a `ReadTimeout("")` with an EMPTY message was scored WRONG in BOTH the
+      seeding path and eval_tower, because the error string was falsy.
+      Now classified STRUCTURALLY from `failure_reason` / `failure_provenance.class` / `_meta.reason`
+      / HTTP status / in-band `[ERROR:]` banner / empty zero-token replies, with the substring list
+      demoted to a last-resort fallback. *(Verified by `mainC`: with structural facts present,
+      connection-refused, HTTP-400-overflow, empty-message timeout and empty-answer all return
+      `infra_failed`, while a genuine wrong answer stays `scored`.)*
+      **The aggregate fix is the honest half.** Infra rows were already outside the quality
+      denominator — what was missing is that the exclusion was INVISIBLE. `quality` is a float on the
+      Pareto/SafetyGate contract and cannot become `None`, so an all-infra run now still reports
+      `0.0` but labels it a PLACEHOLDER and logs at ERROR, and carries `quality_measured`,
+      `infra_failed_count` and a reason histogram. An all-wrong run and an all-infra run share a
+      `quality` and differ everywhere else — which is exactly the 2026-08-03 incident's blind spot.
+  - [ ] **OPERATOR DECISION, deliberately not taken by the subagent:** `:1960` also says reliability
+    should have collapsed the run long before 70 questions. Early abort is a live-control-loop policy
+    change — *how many consecutive infra-failed rows should abort an in-flight batch, and abort or
+    continue-and-mark?* `RELIABILITY_FLOOR = 0.8` already blocks such a run at the gate (as RETRY),
+    but only at the END, after the questions are spent. Everything not depending on that answer is done.
+
 - [ ] **Regenerate the E8 context coverage scan.** `artifacts/operator/e8_quality_context_coverage_v4_20260727.json`
       reports `required_tokens` in BYTES and was taken against the pre-2026-07-30 fleet. Every
       downstream artifact built on it — including the Options A-D decision package and the two 19 MB
