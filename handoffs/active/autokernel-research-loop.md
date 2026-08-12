@@ -95,6 +95,7 @@ or a frozen production tree. Banked evidence requires a clean experimental `llam
 whose source, branch, ancestry, patch, binary, linkage, and toolchain identities all join. The C3
 compiler now distinguishes diagnostic provider overlays from `IntegratedLlamaGpuBinding`; only the
 latter can satisfy the whole-model exit. This checkpoint ran no inference.
+
 Research `4a5f7361` closes the remaining offline integration seam from the lean sequencer's
 schema-bound composed champion through readiness, dry-run T3, and one validated
 `RELEASE_PACKAGE_READY` journal record. The closeout is operator-triggered, unreachable from Campaign
@@ -118,6 +119,7 @@ kernel set, including three trees, four attested binaries, four stable links, no
 ELF linkage, and ggml-generation checks. The live fold intentionally remains not-proven while llama's
 observed ggml `0.16.0` lacks human attestation and the pre-reboot dashboard process carries a stale
 ggml-bearing `LD_LIBRARY_PATH`; it does not convert either unknown into green state.
+
 INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
 VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
 Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
@@ -3006,6 +3008,8 @@ cannot retrigger the expensive gate unchanged.
     `empirical_claim=false`. The independently repeated focused suite passed **1,692 tests**. This is
     regression evidence only and does not close the parent empirical campaign task.
 - [x] Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
+
+- [ ] Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
   fault-injection tests are prerequisites, not substitutes for a campaign rehearsal with durable
   empirical receipts.
   - [x] **Complete the offline fault-injection acceptance matrix.** ✅ 2026-08-12 — research
