@@ -49304,6 +49304,52 @@
   verdict_justification: 'adopt_patterns, with one operator-review flag rather than a self-authorized rejection. ADOPTABLE NOW (no GPU): the environment/verifier/trace-capture substrate — black_box mode needs no logprobs and the rollout worker is CPU-only by design, so running opencode in a sandbox against our llama.cpp endpoint with a held-out verifier yields verified agent trajectories with programmatic rewards, an eval-tower and corpus asset independent of ever training. NOT ADOPTABLE (flagged, not dismissed): the weight-update half. Licenses all clean — TRL Apache-2.0, OpenEnv BSD-3-Clause, opencode MIT.'
   notes: 'Ingested 2026-07-25 via /research-intake. Derived work PROPOSED (pending Stage-2 plan approval) as intake-derived-work-2026-07-25.md (ID-20). Adapter cost for our own harness: the ResourceSessionFactory shim is ~10 lines; real cost is ResourceSession + the TRL-side loop-owning extension protocol (wait_for_completion, fetch_proxy_trace), a per-rollout isolated sandbox, and proxy routing. Subtle trap worth recording: a harness firing auxiliary LLM calls (title generation, summarization) will train those calls with the task reward unless agent_turn_fn filters them.'
   dive_corrections: '2026-07-25 Stage-2a dive: TRL/OpenEnv: DECLINE rather than bridge. llama.cpp has NONE of the seven vLLM control endpoints (/get_world_size, /pause, /resume, /init_weight_transfer_engine, /start_weight_update, /update_weights, /finish_weight_update — full sweep of tools/server/*.cpp returns zero) and weight_transfer.py:25 hard-imports the vLLM NCCL engine, so llama.cpp could only ever be a FROZEN OFF-POLICY SAMPLER, defeating AsyncGRPO''s premise. My proposed one-line alias was also BUGGY: entry.get(''token_id'') or entry.get(''id'') is truthiness-based and token id 0 is valid and falsy, silently desyncing completion_token_ids from per_token_logps. Logprob semantics also mismatch (llama.cpp ''prob''/''logprob'' != vLLM processed_logprobs). Keep only the GPU-free half: black_box mode + LocalSubprocessSandboxBackend (no E2B needed).'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive: DECLINE rather than bridge, and the claims already carry the reason
+      — claim 4 states the hardware block outright. Verified by full sweep: llama.cpp has NONE of the seven
+      vLLM control endpoints (/get_world_size, /pause, /resume, /init_weight_transfer_engine, /start_weight_update,
+      /update_weights, /finish_weight_update — tools/server/*.cpp returns zero), and weight_transfer.py:25
+      hard-imports the vLLM NCCL engine. llama.cpp could therefore only ever be a FROZEN OFF-POLICY SAMPLER,
+      which defeats AsyncGRPO''s premise. The dive also retracts its own proposed one-line alias as BUGGY
+      — a self-correction worth keeping visible.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive: DECLINE rather than bridge, and the claims already carry the reason
+      — claim 4 states the hardware block outright. Verified by full sweep: llama.cpp has NONE of the seven
+      vLLM control endpoints (/get_world_size, /pause, /resume, /init_weight_transfer_engine, /start_weight_update,
+      /update_weights, /finish_weight_update — tools/server/*.cpp returns zero), and weight_transfer.py:25
+      hard-imports the vLLM NCCL engine. llama.cpp could therefore only ever be a FROZEN OFF-POLICY SAMPLER,
+      which defeats AsyncGRPO''s premise. The dive also retracts its own proposed one-line alias as BUGGY
+      — a self-correction worth keeping visible.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive: DECLINE rather than bridge, and the claims already carry the reason
+      — claim 4 states the hardware block outright. Verified by full sweep: llama.cpp has NONE of the seven
+      vLLM control endpoints (/get_world_size, /pause, /resume, /init_weight_transfer_engine, /start_weight_update,
+      /update_weights, /finish_weight_update — tools/server/*.cpp returns zero), and weight_transfer.py:25
+      hard-imports the vLLM NCCL engine. llama.cpp could therefore only ever be a FROZEN OFF-POLICY SAMPLER,
+      which defeats AsyncGRPO''s premise. The dive also retracts its own proposed one-line alias as BUGGY
+      — a self-correction worth keeping visible.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive: DECLINE rather than bridge, and the claims already carry the reason
+      — claim 4 states the hardware block outright. Verified by full sweep: llama.cpp has NONE of the seven
+      vLLM control endpoints (/get_world_size, /pause, /resume, /init_weight_transfer_engine, /start_weight_update,
+      /update_weights, /finish_weight_update — tools/server/*.cpp returns zero), and weight_transfer.py:25
+      hard-imports the vLLM NCCL engine. llama.cpp could therefore only ever be a FROZEN OFF-POLICY SAMPLER,
+      which defeats AsyncGRPO''s premise. The dive also retracts its own proposed one-line alias as BUGGY
+      — a self-correction worth keeping visible.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive: DECLINE rather than bridge, and the claims already carry the reason
+      — claim 4 states the hardware block outright. Verified by full sweep: llama.cpp has NONE of the seven
+      vLLM control endpoints (/get_world_size, /pause, /resume, /init_weight_transfer_engine, /start_weight_update,
+      /update_weights, /finish_weight_update — tools/server/*.cpp returns zero), and weight_transfer.py:25
+      hard-imports the vLLM NCCL engine. llama.cpp could therefore only ever be a FROZEN OFF-POLICY SAMPLER,
+      which defeats AsyncGRPO''s premise. The dive also retracts its own proposed one-line alias as BUGGY
+      — a self-correction worth keeping visible.'
 - id: intake-890
   arxiv_id: null
   url: https://github.com/VectifyAI/PageIndex
@@ -49747,6 +49793,52 @@
   verdict_justification: 'adopt_patterns, not adopt_component — the repo does NOT overturn the blog, it substantiates the mechanism while leaving the results unverifiable. Code merit is genuinely good (68 test modules to 57 source modules, PR-gated CI, no stubs on headline features, commit messages that read like someone actually operating it). Commercial-bias check comes out FAVOURABLE on the code (the full loop, budgets, radio, TUI and all five backends are in-tree under Apache-2.0 with no license key or phone-home) and UNFAVOURABLE on the roadmap (Fractal Cloud announced with early access). Three reasons to lift patterns rather than adopt: it imports a competing orchestrator; its budget caps go slack against local models; and default-bypassed permissions are disqualifying here.'
   notes: 'Ingested 2026-07-25 via /research-intake. OPERATOR DECISION 2026-07-25: containerized / disposable-host trial approved. Containment design worth extracting regardless — budget aggregation up the tree, a reserve tranche withheld for cleanup, drain-at-iteration-boundary termination, and the scope flag limiting commit blast radius (the mechanism that would keep an autonomous kernel node out of frozen production-consolidated-v7). A non-USD cost basis (GPU-seconds or wall-clock) is required before any local use.'
   dive_corrections: '2026-07-25 Stage-2a dive: Fractal repo: runtime deps confirmed as ONLY plasma-wiki/rich/textual/typer with zero torch/vllm/CUDA/ROCm/llama.cpp — ''accelerates nothing'' is safe. 56 commits, single author (bus factor 1). The safety posture is the project''s OWN front-page [!WARNING], stronger than I asserted: ''Nodes run their agent without permission prompts by default'' enumerating five bypass flags (Claude bypassPermissions, Codex danger-full-access, Grok --always-approve, opencode --auto, omp --yolo), and ''The per-node git worktree isolates the branch it commits to, not the filesystem, the network, or anything else outside it.'' Cite theirs rather than asserting our own. Budget slack CONFIRMED concretely by their docs: ''Cost is recorded, never estimated. A step whose backend reported no figure stores no cost'' — so a local llama-server that reports nothing produces no cost row and max-cost never trips.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. Runtime deps confirmed as ONLY plasma-wiki/rich/textual/typer with
+      zero torch/vllm/CUDA/ROCm/llama.cpp, so ''accelerates nothing'' is safe. 56 commits, single author
+      — bus factor 1. The safety posture is STRONGER than the entry asserted and it is the project''s OWN
+      front-page warning: nodes run their agent WITHOUT permission prompts by default, enumerating five
+      bypass flags (Claude bypassPermissions, Codex danger-full-access, Grok --always-approve, opencode
+      --auto, omp --yolo). Claim 4''s hostile-to-this-machine reading is corroborated by the vendor, not
+      merely inferred.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. Runtime deps confirmed as ONLY plasma-wiki/rich/textual/typer with
+      zero torch/vllm/CUDA/ROCm/llama.cpp, so ''accelerates nothing'' is safe. 56 commits, single author
+      — bus factor 1. The safety posture is STRONGER than the entry asserted and it is the project''s OWN
+      front-page warning: nodes run their agent WITHOUT permission prompts by default, enumerating five
+      bypass flags (Claude bypassPermissions, Codex danger-full-access, Grok --always-approve, opencode
+      --auto, omp --yolo). Claim 4''s hostile-to-this-machine reading is corroborated by the vendor, not
+      merely inferred.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. Runtime deps confirmed as ONLY plasma-wiki/rich/textual/typer with
+      zero torch/vllm/CUDA/ROCm/llama.cpp, so ''accelerates nothing'' is safe. 56 commits, single author
+      — bus factor 1. The safety posture is STRONGER than the entry asserted and it is the project''s OWN
+      front-page warning: nodes run their agent WITHOUT permission prompts by default, enumerating five
+      bypass flags (Claude bypassPermissions, Codex danger-full-access, Grok --always-approve, opencode
+      --auto, omp --yolo). Claim 4''s hostile-to-this-machine reading is corroborated by the vendor, not
+      merely inferred.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. Runtime deps confirmed as ONLY plasma-wiki/rich/textual/typer with
+      zero torch/vllm/CUDA/ROCm/llama.cpp, so ''accelerates nothing'' is safe. 56 commits, single author
+      — bus factor 1. The safety posture is STRONGER than the entry asserted and it is the project''s OWN
+      front-page warning: nodes run their agent WITHOUT permission prompts by default, enumerating five
+      bypass flags (Claude bypassPermissions, Codex danger-full-access, Grok --always-approve, opencode
+      --auto, omp --yolo). Claim 4''s hostile-to-this-machine reading is corroborated by the vendor, not
+      merely inferred.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. Runtime deps confirmed as ONLY plasma-wiki/rich/textual/typer with
+      zero torch/vllm/CUDA/ROCm/llama.cpp, so ''accelerates nothing'' is safe. 56 commits, single author
+      — bus factor 1. The safety posture is STRONGER than the entry asserted and it is the project''s OWN
+      front-page warning: nodes run their agent WITHOUT permission prompts by default, enumerating five
+      bypass flags (Claude bypassPermissions, Codex danger-full-access, Grok --always-approve, opencode
+      --auto, omp --yolo). Claim 4''s hostile-to-this-machine reading is corroborated by the vendor, not
+      merely inferred.'
 - id: intake-895
   arxiv_id: '2506.15629'
   url: https://arxiv.org/html/2506.15629v1
@@ -50274,6 +50366,33 @@
   verdict_justification: 'adopt_patterns, scoped tightly to two items — the four verification gates as a checklist extension to the existing security-review skill, and the phase-transition caution as a bound on SkillBank library growth. Everything else is already better covered by primaries we hold. Deliberately NOT proposed: adopting any surveyed method (SAGE, SEAgent, CUA-Skill are GUI/computer-use agents on proprietary stacks, outside our serving domain and given only secondhand treatment); and NOT citing the 26.1% figure as evidence until the three primaries are read directly.'
   notes: Ingested 2026-07-25 via /research-intake Phase-3 Tier-1 expansion from intake-888.
   dive_corrections: '2026-07-25 Stage-2a dive: Agent Skills survey: BOTH flagged items are CITATIONS, not primary work by these authors. The 26.1%/2.12x security figures trace to arXiv 2601.10338, the 54.1% single-actor figure to arXiv 2602.06547, and the prompt-injection material to arXiv 2510.26328 — cite those directly, never the survey. The skill-selection PHASE TRANSITION is attributed to arXiv 2601.04748 (''Beyond a critical library size, skill selection accuracy degrades sharply''); READ THAT PRIMARY before setting any SkillBank library-size bound.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive: BOTH flagged items are CITATIONS, not primary work by these authors
+      — the survey is a conduit and must not be cited as the source.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive: BOTH flagged items are CITATIONS, not primary work by these authors
+      — the survey is a conduit and must not be cited as the source.'
+  - claim_index: 2
+    effect: reattributed
+    note: '2026-07-25 Stage-2a dive: BOTH flagged items are CITATIONS, not primary work by these authors
+      — the survey is a conduit and must not be cited as the source. These security figures are NOT this
+      survey''s measurements. The 26.1% / 2.12x trace to arXiv 2601.10338 and the 54.1% single-actor figure
+      to arXiv 2602.06547, with the prompt-injection material at arXiv 2510.26328. Cite those directly,
+      never the survey.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive: BOTH flagged items are CITATIONS, not primary work by these authors
+      — the survey is a conduit and must not be cited as the source.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive: BOTH flagged items are CITATIONS, not primary work by these authors
+      — the survey is a conduit and must not be cited as the source. The claim is correctly worded as ''cites
+      a finding'', so it survives — but the operational instruction attached to it does not: the phase transition
+      is attributed to arXiv 2601.04748, and that PRIMARY must be read before any SkillBank size limit is
+      set from it.'
 - id: intake-901
   arxiv_id: null
   url: https://github.com/avbiswas/fast-rlm
@@ -52964,6 +53083,47 @@
     located_by: machine
     match_coverage: '0.529'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (fresh tree at HEAD a7233324; host prereqs checked read-only). The verdict
+      and the refusal of adopt_component are both UPHELD AND STRENGTHENED, and these Firecracker/microVM
+      claims are untouched. The correction lands on OUR side, not the source''s: the entry''s primary hook
+      cited an ''OPEN, UNSTARTED checkbox'' in scoring-infra-standardization.md that DOES NOT EXIST AS A
+      CHECKBOX — it is trailing prose inside item 2a-ii, which is itself marked DONE. Worth knowing for
+      anyone working that handoff: a hook can cite a checkbox that was never a checkbox.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (fresh tree at HEAD a7233324; host prereqs checked read-only). The verdict
+      and the refusal of adopt_component are both UPHELD AND STRENGTHENED, and these Firecracker/microVM
+      claims are untouched. The correction lands on OUR side, not the source''s: the entry''s primary hook
+      cited an ''OPEN, UNSTARTED checkbox'' in scoring-infra-standardization.md that DOES NOT EXIST AS A
+      CHECKBOX — it is trailing prose inside item 2a-ii, which is itself marked DONE. Worth knowing for
+      anyone working that handoff: a hook can cite a checkbox that was never a checkbox.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (fresh tree at HEAD a7233324; host prereqs checked read-only). The verdict
+      and the refusal of adopt_component are both UPHELD AND STRENGTHENED, and these Firecracker/microVM
+      claims are untouched. The correction lands on OUR side, not the source''s: the entry''s primary hook
+      cited an ''OPEN, UNSTARTED checkbox'' in scoring-infra-standardization.md that DOES NOT EXIST AS A
+      CHECKBOX — it is trailing prose inside item 2a-ii, which is itself marked DONE. Worth knowing for
+      anyone working that handoff: a hook can cite a checkbox that was never a checkbox.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (fresh tree at HEAD a7233324; host prereqs checked read-only). The verdict
+      and the refusal of adopt_component are both UPHELD AND STRENGTHENED, and these Firecracker/microVM
+      claims are untouched. The correction lands on OUR side, not the source''s: the entry''s primary hook
+      cited an ''OPEN, UNSTARTED checkbox'' in scoring-infra-standardization.md that DOES NOT EXIST AS A
+      CHECKBOX — it is trailing prose inside item 2a-ii, which is itself marked DONE. Worth knowing for
+      anyone working that handoff: a hook can cite a checkbox that was never a checkbox.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (fresh tree at HEAD a7233324; host prereqs checked read-only). The verdict
+      and the refusal of adopt_component are both UPHELD AND STRENGTHENED, and these Firecracker/microVM
+      claims are untouched. The correction lands on OUR side, not the source''s: the entry''s primary hook
+      cited an ''OPEN, UNSTARTED checkbox'' in scoring-infra-standardization.md that DOES NOT EXIST AS A
+      CHECKBOX — it is trailing prose inside item 2a-ii, which is itself marked DONE. Worth knowing for
+      anyone working that handoff: a hook can cite a checkbox that was never a checkbox.'
 - id: intake-924
   arxiv_id: null
   url: https://huggingface.co/KyleHessling1/Qwopus3.6-27B-Fusion-GGUF
@@ -53719,6 +53879,82 @@
     located_by: machine
     match_coverage: '0.625'
     verified_by: vidya/machine_anchor
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (joint with intake-918/928). adopt_patterns stands. The decomposition
+      is CONFIRMED and is the entry''s strongest asset: Eq. 5 substitutes CFG into the DMD gradient and
+      Eq. 6 rearranges with explicit underbraces into a Distribution-Matching term and a CFG-Augmentation
+      term — a one-line identity verifiable WITHOUT appeal to the authors'' experiments, which is why credibility
+      1 reflects venue and self-validation rather than method weakness. The CA-alone degradation is supported
+      by a real ABLATION (SS3.1.1, three configurations on 1k COCO-10k prompts with ImageReward and HPS
+      v2.1), with two honesty markers worth carrying: the authors hedge that DM is not TOTALLY incapable
+      of the multi-step-to-few-step conversion, and the ablation''s numbers live in Fig. 2 — AN IMAGE, not
+      an extractable table — so the ablation is real but its magnitudes are NOT machine-quotable. NUMBERING
+      NOTE: the correction''s own ''CLAIM 7/8/9'' indexes a different list than this worksheet''s, and its
+      one OVERTURN (a 1-step experiment DOES exist at SS4.1, against the entry''s ''NOT-FOUND-IN-SOURCE'')
+      lands on a reported-results field rather than on any of these five claims. Adjudicated on content,
+      not on that numbering — the third such mismatch tonight after intake-916 and intake-920.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (joint with intake-918/928). adopt_patterns stands. The decomposition
+      is CONFIRMED and is the entry''s strongest asset: Eq. 5 substitutes CFG into the DMD gradient and
+      Eq. 6 rearranges with explicit underbraces into a Distribution-Matching term and a CFG-Augmentation
+      term — a one-line identity verifiable WITHOUT appeal to the authors'' experiments, which is why credibility
+      1 reflects venue and self-validation rather than method weakness. The CA-alone degradation is supported
+      by a real ABLATION (SS3.1.1, three configurations on 1k COCO-10k prompts with ImageReward and HPS
+      v2.1), with two honesty markers worth carrying: the authors hedge that DM is not TOTALLY incapable
+      of the multi-step-to-few-step conversion, and the ablation''s numbers live in Fig. 2 — AN IMAGE, not
+      an extractable table — so the ablation is real but its magnitudes are NOT machine-quotable. NUMBERING
+      NOTE: the correction''s own ''CLAIM 7/8/9'' indexes a different list than this worksheet''s, and its
+      one OVERTURN (a 1-step experiment DOES exist at SS4.1, against the entry''s ''NOT-FOUND-IN-SOURCE'')
+      lands on a reported-results field rather than on any of these five claims. Adjudicated on content,
+      not on that numbering — the third such mismatch tonight after intake-916 and intake-920.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (joint with intake-918/928). adopt_patterns stands. The decomposition
+      is CONFIRMED and is the entry''s strongest asset: Eq. 5 substitutes CFG into the DMD gradient and
+      Eq. 6 rearranges with explicit underbraces into a Distribution-Matching term and a CFG-Augmentation
+      term — a one-line identity verifiable WITHOUT appeal to the authors'' experiments, which is why credibility
+      1 reflects venue and self-validation rather than method weakness. The CA-alone degradation is supported
+      by a real ABLATION (SS3.1.1, three configurations on 1k COCO-10k prompts with ImageReward and HPS
+      v2.1), with two honesty markers worth carrying: the authors hedge that DM is not TOTALLY incapable
+      of the multi-step-to-few-step conversion, and the ablation''s numbers live in Fig. 2 — AN IMAGE, not
+      an extractable table — so the ablation is real but its magnitudes are NOT machine-quotable. NUMBERING
+      NOTE: the correction''s own ''CLAIM 7/8/9'' indexes a different list than this worksheet''s, and its
+      one OVERTURN (a 1-step experiment DOES exist at SS4.1, against the entry''s ''NOT-FOUND-IN-SOURCE'')
+      lands on a reported-results field rather than on any of these five claims. Adjudicated on content,
+      not on that numbering — the third such mismatch tonight after intake-916 and intake-920.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (joint with intake-918/928). adopt_patterns stands. The decomposition
+      is CONFIRMED and is the entry''s strongest asset: Eq. 5 substitutes CFG into the DMD gradient and
+      Eq. 6 rearranges with explicit underbraces into a Distribution-Matching term and a CFG-Augmentation
+      term — a one-line identity verifiable WITHOUT appeal to the authors'' experiments, which is why credibility
+      1 reflects venue and self-validation rather than method weakness. The CA-alone degradation is supported
+      by a real ABLATION (SS3.1.1, three configurations on 1k COCO-10k prompts with ImageReward and HPS
+      v2.1), with two honesty markers worth carrying: the authors hedge that DM is not TOTALLY incapable
+      of the multi-step-to-few-step conversion, and the ablation''s numbers live in Fig. 2 — AN IMAGE, not
+      an extractable table — so the ablation is real but its magnitudes are NOT machine-quotable. NUMBERING
+      NOTE: the correction''s own ''CLAIM 7/8/9'' indexes a different list than this worksheet''s, and its
+      one OVERTURN (a 1-step experiment DOES exist at SS4.1, against the entry''s ''NOT-FOUND-IN-SOURCE'')
+      lands on a reported-results field rather than on any of these five claims. Adjudicated on content,
+      not on that numbering — the third such mismatch tonight after intake-916 and intake-920.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-29 Stage-2 dive (joint with intake-918/928). adopt_patterns stands. The decomposition
+      is CONFIRMED and is the entry''s strongest asset: Eq. 5 substitutes CFG into the DMD gradient and
+      Eq. 6 rearranges with explicit underbraces into a Distribution-Matching term and a CFG-Augmentation
+      term — a one-line identity verifiable WITHOUT appeal to the authors'' experiments, which is why credibility
+      1 reflects venue and self-validation rather than method weakness. The CA-alone degradation is supported
+      by a real ABLATION (SS3.1.1, three configurations on 1k COCO-10k prompts with ImageReward and HPS
+      v2.1), with two honesty markers worth carrying: the authors hedge that DM is not TOTALLY incapable
+      of the multi-step-to-few-step conversion, and the ablation''s numbers live in Fig. 2 — AN IMAGE, not
+      an extractable table — so the ablation is real but its magnitudes are NOT machine-quotable. NUMBERING
+      NOTE: the correction''s own ''CLAIM 7/8/9'' indexes a different list than this worksheet''s, and its
+      one OVERTURN (a 1-step experiment DOES exist at SS4.1, against the entry''s ''NOT-FOUND-IN-SOURCE'')
+      lands on a reported-results field rather than on any of these five claims. Adjudicated on content,
+      not on that numbering — the third such mismatch tonight after intake-916 and intake-920.'
 - id: intake-930
   arxiv_id: '2509.25140'
   url: https://arxiv.org/abs/2509.25140
@@ -61303,6 +61539,17 @@
     DIVE-SURFACED SOURCES: Mem0 (arXiv:2504.19413) is proposed as the strongest production-oriented cross-session comparator; no independent Cognitive Workspace reproduction surfaced.
 
     STAGE-3/4 ROUTING 2026-08-07 (operator-approved): UTM-V1 through UTM-V6 in `handoffs/active/unified-trace-memory-service.md` own the verified negative fixtures and lifecycle-evaluation constraints; the Cognitive Workspace runtime remains declined.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-08-07 Stage-2 paper/code dive. VERIFIED as a benchmark-integrity NEGATIVE FIXTURE, which
+      is its real value. The mechanisms are confirmed as PROPOSED, which is all this claim asserts.
+  - claim_index: 1
+    effect: overturned
+    note: 'The comparison is vacuous: the dive read the code and found THE RAG REUSE CONTROL IS HARD-CODED
+      TO ZERO. So ''54-60% memory reuse versus 0% for traditional RAG'' is not a measurement of RAG — the
+      0% is a constant, not an observation. The entry is OVERTURNED as empirical evidence for memory quality,
+      efficiency, complexity or durable persistence; keep it only as the negative fixture.'
 - id: intake-1009
   arxiv_id: null
   url: https://github.com/PrimeIntellect-ai/prime-agent
@@ -63792,6 +64039,35 @@
     for Stage-2b round 2; PROV-AGENT DECLINED (interop reference only - Table 2 mapping captured
     in intake-1046); A-MemGuard DECLINED (design argument for fold-time checking already
     recorded here; no mechanism to import).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.04990 v3 read, v4 cross-checked). Housekeeping to carry:
+      the paper moved to v4 on 2026-06-28, so RE-PIN citations; the author list is 11, lead Yiqi Wang. The
+      claim already flags the abstract/body inconsistency itself.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.04990 v3 read, v4 cross-checked). Housekeeping to carry:
+      the paper moved to v4 on 2026-06-28, so RE-PIN citations; the author list is 11, lead Yiqi Wang. This
+      claim already carries the CORRECTED count — the vocabulary is NINE relations, not the seven Stage
+      1 recorded.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.04990 v3 read, v4 cross-checked). Housekeeping to carry:
+      the paper moved to v4 on 2026-06-28, so RE-PIN citations; the author list is 11, lead Yiqi Wang. This
+      claim already carries the REATTRIBUTION: the gap statement is at SS6.4 + Table 6, and the Stage-1
+      phrase appears nowhere verbatim in Table 3.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.04990 v3 read, v4 cross-checked). Housekeeping to carry:
+      the paper moved to v4 on 2026-06-28, so RE-PIN citations; the author list is 11, lead Yiqi Wang.'
+  - claim_index: 4
+    effect: narrowed
+    note: '2026-08-09 Stage-2 dive (arXiv 2606.04990 v3 read, v4 cross-checked). Housekeeping to carry:
+      the paper moved to v4 on 2026-06-28, so RE-PIN citations; the author list is 11, lead Yiqi Wang. ''Desiderata''
+      overstates the artifact''s structure: there is no structured checklist. It is SS8''s five open-problem
+      HEADINGS plus one prescriptive sentence, so cite it as open problems, not as a specification to implement
+      against.'
 
 - id: intake-1035
   arxiv_id: '2606.06240'
@@ -65383,6 +65659,42 @@
   - entry: intake-1050
     claim_index: 4
     why: Our claim that the alpha/beta/gamma models of CCE and BRD are ORIGINAL to the 2009 chapter is an assertion about what the 2007 Carneades paper does NOT contain. If intake-1050's content record is wrong, this originality claim is wrong.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass, dive-verified at PRIMARY-SOURCE level: the full
+      20-page author preprint was recovered via the Wayback Machine from the defunct dougwalton.ca, now
+      a parked domain — so the source exists and was read, not inferred. ONE CITATION CAVEAT to carry: the
+      page range 239-260 comes from a SECONDARY citation and was not verified against the Springer TOC.
+      Check it before any formal citation.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass, dive-verified at PRIMARY-SOURCE level: the full
+      20-page author preprint was recovered via the Wayback Machine from the defunct dougwalton.ca, now
+      a parked domain — so the source exists and was read, not inferred. ONE CITATION CAVEAT to carry: the
+      page range 239-260 comes from a SECONDARY citation and was not verified against the Springer TOC.
+      Check it before any formal citation.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass, dive-verified at PRIMARY-SOURCE level: the full
+      20-page author preprint was recovered via the Wayback Machine from the defunct dougwalton.ca, now
+      a parked domain — so the source exists and was read, not inferred. ONE CITATION CAVEAT to carry: the
+      page range 239-260 comes from a SECONDARY citation and was not verified against the Springer TOC.
+      Check it before any formal citation.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass, dive-verified at PRIMARY-SOURCE level: the full
+      20-page author preprint was recovered via the Wayback Machine from the defunct dougwalton.ca, now
+      a parked domain — so the source exists and was read, not inferred. ONE CITATION CAVEAT to carry: the
+      page range 239-260 comes from a SECONDARY citation and was not verified against the Springer TOC.
+      Check it before any formal citation.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass, dive-verified at PRIMARY-SOURCE level: the full
+      20-page author preprint was recovered via the Wayback Machine from the defunct dougwalton.ca, now
+      a parked domain — so the source exists and was read, not inferred. ONE CITATION CAVEAT to carry: the
+      page range 239-260 comes from a SECONDARY citation and was not verified against the Springer TOC.
+      Check it before any formal citation.'
 - id: intake-1063
   arxiv_id: null
   url: https://github.com/C2SP/C2SP
@@ -65532,6 +65844,37 @@
     Abo Khamis stability bounds are one explicitly cross-cited family - no invented connections.
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by intake-1041).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (full TUM-archive PDF + ICDT 2014 cross-check), dive-verified.
+      Worth recording why the connections are trustworthy: the E&L engine, the ICDT circuit, Naaf''s closed
+      forms and the Abo Khamis stability bounds are ONE EXPLICITLY CROSS-CITED FAMILY — no connections were
+      invented by the dive, which is the failure mode a survey-of-surveys usually introduces.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (full TUM-archive PDF + ICDT 2014 cross-check), dive-verified.
+      Worth recording why the connections are trustworthy: the E&L engine, the ICDT circuit, Naaf''s closed
+      forms and the Abo Khamis stability bounds are ONE EXPLICITLY CROSS-CITED FAMILY — no connections were
+      invented by the dive, which is the failure mode a survey-of-surveys usually introduces.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (full TUM-archive PDF + ICDT 2014 cross-check), dive-verified.
+      Worth recording why the connections are trustworthy: the E&L engine, the ICDT circuit, Naaf''s closed
+      forms and the Abo Khamis stability bounds are ONE EXPLICITLY CROSS-CITED FAMILY — no connections were
+      invented by the dive, which is the failure mode a survey-of-surveys usually introduces.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (full TUM-archive PDF + ICDT 2014 cross-check), dive-verified.
+      Worth recording why the connections are trustworthy: the E&L engine, the ICDT circuit, Naaf''s closed
+      forms and the Abo Khamis stability bounds are ONE EXPLICITLY CROSS-CITED FAMILY — no connections were
+      invented by the dive, which is the failure mode a survey-of-surveys usually introduces.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (full TUM-archive PDF + ICDT 2014 cross-check), dive-verified.
+      Worth recording why the connections are trustworthy: the E&L engine, the ICDT circuit, Naaf''s closed
+      forms and the Abo Khamis stability bounds are ONE EXPLICITLY CROSS-CITED FAMILY — no connections were
+      invented by the dive, which is the failure mode a survey-of-surveys usually introduces.'
 
 - id: intake-1066
   arxiv_id: '1712.01980'
@@ -65587,6 +65930,47 @@
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by the formal cluster's
     Dannert dive). The single most consequential formal finding of the audit session.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (RWTH full PDF, 18pp, proofs verified INLINE; CSL
+      2021 cross-read for the fixed-point boundary), dive-verified. Claim 3 already states the scope limit
+      honestly — strictly FOL on finite universes, with the paper itself saying fixed points are future
+      work — and claim 4 records a bounded NEGATIVE search result. Dive-surfaced and selected for a final-round
+      dive: Gradel & Tannen 1907.08470, the missing link where the dual-indeterminate power series is constructed
+      and semipositive Datalog is worked out.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (RWTH full PDF, 18pp, proofs verified INLINE; CSL
+      2021 cross-read for the fixed-point boundary), dive-verified. Claim 3 already states the scope limit
+      honestly — strictly FOL on finite universes, with the paper itself saying fixed points are future
+      work — and claim 4 records a bounded NEGATIVE search result. Dive-surfaced and selected for a final-round
+      dive: Gradel & Tannen 1907.08470, the missing link where the dual-indeterminate power series is constructed
+      and semipositive Datalog is worked out.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (RWTH full PDF, 18pp, proofs verified INLINE; CSL
+      2021 cross-read for the fixed-point boundary), dive-verified. Claim 3 already states the scope limit
+      honestly — strictly FOL on finite universes, with the paper itself saying fixed points are future
+      work — and claim 4 records a bounded NEGATIVE search result. Dive-surfaced and selected for a final-round
+      dive: Gradel & Tannen 1907.08470, the missing link where the dual-indeterminate power series is constructed
+      and semipositive Datalog is worked out.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (RWTH full PDF, 18pp, proofs verified INLINE; CSL
+      2021 cross-read for the fixed-point boundary), dive-verified. Claim 3 already states the scope limit
+      honestly — strictly FOL on finite universes, with the paper itself saying fixed points are future
+      work — and claim 4 records a bounded NEGATIVE search result. Dive-surfaced and selected for a final-round
+      dive: Gradel & Tannen 1907.08470, the missing link where the dual-indeterminate power series is constructed
+      and semipositive Datalog is worked out.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (RWTH full PDF, 18pp, proofs verified INLINE; CSL
+      2021 cross-read for the fixed-point boundary), dive-verified. Claim 3 already states the scope limit
+      honestly — strictly FOL on finite universes, with the paper itself saying fixed points are future
+      work — and claim 4 records a bounded NEGATIVE search result. Dive-surfaced and selected for a final-round
+      dive: Gradel & Tannen 1907.08470, the missing link where the dual-indeterminate power series is constructed
+      and semipositive Datalog is worked out.'
 
 - id: intake-1067
   arxiv_id: '1907.08470'
@@ -65718,6 +66102,47 @@
     intake_entries:
     - intake-772
     - intake-1069
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-08-10, ingested only because rec-002 and frontier-f1-real-task-corpus.md cited this paper
+      with intake-791's (SwarmAgentic) id attached — a NEIGHBOURING entry's id. The claims below are accurate;
+      what was wrong is how it was CITED. It was used as evidence for a trajectory toward 'fully autonomous
+      task generation', and ADAS DOES NOT GENERATE TASKS — it is evaluated on given benchmarks, and what
+      it automates is agent DESIGN. Verified 2026-08-10 against the primary source during the citation audit
+      that found this paper cited but never ingested.
+  - claim_index: 1
+    effect: unaffected
+    note: 2026-08-10, ingested only because rec-002 and frontier-f1-real-task-corpus.md cited this paper
+      with intake-791's (SwarmAgentic) id attached — a NEIGHBOURING entry's id. The claims below are accurate;
+      what was wrong is how it was CITED. It was used as evidence for a trajectory toward 'fully autonomous
+      task generation', and ADAS DOES NOT GENERATE TASKS — it is evaluated on given benchmarks, and what
+      it automates is agent DESIGN. Verified 2026-08-10 against the primary source during the citation audit
+      that found this paper cited but never ingested.
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-08-10, ingested only because rec-002 and frontier-f1-real-task-corpus.md cited this paper
+      with intake-791's (SwarmAgentic) id attached — a NEIGHBOURING entry's id. The claims below are accurate;
+      what was wrong is how it was CITED. It was used as evidence for a trajectory toward 'fully autonomous
+      task generation', and ADAS DOES NOT GENERATE TASKS — it is evaluated on given benchmarks, and what
+      it automates is agent DESIGN. Verified 2026-08-10 against the primary source during the citation audit
+      that found this paper cited but never ingested.
+  - claim_index: 3
+    effect: unaffected
+    note: 2026-08-10, ingested only because rec-002 and frontier-f1-real-task-corpus.md cited this paper
+      with intake-791's (SwarmAgentic) id attached — a NEIGHBOURING entry's id. The claims below are accurate;
+      what was wrong is how it was CITED. It was used as evidence for a trajectory toward 'fully autonomous
+      task generation', and ADAS DOES NOT GENERATE TASKS — it is evaluated on given benchmarks, and what
+      it automates is agent DESIGN. Verified 2026-08-10 against the primary source during the citation audit
+      that found this paper cited but never ingested.
+  - claim_index: 4
+    effect: unaffected
+    note: 2026-08-10, ingested only because rec-002 and frontier-f1-real-task-corpus.md cited this paper
+      with intake-791's (SwarmAgentic) id attached — a NEIGHBOURING entry's id. The claims below are accurate;
+      what was wrong is how it was CITED. It was used as evidence for a trajectory toward 'fully autonomous
+      task generation', and ADAS DOES NOT GENERATE TASKS — it is evaluated on given benchmarks, and what
+      it automates is agent DESIGN. Verified 2026-08-10 against the primary source during the citation audit
+      that found this paper cited but never ingested.
 - id: intake-1069
   arxiv_id: '2603.19461'
   url: https://arxiv.org/abs/2603.19461
@@ -65752,6 +66177,47 @@
     intake_entries:
     - intake-772
     - intake-1068
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-10, ingested only because it was cited with intake-787''s (MCE) id attached — a neighbouring
+      entry''s id. Also note intake-229 ''HyperAgents 2025 workshop'' is a DIFFERENT thing and is not this.
+      The claims are accurate; the CITATION was wrong: it was used as evidence for ''fully autonomous task
+      generation'' when the paper lists ''a fixed task and evaluation distribution'' among its OWN limitations.
+      The real trajectory it supports is toward domain-general metacognitive self-modification. Verified
+      against primary source.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-10, ingested only because it was cited with intake-787''s (MCE) id attached — a neighbouring
+      entry''s id. Also note intake-229 ''HyperAgents 2025 workshop'' is a DIFFERENT thing and is not this.
+      The claims are accurate; the CITATION was wrong: it was used as evidence for ''fully autonomous task
+      generation'' when the paper lists ''a fixed task and evaluation distribution'' among its OWN limitations.
+      The real trajectory it supports is toward domain-general metacognitive self-modification. Verified
+      against primary source.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-10, ingested only because it was cited with intake-787''s (MCE) id attached — a neighbouring
+      entry''s id. Also note intake-229 ''HyperAgents 2025 workshop'' is a DIFFERENT thing and is not this.
+      The claims are accurate; the CITATION was wrong: it was used as evidence for ''fully autonomous task
+      generation'' when the paper lists ''a fixed task and evaluation distribution'' among its OWN limitations.
+      The real trajectory it supports is toward domain-general metacognitive self-modification. Verified
+      against primary source.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-10, ingested only because it was cited with intake-787''s (MCE) id attached — a neighbouring
+      entry''s id. Also note intake-229 ''HyperAgents 2025 workshop'' is a DIFFERENT thing and is not this.
+      The claims are accurate; the CITATION was wrong: it was used as evidence for ''fully autonomous task
+      generation'' when the paper lists ''a fixed task and evaluation distribution'' among its OWN limitations.
+      The real trajectory it supports is toward domain-general metacognitive self-modification. Verified
+      against primary source.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08-10, ingested only because it was cited with intake-787''s (MCE) id attached — a neighbouring
+      entry''s id. Also note intake-229 ''HyperAgents 2025 workshop'' is a DIFFERENT thing and is not this.
+      The claims are accurate; the CITATION was wrong: it was used as evidence for ''fully autonomous task
+      generation'' when the paper lists ''a fixed task and evaluation distribution'' among its OWN limitations.
+      The real trajectory it supports is toward domain-general metacognitive self-modification. Verified
+      against primary source.'
 - id: intake-1070
   arxiv_id: '2606.09498'
   url: https://arxiv.org/abs/2606.09498
@@ -65786,6 +66252,47 @@
     intake_entries:
     - intake-244
     - intake-1071
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-10, ingested only because rec-001 cited it with intake-785''s (Darwin Godel Machine)
+      id attached. The paper is real and correctly named; the CITATION was wrong. rec-001 cites it for ''LLM-as-judge
+      benchmark design is itself optimizable'' — NOT SUPPORTED: the term LLM-as-judge does not appear in
+      the paper, validation uses DETERMINISTIC verifiers (which claim 4 states), and the benchmark is a
+      fixed target rather than the object of optimization. What it does support is that agent HARNESS design
+      is automatically optimizable.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-10, ingested only because rec-001 cited it with intake-785''s (Darwin Godel Machine)
+      id attached. The paper is real and correctly named; the CITATION was wrong. rec-001 cites it for ''LLM-as-judge
+      benchmark design is itself optimizable'' — NOT SUPPORTED: the term LLM-as-judge does not appear in
+      the paper, validation uses DETERMINISTIC verifiers (which claim 4 states), and the benchmark is a
+      fixed target rather than the object of optimization. What it does support is that agent HARNESS design
+      is automatically optimizable.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-10, ingested only because rec-001 cited it with intake-785''s (Darwin Godel Machine)
+      id attached. The paper is real and correctly named; the CITATION was wrong. rec-001 cites it for ''LLM-as-judge
+      benchmark design is itself optimizable'' — NOT SUPPORTED: the term LLM-as-judge does not appear in
+      the paper, validation uses DETERMINISTIC verifiers (which claim 4 states), and the benchmark is a
+      fixed target rather than the object of optimization. What it does support is that agent HARNESS design
+      is automatically optimizable.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-10, ingested only because rec-001 cited it with intake-785''s (Darwin Godel Machine)
+      id attached. The paper is real and correctly named; the CITATION was wrong. rec-001 cites it for ''LLM-as-judge
+      benchmark design is itself optimizable'' — NOT SUPPORTED: the term LLM-as-judge does not appear in
+      the paper, validation uses DETERMINISTIC verifiers (which claim 4 states), and the benchmark is a
+      fixed target rather than the object of optimization. What it does support is that agent HARNESS design
+      is automatically optimizable.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08-10, ingested only because rec-001 cited it with intake-785''s (Darwin Godel Machine)
+      id attached. The paper is real and correctly named; the CITATION was wrong. rec-001 cites it for ''LLM-as-judge
+      benchmark design is itself optimizable'' — NOT SUPPORTED: the term LLM-as-judge does not appear in
+      the paper, validation uses DETERMINISTIC verifiers (which claim 4 states), and the benchmark is a
+      fixed target rather than the object of optimization. What it does support is that agent HARNESS design
+      is automatically optimizable.'
 - id: intake-1071
   arxiv_id: '2510.04618'
   url: https://arxiv.org/abs/2510.04618
@@ -65825,6 +66332,47 @@
     intake_entries:
     - intake-244
     - intake-1070
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-10, ingested only because rec-001 cited ''ACE'' with intake-788''s (AFlow) id attached.
+      TWO citation corrections, neither touching these claims. (1) rec-001 cites it for ''LLM-as-judge benchmark
+      design is itself optimizable'' — NOT SUPPORTED: ACE optimizes the CONTEXT fed to an agent, not benchmarks
+      or judges, and its single LLM-as-judge mention is an off-the-shelf metric. (2) LINEAGE CORRECTION:
+      the note ''Meta-Harness -> ACE'' points the WRONG WAY — ACE (2025-10) predates Meta-Harness (2026-03)
+      by about six months.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-10, ingested only because rec-001 cited ''ACE'' with intake-788''s (AFlow) id attached.
+      TWO citation corrections, neither touching these claims. (1) rec-001 cites it for ''LLM-as-judge benchmark
+      design is itself optimizable'' — NOT SUPPORTED: ACE optimizes the CONTEXT fed to an agent, not benchmarks
+      or judges, and its single LLM-as-judge mention is an off-the-shelf metric. (2) LINEAGE CORRECTION:
+      the note ''Meta-Harness -> ACE'' points the WRONG WAY — ACE (2025-10) predates Meta-Harness (2026-03)
+      by about six months.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-10, ingested only because rec-001 cited ''ACE'' with intake-788''s (AFlow) id attached.
+      TWO citation corrections, neither touching these claims. (1) rec-001 cites it for ''LLM-as-judge benchmark
+      design is itself optimizable'' — NOT SUPPORTED: ACE optimizes the CONTEXT fed to an agent, not benchmarks
+      or judges, and its single LLM-as-judge mention is an off-the-shelf metric. (2) LINEAGE CORRECTION:
+      the note ''Meta-Harness -> ACE'' points the WRONG WAY — ACE (2025-10) predates Meta-Harness (2026-03)
+      by about six months.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-10, ingested only because rec-001 cited ''ACE'' with intake-788''s (AFlow) id attached.
+      TWO citation corrections, neither touching these claims. (1) rec-001 cites it for ''LLM-as-judge benchmark
+      design is itself optimizable'' — NOT SUPPORTED: ACE optimizes the CONTEXT fed to an agent, not benchmarks
+      or judges, and its single LLM-as-judge mention is an off-the-shelf metric. (2) LINEAGE CORRECTION:
+      the note ''Meta-Harness -> ACE'' points the WRONG WAY — ACE (2025-10) predates Meta-Harness (2026-03)
+      by about six months.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-08-10, ingested only because rec-001 cited ''ACE'' with intake-788''s (AFlow) id attached.
+      TWO citation corrections, neither touching these claims. (1) rec-001 cites it for ''LLM-as-judge benchmark
+      design is itself optimizable'' — NOT SUPPORTED: ACE optimizes the CONTEXT fed to an agent, not benchmarks
+      or judges, and its single LLM-as-judge mention is an off-the-shelf metric. (2) LINEAGE CORRECTION:
+      the note ''Meta-Harness -> ACE'' points the WRONG WAY — ACE (2025-10) predates Meta-Harness (2026-03)
+      by about six months.'
 - id: intake-1072
   arxiv_id: '2411.15114'
   url: https://arxiv.org/abs/2411.15114
