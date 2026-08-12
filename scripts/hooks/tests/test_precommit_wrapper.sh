@@ -35,7 +35,29 @@ set -uo pipefail
 # with a known-bad blob staged, and asserts a non-zero exit. It also asserts the
 # clean case exits zero, so a wrapper cannot pass by simply always failing.
 #
+# 2026-08-12 (guard-universe-and-worktree-isolation P1/3a): the wrapper now
+# resolves its own HOOK_SRC_DIR at runtime via `git rev-parse --show-toplevel`
+# (worktree correctness — .git/hooks/ is shared across every worktree of a
+# repo, so the wrapper must ask which one is committing rather than have a
+# path baked in at install time; see install_git_hooks.sh). The throwaway
+# sandbox this test stages into has no relationship to any real checkout, so
+# git-plumbing resolution finds nothing there — deliberately: this test
+# covers the wrapper's scanning/status-propagation contract, not the
+# git-worktree-resolution contract (that has its own coverage in
+# scripts/hooks/tests/test_hook_worktree_resolution.py). EPYC_HOOK_SRC_DIR is
+# the wrapper's test-only override (mirrors EPYC_BUS_ROOT in session_bus.py)
+# for exactly this: pointing it at the real scripts/hooks without needing the
+# sandbox to BE a real checkout. Always points at epyc-root's canonical copy
+# (HOOKS_HOME below), not each tested repo's own root — pii_precommit.sh and
+# hermes_drift_precommit.sh have only ever lived in epyc-root; orchestrator
+# and inference-research have never carried their own copy and reach epyc-
+# root's for exactly this pair of scripts, by design (verified 2026-08-12:
+# neither has scripts/hooks/pii_precommit.sh on disk). The wrapper's own
+# production resolution (tier 4 fallback) lands on the same path for them.
+#
 # Run: bash scripts/hooks/tests/test_precommit_wrapper.sh
+
+HOOKS_HOME="/workspace/scripts/hooks"
 
 REPOS=(
   "/workspace"
@@ -78,7 +100,7 @@ for repo in "${REPOS[@]}"; do
     git add staged.txt
   ) >/dev/null 2>&1
 
-  ( cd "$tmp" && bash "$hook" ) >/dev/null 2>&1
+  ( cd "$tmp" && EPYC_HOOK_SRC_DIR="$HOOKS_HOME" bash "$hook" ) >/dev/null 2>&1
   rc=$?
   if [[ "$rc" -ne 0 ]]; then
     pass "$name blocks a staged secret (exit $rc)"
@@ -87,7 +109,7 @@ for repo in "${REPOS[@]}"; do
   fi
 
   ( cd "$tmp" && printf 'ordinary content\n' > staged.txt && git add staged.txt ) >/dev/null 2>&1
-  ( cd "$tmp" && bash "$hook" ) >/dev/null 2>&1
+  ( cd "$tmp" && EPYC_HOOK_SRC_DIR="$HOOKS_HOME" bash "$hook" ) >/dev/null 2>&1
   rc=$?
   if [[ "$rc" -eq 0 ]]; then
     pass "$name allows a clean staged set"

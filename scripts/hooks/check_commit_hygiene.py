@@ -45,10 +45,17 @@ import json
 import os
 import re
 import shlex
+import subprocess
 import sys
 import time
 from pathlib import Path
 
+# The five known repos. Worktree-aware as of 2026-08-12
+# (guard-universe-and-worktree-isolation P1/3b): these are now the SEED of the
+# shared set, not its entire membership — see is_shared() below. Literal
+# equality alone silently lapsed for any worktree (e.g. the incoming
+# /mnt/raid0/llm/worktrees/mains/<agent> lanes), since a worktree's path is
+# never literally one of these five.
 SHARED_REPOS = [
     "/workspace",
     "/mnt/raid0/llm/epyc-root",
@@ -77,8 +84,70 @@ def canon(p: str) -> str:
 SHARED_CANON = {canon(p) for p in SHARED_REPOS}
 
 
+def _git_common_dir(path: str) -> str | None:
+    """`path`'s git-common-dir, or None if it is not inside a git working
+    tree (or git cannot answer in time). None is the "not shared" verdict —
+    the same fail-permissive posture literal equality already had for
+    non-repo paths (throwaway test fixtures, sandboxes): this hook errs
+    permissive on purpose (see module docstring, SCOPE).
+
+    Every worktree of a repo shares ONE git-common-dir with it — the common
+    object/ref store a `git worktree add` checkout points back to — so this
+    is the actual git-native test for "is this path part of that repo",
+    where literal path equality only ever tested "is this path the repo's
+    ORIGINAL checkout location".
+    """
+    try:
+        proc = subprocess.run(
+            ["git", "-C", path, "rev-parse", "--git-common-dir"],
+            capture_output=True, text=True, timeout=3,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if proc.returncode != 0:
+        return None
+    common = proc.stdout.strip()
+    if not common:
+        return None
+    if not os.path.isabs(common):
+        common = os.path.join(path, common)
+    return canon(common)
+
+
+# Lazily computed and cached (module-global, per-process) rather than at
+# import time: this hook fires on every Bash call, most of which never
+# mention git, and each seed lookup is a subprocess spawn. Computing it only
+# once resolve_repo()/is_shared() are actually reached (git add/commit was
+# seen) keeps the common case — no git in the command at all — at zero
+# subprocess cost, exactly as it was before this change.
+_seed_common_dirs_cache: set[str] | None = None
+
+
+def _seed_common_dirs() -> set[str]:
+    global _seed_common_dirs_cache
+    if _seed_common_dirs_cache is None:
+        _seed_common_dirs_cache = {
+            d for d in (_git_common_dir(p) for p in SHARED_REPOS) if d
+        }
+    return _seed_common_dirs_cache
+
+
 def is_shared(path: str) -> bool:
-    return canon(path) in SHARED_CANON
+    """True for one of the five repo roots OR any worktree of one.
+
+    Two independent tests, either is sufficient:
+      - literal canonical-path membership: the original, unchanged fast path
+        for the exact seed roots — correct even when git is unavailable or
+        the path does not exist (Path.resolve() does not require existence).
+      - git-common-dir membership: the worktree-aware addition. A worktree
+        living anywhere on disk (e.g. /mnt/raid0/llm/worktrees/mains/mainA)
+        still shares its seed's common-dir, so it qualifies without ever
+        being named literally.
+    """
+    if canon(path) in SHARED_CANON:
+        return True
+    common = _git_common_dir(path)
+    return common is not None and common in _seed_common_dirs()
 
 
 def git_invocations(segment: str) -> list[list[str]]:
