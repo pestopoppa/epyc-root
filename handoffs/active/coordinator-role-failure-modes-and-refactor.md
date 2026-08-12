@@ -488,25 +488,30 @@ Nothing is checked off without a commit hash or a receipt path.
 
 ### Immediate — mechanisms that exist and are simply not wired or not landed
 
-- [ ] **R-1 — Land `fleet_watch.sh`, or delete it.** Untracked; the only mechanism for F-07, F-10,
+- [x] **R-1 — Land `fleet_watch.sh`, or delete it.** Untracked; the only mechanism for F-07, F-10,
       F-11 and F-13; does not survive this session. **Another agent owns the file right now — route
       the request, do not edit it.** Closes F-13.
-- [ ] **R-2 — Land the C51 `tmux_adapter.py` fix and the `bus_supervisor.sh` C49 fix**, both
+      ✅ 2026-08-12 — landed as `83f204cf`; adoption path (restart + registry contract) specced in Phase 5.
+- [x] **R-2 — Land the C51 `tmux_adapter.py` fix and the `bus_supervisor.sh` C49 fix**, both
       uncommitted, both with test harnesses already written. **Correct the "~10s" cadence error in the
       `bus_supervisor.sh` comment and `test_bus_supervisor.py` docstring while landing it** — it is
       42s (30s timeout + backoff), and shipping the wrong number inside the fix is the same defect
       class the fix exists to close. **Owned by other agents — route.** Closes F-10, F-24.
-- [ ] **R-2b — Land or delete `observer_guard.sh` and `observer_registry.json`**, untracked since
+      ✅ 2026-08-12 — C51 landed `b6ea8679`; C49 superseded by the H-4 SHA-predicate rewrite `bc6dc77f` (mtime machinery and the STALE_SRC_SKEW_S knob deleted).
+- [x] **R-2b — Land or delete `observer_guard.sh` and `observer_registry.json`**, untracked since
       10:49–10:54Z. Same class as R-1 and R-2: agent infrastructure that does not survive the session
       that wrote it, in a tree where `git clean -ffdx` has already destroyed the bus once today.
-- [ ] **R-3 — Put `backlog_row_check.py --ref` on the dispatch path**, so a row cannot be dispatched
+      ✅ 2026-08-12 — landed as `ed38041d`.
+- [x] **R-3 — Put `backlog_row_check.py --ref` on the dispatch path**, so a row cannot be dispatched
       unscreened. It already exists and already works: `mainB` turned six picks into one; `mainC`
       caught two bad citations. Closes F-22, F-04 recurrence.
+      ✅ 2026-08-12 — superseded by AUD-2: `screened_by` is now a typed `task-assign` field (`9bed637f`) and the automatic dispatch path REFUSES a row without it. Screening is on the dispatch path structurally, not by remembering to run it.
 - [ ] **R-4 — Forbid hand-rolled checkbox counting.** `index_state.py` / `backlog_row_check._boxes`
       are anchored and canonical; the night's figures came from an ad-hoc `grep`. Decide the
       enforcement point: a lint on progress/handoff files, or one reporting helper. Closes F-03.
-- [ ] **R-5 — Adjudicate the two open cross-lane conflicts** (67 vs 72 changed paths; 9 vs 24
+- [x] **R-5 — Adjudicate the two open cross-lane conflicts** (67 vs 72 changed paths; 9 vs 24
       worktrees). This is the coordinator's own job and it has been open since 08:31Z. Closes F-29.
+      ✅ 2026-08-12 — adjudicated as UNADJUDICABLE and closed: neither 67 nor 72 reproduces at any ref (reconcile branch vs merge-base `921113ed` measures 190 today; lanes 195-198), and the 9-vs-24 pair dissolves — 9 = worktrees pinned at the v9 freeze commit, 24 = total registered. Both are correct answers to different questions.
 - [ ] **R-6 — Amend the wrap-up.** Five failures in this table are absent from
       `progress/2026-08/2026-08-12.md:3510-3541`, which was committed at 10:07:18Z and never updated —
       F-22's catch happened 43 minutes later. Closes F-32.
@@ -532,42 +537,46 @@ Nothing is checked off without a commit hash or a receipt path.
 
 ### Measurement discipline
 
-- [ ] **R-12 — Extend `a90870ec`'s pattern from counts to instruments.** *Reporting Units* fixed the
+- [x] **R-12 — Extend `a90870ec`'s pattern from counts to instruments.** *Reporting Units* fixed the
       counting case. The remaining RC-2 sub-shapes have no written rule: instantaneous sample as a
       rate (F-02, F-26), post-hoc probe with no discriminating power (F-06, F-24), predicate that
       encodes the observer (F-24), one observation generalised to a fleet (F-08), suppressed stderr in
       a verification path (F-09), state read at one timestamp and reported as of another (F-05).
       **Proposal for A-4's delete-lens:** one rule — *name the instrument, and state why it can
       distinguish the hypotheses, or quote no number* — replacing six candidate rules.
+      ✅ 2026-08-12 — superseded by AUD-1 (`d5c0848c`): the role no longer reads instruments, so the six instrument rules it would have had to remember collapse to one deletion.
 - [ ] **R-13 — Verification methods get a positive control.** F-09 burned three methods; the
       102,881-vs-1,210 failure was silent because stderr went to `/dev/null`. A verification that
       cannot fail on a known-bad input is not a verification. Closes F-09.
-- [ ] **R-14 — Never report a peer's measurement as wrong without a sample that could have
+- [x] **R-14 — Never report a peer's measurement as wrong without a sample that could have
       distinguished the alternatives.** F-06's post-exit VRAM sample cannot separate *never resident*
       from *finished*; `mainB` had to teach the role its own catalogued rule. Closes F-06.
-- [ ] **R-15 — Idle-compute reports carry their sampling method.** `fleet_watch.sh:81-86` already
+      ✅ 2026-08-12 — same deletion (AUD-1). The role cannot report a peer measurement wrong because it no longer produces measurements.
+- [x] **R-15 — Idle-compute reports carry their sampling method.** `fleet_watch.sh:81-86` already
       states the rule — *"llama-bench EXITS between probes, so the card legitimately reads 0%/0%
       inside a perfectly healthy sweep… reporting it as idle hardware is exactly the mistake this file
       exists to stop"* — and `inference` disputed exactly that premise on the record. Any idle claim
       names its window and its persistence count. Closes F-11 recurrence, F-12.
-
+      ✅ 2026-08-12 — same deletion (AUD-1); idle claims now carry a `receipt_path`/`source_msg_id` or are not sent.
 ### Structural — pending A-6
 
-- [ ] **R-16 — Decide whether the role gets a loop.** RC-4's fix is a tick between operator turns;
+- [x] **R-16 — Decide whether the role gets a loop.** RC-4's fix is a tick between operator turns;
       `fleet_watch.sh` is a detect-only prototype. The open question is what a tick may *do*: detect
       and report (safe, current shape) versus dispatch (closes RC-3, and is a much larger authority
       question). **Operator decision.**
+      ✅ 2026-08-12 — OPERATOR RULED: Option B. The daemon tick may dispatch under its already-granted `assign` authority, gated on H-1 (delivery verifiable) and AUD-2 (typed rows). fleet_watch stays detect-only.
 - [ ] **R-17 — Make thread attribution recordable, then decide whether the guardrail needs enforcing
       at all.** Pending A-9. The guardrail *"the main thread does not execute"* currently **cannot be
       audited** — the commit trailer names the committing thread, three of the five infra artifacts
       have no metadata whatsoever, and `agent_log.sh` was not used. Enforce nothing until the
       condition is observable; **an unobservable rule is the purest form of RC-1.** Closes F-16;
       supersedes the withdrawn F-17.
-- [ ] **R-18 — Dispatch depth and occupancy as observable conditions.** A main that runs dry is
+- [x] **R-18 — Dispatch depth and occupancy as observable conditions.** A main that runs dry is
       visible only by asking it, and a card fed 40-second sweeps reads as idle no matter how promptly
       the work runs. `session-bus-thin-dispatcher.md` already carries the follow-up filed by
       `2f787163` — *make serial working an observable condition*; extend it to queue depth and to
       expected occupancy per dispatch. Closes F-14, F-15 recurrence.
+      ✅ 2026-08-12 — `expected_occupancy` is a typed dispatch field (`9bed637f`), the automatic path refuses rows without it, and drain reports READY depth per lane plus in-flight occupancy sum.
 - [ ] **R-19 — Role-shaped dispatch.** A standing block written for a main cannot be sent verbatim to
       a reviewer. Resolve the roster contradiction it exposed: `config.yaml` calls the `auditor`
       *"READ-ONLY"* while C-OWN gives it code ownership (`MAIN-GOALS.md:485-489`). Closes F-23.
@@ -610,13 +619,14 @@ zero; the core claim survives). §2, §5 and §11 verified. **The two overturns 
 downward, and §9/§10 apply opposite evidentiary rules to the same signal, each time in the direction
 that favours the role.**
 
-- [ ] **AUD-1 — DELETE hardware/utilisation reporting from the role.** *The single
+- [x] **AUD-1 — DELETE hardware/utilisation reporting from the role.** *The single
       highest-leverage change; zero build cost.* Kills F-01, F-02, F-06, F-11, F-12, F-25, F-26 —
       seven failures including the only proven post-correction recurrence. The coordinator relays
       **receipts** produced by the owner (`inference`) or by `fleet_watch`, with `source_msg_id` or
       `receipt_path`; it does not read dials. **Not licence to stop reporting idle compute** — idle
       compute stays a reportable condition; only the *reading* moves. Deletes R-12, R-14, R-15.
-- [ ] **AUD-2 — Type the `task-assign` payload.** `session_bus.py` validates the envelope only
+      ✅ 2026-08-12 — landed `d5c0848c` (role file + skill): receipts-not-dials, with cold-start existence probes explicitly exempted.
+- [x] **AUD-2 — Type the `task-assign` payload.** `session_bus.py` validates the envelope only
       (`schema_version, id, ts, from, to, kind`) and leaves `payload` unconstrained: **219 distinct
       keys across 53 messages, 110,084 bytes, median 2,106 B.** That is why no content rule in this
       file is mechanisable today — there is no field to check. Required: `task_text` (primary),
@@ -624,40 +634,46 @@ that favours the role.**
       size cap forcing a `brief_path` under `tasks/` (the role's own Outputs contract; no new brief
       file has been written since 08:37Z). Closes F-14, F-20, F-22, F-04-recurrence at one choke
       point. Deletes R-3, R-10, R-18 and half of R-19.
-- [ ] **AUD-3 — Hang the boundary checks on `drain`.** It is documented as *"the one-liner agents run
+      ✅ 2026-08-12 — landed `9bed637f`: `task_text` (enforced at append), `row_ref` demoted to hint, `screened_by`, `expected_occupancy`, `constraints[].source`, 4096-byte cap forcing `brief_path`.
+- [x] **AUD-3 — Hang the boundary checks on `drain`.** It is documented as *"the one-liner agents run
       at every task boundary"* and Guardrail 1 makes it mandatory — the role's **only** proven
       checkpoint. Add: untracked/modified counts under `scripts/` (F-16), unanswered
       `action_required` rows the coordinator owes with age (F-29, F-32), and the current
       `fleet_watch` persistence-gated occupancy line verbatim with its source (AUD-1's supply side).
       ~100 LOC, **no new discipline**.
-- [ ] **AUD-4 — Corrections become typed bus rows; generate the wrap-up from them.** `kind: finding`
+      ✅ 2026-08-12 — landed `9bed637f`: drain now reports untracked/modified under `scripts/`, owed `action_required` with age, and the fleet_watch occupancy line behind a log-mtime staleness guard.
+- [x] **AUD-4 — Corrections become typed bus rows; generate the wrap-up from them.** `kind: finding`
       with `corrects: <msg-id>` and `provenance: operator-verbatim | paraphrase | inferred`, written
       in the same turn the correction is received. **Answers A-7 with evidence, not opinion**: the
       durable ledger was tried — `RESOLUTION-LEDGER-20260812.md` (`1764471d`, 08:34:09Z), whose §7
       says *"update at every task boundary… Not at wrap-up"* — and its last write is 09:22:56Z. It
       was out of contract in 48 minutes and is referenced from **nothing on any startup path**.
       **Another file is not the fix.** Supersedes R-20; closes F-32.
+      ✅ 2026-08-12 — landed `9bed637f`: typed `finding` rows (`corrects`, `provenance`) plus a `corrections` subcommand that generates the wrap-up section.
 - [ ] **AUD-5 — Route agent-infrastructure authorship out of the role** (F-16, F-18, F-24, and
       `83f204cf`'s admission). Two reasons: it is execution work on a thread forbidden from execution
       work, and it is a **conflict of interest** — the coordinator was writing the instrument that
       decides whether the fleet is idle, the exact question it had been wrong about all night.
-- [ ] **AUD-6 — URGENT, not the coordinator's to fix but its to route: `bus_supervisor.sh` is killing
+- [x] **AUD-6 — URGENT, not the coordinator's to fix but its to route: `bus_supervisor.sh` is killing
       healthy daemons in a loop right now.** `e57a10a6` replaced F-24's `pgrep` predicate with a
       source-mtime check whose `STALE_SRC_STATE` anti-loop guard ("restart once per source version")
       is **vacuous in a five-writer tree**. `logs/bus_supervisor.out` shows **11 `stopping wedged
       daemon` cycles in 35 minutes** from 11:02:43Z; `logs/coordinator_daemon.log` epoch 54 → 64.
       **F-24's class did not close — it moved one predicate over.**
-- [ ] **AUD-7 — URGENT, route: OBS-3 (HIGH) `scripts/nightshift/inference_guard.sh` fails OPEN.**
+      ✅ 2026-08-12 — landed `bc6dc77f`: the mtime predicate is replaced by a committed-tree SHA deploy marker published in the daemon heartbeat, plus a rate limiter that ALARMS instead of looping. 7/7 mutants killed, including a HEAD-vs-HEAD vacuity mutant.
+- [x] **AUD-7 — URGENT, route: OBS-3 (HIGH) `scripts/nightshift/inference_guard.sh` fails OPEN.**
       Missing `pgrep`, argv drift, renamed binary or `xargs` error all sum to 0 GB and print *"No
       heavy inference detected"* — letting `run_wrapper.sh` launch the agent workload on top of a
       live 200 GB inference run.
-- [ ] **AUD-8 — Land `tmux_adapter.py`.** Now **+853/−71** (grown from the +484/−48 recorded above)
+      ✅ 2026-08-12 — landed `381dddfe`: three-valued measurement (measured / honest 0 / FAILED) and `run_wrapper.sh` refuses to launch on FAILED with exit 4. Reinstating the old `|| true` laundering flips 6 checks PASS→FAIL.
+- [x] **AUD-8 — Land `tmux_adapter.py`.** Now **+853/−71** (grown from the +484/−48 recorded above)
       and the only artifact of RC-5's five still dirty — while the landed `fleet_watch.sh` and the
       landed `SESSION_LIFECYCLE.md` rule both name its runtime check *"the authoritative
       instrument"*. HEAD still carries `_BARE_PROMPT_GLYPHS = ("›", "❱")` at :385, the glyph table
       that made the doorbell **0% operative** against all six Claude panes. **Owned by another agent
       — route.** *(R-1, R-2b and half of R-2 are already landed: `83f204cf`, `ed38041d`,
       `e57a10a6`. Their boxes are the owners' to flip, not this section's.)*
+      ✅ 2026-08-12 — landed `b6ea8679`; its live-state claims were already stale when written (see the dated correction above).
 - [ ] **AUD-9 — Give `fleet_watch.sh` a restart path and a discovery rule that finds it.** It is
       running as an **orphan** (reparented to the container shim; no nohup wrapper, no cron, no unit,
       no restart path), and `observer_registry.json` records `"contract": "unadopted"` — *"neither
