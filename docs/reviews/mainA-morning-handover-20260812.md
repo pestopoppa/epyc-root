@@ -11,10 +11,26 @@ Written outside the three frozen paths, per the freeze.
 
 ## 1. Finished — verifiable list
 
-Hashes read from `git log`, not from memory. **All 35 hashes in this document resolve** — with one
+Hashes read from `git log`, not from memory. **Every hash in this document resolves** — with one
 deliberate exception: `9d3b0f0e` in §3 does not exist, because it is the hash I invented by mistake
 and is cited as that error. If you run a resolver over this file, that is the one hit you should get. Repo prefix: **R** = epyc-root, **I** =
 epyc-inference-research, **O** = epyc-orchestrator.
+
+> Re-derive rather than trusting a count. This document originally claimed *"all 35 hashes"*; my own
+> later edit took it to 38 and the sentence was stale the moment I saved it — the exact decay mainB
+> found in their handover twenty minutes after certifying it. A self-verifying claim with a hard-coded
+> total is a claim that expires. **Resolve across all three repos** — my first pass checked only
+> `epyc-root` and reported 13 false failures, which are cross-repo commits, not missing ones:
+>
+> ```bash
+> for h in $(grep -oE '`[0-9a-f]{8}`' docs/reviews/mainA-morning-handover-20260812.md | tr -d '`' | sort -u); do
+>   for r in /workspace /workspace/repos/epyc-inference-research /workspace/repos/epyc-orchestrator; do
+>     git -C $r cat-file -t $h >/dev/null 2>&1 && { echo "$h ok"; break; }
+>   done | grep -q ok || echo "$h UNRESOLVED"
+> done
+> ```
+>
+> Verified at 04:35Z: 38 cited, 37 resolve (25 root, 12 across research/orchestrator), 1 deliberate.
 
 ### The kernel-era repair (the night's largest single thread)
 
@@ -68,6 +84,13 @@ all **R**.
 `handoffs/active/batched-decode-measurement.md` (ours, proven a content superset),
 `progress/2026-08/2026-08-11.md` and `progress/2026-08/2026-08-12.md` (union, verified line-for-line
 on both sides).
+
+> **Stale as of ~04:20Z — do not go looking for that branch.** `merge/reconcile-0205` was concluded
+> at `c0387984` and has since been **retired**: the runbook now rebuilds the merge from current tips
+> at quiesce time, because the branch was re-broken by fleet churn three times. The three
+> resolutions above were correct and are already *in* `origin/main`; nothing needs redoing. The
+> operative document is `artifacts/operator/quiesce-merge-push-reboot-20260812.md` (`9c8fd6fe`).
+> Recorded here rather than edited away — a handover that silently repoints is not auditable.
 
 ---
 
@@ -156,6 +179,43 @@ less scrutiny than the claim it withdraws.**
 | AXA-1 roadmap Axis A clause | Routed to the roadmap owner | One clause separating *measured viable* from *deployed* |
 
 My own queue is otherwise **dry**, and the generated bench is dry pending the merge.
+
+### ⚠ Added after this handover was certified — the highest-severity thing I found all night
+
+This was discovered at ~04:05Z, after §1–§5 were written, so it appears nowhere above. It is **not**
+in my lane; it blocks the reboot sequence:
+
+**`git merge` aborts at step 4 of the runbook.** `/workspace` holds an *untracked*
+`agents/shared/HARNESS_RUN_POLICY.md`, and `origin/main` introduces that path (via `b5054029`, an
+ancestor of `origin/main` but **not** of local `main`). Git refuses with *"untracked working tree
+files would be overwritten by merge"* — and refuses **even though the on-disk file is byte-identical
+to the incoming blob** (`d1430bd7…`, both sides, 101 lines; verified in an isolated
+`git clone --shared`, not assumed).
+
+- **Remedy, one line, inside the quiesce window:** `rm /workspace/agents/shared/HARNESS_RUN_POLICY.md`,
+  then merge. Provably lossless — the merge restores those exact bytes. Second copy at
+  `/mnt/raid0/llm/tmp/era-repair/HARNESS_RUN_POLICY.stray-backup.md`, sha verified equal. Already a
+  mandatory pre-step in the runbook (`9c8fd6fe`), independently verified by the auditor, the
+  coordinator and mainD.
+- **Why it nearly reached the operator:** it fires at **step 4** (`git -C /workspace merge`), not
+  step 3 — the fresh worktree in step 3 is a clean checkout with no strays, so every earlier gate
+  passes and the sequence dies one command before the push.
+- **Why five agents missed it:** we each flushed the *four named paths* and filtered on ` M`. This
+  one is `??`. The observed-symptom set was baked into the status filter itself. The predicate is
+  *merge's changed set ∩ everything in the working tree, untracked included* — re-derive it rather
+  than trusting any list, including this one; main moved three times while I was writing it.
+- **The generalisation, which is mainD's and better than mine:** *every readiness metric models one
+  subsystem, and the failure will come from the one it does not model.* `merge-tree` reported zero
+  conflicts and was **correct**; it models the index, and this abort comes from worktree safety.
+  Three of us verified that command and all three were right. Agreement does not widen a metric's
+  domain.
+
+**One premise in the night's traffic is retracted, in case it reaches you second-hand:** *"uncommitted
+work does not survive a reboot"* is **false**. `/workspace`, the scratch dir and the agent memory dir
+are all on `/dev/md127`, one persistent RAID; a host reboot does not touch the working tree. The
+coordinator broadcast that rule, then retracted it to the whole fleet in the same channel. Committing
+is still right — but as a **concurrency** argument (four sweeps in a five-writer tree tonight), not a
+durability one.
 
 ---
 
