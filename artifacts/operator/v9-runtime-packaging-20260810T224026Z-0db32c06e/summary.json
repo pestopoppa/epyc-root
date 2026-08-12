@@ -1,0 +1,30 @@
+{
+  "schema": "epyc.kernel_v9.runtime_packaging.v1",
+  "status": "sealed",
+  "packaged_at": "2026-08-10T22:40:26Z",
+  "candidate_branch": "experimental-v9-dspark-promotion",
+  "candidate_head": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+  "candidate_version": "version: 10125 (0db32c06e)",
+  "stage": "/mnt/raid0/llm/kernel-runtime-stages/production-consolidated-v9-0db32c06e",
+  "source": {
+    "cpu": "/mnt/raid0/llm/llama.cpp-experimental/build-v9-cpu/bin",
+    "hip": "/mnt/raid0/llm/llama.cpp-experimental/build-v9-hip/bin"
+  },
+  "deployed_server_sha256": {
+    "cpu": "8ebb1355593121a231735d7b58ad076f4539d2c5e3847fa09d2922fa8a980499",
+    "hip": "21cfb750dc0ba4b3add0674fcb9dd061d77b3604ebf8e1d063ba0e2c51902feb"
+  },
+  "rpath": {
+    "cpu": "$ORIGIN",
+    "hip": "$ORIGIN:/opt/rocm/lib"
+  },
+  "rewritten_elfs": {
+    "cpu": 118,
+    "hip": 119
+  },
+  "clean_environment_version_verified": true,
+  "clean_environment_ldd_verified": true,
+  "experimental_runpath_hits": 0,
+  "dangling_symlinks": 0,
+  "production_mutated": false
+}

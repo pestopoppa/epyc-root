@@ -1,0 +1,31 @@
+{
+  "schema": "epyc.kernel_v9.rollback_rehearsal.v1",
+  "status": "pass",
+  "rehearsed_at": "2026-08-10T22:48:40Z",
+  "live_production_mutated": false,
+  "transaction": {
+    "source_before": {
+      "branch": "production-consolidated-v8",
+      "head": "67a433bf45a8a091d83b4ea0b32ff0735fd51800"
+    },
+    "candidate_installed": {
+      "branch": "production-consolidated-v9",
+      "head": "0db32c06e3e550065b78311a6031ef3dd2c4f27c"
+    },
+    "injected_failure_phase": "after_runtime_install_and_source_switch_before_governance_commit",
+    "source_after_rollback": {
+      "branch": "production-consolidated-v8",
+      "head": "67a433bf45a8a091d83b4ea0b32ff0735fd51800"
+    }
+  },
+  "runtime": {
+    "installed_v9_hashes": {
+      "cpu": "8ebb1355593121a231735d7b58ad076f4539d2c5e3847fa09d2922fa8a980499",
+      "hip": "21cfb750dc0ba4b3add0674fcb9dd061d77b3604ebf8e1d063ba0e2c51902feb"
+    },
+    "v8_manifests_restored_exactly": true,
+    "failed_v9_manifests_preserved_exactly": true,
+    "clean_environment_linkage_verified": true
+  },
+  "disposable_sandbox_removed_after_verification": true
+}
