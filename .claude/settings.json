@@ -34,11 +34,6 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_process_pattern_kill.sh\""
-          },
-          {
-            "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_destructive_revert.sh\"",
-            "timeout": 15
           }
         ]
       },
