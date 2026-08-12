@@ -45,6 +45,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-14 | Grant or decline a temporary readable `energy_uj` window, restored to `0400`; without it the required package-energy gate remains COULD_NOT_CHECK | [autokernel-research-loop.md](autokernel-research-loop.md) AK6.5 Step 2 | 2026-08-11 |
 | OP-15 | Approve or decline one experimental commit for the Q4_K branchless scale/min decoder before a clean governed replay | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 | OP-16 | Authorize an orderly host reboot after wrap-up so the ratified uptime gate permits the prepared CPU IQK campaign | [autokernel-research-loop.md](autokernel-research-loop.md) AK6.5 Step 3 | 2026-08-12 |
+| OP-17 | Amend frozen-v9 attestation with llama ggml `0.16.0`, or retain an intentionally unverified complete-kernel-set fold | [autokernel-research-loop.md](autokernel-research-loop.md) AK6 dashboard residual | 2026-08-12 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
@@ -68,7 +69,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 53 | 402 | 4 | 2026-07-29 |
+| inference-research | 53 | 403 | 4 | 2026-07-29 |
 | pipeline-integration | 5 | 51 | 0 | 2026-07-29 |
 | research-evaluation | 48 | 302 | 0 | 2026-07-29 |
 | reviewer-control-plane | 9 | 41 | 1 | 2026-07-29 |
