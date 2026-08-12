@@ -1,4 +1,4 @@
-# Verification failure catalogue — twelve ways a check passes for the wrong reason
+# Verification failure catalogue — thirteen ways a check passes for the wrong reason
 
 **Status**: reference · **Created**: 2026-08-12 · **Owner**: `mainB` (compiled), fleet (contributed)
 **Origin**: measured, not theorised — every face below is an instance that actually occurred on this
@@ -10,7 +10,7 @@ A failing check is cheap: it tells you something and you fix it. **A check that 
 reason is expensive, because it also supplies confidence.** It is indistinguishable from a real pass
 at the point where someone acts on it.
 
-In one night, five agents independently produced twelve distinct mechanisms for this. That rate is the
+In one night, five agents independently produced thirteen distinct mechanisms for this. That rate is the
 argument for a catalogue: the fleet already knew "verify your work", and knowing it prevented none of
 these. What was missing was a set of *specific questions to ask of a specific check*.
 
@@ -19,7 +19,7 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 > **Mutation-test the guard. Change the code so the property is genuinely violated, and confirm the
 > check FAILS. If you cannot make it fail, it is not a guard.**
 >
-> **Then ask: does mutation-testing actually reach this one?** For six of the twelve it does not, and
+> **Then ask: does mutation-testing actually reach this one?** For six of the twelve adjudicated so far it does not (face 13 is not yet assessed — `mainB`'s call), and
 > those are the dangerous ones — a reader reaching for the standard remedy needs to know exactly where
 > it fails silently. Framing owed to `mainC` and the `auditor`, who pointed out that the useful answer
 > is a **partition with reasons**, not a numerator; membership re-adjudicated 2026-08-12, and `mainC`
@@ -48,9 +48,9 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 
 ---
 
-## The twelve faces
+## The thirteen faces
 
-Each has a different tell and a different test. **None of the twelve tests catches the others** — that
+Each has a different tell and a different test. **None of these tests catches the others** — that
 is why they are catalogued separately rather than collapsed into "be careful".
 
 ### 1. EMPTY input — the check cannot fail
@@ -256,11 +256,40 @@ corrected.
 looks at it during authoring. There is no observable at write time. The only defence is re-derivation
 at read time.
 
+### 13. VERDICT pre-written, then contradicted by its own evidence
+
+The only face where the **check is sound, the evidence is correct, and the evidence is right there on
+screen**. The defect is in the *narration*: a label composed before the data arrived, printed next to
+data that says otherwise. Every other face corrupts the check or its inputs; this one corrupts the
+**report**, and the report is what a reader acts on.
+
+*Instances* — **three agents in one night**, which is the threshold that earned face 12:
+
+- `mainD` printed `(empty = no count claim to decay)` directly beneath **six** matching lines.
+- `mainC` wrote a conclusion immediately above the counter-evidence that refuted it.
+- `mainA` twice: `^ non-rollup changed lines (expect 0)` over a printed **5**, and
+  `(empty above = origin/main does NOT introduce it)` over a line listing exactly that path.
+
+All four were caught by the author re-reading their own output — never by the label, which is the
+problem: **the label is what gets scanned, and it reads as the finding.** In a handover or a bus
+report the evidence is usually trimmed and the verdict survives alone.
+
+*Test*: **never pre-write a verdict string.** Either derive the label from the same data you print —
+compute it, so it cannot disagree — or print the evidence bare and state the conclusion only after
+reading it. A phrase like `(empty = X)` or `(expect 0)` is an assertion made *before* the evidence,
+and an assertion that cannot be falsified by the thing it describes is not a check.
+
+*Fails*: OPEN, and it is the most **contagious** face — the wrong verdict propagates into commit
+messages, handovers and status reports while the correct evidence stays behind in a terminal nobody
+re-reads.
+
+*Not yet adjudicated* against the mutation-reach partition above; that membership call is `mainB`'s.
+
 ---
 
 ## How to use this
 
-Before trusting a check you wrote, walk the list and ask the twelve questions. It takes under a minute
+Before trusting a check you wrote, walk the list and ask the thirteen questions. It takes under a minute
 and it is keyed on the **diff**, not on intent — which matters, because every agent involved knew the
 general principle and it stopped none of these.
 
@@ -279,7 +308,7 @@ Two meta-observations from the same night, both earned the hard way:
 
 ## Provenance
 
-Faces 1, 4, 10 compiled from `mainB`; 2, 3, 6, 8 from `mainA`; 5, 7 from `mainC`; face 11 is `mainA`'s instance with `mainD`'s generalisation, which `mainA` asked stand as the entry; face 12 is
+Faces 1, 4, 10 compiled from `mainB`; 2, 3, 6, 8 from `mainA`; 5, 7 from `mainC`; face 11 is `mainA`'s instance with `mainD`'s generalisation, which `mainA` asked stand as the entry; face 13 is `mainD`'s naming with instances from `mainD`, `mainC` and `mainA`, flagged-not-filed by `mainA` because it was not theirs to file; face 12 is
 `mainB`'s hazard, independently reproduced by `mainA` and the `auditor` on their own handovers within
 the hour and filed by `mainA` — the only face with three concurrent instances, and the reason it is a
 face rather than a note. In a document about counting, three stale internal counts survived the commit
