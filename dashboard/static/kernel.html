@@ -258,6 +258,37 @@ function renderCurrentState(d){
   }
   h+=evidenceLine(prod)+'</div>';
 
+  // Kernel SET — three kernels, four binaries. Rendered as ONE card beside the llama
+  // attestation card rather than a second llama panel: the singular card above answers
+  // "which llama is frozen", this answers "is the whole frozen set still what we froze".
+  const kset=state.production_kernel_set||null;
+  if(kset){
+    h+='<div class="state-card production"><h3>Production kernel SET · freeze scope</h3>';
+    const intact=kset.intact===true;
+    h+='<div class="headline '+(intact?'ok':'fail')+'">'+(intact?'SET INTACT':'SET NOT PROVEN')+'</div>';
+    h+='<div class="detail">'+esc(kset.trees_matching+'/'+kset.expected_kernels)+' trees match attestation · '
+      +esc(kset.binaries_proven+'/'+kset.expected_binaries)+' binaries proven'
+      +(kset.binaries_unverified?' · <span class="fail">'+esc(kset.binaries_unverified)+' UNVERIFIED</span>':'')+'</div>';
+    (kset.members||[]).forEach(function(m){
+      const st=m.matches_attestation===true?'<span class="ok">matches</span>'
+        :(m.matches_attestation===false?'<span class="fail">DRIFT</span>':'<span class="fail">unverified</span>');
+      h+='<div class="detail">'+esc(m.title||'—')+' · '+esc(m.branch||'—')+' <code>'
+        +esc((m.head||'').slice(0,12))+'</code>'+(m.ggml?' · ggml '+esc(m.ggml):' · <span class="fail">ggml not attested</span>')+' · '+st
+        +(m.error?' <span class="fail">'+esc(m.error)+'</span>':'')+'</div>';
+    });
+    (kset.binaries||[]).forEach(function(b){
+      const st=b.matches===true?'<span class="ok">digest ok</span>'
+        :(b.matches===false?'<span class="fail">BINARY DRIFT</span>':'<span class="fail">unverified</span>');
+      h+='<div class="detail">'+esc(b.label||'—')+' · '+st
+        +(b.observed_sha256?' <code>'+esc(b.observed_sha256.slice(0,12))+'</code>':'')
+        +(b.error?' <span class="fail">'+esc(b.error)+'</span>':'')+'</div>';
+    });
+    (kset.alarms||[]).forEach(function(a){
+      h+='<div class="detail fail">⚠ '+esc(a)+'</div>';
+    });
+    h+='</div>';
+  }
+
   h+='<div class="state-card"><h3>CPU evaluator controls · decision gate</h3>';
   if(controls.available){
     const p=controls.panel||{};

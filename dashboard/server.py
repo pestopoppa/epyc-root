@@ -51,6 +51,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import hashlib
 import json
 import os
 import re
@@ -172,6 +173,22 @@ PRODUCTION_KERNEL_ATTESTATION = Path(os.environ.get(
 PRODUCTION_KERNEL_REPO = Path(os.environ.get(
     "PRODUCTION_KERNEL_REPO",
     "/mnt/raid0/llm/llama.cpp"))
+SPEECH_KERNEL_ATTESTATION = Path(os.environ.get(
+    "SPEECH_KERNEL_ATTESTATION",
+    str(REPO / "artifacts/operator/ratify_speech_kernel_freeze_20260731.json")))
+#: The four binaries the freeze actually covers. These mirror what
+#: `scripts/session/verify_llama_cpp.sh` and `verify_speech_kernels.sh` ENFORCE — the
+#: dashboard is a read-only projection of the enforced truth, never a second opinion.
+#: llama ships two (CPU and HIP) from one tree; the speech kernels ship one each.
+PRODUCTION_LLAMA_BINARIES = {
+    "cpu": Path(os.environ.get("PRODUCTION_LLAMA_CPU_BINARY",
+                               "/mnt/raid0/llm/llama.cpp/build/bin/llama-server")),
+    "hip": Path(os.environ.get("PRODUCTION_LLAMA_HIP_BINARY",
+                               "/mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server")),
+}
+#: Guard against hashing something pathological on a request path. The real binaries
+#: are 20 KB–1.7 MB and hash in ~4 ms; anything far larger is not what we think it is.
+_MAX_HASHED_BINARY_BYTES = 512 * 1024 * 1024
 
 # Freshness thresholds are DECLARED IN THE REGISTRY (dashboard/panels.py) and
 # read back here, so the numbers on the wire and the numbers in the panel→producer
@@ -1282,12 +1299,33 @@ def _gpu_replay_summary(path: Path | None, data: dict | None,
     }
 
 
+#: The receipt schemas this panel knows how to project. Kept as a named constant so
+#: the page can DECLARE its own coverage rather than implying completeness by silence.
+_PROJECTED_RECEIPT_SCHEMAS = {
+    "epyc.autokernel.arena_controller_campaign_audit.v1",
+    "epyc.autokernel.arena_available_source_campaign_audit.v1",
+    "epyc.autokernel.arena_diagnostic_smoke.v1",
+    "epyc.autokernel.live_control_preflight.v1",
+    "epyc.autokernel.async_prefetch_replay.v1",
+}
+
+
 def _production_kernel_summary(attestation_path: Path,
                                production_repo: Path) -> dict:
     """Read the operator freeze attestation and compare the canonical checkout."""
     present, data, err = _read_json_object(attestation_path,
                                            "production kernel attestation")
     if data is None:
+        if err is None:
+            # D-1 residual (KRD-AUDIT-20260812). `_read_json_object` returns err=None
+            # for a simply-absent file, and this function used to pass that straight
+            # through — so the panel could only say "attestation not found" with no
+            # reason. The render was made loud earlier; the REASON was still missing,
+            # and the same synthesised-sentence pattern already existed one function
+            # away in `_read_kernel_contract`. Asymmetry closed.
+            err = (f"production kernel freeze attestation not exported — nothing has "
+                   f"written {attestation_path}. The production kernel identity is "
+                   f"UNPROVEN; do not read this page as confirming which kernel is live.")
         return {"available": False, "artifact_present": present,
                 "evidence": str(attestation_path), "error": err}
     observed_branch = observed_head = checkout_error = None
@@ -1319,6 +1357,8 @@ def _production_kernel_summary(attestation_path: Path,
         "branch": expected_branch,
         "head": expected_head,
         "version": data.get("production_version"),
+        "binary_sha256": data.get("production_binary_sha256") or {},
+        "ggml": data.get("ggml"),
         "ratified_at": data.get("ratified_at"),
         "scope": data.get("scope"),
         "evidence": str(attestation_path),
@@ -1330,6 +1370,230 @@ def _production_kernel_summary(attestation_path: Path,
                                     and observed_head == expected_head),
             "error": checkout_error,
         },
+    }
+
+
+def _sha256_file(path: Path) -> tuple:
+    """``(digest_or_None, error_or_None)``. Absence is not an error here — the caller
+    distinguishes *missing binary* from *unreadable binary*, and both must stay loud."""
+    try:
+        size = path.stat().st_size
+    except FileNotFoundError:
+        return None, None
+    except OSError as exc:
+        return None, f"unreadable: {exc}"
+    if size > _MAX_HASHED_BINARY_BYTES:
+        return None, f"refusing to hash {size} bytes (> {_MAX_HASHED_BINARY_BYTES})"
+    digest = hashlib.sha256()
+    try:
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+    except OSError as exc:
+        return None, f"unreadable: {exc}"
+    return digest.hexdigest(), None
+
+
+def _binary_identity(label: str, path: Path, expected_sha256: str | None) -> dict:
+    """One attested binary, compared live.
+
+    THREE-VALUED ON PURPOSE, because two of the states are the ones that hurt:
+    ``matches`` True (identity proven), False (DRIFT — something rebuilt or replaced a
+    frozen binary), or None (*unknown* — the file is missing, unreadable, or the
+    attestation carries no digest to compare against). A missing binary must never
+    read as a passing one, which a boolean would force it to.
+    """
+    observed, error = _sha256_file(path)
+    present = observed is not None
+    if expected_sha256 and observed:
+        matches = observed == expected_sha256
+    else:
+        matches = None
+    if error is None and not present:
+        error = "binary absent — the freeze attests a file that is not on disk"
+    elif matches is False:
+        error = ("BINARY DRIFT — on-disk digest does not match the operator "
+                 "attestation; a frozen binary was rebuilt or replaced")
+    elif expected_sha256 is None and present:
+        error = "attestation carries no digest for this binary — identity unverifiable"
+    return {"label": label, "path": str(path), "present": present,
+            "expected_sha256": expected_sha256, "observed_sha256": observed,
+            "matches": matches, "error": error}
+
+
+def _checkout_identity(repo: Path, expected_branch: str | None,
+                       expected_head: str | None) -> dict:
+    """Live branch/head of a kernel tree vs what the attestation froze."""
+    observed_branch = observed_head = error = None
+    try:
+        branch = subprocess.run(
+            ["git", "-C", str(repo), "symbolic-ref", "--short", "HEAD"],
+            capture_output=True, text=True, timeout=5.0, check=False)
+        head = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", "HEAD"],
+            capture_output=True, text=True, timeout=5.0, check=False)
+        if branch.returncode == 0:
+            observed_branch = branch.stdout.strip() or None
+        else:
+            error = branch.stderr.strip() or f"git symbolic-ref exited {branch.returncode}"
+        if head.returncode == 0:
+            observed_head = head.stdout.strip() or None
+        elif error is None:
+            error = head.stderr.strip() or f"git rev-parse exited {head.returncode}"
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        error = str(exc)
+    if observed_branch is None and observed_head is None and error is None:
+        error = "kernel tree unreadable — no branch or head could be resolved"
+    matches = None
+    if observed_branch is not None and observed_head is not None:
+        matches = (observed_branch == expected_branch and observed_head == expected_head)
+    return {"path": str(repo), "branch": observed_branch, "head": observed_head,
+            "expected_branch": expected_branch, "expected_head": expected_head,
+            "matches_attestation": matches, "error": error}
+
+
+def _speech_kernel_summary(attestation_path: Path | None = None) -> dict:
+    """whisper.cpp and qwentts.cpp — the two thirds of the freeze nobody was showing.
+
+    WHY THIS EXISTS (KRD-AUDIT-20260812). The freeze covers a production KERNEL SET —
+    llama.cpp `production-consolidated-v9` plus whisper.cpp and qwentts.cpp at
+    `production-speech-v1` — and the dashboard projected only llama. Measured on the
+    live surface before this change: the strings `whisper`, `qwentts`, `speech` and
+    `ggml` appeared ZERO times anywhere in `autokernel_current_state()`. Two of three
+    frozen kernels could drift, be rebuilt, or vanish and no panel would say so.
+
+    THE STALE-SOURCE TRAP, and it is why llama is NOT read from here. This attestation
+    also carries a `kernels.llama_cpp` block — pinned at **v8** (`67a433bf`, binary
+    10107) and labelled in its own text *"unchanged by this ratification; recorded for
+    completeness"*. It was accurate on 2026-07-31 and was superseded by the v9 freeze
+    on 08-11. Folding the set from this one file would therefore project a **stale
+    llama identity that still looks internally consistent** — the failure this audit
+    was commissioned to find, not to reproduce. llama comes from the v9 attestation;
+    this function deliberately ignores its own llama block.
+
+    ggml GENERATION IS PROJECTED because it is load-bearing, not decorative: the three
+    trees run three different ggml generations (0.18.0 / 0.17.0 / v9's own), and
+    `CLAUDE.md` records that a binary inheriting another tree's ggml *runs silently
+    wrong*. A number that must match and is shown nowhere is exactly the class of fact
+    this dashboard exists to surface.
+    """
+    attestation_path = attestation_path or SPEECH_KERNEL_ATTESTATION
+    present, data, err = _read_json_object(attestation_path, "speech kernel attestation")
+    if data is None:
+        if err is None:
+            err = (f"speech kernel freeze attestation not exported — nothing has "
+                   f"written {attestation_path}. Two of the three frozen kernels "
+                   f"(whisper.cpp, qwentts.cpp) are therefore UNVERIFIED here.")
+        return {"available": False, "artifact_present": present,
+                "evidence": str(attestation_path), "error": err, "kernels": []}
+    kernels = []
+    for key, title in (("whisper_cpp", "whisper.cpp (STT)"),
+                       ("qwentts_cpp", "qwentts.cpp (TTS)")):
+        spec = data.get("kernels", {}).get(key)
+        if not isinstance(spec, dict):
+            kernels.append({"key": key, "title": title, "available": False,
+                            "error": f"attestation carries no `{key}` block"})
+            continue
+        binary = spec.get("binary")
+        kernels.append({
+            "key": key, "title": title, "available": True,
+            "tree": spec.get("tree"), "branch": spec.get("branch"),
+            "head": spec.get("commit"), "ggml": spec.get("ggml"),
+            "load_bearing_patch": spec.get("load_bearing_patch"),
+            "checkout": _checkout_identity(Path(spec.get("tree") or "/nonexistent"),
+                                           spec.get("branch"), spec.get("commit")),
+            "binary": _binary_identity(title, Path(binary), spec.get("binary_sha256"))
+            if binary else {"label": title, "present": False, "matches": None,
+                            "error": "attestation names no binary for this kernel"},
+        })
+    return {"available": True, "ratification": data.get("ratification"),
+            "ratified_at": data.get("date_utc"), "scope": data.get("scope"),
+            "evidence": str(attestation_path), "error": None, "kernels": kernels}
+
+
+def production_kernel_set(attestation_path: Path | None = None,
+                          production_repo: Path | None = None,
+                          speech_attestation_path: Path | None = None) -> dict:
+    """The COMPLETE frozen kernel set, folded to one honest verdict.
+
+    Three kernels, four binaries. `production_kernel` (llama only) is left untouched
+    beside this for existing consumers; this is the set-level view, and it is one
+    panel rather than a second llama panel — the audit brief explicitly warned against
+    duplicating what already renders.
+
+    THE FOLD IS DELIBERATELY PESSIMISTIC. `intact` is True only when every kernel and
+    every binary is proven — any drift, absence, unreadable tree or missing digest
+    makes it False, and `unverified` records how many facts could not be established
+    at all. A set-level green that can be produced by a kernel we failed to read is
+    the same absence-tolerance that let incident 8 render a dead loop as a clean page.
+    """
+    llama = _production_kernel_summary(attestation_path or PRODUCTION_KERNEL_ATTESTATION,
+                                       production_repo or PRODUCTION_KERNEL_REPO)
+    speech = _speech_kernel_summary(speech_attestation_path)
+
+    binaries = []
+    llama_digests = llama.get("binary_sha256") or {}
+    for slot, path in PRODUCTION_LLAMA_BINARIES.items():
+        binaries.append(_binary_identity(f"llama.cpp {slot.upper()}", path,
+                                         llama_digests.get(slot)))
+    for kernel in speech.get("kernels", []):
+        if kernel.get("binary"):
+            binaries.append(kernel["binary"])
+
+    members, alarms = [], []
+    llama_ck = llama.get("checkout") or {}
+    members.append({"key": "llama_cpp", "title": "llama.cpp",
+                    "available": llama.get("available"),
+                    "branch": llama.get("branch"), "head": llama.get("head"),
+                    "version": llama.get("version"), "ggml": llama.get("ggml"),
+                    "matches_attestation": llama_ck.get("matches_attestation"),
+                    "error": llama.get("error") or llama_ck.get("error")})
+    for kernel in speech.get("kernels", []):
+        members.append({
+            "key": kernel.get("key"), "title": kernel.get("title"),
+            "available": kernel.get("available"),
+            "branch": kernel.get("branch"), "head": kernel.get("head"),
+            "version": None, "ggml": kernel.get("ggml"),
+            "matches_attestation": (kernel.get("checkout") or {}).get("matches_attestation"),
+            "error": kernel.get("error") or (kernel.get("checkout") or {}).get("error")})
+
+    if not llama.get("available"):
+        alarms.append("llama.cpp freeze attestation unavailable — production identity unproven")
+    if not speech.get("available"):
+        alarms.append("speech kernel freeze attestation unavailable — whisper.cpp and "
+                      "qwentts.cpp identities unproven")
+    for member in members:
+        if member.get("matches_attestation") is False:
+            alarms.append(f"{member['title']}: tree does NOT match attestation (drift)")
+        elif member.get("available") and member.get("matches_attestation") is None:
+            alarms.append(f"{member['title']}: tree identity could not be established")
+    for binary in binaries:
+        if binary.get("matches") is False:
+            alarms.append(f"{binary['label']}: BINARY DRIFT vs operator attestation")
+        elif not binary.get("present"):
+            alarms.append(f"{binary['label']}: attested binary absent from disk")
+
+    proven = sum(1 for b in binaries if b.get("matches") is True)
+    unverified = sum(1 for b in binaries if b.get("matches") is None)
+    trees_proven = sum(1 for m in members if m.get("matches_attestation") is True)
+    return {
+        "schema": "epyc.production_kernel_set.v1",
+        "expected_kernels": 3,
+        "expected_binaries": len(PRODUCTION_LLAMA_BINARIES) + 2,
+        "kernels_present": len(members),
+        "trees_matching": trees_proven,
+        "binaries_proven": proven,
+        "binaries_unverified": unverified,
+        "intact": (llama.get("available") is True and speech.get("available") is True
+                   and trees_proven == len(members) == 3
+                   and proven == len(binaries) == 4),
+        "alarms": alarms,
+        "members": members,
+        "binaries": binaries,
+        "llama": llama,
+        "speech": speech,
+        "evidence": [str(attestation_path or PRODUCTION_KERNEL_ATTESTATION),
+                     str(speech_attestation_path or SPEECH_KERNEL_ATTESTATION)],
     }
 
 
@@ -1380,7 +1644,25 @@ def autokernel_current_state(probe_root: Path | None = None,
             control_path, control, control_err, production_head),
         "gpu_prefetch_replay": _gpu_replay_summary(
             replay_path, replay, replay_err),
+        # SCOPE, DECLARED (KRD-AUDIT-20260812). This panel projects a CURATED set of
+        # receipt schemas, not everything under the probe root — measured at audit time:
+        # 5 schemas projected, 29 further schemas across 98 receipt files present on
+        # disk and not shown. Most are legitimately intermediate (checkpoints, profile
+        # captures), so the fix is not "render them all"; it is to stop a curated view
+        # reading as a complete one. Naming the scope where the answer is printed is
+        # the same rule the health-probe finding turned on: a reader acts on the pass.
+        "receipt_coverage": {
+            "projected_schemas": sorted(_PROJECTED_RECEIPT_SCHEMAS),
+            "probe_root": str(probe_root),
+            "note": ("CURATED VIEW — receipts whose schema is not in "
+                     "`projected_schemas` exist under `probe_root` and are NOT shown "
+                     "here. Absence from this panel is not absence of evidence."),
+        },
         "production_kernel": production,
+        # Singular `production_kernel` above is PRESERVED for existing consumers;
+        # this is the set-level fold over all three frozen kernels and four binaries.
+        "production_kernel_set": production_kernel_set(
+            attestation_path, production_repo),
         "promotion_claim": False,
     }
 

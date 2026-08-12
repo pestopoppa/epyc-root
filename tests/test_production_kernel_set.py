@@ -1,0 +1,141 @@
+"""The production kernel SET projection — three kernels, four binaries.
+
+KRD-AUDIT-20260812 (`mainC`, for `inference`). The freeze covers a kernel SET —
+llama.cpp `production-consolidated-v9` plus whisper.cpp and qwentts.cpp at
+`production-speech-v1` — and the dashboard projected only llama. Measured on the live
+surface before the change: `whisper`, `qwentts`, `speech` and `ggml` appeared ZERO
+times in `autokernel_current_state()`. Two of three frozen kernels could drift, be
+rebuilt, or vanish with no panel saying so.
+
+Every test here is a MUTATION: the value under test is one an operator would care
+about, and the assertion is that the surface goes loud. A panel that cannot go red is
+the incident-8 shape (a dead loop rendering as a clean, empty, trusted page).
+"""
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "dashboard"))
+import server as S  # noqa: E402
+
+SPEECH = REPO / "artifacts/operator/ratify_speech_kernel_freeze_20260731.json"
+V9 = REPO / "artifacts/operator/ratify_v9_final_freeze_20260811.json"
+
+
+def _speech_with(tmp_path: Path, mutate) -> Path:
+    data = json.loads(SPEECH.read_text(encoding="utf-8"))
+    mutate(data)
+    out = tmp_path / "speech.json"
+    out.write_text(json.dumps(data), encoding="utf-8")
+    return out
+
+
+def test_all_three_kernels_are_projected() -> None:
+    """The gap this audit was commissioned to find: two thirds of the freeze missing."""
+    result = S.production_kernel_set()
+    titles = {m["title"] for m in result["members"]}
+    assert len(result["members"]) == 3
+    assert any("whisper" in t for t in titles) and any("qwentts" in t for t in titles)
+    assert result["expected_binaries"] == 4
+
+
+def test_llama_identity_is_NOT_read_from_the_speech_attestation(tmp_path: Path) -> None:
+    """The stale-source trap, and the single most important test in this file.
+
+    The speech attestation also carries a `kernels.llama_cpp` block pinned at **v8**
+    and labelled in its own text "unchanged by this ratification; recorded for
+    completeness". Folding the set from that one file would project a stale llama
+    identity that still looks internally consistent. llama must come from the v9
+    attestation, so corrupting the speech file's llama block must change nothing.
+    """
+    def wreck(data):
+        data["kernels"]["llama_cpp"]["branch"] = "production-consolidated-v8"
+        data["kernels"]["llama_cpp"]["commit"] = "67a433bf45a8a091d83b4ea0b32ff0735fd51800"
+
+    result = S.production_kernel_set(speech_attestation_path=_speech_with(tmp_path, wreck))
+    llama = next(m for m in result["members"] if m["key"] == "llama_cpp")
+    assert llama["branch"] == "production-consolidated-v9"
+    assert llama["matches_attestation"] is True
+
+
+def test_a_missing_speech_attestation_is_loud_and_names_what_is_unproven(tmp_path) -> None:
+    result = S.production_kernel_set(speech_attestation_path=tmp_path / "absent.json")
+    assert result["intact"] is False
+    assert result["alarms"]
+    assert "whisper" in result["speech"]["error"] and "qwentts" in result["speech"]["error"]
+
+
+def test_binary_drift_is_reported_as_drift_not_as_absence(tmp_path: Path) -> None:
+    """A rebuilt frozen binary is the thing the digests exist to catch."""
+    result = S.production_kernel_set(
+        speech_attestation_path=_speech_with(
+            tmp_path, lambda d: d["kernels"]["whisper_cpp"].update(binary_sha256="0" * 64)))
+    assert result["intact"] is False
+    assert any("BINARY DRIFT" in a for a in result["alarms"])
+
+
+def test_a_tree_at_the_wrong_commit_is_reported(tmp_path: Path) -> None:
+    result = S.production_kernel_set(
+        speech_attestation_path=_speech_with(
+            tmp_path, lambda d: d["kernels"]["qwentts_cpp"].update(commit="dead" * 10)))
+    assert result["intact"] is False
+    assert any("does NOT match attestation" in a for a in result["alarms"])
+
+
+def test_an_attested_binary_missing_from_disk_is_reported(tmp_path: Path) -> None:
+    result = S.production_kernel_set(
+        speech_attestation_path=_speech_with(
+            tmp_path, lambda d: d["kernels"]["whisper_cpp"].update(binary="/nonexistent/x")))
+    assert result["intact"] is False
+    assert any("absent from disk" in a for a in result["alarms"])
+
+
+def test_unverifiable_is_NOT_the_same_as_matching(tmp_path: Path) -> None:
+    """Three-valued on purpose: a digest we could not compute must never read as a pass."""
+    identity = S._binary_identity("probe", tmp_path / "nope", "a" * 64)
+    assert identity["matches"] is None and identity["present"] is False
+    assert identity["error"]
+
+
+def test_a_missing_llama_attestation_carries_a_REASON_not_just_a_blank() -> None:
+    """D-1 residual. The render was made loud earlier; the reason string was still None."""
+    result = S._production_kernel_summary(Path("/nonexistent/ratify.json"),
+                                          Path("/mnt/raid0/llm/llama.cpp"))
+    assert result["available"] is False
+    assert result["error"] and "not exported" in result["error"]
+
+
+def test_the_singular_llama_view_is_preserved_for_existing_consumers() -> None:
+    """The brief asked for no duplicate panels and no broken compatibility."""
+    state = S.autokernel_current_state()
+    assert "production_kernel" in state and "production_kernel_set" in state
+    assert state["production_kernel"]["branch"] == "production-consolidated-v9"
+
+
+@pytest.mark.parametrize("field", ["ggml", "branch", "head"])
+def test_each_speech_kernel_projects_the_identity_fields_that_must_match(field) -> None:
+    """ggml generation is load-bearing: the three trees run three generations, and a
+    binary inheriting another tree's ggml runs silently wrong (CLAUDE.md)."""
+    speech = S._speech_kernel_summary()
+    assert speech["available"] is True
+    for kernel in speech["kernels"]:
+        assert kernel[field], f"{kernel['key']} is missing {field}"
+
+
+def test_the_panel_declares_its_own_receipt_coverage() -> None:
+    """A curated view must say it is curated.
+
+    Measured at audit time: 5 receipt schemas projected, 29 further schemas across 98
+    receipt files present under the probe root and not shown. Most are legitimately
+    intermediate, so the repair is not "render them all" — it is that a reader acts on
+    what the page implies, and silence implied completeness.
+    """
+    coverage = S.autokernel_current_state()["receipt_coverage"]
+    assert coverage["projected_schemas"], "coverage must enumerate what it shows"
+    assert coverage["probe_root"]
+    assert "CURATED" in coverage["note"] and "not absence of evidence" in coverage["note"]
