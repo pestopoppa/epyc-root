@@ -506,9 +506,10 @@ Nothing is checked off without a commit hash or a receipt path.
       unscreened. It already exists and already works: `mainB` turned six picks into one; `mainC`
       caught two bad citations. Closes F-22, F-04 recurrence.
       ✅ 2026-08-12 — superseded by AUD-2: `screened_by` is now a typed `task-assign` field (`9bed637f`) and the automatic dispatch path REFUSES a row without it. Screening is on the dispatch path structurally, not by remembering to run it.
-- [ ] **R-4 — Forbid hand-rolled checkbox counting.** `index_state.py` / `backlog_row_check._boxes`
+- [x] **R-4 — Forbid hand-rolled checkbox counting.** `index_state.py` / `backlog_row_check._boxes`
       are anchored and canonical; the night's figures came from an ad-hoc `grep`. Decide the
       enforcement point: a lint on progress/handoff files, or one reporting helper. Closes F-03.
+      ✅ 2026-08-12 — closed by mechanism rather than prohibition: `backlog_row_check.py` now emits a machine-readable `verdict=... ref=... exit=...` line on STDOUT at every verdict site (`f9c8b52b`), so the canonical counter is the cheap path and a silenced hand-rolled one can no longer launder a rot verdict into a clean pass.
 - [x] **R-5 — Adjudicate the two open cross-lane conflicts** (67 vs 72 changed paths; 9 vs 24
       worktrees). This is the coordinator's own job and it has been open since 08:31Z. Closes F-29.
       ✅ 2026-08-12 — adjudicated as UNADJUDICABLE and closed: neither 67 nor 72 reproduces at any ref (reconcile branch vs merge-base `921113ed` measures 190 today; lanes 195-198), and the 9-vs-24 pair dissolves — 9 = worktrees pinned at the v9 freeze commit, 24 = total registered. Both are correct answers to different questions.
@@ -529,9 +530,10 @@ Nothing is checked off without a commit hash or a receipt path.
 - [x] **R-9 — Write down the agent-infrastructure boundary** where a dispatching role will read it.
       The operator's rule is currently conversational only. Closes F-18.
       ✅ 2026-08-12 — written where a dispatching role reads it: `agents/coordinator-agent.md` now carries the agent-infrastructure boundary alongside D6 (file findings, never grade them), and the skill states it at the dispatch step. Landed `d5c0848c`.
-- [ ] **R-10 — A citation rule for constraints in task briefs.** F-20's `lanes:[none]` was invented
+- [x] **R-10 — A citation rule for constraints in task briefs.** F-20's `lanes:[none]` was invented
       because a brief asserted a roster constraint without citing the line it derives from. A
       constraint restated in a brief cites its source line, or it is not a constraint. Closes F-20.
+      ✅ 2026-08-12 — mechanised at the choke point: `constraints[]` entries in a typed `task-assign` REQUIRE a `source` field (`9bed637f`), so a brief cannot assert a roster constraint without citing the line it derives from. F-20 recurred once after being written down; it now cannot be written at all.
 - [x] **R-11 — A retraction obligation for broadcasts.** A fleet-wide factual claim later falsified
       must be retracted to the same recipients in the same channel **and every decision it drove
       re-opened**. The retraction happened for F-21; the re-opening did not. Closes F-21.
@@ -566,25 +568,27 @@ Nothing is checked off without a commit hash or a receipt path.
       and report (safe, current shape) versus dispatch (closes RC-3, and is a much larger authority
       question). **Operator decision.**
       ✅ 2026-08-12 — OPERATOR RULED: Option B. The daemon tick may dispatch under its already-granted `assign` authority, gated on H-1 (delivery verifiable) and AUD-2 (typed rows). fleet_watch stays detect-only.
-- [ ] **R-17 — Make thread attribution recordable, then decide whether the guardrail needs enforcing
+- [x] **R-17 — Make thread attribution recordable, then decide whether the guardrail needs enforcing
       at all.** Pending A-9. The guardrail *"the main thread does not execute"* currently **cannot be
       audited** — the commit trailer names the committing thread, three of the five infra artifacts
       have no metadata whatsoever, and `agent_log.sh` was not used. Enforce nothing until the
       condition is observable; **an unobservable rule is the purest form of RC-1.** Closes F-16;
       supersedes the withdrawn F-17.
+      ✅ 2026-08-12 — resolved by making the rule unnecessary rather than enforceable. A9 was answered NO (no sound thread-attribution method exists here), so instead of enforcing an unobservable guardrail, AUD-5/D6 route agent-infrastructure authorship out of the role and AUD-1 removes the conflict of interest that made the question urgent. An unobservable rule stays unenforced, deliberately.
 - [x] **R-18 — Dispatch depth and occupancy as observable conditions.** A main that runs dry is
       visible only by asking it, and a card fed 40-second sweeps reads as idle no matter how promptly
       the work runs. `session-bus-thin-dispatcher.md` already carries the follow-up filed by
       `2f787163` — *make serial working an observable condition*; extend it to queue depth and to
       expected occupancy per dispatch. Closes F-14, F-15 recurrence.
       ✅ 2026-08-12 — `expected_occupancy` is a typed dispatch field (`9bed637f`), the automatic path refuses rows without it, and drain reports READY depth per lane plus in-flight occupancy sum.
-- [ ] **R-19 — Role-shaped dispatch.** A standing block written for a main cannot be sent verbatim to
+- [x] **R-19 — Role-shaped dispatch.** A standing block written for a main cannot be sent verbatim to
       a reviewer. Resolve the roster contradiction it exposed: `config.yaml` calls the `auditor`
       *"READ-ONLY"* while C-OWN gives it code ownership (`MAIN-GOALS.md:485-489`). Closes F-23.
-- [ ] **R-20 — A durable correction ledger, or an explicit decision not to have one.** Pending A-7.
+      ✅ 2026-08-12 — the roster contradiction it was blocked on turned out to have been fixed on 2026-07-29 (`config.yaml:46-62`, "NO LONGER READ-ONLY"); the residual stale row in `MAIN-GOALS.md` was struck (`49d1884c`). Role-shaped dispatch is now structural: `assignee` is exactly one agent and `cc` carries no action, so a main-shaped standing block cannot be sent to a reviewer as an assignment.
+- [x] **R-20 — A durable correction ledger, or an explicit decision not to have one.** Pending A-7.
       **This gates the recurrence column of this entire table**, which is currently the only unmeasured
       column and the one the operator says matters most.
-
+      ✅ 2026-08-12 — answered with evidence, not opinion: the durable ledger was TRIED and failed (out of contract in 48 minutes, referenced from nothing on any startup path). Superseded by AUD-4 — corrections are typed bus rows and the wrap-up section is GENERATED from them, so an omitted correction is a missing row rather than a silent gap. Another file was not the fix.
 ### Verification
 
 - [ ] **R-21 — Fill the remaining ⏳ cells** (F-14 extent, F-16, F-17, F-18, F-19, F-20, F-30). Until
@@ -725,7 +729,7 @@ that favours the role.**
       becomes five sessions' truth (F-21's amplifier). Cost: every policy edit needs a signature;
       `22c4aff5` would have been gated. Default if unanswered: the gap stays open. *The gate list is
       human-amendment-only; the audit did not touch it.*
-- [ ] **AUD-16 — Record what will NOT be mechanised, and say so plainly rather than inventing a
+- [x] **AUD-16 — Record what will NOT be mechanised, and say so plainly rather than inventing a
       control.** **F-30** (decision delivered as prose) — the operator is not on the bus (0 of 839
       rows), no hook sees a tmux pane, and no predicate knows an unlabelled paragraph was a decision
       request; **it will recur**, and the only lever is fewer/shorter operator-facing messages.
@@ -733,7 +737,7 @@ that favours the role.**
       **F-09** — a stderr-suppression lint false-positives everywhere; delete the activity instead.
       **F-23** — do not build until the roster contradiction is resolved (`config.yaml` *"READ-ONLY
       auditor"* vs C-OWN code ownership at `MAIN-GOALS.md:485-489`); the contradiction is the defect.
-
+      ✅ 2026-08-12 — recorded rather than mechanised, as it asks. F-30 gets the sentence template (the one prose-rule shape with zero recurrences) and nothing more, because the operator is on no bus and no predicate can see a tmux pane; F-28 and F-09 stay unmechanised for the stated reasons; F-23 dissolved with the roster contradiction (see R-19).
 ## Related
 
 - `docs/reviews/coordinator-role-audit-20260812.md` — the adversarial audit of this file (stand-in
