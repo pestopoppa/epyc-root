@@ -34,6 +34,12 @@ The carrier is shared. The grading rule is **not**, and pretending otherwise is 
 The literature ceiling is **structural, not a limitation to lift**. An intake entry records what
 someone else reported; no amount of careful reading turns it into a protocol-admissible measurement.
 
+Dependency evidence is not a third carrier class yet. A producer may write an integrity-bound
+dependency record and an adapter may classify it, but until a shared dependency warrant rule is
+declared it MUST NOT register a `ClaimTuple` projection or emit `evidence_supports_claim`. In
+particular, verification legs from one rehearsal retain their native identities but share one
+run-level support key; they are not independent corroborating witnesses.
+
 Each class has **exactly one** ladder. `register_ladder()` refuses a second. A genuinely new kind of
 warrant is a new class — declare it deliberately, never by accident.
 
@@ -91,7 +97,7 @@ Keep this table current. It is the answer to "has anyone already looked at this?
 | AutoKernel live-control and governed replay receipts | measurement | **write/read path wired prospectively; awaiting the next controls/replay** — future writers emit self-hashed rows carrying the native verdict, scored-block basis, and exact producer/source/binary/model/resource-claim/evidence identities. The adapter re-derives all bindings and delegates grading to the shared ladder. The 2026-08-12 hardened-instrument smoke and GPU replay remain pre-hook evidence and are never back-filled | `autokernel_governed_receipt.py` |
 | AutoKernel gfx90a saturation and vendor-GEMM baseline diagnostics | measurement | **candidate — needs a prospective write-side hook before the next run**. The 2026-08-12 RVP-T0-1 and AK-BH-1 receipts predate a ClaimTuple hook and remain unprojected; never back-fill them on read | — |
 | AutoKernel AK-LE planner prefilter/reduction receipts | measurement | **candidate — wire the write side before the corrected AK-LE panel runs**. The producer preserves measured per-cell search persistence, structural-filter decisions, and elapsed time in `loop_engineering_planner_receipt.v1`; the under-specified r1 panel is a refusal and must never be back-filled | — |
-| AutoKernel host-process fault rehearsal | dependency evidence | **candidate — wire the write side before the next rehearsal**. `fault_rehearsal.py` emits `host_process_fault_rehearsal.v1` with three real-process recovery legs and exact source/producer/process identities; PASS proves the recovery mechanism only and is not a performance measurement or release gate | — |
+| AutoKernel host-process fault rehearsal | dependency evidence | **write/classification path wired prospectively; awaiting the next rehearsal** — `fault_rehearsal.py` emits three self-hashed dependency rows with exact source/producer/process identities, all sharing one rehearsal-run support key. `autokernel_fault_rehearsal.py` verifies those rows and the immutable receipt digest, then returns typed dependency classifications only; it deliberately emits no `ClaimTuple`, performance measurement, support frame, corroborating witness, release claim, or campaign authority. Pre-hook receipts remain unprojected | `autokernel_fault_rehearsal.py` |
 
 **Before adding a bulk adapter, price it** (the P2 discipline): sample ~50 records and count how many
 carry the full tuple. If the answer is near zero, the gap is upstream and an adapter adds volume
