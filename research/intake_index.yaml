@@ -76337,3 +76337,282 @@
   - Relevant validation issues require a source-level dive before adoption.
   handoffs_updated: []
   handoffs_created: []
+- id: intake-1104
+  arxiv_id: '2607.01211'
+  url: https://arxiv.org/abs/2607.01211
+  source_type: paper
+  title: Are Performance-Optimization Benchmarks Reliably Measuring Coding Agents?
+  authors:
+  - Zhi Chen
+  - Zhensu Sun
+  - Yuling Shi
+  - David Lo
+  - Lingxiao Jiang
+  source_revision: >-
+    arXiv v2 (stamped 'arXiv:2607.01211v2 [cs.SE] 16 Jul 2026'; v1 2026-07-01), read in full via the
+    arXiv HTML rendering, retrieved 2026-08-12. Public-data repo
+    github.com/chenzhi-cz/performance-optimization-benchmark-reliability (default branch main, 2
+    commits, created and last pushed 2026-07-16) retrieved the same day; the three valid-task CSVs and
+    the 8,856-row cross_machine_replay_observations.csv were downloaded and spot-recounted in-session.
+  categories:
+  - benchmark_methodology
+  novelty: high
+  novelty_justification: >-
+    First audit-of-benchmarks source in the code-efficiency cluster: the compendium holds the audited
+    instruments themselves (intake-973 GSO, intake-951 SWE-Perf, intake-953 SWE-fficiency) but no
+    independent replay audit of any of them, and no prior source that quantifies how much of a
+    harmonic-mean leaderboard's denominator a handful of floor-clamped tasks can carry.
+  relevance: high
+  relevance_justification: >-
+    Named pre-adoption gate on the code-runtime-efficiency instrument choice
+    (architect-model-selection-bench.md, 'Instrument selection'): the adoption row for EffiBench-X was
+    explicitly held on this ingest. It also directly amends the GSO llama-cpp-python row (claim 06) and
+    independently corroborates measurement decision package DP-2's ban on failure-clamped sentinels
+    inside harmonic means (claims 04/05).
+  credibility_score: 2
+  credibility_justification: >-
+    Venue +0 (arXiv preprint, no journal-ref/DOI; comments field claims only '12 pages, 7 figures').
+    Recency 0 (v2 four weeks before ingest). Known contributors +1 (David Lo and Lingxiao Jiang, SMU -
+    among the most-published software-engineering researchers; Yuling Shi SJTU). Commercial bias 0 (no
+    author-affiliated model appears in the audited leaderboards; GPT-5.5 is used only as an annotation
+    model). Independent corroboration +1 (public data released and verified in-session: the three
+    valid-task CSVs count exactly 39/11/411 rows matching the abstract, and the per-task observation
+    table reproduces the per-run fates cited in claim 06).
+  verdict: adopt_patterns
+  verdict_justification: >-
+    adopt_patterns, not adopt_component: the adoptable content is the cross-machine multi-round
+    replay-validity discipline, the std/signal (signal-magnitude) diagnostic, the per-task
+    score-weight decomposition, and the bounded-penalty rescoring check - all method, no harness. The
+    released data is consulted as evidence, but the data repo ships NO license file (CITATION.cff
+    only), so the artifact itself is not committed to under the sourcing policy. Not
+    worth_investigating - it was read in full and its actionable content is extracted here. Not
+    not_applicable or superseded - it is the only independent audit of this cluster.
+  key_claims:
+  - >-
+    SCOPE - the audit covers ONLY the three repository-level benchmarks (GSO, SWE-Perf,
+    SWE-fficiency), selected by explicit criteria (repository-level edits, runtime-optimization
+    workloads, peer-reviewed benchmark papers). EffiBench, EffiBench-X, ENAMEL, EvalPerf/DPE, Mercury,
+    COFFE, ECCO, ACECode appear ONLY in related work and are NOT evaluated - so this paper can neither
+    indict nor clear the micro-benchmark half of the design space.
+  - >-
+    Replaying the official reference patches of 740 tasks across four GCP machine types and three
+    rounds, the patches satisfy their own benchmark's original validity rules in ALL 12 machine-round
+    replays for only 39/102 GSO tasks, 11/140 SWE-Perf tasks, and 411/498 SWE-fficiency tasks.
+  - >-
+    SWE-Perf's fragility is signal magnitude, not machine noise: its median within-task runtime std
+    (1.41pp) is LOWER than GSO's (3.81pp) and SWE-fficiency's (2.41pp), but its median reference-patch
+    runtime change is only -0.03% versus -54.20% (GSO) and -56.04% (SWE-fficiency), giving
+    std/signal ratios of 43.23x vs 0.07x and 0.04x.
+  - >-
+    Repetition-rich single-machine statistics do not confer cross-machine validity: SWE-Perf's own
+    construction gate is 20 timing repetitions + IQR outlier filtering + a Mann-Whitney minimum-gain
+    threshold (delta_i > 0.05), yet 129 of its 138 replay-evaluable reference patches no longer show
+    statistically supported gain across machines. When the underlying signal is near zero, more
+    repetitions on one machine cannot rescue validity.
+  - >-
+    Rankings are scoring-rule-dependent: among the 8 public submissions shared by GSO and
+    SWE-fficiency, the official rankings disagree on 9 of 28 pairwise comparisons (Spearman 0.452).
+    Rescoring SWE-fficiency with a GSO-style reference-level pass rate raises Spearman to 0.762;
+    applying SWE-fficiency's harmonic scoring to GSO per-task reports yields Spearman 0.238 and flips
+    11/28 head-to-head pairs.
+  - >-
+    SWE-fficiency's harmonic mean with a 0.001 SR floor concentrates score weight in its worst tasks:
+    worst-1 carries 6.3-33.6%, worst-5 31.4-73.1%, worst-10 58.5-82.8% of the official score
+    denominator (498-task benchmark); one near-floor task (raw SR 0.00134) carries 33.6% of one
+    submission's entire score weight, and a bounded-penalty diagnostic changes 6/8 submission ranks
+    and flips 8/28 head-to-head comparisons.
+  - >-
+    DERIVED FROM THE RELEASED DATA (not paper prose): BOTH of GSO's two abetlen/llama-cpp-python tasks
+    fail the cross-machine validity rule. 218d361 is not-evaluable in 0/12 machine-rounds
+    (patch_apply_failed on Intel n2, Intel n4 and AMD Turin n4d in all rounds; base_failed on AMD
+    Milan n2d in all rounds) - its reference patch does not even apply in a clean replay pipeline.
+    2bc1d97 is construction-valid in 9/12 (per-test speedup 1.37-2.02x, all >= the 1.2 gate) but
+    base_failed on AMD EPYC Milan n2d in all three rounds, so it misses the 39-task replay-valid
+    list. On AMD EPYC Turin n4d (closest public relative of our EPYC 9655) it was valid 3/3 at
+    1.97-2.02x.
+  - >-
+    Artifacts ship: replay data is public at
+    github.com/chenzhi-cz/performance-optimization-benchmark-reliability (per-run observations,
+    per-task summaries, and the three cross-machine valid-task lists; CSV row counts recomputed
+    in-session match the abstract's 39/11/411). The paper is CC BY 4.0; the DATA REPO CARRIES NO
+    LICENSE FILE (CITATION.cff only, 2 commits).
+  - >-
+    The paper's stated reading rule: current benchmark scores 'should not be read as direct labels of
+    agent capability'; at minimum, reports should distinguish cross-machine-verified tasks from
+    unstable tasks, show per-task score weight, and compare submissions under aggregation rules that
+    match the use case.
+  - >-
+    Coverage finding: across 10 public submissions per task, at least one submission matches or beats
+    the reference patch on 85.3% (384/450) of replay-valid GSO and SWE-fficiency tasks, and beats the
+    unoptimized base code on 99.8% (449/450) - aggregate leaderboard gaps mostly reflect consistency,
+    not unreachable tasks.
+  techniques:
+  - cross-machine reference-patch replay (4 GCP machine types x 3 rounds; validity requires all 12)
+  - re-application of each benchmark's own construction/validity rule at replay time
+  - std/signal ratio as a per-benchmark runtime-signal-magnitude diagnostic
+  - per-task score-weight decomposition of harmonic-mean leaderboards
+  - bounded-penalty (capped-denominator) rescoring diagnostic
+  - cross-benchmark rescoring of shared submissions with Spearman and pairwise-flip counts
+  - schema-checked GPT-5.5-assisted optimization-category annotation of reference vs best public patches
+  reported_results:
+  - 'Replay evaluability: GSO 98/102 (4 not evaluable: one functional-equivalence failure, one missing external-data dependency, one image-decoding failure, one x86_64 CPU-instruction portability failure), SWE-Perf 138/140 (missing dependencies in the evaluation image), SWE-fficiency 498/498.'
+  - 'Original-rule cross-machine validity: GSO 39/102, SWE-Perf 11/140, SWE-fficiency 411/498.'
+  - 'Runtime signal: median change / median std / std-signal ratio - GSO -54.20% / 3.81pp / 0.07x; SWE-Perf -0.03% / 1.41pp / 43.23x; SWE-fficiency -56.04% / 2.41pp / 0.04x. 101/138 SWE-Perf tasks sit within +/-5% of zero change.'
+  - 'GSO-rank to SWE-fficiency-rank moves among the 8 shared submissions: Claude Opus 4.6 1->3, GPT-5.2 2->4, Claude Opus 4.5 3->1, Gemini 3 Pro 4->7, Claude Sonnet 4.5 5->5, Gemini 3 Flash 6->6, GPT-5 7->2, Gemini 2.5 Pro 8->8.'
+  - 'Machine pool: n2 (Intel Cascade Lake), n2d (AMD EPYC Milan 7B13), n4 (Intel Emerald Rapids), n4d (AMD EPYC Turin 9B45), all 64 vCPU / 256 GB.'
+  claim_anchors:
+  - claim_index: 0
+    locator: section II scope criteria + related-work paragraph, arXiv HTML v2
+    quote: we include benchmarks only when they (1) evaluate repository-level edits, (2) target runtime
+      optimization with executable workloads or tests that compare code states, and (3) appear as recent,
+      visible peer-reviewed benchmark papers
+    source_revision: v2
+  - claim_index: 1
+    locator: abstract, arXiv HTML v2
+    quote: their reference patches satisfy the original benchmark validity rules in every cross-machine
+      replay for only 39/102 GSO tasks, 11/140 SWE-Perf tasks, and 411/498 SWE-fficiency tasks
+    source_revision: v2
+  - claim_index: 2
+    locator: section III RQ1.3 results, arXiv HTML v2
+    quote: 'The table rules out a simple "more machine noise" explanation for SWE-Perf. Its median within-task
+      standard deviation is 1.41 percentage points, lower than GSO and SWE-fficiency. The problem is signal
+      size: the median SWE-Perf runtime change is only -0.03%'
+    source_revision: v2
+  - claim_index: 3
+    locator: section III validity-rule table + RQ1.2 results, arXiv HTML v2
+    quote: 'After 20 timing repetitions and IQR outlier filtering, the recomputed Mann-Whitney minimum-gain
+      value must remain above the dataset threshold ... The drop is the largest for SWE-Perf, where 129
+      reference patches no longer show statistically supported gain across machines.'
+    source_revision: v2
+  - claim_index: 4
+    locator: abstract + section IV RQ2 rescoring results, arXiv HTML v2
+    quote: the official rankings disagree on 9 of 28 pairwise submission comparisons ... raises Spearman
+      rank correlation with GSO from 0.452 to 0.762 and reduces discordant pairs from 9 to 6 ... gives a
+      Spearman rank correlation of 0.238 against the official SWE-fficiency ranking and flips 11/28 head-to-head
+      pairs
+    source_revision: v2
+  - claim_index: 5
+    locator: section IV Figure 3 results + bounded-penalty paragraph, arXiv HTML v2
+    quote: Worst-1 tasks carry 6.3-33.6%, worst-5 tasks carry 31.4-73.1%, and worst-10 tasks carry 58.5-82.8%
+      of the official score denominator ... one near-floor task in Claude Opus 4.5 has raw SR 0.00134 and
+      carries 33.6% of the submission's score weight ... A simple bounded-penalty diagnostic changes 6/8
+      submission ranks and flips 8/28 head-to-head comparisons.
+    source_revision: v2
+  - claim_index: 6
+    locator: released data, cross_machine_task_summary.csv rows abetlen__llama-cpp-python-218d361 and
+      abetlen__llama-cpp-python-2bc1d97, plus the 24 matching rows of cross_machine_replay_observations.csv;
+      absent from gso_cross_machine_valid_tasks.csv (39 rows, recounted)
+    quote: 'abetlen__llama-cpp-python-218d361 ... 12 expected runs, 0 score-ready, final_status not-fully-evaluable
+      (availability_note patch_apply_failed on n2/n4/n4d, base_failed on n2d); abetlen__llama-cpp-python-2bc1d97
+      ... 9/12 construction-valid, min_native_score 1.3736, median 1.8711, base_failed on n2d r1/r2/r3'
+    source_revision: data repo main @ 2026-07-16
+  - claim_index: 7
+    locator: Data Availability section, arXiv HTML v2 + GitHub API repo metadata
+    quote: The public data are available at https://github.com/chenzhi-cz/performance-optimization-benchmark-reliability
+    source_revision: v2; data repo main @ 2026-07-16
+  - claim_index: 8
+    locator: Discussion / implications section, arXiv HTML v2
+    quote: current benchmark scores should not be read as direct labels of agent capability ... At minimum,
+      reports should distinguish cross-machine verified tasks from unstable tasks, show per-task score
+      weight, and compare submissions under aggregation rules that match the use case.
+    source_revision: v2
+  - claim_index: 9
+    locator: abstract, arXiv HTML v2
+    quote: at least one submission matches or beats the reference patch on 85.3% (384/450) of replay-valid
+      GSO and SWE-fficiency tasks, and beats the unoptimized base code on 99.8% (449/450)
+    source_revision: v2
+  contradicting_evidence:
+  - >-
+    The backlog row's premise ('it directly meta-evaluates this entire cluster') is HALF-true: the
+    audit covers only the repo-level trio. Nothing in it measures EffiBench-X, ENAMEL, EvalPerf,
+    COFFE or Mercury, so it cannot pre-empt or validate the micro-benchmark half of the instrument
+    choice (claim 00).
+  - >-
+    Preprint, not peer-reviewed (no venue, no DOI, v2 four weeks old at ingest); the released data
+    repo carries no license file; category annotations are produced by GPT-5.5, not humans.
+  - >-
+    Machine pool is GCP 64-vCPU shapes only. Our host (EPYC 9655, 96c/192t, 1.1TB) is outside the
+    pool; the per-machine findings bound nothing on our hardware directly - AMD Turin n4d is the
+    closest relative and is the one machine where the surviving llama-cpp-python task was valid 3/3.
+  portability_to_epyc: >-
+    The audit method is directly portable: replay + own-rule revalidation + a signal-magnitude
+    (std/signal) gate is the same discipline behind our existing decline of an efficiency axis over
+    SWE40/LCB (duration-spread clearable for <=3.8% of problems, intake-976). The per-task
+    score-weight decomposition and bounded-penalty check apply verbatim to any harmonic-mean ladder
+    we publish under DP-2. The released valid-task lists are usable as a task filter for any future
+    GSO arm, subject to local re-verification (claim 06).
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - architect-model-selection-bench.md
+    experiments: []
+    intake_entries:
+    - intake-939
+    - intake-951
+    - intake-952
+    - intake-953
+    - intake-954
+    - intake-970
+    - intake-971
+    - intake-972
+    - intake-973
+    - intake-974
+    - intake-976
+  recommended_actions:
+  - >-
+    [unverified] Before running the GSO llama-cpp-python arm (architect-model-selection-bench.md
+    'Instrument selection'), re-derive both tasks' fate locally: the released data says 218d361's
+    reference patch fails to apply in a clean replay pipeline anywhere, and 2bc1d97's base commit
+    fails on AMD EPYC Milan while passing 3/3 on AMD EPYC Turin - build both base commits on our
+    EPYC 9655 first and apply GSO's own >=1.2 per-test speedup rule before trusting either
+    reference target.
+  - >-
+    [unverified] When the EffiBench-X ladder goes live, publish per-task score weight and a per-task
+    duration-spread (signal-magnitude) column beside the DP-2 harmonic mean, so a rank difference is
+    attributable to broad performance vs a few near-floor tasks - the exact interpretability failure
+    documented here for SWE-fficiency.
+  - >-
+    [unverified] Port the std/signal ratio as an acceptance-gate statistic for any timing instrument:
+    a task whose reference signal is within ~2 std of zero cannot carry a cross-machine-stable
+    verdict regardless of repetition count (claims 02/03).
+  notes: >-
+    PROVENANCE: entry created 2026-08-12 on the auditor lane with EXPLICIT OPERATOR APPROVAL (given
+    2026-08-12) outside the standard /research-intake sweep, working the backlog row 'Ingest arXiv
+    2607.01211 BEFORE finalising the instrument choice' in
+    handoffs/active/architect-model-selection-bench.md ('Instrument selection'). The row was parked
+    during the 2026-08-03 Stage-2/2b efficiency-cluster round as a pre-adoption gate.
+    AUTHOR-INDEPENDENCE CHECK (the reason this source counts): zero author overlap with the Mingzhe
+    Du connected component (Mercury -> EffiBench/EffiBench-X -> SWE-Perf; intake-972/952/951) and
+    zero with ENAMEL (intake-970), EvalPerf (intake-971), GSO (intake-973) or COFFE (intake-954)
+    author sets - affiliations are SMU (Chen, Sun, Lo, Jiang) and SJTU (Shi). This is the first
+    source in the cluster independent of every instrument it discusses, so its corroboration of the
+    DP-2 sentinel ban is genuinely out-of-lineage. CLAIM 06 IS DERIVED by this ingest from the
+    released CSVs (downloaded and grepped in-session), not stated in paper prose - treat it as
+    machine-verified data-mining of the paper's own artifact, one step below a quoted claim.
+    VERIFICATION DETAIL: abstract counts recomputed from the released CSVs (39/11/411 valid-task
+    rows; 8,856 observation rows); all quoted figures located verbatim in the saved HTML text
+    (workspace tmp copy; quotes above are the durable anchors).
+  reader_should_conclude: >-
+    An independent, non-Du-lineage audit of the repo-level half of the efficiency cluster. It does
+    NOT evaluate EffiBench-X, so it cannot pre-empt that adoption; what it does is (a) corroborate,
+    from outside the lineage, DP-2's ban on failure-clamped sentinels inside harmonic means with the
+    strongest quantitative evidence on record (worst-10 tasks = 58.5-82.8% of a 498-task
+    denominator), (b) establish that replay validity is bounded by signal magnitude, not repetition
+    count - reinforcing that our sealed SWE40/LCB tasks cannot carry a timing signal and that
+    single-execution timing is acceptance-grade only, and (c) show from its released data that
+    NEITHER of GSO's two llama-cpp-python tasks is cross-machine replay-valid - verify both locally
+    before that arm runs.
+  discovered_via: search
+  ingested_date: '2026-08-12'
+  verification: dive-verified
+  integration_disposition: integrated
+  disposition_evidence:
+  - Decision-impact note artifacts/audit/arxiv-2607-01211-adoption-impact-20260812.md (verdict
+    SUPPORTS-WITH-CAVEATS for the EffiBench-X adoption row).
+  - GSO llama-cpp-python row and the intake-ingest row in
+    handoffs/active/architect-model-selection-bench.md updated with claim-06 caveat and closure.
+  handoffs_updated:
+  - handoffs/active/architect-model-selection-bench.md
+  handoffs_created: []

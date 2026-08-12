@@ -1,0 +1,3 @@
+Source: github.com/chenzhi-cz/performance-optimization-benchmark-reliability (main, retrieved 2026-08-12; repo created/pushed 2026-07-16, 2 commits, NO LICENSE file).
+Extracts supporting intake-1104#06: full GSO valid-task list (39 rows) + the two abetlen__llama-cpp-python task rows from data/cross_machine_task_summary.csv and their 24 per-run rows from data/cross_machine_replay_observations.csv.
+Paper: arXiv 2607.01211v2 (CC BY 4.0).

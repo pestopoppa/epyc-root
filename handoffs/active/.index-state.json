@@ -4,7 +4,7 @@
       "blocked": 12,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 356
+      "open": 357
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -16,7 +16,7 @@
       "blocked": 9,
       "handoffs": 49,
       "oldest_advance": "2026-07-29",
-      "open": 289
+      "open": 288
     },
     "reviewer-control-plane-index.md": {
       "blocked": 11,
@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 383
+      "open": 384
     },
     "user-facing-harness-index.md": {
       "blocked": 3,
@@ -107,10 +107,10 @@
     },
     "architect-model-selection-bench.md": {
       "blocked": 0,
-      "closed": 67,
+      "closed": 68,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 17,
+      "open": 16,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-02",
       "state": "active",
@@ -140,14 +140,14 @@
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
-      "closed": 152,
+      "closed": 153,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 61,
+      "open": 62,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
       "state": "active",
-      "total": 215
+      "total": 217
     },
     "autopilot-control-plane-integration.md": {
       "blocked": 0,
@@ -1507,11 +1507,11 @@
       "closed": 70,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 17,
+      "open": 18,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 87
+      "total": 88
     },
     "routing-intelligence.md": {
       "blocked": 0,

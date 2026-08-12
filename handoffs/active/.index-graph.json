@@ -553,6 +553,12 @@
     {
       "from": "EVL-25",
       "kind": "ref",
+      "to": "RTG-15",
+      "weight": 2
+    },
+    {
+      "from": "EVL-25",
+      "kind": "ref",
       "to": "RTG-29",
       "weight": 2
     },
@@ -3491,7 +3497,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T13:03:45Z",
+  "generated_at": "2026-08-12T13:16:10Z",
   "nodes": [
     {
       "age_days": 13,
@@ -3509,13 +3515,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 67,
+      "closed": 68,
       "domain": "research-evaluation",
       "handoff": "architect-model-selection-bench.md",
       "id": "EVL-02",
       "last_advanced": "2026-08-12",
       "next_action": "Decide :596 EffiBench-X adoption once the 2607.01211 ingest lands; gpqa_diamond_cot arm per ROI rule",
-      "open": 17,
+      "open": 16,
       "state": "active",
       "track": "architect model selection bench"
     },
@@ -4672,7 +4678,7 @@
       "id": "INF-48",
       "last_advanced": "2026-08-12",
       "next_action": "Bind clean producer provenance; replay C2/C5, then capture EPYC workloads and add gfx90a k228/k175 adapters",
-      "open": 17,
+      "open": 18,
       "state": "active",
       "track": "rocm verify profile backend"
     },
@@ -5017,13 +5023,13 @@
     {
       "age_days": 0,
       "blocked": 2,
-      "closed": 152,
+      "closed": 153,
       "domain": "routing-and-optimization",
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",
       "last_advanced": "2026-08-12",
       "next_action": "Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped",
-      "open": 61,
+      "open": 62,
       "state": "active",
       "track": "autopilot continuous optimization"
     },
