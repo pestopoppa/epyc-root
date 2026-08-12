@@ -147,13 +147,6 @@ def test_incidental_curl_is_not_a_download(monkeypatch):
     assert ic.classify_load()["state"] == "quiet"
 
 
-def test_busy_mi210_vram(monkeypatch):
-    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_BUSY_VRAM))
-    result = ic.classify_load()
-    assert result["state"] == "busy"
-    assert any("MI210" in r for r in result["busy_reasons"])
-
-
 def test_busy_mi210_util(monkeypatch):
     monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_BUSY_UTIL))
     assert ic.mi210_state()["occupied"] is True
@@ -301,3 +294,156 @@ def test_c1_no_autopilot_processes_is_stopped(monkeypatch):
     st = ic.autopilot_state()
     assert st["running"] is False
     assert st["detail"] == "stopped"
+
+
+# --------------------------------------------------------------------------- #
+# M4 (2026-08-12) — RESIDENCY IS NOT WORK
+#
+# `mi210_state()` used to OR utilisation with VRAM residency into one `occupied`
+# boolean. A loaded-but-idle model therefore read BUSY, and the coordinator daemon
+# rejected every queued lane row behind it — 572 `lane cpu busy` rejections and a
+# 3h47m window at zero compute on the night of 2026-08-11/12.
+#
+# `test_busy_mi210_vram` used to live here asserting `state == "busy"` for exactly
+# this input. It was DELETED, not adjusted: it pinned the defect. Its replacement
+# is `test_m4_resident_vram_is_parked_not_busy` below, which asserts the opposite.
+#
+# The compliant-path controls are as load-bearing as the bites: a legitimately busy
+# device must still read BUSY (`test_m4_util_above_floor_is_still_busy`,
+# `test_m4_decode_on_a_resident_device_is_busy`), and no unreadable probe may ever
+# read FREE (`test_m4_unreadable_probe_is_unknown_never_free`).
+# --------------------------------------------------------------------------- #
+ROCM_RESIDENT = ROCM_BUSY_VRAM                      # 42 GB held, 0% utilisation
+ROCM_MIXED = (
+    '{"card0": {"GPU use (%)": "0", "VRAM Total Used Memory (B)": "13094912"},'
+    ' "card1": {"GPU use (%)": "0", "VRAM Total Used Memory (B)": "'
+    + str(42 * 1024 ** 3) + '"}}'
+)
+ROCM_NO_CARDS = '{"system": "not a card dict"}'
+
+
+def test_m4_resident_vram_is_parked_not_busy(monkeypatch):
+    """THE CENTRAL ASSERTION. 42 GB resident, 0% utilisation ⇒ RESIDENT, not BUSY."""
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_RESIDENT))
+    gpu = ic.mi210_state()
+    assert gpu["device_state"] == ic.DEVICE_RESIDENT
+    assert gpu["util_occupied"] is False
+    assert gpu["vram_resident"] is True
+
+    result = ic.classify_load()
+    assert result["state"] == "parked"
+    assert result["busy_reasons"] == []          # nothing is working
+    assert result["parked_reasons"]              # and the reason is named
+
+
+def test_m4_occupied_key_is_unchanged_for_pre_split_callers(monkeypatch):
+    """`occupied` stays the OR, so nothing that predates the split changes meaning."""
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_RESIDENT))
+    assert ic.mi210_state()["occupied"] is True
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_BUSY_UTIL))
+    assert ic.mi210_state()["occupied"] is True
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_IDLE))
+    assert ic.mi210_state()["occupied"] is False
+
+
+def test_m4_util_above_floor_is_still_busy(monkeypatch):
+    """COMPLIANT PATH: a legitimately busy device must still read BUSY."""
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_BUSY_UTIL))
+    gpu = ic.mi210_state()
+    assert gpu["device_state"] == ic.DEVICE_BUSY
+    assert gpu["util_occupied"] is True
+    result = ic.classify_load()
+    assert result["state"] == "busy"
+    assert result["parked_reasons"] == []
+    assert any("MI210" in r for r in result["busy_reasons"])
+
+
+def test_m4_decode_on_a_resident_device_is_busy(monkeypatch):
+    """COMPLIANT PATH: residency + a decoding slot is WORK. `parked` must not win."""
+    monkeypatch.setattr(
+        ic, "_run",
+        make_run(pgrep_map={"llama-server": "111 /usr/bin/llama-server --port 8080"},
+                 rocm=ROCM_RESIDENT),
+    )
+    monkeypatch.setattr(ic, "_slots_active_count", lambda port, timeout: 3)
+    result = ic.classify_load()
+    assert result["state"] == "busy"
+    assert result["parked_reasons"] == []
+
+
+def test_m4_free_device_is_free(monkeypatch):
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_IDLE))
+    assert ic.mi210_state()["device_state"] == ic.DEVICE_FREE
+    assert ic.classify_load()["state"] == "quiet"
+
+
+def test_m4_any_resident_card_makes_the_device_resident(monkeypatch):
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_MIXED))
+    gpu = ic.mi210_state()
+    assert gpu["device_state"] == ic.DEVICE_RESIDENT
+    assert gpu["cards"]["card0"]["vram_resident"] is False
+    assert gpu["cards"]["card1"]["vram_resident"] is True
+
+
+def test_m4_unreadable_probe_is_unknown_never_free(monkeypatch):
+    """FAIL CLOSED. Every unreadable path is `unknown`; none may read `free`."""
+    for kwargs in ({"rocm_missing": True}, {"rocm": ROCM_JUNK},
+                   {"rocm": ROCM_NO_CARDS}, {"rocm": ""}):
+        monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, **kwargs))
+        gpu = ic.mi210_state()
+        assert gpu["device_state"] == ic.DEVICE_UNKNOWN, kwargs
+        assert gpu["device_state"] not in (ic.DEVICE_FREE, ic.DEVICE_RESIDENT), kwargs
+        assert gpu["occupied"] is None, kwargs
+        assert gpu["confirmable"] is False, kwargs
+        assert ic.classify_load()["state"] == "serial_ok", kwargs
+
+
+def test_m4_resident_with_an_unconfirmed_probe_stays_serial_ok(monkeypatch):
+    """`parked` is a POSITIVE claim; an unconfirmed probe forfeits it.
+
+    Resident VRAM plus a missing pgrep means "something is loaded AND I cannot
+    see the process table". That is `serial_ok` ("cannot confirm"), not the
+    specific `parked`. Both admit the same work, so this costs nothing and keeps
+    the label honest.
+    """
+    def _run(cmd, timeout=6.0):
+        if cmd[0] == "pgrep":
+            return None
+        if cmd[0] == "rocm-smi":
+            return FakeProc(returncode=0, stdout=ROCM_RESIDENT)
+        return None
+
+    monkeypatch.setattr(ic, "_run", _run)
+    result = ic.classify_load()
+    assert ic.mi210_state()["device_state"] == ic.DEVICE_RESIDENT
+    assert result["state"] == "serial_ok"
+    assert result["parked_reasons"] == []
+
+
+def test_m4_parked_still_blocks_quiet(monkeypatch):
+    """Nothing that would LOAD a model is newly permitted by M4."""
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_RESIDENT))
+    quiet, reasons = ic.is_quiet_window()
+    assert quiet is False
+    assert any(r.startswith(ic._MI210_RESIDENT_BLOCKER) for r in reasons)
+    assert ic.main(["--require", "quiet"]) == 1
+
+
+def test_m4_parked_exit_codes(monkeypatch):
+    """`parked` gets its own bare exit code and passes the serial_ok gate."""
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_RESIDENT))
+    assert ic.main([]) == 15
+    assert ic.main(["--require", "serial_ok"]) == 0
+    assert ic.main(["--require", "quiet"]) == 1
+    # ...and a genuinely busy device is still refused by BOTH gates.
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_BUSY_UTIL))
+    assert ic.main([]) == 20
+    assert ic.main(["--require", "serial_ok"]) == 1
+    assert ic.main(["--require", "quiet"]) == 1
+
+
+def test_m4_result_is_json_serializable(monkeypatch):
+    import json as _json
+
+    monkeypatch.setattr(ic, "_run", make_run(pgrep_map={}, rocm=ROCM_RESIDENT))
+    _json.dumps(ic.classify_load())

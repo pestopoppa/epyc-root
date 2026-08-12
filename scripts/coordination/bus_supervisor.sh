@@ -229,10 +229,72 @@ check_stale_source() {
 # tell the two apart. An unreadable or dead holder is reported LOUDLY, because that
 # is the shape where nothing is supervising and everything still looks fine: the
 # same fail-open family as a daemon whose heartbeat outlived it.
+# C48 (2026-08-12): THE LOCK IS AUTHORITATIVE; THE PID FILE IS A CACHE OF IT.
+#
+# `status` reported "supervisor: not running" and health UNHEALTHY while pid 1510370
+# was alive, holding the lock, and had been supervising for 7h40m — because
+# $SUP_PIDFILE had vanished (cause non-git: the file was never tracked in any commit,
+# so a70dbe1a could not have removed it even in principle — auditor, verified). The
+# coordinator read UNHEALTHY, concluded the bus was unwatched, and launched a second
+# supervisor; C43's bounded flock correctly refused it as a duplicate, but the refusal
+# message could not NAME the holder because naming also read the missing pid file. The
+# diagnostic and the thing it diagnoses shared a single point of failure.
+#
+# This is C35 one layer up, in the tool that watches the watcher: C35 made daemon
+# status derive liveness from the PROCESS rather than a state file that outlives it.
+# Here liveness derives from the FLOCK, which the kernel releases on process death and
+# which no file operation can leave stale.
+
+lock_is_held() {
+  # 0 = somebody holds the lock. Uses a scratch fd so it cannot disturb fd 9.
+  exec 8>"$LOCK_FILE" 2>/dev/null || return 1
+  if flock -n 8; then flock -u 8; exec 8>&-; return 1; fi
+  exec 8>&-; return 0
+}
+
+lock_holder_pid() {
+  # WHO holds it — by scanning /proc for an fd on the lock file. Pure /proc, no lsof
+  # or fuser dependency (neither netstat nor ss exists on this host; assuming a tool
+  # is installed is how the port gate in start_orchestrator_test.sh became vacuous).
+  local target fd pid
+  target="$(readlink -f "$LOCK_FILE" 2>/dev/null || printf '%s' "$LOCK_FILE")"
+  for fd in /proc/[0-9]*/fd/*; do
+    [[ -L "$fd" ]] || continue
+    [[ "$(readlink -f "$fd" 2>/dev/null)" == "$target" ]] || continue
+    pid="${fd#/proc/}"; pid="${pid%%/*}"
+    [[ "$pid" == "$$" ]] && continue
+    printf '%s\n' "$pid"
+  done 2>/dev/null | sort -un | head -1
+}
+
+supervisor_status_line() {
+  # Lock first, pid file only as a corroborating hint — and say when they disagree,
+  # because a silent disagreement is how the stale-cache class hides.
+  local held hint holder
+  hint="$( [[ -f "$SUP_PIDFILE" ]] && cat "$SUP_PIDFILE" 2>/dev/null || true )"
+  if lock_is_held; then
+    holder="$(lock_holder_pid)"
+    if [[ -n "$holder" && -n "$hint" && "$holder" != "$hint" ]]; then
+      printf '%s (lock) — pidfile says %s, DISAGREEMENT: trust the lock\n' "$holder" "$hint"
+    elif [[ -n "$holder" ]]; then
+      printf '%s%s\n' "$holder" "$( [[ -z "$hint" ]] && printf ' (from lock; %s missing)' "$SUP_PIDFILE" )"
+    else
+      printf 'RUNNING (lock held; holder pid not resolvable from /proc)\n'
+    fi
+  else
+    if [[ -n "$hint" ]]; then
+      printf 'not running (stale %s claims %s — lock is free)\n' "$SUP_PIDFILE" "$hint"
+    else
+      printf 'not running\n'
+    fi
+  fi
+}
+
 lock_holder_report() {
   local holder="" alive="unknown"
-  if [[ -f "$SUP_PIDFILE" ]]; then
-    holder="$(cat "$SUP_PIDFILE" 2>/dev/null || true)"
+  holder="$(lock_holder_pid)"
+  if [[ -n "$holder" ]] || [[ -f "$SUP_PIDFILE" ]]; then
+    [[ -n "$holder" ]] || holder="$(cat "$SUP_PIDFILE" 2>/dev/null || true)"
   fi
   if [[ -z "$holder" ]]; then
     log "  lock holder: UNKNOWN — no readable $SUP_PIDFILE. Cannot confirm anything is"
@@ -296,7 +358,7 @@ case "${1:-loop}" in
     age=$(heartbeat_age_s); pids=$(daemon_pids | tr '\n' ' ')
     printf 'daemon pids : %s\n' "${pids:-none}"
     printf 'heartbeat   : %ss old (stale after %ss)\n' "$age" "$STALE_AFTER"
-    printf 'supervisor  : %s\n' "$( [[ -f "$SUP_PIDFILE" ]] && cat "$SUP_PIDFILE" || echo 'not running')"
+    printf 'supervisor  : %s\n' "$(supervisor_status_line)"
     health_ok && printf 'health      : OK\n' || printf 'health      : UNHEALTHY\n'
     exit 0
     ;;
