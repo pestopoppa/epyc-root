@@ -57,6 +57,12 @@ their source/license/entrypoint pins, and the campaign still names EvoEngineer a
 No controller or GPU campaign ran. The exact final merge suite passed **1,267 tests** with
 **849 subtests**.
 
+An independent stale-checkbox audit also confirmed that AK9's speech release-plan compiler task is
+complete rather than merely restored in source. Both adapters produce the generic compiler binding
+for their own independently freezable tree; the compiler covers the speech source-tree shape; and T3
+consults both speech readiness predicates, branch family, linkage requirements, and preserved freeze.
+The exact-main adapter/plan/T3 slice passed **783 tests with 132 subtests**.
+
 ## Remaining empirical work
 
 After the already-filed compliant-reboot dependency is satisfied, run AK6.5 Step 3's full-host CPU

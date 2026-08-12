@@ -3103,13 +3103,15 @@ tree's ggml.
 - [x] Build the `whisper_stt` and `qwentts_tts` adapters on their own experimental trees. ✅ 2026-08-03
 - [x] Wire linkage verification through the research repo's `scripts/utils/verify_ggml_linkage.sh` for
   every candidate build and every T3 phase-2 check. ✅ 2026-08-03
-- [ ] Extend the release-plan compiler to the speech trees — note these two *are* independently
-  freezable, unlike CPU and GPU (§1.5). **UNBLOCKED 2026-08-03**: Annex S is ratified, so
-  `P-STT-1`/`P-TTS-1` are in force and `PHASES_BY_BACKEND` can now carry the speech phase
-  vocabulary honestly. It was withheld only because the compiler cannot grade a cell under an
-  unratified protocol; that reason is gone. Note the whole speech plane (`adapters/`) was deleted
-  on 2026-08-04 and lives at tag `autokernel-preserve-20260804` — restore from there rather than
-  rewriting, and only when a speech campaign is actually scheduled.
+- [x] **Extend the release-plan compiler to the independently freezable speech trees.** ✅
+  2026-08-12 — research `99fe3014` restores tested `whisper_stt.release_binding()` and
+  `qwentts_tts.release_binding()` adapters that return the generic compiler's `BackendBinding` with
+  exact source tree, stable path, phase vocabulary, Annex S prerequisites, tree-local ggml generation
+  and `LD_LIBRARY_PATH`, complexity ceiling, and canary requirement. The generic compiler accepts
+  single-backend speech targets without inheriting llama CPU/GPU union semantics; T3 consumes both
+  adapter readiness predicates, enforces the `production-speech-vN` branch family, and reconstructs
+  both independent trees from the preserved speech freeze. A focused exact-main adapter/plan/T3
+  audit passed **783 tests with 132 subtests**.
 - [x] `Annex S` ratified — `measurement/protocols/speech.md`, 86 KB, five annexes in
   `MEASUREMENT.md`. `P-STT-1/2/3`, `P-STT-REL-1`, `P-TTS-1/2/3`, `P-TTS-REL-1` are in force; the
   four verdict grammars carry no `attest <ref>`, reconciled with Annex K's own reasoning.
