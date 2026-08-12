@@ -81,15 +81,25 @@ set -uo pipefail
 # Configuration. Every knob is env-overridable so the test suite can drive the
 # real decision code without touching production defaults.
 # ----------------------------------------------------------------------------
-LOG="${FLEET_WATCH_LOG:-/mnt/raid0/llm/epyc-root/logs/fleet_watch.log}"
+# Canonical roots come from ONE place (B2/B7, 2026-08-12). This file used to bake
+# `/mnt/raid0/llm/epyc-root` into its log + lock and `/workspace` into its adapter
+# path — three literals for two directories. Under worktree-per-main a copy of this
+# script exists in every lane worktree, so a self-relative default would give each
+# lane its own lock and its own log and the single-instance flock would stop being
+# single. env.sh canonicalizes LOG_DIR/EPYC_TMUX_ADAPTER from ANY worktree.
+_FW_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "${_FW_DIR}/../lib/env.sh"
+
+LOG="${FLEET_WATCH_LOG:-${LOG_DIR}/fleet_watch.log}"
 INTERVAL="${FLEET_WATCH_INTERVAL:-90}"
 # Cycles a condition must persist before it is worth waking the coordinator.
 PERSIST_CYCLES="${FLEET_WATCH_PERSIST_CYCLES:-3}"
 AGENTS="${FLEET_WATCH_AGENTS:-inference auditor mainA mainB mainC mainD}"
 SESSION="${FLEET_WATCH_SESSION:-agent}"
-ADAPTER="${FLEET_WATCH_ADAPTER:-/workspace/scripts/coordination/tmux_adapter.py}"
+ADAPTER="${FLEET_WATCH_ADAPTER:-${EPYC_TMUX_ADAPTER}}"
 RL="${FLEET_WATCH_REGION_LOCK:-/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock}"
-LOCK_FILE="${FLEET_WATCH_LOCK:-/mnt/raid0/llm/epyc-root/logs/.fleet_watch.lock}"
+LOCK_FILE="${FLEET_WATCH_LOCK:-${LOG_DIR}/.fleet_watch.lock}"
 # Quiet threshold for the fallback liveness signal. Both TUIs redraw their
 # spinner about once a second while generating, so a window with no output for
 # this long is settled at its prompt rather than thinking. 120s is the constant

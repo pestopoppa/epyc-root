@@ -48,7 +48,12 @@
 # (the detector is advisory-only, and every launched job is bounded).
 set -euo pipefail
 
-EPYC_ROOT="${EPYC_ROOT:-/workspace}"
+# Canonical roots from ONE place (B7, 2026-08-12): env.sh resolves EPYC_ROOT to the
+# canonical checkout from ANY worktree, so a lane-worktree copy of this supervisor
+# still finds the one runner, the one queue dir and the one heartbeat.
+_BS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "${_BS_DIR}/../lib/env.sh"
 RUNNER="${RUNNER:-${EPYC_ROOT}/scripts/coordination/hardware_backfill.py}"
 QUEUE_DIR="${QUEUE_DIR:-${EPYC_ROOT}/coordination/backfill}"
 HEARTBEAT="${HEARTBEAT:-${QUEUE_DIR}/heartbeat.json}"

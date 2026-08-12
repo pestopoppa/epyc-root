@@ -23,15 +23,54 @@
 # Determine script location to find the repo root (epyc-root).
 _ENV_SH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _PROJECT_ROOT="$(cd "${_ENV_SH_DIR}/../.." && pwd)"
-# If sourced via a bind alias OUTSIDE the raid prefix (e.g. /workspace, a bind mount of epyc-root —
-# same inode, so realpath/pwd -P do NOT resolve it to the source), prefer the canonical /mnt/raid0
-# spelling so prefix-guarded helpers (check_path_prefix/ensure_dir) and downstream tooling see a
-# consistent path. Inode-verified: only remaps when it is genuinely the same directory.
+
+# ---------------------------------------------------------------------------
+# Canonicalize PROJECT_ROOT to the ONE epyc-root spelling.
+#
+# B1, fixed 2026-08-12 (worktree adoption, phase 3). This repo is reachable
+# from several distinct filesystem paths that are all the SAME repository:
+#   * /workspace                                  — bind-mount alias (same inode)
+#   * /mnt/raid0/llm/epyc-root                    — the canonical checkout
+#   * /mnt/raid0/llm/worktrees/mains/<agent>      — a linked LANE worktree
+# `realpath`/`pwd -P` do NOT collapse the bind mount, and a linked worktree is a
+# genuinely different directory, so neither a string test nor an inode test on
+# the working tree can recognise all three.
+#
+# The previous guard remapped only when the path was NOT under /mnt/raid0/*.
+# A lane worktree at /mnt/raid0/llm/worktrees/mains/mainA IS under that prefix,
+# so the remap never fired and LOG_DIR + XDG_{CACHE,DATA,STATE}_HOME forked one
+# copy per worktree — five mains writing five audit logs and five caches.
+#
+# The identity that IS stable across all three is the git COMMON dir (shared by
+# the main working tree and every linked worktree of one clone), compared by
+# device+inode so the bind-mount alias matches too. Same primitive
+# `serialized_push.py:repo_key()` derives its lock key from, for the same reason.
+# ---------------------------------------------------------------------------
 _CANON_ROOT="${ORCHESTRATOR_PATHS_LLM_ROOT:-/mnt/raid0/llm}/epyc-root"
-if [[ "${_PROJECT_ROOT}" != /mnt/raid0/* && -d "${_CANON_ROOT}" \
-      && "$(stat -c '%d:%i' "${_CANON_ROOT}" 2>/dev/null)" == "$(stat -c '%d:%i' "${_PROJECT_ROOT}" 2>/dev/null)" ]]; then
-  _PROJECT_ROOT="${_CANON_ROOT}"
+
+_epyc_common_dir_id() {
+  # dev:inode of a checkout's git COMMON dir, or nothing if that is unresolvable.
+  local _d
+  _d="$(git -C "$1" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" || return 1
+  [[ -n "${_d}" ]] || return 1
+  stat -c '%d:%i' "${_d}" 2>/dev/null || return 1
+}
+
+if [[ "${_PROJECT_ROOT}" != "${_CANON_ROOT}" && -d "${_CANON_ROOT}" ]]; then
+  _EPYC_ID_HERE="$(_epyc_common_dir_id "${_PROJECT_ROOT}" 2>/dev/null || true)"
+  _EPYC_ID_CANON="$(_epyc_common_dir_id "${_CANON_ROOT}" 2>/dev/null || true)"
+  if [[ -n "${_EPYC_ID_HERE}" && "${_EPYC_ID_HERE}" == "${_EPYC_ID_CANON}" ]]; then
+    # Same repository, reached by an alias or a linked worktree.
+    _PROJECT_ROOT="${_CANON_ROOT}"
+  elif [[ "$(stat -c '%d:%i' "${_CANON_ROOT}" 2>/dev/null)" \
+          == "$(stat -c '%d:%i' "${_PROJECT_ROOT}" 2>/dev/null)" ]]; then
+    # Fallback for a git-less environment (no git binary, or a tarball copy):
+    # the pre-B1 inode test, which still catches the bind-mount alias.
+    _PROJECT_ROOT="${_CANON_ROOT}"
+  fi
+  unset _EPYC_ID_HERE _EPYC_ID_CANON
 fi
+unset -f _epyc_common_dir_id
 unset _CANON_ROOT
 
 # Load .env file if present (repo-local overrides).
@@ -82,6 +121,36 @@ export TMP_DIR="${ORCHESTRATOR_PATHS_TMP_DIR}"
 
 export ORCHESTRATOR_PATHS_LOG_DIR="${ORCHESTRATOR_PATHS_LOG_DIR:-${PROJECT_ROOT}/logs}"
 export LOG_DIR="${ORCHESTRATOR_PATHS_LOG_DIR}"
+
+# =============================================================================
+# Canonical roots for the coordination plane — ONE spelling, sourced not retyped
+# =============================================================================
+#
+# B2/B3/B7, 2026-08-12. Before this block every watchdog carried its own literal:
+# `fleet_watch.sh` hardcoded its lock under /mnt/raid0/llm/epyc-root, three
+# supervisors defaulted EPYC_ROOT to /workspace, and `nudge_retry.sh` baked a
+# /workspace adapter path — four spellings of two directories. Under the
+# worktree-per-main model a fifth spelling (the lane worktree's own path) appears
+# for free, so "which /logs did that watchdog write to" stops being answerable.
+# Every one of those scripts now sources this file and reads these variables.
+
+# The epyc-root checkout everything shares (canonicalized above).
+export EPYC_ROOT="${EPYC_ROOT:-${PROJECT_ROOT}}"
+
+# The coordination RUNTIME plane. Deliberately the /workspace spelling and the
+# same EPYC_BUS_ROOT override name: this MUST resolve byte-identically to
+# session_bus.py's get_bus_root(), because agents and shell watchdogs address the
+# same queue, cursors and heartbeats. Do not "canonicalize" it to the raid path —
+# that would make the two halves of the fleet disagree by a string compare.
+# Covered by scripts/coordination/tests/test_bus_root_resolution.py.
+export EPYC_BUS_ROOT="${EPYC_BUS_ROOT:-/workspace/coordination/session-bus}"
+
+# The one delivery-plane adapter (never a per-worktree copy: a lane worktree's
+# checkout may be behind main, and a stale adapter mis-delivers silently).
+export EPYC_TMUX_ADAPTER="${EPYC_TMUX_ADAPTER:-${EPYC_ROOT}/scripts/coordination/tmux_adapter.py}"
+
+epyc_bus_root() { printf '%s\n' "${EPYC_BUS_ROOT}"; }
+epyc_log_dir()  { printf '%s\n' "${LOG_DIR}"; }
 
 # Path security prefix (empty to disable check)
 export ORCHESTRATOR_PATHS_RAID_PREFIX="${ORCHESTRATOR_PATHS_RAID_PREFIX:-/mnt/raid0/}"

@@ -41,8 +41,13 @@ CONFIRM="${2:-2}"
 MAX="${3:-86400}"
 SESSION="${SESSION:-agent}"
 MAINS="${MAINS:-inference auditor mainA mainB mainC mainD}"
-ADAPTER=/workspace/scripts/coordination/tmux_adapter.py
-LOG="${LOG:-/workspace/logs/idle_supervisor.log}"
+# Canonical roots from ONE place (B3, 2026-08-12): a lane-worktree copy of this
+# script must still drive the canonical adapter and write the canonical log.
+_IS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "${_IS_DIR}/../lib/env.sh"
+ADAPTER="${EPYC_TMUX_ADAPTER}"
+LOG="${LOG:-${LOG_DIR}/idle_supervisor.log}"
 
 MSG='You appear to be idle at your prompt. Run: python3 scripts/coordination/session_bus.py drain --agent <your-id> --triage — then continue with your current assignment, or take the next item from coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md respecting its collision map. Never sit idle: take the next item yourself rather than waiting to be told. Set state:idle in your heartbeat ONLY when you are genuinely awaiting dispatch, and state:working otherwise — an idle main whose heartbeat still says working cannot be nudged at all and deadlocks until a human relays by hand. If you are blocked or need operator input, say so on the bus with action_required true and your own recommendation.'
 

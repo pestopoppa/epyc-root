@@ -96,7 +96,12 @@
 if [[ -n "${_OG_SOURCED:-}" ]]; then return 0 2>/dev/null || true; fi
 _OG_SOURCED=1
 
-OG_EPYC_ROOT="${EPYC_ROOT:-/workspace}"
+# Canonical roots from ONE place (B7, 2026-08-12). env.sh honours an already-set
+# EPYC_ROOT, so a test that pins EPYC_ROOT to a tmpdir still wins.
+_OG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "${_OG_DIR}/../lib/env.sh"
+OG_EPYC_ROOT="${EPYC_ROOT}"
 
 # Where the loud breadcrumb lands. Overridable so tests never write to the real
 # alert dir (and so a sandboxed supervisor cannot mask a real production alarm).
