@@ -63,6 +63,20 @@ for their own independently freezable tree; the compiler covers the speech sourc
 consults both speech readiness predicates, branch family, linkage requirements, and preserved freeze.
 The exact-main adapter/plan/T3 slice passed **783 tests with 132 subtests**.
 
+## Follow-up ROCm C3 and source-prerequisite authority
+
+Research `main` advanced to `d8013a6c66decf023bf4efb7a83033d72ecc4f0f`. The EPYC C3 compiler
+now requires exact frozen-v9 source, version, binary, linkage, and operator-attestation identity for
+the native Q4_K dequant baseline; a provider label alone cannot authorize a comparison. The selected
+attention/MoE cases remain hash-pinned C5 references with their explicit Torch-ROCm-compile floor.
+
+The same commit makes the existing sensitivity, hostile-distribution, and checker-isolation reducers
+real source-candidate T0 prerequisites. Their reports have no authority until measured provenance
+binds the candidate source, evaluator bundle, suite version, trusted producer, and evidence digest;
+missing, dry-run, or mismatched bindings fail closed and parameter candidates cannot carry them. The
+exact-main C3/source-authority/correctness/execution suite passed **444 tests with 132 subtests**.
+No inference, GPU capture, benchmark, or kernel build ran.
+
 ## Remaining empirical work
 
 After the already-filed compliant-reboot dependency is satisfied, run AK6.5 Step 3's full-host CPU

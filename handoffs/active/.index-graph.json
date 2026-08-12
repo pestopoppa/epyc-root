@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T03:39:39Z",
+  "generated_at": "2026-08-12T03:49:44Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4615,13 +4615,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 65,
+      "closed": 67,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-12",
       "next_action": "Bind clean producer provenance; replay C2/C5, then capture EPYC workloads and add gfx90a k228/k175 adapters",
-      "open": 18,
+      "open": 17,
       "state": "active",
       "track": "rocm verify profile backend"
     },

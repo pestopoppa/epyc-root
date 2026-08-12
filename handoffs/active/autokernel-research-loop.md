@@ -48,6 +48,14 @@ write, or self-trigger capability. Real release mode continues to refuse the unr
 `P-KERNEL-FREEZE-1` protocol, while dry-run fixtures preserve the v8/speech waiver, linkage,
 rollback, and transaction-calibration behavior. The final merged release-plus-Arena slice passed
 **1,267 tests** with **849 subtests**; no T3 campaign or release action ran.
+Research `d8013a6c` tightens the ROCm correctness boundary used by source-changing campaigns. The
+EPYC Q4_K dequant case now requires the exact operator-ratified frozen-v9 branch, commit, reported
+version, binary digest, linkage digest, and attestation rather than trusting a provider label.
+Separately, sensitivity, hostile-distribution, and checker-isolation reducer outputs enter T0 only
+through measured, hash-bound bindings to the exact candidate source and evaluator bundle; absence,
+dry-run capture, or identity drift is verdict-bearing `COULD_NOT_CHECK`. The exact-main C3,
+correctness, and execution slice passed **444 tests with 132 subtests**. This closes implementation
+authority only: no EPYC workload capture, candidate timing, whole-model exit, or inference ran.
 INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
 VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
 Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
