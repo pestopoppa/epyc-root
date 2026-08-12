@@ -151,5 +151,5 @@ Target: `meta-harness-optimization.md` Tier-2b (upgraded search + telemetry) and
 - Sibling artifact repo: https://github.com/stanford-iris-lab/meta-harness-tbench2-artifact
 - Paper: https://arxiv.org/abs/2603.28052 (intake-244)
 - Fetched files: `README.md`, `ONBOARDING.md`, `reference_examples/text_classification/` directory listing, `reference_examples/terminal_bench_2/` directory listing, `terminal_bench_2/claude_wrapper.py`, `terminal_bench_2/meta_harness.py`, `terminal_bench_2/.claude/skills/meta-harness-terminal-bench-2/SKILL.md`, `terminal_bench_2/agents/baseline_kira.py` (top 50 lines + summary)
-- Related EPYC handoffs: `meta-harness-optimization.md`, `autopilot-continuous-optimization.md`, `repl-turn-efficiency.md`, `agent-world-env-synthesis.md`, `minddr-deep-research-mode.md`, `hermes-agent-index.md`
+- Related EPYC handoffs: `meta-harness-optimization.md`, `autopilot-continuous-optimization.md`, `repl-turn-efficiency.md`, `agent-world-env-synthesis.md`, `minddr-deep-research-mode.md`, `user-facing-harness-index.md`
 - Related intakes: intake-244 (paper), intake-327 (GEPA), intake-345 (GEPA Full Program Adapter), intake-450 (Venice Skills SKILL.md rubric), intake-454 (hermes-agent orchestrator subagents)

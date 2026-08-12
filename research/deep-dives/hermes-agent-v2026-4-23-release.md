@@ -187,6 +187,6 @@ Ordered by ROI × certainty:
 - Compare (404 at fetch time): https://github.com/NousResearch/hermes-agent/compare/v0.9.0...v2026.4.23
 - Local checkout: `/mnt/raid0/llm/hermes-agent` @ `v2026.3.23-43-g...` (clean against upstream)
 - Local customization: `/workspace/scripts/hermes/` (config, launch, skills)
-- Related handoffs: `/workspace/handoffs/active/hermes-agent-index.md`, `hermes-outer-shell.md`, `tool-output-compression.md`, `context-folding-progressive.md`, `meta-harness-optimization.md`, `repl-turn-efficiency.md`, `orchestrator-conversation-management.md`
+- Related handoffs: `/workspace/handoffs/active/user-facing-harness-index.md`, `hermes-outer-shell.md`, `tool-output-compression.md`, `context-folding-progressive.md`, `meta-harness-optimization.md`, `repl-turn-efficiency.md`, `orchestrator-conversation-management.md`
 - Cross-intakes: intake-117 (original Hermes), intake-172/173 (OpenGauss), intake-277 (LLM Wiki skill), intake-327 (self-evolution), intake-337 (anti-rationalization), intake-388/393 (reasoning traces), intake-450 (Venice Skills cross-runtime pattern), intake-454 (this release)
 - Top contributor attributions: @kshitijk4poor (49 PRs, transport refactor), @OutThisLife (31 PRs, TUI), @helix4u (11 PRs, voice/MCP), @austinpickett (8 PRs, dashboard), @alt-glitch (8 PRs, platform hints)

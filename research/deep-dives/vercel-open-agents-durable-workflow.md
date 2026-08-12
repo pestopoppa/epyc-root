@@ -277,7 +277,7 @@ Proposed replacement for the existing notes:
 
 ### Cross-reference updates
 
-The existing cross-references (hermes-outer-shell, hermes-agent-index, meta-harness-optimization, repl-turn-efficiency, tool-output-compression) are all correct. The most actionable handoff for mining these patterns is **repl-turn-efficiency.md** (for the event-log reconnect pattern + FS-backed large outputs), with **hermes-outer-shell.md** secondary (typed boundary contract).
+The existing cross-references (hermes-outer-shell, user-facing-harness-index, meta-harness-optimization, repl-turn-efficiency, tool-output-compression) are all correct. The most actionable handoff for mining these patterns is **repl-turn-efficiency.md** (for the event-log reconnect pattern + FS-backed large outputs), with **hermes-outer-shell.md** secondary (typed boundary contract).
 
 ---
 

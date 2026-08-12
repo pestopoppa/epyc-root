@@ -307,7 +307,7 @@ DeepPlanning is bundled in the repo under `benchmark/deepplanning/` but is loose
 
 ## 8. Comparison with Hermes Agent
 
-Our Hermes Agent integration (intake-117, `hermes-agent-index.md`) is based on Nous Research's architecture with OpenGauss extensions. Here is a head-to-head comparison:
+Our Hermes Agent integration (intake-117, `user-facing-harness-index.md`) is based on Nous Research's architecture with OpenGauss extensions. Here is a head-to-head comparison:
 
 | Dimension | Qwen-Agent | Hermes Agent | EPYC Assessment |
 |-----------|-----------|-------------|-----------------|
@@ -461,7 +461,7 @@ This pattern is interesting but not novel — it is essentially "agent decides w
 
 | Handoff | Qwen-Agent Relevance |
 |---------|---------------------|
-| `hermes-agent-index.md` | MCP integration model could inform P4 (extract core abstractions). Qwen-Agent's MCP is cleaner than most frameworks. |
+| `user-facing-harness-index.md` | MCP integration model could inform P4 (extract core abstractions). Qwen-Agent's MCP is cleaner than most frameworks. |
 | `hermes-outer-shell.md` | MCP singleton manager pattern is directly applicable to outer shell tool extensibility. |
 | `eval-tower-verification.md` | DeepPlanning benchmark methodology (tool-heavy planning + constraint satisfaction scoring) could inform eval design. |
 | `bulk-inference-campaign.md` | ParallelDocQA map-reduce pattern could be adapted for parallel batch processing. |
@@ -476,7 +476,7 @@ Qwen-Agent's MCP support highlights a gap in our orchestrator: we have no MCP in
 3. Use `tool_policy.py` gates to control MCP tool access
 4. Support stdio-based MCP servers (matching our local-first constraint)
 
-This is not urgent (our tool ecosystem is currently sufficient) but becomes relevant if we integrate MemPalace MCP (H-8 in hermes-agent-index.md) or other MCP-based tools.
+This is not urgent (our tool ecosystem is currently sufficient) but becomes relevant if we integrate MemPalace MCP (H-8 in user-facing-harness-index.md) or other MCP-based tools.
 
 ---
 

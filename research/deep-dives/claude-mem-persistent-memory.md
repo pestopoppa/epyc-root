@@ -385,7 +385,7 @@ Confirmed AGPL-3.0 from `LICENSE` line 1:
 
 - **`context-folding-progressive.md`**: add Phase 2a A/B candidate for six-field `<summary>` schema (pattern E); add Phase 2d entry for `<private>` tag stripping (pattern D).
 - **`tool-output-compression.md`**: add Phase 4 design note for batched-ID MCP peek tool (pattern C).
-- **`hermes-agent-index.md`**: no change — Hermes LLM Wiki PR#5635 already covers more ground.
+- **`user-facing-harness-index.md`**: no change — Hermes LLM Wiki PR#5635 already covers more ground.
 
 ---
 

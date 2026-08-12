@@ -51,7 +51,7 @@ Representative skill sizing (from fetched samples):
 
 ## Cross-EPYC Applicability
 
-- **hermes-agent-index (intake-117)** — parent index. Phase 2 P2 block includes the three written skills as ✅ done. This deep-dive gives that block a next step: a rubric + overview skill + drift detector. Small additions, all in scope for the "Hermes skill YAML files" work item.
+- **user-facing-harness-index (intake-117)** — parent index. Phase 2 P2 block includes the three written skills as ✅ done. This deep-dive gives that block a next step: a rubric + overview skill + drift detector. Small additions, all in scope for the "Hermes skill YAML files" work item.
 - **hermes-outer-shell** — the rubric + overview skill + drift-detector land here directly. Specifically: the handoff's "Remaining Phase 2 Work" list is currently all inference-dependent; adopting the Venice patterns adds three *inference-independent* tasks that can proceed immediately.
 - **intake-454 (hermes-agent v0.11.0)** — namespaced skill bundles + plugin hooks. Venice's `.claude-plugin/` layout is a concrete template for what a Hermes namespaced bundle manifest should look like when we evaluate the new plugin surface. Cross-reference only; do not pre-implement.
 - **intake-337 (addyosmani/agent-skills)** — already adopted its anti-rationalization tables pattern in `.claude/skills/research-intake` and `.claude/skills/agent-file-architecture`. Venice adds a complementary pattern: addyosmani is "how to write rigorous process skills", Venice is "how to ship a canonical API-reference skill corpus." The two are stackable — our rubric can mandate both a "Rationalizations" section (addyosmani) and the ≤500-line reference-doc density (Venice).
@@ -84,7 +84,7 @@ Priority-ordered, each tied to an existing handoff:
 
 4. **[intake-454 evaluation, deferred]** When the hermes-agent v0.11.0 merge task begins (cf. intake-454 "plugin surface evaluation"), reference Venice's `.claude-plugin/` manifest layout as the concrete template for packaging our `x_*` overrides as a namespaced Hermes bundle instead of a fork patch-set. Do not pre-build; just cross-reference.
 
-5. **[hermes-agent-index, bookkeeping]** Add a one-line "Skill-authoring infrastructure" subsection under P2 that lists actions 1–3 as a cluster with a shared rationale (pre-empts growth, closes a concrete drift gap, modeled on intake-450). Keeps the index actionable per the root CLAUDE.md index-document requirements.
+5. **[user-facing-harness-index, bookkeeping]** Add a one-line "Skill-authoring infrastructure" subsection under P2 that lists actions 1–3 as a cluster with a shared rationale (pre-empts growth, closes a concrete drift gap, modeled on intake-450). Keeps the index actionable per the root CLAUDE.md index-document requirements.
 
 ## Drift-Detector Sketch (action 2 detail)
 
@@ -128,6 +128,6 @@ This is ~80 lines of Python. The enum-tracking phase is strictly additive and wo
   - https://raw.githubusercontent.com/veniceai/skills/main/skills/venice-api-overview/SKILL.md
   - https://raw.githubusercontent.com/veniceai/skills/main/scripts/sync_from_swagger.py
 - Related deep-dives: `research/deep-dives/opengauss-architecture-analysis.md`, `research/deep-dives/context-mode-tool-compression-patterns.md`
-- Related handoffs: `handoffs/active/hermes-agent-index.md`, `handoffs/active/hermes-outer-shell.md`
+- Related handoffs: `handoffs/active/user-facing-harness-index.md`, `handoffs/active/hermes-outer-shell.md`
 - Related intakes: intake-117 (Hermes Agent), intake-277 (Hermes LLM Wiki skill), intake-327 (Hermes self-evolution), intake-337 (addyosmani/agent-skills rubric), intake-454 (hermes-agent v0.11.0 namespaced skill bundles)
 - Local skill corpora: `scripts/hermes/skills/{use,escalation,nocode}/SKILL.md`; `.claude/skills/{research-intake,agent-file-architecture,gitnexus,project-wiki,claude-md-accounting}/`

@@ -208,7 +208,7 @@ and experiences: {experiences}"*.
 
 This is the most actionable of the three. Direct mapping to EPYC stack:
 
-**Hermes-agent persistent experience library.** Per `handoffs/active/hermes-agent-index.md`,
+**Hermes-agent persistent experience library.** Per `handoffs/active/user-facing-harness-index.md`,
 Hermes is the agent frontend with memory + skills. Today its "memory" is conversation
 history + Qdrant RAG. A **Training-Free GRPO-style experience library** would add:
 - A curated, model-edited list of short procedural rules learned across sessions
@@ -293,7 +293,7 @@ Three threads tie these standalone items back to the May 2026 batch:
 - SkillSynth: https://ar5iv.labs.arxiv.org/abs/2604.25727
 - Training-Free GRPO: https://ar5iv.labs.arxiv.org/abs/2510.08191
 - EPYC stack governance: `/workspace/CLAUDE.md` (Repository Map, managed services)
-- Hermes context: `handoffs/active/hermes-agent-index.md`,
+- Hermes context: `handoffs/active/user-facing-harness-index.md`,
   `handoffs/active/meta-harness-optimization.md`
 - Service-add pattern (existing): `feedback_stack_managed_services` (MEMORY.md)
 - Worker baseline for cost translation: `project_worker_general_swap_2026_05_08`
