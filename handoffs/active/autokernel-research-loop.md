@@ -340,6 +340,29 @@ Build one domain-agnostic controller with backend adapters. Do not build a GPU-o
 clone it. Do not force scheduler or registry changes through a kernel-freeze transaction merely
 because the same planner discovered them — `serving_runtime` uses a stack-change release adapter.
 
+#### 1.5.1 ROCm modules are governed candidate providers, not champion source trees
+
+AutoKernel's GPU search surface includes the software-addressable ROCm layer: exact-shape
+rocBLAS/hipBLASLt/CK selection, library algorithms, compiler flags, launch topology, standalone
+Triton/HIP kernels, and source-available vendor-module kernels. That does **not** create a fourth
+kernel source tree or permit a module to bypass the deployable product:
+
+- every module build or source fork is content-addressed, source-pinned, and isolated from the
+  resident stack; no campaign may write the shared `/opt/rocm`, replace a resident runtime library,
+  or inherit an unbound module from `LD_LIBRARY_PATH`;
+- opaque vendor binaries may be hash-bound baselines or candidate dependencies, but are never
+  champion source and cannot carry an authored-kernel claim;
+- a winning module/kernel result becomes bankable only after it is integrated through an
+  experimental `llama_gpu` candidate and passes the exact operator, captured-workload, and
+  whole-model gates; the resulting evidence and champion remain attached to the `llama.cpp` source
+  tree; and
+- a future independently deployed ROCm module would require a human-reviewed schema/backend/release
+  adapter before any campaign could promote it. The current loop must not infer that authority from
+  buildability or speed.
+
+This keeps module-level search broad while keeping promotion narrow. Serving concurrency and
+scheduler work remains a separate `serving_runtime` campaign under AK-D9/AK-D23.
+
 ### 1.6 The objective is per-backend, per-phase non-inferiority plus improvement
 
 **Revised 2026-08-02 (operator).** The original production-weighted composite across CPU, GPU, STT
@@ -3404,6 +3427,7 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 | AK-D34 | The oracle registry declares a **harvest class** per row on the axis of architectural portability (`portable_source` vs `reimplement`), **not licensing** — standing policy is open-source self-hosted, non-commercial, licences not blockers and new oracles enter via `research-intake`, not by an agent adding a row | Misclassifying is a schedule problem, not a legal one: a `reimplement` oracle costs authoring effort a `portable_source` one does not. Intake still verifies real gfx90a/EPYC support and normalises the claimed result to roofline utilisation before a port is proposed |
 | AK-D37 | **AK-D36 excludes a *target*, not a *regime*.** Single-stream and batched prefill and decode are all legitimate optimization directions, and AutoKernel looks for improvement independently of batch count. What AK-D36 forbids is recruiting the whole-stack llama.cpp-vs-vLLM ratio as a kernel objective, because that ratio is dominated by scheduling above 16 concurrent users | A coarse 2026-07-04 B=128 profile originally made G15 look like the highest-confidence GPU band; the strict 2026-08-11 family map later closed G15 itself. That falsification reinforces the rule: batch regimes remain valid, but targets must be selected by current mechanism-specific metrics rather than a whole-stack ratio or a coarse non-GEMM remainder |
 | AK-D38 | **Operator hypotheses are a first-class planner input**, carrying an explicit falsifier, entering at `design_prior` evidence grade and never above it, tracked still-open until resolved, and subject to every gate without exception | The operator sees things the profile does not; without a channel that steering arrives as an out-of-band instruction with no falsifier and no resolution record. Grading it `design_prior` is what stops a hunch being laundered into a measured fact. **Note the sibling comparison in §8.4.0 was corrected on 2026-08-03: AutoPilot does not have still-open tracking either, its falsifier is optional and observability-only, its open-set block is stagnation-gated, and it has no evidence-grade vocabulary at all — so this is a new mechanism in both loops rather than parity with one** |
+| AK-D39 | **ROCm libraries, compiler choices, and source-available modules are isolated candidate providers, not new champion source trees.** AutoKernel may select, tune, or fork them, but a win must integrate through an experimental `llama_gpu` candidate and pass operator plus whole-model gates; shared `/opt/rocm` mutation and opaque-binary champion source are forbidden | The measured gap is regime-dependent: dense GEMM provider choice is shape-specific, while the large Q8/IQ2/MoE utilization collapse lives mainly in custom low-bit/layout/gather paths. Broad search across both layers is warranted, but promotion must still name the deployable `llama.cpp` lineage and preserve the frozen-stack trust boundary |
 | AK-D31 | Architectural campaigns replace three §8.4 rejection conditions rather than waiving them: predicted post-change profile for the wall-share ceiling, prospective shapes, and per-step conceptual-change scope; plus spikes and a reserved budget fraction | Those three are correct for incremental work and would block the deep kernel rethinking the loop exists to find; EIG-first ranking starves high-variance work by arithmetic unless budget is reserved |
 | AK-D29 | Source-integrity gates run **before** behavioural gates: symbol/registration preservation, clean build from snapshot, semantic diff conformance, repair from clean parent | AutoPilot's one autonomous source mutation destroyed a module with a syntactically valid edit; none of its four Python defenses transfer to compiled C++, where "it compiles" is far weaker than "it imports" |
 | AK-D30 | `core_header` is its own change class and risk tier, not a size band | A small textual diff to shared ggml core reaches every op in both the CPU and GPU builds |
