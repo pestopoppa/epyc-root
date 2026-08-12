@@ -3769,6 +3769,146 @@ def test_C50_probe_fails_if_the_dereference_is_removed(
                         "if it does not, the refusal above came from somewhere else")
 
 
+# --- C50 END-TO-END: stale a row the way the real world staled it -------------
+#
+# The two probes above call `_eligible` directly, so they pin ONE predicate. The
+# defect was not located in a predicate — it was that NOTHING between "a row sits
+# in queue.jsonl" and "the daemon names it in a would-assign" ever re-derived the
+# row's truth. A regression that reintroduces it need not touch `_eligible`: it
+# could fold the queue differently, drop the row from the candidate scan, or route
+# around eligibility in the picker, and both probes above would stay green.
+#
+# So this drives `tick(dry_run=True)` — config load, fold_queue, _agent_states,
+# the candidate scan, `_eligible`, `_pick`, the advice record — and stales the row
+# EXACTLY as the world did: the checkbox moves on disk, the queue row is not
+# touched and still reads READY. Nothing here writes to the queue between the two
+# ticks, which is the whole point.
+
+def _c50_handoff_bed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, int, int]:
+    """A handoff file with two OPEN boxes, plus a REPO_ROOT that resolves to it.
+
+    Returns (path, stale_line, control_line). Line numbers are DISCOVERED, not
+    assumed, and then asserted — a bed whose boxes moved or vanished would satisfy
+    "refused" and "no would-assign" for entirely the wrong reason.
+    """
+    repo = tmp_path / "fake-repo"
+    (repo / "handoffs" / "active").mkdir(parents=True)
+    doc = repo / "handoffs" / "active" / "queue-source.md"
+    doc.write_text(
+        "# queue source\n"
+        "\n"
+        "- [ ] the row the daemon dispatches\n"
+        "- [ ] a control that never closes\n"
+        "prose, deliberately not a checkbox\n",
+        encoding="utf-8",
+    )
+    lines = doc.read_text(encoding="utf-8").splitlines()
+    boxes = [i for i, line in enumerate(lines, 1) if line.startswith("- [")]
+    assert boxes == [3, 4], f"fixture lost its checkboxes: {boxes} in {lines!r}"
+    assert all(lines[n - 1].startswith("- [ ]") for n in boxes), "fixture must START open"
+    monkeypatch.setattr(coordinator, "REPO_ROOT", repo)
+    # And prove the seam is live: the module default must now resolve into the bed.
+    assert coordinator.spec_ref_state("handoffs/active/queue-source.md#L3") == (
+        "open", "handoffs/active/queue-source.md:3")
+    return doc, boxes[0], boxes[1]
+
+
+def _c50_picks(advice: list[dict]) -> dict[str, dict]:
+    """agent -> its would-assign/would-idle record for this tick."""
+    return {str(row["agent"]): row for row in advice
+            if row.get("kind") in {"would-assign", "would-idle"} and row.get("agent")}
+
+
+def _c50_rejections(advice: list[dict], task_id: str) -> list[str]:
+    """Every stated reason this task was passed over, across all agents."""
+    return [str(rej.get("reason")) for row in advice
+            for rej in (row.get("rejected") or []) if rej.get("task_id") == task_id]
+
+
+def test_C50_e2e_a_row_staled_on_disk_stops_being_dispatched_by_the_whole_tick(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Stale a READY row end to end and watch the daemon's own pick path drop it.
+
+    The live shape, reproduced: `- [x]` on disk since 2026-07-29, `"status": "READY"`
+    in queue.jsonl, and a daemon dispatching it fourteen days later. Of six dispatched
+    picks ONE was dispatchable and four were long closed.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    doc, stale_line, control_line = _c50_handoff_bed(tmp_path, monkeypatch)
+    stale_ref = f"handoffs/active/queue-source.md#L{stale_line}"
+    control_ref = f"handoffs/active/queue-source.md#L{control_line}"
+    _append(bus_root / "queue.jsonl", _queue("T-goes-stale", priority="P1", spec_ref=stale_ref))
+    _append(bus_root / "queue.jsonl", _queue("T-control", priority="P2", spec_ref=control_ref))
+
+    # --- 1. BOTH BOXES OPEN: the row is genuinely dispatchable ---------------
+    before = coordinator.tick(bus_root, epoch=1, dry_run=True)
+    picks = _c50_picks(before)
+    assert set(picks) == {"alice", "bob"}, f"expected two schedulable agents, got {sorted(picks)}"
+    assert picks["alice"]["kind"] == "would-assign" and picks["alice"]["task_id"] == "T-goes-stale"
+    assert picks["bob"]["task_id"] == "T-control", "the control row must be pickable too"
+    assert _c50_rejections(before, "T-goes-stale") == [], "nothing should refuse it yet"
+
+    # --- 2. STALE IT. Checkbox only. The queue row is NEVER touched ----------
+    queue_bytes_before = (bus_root / "queue.jsonl").read_bytes()
+    lines = doc.read_text(encoding="utf-8").splitlines()
+    lines[stale_line - 1] = lines[stale_line - 1].replace("- [ ]", "- [x]", 1)
+    doc.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    assert doc.read_text(encoding="utf-8").splitlines()[stale_line - 1].startswith("- [x]")
+    assert doc.read_text(encoding="utf-8").splitlines()[control_line - 1].startswith("- [ ]")
+    assert (bus_root / "queue.jsonl").read_bytes() == queue_bytes_before, "the queue must not move"
+    row = bus.fold_queue(bus_root)["T-goes-stale"]
+    assert row["status"] == "READY" and row["spec_ref"] == stale_ref, (
+        "the whole point: the row still ASSERTS READY over a box that is now closed")
+
+    # --- 3. The tick must refuse it, and say why in terms of the resolved ref -
+    after = coordinator.tick(bus_root, epoch=2, dry_run=True)
+    assert [r for r in after if r.get("kind") == "would-assign"
+            and r.get("task_id") == "T-goes-stale"] == [], "a closed box must not be dispatched"
+    reasons = _c50_rejections(after, "T-goes-stale")
+    assert reasons, "refused silently — a pass-over with no stated reason is not a refusal"
+    # Decision + a STABLE substring. Not an exact sentence: pinning prose breaks on a
+    # reword while missing the regression. `queue-source.md:3` proves the ref was
+    # actually dereferenced, so a refusal for lane/deps/gates cannot satisfy this.
+    for reason in reasons:
+        assert "CLOSED" in reason, reason
+        assert f"queue-source.md:{stale_line}" in reason, reason
+    # The refusal is SPECIFIC, not the tick going quiet: the control row still goes.
+    picks_after = _c50_picks(after)
+    assert picks_after["alice"]["task_id"] == "T-control", picks_after["alice"]
+    assert _c50_rejections(after, "T-control") == []
+
+
+def test_C50_e2e_sentinel_neutralizing_the_dereference_dispatches_the_stale_row_again(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The probe above must be ABLE to fail. This is that proof, codified.
+
+    Same bed, same closed box on disk, one thing changed: the resolver is stubbed to
+    report every anchor open — the pre-fix world. If the row still fails to dispatch,
+    the refusal above came from somewhere other than the dereference and the e2e probe
+    is vacuous. Asserted here so the sentinel survives in CI, not just in a transcript.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    doc, stale_line, _control_line = _c50_handoff_bed(tmp_path, monkeypatch)
+    stale_ref = f"handoffs/active/queue-source.md#L{stale_line}"
+    _append(bus_root / "queue.jsonl", _queue("T-goes-stale", priority="P1", spec_ref=stale_ref))
+
+    lines = doc.read_text(encoding="utf-8").splitlines()
+    lines[stale_line - 1] = lines[stale_line - 1].replace("- [ ]", "- [x]", 1)
+    doc.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    assert coordinator.spec_ref_state(stale_ref)[0] == "closed", "bed must be staled first"
+    assert _c50_picks(coordinator.tick(bus_root, epoch=1, dry_run=True))["alice"]["task_id"] is None
+
+    monkeypatch.setattr(coordinator, "spec_ref_state", lambda *a, **k: ("open", "stubbed"))
+    # The DISK is still closed — only the dereference was neutralized, not the fixture.
+    assert doc.read_text(encoding="utf-8").splitlines()[stale_line - 1].startswith("- [x]")
+    revived = _c50_picks(coordinator.tick(bus_root, epoch=2, dry_run=True))
+    assert revived["alice"]["task_id"] == "T-goes-stale", (
+        "with the dereference stubbed out the stale row dispatches again; if it does not, "
+        "the e2e refusal came from somewhere else and that probe proves nothing")
+
+
 # --- C49: an operator item is DECLARED, never inferred ------------------------
 
 def test_C49_a_critical_defect_is_not_an_operator_item() -> None:
