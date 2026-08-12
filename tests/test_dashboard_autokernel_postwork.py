@@ -15,6 +15,12 @@ def _write(path: Path, value: dict) -> Path:
     return path
 
 
+def _signed(value: dict) -> dict:
+    value = dict(value)
+    value["receipt_sha256"] = server._canonical_receipt_hash(value)
+    return value
+
+
 def _git(repo: Path, *args: str) -> None:
     subprocess.run(["git", "-C", str(repo), *args], check=True,
                    capture_output=True, text=True)
@@ -52,19 +58,30 @@ def test_mainline_counter_uses_first_parent_merges_not_path_history(tmp_path: Pa
 def test_arena_progress_counts_checkpoint_evidence_without_claiming_liveness(
         tmp_path: Path) -> None:
     run = tmp_path / "campaigns/inf03-r1"
-    _write(run / "campaign-manifest.json", {
+    audit = _signed({
+        "schema": "epyc.autokernel.arena_available_source_campaign_audit.v1",
+        "authority": "diagnostic_only",
+    })
+    _write(run / "audit.json", audit)
+    manifest = _signed({
         "schema": "epyc.autokernel.arena_campaign_run_manifest.v1",
         "campaign_id": "inf03", "authority": "diagnostic_only",
-        "available_source": True,
+        "available_source": True, "audit_receipt_sha256": audit["receipt_sha256"],
+        "constraints": {"partial_results_rankable": False,
+                        "aggregate_atomic_after_complete_matrix_only": True},
         "matrix": {"task_ids": ["task"],
                    "arm_ids": ["starting_state_baseline", "controller"],
                    "checkpoint_hours": [2, 8]},
     })
-    _write(run / "execution/cells/001/checkpoint-receipt.json", {
+    _write(run / "campaign-manifest.json", manifest)
+    _write(run / "execution/cells/001/checkpoint-receipt.json", _signed({
         "schema": "epyc.autokernel.arena_checkpoint.v1",
+        "campaign_id": "inf03", "task_id": "task",
+        "arm_id": "starting_state_baseline", "checkpoint_hours": None,
+        "ended_at": "2026-08-12T01:00:00Z",
         "device_claim_released": {"released_at": "now"},
         "belief_receipt": {"belief_measurements": [{}, {}]},
-    })
+    }))
     _write(run / "execution/cells/001/worker-request.json", {})
     _write(run / "execution/cells/002/worker-request.json", {})
 
@@ -72,11 +89,79 @@ def test_arena_progress_counts_checkpoint_evidence_without_claiming_liveness(
 
     assert result["planned_checkpoints"] == 3
     assert result["completed_checkpoints"] == 1
-    assert result["inflight_markers"] == 1
-    assert result["released_completed_claims"] == 1
     assert result["belief_measurement_count"] == 2
     assert result["terminal_aggregate_present"] is False
-    assert "not a liveness claim" in result["note"]
+    assert result["rankable"] is False
+    assert "no file marker is liveness" in result["note"]
+
+
+def test_arena_progress_selects_newest_semantic_evidence_and_verifies_v2_windows(
+        tmp_path: Path) -> None:
+    def make_attempt(name: str, ended_at: str, *, tamper: bool = False) -> None:
+        run = tmp_path / "campaigns" / name
+        audit = _signed({
+            "schema": "epyc.autokernel.arena_available_source_campaign_audit.v1",
+            "authority": "availability_conditioned_diagnostic_only",
+        })
+        _write(run / "audit.json", audit)
+        manifest = _signed({
+            "schema": "epyc.autokernel.arena_campaign_run_manifest.v1",
+            "campaign_id": "same-logical-id", "authority": "diagnostic_only",
+            "available_source": True, "audit_receipt_sha256": audit["receipt_sha256"],
+            "runner": {"attempt": name},
+            "constraints": {"partial_results_rankable": False,
+                            "aggregate_atomic_after_complete_matrix_only": True},
+            "matrix": {"task_ids": ["task"],
+                       "arm_ids": ["starting_state_baseline", "controller"],
+                       "checkpoint_hours": [2]},
+        })
+        _write(run / "campaign-manifest.json", manifest)
+        windows = []
+        for ordinal in (1, 2):
+            opened = {"claim_id": f"claim-{ordinal}", "campaign_id": "same-logical-id",
+                      "device_id": "mi210_0", "acquired_at": f"t{ordinal}"}
+            released = dict(opened, released_at=f"r{ordinal}")
+            windows.append(_signed({
+                "schema": "epyc.autokernel.arena_gpu_measurement_window.v1",
+                "status": "complete", "device_claim_open": opened,
+                "device_claim_released": released,
+                "device_sampling": {"sample_count": 4, "duration_s": 1.25},
+            }))
+        checkpoint = _signed({
+            "schema": "epyc.autokernel.arena_checkpoint.v2",
+            "campaign_id": "same-logical-id", "task_id": "task",
+            "arm_id": "starting_state_baseline", "checkpoint_hours": None,
+            "ended_at": ended_at, "measurement_windows": windows,
+            "evaluation": {"average_speedup": 1.1, "pass_compilation": True,
+                           "pass_correctness": True, "valid_baseline_cases": 4,
+                           "valid_optimized_cases": 4},
+        })
+        if tamper:
+            checkpoint["evaluation"]["average_speedup"] = 99
+        _write(run / "execution/cells/001/checkpoint-receipt.json", checkpoint)
+        _write(run / "execution/cell-receipts/001.json", _signed({
+            "schema": "epyc.autokernel.arena_cell_runner.v3",
+            "campaign_id": "same-logical-id", "task_id": "task",
+            "arm_id": "starting_state_baseline", "runs": [],
+        }))
+
+    make_attempt("r3", "2026-08-12T01:00:00Z")
+    make_attempt("r4", "2026-08-12T02:00:00Z")
+    make_attempt("tampered-r5", "2026-08-12T03:00:00Z", tamper=True)
+
+    result = server._arena_campaign_progress(tmp_path)
+
+    assert result["run_directory"] == "r4"
+    assert result["completed_checkpoints"] == 1
+    assert result["completed_cells"] == 1
+    assert result["released_measurement_windows"] == 2
+    assert result["measurement_samples"] == 8
+    assert result["measurement_claimed_seconds"] == 2.5
+    assert result["terminal_aggregate_present"] is False
+    assert result["rankable"] is False
+    assert [a["run_directory"] for a in result["attempts"]] == ["r4", "r3"]
+    assert result["attempts"][0]["attempt_id"] != result["attempts"][1]["attempt_id"]
+    assert result["rejected_attempts"] == 1
 
 
 def test_scaffold_panel_requires_hash_bound_evaluation(tmp_path: Path) -> None:
