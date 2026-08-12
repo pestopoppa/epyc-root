@@ -1322,7 +1322,8 @@ def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
         return None, "Arena manifest lacks fail-closed partial/aggregate constraints"
     audit, audit_error = _verified_receipt(
         run_root / "audit.json",
-        {"epyc.autokernel.arena_available_source_campaign_audit.v1"},
+        {"epyc.autokernel.arena_available_source_campaign_audit.v1",
+         "epyc.autokernel.arena_available_source_campaign_audit.v2"},
         "Arena availability audit")
     if audit_error or audit is None or \
             audit.get("receipt_sha256") != manifest.get("audit_receipt_sha256"):
@@ -2021,6 +2022,7 @@ def _gpu_replay_summary(path: Path | None, data: dict | None,
 _PROJECTED_RECEIPT_SCHEMAS = {
     "epyc.autokernel.arena_controller_campaign_audit.v1",
     "epyc.autokernel.arena_available_source_campaign_audit.v1",
+    "epyc.autokernel.arena_available_source_campaign_audit.v2",
     "epyc.autokernel.arena_diagnostic_smoke.v1",
     "epyc.autokernel.live_control_preflight.v1",
     "epyc.autokernel.async_prefetch_replay.v1",
@@ -2616,9 +2618,16 @@ def autokernel_current_state(probe_root: Path | None = None,
     fixed_path, fixed, fixed_err = _latest_autokernel_receipt(
         probe_root, "full-eight-arm-refusal.json",
         "epyc.autokernel.arena_controller_campaign_audit.v1")
+    # V2 is the exact-source seven-arm panel. Keep the v1 lookup as a historical
+    # fallback so a missing new receipt cannot make the last governed audit
+    # disappear, while always preferring v2 when one has been persisted.
     available_path, available, available_err = _latest_autokernel_receipt(
-        probe_root, "available-source-six-arm.json",
-        "epyc.autokernel.arena_available_source_campaign_audit.v1")
+        probe_root, "receipt.json",
+        "epyc.autokernel.arena_available_source_campaign_audit.v2")
+    if available is None:
+        available_path, available, available_err = _latest_autokernel_receipt(
+            probe_root, "available-source-six-arm.json",
+            "epyc.autokernel.arena_available_source_campaign_audit.v1")
     smoke_path, smoke, smoke_err = _latest_autokernel_receipt(
         probe_root, "smoke-receipt.json",
         "epyc.autokernel.arena_diagnostic_smoke.v1")

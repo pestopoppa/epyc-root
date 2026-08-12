@@ -854,20 +854,19 @@ class KernelActivityContextTest(unittest.TestCase):
                                 "controller_or_gpu_command_executed": False},
                 "panel": {"arm_count": 8, "arms": [
                     {"arm_id": f"ready-{n}", "executable": True}
-                    for n in range(6)] + [
-                    {"arm_id": "evoengineer", "executable": False},
+                    for n in range(7)] + [
                     {"arm_id": "argus", "executable": False},
                 ]},
             }
             available = {
-                "schema": "epyc.autokernel.arena_available_source_campaign_audit.v1",
-                "campaign_id": "available-six", "status": "ready",
+                "schema": "epyc.autokernel.arena_available_source_campaign_audit.v2",
+                "campaign_id": "available-seven", "status": "ready",
                 "authority": "availability_conditioned_diagnostic_only",
                 "constraints": {"controller_or_gpu_command_executed": False,
                                 "promotion_authority": False},
-                "panel": {"arm_count": 6, "arms": [
+                "panel": {"arm_count": 7, "arms": [
                     {"arm_id": f"ready-{n}", "executable": True}
-                    for n in range(6)]},
+                    for n in range(7)]},
             }
             smoke = {
                 "schema": "epyc.autokernel.arena_diagnostic_smoke.v1",
@@ -882,7 +881,9 @@ class KernelActivityContextTest(unittest.TestCase):
             }
             (probes / "full-eight-arm-refusal.json").write_text(
                 json.dumps(fixed), encoding="utf-8")
-            (probes / "available-source-six-arm.json").write_text(
+            available_probe = root / "probes" / "available-r2"
+            available_probe.mkdir(parents=True)
+            (available_probe / "receipt.json").write_text(
                 json.dumps(available), encoding="utf-8")
             (probes / "smoke-receipt.json").write_text(
                 json.dumps(smoke), encoding="utf-8")
@@ -1002,14 +1003,14 @@ class KernelActivityContextTest(unittest.TestCase):
                 probes.parent, attestation, production, root / "controls", root)
 
         self.assertEqual(state["fixed_campaign"]["status"], "refused")
-        self.assertEqual(state["fixed_campaign"]["ready_arms"], 6)
+        self.assertEqual(state["fixed_campaign"]["ready_arms"], 7)
         self.assertEqual(state["fixed_campaign"]["total_arms"], 8)
         self.assertEqual(state["fixed_campaign"]["missing_arms"],
-                         ["evoengineer", "argus"])
+                         ["argus"])
         self.assertFalse(
             state["fixed_campaign"]["controller_or_gpu_command_executed"])
-        self.assertEqual(state["available_source_diagnostic"]["ready_arms"], 6)
-        self.assertEqual(state["available_source_diagnostic"]["total_arms"], 6)
+        self.assertEqual(state["available_source_diagnostic"]["ready_arms"], 7)
+        self.assertEqual(state["available_source_diagnostic"]["total_arms"], 7)
         self.assertFalse(state["available_source_diagnostic"]["promotion_authority"])
         self.assertEqual(state["empirical_smoke"]["status"], "failed")
         self.assertEqual(state["empirical_smoke"]["device_sample_count"], 12)

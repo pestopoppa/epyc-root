@@ -1,10 +1,11 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: complete the live r4 governed, availability-conditioned 6/6
-AgentKernelArena panel at matched 2h/8h/32h checkpoints; rank only the terminal full panel. The full
-8/8 panel continues to refuse on the unavailable exact EvoEngineer and ARGUS source releases.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (current-source six-arm readiness re-audit)
+**Next action (2026-08-12)**: run a fresh one-task/one-arm engineering pilot through the integrated
+controller and evaluator sandboxes; require non-null brokered feedback plus complete activation,
+claim/release, and teardown evidence before starting the 7/7 available-source panel. Never reuse r4.
+The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (broker/evaluator isolation + seven-arm readiness checkpoint)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -133,13 +134,6 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
   absent — that half of the 2026-08-12 check stands — but it was never required: **this line names an
   instrument the run did not use.** Nothing was blocked. Corrected 2026-08-12 (mainB).
 
-> **MERGE NOTE 2026-08-12 (coordinator).** Both sides below are preserved; I did
-> not adjudicate. The block above is the local-fleet text, the block below is the
-> origin/AutoKernel text. OWNERS: reconcile and delete this note.
-
-  64 banks decides whether HK's `>>7 <<3` swizzle constants transfer at all. **Completed through the
-  compatible rocprofv2 counter path on 2026-08-11**: the r4 receipt measured 32 banks and eight phase
-  cliques of eight lanes. The upstream script's rocprofv3 spelling was not a hard dependency.
 - **`rocm-flash-attn` as an enabling path**, re-assessed: an adaptation layer with no kernel code of its
   own, but genuine tested code with honest defect annotations. Judged on whether it improves performance,
   not on whether it contains kernels.
@@ -404,14 +398,24 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     log records 64/64 correctness failures. Those calls ran from the deliberately GPU-blind controller
     environment outside the only two durable claim windows, so the controller received invalid search
     feedback even though its final checkpoint receipt was structurally complete.
-  - [ ] **Broker every intermediate controller evaluation through the parent worker's exact-PID
-    boundary.** The parent owns an authenticated AF_UNIX broker, verifies the exact controller PID with
-    `SO_PEERCRED`, evaluates bounded candidate bytes in a fresh workspace, acquires/releases one MI210
-    claim per evaluator action, and gives neither controller nor candidate a claim credential.
-  - [ ] **Prove controller/candidate OS isolation before a decision-bearing INF-03 pilot.** Exact-PID
-    brokerage closes claim ownership but not same-UID `/proc` or workspace attacks. Until the controller
-    and evaluated candidate execute across an OS isolation boundary, any live pilot is engineering
-    smoke only and cannot choose, eliminate, rank, bank, or advance a controller policy.
+  - [x] **Broker every intermediate controller evaluation through the parent worker's exact-PID
+    boundary.** ✅ 2026-08-12 — integrated research `70a0d254` + `de7214ee` make the parent own an
+    authenticated AF_UNIX broker and every intermediate/final evaluation. The broker verifies the exact
+    registered peer PID/start ticks, accepts bounded candidate bytes, and the parent evaluates each
+    request in a fresh GPU-capable deny-network subprocess under its own serialized MI210 claim. Neither
+    controller nor candidate receives a claim credential. Request/result/baseline, sampler, claim,
+    subprocess, activation, and teardown receipts are rehashed during durable restore.
+  - [x] **Enforce controller/candidate OS isolation before a decision-bearing INF-03 pilot.** ✅
+    2026-08-12 — research `9480a1b3`, `9a17e638`, and `de7214ee` wire every non-baseline Arena cell
+    through an exact-read/exec controller sandbox with one inherited peer-bound broker socket, no ROCm
+    device access, no campaign-sibling access, cgroup-owned descendants, and durable activation/teardown
+    evidence. Candidate evaluation runs separately in a fresh deny-network evaluator sandbox; the parent
+    alone owns the claim, sampler, and subprocess. The integrated focused warning-strict suite passed
+    **95/95**, the pinned EvoEngineer suite **11/11**, and the pinned controller suite **572/572**.
+  - [ ] **Repair the pre-existing all-tree discovery parser collision.** Discovery under the pinned
+    ROCm runtime reaches a module whose import-time CLI parser rejects `--evaluate-existing` combined
+    with `--execute`, raising `SystemExit` before unittest can emit a complete summary. Keep the focused
+    and explicit controller suites authoritative until this collection defect is fixed and rerun.
   - [ ] Run a fresh governed available-source campaign only after a one-task/one-arm pilot proves
     non-null brokered intermediate feedback, exact claim/release receipts, peer authentication, and the
     required OS isolation. Never resume or reuse r4.
@@ -421,9 +425,17 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     only around vendor/final measurement windows, exact complete-checkpoint resume, and signal-safe
     release. The audit observed no KFD PID or active device claim while KernelFoundry deliberated;
     other governed GPU work may use those intervals.
-  - [ ] Obtain exact licensed source releases for EvoEngineer and ARGUS, then port their real
-    controller policies through the same governed adapter contract; namesake substitutes are not
-    admissible.
+  - [x] **Obtain and execute the exact licensed EvoEngineer source through the governed adapter.** ✅
+    2026-08-12 — research `f42b3540`, `7e915831`, and `a81c2692` pin MIT source commit
+    `1649715a975b9022c84b5279c88aaef0b73b28dc`, preserve the historical EvoEngineer-Full loop and its
+    four ordered fallback semantics, and exercise the exact upstream `EvoEngineer.run()` for 10
+    generations / 40 samples with fixture model/evaluator bridges only. The fresh physical static audit
+    at `/mnt/raid0/llm/autokernel/probes/inf03-isolation-available-source-reaudit-20260812-r3/receipt.json`
+    is ready at **7/7** over four tasks with zero controller/GPU commands (self-hash `5fa93695…`, file
+    SHA-256 `082d977f…`).
+  - [ ] Obtain the exact licensed ARGUS source release, then port its real controller policy through the
+    same governed adapter contract; a namesake substitute is not admissible. Until then the separate
+    full 8/8 panel must refuse, while the 7/7 available-source panel remains diagnostic-only.
 - [x] Build C4 gfx90a profiler-metric analyzer (GEAK-v2 raw-rocprof path first) ✅ 2026-08-11 —
   `profile_report.py` implements the deterministic paired mapping/formal report; the live single-process
   Q4_K/Q8_0 captures prove it on gfx90a. `profile_context.py` binds the report hash into a priced

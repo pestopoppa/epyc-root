@@ -4,7 +4,7 @@
       "blocked": 13,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 357
+      "open": 356
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -85,14 +85,14 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 1,
-      "closed": 53,
+      "closed": 56,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 4,
+      "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 58
+      "total": 60
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 1,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 223,
+      "closed": 224,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 245
+      "total": 246
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
@@ -2394,7 +2394,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Repair brokered intermediate evaluation and OS isolation; then run a fresh pilot before any new panel",
+      "next_action": "Run one isolated task/arm pilot; require complete broker, claim, sandbox, and teardown receipts before the 7/7 panel",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {
