@@ -2562,3 +2562,51 @@ dispatches against 45,021 in a real decode.
   tool-boundary row, its closure caveats, and the derived VGPR-pressure lever.
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — commit hashes, residency samples, receipt
   paths, and the runner-defect chain.
+
+## Compiled Update — 2026-08-12b (IQ2_XXS register pressure: sign unpack, not the codebook)
+
+Static read of the shipped `libggml-hip.so.0.16.0` (frozen-v9 `0db32c06e`), **no GPU time**. Method
+note: `.hip_fatbin` holds **one offload bundle per translation unit** — 135 of them in this library —
+so a parser that reads only the first bundle returns 8 KB of a 3 MB section and answers about the wrong
+kernel. Extract every `__CLANG_OFFLOAD_BUNDLE__`, then read `.vgpr_count` from each `gfx90a` ELF's
+AMDGPU msgpack note. `rocprof`'s reported VGPR counts are allocation-granularity rounded (64/80 against
+true 63/78); occupancy follows the rounded value.
+
+**Register pressure on `mul_mat_vec_q` tracks per-block state-machine complexity, not quantization
+bit-width and not the presence of a codebook.** At the identical `<_,1,true,false>` (mm_ids/MoE)
+wrapper: Q8_0 **25**, Q4_0 28, IQ4_NL 38, IQ1_S 42, Q4_K 44, Q6_K 46, Q5_K 55, Q2_K 57, **IQ4_XS 64**,
+IQ3_XXS 71, **IQ2_XXS 78**, IQ2_S 78, IQ3_S 80, IQ2_XS 82, **Q3_K 88**. The most expensive kernel in the
+table is a *block* quant, and two codebook quants are among the cheapest — so "codebook implies
+expensive" is false. On gfx90a's 512 unified VGPRs, 64 is the 8-waves/SIMD threshold; IQ4_XS sits
+exactly on it, which makes the target provably reachable rather than hypothetical.
+
+**The MoE wrapper is not the cost either** — Q8_0 runs the identical wrapper in 25 registers.
+
+**Disassembly localises it to sign unpacking.** IQ2_XXS is 1002 instructions against IQ4_XS's 565 at
+the same wrapper; the entire 437 excess is vector ALU (758 vs 334) while scalar (210 vs 203) and LDS
+(16 vs 16) are near-identical, and **IQ2_XXS issues fewer global loads than IQ4_XS (3 vs 5)** — the
+gather is not the cost. `unpack_ksigns` → `__vcmpne4` → `__vsub4` (`vecdotq.cuh:990`) lowers to ~272
+sub-word 16-bit operations (`v_or_b32_sdwa` 96, `v_lshlrev_b16` 96, `v_sub_i16` 64, `v_bfe_i32` 46),
+each holding live values. IQ4_XS performs its byte manipulation with **48 `v_perm_b32`**, a
+single-instruction byte permute IQ2_XXS never emits. **Generalisable rule: on CDNA2, prefer
+`v_perm_b32` byte-permute idioms over 16-bit shift/or/sub chains for sub-byte unpacking** — the
+compiler does not convert one into the other.
+
+Spill is 0 in every variant, so there is no slack: any register reduction must report
+`vgpr_spill_count` beside occupancy. And the whole lever is necessary-not-sufficient — decode on the
+122B IQ2_M is bandwidth/latency-bound (85.60 µs median, 6% spread across 6,063 dispatches), so fewer
+instructions and +2 waves only help if latency remains to hide.
+
+**Tooling trap.** `/opt/rocm/llvm/bin/` in this install ships `objdump`/`objcopy`/`readelf` but **no
+`llvm-nm`**, and `roc-obj-ls` is a perl script that dies without `File::Which`. A search loop invoking
+a missing binary under `2>/dev/null | grep -q` yields silence that reads exactly like "no matches".
+Verify a tool exists before trusting its negative result.
+
+### Source References (2026-08-12b IQ2 register pressure)
+
+- [A10 IQ2 VGPR lever](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — full per-quant
+  table, the four IQ2_XXS instantiations, the disassembly diff, and the extraction method.
+- [A10 IQ2 decode attribution](../artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md) —
+  the decode timings the occupancy question hangs off.
+- [MI210 Q8 dequant GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the filed
+  `v_perm_b32` re-expression task and its experimental-branch constraint.

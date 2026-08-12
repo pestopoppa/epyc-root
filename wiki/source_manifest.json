@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-12T12:52:26Z",
+  "last_compile": "2026-08-12T13:30:29Z",
   "mode": "full",
-  "scan_time": "2026-08-12T13:10:35Z",
+  "scan_time": "2026-08-12T13:40:52Z",
   "schema_version": 1,
-  "source_set_hash": "44cd8338fb49deec42e9748648a1d635626956ab869e0dbb91589792839c4ed7",
+  "source_set_hash": "407a7b4b7692c70e21c51c42d6bcb5a67561d362302cd78eec0e17af20cab570",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -71,10 +71,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "fea20b19de0fa264964500d37dcf5d045d4cd3628dd96d5682976a2d0a1e1d68",
-      "modified": "2026-08-12T12:58:43Z",
+      "content_hash": "81aedfe3d47d779bf5a6bfd291714d9bad35474811a88fb598a0f4e9ff78299e",
+      "modified": "2026-08-12T13:13:07Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
-      "size": 102137,
+      "size": 103595,
       "title": "Architect Model Comparison Benchmark",
       "type": "handoff-active"
     },
@@ -95,10 +95,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "22ddd29be70cbb989c5a0fd2db817bfc0d30326bebf1fa77ddebd43175a8b4eb",
-      "modified": "2026-08-12T13:10:20Z",
+      "content_hash": "cba87ae6812517cb54491e86014c6d8f86e227f01b5ce08e7d102dcd2881734f",
+      "modified": "2026-08-12T13:38:17Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 332462,
+      "size": 346444,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -455,10 +455,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7a6c173142b33d2288ab8ce2da0c7b304972012cf96d8afc354607ef11b31909",
-      "modified": "2026-08-12T11:06:37Z",
+      "content_hash": "2f6cb30655b4cf01998249fc57619a9e080ae45ba3f22e95eda29bd8bbc179bb",
+      "modified": "2026-08-12T13:28:07Z",
       "path": "handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md",
-      "size": 50405,
+      "size": 51020,
       "title": "findings-05c \u2014 MI210 gfx90a Speed Campaign: Lever \u00d7 Model-Category Isolation",
       "type": "handoff-active"
     },
@@ -479,10 +479,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "86a2586264229c704c659947e2b3f6df2395311dc4d7deff0368ce3ca533b9c8",
-      "modified": "2026-08-12T13:07:04Z",
+      "content_hash": "7010971670fa2a2345c9daebe46d3c97d6ae3c9945c8c81c1fc1a7d0f185995b",
+      "modified": "2026-08-12T13:40:14Z",
       "path": "handoffs/active/frontier-f3-data-flywheel.md",
-      "size": 27785,
+      "size": 29487,
       "title": "Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates",
       "type": "handoff-active"
     },
@@ -759,10 +759,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4ec7e64add66d47ced1a74dedb4d46ce8c32c6cbd57b487943c6c03adf0b1891",
-      "modified": "2026-08-12T09:37:06Z",
+      "content_hash": "4f39d42b70c1f0a0d70c59fc66b703b337bf8d3be760bf5635e79255df107377",
+      "modified": "2026-08-12T13:39:43Z",
       "path": "handoffs/active/mi210-q8-dequant-gemv-roofline.md",
-      "size": 31198,
+      "size": 34961,
       "title": "Handoff: MI210 single-stream roofline \u2014 Q8 dequant-GEMV kernel + batch-1 latency levers",
       "type": "handoff-active"
     },
@@ -1087,10 +1087,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "09c67d681ecfd0678c92f67c1758d1709de6b7177eef0b92a12968a1521a96e8",
-      "modified": "2026-08-12T13:08:18Z",
+      "content_hash": "1594800d64afc3048b1d43b1740413502e870be36466d82ed3d5fc274472f6a8",
+      "modified": "2026-08-12T13:14:28Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 84557,
+      "size": 86709,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -1167,10 +1167,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "51b04b94c5c193aed621208c948c1fac91751e153a78be6bff44eea45503394e",
-      "modified": "2026-08-12T11:25:40Z",
+      "content_hash": "a8aa075055e6bca99825aefb8dd1a23231bf4a5f5d3321a55c18cd9219bd9664",
+      "modified": "2026-08-12T13:23:45Z",
       "path": "handoffs/active/session-bus-thin-dispatcher.md",
-      "size": 237771,
+      "size": 240756,
       "title": "Session Bus + Thin Coordinator \u2014 N-main-thread control structure",
       "type": "handoff-active"
     },
@@ -6015,10 +6015,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "f8f0d52423acafa8151a1f233fc0f422166aed7760120d0b5a73764b593d4804",
-      "modified": "2026-08-12T13:01:07Z",
+      "content_hash": "5579688200cb8f506373e94e58e86d0c3dfd83027803a092ab1a018218de97e8",
+      "modified": "2026-08-12T13:40:14Z",
       "path": "progress/2026-08/2026-08-12.md",
-      "size": 329656,
+      "size": 343243,
       "title": "2026-08-12",
       "type": "progress"
     },
@@ -6127,11 +6127,11 @@
       "type": "docs"
     },
     {
-      "content_hash": "7eb072903a7fff4292f855c25cd036536412096c9f6ea28409e8581e60ad05c1",
-      "modified": "2026-08-12T07:43:09Z",
+      "content_hash": "a64557f6cca44942aab424d49af74a67b83bc6faa904ca865f7c88214083f108",
+      "modified": "2026-08-12T13:25:12Z",
       "path": "docs/guides/agent-workflows/verification-failure-catalogue.md",
-      "size": 26947,
-      "title": "Verification failure catalogue \u2014 fourteen ways a check passes for the wrong reason",
+      "size": 30554,
+      "title": "Verification failure catalogue \u2014 fifteen ways a check passes for the wrong reason",
       "type": "docs"
     },
     {
