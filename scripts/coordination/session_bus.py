@@ -1340,8 +1340,30 @@ def cmd_claim(args: argparse.Namespace) -> int:
                 print(f"session_bus: WARNING unreadable claim {p.name}", file=sys.stderr)
         if not rows:
             print("(no rows claimed)")
+        # STALE MARKING (2026-08-12, `mainC`, on `mainB`'s finding). A claim has no
+        # expiry, so a claim held by a session that died behaves as a lock nobody
+        # remembers taking — and it is INVISIBLE as a blocker, because the row simply
+        # never gets pulled. Measured when this was added: 15 claims, 8 of them older
+        # than 300 HOURS, all from the 2026-07-29 fleet death. Two consequences seen
+        # in that same set: `mainB` declined to work a row solely because `mainC` held
+        # a 14-day-old claim on it, and one stale claim OUTLIVED ITS OWN ROW'S
+        # CLOSURE — the legacy ComparativeResult path it names was closed in
+        # `e108ec9f` while the claim stayed held.
+        #
+        # This only MARKS; it never releases. A claim is single-writer by design and
+        # only its owner may drop it, so auto-expiry here would break the one property
+        # that makes the O_EXCL scheme sound. Marking is enough: it makes the lock
+        # visible to the owner and to whoever is blocked.
+        now = datetime.now(timezone.utc)
         for r in rows:
-            print(f"{r.get('agent'):18s} {r.get('ts')}  {r.get('row')}")
+            mark = ""
+            try:
+                age_h = (now - datetime.fromisoformat(r.get("ts"))).total_seconds() / 3600.0
+                if age_h >= 24:
+                    mark = f"  [STALE {age_h:.0f}h — owner should release or re-affirm]"
+            except (TypeError, ValueError):
+                mark = "  [unparseable ts]"
+            print(f"{r.get('agent'):18s} {r.get('ts')}  {r.get('row')}{mark}")
         return 0
 
     if not args.row:
