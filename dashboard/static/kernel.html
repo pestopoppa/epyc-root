@@ -252,7 +252,8 @@ function renderCurrentState(d){
   const replay=s.gpu_prefetch_replay||{}, coverage=s.receipt_coverage||{};
   const loop=s.loop_engineering||{}, fault=s.fault_rehearsal||{};
   const scaffold=s.scaffold_engineering||{}, arena=s.arena_campaign_progress||{};
-  const rocm=s.rocm_diagnostics||{}, beliefs=s.belief_source_wiring||{};
+  const rocm=s.rocm_diagnostics||{}, hip=s.hip_decision_grade||{};
+  const beliefs=s.belief_source_wiring||{};
   let h='<div class="state-grid">';
 
   h+='<div class="state-card production"><h3>Production kernel · operator attestation</h3>';
@@ -445,6 +446,18 @@ function renderCurrentState(d){
     if(rvp.evidence) h+='<div class="evidence">RVP: <code>'+esc(rvp.evidence)+'</code></div>';
     if(bh.evidence) h+='<div class="evidence">AK-BH: <code>'+esc(bh.evidence)+'</code></div>';
   } else h+='<div class="muted">ROCm diagnostic/profile receipts unavailable</div>';
+  h+='</div>';
+
+  h+='<div class="state-card"><h3>Raw HIP · decision-grade task-local evidence</h3>';
+  if(hip.available){
+    h+='<div class="headline ok">'+esc(hip.correctness_passed+' / '+hip.correctness_total)+' sealed cases · '+esc(num(hip.median_speedup,9))+'× exact-provider speedup</div>';
+    h+='<div class="detail"><code>'+esc(hip.task_id||"—")+'</code> · '+esc((hip.target||{}).gpu_model||"—")+' / '+esc((hip.target||{}).gfx_arch||"—")+' · max abs error '+esc(hip.max_abs_error==null?"—":String(hip.max_abs_error))+'</div>';
+    h+='<div class="detail">anytime-valid e-process first crossed at block '+esc(hip.e_process_first_crossing_block)+' · duration admissions '+esc(hip.duration_admissions_passed+' / '+hip.duration_admissions_total)+' · minimum observed '+esc(hip.minimum_observed_duration_ns==null?"—":num(hip.minimum_observed_duration_ns/1e6,3)+' ms')+'</div>';
+    h+='<div class="detail">scope: <code>'+esc(hip.authority||"—")+'</code></div>';
+    h+='<div class="detail fail"><b>NOT A CHAMPION.</b> Experimental llama integration is required before any release; release/promotion authority: '+esc(String(hip.release_or_promotion_authority===true))+'</div>';
+    h+='<div class="evidence">self hash: <code>'+esc(hip.receipt_self_sha256||"—")+'</code><br>file hash: <code>'+esc(hip.receipt_file_sha256||"—")+'</code><br>evidence: <code>'+esc(hip.evidence||"—")+'</code></div>';
+    h+='<div class="detail">'+esc(hip.note||"")+'</div>';
+  } else h+='<div class="muted">raw-HIP r6 evidence unavailable: '+esc(hip.error||"not found")+'</div>';
   h+='</div>';
 
   h+='<div class="state-card"><h3>Belief source wiring · producer rows → Vidya readers</h3>';

@@ -2444,6 +2444,11 @@ result can support a release or production proposal. The belief-substrate adapte
 re-derives the sealed correctness row and exact-provider speedup row and fails closed on sub-floor
 timing or invented promotion authority.
 
+The Kernel-R&D dashboard now preserves that same boundary in its operator projection. It verifies the
+exact r6 self-hash and file hash before showing 24/24 correctness, the 1.076934974× median, block-9
+e-process crossing, and 40/40 duration admissions. The card explicitly says `NOT A CHAMPION`, names
+experimental llama integration as required, and cannot affect dashboard freshness or release state.
+
 ### Source References (2026-08-12 AutoKernel raw-HIP arm)
 
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — sealed-suite,
