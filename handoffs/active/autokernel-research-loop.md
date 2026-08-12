@@ -31,7 +31,8 @@ but live preflight correctly refused before claim, build, or benchmark because h
 `13.47 days`, beyond the ratified one-week ceiling. After a compliant reboot, run the full-host CPU
 IQK proposal, materialize the real matched archive, then run the least-commitment evaluation
 observe-only.
-Research `58b8d66a` and `948a95a4` close the no-inference producer gap in that next step. The live
+Research `58b8d66a`, `948a95a4`, and `3bd94893` close the no-inference producer gap and subsequent
+proposal-v4 drift in that next step. The live
 campaign now requires a prospective least-commitment capture plan for the IQK parameter path,
 journals the measured diagnostic/outcome block, and can project two clean completed campaigns into
 the strict matched archive and onward to the sequencer/release rehearsal. Capture plans no longer
@@ -41,8 +42,9 @@ exploratory result and binds the exact proposal statement to one durable `HYPOTH
 selected `HYPOTHESIS_CLAIM_AUTHORIZED` record. The exact intervention and A/A control proposal,
 capture, source, hypothesis-store, and physical-envelope inputs are materialized under
 `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/` and
-`/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812/`. Both bound commands compose
-successfully with `executed=false`; no inference was performed by this checkpoint. A live matched
+`/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812/`. Both bound current-schema
+commands compose successfully in 12 steps with `state=dry_run_composed` and `executed=false`; no
+inference was performed by this checkpoint. A live matched
 archive still requires two post-reboot clean DECIDED runs.
 Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
 The live campaign consumes an immutable content-addressed source patch before claim acquisition,
@@ -2722,11 +2724,11 @@ evaluator or its own scope, and T1 may legally guide search.
   bytes is refused. The AP-WM-1 evaluator is implemented as an observe-only module outside the campaign
   import path and exposes no selector/champion/T2/T3 mutation API.
 - [ ] **AK-WM-2a — Materialize the first real matched completed-proposal archive.** After Step 3
-  writes real proposal-v3 plus clean DECIDED terminal journal/evaluation records, deterministically
+  writes current-schema proposals plus clean DECIDED terminal journal/evaluation records, deterministically
   join them with the strict builder and retain the archive plus build manifest. Synthetic fixtures
   remain regression tests and cannot populate the archive.
   - [x] **Implement the strict real-archive builder.** ✅ 2026-08-12 — research `900cb5c6` adds
-    `least_commitment_archive_builder.py`. It accepts only real proposal-v3 events joined to clean
+    `least_commitment_archive_builder.py`. It accepts only real proposal-v3/v4 events joined to clean
     DECIDED terminal events with executed/ok decisions, unchanged-production PASS, released
     resources, nonempty pairs, and hash-bound diagnostic, outcome, and matched one-factor receipts.
     Missing, synthetic, mismatched-frame, direction-drifted, or receipt-tampered inputs fail closed.
@@ -2748,6 +2750,12 @@ evaluator or its own scope, and T1 may legally guide search.
     durable campaign roots. `evidence_path_rehearsal.py` resolves those exact files, proves one changed
     factor, validates both hypothesis statements/falsifiers, reproduces the control proposal byte for
     byte, and reaches the architecture-only `RELEASE_PACKAGE_READY` seam without inference.
+  - [x] **Migrate the durable IQK pair to proposal-v4 and regress the exact artifact path.** ✅ 2026-08-12 —
+    research `3bd94893` executes both durable intervention/control inputs through the current
+    `campaign.main` validator, binds the source-transparent `llama_source` provider at `a4cb04ca`,
+    regenerates all proposal-dependent hashes/frames, and preserves v3 history under
+    `inputs/superseded/`. Both exact dry runs exit zero with 12 steps, `state=dry_run_composed`, and
+    `executed=false`; the independent full suite passed **5,606 tests** with one expected failure.
   - [x] **Require a bound typed hypothesis before a completed proposal may enter the archive.** ✅
     2026-08-12 — archive admission now refuses exploratory campaign records and requires the terminal
     authorization to resolve by exact hypothesis id, campaign id, ledger sequence, payload, and proposal

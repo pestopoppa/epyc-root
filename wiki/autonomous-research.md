@@ -888,3 +888,20 @@ threshold peeking.
 - [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — the oracle and reward-integrity side of the same design
 - [`wiki/benchmark-methodology.md`](benchmark-methodology.md) — the instrument-integrity findings this rests on
 - [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the research-intake session record
+
+## Compiled Update — 2026-08-12: durable campaign rehearsals must traverse the current validator
+
+**Confidence: verified.** AutoKernel's prepared IQK pair became stale when proposal-v4 made the
+source-transparent provider reference mandatory. The repair migrated both durable inputs to v4,
+preserved the historical v3 bytes under `inputs/superseded/`, rebound the diagnostic sources,
+capture plans, physical frames, and hypotheses, and added an exact two-branch rehearsal through
+`campaign.main`. Both intervention and A/A commands now compose 12 steps with
+`state=dry_run_composed` and `executed=false`; no inference ran. The reusable lesson is that a parser
+smoke test is insufficient for durable campaigns: the regression must load the materialized proposal,
+its dependent receipts, and its matched control through the same current-schema validator the live
+entry point uses.
+
+### Source References
+
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-WM-2a durable producer state and empirical next action
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact v4 artifact identities and validation results
