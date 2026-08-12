@@ -3970,3 +3970,28 @@ def test_C49_live_corpus_has_no_operator_items_and_the_corpus_is_real() -> None:
     assert any(r.get("action_required") for r in rows), "corpus carries no action_required at all"
     flagged = [r for r in rows if coordinator._is_operator_item(r)]
     assert flagged == [], f"{len(flagged)} live rows misclassified as operator items"
+
+
+# --- Pins for constants that other assertions reference BY NAME ---------------
+# Audit 2026-08-12: five assertions in this file build their EXPECTED value from
+# the same module constant the production code writes the ACTUAL value with —
+# e.g. `text.count(f"{coordinator._OPERATOR_ESCALATION_MARKER} m-42") == 1`
+# against `marker = f"{_OPERATOR_ESCALATION_MARKER} {mid}"` (session_bus_coordinator
+# .py:3409). Both sides move together, so changing the constant leaves every one of
+# them green. Confirmed by mutation: renaming the marker broke nothing.
+#
+# The fix is ONE deliberate pin per constant rather than rewriting five readable
+# assertions into literals. The by-name assertions stay — they read better and they
+# still prove the marker reaches the file — and a change to the value now fails HERE,
+# loudly and in one place, where the literal is maintained on purpose.
+#
+# If you are changing one of these values: update the literal in the same commit.
+# That edit is the point. It is the difference between a decision and an accident.
+
+def test_constants_referenced_by_name_elsewhere_are_pinned_to_literals() -> None:
+    assert coordinator._OPERATOR_ESCALATION_MARKER == "DAEMON-ESCALATION", (
+        "5 assertions in this file interpolate this constant into their own expected "
+        "value; without this pin, changing it silently keeps them all green")
+    assert coordinator._STUCK_MIN_NUDGE_INTERVAL_S == 600.0, (
+        "test_...:848 asserts the nudge callback receives this exact module attribute, "
+        "which production passes through unchanged — the assertion cannot detect a change")
