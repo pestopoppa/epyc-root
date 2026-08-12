@@ -62,11 +62,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 58 | 426 | 8 | 2026-07-29 |
+| inference-research | 58 | 425 | 8 | 2026-07-29 |
 | pipeline-integration | 5 | 50 | 1 | 2026-07-29 |
 | research-evaluation | 48 | 290 | 9 | 2026-07-29 |
 | reviewer-control-plane | 9 | 39 | 3 | 2026-07-29 |
-| routing-and-optimization | 47 | 314 | 9 | 2026-07-29 |
+| routing-and-optimization | 47 | 315 | 9 | 2026-07-29 |
 | user-facing-harness | 7 | 40 | 3 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

@@ -415,6 +415,20 @@ Retained as the ratification record. Nothing here blocks P1.
   intake session; never edit the skill mid-run.
 - Judgment frames (any LLM verdict entering the ledger) must satisfy the V2.7 keying rules from
   day one — retrofitting replay keys is not possible.
+- **A field used to discriminate KIND must BE an explicit kind, never a present/absent test.**
+  Raised 2026-08-11 by `mainA` from four absence-inferred fields found in one night — and the
+  generalisable point is not carelessness: **two of the four were introduced by the person fixing
+  that exact class, hours apart.** Presence/absence is the cheapest discriminator available at
+  design time, and its whole cost lands on whoever reads the store months later, who cannot tell
+  *"this kind has no value"* from *"nobody wrote one"* from *"the writer predates the field"*.
+  Same asymmetry as the write-side rule above: cheap and permanent to state now, impossible to
+  retrofit — a reader cannot recover a distinction the writer never recorded.
+  Three independent instances the same day show it is not confined to manifests: `mainB` read merge
+  stage `:3` after a `git add` (which collapses stages 1/2/3, so `:3` returned EMPTY and empty made
+  every comparison pass); `mainD`'s `backfill-receipts --check` reported "index is current" while
+  covering only bus-known gates; the `auditor`'s receipt index asserted `ratified` over files that
+  were untracked. **Each was true about a smaller set than it appeared to speak for** — the read-side
+  face of the same defect.
 
 ## Reporting
 

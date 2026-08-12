@@ -2171,6 +2171,18 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   - [x] **Predicate-only scope, deliberately.** ✅ The test never sources the supervisor and never
     reaches `stop_wedged`/`start_daemon`: a stub named `session_bus_coordinator.py` matches the
     production `pgrep` pattern and killed the live daemon that way on 2026-07-27.
+  - [ ] **C42 HAS A BOOTSTRAP PROBLEM, and it is live right now — measured 2026-08-12 00:1xZ.**
+    The watchdog that detects staleness must ITSELF be restarted to gain the ability to detect it.
+    Verified, not theorised: `bus_supervisor` pid 489217 started **08:48:01Z**; C42 landed in
+    `bus_supervisor.sh` at **22:40:02Z**. So the running supervisor predates its own check, has
+    logged **zero** stale-source detections, and therefore never noticed that the coordinator-daemon
+    (pid 942753, started 22:25:55Z) is itself running pre-rotation code — which is why
+    `advisory.jsonl` is **still 1,044 MiB with no shards** and rotation has never fired.
+    **The chain is: stale supervisor → undetected stale daemon → un-run rotation.** One supervisor
+    restart collapses all three, and after it C42 keeps the chain closed on its own. This is
+    **OP-9** in concrete form — *nothing restarts the supervisor itself* — and the strongest
+    argument yet for that cron decision, because C42 cannot bootstrap itself past a supervisor that
+    predates it. **Not mine to do: restarting is process lifecycle, outside C-OWN's lane.**
 
 - [x] **C34 residual disposition — CLOSED as a decision, routed as work.** ✅ 2026-08-11.
   `coordinator-agent` approved **per-owner triage-by-value** (not repair-all, not quarantine) and
