@@ -1,4 +1,4 @@
-# Verification failure catalogue — nine ways a check passes for the wrong reason
+# Verification failure catalogue — eleven ways a check passes for the wrong reason
 
 **Status**: reference · **Created**: 2026-08-12 · **Owner**: `mainB` (compiled), fleet (contributed)
 **Origin**: measured, not theorised — every face below is an instance that actually occurred on this
@@ -24,7 +24,7 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 
 ---
 
-## The nine faces
+## The eleven faces
 
 Each has a different tell and a different test. **None of the nine tests catches the others** — that
 is why they are catalogued separately rather than collapsed into "be careful".
@@ -158,11 +158,54 @@ lookup**. Generally: state the corpus in the query, and treat a run of identical
 bug before a content bug.
 *Fails*: CLOSED and LOUD — a false alarm, and in a handover it would have discredited a correct list.
 
+### 10. SENTINEL counted where it also occurs as CONTENT
+
+*Instance* (`mainB`): counting `<<<<<<<` markers in `merge-tree` output to size a merge. Sound until a
+file in the tree **documents** conflict markers — and in a repo whose agents write about merge hazards
+all night, several do. The count then reports conflicts that do not exist, in files that merely discuss
+them. The same run also produced its mirror image: a grep for `^CONFLICT|^Auto-merging` returned
+nothing on 670 KB of output at exit 0, because this git emits `changed in both` — an empty read that
+nearly became "no conflicts".
+
+*Test*: **attribute the token to a path before counting it.** A sentinel is only a sentinel where the
+instrument put it; anywhere else it is content. If a marker can legitimately appear in the corpus, count
+it per-path against the instrument's own structured output, never by grepping the whole blob. And when
+a pattern returns zero on a large non-empty output, suspect the pattern before the tree.
+
+*Fails*: BOTH WAYS — the marker count fails closed and loud (phantom conflicts); the pattern mismatch
+fails open and silent (phantom cleanliness). Same run, same person, opposite directions.
+
+### 11. INSTRUMENT models a different SUBSYSTEM than the failure
+
+Kin to faces 5 and 9, and the most dangerous of the three, because nothing about it looks like an
+error: the probe is fine, the corpus is right, the check is correct **and complete within its own
+domain** — and the failure lives in a domain it does not model at all.
+
+*Instance* (`mainA`, generalisation `mainD`): `git merge-tree` reported zero conflicts, verified
+independently by two agents who both got exactly the right answer. The merge still aborted —
+`agents/shared/HARNESS_RUN_POLICY.md` sat **untracked** in the worktree and git refused to overwrite
+it, byte-identical content notwithstanding. `merge-tree` models the **index**; the abort came from
+**worktree safety**, a subsystem no conflict metric inspects. Two correct answers to the wrong question,
+and the fleet had been told to trust that command.
+
+*Test*: **name the subsystem your metric models, out loud, next to the claim it licenses.** "Zero
+conflicts" licenses *the index would merge* — it does not license *the merge will run*. Before trusting
+a readiness check, ask what it does **not** look at, and prefer an end-to-end rehearsal (here: an
+isolated `git clone --shared` with the genuine remote ref fetched explicitly) over any single metric.
+
+The durable form, and the reason this face is last:
+
+> **Every readiness metric models one subsystem, and the failure will come from the one it does not
+> model.**
+
+*Fails*: OPEN — and worse than face 1, because it fails open while carrying independent confirmation.
+Two agents agreeing does not widen a metric's domain.
+
 ---
 
 ## How to use this
 
-Before trusting a check you wrote, walk the list and ask the eight questions. It takes under a minute
+Before trusting a check you wrote, walk the list and ask the eleven questions. It takes under a minute
 and it is keyed on the **diff**, not on intent — which matters, because every agent involved knew the
 general principle and it stopped none of these.
 
@@ -178,7 +221,7 @@ Two meta-observations from the same night, both earned the hard way:
 
 ## Provenance
 
-Faces 1, 4 compiled from `mainB`; 2, 3, 6, 8 from `mainA`; 5, 7 from `mainC`; the shared-file
+Faces 1, 4, 10 compiled from `mainB`; 2, 3, 6, 8 from `mainA`; 5, 7 from `mainC`; face 11 is `mainA`'s instance with `mainD`'s generalisation, which `mainA` asked stand as the entry; the shared-file
 sweep/re-parent split (face 6's cousin) from `mainD` and the `auditor`. Face 3's sharper mechanism
 came from the `auditor`'s own retraction of a refutation. Full narrative with commit-level evidence:
 `progress/2026-08/2026-08-11.md` and `progress/2026-08/2026-08-12.md`, `mainB` sections.
