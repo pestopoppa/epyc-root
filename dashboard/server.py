@@ -195,6 +195,8 @@ AUTOKERNEL_READINESS_COMMITS = (
      "prospective feedback-only intermediate evaluator beliefs"),
     ("ak_del_2_catalogue", "35f10715",
      "bounded gfx90a prior-art catalogue expansion"),
+    ("source_available_rocm_provider", "a54e36ba",
+     "governed source-available ROCm provider execution"),
 )
 PRODUCTION_KERNEL_ATTESTATION = Path(os.environ.get(
     "PRODUCTION_KERNEL_ATTESTATION",

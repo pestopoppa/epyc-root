@@ -3486,7 +3486,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T19:50:33Z",
+  "generated_at": "2026-08-12T19:59:17Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4193,13 +4193,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 239,
+      "closed": 240,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-12",
       "next_action": "Run the post-reboot matched IQK intervention/control pair, then materialize and evaluate the real archive",
-      "open": 23,
+      "open": 22,
       "state": "active",
       "track": "autokernel research loop"
     },
@@ -4661,7 +4661,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 76,
+      "closed": 77,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",

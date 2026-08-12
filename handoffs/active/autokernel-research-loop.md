@@ -552,12 +552,13 @@ scheduler work remains a separate `serving_runtime` campaign under AK-D9/AK-D23.
   580 tests; a full 5,597-test discovery exposed four current-schema call sites, which were repaired
   and revalidated in a 419-test affected slice. The only remaining discovery error was environmental:
   the checkout Python lacks `pytest` for `test_placement_context.py`.
-- [ ] **AK-D39-2 — Implement governed source-available ROCm module execution.**
-  `execution/provider.py` currently validates source/opaque mode, immutable identity, protected-prefix
-  exclusion, and llama integration joins, but it does not acquire, build, install, or execute a pinned
-  module in an isolated content-addressed prefix. Add that lifecycle with exact source, licence,
-  toolchain, build, install, linkage, and teardown receipts; never mutate shared `/opt/rocm` or admit
-  an opaque binary as champion source.
+- [x] **AK-D39-2 — Implement governed source-available ROCm module execution.** ✅ 2026-08-12 —
+  research `a54e36ba` adds the pinned clean-source lifecycle in a content-addressed isolated prefix,
+  binds exact source commit/tree, tracked files, licence, toolchain, executable and linkage identities,
+  requires explicit authorization, executes without network access, verifies expected outputs, and
+  records teardown. The provider remains diagnostic/nonbankable until its result joins an experimental
+  `llama_gpu` integration candidate; it cannot mutate shared `/opt/rocm` or make an opaque binary into
+  champion source. Validation passed 101 tests plus 22 subtests and Ruff.
 
 ### 1.6 The objective is per-backend, per-phase non-inferiority plus improvement
 

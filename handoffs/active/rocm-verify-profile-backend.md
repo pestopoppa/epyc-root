@@ -661,6 +661,22 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     work, two / **2.3187%** as forward-port candidates, and eight / **25.3907%** as unmatched. The
     deterministic recommendation is `expand_catalogue_before_novel_generator`; this is routing,
     not a performance verdict.
+  - [x] **RVP-C4-4b — Capture and route the governed 35B Q8 decode control.** ✅ 2026-08-12 — the
+    source-bound p0/tg128 run on Qwen3.6-35B-A3B-MTP-Q8_0 passed at **81.582817 tok/s**. Summed device
+    time was MMV **42.3760%**, quantize **12.9820%**, RMSNorm **6.2201%**, FlashAttention **5.5143%**,
+    copy **2.7359%**, and GDN **1.7678%**. Receipt
+    `/mnt/raid0/llm/autokernel/probes/rvp-c4-4a-35b-q8-decode-20260812T194500Z/receipt.json`, file
+    SHA-256 `0ca812e34c8c7c939c9b9d5eac90941dcad603236a7fbed85ade3c839316d2ce`; CSV SHA-256
+    `670819fbd7b33094bba4a8904667196d6eccade78296c8d0a632aa3fd29d18dd`. Sixty-one device samples
+    covered the measurement window and both claims released cleanly. Its deterministic replay routes
+    four families / **62.4344%** of captured time to existing paths, two / **2.7359%** to forward-port
+    candidates, and ten / **33.0644%** to unmatched work, yielding `retain_novel_generator_scope`.
+    Paired outputs are `rvp-c4-4a-iq2-decode-20260812-prior-art.json` (SHA-256
+    `8037bf5eec8b7be71d29f2714ee1469dc83dc7e7ab6d2063b379b874e22025ec`) and
+    `rvp-c4-4a-q8-decode-20260812-prior-art.json` (SHA-256
+    `c5a6190f0c6d6c6ff6c606f3b3a9640e08c0688381e6fe178f188f20c62163fd`). This sibling control
+    corroborates low GDN priority, but model size, active parameters, and quant differ, so it is not a
+    causal model/quant comparison and the two workload-specific router decisions must not be pooled.
 - [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
   the value distribution. This is the anti-shape-detection device, and it targets something we
   actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can
