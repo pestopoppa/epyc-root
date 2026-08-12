@@ -251,6 +251,8 @@ function renderCurrentState(d){
   const controls=s.decision_controls||{}, preflight=s.instrument_preflight||{};
   const replay=s.gpu_prefetch_replay||{}, coverage=s.receipt_coverage||{};
   const loop=s.loop_engineering||{}, fault=s.fault_rehearsal||{};
+  const scaffold=s.scaffold_engineering||{}, arena=s.arena_campaign_progress||{};
+  const rocm=s.rocm_diagnostics||{}, beliefs=s.belief_source_wiring||{};
   let h='<div class="state-grid">';
 
   h+='<div class="state-card production"><h3>Production kernel · operator attestation</h3>';
@@ -380,6 +382,33 @@ function renderCurrentState(d){
   if(loop.reduction_evidence) h+='<div class="evidence">reduction: <code>'+esc(loop.reduction_evidence)+'</code></div>';
   h+='</div>';
 
+  h+='<div class="state-card"><h3>Loop engineering · AK-LE-3 scaffold</h3>';
+  if(scaffold.available){
+    const terminal=scaffold.status==="complete"&&scaffold.completed_cells===scaffold.total_cells;
+    h+='<div class="headline '+(terminal?'ok':'sec-refused')+'">'+esc(scaffold.completed_cells+' / '+scaffold.total_cells)+' cells · '+esc(String(scaffold.status||"unknown").toUpperCase())+'</div>';
+    h+='<div class="detail">released MI210 claims '+esc(scaffold.released_claims+' / '+scaffold.total_cells)+' · belief rows '+esc(scaffold.belief_measurement_count)+'</div>';
+    h+='<div class="detail">prospective read adapter '+(scaffold.prospective_adapter_present?'<span class="ok">present</span>':'<span class="fail">missing</span>')+' · r1 is not back-filled</div>';
+    if((scaffold.cells||[]).length){
+      h+='<table><thead><tr><th>model</th><th>scaffold</th><th>correct</th><th>cases</th><th>avg speedup</th><th>evaluation</th></tr></thead><tbody>';
+      (scaffold.cells||[]).forEach(function(c){
+        h+='<tr><td><code>'+esc(c.model_id||"—")+'</code></td><td>'+esc(c.scaffold||"—")+'</td><td>'+esc(String(c.pass_correctness))+'</td><td>'+esc((c.valid_optimized_cases==null?"—":c.valid_optimized_cases)+' / '+(c.valid_baseline_cases==null?"—":c.valid_baseline_cases))+'</td><td class="num">'+esc(c.average_speedup==null?"—":num(c.average_speedup,6)+'×')+'</td><td>'+(c.evaluation_hash_matches?'<span class="ok">hash bound</span>':'<span class="fail">UNVERIFIED</span>')+'</td></tr>';
+      });
+      h+='</tbody></table>';
+    }
+    h+='<div class="detail">'+esc(scaffold.note||"")+' · no ranking/promotion authority</div>';
+  } else h+='<div class="muted">AK-LE-3 panel unavailable: '+esc(scaffold.error||"not found")+'</div>';
+  h+=evidenceLine(scaffold)+'</div>';
+
+  h+='<div class="state-card"><h3>INF-03 · available-source Arena progress</h3>';
+  if(arena.available){
+    const terminal=arena.terminal_aggregate_present===true;
+    h+='<div class="headline '+(terminal?'ok':'sec-refused')+'">'+esc(arena.completed_checkpoints+' / '+arena.planned_checkpoints)+' checkpoints · '+(terminal?'TERMINAL AGGREGATE':'INCOMPLETE')+'</div>';
+    h+='<div class="detail">'+esc(arena.tasks)+' tasks × '+esc(arena.arms)+' available arms · checkpoints <code>'+esc((arena.checkpoint_hours||[]).join('h, ')+'h')+'</code></div>';
+    h+='<div class="detail">in-flight file markers '+esc(arena.inflight_markers)+' (not liveness) · completed claim releases '+esc(arena.released_completed_claims+' / '+arena.completed_checkpoints)+' · belief rows '+esc(arena.belief_measurement_count)+'</div>';
+    h+='<div class="detail">run <code>'+esc(arena.run_directory||"—")+'</code> · '+esc(arena.note||"")+'</div>';
+  } else h+='<div class="muted">Arena campaign evidence unavailable: '+esc(arena.error||"not found")+'</div>';
+  h+=evidenceLine(arena)+'</div>';
+
   h+='<div class="state-card"><h3>Host-process fault rehearsal</h3>';
   if(fault.available){
     h+='<div class="headline '+(fault.status==="PASS"?'ok':'fail')+'">'+esc(String(fault.status||"unknown"))+' · '+esc(fault.passed_legs+' / '+fault.total_legs)+' legs</div>';
@@ -387,6 +416,36 @@ function renderCurrentState(d){
     h+='<div class="detail">'+esc(fault.note||"")+'</div>';
   } else h+='<div class="muted">fault rehearsal unavailable: '+esc(fault.error||"not found")+'</div>';
   h+=evidenceLine(fault)+'</div>';
+
+  h+='<div class="state-card"><h3>ROCm diagnostics · RVP / baseline honesty / profiling</h3>';
+  if(rocm.available){
+    const rvp=rocm.rvp||{}, bh=rocm.baseline_honesty||{};
+    if(rvp.available) h+='<div class="detail"><b>RVP-T0-1</b> · '+esc(rvp.status||"—")+' · '+esc(rvp.throughput_tflops==null?"—":num(rvp.throughput_tflops,6)+' TFLOP/s')+' · nominal SCLK '+esc(rvp.nominal_sclk_fraction==null?"—":num(rvp.nominal_sclk_fraction*100,4)+'%')+' · '+esc(rvp.max_power_w)+' / '+esc(rvp.power_cap_w)+' W · '+esc(rvp.belief_measurement_count)+' belief rows</div>';
+    if(bh.available) h+='<div class="detail"><b>AK-BH-1</b> · '+esc(bh.status||"—")+' · hipBLASLt wins '+esc(bh.hipblaslt_wins+' / '+bh.shape_count)+' shapes · ratio '+esc(num(bh.ratio_min,6)+'–'+num(bh.ratio_max,6))+' · '+esc(bh.belief_measurement_count)+' belief rows</div>';
+    h+='<div class="detail">diagnostic read adapter '+(rocm.read_adapter_present?'<span class="ok">present</span>':'<span class="fail">missing</span>')+' · profile adapter '+(rocm.profile_adapter_present?'<span class="ok">present</span>':'<span class="fail">missing</span>')+'</div>';
+    if((rocm.profiles||[]).length){
+      h+='<table><thead><tr><th>profile surface</th><th>receipt</th><th>belief rows</th></tr></thead><tbody>';
+      (rocm.profiles||[]).forEach(function(p){ h+='<tr><td>'+esc(p.label||p.schema)+'</td><td>'+esc(p.status||"observed")+'</td><td class="num">'+esc(p.belief_measurement_count)+'</td></tr>'; });
+      h+='</tbody></table>';
+    }
+    h+='<div class="detail">'+esc(rocm.note||"")+'</div>';
+    if(rvp.evidence) h+='<div class="evidence">RVP: <code>'+esc(rvp.evidence)+'</code></div>';
+    if(bh.evidence) h+='<div class="evidence">AK-BH: <code>'+esc(bh.evidence)+'</code></div>';
+  } else h+='<div class="muted">ROCm diagnostic/profile receipts unavailable</div>';
+  h+='</div>';
+
+  h+='<div class="state-card"><h3>Belief source wiring · producer rows → Vidya readers</h3>';
+  if((beliefs.sources||[]).length){
+    h+='<table><thead><tr><th>source</th><th>producer rows</th><th>reader / source table</th><th>state</th></tr></thead><tbody>';
+    (beliefs.sources||[]).forEach(function(row){
+      const wired=row.reader_present&&row.source_table_listed;
+      h+='<tr><td>'+esc(row.source||"—")+'</td><td class="num">'+esc(row.belief_rows==null?"—":row.belief_rows)+'</td><td>'+(wired?'<span class="ok">present + listed</span>':'<span class="fail">'+(row.reader_present?'reader unlisted':'reader missing')+'</span>')+'<div class="muted"><code>'+esc(row.reader||"—")+'</code></div></td><td>'+esc(row.status||"—")+'</td></tr>';
+    });
+    h+='</tbody></table>';
+    h+='<div class="detail">'+esc(beliefs.note||"")+'</div>';
+    h+='<div class="evidence">source table: <code>'+esc(beliefs.source_table||"—")+'</code> · '+(beliefs.source_table_present?'present':'missing')+'</div>';
+  } else h+='<div class="muted">belief source-table projection unavailable</div>';
+  h+='</div>';
 
   h+='<div class="state-card"><h3>Fixed controller campaign · 8 arms</h3>';
   if(fixed.available){
@@ -428,6 +487,7 @@ function renderActivity(d){
   const impl=a.implementation||{}, commits=impl.recent_commits||[];
   const bundles=a.work_bundles||[], journals=((a.durable_state||{}).journals||[]);
   const probeState=a.probe_receipts||{}, probes=probeState.receipts||[];
+  const integrations=a.mainline_integration||[];
   let h='<div class="activity-grid"><div><h3>Implementation</h3>';
   if(commits.length){
     const head=commits[0];
@@ -438,6 +498,14 @@ function renderActivity(d){
     for(const c of commits) h+='<li><code>'+esc(c.short_sha||"")+'</code> '+esc(c.subject||"")+'</li>';
     h+='</ul></details>';
   } else h+='<div class="muted">implementation history unavailable: '+esc(impl.reason||impl.status||"no commits")+'</div>';
+  if(integrations.length){
+    h+='<h3 style="margin-top:12px">Mainline integration</h3>';
+    integrations.forEach(function(row){
+      if(!row.available){ h+='<div class="fail">'+esc(row.label||"repo")+': '+esc(row.error||"unavailable")+'</div>'; return; }
+      h+='<div class="detail"><b>'+esc(row.label||"repo")+'</b> · '+esc(row.first_parent_commits)+' first-parent commits · <span class="ok">'+esc(row.first_parent_merges)+' merges</span> since '+esc(row.since||"—")+' · <code>'+esc((row.tip||"").slice(0,10))+'</code></div>';
+    });
+    h+='<div class="muted" style="margin-top:4px">Counts use <code>origin/main</code> (local main only as fallback) with first-parent traversal. The path-filtered commit list above is intentionally not a merge counter.</div>';
+  }
   h+='</div><div><h3>Durable work bundles</h3>';
   if(!bundles.length) h+='<div class="muted">no <code>data/autokernel_*</code> bundles found</div>';
   else{

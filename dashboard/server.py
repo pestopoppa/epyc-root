@@ -158,6 +158,8 @@ BENCHMARK_ARTIFACT_INVENTORY = REPO / "data" / "benchmark_artifact_inventory.jso
 AUTOKERNEL_RESEARCH_REPO = Path(os.environ.get(
     "AUTOKERNEL_RESEARCH_REPO",
     "/workspace/repos/epyc-inference-research"))
+AUTOKERNEL_ROOT_REPO = Path(os.environ.get(
+    "AUTOKERNEL_ROOT_REPO", str(REPO)))
 AUTOKERNEL_STATE_ROOT = Path(os.environ.get(
     "AUTOKERNEL_STATE_ROOT",
     "/mnt/raid0/llm/autokernel"))
@@ -173,6 +175,8 @@ PRODUCTION_KERNEL_ATTESTATION = Path(os.environ.get(
 PRODUCTION_KERNEL_REPO = Path(os.environ.get(
     "PRODUCTION_KERNEL_REPO",
     "/mnt/raid0/llm/llama.cpp"))
+AUTOKERNEL_INTEGRATION_SINCE = os.environ.get(
+    "AUTOKERNEL_INTEGRATION_SINCE", "2026-07-29T00:00:00Z")
 SPEECH_KERNEL_ATTESTATION = Path(os.environ.get(
     "SPEECH_KERNEL_ATTESTATION",
     str(REPO / "artifacts/operator/ratify_speech_kernel_freeze_20260731.json")))
@@ -934,6 +938,74 @@ def _autokernel_git_activity(repo: Path, *, limit: int = 8) -> dict:
             "recent_commits": commits}
 
 
+def _mainline_integration_summary(repo: Path, label: str,
+                                  since: str = AUTOKERNEL_INTEGRATION_SINCE) -> dict:
+    """Count the authoritative first-parent history instead of path-simplified log rows.
+
+    ``_autokernel_git_activity`` intentionally uses ``--all -- <path>``. Git history
+    simplification commonly removes merge commits from that view, so it must never be
+    reused as a merge/deployment counter. This projection names the exact ref and
+    traversal used, making a displayed zero falsifiable.
+    """
+    refs = ("refs/remotes/origin/main", "refs/heads/main")
+    selected = None
+    try:
+        for ref in refs:
+            probe = subprocess.run(
+                ["git", "-C", str(repo), "show-ref", "--verify", "--quiet", ref],
+                capture_output=True, text=True, timeout=5.0, check=False)
+            if probe.returncode == 0:
+                selected = ref
+                break
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {"label": label, "available": False, "repo": str(repo),
+                "since": since, "error": str(exc)}
+    if selected is None:
+        return {"label": label, "available": False, "repo": str(repo),
+                "since": since, "error": "neither origin/main nor local main exists"}
+
+    def _log(*extra: str) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            ["git", "-C", str(repo), "log", "--first-parent",
+             f"--since={since}", *extra, "--format=%H%x00%cI%x00%s", selected],
+            capture_output=True, text=True, timeout=8.0, check=False)
+
+    try:
+        commits = _log()
+        merges = _log("--merges")
+        tip = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", selected], capture_output=True,
+            text=True, timeout=5.0, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {"label": label, "available": False, "repo": str(repo),
+                "ref": selected, "since": since, "error": str(exc)}
+    failed = next((proc for proc in (commits, merges, tip)
+                   if proc.returncode != 0), None)
+    if failed is not None:
+        return {"label": label, "available": False, "repo": str(repo),
+                "ref": selected, "since": since,
+                "error": failed.stderr.strip() or f"git exited {failed.returncode}"}
+    commit_rows = [row for row in commits.stdout.splitlines() if row]
+    merge_rows = [row for row in merges.stdout.splitlines() if row]
+    newest_merge = None
+    if merge_rows:
+        sha, committed_at, subject = merge_rows[0].split("\0", 2)
+        newest_merge = {"sha": sha, "short_sha": sha[:10],
+                        "committed_at": committed_at, "subject": subject}
+    return {
+        "label": label,
+        "available": True,
+        "repo": str(repo),
+        "ref": selected,
+        "tip": tip.stdout.strip(),
+        "since": since,
+        "first_parent_commits": len(commit_rows),
+        "first_parent_merges": len(merge_rows),
+        "newest_merge": newest_merge,
+        "method": "git log --first-parent --since=<since> --merges <ref>",
+    }
+
+
 def _autokernel_work_bundles(repo: Path, *, limit: int = 12) -> list[dict]:
     """Summarise durable ``data/autokernel_*`` bundles without interpreting results.
 
@@ -1201,6 +1273,217 @@ def _fault_rehearsal_summary(root: Path) -> dict:
     }
 
 
+def _arena_campaign_progress(root: Path) -> dict:
+    """Project verified checkpoint file state for the newest INF-03-style run.
+
+    Incomplete campaigns have no campaign verdict. Worker requests are shown only
+    as in-flight *markers*: their presence does not claim process liveness, success,
+    resumability, or a partial ranking.
+    """
+    try:
+        manifests = list((root / "campaigns").glob("*/campaign-manifest.json"))
+    except OSError as exc:
+        return {"available": False, "error": str(exc)}
+    manifests.sort(key=lambda path: _iso_mtime(path) or "", reverse=True)
+    for path in manifests:
+        _, manifest, error = _read_json_object(path, "Arena campaign manifest")
+        if error or manifest is None or manifest.get("schema") != \
+                "epyc.autokernel.arena_campaign_run_manifest.v1":
+            continue
+        matrix = manifest.get("matrix") if isinstance(manifest.get("matrix"), dict) else {}
+        tasks = matrix.get("task_ids") if isinstance(matrix.get("task_ids"), list) else []
+        arms = matrix.get("arm_ids") if isinstance(matrix.get("arm_ids"), list) else []
+        checkpoints = (matrix.get("checkpoint_hours")
+                       if isinstance(matrix.get("checkpoint_hours"), list) else [])
+        baseline_count = sum(1 for arm in arms if arm == "starting_state_baseline")
+        planned = len(tasks) * (baseline_count + (len(arms) - baseline_count) * len(checkpoints))
+        campaign_root = path.parent
+        receipt_paths = list(campaign_root.glob("execution/cells/*/checkpoint-receipt.json"))
+        completed = []
+        belief_rows = 0
+        released = 0
+        for receipt_path in receipt_paths:
+            _, receipt, _ = _read_json_object(receipt_path, "Arena checkpoint")
+            if not isinstance(receipt, dict) or receipt.get("schema") != \
+                    "epyc.autokernel.arena_checkpoint.v1":
+                continue
+            completed.append(receipt_path)
+            release = receipt.get("device_claim_released")
+            if isinstance(release, dict) and release.get("released_at"):
+                released += 1
+            belief = receipt.get("belief_receipt")
+            rows = belief.get("belief_measurements") if isinstance(belief, dict) else []
+            belief_rows += len(rows) if isinstance(rows, list) else 0
+        requests = list(campaign_root.glob("execution/cells/*/worker-request.json"))
+        complete_parents = {receipt.parent for receipt in completed}
+        inflight_markers = sum(1 for request in requests
+                               if request.parent not in complete_parents)
+        terminal_paths = sorted(campaign_root.glob("*aggregate*.json"),
+                                key=lambda candidate: _iso_mtime(candidate) or "",
+                                reverse=True)
+        return {
+            "available": True,
+            "campaign_id": manifest.get("campaign_id"),
+            "run_directory": campaign_root.name,
+            "authority": manifest.get("authority"),
+            "available_source": manifest.get("available_source"),
+            "tasks": len(tasks),
+            "arms": len(arms),
+            "checkpoint_hours": checkpoints,
+            "completed_checkpoints": len(completed),
+            "planned_checkpoints": planned,
+            "inflight_markers": inflight_markers,
+            "released_completed_claims": released,
+            "belief_measurement_count": belief_rows,
+            "terminal_aggregate_present": bool(terminal_paths),
+            "evidence": str(path),
+            "evidence_mtime": _iso_mtime(path),
+            "note": ("checkpoint file-state only; partial/in-flight work is not rankable and "
+                     "an in-flight marker is not a liveness claim"),
+        }
+    return {"available": False,
+            "error": f"no Arena campaign manifest found below {root / 'campaigns'}"}
+
+
+def _scaffold_panel_summary(root: Path) -> dict:
+    """Project the newest terminal AK-LE-3 panel and hash-bound evaluations."""
+    try:
+        paths = list((root / "campaigns").glob("*/panel/panel.json"))
+    except OSError as exc:
+        return {"available": False, "error": str(exc)}
+    paths.sort(key=lambda path: _iso_mtime(path) or "", reverse=True)
+    for path in paths:
+        _, panel, error = _read_json_object(path, "AK-LE-3 panel")
+        if error or panel is None or panel.get("schema") != \
+                "epyc.autokernel.ak_le_3_scaffold_panel.v1":
+            continue
+        panel_cells = panel.get("cells") if isinstance(panel.get("cells"), list) else []
+        evaluation_paths = list((path.parent / "cells").glob("*/arena-evaluation.json"))
+        evaluations = {}
+        for evaluation_path in evaluation_paths:
+            _, value, _ = _read_json_object(evaluation_path, "AK-LE-3 evaluation")
+            if isinstance(value, dict) and value.get("schema") == \
+                    "epyc.autokernel.ak_le_3_arena_evaluation.v1":
+                evaluations[value.get("cell_id")] = (evaluation_path, value)
+        cells = []
+        released = 0
+        for cell in panel_cells:
+            if not isinstance(cell, dict):
+                continue
+            release = cell.get("device_claim_released")
+            if isinstance(release, dict) and release.get("released_at"):
+                released += 1
+            evaluation_path, evaluation = evaluations.get(cell.get("cell_id"), (None, {}))
+            digest, digest_error = _sha256_file(evaluation_path) if evaluation_path else (None, None)
+            expected = cell.get("evaluation_sha256")
+            cells.append({
+                "cell_id": cell.get("cell_id"),
+                "model_id": cell.get("model_id"),
+                "effort": cell.get("effort"),
+                "scaffold": cell.get("scaffold"),
+                "planned_wall_seconds": cell.get("planned_wall_seconds"),
+                "observed_actor_wall_seconds": cell.get("observed_actor_wall_seconds"),
+                "average_speedup": evaluation.get("average_speedup"),
+                "pass_compilation": evaluation.get("pass_compilation"),
+                "pass_correctness": evaluation.get("pass_correctness"),
+                "valid_baseline_cases": evaluation.get("valid_baseline_cases"),
+                "valid_optimized_cases": evaluation.get("valid_optimized_cases"),
+                "evaluation_hash_matches": bool(expected and digest == expected),
+                "evaluation_error": digest_error,
+            })
+        constraints = panel.get("constraints") if isinstance(panel.get("constraints"), dict) else {}
+        return {
+            "available": True,
+            "campaign_id": panel.get("experiment_id"),
+            "status": panel.get("status"),
+            "authority": panel.get("authority"),
+            "capture_mode": panel.get("capture_mode"),
+            "completed_cells": len(cells),
+            "total_cells": 4,
+            "released_claims": released,
+            "cells": cells,
+            "belief_measurement_count": len(panel.get("belief_measurements", []))
+            if isinstance(panel.get("belief_measurements"), list) else 0,
+            "prospective_adapter_present": (REPO / "scripts/vidya/adapters/autokernel_scaffold_panel.py").is_file(),
+            "ranking_authority": constraints.get("ranking_authority", False),
+            "promotion_authority": constraints.get("campaign_authority", False),
+            "evidence": str(path),
+            "evidence_mtime": _iso_mtime(path),
+            "note": ("measured diagnostic scaffold observation only; r1 predates the "
+                     "prospective belief hook and is not retrofitted"),
+        }
+    return {"available": False,
+            "error": f"no AK-LE-3 panel found below {root / 'campaigns'}"}
+
+
+def _rocm_diagnostics_summary(root: Path) -> dict:
+    """Project current post-hook ROCm diagnostics and profiler receipt inventory."""
+    campaign_root = root / "campaigns"
+    rvp_path, rvp, rvp_error = _latest_autokernel_receipt(
+        campaign_root, "receipt.json", "epyc.rvp_t0_1_saturation_probe.v1")
+    bh_path, bh, bh_error = _latest_autokernel_receipt(
+        campaign_root, "receipt.json", "epyc.ak_bh_1_gemm_baseline_compare.v1")
+    rvp_rows = rvp.get("belief_measurements") if isinstance(rvp, dict) else []
+    bh_rows = bh.get("belief_measurements") if isinstance(bh, dict) else []
+    comparisons = bh.get("comparisons") if isinstance(bh, dict) else []
+    ratios = [row.get("hipblaslt_over_rocblas") for row in comparisons
+              if isinstance(row, dict) and isinstance(
+                  row.get("hipblaslt_over_rocblas"), (int, float))]
+    profile_schemas = {
+        "epyc.autokernel.rocprofv1_attribution.v1": "rocprof v1 whole-model attribution",
+        "epyc.autokernel.c4_profile_capture.v1": "C4 rocprof capture",
+        "epyc.autokernel.c4_profile_report.v1": "C4 paired profile report",
+        "epyc.autokernel.g15_profile.v1": "G15 profiler capture",
+        "epyc.autokernel.omniperf_fallback.v1": "Omniperf fallback",
+    }
+    profiles = []
+    for schema, label in profile_schemas.items():
+        found = []
+        try:
+            for candidate in (root / "probes").glob("*/*.json"):
+                _, data, _ = _read_json_object(candidate, "ROCm profile receipt")
+                if isinstance(data, dict) and data.get("schema") == schema:
+                    found.append((candidate, data))
+        except OSError:
+            found = []
+        found.sort(key=lambda pair: _iso_mtime(pair[0]) or "", reverse=True)
+        if found:
+            candidate, data = found[0]
+            rows = data.get("belief_measurements")
+            profiles.append({"schema": schema, "label": label,
+                             "status": data.get("status"),
+                             "belief_measurement_count": len(rows)
+                             if isinstance(rows, list) else 0,
+                             "evidence": str(candidate)})
+    return {
+        "available": rvp is not None or bh is not None or bool(profiles),
+        "rvp": {
+            "available": rvp is not None, "campaign_id": rvp.get("campaign_id") if rvp else None,
+            "status": rvp.get("status") if rvp else None,
+            "throughput_tflops": (rvp.get("workload") or {}).get("throughput_tflops") if rvp else None,
+            "nominal_sclk_fraction": rvp.get("nominal_sclk_sample_fraction") if rvp else None,
+            "max_power_w": rvp.get("max_power_w") if rvp else None,
+            "power_cap_w": rvp.get("power_cap_w") if rvp else None,
+            "belief_measurement_count": len(rvp_rows) if isinstance(rvp_rows, list) else 0,
+            "evidence": str(rvp_path) if rvp_path else None, "error": rvp_error,
+        },
+        "baseline_honesty": {
+            "available": bh is not None, "campaign_id": bh.get("campaign_id") if bh else None,
+            "status": bh.get("status") if bh else None, "shape_count": len(comparisons),
+            "hipblaslt_wins": sum(1 for value in ratios if value > 1.0),
+            "ratio_min": min(ratios) if ratios else None,
+            "ratio_max": max(ratios) if ratios else None,
+            "belief_measurement_count": len(bh_rows) if isinstance(bh_rows, list) else 0,
+            "evidence": str(bh_path) if bh_path else None, "error": bh_error,
+        },
+        "read_adapter_present": (REPO / "scripts/vidya/adapters/autokernel_rocm_diagnostic.py").is_file(),
+        "profile_adapter_present": (REPO / "scripts/vidya/adapters/autokernel_aux_receipt.py").is_file(),
+        "profiles": profiles,
+        "note": ("diagnostic/profile receipts do not rank an AutoKernel candidate or grant "
+                 "campaign or promotion authority"),
+    }
+
+
 def _campaign_audit_summary(path: Path | None, data: dict | None,
                             error: str | None) -> dict:
     """Project a controller audit receipt without inventing a verdict."""
@@ -1417,6 +1700,17 @@ _PROJECTED_RECEIPT_SCHEMAS = {
     "epyc.autokernel.arena_diagnostic_smoke.v1",
     "epyc.autokernel.live_control_preflight.v1",
     "epyc.autokernel.async_prefetch_replay.v1",
+    "epyc.autokernel.arena_campaign_run_manifest.v1",
+    "epyc.autokernel.arena_checkpoint.v1",
+    "epyc.autokernel.ak_le_3_scaffold_panel.v1",
+    "epyc.autokernel.ak_le_3_arena_evaluation.v1",
+    "epyc.rvp_t0_1_saturation_probe.v1",
+    "epyc.ak_bh_1_gemm_baseline_compare.v1",
+    "epyc.autokernel.rocprofv1_attribution.v1",
+    "epyc.autokernel.c4_profile_capture.v1",
+    "epyc.autokernel.c4_profile_report.v1",
+    "epyc.autokernel.g15_profile.v1",
+    "epyc.autokernel.omniperf_fallback.v1",
 }
 
 
@@ -2012,6 +2306,43 @@ def autokernel_current_state(probe_root: Path | None = None,
     control_path, control, control_err = _latest_control_summary(control_root)
     production = _production_kernel_summary(attestation_path, production_repo)
     production_head = production.get("head") if production.get("available") else None
+    loop = _loop_engineering_summary(state_root)
+    scaffold = _scaffold_panel_summary(state_root)
+    arena = _arena_campaign_progress(state_root)
+    rocm = _rocm_diagnostics_summary(state_root)
+    adapter_root = REPO / "scripts/vidya/adapters"
+    source_table_path = adapter_root / "README.md"
+    try:
+        source_table_text = source_table_path.read_text(encoding="utf-8")
+        source_table_error = None
+    except OSError as exc:
+        source_table_text = ""
+        source_table_error = str(exc)
+
+    def _belief_source(source: str, rows: int, reader: str, status: str) -> dict:
+        return {"source": source, "belief_rows": rows,
+                "reader_present": (adapter_root / reader).is_file(),
+                "source_table_listed": f"`{reader}`" in source_table_text,
+                "reader": reader, "status": status}
+
+    rocm_rows = sum((rocm.get("rvp", {}).get("belief_measurement_count", 0),
+                     rocm.get("baseline_honesty", {}).get("belief_measurement_count", 0)))
+    belief_sources = [
+        _belief_source("AK-LE planner reduction", loop.get("belief_measurement_count", 0),
+                       "autokernel_planner_reduction.py",
+                       "live" if loop.get("belief_measurement_count", 0) else "awaiting evidence"),
+        _belief_source("RVP-T0-1 + AK-BH-1 diagnostics", rocm_rows,
+                       "autokernel_rocm_diagnostic.py",
+                       "live" if rocm_rows else "awaiting post-hook receipt"),
+        _belief_source("INF-03 Arena checkpoints", arena.get("belief_measurement_count", 0),
+                       "autokernel_aux_receipt.py",
+                       "live checkpoint rows; partial campaign not rankable"
+                       if arena.get("belief_measurement_count", 0) else "awaiting post-hook checkpoint"),
+        _belief_source("AK-LE-3 scaffold panel", scaffold.get("belief_measurement_count", 0),
+                       "autokernel_scaffold_panel.py",
+                       "live" if scaffold.get("belief_measurement_count", 0)
+                       else "prospective successor-only; terminal r1 remains zero-row"),
+    ]
     return {
         "schema": "epyc.autokernel.dashboard_current_state.v1",
         "role": ("EVIDENCE SNAPSHOT ONLY — audits and diagnostic smokes do not "
@@ -2028,18 +2359,28 @@ def autokernel_current_state(probe_root: Path | None = None,
             control_path, control, control_err, production_head),
         "gpu_prefetch_replay": _gpu_replay_summary(
             replay_path, replay, replay_err),
-        "loop_engineering": _loop_engineering_summary(state_root),
+        "loop_engineering": loop,
+        "scaffold_engineering": scaffold,
         "fault_rehearsal": _fault_rehearsal_summary(state_root),
+        "arena_campaign_progress": arena,
+        "rocm_diagnostics": rocm,
+        "belief_source_wiring": {
+            "source_table": str(source_table_path),
+            "source_table_present": source_table_path.is_file(),
+            "source_table_error": source_table_error,
+            "sources": belief_sources,
+            "note": ("reader presence never back-fills pre-hook evidence; displayed row counts "
+                     "come only from producer-authored receipt vectors"),
+        },
         # SCOPE, DECLARED (KRD-AUDIT-20260812). This panel projects a CURATED set of
-        # receipt schemas, not everything under the probe root — measured at audit time:
-        # 5 schemas projected, 29 further schemas across 98 receipt files present on
-        # disk and not shown. Most are legitimately intermediate (checkpoints, profile
-        # captures), so the fix is not "render them all"; it is to stop a curated view
+        # receipt schemas, not everything under the probe/state roots. Many others are
+        # legitimately intermediate, so the fix is not "render them all"; it is to stop a curated view
         # reading as a complete one. Naming the scope where the answer is printed is
         # the same rule the health-probe finding turned on: a reader acts on the pass.
         "receipt_coverage": {
             "projected_schemas": sorted(_PROJECTED_RECEIPT_SCHEMAS),
             "probe_root": str(probe_root),
+            "state_root": str(state_root),
             "note": ("CURATED VIEW — receipts whose schema is not in "
                      "`projected_schemas` exist under `probe_root` and are NOT shown "
                      "here. Absence from this panel is not absence of evidence."),
@@ -2068,6 +2409,10 @@ def autokernel_activity(repo: Path | None = None,
                  "liveness and does not affect _freshness or /api/health"),
         "research_repo": str(repo),
         "implementation": _autokernel_git_activity(repo),
+        "mainline_integration": [
+            _mainline_integration_summary(AUTOKERNEL_ROOT_REPO, "epyc-root"),
+            _mainline_integration_summary(repo, "epyc-inference-research"),
+        ],
         "work_bundles": _autokernel_work_bundles(repo),
         "durable_state": _autokernel_journal_inventory(state_root),
         "probe_receipts": _autokernel_probe_receipts(state_root),

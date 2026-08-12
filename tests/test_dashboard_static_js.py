@@ -174,6 +174,10 @@ class StaticJsTest(unittest.TestCase):
             instrument_preflight: {available: false},
             gpu_prefetch_replay: {available: false},
             loop_engineering: {available: false},
+            scaffold_engineering: {available: false},
+            arena_campaign_progress: {available: false},
+            rocm_diagnostics: {available: false},
+            belief_source_wiring: {sources: []},
             fault_rehearsal: {available: false},
             fixed_campaign: {available: false},
             available_source_diagnostic: {available: false},
@@ -194,8 +198,20 @@ if (!__stateHtml.includes("Production kernel SET")) {{
   throw new Error("current-state renderer did not reach the kernel-set card");
 }}
 for (const expected of ["ggml observed 0.16.0", "not attested",
-                        "dashboard process only", "CURATED VIEW"]) {{
+                        "dashboard process only", "CURATED VIEW",
+                        "AK-LE-3 scaffold", "INF-03", "ROCm diagnostics",
+                        "Belief source wiring"]) {{
   if (!__stateHtml.includes(expected)) throw new Error("missing distinction: " + expected);
+}}
+renderActivity({{_activity: {{implementation: {{recent_commits: []}},
+  mainline_integration: [{{available: true, label: "epyc-root",
+    first_parent_commits: 666, first_parent_merges: 38,
+    since: "2026-07-29T00:00:00Z", tip: "abcdef123456"}}],
+  work_bundles: [], durable_state: {{journals: []}}, probe_receipts: {{receipts: []}}
+}}}});
+if (!__box.innerHTML.includes("38 merges") ||
+    !__box.innerHTML.includes("path-filtered commit list")) {{
+  throw new Error("mainline integration count was hidden or confused with path history");
 }}
 renderSections({{
   _render: {{mode: "contract_v2"}},
