@@ -39,9 +39,10 @@ exact disaster the guards exist to prevent. Endpoints must be
 `tmux:<session>:<window>`, or a window whose name equals the agent id must exist.
 
 Usage:
-    tmux_adapter.py probe  --agent codex                 # all guard signals, no action
-    tmux_adapter.py nudge  --agent codex --message "..."  # send-keys, guarded
-    tmux_adapter.py spawn  --agent new-main               # 4 bus files, then a pane
+    tmux_adapter.py probe    --agent codex                 # all guard signals, no action
+    tmux_adapter.py nudge    --agent codex --message "..."  # send-keys, guarded (DEPRECATED payload)
+    tmux_adapter.py doorbell --agent codex                  # fixed ring, two guards, bus carries payload
+    tmux_adapter.py spawn    --agent new-main               # 4 bus files, then a pane
 """
 
 from __future__ import annotations
@@ -287,6 +288,136 @@ def _pending_fragment(message: str) -> str:
     """
     trimmed = message.rstrip()
     return trimmed[-min(len(trimmed), _FRAGMENT_CHARS):]
+
+
+# ---------------------------------------------------------------------------
+# C45, 2026-08-12. THE DOORBELL: nudges stop carrying payload.
+#
+# THE FAILURE THIS REPLACES. `probe`'s `state == "working"` blocker (see the
+# C35/R1/C36 blocks above) is correct in principle for a PAYLOAD nudge — typing
+# a brief into a pane mid-generation corrupts whatever is running there — but it
+# is the wrong tradeoff for the common case, where the message carries no new
+# information at all ("you have mail, go read it"). On 2026-08-12 an
+# idle-but-`working`-labelled agent sat unreachable for 33 minutes because
+# every nudge attempt refused on the heartbeat state, and nothing could clear
+# the flag because clearing it is what the refused nudge would have done. C35's
+# quiescence override and C36's runtime-liveness signal both exist to patch
+# exactly this deadlock for the PAYLOAD path — and both remain necessary there,
+# because a payload nudge really can corrupt a mid-generation pane.
+#
+# THE REDESIGN. Payload moves entirely to the bus, which already is durable,
+# schema-validated and cursor-tracked (see BUS_PROTOCOL.md) — it does not need
+# a tmux pane to carry it reliably, and never did. The pane only ever needed a
+# DOORBELL: a signal to go check the bus. So `doorbell` sends a fixed,
+# content-free, idempotent string and nothing else — no `--message`, because a
+# caller-controlled string is a payload nudge wearing a different name. Once
+# nothing an agent DOES (drains a bus message, keeps generating, sits at an
+# empty prompt) changes what the doorbell says, most of the reasons a payload
+# nudge must be refused stop applying to it:
+#
+#   * quiet-for (window_activity < --quiet-s)     NOT applied. A short fixed
+#     line buffers safely inside a busy composer and submits cleanly once
+#     generation stops — the whole reason chunking/pacing exists for nudge is
+#     to survive a PASTE-BLOB threshold on a LONG message; the doorbell string
+#     is ~45 chars, an order of magnitude under the smallest calibrated
+#     single-burst limit (800 chars, Claude Code). There is nothing here for
+#     the quiet-for check to protect against.
+#   * rate limit (--min-interval-s)                NOT applied. Ringing twice
+#     is a no-op by design: the second ring says exactly what the first one
+#     said, to an agent that either already drained (so the doorbell is inert)
+#     or still has not (so ringing again is the correct behaviour, not spam).
+#     A payload nudge earns a rate limit because repetition means the operator
+#     is re-typing a brief into a live session; a doorbell has no brief to
+#     re-type.
+#   * heartbeat-state refusal (`state == "working"`) NOT applied. THIS is the
+#     guard whose removal fixes the 33-minute incident above, and it is safe to
+#     remove here specifically because of what the message no longer does: it
+#     does not interrupt a task with new instructions, it cannot corrupt a
+#     mid-generation composer with foreign content (see guard (b) below — the
+#     composer-empty check is what still protects a genuinely mid-typing pane),
+#     and an agent correctly mid-generation simply keeps generating with three
+#     extra harmless lines in its scrollback. The failure mode C35/C36 exist to
+#     avoid — believing a stale `working` self-report and typing a live brief
+#     into a busy pane — cannot happen here because there is no brief.
+#   * C35's quiescence-override machinery                NOT applied, and not
+#     merely "applied but never triggers": there is no `working` blocker on
+#     this path for it to override, so wiring it in would be dead code arguing
+#     with a guard that no longer exists. C35 (and its R1 stale-heartbeat
+#     sibling) stay exactly as they are for `nudge` — this module still owns a
+#     real payload path, and it still needs a real deadlock escape hatch.
+#
+# WHAT STAYS, AND WHY THESE TWO ARE LOAD-BEARING WHERE THE OTHERS ARE NOT.
+# Both guards below protect against the SAME hazard class — an Enter landing
+# somewhere it corrupts — which none of the four removed guards do:
+#
+#   (a) pane exists and is not dead. An Enter (and the string ahead of it) sent
+#       to a pane that no longer exists is not caught by tmux — `send-keys` to
+#       a dead/gone target simply fails or silently goes nowhere — so this is
+#       the same "does the target still exist" question `resolve_target` and
+#       `probe`'s `pane_dead` read already answer for `nudge`, asked fresh
+#       (state can change between resolution and send) and answered the same
+#       fail-closed way: unreadable is refused, not assumed alive.
+#   (b) the composer holds no pending input. This is the one hazard a
+#       content-free message does NOT remove: the doorbell's Enter is still a
+#       real Enter, and Enter always submits whatever is already sitting in
+#       the composer, doorbell text or not. If an operator (or the agent
+#       itself) has half-typed something and not yet submitted it, ringing the
+#       doorbell submits THAT, not the doorbell string. This is a hazard the
+#       payload path also has — see the C6/C12 cursor-anchored submission
+#       machinery above — but `nudge` gets to defend against it by verifying
+#       ITS OWN fragment lands before pressing Enter. A doorbell has no
+#       fragment of its own to plant first; it must instead confirm the
+#       composer is empty BEFORE typing anything, or refuse.
+#
+# See `_composer_row_is_empty` for how (b) is read, and its docstring for the
+# one thing this check is known not to distinguish (a placeholder/hint string
+# a TUI might render at an empty prompt from real pending content) — that case
+# fails CLOSED (reads as non-empty, refuses), which is the safe direction: a
+# doorbell that occasionally over-refuses costs a retry; one that fires into
+# half-typed text does not.
+DOORBELL_TEXT_TEMPLATE = "Bus: unread inbox for {agent} — drain now."
+# Codex's bare prompt is "› ", Claude Code's is "❱ " (both calibrated in the
+# C6 block above and used throughout tests/test_tmux_adapter.py as the bare-
+# prompt fixture for each TUI). A composer showing only one of these — or
+# nothing at all, the disposable-shell fixture's bare state — has no pending
+# input. Anything else on the row is real content, typed by the operator or
+# left behind by the agent, and must not be typed over.
+_BARE_PROMPT_GLYPHS = ("›", "❱")
+
+
+def doorbell_text(agent: str) -> str:
+    """The fixed doorbell string. `agent` is the ONLY substitution — no other
+    interpolation, no free-form content. This is deliberately not an f-string
+    at the call site: routing every doorbell through one template is what makes
+    "the string is not caller-controllable" a property of the code, not a
+    convention callers are trusted to honour."""
+    return DOORBELL_TEXT_TEMPLATE.format(agent=agent)
+
+
+def _composer_row_is_empty(composer_text: str) -> bool:
+    """Is the composer's CURRENT ROW free of pending input? For guard (b) above.
+
+    Deliberately narrower than `_composer_text`'s own return value. That value
+    is "everything up to the cursor" — the right anchor for fragment matching
+    (see its docstring), but wrong here: it also contains the entire prior
+    transcript, which is real, submitted, harmless content and must not count
+    against emptiness. `doorbell` has no fragment to match against in the
+    first place — the question is not "does the composer end with X" but "is
+    there anything at all pending" — so this reads only the last line of that
+    capture: the physical row the cursor sits on, from column 0 to the cursor.
+
+    KNOWN SCOPE LIMIT, stated rather than hidden: a composer with pending input
+    spanning MULTIPLE rows (an operator mid-typing a multi-line message, cursor
+    resting on a trailing blank line) would read this row as empty while an
+    earlier row is not. Not addressed here — the design brief scopes this to
+    the "composer/input row", singular, and multi-row pending input on an
+    otherwise-idle main is not the case this guard was written to catch. If it
+    ever matters, extend the scan to every row from the last recognised
+    bare-prompt line to the cursor, not just the last one.
+    """
+    row = composer_text.rsplit("\n", 1)[-1]
+    stripped = row.strip()
+    return stripped == "" or stripped in _BARE_PROMPT_GLYPHS
 
 
 def _submission_state(composer_text: str, fragment: str,
@@ -1469,6 +1600,73 @@ def cmd_nudge(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_doorbell(args: argparse.Namespace) -> int:
+    """Ring the fixed doorbell string. Two load-bearing guards, both fail-closed;
+    see the C45 block above `doorbell_text` for what is and is not applied here
+    and why. Deliberately does NOT call `probe()` or `heartbeat()` — pulling in
+    `probe` would silently re-attach every guard C45 removes (quiet-for, rate
+    limit, heartbeat state, the C35 override machinery built to patch it), which
+    is precisely the deadlock this command exists to stop reproducing.
+    """
+    config = load_config()
+    flags = config.get("flags") or {}
+    authorised = str(flags.get("codex_sendkeys")).strip().lower() in {"1", "true", "yes", "on"}
+    if not authorised:
+        # The master send-keys authorisation (gate OP-SENDKEYS-CODEX), not one of
+        # doorbell's two pane-state guards — this adapter does not type into any
+        # pane, doorbell or payload, without it.
+        print("REFUSING: flags.codex_sendkeys is off (gate OP-SENDKEYS-CODEX)", file=sys.stderr)
+        return EX_BLOCKED
+
+    target, why = resolve_target(config, args.agent)
+    if not target:
+        print(f"REFUSING: {why}", file=sys.stderr)
+        return EX_BLOCKED
+
+    # ---- guard (a): pane exists and pane_dead == 0 ----
+    rc, out = _tmux("display-message", "-p", "-t", target, "#{pane_dead}")
+    if rc != 0 or out.strip() not in ("0", "1"):
+        print(f"REFUSING: could not read pane_dead for {target}: {out!r} — fail closed",
+              file=sys.stderr)
+        return EX_BLOCKED
+    if out.strip() == "1":
+        print(f"REFUSING: pane {target} is dead", file=sys.stderr)
+        return EX_BLOCKED
+
+    # ---- guard (b): composer holds no pending input ----
+    composer, failure = _composer_text(target)
+    if failure or composer is None:
+        print(f"REFUSING: could not read the composer to confirm it holds no pending input: "
+              f"{failure} — fail closed rather than risk submitting whatever is there",
+              file=sys.stderr)
+        return EX_MISCONFIG
+    if not _composer_row_is_empty(composer):
+        print(f"REFUSING: pane {target} composer holds pending input; ringing the doorbell "
+              f"sends a real Enter, which would submit whatever is already typed there, not "
+              f"the doorbell string. Clear it (or let whoever is typing submit it) and retry — "
+              f"retrying costs nothing, ringing is idempotent.", file=sys.stderr)
+        return EX_BLOCKED
+
+    message = doorbell_text(args.agent)
+    if args.dry_run:
+        print(f"would ring doorbell for {args.agent} at {target}: {message!r}")
+        return 0
+    # One send-keys call is enough — no chunking, no pacing gap: the string is
+    # ~45 chars, an order of magnitude under the smallest calibrated single-burst
+    # paste threshold (800 chars, Claude Code CLI v2.1.220). See the C45 block.
+    rc, out = _tmux("send-keys", "-l", "-t", target, "--", message)
+    if rc != 0:
+        print(f"send-keys message failed: {out}", file=sys.stderr)
+        return EX_MISCONFIG
+    rc, out = _tmux("send-keys", "-t", target, "Enter")
+    if rc != 0:
+        print(f"send-keys Enter failed: {out}", file=sys.stderr)
+        return EX_MISCONFIG
+    record("doorbell", args.agent, message)
+    print(f"doorbell rung for {args.agent} at {target}")
+    return 0
+
+
 def cmd_spawn(args: argparse.Namespace) -> int:
     """Create the agent's four bus files, THEN start its pane.
 
@@ -1749,7 +1947,9 @@ def build_parser() -> argparse.ArgumentParser:
     pr.add_argument("--json", action="store_true")
     pr.set_defaults(func=cmd_probe)
 
-    nu = sub.add_parser("nudge", help="send-keys into the agent's pane, guarded")
+    nu = sub.add_parser("nudge", help="send-keys into the agent's pane, guarded — DEPRECATED: "
+                        "payload nudges are deprecated — bus carries payload, doorbell rings "
+                        "(see the 'doorbell' subcommand and the C45 block in this file)")
     nu.add_argument("--agent", required=True)
     nu.add_argument("--message", required=True)
     nu.add_argument("--min-interval-s", type=float, default=600.0, help="rate limit (default 600)")
@@ -1757,6 +1957,13 @@ def build_parser() -> argparse.ArgumentParser:
                     help="delay before each prompt-tail submission check")
     nu.add_argument("--dry-run", action="store_true")
     nu.set_defaults(func=cmd_nudge)
+
+    db = sub.add_parser("doorbell", help="ring a FIXED, content-free string into the agent's "
+                        "pane — no --message: the bus carries payload, this only says 'go "
+                        "drain it'. Two guards only (pane alive, composer empty); see C45.")
+    db.add_argument("--agent", required=True)
+    db.add_argument("--dry-run", action="store_true")
+    db.set_defaults(func=cmd_doorbell)
 
     sp = sub.add_parser("spawn", help="create the agent's bus files, then its pane")
     sp.add_argument("--agent", required=True)
