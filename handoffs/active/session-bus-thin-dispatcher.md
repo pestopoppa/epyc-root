@@ -2283,6 +2283,222 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     already written, which wants more care than a late-night text fix, and the six live instances
     are already surfaced by the C39 notice.
 
+### C44–C50 + the 2026-08-12 delivery-plane landings (filed at wrap-up by `coordinator-agent`)
+
+Filed because most of these emerged mid-flight and had no task line: work that landed with a commit
+gets a closed box carrying its hash, work this session only *recommended* gets an open one. Nothing
+here is back-dated — `✅ 2026-08-12` is the day it landed and the day it was filed.
+
+Two of these (`guard-universe-and-worktree-isolation` items 1–5, and the pattern-kill hooks) belong
+to a task with **no handoff of its own**. They are filed here rather than left as prose in a bus
+message, because item 1 is a bus-root fix and the whole task's premise is this plane's
+one-live-instance assumption. If that task gets its own handoff, move these five rows wholesale.
+
+> **⚠ C-NUMBER COLLISION — for the C-series owner (`mainD`), NOT renumbered here.** `C45` is anchored
+> twice on 2026-08-12 and neither anchor can be dropped silently: the **doorbell** owns it in the code
+> (a `C45` comment block in `scripts/coordination/tmux_adapter.py`, plus `DOORBELL_MIGRATION.md` and
+> two test files), and the **`agent_audit.log` untrack** owns it in `a70dbe1a`'s `.gitignore`
+> rationale (*"C45 precedent — the same untrack-and-gitignore ruling already applied to
+> logs/agent_audit.log"*). Renumbering inside another agent's namespace is that agent's call. Until
+> it is made, the audit-log item is referred to by description and hash, never by a number.
+
+- [x] **C44 — the token relay is WITHDRAWAL-BLIND: a gate whose own requester has moved on is still
+  presented as a live ask.** ✅ 2026-08-12 — `mainD`, commit `bd2e830d`. C39 taught the relay to
+  notice a *signed* gate; it could not notice a *withdrawn* one. Verified closed end-to-end rather
+  than re-done: `tokens/token-queue.md:365` carries the `REQUESTER-MOVED-ON` marker, so the operator
+  no longer reads that gate as pending.
+- [x] **C45 — every nudge guard exists because nudges carry PAYLOAD, and the payload never needed the
+  pane.** ✅ 2026-08-12 — commit `777f826e`. The bus is already durable, schema-validated and
+  cursor-tracked; the pane only ever needed a **doorbell** — a fixed, content-free, idempotent "go
+  check the bus" string with no `--message`, since a caller-controlled string is a payload nudge by
+  another name. Quiet-for, the rate limit, the heartbeat-state refusal and C35's override machinery
+  are all **not** applied to it, each removal reasoned through in the code. Two guards stay,
+  fail-closed, against the one hazard content-free does not remove: an Enter landing where it
+  corrupts. Cost of the old shape, measured: an idle-but-`working`-labelled agent was unreachable for
+  **33 minutes** on 2026-08-12 — the heartbeat-state blocker refused every nudge, and clearing the
+  flag is exactly what the refused nudge would have done. 28 new tests; all 124 pre-existing
+  `tmux_adapter` tests still pass unchanged. `DOORBELL_MIGRATION.md` names the daemon call sites for
+  the daemon's owner and is deliberately not applied here.
+- [x] **`logs/agent_audit.log` untracked — a concurrently-appended tracked file is permanent merge
+  tax.** ✅ 2026-08-12 — commit `73998d70` (labelled C45 in its subject; see the collision note).
+  Every writer touches the same last line, so a textual merge cannot interleave two sets of appends;
+  it conflicted on this merge and would conflict on every future one. The trail lives on disk and is
+  read via `agent_log_analyze.sh` — nothing reads it out of git history. Option 1 of three, per the
+  A19 precedent. **Option 3 (a `merge=union` driver) was rejected on its own merits**: it makes the
+  conflict disappear while silently reordering chronology, passing every check and producing a log
+  nobody can trust to be ordered.
+- [x] **C46 — the pattern-kill hook forbade an idiom a project skill instructs.** ✅ 2026-08-12 —
+  commit `e08fe836`, operator decision, `mainD` CC'd (they own the hook and had argued the opposite).
+  The guard was scoped to `pkill` **and** `pgrep`; `pgrep` selects but does not kill, and blocking it
+  collided with legitimate read-only sensing, forcing a skill rewrite around an unapproved scope. The
+  scanner still classifies grep-patterns; the hook now allows them. The narrowing is pinned by its own
+  test so it cannot be silently re-widened. 9/9 green. *A guard must be tested against the compliant
+  path, not only the hazardous one.*
+- [x] **C47 — the hook blocked the message REPORTING the incident it guards.** ✅ 2026-08-12 —
+  commit `ee628304` (guard itself `68979233`). Scoped to invocations, not text.
+- [x] **C48 — supervisor liveness was derived from a pid file, not from the lock.** ✅ 2026-08-12 —
+  commit `a96191af`. Measured incident: `status` reported *"supervisor: not running"* and health
+  UNHEALTHY while pid 1510370 was alive, holding the lock, and had been supervising for 7h40m,
+  because `$SUP_PIDFILE` had vanished. The coordinator read UNHEALTHY, concluded the bus was
+  unwatched, and launched a second supervisor; C43's bounded flock correctly refused it, but the
+  refusal **could not name the holder**, because naming also read the missing pid file. *The
+  diagnostic and the thing it diagnoses shared a single point of failure.* Liveness now comes from
+  the flock; the pid file is demoted to a hint.
+- [x] **The destructive-revert guard (hook 2) reverted.** ✅ 2026-08-12 — commit `3d8800e6`, reverting
+  `03e17111`, by operator decision. Recorded as landed work rather than dropped: a shipped-then-pulled
+  guard is a decision, and `54889ea3` separately pinned the shell-framing gap found in it so the
+  finding outlives the revert.
+- [x] **`start_orchestrator_test` name-pattern kills removed — twice, at two levels.** ✅ 2026-08-12
+  — commits `81412a6e` (the kills the script *executes*, lines 76–77) and `c46caf24` (the one it
+  *recommends*, line 232, printed as the operator's stop procedure). Landed on coordinator
+  instruction at severity CRITICAL; **authorship is not the committer's** — the fix was written by an
+  unidentified agent, had been destroyed twice, and survived only in fragile copies. The second
+  commit is the same bug one level over: the first fix's universe was *"commands this script runs"*,
+  the hazard's universe is *"name-pattern kills this script causes"*, and the missing line is
+  arguably worse because it launders the wildcard through the operator.
+- [x] **Bus-root resolution canonicalised — one strategy.** ✅ 2026-08-12 — commit `8b308468`
+  (`guard-universe-and-worktree-isolation` P1/1). `session_bus.py` resolved `DEFAULT_BUS_ROOT` via
+  `Path(__file__).resolve().parents[2]` while `merge_gate.py` hardcoded the literal `/workspace` —
+  two strategies for one fact. Under worktree-per-main the first derives **five independently
+  mutating bus directories** instead of the single shared runtime plane the protocol assumes (one
+  queue, one cursor set, one single-writer rule per file). New `--print-root` flag makes the
+  resolution assertable from inside a worktree.
+- [x] **Worktree machinery + migration doc.** ✅ 2026-08-12 — commit `724b5f85` (P1/4).
+  `scripts/coordination/setup_main_worktrees.sh`: idempotent per-agent
+  `git worktree add /mnt/raid0/llm/worktrees/mains/<agent> -b lane/<agent>`, syncs `repos/*` via the
+  **worktree's own** `clone-repos.sh`, then verifies inside the worktree that the shared pre-commit
+  hooks actually fire (stages a secret-shaped blob, confirms the block; stages a clean file, confirms
+  the commit) and that `session_bus.py --print-root` resolves to the ONE canonical bus root.
+  Throwaway worktree cleaned up completely after each verification pass, confirmed absent from
+  `git worktree list`, `git branch -a` and the filesystem.
+- [x] **Test coverage for the three worktree items.** ✅ 2026-08-12 — commit `fbff4c22` (P1/5). Four
+  pytest-collectible files, 57 collected / 50 passed / 7 honest skips, each carrying a
+  **both-directions** pair: the new behaviour fires, and the adjacent behaviour it must not disturb
+  stays intact. The core pin relocates a *copy* of `session_bus.py` to an arbitrary path — which is
+  exactly what a worktree checkout is — and asserts the root does not follow it.
+- [x] **`worktrees/` gitignored — and the premise it was routed on corrected in the same commit.**
+  ✅ 2026-08-12 — commit `5df3c9eb`. Routed as a one-line live-hazard fix; **both halves of the
+  premise were wrong**, and measurement rather than assumption is what caught them. `git clean -ndx`
+  prints `Would skip repository` for all **29** (not 20) — git skips nested repositories, so `-fdx`
+  removes none of them. Only `-ffdx` removes them, as a single `Would remove worktrees/`. The commit
+  states plainly that ignoring does **not** close the hazard. *Falsified within the hour: the wipe
+  below is that second `f` being typed.*
+- [x] **Hardware-idle backfill runner + queue-empty detector.** ✅ 2026-08-12 — commit `5af987ef`.
+  Against a measured gap: 19 READY compute-gated tasks existed, nothing translated them into queued
+  jobs, hardware sat idle **3h47m**, and the daemon wrote 590 consecutive all-idle advisory records
+  nothing reads. Region-lock-wrapped, timeout-bounded, concurrency-capped, crash-safe re-queue of
+  orphaned in-flight entries; the detector watches the QUEUE, not the hardware, and emits at most one
+  bus finding per unbroken idle stretch.
+- [x] **The daemon's own pick now reaches a reader.** ✅ 2026-08-12 — commit `e9a11f08`.
+  *(Labelled "M1" in the falsifiability investigation's numbering — **not** this handoff's M1
+  milestone, which is the 2026-07-27 skeleton. Recorded without a number to stop the collision
+  spreading.)* `compute_advice()` has always computed a concrete pick per agent per tick, into
+  `advisory.jsonl` — a file whose own producer says in-source that it has no reader.
+  `deliver_scheduling_recommendation()` routes a *stable* pick-set into `coordinator-agent`'s inbox,
+  reusing R1's `_append_inbox` shape and R2's dedupe verbatim. **There is deliberately no authority
+  branch in the code**: under `assign` the row leaves READY, the pick stops being emitted, and the
+  arming counter resets, so the mechanism silences itself *structurally*. A mechanism that behaves
+  differently when a config flag is raised has smuggled the flag's decision into itself.
+- [x] **Residency is not work — the idle model that locked the queue.** ✅ 2026-08-12 — commit
+  `e9a11f08`. *(Labelled "M4" in the same ad-hoc numbering; not this handoff's M4 milestone.)*
+  `mi210_state()` OR-ed `util_pct` with `vram_used_mb` into one `occupied` boolean, so a
+  loaded-but-idle model read BUSY and `_eligible` rejected every queued lane row behind it — **572
+  `lane cpu busy` rejections**. The sensor now publishes `busy | resident | free | unknown`;
+  `occupied` is retained unchanged for pre-split callers. **RESIDENT ADMITS, WITH A WARNING**, stated
+  rather than buried: admission is not acquisition — `_eligible` only makes a row pickable, and
+  `device_claim.py` / `cpu_region_lock` remain the only things that grant a device, untouched.
+  `test_busy_mi210_vram` was **deleted, not adjusted**: it pinned the defect. Six mutations verified
+  against a sandbox copy, never the shared tree.
+- [x] **The device-claim expiry check was disarmed for exactly the claim that monopolised the
+  MI210.** ✅ 2026-08-12 — `epyc-inference-research` commit `4755e727`. The device claim was acquired
+  with no `max_hold_s` while the CPU claim three lines above passed one, so `expires_at` was never
+  written and `check_claim_expiry()` returned `COULD_NOT_CHECK` forever instead of `FAIL`. Fixed by
+  quoting `spec.max_hold_s` rather than a fresh constant — both claims are taken in one transaction
+  for one campaign and released together, so two declared deadlines would be a defect by construction.
+- [x] **Three operator decisions applied to `config.yaml`.** ✅ 2026-08-12 — commit `6d8b5999`.
+  `authority: manual` → `assign`; cpu lanes for `mainC` and `mainD` (only `mainA` had it, so CPU work
+  queued behind one agent and `lane cpu not in <agent> roster lanes` was the dominant rejection); and
+  a `hardware-backfill` roster row, without which `_require_roster_id` refuses the new runner's
+  findings and they cannot reach the bus at all. Verified before editing that `config.yaml` is not in
+  `human_only_paths.yaml` and that `authority.lease_grant` includes `coordinator-agent`, so no
+  signature was required. **Effect, measured within a tick:** `ready_depth: 19` with nothing moving
+  → queue fold `ASSIGNED 6 / CLAIMED 1 / READY 12`, with seven `assigned` and one
+  `scheduling-recommendation-delivered` advisory record.
+- [x] **The coordinator's status-from-memory replaced by an artifact-per-row ledger.** ✅ 2026-08-12
+  — commit `1764471d` (`artifacts/operator/RESOLUTION-LEDGER-20260812.md`), with the morning package
+  `9cbcca0c` (`artifacts/operator/MORNING-PACKAGE-20260812.md`) as its decisions-first companion.
+  Every row carries a commit, a receipt path, a `file:line`, or the literal token `NO ARTIFACT`, and
+  the **unowned section is first and is not empty** (ten items). Both documents exist to correct the
+  coordinator's own reported figures, and they did: duty cycle ~20% → **~8–9%**; checkbox counts
+  re-derived with an anchored pattern (1273→1242 open, 2306→2368 done); the **5,292** lane-rejection
+  figure withdrawn as **not reproducible**; and one coordinator self-criticism withdrawn because it
+  could not be verified at all. *A metric can flag candidates; only the artifact settles them.*
+
+- [ ] **C49 — the operator escalation misclassifies `action_required`, and reported 11 items when
+  there were zero.** FILED 2026-08-12 by `coordinator-agent`, **unfixed**. The daemon escalated 11
+  operator items; a full parse of the same 17-item standing queue found **zero** needing the human.
+  The 11 is reproducible exactly as *every item with `action_required: true` (12) minus `kind: status`
+  (1)*. That formula reads `action_required` as "the operator must act", when on this bus it means
+  "some named agent must act next" — every one of the 11 is addressed to `auditor`, a main, or the
+  coordinator in its own text, and only one carries `kind: decision-request`, which its author
+  disclaims. Measured across the live inboxes: **111 rows carry `action_required`, 8 satisfy
+  `_is_operator_item` (`session_bus_coordinator.py:2643`, keyed on `kind ∈ {token-request, defect}`
+  or `severity == CRITICAL`), 7 overlap** — the two predicates are nearly disjoint. An escalation
+  that fires on a well-run night trains everyone to ignore it, which is the same failure as not
+  checking, one level up.
+  - [ ] **The fix is a POSITIVE marker, not a tightened negative.** Neither predicate can be repaired
+    by exclusion: `action_required` over-fires and the kind-set under-fires, so a sender who needs the
+    operator has no way to say so. Add an explicit sender-set field (the `needs_routing_to` /
+    structural-intent idiom already in use), make the escalation key on **that alone**, and make an
+    item claiming operator attention without it a schema warning — so the marker's absence is
+    detectable rather than silent.
+- [ ] **C50 — the picker serves a STALE READY set, and this is DISTINCT from the authority gag.**
+  FILED 2026-08-12 by `coordinator-agent` from `mainB`'s screening, **unfixed**. Six dispatched picks
+  screened with `backlog_row_check.py --ref`: **1 of 6 dispatchable**; four (`:463`, `:511`, `:513`,
+  `:628`) had been `- [x]` since **2026-07-29**, closed fourteen days before the daemon named them,
+  and one (`:626`) was anchor rot — the file untouched in between, so the picker never re-read what
+  closed them. It re-selected them on 20 consecutive ticks. In the surviving advisory shard: **811
+  `would-assign` records, 100% carrying a `task_id`, resolving to 15 distinct `(agent, task, lane)`
+  picks over NINE distinct task rows, all nine from one file**
+  (`handoffs/active/opendataloader-pipeline-integration.md`), the top six repeating 104–105 times
+  each. **Fixing delivery does not fix selection** — a working courier now delivers wrong rows faster.
+  - [ ] **Establish whether the READY set is cached or re-derived per tick**, and re-anchor picks on
+    row identity rather than `file:line`. Anchor rot alone accounts for one of the six, and every
+    advisory row inherits whichever defect this is.
+- [ ] **Reporting-unit rule for any scheduler/backlog figure — write it into the shared
+  constraints.** Derived from the C50 retraction: the "4,602 pending picks" headline counted
+  **records, not work**. Standing form: *"N records resolving to M distinct rows, of which K were
+  dispatchable at emission."* K is the only one of the three that was ever a claim about the fleet,
+  and it is the one nobody computed. Applies to queue depth, backlog size and advisory volume alike;
+  a figure quoted without its distinct-row and dispatchable-at-emission denominators is the same
+  error. Belongs in `agents/shared/OPERATING_CONSTRAINTS.md` beside the existing claim-grammar rules.
+- [ ] **`advisory*.jsonl` rotation keeps no durable history.** C38's rotation is correct and closed,
+  but the shards land **inside the repo and gitignored** (`.gitignore`: `coordination/session-bus/
+  advisory*.jsonl`), which makes the entire scheduler record `git clean -x` fodder. It was destroyed
+  on 2026-08-12: the earliest surviving record is **08:20:31Z**, which is precisely why the 4,602
+  figure above cannot be re-derived and 811 is what remains. Rotate to a path outside the repo, or
+  archive each sealed shard to one. *A history that only exists in `clean -x` fodder is not a
+  history.*
+- [ ] **Nothing on this host explains the deletion of `logs/bus_supervisor.pid`, and nobody owns it.**
+  Routed explicitly by `mainD` rather than left implicit: the `auditor` exonerated `a70dbe1a` with
+  mechanism — the path was never tracked in any commit, so `git rm --cached` could not have deleted
+  it even in principle. C48 makes it moot for *liveness*, but something deleted a live process's
+  record and the cause is unestablished. Closes as either a named cause or an explicit written-off.
+- [ ] **Per-agent shards for the concurrently-appended log files.** Option 2 from the
+  `agent_audit.log` adjudication, which untracking deliberately did not implement. Untracking removed
+  the merge tax at the cost of the git copy; per-agent files remove it while keeping tracking, and the
+  same shape applies to any other all-writers-one-file artifact on this plane. Decide it as a policy
+  once rather than per-file — and note that the untrack has already converted two paths from *merge
+  contention* into *`clean -x` exposure*, which is the cost this option avoids.
+- [ ] **Worktree isolation phase 2 — the cutover.** Phase 1 items 1–5 are landed above; nothing is
+  migrated. `scripts/coordination/WORKTREE_MIGRATION.md` is written and `setup_main_worktrees.sh` is
+  verified against a throwaway, but the five mains still share `/workspace` — which is what forced a
+  15-minute fleet-wide commit freeze to land one merge, and what put 29 worktrees inside the tree that
+  `git clean -ffdx` then swept (`progress/2026-08/2026-08-12.md`). **Not blocked on the
+  reboot** — OP-16 was declined by the operator, so this is queued, not gated. Its own task id
+  (`guard-universe-and-worktree-isolation`) still has no handoff of its own; give it one at cutover
+  or fold it here permanently.
+
 ## Decision gates
 
 - `OP-SENDKEYS-CODEX` (send-keys nudging) — operator grant, evidence-driven, default OFF.
