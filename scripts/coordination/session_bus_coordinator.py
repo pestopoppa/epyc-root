@@ -90,8 +90,49 @@ ADVISORY_SCHEMA = "session_bus.advisory.v1"
 _DAEMON_MARKER = "session_bus_coordinator"
 
 # A lane is idle only when every signal agrees; unknown means busy.
+#
+# M4 (2026-08-12). `parked` is deliberately NOT in this set. `inference_load_check`
+# used to return `busy` for a device holding a loaded-but-idle model, because its
+# sensor OR-ed utilisation with VRAM residency; that made `cpu_busy` True and
+# `_eligible` rejected every queued lane row behind an idle model — 572
+# `lane cpu busy (load_class=busy)` rejections and 3h47m at zero compute on the
+# night of 2026-08-11/12. Residency is an EXCLUSION fact, not a WORK fact.
 _BUSY_LOAD_CLASSES = {"busy"}
 _UNKNOWN_IS_BUSY = True
+
+# M4 lane states. `resident` means "held and idle": it ADMITS, with a warning
+# (see `_eligible`). `unknown` means the probe could not be read and is treated
+# as busy — for EXCLUSION, unknown must mean busy.
+LANE_BUSY = "busy"
+LANE_RESIDENT = "resident"
+LANE_FREE = "free"
+LANE_UNCONFIRMED = "unconfirmed"
+LANE_UNKNOWN = "unknown"
+_LANE_STATES = frozenset({LANE_BUSY, LANE_RESIDENT, LANE_FREE, LANE_UNCONFIRMED,
+                          LANE_UNKNOWN})
+
+# How `classify_load()`'s label maps onto a lane state. `serial_ok` becomes
+# `unconfirmed` rather than `free` — it means "no positive competitor, but the
+# window is not provably quiet" — and it keeps its EXISTING scheduling polarity
+# (not busy), because tightening it here would stop the daemon advising whenever
+# pgrep is momentarily unavailable. Naming it is the change; re-deriving CPU
+# admission is not, and is not this mechanism's job.
+_CPU_STATE_BY_LOAD_CLASS = {
+    "busy": LANE_BUSY,
+    "parked": LANE_RESIDENT,
+    "quiet": LANE_FREE,
+    "serial_ok": LANE_UNCONFIRMED,
+}
+
+# Stated once, so the decision is visible where it is made and where it is read.
+_RESIDENT_ADMIT_NOTE = (
+    "lane {lane} is RESIDENT (a model is loaded and idle, not working). ADMITTED "
+    "WITH A WARNING, deliberately: admission is not acquisition — this only makes "
+    "the row pickable, and the exclusive claim (device_claim.py / cpu_region_lock) "
+    "still gates the run and is the only thing that grants the device. Rejecting "
+    "here is precisely what held the queue for 3h47m on 2026-08-11/12 behind an "
+    "idle VRAM-resident model. The holder is never preempted by this verdict."
+)
 
 
 def _utcnow_iso() -> str:
@@ -153,6 +194,12 @@ def _lane_snapshot() -> dict:
             faked = json.loads(override)
             faked.setdefault("ts", _utcnow_iso())
             faked.setdefault("none_busy", False)
+            # M4: a seam that omits the lane states must still produce a COMPLETE
+            # snapshot, or `_eligible` would read `None` and silently skip the
+            # residency branch. Derive them from the booleans the seam does set.
+            for lane_key in ("cpu", "gpu", "none"):
+                faked.setdefault(f"{lane_key}_state",
+                                 LANE_BUSY if faked.get(f"{lane_key}_busy") else LANE_FREE)
             faked["_test_seam"] = True
             return faked
         except json.JSONDecodeError:
@@ -170,11 +217,15 @@ def _lane_snapshot() -> dict:
     except Exception as exc:  # noqa: BLE001
         snapshot["cpu_error"] = str(exc)
 
-    gpu_busy = None
+    gpu_state = None
     try:
         from scripts.coordination.inference_load_check import mi210_state
         gpu = mi210_state() or {}
-        gpu_busy = gpu.get("occupied")
+        # M4: read the SPLIT verdict, not the OR. `occupied` is still published by
+        # the sensor and is still the OR of work and residency — reading it here
+        # is what conflated "a model is loaded" with "the GPU is working" and
+        # locked the gpu lane behind an idle resident model.
+        gpu_state = gpu.get("device_state")
         snapshot["gpu_signal"] = gpu
     except Exception as exc:  # noqa: BLE001
         snapshot["gpu_error"] = str(exc)
@@ -183,8 +234,19 @@ def _lane_snapshot() -> dict:
     snapshot["cpu_busy"] = (
         _UNKNOWN_IS_BUSY if load_class is None else load_class in _BUSY_LOAD_CLASSES
     )
-    snapshot["gpu_busy"] = _UNKNOWN_IS_BUSY if gpu_busy is None else bool(gpu_busy)
+    snapshot["cpu_state"] = (
+        LANE_UNKNOWN if load_class is None
+        else _CPU_STATE_BY_LOAD_CLASS.get(load_class, LANE_UNKNOWN)
+    )
+    snapshot["gpu_state"] = gpu_state if gpu_state in _LANE_STATES else LANE_UNKNOWN
+    # Only WORK makes a lane busy. `resident` and `free` do not; `unknown` does,
+    # because for exclusion an unreadable probe must fail closed.
+    snapshot["gpu_busy"] = (
+        _UNKNOWN_IS_BUSY if snapshot["gpu_state"] == LANE_UNKNOWN
+        else snapshot["gpu_state"] == LANE_BUSY
+    )
     snapshot["none_busy"] = False  # lane:none is always schedulable by definition
+    snapshot["none_state"] = LANE_FREE
     return snapshot
 
 
@@ -315,12 +377,29 @@ def _eligible(row: dict, latest: dict[str, dict], snapshot: dict, token_text: st
         ok, why = _co_residency_verdict(row, co_ctx)
         if not ok:
             return False, why
+    # M4 ADMISSION RULE, stated where it is made rather than buried in a boolean:
+    #   BUSY      -> REJECT. Work is in flight; queueing behind it is contention.
+    #   UNKNOWN   -> REJECT. The probe could not be read; for exclusion, unknown
+    #                means busy. (Folded into `{lane}_busy` by `_lane_snapshot`.)
+    #   RESIDENT  -> ADMIT, WITH A WARNING. See `_RESIDENT_ADMIT_NOTE`.
+    #   FREE      -> ADMIT.
     lane = row.get("lane")
-    if lane in {"cpu", "gpu"} and snapshot.get(f"{lane}_busy"):
-        return False, f"lane {lane} busy (load_class={snapshot.get('load_class')})"
-    if row.get("contention_class") == "exclusive-contiguous" and snapshot.get("cpu_busy"):
-        return False, "exclusive-contiguous needs a quiet host"
-    return True, "eligible"
+    admit_note = ""
+    if lane in {"cpu", "gpu"}:
+        if snapshot.get(f"{lane}_busy"):
+            return False, (f"lane {lane} busy (load_class={snapshot.get('load_class')}, "
+                           f"lane_state={snapshot.get(f'{lane}_state')})")
+        if snapshot.get(f"{lane}_state") == LANE_RESIDENT:
+            admit_note = _RESIDENT_ADMIT_NOTE.format(lane=lane)
+    # `exclusive-contiguous` is the one class for which residency IS disqualifying:
+    # it asks for a QUIET host, and a host with a resident model is not one. This
+    # preserves the pre-M4 verdict exactly — a resident device used to classify as
+    # `busy`, so this row was rejected then too.
+    if row.get("contention_class") == "exclusive-contiguous" and (
+            snapshot.get("cpu_busy") or snapshot.get("cpu_state") == LANE_RESIDENT):
+        return False, (f"exclusive-contiguous needs a quiet host "
+                       f"(cpu_state={snapshot.get('cpu_state')})")
+    return True, ("eligible" if not admit_note else f"eligible — {admit_note}")
 
 
 _ORCH_ROOT = Path("/mnt/raid0/llm/epyc-orchestrator")
@@ -465,6 +544,11 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
             "gpu": "busy" if snapshot["gpu_busy"] else "idle",
             "none": "idle",
         },
+        # M4: the OR-collapsed `lanes` above is kept so nothing reading it breaks;
+        # `lane_states` is where residency stops being invisible.
+        "lane_states": {"cpu": snapshot.get("cpu_state"),
+                        "gpu": snapshot.get("gpu_state"),
+                        "none": snapshot.get("none_state") or LANE_FREE},
         "load_class": snapshot.get("load_class"),
         "co_residency": {"matrix_status": co_ctx.get("matrix_status"),
                          "live_roles": co_ctx.get("live_roles"),
@@ -490,6 +574,7 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
                            "reason": "already holds a live ASSIGNED/CLAIMED/RUNNING task"})
             continue
         candidates, rejections = [], []
+        admit_why: dict[str, str] = {}
         for row in latest.values():
             if row.get("task_id") in claimed_this_tick:
                 continue
@@ -502,22 +587,49 @@ def compute_advice(bus_root: Path, config: dict, epoch: int) -> list[dict]:
                 rejections.append({"task_id": row.get("task_id"),
                                    "reason": f"lane {row.get('lane')} not in {aid} roster lanes"})
                 continue
+            if why != "eligible":     # only a WARNING is worth carrying forward
+                admit_why[str(row.get("task_id"))] = why
             candidates.append(row)
         pick = _pick(candidates)
         if pick:
             claimed_this_tick.add(str(pick.get("task_id")))
+        pick_lane = (pick or {}).get("lane")
         advice.append({
             "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
             "kind": "would-assign" if pick else "would-idle",
             "agent": aid,
             "task_id": (pick or {}).get("task_id"),
             "priority": (pick or {}).get("priority"),
-            "lane": (pick or {}).get("lane"),
+            "lane": pick_lane,
             "routing_annotation": (pick or {}).get("routing_annotation"),
             "considered": len(candidates),
             "rejected": rejections[:8],
+            # M4/M1: WHY this pick, and under what host state. `admission_note` is
+            # non-empty only when the lane was admitted while RESIDENT, so the
+            # warning travels with the pick instead of being dropped on the floor.
+            "lane_state": snapshot.get(f"{pick_lane}_state") if pick_lane else None,
+            "admission_note": admit_why.get(str((pick or {}).get("task_id")), ""),
+            "top_rejection": _top_rejection(rejections),
         })
     return advice
+
+
+def _top_rejection(rejections: list[dict]) -> dict | None:
+    """The modal rejection reason, with its count. `None` when nothing was rejected.
+
+    L6 (2026-08-12): the dominant reason all night was `lane cpu not in <agent>
+    roster lanes` — 5,292 occurrences per agent — a ROSTER-CONFIG fact recomputed
+    ~1,070x/hour and delivered nowhere. Summarising it here is what carries it into
+    the M1 recommendation for free.
+    """
+    if not rejections:
+        return None
+    counts: dict[str, int] = {}
+    for rec in rejections:
+        reason = str(rec.get("reason") or "")
+        counts[reason] = counts.get(reason, 0) + 1
+    reason, count = max(counts.items(), key=lambda kv: (kv[1], kv[0]))
+    return {"reason": reason, "count": count, "of": len(rejections)}
 
 
 # ------------------------------------------------------------------- daemon
@@ -3159,6 +3271,206 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     return emitted
 
 
+# =========================================================================== M1
+#
+# DELIVER THE DAEMON'S OWN PICK TO A READER.
+#
+# The scheduler named the work and told nobody. `compute_advice()` computes a
+# CONCRETE pick per agent every tick and emits it as a `would-assign` row. On the
+# night of 2026-08-11/12, window 03:00-07:59Z: **4,602 `would-assign` rows, 100%
+# carrying a concrete `task_id`, resolving to 12 distinct `(agent, task, lane)`
+# picks — six of them repeated 756 consecutive times each**, while the fleet ran
+# at ~8-9% compute utilisation with a 3h47m window at zero. Every one of those
+# rows went to `advisory.jsonl`, whose own producer states in this file that it
+# "has no reader" (see `resolve_stuck_agents` and `relay_outbox_messages`).
+#
+# AUTHORITY. `coordinator_daemon.authority` is `manual`, and this mechanism does
+# not touch it. What is delivered is a RECOMMENDATION to `coordinator-agent` —
+# never a `task-assign` to the picked main, at any authority. There is
+# deliberately NO authority branch in this code: raising authority to `assign` is
+# a separate, operator-reserved decision, and this must not quietly become an
+# assignment path when it is taken. It also does not need one — under `assign`,
+# `apply_assignment` moves the row to ASSIGNED, the owner enters `busy_owners`,
+# the `would-assign` row stops being emitted, the signature changes, and the
+# arming counter resets before it can ever fire. The mechanism silences itself
+# structurally rather than by inspecting a config key.
+#
+# VOLUME. Six picks repeated 756 times each is what made `advisory.jsonl`
+# useless; a message repeated 756 times is a second unread sink. So: ONE row per
+# distinct `(agent, task, lane)` pick-set, emitted only after the SAME set has
+# survived `_RECOMMEND_MIN_TICKS` consecutive ticks (~15 min at the 45s tick),
+# and re-emitted only when the set CHANGES or after `_RECOMMEND_REEMIT_S` of the
+# set standing unchanged. The 4,602-row night collapses to one inbox item at
+# roughly 00:15Z.
+#
+# NON-FIRING BY CONSTRUCTION. A pick that is dispatched, superseded, or resolved
+# inside 15 minutes never fires — which is what keeps an ordinary gap between two
+# legs of a campaign quiet. A fleet with no READY work, or with every agent
+# already holding a live task, emits no `would-assign` rows at all and therefore
+# cannot fire. A check that fires on a well-run night trains everyone to ignore it.
+_SCHEDULING_STATE = "scheduling_recommendation_state.json"
+_RECOMMEND_MIN_TICKS = 20            # ~15 min at the 45 s tick
+_RECOMMEND_REEMIT_S = 6 * 3600.0     # a still-unactioned pick-set is re-raised 4x/day
+_RECOMMEND_EVENT = "scheduling-pick-undelivered"
+
+
+def _pick_signature(advice: list[dict]) -> tuple[str, list[dict]]:
+    """(signature, picks) over this tick's `would-assign` rows.
+
+    The signature is keyed on `(agent, task_id, lane)` ONLY — the identity of the
+    decision. Counts, timestamps and rejection tallies move every tick and would
+    make every tick a "new" pick-set, which is the 756x flood in another costume.
+    """
+    picks = sorted(
+        ({"agent": str(rec.get("agent")),
+          "task_id": str(rec.get("task_id")),
+          "lane": rec.get("lane"),
+          "lane_state": rec.get("lane_state"),
+          "priority": rec.get("priority"),
+          "why_picked": (f"top-priority eligible READY row in {rec.get('agent')}'s roster "
+                         f"lanes ({rec.get('considered')} candidate(s) considered, "
+                         f"priority={rec.get('priority')})"),
+          "routing_annotation": rec.get("routing_annotation"),
+          "admission_note": rec.get("admission_note") or "",
+          "top_rejection": rec.get("top_rejection")}
+         for rec in advice
+         if rec.get("kind") == "would-assign" and rec.get("task_id") and rec.get("agent")),
+        key=lambda p: (p["agent"], p["task_id"]))
+    ident = [[p["agent"], p["task_id"], p["lane"]] for p in picks]
+    sig = hashlib.sha256(json.dumps(ident, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+    return sig, picks
+
+
+def _deliver_scheduling_recommendation(bus_root: Path, config: dict, picks: list[dict],
+                                       sig: str, ticks: int, since: float, moment: float,
+                                       epoch: int, reemit_s: float) -> bool:
+    """Put the recommendation where somebody drains it. True if it was written.
+
+    R1's shape, verbatim: one `_append_inbox` of a `defect` addressed to
+    `coordinator-agent`, deduped against that inbox's OWN contents. Idempotency is
+    keyed on the notice's durable evidence rather than on the state file, so a
+    daemon restart — or a lost state file — cannot re-flood a drained inbox.
+
+    Never raises: this is a reporting path, and a checker that can take the tick
+    down is worse than a missed notice.
+    """
+    try:
+        roster_ids = {str(r.get("id")) for r in (config.get("roster") or [])
+                      if isinstance(r, dict)}
+        if COORDINATOR_AGENT not in roster_ids:
+            return False
+        rows, _ = _read_jsonl(bus_root / "inbox" / f"{COORDINATOR_AGENT}.jsonl")
+        last = None
+        for row in reversed(rows):
+            if (row.get("payload") or {}).get("event") == _RECOMMEND_EVENT:
+                last = row
+                break
+        if last is not None and (last.get("payload") or {}).get("pick_sig") == sig:
+            # Age against the payload's OWN `emitted_at`, which is the same clock
+            # `moment` comes from. The envelope `ts` is wall-clock text written by
+            # `_append_inbox`; comparing the two would silently mix clocks, and a
+            # dedupe that reads a bogus age is a dedupe that suppresses forever.
+            stamp = (last.get("payload") or {}).get("emitted_at")
+            if stamp is None:
+                try:
+                    stamp = datetime.fromisoformat(str(last.get("ts"))).timestamp()
+                except (TypeError, ValueError):
+                    return False   # unreadable stamp -> assume recent, never flood
+            if moment - float(stamp) < reemit_s:
+                return False
+        authority = _authority(config)
+        _append_inbox(bus_root, [{
+            "to": COORDINATOR_AGENT, "kind": "defect",
+            "payload": {
+                "event": _RECOMMEND_EVENT,
+                "pick_sig": sig,
+                "emitted_at": moment,
+                "authority": authority,
+                "stable_for_ticks": ticks,
+                "stable_since": datetime.fromtimestamp(
+                    since, timezone.utc).isoformat(timespec="seconds"),
+                "picks": picks,
+                "detail": (
+                    f"The daemon has computed the same {len(picks)} assignment pick(s) on "
+                    f"{ticks} consecutive ticks ({(moment - since) / 60.0:.0f} min) and "
+                    f"delivered none of them: at authority={authority!r} it MAY NOT assign. "
+                    f"Each pick names the agent, the READY task chosen for it, the lane, and "
+                    f"why. Until 2026-08-12 these went only to advisory.jsonl, which has no "
+                    f"reader — 4,602 such rows in one night while the fleet ran at ~8-9% "
+                    f"utilisation with a 3h47m window at zero."),
+                "action": (
+                    "RECOMMENDATION, NOT AN ASSIGNMENT. Dispatch these yourself, or record "
+                    "why not. The daemon's authority is unchanged and this mechanism never "
+                    "assigns at any authority. If a pick looks wrong, the queue row or the "
+                    "roster lanes are wrong rather than the pick: `top_rejection` on each "
+                    "pick names what most often blocked the runners-up, and a dominant "
+                    "`lane <x> not in <agent> roster lanes` means work exists that no live "
+                    "agent may legally receive."),
+            }}], epoch)
+        return True
+    except Exception:  # noqa: BLE001 — reporting must never break the tick
+        return False
+
+
+def deliver_scheduling_recommendation(bus_root: Path, config: dict, advice: list[dict],
+                                      epoch: int, *, now: float | None = None,
+                                      state_path: Path | None = None,
+                                      min_ticks: int = _RECOMMEND_MIN_TICKS,
+                                      reemit_s: float = _RECOMMEND_REEMIT_S) -> list[dict]:
+    """Deliver a STABLE, undelivered pick-set to `coordinator-agent`'s inbox.
+
+    Read-only with respect to the queue: it appends nothing to `queue.jsonl`,
+    writes no `task-assign`, and changes no status. It observes and reports.
+    """
+    moment = time.time() if now is None else now
+    path = Path(state_path) if state_path is not None else (bus_root / _SCHEDULING_STATE)
+    try:
+        prev = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(prev, dict):
+            prev = {}
+    except (OSError, ValueError):
+        prev = {}
+
+    sig, picks = _pick_signature(advice)
+    if not picks:
+        # THE WELL-RUN-NIGHT PATH. Nothing is being withheld, so nothing is said —
+        # and the arming counter is reset so a later pick starts from zero rather
+        # than inheriting credit from an unrelated one.
+        if prev.get("sig") is not None or prev.get("ticks"):
+            _write_atomic(path, {"sig": None, "ticks": 0, "since_ts": None,
+                                 "last_emit_sig": prev.get("last_emit_sig"),
+                                 "last_emit_ts": prev.get("last_emit_ts")})
+        return []
+
+    if prev.get("sig") == sig:
+        ticks = int(prev.get("ticks") or 0) + 1
+        since = float(prev.get("since_ts") or moment)
+    else:
+        ticks, since = 1, moment
+    state = {"sig": sig, "ticks": ticks, "since_ts": since,
+             "last_emit_sig": prev.get("last_emit_sig"),
+             "last_emit_ts": prev.get("last_emit_ts")}
+
+    emitted: list[dict] = []
+    last_ts = prev.get("last_emit_ts")
+    due = (prev.get("last_emit_sig") != sig
+           or last_ts is None
+           or moment - float(last_ts) >= reemit_s)
+    if ticks >= min_ticks and due and _deliver_scheduling_recommendation(
+            bus_root, config, picks, sig, ticks, since, moment, epoch, reemit_s):
+        state["last_emit_sig"] = sig
+        state["last_emit_ts"] = moment
+        emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                        "epoch": epoch, "kind": "scheduling-recommendation-delivered",
+                        "pick_sig": sig, "picks": len(picks), "stable_for_ticks": ticks,
+                        "to": COORDINATOR_AGENT})
+    try:
+        _write_atomic(path, state)
+    except OSError:  # noqa: PERF203 — an unwritable state file must not kill the tick
+        pass
+    return emitted
+
+
 def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     _reset_tick_cache()   # one consistent host view per tick, probed once
     config = _load_config(bus_root)
@@ -3204,6 +3516,10 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
         # scheduling decision, and its absence is what every one of the seven
         # documented last-hop failures had in common.
         advice += pending_operator_actions(bus_root, roster, epoch)
+        # M1: the daemon's OWN pick, delivered to a reader. Runs at EVERY
+        # authority and NEVER assigns — see the block comment above. Passed the
+        # advice list as computed at the top of this tick.
+        advice += deliver_scheduling_recommendation(bus_root, config, list(advice), epoch)
 
     if authority == "assign" and not dry_run:
         # M4. In manual/advisory mode this branch never runs, so the daemon keeps

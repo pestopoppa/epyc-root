@@ -13,10 +13,14 @@ It answers two questions:
     is present, or that cannot be confirmed absent because a probe tool is
     missing, keeps the window non-quiet. Fail-safe by construction.
 
-  * ``classify_load() -> dict`` — a three-way label ``quiet | serial_ok | busy``.
+  * ``classify_load() -> dict`` — a four-way label
+    ``quiet | serial_ok | parked | busy``.
     ``serial_ok`` means "no hard compute competitor is running, but the window is
     not provably quiet" — light enough for ``serial_noninference`` batch entries
     (which perform no inference) but NOT for anything that would run a model.
+    ``parked`` (M4, 2026-08-12) means "a model is RESIDENT on the device and
+    nothing is working" — the same permissiveness as ``serial_ok``, but with the
+    reason named instead of guessed at. See "M4" below.
 
 Exact QUIET predicate (all five must hold):
   1. No live ``llama-server`` *decode* traffic. ``pgrep`` finds no llama-server, OR
@@ -35,6 +39,37 @@ Exact QUIET predicate (all five must hold):
 Conservative-on-missing-tool: pgrep missing → the process-based conditions are
 "unconfirmed" (not quiet, but not a positive busy signal → serial_ok). rocm-smi
 missing/unparseable → GPU unconfirmed (not quiet → serial_ok).
+
+M4 (2026-08-12) — RESIDENCY IS NOT WORK.
+``mi210_state()`` used to collapse two independently measured numbers into one
+boolean (``occupied = util > 5% OR vram_used > 512 MB``). A model sitting loaded
+in VRAM with nothing decoding therefore read BUSY, ``classify_load()`` returned
+``busy``, and the coordinator daemon rejected every queued lane row behind it
+(``session_bus_coordinator._eligible``). Measured on the night of 2026-08-11/12:
+572 ``lane cpu busy (load_class=busy)`` rejections and a 3h47m window at zero
+compute, while the device was merely RESIDENT. **An idle VRAM-resident claim did
+not merely waste the device; it positively locked the queue.**
+
+The two numbers were always stored separately; only the verdict conflated them.
+So ``mi210_state()`` now publishes an explicit device state:
+
+    busy      some card is above the utilisation floor — work is in flight
+    resident  no card above the utilisation floor, some card above the VRAM
+              floor — something is loaded and idle
+    free      every card below both floors
+    unknown   rocm-smi absent, unparseable, or reporting no cards
+
+``unknown`` is NEVER read as ``free``. Inferring a value from absence is the
+defect family this change belongs to; the polarity is asymmetric on purpose —
+for EXCLUSION, unknown must mean busy; for ACCUSATION, unknown must mean silence.
+
+``occupied`` is retained, unchanged, as the OR of the two, so every caller that
+predates the split keeps its current meaning. What changed is the *label*: a
+resident-and-idle device now classifies as ``parked`` rather than ``busy``.
+``parked`` still blocks QUIET (a quiet window is what licenses loading a model,
+and 40+ GB of resident weights is not a free device to load into) — so nothing
+that would run a model is newly permitted. It no longer blocks ``serial_ok``,
+which is exactly the queue lock being removed.
 
 Read-only everything: pgrep / rocm-smi / /proc cmdline reads / a non-blocking
 flock *test* that acquires-and-immediately-releases without writing. No stack,
@@ -61,6 +96,19 @@ from pathlib import Path
 # few MB (~13 MB observed). 512 MB used or >5% util means someone is on the GPU.
 MI210_VRAM_USED_MB_THRESHOLD = 512.0
 MI210_UTIL_PCT_THRESHOLD = 5.0
+
+# M4 device states. `unknown` is a first-class third value, never a stand-in for
+# `free` — see the module docstring.
+DEVICE_BUSY = "busy"
+DEVICE_RESIDENT = "resident"
+DEVICE_FREE = "free"
+DEVICE_UNKNOWN = "unknown"
+DEVICE_STATES = (DEVICE_BUSY, DEVICE_RESIDENT, DEVICE_FREE, DEVICE_UNKNOWN)
+
+# The one quiet-blocker that `parked` is allowed to be made of. Anything else in
+# `quiet_blockers` means something is UNCONFIRMED, and an unconfirmed window must
+# keep the weaker, honest `serial_ok` label rather than the specific `parked` one.
+_MI210_RESIDENT_BLOCKER = "MI210 resident"
 
 DEFAULT_HEALTH_TIMEOUT = 2.0
 
@@ -320,22 +368,38 @@ def heavy_download_state() -> dict:
 
 
 def mi210_state() -> dict:
-    """Occupancy of the MI210 via rocm-smi.
+    """Occupancy of the MI210 via rocm-smi, with RESIDENCY split from WORK (M4).
 
-    occupied ∈ {True, False, None}; confirmable is False when rocm-smi is absent
-    or unparseable (⇒ cannot confirm unoccupied ⇒ not quiet).
+    Keys:
+      ``device_state``   ∈ {busy, resident, free, unknown} — the honest verdict.
+      ``util_occupied``  any card above MI210_UTIL_PCT_THRESHOLD — WORK.
+      ``vram_resident``  any card above MI210_VRAM_USED_MB_THRESHOLD — RESIDENCY.
+      ``occupied``       ``util_occupied or vram_resident``. RETAINED UNCHANGED
+                         for callers that predate the split; ``None`` when the
+                         probe could not be read.
+      ``confirmable``    False ⇒ ``device_state`` is ``unknown``, never ``free``.
+
+    The per-card dicts carry ``util_pct`` and ``vram_used_mb`` as before, plus
+    the two split booleans, so a caller can re-derive any verdict it needs from
+    the raw numbers rather than from this function's opinion.
     """
+    def unknown(detail: str) -> dict:
+        # FAIL CLOSED. Every unreadable path lands here, and none of them is
+        # allowed to look like an idle device.
+        return {"occupied": None, "util_occupied": None, "vram_resident": None,
+                "device_state": DEVICE_UNKNOWN, "confirmable": False, "cards": {},
+                "detail": detail}
+
     res = _run(["rocm-smi", "--showuse", "--showmeminfo", "vram", "--json"])
     if res is None or res.returncode != 0 or not res.stdout.strip():
-        return {"occupied": None, "confirmable": False, "cards": {},
-                "detail": "rocm-smi unavailable"}
+        return unknown("rocm-smi unavailable")
     try:
         data = json.loads(res.stdout)
     except (ValueError, TypeError):
-        return {"occupied": None, "confirmable": False, "cards": {},
-                "detail": "rocm-smi output unparseable"}
+        return unknown("rocm-smi output unparseable")
     cards: dict[str, dict] = {}
-    occupied = False
+    util_occupied = False
+    vram_resident = False
     for card, fields in data.items():
         if not isinstance(fields, dict):
             continue
@@ -346,17 +410,29 @@ def mi210_state() -> dict:
              "VRAM Used Memory (B)"],
         ))
         used_mb = used_b / (1024 * 1024) if used_b is not None else None
-        card_occ = bool(
-            (util is not None and util > MI210_UTIL_PCT_THRESHOLD)
-            or (used_mb is not None and used_mb > MI210_VRAM_USED_MB_THRESHOLD)
-        )
-        occupied = occupied or card_occ
-        cards[card] = {"util_pct": util, "vram_used_mb": used_mb, "occupied": card_occ}
+        card_util = bool(util is not None and util > MI210_UTIL_PCT_THRESHOLD)
+        card_vram = bool(used_mb is not None and used_mb > MI210_VRAM_USED_MB_THRESHOLD)
+        util_occupied = util_occupied or card_util
+        vram_resident = vram_resident or card_vram
+        cards[card] = {"util_pct": util, "vram_used_mb": used_mb,
+                       "util_occupied": card_util, "vram_resident": card_vram,
+                       "occupied": card_util or card_vram}
     if not cards:
-        return {"occupied": None, "confirmable": False, "cards": {},
-                "detail": "no GPU cards parsed"}
-    return {"occupied": occupied, "confirmable": True, "cards": cards,
-            "detail": "occupied" if occupied else "idle"}
+        return unknown("no GPU cards parsed")
+    if util_occupied:
+        device_state = DEVICE_BUSY
+        detail = f"busy (utilisation above {MI210_UTIL_PCT_THRESHOLD}%)"
+    elif vram_resident:
+        device_state = DEVICE_RESIDENT
+        detail = (f"resident (>{MI210_VRAM_USED_MB_THRESHOLD:.0f} MB of VRAM held, "
+                  f"utilisation below {MI210_UTIL_PCT_THRESHOLD}%) — loaded is not working")
+    else:
+        device_state = DEVICE_FREE
+        detail = "idle"
+    return {"occupied": util_occupied or vram_resident,
+            "util_occupied": util_occupied, "vram_resident": vram_resident,
+            "device_state": device_state, "confirmable": True, "cards": cards,
+            "detail": detail}
 
 
 def autopilot_state(lock_path: Path = AUTOPILOT_LOCK) -> dict:
@@ -440,11 +516,19 @@ def is_quiet_window(signals: dict | None = None,
     elif dl["running"] is None:
         reasons.append("pgrep unavailable; cannot confirm no downloads (conservative)")
 
-    # 4 — MI210 confirmed unoccupied
+    # 4 — MI210 confirmed unoccupied.
+    # M4: `resident` and `busy` are reported as the different things they are, but
+    # BOTH still block QUIET. A quiet window is the licence to load and run a
+    # model; a device already holding 40+ GB of weights is not a free one, even
+    # when nothing is decoding into them.
     gpu = signals["mi210"]
-    if gpu["occupied"] is True:
-        reasons.append("MI210 occupied")
-    elif not gpu["confirmable"]:
+    gpu_state = gpu.get("device_state")
+    if gpu_state == DEVICE_BUSY:
+        reasons.append("MI210 occupied (utilisation above floor — work in flight)")
+    elif gpu_state == DEVICE_RESIDENT:
+        reasons.append(f"{_MI210_RESIDENT_BLOCKER} (model loaded, no work in flight) — "
+                       f"not a quiet window, but not a busy device either")
+    elif gpu_state != DEVICE_FREE:
         reasons.append(f"MI210 occupancy unconfirmable ({gpu['detail']}) (conservative)")
 
     # 5 — autopilot stopped
@@ -460,15 +544,39 @@ def is_quiet_window(signals: dict | None = None,
 def classify_load(signals: dict | None = None,
                   ports: list[int] | None = None,
                   health_timeout: float = DEFAULT_HEALTH_TIMEOUT) -> dict:
-    """Three-way load classification: quiet | serial_ok | busy.
+    """Four-way load classification: quiet | serial_ok | parked | busy.
 
     * busy      — a hard compute competitor is *positively* running (active
-                  decode, bench/cli/eval, model download, MI210 occupied, or
-                  autopilot). Run nothing.
+                  decode, bench/cli/eval, model download, MI210 utilisation above
+                  its floor, or autopilot). Run nothing.
     * quiet     — the full quiet predicate holds. Any batch entry may run.
+    * parked    — M4. Nothing is working, and the ONLY reason the window is not
+                  quiet is that a model is RESIDENT on the device. Same
+                  permissiveness as ``serial_ok`` (``serial_noninference`` entries
+                  may run; nothing that would load a model may), with the reason
+                  named rather than guessed at.
     * serial_ok — no hard competitor, but the window is not provably quiet
                   (a resident-but-unprobeable server, or a missing/unparseable
                   probe). Only ``serial_noninference`` entries may run.
+
+    WHY ``parked`` IS NOT ``busy`` (M4, 2026-08-12). ``mi210_state()`` measures
+    utilisation and VRAM separately; the old verdict OR-ed them, so a loaded-idle
+    model reported ``busy`` and the coordinator daemon rejected every queued lane
+    row behind it — 572 rejections and 3h47m at zero compute in one night. Work is
+    ``util_pct``; residency is ``vram_used_mb``; they are different observables and
+    are now labelled as such.
+
+    WHY ``parked`` IS NOT ``serial_ok`` WHEN ANYTHING IS UNCONFIRMED. ``parked`` is
+    a POSITIVE claim ("I looked, and the only thing there is an idle resident
+    model"). If any other quiet-blocker is present — a missing pgrep, an
+    unreadable ``/slots`` — that claim is not supported, and the weaker, honest
+    ``serial_ok`` is returned instead. The two labels admit exactly the same work,
+    so this costs nothing and keeps the vocabulary truthful.
+
+    The work-side discriminator is ``llama_decode_state()``'s existing
+    resident-vs-decoding split, reused rather than reimplemented: an active slot
+    puts the host in ``busy`` above, and its state is recorded alongside the
+    ``parked`` verdict as the attribution for the resident VRAM.
     """
     if signals is None:
         signals = collect_signals(ports=ports, health_timeout=health_timeout)
@@ -481,15 +589,29 @@ def classify_load(signals: dict | None = None,
         busy_reasons.append("bench/cli/eval running")
     if signals["downloads"]["running"] is True:
         busy_reasons.append("heavy model download running")
-    if signals["mi210"]["occupied"] is True:
-        busy_reasons.append("MI210 occupied")
+    if signals["mi210"].get("device_state") == DEVICE_BUSY:
+        busy_reasons.append("MI210 utilisation above floor (work in flight)")
     if signals["autopilot"]["running"] is True:
         busy_reasons.append("autopilot running")
+
+    parked_reasons: list[str] = []
+    other_blockers = [r for r in quiet_blockers
+                      if not r.startswith(_MI210_RESIDENT_BLOCKER)]
+    if (not busy_reasons
+            and signals["mi210"].get("device_state") == DEVICE_RESIDENT
+            and not other_blockers):
+        llama_state = signals["llama"].get("state")
+        parked_reasons.append(
+            f"MI210 resident: {signals['mi210'].get('detail')}; "
+            f"llama-server decode state={llama_state!r} "
+            f"(residency is not work — the device is held, not used)")
 
     if busy_reasons:
         state = "busy"
     elif quiet:
         state = "quiet"
+    elif parked_reasons:
+        state = "parked"
     else:
         state = "serial_ok"
 
@@ -499,6 +621,7 @@ def classify_load(signals: dict | None = None,
         "quiet": quiet,
         "quiet_blockers": quiet_blockers,
         "busy_reasons": busy_reasons,
+        "parked_reasons": parked_reasons,
         "signals": signals,
     }
 
@@ -506,7 +629,13 @@ def classify_load(signals: dict | None = None,
 # --------------------------------------------------------------------------- #
 # CLI
 # --------------------------------------------------------------------------- #
-_EXIT_BY_STATE = {"quiet": 0, "serial_ok": 10, "busy": 20}
+# M4 adds `parked` (15) BETWEEN serial_ok and busy so a caller reading the bare
+# exit code can tell "held but idle" from "cannot confirm" without parsing JSON.
+# `--require serial_ok` accepts it: `parked` and `serial_ok` admit exactly the
+# same work, and `--require quiet` still refuses it, so nothing that would load a
+# model is newly permitted.
+_EXIT_BY_STATE = {"quiet": 0, "serial_ok": 10, "parked": 15, "busy": 20}
+_SERIAL_OK_STATES = ("quiet", "serial_ok", "parked")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -529,11 +658,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  quiet-blocker: {reason}")
         for reason in result["busy_reasons"]:
             print(f"  BUSY: {reason}")
+        for reason in result.get("parked_reasons") or []:
+            print(f"  PARKED: {reason}")
 
     if args.require == "quiet":
         return 0 if result["state"] == "quiet" else 1
     if args.require == "serial_ok":
-        return 0 if result["state"] in ("quiet", "serial_ok") else 1
+        return 0 if result["state"] in _SERIAL_OK_STATES else 1
     return _EXIT_BY_STATE[result["state"]]
 
 
