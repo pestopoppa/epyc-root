@@ -291,7 +291,15 @@ Sources — cite these, they contain the full reasoning:
 All ten are **zero-inference** and can be worked while the measurement runs hold
 the machine.
 
-- [ ] **P1-1. Generalise the `placement_policy` enum vocabulary — it is
+- [x] **P1-1. Generalise the `placement_policy` enum vocabulary — it is
+      quarter-shaped.** ✅ 2026-08-12 (`mainA`) — orchestrator `1849e7d4`. Row was STALE BY ONE
+      DAY: `270cf9ea` (2026-07-31) already landed `BURST_PREFER_SPLIT`, the legacy alias map and
+      the `_coerce` raise. The real gap was that fail-CLOSED was tested and fail-LOUD was not —
+      gutting the message to `ValueError("bad placement policy")` left all 19 existing tests
+      passing. Now pinned by 16 collected tests, 11 mutations all counted as failures. Also
+      fixed a docstring that still promised the removed fallback, and a NEW fleet-wide fail-open:
+      the `stack_numa` import sat in a bare `except Exception`, so a breakage would silently
+      resolve EVERY role to `SOLO_PREFER_FULL`.
       quarter-shaped.** `src/scheduling/placement_policy.py:35` declares
       `BURST_PREFER_QUARTERS`, and `SOLO_PREFER_FULL`'s docstring says concurrent
       requests "spill to NUMA-disjoint quarters". On a machine with no quarters
@@ -315,6 +323,14 @@ the machine.
       **forbids the topology we just deployed**. It is a *learned prior*:
       **supersede it, never edit it in place.**
 - [ ] **P1-4. `stack_templates/default.yaml` is a 4th hand-maintained copy of the
+      topology.** *(2026-08-12 `mainA`, orchestrator `fa34447c` — PARTIAL, deliberately left
+      open. The row's "fails 7 ways" is STALE: `validate_template` returns 0 errors today. The
+      real hole was that `numa:` and `threads:` were compared by NOTHING — `stale_role_fact_table`
+      skips ports by design and `_validate_stack_prior_parity` slides `numa_mode` until one
+      matches, so four roles could declare any cpuset shape or thread count undetected. A parity
+      gate now closes that. It is still a FOURTH COPY — now gated rather than derived. Finishing
+      needs an owner for `src/config/stack_templates.py`; the proposal is in the new module's
+      docstring.)*
       topology.** Its parity gate already fails 7 ways. Either derive it from the
       single source or delete it — a fourth copy is how the drift started.
 - [x] **P1-5. `src/registry/registry_validator.py` never cross-checks ✅ 2026-08-12 — `mainD`. orchestrator `7d4f96d2`. Cross-check added and wired into `validate_all`, reached by the one production caller (`stack_commands.py:1289` in `cmd_start`). **Premise corrected**: a PARTIAL guard already existed — `stack_manifest.validate_declaration_parity()` — but it iterates `NUMA_CONFIG.items()` and is structurally blind to a registry declaring a fleet the topology never heard of, which is P1-7's phantom-fleet shape. Both directions now covered, plus duplicate ports, `numa_instances` vs `len(numa_ports)`, and primary port vs full-instance port. 23 tests, counted by the runner (tests/unit 12039 → 12062); an empty/unloadable topology is an ERROR, never silent agreement.
@@ -332,7 +348,18 @@ the machine.
       routing knob to autopilot.** A lever autopilot can move but cannot score is
       exactly how `dual-half-negative` (P1-3) got mislearned. This ordering is the
       point of the task.
-- [ ] **P1-9. Delete-candidate: `scripts/server/quarter_scheduler.py`** — 403
+- [x] **P1-9. Delete-candidate: `scripts/server/quarter_scheduler.py` — ADJUDICATED: DO NOT
+      DELETE.** ✅ 2026-08-12 (`mainA`) — orchestrator `1fe3b57e`, additive only (+83/-0). Two of
+      the row's three claims are FALSE. "Zero runtime importers" is TRUE (every dynamic route
+      ruled out). But "two test-only references" misses FOUR more, and THREE ARE LIVE
+      PRODUCTION CODE carrying a purpose-built API for this scheduler — `round_robin.py:119`,
+      `concurrency_aware.py:1724`, `stack_migration.py:14`; deleting orphans them. "Factually
+      wrong about the machine" is refuted: `QUARTER_TOPOLOGY` is identical to the live
+      `stack_numa` constants — the quarters are UNUSED since W1, not WRONG. NIB2-18 is an OPEN
+      "do not treat as code-only scaffolding" checkbox. The row's own cited test line `:234` is
+      wrong; `:322` pins DS-7 governance metadata, so "fixing" it would break a contract. A
+      PARKED banner now sits in the module so this is not re-litigated. Original text below.
+  - ~~403~~
       lines, **zero runtime importers**, and now factually wrong about the
       machine. Confirm the two test-only references
       (`tests/unit/test_dynamic_stack.py:177`,
