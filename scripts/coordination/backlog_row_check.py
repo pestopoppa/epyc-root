@@ -726,6 +726,28 @@ def closed_standing_constraints(root: Path = HANDOFFS) -> list[tuple[Path, int, 
     return hits
 
 
+def emit_verdict(verdict: str, ref: str, exit_code: int) -> None:
+    """ONE machine-readable line, on STDOUT, unconditionally, at every verdict.
+
+    2026-08-12. ANCHOR ROT, UNRESOLVABLE, AMBIGUOUS and REFUSING were written to
+    STDERR only. That is correct for the human detail and catastrophic as the ONLY
+    channel: the idiom every wrapper on this host reaches for is
+
+        out=$(backlog_row_check.py --ref "$row" 2>/dev/null)
+
+    and under it a rotted anchor produces an EMPTY string and a silently discarded
+    exit code — i.e. it reads exactly like a clean pass. A main committed precisely
+    that wrapper today. Anchor rot is running at 34.5% queue-wide, so the failure
+    mode this laundered is the COMMON case, not an edge one.
+
+    The fix is a channel that `2>/dev/null` cannot remove. stderr keeps the prose
+    and the exit codes are unchanged — this only adds a line that survives the
+    idiom. `ref=` is empty when the input was a `--row` text (the row is echoed in
+    the stderr detail); the point of the line is the VERDICT, which is never empty.
+    """
+    print(f"verdict={verdict} ref={ref} exit={exit_code}", flush=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     g = ap.add_mutually_exclusive_group(required=True)
@@ -768,10 +790,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.row:
         hits = find_by_text(args.row)
         if not hits:
+            emit_verdict("UNRESOLVABLE", "", 3)
             print(f"UNRESOLVABLE: no open or closed box in {HANDOFFS} matches that text.",
                   file=sys.stderr)
             return 3
         if len({(p, n) for p, n, *_ in hits}) > 1:
+            emit_verdict("AMBIGUOUS", "", 4)
             print("AMBIGUOUS — that text matches several boxes; be more specific:", file=sys.stderr)
             for p, n, st, body, _ in hits:
                 print(f"  {p.name}:{n} [{st or ' '}] {body[:70]}", file=sys.stderr)
@@ -780,15 +804,18 @@ def main(argv: list[str] | None = None) -> int:
     else:
         m = re.match(r"([^:]+):(\d+)$", args.ref.strip())
         if not m:
+            emit_verdict("REFUSING", args.ref.strip(), 3)
             print("REFUSING: --ref must look like file.md:LINE", file=sys.stderr)
             return 3
         path, lineno = HANDOFFS / m.group(1), int(m.group(2))
         if not path.exists():
+            emit_verdict("UNRESOLVABLE", f"{m.group(1)}:{m.group(2)}", 3)
             print(f"UNRESOLVABLE: {path} does not exist.", file=sys.stderr)
             return 3
         boxes = {n: (st, b, h) for n, st, b, h in _boxes(path)}
         if lineno not in boxes:
             # THE MEASURED FAILURE, reported as itself rather than as "not found".
+            emit_verdict("ANCHOR_ROT", f"{path.name}:{lineno}", 3)
             print(f"ANCHOR ROT: {path.name}:{lineno} is no longer a checkbox — the file has been "
                   f"edited since the queue was written.\n"
                   f"  Measured 2026-07-29: 10% of the queue's anchors were dead the same day.\n"
@@ -799,6 +826,10 @@ def main(argv: list[str] | None = None) -> int:
 
     code, reasons = classify(path, lineno, state, body, head)
     verdict = {0: "DISPATCHABLE", 2: "NOT DISPATCHABLE"}[code]
+    # The two terminal verdicts get the same machine-readable line as the four
+    # error ones, so a wrapper parses ONE grammar and cannot accidentally treat
+    # "no verdict line at all" as a pass.
+    emit_verdict(verdict.replace(" ", "_"), f"{path.name}:{lineno}", code)
     print(f"{verdict}  {path.name}:{lineno}")
     print(f"  section : § {head}")
     print(f"  state   : [{state or ' '}]")
