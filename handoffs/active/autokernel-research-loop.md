@@ -2868,6 +2868,14 @@ cannot retrigger the expensive gate unchanged.
   production-set wire shape and requires full blocking-condition detail plus distinct tree identity,
   observed/attested ggml, non-executing ELF linkage, and dashboard-process ambient-path claims.
   `tests.test_dashboard_static_js` passed **28/28**.
+- [x] **Project the terminal raw-HIP r6 decision receipt on Kernel-R&D without manufacturing a
+  champion.** ✅ 2026-08-12 — the hub admits only the exact self-hashed
+  `epyc.autokernel.hip_decision_grade.v1` receipt at campaign r6, verifies its producer, sealed MI210
+  task, 24/24 correctness, numeric error evidence, block-9 e-process crossing, and all 40 per-arm
+  duration admissions, then exposes the exact file/self hashes. The distinct card labels the result
+  task-local, says `NOT A CHAMPION`, requires experimental llama integration, and carries
+  `release/promotion authority: false`. Static JavaScript and producer projection tests fail closed
+  on partial admissions or widened authority; no inference ran.
 - [x] **Surface current loop-engineering and host-process recovery evidence on Kernel-R&D.** ✅
   2026-08-12 — root `26a9b9f1` adds distinct AK-LE and fault-rehearsal cards. The loop card reports
   the newest complete panel only as raw evidence until a governed reduction exists, then shows its

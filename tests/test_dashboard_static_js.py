@@ -177,6 +177,20 @@ class StaticJsTest(unittest.TestCase):
             scaffold_engineering: {available: false},
             arena_campaign_progress: {available: false},
             rocm_diagnostics: {available: false},
+            hip_decision_grade: {
+              available: true, correctness_passed: 24, correctness_total: 24,
+              median_speedup: 1.0769349742219618,
+              task_id: "torch2hip/gpumode/16636_SiLU",
+              target: {gpu_model: "MI210", gfx_arch: "gfx90a"},
+              max_abs_error: 1.2280521204388606e-6,
+              e_process_first_crossing_block: 9,
+              duration_admissions_passed: 40, duration_admissions_total: 40,
+              minimum_observed_duration_ns: 276039581.2988281,
+              authority: "task_local_rank_no_release_or_promotion_authority",
+              release_or_promotion_authority: false,
+              receipt_self_sha256: "self-hash", receipt_file_sha256: "file-hash",
+              evidence: "/campaigns/hip-r6/receipt.json"
+            },
             belief_source_wiring: {sources: []},
             fault_rehearsal: {available: false},
             fixed_campaign: {available: false},
@@ -200,7 +214,10 @@ if (!__stateHtml.includes("Production kernel SET")) {{
 for (const expected of ["ggml observed 0.16.0", "not attested",
                         "dashboard process only", "CURATED VIEW",
                         "AK-LE-3 scaffold", "INF-03", "ROCm diagnostics",
-                        "Belief source wiring"]) {{
+                        "Belief source wiring", "24 / 24 sealed cases",
+                        "NOT A CHAMPION", "Experimental llama integration is required",
+                        "task_local_rank_no_release_or_promotion_authority",
+                        "self-hash", "file-hash"]) {{
   if (!__stateHtml.includes(expected)) throw new Error("missing distinction: " + expected);
 }}
 renderActivity({{_activity: {{implementation: {{recent_commits: []}},

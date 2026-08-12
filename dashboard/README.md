@@ -179,6 +179,16 @@ checkpoint/cell counts, and individual observations, but an incomplete matrix
 has no aggregate and remains explicitly non-rankable. These fields are evidence
 inventory, not controller liveness and not part of Kernel-R&D health.
 
+`current_state.hip_decision_grade` is a curated projection of the terminal
+`hip-silu-decision-grade-20260812-r6/receipt.json`. The hub verifies the receipt's
+self-hash, exact producer/schema/task, complete 24-case correctness vector,
+block-9 e-process crossing, all 40 per-arm duration admissions, and the physical
+file digest before rendering it. The card is deliberately separate from the
+champion/release plane: it says `NOT A CHAMPION`, preserves
+`task_local_rank_no_release_or_promotion_authority`, and names experimental
+llama integration as a prerequisite. Like the other `_activity.current_state`
+cards, it cannot make Kernel-R&D healthy or fresh.
+
 The Kernel-R&D page executes its current-state renderer in the static-JavaScript
 suite, not just a syntax parser. This matters because the complete-kernel-set card
 once referenced a free identifier: the script parsed, the API remained complete,

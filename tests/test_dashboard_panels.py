@@ -91,6 +91,44 @@ def _v2_doc(*, produced_at, observed=("campaign",), stopped=False, seq=17,
     }
 
 
+def _hip_decision_receipt() -> dict:
+    """Small shape-faithful producer fixture for the curated r6 projection."""
+    cases = [{"case_id": f"case-{index}", "passed": True,
+              "max_abs_error": 1.2280521204388606e-6}
+             for index in range(24)]
+    value = {
+        "schema": server.AUTOKERNEL_HIP_DECISION_SCHEMA,
+        "campaign_id": server.AUTOKERNEL_HIP_DECISION_CAMPAIGN,
+        "status": "complete", "ended_at": "2026-08-12T10:21:39.000627Z",
+        "authority": server.AUTOKERNEL_HIP_DECISION_AUTHORITY,
+        "producer": {"producer_id": server.AUTOKERNEL_HIP_DECISION_PRODUCER,
+                     "sha256": "6" * 64},
+        "task": {"task_id": "torch2hip/gpumode/16636_SiLU",
+                 "target": {"gpu_model": "MI210", "gfx_arch": "gfx90a"}},
+        "correctness": {"all_passed": True, "passed": 24, "total": 24,
+                        "cases": cases},
+        "timing": {
+            "median_speedup": 1.0769349742219618,
+            "provider": {"provider_id": "torch_rocm_compile"},
+            "e_process": {"first_crossing_block": 9},
+            "ranked_duration_admission": {
+                "all_arms_passed": True, "minimum_ns": 250_090_903,
+                "minimum_observed_ns": 276_039_581.2988281,
+                "checks": [{"outcome": "PASS"} for _ in range(40)],
+            },
+        },
+        "decision": {
+            "rankable_against_exact_task_local_provider": True,
+            "release_or_promotion_authority": False,
+            "experimental_llama_integration_required_before_any_release": True,
+        },
+        "constraints": {"promotion_authority": False,
+                        "production_tree_touched": False},
+    }
+    value["receipt_sha256"] = server._canonical_receipt_hash(value)
+    return value
+
+
 class _KernelFile:
     """Point ``server.KERNEL_DASHBOARD_JSON`` at a temp file for one block."""
 
@@ -757,6 +795,52 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertEqual(row["parse_state"], "invalid_json")
         self.assertIsNone(row["producer_label"])
 
+    def test_hip_r6_projection_is_exact_and_carries_no_champion_authority(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            path = (root / "campaigns" / server.AUTOKERNEL_HIP_DECISION_CAMPAIGN /
+                    "receipt.json")
+            path.parent.mkdir(parents=True)
+            path.write_text(json.dumps(_hip_decision_receipt()) + "\n",
+                            encoding="utf-8")
+            row = server._hip_decision_grade_summary(root)
+        self.assertTrue(row["available"])
+        self.assertEqual(row["schema"], server.AUTOKERNEL_HIP_DECISION_SCHEMA)
+        self.assertEqual(row["task_id"], "torch2hip/gpumode/16636_SiLU")
+        self.assertEqual((row["correctness_passed"], row["correctness_total"]),
+                         (24, 24))
+        self.assertAlmostEqual(row["median_speedup"], 1.0769349742219618)
+        self.assertEqual(row["e_process_first_crossing_block"], 9)
+        self.assertEqual((row["duration_admissions_passed"],
+                          row["duration_admissions_total"]), (40, 40))
+        self.assertRegex(row["receipt_self_sha256"], r"^[0-9a-f]{64}$")
+        self.assertRegex(row["receipt_file_sha256"], r"^[0-9a-f]{64}$")
+        self.assertEqual(row["authority"],
+                         server.AUTOKERNEL_HIP_DECISION_AUTHORITY)
+        self.assertTrue(row["experimental_llama_integration_required"])
+        self.assertFalse(row["release_or_promotion_authority"])
+        self.assertFalse(row["champion_claim"])
+
+    def test_hip_r6_projection_fails_closed_on_partial_or_widened_receipt(self):
+        for mutate, phrase in (
+                (lambda value: value["timing"]["ranked_duration_admission"][
+                    "checks"].pop(), "40/40"),
+                (lambda value: value["decision"].__setitem__(
+                    "release_or_promotion_authority", True), "no-release")):
+            with self.subTest(phrase=phrase), tempfile.TemporaryDirectory() as td:
+                root = Path(td)
+                path = (root / "campaigns" /
+                        server.AUTOKERNEL_HIP_DECISION_CAMPAIGN / "receipt.json")
+                path.parent.mkdir(parents=True)
+                value = _hip_decision_receipt()
+                mutate(value)
+                value.pop("receipt_sha256")
+                value["receipt_sha256"] = server._canonical_receipt_hash(value)
+                path.write_text(json.dumps(value), encoding="utf-8")
+                row = server._hip_decision_grade_summary(root)
+            self.assertFalse(row["available"])
+            self.assertIn(phrase, row["error"])
+
     def test_current_state_keeps_fixed_diagnostic_and_smoke_claims_separate(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -909,6 +993,10 @@ class KernelActivityContextTest(unittest.TestCase):
                 "legs": [{"name": name, "status": "PASS"}
                          for name in ("restart", "revocation", "tamper")],
             }), encoding="utf-8")
+            hip_path = (root / "campaigns" /
+                        server.AUTOKERNEL_HIP_DECISION_CAMPAIGN / "receipt.json")
+            hip_path.parent.mkdir(parents=True)
+            hip_path.write_text(json.dumps(_hip_decision_receipt()), encoding="utf-8")
 
             state = server.autokernel_current_state(
                 probes.parent, attestation, production, root / "controls", root)
@@ -949,6 +1037,10 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertEqual(state["fault_rehearsal"]["status"], "PASS")
         self.assertEqual(state["fault_rehearsal"]["passed_legs"], 3)
         self.assertFalse(state["fault_rehearsal"]["live_claim_root_touched"])
+        self.assertEqual(state["hip_decision_grade"]["correctness_passed"], 24)
+        self.assertEqual(state["hip_decision_grade"][
+            "duration_admissions_passed"], 40)
+        self.assertFalse(state["hip_decision_grade"]["champion_claim"])
         self.assertTrue(
             state["production_kernel"]["checkout"]["matches_attestation"])
         self.assertIn("AutoKernel initialization excluded",
@@ -980,6 +1072,7 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertFalse(state["gpu_prefetch_replay"]["available"])
         self.assertFalse(state["loop_engineering"]["available"])
         self.assertFalse(state["fault_rehearsal"]["available"])
+        self.assertFalse(state["hip_decision_grade"]["available"])
         self.assertFalse(state["production_kernel"]["available"])
         self.assertFalse(state["promotion_claim"])
 

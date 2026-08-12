@@ -169,6 +169,11 @@ AUTOKERNEL_PROBE_ROOT = Path(os.environ.get(
 AUTOKERNEL_CONTROL_ROOT = Path(os.environ.get(
     "AUTOKERNEL_CONTROL_ROOT",
     "/mnt/raid0/llm/autokernel/controls"))
+AUTOKERNEL_HIP_DECISION_CAMPAIGN = "hip-silu-decision-grade-20260812-r6"
+AUTOKERNEL_HIP_DECISION_SCHEMA = "epyc.autokernel.hip_decision_grade.v1"
+AUTOKERNEL_HIP_DECISION_PRODUCER = "autokernel.controller.hip_decision_grade/v1"
+AUTOKERNEL_HIP_DECISION_AUTHORITY = \
+    "task_local_rank_no_release_or_promotion_authority"
 PRODUCTION_KERNEL_ATTESTATION = Path(os.environ.get(
     "PRODUCTION_KERNEL_ATTESTATION",
     str(REPO / "artifacts/operator/ratify_v9_final_freeze_20260811.json")))
@@ -1609,6 +1614,128 @@ def _rocm_diagnostics_summary(root: Path) -> dict:
     }
 
 
+def _hip_decision_grade_summary(root: Path) -> dict:
+    """Project the exact terminal raw-HIP r6 receipt without widening authority.
+
+    This is a curated operator display, not a second evaluator.  It admits only
+    the producer's self-hashed terminal receipt at the named campaign path and
+    checks every field the card repeats.  A partial/tampered receipt disappears
+    behind an explicit error instead of leaving a plausible-looking speed card.
+    """
+    path = root / "campaigns" / AUTOKERNEL_HIP_DECISION_CAMPAIGN / "receipt.json"
+    receipt, error = _verified_receipt(
+        path, {AUTOKERNEL_HIP_DECISION_SCHEMA}, "raw-HIP decision-grade receipt")
+    if error or receipt is None:
+        return {"available": False, "evidence": str(path), "error": error}
+    producer = receipt.get("producer")
+    task = receipt.get("task")
+    correctness = receipt.get("correctness")
+    timing = receipt.get("timing")
+    e_process = timing.get("e_process") if isinstance(timing, dict) else None
+    admission = (timing.get("ranked_duration_admission")
+                 if isinstance(timing, dict) else None)
+    decision = receipt.get("decision")
+    constraints = receipt.get("constraints")
+    cases = correctness.get("cases") if isinstance(correctness, dict) else None
+    checks = admission.get("checks") if isinstance(admission, dict) else None
+    invalid = []
+    if receipt.get("campaign_id") != AUTOKERNEL_HIP_DECISION_CAMPAIGN:
+        invalid.append("receipt campaign identity does not match the curated r6 path")
+    if receipt.get("status") != "complete":
+        invalid.append("receipt is not terminal complete")
+    if receipt.get("authority") != AUTOKERNEL_HIP_DECISION_AUTHORITY:
+        invalid.append("authority is not the task-local no-release boundary")
+    if not isinstance(producer, dict) or \
+            producer.get("producer_id") != AUTOKERNEL_HIP_DECISION_PRODUCER:
+        invalid.append("producer identity is not the decision-grade HIP producer")
+    elif not isinstance(producer.get("sha256"), str) or \
+            len(producer["sha256"]) != 64 or \
+            any(char not in "0123456789abcdef" for char in producer["sha256"]):
+        invalid.append("producer source digest is not a lowercase SHA-256")
+    if not isinstance(task, dict) or \
+            task.get("task_id") != "torch2hip/gpumode/16636_SiLU" or \
+            task.get("target") != {"gpu_model": "MI210", "gfx_arch": "gfx90a"}:
+        invalid.append("task is not the sealed MI210/gfx90a SiLU surface")
+    if not isinstance(cases, list) or len(cases) != 24 or \
+            not isinstance(correctness, dict) or \
+            correctness.get("all_passed") is not True or \
+            correctness.get("passed") != 24 or correctness.get("total") != 24 or \
+            any(not isinstance(case, dict) or case.get("passed") is not True
+                for case in cases):
+        invalid.append("correctness is not a complete 24/24 sealed pass")
+    elif any(isinstance(case.get("max_abs_error"), bool) or
+             not isinstance(case.get("max_abs_error"), (int, float))
+             for case in cases):
+        invalid.append("correctness cases lack numeric max-absolute-error evidence")
+    median_speedup = timing.get("median_speedup") if isinstance(timing, dict) else None
+    if isinstance(median_speedup, bool) or not isinstance(median_speedup, (int, float)):
+        invalid.append("median speedup is absent or non-numeric")
+    if not isinstance(e_process, dict) or e_process.get("first_crossing_block") != 9:
+        invalid.append("e-process does not carry the r6 block-9 crossing")
+    if not isinstance(timing, dict) or \
+            (timing.get("provider") or {}).get("provider_id") != "torch_rocm_compile":
+        invalid.append("timing does not name the exact Torch-ROCm-compile provider")
+    if not isinstance(checks, list) or len(checks) != 40 or \
+            not isinstance(admission, dict) or admission.get("all_arms_passed") is not True or \
+            any(not isinstance(check, dict) or check.get("outcome") != "PASS"
+                for check in checks):
+        invalid.append("per-arm duration admission is not 40/40 PASS")
+    elif admission.get("minimum_ns") != 250_090_903 or \
+            not isinstance(admission.get("minimum_observed_ns"), (int, float)) or \
+            admission["minimum_observed_ns"] < admission["minimum_ns"]:
+        invalid.append("duration admission does not clear the exact gfx90a floor")
+    if not isinstance(decision, dict) or \
+            decision.get("rankable_against_exact_task_local_provider") is not True or \
+            decision.get("release_or_promotion_authority") is not False or \
+            decision.get("experimental_llama_integration_required_before_any_release") is not True:
+        invalid.append("decision does not retain task-local/no-release scope")
+    if not isinstance(constraints, dict) or \
+            constraints.get("promotion_authority") is not False or \
+            constraints.get("production_tree_touched") is not False:
+        invalid.append("receipt constraints do not exclude promotion/production mutation")
+    file_sha256, file_error = _sha256_file(path)
+    if file_error or not file_sha256:
+        invalid.append(file_error or "receipt file digest unavailable")
+    if invalid:
+        return {"available": False, "evidence": str(path),
+                "error": "; ".join(invalid)}
+    max_abs_error = max(
+        float(case["max_abs_error"]) for case in cases
+        if isinstance(case.get("max_abs_error"), (int, float)))
+    return {
+        "available": True,
+        "schema": receipt.get("schema"),
+        "campaign_id": receipt.get("campaign_id"),
+        "status": receipt.get("status"),
+        "ended_at": receipt.get("ended_at"),
+        "producer_id": producer.get("producer_id"),
+        "producer_sha256": producer.get("sha256"),
+        "task_id": task.get("task_id"),
+        "target": task.get("target"),
+        "correctness_passed": correctness.get("passed"),
+        "correctness_total": correctness.get("total"),
+        "max_abs_error": max_abs_error,
+        "median_speedup": median_speedup,
+        "exact_provider": (timing.get("provider") or {}).get("provider_id"),
+        "e_process_first_crossing_block": e_process.get("first_crossing_block"),
+        "duration_admissions_passed": 40,
+        "duration_admissions_total": 40,
+        "minimum_duration_ns": admission.get("minimum_ns"),
+        "minimum_observed_duration_ns": admission.get("minimum_observed_ns"),
+        "receipt_self_sha256": receipt.get("receipt_sha256"),
+        "receipt_file_sha256": file_sha256,
+        "authority": receipt.get("authority"),
+        "rankable_against_exact_task_local_provider": True,
+        "experimental_llama_integration_required": True,
+        "release_or_promotion_authority": False,
+        "champion_claim": False,
+        "evidence": str(path),
+        "evidence_mtime": _iso_mtime(path),
+        "note": ("decision-grade evidence for this exact task/provider only; not a "
+                 "champion and not release or promotion evidence"),
+    }
+
+
 def _campaign_audit_summary(path: Path | None, data: dict | None,
                             error: str | None) -> dict:
     """Project a controller audit receipt without inventing a verdict."""
@@ -1836,6 +1963,7 @@ _PROJECTED_RECEIPT_SCHEMAS = {
     "epyc.autokernel.c4_profile_report.v1",
     "epyc.autokernel.g15_profile.v1",
     "epyc.autokernel.omniperf_fallback.v1",
+    AUTOKERNEL_HIP_DECISION_SCHEMA,
 }
 
 
@@ -2435,6 +2563,7 @@ def autokernel_current_state(probe_root: Path | None = None,
     scaffold = _scaffold_panel_summary(state_root)
     arena = _arena_campaign_progress(state_root)
     rocm = _rocm_diagnostics_summary(state_root)
+    hip_decision = _hip_decision_grade_summary(state_root)
     adapter_root = REPO / "scripts/vidya/adapters"
     source_table_path = adapter_root / "README.md"
     try:
@@ -2467,6 +2596,11 @@ def autokernel_current_state(probe_root: Path | None = None,
                        "autokernel_scaffold_panel.py",
                        "live" if scaffold.get("belief_measurement_count", 0)
                        else "prospective successor-only; terminal r1 remains zero-row"),
+        _belief_source("raw-HIP r6 task-local decision receipt",
+                       2 if hip_decision.get("available") else 0,
+                       "autokernel_aux_receipt.py",
+                       "live task-local rows; no release/promotion authority"
+                       if hip_decision.get("available") else "receipt unavailable"),
     ]
     return {
         "schema": "epyc.autokernel.dashboard_current_state.v1",
@@ -2489,6 +2623,7 @@ def autokernel_current_state(probe_root: Path | None = None,
         "fault_rehearsal": _fault_rehearsal_summary(state_root),
         "arena_campaign_progress": arena,
         "rocm_diagnostics": rocm,
+        "hip_decision_grade": hip_decision,
         "belief_source_wiring": {
             "source_table": str(source_table_path),
             "source_table_present": source_table_path.is_file(),
