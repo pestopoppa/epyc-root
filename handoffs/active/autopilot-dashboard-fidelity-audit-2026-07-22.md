@@ -340,10 +340,27 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
     ATTEST-E8-CONTEXT-FEASIBILITY-AND-BASELINE-APPLY-20260727)`. A signable token script with no
     keyed-receipt write, i.e. a gate that could be signed without leaving an index entry. Routed
     to the E8 quality-baseline owner.
-  - [ ] **[E8-PANELS-c] Hub pct presentation**: `pct_all_done` reads intake sweeps as decline
-    (denominator inflation, see 2026-07-27 forensics) — surface absolute `all_tasks_done` +
-    a newly-filed-tasks series on the :8100 hub (owner may also be
+  - [x] **[E8-PANELS-c] Hub pct presentation** ✅ 2026-08-12 (`mainB`) — `pct_all_done` reads intake
+    sweeps as decline (denominator inflation, see 2026-07-27 forensics) — surface absolute
+    `all_tasks_done` + a newly-filed-tasks series on the :8100 hub (owner may also be
     loops-and-dashboards-audit-2026-07-05.md).
+    **Both requested surfaces ALREADY EXISTED; the defect left was the guard protecting them.**
+    Absolute: `handoffs.html:620` renders `bk.all_tasks_done` ("tasks completed (all tracked)").
+    Newly-filed series: `:943` and `:994-995` (`newly_filed` / `tasks_newly_filed`, each falling
+    back to `opened`). The percentage was *kept* rather than removed — a later design decision,
+    commented in place — but scope-labelled, "% done · open scope" beside "% done · all scope",
+    which addresses the same confusion by disambiguation instead of deletion.
+    **What was actually broken: the frontend-contract test asserted a SPELLING, not a property.**
+    `tests/test_handoff_parser.py` carried
+    `assertNotIn("const pctAll = bk.pct_all_done", html)` — and that exact expression exists nowhere
+    in the file, so the guard passed while `bk.pct_all_done` was still rendered through a different
+    expression at `:704-705`. A guard that forbids one *way of writing* a thing does not forbid the
+    thing. Rewritten to assert the property: if `bk.pct_all_done` is rendered at all, it must carry
+    its scope label AND appear beside the open-scope figure.
+    **Mutation-checked, because a guard I cannot make fail is the defect I was removing:** stripping
+    the two scope labels while leaving the render in place makes the new assertion FAIL
+    (`'% done · all scope' not found`); the old one passed on that same mutation. Restored, 42/42
+    green.
 - [x] **[E8-TRIALS-COLD] Validate restart-surface trial speed samples for cold-start
   contamination** ✅ 2026-07-27. Retrospective row-level audit cleared the sealed E8
   frontier: restart attempts 1442/1455 were tier-0 skips because AP-3 restart was disabled,

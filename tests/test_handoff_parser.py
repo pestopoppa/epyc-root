@@ -274,7 +274,24 @@ class FrontendContractTests(unittest.TestCase):
     def test_backlog_and_task_flow_use_absolute_and_newly_filed_contracts(self):
         html = (_REPO / "dashboard" / "static" / "handoffs.html").read_text()
         self.assertIn('bk.all_tasks_done, l: "tasks completed (all tracked)"', html)
-        self.assertNotIn("const pctAll = bk.pct_all_done", html)
+        # E8-PANELS-c. This assertion used to read
+        #     assertNotIn("const pctAll = bk.pct_all_done", html)
+        # which pinned a SPELLING, not a property: that exact expression no
+        # longer exists anywhere, so the guard passed while `bk.pct_all_done`
+        # was still being rendered through a different expression. A guard that
+        # forbids one way of writing a thing does not forbid the thing.
+        #
+        # The property that actually matters is the one the row is about: an
+        # all-scope percentage has an INFLATED DENOMINATOR (intake sweeps file
+        # tasks faster than they close), so shown bare it reads as decline. It
+        # may appear ONLY if it is unambiguously scope-labelled, and only
+        # alongside the open-scope figure it would otherwise be confused with.
+        if "bk.pct_all_done" in html:
+            self.assertIn("% done · all scope", html,
+                          "pct_all_done is rendered without its scope label — bare, it reads "
+                          "as decline whenever an intake sweep inflates the denominator")
+            self.assertIn("% done · open scope", html,
+                          "all-scope percentage shown without the open-scope figure beside it")
         self.assertIn("const filed=w=>(w.newly_filed!=null?w.newly_filed:w.opened)||0;", html)
         self.assertIn("tasks_newly_filed!=null", html)
         self.assertIn("tasks newly filed vs completed per week", html)
