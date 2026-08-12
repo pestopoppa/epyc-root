@@ -18,13 +18,17 @@
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
-**Current checkpoint (2026-08-11):** Steps 0–2 and the five-control calibration are complete for
+**Current checkpoint (2026-08-12):** Steps 0–2 and the five-control calibration are complete for
 the retired v8 era and remain valuable regression evidence; they do **not** authorize ranking on
-frozen v9 plus the hardened measurement overlay. The operator authorized all compute and inference
-for this session on 2026-08-11, but two measurement gates remain: explicit operator approval for the
-one remaining experimental producer/oracle/Q4 repair commit stacked on the already-pushed hardened
-instrument `0492c231`, and a privileged measurement window (or temporary readable `energy_uj`
-permission, restored to `0400` afterward).
+frozen v9 plus the hardened measurement overlay. The current measurement instrument is the clean,
+one-parent overlay `a4cb04ca8f92fa4d665684490f609b380f9b5e96` directly on frozen v9
+`0db32c06e3e550065b78311a6031ef3dd2c4f27c`, and its real CPU smoke emitted every required
+hardening receipt. Research commit `1094ff6b` removes the package-power privilege blocker through a
+pinned, networkless, read-only broker and makes the v9 controls decision-grade. Research commit
+`7f8e9997` then requires a fresh operator-chosen campaign id and derives every seed, window, and
+absolute evidence reference from it. The remaining order is: run the five v9 controls, run the
+full-host CPU IQK proposal, construct the real matched archive, then run the least-commitment
+evaluation observe-only.
 INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
 VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
 Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
@@ -2787,11 +2791,17 @@ nothing wrong. We held no claim.**
 
 ### Step 2 — calibrate the instrument before trusting it
 
-- [ ] **Bind the hardened instrument to clean, committed provenance before inference.** Start from a
-      clean checkout of frozen v9 plus the reviewed hardening overlay; retain the exact source commit,
-      clean-tree attestation, build recipe and binary/library hashes. A receipt naming v9 while executing
-      a binary built from the dirty shared experimental tree is diagnostic only and must fail campaign
-      admission.
+- [x] **Bind the hardened instrument to clean, committed provenance before inference.** ✅ 2026-08-12 —
+      `experimental-v9-autokernel-t1-hardening-final` at
+      `a4cb04ca8f92fa4d665684490f609b380f9b5e96` has exactly one parent, frozen v9
+      `0db32c06e3e550065b78311a6031ef3dd2c4f27c`, changes only `llama-bench.cpp` and its README,
+      is clean, and is pushed to the internal fork. The clean CPU build's copied `llama-bench` is
+      SHA-256 `19dfba5c65a94e7b27e3db001a8a6a250a91d013bfea73970f4e931f0c1e54b0`.
+      A claimed 0–95 CPU smoke emitted all six required hybrid-sync, thread-set, escape-check,
+      unsynchronized-sample, and device-sync receipts (`cpu_not_applicable`) and released its q0–q3
+      claim. The all-PASS preflight is
+      `/mnt/raid0/llm/autokernel/probes/ak-v9-final-preflight-20260812-r1/preflight.json`, SHA-256
+      `0baf7b73055f028c5c493afd9a4ab8c9950d3c088ed79f3751102ddff71fdefd`.
 
 - [x] **Run the five fixed controls (§15.2) before any real search**: positive, neutral, negative,
       A/A, and the **historical-win replay — the iqk port, which MUST promote**. The negative control
@@ -2813,28 +2823,24 @@ nothing wrong. We held no claim.**
       production commit, measurement-instrument commit, recipe, floor, B_min/ceiling and MDE, and
       refuses the v8 bundle on v9. Dry run reports `UNCALIBRATED CELL` rather than printing the old
       2.1310% placeholder as live authority. ✅ 2026-08-11
+- [x] **Close package-power admission without broadening host privilege.** ✅ 2026-08-12 — research
+      commit `1094ff6b` adds a lazy, exact-container-id broker pinned to image
+      `sha256:3a2e92b4133d06d1287f96ec47bacd743717b377f4b9df6be1e3af626c35dbb0`, with no network,
+      a read-only root, all capabilities dropped, `no-new-privileges`, a 16-PID limit, and only the
+      powercap mount exposed read-only. The v9 preflight now passes package-power availability; unit
+      coverage proves exact-id stop/inspect/kill escalation and refuses image-identity mismatch.
+- [x] **Require a fresh campaign identity and self-consistent evidence root.** ✅ 2026-08-12 —
+      research commit `7f8e9997` removes the retired hard-coded campaign id and evidence directory,
+      requires `--campaign-id` plus an absolute `--output`, and deterministically derives the seed and
+      window id. Declaration, calibration, claim, host, control, evaluator, and summary receipts now
+      carry the same identity; invalid ids and relative evidence roots fail before execution.
 - [ ] **Run the five controls against frozen v9 plus the hardened measurement instrument.** Produce
       the current identity-bound calibration bundle and retain the failed attempt if the declared
-      floor cannot be resolved. CPU inference was explicitly authorized on 2026-08-11 while the
-      production stack remains online and idle; do not infer GPU-load, producer-commit, promotion,
-      or freeze authority from it. The v8 3%/B_min=12 bundle is a regression fixture, not a literal
-      to copy. The first v9 preflight was retained and failed closed **before inference**: source and
-      copied-binary identity passed, but the selected measurement binary did not emit the six required
-      hardened runtime receipts (`autokernel_hybrid_ab_complete`, thread-set stability/hash,
-      escape-check completion, unsynchronized-sample timing, and device-sync mode), and package-power
-      readability was initially `COULD_NOT_CHECK`. The pending v2 overlay now builds cleanly and a
-      claimed CPU smoke emitted all six fields with stable identical thread-set hashes,
-      `cpu_not_applicable` device sync, and a released q0-q3 claim. Receipt SHA-256:
-      `269aaf94c850212be5d390e0e9b64436238ce258cc618546bb736296c65f9820`. Package power remains
-      unreadable to the current UID (`energy_uj` is `0400 root:root`), so
-      `HostStatePolicy(require_package_power=True)` returns `COULD_NOT_CHECK`. The two remaining
-      preflight gates are explicit operator approval for the one remaining local experimental commit
-      on top of already-pushed `0492c231`, and a
-      privileged measurement window (or temporary readable `energy_uj` permission, restored to
-      `0400` afterward). Local
-      failed-attempt evidence remains untracked at
-      `epyc-inference-research/data/autokernel_controls_3pct_20260811_v9_hardened/`; its copied binary
-      payload is about 15 MB and is intentionally not a repository artifact.
+      floor cannot be resolved. CPU inference is explicitly authorized for the owning session; do not
+      infer producer promotion or freeze authority from it. The v8 3%/B_min=12 bundle is a regression
+      fixture, not a literal to copy. The clean instrument, package-power, and fresh-identity gates now
+      pass. Run a new campaign id and preserve any fail-closed result under that id rather than
+      overwriting it.
 
 ### Step 3 — the first candidate
 
@@ -2885,6 +2891,14 @@ nothing wrong. We held no claim.**
       block. This is `NOT_REPRODUCED`, not a banked candidate. Receipt:
       `/mnt/raid0/llm/autokernel/probes/ak-gpu-prefetch-v9-20260811-r2/receipt.json`, SHA-256
       `7b173cafcccb8a99319bf93a80fd13a2e94a400afab2bf03355363f9521ab17f`.
+- [x] **Repeat the governed v9 async-prefetch replay under an independent 20-block campaign.**
+      ✅ 2026-08-12 — all **20/20** paired blocks were positive, but the median delta was only
+      **+1.2442303249%** (minimum **+0.6788501205%**), below the predeclared **2%** contribution
+      floor. The honest verdict remains `NOT_REPRODUCED`; positivity alone is not promotion evidence.
+      The receipt binds frozen-v9 source/binary/linkage/model identities, a held-and-released MI210
+      claim, and 2,544 device samples across 635.76 s:
+      `/mnt/raid0/llm/autokernel/probes/ak-gpu-prefetch-v9-20260812-r1/receipt.json`, SHA-256
+      `7321f2a640a7cc0b3169544867e26e3102a3efe3ebd5b0ebc732e154398339b0`.
 - [ ] Then a real one. Drop a hypothesis into the store (`HYPOTHESES.md` has the shape), or run
       exploratory with no `--hypothesis` at all.
 

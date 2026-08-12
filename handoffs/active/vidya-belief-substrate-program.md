@@ -439,6 +439,12 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       identities. Root's auxiliary adapter re-derives every value, row digest, arm/topology field,
       and receipt digest while preserving the observation-only no-selection/no-speedup/no-carve/
       no-activation boundary. No grading rule was added and no historical result was back-filled.
+- [ ] SC27 **Wire AutoKernel live-control and governed replay receipts on the write side before the
+      next run.** The 2026-08-12 hardened-instrument smoke and async-prefetch replay are immutable
+      pre-hook evidence and must not be back-filled. Extend future writers with producer-written
+      protocol id, metric direction, scored-block/sample basis, source/binary/model/claim identity,
+      native verdict, and immutable evidence digest; project those rows into the existing measurement
+      ladder and let `claim_tuple.grade()` decide. Do not create a second grading rule.
 
 ## Dependency notes
 
