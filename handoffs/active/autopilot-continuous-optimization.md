@@ -2499,7 +2499,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       11 silent drops into 11 always-fails. (c) The `cruxeval` row's oracle is **correct**; upstream
       `sample_135` is `def f()` with no arguments, so the QUESTION is degenerate, not the ground truth.
       Evidence: `artifacts/audit/unscoreable-rows-livecodebench-cruxeval-mah-20260812.md` (`08d73fd9`).
-- [ ] **THE 13 WERE NEVER THE PROBLEM: all 2,360 `livecodebench` rows carry the SAME 4-character
+- [x] **THE 13 WERE NEVER THE PROBLEM: all 2,360 `livecodebench` rows carry the SAME 4-character
   oracle, and 2,349 of them SCORE.** `expected == "def "` for every row in the suite —
   **one distinct value across 2,360 rows** — scored by `substring`. Any plausible Python answer
   contains `def `, so the suite cannot distinguish a correct solution from a syntactically valid
@@ -2518,6 +2518,38 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
   *(Verified by `mainC` before acceptance: 2,360 rows / 1 distinct `expected` / 2,349 `substring`
   re-derived independently, and the new guard run against the live pool flags exactly `livecodebench`
   plus `needle_parameterized` — the latter a fixed needle by design, reported not allow-listed.)*
+  ✅ 2026-08-12 — **REBUILT**: orchestrator `75b812c0`, research `cb0761b5`.
+  **The shipped oracle passes a do-nothing stub.** *(Verified by `mainC`: all 5 livecodebench rows in
+  the core pools are satisfied by `def solve(): pass`, one distinct `expected` between them.)* It also
+  passes echoing the prompt, 100%. That is the strongest form of the vacuity claim.
+  **New oracle:** parse LeetCode's own `**Input:**`/`**Output:**` blocks (present on 2,358/2,360) into
+  executable cases and RUN the answer — `assert fn(*args) == expected`. The answer key is LeetCode's
+  examples; the reference solution is only a witness that our parse is faithful, so a wrong reference
+  costs coverage, never correctness. Build gate, not a report: 4 echo answers must all fail and 3
+  correct answers must all pass, else the row is dropped.
+  **Verdict: rebuild 704, retire 1,656** (coverage 29.83%; distinct `expected` goes 1 → 670). Of the
+  11 `code_execution` rows: 1 regenerate, 10 retire — every one a linked-list / tree / quad-tree /
+  class-design problem for which no case can be manufactured from this snapshot.
+  **UPSTREAM IS PARTLY MISALIGNED, and this was not in the audit.** `greengerong/leetcode` reference
+  solutions are frequently the solution to a DIFFERENT problem — `flip-equivalent-binary-trees` ships
+  `partitionDisjoint`, `basic-calculator-ii` ships calculator-I. A function name matching its own slug
+  occurs on only **40.08%** of rows. Not a constant offset (every shift −4..+8 scores worse than 0).
+  That is why ungated reference-fail is 53.26% — upstream, not our parsing — and it constrains any
+  future work on this suite.
+  **27 mutations, 0 survivors.** Three survived round one, and writing the pin for one found a REAL
+  BUG: `order_args`' positional fallback silently defeated the named-binding guard, so an example
+  naming only `cur` bound its value to `root` — a mis-bound oracle, the shipped adapter's defect in a
+  new costume. Fixed, then pinned.
+- [ ] **A THIRD SILENT-SCORING DEFECT, found while porting: the research repo's diverged
+  `debug_scorer.py` answers an `entry_point` oracle with `assert f() == <expected text>`** — a
+  ZERO-ARG assertion that a function taking arguments can never satisfy, so **correct answers scored
+  False on every such row**. Ported the real execution plus the orchestrator's refusal; a test pins it.
+  Same family as debugbench's reference-fails: the scorer rejecting right answers, not just accepting
+  wrong ones.
+- [ ] **Scorer defect reported, not worked around:** `_extract_code_block` truncates UNFENCED code at
+  the first blank line. Gating on the unfenced reference would cost 344 rows (15.85% vs 29.83%), so it
+  is measured and reported rather than silently absorbed. **UNOWNED.**
+
 - [ ] **REGENERATE `ma_hard_code_001`** — hand-authored tracked YAML
   (`mode_advantage_hard.yaml:288-328`), two defects: `test_code` wires stdin and never asserts, AND
   the prompt ships the author's unresolved self-correction (says 3, then 6; correct answer is 6).
