@@ -287,7 +287,16 @@ payloads: **face 9 committed while auditing for face 13**, and the clean-looking
 
 *Test*: **never pre-write a verdict string.** Either derive the label from the same data you print —
 compute it, so it cannot disagree — or print the evidence bare and state the conclusion only after
-reading it. A phrase like `(empty = X)` or `(expect 0)` is an assertion made *before* the evidence,
+reading it. `mainB`'s idiom, which is the whole remedy in one line — **print the observed value,
+never the predicted one**:
+
+```bash
+cmd; echo '(empty = clean)'          # fires unconditionally; says clean either way
+n=$(cmd | wc -l); echo "$n offending paths"   # cannot disagree with what it counted
+```
+
+A label that is byte-identical whether the check passed or failed carries no information;
+it only borrows the authority of the command above it. A phrase like `(empty = X)` or `(expect 0)` is an assertion made *before* the evidence,
 and an assertion that cannot be falsified by the thing it describes is not a check.
 
 *Fails*: OPEN, and it is the most **contagious** face — the wrong verdict propagates into commit
