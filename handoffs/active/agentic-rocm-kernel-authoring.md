@@ -491,7 +491,7 @@ section costs **zero GPU and zero local inference**.
   target arms produced fewer than their matched controls (`3→1` at high, `3→2` at xhigh). No cell
   emitted an already-optimized termination. The honest result is null for Claude and mixed/adverse
   for Codex on this single panel; it does not establish a transferable proximate-target benefit.
-- [ ] **AK-LE-3 — Split *implement* from *exploit* as two prompt roles on the SAME model first,
+- [x] **AK-LE-3 — Split *implement* from *exploit* as two prompt roles on the SAME model first,
   budget-matched in wall-hours, before any multi-model A/B.** The note's four-role split
   (explore / critique / implement / exploit) is a runnable design, but the delta from our current
   two-role planner may be small, and a multi-model comparison would confound scaffold with model.
@@ -511,8 +511,17 @@ section costs **zero GPU and zero local inference**.
     trusted Arena evaluator in every cell, isolate disposable baseline/candidate worktrees, bind
     runtime/image/import identities, serialize MI210 claims, and clean up exact owned worktrees on
     every exit. The focused integrated slice passed **29/29** and the controller suite passed
-    **512/512**. Empirical campaign `ak-le-3-scaffold-20260812-r1` is running; the parent remains open
-    until all four cells and the terminal reduction are sealed.
+    **512/512**. The following terminal campaign closes the parent experiment.
+  - [x] **Run and reduce the governed same-model scaffold panel.** ✅ 2026-08-12 — all **4/4**
+    gpt-5.6-sol/terra × direct/split cells compiled, passed all four correctness cases, retained four
+    valid baseline and four optimized timing cases, and released their MI210 claims. Average speedup
+    was Sol direct `0.9957477195`, Sol split `1.3930213301`, Terra direct `1.0021830618`, and Terra
+    split `0.9935661224`. The split benefit is therefore task- and model-specific, not a cross-model
+    scaffold default. The panel has diagnostic observation authority only: it cannot rank a campaign,
+    choose a champion, or authorize a release. Receipt:
+    `/mnt/raid0/llm/autokernel/campaigns/ak-le-3-scaffold-20260812-r1/panel/panel.json`, self-hash
+    `6e764cca1df8cf347d43c48bca70654f1cec4dddbe967e7e80a3705c3d71ff32`, file SHA-256
+    `5af0307ffd823e093d06d26497a536e414090d72e3dee73bf3c33f4ea853e666`.
 - [x] **AK-LE-4 — Context discipline: a priced context budget and a reversible compaction protocol.**
   (a) A per-round context-budget table with an explicit **never-bulk-read** rule, so the loop cannot
   spend its window on a file it will not use. (b) A research-log compaction step that writes a

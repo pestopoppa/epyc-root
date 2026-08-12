@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 400
+      "open": 399
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 302
+      "open": 303
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -85,14 +85,14 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 44,
+      "closed": 46,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 4,
+      "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 48
+      "total": 49
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 0,
@@ -1837,11 +1837,11 @@
       "closed": 50,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 13,
+      "open": 14,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 63
+      "total": 64
     },
     "within-role-placement-state-machine.md": {
       "blocked": 0,
