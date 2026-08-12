@@ -31,6 +31,19 @@ but live preflight correctly refused before claim, build, or benchmark because h
 `13.47 days`, beyond the ratified one-week ceiling. After a compliant reboot, run the full-host CPU
 IQK proposal, materialize the real matched archive, then run the least-commitment evaluation
 observe-only.
+Research `58b8d66a` and `948a95a4` close the no-inference producer gap in that next step. The live
+campaign now requires a prospective least-commitment capture plan for the IQK parameter path,
+journals the measured diagnostic/outcome block, and can project two clean completed campaigns into
+the strict matched archive and onward to the sequencer/release rehearsal. Capture plans no longer
+accept decorative receipt ids: they resolve one absolute SHA-pinned diagnostic-source file and
+mechanically rederive every canonical and recoded diagnostic. Archive admission also refuses an
+exploratory result and binds the exact proposal statement to one durable `HYPOTHESIS_OPENED` plus the
+selected `HYPOTHESIS_CLAIM_AUTHORIZED` record. The exact intervention and A/A control proposal,
+capture, source, hypothesis-store, and physical-envelope inputs are materialized under
+`/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/` and
+`/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812/`. Both bound commands compose
+successfully with `executed=false`; no inference was performed by this checkpoint. A live matched
+archive still requires two post-reboot clean DECIDED runs.
 Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
 The live campaign consumes an immutable content-addressed source patch before claim acquisition,
 applies it only through the guarded worktree boundary, and records the exact clean source/build,
@@ -56,6 +69,14 @@ through measured, hash-bound bindings to the exact candidate source and evaluato
 dry-run capture, or identity drift is verdict-bearing `COULD_NOT_CHECK`. The exact-main C3,
 correctness, and execution slice passed **444 tests with 132 subtests**. This closes implementation
 authority only: no EPYC workload capture, candidate timing, whole-model exit, or inference ran.
+Research `77689f76` makes AK-D39 executable rather than advisory. Proposal v4 binds every provider's
+source/opaque mode, immutable source or artifact identity, licence check, isolated prefix, toolchain,
+linkage, target backend, and evidence authority. Opaque binaries are diagnostic-only. Provider roots
+are realpath-resolved and refused when they lie inside—or broadly encompass—shared ROCm/system paths
+or a frozen production tree. Banked evidence requires a clean experimental `llama.cpp` integration
+whose source, branch, ancestry, patch, binary, linkage, and toolchain identities all join. The C3
+compiler now distinguishes diagnostic provider overlays from `IntegratedLlamaGpuBinding`; only the
+latter can satisfy the whole-model exit. This checkpoint ran no inference.
 Research `4a5f7361` closes the remaining offline integration seam from the lean sequencer's
 schema-bound composed champion through readiness, dry-run T3, and one validated
 `RELEASE_PACKAGE_READY` journal record. The closeout is operator-triggered, unreachable from Campaign
@@ -197,6 +218,12 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   AK-DEL-1 is separately commit-backed at research `df02169e`: its hash-bound scope report found all
   3/3 admitted families in `existing_path_should_apply` and selects catalogue expansion before a novel
   generator. This corpus-bounded routing conclusion is not a claim about all workloads.
+- [x] **AK-AUD-5 — Make the real-process fault rehearsal independent of caller import state.** ✅
+  2026-08-12 — research `eeaf80ba` pins the exact checkout's `scripts/kernel_rnd` path first in each
+  captured child environment, so the crash/restart and claim-revocation legs no longer exit when a
+  test runner mutates `sys.path` without exporting `PYTHONPATH`. Detached clean campaign checkouts are
+  accepted by exact commit identity. The focused suite passed 12 tests and the full AutoKernel suite
+  passed 5,548 tests with one expected failure and 2,241 subtests.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
@@ -339,6 +366,38 @@ assume uniformity.
 Build one domain-agnostic controller with backend adapters. Do not build a GPU-only controller and
 clone it. Do not force scheduler or registry changes through a kernel-freeze transaction merely
 because the same planner discovered them — `serving_runtime` uses a stack-change release adapter.
+
+#### 1.5.1 ROCm modules are governed candidate providers, not champion source trees
+
+AutoKernel's GPU search surface includes the software-addressable ROCm layer: exact-shape
+rocBLAS/hipBLASLt/CK selection, library algorithms, compiler flags, launch topology, standalone
+Triton/HIP kernels, and source-available vendor-module kernels. That does **not** create a fourth
+kernel source tree or permit a module to bypass the deployable product:
+
+- every module build or source fork is content-addressed, source-pinned, and isolated from the
+  resident stack; no campaign may write the shared `/opt/rocm`, replace a resident runtime library,
+  or inherit an unbound module from `LD_LIBRARY_PATH`;
+- opaque vendor binaries may be hash-bound baselines or candidate dependencies, but are never
+  champion source and cannot carry an authored-kernel claim;
+- a winning module/kernel result becomes bankable only after it is integrated through an
+  experimental `llama_gpu` candidate and passes the exact operator, captured-workload, and
+  whole-model gates; the resulting evidence and champion remain attached to the `llama.cpp` source
+  tree; and
+- a future independently deployed ROCm module would require a human-reviewed schema/backend/release
+  adapter before any campaign could promote it. The current loop must not infer that authority from
+  buildability or speed.
+
+This keeps module-level search broad while keeping promotion narrow. Serving concurrency and
+scheduler work remains a separate `serving_runtime` campaign under AK-D9/AK-D23.
+
+- [x] **AK-D39-1 — Enforce the provider-not-champion boundary in records, execution setup, C3, and
+  champion admission.** ✅ 2026-08-12 — research `77689f76` adds proposal-v4 provider identity,
+  diagnostic-only opaque authority, realpath-aware isolated prefixes, exact baseline manifests,
+  provider-integration joins, and the diagnostic-versus-integrated C3 split. Ancestor-root and
+  symlink-to-protected mutation tests fail closed. Post-rebase focused/affected validation passed
+  580 tests; a full 5,597-test discovery exposed four current-schema call sites, which were repaired
+  and revalidated in a 419-test affected slice. The only remaining discovery error was environmental:
+  the checkout Python lacks `pytest` for `test_placement_context.py`.
 
 ### 1.6 The objective is per-backend, per-phase non-inferiority plus improvement
 
@@ -2682,6 +2741,19 @@ evaluator or its own scope, and T1 may legally guide search.
     mismatched, and literal empirical inputs fail closed. The receipt/footprint slice passed **98/98**
     and the integrated canonical AutoKernel suite exited zero. The parent remains open until CPU IQK
     and a matched completed control/intervention pair supply the real records.
+  - [x] **Materialize the exact prospective IQK intervention/control producer inputs.** ✅ 2026-08-12 —
+    research `58b8d66a`/`948a95a4` adds the live capture-plan producer and mechanical diagnostic-source
+    compiler, then materializes the intervention and A/A control proposals, SHA-bound source receipts,
+    capture plans, stated hypothesis stores, and control-specific physical envelope under the two
+    durable campaign roots. `evidence_path_rehearsal.py` resolves those exact files, proves one changed
+    factor, validates both hypothesis statements/falsifiers, reproduces the control proposal byte for
+    byte, and reaches the architecture-only `RELEASE_PACKAGE_READY` seam without inference.
+  - [x] **Require a bound typed hypothesis before a completed proposal may enter the archive.** ✅
+    2026-08-12 — archive admission now refuses exploratory campaign records and requires the terminal
+    authorization to resolve by exact hypothesis id, campaign id, ledger sequence, payload, and proposal
+    statement. A dry-run followed by execute under the same campaign identity remains idempotent: one
+    OPENED record is retained and separate composition/live authorizations are journaled so the archive
+    can bind the live spend exactly. The post-rebase suite passed **5,599 tests** with one expected failure.
 - [ ] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol,
   matched-intervention validation, per-regime/surface results, noise floor, robust sign error, and
   recoding stability. Until real evidence shows invariant independent signal, do not add weakness,
@@ -3109,10 +3181,13 @@ future sweep.)*
       fail-closed STOP_STATE records remain in
       `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/events.jsonl`.
   - [x] **Recover and validate the exact current dry-run invocation.** ✅ 2026-08-12 — the recovered
-    command exits zero without host mutation and composes 13 current-code steps / 10 pairs with the
-    accepted 3% floor, B_min 10, CPU `0-95`, and required `--nominal-khz 2500000`. The durable command
-    is recorded in `progress/2026-08/2026-08-12.md`; the separate governed execute invocation still
-    requires OP-16 and a fresh post-reboot preflight.
+    intervention and matched A/A commands exit zero without host mutation, bind their exact
+    `--least-commitment-capture-plan`, `--hypothesis`, and `--hypothesis-store` inputs, and compose the
+    current-code steps with the accepted 3% floor, B_min 10, CPU `0-95`, and required
+    `--nominal-khz 2500000`. Dry-run authorization does not consume the live authorization: identical
+    execute-mode pickup appends a distinct typed spend record. Both durable commands are recorded in
+    `progress/2026-08/2026-08-12.md`; governed execution still requires OP-16 and fresh post-reboot
+    preflight.
 - [ ] **After a compliant host reboot, rerun the prepared full-host CPU IQK campaign.** The ratified
       one-week uptime ceiling in `measurement/protocols/kernel-research.md` and `bench-cpu.md` is the
       sole remaining preflight blocker. Reuse the accepted v9 control bundle and exact recipe frame;
@@ -3404,6 +3479,7 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 | AK-D34 | The oracle registry declares a **harvest class** per row on the axis of architectural portability (`portable_source` vs `reimplement`), **not licensing** — standing policy is open-source self-hosted, non-commercial, licences not blockers and new oracles enter via `research-intake`, not by an agent adding a row | Misclassifying is a schedule problem, not a legal one: a `reimplement` oracle costs authoring effort a `portable_source` one does not. Intake still verifies real gfx90a/EPYC support and normalises the claimed result to roofline utilisation before a port is proposed |
 | AK-D37 | **AK-D36 excludes a *target*, not a *regime*.** Single-stream and batched prefill and decode are all legitimate optimization directions, and AutoKernel looks for improvement independently of batch count. What AK-D36 forbids is recruiting the whole-stack llama.cpp-vs-vLLM ratio as a kernel objective, because that ratio is dominated by scheduling above 16 concurrent users | A coarse 2026-07-04 B=128 profile originally made G15 look like the highest-confidence GPU band; the strict 2026-08-11 family map later closed G15 itself. That falsification reinforces the rule: batch regimes remain valid, but targets must be selected by current mechanism-specific metrics rather than a whole-stack ratio or a coarse non-GEMM remainder |
 | AK-D38 | **Operator hypotheses are a first-class planner input**, carrying an explicit falsifier, entering at `design_prior` evidence grade and never above it, tracked still-open until resolved, and subject to every gate without exception | The operator sees things the profile does not; without a channel that steering arrives as an out-of-band instruction with no falsifier and no resolution record. Grading it `design_prior` is what stops a hunch being laundered into a measured fact. **Note the sibling comparison in §8.4.0 was corrected on 2026-08-03: AutoPilot does not have still-open tracking either, its falsifier is optional and observability-only, its open-set block is stagnation-gated, and it has no evidence-grade vocabulary at all — so this is a new mechanism in both loops rather than parity with one** |
+| AK-D39 | **ROCm libraries, compiler choices, and source-available modules are isolated candidate providers, not new champion source trees.** AutoKernel may select, tune, or fork them, but a win must integrate through an experimental `llama_gpu` candidate and pass operator plus whole-model gates; shared `/opt/rocm` mutation and opaque-binary champion source are forbidden | The measured gap is regime-dependent: dense GEMM provider choice is shape-specific, while the large Q8/IQ2/MoE utilization collapse lives mainly in custom low-bit/layout/gather paths. Broad search across both layers is warranted, but promotion must still name the deployable `llama.cpp` lineage and preserve the frozen-stack trust boundary |
 | AK-D31 | Architectural campaigns replace three §8.4 rejection conditions rather than waiving them: predicted post-change profile for the wall-share ceiling, prospective shapes, and per-step conceptual-change scope; plus spikes and a reserved budget fraction | Those three are correct for incremental work and would block the deep kernel rethinking the loop exists to find; EIG-first ranking starves high-variance work by arithmetic unless budget is reserved |
 | AK-D29 | Source-integrity gates run **before** behavioural gates: symbol/registration preservation, clean build from snapshot, semantic diff conformance, repair from clean parent | AutoPilot's one autonomous source mutation destroyed a module with a syntactically valid edit; none of its four Python defenses transfer to compiled C++, where "it compiles" is far weaker than "it imports" |
 | AK-D30 | `core_header` is its own change class and risk tier, not a size band | A small textual diff to shared ggml core reaches every op in both the CPU and GPU builds |
