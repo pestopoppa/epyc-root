@@ -2607,7 +2607,40 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   but weak checks on their own; the suite's aggregate result (and specifically checks 1/4/5) is what
   catches the regression, and the suite as a whole correctly reports `fail=3` and exits 1 under the
   mutation.
-- [ ] **Worktree isolation phase 2 — the cutover.** Phase 1 items 1–5 are landed above; nothing is
+- [ ] **Worktree isolation phase 2 — the cutover.**
+
+  - [ ] **Re-register the 3 worktrees still holding RELATIVE gitdir pointers.** Measured
+        2026-08-12 (`mainA`): `/workspace/.git` and `/mnt/raid0/llm/epyc-root/.git` are ONE repo
+        (inode `96604699`) at two depths — a **bind mount**, so `realpath` does not collapse them.
+        With `worktree.useRelativePaths=true` git writes pointers that resolve only at the depth
+        they were written for, so from the deeper path live worktrees read **prunable** and any
+        `git worktree prune` — or the `git gc` that runs one — DELETES their admin data. That is
+        what destroyed all five lane worktrees this morning. Config is now `false` and the five
+        lanes were re-registered absolute, but **the fix is not retroactive**: three pre-existing
+        worktrees remain exposed. `pytest.ini` tells agents to invoke from the deep path, so this
+        will recur. Re-register them or rewrite their `gitdir` files to absolute.
+  - [ ] **Decide whether to install the pre-push serialization guard.** Built and tested
+        2026-08-12 (`mainA`, root `75c7dd59`): `scripts/coordination/serialized_push.py` (62 tests)
+        + `scripts/hooks/pre_push_serialization_guard.sh` (56 tests), 50 mutations all killed.
+        **Deliberately NOT installed** — nothing registered in `.git/hooks` or settings. This is an
+        operator decision, not an engineering one: the guard is advisory (a plain `git push`
+        bypasses it, `--no-verify` defeats it), and **only a server-side `pre-receive` on origin
+        makes serialization structural**. Decide: install as-is, pursue server-side, or neither.
+  - [ ] **Compile 4 pending wiki sources.** `compile_sources.py` reports `total_new: 4` —
+        `architect-model-selection-bench.md`, `rocm-verify-profile-backend.md`,
+        `session-bus-thin-dispatcher.md`, `progress/2026-08/2026-08-12.md`. NOT compiled in the
+        2026-08-12 `mainA` wrap-up, deliberately and with a reason rather than skipped: three of the
+        four are that session's own output, and their reusable content — the verification-failure
+        faces 12/13/14 — is already durable in
+        `docs/guides/agent-workflows/verification-failure-catalogue.md`, so compiling now would
+        largely restate it. The two non-mainA sources still deserve a pass.
+  - [ ] **Close the `repos/` gap, or record that it stays open.** Worktree phase 2 isolates
+        `epyc-root` per agent, but `repos/<name>` is a **symlink out** of every lane worktree, so
+        `epyc-orchestrator` and `epyc-inference-research` remain one shared clone regardless of
+        which worktree an agent sits in. Measured cost 2026-08-12: three subagents editing one
+        shared orchestrator clone held apart only by file-disjoint ownership and a no-commit rule,
+        and a `git add` into a mid-cherry-pick index putting 42 files into another agent's commit.
+        Phase 2 does **not** cover the sub-repos and should not be read as if it does. Phase 1 items 1–5 are landed above; nothing is
   migrated. `scripts/coordination/WORKTREE_MIGRATION.md` is written and `setup_main_worktrees.sh` is
   verified against a throwaway, but the five mains still share `/workspace` — which is what forced a
   15-minute fleet-wide commit freeze to land one merge, and what put 29 worktrees inside the tree that
