@@ -2719,6 +2719,7 @@ environment claim here is backed by an on-device compute step for that reason.
 - [A9 gfx90a training viability](../artifacts/gpu-aux-baselines/a9_gfx90a_training_viability_20260812.md) —
   the bitsandbytes wheel failure and the source build that fixed it.
 
+
 ## Compiled Update — 2026-08-12 (AutoKernel raw-HIP decision-grade arm)
 
 **Confidence: witnessed correctness and attested task-local timing on one MI210/gfx90a surface; no
@@ -2748,6 +2749,7 @@ The Kernel-R&D dashboard now preserves that same boundary in its operator projec
 exact r6 self-hash and file hash before showing 24/24 correctness, the 1.076934974× median, block-9
 e-process crossing, and 40/40 duration admissions. The card explicitly says `NOT A CHAMPION`, names
 experimental llama integration as required, and cannot affect dashboard freshness or release state.
+
 
 ### Source References (2026-08-12 AutoKernel raw-HIP arm)
 
@@ -2846,3 +2848,4 @@ hook; reference or synthetic tensors cannot substitute.
   immutable r18 posture, C3/C5 capture seam, and exact remaining hook artifacts.
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — self-contained receipt hashes,
   implementation commits, test counts, router replay, and authority limits.
+
