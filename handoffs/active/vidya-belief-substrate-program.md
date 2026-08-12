@@ -208,6 +208,13 @@ deliberately — decide them, do not just implement them.
       `belief_measurements` and must never be reconstructed on read. Before any successor run, emit
       rows with exact source/binary/case/ranked-unit/claim identities and preserve the
       `instrument validation only; no candidate speed claim` authority boundary.
+- [x] **SC34 — Wire the governed raw-HIP authoring round trip prospectively.** ✅ 2026-08-12 — the
+      research producer emits separate public-correctness and timing-harness-validity fractions with
+      scored-case denominators, exact source/toolchain/task/candidate identities, and two released
+      MI210 claim/sampler windows. Root `autokernel_aux_receipt.py` independently re-derives both
+      rows, every receipt/window/sampler digest, the clean AgentKernelArena pin and physical gfx90a
+      binding, while preserving observation-only/no-ranking/no-promotion authority. r4 is the first
+      complete post-contract proof; r1–r3 are not retrofitted.
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input

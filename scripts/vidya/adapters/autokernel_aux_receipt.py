@@ -34,11 +34,18 @@ SOURCE_SCHEMAS = frozenset({
     "epyc.autokernel.q4k_unpack_attribution.v1",
     "epyc.autokernel.iq2_xxs_model_confirmation.v1",
     "epyc.autokernel.p2_5j_placement_receipt.v1",
+    "epyc.autokernel.hip_authoring_roundtrip.v1",
 })
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _COMMIT = re.compile(r"^[0-9a-f]{40}$")
 _ARENA_SCHEMA = "epyc.autokernel.geak_arena_roundtrip.v1"
 _ARENA_PRODUCER = "autokernel.controller.arena_roundtrip/v1"
+_HIP_SCHEMA = "epyc.autokernel.hip_authoring_roundtrip.v1"
+_HIP_PRODUCER = "autokernel.controller.hip_authoring_arm/v1"
+_HIP_PRODUCER_PATH = "scripts/kernel_rnd/autokernel/controller/hip_authoring_arm.py"
+_HIP_TASK_SCHEMA = "epyc.autokernel.hip_authoring_task_audit.v1"
+_HIP_WINDOW_SCHEMA = "epyc.autokernel.hip_authoring_gpu_window.v1"
+_HIP_VENDOR_COMMIT = "2dbbf1d3f676b948c04c339de50516fe80ed4ab9"
 _Q4K_SCHEMA = "epyc.autokernel.q4k_unpack_attribution.v1"
 _Q4K_PRODUCER = "scripts.benchmark.run_autokernel_q4k_unpack_attribution/v2"
 _Q4K_PRODUCER_PATH = "scripts/benchmark/run_autokernel_q4k_unpack_attribution.py"
@@ -155,6 +162,137 @@ def _arena_receipt_identity(receipt: dict) -> str:
             or isinstance(source.get("checkpoint_hours"), bool)
             or not isinstance(source.get("checkpoint_hours"), (int, float))):
         raise ProjectionError("Arena receipt lacks task/controller/checkpoint identity")
+    return claimed
+
+
+def _hip_receipt_identity(receipt: dict) -> str:
+    """Re-derive the observation-only raw-HIP receipt and its two native rows."""
+    if receipt.get("authority") != "observation_only" or receipt.get("status") != "complete":
+        raise ProjectionError("HIP receipt must be a complete observation-only record")
+    campaign_id = _iq2_text(receipt.get("campaign_id"), "campaign_id")
+    started = _iq2_instant(receipt.get("started_at"), "started_at")
+    ended = _iq2_instant(receipt.get("ended_at"), "ended_at")
+    if ended < started:
+        raise ProjectionError("HIP receipt ended before it started")
+    producer = receipt.get("producer")
+    if (not isinstance(producer, dict)
+            or producer.get("producer_id") != _HIP_PRODUCER
+            or producer.get("path") != _HIP_PRODUCER_PATH):
+        raise ProjectionError("HIP receipt lacks its exact producer identity")
+    _sha(producer.get("sha256"), "producer.sha256")
+    claimed = _sha(receipt.get("receipt_sha256"), "receipt.receipt_sha256")
+    logical = {key: value for key, value in receipt.items() if key != "receipt_sha256"}
+    if _canonical_sha256(logical) != claimed:
+        raise ProjectionError("HIP receipt_sha256 does not bind the logical receipt")
+
+    task = receipt.get("task")
+    vendor = task.get("vendor_identity") if isinstance(task, dict) else None
+    if (not isinstance(task, dict) or task.get("schema") != _HIP_TASK_SCHEMA
+            or task.get("task_type") != "torch2hip"
+            or not re.fullmatch(r"torch2hip/[a-z0-9_-]+/[A-Za-z0-9_-]+",
+                                str(task.get("task_id", "")))
+            or not str(task.get("target_file", "")).endswith(".hip")
+            or task.get("target") != {"gpu_model": "MI210", "gfx_arch": "gfx90a"}
+            or not isinstance(vendor, dict) or vendor.get("clean") is not True
+            or vendor.get("commit") != _HIP_VENDOR_COMMIT):
+        raise ProjectionError("HIP receipt lacks its exact Torch2HIP task/vendor binding")
+    files = task.get("file_sha256")
+    if (not isinstance(files, dict) or not files
+            or any(not isinstance(path, str) or not path or not _SHA256.fullmatch(str(digest))
+                   for path, digest in files.items())):
+        raise ProjectionError("HIP task file manifest is malformed")
+    hardware = receipt.get("hardware")
+    if (not isinstance(hardware, dict)
+            or hardware.get("architectures") != ["gfx90a"]
+            or hardware.get("target_gfx_arch") != "gfx90a"
+            or hardware.get("target_gpu_model") != "MI210"):
+        raise ProjectionError("HIP receipt does not bind the physical gfx90a target")
+    candidate = receipt.get("candidate")
+    candidate_sha = _sha(
+        candidate.get("sha256") if isinstance(candidate, dict) else None,
+        "candidate.sha256")
+    evaluation = receipt.get("evaluation")
+    if (not isinstance(evaluation, dict)
+            or evaluation.get("compiled") is not True
+            or evaluation.get("correct") is not True
+            or evaluation.get("speedup_rankable") is not False
+            or evaluation.get("profiler_metrics") != {}
+            or set(evaluation.get("integrity_flags", ())) != {
+                "public_shapes_only", "honest_vendor_baseline_not_bound"}):
+        raise ProjectionError("HIP evaluation exceeds or lacks its observation-only boundary")
+    correctness_cases = evaluation.get("public_correctness_cases")
+    timing_cases = evaluation.get("valid_baseline_cases")
+    if (isinstance(correctness_cases, bool) or not isinstance(correctness_cases, int)
+            or correctness_cases < 1 or isinstance(timing_cases, bool)
+            or not isinstance(timing_cases, int) or not 0 < timing_cases <= correctness_cases):
+        raise ProjectionError("HIP evaluation case counts are invalid")
+    constraints = receipt.get("constraints")
+    if (not isinstance(constraints, dict)
+            or constraints.get("performance_claim") is not False
+            or constraints.get("promotion_authority") is not False
+            or constraints.get("production_tree_touched") is not False
+            or constraints.get("frozen_kernel_built") is not False):
+        raise ProjectionError("HIP receipt invents performance, promotion, or production authority")
+
+    windows = receipt.get("measurement_windows")
+    if not isinstance(windows, list) or [item.get("phase") for item in windows
+            if isinstance(item, dict)] != ["vendor_baseline", "centralized_final_evaluation"]:
+        raise ProjectionError("HIP receipt requires the exact two measurement windows")
+    claim_ids = []
+    for window in windows:
+        unsigned = {key: value for key, value in window.items() if key != "receipt_sha256"}
+        if (_sha(window.get("receipt_sha256"), "window.receipt_sha256")
+                != _canonical_sha256(unsigned)):
+            raise ProjectionError("HIP measurement-window digest is invalid")
+        if (window.get("schema") != _HIP_WINDOW_SCHEMA or window.get("status") != "complete"
+                or window.get("campaign_id") != campaign_id
+                or window.get("task_id") != task["task_id"]
+                or window.get("gpu_action_executed_only_while_claim_held") is not True):
+            raise ProjectionError("HIP measurement window changes task, campaign, or claim scope")
+        opened, released, sampling = (window.get("device_claim_open"),
+                                      window.get("device_claim_released"),
+                                      window.get("device_sampling"))
+        if not isinstance(opened, dict) or not isinstance(released, dict):
+            raise ProjectionError("HIP measurement window lacks claim receipts")
+        if (opened.get("claim_id") != released.get("claim_id")
+                or opened.get("device_id") != "mi210_0"
+                or opened.get("campaign_id") != campaign_id
+                or not isinstance(released.get("released_at"), str)
+                or not released.get("released_at")):
+            raise ProjectionError("HIP measurement window lacks a released MI210 claim")
+        claim_ids.append(opened["claim_id"])
+        if not isinstance(sampling, dict) or sampling.get("sample_count", 0) < 1:
+            raise ProjectionError("HIP measurement window lacks device samples")
+        sampler_unsigned = {key: value for key, value in sampling.items() if key != "sha256"}
+        if _sha(sampling.get("sha256"), "device_sampling.sha256") != _canonical_sha256(
+                sampler_unsigned):
+            raise ProjectionError("HIP device-sampling digest is invalid")
+    if len(set(claim_ids)) != 2:
+        raise ProjectionError("HIP baseline and final evaluation must use distinct claims")
+
+    common = {"unit": "fraction", "metric_direction": "higher_better",
+              "category": "CANDIDATE", "reps_basis": "scored_public_cases"}
+    expected = [
+        {"measurement_id": "hip_public_correctness_pass_rate",
+         "metric": "autokernel_hip_public_correctness_pass_rate", "value": 1.0,
+         "claim": "Fraction of scored public Torch2HIP correctness cases that passed",
+         "reps": correctness_cases, **common,
+         "extra": {"measurement_role": "raw_hip_authoring_correctness",
+                   "passed": correctness_cases, "total": correctness_cases,
+                   "candidate_source_sha256": candidate_sha,
+                   "authority": "observation_only"}},
+        {"measurement_id": "hip_timing_harness_validity_rate",
+         "metric": "autokernel_hip_timing_harness_validity_rate",
+         "value": timing_cases / correctness_cases,
+         "claim": "Fraction of scored Torch2HIP timing cases admitted as valid",
+         "reps": correctness_cases, **common,
+         "extra": {"measurement_role": "raw_hip_timing_validity",
+                   "passed": timing_cases, "total": correctness_cases,
+                   "candidate_source_sha256": candidate_sha,
+                   "authority": "observation_only"}},
+    ]
+    if receipt.get("belief_measurements") != expected:
+        raise ProjectionError("HIP belief rows do not exactly rederive from native evidence")
     return claimed
 
 
@@ -1033,6 +1171,8 @@ def native_rows(receipt: dict, *, receipt_locator: str = "",
         _validate_p2_measurements(receipt, measurements)
     if receipt.get("schema") == _ARENA_SCHEMA:
         _arena_receipt_identity(receipt)
+    if receipt.get("schema") == _HIP_SCHEMA:
+        _hip_receipt_identity(receipt)
     return tuple({
         "receipt": receipt,
         "measurement": measurement,
@@ -1078,7 +1218,9 @@ def project(native: Any) -> ClaimTuple:
     if not isinstance(extra, dict):
         raise ProjectionError("measurement.extra must be a dict")
     observation_identity = (
-        _arena_receipt_identity(receipt) if schema == _ARENA_SCHEMA else campaign_id)
+        _arena_receipt_identity(receipt) if schema == _ARENA_SCHEMA
+        else _hip_receipt_identity(receipt) if schema == _HIP_SCHEMA
+        else campaign_id)
     identity_payload = json.dumps(
         [schema, observation_identity, local_id, native.get("measurement_index")],
         separators=(",", ":"), ensure_ascii=True)
@@ -1106,6 +1248,8 @@ def project(native: Any) -> ClaimTuple:
             "native_measurement_id": local_id,
             **({"arena_receipt_identity_sha256": observation_identity}
                if schema == _ARENA_SCHEMA else {}),
+            **({"hip_receipt_identity_sha256": observation_identity}
+               if schema == _HIP_SCHEMA else {}),
             **({"native_measurement_sha256": measurement["measurement_sha256"]}
                if measurement.get("measurement_sha256") else {}),
             **({"receipt_self_sha256": receipt["receipt_sha256"]}
