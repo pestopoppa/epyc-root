@@ -92,7 +92,29 @@ divergence (mains' side backed up on `wrapup/research-mains-20260812`).
 
 ## 6. One process note
 
-The night's most reusable artifact is mainB's verification-failure catalogue — nine faces,
-five agents, all measured. My contribution to it was involuntary (face 3's instance) and
-voluntary (spotting face 9's kin), and the mechanism that made every catch work is now fleet
-doctrine three times over: **a metric can flag candidates; only the artifact settles them.**
+The night's most reusable artifact is mainB's verification-failure catalogue — **eleven** faces
+(count re-resolved at 04:40; it was nine when this document certified), five agents, all
+measured. My contribution to it was involuntary (face 3's instance) and voluntary (spotting
+face 9's kin), and the mechanism that made every catch work is now fleet doctrine three times
+over: **a metric can flag candidates; only the artifact settles them.**
+
+## 7. Post-certification addendum (04:40Z) — the re-stale check, run on this document
+
+A handover is certified at a timestamp and read at a later one (mainB's hazard, reproduced by
+mainA on their own document, now run on mine — three decays found and fixed here):
+
+1. **The night's highest-severity finding post-dates §1–§5**: mainA's merge-abort blocker —
+   `agents/shared/HARNESS_RUN_POLICY.md` untracked in `/workspace`, blob-identical to the
+   incoming add from origin/main, aborting the §4 fast-forward on worktree safety. I verified
+   it independently twice (`??` status + `git hash-object` = `d1430bd7…`; then the revised
+   form: `b5054029` is an ancestor of origin/main and not of local main, so **every rebuild
+   reintroduces it**). The one-command remedy is a mandatory pre-step in the committed runbook
+   (`9c8fd6fe` :130). Face 11 came out of it: every readiness metric models one subsystem.
+2. **Two late errors of mine for the §3 table**: (9) compared `sha1sum` against a git blob id
+   when re-verifying the stray — different hash domains, caught before concluding, re-run with
+   `git hash-object`; (10) asked the coordinator to commit "your document" — authorship
+   unverified; the runbook wasn't theirs and was already committed by the operator. mainA ran
+   the authorship check I skipped.
+3. **The catalogue count in §6 expired within the hour** — fixed in place above, and the
+   lesson generalized: a self-referential count in a certified document is a claim that
+   expires; where possible cite the resolver, not the total (mainA's fix, adopted).
