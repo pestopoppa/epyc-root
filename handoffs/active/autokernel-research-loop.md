@@ -33,6 +33,8 @@ IQK proposal, materialize the real matched archive, then run the least-commitmen
 observe-only.
 Research `58b8d66a`, `948a95a4`, and `3bd94893` close the no-inference producer gap and subsequent
 proposal-v4 drift in that next step. The live
+
+Research `58b8d66a` and `948a95a4` close the no-inference producer gap in that next step. The live
 campaign now requires a prospective least-commitment capture plan for the IQK parameter path,
 journals the measured diagnostic/outcome block, and can project two clean completed campaigns into
 the strict matched archive and onward to the sequencer/release rehearsal. Capture plans no longer
@@ -62,6 +64,10 @@ intermediate evaluator beliefs. Fresh immutable r18 is sealed at `17b9208d`; its
 and its first actor cell is active. Partial r18 evidence grants no comparison, aggregate, rank, bank,
 champion, promotion, or release authority. This controller comparison remains diagnostic and does not
 replace the post-reboot IQK/matched-archive sequence.
+
+`/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812/`. Both bound commands compose
+successfully with `executed=false`; no inference was performed by this checkpoint. A live matched
+archive still requires two post-reboot clean DECIDED runs.
 Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
 The live campaign consumes an immutable content-addressed source patch before claim acquisition,
 applies it only through the guarded worktree boundary, and records the exact clean source/build,
@@ -2917,6 +2923,7 @@ evaluator or its own scope, and T1 may legally guide search.
     regenerates all proposal-dependent hashes/frames, and preserves v3 history under
     `inputs/superseded/`. Both exact dry runs exit zero with 12 steps, `state=dry_run_composed`, and
     `executed=false`; the independent full suite passed **5,606 tests** with one expected failure.
+
   - [x] **Require a bound typed hypothesis before a completed proposal may enter the archive.** ✅
     2026-08-12 — archive admission now refuses exploratory campaign records and requires the terminal
     authorization to resolve by exact hypothesis id, campaign id, ledger sequence, payload, and proposal
@@ -2954,6 +2961,7 @@ evaluator or its own scope, and T1 may legally guide search.
     drift, rolls back the pair on failure, and rebuilds byte-identically in tests. Its held-out projector
     accepts only a distinct clean hypothesis-bound completed journal. Real pair materialization remains
     in parent AK-WM-2a and correctly waits for post-reboot completed journals; fixtures cannot substitute.
+
 - [ ] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol,
   matched-intervention validation, per-regime/surface results, noise floor, robust sign error, and
   recoding stability. Until real evidence shows invariant independent signal, do not add weakness,
