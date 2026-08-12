@@ -54403,6 +54403,52 @@
     Q5 n/REPS/SEEDS — NONE, and WEAKER than V2.5-Dev, which at least stated its single-run convention explicitly; V2 is silent. Two K=8 constants exist but BOTH are training-side (Pass@8 rejection sampling; MCLA log-prob averaging) and must not be mistaken for eval reps. Competitor numbers in Tables 3 and 5 were scraped on a single date, 2026-03-25.
 
     CONTAMINATION CHECK — CLEAN. No figure from V1 (73.4), the V2.5 paper (65.2), the -Dev card (69.40/45.96/41.02/32.60/49.44), KAT-Dev-72B-Exp (74.6) or Qwen3.6-35B-A3B (73.4) appears here. The one 73.4 in this entry is read from Table 3 and is Claw-Eval Average Score under OpenClaw, labelled as such at every occurrence.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-29 combined Stage-1+2 dive (Tier 4, operator-authorised). METHOD WORTH COPYING: the PDF
+      was extracted with pdftotext -layout AND -raw and the arXiv HTML additionally parsed with a table
+      walker, so all four result tables were re-derived THREE times across independent paths and agreed
+      CELL-FOR-CELL — the span-grid mangling hazard that hit intake-916 did not recur here because this
+      paper uses real <table> elements. The one PARTIAL is the base model: no parameter count, no active
+      params, no context length disclosed — so nothing in this entry supports reasoning about the model''s
+      size or cost, only about its pipeline.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-29 combined Stage-1+2 dive (Tier 4, operator-authorised). METHOD WORTH COPYING: the PDF
+      was extracted with pdftotext -layout AND -raw and the arXiv HTML additionally parsed with a table
+      walker, so all four result tables were re-derived THREE times across independent paths and agreed
+      CELL-FOR-CELL — the span-grid mangling hazard that hit intake-916 did not recur here because this
+      paper uses real <table> elements. The one PARTIAL is the base model: no parameter count, no active
+      params, no context length disclosed — so nothing in this entry supports reasoning about the model''s
+      size or cost, only about its pipeline.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-29 combined Stage-1+2 dive (Tier 4, operator-authorised). METHOD WORTH COPYING: the PDF
+      was extracted with pdftotext -layout AND -raw and the arXiv HTML additionally parsed with a table
+      walker, so all four result tables were re-derived THREE times across independent paths and agreed
+      CELL-FOR-CELL — the span-grid mangling hazard that hit intake-916 did not recur here because this
+      paper uses real <table> elements. The one PARTIAL is the base model: no parameter count, no active
+      params, no context length disclosed — so nothing in this entry supports reasoning about the model''s
+      size or cost, only about its pipeline.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-29 combined Stage-1+2 dive (Tier 4, operator-authorised). METHOD WORTH COPYING: the PDF
+      was extracted with pdftotext -layout AND -raw and the arXiv HTML additionally parsed with a table
+      walker, so all four result tables were re-derived THREE times across independent paths and agreed
+      CELL-FOR-CELL — the span-grid mangling hazard that hit intake-916 did not recur here because this
+      paper uses real <table> elements. The one PARTIAL is the base model: no parameter count, no active
+      params, no context length disclosed — so nothing in this entry supports reasoning about the model''s
+      size or cost, only about its pipeline.'
+  - claim_index: 4
+    effect: unaffected
+    note: '2026-07-29 combined Stage-1+2 dive (Tier 4, operator-authorised). METHOD WORTH COPYING: the PDF
+      was extracted with pdftotext -layout AND -raw and the arXiv HTML additionally parsed with a table
+      walker, so all four result tables were re-derived THREE times across independent paths and agreed
+      CELL-FOR-CELL — the span-grid mangling hazard that hit intake-916 did not recur here because this
+      paper uses real <table> elements. The one PARTIAL is the base model: no parameter count, no active
+      params, no context length disclosed — so nothing in this entry supports reasoning about the model''s
+      size or cost, only about its pipeline.'
 - id: intake-934
   arxiv_id: '2607.15439'
   url: https://arxiv.org/abs/2607.15439
@@ -57816,6 +57862,34 @@
     (7) THE "5-SECOND PER-MEASUREMENT WALL CAP" IN reported_results IS MIS-SCOPED: the 5 s cap is Sec 3.4, for BENCHMARK CONSTRUCTION. The released EVALUATION path uses max(0.1, 10.0 x 5) = 50 s.
     (8) Apache-2.0 is now BYTE-VERIFIED from Coffe/LICENSE:1-3 rather than read from the README. The 12-run / drop-max-and-min / RSD-over-10 protocol is confirmed to match the code for BOTH metrics (a 100-run untrimmed variant exists but is not imported), so the RSD comparison is genuinely apples-to-apples. The anti-circularity control is confirmed.
     (9) DESIGN CONFLICT WITH intake-951, unresolved and carried to planning: COFFE argues correctness and efficiency must be FUSED into one efficient@k capped at pass@k. DIVE-D established that all four instruments in this cluster ALREADY gate at the instance level, so the framed conflict is largely false - but COFFE's efficient@k is additionally BINARY (faster than the best ground-truth solution, or not), which DISCARDS MAGNITUDE: a 1.01x win and a 100x win score identically, so the metric cannot reward the large algorithmic wins that are the point.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-08-03 DIVE-C. verdict adopt_component STANDS but is NARROWED IN SCOPE, and the entry's own
+      pending test is discharged with a NO. The wall-clock objection stands on its own terms.
+  - claim_index: 1
+    effect: narrowed
+    note: 2026-08-03 DIVE-C. verdict adopt_component STANDS but is NARROWED IN SCOPE, and the entry's own
+      pending test is discharged with a NO. THE APPLICABILITY LIMIT IS NO LONGER A CAVEAT — IT IS A MEASURED
+      FALSIFICATION, RUN ON OUR OWN HARDWARE (in-session probe, gcc -O2, pinned with taskset). COFFE's Eq.
+      1 is an IDENTITY, not a model, and the inference it licenses — that 'the only factor related to the
+      program is Instruction Count' — is false in general, because CPI is a property of the program-MACHINE
+      PAIR, not of the program. The low variance of instruction count is real; what does not follow is that
+      it therefore measures program efficiency on a given machine.
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-03 DIVE-C. verdict adopt_component STANDS but is NARROWED IN SCOPE, and the entry''s
+      own pending test is discharged with a NO. This statement is TRUE and is precisely why instruction
+      count is not a proxy for time: a stalled program retires the same instructions. The claim is sound;
+      the inference drawn from it in the entry is what the falsification removes.'
+  - claim_index: 3
+    effect: unaffected
+    note: 2026-08-03 DIVE-C. verdict adopt_component STANDS but is NARROWED IN SCOPE, and the entry's own
+      pending test is discharged with a NO.
+  - claim_index: 4
+    effect: unaffected
+    note: 2026-08-03 DIVE-C. verdict adopt_component STANDS but is NARROWED IN SCOPE, and the entry's own
+      pending test is discharged with a NO.
 
 - id: intake-955
   arxiv_id: null
@@ -60922,6 +60996,39 @@
     DIVE-SURFACED SOURCES: official peer reviews were read as adjudication artifacts and do not require separate intake; no unresolved bearing source remains.
 
     2026-08-05 STAGE-3/4 DISPOSITION. I1, I2, and I3 landed through AP-WM-1 and AK-WM-1 as robust per-environment sign-error, tail and mean reporting, a noise/effective-pair gate, and subfamily localization. I4 is declined: no universal threshold or paper-specific measure is adopted.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full NeurIPS paper and appendices, official reviews
+      and meta-review, plus comparison to intake-999). DIVE-VERIFIED for the robust-evaluation method and
+      its reported scope; nothing disputed. The result these claims carry is the useful one: across 1.6
+      MILLION evaluations of 24 measures, no tested measure beat a coin flip on the worst-case sign-prediction
+      criterion — and claim 3 states the scoping honestly, that robustness is relative to the DECLARED intervention
+      family.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full NeurIPS paper and appendices, official reviews
+      and meta-review, plus comparison to intake-999). DIVE-VERIFIED for the robust-evaluation method and
+      its reported scope; nothing disputed. The result these claims carry is the useful one: across 1.6
+      MILLION evaluations of 24 measures, no tested measure beat a coin flip on the worst-case sign-prediction
+      criterion — and claim 3 states the scoping honestly, that robustness is relative to the DECLARED intervention
+      family.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full NeurIPS paper and appendices, official reviews
+      and meta-review, plus comparison to intake-999). DIVE-VERIFIED for the robust-evaluation method and
+      its reported scope; nothing disputed. The result these claims carry is the useful one: across 1.6
+      MILLION evaluations of 24 measures, no tested measure beat a coin flip on the worst-case sign-prediction
+      criterion — and claim 3 states the scoping honestly, that robustness is relative to the DECLARED intervention
+      family.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full NeurIPS paper and appendices, official reviews
+      and meta-review, plus comparison to intake-999). DIVE-VERIFIED for the robust-evaluation method and
+      its reported scope; nothing disputed. The result these claims carry is the useful one: across 1.6
+      MILLION evaluations of 24 measures, no tested measure beat a coin flip on the worst-case sign-prediction
+      criterion — and claim 3 states the scoping honestly, that robustness is relative to the DECLARED intervention
+      family.'
 - id: intake-1001
   arxiv_id: null
   url: https://www.ijcai.org/proceedings/2025/1238
@@ -63968,6 +64075,43 @@
     Discovered during the 2026-08-09 Vidya-handoff audit novelty sweep. Its AnalyzeImpact
     dependency cascade is the published analog of Vidya's reverse-impact traversal; its
     pointer-based projection semantics parallel the proposed active-frame interpretation.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2603.17244v1 full text): all Stage-1 claims CONFIRMED. The one
+      downgrade lands OUTSIDE these four — AnalyzeImpact drops to PARTIAL because ''transitive cascade''
+      overstates what it does: depth-bounded, a single Cypher ShortestPath, an advisory over-approximation,
+      and no correctness theorem. Two refinements worth carrying when citing: the supplementary AGM postulates
+      K*7/K*8 are OPEN, the proofs are deliberately scoped to a simple propositional logic to avoid the
+      Flouris et al. (2005) DL impossibility, and the adversarial 97.5% is BINARY REFUSAL DETECTION, not
+      F1.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2603.17244v1 full text): all Stage-1 claims CONFIRMED. The one
+      downgrade lands OUTSIDE these four — AnalyzeImpact drops to PARTIAL because ''transitive cascade''
+      overstates what it does: depth-bounded, a single Cypher ShortestPath, an advisory over-approximation,
+      and no correctness theorem. Two refinements worth carrying when citing: the supplementary AGM postulates
+      K*7/K*8 are OPEN, the proofs are deliberately scoped to a simple propositional logic to avoid the
+      Flouris et al. (2005) DL impossibility, and the adversarial 97.5% is BINARY REFUSAL DETECTION, not
+      F1.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2603.17244v1 full text): all Stage-1 claims CONFIRMED. The one
+      downgrade lands OUTSIDE these four — AnalyzeImpact drops to PARTIAL because ''transitive cascade''
+      overstates what it does: depth-bounded, a single Cypher ShortestPath, an advisory over-approximation,
+      and no correctness theorem. Two refinements worth carrying when citing: the supplementary AGM postulates
+      K*7/K*8 are OPEN, the proofs are deliberately scoped to a simple propositional logic to avoid the
+      Flouris et al. (2005) DL impossibility, and the adversarial 97.5% is BINARY REFUSAL DETECTION, not
+      F1.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2603.17244v1 full text): all Stage-1 claims CONFIRMED. The one
+      downgrade lands OUTSIDE these four — AnalyzeImpact drops to PARTIAL because ''transitive cascade''
+      overstates what it does: depth-bounded, a single Cypher ShortestPath, an advisory over-approximation,
+      and no correctness theorem. Two refinements worth carrying when citing: the supplementary AGM postulates
+      K*7/K*8 are OPEN, the proofs are deliberately scoped to a simple propositional logic to avoid the
+      Flouris et al. (2005) DL impossibility, and the adversarial 97.5% is BINARY REFUSAL DETECTION, not
+      F1.'
 
 - id: intake-1034
   arxiv_id: '2606.04990'
@@ -64487,6 +64631,35 @@
     provenance-circuit spine. Attribution: CONFIRMED with the continuity nuance above (retrieved
     2026-08-09). arXiv 1910.07910 is the preliminary version titled 'Generalized Absorptive
     Polynomials and Provenance Semantics for Fixed-Point Logic'; published as LIPIcs CSL.2021.17.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (published LIPIcs 183:17 PDF + arXiv 1910.07910v3 42-pp extended
+      version): all four Stage-1 claims confirmed VERBATIM, including Example 5''s exact counterexample
+      (f(x,y) = max(0, x+y-1) on x_n = 1 - 1/(1+n), where G(1) = 1 but sup G(x_n) = 0). ONE CITATION HAZARD
+      recorded: the two versions carry DUAL NUMBERING, so any spec citation must name the LIPIcs version
+      explicitly or it points at a different proposition.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (published LIPIcs 183:17 PDF + arXiv 1910.07910v3 42-pp extended
+      version): all four Stage-1 claims confirmed VERBATIM, including Example 5''s exact counterexample
+      (f(x,y) = max(0, x+y-1) on x_n = 1 - 1/(1+n), where G(1) = 1 but sup G(x_n) = 0). ONE CITATION HAZARD
+      recorded: the two versions carry DUAL NUMBERING, so any spec citation must name the LIPIcs version
+      explicitly or it points at a different proposition.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (published LIPIcs 183:17 PDF + arXiv 1910.07910v3 42-pp extended
+      version): all four Stage-1 claims confirmed VERBATIM, including Example 5''s exact counterexample
+      (f(x,y) = max(0, x+y-1) on x_n = 1 - 1/(1+n), where G(1) = 1 but sup G(x_n) = 0). ONE CITATION HAZARD
+      recorded: the two versions carry DUAL NUMBERING, so any spec citation must name the LIPIcs version
+      explicitly or it points at a different proposition.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (published LIPIcs 183:17 PDF + arXiv 1910.07910v3 42-pp extended
+      version): all four Stage-1 claims confirmed VERBATIM, including Example 5''s exact counterexample
+      (f(x,y) = max(0, x+y-1) on x_n = 1 - 1/(1+n), where G(1) = 1 but sup G(x_n) = 0). ONE CITATION HAZARD
+      recorded: the two versions carry DUAL NUMBERING, so any spec citation must name the LIPIcs version
+      explicitly or it points at a different proposition.'
 
 - id: intake-1040
   arxiv_id: '2105.14435'
@@ -64562,6 +64735,35 @@
     'Computing Least and Greatest Fixed Points in Absorptive Semirings' (RAMiCS 2021, arXiv
     2106.00399, DOI 10.1007/978-3-030-88701-8_21) - closed-form polynomial-operation-count
     computation exploiting absorption. Retrieved 2026-08-09.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (arXiv 2105.14435, 55-pp full PDF): p-stability and 0-stable
+      definitions confirmed VERBATIM, with the 0-stable equivalences given twice, and the N-step theorem
+      pinned (Thm 1.2 bullet 3, engine Thm 5.12(2), POPS form Cor 5.19). Improvement rather than correction:
+      the general bound formula is now EXACT, replacing Stage-1''s approximate ''(p+2)-power'' note — so
+      cite the exact form.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (arXiv 2105.14435, 55-pp full PDF): p-stability and 0-stable
+      definitions confirmed VERBATIM, with the 0-stable equivalences given twice, and the N-step theorem
+      pinned (Thm 1.2 bullet 3, engine Thm 5.12(2), POPS form Cor 5.19). Improvement rather than correction:
+      the general bound formula is now EXACT, replacing Stage-1''s approximate ''(p+2)-power'' note — so
+      cite the exact form.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (arXiv 2105.14435, 55-pp full PDF): p-stability and 0-stable
+      definitions confirmed VERBATIM, with the 0-stable equivalences given twice, and the N-step theorem
+      pinned (Thm 1.2 bullet 3, engine Thm 5.12(2), POPS form Cor 5.19). Improvement rather than correction:
+      the general bound formula is now EXACT, replacing Stage-1''s approximate ''(p+2)-power'' note — so
+      cite the exact form.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-09 Stage-2 promotion dive (arXiv 2105.14435, 55-pp full PDF): p-stability and 0-stable
+      definitions confirmed VERBATIM, with the 0-stable equivalences given twice, and the N-step theorem
+      pinned (Thm 1.2 bullet 3, engine Thm 5.12(2), POPS form Cor 5.19). Improvement rather than correction:
+      the general bound formula is now EXACT, replacing Stage-1''s approximate ''(p+2)-power'' note — so
+      cite the exact form.'
 
 - id: intake-1041
   arxiv_id: null
@@ -64611,6 +64813,35 @@
     (Bourgaux) and refined by intake-1042 (Fan-Koutris-Roy PODS 2025). Surfaced: Esparza &
     Luttenberger CALCO 2011 (the N+1-iteration engine) as a follow-up candidate if the circuit
     cache is adopted.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (primary PDF read, pp. 4-5 and 9-11), so it lands dive-verified.
+      Stage 1 had only two independent SECONDARY quotations; these claims are now GROUNDED in the primary,
+      and the circuit result is for the FREE absorptive semiring, hence for every distributive lattice.
+      ONE ENGINEERING CAVEAT that a reader would otherwise miss: the constants are ASYMPTOTIC — benchmark
+      actual circuit size before relying on the incremental path.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (primary PDF read, pp. 4-5 and 9-11), so it lands dive-verified.
+      Stage 1 had only two independent SECONDARY quotations; these claims are now GROUNDED in the primary,
+      and the circuit result is for the FREE absorptive semiring, hence for every distributive lattice.
+      ONE ENGINEERING CAVEAT that a reader would otherwise miss: the constants are ASYMPTOTIC — benchmark
+      actual circuit size before relying on the incremental path.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (primary PDF read, pp. 4-5 and 9-11), so it lands dive-verified.
+      Stage 1 had only two independent SECONDARY quotations; these claims are now GROUNDED in the primary,
+      and the circuit result is for the FREE absorptive semiring, hence for every distributive lattice.
+      ONE ENGINEERING CAVEAT that a reader would otherwise miss: the constants are ASYMPTOTIC — benchmark
+      actual circuit size before relying on the incremental path.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (primary PDF read, pp. 4-5 and 9-11), so it lands dive-verified.
+      Stage 1 had only two independent SECONDARY quotations; these claims are now GROUNDED in the primary,
+      and the circuit result is for the FREE absorptive semiring, hence for every distributive lattice.
+      ONE ENGINEERING CAVEAT that a reader would otherwise miss: the constants are ASYMPTOTIC — benchmark
+      actual circuit size before relying on the incremental path.'
 
 - id: intake-1042
   arxiv_id: '2504.08914'
@@ -64653,6 +64884,27 @@
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (formal cluster). The chain L is absorptive
     AND multiplicatively idempotent (meet), so every theorem class applies.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1 PDF), dive-verified. The correction is to the SESSION''S
+      OWN Stage-1 phrasing rather than to the paper, and claim 0 already carries it: the result is a two-point
+      DICHOTOMY, Theta(log m) versus Theta(log^2 m), not a single depth-optimality claim.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1 PDF), dive-verified. The correction is to the SESSION''S
+      OWN Stage-1 phrasing rather than to the paper, and claim 0 already carries it: the result is a two-point
+      DICHOTOMY, Theta(log m) versus Theta(log^2 m), not a single depth-optimality claim.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1 PDF), dive-verified. The correction is to the SESSION''S
+      OWN Stage-1 phrasing rather than to the paper, and claim 0 already carries it: the result is a two-point
+      DICHOTOMY, Theta(log m) versus Theta(log^2 m), not a single depth-optimality claim.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1 PDF), dive-verified. The correction is to the SESSION''S
+      OWN Stage-1 phrasing rather than to the paper, and claim 0 already carries it: the result is a two-point
+      DICHOTOMY, Theta(log m) versus Theta(log^2 m), not a single depth-optimality claim.'
 
 - id: intake-1043
   arxiv_id: '2106.00399'
@@ -64701,6 +64953,27 @@
   - entry: intake-1067
     claim_index: 2
     why: 'Theorem 17 characterizes lfp/gfp as sums over derivation trees proved in S-infinity[A] and ''transported by universal property'' — that universal property is Proposition 30 of Gradel & Tannen (intake-1067). Retract the construction and the transport step has nothing to stand on. Note the direction: the citation edge runs 1067 -> 1043, but 1067 is 2020 and 1043 is 2021, so the dependency is the reverse.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v3 PDF, 29pp), dive-verified. ONE CITATION CAVEAT:
+      the venue detail (RAMiCS 2021, LNCS 13027 pp. 344-361) comes from Stage 1 and the LNCS volume and
+      pages were NOT re-verified against Springer this session — confirm before any formal citation.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v3 PDF, 29pp), dive-verified. ONE CITATION CAVEAT:
+      the venue detail (RAMiCS 2021, LNCS 13027 pp. 344-361) comes from Stage 1 and the LNCS volume and
+      pages were NOT re-verified against Springer this session — confirm before any formal citation.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v3 PDF, 29pp), dive-verified. ONE CITATION CAVEAT:
+      the venue detail (RAMiCS 2021, LNCS 13027 pp. 344-361) comes from Stage 1 and the LNCS volume and
+      pages were NOT re-verified against Springer this session — confirm before any formal citation.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v3 PDF, 29pp), dive-verified. ONE CITATION CAVEAT:
+      the venue detail (RAMiCS 2021, LNCS 13027 pp. 344-361) comes from Stage 1 and the LNCS volume and
+      pages were NOT re-verified against Springer this session — confirm before any formal citation.'
 - id: intake-1044
   arxiv_id: '2312.14063'
   url: https://arxiv.org/abs/2312.14063
@@ -64784,6 +65057,35 @@
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (formal cluster). The j+ typing is the
     logic-facing justification for per-claim pro/con folds.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v2 PDF, 26pp), dive-verified, with the exact SE axiom
+      table transcribed. Two housekeeping corrections: the VENUE is corrected LFCS -> CLAR, and claim 2
+      already records that arXiv v2 extends and CORRECTS the CLAR 2020 completeness proof — so cite the
+      JLC/arXiv version, never the conference one. Citation counts come from OpenAlex only; Semantic Scholar
+      returned 429/404 this session and was not cross-checked, which is stated rather than papered over.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v2 PDF, 26pp), dive-verified, with the exact SE axiom
+      table transcribed. Two housekeeping corrections: the VENUE is corrected LFCS -> CLAR, and claim 2
+      already records that arXiv v2 extends and CORRECTS the CLAR 2020 completeness proof — so cite the
+      JLC/arXiv version, never the conference one. Citation counts come from OpenAlex only; Semantic Scholar
+      returned 429/404 this session and was not cross-checked, which is stated rather than papered over.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v2 PDF, 26pp), dive-verified, with the exact SE axiom
+      table transcribed. Two housekeeping corrections: the VENUE is corrected LFCS -> CLAR, and claim 2
+      already records that arXiv v2 extends and CORRECTS the CLAR 2020 completeness proof — so cite the
+      JLC/arXiv version, never the conference one. Citation counts come from OpenAlex only; Semantic Scholar
+      returned 429/404 this session and was not cross-checked, which is stated rather than papered over.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v2 PDF, 26pp), dive-verified, with the exact SE axiom
+      table transcribed. Two housekeeping corrections: the VENUE is corrected LFCS -> CLAR, and claim 2
+      already records that arXiv v2 extends and CORRECTS the CLAR 2020 completeness proof — so cite the
+      JLC/arXiv version, never the conference one. Citation counts come from OpenAlex only; Semantic Scholar
+      returned 429/404 this session and was not cross-checked, which is stated rather than papered over.'
 
 - id: intake-1046
   arxiv_id: null
@@ -64903,6 +65205,39 @@
     Dived 2026-08-09 during the Vidya-handoff audit (adoption cluster). in-toto verification
     already occupies the exact epistemic stance of a derivation certificate (rule-following, not
     truth) - cite as precedent for the stance.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (attestation spec v1 statement.md + envelope.md, in-toto-spec.md,
+      slsa.dev/spec/v1.1/provenance), dive-verified. Claim 3 carries the load-bearing security subtlety:
+      expected_command is INFORMATIONAL ONLY and not security-critical, which is exactly the kind of field
+      a reader assumes is a control. Operator dispositions recorded at the 2026-08-09 close-out: SLSA VSA
+      SELECTED for round 2 (structurally close to a replay certificate, and NOT yet read); DSSE v1.0.2 DECLINED
+      as a separate entry.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (attestation spec v1 statement.md + envelope.md, in-toto-spec.md,
+      slsa.dev/spec/v1.1/provenance), dive-verified. Claim 3 carries the load-bearing security subtlety:
+      expected_command is INFORMATIONAL ONLY and not security-critical, which is exactly the kind of field
+      a reader assumes is a control. Operator dispositions recorded at the 2026-08-09 close-out: SLSA VSA
+      SELECTED for round 2 (structurally close to a replay certificate, and NOT yet read); DSSE v1.0.2 DECLINED
+      as a separate entry.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (attestation spec v1 statement.md + envelope.md, in-toto-spec.md,
+      slsa.dev/spec/v1.1/provenance), dive-verified. Claim 3 carries the load-bearing security subtlety:
+      expected_command is INFORMATIONAL ONLY and not security-critical, which is exactly the kind of field
+      a reader assumes is a control. Operator dispositions recorded at the 2026-08-09 close-out: SLSA VSA
+      SELECTED for round 2 (structurally close to a replay certificate, and NOT yet read); DSSE v1.0.2 DECLINED
+      as a separate entry.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (attestation spec v1 statement.md + envelope.md, in-toto-spec.md,
+      slsa.dev/spec/v1.1/provenance), dive-verified. Claim 3 carries the load-bearing security subtlety:
+      expected_command is INFORMATIONAL ONLY and not security-critical, which is exactly the kind of field
+      a reader assumes is a control. Operator dispositions recorded at the 2026-08-09 close-out: SLSA VSA
+      SELECTED for round 2 (structurally close to a replay certificate, and NOT yet read); DSSE v1.0.2 DECLINED
+      as a separate entry.'
 
 - id: intake-1048
   arxiv_id: null
@@ -64955,6 +65290,39 @@
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (adoption cluster). source_type blog per
     schema enum (specs).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (RFC 9162, tlog-tiles.md@main, Tessera README, Rekor v2 GA
+      post), dive-verified. The correction is a SPEC-VERSUS-DEPLOYED gap and claim 0 already carries its
+      head: RFC 9162 is EXPERIMENTAL, deployed CT still runs 6962-era APIs, and the ecosystem converged
+      on the C2SP static-log family instead. Practical limit in claim 3: Tessera is production-ready but
+      is a Go LIBRARY, not a service. C2SP signed-note SELECTED for round 2 — it is the checkpoint format
+      L1 copies, and its normative text is not yet read.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (RFC 9162, tlog-tiles.md@main, Tessera README, Rekor v2 GA
+      post), dive-verified. The correction is a SPEC-VERSUS-DEPLOYED gap and claim 0 already carries its
+      head: RFC 9162 is EXPERIMENTAL, deployed CT still runs 6962-era APIs, and the ecosystem converged
+      on the C2SP static-log family instead. Practical limit in claim 3: Tessera is production-ready but
+      is a Go LIBRARY, not a service. C2SP signed-note SELECTED for round 2 — it is the checkpoint format
+      L1 copies, and its normative text is not yet read.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (RFC 9162, tlog-tiles.md@main, Tessera README, Rekor v2 GA
+      post), dive-verified. The correction is a SPEC-VERSUS-DEPLOYED gap and claim 0 already carries its
+      head: RFC 9162 is EXPERIMENTAL, deployed CT still runs 6962-era APIs, and the ecosystem converged
+      on the C2SP static-log family instead. Practical limit in claim 3: Tessera is production-ready but
+      is a Go LIBRARY, not a service. C2SP signed-note SELECTED for round 2 — it is the checkpoint format
+      L1 copies, and its normative text is not yet read.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (RFC 9162, tlog-tiles.md@main, Tessera README, Rekor v2 GA
+      post), dive-verified. The correction is a SPEC-VERSUS-DEPLOYED gap and claim 0 already carries its
+      head: RFC 9162 is EXPERIMENTAL, deployed CT still runs 6962-era APIs, and the ecosystem converged
+      on the C2SP static-log family instead. Practical limit in claim 3: Tessera is production-ready but
+      is a Go LIBRARY, not a service. C2SP signed-note SELECTED for round 2 — it is the checkpoint format
+      L1 copies, and its normative text is not yet read.'
 
 - id: intake-1049
   arxiv_id: '1811.12787'
@@ -65006,6 +65374,35 @@
     Dived 2026-08-09 during the Vidya-handoff audit (argumentation cluster). The honest
     proven-vs-empirical convergence split is exactly the citation needed to justify declining
     in-algebra accrual for a certified core.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (KR 2018 PDF + arXiv tutorial + repo head cdf67c2), dive-verified,
+      with the venue and two-libraries corrections recorded. Claim 2 carries the reproducibility trap worth
+      keeping: the paper''s 30-SECOND WALL-CLOCK iteration cap is NONDETERMINISTIC ACROSS HOSTS, so any
+      replication that inherits it inherits a machine-dependent stopping rule. Three dive-surfaced follow-ups
+      were all DECLINED as monitor items at the 2026-08-09 close-out.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (KR 2018 PDF + arXiv tutorial + repo head cdf67c2), dive-verified,
+      with the venue and two-libraries corrections recorded. Claim 2 carries the reproducibility trap worth
+      keeping: the paper''s 30-SECOND WALL-CLOCK iteration cap is NONDETERMINISTIC ACROSS HOSTS, so any
+      replication that inherits it inherits a machine-dependent stopping rule. Three dive-surfaced follow-ups
+      were all DECLINED as monitor items at the 2026-08-09 close-out.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (KR 2018 PDF + arXiv tutorial + repo head cdf67c2), dive-verified,
+      with the venue and two-libraries corrections recorded. Claim 2 carries the reproducibility trap worth
+      keeping: the paper''s 30-SECOND WALL-CLOCK iteration cap is NONDETERMINISTIC ACROSS HOSTS, so any
+      replication that inherits it inherits a machine-dependent stopping rule. Three dive-surfaced follow-ups
+      were all DECLINED as monitor items at the 2026-08-09 close-out.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (KR 2018 PDF + arXiv tutorial + repo head cdf67c2), dive-verified,
+      with the venue and two-libraries corrections recorded. Claim 2 carries the reproducibility trap worth
+      keeping: the paper''s 30-SECOND WALL-CLOCK iteration cap is NONDETERMINISTIC ACROSS HOSTS, so any
+      replication that inherits it inherits a machine-dependent stopping rule. Three dive-surfaced follow-ups
+      were all DECLINED as monitor items at the 2026-08-09 close-out.'
 
 - id: intake-1050
   arxiv_id: null
@@ -65055,6 +65452,39 @@
     AI, Springer) - required for correct PE/CCE/BRD citation.
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (argumentation cluster).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (Utrecht preprint PDF, full 22pp, plus carneades-4 USAGE.md
+      at head d19d543), dive-verified. It OVERTURNS the session''s OWN Stage-1 framing, and claims 0 and
+      1 are the corrected statement: ''five proof standards in the 2007 paper'' is wrong — there are exactly
+      THREE in the 2007 AIJ paper (SE, BA, ...) and the familiar five-standard set comes from the later
+      Gordon & Walton line. Surfaced as required for correct PE/CCE/BRD citation: Gordon & Walton 2009,
+      ''Proof burdens and standards''.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (Utrecht preprint PDF, full 22pp, plus carneades-4 USAGE.md
+      at head d19d543), dive-verified. It OVERTURNS the session''s OWN Stage-1 framing, and claims 0 and
+      1 are the corrected statement: ''five proof standards in the 2007 paper'' is wrong — there are exactly
+      THREE in the 2007 AIJ paper (SE, BA, ...) and the familiar five-standard set comes from the later
+      Gordon & Walton line. Surfaced as required for correct PE/CCE/BRD citation: Gordon & Walton 2009,
+      ''Proof burdens and standards''.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (Utrecht preprint PDF, full 22pp, plus carneades-4 USAGE.md
+      at head d19d543), dive-verified. It OVERTURNS the session''s OWN Stage-1 framing, and claims 0 and
+      1 are the corrected statement: ''five proof standards in the 2007 paper'' is wrong — there are exactly
+      THREE in the 2007 AIJ paper (SE, BA, ...) and the familiar five-standard set comes from the later
+      Gordon & Walton line. Surfaced as required for correct PE/CCE/BRD citation: Gordon & Walton 2009,
+      ''Proof burdens and standards''.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (Utrecht preprint PDF, full 22pp, plus carneades-4 USAGE.md
+      at head d19d543), dive-verified. It OVERTURNS the session''s OWN Stage-1 framing, and claims 0 and
+      1 are the corrected statement: ''five proof standards in the 2007 paper'' is wrong — there are exactly
+      THREE in the 2007 AIJ paper (SE, BA, ...) and the familiar five-standard set comes from the later
+      Gordon & Walton line. Surfaced as required for correct PE/CCE/BRD citation: Gordon & Walton 2009,
+      ''Proof burdens and standards''.'
 
 - id: intake-1051
   arxiv_id: '2508.02584'
@@ -65289,6 +65719,35 @@
     characterization fully accurate, sole author captured (Resham Joshi).
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (freshness cluster).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Stage-2b dive-and-index in one pass (arXiv v1, 29pp), dive-verified; the Stage-1 characterization
+      is FULLY ACCURATE and the sole author is captured. Claim 2 is honest about its own comparison in a
+      way that is rare in this corpus — the 90.19% LoCoMo figure is C1-C4 with the ADVERSARIAL C5 EXCLUDED,
+      and the comparison table says so explicitly — and claim 3 enumerates what the system LACKS, including
+      graded confidence and a deterministic path.
+  - claim_index: 1
+    effect: unaffected
+    note: Stage-2b dive-and-index in one pass (arXiv v1, 29pp), dive-verified; the Stage-1 characterization
+      is FULLY ACCURATE and the sole author is captured. Claim 2 is honest about its own comparison in a
+      way that is rare in this corpus — the 90.19% LoCoMo figure is C1-C4 with the ADVERSARIAL C5 EXCLUDED,
+      and the comparison table says so explicitly — and claim 3 enumerates what the system LACKS, including
+      graded confidence and a deterministic path.
+  - claim_index: 2
+    effect: unaffected
+    note: Stage-2b dive-and-index in one pass (arXiv v1, 29pp), dive-verified; the Stage-1 characterization
+      is FULLY ACCURATE and the sole author is captured. Claim 2 is honest about its own comparison in a
+      way that is rare in this corpus — the 90.19% LoCoMo figure is C1-C4 with the ADVERSARIAL C5 EXCLUDED,
+      and the comparison table says so explicitly — and claim 3 enumerates what the system LACKS, including
+      graded confidence and a deterministic path.
+  - claim_index: 3
+    effect: unaffected
+    note: Stage-2b dive-and-index in one pass (arXiv v1, 29pp), dive-verified; the Stage-1 characterization
+      is FULLY ACCURATE and the sole author is captured. Claim 2 is honest about its own comparison in a
+      way that is rare in this corpus — the 90.19% LoCoMo figure is C1-C4 with the ADVERSARIAL C5 EXCLUDED,
+      and the comparison table says so explicitly — and claim 3 enumerates what the system LACKS, including
+      graded confidence and a deterministic path.
 
 - id: intake-1056
   arxiv_id: '2607.28374'
@@ -65331,6 +65790,31 @@
     Stage-1 accurate; authors captured; repair-operator taxonomy added.
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (freshness cluster).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1, 2026-07-30), dive-verified; Stage-1 accurate,
+      authors captured, repair-operator taxonomy added. Claim 3 states the scope limit plainly, which is
+      what keeps this citable: a SINGLE multimodal VQA trajectory with episodic scratch-state — persistent
+      memory is out of scope, so nothing here transfers to a long-horizon memory claim without new evidence.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1, 2026-07-30), dive-verified; Stage-1 accurate,
+      authors captured, repair-operator taxonomy added. Claim 3 states the scope limit plainly, which is
+      what keeps this citable: a SINGLE multimodal VQA trajectory with episodic scratch-state — persistent
+      memory is out of scope, so nothing here transfers to a long-horizon memory claim without new evidence.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1, 2026-07-30), dive-verified; Stage-1 accurate,
+      authors captured, repair-operator taxonomy added. Claim 3 states the scope limit plainly, which is
+      what keeps this citable: a SINGLE multimodal VQA trajectory with episodic scratch-state — persistent
+      memory is out of scope, so nothing here transfers to a long-horizon memory claim without new evidence.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1, 2026-07-30), dive-verified; Stage-1 accurate,
+      authors captured, repair-operator taxonomy added. Claim 3 states the scope limit plainly, which is
+      what keeps this citable: a SINGLE multimodal VQA trajectory with episodic scratch-state — persistent
+      memory is out of scope, so nothing here transfers to a long-horizon memory claim without new evidence.'
 
 - id: intake-1057
   arxiv_id: '2605.17596'
