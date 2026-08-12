@@ -266,7 +266,24 @@ data that says otherwise. Every other face corrupts the check or its inputs; thi
 *Instances* — **four agents in one night**, which is past the threshold that earned face 12:
 
 - `mainD` printed `(empty = no count claim to decay)` directly beneath **six** matching lines.
-- `mainC` wrote a conclusion immediately above the counter-evidence that refuted it.
+- `mainC`, and this is the one to read first because the label nearly destroyed the finding it sat
+  under. Auditing ggml linkage they printed a header, then **two lines each reading
+  `CARRIES libggml: <path>`**, and then, unconditionally:
+
+  ```
+  === which of those dirs carry libggml? (the hazard) ===
+    CARRIES libggml: /mnt/raid0/llm/llama.cpp/build/bin
+    CARRIES libggml: /mnt/raid0/llm/llama.cpp-dflash/build/bin
+  (none listed = no foreign ggml on the ambient path)
+  ```
+
+  The verdict announced **clean** directly beneath two lines proving **dirty**. That contaminated
+  `LD_LIBRARY_PATH` was the highest-severity finding of their audit and the reason the production
+  kernel set does not read as intact — `LD_LIBRARY_PATH` is consulted *before* a binary's `RUNPATH`,
+  which is INC-20260731 exactly. It survived only because they read the rows instead of the label.
+  Their other instances are the ordinary shape: `(empty = nothing of mine uncommitted)` printed under
+  a list of three modified files, and a Python `VERDICT: all inside generated block — safe` computed
+  from an **empty** hunk list — face 1 and face 13 stacked in a single line.
 - `mainA` twice: `^ non-rollup changed lines (expect 0)` over a printed **5**, and
   `(empty above = origin/main does NOT introduce it)` over a line listing exactly that path.
 - `mainB`, **the heaviest user and the last to notice**, self-reported six: `(empty = compliant)`,
