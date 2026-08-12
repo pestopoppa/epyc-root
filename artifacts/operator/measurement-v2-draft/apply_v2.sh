@@ -28,6 +28,17 @@ done
 grep -q 'DRAFT v2 — NOT RATIFIED' "$DRAFT/MEASUREMENT.md" || {
   echo "FATAL: draft banner missing — wrong file?" >&2; exit 1; }
 
+# --- 0b. Pre-amendment snapshot for the §5 receipt --------------------------
+# A backup is a rollback tool; it is not the exact state diff the human signs.
+# Capture the pre-state so the receipt can carry both, and so the coherence check
+# has a "before" to compare the whole-file replacement against.
+source "$ROOT/scripts/operator/lib/ratify_receipt.sh"
+if [[ $APPLY -eq 1 ]]; then
+  receipt_capture MEASUREMENT.md agents/shared/MEASUREMENT_POLICY.md
+else
+  echo "DRY-RUN: capture pre-amendment state of MEASUREMENT.md + MEASUREMENT_POLICY.md"
+fi
+
 # --- 1. Backup v1 (never destroy) ------------------------------------------
 run mkdir -p "$BACKUP_DIR"
 run cp -a "$ROOT/MEASUREMENT.md" "$BACKUP_DIR/MEASUREMENT.v1.md"
@@ -105,7 +116,14 @@ if [[ $APPLY -eq 1 ]]; then
   python3 "$ROOT/scripts/validate/validate_claude_md_matrix.py"
   "$ROOT/scripts/validate/check_claims_grammar.sh"
   echo "APPLY COMPLETE. v1 backup: $BACKUP_DIR"
-  echo "Remaining human step: none — this script was the consolidated apply."
+  # "This script was the consolidated apply" is only true once the consolidated
+  # BUNDLE exists. The receipt is that bundle: protocol + evidence hashes +
+  # validation results + exact state diff, in one signable artifact.
+  RATIFY_VALIDATION="${RATIFY_VALIDATION:-python3 $ROOT/scripts/validate/validate_agents_references.py}" \
+  receipt_emit measurement-v2-constitution "MEASUREMENT.md v2 (core + annexes)" \
+      --anchor "## 5. Governance" \
+      --script artifacts/operator/measurement-v2-draft/apply_v2.sh
+  echo "Remaining human step: read the receipt above, then commit only if RATIFIED."
 else
   echo "DRY-RUN COMPLETE. Re-run with --apply to execute."
 fi

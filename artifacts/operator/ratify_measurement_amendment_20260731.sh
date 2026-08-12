@@ -34,6 +34,16 @@ if grep -q "$MARK" "$M" 2>/dev/null; then
   exit 0
 fi
 
+# MEASUREMENT.md §5 — snapshot before amending. The A1 edit below inserts after a
+# line matched by `startswith`, and on 2026-07-31 that line was the FIRST physical
+# line of a wrapped bullet: the insert landed inside the bullet and stranded its
+# continuation 16 lines away. Nothing in this script could see that, because its
+# verification grepped for the marker it had just inserted. The receipt's
+# coherence section compares whole blocks before/after and catches it.
+ROOT=/workspace
+source "$ROOT/scripts/operator/lib/ratify_receipt.sh"
+receipt_capture MEASUREMENT.md measurement/protocols/bench-cpu.md agents/shared/MEASUREMENT_POLICY.md
+
 python3 - <<'PY'
 import re, sys
 
@@ -139,12 +149,22 @@ edit("agents/shared/MEASUREMENT_POLICY.md", A5_ANCHOR, A5)
 PY
 
 echo
-echo "=== verification ==="
+echo "=== presence floor (necessary, NOT sufficient) ==="
+# Kept as a floor: an amendment whose text did not land is a failure worth
+# naming. It is no longer the verification — a presence check passes on a torn
+# document, which is precisely what happened here on 2026-07-31.
 for pair in "$M:category=OPTIMUM" "$M:Promotion is decided on the production-optimal" \
             "$B:registered production recipe" "$D:Category — declare one, always"; do
   f="${pair%%:*}"; pat="${pair#*:}"
   if grep -qF "$pat" "$f"; then echo "  OK   $f  <- $pat"; else echo "  MISS $f  <- $pat"; exit 1; fi
 done
+
+echo
+echo "=== consolidated receipt (the verification) ==="
+receipt_emit measurement-category-amendment-20260731 "MEASUREMENT.md §3 + §5" \
+    --anchor "category=OPTIMUM" \
+    --anchor "Promotion is decided on the production-optimal" \
+    --script artifacts/operator/ratify_measurement_amendment_20260731.sh
 
 echo
 echo "RATIFIED. Review with:  git -C /workspace diff -- MEASUREMENT.md measurement/protocols/bench-cpu.md agents/shared/MEASUREMENT_POLICY.md"

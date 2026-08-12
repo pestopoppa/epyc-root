@@ -1,9 +1,9 @@
 # Orchestrator Conversation Management — Cherry-Pick from Hermes/OpenGauss
 
 **Status**: complete (B1-B7 all code complete + integration wired 2026-04-05)
-**Created**: 2026-03-20 (split from hermes-agent-index.md)
+**Created**: 2026-03-20 (split from user-facing-harness-index.md)
 **Updated**: 2026-04-05
-**Parent**: [hermes-agent-index.md](hermes-agent-index.md)
+**Parent**: [user-facing-harness-index.md](user-facing-harness-index.md)
 **Source implementations**: hermes-agent (`agent/`), OpenGauss (`agent/`, `gauss_cli/`)
 
 ## Objective

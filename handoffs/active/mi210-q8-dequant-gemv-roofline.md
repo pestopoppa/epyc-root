@@ -277,10 +277,17 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
     lookup. **IQ4_XS sits at exactly 64 on this same wrapper**, so the 8-wave target is proven reachable
     and IQ2_XXS is 14 registers over. Constraint: spill is 0 everywhere, so there is no slack — any
     reduction attempt must report `vgpr_spill_count` beside occupancy or it is not evidence.
-  - [ ] **Disassembly diff `<IQ2_XXS,1,true,false>` vs `<IQ4_XS,1,true,false>`** to locate the extra live
-    values. Still zero-GPU; code objects extracted under `/workspace/tmp/co/` (target `0035.elf`).
-    Note this only licenses a *try*: decode is bandwidth/latency-bound (85.60 µs median, 6% spread), so
-    +2 waves helps only if latency remains to hide.
+  - [x] **Disassembly diff `<IQ2_XXS,1,true,false>` vs `<IQ4_XS,1,true,false>`** ✅ 2026-08-12, zero GPU.
+    1002 instructions vs 565; `v_*` 758 vs 334 while scalar (210/203) and LDS (16/16) are near-identical
+    and IQ2_XXS issues **fewer** global loads (3 vs 5) — **the codebook gather is not the cost, for the
+    third independent time**. The excess is sign unpacking: `unpack_ksigns`/`__vcmpne4`/`__vsub4` lowers
+    to ~272 sub-word ops (`v_or_b32_sdwa` 96, `v_lshlrev_b16` 96, `v_sub_i16` 64, `v_bfe_i32` 46), while
+    IQ4_XS does its byte manipulation with **48 `v_perm_b32`** that IQ2_XXS never uses.
+  - [ ] **Re-express the IQ2_XXS sign expansion using `v_perm_b32`** (byte permute) instead of 16-bit
+    shift/or/sub chains, in `vecdotq.cuh`. IQ4_XS is a working in-tree example of the idiom on the
+    identical wrapper landing at exactly 64 VGPR = 8 waves. **EXPERIMENTAL BRANCH ONLY** — production
+    `production-consolidated-v9` is frozen. Report `vgpr_spill_count` beside occupancy, and note that
+    decode is bandwidth-bound so this is necessary-not-sufficient for throughput.
   - [ ] **Re-run the decode attribution under governance** once RVP-C2-11's `--gen-tokens` patch
     lands, so the 16.42% decode figure carries a durable receipt instead of a non-governed probe.
     The Omniperf 2.0.1 / `rocprof` v1 fallback is now durable in research, but its first governed run

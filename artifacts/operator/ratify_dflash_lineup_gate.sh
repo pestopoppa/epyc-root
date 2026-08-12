@@ -249,6 +249,11 @@ if (
     exit 1
 fi
 
+# MEASUREMENT.md §5 — snapshot immediately before the write, so the receipt can
+# carry the exact state diff rather than a summary.
+source "$ROOT/scripts/operator/lib/ratify_receipt.sh"
+receipt_capture "${protected_root[@]}"
+
 git -C "$ROOT" apply --check "$root_patch"
 git -C "$RESEARCH" apply --check "$research_patch"
 git -C "$ROOT" apply "$root_patch"
@@ -262,3 +267,6 @@ git -C "$RESEARCH" diff --check -- "${protected_research[@]}"
 printf '\nApplied but not committed. Ratified policy and runner diffs:\n\n'
 git -C "$ROOT" diff -- "${protected_root[@]}"
 git -C "$RESEARCH" diff -- "${protected_research[@]}"
+
+receipt_emit dflash-lineup-gate-20260725 P-DFLASH-LINEUP-1 --protocol-new \
+    --script artifacts/operator/ratify_dflash_lineup_gate.sh

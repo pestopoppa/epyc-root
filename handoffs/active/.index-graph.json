@@ -3497,7 +3497,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T13:36:51Z",
+  "generated_at": "2026-08-12T13:40:18Z",
   "nodes": [
     {
       "age_days": 13,
@@ -3812,13 +3812,13 @@
       "track": "frontier f2 self running lab"
     },
     {
-      "age_days": 13,
+      "age_days": 0,
       "blocked": 0,
       "closed": 5,
       "domain": "research-evaluation",
       "handoff": "frontier-f3-data-flywheel.md",
       "id": "EVL-25",
-      "last_advanced": "2026-07-30",
+      "last_advanced": "2026-08-12",
       "next_action": "W3 \u2014 GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate is now satisfied by 100 trusted reviewed triage\u2026",
       "open": 3,
       "state": "active",
@@ -4542,7 +4542,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 16,
+      "closed": 17,
       "domain": "inference-research",
       "handoff": "mi210-q8-dequant-gemv-roofline.md",
       "id": "INF-37",
@@ -5023,7 +5023,7 @@
     {
       "age_days": 0,
       "blocked": 2,
-      "closed": 157,
+      "closed": 158,
       "domain": "routing-and-optimization",
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",

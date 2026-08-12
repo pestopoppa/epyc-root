@@ -1,7 +1,7 @@
 > **SUPERSEDED AND NON-AUTHORITATIVE — 2026-07-30.**
 >
 > This file is a stale draft (last written 2026-07-29 16:39Z) that predates the W2
-> group entirely. It was never the published source. **Do not read it as the record.**
+> group entirely. It was never the local authority. **Do not read it as the record.**
 >
 > Two separate reasons it is void:
 > 1. **It is a partial snapshot.** The auditor flagged the divergence on 2026-07-29
@@ -13,19 +13,16 @@
 >    [`handoffs/active/numa-placement-defect-20260730.md`](../../handoffs/active/numa-placement-defect-20260730.md).
 >
 > **The authoritative record** is the sibling `e5_w0_preliminary_results.html` in this
-> directory — which is the exact file published to
-> <https://claude.ai/code/artifact/b0a7785f-d618-436a-a3e2-46f2fef393aa>, so repo and
-> published copy cannot drift. That page was rewritten from scratch on 2026-07-30 as
-> the NUMA decision package.
+> directory. A hosted presentation copy existed historically, but it is not a project source,
+> locator, or update target. The local HTML was rewritten from scratch on 2026-07-30 as the NUMA
+> decision package.
 >
 > Retained, not deleted, because historical records in this repo are append-only.
 
 # E5 — NUMA × Batch Interaction Sweep: Results
 
-*(File name and published URL deliberately unchanged from the W0 preliminary release —
-`e5_w0_preliminary_results.md` / `https://claude.ai/code/artifact/b0a7785f-d618-436a-a3e2-46f2fef393aa`
-— so the operator's existing link keeps working. This document is updated **in place**; it is now
-the E5 results artifact, not just the W0 preliminary one.)*
+*(File name deliberately unchanged from the W0 preliminary release. The sibling local HTML is the
+E5 results artifact; this markdown file is retained only as a superseded historical draft.)*
 
 ---
 
@@ -34,7 +31,7 @@ the E5 results artifact, not just the W0 preliminary one.)*
 > **This revision is STAGED, not publishable.** The Stage-B campaign was still running when it was
 > written, so every live figure below is a placeholder carrying the literal token `TODO-FILL`.
 >
-> **Publication gate — all five must be true before this is republished:**
+> **Historical local-update gate — all five had to be true before rendering a replacement:**
 >
 > 1. `grep -c TODO-FILL artifacts/operator/e5_w0_preliminary_results.md` returns **0**.
 > 2. This whole `⛔ DRAFT` block is **deleted**.
@@ -42,9 +39,8 @@ the E5 results artifact, not just the W0 preliminary one.)*
 >    `summary.md` — **not** from a partial in-flight run, and **not** from the R2/R4 summarizer
 >    peak (see §8.2 — that peak is invalid by construction).
 > 4. The era-label question in §8.3 is resolved (the run manifests stamp a **stale** era).
-> 5. Republish with `url=https://claude.ai/code/artifact/b0a7785f-d618-436a-a3e2-46f2fef393aa`
->    passed **explicitly** to the Artifact tool. Omitting it mints a NEW url and breaks the
->    operator's link.
+> 5. Replace the authoritative local HTML in place and verify it from its local content hash.
+>    Do not treat any hosted presentation copy as an input or update target.
 >
 > The `.html` render alongside this file is still the **old W0-only** version. It has not been
 > touched. Regenerate it from this source at publication time.

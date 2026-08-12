@@ -225,7 +225,7 @@ Index updates:
 - `inference-acceleration-index.md`: refreshed TriAttention, Summary-token, Single-instance tuning, and KV-selection cross-reference rows.
 - `research-evaluation-index.md`: refreshed REPL, Root-archetype, SLIDERS, P6, and P0.5 notes.
 - `cpu-inference-optimization-index.md`: refreshed NPS4 notes, CPU3, and Qkernel entries.
-- `pipeline-integration-index.md` and `hermes-agent-index.md`: refreshed ERNIE local-image rows.
+- `pipeline-integration-index.md` and `user-facing-harness-index.md`: refreshed ERNIE local-image rows.
 
 Validation after sixth pass:
 - `bash scripts/validate/check_handoff_freshness.sh`: PASS — 0 aging, 0 stale.

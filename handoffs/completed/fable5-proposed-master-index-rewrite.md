@@ -21,7 +21,7 @@
 | Routing/autopilot/stack | routing-and-optimization-index.md | | Acceleration | inference-acceleration-index.md |
 |---|---|---|---|---|
 | CPU throughput | cpu-inference-optimization-index.md | | Research/eval | research-evaluation-index.md |
-| Hermes/agent UX | hermes-agent-index.md | | Pipelines | pipeline-integration-index.md |
+| Hermes/agent UX | user-facing-harness-index.md | | Pipelines | pipeline-integration-index.md |
 
 **Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: `fable5-findings-00-executive-summary.md`.
 

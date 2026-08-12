@@ -4,7 +4,7 @@
 **Created**: 2026-03-28 (via research intake deep dive)
 **Merged**: 2026-04-21 (stub → pipeline-integration-index P2; no in-flight state lost)
 **Categories**: specialist_models, formal_verification, moe_optimization
-**Depends on**: hermes-agent-index.md (OpenGauss context), kv-cache-quantization.md (REAP infrastructure)
+**Depends on**: user-facing-harness-index.md (OpenGauss context), kv-cache-quantization.md (REAP infrastructure)
 
 ## Objective
 

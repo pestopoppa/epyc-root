@@ -62,6 +62,54 @@ latency left to hide. It does establish that the lever is **real, bounded (14 re
 (IQ4_XS proves the target), and cheap to attempt** — and that the measurement to justify it costs no
 GPU time at all.
 
-Suggested next step, still zero-GPU: diff the disassembly of `<IQ2_XXS,1,true,false>` against
-`<IQ4_XS,1,true,false>` to find where the extra live values are held. Reproduce with
+That next step was taken the same day — see the disassembly diff below. Reproduce with the
 `/workspace/tmp/` extraction above; code objects under `/workspace/tmp/co/`, target `0035.elf`.
+
+**Method warning.** A first pass searched all 135 code objects with `llvm-nm`, which **does not exist**
+in this ROCm install (`/opt/rocm/llvm/bin/` ships `objdump`/`objcopy`/`readelf` only). Piped through
+`2>/dev/null | grep -q`, the missing binary produced silence indistinguishable from "no matches" — the
+catalogue's face 8, error laundered into a plausible negative. Use `llvm-readelf -s`; verify a tool
+exists before trusting its negative.
+
+## Disassembly diff — where the 14 registers go (2026-08-12, still zero GPU)
+
+`llvm-objdump -d --disassemble-symbols` on both kernels in `0035.elf`, same `<_,1,true,false>` wrapper.
+
+| | IQ2_XXS | IQ4_XS |
+|---|---|---|
+| total instructions | **1002** | **565** |
+| `v_*` (vector ALU) | 758 | 334 |
+| `s_*` (scalar) | 210 | 203 |
+| `global_*` (memory) | **3** | **5** |
+| `ds_*` (LDS) | 16 | 16 |
+
+**The codebook gather is not the cost — again.** IQ2_XXS issues *fewer* global loads than IQ4_XS (3 vs
+5). Scalar and LDS traffic are near-identical. The entire 437-instruction excess is vector ALU.
+
+Top instruction deltas (IQ2_XXS minus IQ4_XS):
+
+| delta | IQ2_XXS | IQ4_XS | op |
+|---|---|---|---|
+| +96 | 96 | 0 | `v_or_b32_sdwa` |
+| +96 | 96 | 0 | `v_lshlrev_b16` |
+| +64 | 64 | 0 | `v_sub_i16` |
+| +59 | 97 | 38 | `v_and_b32` |
+| +46 | 46 | 0 | `v_bfe_i32` |
+| +24 | 30 | 6 | `v_xor_b32` |
+| +16 | 16 | 0 | `v_lshrrev_b16` |
+| **−48** | **0** | **48** | **`v_perm_b32`** |
+
+**The cost is sign unpacking, not dequant and not the gather.** `unpack_ksigns` → `__vcmpne4` →
+`__vsub4` in `vec_dot_iq2_xxs_q8_1` (`vecdotq.cuh:990`) lowers to ~272 sub-word 16-bit shift/or/sub
+SDWA operations, each holding live values. IQ4_XS expresses its equivalent byte manipulation with
+**48 `v_perm_b32`** — a single-instruction byte permute that IQ2_XXS's sign expansion never uses.
+
+**Concrete optimisation direction, testable on an experimental branch:** re-express the IQ2_XXS sign
+expansion in terms of `v_perm_b32` (byte permute) rather than 16-bit shift/or/sub chains. IQ4_XS is a
+working in-tree example of the idiom on the identical wrapper, and it lands at exactly 64 VGPRs = 8
+waves/SIMD. This is a source-level change in `vecdotq.cuh` and therefore **experimental-branch work
+under the frozen-kernel rule** — it must not touch `production-consolidated-v9`.
+
+Standing caveat unchanged: decode is bandwidth/latency-bound (85.60 µs median, 6% spread), so fewer
+instructions and +2 waves are necessary-not-sufficient for throughput. Any attempt reports
+`vgpr_spill_count` beside occupancy, or it is not evidence.
