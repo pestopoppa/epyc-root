@@ -116,12 +116,60 @@ ratifications ACCUMULATE while the operator is away and are surfaced as ONE runn
 with context on their return, never a trickle — with a carve-out that a genuinely urgent
 hazard still goes up immediately. `ratify_20260812.sh` is the working template.
 
+## Post-wrap-up: two "blockers" that were neither
+
+The operator read the deferred list and asked *"why can't these be done immediately? How can I
+unblock you?"* — and the answer, for both, was that nothing was blocking them. **Both blockers
+were asserted rather than measured.** This is *Act, Don't Defer* catching me in the one place
+the rule specifically warns about: a wrap-up is the last place a doable task should be
+recorded instead of done.
+
+**DSP-1 — I claimed no tool could recover the 11 rotted rows' intent. False.** The `task_id`
+encodes the original line (`--006-L405`) and the row carries a birth timestamp, so
+`git show <commit-at-that-ts>:<handoff>` returns the exact text. One command. Disposition of
+all 11:
+
+| Outcome | n | Detail |
+|---|---|---|
+| Re-anchored BY TEXT | 5 | `:540 :562 :585 :641 :645`, now carrying `task_text` + `screened_by` |
+| `CANCELLED` | 1 | the work landed via another route the same day — moot, not executed |
+| `INFRA_BLOCKED` | 5 | original recovered, but nothing at HEAD matches above 0.35 similarity: removed or superseded, not reworded |
+
+Bus validates clean. Two schema refusals caught my own errors mid-recovery — an invented
+`note` field, then `DONE` not being in the status enum. Fail-closed earning its keep on the
+person who built the fix.
+
+**DSP-2 — I over-framed a fix as an operator decision.** The rule never needed a ruling: never
+fabricate an occupancy number for a hardware-lane row. The real gap was that **nothing asked
+the author**, and refusing at dispatch is too late — the row already exists, so the
+hand-dispatch pool only grows. `seed_queue.py` now surfaces unestimated `cpu`/`gpu` rows **at
+authoring**, where the person who knows whether it is a 40-second sweep or an overnight run is
+standing, and states that a duration written into the task text is picked up verbatim.
+A **warning, not a refusal**: a task nobody can time is still real work, and dropping it would
+be worse than dispatching it by hand. Verified live — 3 of 5 proposals flagged.
+
+**The transferable lesson, worth more than either fix:** "no tool can recover this" and "this
+is the operator's trade" are both *claims*, and neither was tested before being written into a
+deferred list. The recovery took one git command; the trade dissolved once I asked what the
+fix actually was.
+
 ## Open, with named blockers
 
 - Two trust-boundary amendments (AUD-15, P-GPU-1 field 3) — operator-only by
   construction; in `artifacts/operator/RATIFICATION-PACKAGE-20260812.md`.
 - `worktree.useRelativePaths=true` in `/etc/gitconfig` — needs root.
 - A venv created into `/workspace` itself — needs its owner.
-- The tick will dispatch NOTHING until queue rows carry `screened_by` and
-  `expected_occupancy` at intake. Fail-closed and intended; the intake
-  population is the last piece of work in flight.
+- The tick dispatches only rows carrying `screened_by` and `expected_occupancy`.
+  Intake now writes both, `seed_queue` warns at authoring when a hardware-lane
+  row states no duration, and the live queue was backfilled where it could be
+  done honestly. Rows that remain unestimated are hand-dispatch by design, not
+  by omission.
+- **Phase-7 §7 items 1–7** — index/handoff row edits including four stale
+  `multimodal-pipeline.md` rows, one contradicting the live registry. Blocked
+  on operator approval (standing rule: no index modifications without it).
+- **A quiet host (~2 min)** — turns `mainC`'s scout cells decision-grade.
+  Scheduling, not technical.
+- **5 opendataloader rows whose source task no longer exists in the handoff** —
+  recovered originals are recorded in their `failure_reason`; a human decides
+  whether to re-derive or drop. Not recoverable by tool: the text is simply gone
+  from HEAD.

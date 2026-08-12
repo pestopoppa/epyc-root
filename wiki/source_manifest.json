@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-12T22:02:17Z",
+  "last_compile": "2026-08-12T22:35:37Z",
   "mode": "full",
-  "scan_time": "2026-08-12T22:34:16Z",
+  "scan_time": "2026-08-12T22:56:48Z",
   "schema_version": 1,
-  "source_set_hash": "8a77c93778ffbd5c0d8c4c2e76b71a08ee899aab7db4059430f807419a9166b8",
+  "source_set_hash": "4d37f0f8e40b3d837bd2223529195a34aab2e2346f08bd1bff49dd1698fcfe6c",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -1167,10 +1167,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c41a05b61359996a76c1014354c41f4b56b1708228e6e1f4917e762a8a86bf34",
-      "modified": "2026-08-12T22:33:37Z",
+      "content_hash": "3d56984209e552196cb6837a18379917b3d27e5e3cb995ad79808928b6a61ff8",
+      "modified": "2026-08-12T22:54:12Z",
       "path": "handoffs/active/session-bus-thin-dispatcher.md",
-      "size": 255712,
+      "size": 256966,
       "title": "Session Bus + Thin Coordinator \u2014 N-main-thread control structure",
       "type": "handoff-active"
     },
@@ -6023,10 +6023,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "4e2c2fabc4dd57abb6ac78c1e216cdbbbbc28fa81af8c112d5adea27203303d6",
-      "modified": "2026-08-12T22:33:18Z",
+      "content_hash": "a27fcb58e609d8554202c9f39fc1da34bb64d45a0698f5c250be52259e2719a3",
+      "modified": "2026-08-12T22:56:16Z",
       "path": "progress/2026-08/2026-08-12-refactor-session.md",
-      "size": 7688,
+      "size": 10751,
       "title": "2026-08-12 \u2014 coordinator-seat refactor (refactor-session)",
       "type": "progress"
     },

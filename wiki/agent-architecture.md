@@ -1872,6 +1872,36 @@ working-tree state, sweeping a peer's uncommitted hunks in that same file (this 
 collision mechanism, not carelessness); and a repo reachable at two path depths makes
 `git worktree prune` read live worktrees as prunable and delete their admin data.
 
+### Addendum — 2026-08-12: a deferred item's blocker is a CLAIM, and it is usually untested
+
+Two items were written into a wrap-up's deferred list with named blockers, in a repo whose own
+policy says a blocker must be nameable in one sentence or the work is not blocked. Both
+blockers were **asserted, not measured**, and both dissolved within minutes of being
+questioned:
+
+- *"No tool can recover these rows' intent — a human must re-anchor them by text."* The row ids
+  encoded the original line numbers and the rows carried birth timestamps, so
+  `git show <commit-at-that-timestamp>:<file>` returned the exact original text. **A rotted
+  line-number anchor is recoverable whenever the identifier or the record preserves the
+  coordinate and the time** — the pair is enough to reconstruct the file as it stood. 11 of 11
+  recovered; 5 re-anchored to live tasks, 1 already completed elsewhere, 5 genuinely deleted
+  from the source (and *that* distinction was only visible because the originals were
+  recovered and compared by similarity).
+- *"This is the operator's trade between authoring effort and autonomy."* It was not a trade at
+  all: the underlying rule (never fabricate a duration estimate for a hardware-holding task)
+  was already correct and unchallenged. The real gap was that **nothing asked the author at
+  the moment the answer was known.** Refusing the row later, at dispatch, is correct but too
+  late — the row already exists, so the un-dispatchable pool only grows. Moving the prompt to
+  authoring time closed it with no ruling required.
+
+**The generalisation.** An agent writing a deferred list is making an empirical claim about the
+world under the least scrutiny it will ever face — after the work, at the end of a session,
+when the incentive to stop is highest. Two shapes recur: *"nothing can recover X"* (test it —
+recovery is often one command against history) and *"this is a human's decision"* (ask what the
+FIX is; a decision framed around a rule that is not actually in dispute is usually a
+missing mechanism wearing a decision's clothes). The check that catches both is mechanical:
+**state the blocker, then try to falsify it once before writing it down.**
+
 ### Sources
 
 - `handoffs/active/coordinator-role-failure-modes-and-refactor.md` — the catalogue, the
