@@ -70,7 +70,9 @@ Coupling edges: `.claude/dependency-map.json`.
 Adding or changing a dashboard surface? The **plane rule** is one paragraph in
 [`dashboard/README.md`](dashboard/README.md): data contracts live with the subsystem they observe;
 pages, nav and the registry live with the hub (`:8100`); every new dashboard needs a registry entry
-**plus** a health probe **plus** a freshness envelope; no unregistered pages.
+**plus** a health probe **plus** a freshness envelope; no unregistered pages. Note which probe:
+`/health` is transport-only (*the process is serving*) and stays green over a dead producer —
+`/api/health` is the three-valued fold that answers *is what this page shows still true*.
 
 ## Progress Tracking
 
