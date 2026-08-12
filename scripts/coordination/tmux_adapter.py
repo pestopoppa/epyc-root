@@ -709,6 +709,19 @@ def _await_composer_consumed(target: str, baseline: str, timeout_s: float,
 # is used with: it rides harmlessly into a submitted message, and `C-u` kills
 # the whole line regardless of what is on it.
 #
+# CLEAR IS NOW MEASURED, NOT INFERRED (2026-08-12T21:45:06Z, H-1 closed). C55
+# verified the SUBMIT half live and left `C-u` resting on the inference above.
+# `scripts/coordination/verify_composer_keys.sh` then measured all three discard
+# candidates against a disposable `claude` TUI in a scratch session:
+#
+#     space + 1.0s + C-u   -> CLEARED (composer fell back to its placeholder)
+#     space + 1.0s + Escape-> no-op; text stays
+#     bare  Escape         -> no-op; text stays
+#
+# So the sequence this helper already sends is the one that works, and Escape —
+# the untested candidate it was tempting to guess at — does nothing. Discard is
+# implemented, not open. Re-run that script if the TUI's key handling changes.
+#
 # THE HONEST CAVEAT. If the key does NOT take, the pane is then holding
 # `text + " "` rather than `text` — the wake character is a real edit to the
 # composer, not a probe. That is tolerable here and ONLY here because every
