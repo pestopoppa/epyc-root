@@ -139,3 +139,39 @@ def test_the_panel_declares_its_own_receipt_coverage() -> None:
     assert coverage["projected_schemas"], "coverage must enumerate what it shows"
     assert coverage["probe_root"]
     assert "CURATED" in coverage["note"] and "not absence of evidence" in coverage["note"]
+
+
+def test_every_contract_section_reaches_the_page_no_allowlist() -> None:
+    """Loop-state reconciliation (KRD-AUDIT-20260812, scope arm 1).
+
+    The contract-v2 producer exports the AutoKernel loop's own state — campaign,
+    champion, release_package, backend_standing, blocking_conditions, headroom,
+    resource_claims. The page must receive ALL of them, so that coverage cannot
+    silently lag the producer when a new section is added.
+
+    CORRECTION WORTH KEEPING: I first "found" that resource_claims and headroom were
+    rendered nowhere, by counting their name in kernel.html and getting 0. That
+    counted BESPOKE DETAIL BRANCHES, not rendering — the renderer iterates
+    Object.keys(sections) and always drew them. A grep count standing in for the
+    property, which is the same proxy-key error twice over. The real gap was small:
+    those two fell through to the bare word "reported", discarding their content.
+    """
+    import json as _json
+    payload = S.kernel_payload()
+    if (payload.get("_render") or {}).get("mode") != "contract_v2":
+        pytest.skip("live contract is not v2 on this host")
+    contract = _json.loads(Path(S.KERNEL_DASHBOARD_JSON).read_text(encoding="utf-8"))
+    assert set(payload["sections"]) == set(contract["sections"]), (
+        "the page must receive every section the producer exports — a filtered view "
+        "would make a newly added section invisible by construction")
+
+
+def test_not_reported_sections_are_flagged_not_silently_empty() -> None:
+    """`not_reported` is a VALUE, not an omission — the incident-8 distinction."""
+    payload = S.kernel_payload()
+    if (payload.get("_render") or {}).get("mode") != "contract_v2":
+        pytest.skip("live contract is not v2 on this host")
+    unreported = set((payload.get("_freshness") or {}).get("unreported") or ())
+    silent = {n for n, s in payload["sections"].items()
+              if isinstance(s, dict) and s.get("status") == "not_reported"}
+    assert silent <= unreported, f"not_reported sections missing from freshness: {silent - unreported}"

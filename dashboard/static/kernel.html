@@ -213,6 +213,12 @@ function renderSections(d){
       else if(name==="release_package") detail=String(s.state||"—");
       else if(name==="champion") detail=String(s.combined_candidate_id||"—");
       else if(name==="backend_standing") detail=Object.keys(s.backends||{}).map(b=>b+": "+((s.backends[b]||{}).standing||"—")).join(" · ")||"—";
+      // resource_claims and headroom previously fell through to the bare word
+      // "reported", which discards the one thing they carry. Empty lists here are a
+      // REPORTED ZERO, not silence — the same []-vs-null distinction this page was
+      // repaired around — so they are spelled out rather than collapsed.
+      else if(name==="resource_claims") detail=((s.held||[]).length)+" held · "+((s.released||[]).length)+" released"+(((s.held||[]).length||(s.released||[]).length)?"":" (reported, none outstanding)");
+      else if(name==="headroom") detail=(s.storage||s.budget)?[s.storage&&("storage "+s.storage),s.budget&&("budget "+s.budget)].filter(Boolean).join(" · "):"reported, no storage/budget figure carried";
       else detail="reported";
     }
     h+='<tr><td>'+esc(name)+'</td><td class="'+cls+'">'+esc(st)+'</td><td class="muted">'+esc(s.as_of||"—")+'</td><td>'+esc(detail)+'</td></tr>';
