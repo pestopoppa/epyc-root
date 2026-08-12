@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-12T13:41:12Z",
+  "last_compile": "2026-08-12T13:58:09Z",
   "mode": "full",
-  "scan_time": "2026-08-12T13:56:18Z",
+  "scan_time": "2026-08-12T13:58:26Z",
   "schema_version": 1,
-  "source_set_hash": "fc897e3f838aa1739cbf5cee3ef74d61a0c707221dd2a6d4a61d3469fe551c32",
+  "source_set_hash": "68dbbe46d0077181705643c241a061cd410e2691efda0d2854e2f9cb65273d96",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -479,10 +479,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4784cbe6c663e2f9faa9eb2982011bd17ca6bb622bcfffce6506b4c2de11030c",
-      "modified": "2026-08-12T13:55:29Z",
+      "content_hash": "2010bfc09ef0a7332c8444cd3e34d2ce7cec3288303cb88cfdb9642b070aa398",
+      "modified": "2026-08-12T13:57:31Z",
       "path": "handoffs/active/frontier-f3-data-flywheel.md",
-      "size": 31693,
+      "size": 32275,
       "title": "Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates",
       "type": "handoff-active"
     },
@@ -1175,10 +1175,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f8451f74415abac2e7767b6507915099e12d50622e5a588ec9db69f688dd9bdc",
-      "modified": "2026-08-12T00:31:07Z",
+      "content_hash": "753dc988806465fdebaf14fcb8d165a34034e0977fac3afdd2888ade857c8f60",
+      "modified": "2026-08-12T13:58:22Z",
       "path": "handoffs/active/shape-keyed-contention-gating.md",
-      "size": 46050,
+      "size": 48846,
       "title": "Shape-Keyed Contention Gating + Cross-Role Disjoint Placement",
       "type": "handoff-active"
     },
