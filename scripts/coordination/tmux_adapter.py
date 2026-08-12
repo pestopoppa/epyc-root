@@ -2116,7 +2116,7 @@ def cmd_nudge(args: argparse.Namespace) -> int:
             "nudge", args.agent, p["target"], baseline, "pre-Enter verification",
             "the message did not land in the composer — the cursor is not at the end of "
             "it, so the pane is not accepting typed input (a full-screen modal, e.g. "
-            "Codex backtrack mode, does this, faint_ok)")
+            "Codex backtrack mode, does this)", faint_ok)
 
     # C12: how many times the fragment is on the pane BEFORE Enter, including any
     # stale copy already in the scrollback. A genuine submission moves our copy from
@@ -2165,7 +2165,7 @@ def cmd_nudge(args: argparse.Namespace) -> int:
             "nudge", args.agent, p["target"], baseline, "post-Enter echo check",
             "the message is no longer at the cursor but is not echoed on the pane either. "
             "Enter was consumed by something that rewrote the composer (a completion "
-            "picker, e.g. Codex '@' or a '/' menu, faint_ok) rather than submitting")
+            "picker, e.g. Codex '@' or a '/' menu) rather than submitting", faint_ok)
 
     # ---- C51: and the BUFFER must be gone, not merely the keystrokes dispatched ----
     # The echo above is evidence that our text reached the transcript; this is evidence
@@ -2183,8 +2183,8 @@ def cmd_nudge(args: argparse.Namespace) -> int:
         return _fail_after_typing(
             "nudge", args.agent, p["target"], baseline, "post-Enter buffer check",
             f"the transcript echo is present but the composer BUFFER was not consumed: it "
-            f"holds {(observed or '', faint_ok)[:80]!r} instead of returning to "
-            f"{baseline.strip()[:40]!r}")
+            f"holds {(observed or '')[:80]!r} instead of returning to "
+            f"{baseline.strip()[:40]!r}", faint_ok)
     # C35: a nudge that only happened because quiescence outvoted a `working`
     # heartbeat is the one most worth being able to reconstruct later — if the
     # override ever does interrupt a real generation, this row is the evidence.
@@ -2290,9 +2290,9 @@ def cmd_doorbell(args: argparse.Namespace) -> int:
     if not consumed:
         return _fail_after_typing(
             "doorbell", args.agent, target, baseline, "post-Enter buffer check",
-            f"the composer BUFFER was not consumed: it holds {(observed or '', faint_ok)[:80]!r} "
+            f"the composer BUFFER was not consumed: it holds {(observed or '')[:80]!r} "
             f"instead of returning to {baseline.strip()[:40]!r}, so the Enter did not "
-            f"submit and the ring is still sitting in that composer")
+            f"submit and the ring is still sitting in that composer", faint_ok)
     record("doorbell", args.agent, message)
     print(f"doorbell rung for {args.agent} at {target}")
     return 0

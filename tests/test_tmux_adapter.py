@@ -2102,3 +2102,67 @@ def test_c13_the_picker_guard_is_narrowed_to_the_actual_hazard(
     actually binds to (token-initial), NOT relaxed."""
     adapter = _load(f"c13_{abs(hash(message)) % 9999}")
     assert bool(adapter._INLINE_PICKER_RE.search(message)) is refused, why
+
+
+# ---------------------------------------------------------------------------
+# C56, 2026-08-12. THE FOUR MANGLED `_fail_after_typing` CALL SITES.
+#
+# b6ea8679 moved a trailing `, faint_ok)` argument INTO the adjacent string
+# literal at four sites (`…does this, faint_ok)"`), and at two of those it also
+# turned `(observed or '')[:80]` into `(observed or '', faint_ok)[:80]` — a
+# 2-tuple sliced to itself, so the rollback message printed the whole tuple.
+# BOTH halves are silent: the call still type-checks, the string still renders,
+# and the only visible symptom is a rollback that reads a FAINT placeholder as
+# real pending text and therefore reports a strand that does not exist (or, on
+# the tuple sites, an unreadable stderr line at the exact moment a human is
+# trying to recover a stranded payload).
+#
+# Nothing in the runtime path could have caught this, which is why the guard is
+# STRUCTURAL: it reads the module's own AST rather than any rendered output, so
+# it fails on the shape of the defect and not on a spelling of the message.
+def _adapter_ast():
+    import ast
+    return ast.parse(ADAPTER_PATH.read_text(encoding="utf-8"))
+
+
+def test_c56_every_fail_after_typing_call_passes_the_faint_flag_as_an_argument() -> None:
+    """The flag must be a real argument, never text inside the detail string."""
+    import ast
+    bad = []
+    for node in ast.walk(_adapter_ast()):
+        if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                and node.func.id == "_fail_after_typing"):
+            continue
+        kw = {k.arg for k in node.keywords}
+        has_positional = len(node.args) >= 7
+        if not (has_positional or "faint_is_placeholder" in kw):
+            bad.append(node.lineno)
+            continue
+        if has_positional and not isinstance(node.args[6], (ast.Name, ast.Attribute,
+                                                            ast.Constant, ast.Subscript)):
+            bad.append(node.lineno)
+    assert not bad, (f"_fail_after_typing calls at lines {bad} do not pass the "
+                     f"faint-placeholder flag — the rollback will re-read the composer "
+                     f"with the wrong placeholder policy and mis-report a strand")
+
+
+def test_c56_no_string_literal_in_the_adapter_mentions_faint_ok() -> None:
+    """`faint_ok` is a variable. Seeing it inside quotes means an argument was
+    absorbed into a message — the exact b6ea8679 mangling."""
+    import ast
+    offenders = [n.lineno for n in ast.walk(_adapter_ast())
+                 if isinstance(n, ast.Constant) and isinstance(n.value, str)
+                 and "faint_ok" in n.value]
+    assert not offenders, (f"string literals at lines {offenders} contain 'faint_ok' — "
+                           f"an argument was absorbed into a string literal")
+
+
+def test_c56_no_tuple_is_sliced_where_a_string_was_meant() -> None:
+    """`(observed or '', faint_ok)[:80]` slices a 2-tuple and renders as a tuple.
+    A literal tuple subscripted by a SLICE is never intentional in this module."""
+    import ast
+    offenders = [n.lineno for n in ast.walk(_adapter_ast())
+                 if isinstance(n, ast.Subscript) and isinstance(n.value, ast.Tuple)
+                 and isinstance(n.slice, ast.Slice)]
+    assert not offenders, (f"tuple literals sliced at lines {offenders} — a truncation "
+                           f"that was meant for a string is truncating a tuple")
