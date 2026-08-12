@@ -902,7 +902,24 @@ primary artefact.
   the tolerance ratification for the multi-node analogue.
 
 - [ ] **T8 — Carry prompt length on every decode claim for `ingest_long_context`**, in the
-      registry and in any handoff that quotes a tok/s for it. The 9–12 vs 15–25 split is entirely
+      registry and in any handoff that quotes a tok/s for it.
+      **REGISTRY HALF DONE ✅ 2026-08-12 (`mainB`, research `7dddce0f`); handoff half still open.**
+      Two of the four figures already carried context (`long_context_tps_range … @ ~12K context`,
+      `summarization_benchmark … (10K context)`). **`baseline_tps: 10.12` and `optimized_tps: 10.12`
+      did not** — and those are the ones consumers read *programmatically*. Annotated as a
+      **provenance GAP, not back-filled**: the prompt length was never recorded with them, and
+      inventing one to satisfy the rule would defeat the rule. Flagged for whoever re-derives them
+      under T10 to record context at the same time.
+      **Landed in the MASTER** (`epyc-inference-research/orchestration/model_registry.yaml`), NOT
+      `epyc-orchestrator/orchestration/model_registry.yaml` — that file is the compiled runtime view,
+      regenerated from the master at every `orchestrator_stack.py start`, so an edit there is
+      silently wiped. Worth stating because the row says "in the registry" and there are two.
+      **Handoff half — surveyed, not done** (spans other owners' files, so not swept unilaterally).
+      Unqualified `ingest_long_context` tok/s quotes found in: `bulk-inference-campaign.md:83,584`
+      (`17.27 t/s`, Tulving run), `gemma-challenge-kernel-techniques-v7.md:396` (`13.89`/`14.02`
+      base decode, `23.52`/`23.27` server path), `autopilot-continuous-optimization.md:1081`
+      (`12.3 t/s/quarter`), `stack-lineup-dossier-2026-07-23.md:21` (`12.3 t/s/quarter`),
+      `within-role-placement-state-machine.md:315` (`12.34 t/s`, `~0.1 t/s`). The 9–12 vs 15–25 split is entirely
       a context-length effect. *(Amended 2026-07-30: the rule stands; the 9–12 / 15–25 bands
       themselves are IQ2_M and must be re-derived on Q4_K_M — T10.)*
 - [x] **T9 — Operator ratification of `P-BENCH-PLACEMENT-1`.** ✅ 2026-07-30 — **RATIFIED** by
