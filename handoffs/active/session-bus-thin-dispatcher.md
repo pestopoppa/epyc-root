@@ -2513,7 +2513,22 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   figure above cannot be re-derived and 811 is what remains. Rotate to a path outside the repo, or
   archive each sealed shard to one. *A history that only exists in `clean -x` fodder is not a
   history.*
-- [ ] **Nothing on this host explains the deletion of `logs/bus_supervisor.pid`, and nobody owns it.**
+- [x] **Nothing on this host explains the deletion of `logs/bus_supervisor.pid`, and nobody owns it.**
+  ✅ 2026-08-12 — **NAMED CAUSE, not written off.** The deleter is the supervisor's OWN trap
+  (`bus_supervisor.sh:373`) running in a second instance that should never have held the lock:
+  something removes `$LOCK_FILE` while A holds it → B's `exec 9>"$LOCK_FILE"` creates a NEW INODE
+  and its flock succeeds (C43 cannot refuse what the kernel sees as an unrelated file) → B clobbers
+  the pid, is TERM'd, and its trap `rm -f`s it → A is still alive holding the unlinked lock with no
+  pid file. That is the C48 symptom exactly, with no external deleter to find, which is why
+  "probably the clean run" never fit: it hunts a deleter one layer BELOW the defect.
+  **Mechanism reproduced, not argued** — `scripts/coordination/tests/test_supervisor_lock_inode_identity.sh`:
+  same-inode contender refused, post-replacement contender ACQUIRES. Ruled out first: path never
+  tracked (no git op), `clean -ffdx` runs in `/workspace` and cannot reach `/tmp`, all three
+  supervisor tests isolated, tmpfiles ages `/tmp` at 10d.
+  **Residual, and it is now the real question:** what removed the lock file. Nothing in the repo
+  does. **The fix is upstream of the pid** — flock identity is per-INODE, not per-path, so the
+  acquire must verify the fd's inode still matches the path after locking, or the lock must live
+  somewhere `/tmp` policy cannot reach. NOT applied here: `bus_supervisor.sh` is a RUNNING script.
   Routed explicitly by `mainD` rather than left implicit: the `auditor` exonerated `a70dbe1a` with
   mechanism — the path was never tracked in any commit, so `git rm --cached` could not have deleted
   it even in principle. C48 makes it moot for *liveness*, but something deleted a live process's
