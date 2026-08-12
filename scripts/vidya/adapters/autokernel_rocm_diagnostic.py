@@ -96,7 +96,11 @@ def _claim_identity(receipt: dict) -> tuple[dict, str]:
         _text(opened.get(key), f"device_claim_open.{key}")
         if released.get(key) != opened[key]:
             raise ProjectionError(f"device claim {key} changed across release")
-    if released.get("state") != "released" or not released.get("released_at"):
+    # ClaimReceipt retains the state immediately before Claim.release() drops
+    # the lock.  The durable release proof is released_at; there is no
+    # synthetic ``released`` state in the canonical claim implementation.
+    if released.get("state") not in {"held", "draining"} \
+            or not released.get("released_at"):
         raise ProjectionError("device claim must be durably released")
     identity = {"opened": opened, "released": released}
     return identity, _canonical_sha256(identity)

@@ -20,7 +20,7 @@ def _claim(*, released: bool) -> dict:
         "schema": "epyc.autokernel.device_claim_receipt.v1",
         "claim_id": "akd-fixture", "device_id": "mi210_0",
         "campaign_id": "ak-fixture", "acquired_at": "2026-08-12T06:00:00Z",
-        "state": "released" if released else "held",
+        "state": "held",
         "released_at": "2026-08-12T06:01:00Z" if released else None,
     }
 
@@ -242,7 +242,7 @@ def test_vendor_projects_one_unique_exact_shape_claim_per_comparison() -> None:
     ("saturation", "receipt"), ("saturation", "row"),
     ("saturation", "source"), ("saturation", "sampling"),
     ("saturation", "authority"), ("vendor", "ratio"),
-    ("vendor", "claim"), ("vendor", "provider"),
+    ("vendor", "claim"), ("vendor", "release"), ("vendor", "provider"),
 ])
 def test_tampering_and_authority_fail_closed(kind: str, defect: str) -> None:
     value = saturation_receipt() if kind == "saturation" else vendor_receipt()
@@ -265,6 +265,9 @@ def test_tampering_and_authority_fail_closed(kind: str, defect: str) -> None:
         value = _sign(value)
     elif defect == "claim":
         value["device_claim_released"]["claim_id"] = "other"
+        value = _sign(value)
+    elif defect == "release":
+        value["device_claim_released"]["released_at"] = None
         value = _sign(value)
     else:
         value["raw_results"][0]["library"] = "other"
