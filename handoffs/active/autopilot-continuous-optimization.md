@@ -699,10 +699,45 @@ consideration, not a computed term.
   is a recency window over the last five trials checking presence of a falsifier string only, and
   nothing marks a hypothesis resolved. A deterministic failure signature is the cheapest available
   upgrade and is a precondition for AP-ME-1's debug budget to select anything meaningful.
-- [ ] **AP-ME-5 — Experience-card row schema** (provenance, score, error type, method family, resource
+- [x] **AP-ME-5 — Experience-card row schema** (provenance, score, error type, method family, resource
   usage, novelty statistics) as the row type behind the StrategyStore / DesignArchive projections that
   already exist and already validate clean (69/69 projected, 2026-07-11). **Schema only** — no new
   autonomous loop, no live parent sampler.
+  **✅ 2026-08-12 (`mainA`, pulled from the generated bench and claimed) — SCHEMA DERIVED, not
+  invented. Mapped onto the row type that already exists and already validates, per the row's own
+  framing.** The backing type is `orchestration/repl_memory/strategy_store.py:259` `StrategyEntry`.
+  Six facets asked for; **three are already carried, three are genuinely absent**:
+
+  | facet | status in `StrategyEntry` |
+  |---|---|
+  | **provenance** | ✅ carried — `source_trial_id`, `evidence_trial_ids[]`, `created_at`, `species` |
+  | **score** | ✅ carried, but **three different scores with different meanings**: `validity_score` (0.5 default), `similarity_score` (retrieval), `rrf_score` (fusion rank). None is an outcome score. |
+  | **novelty statistics** | ⚠ partial — `similarity_score` + `staleness` are the raw material; no novelty figure is derived or stored |
+  | **error type** | ❌ absent |
+  | **method family** | ❌ absent — `species` is the nearest field and is a *population* label, not a method taxonomy |
+  | **resource usage** | ❌ absent |
+
+  **The finding that matters for whoever implements it: `score` is ambiguous in the row as
+  written, and the existing type proves it.** `StrategyEntry` already carries three floats named
+  `*_score`, none of which is the *outcome* score an experience card needs — they are a validity
+  prior, a retrieval similarity and a fusion rank. Adding a fourth bare `score` to that set is how
+  a consumer reads the wrong one. Any implementation should name it for what it measures
+  (`outcome_score`, or the objective it came from) rather than inheriting the row's word.
+  **Recommended shape:** extend `StrategyEntry` additively rather than defining a parallel type —
+  `to_dict()` is `asdict()`, so new optional fields round-trip for free and the 69/69 projections
+  keep validating. The three absent facets want: a typed `error_signature` (which AP-ME-6 above
+  independently asks for, so build it once and let both consume it), a `method_family` enum
+  distinct from `species`, and a `resource_usage` sub-dict — the last is the one with a live
+  write-side hook available, since the trial journal already records wall-clock and the four raw
+  objective components.
+  **Belief-kernel note, filed rather than assumed:** an experience card carrying an outcome score
+  plus provenance IS a measurement-shaped record. If it is implemented, it needs a write-side
+  ClaimTuple decision at that moment — not retrofitted on read. Flagged here so the implementer
+  hits it at design time; not filed as a vidya row, because the type does not exist yet and a
+  register row for an unbuilt producer is the kind of speculative entry that register warns about.
+  **NOT IMPLEMENTED, deliberately** — the row says *schema only*, and the three absent facets each
+  need an owner decision (which taxonomy for `method_family`, which resources count). This closes
+  the derivation; the field additions are a separate, smaller task with those answers in hand.
 - [ ] **AP-ME-6 — Negative-evidence rendering discipline.** intake-940's dive narrowed this from an
   exclusion filter to a *rendering* rule: a deterministic error signature per card plus a board-level
   repeated-error counter, rendered as one compact typed line rather than raw prior-attempt text.
