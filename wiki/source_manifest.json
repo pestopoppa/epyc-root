@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-12T19:59:40Z",
+  "last_compile": "2026-08-12T20:16:59Z",
   "mode": "full",
-  "scan_time": "2026-08-12T20:14:20Z",
+  "scan_time": "2026-08-12T20:52:37Z",
   "schema_version": 1,
-  "source_set_hash": "1b5a1e10faeab7b1f5f5a9531a5ff43c3c5cb8f44147fe1ddd6b682c53144366",
+  "source_set_hash": "be2cb125aaa48df5a61858e0f0e59613f0514bb277a9d1dafd8ef7514c912e00",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -23,10 +23,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ec1707162e56f5feff5c4e79de5ab1a2f704f7f86af2fb775c854865a6eed88e",
-      "modified": "2026-08-12T20:05:18Z",
+      "content_hash": "3dd847950b2191849c01779ac575c08e3328dbd5403abb8c69631a689bc170a1",
+      "modified": "2026-08-12T20:19:53Z",
       "path": "handoffs/active/CURRENT-CAMPAIGN.md",
-      "size": 19949,
+      "size": 19876,
       "title": "Current campaign state",
       "type": "handoff-active"
     },
@@ -55,10 +55,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "53f4012ad172fc5f7600eda94bde3f8d56c0ee72a6f1a7118649407fa086694c",
-      "modified": "2026-08-12T19:55:51Z",
+      "content_hash": "00fe33832c57c7252f41bc6d16e813a5687ba538f80fb9a9bffc69c679ae4b9f",
+      "modified": "2026-08-12T20:19:53Z",
       "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
-      "size": 82559,
+      "size": 84715,
       "title": "Agentic ROCm Kernel Authoring \u2014 MI210 Verify+Profile Harness",
       "type": "handoff-active"
     },
@@ -71,10 +71,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5a3bf653231d7176d766275c7c0ac1d7262581193ab564755e73f2b119651b9b",
-      "modified": "2026-08-12T20:04:47Z",
+      "content_hash": "ae0a66b891d2c9ae0394a98ba1bf43ac080f93b754fa47365f88bfcbbbfa20f1",
+      "modified": "2026-08-12T20:52:10Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
-      "size": 112981,
+      "size": 121545,
       "title": "Architect Model Comparison Benchmark",
       "type": "handoff-active"
     },
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "92e1f6f016b9137a67774b8dd363f4a3ebc18c932bab8095f1bb8f4a7da0214d",
-      "modified": "2026-08-12T20:14:11Z",
+      "content_hash": "94327d7fb64bb7dbd8139f9592d26a3964540a636069c01f934b915ee90dd97e",
+      "modified": "2026-08-12T20:20:36Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 375410,
+      "size": 380714,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -119,10 +119,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "46ef17b2fcfa820d5ed3c522e36d4fa2716fc69376edbca33a9083eb70b53aae",
-      "modified": "2026-08-12T12:06:17Z",
+      "content_hash": "98928b5f51856ec0bdb54ec62f0f13f4552ecaae65ae2842299e7664e3eb2ede",
+      "modified": "2026-08-12T20:19:05Z",
       "path": "handoffs/active/autopilot-decision-plane-audit-2026-07-22.md",
-      "size": 71894,
+      "size": 74536,
       "title": "Autopilot Decision-Plane Adversarial Audit \u2014 2026-07-22",
       "type": "handoff-active"
     },
@@ -559,10 +559,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "42c7cfcb489ea08bd423a75b089a60c2bcb20c14a62d4163a891ec63b6e7146e",
-      "modified": "2026-08-12T09:37:06Z",
+      "content_hash": "35ff9c4d5f6476b07ef2fd804e5089356b98e8a97fc71d89f1a14b11ece8a964",
+      "modified": "2026-08-12T20:19:05Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 80849,
+      "size": 80350,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -1087,10 +1087,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cf14a759eeef504f0755efa12128b9e732215f2e1d89b4b32a5ecb33ed5260ab",
-      "modified": "2026-08-12T20:05:57Z",
+      "content_hash": "617f44e7e14830d104b5418f0621470306be3671408fa8d72803743a4a28e5ae",
+      "modified": "2026-08-12T20:19:53Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 85231,
+      "size": 86783,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -1175,10 +1175,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "243afd3176a5e8bed46b25586b57d4151ef775f09aa803d04e3ad0795f1a23bc",
-      "modified": "2026-08-12T19:25:17Z",
+      "content_hash": "12b711e0a0fd3fd81ab1022976d82486fc9e9af54c67dbfe5dd468f03a14cf1f",
+      "modified": "2026-08-12T20:39:45Z",
       "path": "handoffs/active/shape-keyed-contention-gating.md",
-      "size": 51924,
+      "size": 54115,
       "title": "Shape-Keyed Contention Gating + Cross-Role Disjoint Placement",
       "type": "handoff-active"
     },
@@ -1343,10 +1343,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "38e8cca801b30acfd8cb2dc579b3bbb2cab9de848a5eea6c30e655197ab88ca1",
-      "modified": "2026-08-12T20:12:18Z",
+      "content_hash": "1e6f460cd459386496be05c81cc054580115950b29f8e60717200e3ed0356579",
+      "modified": "2026-08-12T20:40:00Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 61537,
+      "size": 62466,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -5815,10 +5815,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "d990d75a3b940986878626d8f954673ca749d8ed762495ad8af00a69206cb231",
-      "modified": "2026-07-29T19:40:23Z",
+      "content_hash": "b6a40d9dff74bb523751cafc15816e818ffe99742f6608a8231ce467dba7ca94",
+      "modified": "2026-08-12T20:19:19Z",
       "path": "progress/2026-07/2026-07-29.md",
-      "size": 206177,
+      "size": 209482,
       "title": "Progress \u2014 2026-07-29",
       "type": "progress"
     },
@@ -6015,10 +6015,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "77749cf891944b4c16ed7bc9e858d2c1d3a8d1e86fc439fac14f91526e6b1e7e",
-      "modified": "2026-08-12T20:12:18Z",
+      "content_hash": "5e8e9448d6c6e6b781c857754c69ce96776e729803d9437a255ab53731ca639b",
+      "modified": "2026-08-12T20:45:47Z",
       "path": "progress/2026-08/2026-08-12.md",
-      "size": 484070,
+      "size": 507093,
       "title": "2026-08-12",
       "type": "progress"
     },
