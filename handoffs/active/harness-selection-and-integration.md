@@ -249,7 +249,9 @@ every candidate harness cooperates by writing **body fields** on `/v1/chat/compl
 API reads no headers other than the `x-task-id` tag. That makes the request model's field policy and
 its error path the whole contract. Both are currently wrong in a way that is silent.
 
-- [ ] **HS-OD-1 — Standard OpenAI body fields are silently dropped.** `response_format` and
+- [x] **HS-OD-1 — Standard OpenAI body fields are silently dropped.** ✅ 2026-08-12
+  (`auditor`, pulled from the generated bench and claimed; orchestrator `cbe551e8`)
+  `response_format` and
   `max_completion_tokens` have **zero occurrences anywhere under `src/api/`**, and
   `OpenAIChatRequest` (`src/api/models/openai.py:39`) declares no `model_config` / `class Config` and
   no `extra` policy — so pydantic v2's default `extra='ignore'` discards them without error.
@@ -258,6 +260,20 @@ its error path the whole contract. Both are currently wrong in a way that is sil
   missing feature so much as a missing *refusal*: unknown fields that change output semantics must be
   rejected, not ignored. Decide per field — implement, or reject with a 4xx naming the field — and add
   a test that a body field the API does not honour cannot be accepted silently.
+  **Done.** Per-field decision as the row asks: `max_completion_tokens` **implemented** (alias →
+  `max_tokens`; both supplied → 422); `response_format` and the other unhonoured semantic fields
+  (`n`≠1, `stop`, `logprobs`/`top_logprobs`, `logit_bias`, penalties, legacy `functions`/
+  `function_call`) **refused with a 422 naming the field** — value-sensitively, so explicit no-ops
+  (`n=1`, penalty `0.0`, `{"type":"text"}`, empty lists) and non-semantic extras (`user`,
+  `metadata`, `stream_options`) still pass, keeping SDK clients that spell out defaults working.
+  JSON-mode support itself remains unimplemented BY DECISION: the seam now answers with a
+  diagnostic instead of prose-with-a-200; implementing it is backend feature work needing
+  inference validation — file its own task if a harness actually needs it.
+  Guards both directions (refusal fires AND compliant path passes):
+  `tests/unit/test_openai_semantic_field_refusal.py`, 30 tests, plus the 897-test
+  compat/chat/request slice green. **Committed, NOT LIVE**: the running `:8000` uvicorn serves
+  the old request model until the API reload at the inference session's own boundary
+  (reload-ownership rule) — reload routed via bus, not executed here.
 - [x] **HS-OD-2 — Backend failures are returned as assistant content with HTTP 200.** ✅ 2026-08-11
   (`mainB`, orchestrator `a4e398fc`)
   `src/api/routes/openai_compat.py:776-777` catches **every** exception into
