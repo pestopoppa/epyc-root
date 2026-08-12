@@ -11,7 +11,7 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | EVL-01 | agent file prose compression | [agent-file-prose-compression.md](agent-file-prose-compression.md) | AFC-P5.E3 — run the n=30 compliance campaign. READY but HELD (operator: "I will tell | — |
-| EVL-02 | architect model selection bench | [architect-model-selection-bench.md](architect-model-selection-bench.md) | Re-run the MMLU-Pro control under the hardened protocol — the sidecar's n=50 run predates it | — |
+| EVL-02 | architect model selection bench | [architect-model-selection-bench.md](architect-model-selection-bench.md) | Complete the full paired GPU `gpqa_diamond_cot` arm or close it by the standing ROI rule | — |
 | EVL-03 | autopilot decision plane audit 2026 07 22 | [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) | E8 RE-ARM (2026-07-26) — AutoPilot E8 baseline reseed = the gating task of the post-v8 | — |
 | EVL-04 | autopilot sequential allocation | [autopilot-sequential-allocation.md](autopilot-sequential-allocation.md) | SEQ-A: make the refuted label sticky in state_name() so re-adjudication cannot silently un-refute | — |
 | EVL-05 | backlog roi audit 2026 07 14 | [backlog-roi-audit-2026-07-14.md](backlog-roi-audit-2026-07-14.md) | RE-1 · Math-Verify scoring flip + re-baseline (S, med-ROI; intake-377/379) — the math_verify scorer is landed in orchestrator but zero pool… | — |

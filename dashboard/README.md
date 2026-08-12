@@ -89,6 +89,8 @@ the orchestrator's venv is **not** required.
 - `GET /api/handoff_detail?id=<state>/<stem>` — full card + scrubbed markdown body (path-traversal guarded)
 - `GET /api/handoff_timeline` — the git-derived timeline artifact + freshness
 - `GET /api/kernel` — the AutoKernel `/kernel` contract (v2, v1 still readable) + freshness
+- `GET /api/kernel/health` — Kernel-R&D producer/data health only; HTTP 200 when
+  fully reported and current, HTTP 503 with `absent`/`degraded` detail otherwise
 - `GET /api/bus`, `GET /api/queue`, `GET /api/outcome`, `GET /api/benchmark_artifacts`
 - `GET /api/health` — **the fold**: every registered panel's envelope + one verdict
 
@@ -144,6 +146,10 @@ trusted.
 * `/health` stays transport-only because
   `scripts/dashboard/hub_supervisor.sh` restarts the hub on a non-ok body, and
   restarting the dashboard cannot revive a producer in another repository.
+* `/api/kernel/health` is the non-recursive Kernel-R&D data probe used by the
+  dashboard registry. It reads and folds only the `kernel` envelope; it never
+  calls the global `/api/health` fold. This lets registry consumers see a live hub
+  and an absent/partial AutoKernel producer as two different facts.
 
 Producer side (contract v2): `epyc-inference-research` →
 `scripts/kernel_rnd/autokernel/dashboard.py`. The campaign driver exports only
@@ -162,6 +168,16 @@ audit readiness and a diagnostic smoke cannot promote or freeze a kernel. All of
 this is presentation context only. It is structurally excluded from `_freshness`
 and `/api/health`, so a commit, audit, or A/A artifact cannot make an absent or
 dead campaign look alive.
+
+The Kernel-R&D page executes its current-state renderer in the static-JavaScript
+suite, not just a syntax parser. This matters because the complete-kernel-set card
+once referenced a free identifier: the script parsed, the API remained complete,
+but rendering stopped before controls, empirical gates, activity, or the seven
+contract sections. Producer-authored blocking-condition details are rendered in
+full, so a generic `PREFLIGHT_REFUSED` label cannot hide the actionable gate. The
+production-set card also labels tree identity, observed versus attested ggml
+generation, non-executing `readelf` linkage, and dashboard-process ambient
+`LD_LIBRARY_PATH` as distinct claims rather than folding them into one green mark.
 
 ### The seam: what the hub owns of the producer's document
 

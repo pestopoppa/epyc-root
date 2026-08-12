@@ -6,7 +6,7 @@
 
 **Why archived**: no unchecked actionable item remains and no live reopen gate exists. The pre/post-reboot baseline tables, procedures, and decision matrices below are historical record; raw data lives in `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/`.
 
-**Where residuals now live**: generic post-reboot validation/recovery (re-apply non-persistent sysctls, throttle check, canonical smoke bench) overlaps [`cpu-kernel-env-flags-inventory.md`](../active/cpu-kernel-env-flags-inventory.md) and the memory entries `feedback_host_throttle_check` / `feedback_numa_balancing_self_reset` / `feedback_canonical_baseline_protocol`; the CPU15/EP disposition is owned by [`large-moe-expert-parallelism.md`](../active/large-moe-expert-parallelism.md).
+**Where residuals now live**: generic post-reboot validation/recovery (re-apply non-persistent sysctls, throttle check, canonical smoke bench) overlaps [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) and the memory entries `feedback_host_throttle_check` / `feedback_numa_balancing_self_reset` / `feedback_canonical_baseline_protocol`; the CPU15/EP disposition is owned by [`large-moe-expert-parallelism.md`](../active/large-moe-expert-parallelism.md).
 
 **Reopen triggers**: none. **L3aaN is do-not-re-propose without a new mechanism** (per `project_l3aan_reverted`); any future NPS-mode change gets a fresh runbook with fresh baselines.
 

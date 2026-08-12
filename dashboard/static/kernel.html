@@ -56,7 +56,7 @@
   .reporting b{color:inherit}
   .sec-observed{color:var(--good)} .sec-silent{color:var(--bad)} .sec-refused{color:var(--warn)}
   .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:10px;border:1px solid var(--amber);color:var(--amber);margin-left:6px}
-  .activity-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:18px}
+  .activity-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
   .activity-grid h3{font-size:12px;color:var(--muted);margin:0 0 8px}
   .activity-list{margin:0;padding-left:18px}.activity-list li{margin:5px 0}
   .state-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
@@ -209,10 +209,20 @@ function renderSections(d){
     let detail=s.reason||"";
     if(st==="observed"){
       if(name==="campaign") detail=`${s.state||"—"} · seq ${s.seq==null?"—":s.seq}${s.stopped?" · STOPPED (declared)":""}`;
-      else if(name==="blocking_conditions") detail=(s.open||[]).map(c=>c.kind).join(", ")||"no open conditions reported";
+      // The producer's detail is the actionable gate (today: the ratified uptime
+      // refusal), while `kind` alone merely says that *some* preflight refused.
+      // Pass the producer-authored sentence through verbatim; never infer a gate
+      // or verdict from it here in the view plane.
+      else if(name==="blocking_conditions") detail=(s.open||[]).map(c=>[c.kind,c.detail].filter(Boolean).join(": ")).join(" · ")||"no open conditions reported";
       else if(name==="release_package") detail=String(s.state||"—");
       else if(name==="champion") detail=String(s.combined_candidate_id||"—");
       else if(name==="backend_standing") detail=Object.keys(s.backends||{}).map(b=>b+": "+((s.backends[b]||{}).standing||"—")).join(" · ")||"—";
+      // resource_claims and headroom previously fell through to the bare word
+      // "reported", which discards the one thing they carry. Empty lists here are a
+      // REPORTED ZERO, not silence — the same []-vs-null distinction this page was
+      // repaired around — so they are spelled out rather than collapsed.
+      else if(name==="resource_claims") detail=((s.held||[]).length)+" held · "+((s.released||[]).length)+" released"+(((s.held||[]).length||(s.released||[]).length)?"":" (reported, none outstanding)");
+      else if(name==="headroom") detail=(s.storage||s.budget)?[s.storage&&("storage "+s.storage),s.budget&&("budget "+s.budget)].filter(Boolean).join(" · "):"reported, no storage/budget figure carried";
       else detail="reported";
     }
     h+='<tr><td>'+esc(name)+'</td><td class="'+cls+'">'+esc(st)+'</td><td class="muted">'+esc(s.as_of||"—")+'</td><td>'+esc(detail)+'</td></tr>';
@@ -238,6 +248,11 @@ function renderCurrentState(d){
   const box=$("#current-state"), s=((d._activity||{}).current_state||{});
   const prod=s.production_kernel||{}, fixed=s.fixed_campaign||{};
   const avail=s.available_source_diagnostic||{}, smoke=s.empirical_smoke||{};
+  const controls=s.decision_controls||{}, preflight=s.instrument_preflight||{};
+  const replay=s.gpu_prefetch_replay||{}, coverage=s.receipt_coverage||{};
+  const loop=s.loop_engineering||{}, fault=s.fault_rehearsal||{};
+  const scaffold=s.scaffold_engineering||{}, arena=s.arena_campaign_progress||{};
+  const rocm=s.rocm_diagnostics||{}, beliefs=s.belief_source_wiring||{};
   let h='<div class="state-grid">';
 
   h+='<div class="state-card production"><h3>Production kernel · operator attestation</h3>';
@@ -249,8 +264,188 @@ function renderCurrentState(d){
     const checkoutState=checkout.error?'<span class="fail">unavailable: '+esc(checkout.error)+'</span>':(checkout.matches_attestation?'<span class="ok">matches attestation</span>':'<span class="fail">does not match attestation</span>');
     h+='<div class="detail">canonical checkout '+checkoutState+'</div>';
     if(prod.scope) h+='<div class="detail">scope: '+esc(prod.scope)+'</div>';
-  } else h+='<div class="muted">freeze attestation unavailable: '+esc(prod.error||"not found")+'</div>';
+  } else {
+    h+='<div class="headline fail">ATTESTATION UNAVAILABLE</div>';
+    h+='<div class="detail fail">Production identity is unasserted; do not infer freeze or checkout state.</div>';
+    h+='<div class="detail">'+esc(prod.error||"attestation not found")+'</div>';
+  }
   h+=evidenceLine(prod)+'</div>';
+
+  // Kernel SET — three kernels, four binaries. Rendered as ONE card beside the llama
+  // attestation card rather than a second llama panel: the singular card above answers
+  // "which llama is frozen", this answers "is the whole frozen set still what we froze".
+  const kset=s.production_kernel_set||null;
+  if(kset){
+    h+='<div class="state-card production"><h3>Production kernel SET · freeze scope</h3>';
+    const intact=kset.intact===true;
+    h+='<div class="headline '+(intact?'ok':'fail')+'">'+(intact?'SET INTACT':'SET NOT PROVEN')+'</div>';
+    h+='<div class="detail">'+esc(kset.trees_matching+'/'+kset.expected_kernels)+' trees match attestation · '
+      +esc(kset.binaries_proven+'/'+kset.expected_binaries)+' binaries proven'
+      +(kset.binaries_unverified?' · <span class="fail">'+esc(kset.binaries_unverified)+' UNVERIFIED</span>':'')+'</div>';
+    (kset.members||[]).forEach(function(m){
+      const st=m.matches_attestation===true?'<span class="ok">tree matches attestation</span>'
+        :(m.matches_attestation===false?'<span class="fail">TREE DRIFT</span>':'<span class="fail">tree unverified</span>');
+      const gen=m.ggml_generation||{};
+      const ggml=(gen.observed
+        ?(' · ggml observed '+esc(gen.observed)+(gen.expected?' · attested '+esc(gen.expected):' · <span class="fail">not attested</span>'))
+        :(gen.expected?' · ggml attested '+esc(gen.expected)+' · <span class="fail">not observed</span>':' · <span class="fail">ggml not observed or attested</span>'));
+      h+='<div class="detail">'+esc(m.title||'—')+' · '+esc(m.branch||'—')+' <code>'
+        +esc((m.head||'').slice(0,12))+'</code>'+ggml+' · '+st
+        +(m.error?' <span class="fail">'+esc(m.error)+'</span>':'')+'</div>';
+      if(m.working_tree_clean===false){
+        h+='<div class="detail fail">working tree DIRTY · '+esc(m.dirty_count==null?'—':m.dirty_count)+' paths'
+          +((m.dirty_paths||[]).length?' · <code>'+esc(m.dirty_paths.join(', '))+'</code>':'')+'</div>';
+      } else if(m.working_tree_clean===true){
+        h+='<div class="detail ok">working tree clean</div>';
+      } else h+='<div class="detail fail">working-tree cleanliness unverified</div>';
+    });
+    (kset.binaries||[]).forEach(function(b){
+      const st=b.matches===true?'<span class="ok">digest ok</span>'
+        :(b.matches===false?'<span class="fail">BINARY DRIFT</span>':'<span class="fail">unverified</span>');
+      h+='<div class="detail">'+esc(b.label||'—')+' · '+st
+        +(b.observed_sha256?' <code>'+esc(b.observed_sha256.slice(0,12))+'</code>':'')
+        +(b.error?' <span class="fail">'+esc(b.error)+'</span>':'')+'</div>';
+    });
+    // Stable links and tree-local linkage go in the SAME card, not a new one.
+    h+='<div class="detail">stable links '+esc((kset.stable_links_ok||0)+'/4')
+      +' · readelf-resolved tree-local ggml linkage '+esc((kset.linkage_verified||0)+'/4')
+      +' · ggml generations '+esc((kset.ggml_generations_proven||0)+'/'+(kset.expected_kernels||3))+'</div>';
+    (kset.stable_links||[]).forEach(function(l){
+      const ok=l.matches_expected&&l.binary_present;
+      h+='<div class="detail">link <code>'+esc(l.name||'—')+'</code> → '
+        +(l.target?'<code>'+esc(l.target)+'</code>':'<span class="fail">unresolved</span>')
+        +' · '+(ok?'<span class="ok">ok</span>':'<span class="fail">'+esc(l.error||'DRIFT')+'</span>')+'</div>';
+    });
+    (kset.linkage||[]).forEach(function(e){
+      const st=e.verified===true?'<span class="ok">own tree</span>'
+        :(e.verified===false?'<span class="fail">FOREIGN ggml</span>':'<span class="fail">unverifiable</span>');
+      h+='<div class="detail">linkage <code>'+esc(e.link||'—')+'</code> · '+esc((e.ggml_libs||[]).length)+' ggml libs · '+st
+        +((e.foreign||[]).length?' <span class="fail">'+esc(e.foreign.map(f=>f.lib+' → '+f.resolved).join('; '))+'</span>':'')+'</div>';
+    });
+    const amb=kset.ambient_library_path||{};
+    if(amb.clean===false){
+      h+='<div class="detail fail">⚠ LD_LIBRARY_PATH carries ggml: <code>'+esc((amb.ggml_bearing_entries||[]).join(', '))
+        +'</code> — consulted BEFORE each binary\u2019s RUNPATH</div>';
+    }
+    if(amb.note) h+='<div class="detail muted">'+esc(amb.note)+'</div>';
+    (kset.alarms||[]).forEach(function(a){
+      h+='<div class="detail fail">⚠ '+esc(a)+'</div>';
+    });
+    h+='</div>';
+  }
+
+  h+='<div class="state-card"><h3>CPU evaluator controls · decision gate</h3>';
+  if(controls.available){
+    const p=controls.panel||{};
+    const ctlClass=controls.may_rank?'ok':'fail';
+    h+='<div class="headline '+ctlClass+'">'+esc(controls.marker||"—")+' controls · '+(controls.may_rank?'MAY RANK':'RANKING BLOCKED')+'</div>';
+    h+='<div class="detail">positive '+esc(p.positive||"—")+' · neutral '+esc(p.neutral||"—")+' · degraded negative '+esc(p.degraded_negative||"—")+' · A/A '+esc(p.aa||"—")+' · historical replay '+esc(p.historical_replay||"—")+'</div>';
+    const pf=preflight.available?(esc(preflight.passed_checks)+" / "+esc(preflight.total_checks)+" "+esc(preflight.status||"unknown")):"unavailable";
+    h+='<div class="detail">instrument prerequisites '+pf+' · instrument <code>'+esc((controls.measurement_instrument_commit||"").slice(0,12))+'</code></div>';
+    h+='<div class="detail muted">This receipt checks instrument/model/power/storage/topology prerequisites; the campaign preflight and its host-uptime gate remain separate in the contract sections below.</div>';
+    h+='<div class="detail">production anchor <code>'+esc((controls.production_source_commit||"").slice(0,12))+'</code> · '+(controls.anchor_matches_production?'<span class="ok">matches current freeze</span>':'<span class="fail">does not match current freeze</span>')+'</div>';
+    h+='<div class="detail">calibration '+(controls.calibration_accepted?'accepted':'not accepted')+' · B_min '+esc(controls.b_min_blocks==null?'—':controls.b_min_blocks)+' · noise floor '+esc(controls.noise_floor==null?'—':num(controls.noise_floor*100,3)+'%')+'</div>';
+    if(controls.composition_inference_executed===false) h+='<div class="detail">final composition reused completed raw vectors; recovery itself ran no inference</div>';
+  } else h+='<div class="sec-refused">decision-control receipt unavailable: '+esc(controls.error||"not found")+'</div>';
+  h+=evidenceLine(controls);
+  if(preflight.evidence) h+='<div class="evidence">preflight: <code>'+esc(preflight.evidence)+'</code></div>';
+  h+='</div>';
+
+  h+='<div class="state-card"><h3>ROCm replay · async Q8 prefetch</h3>';
+  if(replay.available){
+    const blocks=esc(replay.blocks==null?'—':replay.blocks);
+    const positive=replay.all_blocks_positive?(blocks+' / '+blocks+' positive'):'not all blocks positive';
+    h+='<div class="headline sec-refused">'+esc(String(replay.verdict||"unknown").toUpperCase())+'</div>';
+    h+='<div class="detail">'+positive+' · median '+esc(replay.median_relative_delta==null?'—':(replay.median_relative_delta*100).toFixed(4)+'%')+' · required floor '+esc(replay.contribution_floor==null?'—':(replay.contribution_floor*100).toFixed(2)+'%')+'</div>';
+    h+='<div class="detail">'+esc(replay.device_id||"ROCm device")+' · '+esc(replay.device_sample_count==null?'—':replay.device_sample_count)+' device samples · claim released '+esc(replay.device_claim_released_at||"—")+'</div>';
+    h+='<div class="detail">measured on <code>'+esc(replay.source_branch||"—")+'</code> @ <code>'+esc((replay.source_commit||"").slice(0,12))+'</code> · no promotion authority</div>';
+  } else h+='<div class="muted">ROCm replay receipt unavailable: '+esc(replay.error||"not found")+'</div>';
+  h+=evidenceLine(replay)+'</div>';
+
+  h+='<div class="state-card"><h3>Loop engineering · AK-LE-1/2</h3>';
+  if(loop.available){
+    const complete=loop.panel_status==="complete"&&loop.completed_cells===loop.total_cells;
+    h+='<div class="headline '+(loop.reduced?'ok':'sec-refused')+'">'+esc(loop.completed_cells+' / '+loop.total_cells)+' cells · '+esc(String(loop.panel_status||"unknown").toUpperCase())+'</div>';
+    h+='<div class="detail">'+(loop.reduced?esc(loop.belief_measurement_count)+' producer-authored observations':'REDUCTION PENDING — raw hypotheses are not a result')+'</div>';
+    h+='<div class="detail">'+esc(loop.note||"")+'</div>';
+    if((loop.cells||[]).length){
+      h+='<table><thead><tr><th>model</th><th>effort</th><th>target</th><th>survived</th><th>termination</th><th>wall</th></tr></thead><tbody>';
+      (loop.cells||[]).forEach(function(c){
+        const target=c.target_context_mode==="rendered_context_line"?"rendered":"absent";
+        h+='<tr><td><code>'+esc(c.model_id||"—")+'</code></td><td>'+esc(c.effort||"—")+'</td><td>'+esc(target)+'</td><td class="num">'+esc(c.prefilter_survival_count==null?"—":c.prefilter_survival_count)+'</td><td>'+esc(c.termination||"—")+'</td><td class="num">'+esc(c.elapsed_wall_seconds==null?"—":num(c.elapsed_wall_seconds,1)+'s')+'</td></tr>';
+      });
+      h+='</tbody></table>';
+    }
+    if(!complete) h+='<div class="detail fail">matched panel incomplete; do not compare arms</div>';
+  } else h+='<div class="muted">AK-LE panel unavailable: '+esc(loop.error||"not found")+'</div>';
+  h+=evidenceLine(loop);
+  if(loop.reduction_evidence) h+='<div class="evidence">reduction: <code>'+esc(loop.reduction_evidence)+'</code></div>';
+  h+='</div>';
+
+  h+='<div class="state-card"><h3>Loop engineering · AK-LE-3 scaffold</h3>';
+  if(scaffold.available){
+    const terminal=scaffold.status==="complete"&&scaffold.completed_cells===scaffold.total_cells;
+    h+='<div class="headline '+(terminal?'ok':'sec-refused')+'">'+esc(scaffold.completed_cells+' / '+scaffold.total_cells)+' cells · '+esc(String(scaffold.status||"unknown").toUpperCase())+'</div>';
+    h+='<div class="detail">released MI210 claims '+esc(scaffold.released_claims+' / '+scaffold.total_cells)+' · belief rows '+esc(scaffold.belief_measurement_count)+'</div>';
+    h+='<div class="detail">prospective read adapter '+(scaffold.prospective_adapter_present?'<span class="ok">present</span>':'<span class="fail">missing</span>')+' · r1 is not back-filled</div>';
+    if((scaffold.cells||[]).length){
+      h+='<table><thead><tr><th>model</th><th>scaffold</th><th>correct</th><th>cases</th><th>avg speedup</th><th>evaluation</th></tr></thead><tbody>';
+      (scaffold.cells||[]).forEach(function(c){
+        h+='<tr><td><code>'+esc(c.model_id||"—")+'</code></td><td>'+esc(c.scaffold||"—")+'</td><td>'+esc(String(c.pass_correctness))+'</td><td>'+esc((c.valid_optimized_cases==null?"—":c.valid_optimized_cases)+' / '+(c.valid_baseline_cases==null?"—":c.valid_baseline_cases))+'</td><td class="num">'+esc(c.average_speedup==null?"—":num(c.average_speedup,6)+'×')+'</td><td>'+(c.evaluation_hash_matches?'<span class="ok">hash bound</span>':'<span class="fail">UNVERIFIED</span>')+'</td></tr>';
+      });
+      h+='</tbody></table>';
+    }
+    h+='<div class="detail">'+esc(scaffold.note||"")+' · no ranking/promotion authority</div>';
+  } else h+='<div class="muted">AK-LE-3 panel unavailable: '+esc(scaffold.error||"not found")+'</div>';
+  h+=evidenceLine(scaffold)+'</div>';
+
+  h+='<div class="state-card"><h3>INF-03 · available-source Arena progress</h3>';
+  if(arena.available){
+    const terminal=arena.terminal_aggregate_present===true;
+    h+='<div class="headline '+(terminal?'ok':'sec-refused')+'">'+esc(arena.completed_checkpoints+' / '+arena.planned_checkpoints)+' checkpoints · '+(terminal?'TERMINAL AGGREGATE':'INCOMPLETE')+'</div>';
+    h+='<div class="detail">'+esc(arena.tasks)+' tasks × '+esc(arena.arms)+' available arms · checkpoints <code>'+esc((arena.checkpoint_hours||[]).join('h, ')+'h')+'</code></div>';
+    h+='<div class="detail">in-flight file markers '+esc(arena.inflight_markers)+' (not liveness) · completed claim releases '+esc(arena.released_completed_claims+' / '+arena.completed_checkpoints)+' · belief rows '+esc(arena.belief_measurement_count)+'</div>';
+    h+='<div class="detail">run <code>'+esc(arena.run_directory||"—")+'</code> · '+esc(arena.note||"")+'</div>';
+  } else h+='<div class="muted">Arena campaign evidence unavailable: '+esc(arena.error||"not found")+'</div>';
+  h+=evidenceLine(arena)+'</div>';
+
+  h+='<div class="state-card"><h3>Host-process fault rehearsal</h3>';
+  if(fault.available){
+    h+='<div class="headline '+(fault.status==="PASS"?'ok':'fail')+'">'+esc(String(fault.status||"unknown"))+' · '+esc(fault.passed_legs+' / '+fault.total_legs)+' legs</div>';
+    h+='<div class="detail">captured children only · live claim root touched: '+esc(String(fault.live_claim_root_touched))+'</div>';
+    h+='<div class="detail">'+esc(fault.note||"")+'</div>';
+  } else h+='<div class="muted">fault rehearsal unavailable: '+esc(fault.error||"not found")+'</div>';
+  h+=evidenceLine(fault)+'</div>';
+
+  h+='<div class="state-card"><h3>ROCm diagnostics · RVP / baseline honesty / profiling</h3>';
+  if(rocm.available){
+    const rvp=rocm.rvp||{}, bh=rocm.baseline_honesty||{};
+    if(rvp.available) h+='<div class="detail"><b>RVP-T0-1</b> · '+esc(rvp.status||"—")+' · '+esc(rvp.throughput_tflops==null?"—":num(rvp.throughput_tflops,6)+' TFLOP/s')+' · nominal SCLK '+esc(rvp.nominal_sclk_fraction==null?"—":num(rvp.nominal_sclk_fraction*100,4)+'%')+' · '+esc(rvp.max_power_w)+' / '+esc(rvp.power_cap_w)+' W · '+esc(rvp.belief_measurement_count)+' belief rows</div>';
+    if(bh.available) h+='<div class="detail"><b>AK-BH-1</b> · '+esc(bh.status||"—")+' · hipBLASLt wins '+esc(bh.hipblaslt_wins+' / '+bh.shape_count)+' shapes · ratio '+esc(num(bh.ratio_min,6)+'–'+num(bh.ratio_max,6))+' · '+esc(bh.belief_measurement_count)+' belief rows</div>';
+    h+='<div class="detail">diagnostic read adapter '+(rocm.read_adapter_present?'<span class="ok">present</span>':'<span class="fail">missing</span>')+' · profile adapter '+(rocm.profile_adapter_present?'<span class="ok">present</span>':'<span class="fail">missing</span>')+'</div>';
+    if((rocm.profiles||[]).length){
+      h+='<table><thead><tr><th>profile surface</th><th>receipt</th><th>belief rows</th></tr></thead><tbody>';
+      (rocm.profiles||[]).forEach(function(p){ h+='<tr><td>'+esc(p.label||p.schema)+'</td><td>'+esc(p.status||"observed")+'</td><td class="num">'+esc(p.belief_measurement_count)+'</td></tr>'; });
+      h+='</tbody></table>';
+    }
+    h+='<div class="detail">'+esc(rocm.note||"")+'</div>';
+    if(rvp.evidence) h+='<div class="evidence">RVP: <code>'+esc(rvp.evidence)+'</code></div>';
+    if(bh.evidence) h+='<div class="evidence">AK-BH: <code>'+esc(bh.evidence)+'</code></div>';
+  } else h+='<div class="muted">ROCm diagnostic/profile receipts unavailable</div>';
+  h+='</div>';
+
+  h+='<div class="state-card"><h3>Belief source wiring · producer rows → Vidya readers</h3>';
+  if((beliefs.sources||[]).length){
+    h+='<table><thead><tr><th>source</th><th>producer rows</th><th>reader / source table</th><th>state</th></tr></thead><tbody>';
+    (beliefs.sources||[]).forEach(function(row){
+      const wired=row.reader_present&&row.source_table_listed;
+      h+='<tr><td>'+esc(row.source||"—")+'</td><td class="num">'+esc(row.belief_rows==null?"—":row.belief_rows)+'</td><td>'+(wired?'<span class="ok">present + listed</span>':'<span class="fail">'+(row.reader_present?'reader unlisted':'reader missing')+'</span>')+'<div class="muted"><code>'+esc(row.reader||"—")+'</code></div></td><td>'+esc(row.status||"—")+'</td></tr>';
+    });
+    h+='</tbody></table>';
+    h+='<div class="detail">'+esc(beliefs.note||"")+'</div>';
+    h+='<div class="evidence">source table: <code>'+esc(beliefs.source_table||"—")+'</code> · '+(beliefs.source_table_present?'present':'missing')+'</div>';
+  } else h+='<div class="muted">belief source-table projection unavailable</div>';
+  h+='</div>';
 
   h+='<div class="state-card"><h3>Fixed controller campaign · 8 arms</h3>';
   if(fixed.available){
@@ -280,6 +475,7 @@ function renderCurrentState(d){
   } else h+='<div class="muted">empirical smoke receipt unavailable: '+esc(smoke.error||"not found")+'</div>';
   h+=evidenceLine(smoke)+'</div></div>';
   h+='<div class="state-note">No AutoKernel promotion claim. Production freeze identity and experimental audit evidence are independent. '+esc(s.role||"")+'</div>';
+  if(coverage.note) h+='<div class="state-note">'+esc(coverage.note)+' Projected schemas: <code>'+esc((coverage.projected_schemas||[]).join(", "))+'</code></div>';
   box.innerHTML=h;
 }
 
@@ -290,15 +486,26 @@ function renderActivity(d){
   const box=$("#activity"), a=d._activity||{};
   const impl=a.implementation||{}, commits=impl.recent_commits||[];
   const bundles=a.work_bundles||[], journals=((a.durable_state||{}).journals||[]);
+  const probeState=a.probe_receipts||{}, probes=probeState.receipts||[];
+  const integrations=a.mainline_integration||[];
   let h='<div class="activity-grid"><div><h3>Implementation</h3>';
   if(commits.length){
     const head=commits[0];
     h+='<div><code>'+esc(head.short_sha||"")+'</code> '+esc(head.subject||"")+'</div>';
     h+='<div class="muted" style="margin-top:4px">'+esc(head.committed_at||"—")+' · '+esc(shortAge(head.committed_at))+'</div>';
+    h+='<div class="muted" style="margin-top:4px">'+esc(impl.scope||"")+'</div>';
     h+='<details style="margin-top:8px"><summary class="muted">recent AutoKernel commits ('+commits.length+')</summary><ul class="activity-list">';
     for(const c of commits) h+='<li><code>'+esc(c.short_sha||"")+'</code> '+esc(c.subject||"")+'</li>';
     h+='</ul></details>';
   } else h+='<div class="muted">implementation history unavailable: '+esc(impl.reason||impl.status||"no commits")+'</div>';
+  if(integrations.length){
+    h+='<h3 style="margin-top:12px">Mainline integration</h3>';
+    integrations.forEach(function(row){
+      if(!row.available){ h+='<div class="fail">'+esc(row.label||"repo")+': '+esc(row.error||"unavailable")+'</div>'; return; }
+      h+='<div class="detail"><b>'+esc(row.label||"repo")+'</b> · '+esc(row.first_parent_commits)+' first-parent commits · <span class="ok">'+esc(row.first_parent_merges)+' merges</span> since '+esc(row.since||"—")+' · <code>'+esc((row.tip||"").slice(0,10))+'</code></div>';
+    });
+    h+='<div class="muted" style="margin-top:4px">Counts use <code>origin/main</code> (local main only as fallback) with first-parent traversal. The path-filtered commit list above is intentionally not a merge counter.</div>';
+  }
   h+='</div><div><h3>Durable work bundles</h3>';
   if(!bundles.length) h+='<div class="muted">no <code>data/autokernel_*</code> bundles found</div>';
   else{
@@ -312,6 +519,17 @@ function renderActivity(d){
     h+='</tbody></table>';
   }
   h+='<div class="muted" style="margin-top:8px">runtime journals visible under <code>'+esc((a.durable_state||{}).state_root||"—")+'</code>: '+journals.length+'. '+esc((a.durable_state||{}).discovery_scope||"")+'</div>';
+  h+='</div><div><h3>Durable probe receipts</h3>';
+  if(!probes.length) h+='<div class="muted">no receipts below <code>'+esc(probeState.root||"—")+'</code></div>';
+  else{
+    h+='<table><thead><tr><th>probe</th><th>producer label</th><th>latest activity</th></tr></thead><tbody>';
+    for(const p of probes){
+      const label=p.producer_label||p.parse_state||"unlabelled";
+      h+='<tr><td><code>'+esc(p.probe||"")+'</code><div class="muted">'+esc(p.schema||"")+'</div></td><td>'+esc(label)+'</td><td>'+esc(shortAge(p.updated_at))+'</td></tr>';
+    }
+    h+='</tbody></table>';
+  }
+  h+='<div class="muted" style="margin-top:8px">'+esc(probeState.role||"")+'</div>';
   h+='</div></div><div class="muted" style="margin-top:10px">'+esc(a.role||"")+'</div>';
   box.innerHTML=h;
 }

@@ -326,7 +326,7 @@ Port three upstream compressor patterns into our `scripts/utils/compress_tool_ou
 
 ### Dependency
 
-- D — pin bump v2026.3.23 → v2026.4.23 (lives in [`user-facing-harness-index.md`](user-facing-harness-index.md) P2.6.1) — recommended-but-not-strict prerequisite. We can read the upstream patches directly without bumping our pin first; bumping makes side-by-side comparison easier and lets us run upstream's anti-thrashing test fixtures.
+- D — pin bump v2026.3.23 → v2026.4.23 (now routed by [`user-facing-harness-index.md`](user-facing-harness-index.md)) — recommended-but-not-strict prerequisite. We can read the upstream patches directly without bumping our pin first; bumping makes side-by-side comparison easier and lets us run upstream's anti-thrashing test fixtures.
 
 ### Work Items
 
@@ -339,7 +339,7 @@ Port three upstream compressor patterns into our `scripts/utils/compress_tool_ou
 ### Cross-references
 
 - Synergizes with [`context-folding-progressive.md`](context-folding-progressive.md) Phase 3c — anti-thrashing reduces oscillation-induced false positives in their monitoring telemetry. See that handoff's Phase 3c subsection for cross-ref.
-- Companion to [`user-facing-harness-index.md`](user-facing-harness-index.md) P2.6 (the pin bump that gives us side-by-side access to upstream patches).
+- Companion to [`user-facing-harness-index.md`](user-facing-harness-index.md) (the pin bump that gives us side-by-side access to upstream patches).
 
 ## Research Intake Update — 2026-04-26
 

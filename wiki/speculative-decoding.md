@@ -2,8 +2,64 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-08-09 (adds DSpark as a distinct draft type — `deepseek4` arch already ships in production v8 via upstream #24162, but no `DRAFT_DSPARK` member exists among the ten enumerated spec types, and DSpark is a separate sidecar GGUF so NextN metadata does not imply it; earlier 2026-07-31 note: adds the composed-recipe reconciliation — production was not launching the operator's `ngram-mod,draft-mtp` recipe since `2370025f`, the naive fix would have disabled speculation entirely, fixed by `2874ed73`+`6390b871` — plus the soft-budget/independent-knob/acceptance-dilution mechanism findings and the draft-max sweep; earlier 2026-07-29 note: verifying a draft/MTP head is a weight-map question, not a config question; earlier 2026-07-24 note: adds the per-model GPU MTP-depth optimum for all three architect candidates and the architecture-dependent spec-dec × batching interaction; earlier 2026-07-20 note: adds the external-drafter-dead / native-MTP-dominant finding, the surviving quant-asymmetric self-spec redesign, and the K28 fused-GDN-kernel research; earlier 2026-07-19 note: adds v7 promotion/reviewer decoupling, repaired native GLM-MTP evidence, and the lossless-only release boundary; 2026-07-04/05/06 MI210/spec-sheet subsections remain flagged where noted)
+**Last compiled**: 2026-08-11 (DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
 **Sources**: 63+ documents
+
+## Compiled Update — 2026-08-11
+
+### DSpark is production-safe on the validated serial lane, not yet a throughput win
+
+**Identity correction.** `draft-dspark` is the speculation mode, while `dflash` is the sidecar's
+GGUF architecture and shared model backbone. DSpark specializes that backbone with an anchor-first
+block layout and a semi-autoregressive Markov head; it does not introduce a `dspark` GGUF
+architecture. It remains distinct from the target's MTP/NextN tensors and still requires a separate
+target-locked sidecar.
+
+The 2026-08-09 pre-port assessment below is now historical. Upstream had already merged the generic
+DSpark speculator, the DeepSeek-V4 graph, and two required quantized-reshape fixes. EPYC therefore
+performed a dependency-aware manual forward-port onto exact frozen v8 rather than implementing a
+new architecture or blindly cherry-picking conflict-heavy patches. The repaired candidate passed
+the complete CPU/HIP promotion procedure and is frozen as `production-consolidated-v9` at
+`0db32c06e3e550065b78311a6031ef3dd2c4f27c` (binary 10125); v8 remains the rollback anchor.
+
+The validated boundary is deliberately narrow. A production-named Q8 target run at `-np 1` emitted
+the same 16 token ids with request-local cap 0 and cap 3. Cap 0 drafted nothing; cap 3 drafted 18 and
+accepted 9. The candidate uses a serial target verifier for greedy recurrent targets because the
+parallel verifier reproduced the upstream quantized-target parity defect. Multi-slot DSpark remains
+rejected at launch pending the separate speculative-cache defect. The serial correctness fallback
+was slightly slower in preliminary observations, so v9 establishes capability and parity, not a
+DSpark speed claim.
+
+The lower `UD-IQ3_XXS` target is present as a four-shard, checksum-verified research artifact
+(104,207,848,032 bytes). Its routed experts are materially requantized, unlike the Q8 artifact's
+MXFP4-preserving expert tensors. A bounded production-v9 CPU pair at `-np 1`, nominal 2,048 context
+and 64 completion tokens preserved exact cap-0/cap-3 token parity. Cap 3 drafted 67 and accepted 40
+(59.70%) but decoded at 4.61014 t/s versus 4.82846 t/s with cap 0, or 0.95478× (−4.52%). This is
+one dirty-host repetition with the resident stack online: useful preliminary evidence that DSpark is
+active and parity-safe on IQ3, but not a claim-grade throughput or quality result.
+
+A standardized comparison sidecar was acquired from
+[`alessandrobologna/DeepSeek-V4-Flash-DSpark-Drafter-GGUF`](https://huggingface.co/alessandrobologna/DeepSeek-V4-Flash-DSpark-Drafter-GGUF)
+at pinned revision `0c8f204aa30677da13c234b4e929212d5d5a0b8c`. The selected
+`DeepSeek-V4-Flash-DSpark-Drafter-Q2_K-Q8_0-dflash.gguf` is expected to be 6,971,242,976 bytes with
+publisher SHA-256 `232dd3c3dc3f7082d242e8700940feedc85f6b65cf2991fd35be0a66dad3efa0`.
+Its manifest reports 81 tensors (F32 45 / F16 2 / Q8_0 25 / Q2_K 9), block size 5 and target layers
+`[41,42,43]`. The local file is exactly 6,971,242,976 bytes and its SHA-256 matches the publisher
+value; no incomplete transfer remains.
+
+The existing 10,896,057,440-byte control also has 81 tensors, block size 5 and the same target
+layers, but its actual composition is MXFP4 9 / F32 41 / Q8_0 25 / BF16 6. Thus the filename
+shorthand “Q8_0” does not make it a uniform Q8 drafter. Its useful next test is a matched
+target/prompt/request/host comparison reporting
+throughput, acceptance and exact token parity against this existing control.
+
+### Source References (2026-08-11)
+
+- [`deepseek-v4-flash-0731-dspark.md`](../handoffs/active/deepseek-v4-flash-0731-dspark.md) — dependency closure, final production boundary, Q8 parity and IQ3 artifact identity.
+- [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — request-local cap contract, qualification gates and frozen v9 evidence map.
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — session-level promotion, certification, stack-restoration and acquisition record.
+- [`ratify_v9_final_freeze_20260811.json`](../artifacts/operator/ratify_v9_final_freeze_20260811.json) — operator-ratified production identity and rollback boundary.
+- [`IQ3 DSpark quick-pair receipt`](https://github.com/pestopoppa/epyc-inference-research/blob/main/data/deepseek-v4-flash/iq3-dspark-quick-20260811T063729Z/summary.json) — exact tokens, throughput, acceptance, host caveat and cleanup proof.
 
 ## Compiled Update — 2026-08-09
 
@@ -26,6 +82,9 @@ each verified directly against the frozen production tree on 2026-08-09:
    sidecar GGUF** (~10.9 GB at Q8_0), not as tensors inside the quant. A V4 GGUF carrying
    `deepseek4.nextn_predict_layers` metadata therefore provides *no* DSpark capability. Reading
    NextN metadata as "MTP present, so the newer drafter is available" is the trap here.
+
+> **Superseded scope note (2026-08-11):** upstream DSpark and DeepSeek-V4 support already existed;
+> the final work was a dependency-aware forward-port, and the result is summarized above.
 
 **Generalizable lesson**: when a vendor renames or replaces its drafting algorithm, check the
 engine's *draft-type enumeration*, not the model's architecture support. Arch support and drafter
@@ -62,7 +121,7 @@ The dominant new result: **every production target already ships a near-free emb
 - **External GPU-drafter lanes are measured dead; native MTP dominates.** Stage-1 (CPU target + MI210 external drafter) = 0.915× decode despite usable acceptance; Stage-2 co-resident = 0.355× (external) / 0.948× (native MTP) vs GPU no-spec. The DR-1 break-even model shows external lanes failed even at α=1.0 → the blocker is **overhead/control cost, not acceptance**; any future lane must satisfy `E(α,K) > F(K)+H(K)` on paper first. ([gpu-drafter-control-redesign](../handoffs/active/gpu-drafter-control-redesign.md), [mi210-big-model-and-acceleration-roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md))
 - **Quant-asymmetric same-model self-spec is the surviving redesign.** Aggressive-IQ drafter on GPU + high-quant verifier on CPU is N5-free (identical vocab/M-RoPE/GDN) and the CPU verify launders quality. DR-0e.2 (observation-grade): 122B Q4-CPU verifier + 122B-IQ2-MI210 drafter, **K2 = 1.61× (alpha 0.90)**, 28/28 quality, output byte-stable vs CPU baseline; K2 chosen over K4 (only +3.85%, alpha 0.787). New server telemetry now separates `F(K)` verify work (K2: 33.7s) from `H(K)` coordination (0.66s). Default-off research lane, `P-GPU-1`-gated. ([quant-asymmetric-self-spec-serving-design](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md), [gpu-drafter-control-redesign](../handoffs/active/gpu-drafter-control-redesign.md))
 - **GLM native-MTP repaired** (post-candidate `12a292f0c`): 5.33 t/s vs 2.49 no-spec, alpha 0.933 (376/403 accepted) — available-not-required, since the reviewer route is decoupled from v7 finalization. ([v7-promotion](../handoffs/active/v7-promotion.md))
-- **K28 GDN long-prefill fused-chunked kernel (research/design):** the serial token-scan kernel is serial-dependency-bound (effective BW falls 51→27 GB/s as prompt grows → real fusion headroom), but the Phase-0 ceiling is bounded (GDN ~15% of GPU prefill; 4× op → ~11% full-model). The real fix is a single fused chunked-recurrence kernel (fusion-first FP32, then MFMA/bf16) keeping chunk-local tensors on-chip — the generic-ggml chunked graph already uses matrix cores yet loses ~6% (op-dispatch/HBM-bound). Must preserve GDA/KDA + transposed state + **K>1 MTP-snapshot** semantics for spec-dec rollback. Post-promotion/default-off only; do NOT delay v7. GPU remains the natural habitat for the CPU-dead recurrent-model speculation (parallel scan for GDN state; vLLM DDTree+Dflash on Qwen3.5-27B AWQ ≈ 91 t/s community reference). ([k28-fused-chunked-gdn-kernel-research](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md), [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md), [gpu-acceleration-path](../handoffs/active/gpu-acceleration-path.md))
+- **K28 GDN long-prefill fused-chunked kernel — CLOSED NO-GO 2026-08-11:** governed direct attribution measured GDN at 15.40% / 14.65% / 12.18% of summed kernel time at 2K/8K/32K; even an optimistic 4× op speedup caps full-model gain at 11.55% / 10.99% / 9.14%. That fails the requirement to materially beat higher-EV alternatives, so no prototype is warranted. The design and K>1 snapshot invariants remain reference material. ([K28 closeout](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md), [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md))
 
 ### Open Questions (2026-07-20)
 
@@ -76,7 +135,7 @@ The dominant new result: **every production target already ships a near-free emb
 - [gpu-drafter-control-redesign.md](../handoffs/active/gpu-drafter-control-redesign.md) — external-drafter lanes dead; quant-asymmetric self-spec redesign + DR-0/DR-1.
 - [quant-asymmetric-self-spec-serving-design-2026-07-20.md](../docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md) — K2 lane design + F(K)/H(K) telemetry.
 - [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — Axis-B drafter economics, native-MTP dominance.
-- [k28-fused-chunked-gdn-kernel-research.md](../handoffs/active/k28-fused-chunked-gdn-kernel-research.md) + [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md) — fused GDN kernel design + bounded ceiling.
+- [k28-fused-chunked-gdn-kernel-research.md](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) + [progress 2026-07-20-k28](../progress/2026-07/2026-07-20-k28-fused-gdn-kernel-research.md) — fused GDN design and measured no-go closeout.
 - [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — GPU as the natural habitat for recurrent-model speculation (DFlash/DDTree).
 
 

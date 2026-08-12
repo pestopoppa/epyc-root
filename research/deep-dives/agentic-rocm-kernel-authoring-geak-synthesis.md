@@ -70,7 +70,9 @@ Operator-level/torch-eager scores overstate real gains ~25pp (1.16×→0.93× vs
 **Controller candidates:** EvoEngineer 666 (lead) · KernelFoundry 669 (hardware-awareness layer) · Xe-Forge 672 (linear archetype) · K-Search 673 (world-model tree) · GEAK 674 (AMD-native, first to stand up).
 **C4 sources:** GEAK-v2 Profiler-Analyzer 677 (try first) · Xe-Forge static-KB 672 · CudaForge formal selection 662.
 **C6 sources:** robust-kbench 668 (exploit classes) · AgentKernelArena 679 (unseen shapes).
-**Scoring/eval philosophy:** KernelBench 664 (`fast_p`) · FastKernels 671 (vendor baseline + whole-model) · Apex/AgentKernelArena Magpie shape.
+**Scoring/eval philosophy:** RE-Bench 1072 (reference-normalized log-time score + matched 2h/8h/32h
+curves, methodology only) · KernelBench 664 (`fast_p` and correctness-design patterns, not its task
+artifacts) · FastKernels 671 (vendor baseline + whole-model) · Apex/AgentKernelArena Magpie shape.
 **Optional later (offline):** ConCuR 665 + TritonForge 676 (SFT data-curation for a local HIP-specialized small model).
 **RL lessons (no training):** CUDA Agent 660 · CUDA-L1 661 · Kevin 663.
 
@@ -81,6 +83,11 @@ Operator-level/torch-eager scores overstate real gains ~25pp (1.16×→0.93× vs
 - **Re-basing the controller on GEAK-OpenEvolve (677)** — rejected per the §5.3 consistency guard (K-Search beats OpenEvolve; gfx90a-unproven; vendor-blog).
 - **MultiKernelBench as primary backend** — superseded by GEAK-eval; kept only for multi-vendor abstraction.
 - **Hand-rolling a controller-A/B harness** — superseded by adopting AgentKernelArena (679) as the comparison shell.
+- **KernelBench task artifacts as the gfx90a or llama.cpp-HIP baseline** — declined after the current
+  first-party HIP path audit: upstream targets gfx942/gfx950 on ROCm 7.1+, while our unit under test is
+  a production-shaped ggml/HIP operation on gfx90a. Its transferable correctness and reward-integrity
+  rules are already native C2/C6 checks; exact-surface baselines and historical C5 replay preserve the
+  real unit under test.
 
 ## 8. Net engineering picture (what actually has to be built)
 1. **Reproduce GEAK-eval (+ AgentKernelArena) on the real MI210/gfx90a** — the sanity gate; expect lower absolute speedups at half the bandwidth, verify correctness/compat. *(integration of MIT/Apache-2.0 code.)*
@@ -92,7 +99,34 @@ Operator-level/torch-eager scores overstate real gains ~25pp (1.16×→0.93× vs
 The MI210 is installed; any execution remains operator-approved under the measurement policy. **All AMD numbers are vendor-reported until reproduced on our own gfx90a.**
 
 ## 9. Freshness Appendix (sweep at each handoff audit / when the MI210 racks)
-**Last swept: 2026-08-03 (research-intake Stage-2b).**
+**Last swept: 2026-08-11 (AutoKernel completion audit).**
+
+### Sweep 2026-08-11 — `landscape/` + `languages/` taxonomy check closed
+
+The current AMD GEAK tree was inspected at
+[`AMD-AGI/GEAK@5107c7e4`](https://github.com/AMD-AGI/GEAK/commit/5107c7e4b2878b0e36a1a9cf9abd4aea37615953)
+(2026-08-11). The old phrase **"our seven-school taxonomy" was under-specified**: this document never
+enumerated seven schools, and GEAK does not support treating the number seven as a fact. The useful
+comparison is by *authoring abstraction family*:
+
+| Family | GEAK examples | gfx90a disposition for AutoKernel |
+|---|---|---|
+| Compiler-managed tile DSL | Triton | **Primary on-ramp.** GEAK marks `gfx90a` competitive. |
+| Explicit-layout tile DSL | Gluon, TileLang, FlyDSL | **TileLang is live on gfx90a**; Gluon/FlyDSL are current gfx942+ references whose scheduling and layout vocabulary may transfer, not their code or numbers. |
+| C++ tile primitives | HipKittens | **Mechanism donor only.** The live solver proved its 64-bank/two-phase constants do not transfer to our 32-bank/eight-phase MI210. |
+| Vendor tile/template library | CK/CK-Tile, rocWMMA | **Available baselines and knob dictionaries on gfx90a**, not the default agent-emission surface. |
+| General systems-language kernel | HIP/C++; Mojo | **HIP is the endgame.** Mojo's recorded AMD support begins at gfx942, so it is not a current MI210 arm. |
+| Direct intrinsic / ISA | MFMA builtins, inline assembly, raw assembly | **Last-rung diagnostic/endgame.** GEAK's current language metadata omits gfx90a here even though our tree and compiler prove gfx90a MFMA support; do not inherit that omission as a capability claim. |
+| Concept-only / compiler research | CUTLASS/CuTe, Pallas, Hidet/Hexcute/Tilus, Exo, IREE/rocMLIR | **Borrow representations and search-space ideas only** unless a separate gfx90a backend is proven. CUTLASS/CuTe itself is explicitly unavailable on CDNA. |
+
+This **validates the abstraction ladder, not a literal count**. For the installed MI210 the executable
+ladder is now explicit: **Triton → TileLang when extra tile/schedule control is useful → HIP/C++ →
+MFMA/ISA only when measured evidence justifies the drop**, with CK/CK-Tile/rocWMMA as honest baselines
+and source-pattern dictionaries. The genuinely new corpus item is **FlyDSL**, but GEAK scopes it to
+gfx942/gfx950; it therefore informs C4 vocabulary and future ports rather than entering the current
+gfx90a controller A/B. GEAK's broader registry recommendation — select by
+`(operator, arch, dtype, regime)` with explicit fallbacks and exclusions — agrees with AutoKernel's
+surface-bound baseline selection and should remain a registry invariant.
 
 ### Sweep 2026-08-03 — the coverage conclusion below is AMENDED
 

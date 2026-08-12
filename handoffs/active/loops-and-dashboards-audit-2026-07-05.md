@@ -4,7 +4,7 @@
 **Created**: 2026-07-05
 **Author**: Fable 5 audit session (operator-directed: "audit the kernel improvement loop and its dashboard… could the orchestration autopilot loop/dashboard be improved also?")
 **Method**: direct source reads + a read-only 7-facet audit workflow (deep-read → synthesize → adversarial gap-critic; 9 agents, 0 errors, ~1.1M subagent tokens). Every performance number here is an **OBSERVATION** in the MEASUREMENT.md sense (journal/log-derived, no protocol id) — it steers attention, it does not gate promotions. The highest-leverage fixes touch the **human-amendment-only** trust boundary and are flagged as operator-signed amendments, not agent edits.
-**Scope of surfaces audited**: `epyc-orchestrator/scripts/autopilot/*` + `src/autopilot_core/*` (loop, generators, evidence/promotion/safety plane), `epyc-orchestrator/src/api/routes/dashboard*` (autopilot dashboard :8000), `epyc-inference-research/scripts/kernel_rnd/*` (kernel loop), `epyc-root/dashboard/*` (hub :8100). Related: [mi210-kernel-rnd-loop-proposal.md](mi210-kernel-rnd-loop-proposal.md), [master-handoff-index.md](master-handoff-index.md), the completed `fable5-findings-*` set.
+**Scope of surfaces audited**: `epyc-orchestrator/scripts/autopilot/*` + `src/autopilot_core/*` (loop, generators, evidence/promotion/safety plane), `epyc-orchestrator/src/api/routes/dashboard*` (autopilot dashboard :8000), `epyc-inference-research/scripts/kernel_rnd/*` (kernel loop), `epyc-root/dashboard/*` (hub :8100). Related: [mi210-kernel-rnd-loop-proposal.md](../completed/mi210-kernel-rnd-loop-proposal.md), [master-handoff-index.md](master-handoff-index.md), the completed `fable5-findings-*` set.
 
 ## Main-thread review/action — 2026-07-05
 
@@ -367,7 +367,7 @@ Package these trust-boundary changes into a **single** proposal with a shared Vi
 ## Key files
 - **Orchestration loop:** `epyc-orchestrator/scripts/autopilot/autopilot.py`, `safety_gate.py`, `eval_tower.py`, `paired_stats.py`, `planner_coordinator.py`, `planner_providers.py`, `phase_health_report.py`, `phase_status.py`, `digest.py`, `audit_block_report.py`, `species/*`; `src/autopilot_core/sequential_verdict.py`, `learning_exclusions.py`, `instrument_era_guard.py`, `pareto_archive.py`; `orchestration/instrument_eras.yaml`; `MEASUREMENT.md`.
 - **Orchestration dashboard:** `epyc-orchestrator/src/api/routes/dashboard.py`, `dashboard_panels.py`, `dashboard_freshness.py`, `dashboard_tap.py`, `dashboard.html`.
-- **Kernel loop:** `epyc-inference-research/scripts/kernel_rnd/kernel_eval.sh`, `kernel_store.py`, `kernel_sweep.sh`; `handoffs/active/mi210-kernel-rnd-loop-proposal.md`.
+- **Kernel loop:** `epyc-inference-research/scripts/kernel_rnd/kernel_eval.sh`, `kernel_store.py`, `kernel_sweep.sh`; `handoffs/completed/mi210-kernel-rnd-loop-proposal.md`.
 - **Hub dashboard:** `epyc-root/dashboard/{server.py,handoff_parser.py,freshness.py,static/kernel.html,static/handoffs.html}`, `scripts/handoffs/build_handoff_timeline.py`.
 
 ## Provenance

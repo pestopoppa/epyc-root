@@ -536,10 +536,17 @@ def _fake_hub(name="fake_hub", *, extra=None, routes=None):
     funcs = [s.payload_func for s in panels.PANELS.values()]
     exec("\n".join(f"def {f}(*a, **k):\n    return {{}}\n" for f in funcs),
          mod.__dict__)
+    exec("\n".join(
+        f"def {src.health_func}(*a, **k):\n    return 200, {{}}"
+        for src in panels.PANELS.values() if src.health_func), mod.__dict__)
     for attr, value in (extra or {}).items():
         setattr(mod, attr, value(mod) if callable(value) else value)
     mod.API_ROUTES = {s.route: getattr(mod, s.payload_func)
                       for s in panels.PANELS.values() if s.route}
+    mod.PANEL_HEALTH_ROUTES = {
+        s.health_route: getattr(mod, s.health_func)
+        for s in panels.PANELS.values() if s.health_route
+    }
     for route, fn in (routes or {}).items():
         mod.API_ROUTES[route] = fn(mod) if callable(fn) else fn
     return mod

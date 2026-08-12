@@ -1,344 +1,71 @@
 {
-  "session_id": "b43a6183-9b5d-435b-a942-50a6cd77303e",
-  "started_at": "2026-08-10T00:00:00Z",
-  "last_checkpoint": "2026-08-10T00:00:00Z",
-  "phase": 4,
-  "stage": "stage4-complete",
-  "session_kind": "research-intake batch (8 URLs + 2 operator-supplied inline documents)",
+  "session_id": "b3cb6221-c00f-4696-a49b-4ff326f41eb8",
+  "started_at": "2026-08-11T14:57:44.360743Z",
+  "last_checkpoint": "2026-08-11T14:57:44.360743Z",
+  "phase": 1,
+  "stage": "stage1-complete-awaiting-dive-selection",
+  "session_kind": "research-intake (1 discovered URL + 1 expansion)",
   "previous_session": {
-    "session_id": "dba84261-d912-4bc9-b6bc-9fe94b17a589",
+    "session_id": "b43a6183-9b5d-435b-a942-50a6cd77303e",
     "stage": "stage4-complete",
-    "completed": "2026-08-09",
-    "note": "Vidya governance-pilot audit. Closed. Not resumed; this is a new mandate. ID sequence continues from it."
+    "completed": "2026-08-10",
+    "note": "Closed session; not resumed. This is a new AutoKernel benchmark-substrate mandate."
   },
-  "mandate": "Ingest a 10-source batch centred on agentic/autoresearch optimization loops (GPU kernel authoring, parallel RL, autoresearch loop engineering) plus multimodal plugins, a knowledge-base repo, and three fresh arXiv papers. Operator flagged the Cholesky loop-engineering note as high-interest for autopilot + autokernel, while requiring equal review rigour across all ten.",
-  "submitted_url_count": 8,
-  "submitted_inline_material_count": 2,
+  "mandate": "Assess the ROCm SOL-ExecBench source discovered while resolving the missing workload/reference half of AutoKernel C5-2, and expand to its canonical upstream.",
+  "submitted_url_count": 1,
+  "submitted_inline_material_count": 0,
   "sources_submitted": [
-    "https://github.com/GaryStack/Parallel-RL",
-    "https://arxiv.org/html/2608.03573v2",
-    "INLINE-A: Loop Engineering for AutoResearch (Batched Cholesky, GPU Mode 776) \u2014 /workspace/tmp/intake-20260810-inline-A-cholesky-loop-engineering.md",
-    "https://github.com/QwenLM/Qwen-MM-Plugins",
-    "https://multica.ai/",
-    "https://github.com/multica-ai/multica",
-    "INLINE-B: Automating GPU Kernel Development with LLMs (Verifiable Generation Loops) \u2014 /workspace/tmp/intake-20260810-inline-B-verifiable-kernel-loops.md",
-    "https://github.com/VectifyAI/OpenKB",
-    "https://arxiv.org/html/2608.03893v1",
-    "https://arxiv.org/html/2608.03392v1"
+    "https://github.com/williamqwu/sol-execbench-rocm"
+  ],
+  "expansion_sources": [
+    "https://github.com/NVIDIA/SOL-ExecBench"
   ],
   "dedup_sweep": {
-    "run": "2026-08-10, unbounded (no head/tail truncation) over all 1068 entries",
-    "arxiv_ids_checked": [
-      "2608.03573",
-      "2608.03893",
-      "2608.03392"
-    ],
+    "run": "2026-08-11, unbounded over all 1,097 pre-existing entries",
     "url_patterns_checked": [
-      "Parallel-RL",
-      "Qwen-MM-Plugins",
-      "multica",
-      "OpenKB",
-      "VectifyAI",
-      "cholesky",
-      "gpumode",
-      "GaryStack"
+      "https://github.com/williamqwu/sol-execbench-rocm",
+      "https://github.com/NVIDIA/SOL-ExecBench"
     ],
-    "collisions_found": 0,
-    "near_miss": "VectifyAI/PageIndex is already indexed (same org as OpenKB, different repo). Per the companion-artifact rule this is a DISTINCT source, not a duplicate. Analyst instructed to establish the successor/sibling relationship and to check whether OpenKB repeats the Mafin-2.5 FinanceBench conflation already corrected on the PageIndex entry."
+    "collisions_found": 0
   },
-  "max_existing_intake_id": 1072,
-  "next_intake_id": 1102,
-  "expansion_count": 6,
+  "max_existing_intake_id": 1101,
+  "next_intake_id": 1104,
+  "expansion_count": 1,
   "expansion_cap": 10,
   "processed_urls": [
-    "https://github.com/GaryStack/Parallel-RL",
-    "https://arxiv.org/html/2608.03573v2",
-    "INLINE-A: Loop Engineering for AutoResearch (Batched Cholesky, GPU Mode 776) \u2014 /workspace/tmp/intake-20260810-inline-A-cholesky-loop-engineering.md",
-    "https://github.com/QwenLM/Qwen-MM-Plugins",
-    "https://multica.ai/",
-    "https://github.com/multica-ai/multica",
-    "INLINE-B: Automating GPU Kernel Development with LLMs (Verifiable Generation Loops) \u2014 /workspace/tmp/intake-20260810-inline-B-verifiable-kernel-loops.md",
-    "https://github.com/VectifyAI/OpenKB",
-    "https://arxiv.org/html/2608.03893v1",
-    "https://arxiv.org/html/2608.03392v1"
+    "https://github.com/williamqwu/sol-execbench-rocm",
+    "https://github.com/NVIDIA/SOL-ExecBench"
   ],
   "entries_processed": [
-    "intake-1073",
-    "intake-1074",
-    "intake-1075",
-    "intake-1076",
-    "intake-1077",
-    "intake-1078",
-    "intake-1079",
-    "intake-1080",
-    "intake-1081",
-    "intake-1082",
-    "intake-1083",
-    "intake-1084",
-    "intake-1085",
-    "intake-1086",
-    "intake-1087",
-    "intake-1088",
-    "intake-1089",
-    "intake-1090",
-    "intake-1091",
-    "intake-1092",
-    "intake-1093",
-    "intake-1094",
-    "intake-1095",
-    "intake-1096",
-    "intake-1097",
-    "intake-1098",
-    "intake-1099",
-    "intake-1100",
-    "intake-1101"
+    "intake-1102",
+    "intake-1103"
   ],
   "steering_ledger": [
     {
       "seq": 1,
       "stage": 1,
-      "verbatim": "I'm looking forward to seeing what insights we can extract this session. One is a reported note about a colleague's efforts building an autoresearch loop to optimize a standard linear algebra operation. I think we cna learn a lot from it for applications to autopilot and autokernel",
+      "verbatim": "I believe there are a number of rocm-related profiling handoffs. Dispatch a subagent to collect them for you. They shoudl be added to your goal given that the tools they build integrate and inform autokernel",
       "disposition": "context-only",
       "plan_ref": null,
-      "effect_on_stage1": "Establishes provenance for INLINE-A: a second-hand write-up of a first-hand campaign by an operator contact, not an anonymous essay. Recorded in that entry's locator_note. Also sets the primary relevance axis for INLINE-A to handoffs/active/autopilot-continuous-optimization.md and handoffs/active/autokernel-research-loop.md; the assigned analyst was told to read both files rather than grep them, and to enumerate per-mechanism what we already have vs lack. Carries to Stage 3 as a ranking input, not as authorization to write any handoff."
-    },
-    {
-      "seq": 2,
-      "stage": 1,
-      "verbatim": "don't pay less attention to the other intake items though. It's all very important to review",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "effect_on_stage1": "All ten sources dispatched with equally specific, source-tailored analyst briefs; none downgraded to a thin pass. Carries to Stage 3 as a completeness constraint: every one of the ten gets either a plan item or an explicit written decline, and no source may be dropped silently for being less headline-worthy than INLINE-A."
-    },
-    {
-      "seq": 3,
-      "stage": 1,
-      "verbatim": "the note was about a competition submission. I imagine those submissions are public and viewable.",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "effect_on_stage1": "Raises the expected corroboration bar for INLINE-A. GPU Mode competition submissions and leaderboards are public, so the cited repo (github.com/ravi03071991/cholesky-gpu-mode) and leaderboard (gpumode.com/leaderboard/776) should be reachable and checkable. If the assigned analyst returns NOT-LOCATED for both, that is a materially more surprising result than a generic bounded-search miss and must be reported as such rather than shrugged off as provisional-absence boilerplate. Does NOT change the unverified contract: corroboration still has to actually happen before any figure is quotable in a Stage-3 plan item."
-    },
-    {
-      "seq": 4,
-      "stage": 1,
-      "verbatim": "\"That makes one bounded experiment obvious \u2014 repoint it at our resident :8087 Qwen3-VL-30B-A3B and see how much of core survives without a key.\" - interesting. I like it.",
-      "disposition": "planned",
-      "plan_ref": "MM-1 + MM-4 (multimodal-pipeline.md \u00a72026-08-10)",
-      "effect_on_stage1": "Operator endorsement of the DASHSCOPE_BASE_URL repoint experiment against the resident :8087 Qwen3-VL-30B-A3B vision role. Carried to Stage 3 as a named plan item with multimodal-pipeline.md as the candidate owner. EXPLICITLY NOT AUTHORIZATION TO WRITE THE TASK NOW: per the skill's load-bearing rule, approval of scope is not a waiver of the review gate, and this is precisely the substitution that caused the 2026-07-25 defect. Two dependencies must be resolved in the plan, not assumed: (a) the Stage-2 dive question of whether the api tools speak OpenAI-compatible chat completions or DashScope-native endpoints \u2014 if native, the experiment cannot run as conceived; (b) the security review of the shipped CLAUDE.md/AGENTS.md/skill directories must precede any install, since the repo lands files in instruction position inside our harnesses."
-    },
-    {
-      "seq": 5,
-      "stage": 1,
-      "verbatim": "there's no need to fixate on these numbers. What's relevant to us in the agent loop methodology and how we can use it refine ours.",
-      "disposition": "planned",
-      "plan_ref": "intake-1075 dive_corrections (headline reattributed; methodology retained) + agentic-rocm-kernel-authoring.md \u00a7Loop engineering",
-      "effect": "RESCOPES the intake-1075 dive. The number-verification work is DONE and stays recorded in the entry as provenance hygiene, but it is not the dive's product and no further effort goes into it. The dive's deliverable is METHODOLOGY EXTRACTION for our own loop: read harness/modal_ab.py and problem/validation.py as code, extract the 15-failure ledger into our six-class schema as a worked example, and return concrete refinements to autokernel-research-loop.md and autopilot-continuous-optimization.md. Carries to Stage 3 as the framing for every 1075-derived plan item."
-    },
-    {
-      "seq": 6,
-      "stage": 1,
-      "verbatim": "zero primary backing doesn't mean we can't reason about the potential usefulness of this information from first principles.",
-      "disposition": "planned",
-      "plan_ref": "AK-LE-1 .. AK-LE-5 (agentic-rocm-kernel-authoring.md \u00a7Loop engineering) \u2014 provenance label retained, evaluated on merit",
-      "effect": "CORRECTS a framing error in the Stage-1 report. 'Uncorroborated' was being used as if it were 'valueless'. It is not: an unattributed claim can still be a plausible, testable design hypothesis, and the reasoning-effort/premature-satisfaction claim, the four-role split, and the context-rot claim are exactly that. The dive must evaluate each on its MERITS from first principles against our stack and propose how we would test it, while keeping the provenance label attached so nothing is cited as an established result. The unverified contract governs CITATION, not CONSIDERATION."
-    },
-    {
-      "seq": 7,
-      "stage": 1,
-      "verbatim": "\"Our kernel loop has no numerical oracle. C6 secures the measurement plumbing extremely well - but it consumes an is_correct verdict and never computes one.\" - good point.",
-      "disposition": "planned",
-      "plan_ref": "RVP-C2-1 .. RVP-C2-9 (rocm-verify-profile-backend.md \u00a72026-08-10) \u2014 the correctness-oracle gap",
-      "effect": "Operator endorsement of the numerical-oracle gap as a real finding. Elevates it from an analyst observation to a named Stage-3 plan candidate. The intake-1085 dive must return a concrete C2 oracle stack proposal that composes rather than accretes the four available designs (fp64 reference from intake-796, four value transforms from intake-1085, seeded fuzzing from intake-796, shape variation from intake-668/679), with a cost/coverage argument for the ordering."
-    },
-    {
-      "seq": 8,
-      "stage": 1,
-      "verbatim": "Proceed with recommended deep dives and lets see what comes out the end of the tunnel",
-      "disposition": "planned",
-      "plan_ref": "Stage 2 executed: 5 operator-selected dives completed 2026-08-10",
-      "effect": "Operator SELECTS the full ranked dive list: intake-1076, intake-1075, intake-1085, intake-1084, intake-1078. Stage 2 begins. No handoff, stub or index-row write is authorized by this - Stage 2 writes ONLY intake-entry verification/correction fields, and Stage 3 plan approval remains the gate for everything else."
-    },
-    {
-      "seq": 9,
-      "stage": 2,
-      "verbatim": "we also have access to anthropic and gpt models for use in our autopilot/autokernel planners as needed. We don't solely rely on local models.",
-      "disposition": "planned",
-      "plan_ref": "AK-LE-3 (frontier planners available; scaffold and model varied independently) + autokernel-research-loop.md \u00a721 correction 1",
-      "effect": "CORRECTS an over-pessimistic constraint the orchestrator asserted when framing the Cholesky asymmetry and passed to the intake-1075 dive. The compute asymmetry is REAL for kernel EVALUATION (one MI210, operator-approved P-GPU-1 runs, serialized region claims) but does NOT extend to the PLANNER/PROPOSER roles: metered Anthropic and GPT models are available to autopilot and autokernel planners, so the campaign's multi-vendor role roster (its head commit names Claude Code, Codex, Grok, Kimi-Code) is REPRODUCIBLE here in kind. Consequences: (1) the four-role split (explore/critique/implement/exploit) is a RUNNABLE experiment, not a blocked one; (2) planner-side A/B does NOT consume local inference and is therefore NOT subject to the single-MI210 region claim, so budget-matching should be in COST and wall-clock, not in local-inference slots; (3) the 'throughput in the exploit role' hypothesis is assessable because API models are not serialized behind our one card. The genuine remaining asymmetry narrows to two things only: elastic parallel EVALUATION hardware, and an external adversarial verifier we do not have. Forwarded to the running dive mid-flight."
-    },
-    {
-      "seq": 10,
-      "stage": 2,
-      "verbatim": "\"We have one MI210 and every run is operator-approved under P-GPU-1.\" - this is not true. autokernel doesn't need operator approval. Only the promotion to production does!",
-      "disposition": "planned",
-      "plan_ref": "autokernel-research-loop.md \u00a721 correction 1 (no per-run operator approval; the human boundary is freeze/cutover/promotion)",
-      "effect": "CORRECTS a factual error the orchestrator introduced and propagated into the Stage-2 brief read by all five dives. WRONG: 'every GPU run is operator-approved under P-GPU-1.' RIGHT, verified against source: autokernel-research-loop.md:523 'No autonomous freeze or cutover. AutoKernel produces a release package; a human executes it', and :172 records that P-GPU-1 governs the CLASS OF CLAIM a result may carry (decision-grade requires an already production-named kernel) rather than permission to execute. The autonomy ceiling is experimental-tree commits plus OBSERVATIONS; the human-only boundary is freeze/cutover/promotion. CONSEQUENCE: the evaluation-cadence asymmetry against the Cholesky campaign is much weaker than the orchestrator claimed twice. The remaining constraint is PHYSICAL (one MI210, so candidate evaluation serializes and wall-clock per iteration is real) and NOT PROCEDURAL (no human in the loop per experiment). Combined with steering seq 9 (frontier API models available to planners), the genuine asymmetry now reduces to TWO items only: (1) parallel evaluation hardware, and (2) an external adversarial verifier we do not have. Forwarded mid-flight to the intake-1075 and intake-1085 dives, where it is load-bearing; not forwarded to intake-1084 or intake-1078, which have no GPU-run dependency."
-    },
-    {
-      "seq": 11,
-      "stage": 2,
-      "verbatim": "\"the cadence gap is parallelism, not permission. We can run continuously and autonomously; we can't run concurrently.\" - also not true. We can run on CPU and GPU concurrently / We could in theory optimize GPU and CPU kernels in parallel",
-      "disposition": "planned",
-      "plan_ref": "autokernel-research-loop.md \u00a721 correction 2 + AK-LN-1 (lane registry: 1 GPU + up to 4 quarter-CPU lanes)",
-      "effect": "THIRD consecutive orchestrator over-constraint, corrected. Verified against our own design: autokernel-research-loop.md:693 lists 'CPU region claims' and 'exclusive GPU device claim' as SEPARATE stable-API resource types, so a CPU-kernel campaign and a GPU-kernel campaign are two independent claim classes and can proceed CONCURRENTLY. The loop is already scoped 'system-wide' across both device classes, and its next live action (AK6.5 Step 3) begins with a CPU candidate. CONSEQUENCE: real 2-lane parallelism exists today, and it composes with the intake-1075 finding on parallel agent lines (SCOREBOARD.md:18; experiments.md:114-116,189 \u2014 prove a mechanism on a parallel line's own base, then transplant onto the main line's stronger base). The CPU and GPU lanes ARE two parallel lines in that sense. PATTERN NOTE: seq 9 (frontier API models available to planners), seq 10 (autokernel needs no per-run operator approval), and seq 11 (CPU+GPU concurrency) are all the same error \u2014 the orchestrator asserted constraints from memory instead of verifying them, each time tighter than reality, each time narrowing what looked feasible. Every remaining feasibility claim in Stage 3 must be verified against source before it is written."
-    },
-    {
-      "seq": 12,
-      "stage": 2,
-      "verbatim": "Also, it may be possible that what optimized perfomance on half instances generalizes to full instances, so you could at least periodically experiment on two CPU kernels in parallel",
-      "disposition": "planned",
-      "plan_ref": "AK-LN-2 (partition-depth calibration, half arm)",
-      "effect": "Proposes a THIRD concurrency axis beyond the CPU/GPU lane split of seq 11: partition the CPU into two half-machine instances and screen TWO CPU kernel candidates in parallel, on the hypothesis that half-instance improvements generalize to full-instance. Supporting prior from our own measurements: NPS4 48t reaches 46.6 t/s against 96t-single at 49.1, i.e. the half-machine operating point is close enough that ranking may well be preserved. TWO CONSTRAINTS THAT MUST BE DESIGNED IN, NOT ASSUMED: (a) a half-machine result may SCREEN but may never GATE a full-machine claim \u2014 that is the standing gate-scope-must-match-measured-subset rule, and our canonical baseline protocol is explicitly full-machine (taskset 0-95, -t 96); (b) two concurrent CPU instances contend invisibly unless placement is forced, because mmap SHARES NUMA placement across instances \u2014 only --no-mmap plus explicit membind gives node-local isolation. WHY THIS IS THE RIGHT SHAPE: it makes half->full a MEASURED per-change-class transfer ratio rather than an assumption, which is exactly the mechanism the intake-1075 dive recommends importing (their measured classes: kernel/occupancy/precision 1.0-1.94x, sync/launch-pipeline ~0.5x, RL-routing ~0). Bandwidth-bound changes should transfer poorly (bandwidth-per-core differs between half and full) while instruction-level changes should transfer well \u2014 which is itself the testable prediction. Net effect on cadence: up to 3 concurrent screening lanes (GPU + 2x half-CPU), which materially narrows the parallelism gap against the Cholesky campaign's elastic containers."
-    },
-    {
-      "seq": 13,
-      "stage": 2,
-      "verbatim": "mayeb even quarter instances or more!",
-      "disposition": "planned",
-      "plan_ref": "AK-LN-2 (partition-depth calibration, quarter arm)",
-      "effect": "Extends seq 12 from a half/full binary to PARTITION DEPTH AS A TUNABLE. NPS4 gives four natural NUMA domains (24 physical cores each), so quarter instances are the topology's own partition and deeper splits are measurable. Existing support in our record: we have measured deep CPU partitioning before (4x48t -> 32x6t, +44-58% on concurrent throughput) and we already run a quarter-fleet mode in the serving lineup, so the partitioning machinery is not new work. THE DESIGN INSIGHT: partition depth is a knob and screening validity is a SURFACE, not a constant \u2014 transfer fidelity should degrade as instances shrink, because a quarter instance has roughly a quarter of the memory bandwidth while CPU decode is bandwidth-bound, so the operating point diverges further from the full-machine baseline the deeper you partition. The right deliverable is therefore a 2D map: per CHANGE CLASS x PARTITION DEPTH, does candidate RANKING survive? Then screen at the shallowest depth that preserves ranking for the class being tested. Mechanistic prediction to pre-register: bandwidth-bound changes lose rank fidelity fast with depth; instruction-level/compute-bound changes hold. VALIDATION METHOD: run one fixed candidate set at full / half / quarter and measure rank correlation against the full-machine ordering \u2014 that is a screening-tier calibration, needs no new candidates, and is exactly the proxy->ground-truth transfer measurement the intake-1075 dive recommends importing. Cadence consequence: up to 5 concurrent screening lanes (1 GPU + 4 quarter-CPU), which closes most of the parallelism gap I had been treating as fixed against the Cholesky campaign's elastic containers."
-    },
-    {
-      "seq": 14,
-      "stage": 2,
-      "verbatim": "beyond half instances the aggregate throughput takes a hit, but for the purposes of kernel development, the faster kernel experiment churn on short benchmark tasks is more important than maximizing absolute taskthroughput (like the orchestrator cares for)",
-      "disposition": "planned",
-      "plan_ref": "autokernel-research-loop.md \u00a721 correction 3 (objective is experiment churn; only rank inversion costs)",
-      "effect": "THE CONCEPTUAL REFRAME OF THE SESSION, and it inverts the standing analysis. AutoKernel and the orchestrator have DIFFERENT OBJECTIVE FUNCTIONS over the same hardware. The orchestrator maximizes absolute task throughput, which is what our canonical CPU protocol is built for (full machine, taskset 0-95, -t 96) and why deep partitioning has always been scored as a throughput LOSS. Kernel development maximizes EXPERIMENT CHURN over short benchmark tasks, where aggregate tokens/sec is close to irrelevant: four quarter-instances completing four short benchmarks concurrently beat one full instance completing one, even though total throughput is lower. So the aggregate-throughput hit beyond half instances is NOT A COST for this workload \u2014 it is spending a resource the loop does not value to buy the one it does. CONSEQUENCE FOR PARTITION DEPTH: choose depth to maximize (experiments per hour x rank fidelity), NOT to maximize throughput. Throughput loss is acceptable at any depth; RANK INVERSION is the only real failure, so rank correlation against the full-machine ordering is the single binding constraint on how deep we may go. This also supplies the missing piece for the intake-1075 'hypothesis quality x useful experiments per unit time' thesis: that framing has no teeth without a lever on the second factor, and partition depth IS that lever on the CPU side. It further connects to objective-task-rate-goodput.md, which flipped live dominance to task_rate_4d_v1 on 2026-08-04 on exactly the argument that the throughput-shaped metric was the wrong objective for the real goal \u2014 the same category error, one level up."
-    },
-    {
-      "seq": 15,
-      "stage": 2,
-      "verbatim": "also... if we profile specific bottlenecks, we could parallelize JUST that specific bottleneck operation in an attempt to experiment more quickly on how it can be optimized",
-      "disposition": "planned",
-      "plan_ref": "AK-LN-4 (op-level screening on profiled bottlenecks)",
-      "effect": "COMPLETES the churn-not-throughput argument (seq 12-14) by identifying the unit of work that actually parallelizes. Whole-model benchmarks parallelize badly: large resident footprint, model load time, minutes per run, and system-level memory-bandwidth coupling between concurrent instances. A SINGLE OP microbenchmark parallelizes well: small tensors, no model load, milliseconds per run, and trivially pinnable to one NUMA domain. So the highest-churn screening tier is op-level, not model-level, and the concurrency ceiling there is much higher than the 4-5 lanes of seq 13. THE INFRASTRUCTURE ALREADY EXISTS: test-backend-ops IS an op-level harness and the intake-1085 dive established it as our standing T0 gate; rocprofv2 (side-loaded, version-matched, 465 counters enumerated on our own card) supplies the bottleneck identification; and autokernel-research-loop.md \u00a79.4's wall-share rule (operator wall share x operator gain) is exactly the selector for WHICH op deserves the campaign. So the pipeline is profile -> select by wall share -> fan out many concurrent op-level experiments on the selected op -> promote survivors to graph level. THE BINDING CAVEAT, and it is measured rather than hypothetical: op-in-isolation is not op-in-graph. The intake-1087 (KForge) dive found per-kernel wins of 1.06-1.43x delivering +2.12% end-to-end against TensorRT-LLM, with the mechanism named (register/shared-memory pressure shifts and autotuner perturbation of neighbouring kernels). So op-level is a SCREEN whose transfer ratio to graph level must be MEASURED per change class, which is the same per-change-class transfer machinery the intake-1075 dive recommends importing (their measured classes: kernel/occupancy/precision 1.0-1.94x, sync/launch-pipeline ~0.5x, RL-routing ~0). One mechanism, three uses: half->full partition transfer, op->graph transfer, and T1->T3 tier transfer are all the same field on the evaluation event."
-    },
-    {
-      "seq": 16,
-      "stage": "2b",
-      "verbatim": "proceed with recommendations",
-      "disposition": "planned",
-      "plan_ref": "Stage 2b executed: 13 dive-surfaced sources analysed 2026-08-10 (see stage2b_entry_persistence_gap)",
-      "effect": "Operator selects the FULL recommended set from the Stage-2 close-out: Tier 1 (2510.18874 Retaining by Doing, 2605.09640 Lou et al., 2507.02825 Rigorous Agentic Benchmarks, GPUMODE/kernelbot-data), Tier 2 (KernelBench v0.1, gpu-mode/reference-kernels validation.py, KernelArena, Standard Kernel clock/power confounds), Tier 3 (2605.04956 KernelBenchX, ISO-Bench, 2507.05386 Lai, 2509.12235 Jin, Qwen-MM-Plugins issue 7 + PR 6). Declines stand as recorded and must be named in the bearing entries' dive_corrections per the skill. Stage 2b is a COMBINED Stage-1 + Stage-2 pass: entries land dive-verified or dive-overturned with dive_corrections, never stage1-unverified, which is what makes them quotable under the unverified contract in the Stage-3 plan. Dedup note: a first substring sweep wrongly reported all ten arXiv IDs as HELD because it matched referenced_arxiv_ids and expansion_candidates fields inside the entries written earlier today; re-run against the arxiv_id field only, 2602.24286 (CUDA Agent) is held as intake-660 and the other nine are genuinely absent."
-    },
-    {
-      "seq": 17,
-      "stage": "2b",
-      "verbatim": "after experimenting on parallel lanes we'd still verify performance gains on a full instance as we always do when benchmarking. My point is that you coudl iterate faster using multiple instances and anly verify improvements on the single instance",
-      "disposition": "planned",
-      "plan_ref": "AK-LN-5 + \u00a721 lane rule \"lanes screen, the full instance verifies\"",
-      "effect": "RE-CALIBRATES a risk the orchestrator overstated. Parallel/partitioned lanes are for ITERATION AND SCREENING ONLY; every claimed improvement is still verified on a full single instance under the canonical protocol, exactly as today. CONSEQUENCE: cross-lane interference (thermal, power, clock, memory-bandwidth coupling) cannot corrupt a CLAIM, because no claim is ever made from a lane. Its only cost is SEARCH EFFICIENCY \u2014 a false positive wastes one verification slot, a false negative loses one candidate. That is a far softer failure than the orchestrator implied when it called clock/power coupling urgent. THE ONE THING THAT STILL MATTERS: random lane noise merely costs efficiency, but SYSTEMATIC lane bias (e.g. lane 1 consistently hotter than lane 4) would systematically misrank candidates and therefore degrade the screen itself. The mitigation for that is already the right one and already identified: an A/A control across lanes, which detects systematic offset without needing any absolute accuracy. NET EFFECT ON DESIGN: this makes the partitioning argument STRONGER, not weaker. Because lanes need only preserve RANKING and never absolute accuracy, we can partition more aggressively than a claim-grade protocol would allow \u2014 the full-instance verification gate is what protects validity, and it is already in place."
-    },
-    {
-      "seq": 18,
-      "stage": "2b",
-      "verbatim": "\"We have a standing rule to check CPU frequency before benchmarking - after a multi-day -60% throttle incident\" - but yes, this is still valid and applicable",
-      "disposition": "planned",
-      "plan_ref": "AK-LN-5 (throttle check stays mandatory at the VERIFICATION tier)",
-      "effect": "CLARIFIES seq 17 so the recalibration is not over-applied. The two concerns live at DIFFERENT TIERS and both stand. (1) VERIFICATION TIER \u2014 the standing pre-benchmark CPU-frequency/throttle check remains MANDATORY and unchanged. It protects CLAIMS, and the multi-day -60% throttle incident is precisely the case where a real claim was silently corrupted by host state. The screening/verification split does not weaken it; if anything it concentrates its importance, because the full-instance verification run is now the ONLY place a claim is produced. Any Stage-3 item touching benchmarking must preserve it. (2) SCREENING TIER \u2014 cross-lane thermal/power coupling cannot corrupt a claim (no claim is made from a lane), so it is an efficiency-and-ranking question answered by an A/A control across lanes, not by clock pinning or per-run thermal capture. NET RULE for the plan: host-health verification is a precondition of the VERIFICATION run; lane-to-lane comparability is a property of the SCREENING run. Do not conflate them, and do not let the seq-17 recalibration be read as relaxing the throttle check."
-    },
-    {
-      "seq": 19,
-      "stage": "2b",
-      "verbatim": "you could make the metric richer by independently looking at the mtric across different model quantization (ex: MI210 works quite well at 16-bit but underperforms massively at 4-bit)",
-      "disposition": "planned",
-      "plan_ref": "AK-TR-4 (per-quant roofline utilisation)",
-      "effect": "SHARPENS the roofline-utilisation target (seq 18 / AK-D35) from a scalar into a DIAGNOSTIC, and is also more correct than an aggregate. Two reasons. (1) CORRECTNESS: bytes-moved per weight is quant-dependent (Q4_K ~0.5 B/weight vs fp16 2 B/weight), so a single aggregate utilisation figure mixes different byte-movement regimes and is not a well-defined quantity. Per-quant is the only basis on which the denominator is meaningful. (2) DIAGNOSTIC POWER: a scalar says there is headroom; a per-quant curve says WHERE. If utilisation is high at bf16/fp16 and low at Q4_K/IQ2, the deficit is localised to the DEQUANT path rather than to the memory subsystem or general kernel quality \u2014 which is exactly the op class our kernel work targets (dequant GEMV named repeatedly across the Stage-2 dives, and mi210-q8-dequant-gemv-roofline.md owns it). Corroborating prior in our own record: iqk gives +33-43% prefill on K/legacy plus IQ2/IQ3/IQ4_XS while IQ1 remains stubbed, and the AVX512BW 8x8 Q8_0 work measured +31.8% at 1t \u2014 both are evidence that quant-path efficiency varies sharply and independently of the fp16 path. CONSEQUENCE FOR THE EXTERNAL ANCHOR: the SOTA-CUDA comparison must also be per-quant, or it compares our Q4 path against their fp16 path and manufactures a gap. AK-D35 already requires MoE be counted by active-expert bytes, which is the same principle applied to a different axis, so this extends an existing rule rather than adding one."
-    },
-    {
-      "seq": 20,
-      "stage": 2,
-      "verbatim": "A thought: In the cholesky decomposition note the author mentioned the improtance of giving defined improvement targets to the agent loop. In our case an idea I had is to compare decode throughput as percentage of theoretical roof, to what state-of-the-art cuda kernels achieve on NVIDIA hardware.",
-      "disposition": "planned",
-      "plan_ref": "AK-TR-4 (autokernel-research-loop.md \u00a721) \u2014 utilisation vs SOTA CUDA anchors, spec-basis for cross-vendor; AK-D35 already makes it diagnostic-only so it does not reopen AK-D3",
-      "recording_note": "Recorded during Stage 4 on 2026-08-10; chronologically PRIOR to seq 19, which refines it. Seq is the recording order, not the utterance order."
-    },
-    {
-      "seq": 21,
-      "stage": 3,
-      "verbatim": "irrelevant. we can reimplement or copy as needed. We build for personal use.",
-      "disposition": "planned",
-      "plan_ref": "intake-1075 dive_corrections (licence recorded as a FACT ONLY, gates nothing) + rocm-verify-profile-backend.md \u00a7Recorded so it is not re-derived \u2014 every 're-implement rather than copy' in the batch is justified TECHNICALLY only (torch/CUDA artifacts, no torch-ROCm here)",
-      "recording_note": "Corrects an error I made: I applied a licensing constraint the project does not have. Standing policy is open-source self-hosted personal use, licences are not blockers."
+      "effect_on_stage1": "Establishes AutoKernel ownership of the ROCm profiling and verification substrate. It does not waive the research-intake review gate or authorize Stage-3 handoff writes."
     }
   ],
-  "state": {
-    "stage4_writes": [
-      "handoffs/active/rocm-verify-profile-backend.md",
-      "handoffs/active/autokernel-research-loop.md",
-      "handoffs/active/agentic-rocm-kernel-authoring.md",
-      "handoffs/active/multimodal-pipeline.md",
-      "handoffs/active/harness-selection-and-integration.md",
-      "repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md",
-      "repos/epyc-inference-research/docs/chapters/07-benchmark-suite-construction.md",
-      "research/intake_index.yaml"
-    ],
-    "validator": "validate_intake.sh exit 0, 1084 entries"
-  },
-  "stage1_completed": "2026-08-10",
-  "expansion_note": "6 of the 10-entry cap used. All 6 confirmed absent from the index pre-dispatch; each adjudicates a contested claim in the primary batch.",
-  "stage1_summary": {
-    "primary_entries": "intake-1073..1082 (8 URLs + 2 operator-supplied inline documents)",
-    "expansion_entries": "intake-1083..1088",
-    "validator": "validate_intake.sh exit 0, 1084 entries",
-    "handoffs_clean": "yes - only pre-existing parallel-session edits; this intake wrote research/intake_index.yaml only",
-    "in_session_correction": "intake-1079 contradicting_evidence: the 3.13x->1.49x/200-task figure was misattributed to arXiv 2607.16241 by a Stage-1 bounded search. A primary read (now intake-1085) refutes it on four counts; the figure belongs to robust-kbench (intake-668). Corrected in place; the bullet was retained rather than deleted so the misattribution cannot be silently re-derived from a future search."
-  },
-  "stage2_selected": [
-    "intake-1076",
-    "intake-1075",
-    "intake-1085",
-    "intake-1084",
-    "intake-1078"
+  "dive_recommendations": [
+    {
+      "rank": 1,
+      "entry": "intake-1102",
+      "reason": "Direct eight-task match to C5; determine portable definitions, license boundary, and MI210 reproduction seam."
+    },
+    {
+      "rank": 2,
+      "entry": "intake-1103",
+      "reason": "Canonical Apache-2.0 upstream; audit the schema and reported validation vulnerabilities before reuse."
+    }
   ],
-  "stage2b_selected": [
-    "2510.18874",
-    "2605.09640",
-    "2507.02825",
-    "GPUMODE/kernelbot-data",
-    "KernelBench-v0.1",
-    "gpu-mode/reference-kernels",
-    "KernelArena",
-    "StandardKernel-clock-power",
-    "2605.04956",
-    "ISO-Bench",
-    "2507.05386",
-    "2509.12235",
-    "QwenMMPlugins-issue7-pr6"
+  "preliminary_actionables": [
+    "Map the eight C5 task definitions and locally regenerate references for the existing three-seed by four-transform sensitivity reducer.",
+    "Diff scorer, profiler, timing, and anti-reward-hacking mechanisms against the existing C2/C3/C6 implementation.",
+    "Keep all gfx950/B200 timings, bounds, tolerances, and scores outside the MI210 evidence boundary."
   ],
-  "stage2b_completed": "2026-08-10",
-  "stage4_completed": "2026-08-10",
-  "stage2b_entries_persisted": {
-    "ids": "intake-1089..intake-1101 (13)",
-    "when": "2026-08-10, during Stage 4",
-    "how": "The Stage-2b analyst reports were RECOVERED VERBATIM from the session transcript (/home/node/.claude/projects/-workspace/b43a6183-9b5d-435b-a942-50a6cd77303e.jsonl) into /workspace/tmp/stage2b-recovered/. Nothing was reconstructed from memory: each entry was transcribed from its own dive report, with claim_anchors, per-claim verdicts and dive_corrections intact.",
-    "validator": "validate_intake.sh exit 0, 1097 entries",
-    "schema_notes": [
-      "claim_corrections rows whose claim_index addressed the DIVE's verdict table rather than the condensed key_claims were moved to a sibling dive_claim_ledger field with an explicit basis note, rather than dropped \u2014 'examined and cleared' is the load-bearing distinction from 'nobody looked', and the validator legitimately requires claim_index to index key_claims.",
-      "depends_on strings were converted to the required {entry, why} mappings; any stated dependency naming no intake id was kept as prose rather than fabricating a target."
-    ]
-  },
-  "stage2b_entry_persistence_gap_history": {
-    "what": "The 13 operator-approved Stage-2b sources were analysed and their findings are carried in the Stage-3 plan and in the handoff writes, but NO index entries were minted for them. next_intake_id is still 1089 and the index still holds 1084 entries.",
-    "why_not_backfilled_now": "The analyst reports were not written to disk and this session was compacted, so reconstructing 13 full entries would mean inventing key_claims, reported_results and claim anchors from memory - exactly the fabrication mode the Stage-1 unverified contract exists to prevent.",
-    "sources": [
-      "2510.18874",
-      "2605.09640",
-      "2507.02825",
-      "GPUMODE/kernelbot-data",
-      "KernelBench-v0.1",
-      "gpu-mode/reference-kernels",
-      "KernelArena",
-      "StandardKernel-clock-power",
-      "2605.04956",
-      "ISO-Bench",
-      "2507.05386",
-      "2509.12235",
-      "QwenMMPlugins-issue7-pr6"
-    ],
-    "next_step": "Re-run Stage 2b persistence for these 13 identifiers as a fresh combined ingest-and-dive pass; each lands dive-verified/dive-overturned with its own claim_anchors. Until then nothing in the index depends on them - the handoff items they informed cite our own tree or dive-verified entries, never a Stage-2b entry id.",
-    "status": "CLOSED 2026-08-10 \u2014 see stage2b_entries_persisted",
-    "correction": "My stated reason for deferring \u2014 'the analyst reports were not written to disk' \u2014 was WRONG. The session transcript was on disk the whole time and the compaction summary named its path explicitly. 'Not saved to a scratch file' was treated as 'not recoverable'. The recovery took one grep."
-  }
+  "handoff_writes_performed": false
 }

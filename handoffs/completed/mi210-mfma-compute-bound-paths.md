@@ -1,8 +1,10 @@
 # Handoff: MI210 MFMA for compute-bound paths (prefill / diffusion / high-batch)
 
-**Status**: **CLOSED-BY-ARITHMETIC for decode** (2026-08-03) — the 2026-07-04 `MfmaUtil ≈ 0%` observation is
-now explained, not merely measured; see §"Compute roofline" below. **OPEN for prefill/diffusion** on the
-original measure-first gate. **Created**: 2026-07-04 (MI210 campaign follow-on).
+**Status**: **COMPLETED / TERMINAL NO-GO** (2026-08-11) — decode is closed by arithmetic; the measured
+prefill and high-batch paths already use MFMA and are not compute-bound; G15 and real-MMQ WGM were
+separately falsified. File a new active handoff only if a current profile exposes a new compute-bound
+diffusion/training path or an actual target fusion cluster above 20%. **Created**: 2026-07-04 (MI210
+campaign follow-on). **Completed**: 2026-08-11.
 **Owner tree**: `/mnt/raid0/llm/llama.cpp-experimental` (kernel work here, never production-v6). **Substrate**: MI210 gfx90a/CDNA2 — has fp16/bf16/int8 **MFMA matrix cores**. All numbers OBSERVATION.
 **Context doc**: `fable5-window2-findings-05b-mi210-inference-architecture.md` §9 (the GDN-MFMA-decode KILL, and why MFMA is alive for compute-bound regimes).
 
@@ -12,7 +14,7 @@ Kernel-thread `a8afd338` ran the decisive pre-build rocprofv2 measurement. **Nei
 - **Prefill** (`-p 1024`): dominant GEMM is ALREADY rocBLAS/Tensile fp16 **MFMA** HGEMM (`MI32x32x8`, AccVGPR=208). VALUBusy **3.55%** (vector ALU near-idle), MemUnitBusy **78.5%** → memory-bound, MFMA already the workhorse. No idle matrix cores.
 - **High-batch decode** (`-npl 128`): batched GEMM is `mul_mat_q` MMQ **int8-MFMA** (AccVGPR=128). VALUBusy **16.8%** (not compute-bound), MemUnitBusy 48%; and **43% of batch-128 time is non-GEMM elementwise/norm** + 20% memory-bound GEMV.
 
-→ MFMA kernel-authoring **DEFERRED** — matrix cores are already engaged on both. **Higher-value orthogonal levers surfaced instead (NOT MFMA kernels):** (a) prefill could skip the Q8→f16 dequant/convert (~15%) via a direct int8-MFMA GEMM — a *dispatch-tuning* change, not a new kernel; (b) high-batch could fuse the elementwise/norm tail (43% of B=128 time). **Reopen the MFMA build only if a NEW compute-bound path appears** (a diffusion/DiT serving path — `ernie-image-turbo`; or gfx90a training [unverified]); the measure-first gate below still stands. Original objective kept for the record.
+→ MFMA kernel-authoring **DEFERRED** — matrix cores are already engaged on both. The 2026-07-04 profile also suggested an orthogonal high-batch elementwise/norm fusion lever, but the strict frozen-v9 refresh on 2026-08-11 **falsified it**: actual norm + activation + elementwise share is 1.490% at B=128, not the coarse 43% non-GEMM remainder. **Reopen the MFMA build only if a NEW compute-bound path appears** (a diffusion/DiT serving path — `ernie-image-turbo`; or gfx90a training [unverified]); the measure-first gate below still stands. Original objective kept for the record.
 
 ## Compute roofline — the blank spot, closed by arithmetic (2026-08-03, research-intake)
 
@@ -134,13 +136,35 @@ Acceptance to proceed to kernel work: a candidate path shows **high VALUBusy + l
 
 ## Progress checklist
 
-- [ ] DEFERRED (with data): reopen MFMA build only if a new compute-bound path appears (measurement gate failed both paths)
+- [x] Close the active experiment set after both measured paths failed the build gate; preserve the
+  explicit new-path / >20%-cluster reopen predicate above ✅ 2026-08-11
 - [x] Close the compute-roofline blank spot from spec arithmetic: 181.0 TFLOPS fp16/bf16, 181.0 TOPS int8 (no doubling), ridge 110.5 FLOP/byte, all marked `[D]` ✅ 2026-08-03 — via /research-intake Stage-2b
 - [x] Explain `MfmaUtil ≈ 0%` at batch-1 as correct behaviour (AI 1.0–5.2 FLOP/byte, 31–113× below the knee) rather than a defect ✅ 2026-08-03
 - [x] Derive `B* = 110.5 × bytes_per_weight / 2` (Q4_K 31, Q8_0 59, bf16 110) and check it against the measured bf16 knee at B≈96–128 ✅ 2026-08-03
 - [x] Record the 2× per-GCD/per-OAM defect in AMD's GEAK `cdna2_mi200/memory.md` so its 226 FLOP/byte is never imported ✅ 2026-08-03
 - [x] Import the arch-independent HipKittens scheduling lessons (no wave-specialization, 8-wave ping-pong, HBM-side swizzle, AGPR/HIPCC tax, sweep-don't-set grid swizzle) ✅ 2026-08-03
+- [x] Measure the launch-order/L2 half of HipKittens WGM on a standalone gfx90a proxy before touching MMQ ✅ 2026-08-11 — 240 balanced samples per none/2/4/8/16/32 cell, bit-exact outputs, device claim + 250 ms telemetry, and rocprofv2 dispatch verification found WGM16 best at **+9.823%** (paired bootstrap 95% CI 9.754–9.977%). WGM8/32 were close; WGM2 regressed. This proves launch-order locality matters but is diagnostic-only, not an MMQ keep. Receipt `/mnt/raid0/llm/autokernel/probes/inf36-wgm-gfx90a-20260811-r3/receipt.json`, SHA-256 `d9de5ede02a2ba849b1ffc4362d405a76c45279d907784ecf322ca8a133f7986`; research `f371fc83`.
 - [x] **Measure peak FLOPS with a gfx90a MFMA microbenchmark** ✅ 2026-08-03 — **172.2 TFLOPS**, 95.1% of the derived 181.0, implied sustained clock 1.617 GHz. This was the last derived-from-spec denominator; **every roofline constant this project uses is now measured.** Receipt `data/mi210-mfma-peak/20260803T143200Z/`, research `a2b4e9fc`
 - [x] Peak-FLOPs figures no longer need the `[D]`-only citation restriction — the measured value supersedes it for all internal use; the derived figure remains the right one for cross-vendor spec-to-spec comparison ✅ 2026-08-03
-- [ ] Sweep grid-swizzle WGM (none/2/4/8/16/32) on our own MMQ launches — pure launch-order change, no kernel body edit; the CDNA3 optimum at 8 is a starting point, not an answer
-- [ ] Elementwise/norm fusion for batched decode remains the live orthogonal lever (43% of B=128 time is non-GEMM vs 37% GEMM) — now seeded in `autokernel-research-loop.md` §19.6/§19.8 rather than only noted here
+- [x] Sweep grid-swizzle WGM on the real stream-k MMQ launch with correctness, wall-time, and L2/TCC
+  evidence ✅ 2026-08-11 — r1 is retained as a failed/no-op pilot because the initial remap sat outside
+  the CDNA stream-k launch path. In admitted r2, pure tile-order decoding moved into stream-k and
+  none/2/4/8/16/32 each passed **43/43** Q4_K correctness cases. WGM0 remained fastest; every nonzero
+  cell regressed wall time by **1.286–4.050%**. The mechanism result agrees: WGM8 reduced all-MMQ TCC
+  hit rate **67.304% → 59.849%** while read requests changed **+0.201%**; Q4_K alone lost **7.903
+  points**. Retain WGM0 and do not commit the negative experimental source. Admitted directory:
+  `/mnt/raid0/llm/autokernel/probes/inf36-mmq-wgm-gfx90a-20260811-r2`; receipt SHA-256 values:
+  correctness `8065674e876ab84e58518d3084ec7671b22f007c558c40781413ec827bf71ffe`, wall time
+  `af57d087f307d2ec423c3168bb0ad66efc22a81ef613877e805db105331a8cec`, counters
+  `0dc3d4d01aba790f7b0f1035771d929f940661f29334fdf2db59a4b2ba8a8adf`. The trace-period
+  counter pilot aborted and is excluded; the successful counter-only captures are admitted.
+- [x] **Profile-select the B=64/128 elementwise/norm fusion lever through AutoKernel.** ✅ 2026-08-11 —
+  `run_autokernel_g15_profile.py` captured clean frozen-v9 `rocprof` v1 timestamp maps with exact
+  kernel/family/adjacent-cluster tables. The strict verdict-bearing share (norm + activation +
+  elementwise only) is **1.837% at B=64 and 1.490% at B=128**, so both cells mechanically return
+  `FALSIFIED_PROFILE_TARGET` against the predeclared 20% floor. B=128 is instead matrix 54.881%,
+  gather/scatter 18.631%, recurrent 17.464%, and copy/convert 4.726%. The top actual fusion cluster,
+  `op_add -> rms_norm_f32<1024>`, is only **0.491%**. Receipt:
+  `/mnt/raid0/llm/autokernel/probes/inf36-g15-profile-v9-20260811-r4/receipt.json`, SHA-256
+  `d7a0c8c257c2a59435b95c39b988485a8283d709d83ef7397b3c67ee7ec8cca9`. G15 is closed no-go;
+  gather/scatter and recurrent work remain distinct mechanisms and must not be relabelled as fusion.

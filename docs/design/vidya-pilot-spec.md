@@ -383,6 +383,16 @@ The literature ceiling is structural, not a limitation to be lifted: an intake e
 someone else reported, and no amount of careful reading turns it into a protocol-admissible
 measurement.
 
+**Dependency-evidence boundary.** Dependency evidence is deliberately not forced through this
+carrier. The current tuple structurally requires a metric, direction and measurement category, and
+the current frame path turns every tuple into a claim-support edge. A process-recovery rehearsal or
+dependency preflight has no honest values for those fields and does not thereby become an
+independent corroborating witness. Such a producer may prospectively write self-hashed native
+dependency rows, and an adapter may integrity-check and classify them, but it MUST NOT register a
+`ClaimTuple` projection or emit `evidence_supports_claim` until a shared dependency-evidence carrier
+and warrant rule are declared. Multiple legs from one rehearsal key support on the rehearsal run,
+not on each leg, so one run remains one potential support path.
+
 **The invariant, and how it is enforced.** *Each source class has exactly one ladder.* A new class
 is a legitimate extension and registers via `register_ladder(class, module)`; a second
 implementation of an existing class's rule is a defect and the registry refuses it. A conformance

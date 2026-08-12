@@ -63,7 +63,7 @@ gate this program has already passed.
 
 ### Open work — start here
 
-Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC10`, `SC11`, `SC7`, `SC6-HAZARD`) and
+Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC11`, `SC7`, `SC6-HAZARD`) and
 **Consumption** (`SC12-ENTRY`, `SC14-B`, `SC15`, `SC16`, `SC17`). Everything else is complete and lives in the completed sibling
 linked under Completed Scope.
 
@@ -198,6 +198,10 @@ deliberately — decide them, do not just implement them.
       to the session that owns the inference, at its own boundary. Until then
       `adapters/autopilot_journal.py` correctly reports 0 measured rows. Confirm non-zero after the
       next autopilot cycle
+- [ ] **SC32 — Wire future architect MMLU-Pro hardened controls prospectively.** The 2026-08-12
+      A1/A3/A4 v9 panel carries native captures, exact claims, pinned source/manifest digests and
+      an attestation, but no producer-authored `ClaimTuple` row. Add write-side rows plus a strict
+      adapter before any successor run; the completed panel remains pre-hook and emits zero.
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input
@@ -217,11 +221,14 @@ deliberately — decide them, do not just implement them.
       read claims warrant the original run never captured. `benchmarks/results` is the standing
       proof — 4,562 files, no write hook, 0 of 200 sampled carrying a usable tuple, permanently
       unable to gate a decision ✅ 2026-08-10
-- [ ] SC10 **AutoKernel `evaluation_event` — ready, unwritten.** Its schema already enforces the
-      claim rule as a REQUIRED block (stricter than the autopilot hook: `metric_direction`,
-      `reps` ≥ 1, `anchor.source_commit`, hex-sha256 `run_id`, INVALID runs journaled not
-      discarded). No adapter is needed until the loop emits records — **zero files on disk contain
-      `claim_grammar` today**. Wire the read side when the first evaluation_event lands
+- [x] SC10 **Wire the full AutoKernel `evaluation_event` write/read path prospectively.** ✅
+      2026-08-12 — research `3f0cb392` journals live v5 events and attaches the producer-written
+      `belief_capture` to measured T1 events. Root `2a83b176` plus the `6c9cad04` repetition-axis
+      correction admits only complete current journal envelopes, re-derives every paired raw vector
+      and identity binding, treats `claim_grammar.reps` as per-arm repetitions and
+      `performance.paired_blocks` as the ClaimTuple scored basis, and emits zero rows for historical,
+      null-T0, void, malformed or authority-bearing events. The first real post-hook event remains an
+      empirical observation, not a static implementation gap.
 - [ ] SC11 Survey the remaining candidate sources named in the register — llama-bench sweeps and the
       speech-kernel (whisper/qwentts) runs. Both need a write-side hook before a reader is worth
       anything; price each with the ~50-record sample before building
@@ -239,13 +246,27 @@ deliberately — decide them, do not just implement them.
       honest answer may be that the volume never justifies an adapter — in which case record that
       verdict rather than leaving the row open. **Locator must be run-level, not file-level**: repeated
       preflights of one cell are the same witness, not N.
-- [ ] SC12 **Kernel promotion validation/certification receipts need a write-side ClaimTuple hook.**
+- [ ] SC12 **Kernel promotion/certification and K35 paired kernel/speculation receipts need a
+      write-side ClaimTuple hook.**
       The first bounded receipt is `artifacts/audit/v9-dspark-autokernel-base-20260810.json`; the v9
-      promotion then produced K35 GPU/DSpark and DFlash production-certification summaries. The
-      artifacts are durable, but their producers still do not emit the full tuple at write time and
-      must not be retrofitted on read. Before the next promotion run, add protocol id, scored
+      promotion then produced K35 GPU/DSpark and DFlash production-certification summaries. The K35
+      runner now also emits quant-specific paired receipts, first
+      `data/deepseek-v4-flash/iq3-dspark-quick-20260811T063729Z/summary.json`. The artifacts are
+      durable, but their producers still do not emit the full tuple at write time and must not be
+      retrofitted on read. Before the next promotion or K35 paired run, add protocol id, scored
       reps/basis, date, durable attestation locator+digest, category, and metric direction to the
-      K35, DFlash, qualification, and final-freeze write paths. Only then price/build the adapter
+      K35, DFlash, qualification, and final-freeze write paths. Project into the existing
+      `ClaimTuple`; `claim_tuple.grade()` remains the only grading rule. Only then price/build the
+      adapter
+- [ ] SC12-ARTIFACT **Model artifact acquisition/integrity receipts need a prospective write-side
+      ClaimTuple hook.** The standardized DeepSeek-V4 DFlash acquisition established the source
+      repository and pinned revision, expected/observed byte count, publisher/local SHA-256,
+      selected-file scope, metadata summary, process exit and incomplete-file cleanup, but those
+      facts were captured in session prose rather than a native receipt. Before the next model
+      acquisition, emit one run-level record with those fields plus timestamp, protocol id,
+      category, metric direction and durable attestation locator+digest. Project it into the
+      existing `ClaimTuple`; `claim_tuple.grade()` remains the only grading rule. Do not retrofit
+      this completed acquisition on read
 - [ ] SC7 Ingest autopilot trials into the ledger once SC6-LIVE confirms rows are landing. Deferred
       deliberately: appending 1,372 retro-graded claims now would record provenance the original
       runs never captured, and the corpus is worth ingesting only once it is born attested. Note
@@ -443,7 +464,143 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       and the `ClaimTuple` projection. **Do not write a new grading rule** — the adapter projects into
       a `ClaimTuple` and `claim_tuple.grade()` decides; the `measurement` ladder already exists and the
       registry refuses a second. This is the case `benchmarks/results` is the standing proof of: 4,562
-      files with no write-side hook can never gate a decision, and no read-side pass can repair that
+      files with no write-side hook can never gate a decision, and no read-side pass can repair that.
+      **2026-08-11 static implementation:** research commit `70766412` parses `AK_PROP_V1`, re-derives
+      its verdict, refuses suite-seed mismatches and preserves each residual as a structured
+      `evaluation_event` gate measurement. Root `autokernel_property.py` projects only those written
+      rows into the single measurement ladder and explicitly yields nothing for older events. This
+      row remains open until the experimental `test-backend-ops` producer is committed and its first
+      real event proves the write path.
+- [x] SC19 **Wire the new AutoKernel ROCm auxiliary receipts prospectively — write side FIRST.**
+      ✅ 2026-08-11 — the rocprof-v1 attribution, HipKittens LDS solver, and Omniperf fallback
+      producers now emit explicit `belief_measurements` only on successful future runs. Root
+      `autokernel_aux_receipt.py` projects those rows into the one measurement ladder, binds the
+      native schema as protocol id, and returns zero rows for receipts predating the hook. Current
+      2026-08-11 receipts are deliberately not retrofitted. The adapter's GEAK round-trip schema seam
+      is ready, but no round-trip producer vector is claimed by this closure.
+- [x] SC20 **Add the write-side `belief_measurements` vector to the GEAK/Arena round-trip producer
+      before the matched controller A/B.** Emit correctness pass rate and timing-harness validity as
+      separate directional rows with scored-repetition bases. Do not infer them later from the
+      completed 2026-08-11 receipt; that record predates the hook. ✅ 2026-08-11 — research
+      `controller/arena_roundtrip.py` is the prospective writer; its two rows pass the root
+      `autokernel_aux_receipt.py` projection contract end to end. INF-03 r3's terminal 2h and 8h
+      Claude/Codex checkpoints are the first post-hook live evidence: belief receipts
+      `05cb70a0d6f670796f93bdc06c4a681578d044f7929839688a4b2c5b7a491370` and
+      `4c01642993c1120eac4885714e3e2780845e618913c11676c6decef290fded61` each carry the two
+      producer-authored rows. Older receipts remain untouched.
+- [x] SC21 **Classify GEAK/Arena preflight findings deliberately.** Source pin/license, physical
+      gfx90a identity, registry shape and spoof refusal are verified findings, not ordinal
+      measurements and not literature. Either declare one shared `verification` source-class ladder
+      with a documented ceiling or retain preflight solely as dependency evidence; never invent a
+      metric direction to force it through `ClaimTuple`. ✅ 2026-08-11 — selected the
+      least-commitment option: the writer hash-binds preflight under `dependencies.preflight` with
+      `classification=dependency_evidence_only` and mechanically emits no belief measurement for it.
+- [x] SC22 **Wire future AutoKernel MMQ WGM wall-time/counter receipts on the write side before any
+      successor launch-order experiment.** Emit separate directional rows for end-to-end wall time,
+      all-MMQ TCC hit rate, and read-request volume with the exact WGM arm, scored-repetition basis,
+      device claim, producer/source identity, and admitted receipt digest. Project those written rows
+      through the existing measurement ladder; do not add a grading rule and do not back-fill the
+      admitted 2026-08-11 r2 negative, which predates this hook. ✅ 2026-08-11 — research producer
+      `epyc.autokernel.mmq_wgm_profile.v1` writes three per-arm measurements plus raw observations,
+      exact evidence/source/producer identity, released MI210 claim, and stable receipt digest;
+      root projects only those rows through the existing shared ladder. Historical r2 schemas remain
+      unsupported. Research `36717bd1` (main `acb7e840`); root reconciliation `0126f598`
+      (main `ba0b0450`).
+- [x] SC23 **Wire future AutoKernel IQ2 fancy-SIMD screening and model-confirmation receipts on the
+      write side before the OP-12 follow-up run.** Emit separate lower-is-better op-time rows for the
+      exact IQ2_XXS `n=1` and `n=512` cells, plus explicit higher-is-better model TG/PP rows when
+      available, with scored-block bases, candidate/source/binary identities, device claim, and
+      admitted receipt digest. Project only producer-written rows through the existing measurement
+      ladder; do not add a grading rule and do not back-fill the admitted 2026-08-11 r5 screening
+      receipt, which predates this hook.
+  - [x] **SC23a — Wire the micro-A/B screening rows.** ✅ 2026-08-11 — the prospective research
+    producer emits exact lower-is-better `n=1` and `n=512` op-time rows with scored-block and
+    candidate/source/binary identity; the root adapter admits only the new native schema. Historical
+    r5 remains untouched. Research `f19e5eaf` (main `a207c56f`); root main `9cd32a64`.
+  - [x] **SC23b — Add explicit model TG/PP rows to the first model-confirmation producer.** ✅
+    2026-08-11 — the prospective research producer emits four higher-is-better rows covering
+    TG/PP × anchor/candidate only after T1+T2 have passed, the raw vectors match exactly, and the
+    candidate/build/model/anchor identities plus released CPU claim bind. The root adapter
+    independently reconstructs final/source/row hashes and every candidate, model, anchor, claim,
+    execution, sample, and denominator binding. Fixture interoperability accepts exactly four rows;
+    this completes the writer/reader seam but supplies no model-confirmation evidence before OP-12.
+    Research `0efd7201` (main `6771cfea`); root `be7426b2` (main `328b2ba4`).
+- [x] SC24 **Wire future INF-37 Q4_K direct-PMC receipts on the write side.** ✅ 2026-08-11 — the
+      prospective producer emits separate Q4_K-minus-Q4_0 and Q4_K-minus-Q8_0 VALU/wave,
+      INT32/wave, and diagnostic dispatch-duration rows, all bound to exact arm/control/shape/block,
+      counter, source, binary, producer, profiler, device-claim, evidence, row, and receipt digests.
+      The root adapter re-derives every binding and refuses promotion or fused-unpack wall-share
+      authority. Historical r7 remains unchanged and projects zero rows. Research `5c333a4c`
+      (main `d88ce6ee`); root `c37850e1` (main `9bfa1eae`).
+- [x] SC25 **Finalize structured ROCm profile receipts without rewriting their evidence.** ✅
+      2026-08-11 — research `07b303cc` adds a separate producer for immutable G15, C4, and
+      standalone-WGM receipts. It emits performance and target-selection rows separately, reduces C4
+      only from the formal production-optimization trace, and marks WGM proxy rows as design priors
+      that do not transfer to real MMQ. The root auxiliary adapter admits the new
+      `epyc.autokernel.profile_beliefs.v1` schema through the existing measurement ladder; 16 rows
+      from four current artifacts project end to end. This is a new hash-bound derived receipt, not a
+      mutation or prose reconstruction of the source evidence.
+- [x] SC26 **Wire the P2-5j placement receipt prospectively before its first real campaign.** ✅
+      2026-08-11 — research `f17116de` emits 16 self-hashed rows covering decode throughput,
+      p50/p95 latency, and paired ratio for all four arms with ten scored blocks and exact claim
+      identities. Root's auxiliary adapter re-derives every value, row digest, arm/topology field,
+      and receipt digest while preserving the observation-only no-selection/no-speedup/no-carve/
+      no-activation boundary. No grading rule was added and no historical result was back-filled.
+- [x] SC27 **Wire AutoKernel live-control and governed replay receipts on the write side before the
+      next run.** ✅ 2026-08-12 — research `730adb1d` adds prospective producer-written belief rows
+      to live controls and the async-prefetch replay; root `2a4e170a` adds the
+      `autokernel_governed_receipt.py` projection and source-register entry. Protocol, direction,
+      scored-block basis, source/binary/model/claim/producer identities, native verdict, and immutable
+      evidence digests are independently re-derived before the shared measurement ladder grades the
+      tuple. Focused producer tests pass 23/23 and adapter tests 24/24. The 2026-08-12 smoke, controls,
+      and GPU replay predate the hook and remain deliberately unprojected; only future receipts may
+      enter this source.
+- [x] SC28 **Wire RVP-T0-1 saturation and AK-BH-1 vendor-baseline diagnostics before either runs
+      again.** ✅ 2026-08-12 — research `1434ed1a` adds a shared prospective writer used by both
+      live runners. RVP-T0-1 emits separate sustained-throughput, nominal-clock-hold, peak-power and
+      cap-headroom rows; AK-BH-1 emits one provider ratio per exact shape. Root
+      `autokernel_rocm_diagnostic.py` independently re-derives the sample statistics, provider
+      ratios, scored bases, source/binary/device-claim/producer identities, row hashes and logical
+      receipt hash, then delegates grading to the existing measurement ladder. Every row is
+      diagnostic-only and grants no campaign/promotion authority. The 2026-08-12 pre-hook receipts
+      remain deliberately unprojected; successor runs are the empirical follow-up.
+  - [x] **Capture and independently project the first post-hook successor receipts.** ✅ 2026-08-12 —
+    research `75ff5767` and root `1edf47fd` align both sides with canonical `ClaimReceipt` release
+    semantics (`released_at` on the last held/draining state). RVP-T0-1 post-hook r2 emitted **4**
+    producer-authored diagnostic measurements and AK-BH-1 post-hook r1 emitted **9** exact-shape
+    measurements; the root adapter re-derived **4 + 9 ClaimTuples**. Focused producer/adapter tests
+    pass **8/8** and **12/12**, respectively. No row grants ranking, campaign, release, or production
+    authority.
+- [x] SC29 **Wire AK-LE planner prefilter/reduction receipts before the corrected panel runs.** ✅
+      2026-08-12 — research `16ad9c2c` prospectively emits four self-hashed search-persistence rows
+      per complete cell only after re-running the source-pinned reducer; corrected r3 produced **32**
+      rows from **8/8** cells. Root `47400351` registered the source and root `803a90b5`
+      implemented the fail-closed canonical reader. It projects
+      producer-authored `ClaimTuple` rows for the predeclared per-cell search-persistence measures
+      (`novel_nonduplicate_count`, `prefilter_survival_count`, explicit already-optimized
+      termination, and elapsed wall time), with model/quant/effort/target-arm identity, direction,
+      scored-cell basis, exact manifest/panel/prefilter/evidence digests, and run-level locator. The
+      under-specified 2026-08-12 r1 panel remains a durable refusal and projects zero rows; the r2
+      malformed-Claude-wrapper attempt failed before one complete cell and also projects zero rows.
+  - [x] **Implement the root read-side adapter for the live AK-LE planner-reduction schema.** ✅
+    2026-08-12 — `autokernel_planner_reduction.py` independently replays the pinned structural
+    prefilter and planner receipt, re-derives every producer row, then delegates grading to the
+    shared measurement ladder. The real r3 artifact projects **32/32** unique rows; r1/r2 project
+    zero without reconstructing historical tuples. Focused tests pass **8/8** and the complete
+    Vidya suite passes **512**, with one pre-existing skip.
+- [x] SC30 **Classify and wire the AutoKernel real host-process fault rehearsal before it runs
+      again.** ✅ 2026-08-12 — research `5c8714a1` writes three self-hashed dependency-evidence rows
+      and root `7077f1cc` independently re-derives them while refusing ClaimTuple projection. Preserve
+      `epyc.autokernel.host_process_fault_rehearsal.v1` as dependency evidence:
+      project each of the three recovery legs with exact source/producer/process identities and the
+      immutable receipt digest, but do not coerce PASS into a performance measurement, corroborating
+      witness, release claim, or campaign authority. Key support on the rehearsal run, not each leg.
+- [x] SC31 **Wire AK-LE-3 scaffold-panel measurements on the write side before any successor panel.**
+      ✅ 2026-08-12 — research `loop_scaffold_runner.py` now emits four exact model/scaffold speedups
+      plus two same-model split/direct effects only after a complete measured panel, with scored-case,
+      source/evaluator/candidate and released-claim evidence and diagnostic-only authority. Root
+      `autokernel_scaffold_panel.py` independently re-derives panel, cell, evaluation, claim and row
+      hashes. Terminal r1 remains pre-hook and projects zero rows; no history was reconstructed.
 
 ## Dependency notes
 

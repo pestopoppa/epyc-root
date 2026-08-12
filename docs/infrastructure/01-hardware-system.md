@@ -38,7 +38,7 @@ Everything about this build revolves around memory — how much of it we have, a
 
 Getting the hardware to actually deliver its theoretical bandwidth requires careful tuning. The wrong thread settings can cut performance in half, and ignoring NUMA topology leaves bandwidth on the table.
 
-The full canonical recipe is documented in [`handoffs/active/cpu-kernel-env-flags-inventory.md`](../../handoffs/active/cpu-kernel-env-flags-inventory.md) (the live reference) and staged for orchestrator integration in [`handoffs/active/model-registry-v5-deployment-draft.yaml`](../../handoffs/active/model-registry-v5-deployment-draft.yaml). This section is the public-facing summary; for per-arch tuning matrices, runtime quirks, and arch-class env blocks consult those docs.
+The full canonical recipe is documented in [`handoffs/completed/cpu-kernel-env-flags-inventory.md`](../../handoffs/completed/cpu-kernel-env-flags-inventory.md) (the completed reference) and staged for orchestrator integration in [`handoffs/active/model-registry-v5-deployment-draft.yaml`](../../handoffs/active/model-registry-v5-deployment-draft.yaml). This section is the public-facing summary; for per-arch tuning matrices, runtime quirks, and arch-class env blocks consult those docs.
 
 ### Canonical host prerequisites
 

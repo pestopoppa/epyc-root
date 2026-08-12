@@ -13,7 +13,7 @@ existing test exercises ``dashboard/server.py`` and ``dashboard/panels.py`` —
 the Python that *serves* the page — so a page that parses to nothing still
 passed everything. This closes that gap.
 
-TWO CHECKS, and the split is deliberate:
+THREE CHECKS, and the split is deliberate:
 
 * ``test_no_duplicate_top_level_declarations`` is pure Python and ALWAYS runs.
   It catches the exact class that bit, and it must not depend on a toolchain
@@ -22,6 +22,9 @@ TWO CHECKS, and the split is deliberate:
 * ``test_scripts_parse`` shells out to ``node --check`` for full syntax coverage
   and skips when node is unavailable. It is the broader net, not the load-bearing
   one; the check above is what holds when it is missing.
+* ``test_kernel_current_state_renderer_executes`` runs the Kernel-R&D evidence
+  renderer against a minimal contract. Parsing cannot catch a free identifier
+  that throws only when a production-kernel-set card is rendered.
 
 Run: ``python3 -m unittest tests.test_dashboard_static_js``
 """
@@ -138,6 +141,94 @@ class StaticJsTest(unittest.TestCase):
                 self.assertEqual(
                     proc.returncode, 0,
                     f"{page.name} script block #{i} does not parse:\n{proc.stderr}")
+
+    @unittest.skipIf(shutil.which("node") is None, "node unavailable")
+    def test_kernel_current_state_renderer_executes(self):
+        """Execute the evidence-snapshot renderer against its minimum wire shape.
+
+        ``node --check`` cannot catch a free identifier inside a function.  The
+        production-kernel-set renderer once read ``state.production_kernel_set``
+        even though the function binds the payload as ``s``.  The page parsed, but
+        the resulting ReferenceError prevented controls, activity, and contract
+        sections from rendering.  This small DOM stub exercises that boundary.
+        """
+        page = _STATIC / "kernel.html"
+        blocks = _scripts(page)
+        self.assertEqual(len(blocks), 1, "kernel.html must carry one inline script")
+        source = blocks[0].split("async function load()", 1)[0]
+        payload = r'''{
+          _activity: {current_state: {
+            production_kernel: {available: false},
+            production_kernel_set: {
+              intact: false, expected_kernels: 3, expected_binaries: 4,
+              trees_matching: 3, binaries_proven: 4, binaries_unverified: 0,
+              members: [{title: "llama.cpp", branch: "production-v9", head: "abc",
+                matches_attestation: true,
+                ggml_generation: {observed: "0.16.0", expected: null}}],
+              binaries: [], stable_links: [], linkage: [],
+              stable_links_ok: 4, linkage_verified: 4,
+              ggml_generations_proven: 2, alarms: [],
+              ambient_library_path: {clean: true, note: "dashboard process only"}
+            },
+            decision_controls: {available: false},
+            instrument_preflight: {available: false},
+            gpu_prefetch_replay: {available: false},
+            loop_engineering: {available: false},
+            scaffold_engineering: {available: false},
+            arena_campaign_progress: {available: false},
+            rocm_diagnostics: {available: false},
+            belief_source_wiring: {sources: []},
+            fault_rehearsal: {available: false},
+            fixed_campaign: {available: false},
+            available_source_diagnostic: {available: false},
+            empirical_smoke: {available: false},
+            receipt_coverage: {note: "CURATED VIEW", projected_schemas: ["one.v1"]}
+          }}
+        }'''
+        harness = f'''\nconst __box = {{innerHTML: "", classList: {{remove() {{}}, add() {{}}}}, style: {{}}}};
+globalThis.document = {{
+  querySelector() {{ return __box; }},
+  querySelectorAll() {{ return []; }},
+  createElement() {{ return __box; }}
+}};
+{source}
+renderCurrentState({payload});
+const __stateHtml = __box.innerHTML;
+if (!__stateHtml.includes("Production kernel SET")) {{
+  throw new Error("current-state renderer did not reach the kernel-set card");
+}}
+for (const expected of ["ggml observed 0.16.0", "not attested",
+                        "dashboard process only", "CURATED VIEW",
+                        "AK-LE-3 scaffold", "INF-03", "ROCm diagnostics",
+                        "Belief source wiring"]) {{
+  if (!__stateHtml.includes(expected)) throw new Error("missing distinction: " + expected);
+}}
+renderActivity({{_activity: {{implementation: {{recent_commits: []}},
+  mainline_integration: [{{available: true, label: "epyc-root",
+    first_parent_commits: 666, first_parent_merges: 38,
+    since: "2026-07-29T00:00:00Z", tip: "abcdef123456"}}],
+  work_bundles: [], durable_state: {{journals: []}}, probe_receipts: {{receipts: []}}
+}}}});
+if (!__box.innerHTML.includes("38 merges") ||
+    !__box.innerHTML.includes("path-filtered commit list")) {{
+  throw new Error("mainline integration count was hidden or confused with path history");
+}}
+renderSections({{
+  _render: {{mode: "contract_v2"}},
+  sections: {{blocking_conditions: {{status: "observed", as_of: "now", open: [{{
+    kind: "PREFLIGHT_REFUSED", detail: "host uptime exceeds the ratified ceiling"
+  }}]}}}}
+}});
+if (!__box.innerHTML.includes("host uptime exceeds the ratified ceiling")) {{
+  throw new Error("blocking-condition detail was reduced to a generic label");
+}}
+'''
+        proc = subprocess.run(
+            [shutil.which("node"), "-e", harness], capture_output=True,
+            text=True, timeout=60)
+        self.assertEqual(
+            proc.returncode, 0,
+            "kernel current-state renderer failed at runtime:\n" + proc.stderr)
 
 
 if __name__ == "__main__":

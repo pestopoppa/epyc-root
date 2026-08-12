@@ -33,15 +33,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys as _sys
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-import sys as _sys
-
 _sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from claim_tuple import ClaimTuple  # noqa: E402
-from claim_tuple import grade as _grade  # noqa: E402
+from claim_tuple import ClaimTuple
+from claim_tuple import grade as _grade
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER_DIR = REPO_ROOT / "measurements"
@@ -134,6 +133,10 @@ def to_tuple(record: dict) -> ClaimTuple:
         attestation_path=str(art.get("path") or ""),
         attestation_sha256=str(art.get("sha256") or ""),
         attestation_locator=str(art.get("locator") or ""),
+        # Resolve presence in this module before crossing the shared-carrier boundary. Tests and
+        # alternate roots deliberately rebind measurement_record.REPO_ROOT; letting ClaimTuple
+        # resolve again against its own module root silently downgraded real shards to Anchored.
+        attestation_present=artifact_exists(record),
     )
 
 
@@ -187,7 +190,7 @@ def to_frames(record: dict, *, as_of: str) -> list[dict]:
     import sys
 
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from frames import make_frame  # noqa: PLC0415
+    from frames import make_frame
 
     mid = record["measurement_id"]
     claim_id = f"clm_meas_{mid.replace('-', '_')}"

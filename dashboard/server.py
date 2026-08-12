@@ -17,12 +17,13 @@ GET /api/handoff_detail?id=  full card + scrubbed markdown body (lazy modal load
 GET /api/handoff_timeline    the git-derived timeline artifact (+ freshness)
 GET /api/handoff_graph       the index dependency/liveness graph (+ freshness)
 GET /api/kernel              the kernel-R&D dashboard contract (+ freshness)
+GET /api/kernel/health       Kernel-R&D producer/data health only (non-recursive)
 GET /machine                 the machine / live-inference page (data plane: :8000 API)
 GET /autopilot               the autopilot-loop page (data plane: :8000 API)
 GET /nav.js                  the ONE shared cross-dashboard nav, with the registry
                              injected ahead of it as ``window.__EPYC_DASHBOARDS``
 GET /api/dashboards          the dashboard directory (dashboard/registry.json) plus a
-                             live 127.0.0.1 transport probe per (port, health_path)
+                             live 127.0.0.1 probe per declared (port, health_path)
 GET /bus                     the session-bus page (static HTML, re-read per request)
 GET /api/bus                 roster, per-agent liveness, inbox depth, operator tokens (+ alarms)
 GET /api/queue               folded work queue (latest row per task_id) + invariant alarms
@@ -50,6 +51,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import hashlib
 import json
 import os
 import re
@@ -156,18 +158,56 @@ BENCHMARK_ARTIFACT_INVENTORY = REPO / "data" / "benchmark_artifact_inventory.jso
 AUTOKERNEL_RESEARCH_REPO = Path(os.environ.get(
     "AUTOKERNEL_RESEARCH_REPO",
     "/workspace/repos/epyc-inference-research"))
+AUTOKERNEL_ROOT_REPO = Path(os.environ.get(
+    "AUTOKERNEL_ROOT_REPO", str(REPO)))
 AUTOKERNEL_STATE_ROOT = Path(os.environ.get(
     "AUTOKERNEL_STATE_ROOT",
     "/mnt/raid0/llm/autokernel"))
 AUTOKERNEL_PROBE_ROOT = Path(os.environ.get(
     "AUTOKERNEL_PROBE_ROOT",
     "/mnt/raid0/llm/autokernel/probes"))
+AUTOKERNEL_CONTROL_ROOT = Path(os.environ.get(
+    "AUTOKERNEL_CONTROL_ROOT",
+    "/mnt/raid0/llm/autokernel/controls"))
 PRODUCTION_KERNEL_ATTESTATION = Path(os.environ.get(
     "PRODUCTION_KERNEL_ATTESTATION",
     str(REPO / "artifacts/operator/ratify_v9_final_freeze_20260811.json")))
 PRODUCTION_KERNEL_REPO = Path(os.environ.get(
     "PRODUCTION_KERNEL_REPO",
     "/mnt/raid0/llm/llama.cpp"))
+AUTOKERNEL_INTEGRATION_SINCE = os.environ.get(
+    "AUTOKERNEL_INTEGRATION_SINCE", "2026-07-29T00:00:00Z")
+SPEECH_KERNEL_ATTESTATION = Path(os.environ.get(
+    "SPEECH_KERNEL_ATTESTATION",
+    str(REPO / "artifacts/operator/ratify_speech_kernel_freeze_20260731.json")))
+#: The four binaries the freeze actually covers. These mirror what
+#: `scripts/session/verify_llama_cpp.sh` and `verify_speech_kernels.sh` ENFORCE — the
+#: dashboard is a read-only projection of the enforced truth, never a second opinion.
+#: llama ships two (CPU and HIP) from one tree; the speech kernels ship one each.
+PRODUCTION_LLAMA_BINARIES = {
+    "cpu": Path(os.environ.get("PRODUCTION_LLAMA_CPU_BINARY",
+                               "/mnt/raid0/llm/llama.cpp/build/bin/llama-server")),
+    "hip": Path(os.environ.get("PRODUCTION_LLAMA_HIP_BINARY",
+                               "/mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server")),
+}
+#: Guard against hashing something pathological on a request path. The real binaries
+#: are 20 KB–1.7 MB and hash in ~4 ms; anything far larger is not what we think it is.
+_MAX_HASHED_BINARY_BYTES = 512 * 1024 * 1024
+#: Stable production links the runbook points launchers at, so a launcher never names
+#: a build directory directly. Verified on disk 2026-08-12: these are `cpu`/`gpu`/
+#: `stt`/`tts` — NOT the `inference-cpu`/`inference-gpu` spelling the follow-up brief
+#: used, which exists nowhere on this host.
+PRODUCTION_STABLE_LINK_ROOT = Path(os.environ.get(
+    "PRODUCTION_STABLE_LINK_ROOT", "/mnt/raid0/llm/kernels/production"))
+#: link name -> (expected resolved directory, binary that must live inside it)
+PRODUCTION_STABLE_LINKS = {
+    "cpu": ("/mnt/raid0/llm/llama.cpp/build/bin", "llama-server"),
+    "gpu": ("/mnt/raid0/llm/llama.cpp/build-hip/bin", "llama-server"),
+    "stt": ("/mnt/raid0/llm/whisper.cpp/build/bin", "whisper-server"),
+    "tts": ("/mnt/raid0/llm/qwentts.cpp/build", "tts-server"),
+}
+#: The library families whose tree of origin decides whether a measurement is real.
+_GGML_FAMILY = ("libggml", "libwhisper", "libllama", "libmtmd")
 
 # Freshness thresholds are DECLARED IN THE REGISTRY (dashboard/panels.py) and
 # read back here, so the numbers on the wire and the numbers in the panel→producer
@@ -586,6 +626,40 @@ def _kernel_contract_freshness(data: dict, *, artifact_present: bool = True) -> 
         data, artifact_present=artifact_present))
 
 
+def kernel_data_health() -> tuple[int, dict]:
+    """Kernel-R&D's panel-specific producer/data-health probe.
+
+    This intentionally reads only the AutoKernel terminal contract and folds only
+    the ``kernel`` envelope. It never calls :func:`health_payload` or
+    :func:`panel_envelopes`, so a registry consumer may probe this route without
+    recursing through the global ``/api/health`` fold (which includes the
+    dashboard directory, whose Kernel-R&D row points back here).
+
+    HTTP 200 means the contract is fully reported and current. ``absent`` and
+    ``degraded`` both return HTTP 503 for simple health-check clients; the JSON
+    body preserves the three-valued verdict and the complete freshness envelope,
+    including partial ``unreported`` sections.
+    """
+    present, data = _read_kernel_contract()
+    env = _kernel_contract_freshness(data, artifact_present=present)
+    verdict = panels.fold(
+        {"kernel": env}, registry={"kernel": panels.source("kernel")})
+    payload = {
+        "status": verdict["status"],
+        "probe": "panel-data",
+        "panel": "kernel",
+        "data_route": panels.source("kernel").route,
+        "transport_health": "/health",
+        "global_health": "/api/health",
+        "status_set_by": verdict["status_set_by"],
+        "worst": verdict["worst"],
+        "attention": verdict["attention"],
+        "absent": verdict["absent"],
+        "freshness": env,
+    }
+    return (200 if verdict["status"] == panels.STATUS_OK else 503), payload
+
+
 def _load_file_activity() -> dict:
     """Best-effort read of the git-derived ``file_activity`` map (last commit day
     per handoff) from the timeline artifact.
@@ -828,14 +902,17 @@ def _iso_mtime(path: Path) -> str | None:
 
 
 def _autokernel_git_activity(repo: Path, *, limit: int = 8) -> dict:
-    """Recent implementation commits, without importing the research package.
+    """Recent committed implementation work across refs, without imports.
 
     The dashboard process is intentionally stdlib-only.  ``git log`` also gives
     us the committed fact rather than the shared checkout's dirty state, which
-    may belong to any of several sessions on this host.
+    may belong to any of several sessions on this host.  ``--all`` is deliberate:
+    AutoKernel development uses isolated worktrees, so the canonical checkout's
+    current branch can trail already-committed work by hours.  This is activity
+    context only and therefore never claims the newest ref is merged or deployed.
     """
     command = [
-        "git", "-C", str(repo), "log", f"-{limit}",
+        "git", "-C", str(repo), "log", "--all", f"-{limit}",
         "--format=%H%x00%cI%x00%s", "--", "scripts/kernel_rnd/autokernel",
     ]
     try:
@@ -856,8 +933,77 @@ def _autokernel_git_activity(repo: Path, *, limit: int = 8) -> dict:
         commits.append({"sha": sha, "short_sha": sha[:10],
                         "committed_at": committed_at, "subject": subject})
     return {"status": "observed" if commits else "empty",
+            "scope": "committed AutoKernel work across local refs; not merge/deploy state",
             "head": commits[0] if commits else None,
             "recent_commits": commits}
+
+
+def _mainline_integration_summary(repo: Path, label: str,
+                                  since: str = AUTOKERNEL_INTEGRATION_SINCE) -> dict:
+    """Count the authoritative first-parent history instead of path-simplified log rows.
+
+    ``_autokernel_git_activity`` intentionally uses ``--all -- <path>``. Git history
+    simplification commonly removes merge commits from that view, so it must never be
+    reused as a merge/deployment counter. This projection names the exact ref and
+    traversal used, making a displayed zero falsifiable.
+    """
+    refs = ("refs/remotes/origin/main", "refs/heads/main")
+    selected = None
+    try:
+        for ref in refs:
+            probe = subprocess.run(
+                ["git", "-C", str(repo), "show-ref", "--verify", "--quiet", ref],
+                capture_output=True, text=True, timeout=5.0, check=False)
+            if probe.returncode == 0:
+                selected = ref
+                break
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {"label": label, "available": False, "repo": str(repo),
+                "since": since, "error": str(exc)}
+    if selected is None:
+        return {"label": label, "available": False, "repo": str(repo),
+                "since": since, "error": "neither origin/main nor local main exists"}
+
+    def _log(*extra: str) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            ["git", "-C", str(repo), "log", "--first-parent",
+             f"--since={since}", *extra, "--format=%H%x00%cI%x00%s", selected],
+            capture_output=True, text=True, timeout=8.0, check=False)
+
+    try:
+        commits = _log()
+        merges = _log("--merges")
+        tip = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", selected], capture_output=True,
+            text=True, timeout=5.0, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {"label": label, "available": False, "repo": str(repo),
+                "ref": selected, "since": since, "error": str(exc)}
+    failed = next((proc for proc in (commits, merges, tip)
+                   if proc.returncode != 0), None)
+    if failed is not None:
+        return {"label": label, "available": False, "repo": str(repo),
+                "ref": selected, "since": since,
+                "error": failed.stderr.strip() or f"git exited {failed.returncode}"}
+    commit_rows = [row for row in commits.stdout.splitlines() if row]
+    merge_rows = [row for row in merges.stdout.splitlines() if row]
+    newest_merge = None
+    if merge_rows:
+        sha, committed_at, subject = merge_rows[0].split("\0", 2)
+        newest_merge = {"sha": sha, "short_sha": sha[:10],
+                        "committed_at": committed_at, "subject": subject}
+    return {
+        "label": label,
+        "available": True,
+        "repo": str(repo),
+        "ref": selected,
+        "tip": tip.stdout.strip(),
+        "since": since,
+        "first_parent_commits": len(commit_rows),
+        "first_parent_merges": len(merge_rows),
+        "newest_merge": newest_merge,
+        "method": "git log --first-parent --since=<since> --merges <ref>",
+    }
 
 
 def _autokernel_work_bundles(repo: Path, *, limit: int = 12) -> list[dict]:
@@ -937,6 +1083,74 @@ def _autokernel_journal_inventory(root: Path) -> dict:
     }
 
 
+def _autokernel_probe_receipts(root: Path, *, limit: int = 20) -> dict:
+    """Inventory durable probe receipts without turning the hub into an evaluator.
+
+    Probe producers use different schemas and verdict vocabularies. The hub
+    passes through only string labels already written by a producer; it never
+    infers PASS/FAIL from measurements. Oversized or malformed JSON remains
+    visible as a receipt with no producer label rather than disappearing.
+    """
+    probes_root = root / "probes"
+    candidates = []
+    try:
+        paths = list(probes_root.glob("*/receipt.json"))
+    except OSError:
+        paths = []
+    for path in paths:
+        try:
+            stat = path.stat()
+        except OSError:
+            continue
+        candidates.append((stat.st_mtime, path, stat.st_size))
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    receipts = []
+    for mtime, path, size in candidates[:limit]:
+        payload = None
+        parse_state = "not_parsed"
+        if size <= 4 * 1024 * 1024:
+            try:
+                value = json.loads(path.read_text(encoding="utf-8"))
+                if isinstance(value, dict):
+                    payload = value
+                    parse_state = "parsed"
+                else:
+                    parse_state = "non_object"
+            except (OSError, UnicodeError, json.JSONDecodeError):
+                parse_state = "invalid_json"
+        else:
+            parse_state = "oversized"
+        producer_label = None
+        schema = None
+        campaign_id = None
+        if payload is not None:
+            schema = payload.get("schema") if isinstance(payload.get("schema"), str) else None
+            campaign_id = (payload.get("campaign_id")
+                           if isinstance(payload.get("campaign_id"), str) else None)
+            nested = payload.get("result")
+            nested_verdict = (nested.get("verdict") if isinstance(nested, dict) else None)
+            for value in (nested_verdict, payload.get("verdict"), payload.get("status")):
+                if isinstance(value, str) and value:
+                    producer_label = value
+                    break
+        receipts.append({
+            "probe": path.parent.name,
+            "path": str(path),
+            "updated_at": datetime.fromtimestamp(mtime, timezone.utc).isoformat(),
+            "bytes": size,
+            "parse_state": parse_state,
+            "schema": schema,
+            "campaign_id": campaign_id,
+            "producer_label": producer_label,
+        })
+    return {
+        "root": str(probes_root),
+        "role": ("receipt presence and producer-authored labels only; the dashboard "
+                 "does not grade probe evidence"),
+        "receipts": receipts,
+    }
+
+
 def _latest_autokernel_receipt(root: Path, filename: str,
                                schema: str) -> tuple[Path | None, dict | None, str | None]:
     """Find the newest readable receipt of one exact schema below ``root``.
@@ -962,6 +1176,312 @@ def _latest_autokernel_receipt(root: Path, filename: str,
     if errors:
         return None, None, errors[0]
     return None, None, f"no {schema} receipt found below {root}"
+
+
+def _loop_engineering_summary(root: Path) -> dict:
+    """Report the newest measured AK-LE panel and whether it was reduced.
+
+    This is file-state plus producer-authored status only.  A complete panel is
+    not itself a result: the externally pinned prefilter/reducer must publish a
+    reduction before the dashboard may call any planner metric observed.
+    """
+    try:
+        paths = list((root / "campaigns").glob("*/panel/panel.json"))
+    except OSError as exc:
+        return {"available": False, "error": str(exc)}
+    paths.sort(key=lambda path: _iso_mtime(path) or "", reverse=True)
+    for path in paths:
+        _, panel, error = _read_json_object(path, "AK-LE panel")
+        if error or panel is None or panel.get("schema") != \
+                "epyc.autokernel.loop_experiment_planner_panel.v1":
+            continue
+        observations = panel.get("observations")
+        observations = observations if isinstance(observations, list) else []
+        campaign_root = path.parent.parent
+        reductions = sorted(campaign_root.glob("planner-reduction*.json"),
+                            key=lambda row: _iso_mtime(row) or "", reverse=True)
+        reduction_path = None
+        reduction = None
+        for candidate in reductions:
+            _, value, _ = _read_json_object(candidate, "AK-LE reduction")
+            if isinstance(value, dict) and value.get("schema") == \
+                    "epyc.autokernel.loop_experiment_planner_reduction.v1":
+                reduction_path, reduction = candidate, value
+                break
+        planner_receipt = (reduction.get("planner_receipt")
+                           if isinstance(reduction, dict) and isinstance(
+                               reduction.get("planner_receipt"), dict) else {})
+        search_rows = planner_receipt.get("search_persistence_observations")
+        search_rows = search_rows if isinstance(search_rows, list) else []
+        cells = []
+        for row in search_rows:
+            if not isinstance(row, dict):
+                continue
+            cells.append({key: row.get(key) for key in (
+                "cell_id", "model_id", "effort", "target_context_mode",
+                "prefilter_survival_count", "already_optimized_termination_count",
+                "termination", "elapsed_wall_seconds",
+            )})
+        return {
+            "available": True,
+            "campaign_id": panel.get("experiment_id"),
+            "panel_status": panel.get("status"),
+            "completed_cells": len(observations),
+            "total_cells": 8,
+            "capture_mode": panel.get("capture_mode"),
+            "reduced": reduction is not None,
+            "reduction_sha256": (reduction.get("reduction_sha256")
+                                 if reduction else None),
+            "belief_measurement_count": (len(reduction.get("belief_measurements", []))
+                                         if reduction else 0),
+            "cells": cells,
+            "authority": panel.get("authority"),
+            "evidence": str(path),
+            "reduction_evidence": str(reduction_path) if reduction_path else None,
+            "note": ("complete raw panel, not a result; no empirical interpretation until the "
+                     "pinned prefilter/reducer publishes a reduction")
+                    if reduction is None else
+                    "planner-only AK-LE-1/2 observation; no ranking or promotion authority",
+        }
+    return {"available": False, "error": f"no AK-LE panel found below {root / 'campaigns'}"}
+
+
+def _fault_rehearsal_summary(root: Path) -> dict:
+    """Project the newest real host-process rehearsal without grading it."""
+    path, data, error = _latest_autokernel_receipt(
+        root / "rehearsals", "receipt.json",
+        "epyc.autokernel.host_process_fault_rehearsal.v1")
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    legs = data.get("legs") if isinstance(data.get("legs"), list) else []
+    return {
+        "available": True,
+        "campaign_id": data.get("campaign_id"),
+        "status": data.get("status"),
+        "capture_mode": data.get("capture_mode"),
+        "passed_legs": sum(1 for leg in legs
+                           if isinstance(leg, dict) and leg.get("status") == "PASS"),
+        "total_legs": len(legs),
+        "live_claim_root_touched": data.get("live_claim_root_touched"),
+        "process_selection": data.get("process_selection"),
+        "authority": data.get("authority"),
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+        "note": ("dependency evidence for crash/restart, revocation, teardown, and "
+                 "tamper handling; not a performance or release verdict"),
+    }
+
+
+def _arena_campaign_progress(root: Path) -> dict:
+    """Project verified checkpoint file state for the newest INF-03-style run.
+
+    Incomplete campaigns have no campaign verdict. Worker requests are shown only
+    as in-flight *markers*: their presence does not claim process liveness, success,
+    resumability, or a partial ranking.
+    """
+    try:
+        manifests = list((root / "campaigns").glob("*/campaign-manifest.json"))
+    except OSError as exc:
+        return {"available": False, "error": str(exc)}
+    manifests.sort(key=lambda path: _iso_mtime(path) or "", reverse=True)
+    for path in manifests:
+        _, manifest, error = _read_json_object(path, "Arena campaign manifest")
+        if error or manifest is None or manifest.get("schema") != \
+                "epyc.autokernel.arena_campaign_run_manifest.v1":
+            continue
+        matrix = manifest.get("matrix") if isinstance(manifest.get("matrix"), dict) else {}
+        tasks = matrix.get("task_ids") if isinstance(matrix.get("task_ids"), list) else []
+        arms = matrix.get("arm_ids") if isinstance(matrix.get("arm_ids"), list) else []
+        checkpoints = (matrix.get("checkpoint_hours")
+                       if isinstance(matrix.get("checkpoint_hours"), list) else [])
+        baseline_count = sum(1 for arm in arms if arm == "starting_state_baseline")
+        planned = len(tasks) * (baseline_count + (len(arms) - baseline_count) * len(checkpoints))
+        campaign_root = path.parent
+        receipt_paths = list(campaign_root.glob("execution/cells/*/checkpoint-receipt.json"))
+        completed = []
+        belief_rows = 0
+        released = 0
+        for receipt_path in receipt_paths:
+            _, receipt, _ = _read_json_object(receipt_path, "Arena checkpoint")
+            if not isinstance(receipt, dict) or receipt.get("schema") != \
+                    "epyc.autokernel.arena_checkpoint.v1":
+                continue
+            completed.append(receipt_path)
+            release = receipt.get("device_claim_released")
+            if isinstance(release, dict) and release.get("released_at"):
+                released += 1
+            belief = receipt.get("belief_receipt")
+            rows = belief.get("belief_measurements") if isinstance(belief, dict) else []
+            belief_rows += len(rows) if isinstance(rows, list) else 0
+        requests = list(campaign_root.glob("execution/cells/*/worker-request.json"))
+        complete_parents = {receipt.parent for receipt in completed}
+        inflight_markers = sum(1 for request in requests
+                               if request.parent not in complete_parents)
+        terminal_paths = sorted(campaign_root.glob("*aggregate*.json"),
+                                key=lambda candidate: _iso_mtime(candidate) or "",
+                                reverse=True)
+        return {
+            "available": True,
+            "campaign_id": manifest.get("campaign_id"),
+            "run_directory": campaign_root.name,
+            "authority": manifest.get("authority"),
+            "available_source": manifest.get("available_source"),
+            "tasks": len(tasks),
+            "arms": len(arms),
+            "checkpoint_hours": checkpoints,
+            "completed_checkpoints": len(completed),
+            "planned_checkpoints": planned,
+            "inflight_markers": inflight_markers,
+            "released_completed_claims": released,
+            "belief_measurement_count": belief_rows,
+            "terminal_aggregate_present": bool(terminal_paths),
+            "evidence": str(path),
+            "evidence_mtime": _iso_mtime(path),
+            "note": ("checkpoint file-state only; partial/in-flight work is not rankable and "
+                     "an in-flight marker is not a liveness claim"),
+        }
+    return {"available": False,
+            "error": f"no Arena campaign manifest found below {root / 'campaigns'}"}
+
+
+def _scaffold_panel_summary(root: Path) -> dict:
+    """Project the newest terminal AK-LE-3 panel and hash-bound evaluations."""
+    try:
+        paths = list((root / "campaigns").glob("*/panel/panel.json"))
+    except OSError as exc:
+        return {"available": False, "error": str(exc)}
+    paths.sort(key=lambda path: _iso_mtime(path) or "", reverse=True)
+    for path in paths:
+        _, panel, error = _read_json_object(path, "AK-LE-3 panel")
+        if error or panel is None or panel.get("schema") != \
+                "epyc.autokernel.ak_le_3_scaffold_panel.v1":
+            continue
+        panel_cells = panel.get("cells") if isinstance(panel.get("cells"), list) else []
+        evaluation_paths = list((path.parent / "cells").glob("*/arena-evaluation.json"))
+        evaluations = {}
+        for evaluation_path in evaluation_paths:
+            _, value, _ = _read_json_object(evaluation_path, "AK-LE-3 evaluation")
+            if isinstance(value, dict) and value.get("schema") == \
+                    "epyc.autokernel.ak_le_3_arena_evaluation.v1":
+                evaluations[value.get("cell_id")] = (evaluation_path, value)
+        cells = []
+        released = 0
+        for cell in panel_cells:
+            if not isinstance(cell, dict):
+                continue
+            release = cell.get("device_claim_released")
+            if isinstance(release, dict) and release.get("released_at"):
+                released += 1
+            evaluation_path, evaluation = evaluations.get(cell.get("cell_id"), (None, {}))
+            digest, digest_error = _sha256_file(evaluation_path) if evaluation_path else (None, None)
+            expected = cell.get("evaluation_sha256")
+            cells.append({
+                "cell_id": cell.get("cell_id"),
+                "model_id": cell.get("model_id"),
+                "effort": cell.get("effort"),
+                "scaffold": cell.get("scaffold"),
+                "planned_wall_seconds": cell.get("planned_wall_seconds"),
+                "observed_actor_wall_seconds": cell.get("observed_actor_wall_seconds"),
+                "average_speedup": evaluation.get("average_speedup"),
+                "pass_compilation": evaluation.get("pass_compilation"),
+                "pass_correctness": evaluation.get("pass_correctness"),
+                "valid_baseline_cases": evaluation.get("valid_baseline_cases"),
+                "valid_optimized_cases": evaluation.get("valid_optimized_cases"),
+                "evaluation_hash_matches": bool(expected and digest == expected),
+                "evaluation_error": digest_error,
+            })
+        constraints = panel.get("constraints") if isinstance(panel.get("constraints"), dict) else {}
+        return {
+            "available": True,
+            "campaign_id": panel.get("experiment_id"),
+            "status": panel.get("status"),
+            "authority": panel.get("authority"),
+            "capture_mode": panel.get("capture_mode"),
+            "completed_cells": len(cells),
+            "total_cells": 4,
+            "released_claims": released,
+            "cells": cells,
+            "belief_measurement_count": len(panel.get("belief_measurements", []))
+            if isinstance(panel.get("belief_measurements"), list) else 0,
+            "prospective_adapter_present": (REPO / "scripts/vidya/adapters/autokernel_scaffold_panel.py").is_file(),
+            "ranking_authority": constraints.get("ranking_authority", False),
+            "promotion_authority": constraints.get("campaign_authority", False),
+            "evidence": str(path),
+            "evidence_mtime": _iso_mtime(path),
+            "note": ("measured diagnostic scaffold observation only; r1 predates the "
+                     "prospective belief hook and is not retrofitted"),
+        }
+    return {"available": False,
+            "error": f"no AK-LE-3 panel found below {root / 'campaigns'}"}
+
+
+def _rocm_diagnostics_summary(root: Path) -> dict:
+    """Project current post-hook ROCm diagnostics and profiler receipt inventory."""
+    campaign_root = root / "campaigns"
+    rvp_path, rvp, rvp_error = _latest_autokernel_receipt(
+        campaign_root, "receipt.json", "epyc.rvp_t0_1_saturation_probe.v1")
+    bh_path, bh, bh_error = _latest_autokernel_receipt(
+        campaign_root, "receipt.json", "epyc.ak_bh_1_gemm_baseline_compare.v1")
+    rvp_rows = rvp.get("belief_measurements") if isinstance(rvp, dict) else []
+    bh_rows = bh.get("belief_measurements") if isinstance(bh, dict) else []
+    comparisons = bh.get("comparisons") if isinstance(bh, dict) else []
+    ratios = [row.get("hipblaslt_over_rocblas") for row in comparisons
+              if isinstance(row, dict) and isinstance(
+                  row.get("hipblaslt_over_rocblas"), (int, float))]
+    profile_schemas = {
+        "epyc.autokernel.rocprofv1_attribution.v1": "rocprof v1 whole-model attribution",
+        "epyc.autokernel.c4_profile_capture.v1": "C4 rocprof capture",
+        "epyc.autokernel.c4_profile_report.v1": "C4 paired profile report",
+        "epyc.autokernel.g15_profile.v1": "G15 profiler capture",
+        "epyc.autokernel.omniperf_fallback.v1": "Omniperf fallback",
+    }
+    profiles = []
+    for schema, label in profile_schemas.items():
+        found = []
+        try:
+            for candidate in (root / "probes").glob("*/*.json"):
+                _, data, _ = _read_json_object(candidate, "ROCm profile receipt")
+                if isinstance(data, dict) and data.get("schema") == schema:
+                    found.append((candidate, data))
+        except OSError:
+            found = []
+        found.sort(key=lambda pair: _iso_mtime(pair[0]) or "", reverse=True)
+        if found:
+            candidate, data = found[0]
+            rows = data.get("belief_measurements")
+            profiles.append({"schema": schema, "label": label,
+                             "status": data.get("status"),
+                             "belief_measurement_count": len(rows)
+                             if isinstance(rows, list) else 0,
+                             "evidence": str(candidate)})
+    return {
+        "available": rvp is not None or bh is not None or bool(profiles),
+        "rvp": {
+            "available": rvp is not None, "campaign_id": rvp.get("campaign_id") if rvp else None,
+            "status": rvp.get("status") if rvp else None,
+            "throughput_tflops": (rvp.get("workload") or {}).get("throughput_tflops") if rvp else None,
+            "nominal_sclk_fraction": rvp.get("nominal_sclk_sample_fraction") if rvp else None,
+            "max_power_w": rvp.get("max_power_w") if rvp else None,
+            "power_cap_w": rvp.get("power_cap_w") if rvp else None,
+            "belief_measurement_count": len(rvp_rows) if isinstance(rvp_rows, list) else 0,
+            "evidence": str(rvp_path) if rvp_path else None, "error": rvp_error,
+        },
+        "baseline_honesty": {
+            "available": bh is not None, "campaign_id": bh.get("campaign_id") if bh else None,
+            "status": bh.get("status") if bh else None, "shape_count": len(comparisons),
+            "hipblaslt_wins": sum(1 for value in ratios if value > 1.0),
+            "ratio_min": min(ratios) if ratios else None,
+            "ratio_max": max(ratios) if ratios else None,
+            "belief_measurement_count": len(bh_rows) if isinstance(bh_rows, list) else 0,
+            "evidence": str(bh_path) if bh_path else None, "error": bh_error,
+        },
+        "read_adapter_present": (REPO / "scripts/vidya/adapters/autokernel_rocm_diagnostic.py").is_file(),
+        "profile_adapter_present": (REPO / "scripts/vidya/adapters/autokernel_aux_receipt.py").is_file(),
+        "profiles": profiles,
+        "note": ("diagnostic/profile receipts do not rank an AutoKernel candidate or grant "
+                 "campaign or promotion authority"),
+    }
 
 
 def _campaign_audit_summary(path: Path | None, data: dict | None,
@@ -1024,12 +1544,192 @@ def _smoke_receipt_summary(path: Path | None, data: dict | None,
     }
 
 
+def _control_preflight_summary(path: Path | None, data: dict | None,
+                               error: str | None) -> dict:
+    """Project the trusted-instrument preflight without parsing prose reasons."""
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    checks = data.get("checks") if isinstance(data.get("checks"), dict) else {}
+    outcomes = {
+        str(name): check.get("outcome")
+        for name, check in checks.items() if isinstance(check, dict)
+    }
+    failed = sorted(name for name, outcome in outcomes.items()
+                    if outcome != "PASS")
+    return {
+        "available": True,
+        "status": "PASS" if outcomes and not failed else "FAIL",
+        "passed_checks": sum(1 for outcome in outcomes.values()
+                             if outcome == "PASS"),
+        "total_checks": len(outcomes),
+        "failed_checks": failed,
+        "measured_at": data.get("measured_at"),
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+    }
+
+
+def _latest_control_summary(root: Path) -> tuple[Path | None, dict | None, str | None]:
+    """Select the newest completed control summary with a matching attestation.
+
+    ``summary.json`` predates receipt-wide schema stamping, so accepting it by
+    filename alone would let an arbitrary JSON object become operator posture.
+    The shape is therefore constrained here and its sibling composition receipt
+    must carry the versioned schema and the same campaign id.
+    """
+    try:
+        candidates = list(root.glob("*/summary.json"))
+    except OSError as exc:
+        return None, None, f"control discovery unavailable: {exc}"
+    candidates.sort(key=lambda path: _iso_mtime(path) or "", reverse=True)
+    errors = []
+    for path in candidates:
+        _, data, err = _read_json_object(path, "control summary")
+        if err or data is None:
+            errors.append(f"{path}: {err or 'not an object'}")
+            continue
+        campaign_id = data.get("campaign_id")
+        required = (
+            isinstance(campaign_id, str) and bool(campaign_id)
+            and isinstance(data.get("controls"), dict)
+            and isinstance(data.get("calibration"), dict)
+            and isinstance(data.get("measurement_instrument_commit"), str)
+            and isinstance(data.get("production_source_commit"), str)
+        )
+        if not required:
+            continue
+        attestation_path = path.with_name("composition_attestation.json")
+        _, attestation, attestation_err = _read_json_object(
+            attestation_path, "control composition attestation")
+        if (attestation_err or attestation is None
+                or attestation.get("schema") !=
+                "epyc.autokernel.control_composition_attestation.v1"
+                or attestation.get("campaign_id") != campaign_id):
+            errors.append(f"{path}: matching composition attestation unavailable")
+            continue
+        selected = dict(data)
+        selected["_composition_attestation"] = attestation
+        selected["_composition_attestation_path"] = str(attestation_path)
+        return path, selected, None
+    if errors:
+        return None, None, errors[0]
+    return None, None, f"no completed control summary found below {root}"
+
+
+def _control_summary(path: Path | None, data: dict | None,
+                     error: str | None, production_head: str | None) -> dict:
+    """Project the decision-grade control panel and instrument provenance."""
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    controls = data.get("controls") if isinstance(data.get("controls"), dict) else {}
+    panel_result = (controls.get("panel_result")
+                    if isinstance(controls.get("panel_result"), dict) else {})
+    panel = panel_result.get("panel") if isinstance(panel_result.get("panel"), dict) else {}
+    calibration = (data.get("calibration")
+                   if isinstance(data.get("calibration"), dict) else {})
+    outputs = (calibration.get("outputs")
+               if isinstance(calibration.get("outputs"), dict) else {})
+    attestation = (data.get("_composition_attestation")
+                   if isinstance(data.get("_composition_attestation"), dict) else {})
+    production_source = data.get("production_source_commit")
+    return {
+        "available": True,
+        "campaign_id": data.get("campaign_id"),
+        "state": data.get("state"),
+        "may_rank": data.get("may_rank"),
+        "marker": panel.get("marker"),
+        "panel": panel,
+        "measured_at": data.get("measured_at"),
+        "measurement_instrument_commit": data.get(
+            "measurement_instrument_commit"),
+        "production_source_commit": production_source,
+        "anchor_matches_production": bool(
+            production_head and production_source == production_head),
+        "binary_copy_exact": data.get("binary_copy_exact"),
+        "calibration_accepted": calibration.get("accepted"),
+        "b_min_blocks": outputs.get("b_min_blocks"),
+        "noise_floor": outputs.get("noise_floor_phi"),
+        "composition_mode": data.get("composition_mode"),
+        "composition_inference_executed": attestation.get("inference_executed"),
+        "composition_evidence": data.get("_composition_attestation_path"),
+        "promotion_authority": False,
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+    }
+
+
+def _gpu_replay_summary(path: Path | None, data: dict | None,
+                        error: str | None) -> dict:
+    """Project the paired ROCm replay without turning positivity into a pass."""
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    result = data.get("result") if isinstance(data.get("result"), dict) else {}
+    sampling = (data.get("device_sampling")
+                if isinstance(data.get("device_sampling"), dict) else {})
+    released = (data.get("device_claim_released")
+                if isinstance(data.get("device_claim_released"), dict) else {})
+    return {
+        "available": True,
+        "campaign_id": data.get("campaign_id"),
+        "verdict": result.get("verdict"),
+        "blocks": data.get("blocks"),
+        "all_blocks_positive": result.get("all_blocks_positive"),
+        "contribution_floor": result.get("contribution_floor"),
+        "median_relative_delta": result.get("median_relative_delta"),
+        "minimum_relative_delta": result.get("minimum_relative_delta"),
+        "device_id": sampling.get("device_id"),
+        "device_sample_count": sampling.get("sample_count"),
+        "device_sample_source": sampling.get("source"),
+        "device_claim_released_at": released.get("released_at"),
+        "source_branch": data.get("source_branch"),
+        "source_commit": data.get("source_commit"),
+        "promotion_authority": False,
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+    }
+
+
+#: The receipt schemas this panel knows how to project. Kept as a named constant so
+#: the page can DECLARE its own coverage rather than implying completeness by silence.
+_PROJECTED_RECEIPT_SCHEMAS = {
+    "epyc.autokernel.arena_controller_campaign_audit.v1",
+    "epyc.autokernel.arena_available_source_campaign_audit.v1",
+    "epyc.autokernel.arena_diagnostic_smoke.v1",
+    "epyc.autokernel.live_control_preflight.v1",
+    "epyc.autokernel.async_prefetch_replay.v1",
+    "epyc.autokernel.arena_campaign_run_manifest.v1",
+    "epyc.autokernel.arena_checkpoint.v1",
+    "epyc.autokernel.ak_le_3_scaffold_panel.v1",
+    "epyc.autokernel.ak_le_3_arena_evaluation.v1",
+    "epyc.rvp_t0_1_saturation_probe.v1",
+    "epyc.ak_bh_1_gemm_baseline_compare.v1",
+    "epyc.autokernel.rocprofv1_attribution.v1",
+    "epyc.autokernel.c4_profile_capture.v1",
+    "epyc.autokernel.c4_profile_report.v1",
+    "epyc.autokernel.g15_profile.v1",
+    "epyc.autokernel.omniperf_fallback.v1",
+}
+
+
 def _production_kernel_summary(attestation_path: Path,
                                production_repo: Path) -> dict:
     """Read the operator freeze attestation and compare the canonical checkout."""
     present, data, err = _read_json_object(attestation_path,
                                            "production kernel attestation")
     if data is None:
+        if err is None:
+            # D-1 residual (KRD-AUDIT-20260812). `_read_json_object` returns err=None
+            # for a simply-absent file, and this function used to pass that straight
+            # through — so the panel could only say "attestation not found" with no
+            # reason. The render was made loud earlier; the REASON was still missing,
+            # and the same synthesised-sentence pattern already existed one function
+            # away in `_read_kernel_contract`. Asymmetry closed.
+            err = (f"production kernel freeze attestation not exported — nothing has "
+                   f"written {attestation_path}. The production kernel identity is "
+                   f"UNPROVEN; do not read this page as confirming which kernel is live.")
         return {"available": False, "artifact_present": present,
                 "evidence": str(attestation_path), "error": err}
     observed_branch = observed_head = checkout_error = None
@@ -1053,6 +1753,7 @@ def _production_kernel_summary(attestation_path: Path,
         checkout_error = str(exc)
     expected_branch = data.get("production_branch")
     expected_head = data.get("production_head")
+    working_tree = _working_tree_state(production_repo)
     return {
         "available": True,
         "decision": data.get("decision"),
@@ -1061,6 +1762,8 @@ def _production_kernel_summary(attestation_path: Path,
         "branch": expected_branch,
         "head": expected_head,
         "version": data.get("production_version"),
+        "binary_sha256": data.get("production_binary_sha256") or {},
+        "ggml": data.get("ggml"),
         "ratified_at": data.get("ratified_at"),
         "scope": data.get("scope"),
         "evidence": str(attestation_path),
@@ -1071,19 +1774,518 @@ def _production_kernel_summary(attestation_path: Path,
             "matches_attestation": (observed_branch == expected_branch
                                     and observed_head == expected_head),
             "error": checkout_error,
+            **working_tree,
         },
+    }
+
+
+def _sha256_file(path: Path) -> tuple:
+    """``(digest_or_None, error_or_None)``. Absence is not an error here — the caller
+    distinguishes *missing binary* from *unreadable binary*, and both must stay loud."""
+    try:
+        size = path.stat().st_size
+    except FileNotFoundError:
+        return None, None
+    except OSError as exc:
+        return None, f"unreadable: {exc}"
+    if size > _MAX_HASHED_BINARY_BYTES:
+        return None, f"refusing to hash {size} bytes (> {_MAX_HASHED_BINARY_BYTES})"
+    digest = hashlib.sha256()
+    try:
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+    except OSError as exc:
+        return None, f"unreadable: {exc}"
+    return digest.hexdigest(), None
+
+
+def _binary_identity(label: str, path: Path, expected_sha256: str | None) -> dict:
+    """One attested binary, compared live.
+
+    THREE-VALUED ON PURPOSE, because two of the states are the ones that hurt:
+    ``matches`` True (identity proven), False (DRIFT — something rebuilt or replaced a
+    frozen binary), or None (*unknown* — the file is missing, unreadable, or the
+    attestation carries no digest to compare against). A missing binary must never
+    read as a passing one, which a boolean would force it to.
+    """
+    observed, error = _sha256_file(path)
+    present = observed is not None
+    if expected_sha256 and observed:
+        matches = observed == expected_sha256
+    else:
+        matches = None
+    if error is None and not present:
+        error = "binary absent — the freeze attests a file that is not on disk"
+    elif matches is False:
+        error = ("BINARY DRIFT — on-disk digest does not match the operator "
+                 "attestation; a frozen binary was rebuilt or replaced")
+    elif expected_sha256 is None and present:
+        error = "attestation carries no digest for this binary — identity unverifiable"
+    return {"label": label, "path": str(path), "present": present,
+            "expected_sha256": expected_sha256, "observed_sha256": observed,
+            "matches": matches, "error": error}
+
+
+def _working_tree_state(repo: Path) -> dict:
+    """Three-valued working-tree cleanliness, including untracked paths."""
+    try:
+        status = subprocess.run(
+            ["git", "-C", str(repo), "status", "--porcelain=v1",
+             "--untracked-files=all"], capture_output=True, text=True,
+            timeout=5.0, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {"clean": None, "dirty_count": None, "dirty_paths": [],
+                "status_error": str(exc)}
+    if status.returncode != 0:
+        return {"clean": None, "dirty_count": None, "dirty_paths": [],
+                "status_error": (status.stderr.strip()
+                                 or f"git status exited {status.returncode}")}
+    rows = [row for row in status.stdout.splitlines() if row]
+    return {"clean": not rows, "dirty_count": len(rows),
+            "dirty_paths": rows[:20], "status_error": None}
+
+
+def _checkout_identity(repo: Path, expected_branch: str | None,
+                       expected_head: str | None) -> dict:
+    """Live branch/head of a kernel tree vs what the attestation froze."""
+    observed_branch = observed_head = error = None
+    try:
+        branch = subprocess.run(
+            ["git", "-C", str(repo), "symbolic-ref", "--short", "HEAD"],
+            capture_output=True, text=True, timeout=5.0, check=False)
+        head = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", "HEAD"],
+            capture_output=True, text=True, timeout=5.0, check=False)
+        if branch.returncode == 0:
+            observed_branch = branch.stdout.strip() or None
+        else:
+            error = branch.stderr.strip() or f"git symbolic-ref exited {branch.returncode}"
+        if head.returncode == 0:
+            observed_head = head.stdout.strip() or None
+        elif error is None:
+            error = head.stderr.strip() or f"git rev-parse exited {head.returncode}"
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        error = str(exc)
+    if observed_branch is None and observed_head is None and error is None:
+        error = "kernel tree unreadable — no branch or head could be resolved"
+    matches = None
+    if observed_branch is not None and observed_head is not None:
+        matches = (observed_branch == expected_branch and observed_head == expected_head)
+    return {"path": str(repo), "branch": observed_branch, "head": observed_head,
+            "expected_branch": expected_branch, "expected_head": expected_head,
+            "matches_attestation": matches, "error": error,
+            **_working_tree_state(repo)}
+
+
+def _ggml_generation_identity(repo: Path, expected: str | None) -> dict:
+    """Compare attested ggml generation with the checked-out tree metadata."""
+    cmake = repo / "ggml" / "CMakeLists.txt"
+    try:
+        source = cmake.read_text(encoding="utf-8")
+    except OSError as exc:
+        return {"expected": expected, "observed": None, "matches": None,
+                "evidence": str(cmake), "error": f"ggml generation unverifiable: {exc}"}
+    fields = {}
+    for name in ("MAJOR", "MINOR", "PATCH"):
+        match = re.search(rf"set\(GGML_VERSION_{name}\s+([0-9]+)\)", source)
+        if match:
+            fields[name] = match.group(1)
+    observed = ".".join(fields.get(name, "") for name in ("MAJOR", "MINOR", "PATCH"))
+    if not observed or ".." in observed:
+        return {"expected": expected, "observed": None, "matches": None,
+                "evidence": str(cmake),
+                "error": "ggml generation unverifiable — version fields incomplete"}
+    if not expected:
+        return {"expected": None, "observed": observed, "matches": None,
+                "evidence": str(cmake),
+                "error": "ggml generation observed but not attested"}
+    matches = observed == expected
+    return {"expected": expected, "observed": observed, "matches": matches,
+            "evidence": str(cmake),
+            "error": None if matches else "GGML GENERATION DRIFT — tree differs from attestation"}
+
+
+def _speech_kernel_summary(attestation_path: Path | None = None) -> dict:
+    """whisper.cpp and qwentts.cpp — the two thirds of the freeze nobody was showing.
+
+    WHY THIS EXISTS (KRD-AUDIT-20260812). The freeze covers a production KERNEL SET —
+    llama.cpp `production-consolidated-v9` plus whisper.cpp and qwentts.cpp at
+    `production-speech-v1` — and the dashboard projected only llama. Measured on the
+    live surface before this change: the strings `whisper`, `qwentts`, `speech` and
+    `ggml` appeared ZERO times anywhere in `autokernel_current_state()`. Two of three
+    frozen kernels could drift, be rebuilt, or vanish and no panel would say so.
+
+    THE STALE-SOURCE TRAP, and it is why llama is NOT read from here. This attestation
+    also carries a `kernels.llama_cpp` block — pinned at **v8** (`67a433bf`, binary
+    10107) and labelled in its own text *"unchanged by this ratification; recorded for
+    completeness"*. It was accurate on 2026-07-31 and was superseded by the v9 freeze
+    on 08-11. Folding the set from this one file would therefore project a **stale
+    llama identity that still looks internally consistent** — the failure this audit
+    was commissioned to find, not to reproduce. llama comes from the v9 attestation;
+    this function deliberately ignores its own llama block.
+
+    ggml GENERATION IS PROJECTED because it is load-bearing, not decorative: the three
+    trees run three different ggml generations (0.18.0 / 0.17.0 / v9's own), and
+    `CLAUDE.md` records that a binary inheriting another tree's ggml *runs silently
+    wrong*. A number that must match and is shown nowhere is exactly the class of fact
+    this dashboard exists to surface.
+    """
+    attestation_path = attestation_path or SPEECH_KERNEL_ATTESTATION
+    present, data, err = _read_json_object(attestation_path, "speech kernel attestation")
+    if data is None:
+        if err is None:
+            err = (f"speech kernel freeze attestation not exported — nothing has "
+                   f"written {attestation_path}. Two of the three frozen kernels "
+                   f"(whisper.cpp, qwentts.cpp) are therefore UNVERIFIED here.")
+        return {"available": False, "artifact_present": present,
+                "evidence": str(attestation_path), "error": err, "kernels": []}
+    kernels = []
+    for key, title in (("whisper_cpp", "whisper.cpp (STT)"),
+                       ("qwentts_cpp", "qwentts.cpp (TTS)")):
+        spec = data.get("kernels", {}).get(key)
+        if not isinstance(spec, dict):
+            kernels.append({"key": key, "title": title, "available": False,
+                            "error": f"attestation carries no `{key}` block"})
+            continue
+        binary = spec.get("binary")
+        kernels.append({
+            "key": key, "title": title, "available": True,
+            "tree": spec.get("tree"), "branch": spec.get("branch"),
+            "head": spec.get("commit"), "ggml": spec.get("ggml"),
+            "load_bearing_patch": spec.get("load_bearing_patch"),
+            "checkout": _checkout_identity(Path(spec.get("tree") or "/nonexistent"),
+                                           spec.get("branch"), spec.get("commit")),
+            "binary": _binary_identity(title, Path(binary), spec.get("binary_sha256"))
+            if binary else {"label": title, "present": False, "matches": None,
+                            "error": "attestation names no binary for this kernel"},
+        })
+    return {"available": True, "ratification": data.get("ratification"),
+            "ratified_at": data.get("date_utc"), "scope": data.get("scope"),
+            "evidence": str(attestation_path), "error": None, "kernels": kernels}
+
+
+def _elf_dynamic(path: Path) -> tuple:
+    """``(needed, runpath_entries, error)`` from the ELF dynamic section.
+
+    READ-ONLY AND NON-EXECUTING, deliberately. The research contract
+    (`verify_ggml_linkage.sh`) uses `ldd`, which invokes the dynamic loader; the
+    follow-up brief forbids executing the production binary, so this parses
+    `readelf -d` instead. Strictly weaker than `ldd` — it cannot see dlopened
+    backends — and that limit is reported rather than hidden.
+    """
+    try:
+        proc = subprocess.run(["readelf", "-d", str(path)],
+                              capture_output=True, text=True, timeout=10.0, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return [], [], f"readelf unavailable: {exc}"
+    if proc.returncode != 0:
+        return [], [], (proc.stderr.strip() or f"readelf exited {proc.returncode}")
+    needed, runpath = [], []
+    for line in proc.stdout.splitlines():
+        if "(NEEDED)" in line and "[" in line:
+            needed.append(line.split("[", 1)[1].rstrip("]").strip())
+        elif ("(RUNPATH)" in line or "(RPATH)" in line) and "[" in line:
+            raw = line.split("[", 1)[1].rstrip("]").strip()
+            runpath.extend([e for e in raw.split(":") if e])
+    return needed, runpath, None
+
+
+def _ambient_foreign_ggml_dirs() -> dict:
+    """Entries on the SERVER PROCESS's ``LD_LIBRARY_PATH`` that carry a libggml.
+
+    WHY THIS IS THE FIRST THING CHECKED. `LD_LIBRARY_PATH` is consulted BEFORE a
+    binary's own `DT_RUNPATH`, so a single ggml-bearing directory on it overrides
+    every tree-local guarantee the binaries carry. That is not hypothetical:
+    INC-20260731-ggml-linkage-silent-cpu-fallback is exactly this — a HIP-built
+    whisper-cli loaded the production CPU-only ggml, found no GPU, and ran full-CPU
+    while printing `use gpu = 1`. The run completes, the output is well-formed, and
+    only the throughput is quietly wrong.
+
+    SCOPE, STATED because it is easy to overclaim: this observes the environment of
+    the DASHBOARD PROCESS, not of any launcher. A clean reading here does not prove a
+    launcher is clean, and a dirty reading does not prove a specific measurement was
+    contaminated — it proves the host handed THIS process a contaminated path, which
+    is evidence about the environment sessions inherit. The durable config
+    (`/etc/environment`, devcontainer) is the authority on whether the incident fix is
+    still applied; a stale shell can carry removed entries until it is restarted.
+    """
+    raw = os.environ.get("LD_LIBRARY_PATH", "")
+    entries, carriers = [e for e in raw.split(":") if e], []
+    for entry in entries:
+        try:
+            if any(f.name.startswith("libggml") for f in Path(entry).iterdir()):
+                carriers.append(entry)
+        except OSError:
+            continue
+    return {"ld_library_path": entries, "ggml_bearing_entries": carriers,
+            "clean": not carriers,
+            "note": ("observed for the DASHBOARD PROCESS only — this is evidence about "
+                     "the environment sessions inherit, not proof about any launcher")}
+
+
+def _linkage_evidence(binary: Path, tree_root: Path) -> dict:
+    """Does this binary's ggml family resolve inside its OWN tree?"""
+    needed, runpath, error = _elf_dynamic(binary)
+    if error:
+        return {"binary": str(binary), "tree_root": str(tree_root), "error": error,
+                "verified": None, "runpath": [], "ggml_libs": []}
+    origin = binary.parent
+    resolved_runpath = [str(origin) if e == "$ORIGIN" else e.replace("$ORIGIN", str(origin))
+                        for e in runpath]
+    # One transitive hop: llama-server NEEDs only its impl .so, and the ggml family
+    # arrives through that. Stopping at the direct NEEDED set would report "no ggml
+    # libraries" for the two llama binaries — an absence that is an artifact of where
+    # we stopped looking, not a property of the binary.
+    frontier = list(needed)
+    for name in list(needed):
+        if name.startswith("libllama-server-impl"):
+            child = origin / name
+            if child.exists():
+                more, _, child_err = _elf_dynamic(child)
+                if not child_err:
+                    frontier.extend(more)
+    libs, foreign, unresolved = [], [], []
+    for name in sorted(set(frontier)):
+        if not name.startswith(_GGML_FAMILY):
+            continue
+        where = None
+        for candidate_dir in resolved_runpath or [str(origin)]:
+            if (Path(candidate_dir) / name).exists():
+                where = str(Path(candidate_dir) / name)
+                break
+        inside = bool(where) and Path(where).resolve().is_relative_to(tree_root.resolve())
+        if where is None:
+            unresolved.append(name)
+        elif not inside:
+            foreign.append({"lib": name, "resolved": where})
+        libs.append({"lib": name, "resolved": where, "inside_tree": inside if where else None})
+    verified = (not foreign and not unresolved and bool(libs))
+    return {
+        "binary": str(binary), "tree_root": str(tree_root),
+        "runpath": resolved_runpath, "ggml_libs": libs,
+        "foreign": foreign, "unresolved": unresolved,
+        "verified": verified if libs else None,
+        "error": (None if libs else
+                  "no ggml-family library found in the ELF dynamic section — linkage "
+                  "unverifiable from a static read (backends may be dlopened)"),
+        "method": "readelf -d (non-executing); weaker than ldd — cannot see dlopened backends",
+    }
+
+
+def _stable_link_projection() -> list:
+    """The four stable production links, and what they actually resolve to."""
+    out = []
+    for name, (expected_dir, binary_name) in PRODUCTION_STABLE_LINKS.items():
+        link = PRODUCTION_STABLE_LINK_ROOT / name
+        entry = {"name": name, "link": str(link), "expected_target": expected_dir,
+                 "binary_name": binary_name}
+        try:
+            is_link = link.is_symlink()
+            target = str(link.resolve()) if link.exists() else None
+        except OSError as exc:
+            entry.update({"present": False, "is_symlink": False, "target": None,
+                          "matches_expected": None, "binary_present": None,
+                          "error": f"unreadable: {exc}"})
+            out.append(entry)
+            continue
+        matches = (target == expected_dir) if target else None
+        binary_present = bool(target) and (Path(target) / binary_name).is_file()
+        error = None
+        if target is None:
+            error = ("stable link absent or dangling — launchers that follow the "
+                     "runbook would resolve nothing")
+        elif not matches:
+            error = f"stable link repointed: resolves to {target}, expected {expected_dir}"
+        elif not binary_present:
+            error = f"stable link resolves, but {binary_name} is not inside its target"
+        entry.update({"present": target is not None, "is_symlink": is_link,
+                      "target": target, "matches_expected": matches,
+                      "binary_present": binary_present, "error": error})
+        out.append(entry)
+    return out
+
+
+def production_kernel_set(attestation_path: Path | None = None,
+                          production_repo: Path | None = None,
+                          speech_attestation_path: Path | None = None) -> dict:
+    """The COMPLETE frozen kernel set, folded to one honest verdict.
+
+    Three kernels, four binaries. `production_kernel` (llama only) is left untouched
+    beside this for existing consumers; this is the set-level view, and it is one
+    panel rather than a second llama panel — the audit brief explicitly warned against
+    duplicating what already renders.
+
+    THE FOLD IS DELIBERATELY PESSIMISTIC. `intact` is True only when every kernel and
+    every binary is proven — any drift, absence, unreadable tree or missing digest
+    makes it False, and `unverified` records how many facts could not be established
+    at all. A set-level green that can be produced by a kernel we failed to read is
+    the same absence-tolerance that let incident 8 render a dead loop as a clean page.
+    """
+    llama = _production_kernel_summary(attestation_path or PRODUCTION_KERNEL_ATTESTATION,
+                                       production_repo or PRODUCTION_KERNEL_REPO)
+    speech = _speech_kernel_summary(speech_attestation_path)
+
+    binaries = []
+    llama_digests = llama.get("binary_sha256") or {}
+    for slot, path in PRODUCTION_LLAMA_BINARIES.items():
+        binaries.append(_binary_identity(f"llama.cpp {slot.upper()}", path,
+                                         llama_digests.get(slot)))
+    for kernel in speech.get("kernels", []):
+        if kernel.get("binary"):
+            binaries.append(kernel["binary"])
+
+    members, alarms = [], []
+    llama_ck = llama.get("checkout") or {}
+    llama_generation = _ggml_generation_identity(
+        production_repo or PRODUCTION_KERNEL_REPO, llama.get("ggml"))
+    members.append({"key": "llama_cpp", "title": "llama.cpp",
+                    "available": llama.get("available"),
+                    "branch": llama.get("branch"), "head": llama.get("head"),
+                    "version": llama.get("version"), "ggml": llama.get("ggml"),
+                    "ggml_generation": llama_generation,
+                    "matches_attestation": llama_ck.get("matches_attestation"),
+                    "working_tree_clean": llama_ck.get("clean"),
+                    "dirty_count": llama_ck.get("dirty_count"),
+                    "dirty_paths": llama_ck.get("dirty_paths") or [],
+                    "error": llama.get("error") or llama_ck.get("error")})
+    for kernel in speech.get("kernels", []):
+        tree = Path(kernel.get("tree") or "/nonexistent")
+        members.append({
+            "key": kernel.get("key"), "title": kernel.get("title"),
+            "available": kernel.get("available"),
+            "branch": kernel.get("branch"), "head": kernel.get("head"),
+            "version": None, "ggml": kernel.get("ggml"),
+            "ggml_generation": _ggml_generation_identity(tree, kernel.get("ggml")),
+            "matches_attestation": (kernel.get("checkout") or {}).get("matches_attestation"),
+            "working_tree_clean": (kernel.get("checkout") or {}).get("clean"),
+            "dirty_count": (kernel.get("checkout") or {}).get("dirty_count"),
+            "dirty_paths": (kernel.get("checkout") or {}).get("dirty_paths") or [],
+            "error": kernel.get("error") or (kernel.get("checkout") or {}).get("error")})
+
+    if not llama.get("available"):
+        alarms.append("llama.cpp freeze attestation unavailable — production identity unproven")
+    if not speech.get("available"):
+        alarms.append("speech kernel freeze attestation unavailable — whisper.cpp and "
+                      "qwentts.cpp identities unproven")
+    for member in members:
+        if member.get("matches_attestation") is False:
+            alarms.append(f"{member['title']}: tree does NOT match attestation (drift)")
+        elif member.get("available") and member.get("matches_attestation") is None:
+            alarms.append(f"{member['title']}: tree identity could not be established")
+        if member.get("working_tree_clean") is False:
+            alarms.append(
+                f"{member['title']}: frozen working tree is DIRTY "
+                f"({member.get('dirty_count')} paths; no mutation performed by dashboard)")
+        elif member.get("available") and member.get("working_tree_clean") is None:
+            alarms.append(f"{member['title']}: working-tree cleanliness unverified")
+        generation = member.get("ggml_generation") or {}
+        if generation.get("matches") is False:
+            alarms.append(f"{member['title']}: GGML GENERATION DRIFT")
+        elif generation.get("matches") is None:
+            alarms.append(f"{member['title']}: ggml generation unverified")
+    for binary in binaries:
+        if binary.get("matches") is False:
+            alarms.append(f"{binary['label']}: BINARY DRIFT vs operator attestation")
+        elif not binary.get("present"):
+            alarms.append(f"{binary['label']}: attested binary absent from disk")
+
+    # --- stable links + tree-local linkage (KRD-AUDIT-20260812 follow-up) ---
+    stable_links = _stable_link_projection()
+    for link in stable_links:
+        if link.get("error"):
+            alarms.append(f"stable link `{link['name']}`: {link['error']}")
+
+    ambient = _ambient_foreign_ggml_dirs()
+    if not ambient["clean"]:
+        alarms.append(
+            "LD_LIBRARY_PATH carries ggml-bearing directories "
+            f"({', '.join(ambient['ggml_bearing_entries'])}) — it is consulted BEFORE "
+            "each binary's RUNPATH, so a speech kernel launched from this environment "
+            "can silently load llama's ggml and run wrong while reporting success "
+            "(INC-20260731). Observed for the dashboard process; check the launcher.")
+
+    linkage = []
+    for name, (expected_dir, binary_name) in PRODUCTION_STABLE_LINKS.items():
+        tree_root = Path(expected_dir)
+        # The tree that owns the libraries: for llama both build dirs live under the
+        # one clone, so the ROOT is the tree, not the build dir.
+        for anchor in ("/mnt/raid0/llm/llama.cpp", "/mnt/raid0/llm/whisper.cpp",
+                       "/mnt/raid0/llm/qwentts.cpp"):
+            if expected_dir.startswith(anchor):
+                tree_root = Path(anchor)
+                break
+        evidence = _linkage_evidence(Path(expected_dir) / binary_name, tree_root)
+        evidence["link"] = name
+        linkage.append(evidence)
+        if evidence.get("foreign"):
+            alarms.append(f"{name}: ggml resolves OUTSIDE its own tree — "
+                          + ", ".join(f"{f['lib']} -> {f['resolved']}" for f in evidence["foreign"]))
+        elif evidence.get("verified") is None:
+            alarms.append(f"{name}: tree-local linkage UNVERIFIABLE "
+                          f"({evidence.get('error') or 'no evidence'})")
+
+    links_ok = sum(1 for l in stable_links
+                   if l.get("matches_expected") and l.get("binary_present"))
+    linkage_ok = sum(1 for e in linkage if e.get("verified") is True)
+
+    proven = sum(1 for b in binaries if b.get("matches") is True)
+    unverified = sum(1 for b in binaries if b.get("matches") is None)
+    trees_proven = sum(1 for m in members if m.get("matches_attestation") is True)
+    generations_proven = sum(
+        1 for member in members
+        if (member.get("ggml_generation") or {}).get("matches") is True)
+    return {
+        "schema": "epyc.production_kernel_set.v1",
+        "expected_kernels": 3,
+        "expected_binaries": len(PRODUCTION_LLAMA_BINARIES) + 2,
+        "kernels_present": len(members),
+        "trees_matching": trees_proven,
+        "binaries_proven": proven,
+        "binaries_unverified": unverified,
+        "stable_links": stable_links,
+        "stable_links_ok": links_ok,
+        "linkage": linkage,
+        "linkage_verified": linkage_ok,
+        "ggml_generations_proven": generations_proven,
+        "ambient_library_path": ambient,
+        # PESSIMISTIC, and now over five independent facts rather than two: the
+        # attestations, the trees, the binary digests, the stable links launchers
+        # actually follow, and proof each binary's ggml comes from its own tree. A set
+        # that is byte-identical but reachable only through a repointed link, or whose
+        # libraries resolve into another tree, is not intact in any sense a measurement
+        # can rely on.
+        "intact": (llama.get("available") is True and speech.get("available") is True
+                   and trees_proven == len(members) == 3
+                   and all(m.get("working_tree_clean") is True for m in members)
+                   and proven == len(binaries) == 4
+                   and links_ok == len(stable_links) == 4
+                   and linkage_ok == len(linkage) == 4
+                   and generations_proven == len(members) == 3
+                   and ambient["clean"]),
+        "alarms": alarms,
+        "members": members,
+        "binaries": binaries,
+        "llama": llama,
+        "speech": speech,
+        "evidence": [str(attestation_path or PRODUCTION_KERNEL_ATTESTATION),
+                     str(speech_attestation_path or SPEECH_KERNEL_ATTESTATION)],
     }
 
 
 def autokernel_current_state(probe_root: Path | None = None,
                              attestation_path: Path | None = None,
-                             production_repo: Path | None = None) -> dict:
+                             production_repo: Path | None = None,
+                             control_root: Path | None = None,
+                             state_root: Path | None = None) -> dict:
     """Evidence-backed current posture, separate from runtime liveness.
 
     These receipts describe audits and a diagnostic smoke.  They cannot certify
     a live controller, rank the partial panel, or promote/freeze a kernel.
     """
     probe_root = probe_root or AUTOKERNEL_PROBE_ROOT
+    control_root = control_root or AUTOKERNEL_CONTROL_ROOT
+    state_root = state_root or AUTOKERNEL_STATE_ROOT
     attestation_path = attestation_path or PRODUCTION_KERNEL_ATTESTATION
     production_repo = production_repo or PRODUCTION_KERNEL_REPO
     fixed_path, fixed, fixed_err = _latest_autokernel_receipt(
@@ -1095,6 +2297,52 @@ def autokernel_current_state(probe_root: Path | None = None,
     smoke_path, smoke, smoke_err = _latest_autokernel_receipt(
         probe_root, "smoke-receipt.json",
         "epyc.autokernel.arena_diagnostic_smoke.v1")
+    preflight_path, preflight, preflight_err = _latest_autokernel_receipt(
+        probe_root, "preflight.json",
+        "epyc.autokernel.live_control_preflight.v1")
+    replay_path, replay, replay_err = _latest_autokernel_receipt(
+        probe_root, "receipt.json",
+        "epyc.autokernel.async_prefetch_replay.v1")
+    control_path, control, control_err = _latest_control_summary(control_root)
+    production = _production_kernel_summary(attestation_path, production_repo)
+    production_head = production.get("head") if production.get("available") else None
+    loop = _loop_engineering_summary(state_root)
+    scaffold = _scaffold_panel_summary(state_root)
+    arena = _arena_campaign_progress(state_root)
+    rocm = _rocm_diagnostics_summary(state_root)
+    adapter_root = REPO / "scripts/vidya/adapters"
+    source_table_path = adapter_root / "README.md"
+    try:
+        source_table_text = source_table_path.read_text(encoding="utf-8")
+        source_table_error = None
+    except OSError as exc:
+        source_table_text = ""
+        source_table_error = str(exc)
+
+    def _belief_source(source: str, rows: int, reader: str, status: str) -> dict:
+        return {"source": source, "belief_rows": rows,
+                "reader_present": (adapter_root / reader).is_file(),
+                "source_table_listed": f"`{reader}`" in source_table_text,
+                "reader": reader, "status": status}
+
+    rocm_rows = sum((rocm.get("rvp", {}).get("belief_measurement_count", 0),
+                     rocm.get("baseline_honesty", {}).get("belief_measurement_count", 0)))
+    belief_sources = [
+        _belief_source("AK-LE planner reduction", loop.get("belief_measurement_count", 0),
+                       "autokernel_planner_reduction.py",
+                       "live" if loop.get("belief_measurement_count", 0) else "awaiting evidence"),
+        _belief_source("RVP-T0-1 + AK-BH-1 diagnostics", rocm_rows,
+                       "autokernel_rocm_diagnostic.py",
+                       "live" if rocm_rows else "awaiting post-hook receipt"),
+        _belief_source("INF-03 Arena checkpoints", arena.get("belief_measurement_count", 0),
+                       "autokernel_aux_receipt.py",
+                       "live checkpoint rows; partial campaign not rankable"
+                       if arena.get("belief_measurement_count", 0) else "awaiting post-hook checkpoint"),
+        _belief_source("AK-LE-3 scaffold panel", scaffold.get("belief_measurement_count", 0),
+                       "autokernel_scaffold_panel.py",
+                       "live" if scaffold.get("belief_measurement_count", 0)
+                       else "prospective successor-only; terminal r1 remains zero-row"),
+    ]
     return {
         "schema": "epyc.autokernel.dashboard_current_state.v1",
         "role": ("EVIDENCE SNAPSHOT ONLY — audits and diagnostic smokes do not "
@@ -1105,7 +2353,42 @@ def autokernel_current_state(probe_root: Path | None = None,
             available_path, available, available_err),
         "empirical_smoke": _smoke_receipt_summary(
             smoke_path, smoke, smoke_err),
-        "production_kernel": _production_kernel_summary(
+        "instrument_preflight": _control_preflight_summary(
+            preflight_path, preflight, preflight_err),
+        "decision_controls": _control_summary(
+            control_path, control, control_err, production_head),
+        "gpu_prefetch_replay": _gpu_replay_summary(
+            replay_path, replay, replay_err),
+        "loop_engineering": loop,
+        "scaffold_engineering": scaffold,
+        "fault_rehearsal": _fault_rehearsal_summary(state_root),
+        "arena_campaign_progress": arena,
+        "rocm_diagnostics": rocm,
+        "belief_source_wiring": {
+            "source_table": str(source_table_path),
+            "source_table_present": source_table_path.is_file(),
+            "source_table_error": source_table_error,
+            "sources": belief_sources,
+            "note": ("reader presence never back-fills pre-hook evidence; displayed row counts "
+                     "come only from producer-authored receipt vectors"),
+        },
+        # SCOPE, DECLARED (KRD-AUDIT-20260812). This panel projects a CURATED set of
+        # receipt schemas, not everything under the probe/state roots. Many others are
+        # legitimately intermediate, so the fix is not "render them all"; it is to stop a curated view
+        # reading as a complete one. Naming the scope where the answer is printed is
+        # the same rule the health-probe finding turned on: a reader acts on the pass.
+        "receipt_coverage": {
+            "projected_schemas": sorted(_PROJECTED_RECEIPT_SCHEMAS),
+            "probe_root": str(probe_root),
+            "state_root": str(state_root),
+            "note": ("CURATED VIEW — receipts whose schema is not in "
+                     "`projected_schemas` exist under `probe_root` and are NOT shown "
+                     "here. Absence from this panel is not absence of evidence."),
+        },
+        "production_kernel": production,
+        # Singular `production_kernel` above is PRESERVED for existing consumers;
+        # this is the set-level fold over all three frozen kernels and four binaries.
+        "production_kernel_set": production_kernel_set(
             attestation_path, production_repo),
         "promotion_claim": False,
     }
@@ -1115,7 +2398,8 @@ def autokernel_activity(repo: Path | None = None,
                         state_root: Path | None = None,
                         probe_root: Path | None = None,
                         attestation_path: Path | None = None,
-                        production_repo: Path | None = None) -> dict:
+                        production_repo: Path | None = None,
+                        control_root: Path | None = None) -> dict:
     """Live implementation/research context that cannot affect runtime health."""
     repo = repo or AUTOKERNEL_RESEARCH_REPO
     state_root = state_root or AUTOKERNEL_STATE_ROOT
@@ -1125,10 +2409,15 @@ def autokernel_activity(repo: Path | None = None,
                  "liveness and does not affect _freshness or /api/health"),
         "research_repo": str(repo),
         "implementation": _autokernel_git_activity(repo),
+        "mainline_integration": [
+            _mainline_integration_summary(AUTOKERNEL_ROOT_REPO, "epyc-root"),
+            _mainline_integration_summary(repo, "epyc-inference-research"),
+        ],
         "work_bundles": _autokernel_work_bundles(repo),
         "durable_state": _autokernel_journal_inventory(state_root),
+        "probe_receipts": _autokernel_probe_receipts(state_root),
         "current_state": autokernel_current_state(
-            probe_root, attestation_path, production_repo),
+            probe_root, attestation_path, production_repo, control_root, state_root),
     }
 
 
@@ -1574,13 +2863,13 @@ def benchmark_artifacts_payload() -> dict:
 # --------------------------------------------------------- dashboard directory
 #
 # RTG-47 Phase 0. ``dashboard/registry.json`` is the SSOT list of dashboard
-# surfaces; this panel serves it with a live transport probe per unique
+# surfaces; this panel serves it with a live health-path probe per unique
 # ``(port, health_path)``.
 #
-# THE PROBE IS NOT FOLDED INTO ``/api/health``. A down :8000 is a fact about the
-# orchestrator, and ``scripts/dashboard/hub_supervisor.sh`` restarts THIS hub on a
-# non-ok ``/health`` body — the same rule that keeps a dead AutoKernel loop from
-# putting the dashboard into a restart loop applies here, one process further out.
+# THESE PROBES ARE NOT FOLDED INTO ``/api/health``. A down :8000 is a fact about
+# the orchestrator, while Kernel-R&D's own health_path is already a projection of
+# the kernel envelope. Folding either back in would create a recursive or duplicate
+# verdict. The supervisor itself continues to poll only transport ``/health``.
 _DASHBOARDS_TTL_S = 15.0
 _DASHBOARD_PROBE_TIMEOUT_S = 1.5
 _dashboards_lock = threading.Lock()
@@ -1618,10 +2907,12 @@ def registry_dashboards() -> list:
 
 
 def _probe_health(port: int, health_path: str) -> dict:
-    """One ``127.0.0.1`` transport probe → ``{ok, status_code, latency_ms, error}``.
+    """One ``127.0.0.1`` health-path probe → status/latency/error.
 
-    LOOPBACK ONLY and stdlib-only. This says a server is answering, nothing about
-    whether its producers are reporting — the same boundary ``/health`` holds here.
+    LOOPBACK ONLY and stdlib-only. Semantics belong to the registry entry's
+    ``health_path``: most declare transport-only ``/health``; Kernel-R&D declares
+    its panel-specific producer/data-health route. This reader deliberately uses
+    the HTTP status so it remains compatible with both kinds.
     """
     url = f"http://127.0.0.1:{port}{health_path}"
     started = time.monotonic()
@@ -1689,8 +2980,10 @@ def _build_dashboard_directory() -> dict:
         "registry_present": bool(present),
         "count": len(rows),
         "dashboards": rows,
-        "probe_note": ("probes are LOOPBACK TRANSPORT readings of each server's "
-                       "health_path; they are cached with this payload for "
+        "probe_note": ("probes are LOOPBACK readings of each entry's declared "
+                       "health_path (transport-only unless the entry explicitly "
+                       "names a panel-data probe); they are cached with this "
+                       "payload for "
                        f"{_DASHBOARDS_TTL_S:.0f}s and never enter /api/health"),
         "error": None,
     }
@@ -1973,6 +3266,16 @@ API_ROUTES_WITH_STATUS = {
     "/api/handoff_detail": detail_payload,
 }
 
+#: Panel-specific DATA health. Separate from ``PROBE_ROUTES`` because these
+#: handlers may return 503 when a producer is absent/degraded; the supervisor must
+#: never poll them. Separate from ``API_ROUTES`` because handlers return an
+#: explicit ``(status, payload)``. Each route is declared on its existing
+#: ``PanelSource`` via ``health_route``/``health_func`` and is checked by
+#: ``panels.registry_gaps`` without creating a duplicate panel in the global fold.
+PANEL_HEALTH_ROUTES = {
+    "/api/kernel/health": kernel_data_health,
+}
+
 #: The supervisor's transport probe. In its OWN table, not ``API_ROUTES``: it is
 #: not a panel over a producer, and it must never carry a producer's verdict (see
 #: the module docstring — the supervisor restarts the hub on a non-ok body). It is
@@ -2037,6 +3340,9 @@ class _Handler(BaseHTTPRequestHandler):
             elif route in API_ROUTES_WITH_STATUS:
                 qs = parse_qs(parsed.query)
                 status, payload = API_ROUTES_WITH_STATUS[route]((qs.get("id") or [""])[0])
+                self._send_json(payload, status=status)
+            elif route in PANEL_HEALTH_ROUTES:
+                status, payload = PANEL_HEALTH_ROUTES[route]()
                 self._send_json(payload, status=status)
             else:
                 self._send_json({"error": "not found", "path": route}, status=404)
