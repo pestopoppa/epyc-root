@@ -622,237 +622,103 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
 - [x] **Escha — NO to the artifact, YES to the experiment it motivates** ✅ 2026-08-03 (intake-945/946/956). The `eschamoe` 2-bit format is closed CUDA sm_80-120 with no ROCm path, so the published build is unusable here. But it points at a model worth testing on its own merits — see the task below. The third-party codebook reverse-engineering probe (intake-956) stays `stage1-unverified` and **deferred with a named trigger**: its author is blocked, 2–4 weeks.
 - [ ] **Bench `Qwen3.6-35B-A3B` at `UD-IQ3_XXS` as a `worker_general` candidate.** ~3B active (leaner than gemma4-26B-A4B's ~4B on the bandwidth-bound path), **already supported by the frozen kernel**, and at **13.2 GB it fits `worker_general`'s existing 16 GB budget** in `stack_templates/default.yaml` with no lineup change. **Use `UD-IQ3_XXS`, NOT the size-matched `UD-Q2_K_XL`** — `ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp:73-74` carries `static_assert(!iqk_typeA_supported(GGML_TYPE_Q2_K))` and the same for `Q3_K`, so a Q2_K build forfeits iqk acceleration entirely. Quant-axis detail lives in [`tq3-quantization-evaluation.md`](tq3-quantization-evaluation.md); hold MTP constant across arms, and pair speed with a correctness check.
 
-## 2026-08-07 — LFM2.5-2.6B `worker_general` candidate (intake-1006/1014/1019)
+## 2026-08-12 — `worker_general` candidate RESET: LFM2.5-**1.2B-Instruct** (supersedes the 2.6B attempt)
 
-- [ ] **WG-LFM-1 — Run a matched Q4_K_M / Q8_0 / Gemma4 26B-A4B worker verdict.** Pin the
-  official LiquidAI GGUF revision `b421ad1d549afeda6a0fb2ad3a697cb5a7879adc`; test both
-  `LFM2.5-2.6B-Q4_K_M.gguf` and `LFM2.5-2.6B-Q8_0.gguf`, with the current Gemma4 26B-A4B
-  `worker_general` as the unchanged incumbent. Start with load/template/tool-call smokes on frozen v8;
-  then use identical role prompts, tools, task rows, seeds, limits, stop conditions, and scorer era.
-  Hash and archive the **GGUF-embedded** chat template used by the runner—the separate LEAP sidecars
-  omit its reasoning prefill and tool rendering and are ineligible unless parity is independently
-  proven. Report strict task success, per-suite outcomes, tool-schema compliance and repair rate,
-  reasoning/output tokens, retries, peak resident memory, prompt/decode throughput, TTFT, and complete
-  wall time. Publish Q8-minus-Q4 and each-LFM-minus-Gemma paired deltas. Do not change the role alias,
-  registry, stack manifest, or production process unless a later operator decision accepts a
-  decision-grade Pareto result.
+> **START HERE.** This block was reset on 2026-08-12 after a full evaluation of `LFM2.5-2.6B`
+> concluded that **we benched the wrong family member**. Read this intro before running anything.
 
-  **SCOUT PASS 2026-08-12** (`mainC`) — evidence in `epyc-inference-research`
-  `benchmarks/results/scout/wg-lfm-1-20260812/` (commits `fd9efdb3`, `b0f92dc5`, 42 files, replayable).
-  Row intentionally left OPEN: the checkbox asks for a decision-grade verdict with tool compliance,
-  per-suite success and an MTP-inclusive incumbent, and none of that was obtainable in this window.
-  GGUFs are downloaded and SHA-256-verified against the remote LFS oids at the pinned revision.
+**Operator ruling, 2026-08-12: `worker_general` should be an INSTRUCT model.** The role is the short,
+high-volume, cheap path. A reasoning model is structurally wrong for it, and no amount of decode speed
+fixes that.
 
-  Raw decode, one region (`q0`, 24 threads), canonical OMP + `GGML_IQK=1`, v9 `0db32c06e`:
-  LFM Q4_K_M **72.04 tg** · LFM Q8_0 **44.95** · gemma4-26B-A4B Q4_K_M **28.00** (no MTP), with LFM Q4
-  at 1.70 GiB resident vs the incumbent's 16.51 GiB. Crediting the incumbent a conservative 1.4–1.5×
-  for its MTP draft path puts it near 39–42, so **LFM Q4 still leads ~1.7–1.8× and LFM Q8 is roughly at
-  parity** — but that MTP credit is an ESTIMATE, not a measurement, and it is the load-bearing number.
+### Why the 2.6B attempt was abandoned — the finding that generalises
 
-- [ ] **WG-LFM-2 — the incumbent arm was benched OUT of its production configuration, so the
-  per-task cost comparison is not yet decision-relevant.** `worker_general` sets
-  `enable_thinking: false` in `orchestration/derived/stack_priors.yaml`, but the scout ran the default
-  embedded template with thinking **ON** for every arm. Both models therefore emitted a reasoning block
-  on all 5 correctness prompts — which makes the observed verbosity symmetry an ARTIFACT of the bench,
-  not a property of production. In production the incumbent emits **no** reasoning tokens while LFM2.5
-  reasons by default (60–120 tokens for "capital of Japan", and not reliably bounded — one Q8 case ran
-  past a 512-token cap mid-deliberation).
-  **Why this decides the verdict**: a 1.7× tokens-per-second lead is worth nothing if the model emits
-  several times the tokens per task. The comparison that matters is *time to a correct answer*, not
-  decode rate. So the open question is narrow and answerable: **can LFM2.5's reasoning be disabled the
-  way the incumbent's is?** If yes, re-run the correctness arm with thinking off on both sides and the
-  throughput lead likely stands. If no, LFM carries an irreducible per-task cost the incumbent does not,
-  and the raw t/s advantage may invert on short high-volume work — which is exactly what
-  `worker_general` is. Corroborating: `intake_index.yaml:34556` already rules LFM2.5 out as a spec-dec
-  drafter (its 128K `lfm2` BPE vocab), so it cannot recover throughput the way the incumbent does.
+`LFM2.5-2.6B` **won every rate measurement and lost the decision anyway.**
 
-  **PARTIALLY ANSWERED 2026-08-12, zero compute** — read from the archived GGUF-embedded template
-  (`benchmarks/results/scout/wg-lfm-1-20260812/chat_template_LFM2.5-2.6B-Q4_K_M.jinja`, byte-identical
-  across both quants). **LFM2.5 exposes NO generation-time thinking switch.** The template's
-  `preserve_thinking` is *not* an `enable_thinking` equivalent: it governs whether PRIOR assistant turns
-  keep their `<think>` blocks in the rendered history (`{%- if not keep_thinking and "</think>" in
-  content -%}` strips them from past messages) and has no bearing on whether the model reasons on the
-  current turn. Every `/think` occurrence is a closing `</think>` tag, not a `/no_think` control token.
-  So the mechanism production uses to silence the incumbent — `chat_template_kwargs.enable_thinking` —
-  **has no counterpart here**.
-  **Bound on this evidence, stated**: absence from the template does not prove the behaviour is
-  unsuppressible in principle — a model can still obey a system-prompt instruction or an inline control
-  token without template support. What it does establish is that the *production* mechanism does not
-  transfer, so adopting LFM2.5 would need a different and unproven suppression path. Anyone closing
-  WG-LFM-2 should test a system-prompt suppression attempt before concluding either way.
-  **Current reading: this materially weakens the LFM2.5 case for `worker_general`**, because the raw
-  1.7–1.8× decode lead is measured against an incumbent that emits no reasoning tokens at all in
-  production, while LFM2.5 has no demonstrated way to stop emitting them.
+| | LFM2.5-2.6B | incumbent gemma4-26B-A4B |
+|---|---:|---:|
+| CPU decode (tg512, 24t) | **72.04** | 28.00 |
+| GPU decode (tg512) | **225.11** | 100.54 |
+| tokens emitted, 5 terse prompts | **501** | **33** |
+| time to answer, CPU | 12.89 s | **2.97 s** |
 
-  **Quantified 2026-08-12 from the committed correctness transcripts (~4 chars/token):**
+It is **2.08× faster per token and ~4.3× slower to an answer**, because it emits **15.2× more tokens**.
+The incumbent runs `enable_thinking: false` in production (`stack_priors.yaml`, four roles); LFM2.5-2.6B's
+template unconditionally prefills `<think>` with **no `enable_thinking` kwarg at all** — the incumbent can
+be turned off, that challenger could not.
 
-  | model | reasoning tok | answer tok | overhead |
-  |---|---:|---:|---:|
-  | LFM2.5 Q4_K_M | ~384 | ~14 | **27.4×** |
-  | gemma4-26B-A4B, thinking ON (*bench only, not production*) | ~599 | ~12 | 49.9× |
+**Faster hardware does not rescue this.** The token-count ratio is invariant to hardware, so GPU *widens*
+the incumbent's lead (6.8× base decode, ~9.8× crediting gemma's 1.44× MTP) because gemma's only CPU
+handicap — ~0.26 s prefill per call on a 26B MoE — vanishes at 2905 t/s prefill.
 
-  Note what the second row explains: the incumbent's reasoning is *more* verbose than LFM2.5's, which is
-  very plausibly **why** production sets `enable_thinking: false` for this role — an option LFM2.5 does
-  not offer. On these five prompts, LFM spends ~9.4 s of decode to deliver ~14 tokens of answer, whereas
-  a thinking-off incumbent at ~40 t/s delivers its ~12 answer tokens in ~0.3 s. **A 1.7× decode-rate
-  advantage does not survive a 27× token-count disadvantage.**
+**Why this is a variant problem, not a vendor problem.** Liquid AI do not document LFM2.5 as verbose —
+they claim the opposite. But their own guidance recommends the **`-Instruct`** variant *"for standard
+chat and creative writing, where reasoning traces might add unnecessary latency"*, which is precisely
+this role. We tested the reasoning variant against a non-reasoning incumbent and measured exactly the
+mismatch the vendor documents.
 
-  **SUPERSEDED BY MEASUREMENT 2026-08-12** — research `7b2426c7`, evidence in
-  `benchmarks/results/scout/wg-lfm-1-thinking-toggle-20260812/` (76 files, replayable). The estimate
-  below was **directionally right and quantitatively wrong**; keep it only to see the correction.
+**Evidence for the abandoned attempt is preserved, not deleted** — `epyc-inference-research`
+`benchmarks/results/scout/wg-lfm-1-20260812/` (CPU + download), `wg-lfm-1-thinking-toggle-20260812/`
+(the token-count measurement). The 2.6B **weights** were retired from disk on operator instruction.
 
-  | arm | gen tokens (5 prompts) | wall (prefill+decode) | mean t/s |
-  |---|---:|---:|---:|
-  | gemma thinking **ON** | 902 | 48.18 s | 19.20 |
-  | gemma thinking **OFF** (production) | **33** | **2.97 s** | 19.40 |
-  | LFM2.5-2.6B Q4_K_M | 501 | 12.89 s | 40.34 |
+### The candidate now under test
 
-  **Production gemma is ~4.3× faster to an answer than LFM2.5 — not the ~31× I estimated.** Correctness
-  with thinking off is **5/5**, identical answers to the thinking-on run, and a repeat reproduced both
-  gemma conditions token-for-token. Three reasons the estimate was off: the chars/4 proxy undercounted
-  **both** sides (gemma 902 measured vs ~599 inferred, LFM 501 vs ~398); answers are ~6.6 tok/prompt not
-  ~12; and, the real error, I applied a rate near LFM's to gemma's tokens — gemma decodes at 19.4 t/s and
-  pays ~0.26 s prefill per call on a 26B MoE. LFM's per-token advantage is actually **2.08×**, larger
-  than the 1.7× cited, and still swamped by a 15× token-count gap.
+**`LiquidAI/LFM2.5-1.2B-Instruct`, Q4_K_M and Q8_0.** Half the parameters of the abandoned candidate, and
+non-reasoning by design. Incumbent is unchanged: `worker_general` = `gemma-4-26B-A4B-it-ORIG-Q4_K_M`
+(note **ORIG**, per `stack_priors.yaml`) with MTP, `reasoning: 'off'`.
 
-  **The toggle is real and is a PREFILL, not an instruction** — template line 359,
-  `{%- if not enable_thinking | default(false) -%}` appends an immediately-closed empty thought channel.
-  Note the template's own default is *suppressed*; llama.cpp overrides it to true
-  (`common/chat.h:261`), which is why the scout got thinking without asking for it. Production path
-  traced end-to-end: `stack_priors.yaml` → `reasoning: 'off'` (four roles — `worker_general`,
-  `toolrunner`, `worker_explore`, `worker_math`) → `--reasoning off` → the exact prompt measured.
+### Tasks
 
-  **Verdict direction is unchanged and if anything firmer**: the harness could not exercise gemma4's MTP
-  self-speculation, so **production gemma is faster than measured**, widening the gap in the incumbent's
-  favour. And WG-LFM-2's answer is now confirmed from two independent directions — LFM2.5's template
-  unconditionally prefills `<think>` with no `enable_thinking` kwarg. The incumbent can be turned off;
-  the challenger, as shipped, cannot.
+- [ ] **WG-LFMI-1 — Prove it does not reason, BEFORE benching anything.** This is the whole premise of
+      the reset, so establish it first and cheaply: extract the GGUF-embedded chat template, check for an
+      unconditional `<think>` prefill and for an `enable_thinking` kwarg, then measure **generated token
+      count** on the same five prompts the 2.6B was measured on. If it emits a reasoning block anyway,
+      stop and report — the reset premise is wrong and nothing downstream is worth running.
+      Bar to beat: **33 tokens / 2.97 s** (production incumbent, measured 2026-08-12).
 
-- [ ] **MEASUREMENT TRAP — `llama-cli` / `llama-completion` SILENTLY IGNORE `-rea off`.** In those
-  tools `default_template_kwargs` is consumed only by `common_chat_format_example`, so the flag parses,
-  is accepted, and changes nothing — verified: `-rea off` still rendered the 31-token thinking-ON
-  prompt. `llama-server` *does* honour it (`server-context.cpp:1463` → `server-common.cpp:1064` →
-  `chat.cpp:895`). **Never reproduce production thinking state with the CLI flag** — render the prompt
-  and pass it raw, and prove the render by diffing token sequences. This silently fabricates
-  thinking-on numbers while labelling them thinking-off, in the direction that flatters a reasoning
-  model. Worth codifying wherever the canonical bench recipes live.
+- [ ] **WG-LFMI-2 — CPU + GPU decode, interleaved, both quants.** Report pp/tg with stddev, peak
+      resident, **and tokens-per-task** — a t/s table alone is what nearly banked the wrong verdict last
+      time. Reuse the harness under `benchmarks/results/scout/wg-lfm-1-20260812/` (replayable).
 
-  **Three limits on the SUPERSEDED estimate, kept for the record.** (1) These five prompts are
-  deliberately terse — "reply with only the city name" — which is the WORST case for a reasoning model,
-  because a fixed reasoning block is amortised over a 1-token answer; real `worker_general` traffic with
-  longer outputs will show a much smaller ratio. (2) ~4 chars/token is an approximation and the two
-  models use different tokenizers (LFM's 128K `lfm2` BPE vs gemma's), so the CROSS-model counts are
-  indicative only — the robust figure is LFM's 27.4× overhead against *its own* answer length. (3) The
-  incumbent's thinking-off behaviour was inferred from config, not measured; a thinking-off run would
-  confirm the ~0.3 s side. The direction is not in doubt, the magnitude is prompt-dependent.
+- [ ] **WG-LFMI-3 — The decision-grade bar the original row asked for and never got**: strict task
+      success, per-suite outcomes, tool-schema compliance and repair rate, reasoning/output tokens,
+      retries, peak RSS, TTFT, complete wall time. Needs a `llama-server` arm so the incumbent's **MTP**
+      path is exercised — `llama-bench` cannot, and every number on record so far understates the
+      incumbent for that reason. Blocked on **OP-16** (host reboot) for decision-grade.
 
-- [ ] **WG-LFM-3 — Can LFM2.5-2.6B be accelerated by speculative decoding?** (operator question,
-  2026-08-12.) **Read the ratio caveat before spending a window on this.** Spec-dec raises tokens per
-  SECOND; the term currently deciding this verdict is tokens per TASK (WG-LFM-2, ~27× overhead). A
-  realistic 1.5–2.5× spec-dec gain cannot close a 27× count gap, because the drafter still has to emit
-  every reasoning token. So this is **not** a route to rescuing the candidate — but it IS the right way
-  to establish its best-case ceiling, and it becomes decisive if real `worker_general` traffic (longer
-  answers) shrinks the count gap enough for rate to matter again.
-  Concrete path: **`LFM2.5-1.2B` exists** and is the obvious same-family drafter. Two cautions. (1) The
-  size ratio is poor — 1.2B drafting for 2.6B is ~2.2×, where spec-dec normally wants ~10×; draft cost
-  plausibly eats the gain, so this may be net-negative. (2) **Vocabulary identity must be PROVEN, not
-  assumed** from the shared `LFM2.5` name — the existing note that LFM2.5's 128K `lfm2` BPE rules it out
-  as a drafter *for other targets* says nothing about 1.2B↔2.6B compatibility. Per standing policy,
-  **measure acceptance rate α before investing**: a low α makes the whole path net-negative regardless
-  of ratio. Note the incumbent already has MTP self-drafting, so this only equalises an existing
-  advantage rather than creating a new one.
+- [ ] **WG-LFMI-4 — Speculative decoding, only after WG-LFMI-1 passes.** Spec-dec raises tokens/second;
+      it cannot fix tokens/task, which is what killed the last candidate. For a 1.2B target the drafter
+      ratio problem is worse, not better — a same-family drafter would have to be tiny. **Measure
+      acceptance rate α before investing**, per standing policy, and prove vocabulary identity rather
+      than inferring it from a shared model-family name.
 
-- [ ] **WG-LFM-4 — Compare both arms on GPU** (operator instruction, 2026-08-12). LFM2.5-2.6B Q4_K_M is
-  1.70 GiB resident and fits the MI210 trivially, so this is cheap to run and the CPU-only comparison is
-  genuinely incomplete without it. Two things to carry in: (a) the reasoning-token finding is a property
-  of the MODEL, not the hardware, so GPU changes the rate and not the count — WG-LFM-2 must be settled
-  either way; (b) the incumbent must run with its production MTP path, which `llama-bench` cannot
-  exercise, so this needs a `llama-server` arm to be a fair comparison rather than a repeat of the
-  base-decode-only limitation. Blocked on the GPU lane (not `mainC`'s) and on OP-16 for decision-grade.
+### Traps this row has already paid for — do not rediscover them
 
-  **DONE 2026-08-12 (scout-grade)** — operator granted the GPU lane; `mainC` verified it idle first
-  (0% util, 0% VRAM, **0 KFD clients**). Residency proven three ways as required: linkage verified in the
-  *launch* environment (ambient `LD_LIBRARY_PATH` confirmed contaminated, CPU `build/bin` at position 2),
-  VRAM sampled **while the bench PID was alive**, and KFD client count 1 during / 0 after.
-  `verify_llama_cpp.sh` clean before and after; v9 @ `0db32c06e`, HIP binary `10125`. Interleaved,
-  5 rounds, model order rotated, each model at its own max-opt `-fa`:
-
-  | model | pp512 | tg512 | peak VRAM |
-  |---|---:|---:|---:|
-  | LFM2.5-2.6B Q4_K_M | 6403.64 ±10.91 | 225.11 ±1.37 | 2126 MiB |
-  | LFM2.5-2.6B Q8_0 | 6980.07 ±20.16 | **228.34** ±1.97 | 3576 MiB |
-  | gemma-4-26B-A4B ORIG Q4_K_M | 2905.85 ±5.71 | 100.54 ±0.88 | 17213 MiB |
-
-  **GPU does NOT rescue the candidate — it widens the incumbent's lead**, which is the answer to the
-  question that prompted this row. Combining these rates with the MEASURED token counts (LFM 501 vs
-  production gemma 33 over the same five prompts): decode-only time-to-answer is **6.8× in the
-  incumbent's favour on GPU**, rising to **~9.8× if the 1.44× MTP gain measured on sibling gemma4-31B
-  carries**, versus 7.3× decode-only on CPU. The reason is structural: **the 15.2× token-count ratio is
-  invariant to hardware**, while gemma's one CPU handicap — ~0.26 s of prefill per call on a 26B MoE —
-  largely vanishes at 2905 t/s prefill. Faster hardware helps the model that emits fewer tokens.
-  *(Decode-only arithmetic; prefill is negligible on GPU for these prompt lengths but was not.)*
-  **Do not quote 2.24× as a production delta** — it is base-decode vs base-decode, and the incumbent's
-  MTP path is not exercised, so its number understates production.
-
-- [x] **Q4 vs Q8 INVERTS from CPU to GPU — prefer Q8_0 on GPU** ✅ 2026-08-12. On CPU, LFM Q4 beat Q8 by
-  1.60× (72.04 vs 44.95 tg512). On GPU they are within noise and **Q8 is marginally ahead** (228.34 vs
-  225.11). At 2.6B on MI210 decode is not weight-bandwidth-bound, and Q4_K carries the known CDNA2 MMQ
-  dequant cost. Practical read: on GPU take **Q8_0** — better quality, +0.9 GiB VRAM, no throughput
-  penalty. A quant choice justified on CPU evidence does not transfer to GPU.
-
-- [ ] **`-fa 0` measured 12.9% faster decode for gemma4 on gfx90a — FORWARD-relevant, not a live
-  production defect.** Corrected framing (`mainC`, 2026-08-12): I first wrote this as "production GPU
-  serving may leave 13% on the table". It is not — **`worker_general` is not GPU-served today**
-  (`stack_priors.yaml`: `device: null`, `n_gpu_layers: null`). The GPU-served roles are
-  `architect_general`, `coder_escalation`, `vision_escalation` and `worker_vision`. What I measured is a
-  *bench* launcher (`architect_bench_gpu_lib.sh`, `-ngl all -fa on`) on a model production serves on CPU.
-  It still matters for two reasons: the operator confirms `worker_general` **may move to GPU in future**,
-  and the `-fa 0` advantage replicates a known gfx90a/CDNA2 pattern that could apply to the roles which
-  *are* GPU-served. Reading: 101.44 vs 90.86 tg128, far outside a ±0.9 stddev.
-  **Do not act on it without a server-arm check** — it is base-decode `llama-bench`, and FA interacts
-  with both MTP and long-context KV, either of which could reverse it. LFM is `-fa 1`-optimal on every
-  metric, so this is gemma-specific.
-
-- [ ] **WG-LFM-5 — we may have benched the wrong family member. Check for a NON-REASONING LFM2.5-2.6B.**
-  Raised by the operator asking whether the verbosity is documented upstream (2026-08-12). It is not
-  documented as an LFM2.5 defect — Liquid AI claim the *opposite*, that LFM2.5-1.2B-Thinking needs
-  **fewer** output tokens than Qwen3-1.7B in thinking mode. But their own guidance is decisive for us:
-  they recommend the **`-Instruct`** variant "for standard chat and creative writing, where reasoning
-  traces might add unnecessary latency" — which is precisely the `worker_general` profile and precisely
-  the 15.2× token-count penalty we measured.
-  So the WG-LFM-2 conclusion should be stated more narrowly than I did: **`LFM2.5-2.6B` as benched has a
-  habit it cannot switch off** — but the vendor ships a variant intended for exactly this use case, and
-  we never tested it. `LFM2.5-1.2B-Instruct` certainly exists; whether a **2.6B** Instruct exists is
-  **unconfirmed** — a web search was inconclusive and one source suggests LFM2 scores are reported using
-  instruct variants in non-thinking mode, which does not settle it. **Resolve by checking the LiquidAI HF
-  org directly, not by inference.** If a 2.6B non-reasoning variant exists, it is the candidate that
-  should have been benched, and the whole verdict needs re-running against it before LFM2.5 is dismissed.
-
-- [ ] **Any eval harness pointed at LFM2.5 MUST apply its chat template or it will UNDER-SCORE it.**
-  A first correctness pass using *raw completion* made LFM look wrong on a sequence item — it emitted
-  "16" and was truncated mid-`<think>`. With templates applied (`--jinja -st`) all three models scored
-  **9/9**. LFM2.5 is a reasoning model and needs room for the `<think>` block to close; a harness that
-  denies it that measures the harness. This is the same shape as the raw-completion trap that produced
-  today's thinking-ON-labelled-OFF hazard, and it biases in the opposite direction — worth checking
-  wherever LFM2.5 is scored.
-
-- [x] **`GGML_IQK_Q8_0=1` is load-bearing for any Q8_0 arm** ✅ 2026-08-12 — without it the Q8_0 run
-  logged no `[iqk] ACTIVE` line at all: pp 539.24→870.47 (+61%), tg 15.75→24.97 (+58%). A Q8_0 bench
-  omitting it is not top-optimized and must not be published as one. `canonical_recipe.py` already
-  exposes `--ggml-iqk-q8-0`.
-
-- [ ] **RECIPE-NUMA-1 — `numactl --membind=<node>` is WRONG even when the CPU grant is a single
-  region, and `canonical_recipe.py` has no region-scoped path to stop the next person hitting it.**
-  Measured 2026-08-12 while benching one region (`q0`, cores 0-23): binding memory to node 0 to "match"
-  the cpuset looks obviously correct and confines a bandwidth-bound decode to one node's memory
-  channels. Same cores, same binary, switching only to canonical `--interleave=all`: **gemma +42%,
-  LFM Q8 +80%, LFM Q4 +195%**, and run-to-run stddev collapsed from as much as **51% of the mean to
-  under 1.5%**. The enormous variance under `--membind` is the tell — it was not a slow-but-stable
-  configuration, it was an unstable one that could have been reported as either result.
-  **`--interleave=all` is correct at EVERY CPU scope, not just full-machine.** This matches the
-  standing CPU-decode-is-bandwidth-bound finding; the novelty is that a partial-machine grant does not
-  license a partial-machine membind. Worth codifying before the OP-21 contention re-bench or any other
-  region-scoped work repeats it.
+- [ ] **`llama-cli` / `llama-completion` SILENTLY IGNORE `-rea off`.** `default_template_kwargs` is
+      consumed only by `common_chat_format_example` there; `llama-server` honours it. The flag parses, is
+      accepted, and changes nothing — producing **thinking-ON numbers labelled thinking-OFF**, i.e. it
+      fails in the direction that flatters a reasoning model. Render the prompt yourself and prove it by
+      **diffing token sequences**, with llama.cpp's own render as the control.
+- [ ] **A raw-completion harness UNDER-SCORES a reasoning model** — the mirror trap. LFM2.5-2.6B looked
+      wrong on one item purely because it was truncated mid-`<think>`; 9/9 with templates applied. A
+      reasoning model measured without its template measures the template's absence.
+- [ ] **RECIPE-NUMA-1 — `numactl --membind=<node>` is WRONG even for a single-region CPU grant**, and
+      `canonical_recipe.py` has no region-scoped path to prevent it. Same cores, same binary, switching
+      to canonical `--interleave=all`: **gemma +42%, LFM Q8 +80%, LFM Q4 +195%**, with stddev collapsing
+      from up to **51% of the mean to under 1.5%**. The variance is the tell — membind was not
+      slow-but-stable, it was unstable enough to be reported as either result. `--interleave=all` is
+      correct at EVERY CPU scope.
+- [x] **`GGML_IQK_Q8_0=1` is load-bearing for any Q8_0 CPU arm** ✅ 2026-08-12 — without it the Q8_0 run
+      logged no `[iqk] ACTIVE` line at all: pp 539.24→870.47 (+61%), tg 15.75→24.97 (+58%). A Q8_0 bench
+      omitting it is not top-optimized. `canonical_recipe.py` exposes `--ggml-iqk-q8-0`.
+- [x] **Q4-vs-Q8 INVERTS from CPU to GPU** ✅ 2026-08-12 — on CPU Q4 beat Q8 by 1.60×; on GPU they are
+      within noise with **Q8 marginally ahead**. At small parameter counts on MI210 decode is not
+      weight-bandwidth-bound and Q4_K carries the CDNA2 MMQ dequant cost. **A quant choice justified on
+      CPU evidence does not transfer to GPU** — expect to re-derive it for the 1.2B.
+- [ ] **`-fa 0` measured 12.9% faster decode for gemma4 on gfx90a** (101.44 vs 90.86 tg128, far outside
+      ±0.9 stddev) while the bench launcher uses `-fa on`. **Forward-relevant, not a live defect**:
+      `worker_general` is not GPU-served today (`device: null`), though the operator confirms it may be.
+      Do not act without a server-arm check — FA interacts with MTP and long-context KV.
 
 ## 2026-08-09 — OpenRSI release-state watch (research-intake Stage-2b)
 
