@@ -10,9 +10,9 @@
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-08-12T13:58:09Z",
   "mode": "full",
-  "scan_time": "2026-08-12T13:58:26Z",
+  "scan_time": "2026-08-12T14:02:41Z",
   "schema_version": 1,
-  "source_set_hash": "68dbbe46d0077181705643c241a061cd410e2691efda0d2854e2f9cb65273d96",
+  "source_set_hash": "59fc7f41815e2168520346082bd275b34d0665ceda97187ed918d4df54f169db",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -95,10 +95,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e1e0c263d62ed8e02e4675d73e7d57c8d132435425034cc4ef7c03492493daac",
-      "modified": "2026-08-12T13:52:18Z",
+      "content_hash": "35125bb3cae38674471ead651c2d4d72785d195c6ea5ecd953894136685fbbff",
+      "modified": "2026-08-12T14:01:07Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 349226,
+      "size": 352487,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -6015,10 +6015,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "1f7cdda23f420f442f31a6da3d6bb4d47f8649407af76d6701a594212e119417",
-      "modified": "2026-08-12T13:56:02Z",
+      "content_hash": "8c844245d80396bb3eabea05990e9418dcf013f3b0295c274b77f1517f908e9e",
+      "modified": "2026-08-12T14:02:27Z",
       "path": "progress/2026-08/2026-08-12.md",
-      "size": 345734,
+      "size": 356536,
       "title": "2026-08-12",
       "type": "progress"
     },
