@@ -1,0 +1,12 @@
+# epyc-root pre-commit extras — sourced by the generated .git/hooks/pre-commit.
+#
+# CONTRACT (from the wrapper): accumulate into $status, never `exit` directly, so
+# every check runs and one failure cannot hide another.
+#
+# Installed to .git/hooks/pre-commit.extras by scripts/hooks/install_git_hooks.sh.
+# Versioned here because .git/ reaches no clone.
+
+# Observation contract: no new name-pattern watchdog without a registry row, and no
+# silently-dropped deferral for an existing one. See the header of
+# scripts/hooks/observer_census_precommit.sh for why this is a hook and not a rule.
+"${HOOK_SRC_DIR}/observer_census_precommit.sh" "$@" || status=1

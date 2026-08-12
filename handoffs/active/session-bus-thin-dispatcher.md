@@ -2630,6 +2630,29 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   zero children while the main's queue is non-empty. Same shape as C35/C36 — the RUNTIME decides,
   not the agent's self-report — so it inherits their fail-closed and UNAVAILABLE-fallback rules.
 
+## Observation contract — adoption backlog
+
+Filed 2026-08-12 by the class-sweep that followed the `pgrep -f "session_bus_coordinator\.py run"`
+watchdog blindness (the live daemon's argv carried `--bus-root <path>` between `.py` and `run`, so a
+healthy heartbeating daemon read as dead forever and the watchdog relaunch-looped for hours). The
+instance repair is owned elsewhere; this row is about the **class**, and it is enforced, not
+remembered — `tests/test_observer_contract.py` reads
+[`scripts/coordination/observer_registry.json`](../../scripts/coordination/observer_registry.json)
+and goes RED if this line is checked off or deleted without the migration landing.
+
+- [ ] **OBS-1** (MED): **`scripts/coordination/bus_supervisor.sh` adopts the observation contract.**
+  Source [`scripts/coordination/observer_guard.sh`](../../scripts/coordination/observer_guard.sh),
+  fold identity three-valued (`present`/`absent`/`unobservable`) over ≥2 independent channels, and
+  expose the uniform `observe` subcommand (`state=…`, exit 0/1/3). That entrypoint is what enrolls
+  the file in the shared behavioural battery — which drives a real stand-in process through
+  channel-disagreement and partial-blindness cases, and asserts corrective action is SUPPRESSED
+  while blind and still TAKEN when the target is genuinely absent. Reference adoption:
+  `scripts/coordination/backfill_supervisor.sh`. On landing, flip the registry row to
+  `contract: "v1"` and delete this line. Note the residual the sweep found even after the C49
+  repair: an unverifiable identity resolves to **`dead`** rather than `unknown`, which is the one
+  place the collapse survives — `session_bus_coordinator.py::_identity_verdict` answers the same
+  question with the opposite polarity, so the two halves of one check disagree.
+
 ## Decision gates
 
 - `OP-SENDKEYS-CODEX` (send-keys nudging) — operator grant, evidence-driven, default OFF.
