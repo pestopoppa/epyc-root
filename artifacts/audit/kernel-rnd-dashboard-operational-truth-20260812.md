@@ -320,3 +320,21 @@ unreported. Those are empirical outputs of the reboot-gated real campaign; calib
 implementation commits, and diagnostic receipts cannot fill them. Timeline is a separate
 root-dashboard health input outside this audit's scope. **OP-16 and the post-reboot empirical sequence
 are unchanged.**
+
+---
+
+# Panel-health addendum — D-2 closed live (2026-08-12)
+
+Root `6188197f` implements the non-recursive panel-specific probe requested above and changes the
+Kernel-R&D registry `health_path` from transport `/health` to `/api/kernel/health`. The live hub
+demonstrates the intended split:
+
+- `/health` returns HTTP 200 and reports transport `ok`;
+- `/api/kernel/health` returns HTTP 503 / `absent`, with the result scoped only to the Kernel-R&D
+  producer and its unreported `champion`, `headroom`, and `release_package` sections; and
+- the panel probe does not fold timeline, outcome, queue, or dashboard-registry state and therefore
+  cannot recurse through global `/api/health`.
+
+The promoted live supervisor is PID `1689063` and hub PID `1689100`. This closes D-2. It does not
+claim those three missing campaign outputs exist: the reboot-gated real campaign remains their only
+valid producer, so **OP-16 and the empirical sequence remain unchanged.**

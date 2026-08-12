@@ -439,12 +439,15 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       identities. Root's auxiliary adapter re-derives every value, row digest, arm/topology field,
       and receipt digest while preserving the observation-only no-selection/no-speedup/no-carve/
       no-activation boundary. No grading rule was added and no historical result was back-filled.
-- [ ] SC27 **Wire AutoKernel live-control and governed replay receipts on the write side before the
-      next run.** The 2026-08-12 hardened-instrument smoke and async-prefetch replay are immutable
-      pre-hook evidence and must not be back-filled. Extend future writers with producer-written
-      protocol id, metric direction, scored-block/sample basis, source/binary/model/claim identity,
-      native verdict, and immutable evidence digest; project those rows into the existing measurement
-      ladder and let `claim_tuple.grade()` decide. Do not create a second grading rule.
+- [x] SC27 **Wire AutoKernel live-control and governed replay receipts on the write side before the
+      next run.** ✅ 2026-08-12 — research `730adb1d` adds prospective producer-written belief rows
+      to live controls and the async-prefetch replay; root `2a4e170a` adds the
+      `autokernel_governed_receipt.py` projection and source-register entry. Protocol, direction,
+      scored-block basis, source/binary/model/claim/producer identities, native verdict, and immutable
+      evidence digests are independently re-derived before the shared measurement ladder grades the
+      tuple. Focused producer tests pass 23/23 and adapter tests 24/24. The 2026-08-12 smoke, controls,
+      and GPU replay predate the hook and remain deliberately unprojected; only future receipts may
+      enter this source.
 
 ## Dependency notes
 

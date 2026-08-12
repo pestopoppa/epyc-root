@@ -2,8 +2,27 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-11 (adds the MMQ-WGM prospective write-side gap; prior AutoKernel Arena and promotion-track findings retained)
+**Last compiled**: 2026-08-12 (adds SC27 prospective live-control/replay belief wiring; prior AutoKernel Arena and promotion-track findings retained)
 **Sources**: 36 documents
+
+## Compiled Update — 2026-08-12 (AutoKernel governed receipts)
+
+AutoKernel's live controls and governed async-prefetch replay now write belief semantics at the
+producer boundary. Future receipts carry protocol and metric direction, scored-block basis, exact
+source/binary/model/resource-claim/producer identities, the native verdict, and immutable evidence
+digests. The Vidya adapter independently re-derives those bindings and delegates grading to the one
+shared measurement ladder; it does not introduce a source-specific grade rule.
+
+The temporal boundary is deliberate. The accepted controls, hardened-instrument smoke, and GPU replay
+completed before this hook and therefore project no Vidya rows. A reader cannot manufacture write-time
+warrant after the fact. Research `730adb1d` and root `2a4e170a` close SC27 prospectively; the next
+governed controls or replay will be the first admissible source records.
+
+### Source References (2026-08-12 SC27)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC27 contract and completion boundary
+- [Vidya adapter contract](../scripts/vidya/adapters/README.md) — live source register and projection semantics
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — promoted commits, tests, and no-backfill evidence
 
 ## Compiled Update — 2026-08-11 (AutoKernel Arena write-side boundary)
 

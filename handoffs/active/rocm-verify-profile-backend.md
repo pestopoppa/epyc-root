@@ -597,6 +597,20 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   and the full research suite plus live repairs are green, while a durable producer identity is the
   only remaining instrumentation dependency. **Default:** no experimental commit or push; no
   producer-dependent closure.
+
+  **Exact OP-11 audit — 2026-08-12, decision still open.** The preserved experimental checkout has
+  HEAD `0db32c06e`, an index exactly matching pushed `0492c2319a79e9bcc4edaa1bfb6af5a096276ab7`,
+  and no untracked files. Its full four-file unstaged diff hashes to
+  `b317f27807cc4ce1107a453d693eb7a3c92dc69fb6182ab094834e50404f81d5` with patch-id
+  `af2183d2ce8de8702dbf05ef41e920fa606ace5c`. Two llama-bench files duplicate the already pushed
+  hardened instrument `a4cb04ca`, so the recommended genuine OP-11 history is a two-file commit on
+  parent `a4cb04ca`: `ggml/src/ggml-cuda/quantize.cu` plus `tests/test-backend-ops.cpp`,
+  `+1795/-64`, plain-diff SHA-256
+  `6dcec2b44322470fd76cbbd1e6223cd5a204b8352339b80189d3c06aa1cbbebf`, patch-id
+  `d2938e29`. The audit found no critical/high hazard; the Q4_K final receipt remains 172/172 PASS
+  (SHA-256 `355bdcf169cb8682d2f56e1754b321f770a0fe3c0bbc5f6e1dc58eaffb443fb2`), the stateful campaign
+  remains 5,184/5,184, and sensitivity/specificity remain 1.0. **Recommendation remains Option A for
+  this exact two-file core; no commit or push is authorized until the operator approves OP-11.**
 - [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
   the value distribution. This is the anti-shape-detection device, and it targets something we
   actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can

@@ -2648,9 +2648,14 @@ cannot retrigger the expensive gate unchanged.
   pass. The Kernel-R&D panel's `/api/health` contribution remains `absent` because `champion`,
   `headroom`, and `release_package` are correctly `not_reported` until a real campaign completes,
   not because the dashboard producer is stale.
-- [ ] Add a non-recursive, panel-specific Kernel-R&D data-health probe so registry consumers can
+- [x] Add a non-recursive, panel-specific Kernel-R&D data-health probe so registry consumers can
   distinguish hub transport health from AutoKernel producer health without recursing through the
-  global `/api/health` fold.
+  global `/api/health` fold. ✅ 2026-08-12 — root `6188197f` moves the registry probe from
+  transport `/health` to `/api/kernel/health`. Live transport returns HTTP 200 while the semantic
+  endpoint correctly returns HTTP 503 / `absent`, scoped only to Kernel-R&D's unreported
+  `champion`, `headroom`, and `release_package` sections. The promoted hub remains supervised by PID
+  `1689063` with hub PID `1689100`; no global-health recursion or unrelated timeline state enters the
+  panel result.
 - [ ] Extend production-kernel-set projection from the attested llama.cpp v9 anchor to the separately
   frozen whisper.cpp and qwentts.cpp identities when AK9 consumes those backends; do not imply the
   current llama campaign governs speech kernels.

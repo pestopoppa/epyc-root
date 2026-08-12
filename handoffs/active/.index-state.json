@@ -4,7 +4,7 @@
       "blocked": 4,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 405
+      "open": 404
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 0,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 303
+      "open": 302
     },
     "reviewer-control-plane-index.md": {
       "blocked": 1,
@@ -129,10 +129,10 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 1,
-      "closed": 195,
+      "closed": 196,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 24,
+      "open": 23,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
@@ -1834,10 +1834,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 44,
+      "closed": 45,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 14,
+      "open": 13,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",

@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T01:29:56Z",
+  "generated_at": "2026-08-12T01:58:07Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4056,13 +4056,13 @@
     {
       "age_days": 1,
       "blocked": 0,
-      "closed": 44,
+      "closed": 45,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-11",
       "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
-      "open": 14,
+      "open": 13,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -4147,13 +4147,13 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 195,
+      "closed": 196,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-12",
       "next_action": "After a compliant reboot, run full-host CPU IQK; then materialize and evaluate the matched archive",
-      "open": 24,
+      "open": 23,
       "state": "active",
       "track": "autokernel research loop"
     },

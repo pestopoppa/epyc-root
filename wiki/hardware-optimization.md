@@ -34,10 +34,17 @@ the latter remains open and must produce its own empirical receipts.
 The Kernel-R&D hub now surfaces this state from durable producers rather than a fixed historical
 allowlist. Its live contract shows the attested frozen-v9 anchor, `8/8` instrument preflight, accepted
 `5/5` controls, GPU replay `NOT_REPRODUCED`, and implementation `900cb5c6`; a missing production
-attestation is a loud alarm. The Kernel-R&D panel's health contribution correctly remains absent
-while champion, headroom, and release package are unreported: only the reboot-gated real campaign may
-create those facts. A panel-specific data-health probe and AK9 speech-kernel-set projection remain
-separate follow-ups.
+attestation is a loud alarm. The registry now uses the panel-specific `/api/kernel/health` probe:
+transport remains HTTP 200 while semantic health correctly returns HTTP 503 until champion, headroom,
+and release package are reported by the reboot-gated real campaign. AK9 speech-kernel-set projection
+remains a separate follow-up.
+
+The OP-11 source audit also reduced the approval request to its genuine two-file core on parent
+`a4cb04ca`: `quantize.cu` plus `test-backend-ops.cpp`, `+1795/-64`, plain-diff SHA-256
+`6dcec2b44322470fd76cbbd1e6223cd5a204b8352339b80189d3c06aa1cbbebf`. The audit found no
+critical/high hazard and retained the 172/172 Q4_K final matrix, 5,184/5,184 stateful result, and
+sensitivity/specificity 1.0. This is a recommendation only; the experimental commit remains forbidden
+until the operator approves OP-11.
 
 ### Source References (2026-08-12 current-v9 controls)
 
