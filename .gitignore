@@ -162,3 +162,12 @@ cache/
 logs/*.out
 logs/*.stale_src
 *.orig
+
+# Bus runtime state untracked 2026-08-12 (operator-approved, Phase-0 batch):
+# queue + tokens + session pointer are live churn; daemon rebuilds queue state
+# from bus files (BUS_PROTOCOL rule 9); operator decisions live in artifacts/operator.
+coordination/session-bus/queue.jsonl
+coordination/session-bus/tokens/token-queue.md
+coordination/session-bus/tokens/unblock.md
+coordination/session-bus/tokens/unblock.pins.json
+logs/.current_session
