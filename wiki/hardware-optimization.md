@@ -14,6 +14,35 @@
 **Last compiled**: 2026-08-12 (adds executable AutoKernel reward-integrity evidence; prior findings retained)
 **Sources**: 102+ documents
 
+## Compiled Update — 2026-08-12 (governed raw-HIP compatibility arm)
+
+**Confidence: verified compile/correctness/harness compatibility on one public Torch2HIP task;
+observation-only and not a performance ranking.**
+
+AutoKernel now has a smallest end-to-end raw-HIP authoring seam on the physical MI210. The producer
+admits only a true Torch2HIP task from clean Apache-2.0 AgentKernelArena commit `2dbbf1d3`, hashes the
+task, candidate, evaluator, Ninja and hipcc identities, and compiles GPU-blind for gfx90a. It holds
+separate short MI210 claims only around the vendor baseline and centralized final evaluation and
+releases both even on failure or polite interruption.
+
+The post-contract SiLU r4 proof compiled and passed **11/11 public correctness cases** plus **11/11
+timing-harness cases**. Its receipt self-hash is
+`1cb7087f715a2a9ac28b187a3f2d25c41be6a82279ca4fb254ac9b481805bc48`; the independent belief reader
+re-derived the two producer-written fractions, window/sampler digests, distinct released claims,
+and observation-only boundary. The measured Torch-eager ratio is not rankable: public shapes are not
+sealed and the run binds no honest vendor baseline. C2/C6 sealed/unseen cases and a C3 vendor baseline
+remain mandatory before any HIP candidate can be ranked or proposed for an experimental llama.cpp
+branch.
+
+### Source References (2026-08-12 raw-HIP arm)
+
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — arm acceptance,
+  exact authority boundary, and residual decision-grade gate
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — task identity, claims, test counts, and
+  immutable r4 receipt hashes
+- [Vidya source register](../scripts/vidya/adapters/README.md) — prospective write/read contract and
+  no-backfill boundary
+
 ## Compiled Update — 2026-08-12 (executable reward-integrity corpus)
 
 **Confidence: verified instrument validation on gfx90a; no candidate speed or arbitrary-program coverage claim.**

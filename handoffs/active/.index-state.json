@@ -1,40 +1,40 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 3,
+      "blocked": 11,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 399
+      "open": 361
     },
     "pipeline-integration-index.md": {
-      "blocked": 0,
+      "blocked": 1,
       "handoffs": 5,
       "oldest_advance": "2026-07-29",
-      "open": 51
+      "open": 50
     },
     "research-evaluation-index.md": {
-      "blocked": 0,
+      "blocked": 9,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 301
+      "open": 283
     },
     "reviewer-control-plane-index.md": {
-      "blocked": 1,
+      "blocked": 11,
       "handoffs": 9,
       "oldest_advance": "2026-07-29",
-      "open": 41
+      "open": 30
     },
     "routing-and-optimization-index.md": {
-      "blocked": 1,
+      "blocked": 14,
       "handoffs": 47,
       "oldest_advance": "2026-07-29",
-      "open": 326
+      "open": 302
     },
     "user-facing-harness-index.md": {
-      "blocked": 0,
+      "blocked": 3,
       "handoffs": 7,
       "oldest_advance": "2026-07-29",
-      "open": 44
+      "open": 39
     }
   },
   "duplicates": {},
@@ -88,18 +88,18 @@
       "closed": 51,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 3,
+      "open": 4,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 54
+      "total": 55
     },
     "angelslim-techniques-evaluation.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 1,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 3,
+      "open": 2,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-04",
       "state": "active",
@@ -107,14 +107,14 @@
     },
     "architect-model-selection-bench.md": {
       "blocked": 0,
-      "closed": 61,
+      "closed": 64,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 22,
+      "open": 20,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-02",
       "state": "active",
-      "total": 83
+      "total": 84
     },
     "attention-matching-kv-compaction.md": {
       "blocked": 0,
@@ -140,14 +140,14 @@
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
-      "closed": 131,
+      "closed": 139,
       "guarded": 0,
-      "last_advanced": "2026-08-11",
-      "open": 63,
+      "last_advanced": "2026-08-12",
+      "open": 56,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
       "state": "active",
-      "total": 194
+      "total": 195
     },
     "autopilot-control-plane-integration.md": {
       "blocked": 0,
@@ -162,21 +162,21 @@
     },
     "autopilot-dashboard-fidelity-audit-2026-07-22.md": {
       "blocked": 0,
-      "closed": 8,
+      "closed": 11,
       "guarded": 0,
-      "last_advanced": "2026-07-30",
-      "open": 8,
+      "last_advanced": "2026-08-12",
+      "open": 5,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-03",
       "state": "active",
       "total": 16
     },
     "autopilot-decision-plane-audit-2026-07-22.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 34,
       "guarded": 0,
       "last_advanced": "2026-07-30",
-      "open": 9,
+      "open": 8,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-03",
       "state": "active",
@@ -184,14 +184,14 @@
     },
     "autopilot-sequential-allocation.md": {
       "blocked": 0,
-      "closed": 4,
+      "closed": 6,
       "guarded": 0,
-      "last_advanced": "2026-08-04",
+      "last_advanced": "2026-08-11",
       "open": 12,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-04",
       "state": "active",
-      "total": 16
+      "total": 18
     },
     "backlog-roi-audit-2026-07-14.md": {
       "blocked": 0,
@@ -205,15 +205,15 @@
       "total": 5
     },
     "batched-decode-measurement.md": {
-      "blocked": 0,
-      "closed": 26,
+      "blocked": 1,
+      "closed": 43,
       "guarded": 0,
-      "last_advanced": "2026-07-30",
-      "open": 15,
+      "last_advanced": "2026-08-12",
+      "open": 11,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-07",
       "state": "active",
-      "total": 41
+      "total": 55
     },
     "batched-edit-parallel-apply.md": {
       "blocked": 0,
@@ -261,10 +261,10 @@
     },
     "canonical-judge-suite-revamp.md": {
       "blocked": 0,
-      "closed": 0,
+      "closed": 2,
       "guarded": 0,
-      "last_advanced": "2026-08-03",
-      "open": 24,
+      "last_advanced": "2026-08-12",
+      "open": 22,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-08",
       "state": "active",
@@ -282,11 +282,11 @@
       "total": 6
     },
     "colbert-reranker-web-research.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 10,
       "guarded": 0,
       "last_advanced": "2026-07-30",
-      "open": 9,
+      "open": 8,
       "owner_index": "pipeline-integration-index.md",
       "row_id": "PIP-01",
       "state": "active",
@@ -308,11 +308,11 @@
       "closed": 9,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 14,
+      "open": 15,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-08",
       "state": "active",
-      "total": 23
+      "total": 24
     },
     "cpu-prefill-compute-large-models.md": {
       "blocked": 0,
@@ -327,43 +327,43 @@
     },
     "cpu-shape-specialized-gemv-decode.md": {
       "blocked": 0,
-      "closed": 7,
-      "guarded": 9,
-      "last_advanced": "2026-07-30",
-      "open": 26,
+      "closed": 6,
+      "guarded": 36,
+      "last_advanced": "2026-08-11",
+      "open": 2,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-10",
       "state": "active",
-      "total": 42
+      "total": 44
     },
     "dashboard-architecture-restructure.md": {
-      "blocked": 0,
-      "closed": 12,
+      "blocked": 1,
+      "closed": 15,
       "guarded": 0,
-      "last_advanced": "2026-08-10",
-      "open": 15,
+      "last_advanced": "2026-08-12",
+      "open": 13,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-47",
       "state": "active",
-      "total": 27
+      "total": 29
     },
     "decision-aware-routing.md": {
-      "blocked": 1,
-      "closed": 39,
-      "guarded": 0,
-      "last_advanced": "2026-07-29",
+      "blocked": 2,
+      "closed": 38,
+      "guarded": 1,
+      "last_advanced": "2026-08-11",
       "open": 32,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-09",
       "state": "active",
-      "total": 72
+      "total": 73
     },
     "deepseek-v4-flash-0731-dspark.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 23,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 14,
+      "open": 13,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-11",
       "state": "active",
@@ -404,9 +404,9 @@
     },
     "document-parser-table-bench.md": {
       "blocked": 0,
-      "closed": 3,
-      "guarded": 0,
-      "last_advanced": "2026-07-30",
+      "closed": 2,
+      "guarded": 1,
+      "last_advanced": "2026-08-11",
       "open": 15,
       "owner_index": "pipeline-integration-index.md",
       "row_id": "PIP-02",
@@ -481,10 +481,10 @@
     },
     "eval-tower-architecture-audit-2026-07-20.md": {
       "blocked": 0,
-      "closed": 38,
+      "closed": 39,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 5,
+      "last_advanced": "2026-08-11",
+      "open": 4,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-12",
       "state": "active",
@@ -502,11 +502,11 @@
       "total": 23
     },
     "eval-tower-verification.md": {
-      "blocked": 0,
+      "blocked": 6,
       "closed": 45,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 27,
+      "open": 21,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-14",
       "state": "active",
@@ -767,10 +767,10 @@
     },
     "gpu-serving-tie-in-program.md": {
       "blocked": 0,
-      "closed": 37,
+      "closed": 39,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 25,
+      "open": 23,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-22",
       "state": "active",
@@ -788,22 +788,22 @@
       "total": 5
     },
     "handoff-index-and-backlog-graph.md": {
-      "blocked": 0,
-      "closed": 5,
+      "blocked": 1,
+      "closed": 7,
       "guarded": 0,
       "last_advanced": "2026-08-11",
-      "open": 5,
+      "open": 3,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-46",
       "state": "active",
-      "total": 10
+      "total": 11
     },
     "harness-selection-and-integration.md": {
-      "blocked": 0,
-      "closed": 14,
+      "blocked": 1,
+      "closed": 16,
       "guarded": 0,
-      "last_advanced": "2026-07-30",
-      "open": 4,
+      "last_advanced": "2026-08-12",
+      "open": 1,
       "owner_index": "user-facing-harness-index.md",
       "row_id": "UFH-01",
       "state": "active",
@@ -832,11 +832,11 @@
       "total": 11
     },
     "inference-batch-loop.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 15,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 13,
+      "open": 12,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-24",
       "state": "active",
@@ -844,10 +844,10 @@
     },
     "intake-derived-work-2026-07-25.md": {
       "blocked": 0,
-      "closed": 23,
+      "closed": 25,
       "guarded": 0,
-      "last_advanced": "2026-07-30",
-      "open": 19,
+      "last_advanced": "2026-08-12",
+      "open": 17,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-29",
       "state": "active",
@@ -920,44 +920,44 @@
       "total": 12
     },
     "large-moe-expert-parallelism.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 2,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 3,
+      "open": 2,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-29",
       "state": "active",
       "total": 5
     },
     "learned-routing-controller.md": {
-      "blocked": 0,
-      "closed": 34,
-      "guarded": 0,
-      "last_advanced": "2026-07-30",
-      "open": 20,
+      "blocked": 1,
+      "closed": 33,
+      "guarded": 1,
+      "last_advanced": "2026-08-11",
+      "open": 19,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-15",
       "state": "active",
       "total": 54
     },
     "lightning-attention-port.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 1,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 3,
+      "open": 2,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-30",
       "state": "active",
       "total": 4
     },
     "llama-cpp-dsa-contribution.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 6,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 4,
+      "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-31",
       "state": "active",
@@ -1031,8 +1031,8 @@
     },
     "mi210-big-model-and-acceleration-roadmap.md": {
       "blocked": 0,
-      "closed": 50,
-      "guarded": 0,
+      "closed": 49,
+      "guarded": 1,
       "last_advanced": "2026-08-11",
       "open": 4,
       "owner_index": "inference-research-index.md",
@@ -1052,11 +1052,11 @@
       "total": 21
     },
     "minddr-deep-research-mode.md": {
-      "blocked": 0,
+      "blocked": 2,
       "closed": 3,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 9,
+      "open": 7,
       "owner_index": "user-facing-harness-index.md",
       "row_id": "UFH-04",
       "state": "active",
@@ -1075,9 +1075,9 @@
     },
     "model-stack-change-standardization-audit.md": {
       "blocked": 0,
-      "closed": 4,
-      "guarded": 7,
-      "last_advanced": "2026-07-29",
+      "closed": 0,
+      "guarded": 11,
+      "last_advanced": "2026-08-11",
       "open": 0,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-18",
@@ -1087,20 +1087,20 @@
     "model-stack-single-source-update-pipeline.md": {
       "blocked": 0,
       "closed": 5,
-      "guarded": 6,
-      "last_advanced": "2026-07-29",
+      "guarded": 7,
+      "last_advanced": "2026-08-11",
       "open": 0,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-19",
       "state": "active",
-      "total": 11
+      "total": 12
     },
     "model-stack-update-pipeline-audit.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 5,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 3,
+      "open": 2,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-20",
       "state": "active",
@@ -1174,10 +1174,10 @@
     },
     "numa-placement-defect-20260730.md": {
       "blocked": 0,
-      "closed": 33,
+      "closed": 36,
       "guarded": 0,
-      "last_advanced": "2026-07-30",
-      "open": 7,
+      "last_advanced": "2026-08-12",
+      "open": 4,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-43",
       "state": "active",
@@ -1196,36 +1196,36 @@
     },
     "numa-topology-cutover-resume-20260730.md": {
       "blocked": 2,
-      "closed": 54,
+      "closed": 55,
       "guarded": 0,
-      "last_advanced": "2026-08-01",
-      "open": 84,
+      "last_advanced": "2026-08-11",
+      "open": 85,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-45",
       "state": "active",
-      "total": 140
+      "total": 142
     },
     "objective-task-rate-goodput.md": {
       "blocked": 0,
-      "closed": 12,
+      "closed": 13,
       "guarded": 0,
-      "last_advanced": "2026-08-04",
+      "last_advanced": "2026-08-12",
       "open": 6,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-23",
       "state": "active",
-      "total": 18
+      "total": 19
     },
     "opendataloader-pipeline-integration.md": {
       "blocked": 0,
-      "closed": 44,
+      "closed": 45,
       "guarded": 0,
-      "last_advanced": "2026-07-30",
+      "last_advanced": "2026-08-12",
       "open": 16,
       "owner_index": "pipeline-integration-index.md",
       "row_id": "PIP-05",
       "state": "active",
-      "total": 60
+      "total": 61
     },
     "orchestration-robustness-audit-2026-07-11.md": {
       "blocked": 0,
@@ -1305,11 +1305,11 @@
       "total": 5
     },
     "rao-redel-substrate-spike.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 6,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 6,
+      "open": 5,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-34",
       "state": "active",
@@ -1338,11 +1338,11 @@
       "total": 28
     },
     "reasoning-effort-levels.md": {
-      "blocked": 0,
+      "blocked": 3,
       "closed": 8,
       "guarded": 0,
       "last_advanced": "2026-07-30",
-      "open": 18,
+      "open": 15,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-28",
       "state": "active",
@@ -1382,22 +1382,22 @@
       "total": 8
     },
     "retrain-routing-models.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 4,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 3,
+      "open": 2,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-29",
       "state": "active",
       "total": 7
     },
     "reviewer-calibration-accounting.md": {
-      "blocked": 0,
+      "blocked": 2,
       "closed": 8,
       "guarded": 0,
       "last_advanced": "2026-07-30",
-      "open": 4,
+      "open": 2,
       "owner_index": "reviewer-control-plane-index.md",
       "row_id": "REV-03",
       "state": "active",
@@ -1415,33 +1415,33 @@
       "total": 12
     },
     "reviewer-escalation-and-human-gate-policy.md": {
-      "blocked": 1,
-      "closed": 1,
+      "blocked": 4,
+      "closed": 2,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 8,
+      "last_advanced": "2026-08-12",
+      "open": 4,
       "owner_index": "reviewer-control-plane-index.md",
       "row_id": "REV-05",
       "state": "active",
       "total": 10
     },
     "reviewer-latency-and-sampling-budget.md": {
-      "blocked": 0,
+      "blocked": 3,
       "closed": 3,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 7,
+      "open": 4,
       "owner_index": "reviewer-control-plane-index.md",
       "row_id": "REV-06",
       "state": "active",
       "total": 10
     },
     "reviewer-model-ablations.md": {
-      "blocked": 0,
+      "blocked": 2,
       "closed": 12,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 9,
+      "open": 7,
       "owner_index": "reviewer-control-plane-index.md",
       "row_id": "REV-07",
       "state": "active",
@@ -1548,10 +1548,10 @@
     },
     "scorer-fork-drift-audit-2026-07-22.md": {
       "blocked": 0,
-      "closed": 5,
+      "closed": 6,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 3,
+      "last_advanced": "2026-08-11",
+      "open": 2,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-41",
       "state": "active",
@@ -1559,21 +1559,21 @@
     },
     "scoring-infra-standardization.md": {
       "blocked": 0,
-      "closed": 15,
+      "closed": 16,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 18,
+      "last_advanced": "2026-08-12",
+      "open": 17,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-42",
       "state": "active",
       "total": 33
     },
     "searxng-search-backend.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 19,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 4,
+      "open": 3,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-33",
       "state": "active",
@@ -1592,14 +1592,14 @@
     },
     "session-bus-thin-dispatcher.md": {
       "blocked": 0,
-      "closed": 60,
+      "closed": 112,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
-      "open": 24,
+      "last_advanced": "2026-08-12",
+      "open": 22,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-34",
       "state": "active",
-      "total": 84
+      "total": 134
     },
     "shape-keyed-contention-gating.md": {
       "blocked": 0,
@@ -1613,11 +1613,11 @@
       "total": 16
     },
     "sliders-local-validation.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 0,
       "guarded": 0,
       "last_advanced": "2026-07-29",
-      "open": 9,
+      "open": 8,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-43",
       "state": "active",
@@ -1658,21 +1658,21 @@
     },
     "stale-open-audit-2026-07-18.md": {
       "blocked": 0,
-      "closed": 8,
-      "guarded": 1,
-      "last_advanced": "2026-07-29",
+      "closed": 13,
+      "guarded": 0,
+      "last_advanced": "2026-08-12",
       "open": 6,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-44",
       "state": "active",
-      "total": 15
+      "total": 19
     },
     "standardized-stack-update-pipeline-finalization.md": {
       "blocked": 0,
       "closed": 3,
-      "guarded": 3,
+      "guarded": 2,
       "last_advanced": "2026-07-29",
-      "open": 2,
+      "open": 3,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-38",
       "state": "active",
@@ -1756,11 +1756,11 @@
       "total": 9
     },
     "tq3-quantization-evaluation.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 15,
       "guarded": 0,
       "last_advanced": "2026-08-03",
-      "open": 13,
+      "open": 12,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-54",
       "state": "active",
@@ -1800,11 +1800,11 @@
       "total": 4
     },
     "unified-trace-memory-service.md": {
-      "blocked": 0,
+      "blocked": 2,
       "closed": 21,
       "guarded": 0,
       "last_advanced": "2026-07-30",
-      "open": 10,
+      "open": 8,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-41",
       "state": "active",
@@ -1834,21 +1834,21 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 53,
+      "closed": 55,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 14,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 67
+      "total": 69
     },
     "within-role-placement-state-machine.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 14,
       "guarded": 0,
       "last_advanced": "2026-07-30",
-      "open": 6,
+      "open": 5,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-42",
       "state": "active",
@@ -1951,7 +1951,7 @@
       "id": "EVL-06",
       "index": "research-evaluation-index.md",
       "line": 18,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "File artifact ingestion and the UI as tasks \u2014 the Status line says both remain open but all 7 boxes are closed",
       "track": "benchmark results dashboard"
     },
     "EVL-07": {
@@ -1978,7 +1978,7 @@
       "id": "EVL-09",
       "index": "research-evaluation-index.md",
       "line": 21,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "OPERATOR: rule on each item in the 2026-07-23 design triage; the doc carries no boxes, so nothing can be dispatched",
       "track": "design backlog triage 2026 07 23"
     },
     "EVL-10": {
@@ -2014,7 +2014,7 @@
       "id": "EVL-13",
       "index": "research-evaluation-index.md",
       "line": 25,
-      "next_action": "H2.v8 \u2014 remeasure the contention matrix under frozen v8 after E8 quality collection \u2014 live dashboard topology and region-lock payloads alre\u2026",
+      "next_action": "H2.v9 \u2014 remeasure the contention matrix under frozen v9 after E8 quality collection \u2014 live dashboard topology and region-lock payloads alre\u2026",
       "track": "eval tower loop robustness audit 2026 07 20"
     },
     "EVL-14": {
@@ -2050,7 +2050,7 @@
       "id": "EVL-17",
       "index": "research-evaluation-index.md",
       "line": 29,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Run the preflight named under Run configuration, or retire the review if the Window-2 findings superseded it",
       "track": "fable5 architecture review 2"
     },
     "EVL-18": {
@@ -2059,7 +2059,7 @@
       "id": "EVL-18",
       "index": "research-evaluation-index.md",
       "line": 30,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Extract to docs and move to completed/ \u2014 findings record, no remaining work",
       "track": "fable5 window2 findings 00 executive summary"
     },
     "EVL-19": {
@@ -2095,7 +2095,7 @@
       "id": "EVL-22",
       "index": "research-evaluation-index.md",
       "line": 34,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Extract the intake-sweep + roofline findings to docs and move to completed/ \u2014 no remaining work",
       "track": "fable5 window2 findings 05 intake sweep and"
     },
     "EVL-23": {
@@ -2104,7 +2104,7 @@
       "id": "EVL-23",
       "index": "research-evaluation-index.md",
       "line": 35,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "File the W2+ real-task harvester work as tasks \u2014 Status reads IN PROGRESS but all 10 boxes are closed",
       "track": "frontier f1 real task corpus"
     },
     "EVL-24": {
@@ -2149,7 +2149,7 @@
       "id": "EVL-28",
       "index": "research-evaluation-index.md",
       "line": 40,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "File the outstanding HF model-artifact step as a task, or close Phase A and retire the bench plan",
       "track": "granite 97m r2 bench plan"
     },
     "EVL-29": {
@@ -2167,7 +2167,7 @@
       "id": "EVL-30",
       "index": "research-evaluation-index.md",
       "line": 42,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Keep as the integration-test standing-constraint holder; no dispatchable task by design",
       "track": "integration test coverage"
     },
     "EVL-31": {
@@ -2185,7 +2185,7 @@
       "id": "EVL-32",
       "index": "research-evaluation-index.md",
       "line": 44,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Retire this compatibility pointer once its 14 active citations are redirected to the owning harness handoffs",
       "track": "meta harness optimization"
     },
     "EVL-33": {
@@ -2212,7 +2212,7 @@
       "id": "EVL-35",
       "index": "research-evaluation-index.md",
       "line": 47,
-      "next_action": "RE-4.2 \u2014 non-saturation probe (operator quiet-window, current v8 topology re-attested, autopilot stopped): frontdoor-only, two-phase, R=409\u2026",
+      "next_action": "RE-4.2 \u2014 non-saturation probe (operator quiet-window, current v9 topology re-attested, autopilot stopped): frontdoor-only, two-phase, R=409\u2026",
       "track": "re4 protocol redesign"
     },
     "EVL-36": {
@@ -2257,7 +2257,7 @@
       "id": "EVL-40",
       "index": "research-evaluation-index.md",
       "line": 52,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Extract the SafetyGate/RLVR provenance findings to docs and move to completed/ \u2014 all 9 boxes closed",
       "track": "safetygate rlvr provenance audit 2026 07 22"
     },
     "EVL-41": {
@@ -2338,7 +2338,7 @@
       "id": "INF-01",
       "index": "inference-research-index.md",
       "line": 13,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Retire this compatibility pointer and redirect its external citations to the live spec-decode handoffs",
       "track": "01 speculative decoding"
     },
     "INF-02": {
@@ -2453,7 +2453,7 @@
       "id": "INF-14",
       "index": "inference-research-index.md",
       "line": 25,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Extract the MI210 architecture findings into docs, then move to completed/ (6 active handoffs cite it \u2014 relink first)",
       "track": "fable5 window2 findings 05b mi210 inference"
     },
     "INF-16": {
@@ -2543,7 +2543,7 @@
       "id": "INF-25",
       "index": "inference-research-index.md",
       "line": 35,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Keep as the intra-process TP standing-constraint holder; reopen only if tensor-parallel decode is reconsidered",
       "track": "intra process tensor parallel decode"
     },
     "INF-26": {
@@ -2699,7 +2699,7 @@
       "id": "INF-46",
       "index": "inference-research-index.md",
       "line": 52,
-      "next_action": "P6b Operator-gated fresh-v8-experimental model-load + gate bench on unsloth/Qwen3.6-35B-A3B-MTP-GGUF, with matched Q4 no-spec vs Q4-MTP art\u2026",
+      "next_action": "P6b Operator-gated fresh-v9-experimental model-load + gate bench on unsloth/Qwen3.6-35B-A3B-MTP-GGUF, with matched Q4 no-spec vs Q4-MTP art\u2026",
       "track": "qwen mtp llamacpp port"
     },
     "INF-47": {
@@ -2782,7 +2782,7 @@
       "id": "INF-55",
       "index": "inference-research-index.md",
       "line": 61,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Decide forward-port vs drop for the tree-draft plan now that v9 is frozen; the read-only investigation is complete",
       "track": "tree draft forward port plan"
     },
     "INF-56": {
@@ -2800,7 +2800,7 @@
       "id": "INF-57",
       "index": "inference-research-index.md",
       "line": 63,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Move to completed/ \u2014 the v7 cutover closed and is twice superseded (v8, v9); relink the 14 active handoffs citing it",
       "track": "v7 promotion"
     },
     "INF-58": {
@@ -3056,7 +3056,7 @@
       "id": "RTG-12",
       "index": "routing-and-optimization-index.md",
       "line": 24,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Move to completed/ \u2014 all six ESC8 fixes deployed and verified 2026-07-22; relink the 4 active handoffs citing it",
       "track": "esc8 stack restart landmine audit 2026 07 22"
     },
     "RTG-13": {
@@ -3110,7 +3110,7 @@
       "id": "RTG-18",
       "index": "routing-and-optimization-index.md",
       "line": 30,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Keep as the per-change update checklist \u2014 run it at every model-stack change; never dispatch or flip its boxes",
       "track": "model stack change standardization audit"
     },
     "RTG-19": {
@@ -3119,7 +3119,7 @@
       "id": "RTG-19",
       "index": "routing-and-optimization-index.md",
       "line": 31,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Keep as holder of the seven standing single-source constraints; no dispatchable task by design",
       "track": "model stack single source update pipeline"
     },
     "RTG-20": {
@@ -3173,7 +3173,7 @@
       "id": "RTG-25",
       "index": "routing-and-optimization-index.md",
       "line": 37,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Fold the NPS4 48\u00d74 topology notes into the CPU topology reference, then retire the notes file",
       "track": "orchestrator nps4 48x4 notes"
     },
     "RTG-26": {
@@ -3182,7 +3182,7 @@
       "id": "RTG-26",
       "index": "routing-and-optimization-index.md",
       "line": 38,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Move to completed/ \u2014 terminal `not_pursued` 2026-07-29; relink the 6 active handoffs citing it",
       "track": "outer coordinator learned head"
     },
     "RTG-27": {
@@ -3227,7 +3227,7 @@
       "id": "RTG-31",
       "index": "routing-and-optimization-index.md",
       "line": 43,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Move to completed/ \u2014 closed 2026-07-14 with W1\u2013W8 live-attested; relink the 6 active handoffs citing it",
       "track": "routing truth restoration"
     },
     "RTG-32": {
@@ -3254,7 +3254,7 @@
       "id": "RTG-34",
       "index": "routing-and-optimization-index.md",
       "line": 46,
-      "next_action": "R1a \u2014 the end-to-end bench claim never fired; wiring exists but is inference-gated",
+      "next_action": "C-OWN \u2014 continue the C-series control-plane work (mainD's lane); R1a's bench is inference-gated but does NOT gate the handoff",
       "track": "session bus thin dispatcher"
     },
     "RTG-35": {
@@ -3281,7 +3281,7 @@
       "id": "RTG-37",
       "index": "routing-and-optimization-index.md",
       "line": 49,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Refresh the lineup dossier against the v9 freeze, or mark it a historical snapshot and retire it",
       "track": "stack lineup dossier 2026 07 23"
     },
     "RTG-38": {
@@ -3344,7 +3344,7 @@
       "id": "RTG-44",
       "index": "routing-and-optimization-index.md",
       "line": 56,
-      "next_action": "_no open dispatchable task \u2014 verify complete or file the next step_",
+      "next_action": "Declare this ready-to-run WP9/WP10 runbook do-not-dispatch, or execute it \u2014 it is PREPARED, NOT EXECUTED",
       "track": "wp9 wp10 lineup event prep"
     },
     "RTG-45": {
@@ -3362,7 +3362,7 @@
       "id": "RTG-46",
       "index": "routing-and-optimization-index.md",
       "line": 58,
-      "next_action": "Decide whether .index-state.json / .index-graph.json are git-ignored \u2014 timeline artifact already is",
+      "next_action": "Populate `Deps` with real dependencies as work reveals them \u2014 heuristic import was rejected",
       "track": "handoff index and backlog graph"
     },
     "RTG-47": {
@@ -3371,7 +3371,7 @@
       "id": "RTG-47",
       "index": "routing-and-optimization-index.md",
       "line": 59,
-      "next_action": "Land fix-10 retention overlay; re-eyeball live \u2191/\u2193 under real load; run old+new in parallel toward the Phase 1b call",
+      "next_action": "Take the Phase 1b call \u2014 fix-10 retention and the view-plane consolidation both landed 2026-08-10; parallel-run evidence is in hand",
       "track": "dashboard architecture restructure"
     },
     "UFH-01": {

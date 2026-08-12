@@ -137,7 +137,7 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
   baselines, incomplete case sets, and identity drift fail closed. The matched controller A/B and
   real EPYC capture remain owned only by INF-03; this checkbox makes no empirical completion claim.
 - [x] **HIP arm minimum loop closure (after the Triton loop works).** ✅ 2026-08-12 — research
-  `controller/hip_authoring_arm.py` admits only a true Torch2HIP task from clean Apache-2.0
+  `2c214d48` `controller/hip_authoring_arm.py` admits only a true Torch2HIP task from clean Apache-2.0
   AgentKernelArena `2dbbf1d3`, hashes the task/candidate/toolchain, compiles GPU-blind for gfx90a,
   and uses separate released MI210 claim/sampler windows for the vendor baseline and centralized
   final evaluation. The r4 SiLU receipt compiled and passed 11/11 public correctness and 11/11
