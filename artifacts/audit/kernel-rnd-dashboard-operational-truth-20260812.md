@@ -153,3 +153,82 @@ authoritative. Editing it on `main` now would deepen the exact conflict being ad
 four-line improvement is not worth complicating a merge that is otherwise down to two files.
 
 **Both defects should be applied after that merge lands**, together, since they touch the same panel.
+
+---
+
+# Addendum — AutoKernel state reconciliation (second pass, 2026-08-12 00:40Z)
+
+Requested by `inference` (`msg-20260812T002331Z` / `-002354Z`): reconcile the Kernel-R&D surface
+against the latest durable receipts and frozen-v9 identity. **Read-only throughout** —
+`dashboard/server.py` is on auditor hold, no server started, no inference, lane `none`.
+
+## PASS — production-kernel identity is correct and attested
+
+Read live from `autokernel_current_state()`:
+
+```
+branch  production-consolidated-v9
+head    0db32c06e3e550065b78311a6031ef3dd2c4f27c
+version 10125 (0db32c06e)
+status  production_promoted_frozen · frozen: True · ratified 2026-08-11T01:16:00Z
+checkout.branch/head identical → MATCHES ATTESTATION: True
+```
+
+## PASS — the three auto-selected receipts are present and correctly authority-labelled
+
+| receipt | state | authority |
+|---|---|---|
+| `inf03-mi210-controller-ab-v1` | **refused**, 6/8 ready, missing `evoengineer` + `argus` | `diagnostic_only` |
+| `…-available-source-six-arm-v1` | **ready**, 6/6 | `availability_conditioned_diagnostic_only` |
+| `inf03-actor-critic-real-smoke-v6` | **complete**, `rankable: false`, `matched_campaign_implied: false` | `diagnostic_only` |
+
+`promotion_claim: false`. All three match what `inference` reported at 23:52Z.
+
+## The five requested fields are ABSENT, not stale — and the cause is not what it looks like
+
+Probed the entire `current_state` document (2,496 chars) for each:
+
+| requested | present anywhere |
+|---|---|
+| hardened instrument `a4cb04ca…` | **no** |
+| GPU replay 20/20 positive / `NOT_REPRODUCED` / 2% floor / median `1.2442%` | **no** |
+| fresh-v9 controls · CPU IQK · matched archive (pending markers) | **no** |
+| AutoKernel-relevant ROCm dependencies | **no** |
+
+**These are not stale values needing correction. They are fields that do not exist** — so the repair
+is additive, not a value fix. Two independent causes, and the second is the actionable one:
+
+**(a) The exported contract does not exist at all.** `KERNEL_DASHBOARD_JSON` points at
+`/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json` — **that file, and the `surface/` directory
+itself, are absent from disk**; a filesystem-wide search finds no `kernel_dashboard.json` anywhere.
+So every `runs` / `pareto` / `totals` figure on `/kernel` is currently the ABSENT shell. The scar fix
+is doing its job (nulls + explicit sentence, not a clean empty page), but **the page today has two
+producers and only one of them is alive.**
+
+**(b) The receipts ARE on disk; the selector cannot see them.** `autokernel_current_state()` resolves
+exactly **three hard-coded receipt filenames** (`full-eight-arm-refusal.json`,
+`available-source-six-arm.json`, and the smoke receipt). There are **129 probe directories**, and the
+three newest — dated today — are precisely the ones `inference` asked for:
+
+```
+ak-v9-final-preflight-20260812-r1
+ak-instrument-smoke-a4cb04ca-20260812     <-- the hardened instrument a4cb04ca
+ak-gpu-prefetch-v9-20260812-r1            <-- the GPU replay
+```
+
+The evidence is durable and already written. The dashboard is blind to it because its selector is a
+fixed allowlist rather than a schema match.
+
+## Smallest post-hold repair
+
+1. **Extend the selector, do not add a panel.** Add the new receipt filenames/schemas to
+   `autokernel_current_state()` alongside the existing three. That surfaces the instrument, the GPU
+   replay and the v9 preflight from receipts that already exist — no producer change needed.
+2. **Render the replay honestly**: 20/20 positive *and* `NOT_REPRODUCED` at the 2% floor (median
+   1.2442%) must appear together. A 20/20 shown without the floor verdict reads as a pass.
+3. **Land D-1 in the same change** — the missing-attestation branch must become a loud `alarm`, not a
+   `muted` line — since both touch the same panel.
+4. **Producer-side, separately**: either restore the `kernel_dashboard.json` export or make its
+   absence a first-class alarm rather than only a banner state. Right now `current_state` can render
+   fully healthy while the entire runs/pareto contract is missing, and **that combination is the
+   incident-8 shape at the page level rather than the field level.**
