@@ -2304,7 +2304,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
   **What can actually move a decision:** the 419 live rows that took an in-place TD update from an
   external 0.0 (typically 1.0 → 0.9), and `q_value` used as a SAMPLE WEIGHT in
   `extract_training_data.py`. Small, but real.
-- [ ] **LARGER ADJACENT DEFECT, SAME CLASS, NOT COVERED BY `2f41c3ad` — the live-serving path.**
+- [x] **LARGER ADJACENT DEFECT, SAME CLASS, NOT COVERED BY `2f41c3ad` — the live-serving path.**
   `src/api/routes/chat.py:1203` catches a live backend `Exception`, logs `log_task_completed(
   success=False)` and calls `score_completed_task`. That path uses `failure_reward = -0.5`
   (`q_scorer.py:1040`), giving `initial_q = 0.25` — **below `min_q_value = 0.3`, so the memory is
@@ -2313,6 +2313,37 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
   592,887 legacy routing rows. **Same defect class as the one we just fixed, with far more
   behavioural teeth and an order of magnitude more data — a transient backend blip permanently
   evicts that memory.** UNOWNED.
+  ✅ 2026-08-12 — orchestrator `ba11d8b0`. **RETROACTIVE REPAIR IS POSSIBLE HERE — the opposite
+  answer to the seeding path.** § Reporting Units: **260 of 11,918 `task_failed` records carry a
+  durable start-of-answer `[ERROR: …]` banner, joining to 580 distinct episodic rows, of which
+  K = 565 are classifiable-as-infra, single-provenance, and below the 0.3 floor.** 15 are
+  `REVIEW_REQUIRED_mixed_provenance` and get no proposed value. Dry-run artifact written read-only:
+  `artifacts/audit/memrl_live_serving_infra_reward_dryrun_20260812.json`, `proposed_q = 0.5` (the
+  untrained prior); current values cluster at 0.161 and 0.268. *(`mainC` verified: 580 rows,
+  565/15 split, single proposed value, live store untouched.)* **Nothing was mutated — the repair is
+  an operator decision and is now executable and reversible.**
+  **THE BRIEF UNDERSTATED THE SURFACE.** `chat.py:1203` is real but RARE. The dominant site is
+  `chat_pipeline/direct_stage.py:245`: `success = bool(answer.strip()) and not
+  answer.startswith("[ERROR")` — so an in-band `[ERROR: …]` banner produced by the file's OWN except
+  handler, and an empty reply, both scored as quality failures. Same pattern at 8 more live-serving
+  sites. All 9 now stamped.
+  **The gate is at the WRITER, not the handler**, and that is the load-bearing choice:
+  `score_pending_tasks()` re-derives unscored tasks from the journal, so a handler-only skip would be
+  undone by the next background sweep.
+  **A property was unpinned and the mutation found it:** mutating THE TRAP (suppress every failure)
+  initially SURVIVED two of three anti-suppression tests, because their `completion_meta` was `{}` —
+  falsy, short-circuiting the guard's own check. Fixed with non-empty metadata; the trap now fails 3.
+  19 tests. Blast radius 136 files on both trees: my failure set is a strict SUBSET of pristine's,
+  zero new failures, re-baselined twice when HEAD moved.
+- [ ] **The legacy substring fallback FALSE-POSITIVES, and the evidence is comical:** applied to
+  `outcome_details` it flagged 23 tasks as infra purely because **`"1.503s"` contains `"503"`**. Every
+  one of its hits on the live journal was that. The dry-run deliberately uses only the structural
+  `[ERROR:` anchor. This is the strongest argument yet for structural-over-substring classification —
+  the fallback does not merely miss infra failures, it invents them. **UNOWNED.**
+- [ ] **8,855 failure records (pre-2026-07-27) have NO `work` payload at all** — nothing durable
+  distinguishes infra from genuine, same mechanism as the seeding path. Unclassifiable, and stated as
+  such rather than estimated.
+
 - [ ] **Close the write-side provenance gap — this is why the assessment above is unresolvable.**
   `seeding_injection.py`'s context builder must carry `disposition` / `infra_reason` / `http_status`
   on every reward, so the next occurrence IS filterable. Verbatim the belief-kernel rule: wiring the
