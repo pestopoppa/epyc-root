@@ -647,6 +647,15 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   Rationale, and it changed on measurement rather than on policy: OP-11's capability is a *seeded
   synthetic-shape* producer (`--suite-seed` / `--repeat-suite`). The IQ2 question it was blocking
   does not need one. Two findings, both verified 2026-08-12 against artifacts already on disk:
+  - **⚠︎ CORRECTED 2026-08-12, same day, by the real-model decode capture below.** The occupancy
+    claim in the next bullet was derived from the SYNTHETIC smoke, which runs
+    `mul_mat_vec_q<(ggml_type)16, 1, false, false>` at `Arch_VGPR=64`. **Production 122B MoE decode
+    never runs that instantiation** — it runs `mul_mat_vec_q<(ggml_type)16, 1, true, false>` (the
+    mm_ids/MoE path) at **`Arch_VGPR=80`**, i.e. 512/80 → **6 waves/SIMD, 75% of the 8-wave
+    maximum**, not 100%. Scratch is still 0, so there is no register spill from the codebook gather,
+    but IQ2_XXS decode **is** modestly occupancy-limited. The synthetic-shape reading below stands
+    only for the synthetic shape. Treat a synthetic op capture as a different kernel from the one
+    production runs until the template arguments are compared.
   - **The occupancy half is already answered.** All 65 IQ2_XXS `mul_mat_vec_q` dispatches in the
     existing smoke's `pmc_perf.csv` carry `Arch_VGPR=64`, `Accum_VGPR=0`, `SGPR=32`,
     `LDS_Per_Workgroup=512`, `Workgroup_Size=128`, `Scratch_Per_Workitem=0`, invariant across six
