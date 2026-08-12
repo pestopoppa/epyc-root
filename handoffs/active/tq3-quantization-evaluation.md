@@ -120,7 +120,21 @@ This handoff (`tq3-quantization-evaluation`) tracks **KV-cache** quantization (T
 ### Action Items (added 2026-05-21; STQ1_0 watch consolidated here 2026-06-12)
 
 - [ ] **Monitor llama.cpp PR #22836 (STQ1_0 kernel) for merge — SINGLE OWNER: this handoff** (consolidated from `llama-cpp-kernel-push-rebase`, archived to [`../completed/llama-cpp-kernel-push-rebase.md`](../completed/llama-cpp-kernel-push-rebase.md) 2026-06-12). On merge: cherry-pick into the next `production-consolidated-v5` (or successor) branch alongside any other pending kernel work.
-- [ ] When STQ1_0 lands: llama-bench AngelSlim/Hy-MT1.5-1.8B-1.25bit-GGUF on EPYC 9655 canonical baseline (taskset -c 0-95 -t 96 -fa 1; per `feedback_canonical_baseline_protocol`); compare decode t/s vs Q4_K_M equivalent. If positive at kernel level, note scaling Sherry to worker-class models is gated on a QAT pipeline we do not have (only Hy-MT1.5-1.8B / HY-1.8B-2bit are public Sherry-QAT'd weights).
+- [ ] When STQ1_0 lands **with an x86 vec_dot** (see the 2026-08-12 check below — merge alone is not the
+      trigger): llama-bench AngelSlim/Hy-MT1.5-1.8B-1.25bit-GGUF on EPYC 9655 canonical baseline (taskset -c 0-95 -t 96 -fa 1; per `feedback_canonical_baseline_protocol`); compare decode t/s vs Q4_K_M equivalent. If positive at kernel level, note scaling Sherry to worker-class models is gated on a QAT pipeline we do not have (only Hy-MT1.5-1.8B / HY-1.8B-2bit are public Sherry-QAT'd weights).
+- [x] **PR #22836 status checked, and the trigger above re-scoped ✅ 2026-08-12.** As of 2026-08-12 the PR is
+      `state: open`, `merged: false` (opened 2026-05-08, last touched 2026-08-10 — alive, not abandoned). The
+      load-bearing new fact: its 17 changed files include `ggml/src/ggml-cpu/arch/arm/quants.c` and
+      `ggml/src/ggml-cpu/arch-fallback.h` and **no `arch/x86/` file at all** — `arch-fallback.h` is exactly the
+      mechanism that routes non-ARM targets to the generic **scalar** `quants.c`. So on Zen 5, a merged #22836
+      gives us STQ1_0 *correctness*, not STQ1_0 *speed*. The CUDA sibling #23332 ("CUDA: add STQ1_0
+      dequantization kernel") was **closed unmerged** 2026-05-22, so there is no GPU path either. Benching the
+      1.25-bit artefact on merge-day would therefore not test Sherry's 1.5× claim; it would test whether
+      1.3125 bpw's ≈3.4× weight-traffic reduction vs Q4_K_M survives scalar dequant ALU cost — a different
+      question, and one `feedback_cpu_decode_bw_bound` predicts we lose. Re-derive with
+      `curl -sS https://api.github.com/repos/ggml-org/llama.cpp/pulls/22836/files`. Mirrored in
+      [`angelslim-techniques-evaluation.md`](angelslim-techniques-evaluation.md), whose checklist row also
+      mislabelled #22836 as "AngleSlim kernels" and has been corrected.
 - [ ] Defer Tequila + DAQ until QAT or sub-4-bit deployment is in scope; not actionable today
 
 ## Research Intake Update — 2026-07-02

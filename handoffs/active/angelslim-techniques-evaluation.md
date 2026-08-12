@@ -70,7 +70,35 @@ This stub exists because the user explicitly framed Hy-MT2 itself as "useful spe
 
 ## Progress checklist
 
-- [ ] BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist
+- [ ] BLOCKED: reopen when llama.cpp PR #22836 (**STQ1_0 / Sherry ternary kernel** — *not* "AngleSlim
+      kernels"; there is no such PR, see the 2026-08-12 gate check) merges **and** an x86 vec_dot exists
+      **and** QAT checkpoints of a base we run exist
+- [x] Gate re-checked against GitHub, and the row's own premise corrected ✅ 2026-08-12 — see
+      [§ Gate check — 2026-08-12](#gate-check--2026-08-12)
+
+## Gate check — 2026-08-12
+
+Read from the GitHub API on 2026-08-12; every number below is re-derivable with
+`curl -sS https://api.github.com/repos/ggml-org/llama.cpp/pulls/22836` and `.../pulls/22836/files`.
+
+| Question | Answer |
+|---|---|
+| Is #22836 merged? | **No.** `state: open`, `merged: false`, opened 2026-05-08, last touched 2026-08-10 — alive, three months unmerged |
+| Is #22836 "AngelSlim kernels"? | **No.** Title: *"ggml-cpu : add STQ1_0 ternary quantization with ARM NEON vec_dot kernel"*, author `sjl623`. The rest of this handoff already describes it correctly; only the checklist row was wrong. There is **no** llama.cpp PR adding AngelSlim kernels — AngelSlim is a checkpoint-producing toolkit, and a repo search for `angelslim` returns 8 items, none of them such a PR (`angleslim`, the row's spelling, returns 0) |
+| Does it help **us**? | **Not as written.** Its 17 changed files include `ggml/src/ggml-cpu/arch/arm/quants.c` and `ggml/src/ggml-cpu/arch-fallback.h` — and **no `arch/x86/`**. `arch-fallback.h` is precisely the mechanism that routes every non-ARM target to the generic scalar `quants.c`. On Zen 5 this lands on the **scalar reference vec_dot**, not AVX-512 |
+| CUDA path? | **Dead.** #23332 *"CUDA: add STQ1_0 dequantization kernel"* was **closed unmerged** 2026-05-22 |
+
+**Consequence for the [Adoption Sequence](#adoption-sequence)**: step 2 as written ("once STQ1_0 lands,
+llama-bench the 1.25-bit artefact … verify the 1.5x decode speedup") would, if executed the day #22836 merges,
+be benching a **scalar fallback** on this host. It would not test Sherry's claim; it would test whether
+1.3125 bpw's ≈3.4× reduction in weight traffic versus Q4_K_M survives a scalar dequant's ALU cost — a
+different question, and one whose likely answer under `feedback_cpu_decode_bw_bound` is *no win*. **Add an
+x86/AVX-512 `vec_dot_stq1_0` to the blocking condition, or expect a guaranteed-negative bench.** The
+1.8B artefact is already on disk (step 2), so nothing here is download-gated — it is kernel-gated.
+
+**Cross-reference owed**: STQ1_0 is a 1.3125-bpw CPU ternary quant landing in `ggml-cpu`, which is squarely
+inside [`tq3-quantization-evaluation.md`](tq3-quantization-evaluation.md)'s surface. That handoff should carry
+the same "ARM-only, x86 falls back to scalar" fact so the two do not re-derive it independently.
 
 ## Research Intake Update — 2026-07-11
 
