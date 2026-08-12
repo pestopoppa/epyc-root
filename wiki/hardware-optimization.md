@@ -2,8 +2,29 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-11 (adds the final Arena audit/smoke boundary; prior real-MMQ WGM, C6, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
+**Last compiled**: 2026-08-12 (adds the AutoKernel diagnostic-provenance boundary; prior Arena, real-MMQ WGM, C6, governed authoring, ROCm-upgrade, INF-37, Q4_K MMQ, expert-ceiling, oracle, sensitivity, C4, correctness, clock, roofline, topology, and quant-path findings retained)
 **Sources**: 102+ documents
+
+## Compiled Update — 2026-08-12 (AutoKernel diagnostic provenance)
+
+**Confidence: verified receipt/source audit; no inference or campaign claim.**
+
+RVP-T0-1, AK-BH-1/2/3, and AK-LN-2/AK-X-5a have durable diagnostic receipts and retain bounded
+hardware, provider, factorial, flash-attention, and lane-proxy findings. They do not collectively
+establish current AutoKernel campaign authority: several bind an experimental binary without a clean
+committed source/build manifest, while the shared experimental tree is dirty. A receipt field naming
+frozen v9 is not a substitute for the exact source, tree, build, library, and binary identities.
+
+The operational dependency order is consequently provenance first: reproduce the hardened instrument
+from clean committed source, run fresh frozen-v9 controls, run the full-host CPU IQK proposal, then
+construct the real matched completed-proposal archive and evaluate it observe-only. Existing diagnostics
+remain valid in their declared scope; synthetic archives remain regression tests.
+
+### Source References (2026-08-12 provenance audit)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — campaign dependency order and matched-archive gates
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — diagnostic receipt authority boundary
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — receipt hashes and source-provenance audit
 
 ## Compiled Update — 2026-08-11 (AutoKernel Arena audit and real-controller smoke)
 

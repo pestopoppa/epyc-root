@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** AK-BH-1–4 COMPLETE / ORACLE + HISTORICAL RESEARCH DURABLE / Q4_K MMQ FIXED LOCALLY / EXPERIMENTAL COMMIT OPEN — updated 2026-08-11
+**Status:** DIAGNOSTIC RECEIPTS DURABLE / CLEAN INSTRUMENT PROVENANCE → V9 CONTROLS → CPU IQK → MATCHED ARCHIVE — updated 2026-08-12
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -110,6 +110,25 @@ evidence of the instrument boundary only; a passing IQ2 counter capture waits on
 The run-specific CPU/GPU authorizations do not extend to producer commits, promotion, or freeze
 actions. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
+
+**Read-only evidence-authority audit (2026-08-12):** the RVP-T0-1 saturation pair and the
+AK-BH-1/2/3 plus AK-LN-2/AK-X-5a receipts are durable diagnostic evidence. They retain commands,
+binary or source hashes, and their bounded results, but they do not all bind a committed, clean
+source checkout and build manifest. In particular, the current experimental CPU benchmark binary
+comes from a dirty shared tree even though its receipt reports frozen-v9 as `build_commit`; that is
+not campaign provenance. The next campaign therefore has one strict dependency chain:
+
+1. materialize the hardened measurement instrument from a clean committed source identity and retain
+   its source, commit, tree, build, and binary hashes;
+2. run the five frozen-v9 controls under that exact identity;
+3. run the first full-host CPU IQK proposal under the accepted control bundle; and
+4. build the first matched completed-proposal archive, then run AK-WM-2/AP-WM-1b observe-only.
+
+The durable diagnostics remain useful inputs and regressions; none substitutes for those four gates.
+
+- [x] **AK-AUD-3 — Reconcile the durable diagnostics against clean-source campaign authority.**
+  Receipt hashes, bounded results, provenance gaps, and the four-step dependency order are retained in
+  `progress/2026-08/2026-08-12.md`; no inference or kernel-tree mutation was performed. ✅ 2026-08-12
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
@@ -2535,13 +2554,15 @@ evaluator or its own scope, and T1 may legally guide search.
   fsynced before preflight, claim, mutation, or build, identical resume is idempotent, and same-id/different-
   bytes is refused. The AP-WM-1 evaluator is implemented as an observe-only module outside the campaign
   import path and exposes no selector/champion/T2/T3 mutation API.
-- [ ] **AK-WM-2 — Run AP-WM-1 on the first real matched completed-proposal archive.** The archive protocol,
-  matched-intervention validation, metric-direction declaration, per-regime/surface report, noise floor,
-  robust sign error, and recoding-stability checks are executable now. The current durable campaign store
-  contains zero proposal records because candidate Step 3 has not run; do not substitute synthetic
-  regression fixtures for empirical evidence. Until a real archive shows invariant independent signal, do
-  not add weakness, completion count, K-rho, scope width, prose length, patch size, or description length to
-  live selection, champion, T2, or T3 authority.
+- [ ] **AK-WM-2a — Build the first real matched completed-proposal archive.** After Step 3 writes real
+  proposal-v3 plus journal/evaluation records, deterministically join them and fail closed on missing or
+  inconsistent frame, representation, demand, metric-direction, and matched-intervention receipts.
+  Synthetic fixtures remain regression tests and cannot populate the archive.
+- [ ] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol,
+  matched-intervention validation, per-regime/surface results, noise floor, robust sign error, and
+  recoding stability. Until real evidence shows invariant independent signal, do not add weakness,
+  completion count, K-rho, scope width, prose length, patch size, or description length to live selection,
+  champion, T2, or T3 authority.
 
 **Exit:** a mock campaign moves from source/profile facts through proposals, corrections, negative
 memory, and champion maintenance without human steering.
@@ -2723,7 +2744,7 @@ document; this phase is the checklist.
 
 ---
 
-## ▶ START HERE — NEXT: RUN CURRENT CONTROLS, THEN THE FIRST CPU CANDIDATE
+## ▶ START HERE — CLEAN INSTRUMENT → CURRENT CONTROLS → CPU IQK → MATCHED ARCHIVE
 
 The first IQK campaign adapter is statically complete: the loop has an entrypoint, a hypothesis path,
 a machine-enforced completed-run ledger, a registered source-free parameter mutation, measured
@@ -2765,6 +2786,12 @@ nothing wrong. We held no claim.**
       window. Evidence: `data/autokernel_aa_20260805_rest_recovery/`. ✅ 2026-08-05
 
 ### Step 2 — calibrate the instrument before trusting it
+
+- [ ] **Bind the hardened instrument to clean, committed provenance before inference.** Start from a
+      clean checkout of frozen v9 plus the reviewed hardening overlay; retain the exact source commit,
+      clean-tree attestation, build recipe and binary/library hashes. A receipt naming v9 while executing
+      a binary built from the dirty shared experimental tree is diagnostic only and must fail campaign
+      admission.
 
 - [x] **Run the five fixed controls (§15.2) before any real search**: positive, neutral, negative,
       A/A, and the **historical-win replay — the iqk port, which MUST promote**. The negative control
