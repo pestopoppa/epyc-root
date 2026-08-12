@@ -107,6 +107,12 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 - [x] Surface the SLIDERS reopen precondition (KB-RAG K7 certified 2026-06-13) as a fired-but-needs-operator-decision note ✅ 2026-07-18
 - [x] **Publish the current dispatch-inventory baseline ✅ 2026-07-29**: [`BACKLOG-DISPATCH-QUEUE.md`](../../coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md) reports **1,103 unchecked active-handoff tasks at sweep start** and **~232 none-lane, unblocked tasks dispatchable now**. This supersedes the historical `≈544` heuristic; it is an inventory count, not an exact audited live/stale partition. The exact partition remains open below.
 - [ ] **NEW 2026-07-29 — Extend the stale-open audit to an exact current live/stale partition, then present a derived dashboard field with audit date and source.** The original 22 audited handoffs now contain 208 open tasks (vs 173 at audit time); current lifecycle parsing identifies only 58 high-precision parked/superseded rows, so neither source can certify the remaining 949-or-fewer tasks as live.
+  *STATE 2026-08-12 (`auditor`): the read-certification tranches ARE this row's engine — T4–T7
+  (2026-08-11/12, artifacts `read-certification-tranche{4..7}-*.md`, records at L269 below) have
+  certified 389 rows ≈41% of the ~918-row backlog with per-row LIVE/DEAD/GATED/REWRITE verdicts
+  and adjudicated DEAD lists; blended dead-rate 25%, and dead-rate tracks time-since-last-audit,
+  not file size. The dashboard-field half remains genuinely open (needs the partition to finish).
+  Remaining tranches are the row's live work; the "58 high-precision rows" framing is superseded.*
 - [ ] Extend the audit to the ~105 un-flagged open handoffs to convert "≤544" into an exact live count
   - **PARTIAL 2026-07-29 (`auditor`) — the exactly-certifiable part is done, and it is small; automated
     exact stale-detection is EXHAUSTED.** Parsed every `- [ ]` box in `handoffs/active/`: **992 raw
