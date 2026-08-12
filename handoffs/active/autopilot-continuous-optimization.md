@@ -2141,10 +2141,41 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       sessions are live on this host; INC-20260731-broad-process-pattern-kills is the leading
       explanation and is NOT proven. Logs now append, so a recurrence is diagnosable. **If it
       recurs, capture `logs/llama-server-*.log` BEFORE restarting.**
-- [ ] **14 residual unscoreable rows are broken DATA, not scorer bugs** — `livecodebench` 11 have
+- [x] **14 residual unscoreable rows are broken DATA, not scorer bugs** — `livecodebench` 11 have
       comment-only `test_code` (`"# assert __init__(/) == as a list of"`), `cruxeval` 1 has no
       ground truth anywhere, `mode_advantage_hard` 1. Either regenerate their oracles or retire the
       rows; leaving them silently dropped is what hid the other 1,438.
+      ✅ 2026-08-12 — **ANSWERED, and THREE OF THIS ROW'S OWN CLAIMS ARE REFUTED.** Measured over all
+      79,479 rows of the live pool, not a sample. (a) It is **13**, not 14; the row's own enumeration
+      sums to 13. (b) *"broken DATA, not scorer bugs"* is **wrong** — the 11 come from a code defect
+      still on main: `LiveCodeBenchAdapter._row_to_prompt` (`coding.py:421-432`) emits every assert
+      line commented and then sets `scoring_method="code_execution"`, so it can never produce an
+      executable oracle. Uncommenting would NOT fix it — the args are scraped English, so it converts
+      11 silent drops into 11 always-fails. (c) The `cruxeval` row's oracle is **correct**; upstream
+      `sample_135` is `def f()` with no arguments, so the QUESTION is degenerate, not the ground truth.
+      Evidence: `artifacts/audit/unscoreable-rows-livecodebench-cruxeval-mah-20260812.md` (`08d73fd9`).
+- [ ] **THE 13 WERE NEVER THE PROBLEM: all 2,360 `livecodebench` rows carry the SAME 4-character
+  oracle, and 2,349 of them SCORE.** `expected == "def "` for every row in the suite —
+  **one distinct value across 2,360 rows** — scored by `substring`. Any plausible Python answer
+  contains `def `, so the suite cannot distinguish a correct solution from a syntactically valid
+  stub. Same vacuity class as the DebugBench oracle, reached independently, and **larger**: DebugBench
+  was 4 rows in our core pools, this is 2,349 live scoring rows.
+  **Consequence:** every `livecodebench` score on record is uninterpretable and any past comparison
+  or ranking resting on a livecodebench delta carries **no signal** — same disposition as debugbench.
+  **Stop scoring the suite until its oracle is rebuilt**; retiring the 11 would close the row while
+  leaving 2,349 vacuous passes live. Rebuild is non-trivial: upstream `greengerong/leetcode` is cached
+  locally and 1:1 with our suite but ships **no test cases**, so an oracle must be MANUFACTURED.
+  **UNOWNED — needs the eval-pipeline owner** (same owner as the DebugBench rebuild, ledger U-7).
+  *Guard shipped so it cannot recur silently:* `constant_oracle_suites()` + 7 tests, orchestrator
+  `ea71c3be`. **It is the SIBLING of the existing guard, not a replacement** — mine asks *is the
+  oracle satisfied by echoing the INPUT*, this asks *is the oracle IDENTICAL across the suite*.
+  Mine is blind here (`"def "` is 4 chars and appears in only 16 of 2,349 prompts); both are needed.
+  *(Verified by `mainC` before acceptance: 2,360 rows / 1 distinct `expected` / 2,349 `substring`
+  re-derived independently, and the new guard run against the live pool flags exactly `livecodebench`
+  plus `needle_parameterized` — the latter a fixed needle by design, reported not allow-listed.)*
+- [ ] **REGENERATE `ma_hard_code_001`** — hand-authored tracked YAML
+  (`mode_advantage_hard.yaml:288-328`), two defects: `test_code` wires stdin and never asserts, AND
+  the prompt ships the author's unresolved self-correction (says 3, then 6; correct answer is 6).
 - [x] **debugbench `expected` is truncated to exactly 100 characters** on every row across all
       three languages. `substring` scoring therefore asks the model to reproduce a 100-char prefix
       of the reference solution. That scores *something*, but it is not obviously "did it fix the
