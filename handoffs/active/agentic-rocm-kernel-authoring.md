@@ -1,11 +1,11 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: run a fresh one-task/one-arm engineering pilot through the integrated
-controller and evaluator sandboxes; require non-null brokered feedback plus complete activation,
-claim/release, and teardown evidence before starting the 7/7 available-source panel. Never reuse r4.
+**Next action (2026-08-12)**: resolve the sandboxed Codex transport denial exposed by governed pilot
+r12 with the least additional authority, then rerun the same one-task/K-Search cell and require a
+terminal diagnostic receipt before starting the 7/7 available-source panel. Never reuse r4.
 The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (broker/evaluator isolation + seven-arm readiness checkpoint)
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (governed K-Search pilot r1-r12 checkpoint)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -412,6 +412,36 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     evidence. Candidate evaluation runs separately in a fresh deny-network evaluator sandbox; the parent
     alone owns the claim, sampler, and subprocess. The integrated focused warning-strict suite passed
     **95/95**, the pinned EvoEngineer suite **11/11**, and the pinned controller suite **572/572**.
+  - [x] **Exercise the governed one-task/K-Search pilot through its first real Codex request and retain
+    every fail-closed attempt.** ✅ 2026-08-12 — research branch
+    `integrate/inf03-isolation-merge-20260812` at `569a8c42` added the explicit
+    `epyc.autokernel.arena_diagnostic_pilot.v1` authority, a pilot-only one-round K-Search override,
+    exact task-source discovery, narrow controller import/runtime/ELF/Git/null-device grants, and a
+    workspace-local ephemeral Codex home that is scrubbed during teardown. The immutable probe ladder is:
+
+    | Attempt | First fail-closed boundary | Disposition |
+    |---|---|---|
+    | r1 | task contract omitted `source_file_path` | fixed by deterministic instruction-task source discovery |
+    | r2-r3 | sandbox could not import the controller module at the declared package root | fixed by the exact `scripts/` import root and below-root module identity |
+    | r4-r5 | Python extension closure was incomplete (`libffi.so.8`) | fixed by exact extension/ELF dependency admission |
+    | r6-r7 | the selected Python environment could not import `yaml` / the pinned Arena evaluator | fixed by binding the governed K-Search Python and exact venv package root |
+    | r8 | exact source verification could not start `git` | fixed by admitting the exact executable and ELF closure |
+    | r9 | Git could not open `/dev/null` | fixed by admitting only the null device; KFD/render remained denied |
+    | r10 | ambient system/global Git configuration paths were denied | fixed by `GIT_CONFIG_NOSYSTEM=1` and `GIT_CONFIG_GLOBAL=/dev/null` |
+    | r11 | Codex could not initialize under the read-only host `CODEX_HOME` | fixed with an ephemeral, workspace-local auth/config projection that is scrubbed on exit |
+    | r12 | the real Codex client started, attempted the response request, retried five times for about 60 seconds, then failed with `Operation not permitted` while sending to the responses endpoint | current narrow transport-policy defect; no completed model response or candidate |
+
+    Every attempt failed before a terminal diagnostic result, so r1-r12 are engineering evidence only:
+    they are not rankable, aggregatable, bankable, or performance evidence. R12's captured controller
+    cgroup was empty and removed and its ephemeral Codex home was scrubbed after failure.
+  - [ ] **Resolve the r12 sandboxed Codex transport denial with least additional authority, then rerun
+    the identical one-task/K-Search diagnostic pilot.** Require a completed model response, non-null
+    brokered feedback, exact controller/evaluator activation, MI210 claim/release and sampler records,
+    scrubbed ephemeral CLI state, empty/removed cgroup, and a terminal pilot receipt. Do not treat a
+    transport-successful request alone as controller or kernel evidence.
+  - [ ] **Project the diagnostic-pilot v1 contract and pre-receipt failure posture into the Kernel-R&D
+    dashboard.** The current root projector reads the older diagnostic-smoke schema only, so it does
+    not yet show that r12 reached a real model request or that no terminal performance claim exists.
   - [ ] **Repair the pre-existing all-tree discovery parser collision.** Discovery under the pinned
     ROCm runtime reaches a module whose import-time CLI parser rejects `--evaluate-existing` combined
     with `--execute`, raising `SystemExit` before unittest can emit a complete summary. Keep the focused

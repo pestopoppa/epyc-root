@@ -4,7 +4,7 @@
       "blocked": 13,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 356
+      "open": 358
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -85,14 +85,14 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 1,
-      "closed": 56,
+      "closed": 57,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 3,
+      "open": 5,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 60
+      "total": 63
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 1,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 224,
+      "closed": 225,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 246
+      "total": 247
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
@@ -2394,7 +2394,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Run one isolated task/arm pilot; require complete broker, claim, sandbox, and teardown receipts before the 7/7 panel",
+      "next_action": "Resolve r12's sandboxed Codex transport denial, then rerun the exact one-task/K-Search pilot to a terminal receipt",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {

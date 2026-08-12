@@ -1136,7 +1136,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-03",
-      "weight": 6
+      "weight": 8
     },
     {
       "from": "INF-06",
@@ -3491,7 +3491,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T13:19:44Z",
+  "generated_at": "2026-08-12T14:04:42Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4159,13 +4159,13 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 56,
+      "closed": 57,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Run one isolated task/arm pilot; require complete broker, claim, sandbox, and teardown receipts before the 7/7 panel",
-      "open": 3,
+      "next_action": "Resolve r12's sandboxed Codex transport denial, then rerun the exact one-task/K-Search pilot to a terminal receipt",
+      "open": 5,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4198,7 +4198,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 224,
+      "closed": 225,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
