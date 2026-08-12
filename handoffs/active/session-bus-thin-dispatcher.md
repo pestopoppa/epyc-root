@@ -2641,6 +2641,25 @@ one-live-instance assumption. If that task gets its own handoff, move these five
         shared orchestrator clone held apart only by file-disjoint ownership and a no-commit rule,
         and a `git add` into a mid-cherry-pick index putting 42 files into another agent's commit.
         Phase 2 does **not** cover the sub-repos and should not be read as if it does. Phase 1 items 1–5 are landed above; nothing is
+
+- [ ] **Per-agent shards for the concurrently-appended log files.** Option 2 from the
+  `agent_audit.log` adjudication, which untracking deliberately did not implement. Untracking removed
+  the merge tax at the cost of the git copy; per-agent files remove it while keeping tracking, and the
+  same shape applies to any other all-writers-one-file artifact on this plane. Decide it as a policy
+  once rather than per-file — and note that the untrack has already converted two paths from *merge
+  contention* into *`clean -x` exposure*, which is the cost this option avoids.
+- [x] **Worktree isolation phase 2 — the cutover.** ✅ 2026-08-12 — all five lane worktrees created and
+  verified by `setup_main_worktrees.sh mainA mainB mainC mainD auditor`: `/mnt/raid0/llm/worktrees/mains/<agent>` on `lane/<agent>`, `repos/*` synced via each worktree's own
+  `clone-repos.sh`, shared pre-commit hooks confirmed firing inside each worktree (secret-shaped blob
+  blocked, clean commit allowed, scratch removed), and `session_bus.py --print-root` resolving to the
+  canonical `/workspace/coordination/session-bus` from all five — the two-plane split holds.
+  **Index isolation proven, not assumed:** staging a scratch file inside `mains/mainA` leaves
+  `/workspace`'s staged count at 0. The pathspec-sweep and staged-files-riding-along hazards are now
+  structurally impossible rather than a discipline every session has to remember.
+  The shared clone was never switched: `/workspace` stayed on `main` throughout, and the tip it moved
+  to mid-run (`a90870ec`->`4622c0d7`) was another session committing, not this script.
+  *Residual, stated rather than buried:* creating a worktree does not MOVE a live session into it —
+  each main must `cd` to its own lane worktree, and until they do, the isolation exists but is unused. Phase 1 items 1–5 are landed above; nothing is
   migrated. `scripts/coordination/WORKTREE_MIGRATION.md` is written and `setup_main_worktrees.sh` is
   verified against a throwaway, but the five mains still share `/workspace` — which is what forced a
   15-minute fleet-wide commit freeze to land one merge, and what put 29 worktrees inside the tree that

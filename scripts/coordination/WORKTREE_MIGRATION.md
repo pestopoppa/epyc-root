@@ -4,9 +4,42 @@ Companion doc for `scripts/coordination/setup_main_worktrees.sh` (P1/4 of
 `guard-universe-and-worktree-isolation`, phase 1). This is the design note;
 the script is the mechanism. **Phase 1 (this) builds and verifies the
 machinery against a single throwaway agent (`wttest`, removed after
-verification). Phase 2, explicitly post-reboot and explicitly not this
-task's to do, is running the script for the five real lane names —
-`mainA mainB mainC mainD auditor`.**
+verification).**
+
+**SUPERSEDED 2026-08-12: phase 2 has been executed.** The line below
+originally read "Phase 2, explicitly post-reboot and explicitly not this
+task's to do, is running the script for the five real lane names — `mainA
+mainB mainC mainD auditor`." That is stale — left here struck through rather
+than deleted, so the document stays auditable instead of quietly repointing
+its own history:
+
+~~Phase 2, explicitly post-reboot and explicitly not this task's to do, is
+running the script for the five real lane names — `mainA mainB mainC mainD
+auditor`.~~
+
+All five lane worktrees now exist at `/mnt/raid0/llm/worktrees/mains/{mainA,
+mainB,mainC,mainD,auditor}`, each on its own `lane/<agent>` branch, and were
+verified: `repos/*` synced via each worktree's own `clone-repos.sh`; the
+shared pre-commit hooks confirmed firing inside each worktree (a
+secret-shaped blob was blocked, a clean commit was allowed, the scratch
+commit was removed); `session_bus.py --print-root` resolved to the canonical
+`/workspace/coordination/session-bus` from all five. Index isolation was
+measured, not assumed: staging a scratch file inside `mains/mainA` left
+`/workspace`'s staged count at 0. The shared clone was never switched —
+`/workspace` stayed on `main` throughout, though its tip moved
+`a90870ec` → `4622c0d7` mid-run; that move was a different session
+committing, not an effect of the setup script. One consequence worth
+recording: `auditor`'s worktree is based at `4622c0d7` while the other four
+are based at `a90870ec` — harmless tip skew, since each lane merges
+independently (see "Per-item sync discipline" above).
+
+**The residual, stated plainly:** creating a worktree does not move a live
+session into it. Each main must `cd` to its own lane worktree. Until a main
+does that, the isolation this document describes exists on disk but is
+unused by that main's session — this is the only thing standing between the
+cutover above and the hazard class ("five mains committing concurrently in
+the same `/workspace` working tree", see "Why: what isolation is for" below)
+actually being closed in practice, as opposed to merely available.
 
 ## Why: what isolation is for
 
@@ -166,7 +199,8 @@ resolves by naming it.
 ## Practical usage
 
 ```bash
-# Phase 2, post-reboot, NOT this task:
+# Phase 2 — executed 2026-08-12 (see SUPERSEDED note above). Re-running is
+# safe: idempotent, see below.
 scripts/coordination/setup_main_worktrees.sh mainA mainB mainC mainD auditor
 ```
 
@@ -193,3 +227,51 @@ scripts/coordination/setup_main_worktrees.sh mainA mainB mainC mainD auditor
   directory from its own invocation path (`$(dirname "$0")/../repos`), so
   no change to that script was needed; it already targets wherever it is
   run from.
+
+## Runbook: entering your lane at session start
+
+The worktree existing is not the same as a session using it — see "The
+residual" above. This is the checklist that closes that gap for one agent's
+session.
+
+1. **`cd` into your own lane worktree**, not `/workspace`:
+
+   ```bash
+   cd /mnt/raid0/llm/worktrees/mains/<agent>   # mainA | mainB | mainC | mainD | auditor
+   ```
+
+   Do this once at session start, before touching code, docs, handoffs, or
+   progress. Everything below assumes you are already there.
+
+2. **Know which plane a file belongs to** (full definitions above, under
+   "The two planes"):
+   - **Runtime plane, `/workspace` only, never forked**: the session bus
+     (`coordination/session-bus/`), `tokens/token-queue.md`,
+     `logs/agent_audit.log`. Read and write these at their canonical
+     `/workspace` path regardless of which lane worktree you are sitting
+     in — do not expect or create a per-lane copy.
+   - **Work plane, your lane worktree**: code, docs, handoffs, progress
+     entries — everything that is your own work-in-progress. Write these
+     inside `/mnt/raid0/llm/worktrees/mains/<agent>`, not `/workspace`.
+
+3. **Commit with explicit pathspecs, on `lane/<agent>`, never in the shared
+   clone**: `git -C /mnt/raid0/llm/worktrees/mains/<agent> add -- <paths>`
+   then commit — never `git add -A`/`git add .` (see repo-wide git
+   discipline), and never `git checkout`/`git switch` the branch in
+   `/workspace` to do this work instead. `/workspace` stays on `main` at all
+   times; your lane work happens only in your own worktree, on your own
+   branch, promoted out via the pattern in "Per-item sync discipline" above.
+
+4. **Verify you are in the right place** before relying on either plane:
+
+   ```bash
+   git rev-parse --abbrev-ref HEAD        # expect: lane/<agent>
+   scripts/coordination/session_bus.py --print-root
+                                           # expect: /workspace/coordination/session-bus
+   ```
+
+   If the branch isn't `lane/<agent>`, you are not in your lane worktree —
+   `cd` there (step 1) rather than switching branches where you are. If the
+   bus root isn't the canonical `/workspace` path, stop and treat it as a
+   bug, not a per-worktree bus — the whole point of item 1 (see "The two
+   planes") is that this must resolve identically from every worktree.
