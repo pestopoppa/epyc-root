@@ -86,6 +86,83 @@ def arena_receipt(*, checkpoint_hours=2.0, ended_at="2026-08-12T08:23:37Z"):
     return value
 
 
+def hip_receipt():
+    campaign = "ak-hip-arm-fixture-r1"
+    task_id = "torch2hip/gpumode/16636_SiLU"
+    candidate_sha = "c" * 64
+
+    def window(phase, claim_id, started_at, ended_at):
+        opened = {"schema": "epyc.autokernel.device_claim_receipt.v1",
+                  "campaign_id": campaign, "claim_id": claim_id,
+                  "device_id": "mi210_0", "acquired_at": started_at,
+                  "released_at": None}
+        released = dict(opened)
+        released["released_at"] = ended_at
+        sampling = {"schema": "epyc.autokernel.device_sampling_receipt.v1",
+                    "sample_count": 2, "samples": [{"offset_s": 0.0},
+                                                     {"offset_s": 0.25}]}
+        sampling["sha256"] = aux._canonical_sha256(sampling)
+        value = {"schema": aux._HIP_WINDOW_SCHEMA, "phase": phase,
+                 "task_id": task_id, "campaign_id": campaign,
+                 "status": "complete", "started_at": started_at,
+                 "ended_at": ended_at, "device_claim_open": opened,
+                 "device_claim_released": released,
+                 "device_sampling": sampling,
+                 "gpu_action_executed_only_while_claim_held": True,
+                 "failure": None}
+        value["receipt_sha256"] = aux._canonical_sha256(value)
+        return value
+
+    common = {"unit": "fraction", "metric_direction": "higher_better",
+              "category": "CANDIDATE", "reps": 11,
+              "reps_basis": "scored_public_cases"}
+    value = {
+        "schema": aux._HIP_SCHEMA, "status": "complete",
+        "authority": "observation_only", "campaign_id": campaign,
+        "started_at": "2026-08-12T09:30:00Z", "ended_at": "2026-08-12T09:31:00Z",
+        "producer": {"producer_id": aux._HIP_PRODUCER,
+                     "path": aux._HIP_PRODUCER_PATH, "sha256": "a" * 64},
+        "task": {"schema": aux._HIP_TASK_SCHEMA, "task_id": task_id,
+                 "task_type": "torch2hip", "target_file": "hip/candidate.hip",
+                 "target": {"gpu_model": "MI210", "gfx_arch": "gfx90a"},
+                 "file_sha256": {"config.yaml": "b" * 64},
+                 "vendor_identity": {"clean": True,
+                                     "commit": aux._HIP_VENDOR_COMMIT}},
+        "hardware": {"architectures": ["gfx90a"], "target_gfx_arch": "gfx90a",
+                     "target_gpu_model": "MI210"},
+        "candidate": {"source": "/fixture/candidate.hip", "sha256": candidate_sha},
+        "evaluation": {"compiled": True, "correct": True,
+                       "public_correctness_cases": 11, "valid_baseline_cases": 11,
+                       "speedup_rankable": False, "profiler_metrics": {},
+                       "integrity_flags": ["public_shapes_only",
+                                           "honest_vendor_baseline_not_bound"]},
+        "measurement_windows": [
+            window("vendor_baseline", "akd-baseline", "2026-08-12T09:30:10Z",
+                   "2026-08-12T09:30:15Z"),
+            window("centralized_final_evaluation", "akd-final",
+                   "2026-08-12T09:30:20Z", "2026-08-12T09:30:55Z")],
+        "belief_measurements": [
+            {"measurement_id": "hip_public_correctness_pass_rate",
+             "metric": "autokernel_hip_public_correctness_pass_rate", "value": 1.0,
+             "claim": "Fraction of scored public Torch2HIP correctness cases that passed",
+             **common, "extra": {"measurement_role": "raw_hip_authoring_correctness",
+                                 "passed": 11, "total": 11,
+                                 "candidate_source_sha256": candidate_sha,
+                                 "authority": "observation_only"}},
+            {"measurement_id": "hip_timing_harness_validity_rate",
+             "metric": "autokernel_hip_timing_harness_validity_rate", "value": 1.0,
+             "claim": "Fraction of scored Torch2HIP timing cases admitted as valid",
+             **common, "extra": {"measurement_role": "raw_hip_timing_validity",
+                                 "passed": 11, "total": 11,
+                                 "candidate_source_sha256": candidate_sha,
+                                 "authority": "observation_only"}}],
+        "constraints": {"performance_claim": False, "promotion_authority": False,
+                        "production_tree_touched": False, "frozen_kernel_built": False},
+    }
+    value["receipt_sha256"] = aux._canonical_sha256(value)
+    return value
+
+
 def p2_receipt():
     shape = {"np_slots": 8, "slot_context_tokens": 8192,
              "total_context_tokens": 65536, "mtp": False}
@@ -871,6 +948,38 @@ def test_arena_identity_refuses_a_tampered_self_digest():
     value["source"]["checkpoint_hours"] = 8.0
     with pytest.raises(ct.ProjectionError, match="does not bind"):
         aux.native_rows(value)
+
+
+def test_hip_rows_rederive_and_preserve_observation_only_identity():
+    source = hip_receipt()
+    rows = aux.native_rows(source, receipt_locator="campaign:r4/receipt.json",
+                           receipt_sha256="d" * 64, attestation_present=True)
+    projected = tuple(aux.project(row) for row in rows)
+    assert len(projected) == 2
+    assert all(row.extra["hip_receipt_identity_sha256"] == source["receipt_sha256"]
+               for row in projected)
+    assert all(row.date == "2026-08-12" for row in projected)
+    assert all(row.extra["authority"] == "observation_only" for row in projected)
+    assert all(ct.grade(row)[:2] == ("Witnessed", "Attested") for row in projected)
+
+
+def test_hip_row_or_claim_tamper_is_refused():
+    source = hip_receipt()
+    source["belief_measurements"][0]["value"] = 0.5
+    source.pop("receipt_sha256")
+    source["receipt_sha256"] = aux._canonical_sha256(source)
+    with pytest.raises(ct.ProjectionError, match="do not exactly rederive"):
+        aux.native_rows(source)
+
+    source = hip_receipt()
+    source["measurement_windows"][0]["device_claim_released"]["released_at"] = None
+    source["measurement_windows"][0].pop("receipt_sha256")
+    source["measurement_windows"][0]["receipt_sha256"] = aux._canonical_sha256(
+        source["measurement_windows"][0])
+    source.pop("receipt_sha256")
+    source["receipt_sha256"] = aux._canonical_sha256(source)
+    with pytest.raises(ct.ProjectionError, match="released MI210 claim"):
+        aux.native_rows(source)
 
 
 def test_invalid_direction_is_rejected_by_shared_carrier():
