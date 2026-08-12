@@ -134,3 +134,26 @@ def test_narrowed_to_pkill_only_pgrep_passes_the_hook() -> None:
     r = subprocess.run(["bash", str(HOOKS / "check_process_pattern_kill.sh")],
                        input=payload, capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+def test_shell_FRAMING_cannot_hide_the_invocation() -> None:
+    """The gap I found in the (now-reverted) destructive-revert guard, applied here.
+
+    That guard tokenised with `shlex.split`, which does NOT emit `;` as its own
+    token unless space-separated — `shlex.split('a; b') == ['a;', 'b']` — so its
+    segmenter never fired on the commonest chaining idiom and `cd /tmp; git
+    checkout -- <dirty>` sailed through. Its suite passed because every destructive
+    case was a single command or used a space-separated operator: it mutated the
+    TARGET and never the FRAMING around it.
+
+    This scanner splits raw text on a separator regex and matches the command word
+    positionally, so it does not share that failure — but "does not share it" is a
+    claim, and this is the check that makes it one.
+    """
+    for cmd in ["cd /tmp; pkill -f llama-server",
+                "echo cleanup; pkill -f llama-server",
+                "pkill -f llama-server; echo done",
+                "true && pkill -f llama-server",
+                "pkill -f llama-server | tee log",
+                "for i in 1; do pkill -f llama-server; done"]:
+        assert pattern_kill_verdict(cmd) == "kill-pattern", cmd
