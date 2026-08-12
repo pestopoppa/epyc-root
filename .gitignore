@@ -126,3 +126,15 @@ artifacts/operator/*operational_baseline_candidate*.json
 # "no graph" (dashboard/panels.py, absence_means), so untracking costs nothing there.
 handoffs/active/.index-state.json
 handoffs/active/.index-graph.json
+
+# Linked git worktrees (29 of them, incl. inference's live campaign trees).
+#
+# THIS ENTRY DOES NOT PROTECT THEM. Measured 2026-08-12, not assumed:
+#   git clean -nd    -> 0 entries          (ignored, so not a candidate)
+#   git clean -ndx   -> "Would skip repository" x29  (git skips nested repos)
+#   git clean -nffdx -> "Would remove worktrees/"    (BEFORE *and AFTER* this entry)
+# `-x` re-includes ignored paths and `-ff` defeats the nested-repo skip, so the
+# only thing standing between `git clean -ffdx` and 29 live worktrees is that
+# nobody types the second `f`. Ignoring is for STATUS HYGIENE here — it removes
+# 29 untracked lines from every `git status` — not for safety.
+worktrees/
