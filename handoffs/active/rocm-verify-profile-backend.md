@@ -466,6 +466,14 @@ job. It is a statement about **what a reward-bearing oracle needs that a regress
   so the probe is read-only and the *remedy*, not the measurement, is what needs root. **At idle the
   card was sitting on level 1 (800 MHz), not level 2**; a three-level DPM table with a wide idle step
   means the probe must record which level is *held under sustained load*, not just the peak touched.
+  A fresh 2026-08-12 corroborating replication under a held MI210 claim produced
+  **41.854545 TFLOP/s** over 60.000284 s while the 250 ms sampler captured **242** samples with a
+  **0.250023 s** maximum gap. Nominal **1700 MHz** held for **99.5868%** of samples and peak power
+  was only **196 W / 300 W**; `approached_power_cap=false`. Receipt:
+  `/mnt/raid0/llm/autokernel/campaigns/rvp-t0-1-20260812T0444Z/receipt.json`, SHA-256
+  `3ca5f261814bcc27114c15db4480a52496041b3c4c524b3271e5c9f6703da9e1`; the receipt binds the
+  workload binary hash and records claim release time. This corroborates the already-closed row and
+  does not create a second completion. The clock-pinning branch remains closed.
 - [x] **RVP-T0-2 — MFMA disassembly audit (row C3).** `roc-obj` + `llvm-objdump --disassemble
   -mcpu=gfx90a` over the hot `mul_mat` kernels in `libggml-hip.so`; grep for `v_mfma_*`. **Static
   only — no GPU time, no server.** If MFMA is absent from the paths this program cares about, that is

@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T04:44:08Z",
+  "generated_at": "2026-08-12T04:50:48Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4062,7 +4062,7 @@
       "id": "EVL-47",
       "last_advanced": "2026-08-12",
       "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
-      "open": 13,
+      "open": 14,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -4147,7 +4147,7 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 205,
+      "closed": 206,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
@@ -4615,7 +4615,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 67,
+      "closed": 68,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",

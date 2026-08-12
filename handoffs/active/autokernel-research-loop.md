@@ -119,7 +119,11 @@ also makes the clean control instrument root/binary explicit and tests both over
 completed its authorized 60-second gfx90a saturation probe: 242 device samples held 1700 MHz for
 99.5868% of the window while the GEMM produced 41.904 TFLOP/s and peaked at only 200 W against the
 300 W cap. Because the card never approached the cap, clock pinning is not a live variance remedy here
-and AK-OP-2 is declined. RVP-C2-6 now also has an independent host-double reference that decodes
+and AK-OP-2 is declined. An additional current-session replay at
+`/mnt/raid0/llm/autokernel/campaigns/rvp-t0-1-20260812T0444Z/receipt.json` corroborated that closure:
+242 samples at 250 ms cadence, 99.5868% at 1700 MHz, 41.854545 TFLOP/s, and only 196 W maximum
+against the same 300 W cap (`approached_power_cap=false`). RVP-C2-6 now also has an independent
+host-double reference that decodes
 Q4_0, Q8_0, Q4_K, and Q6_K directly from GGUF wire bytes and emits
 `fp64_error_ratio/host-double-gguf-wire/v1`. Five representative CPU cases, the broadcast regression,
 31 real parser tests, and the 5/5 planted plus 5/5 clean property self-test passed. A subsequent audit
@@ -132,7 +136,10 @@ default, force-rocBLAS, force-MMQ MFMA, and force-MMQ DP4A then passed **172/172
 The source remains uncommitted under OP-11, but the diagnosis and live correction are complete.
 AK-BH-1 also measured best-available rocBLAS against
 hipBLASLt heuristics at nine prefill shapes: hipBLASLt won three, with ratios spanning 0.734×–1.322×,
-so the honest vendor baseline is shape-specific rather than one global library. AK-BH-2 completed all
+so the honest vendor baseline is shape-specific rather than one global library. A subsequent
+same-panel run at `/mnt/raid0/llm/autokernel/campaigns/ak-bh-1-20260812T0448Z/receipt.json` found
+four hipBLASLt wins across the nine paired shapes and a 0.7289×–1.3219× ratio range, independently
+preserving the shape-specific conclusion. AK-BH-2 completed all
 eight explicitly pinned `-fa` × `ROCWMMA_FATTN` × `MMQ_MFMA` arms on one Q4_K_M model; `-fa on` won
 each paired comparison, `MMQ_MFMA` was materially slower on this surface, and the winning arm was
 `r1m0-fa-on` at 24,647.316788 t/s. Those single-surface observations do not authorize a global build
@@ -4058,7 +4065,11 @@ GPU cost before any GPU claim is filed.
   shape-specific. Receipt: `/mnt/raid0/llm/autokernel/probes/ak-bh-1-best-of-heuristics-20260811T0948Z/receipt.json`,
   SHA-256 `aca0dc59dbea9745008e00f3958a767dfb07b4c9e2e21f8946239ec981762cfc`. Research runner:
   `scripts/benchmark/run_rocm_gemm_baseline_compare.py`; comparator source:
-  `scripts/benchmark/rocm_gemm_baseline_compare.cpp`.
+  `scripts/benchmark/rocm_gemm_baseline_compare.cpp`. A fresh 2026-08-12 corroborating replication
+  under a rebuilt binary found 4/9 hipBLASLt wins and a 0.7289325552×–1.3218706582× ratio range.
+  The near-parity win count drifted by one shape, but the shape-specific baseline conclusion did not.
+  Receipt: `/mnt/raid0/llm/autokernel/campaigns/ak-bh-1-20260812T0448Z/receipt.json`, SHA-256
+  `5daa79e7bc12cec1e9358b8166f08a7586bb0d5ba7885832bb47d96af82c7dc1`.
 - [x] **AK-BH-2 — Baseline-honesty factorial: `-fa 0|1` × `ROCWMMA_FATTN` × `MMQ_MFMA`.** ✅ 2026-08-11
   **Correction to a standing project assumption**: `llama-bench`'s `-fa` default is
   `LLAMA_FLASH_ATTN_TYPE_AUTO`, not `0` — verified at `tools/llama-bench/llama-bench.cpp:389` in the
@@ -4112,7 +4123,9 @@ Neither of these may be executed by a session; both are decision packages for th
 - [x] **AK-OP-2 — Decline root-side `--setperfdeterminism` capability.** ✅ 2026-08-11 — RVP-T0-1
   held 1700 MHz for 99.5868% of a 60-second saturating GEMM while peaking at only 200 W against the
   300 W cap, so the card never approached the cap and clock excursion is not a live variance source
-  under this workload. No root capability or measurement-constitution change is warranted.
+  under this workload. The 2026-08-12 replay independently held the same 99.5868% nominal-clock
+  fraction while peaking at only 196 W. No root capability or measurement-constitution change is
+  warranted.
 
 ### Recorded declines (so they are not re-derived)
 
