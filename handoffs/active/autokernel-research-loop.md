@@ -197,6 +197,12 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   AK-DEL-1 is separately commit-backed at research `df02169e`: its hash-bound scope report found all
   3/3 admitted families in `existing_path_should_apply` and selects catalogue expansion before a novel
   generator. This corpus-bounded routing conclusion is not a claim about all workloads.
+- [x] **AK-AUD-5 — Make the real-process fault rehearsal independent of caller import state.** ✅
+  2026-08-12 — research `eeaf80ba` pins the exact checkout's `scripts/kernel_rnd` path first in each
+  captured child environment, so the crash/restart and claim-revocation legs no longer exit when a
+  test runner mutates `sys.path` without exporting `PYTHONPATH`. Detached clean campaign checkouts are
+  accepted by exact commit identity. The focused suite passed 12 tests and the full AutoKernel suite
+  passed 5,548 tests with one expected failure and 2,241 subtests.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
