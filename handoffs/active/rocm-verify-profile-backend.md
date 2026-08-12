@@ -639,6 +639,30 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   remains 5,184/5,184, and sensitivity/specificity remain 1.0. **Recommendation remains Option A for
   this exact two-file core; no commit or push is authorized until the operator approves OP-11.**
 
+- [ ] **RVP-C2-11 — the rocprof-v1 attribution runner is prefill-only and does not say so.**
+  `run_autokernel_rocprofv1_attribution.py:69` hardcodes `-n 0` in `bench_command()`, so every
+  capture it produces is prefill regardless of the caller's intent, and the receipt has no field
+  recording that. A decode question asked of this runner returns `status: passed` with essentially
+  no `mul_mat_vec_q` dispatches in it — measured 2026-08-12: 2 warmup dispatches on a 122B run,
+  against 45,021 when the same model is driven at `-n 128`. The failure is silent and reads as
+  success, which is what makes it worth fixing rather than documenting.
+  **Not a defect in past consumers.** K28's NO-GO is a *long-prefill* GDN question measured at
+  p2048/p8192/p32768; its instrument matched its phenomenon and it needs no re-labelling. Checked
+  before filing this row.
+  **Fix is written and verified, not applied** — the runner lives on `codex/ak-d39-provider-contract`
+  in `/mnt/raid0/llm/epyc-inference-research-ak-d39` (clean tree, another lane's branch), and it has
+  no promoted identity on research `main`, so applying it is that lane's call.
+  Patch: [`artifacts/gpu-aux-baselines/patches/run_autokernel_rocprofv1_attribution__gen_tokens.patch`](../../artifacts/gpu-aux-baselines/patches/run_autokernel_rocprofv1_attribution__gen_tokens.patch),
+  SHA-256 `1b83f89b903108b91a2b189760304240daca3d07a0c67f52d4c56aea5e27c7c3`. It adds `--gen-tokens`
+  (default `0`, so existing behaviour and every prior receipt's semantics are unchanged), threads it
+  through `profile_command()`, and adds `gen_tokens` + `phase: prefill|prefill+decode` to the receipt
+  `workload` block so a capture states which regime it measured. Verified by mutation, not by
+  inspection: default still emits `-n 0`, `--gen-tokens 128` emits `-n 128`, and the value reaches
+  the profiler command line.
+  Second half of the row: the decode capture that motivated it
+  (`iq2xxs-decode-nongoverned-20260812T1306Z`) is **non-governed** — no receipt, no durable identity.
+  Once the patch lands, re-run it through the governed runner so the decode attribution carries one.
+
   **OP-11 RESOLVED 2026-08-12 — operator selected Option B (decline for now).** No experimental
   commit or push. The implementation is retained as a local diagnostic; the smoke at
   `omniperf-iq2xxs-v1-smoke-20260811T1238Z` remains non-evidence. Removed from the master-index
