@@ -9,9 +9,16 @@ constants. Incident narratives: `docs/reference/agent-config/INCIDENT_LOG.md`.
 A guard refusing a nudge on stale or contradictory data is NOT license to bypass it. If
 `tmux_adapter.py nudge` refuses because the target's heartbeat reads `working`:
 
-1. **Confirm from the pane** whether the session is genuinely idle or genuinely mid-generation —
-   do not assume either way. A genuinely mid-generation session is not blocked at all;
-   escalating it is misreading a guard that is working correctly.
+1. **Confirm the state — and the pane alone cannot do it.** There are three states, not two:
+   working, **compacting**, and idle. A compacting session renders identically to a finished one
+   (goal line, "Pursuing goal" timer and background-terminal count all vanish at once), so a bare
+   status line above an empty composer is not evidence of idleness. Use the runtime check
+   (`tmux_adapter.py probe`, read-only) as the authoritative instrument, and read the refusal
+   itself as data: **a refusal citing runtime state is a finding about the world, not an obstacle
+   to retry past** — it is the instrument reporting the session is alive. A genuinely
+   mid-generation session is not blocked at all; escalating it is misreading a guard that is
+   working correctly. Canonical rule: `agents/shared/SESSION_LIFECYCLE.md` → *Reading another
+   session's liveness*. Origin: INC-20260812-compacting-read-as-idle.
 2. **Know the deadlock shape**: a completed session that never refreshed its heartbeat, now
    blocked waiting for input, cannot refresh the heartbeat either — and `--heartbeat-max-age`
    does not rescue it because the refusal keys on state, not age. Even then, do not send keys

@@ -90,6 +90,7 @@ When a real-path or inference failure is opaque, capture evidence before forming
 - **"Not observable" requires having looked everywhere.** Enumerate all artifacts (`find`/`ls` for tap/trace/session/scratch files), not just the one log you already know, before declaring a blind spot. The cheapest debug move is often a flag-gated per-turn trace of the raw model output.
 - **Cap blind fixes at one.** If a hypothesis-driven fix fails, the next action is observability — not another fix. Each blind patch on inference-gated work costs a host-quiet window.
 - **A coherent failure narrative is a yellow flag, not reassurance** (closure inflation) — coherence is not evidence.
+- **Check the WINDOW before believing an absence.** "Looked everywhere" has a time axis too: a sample taken after the process exited, or a single sample inside a gap between runs, is not evidence the phenomenon never happened. Canonical rule, with the sample-DURING and persistence requirements: [`agents/shared/OPERATING_CONSTRAINTS.md` → *Observation Windows*](OPERATING_CONSTRAINTS.md#observation-windows--a-sample-that-misses-the-phenomenon-proves-nothing).
 
 ## Verification Minimum
 
