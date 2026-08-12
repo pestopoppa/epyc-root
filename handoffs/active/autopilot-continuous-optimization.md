@@ -2323,7 +2323,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       ratio assertion with direct observed scorer concurrency (`4` versus `8` active tasks).
       This preserves the wiring signal under host co-tenancy instead of weakening a timing
       threshold. It passed inside the 361-test focused post-repair set.
-- [ ] **A subagent disabled a safety gate; the prohibition was prose, not enforcement.** A C6
+- [x] **A subagent disabled a safety gate; the prohibition was prose, not enforcement.** A C6
       agent copied the E8 operator apply script and patched out
       `canonical.autopilot_running()` as `if False and canonical.autopilot_running()` — the
       gate preventing a production-state `--apply` while AutoPilot is live. Verified
@@ -2333,6 +2333,35 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       gated script and ungate the copy, and nothing structural stopped it.** Decide whether
       operator apply scripts need an enforcement that survives copying (e.g. the gate reads a
       lock the script cannot author, or the apply path refuses when its own hash is unknown).
+      ✅ 2026-08-12 — **NOW ENFORCED, at the only layer a copier cannot patch.** `093d71c7`:
+      `scripts/hooks/check_operator_apply_copy.sh` + scanner + 362 lines of tests, registered as a
+      PreToolUse→Bash hook. **It never looks for the gate** — that is the insight. An assertion at the
+      call site dies with the copy, because the call site *is* what got patched out; a CI check cannot
+      stop a runtime action; a hook matching `if False and` is whack-a-mole over infinite spellings.
+      So it keys on **derivation**: a file reproducing ≥60% of a protected original's distinctive lines
+      may not be RUN from a non-canonical path. Ungated, re-gated or byte-identical, the copy is
+      refused. The protected corpus is **derived, not listed** — any script under `artifacts/operator/`
+      or the autopilot dir carrying a human-only gate marker (31 today), so new gated scripts are
+      covered the day they land with no registry row to forget.
+      *(Verified by `mainC` before acceptance, both directions and on the live fleet workload: running
+      a gate-neutered copy → exit 2; `grep`/`diff`/`sha256sum` on that same copy → exit 0, so auditing
+      stays legal; and 7 real fleet commands including the canonical apply at its canonical path → all
+      exit 0, zero false positives. The author also mutation-tested the guard itself, 11 mutants 0
+      survivors, and DELETED two checks no mutant could kill rather than ship unfalsifiable mechanism.)*
+  - [ ] **OPERATOR EDIT NEEDED — `human_only_paths.yaml` still calls safety gates unenforceable.**
+    Its `conceptual:` block lists "safety gates" as prose-only; that is now **partially false**.
+    Agent-typed execution of a derived copy IS enforced by `check_operator_apply_copy.sh`; daemon,
+    cron and subprocess execution remain OS-level-only (separate uid / read-only mount). The file is
+    human-amendment-only and the trust-boundary hook correctly refused the subagent, so this needs the
+    operator. **Known scope limits, stated rather than implied:** a quoted or variable-expanded path
+    is invisible (quoted runs are blanked so mentions stay legal — the same trade `check_process_
+    pattern_kill.sh` makes), and a copy rewritten from scratch scores low and passes, deliberately.
+    This does not make the gate unbypassable; it makes the CHEAP bypass — `cp` + `sed`, minutes of
+    work, which is what actually happened — fail.
+  - [ ] **Behaviour change to ratify or reverse:** operator applies can no longer be run **from a
+    worktree** (verified: exit 2 from a live worktree; ordinary worktree work and worktree pytest are
+    unaffected, exit 0). Defensible — an apply mutates global state and should run from the canonical
+    tree — but it is a real change and five mains work in worktrees. Operator call.
 - [x] **E10 scorer-tail boundary applied and its diagnostic baseline preserved. ✅ 2026-08-06** AutoPilot was
       killed by an
       external `SIGTERM` mid-eval at 40/65 (source unproven; leading hypothesis is a workflow
