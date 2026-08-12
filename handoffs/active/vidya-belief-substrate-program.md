@@ -263,6 +263,18 @@ deliberately — decide them, do not just implement them.
 - [ ] SC11 Survey the remaining candidate sources named in the register — llama-bench sweeps and the
       speech-kernel (whisper/qwentts) runs. Both need a write-side hook before a reader is worth
       anything; price each with the ~50-record sample before building
+- [ ] SC20 **LoRA/SFT training runs need a write-side ClaimTuple hook — filed 2026-08-12 by `mainC`
+      at the moment the producer became real, not afterwards.** `memento_sft.py` had never completed a
+      run until 2026-08-12 (its `get_peft_model()` was commented out behind a TODO), so it emits
+      measurements for the first time: s/sample, trainable-param count, per-quarter loss, and an
+      adapter-integrity check (all tensors finite, `lora_B` off zero init). It is therefore in the ideal
+      state to wire — **the producer is being actively modified right now**, which is exactly the window
+      the register says not to miss. Retrofitting is impossible rather than merely expensive: a tuple
+      invented on read claims warrant the run never captured, which is why `benchmarks/results` is
+      permanently rejected at 0/200. Note the natural claim here is **not** "the model improved" — a
+      16-step smoke supports no such thing — but the far more defensible "this configuration trains at
+      X s/sample with an adapter that provably updated", which is what a promote/stop decision on the
+      1.7B validation target will actually rest on.
 - [ ] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
       by `mainA`, at the moment of changing the producer rather than afterwards).
       `affinity_preflight.py` cell mode writes `data/contention_matrix/affinity_preflight_*.json` per

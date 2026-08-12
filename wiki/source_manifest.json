@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-12T19:52:10Z",
+  "last_compile": "2026-08-12T19:59:40Z",
   "mode": "full",
-  "scan_time": "2026-08-12T20:04:45Z",
+  "scan_time": "2026-08-12T20:07:51Z",
   "schema_version": 1,
-  "source_set_hash": "4a7f322153932e13b44c1486826ead06684b110793ea325f9be1706cecf0d32e",
+  "source_set_hash": "b45258e71dd43e374639704377810971fcd8c892d5dcfa25926298ddce80c54d",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -23,10 +23,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a7e9606aa2db6d485a1f25f89fd9692c3df944a4bb195f53f0cbf868d2c6287e",
-      "modified": "2026-08-12T19:55:51Z",
+      "content_hash": "ec1707162e56f5feff5c4e79de5ab1a2f704f7f86af2fb775c854865a6eed88e",
+      "modified": "2026-08-12T20:05:18Z",
       "path": "handoffs/active/CURRENT-CAMPAIGN.md",
-      "size": 19868,
+      "size": 19949,
       "title": "Current campaign state",
       "type": "handoff-active"
     },
@@ -72,7 +72,7 @@
     },
     {
       "content_hash": "5a3bf653231d7176d766275c7c0ac1d7262581193ab564755e73f2b119651b9b",
-      "modified": "2026-08-12T20:04:37Z",
+      "modified": "2026-08-12T20:04:47Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
       "size": 112981,
       "title": "Architect Model Comparison Benchmark",
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "22f5e15bb0b5286e54fa468fd08b97c70c7734b3472e26d749768b324796f025",
-      "modified": "2026-08-12T19:58:35Z",
+      "content_hash": "f461b74f817d2abf2e2b180e4a357dc0889c7944dcbf791e54ab7d57d5d24931",
+      "modified": "2026-08-12T20:05:18Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 375156,
+      "size": 375315,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -736,7 +736,7 @@
     },
     {
       "content_hash": "c491f05bf43338bbe98796d9ecea93c9c8150da93c7bde1b93b0853129cc0e98",
-      "modified": "2026-08-12T20:04:37Z",
+      "modified": "2026-08-12T20:04:47Z",
       "path": "handoffs/active/memento-block-reasoning-compression.md",
       "size": 19558,
       "title": "Memento: Block-Level Reasoning Compression with KV Cache Masking",
@@ -1087,10 +1087,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "de7b749903c1cb8133849f8bf3d0f424854b5e79ccb734328693ac034d5f201b",
-      "modified": "2026-08-12T19:58:35Z",
+      "content_hash": "cf14a759eeef504f0755efa12128b9e732215f2e1d89b4b32a5ecb33ed5260ab",
+      "modified": "2026-08-12T20:05:57Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 85200,
+      "size": 85231,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -1343,10 +1343,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ed101f4e492a690304fe116653ada6bf5cb88e26e23b556ec097cd6fbeb9c165",
-      "modified": "2026-08-12T20:04:26Z",
+      "content_hash": "38e8cca801b30acfd8cb2dc579b3bbb2cab9de848a5eea6c30e655197ab88ca1",
+      "modified": "2026-08-12T20:07:48Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 60363,
+      "size": 61537,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -6015,10 +6015,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "de836518c7c093f334e5cb7807efdc20df49d6905535459883cb6d62702d3ced",
-      "modified": "2026-08-12T20:04:26Z",
+      "content_hash": "da0a5d6390f3f4b21abcb8470b8f73fdc8c61bd1154ea41efc20af6a0d36c1a2",
+      "modified": "2026-08-12T20:06:28Z",
       "path": "progress/2026-08/2026-08-12.md",
-      "size": 477011,
+      "size": 484069,
       "title": "2026-08-12",
       "type": "progress"
     },
