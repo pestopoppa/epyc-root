@@ -69,7 +69,7 @@ advanced past the branch point), and run the gate with a **three-dot** range.
 3. **P0-0** — derived `stack_priors.yaml` had dropped the `NUMA_FULL` instance of **every**
    quarterable fleet (8070/8072/8085), so a HALF is advertised as the full instance: a region-lock
    *scope* error. Same triplet the operator ruled "accidental and clearly a mistake" on 2026-07-23.
-4. **Nine distinct ways a check passes for the wrong reason**, from five agents in one night, now one
+4. **Eleven distinct ways a check passes for the wrong reason** (nine at the time I compiled it; two more added by the fleet before dawn), from five agents in one night, now one
    citable artifact. Probably the most reusable thing produced. (The ninth is mine and was caught by
    the `auditor` in this very handover: my hash-verification pass resolved root hashes against the
    orchestrator repo — right key, wrong universe — and reported eight valid commits as BAD.)
@@ -158,9 +158,14 @@ markers.** I nearly reported three real conflicts that were my own catalogue's p
 `<<<<<<<`. The instrument read the *documentation of the thing* as the thing. Attribute markers to an
 owning path before counting them.
 
-This is a genuine tenth candidate for the verification catalogue. I flagged it rather than filing it:
-it arrived at 03:5xZ and the catalogue's value is that each face is worded once, precisely, with its
-own test. A hurried tenth entry would cost more than a missing one. **Next session should word it.**
+I flagged it rather than filing it: it arrived at 03:5xZ and the catalogue's value is that each face
+is worded once, precisely, with its own test. A hurried entry would cost more than a missing one.
+
+**UPDATE (04:2xZ) — this is DONE and not by me.** It is now **face 10, "SENTINEL counted where it
+also occurs as CONTENT"** (`23dc960d`), worded by the fleet along with a **face 11**. The catalogue
+stands at **eleven**. Leaving a candidate unworded rather than shipping it tired turned out to be the
+right call for a second reason I did not anticipate: someone with fresh context worded it better than
+I would have. **No next-session action — do not re-file it.**
 
 ---
 
