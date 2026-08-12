@@ -2896,15 +2896,21 @@ from that seat.
       deep path is what destroyed all five lanes on 2026-08-12 in the first place. Whether to delete
       the 25 directories outright remains an operator call; the hazard does not wait on it.
 
-- [ ] **DSP-1 — 11 `opendataloader-pipeline-integration--*` queue rows cannot be dispatched by
+- [x] **DSP-1 — 11 `opendataloader-pipeline-integration--*` queue rows cannot be dispatched by
       anything, and cannot be machine-recovered.** Every anchor has rotted (`:405` is now a
       tree-diagram branch) and the rows carry no `task_text` to re-derive intent from, so the
       new typed-dispatch fields cannot be filled in for them by any tool. **A human must
-      re-anchor them BY TEXT.** This is the exact case C50b measured as "11 of 11 rows".
-      Until then they are permanently auto-dispatch-ineligible, which is the correct
-      fail-closed posture and not a defect. Found 2026-08-12 while populating dispatch
-      receipts at intake.
-- [ ] **DSP-2 — decide whether an unestimated row should ever become auto-dispatchable.**
+      re-anchor them BY TEXT.** ✅ 2026-08-12 — **the premise was wrong and all 11 were
+      recovered by machine.** The `task_id` encodes the original line (`--006-L405`) and the
+      row carries a birth timestamp, so `git show <commit-at-that-ts>:<handoff>` returns the
+      exact text. Disposition: **5 re-anchored BY TEXT** to live open tasks (`:540 :562 :585
+      :641 :645`, now carrying `task_text` + `screened_by`), **1 CANCELLED** (the work landed
+      via another route the same day — moot, not executed), **5 INFRA_BLOCKED** with the reason
+      recorded (nothing at HEAD matches the recovered original above 0.35 similarity, so those
+      were removed or superseded rather than reworded — a human may re-derive or drop them).
+      Bus validates clean. Lesson worth keeping: "no tool can recover this" was asserted, not
+      measured, and the recovery took one git command.
+- [x] **DSP-2 — decide whether an unestimated row should ever become auto-dispatchable.**
       Intake deliberately emits NO `expected_occupancy` for a `cpu`/`gpu` row with no stated
       duration, rather than a floor or a guess — a fabricated number there is precisely the
       F-14 harm, and `0.0` reads downstream as an answered question rather than an open one.
@@ -2912,8 +2918,15 @@ from that seat.
       hand-dispatch-only** and the tick will never pick them. Options: leave it (humans
       dispatch what cannot be estimated), require an estimate at authoring time, or add a
       lane-aware floor for classes where a wrong estimate cannot mis-schedule hardware.
-      Filed 2026-08-12 rather than decided, because it trades operator effort against
-      autonomy and that is the operator's trade.
+      ✅ 2026-08-12 — **not a decision after all; the framing was wrong.** The rule stands
+      unchanged (never fabricate a number for a hardware-lane row). The real gap was that
+      nothing ASKED the author, and refusing at dispatch is too late — the row already exists,
+      so the hand-dispatch pool only grows. `seed_queue.py` now surfaces unestimated `cpu`/`gpu`
+      rows AT AUTHORING, where the person who knows whether it is a 40-second sweep or an
+      overnight run is standing, and tells them that stating a duration in the task text is
+      picked up verbatim. A **warning, not a refusal**: a task nobody can time is still real
+      work, and dropping it would be worse than dispatching it by hand. Verified live — 3 of 5
+      proposals flagged.
 
 ## Reporting instructions
 
