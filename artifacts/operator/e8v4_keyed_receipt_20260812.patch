@@ -1,6 +1,6 @@
 --- a/artifacts/operator/ratify_and_apply_e8_quality_baseline_v4_20260727.sh
 +++ b/artifacts/operator/ratify_and_apply_e8_quality_baseline_v4_20260727.sh
-@@ -444,9 +444,30 @@
+@@ -444,9 +444,40 @@
      trap - RETURN
  }
  
@@ -25,6 +25,16 @@
 +}
 +
  apply_final() {
++    # Durable spent-guard (mainA acceptance addition, host-correct form): the
++    # transaction dirs that gate re-application are UNTRACKED scratch; the keyed
++    # index is the durable marker. Index present + transactions absent = a
++    # cleaned-world re-run that would fall through to a FULL re-apply - refuse.
++    # Every transactions-present path (crash recovery, rollback retry) is
++    # untouched, preserving the vehicle's resumable design.
++    if [[ -e "$ROOT/artifacts/operator/receipts/$TOKEN.json" ]] &&
++        ! compgen -G "${TRANSACTION_BASE}-attempt-*" >/dev/null; then
++        fail "already attested (keyed index present) with no transaction state on disk; re-apply refused - operator review required"
++    fi
      validate_only
      mint_receipt
 +    mint_receipt_index
