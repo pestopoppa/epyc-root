@@ -2331,10 +2331,31 @@ def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
         except Exception as exc:  # noqa: BLE001
             # NOT zero. Skipped, loudly, and deduped so a permanently missing
             # file does not write a row every 45s.
-            sig = f"unreadable:{exc.__class__.__name__}"
+            # NAME THE MISSING PATH IN THE SIGNATURE, not just the exception class
+            # (mainD, 2026-08-12). The advisory row already carried the path in
+            # `detail`, but the signature is what gets persisted to
+            # `stuck_state.json` — the durable artifact a reader actually samples.
+            # Read there, `unreadable:FileNotFoundError` says "the bus cannot see
+            # this agent" when the truth was "cursors/<id>.json is missing and
+            # `provision --agent <id>` fixes it". Measured: the resolution ledger
+            # recorded U-1 as "the bus cannot see 7 of its 8 agents"; `mainB` was
+            # missing exactly ONE file while their heartbeat was live and current.
+            # A diagnosis that names a symptom class and hides a one-line remedy is
+            # the same shape as `mainA`'s "fold is unavailable" concealing a
+            # ModuleNotFoundError. Dedup is unaffected: same path, same signature.
+            missing = getattr(exc, "filename", None) or ""
+            if missing:
+                try:
+                    missing = str(Path(missing).relative_to(bus_root))
+                except (ValueError, TypeError):
+                    missing = str(missing)
+            sig = f"unreadable:{exc.__class__.__name__}:{missing}"
             if rec.get("last_detect_sig") != sig:
                 row("stuck-state-unreadable", aid, detail=str(exc),
-                    action="skipped — unread not computable, NOT treated as zero")
+                    action=(f"skipped — unread not computable, NOT treated as zero. "
+                            f"Missing: {missing or 'unknown path'}. If this is a wiped or "
+                            f"never-provisioned agent, `session_bus.py provision --agent {aid}` "
+                            f"recreates it; the agent must then write its own heartbeat."))
             rec["last_detect_sig"] = sig
             new_state[aid] = rec
             continue
