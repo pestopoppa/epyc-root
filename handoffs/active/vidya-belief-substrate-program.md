@@ -63,8 +63,7 @@ gate this program has already passed.
 
 ### Open work — start here
 
-Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC10`, `SC11`, `SC7`, `SC6-HAZARD`,
-`SC28`) and
+Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC11`, `SC7`, `SC6-HAZARD`) and
 **Consumption** (`SC12-ENTRY`, `SC14-B`, `SC15`, `SC16`, `SC17`). Everything else is complete and lives in the completed sibling
 linked under Completed Scope.
 
@@ -191,11 +190,14 @@ deliberately — decide them, do not just implement them.
       read claims warrant the original run never captured. `benchmarks/results` is the standing
       proof — 4,562 files, no write hook, 0 of 200 sampled carrying a usable tuple, permanently
       unable to gate a decision ✅ 2026-08-10
-- [ ] SC10 **AutoKernel `evaluation_event` — ready, unwritten.** Its schema already enforces the
-      claim rule as a REQUIRED block (stricter than the autopilot hook: `metric_direction`,
-      `reps` ≥ 1, `anchor.source_commit`, hex-sha256 `run_id`, INVALID runs journaled not
-      discarded). No adapter is needed until the loop emits records — **zero files on disk contain
-      `claim_grammar` today**. Wire the read side when the first evaluation_event lands
+- [x] SC10 **Wire the full AutoKernel `evaluation_event` write/read path prospectively.** ✅
+      2026-08-12 — research `3f0cb392` journals live v5 events and attaches the producer-written
+      `belief_capture` to measured T1 events. Root `2a83b176` plus the `6c9cad04` repetition-axis
+      correction admits only complete current journal envelopes, re-derives every paired raw vector
+      and identity binding, treats `claim_grammar.reps` as per-arm repetitions and
+      `performance.paired_blocks` as the ClaimTuple scored basis, and emits zero rows for historical,
+      null-T0, void, malformed or authority-bearing events. The first real post-hook event remains an
+      empirical observation, not a static implementation gap.
 - [ ] SC11 Survey the remaining candidate sources named in the register — llama-bench sweeps and the
       speech-kernel (whisper/qwentts) runs. Both need a write-side hook before a reader is worth
       anything; price each with the ~50-record sample before building
@@ -449,12 +451,15 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       tuple. Focused producer tests pass 23/23 and adapter tests 24/24. The 2026-08-12 smoke, controls,
       and GPU replay predate the hook and remain deliberately unprojected; only future receipts may
       enter this source.
-- [ ] SC28 **Wire RVP-T0-1 saturation and AK-BH-1 vendor-baseline diagnostics on the write side
-      before either runs again.** Emit separate producer-authored measurements for sustained GEMM
-      throughput, nominal-clock hold fraction, peak power/headroom, and each exact-shape provider
-      comparison, with declared direction, scored-repetition basis, source/binary/device-claim
-      identity, and immutable receipt digest. Project only those future rows through the existing
-      measurement ladder. The 2026-08-12 receipts predate this hook and must never be back-filled.
+- [x] SC28 **Wire RVP-T0-1 saturation and AK-BH-1 vendor-baseline diagnostics before either runs
+      again.** ✅ 2026-08-12 — research `1434ed1a` adds a shared prospective writer used by both
+      live runners. RVP-T0-1 emits separate sustained-throughput, nominal-clock-hold, peak-power and
+      cap-headroom rows; AK-BH-1 emits one provider ratio per exact shape. Root
+      `autokernel_rocm_diagnostic.py` independently re-derives the sample statistics, provider
+      ratios, scored bases, source/binary/device-claim/producer identities, row hashes and logical
+      receipt hash, then delegates grading to the existing measurement ladder. Every row is
+      diagnostic-only and grants no campaign/promotion authority. The 2026-08-12 pre-hook receipts
+      remain deliberately unprojected; successor runs are the empirical follow-up.
 - [x] SC29 **Wire AK-LE planner prefilter/reduction receipts before the corrected panel runs.** ✅
       2026-08-12 — research `16ad9c2c` prospectively emits four self-hashed search-persistence rows
       per complete cell only after re-running the source-pinned reducer; corrected r3 produced **32**
