@@ -2204,21 +2204,39 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       three languages. `substring` scoring therefore asks the model to reproduce a 100-char prefix
       of the reference solution. That scores *something*, but it is not obviously "did it fix the
       bug" — worth deciding whether this suite measures what its name claims.
-- [ ] **Retire or rebuild the debugbench oracle** — it is live and contributing confident,
-      meaningless passes to aggregate scores. Rebuild from the buggy↔solution DIFF, not a solution
-      prefix; widening 100 → 500 does not fix it. Also re-check the sibling suites: the
-      `livecodebench` comment-only `test_code` rows above suggest the ingestion path has more than
-      one defect. *(Opened 2026-08-12 by `mainC` — the audit DECIDED the question; this is the
-      remediation it implies, and it needs an owner with the eval pipeline.)*
-      ✅ 2026-08-12 — **DECIDED: it does not. The oracle is VACUOUS.** All four rows in both core
-      pools are byte-exact 100-char prefixes of the upstream solution (upstream median 661, only 3
-      of 4,253 are ≤100 — so the truncation is OURS, not upstream). The decisive test was not
-      whether the prefix is uninformative but whether it is **already present in the buggy code the
-      model was handed** — it is, on 4 of 4, so a model that changes nothing and echoes its input
-      PASSES. Corpus-wide the construction is vacuous on 3,233 of 4,250 rows (76.1%), making it a
-      property of the design. Every debugbench score under this config is uninterpretable.
-      Evidence: `artifacts/audit/debugbench-oracle-vacuity-20260812.md` (root `e6e3644a`).
-      Guard shipped so this cannot recur silently: orchestrator `cc81d0ff`.
+- [x] **Retire or rebuild the debugbench oracle** ✅ 2026-08-12 — **REBUILT, not retired.**
+  orchestrator `53f7aea0`, research `99f22523`, evidence `c9fb6573`.
+  **The shipped oracle was broken in BOTH DIRECTIONS AT ONCE, which the morning audit did not catch.**
+  Echoing the buggy input passes (50.5% of rows) — *and the CORRECT reference solution FAILS* (32.2%).
+  Mechanism: the 100-char cut lands mid-token and `_contains_text_unit` requires a word boundary.
+  *(Verified by `mainC` on our own four core-pool rows through the real scorer: the reference solution
+  fails on THREE of four — `new Stac`, `int dist= p`, `vector<int>>&vi` all end mid-token.)* So a
+  debugbench score is not merely uninterpretable, it is **anti-correlated on some rows**: the wrong
+  answer passes and the right answer fails. Separately, the 1,414 python rows used `code_execution`
+  with no `test_code`, a config where the scorer returns `False` unconditionally — they could never pass.
+  **The new oracle is `code_patch`**: `required_lines` (in solution, absent from buggy) +
+  `forbidden_lines` (in buggy, absent from solution). Required matches whitespace-free so re-indenting
+  does not fail a correct fix; forbidden matches as a whole normalised LINE, never a substring, because
+  buggy `return idx;` is a substring of correct `return idx + 1;`.
+  **The discrimination check is a BUILD GATE, not a report** — every row is re-scored against 3 echo
+  answers and 4 correct answers and dropped unless all 3 fail and all 4 pass. Vacuity 0% on emitted
+  rows (0.54% ungated: upstream's `illegal comment` subtype injects bugs by commenting a correct line
+  OUT, so the required text is still in the input — those 20 are dropped). Reference pass 100%.
+  Coverage 3,676/4,253 = 86.4%. Diffs are median 2 changed lines, which is why this instrument fits.
+  **Two mutations SURVIVED first** — each fixture rejected echoes via the *other* half, leaving each
+  half unpinned. Fixed by adding the two answers where each half is the only thing that can see the
+  defect. That is the mutation test doing its job on the test suite itself.
+- [ ] **The live pool still carries the OLD oracle** — the rebuild takes effect on the next pool
+  rebuild, which is a measurement-instrument boundary (`eval_tower` stamps instrument identity) and
+  needs scheduling by the pool owner. Until then the 4 debugbench rows in `core_v2` still score
+  vacuously, and **historical debugbench scores remain uninterpretable and were not re-derived**.
+- [ ] **Residual guard gap:** `vacuous_rows()` only inspects the substring family, so a *programmatic*
+  row whose oracle is input-satisfiable would not be flagged. Debugbench is covered by its own build
+  gate; nothing generic covers that class.
+- [ ] **Stated limit, not hidden:** whether an ALTERNATIVE correct repair passes is bounded by argument
+  (4-added-line cap + the prompt's "fix ONLY the bug"), not by measurement — no second reference exists
+  in the data and upstream ships no executable tests, so no oracle over this dataset can do better.
+  Test-pinned rather than left implicit.
 - [ ] **Design-lens review of AutoPilot dispatched** (workflow `wf_50aef395-2a4`) — essential vs
       incident-scarred vs speculative, against Karpathy's autoresearch. Operator's sharpening:
       scar tissue is not only "justified, keep it" — a CLUSTER of scars is evidence the underlying
