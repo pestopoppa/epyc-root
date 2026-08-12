@@ -3486,7 +3486,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T19:59:17Z",
+  "generated_at": "2026-08-12T20:17:24Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4154,13 +4154,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 77,
+      "closed": 80,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Preserve live r18, then validate its terminal receipt chain before any comparison",
-      "open": 5,
+      "next_action": "Preserve live r19, then validate its terminal receipt chain before any comparison",
+      "open": 6,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4661,7 +4661,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 77,
+      "closed": 78,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",

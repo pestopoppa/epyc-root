@@ -1,7 +1,7 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
-**Status**: ACTIVE HARDENING — governed 122B decode attributed; exact k228/k175 captures remain
-**Created**: 2026-06-03 · **Updated**: 2026-08-12 (122B decode attribution and router replay)
+**Status**: ACTIVE HARDENING — governed IQ2/Q8/Q4_K_M decode attributed; exact k228/k175 captures remain
+**Created**: 2026-06-03 · **Updated**: 2026-08-12 (Q4_K_M decode attribution and router replay)
 
 > **NEXT ACTION (2026-08-12): implement the exact k228 and k175 model-tensor hook manifests, then run
 > their governed real EPYC C3/C5 captures and matched whole-model exits.** OP-11 was
@@ -677,6 +677,24 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     `c5a6190f0c6d6c6ff6c606f3b3a9640e08c0688381e6fe178f188f20c62163fd`). This sibling control
     corroborates low GDN priority, but model size, active parameters, and quant differ, so it is not a
     causal model/quant comparison and the two workload-specific router decisions must not be pooled.
+  - [x] **RVP-C4-4c — Exercise the Q4_K_M decode surface with fail-safe preflight and source-bound
+    routing.** ✅ 2026-08-12 — the attempted 122B three-shard Q4_K_M surface failed safely during
+    `llama-bench` preflight before any captured profile; both exact claims released and teardown had
+    zero errors. Its failure receipt is
+    `/mnt/raid0/llm/autokernel/probes/rvp-c4-4a-122b-q4km-decode-20260812T200800Z/receipt.json`
+    (file SHA-256 `9140e29c1e182e4c3ad503a2935b9edd061784b36a92b22c13afbf68fa9461db`).
+    The governed 35B Q4_K_M p0/tg128 fallback then passed at **70.19648 tok/s** with **217,358**
+    dispatches and 44 device samples spanning 10.892 seconds. Summed device time was MMV
+    **46.0984%**, quantize **10.6058%**, RMSNorm **5.7346%**, FlashAttention **5.2539%**, copy
+    **2.8384%**, and GDN **1.6451%**. Receipt
+    `/mnt/raid0/llm/autokernel/probes/rvp-c4-4a-35b-q4km-decode-20260812T201000Z/receipt.json`
+    has file SHA-256 `459e7bfd3eb0aa3357544569ffec92f082d55a89e525eaf16cff5e37dc9a82f6`;
+    CSV SHA-256 is `6a3571de4bb4d2a1d3267369c99e8b7141618a70cadcae50d980a660af9234f4`.
+    Both claims released cleanly. Source-bound routing admitted six existing families / **59.9639%**
+    of captured duration, two forward-port families / **2.8384%**, and eleven unmatched families /
+    **36.4956%**, yielding workload-local `retain_novel_generator_scope`. Output
+    `rvp-c4-4a-q4km-decode-20260812-prior-art.json` has SHA-256
+    `c234b4b168cd4b95adb8668aa77d3c0e989807f354ae29bb9e5c51892c7243d3`.
 - [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
   the value distribution. This is the anti-shape-detection device, and it targets something we
   actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can
