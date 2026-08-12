@@ -1,10 +1,10 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: preserve immutable r18 while it runs, then validate its terminal receipt
-chain before any comparison. Never resume r4-r17 or aggregate a partial attempt into the panel.
+**Next action (2026-08-12)**: preserve immutable r19 while it runs, then validate its terminal receipt
+chain before any comparison. Never resume r4-r18 or aggregate a partial attempt into the panel.
 The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r18 live from immutable source after r17 evaluator repair)
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r19 live after copy-time staged-input binding)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -564,19 +564,41 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     refused before controller inference, GPU execution, or device-claim acquisition. The corrected pin
     is `eb1de388`; r16 carries no empirical or comparison authority.
   - [ ] **Drive retry-hardened seven-arm comparison to a terminal aggregate and validate the complete
-    receipt chain.** R17 is terminal-noncomplete and non-rankable. Its valid actor/critic 32h checkpoint
-    compiled and passed correctness **4/4** at diagnostic speedup `1.004404445111776` (receipt SHA-256
-    `93292683c21033475697d4743bb54e95f8964a1a8abb265a8789451454f1885e`), but the following EvoEngineer
-    2h cell failed before controller start: `ArenaWorkspaceEvaluator.__init__` was called without the
-    required keyword-only `source_paths`. Exact campaign PIDs `1842347`, `1920709`, `1921055`, and
-    `1966010` are dead; final claim `akd-6b60fb2f7d1449e2` released. Preserve the valid diagnostic
-    checkpoints, but never aggregate, rank, bank, promote, or resume r17.
+    receipt chain.** R18 is terminal-noncomplete and non-rankable after the parent rejected mutable
+    host Claude-config drift following the staged copy. No actor-cell receipt or aggregate was admitted.
+    Fresh r19 is live from clean immutable research `0b1fdbe9`; its ready 7/7 audit, completed baseline,
+    and active first actor cell grant no comparison authority. Preserve diagnostic checkpoints, but never
+    aggregate, rank, bank, promote, release, or resume r4-r18.
     - [x] **Patch the EvoEngineer evaluator-constructor call and launch a fresh immutable successor.**
       ✅ 2026-08-12 — research `381bc55e` wires governed `source_paths` through EvoEngineer, GEAK,
       K-Search, KernelFoundry, and Xe-Forge; `11bccd41` refreshes affected entrypoint pins. Research
       `b0d6f79f` adds prospective intermediate evaluator belief rows and strict feedback-only reading.
-      Fresh r18 is sealed at `17b9208d`, its baseline is complete, and its first actor cell is active;
-      that live state grants no aggregate, rank, bank, champion, promotion, or release authority.
+      Fresh r18 was sealed at `17b9208d`; its later terminal disposition is recorded below.
+    - [x] **Close seven-arm r18 as a staged-host-input identity failure without upgrading its measured
+      partial.** ✅ 2026-08-12 — r18 completed the baseline and full Claude/Codex 2h loop, including
+      four compile/correctness-4/4 candidate evaluations, but the outer parent re-hashed mutable host
+      `~/.claude/.claude.json` after its bytes had already been copied into the scrubbed workspace.
+      That host file changed during the multi-minute cell, so admission failed after controller exit.
+      No actor-cell receipt or aggregate was admitted; r18 remains permanently non-rankable and is
+      recorded in the dashboard disposition overlay under exact attempt id `21754d23…`.
+    - [x] **Bind staged controller inputs at copy time and launch a clean immutable successor.** ✅
+      2026-08-12 — research `0b1fdbe9` verifies the source hash immediately before copying, verifies
+      the staged bytes, emits `epyc.autokernel.controller_staged_inputs.v1`, and validates the receipt
+      instead of reopening a later-mutated host credential/config file. The controller suite passed
+      **596 tests**. R19 is live from clean exact source `0b1fdbe966f338a8ac840c9961eb718528af1a0f`
+      at `/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-seven-arm-r19-20260812`; its audit
+      is ready 7/7, baseline is complete, and the first actor cell is active.
+    - [x] **Specify the safe controller-overlap architecture before enabling it.** ✅ 2026-08-12 —
+      research `dfe265a1` defines immutable schedule order, isolated deterministic lanes, serial
+      per-lane checkpoints, exact MI210 claims around evaluator windows, bounded claim waits, an
+      inherited attempt lease, PID/start-tick cancellation, manifest-v3 validation, truthful observed
+      overlap, and a required overlap A/A noise gate. This is a design/verification contract only:
+      overlap remains disabled, and r19 intentionally retains the proven sequential runner.
+    - [ ] **Implement and validate deterministic controller overlap for a post-r19 successor.** Close
+      every `dfe265a1` gate: manifest-v3 lane/claim bindings, inherited attempt lease, PID/start-tick
+      cancellation, lane confinement, contention/restart regressions, truthful observed concurrency,
+      disjoint CPU placement, and a governed overlap A/A inside its predeclared noise bound. Do not
+      change r19 execution semantics or make concurrent results rankable before that matrix passes.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims

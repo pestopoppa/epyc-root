@@ -48,6 +48,18 @@
       "release_authority": false,
       "reason": "The actor/critic diagnostics completed through 32h, but the next EvoEngineer cell failed before controller start because governed source_paths were not passed to the evaluator constructor; no complete matrix or aggregate exists, so the attempt is permanently non-rankable.",
       "evidence": "/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-seven-arm-r17-20260812/execution/cells/005-instruction2triton_rocmbench_test_add_kernel-377f41e44c06-evoengineer-de7117c433f8-2h/worker.stderr"
+    },
+    {
+      "attempt_id": "21754d232f83cc2845b4f5f71a708dc10bf3bd65c17d0574583f7cb43238f83b",
+      "run_directory": "inf03-available-source-seven-arm-r18-20260812",
+      "disposition": "invalid_diagnostic_history",
+      "execution_state": "stopped",
+      "recorded_at": "2026-08-12T20:03:22Z",
+      "resume_permitted": false,
+      "ranking_authority": false,
+      "release_authority": false,
+      "reason": "The full Claude/Codex 2h loop returned, but parent admission re-opened a mutable host Claude config after its governed staged copy and observed identity drift; no actor-cell receipt or aggregate was admitted, so the attempt is permanently non-rankable.",
+      "evidence": "/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-seven-arm-r18-20260812/execution/cells/002-instruction2triton_rocmbench_test_add_kernel-377f41e44c06-claude_codex_actor_critic-97a1f1fd746b-2h/controller-sandbox-execution.json"
     }
   ]
 }

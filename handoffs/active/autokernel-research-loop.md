@@ -72,6 +72,18 @@ replace the post-reboot IQK/matched-archive sequence.
 `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812/`. Both bound commands compose
 successfully with `executed=false`; no inference was performed by this checkpoint. A live matched
 archive still requires two post-reboot clean DECIDED runs.
+
+`source_paths`. Research `381bc55e`/`11bccd41` repaired and repinned that construction, and
+`b0d6f79f` prospectively captures feedback-only intermediate evaluator beliefs. R18 then completed
+its baseline and full Claude/Codex 2h loop, but the parent refused the cell fail-closed after mutable
+host `~/.claude/.claude.json` changed following its staged copy. No actor-cell receipt or aggregate
+was admitted; r18 is terminal-noncomplete and non-rankable. Research `0b1fdbe9` now binds the source
+identity at copy time, verifies the copied bytes, and emits a staged-input receipt; **596 controller
+tests passed**. Fresh immutable r19 is live from exact clean source `0b1fdbe9`; its ready 7/7 audit,
+completed baseline, and active first actor cell grant no comparison authority. Research `dfe265a1`
+separately specifies the safe controller-overlap architecture and required overlap A/A gate, but does
+not enable overlap in r19. This controller comparison remains diagnostic and does not replace the
+post-reboot IQK/matched-archive sequence.
 Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
 The live campaign consumes an immutable content-addressed source patch before claim acquisition,
 applies it only through the guarded worktree boundary, and records the exact clean source/build,
