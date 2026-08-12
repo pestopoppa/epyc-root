@@ -27,8 +27,20 @@ HEARTBEAT="$TMP/hb/coordinator-daemon.json"
 DAEMON="$TMP/src/session_bus_coordinator.py"
 STALE_SRC_SKEW_S=5   # the production default; the predicate reads it
 
-# Extract just the three functions under test.
-eval "$(sed -n '/^daemon_pid_from_heartbeat()/,/^}/p;/^newest_source_mtime()/,/^}/p;/^source_is_newer_than_daemon()/,/^}/p' "$SUP")"
+# Extract just the functions under test. `resolve_daemon` joined the list with C49
+# (2026-08-12): the predicate no longer trusts the raw heartbeat pid, because a
+# RECYCLED pid would otherwise contribute a stranger's start time to the comparison
+# — and a stranger older than the last source edit reads as "the daemon is stale",
+# restarting a current daemon on the strength of an unrelated process's age.
+eval "$(sed -n '/^daemon_pid_from_heartbeat()/,/^}/p;/^resolve_daemon()/,/^}/p;/^newest_source_mtime()/,/^}/p;/^source_is_newer_than_daemon()/,/^}/p' "$SUP")"
+
+# The globals those functions read, which live outside their bodies. DAEMON_MARKER
+# is THIS SCRIPT'S OWN name, so the "daemon" whose start time the predicate reads
+# is this test process ($$) and nothing else on the host can satisfy it — the
+# marker is only ever matched against the one pid the heartbeat below names, never
+# used to search for a process.
+DAEMON_MARKER="$(basename "$0")"
+DAEMON_STATE=""; DAEMON_PID=""; DAEMON_WHY=""
 
 pass=0; fail=0
 chk() { if [ "$2" = "$3" ]; then echo "  PASS  $1"; pass=$((pass+1));
@@ -41,6 +53,11 @@ echo '{"agent":"coordinator-daemon"}' > "$HEARTBEAT"
 rc=0; source_is_newer_than_daemon || rc=$?; chk "heartbeat carries no pid -> fail closed" "$rc" 2
 echo '{"pid":999999999}' > "$HEARTBEAT"
 rc=0; source_is_newer_than_daemon || rc=$?; chk "pid does not exist -> fail closed" "$rc" 2
+# C49: a pid that EXISTS but is somebody else must fail closed too. Existence was
+# never the question — the same lesson the daemon learned in C37, where a stale
+# heartbeat naming pid 1 (/sbin/init) reported a ten-day-dead daemon as alive.
+echo '{"pid":1}' > "$HEARTBEAT"
+rc=0; source_is_newer_than_daemon || rc=$?; chk "pid recycled to another process -> fail closed" "$rc" 2
 echo "{\"pid\":$$}" > "$HEARTBEAT"
 rc=0; source_is_newer_than_daemon || rc=$?; chk "no source files -> fail closed" "$rc" 2
 
