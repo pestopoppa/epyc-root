@@ -19,24 +19,32 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 > **Mutation-test the guard. Change the code so the property is genuinely violated, and confirm the
 > check FAILS. If you cannot make it fail, it is not a guard.**
 >
-> Then ask three follow-ups, because **five of the twelve faces survive mutation-testing** —
-> re-adjudicated 2026-08-12 against all twelve, rather than carried forward as a bumped number:
+> **Then ask: does mutation-testing actually reach this one?** For six of the twelve it does not, and
+> those are the dangerous ones — a reader reaching for the standard remedy needs to know exactly where
+> it fails silently. Framing owed to `mainC` and the `auditor`, who pointed out that the useful answer
+> is a **partition with reasons**, not a numerator; membership re-adjudicated 2026-08-12, and `mainC`
+> caught face 8, which my first pass missed.
 >
-> - **Face 5** — the mutation is real but the *instrument cannot see it* (untracked probe vs
->   `git grep`). *Is the mutation VISIBLE to the tool doing the looking?*
-> - **Face 7** — the check is correct, complete and passing but *not counted* by the reporter.
->   *Does the tool that reports pass/fail actually COUNT this check?*
-> - **Face 9** — the mutation fires, but you asked the *wrong corpus* (root hashes against the
->   orchestrator repo). *Does the query name its scope?*
-> - **Face 11** — the check is sound and models a *different subsystem* than the one that failed.
->   *Does my metric model the thing that broke?*
-> - **Face 12** — the check was sound *when run*, and the world moved. *Is it still true, or only
->   was-true?*
+> **They defeat it for three different reasons:**
 >
-> Faces 1–4, 6, 8 and 10 are all caught by an honest mutation test. The five above are not, and they
-> divide cleanly: 5, 7 and 9 fail because the **instrument's reach** is wrong (visibility, counting,
-> scope); 11 and 12 because the check is **right about the wrong thing** (wrong subsystem, wrong
-> moment). Soundness is no defence against either pair.
+> *The instrument cannot see the mutation* —
+> **5** (probe untracked, `git grep` blind to it) · **9** (mutation lands in one repo, the query asks
+> another) · **7** (the check is never run, so nothing can fail it).
+>
+> *The mutation produces no distinguishable signal* —
+> **8** (a failed command laundered to `0` looks exactly like a real `0`, so the mutated run and the
+> healthy run report identically).
+>
+> *The check is right about the wrong thing* —
+> **11** (sound, but models a different subsystem than the one that broke) · **12** (sound when run;
+> there is **no observable at write time at all**, so a mutation test at authoring passes forever
+> while the claim rots).
+>
+> Faces **1–4, 6 and 10** are caught by an honest mutation test — with one caveat worth stating: face
+> 1 defeats it *under its own condition*. If you mutation-test while the input is genuinely empty, the
+> empty set satisfies the check and the mutation goes unseen; assert the input is non-empty first and
+> the mutation test then works. That conditionality is why "assert your input" precedes "mutate your
+> guard" rather than replacing it.
 
 ---
 
