@@ -626,6 +626,11 @@ Use focused extra tests for each W2 consumer pass. Do not run AutoPilot or llama
 - [x] Residual classified docs/tests cleanup (legacy_test=72, historical_doc=25 warning buckets) ✅ 2026-07-22
 - [x] Descriptor ctx_model_max contract extension (native ctx_max still incomplete) ✅ 2026-07-22
 - [ ] Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient
+  **2026-08-12 (`mainB`) — screened and NOT actionable as written: the row is CONDITIONAL and its
+  condition has never been assessed.** "Only if promotion-gate coverage proves insufficient" is a
+  gate, not a task; nobody has established insufficiency, so the work it authorises is not yet
+  authorised. Whoever picks it up should first answer *is promotion-gate coverage insufficient?* —
+  that is the actual open question, and it is a different (and cheaper) piece of work.
 - [x] Remaining tap/high-cost/contention policy-hint projection into generated stack priors ✅ 2026-07-22
 
 - [ ] (620 follow-up — deferred, operator-gated) Wire a compile-blocking strict known-gap for null `ctx_model_max` in `_descriptor_gaps`. Deliberately NOT done in `13112f77` (the field extension) because it would flip the strict promotion gate to error for every not-yet-populated model on the launcher path (CRITICAL blast radius). Populate native `ctx_max` first, then enable.
