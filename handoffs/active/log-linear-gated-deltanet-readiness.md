@@ -1,12 +1,16 @@
 # Log-Linear Gated DeltaNet — Readiness Tracker
 
-**Status**: REFRESHED 2026-05-28 — monitoring-only readiness tracker; blocked on pretrained checkpoint + inference reference + architecture docs
+**Status**: **GATES FIRED 2026-08-12** — all three activation gates are satisfied; this is no longer a monitoring-only tracker. See [§ Activation Evidence — 2026-08-12](#activation-evidence--2026-08-12).
 **Created**: 2026-04-14 (via research intake deep dive)
-**Updated**: 2026-07-26 (activation gates reviewed; no gate fired)
+**Updated**: 2026-08-12 (gates re-checked against the live sources; all three fired)
 **Categories**: ssm_hybrid, context_extension, inference_serving
 **Priority**: HIGH (strategic) — activates when gate criteria met
 
 ## 2026-07-26 Staleness Review
+
+> **SUPERSEDED 2026-08-12** — this review, and the "Status as of 2026-04-21" section below, both report
+> "no checkpoint". That was wrong from 2026-02-13 onward; neither review queried HuggingFace. Read
+> [§ Activation Evidence — 2026-08-12](#activation-evidence--2026-08-12) instead. Kept for provenance.
 
 The [design-backlog triage](design-backlog-triage-2026-07-23.md) still
 classifies the public path as training-only and requires both a pretrained
@@ -67,9 +71,102 @@ Track readiness of Log-Linear Gated DeltaNet for deployment on EPYC. 75% of the 
 
 All must be true to activate implementation:
 
-- [ ] Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size)
-- [ ] Reference implementation (github.com/HanGuo97/log-linear-attention) includes inference code, not just training
-- [ ] Model architecture documented sufficiently for GGUF converter implementation
+- [x] Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size) ✅ 2026-08-12 — `hanguo/log-linear-attention`, folder `gdn/`, public since 2026-02-13
+- [x] Reference implementation (github.com/HanGuo97/log-linear-attention) includes inference code, not just training ✅ 2026-08-12 — `HGatedDeltaNetForCausalLM(…, GenerationMixin)` + `hattention/recurrent.py`; see the caveat below, it is not runnable as shipped
+- [x] Model architecture documented sufficiently for GGUF converter implementation ✅ 2026-08-12 — full `config.json` + 423 named tensors read out of the safetensors header + HF modeling source
+
+## Activation Evidence — 2026-08-12
+
+Filed in the format the [2026-05-28 Audit Reset](#2026-05-28-audit-reset--executor-start-here) asks for.
+Every line below was read from the live artifact on 2026-08-12, not from a model card or the paper.
+
+```text
+Checkpoint:                      hanguo/log-linear-attention  (HF, public, not gated, lastModified 2026-02-13)
+                                 subfolder gdn/  → model.safetensors, config.json, generation_config.json,
+                                 tokenizer.json, LICENSE
+                                 subfolder mamba-2/ → the log-linear Mamba-2 sibling (model_type "hattention")
+Reference inference entry point: hattention/modeling_h_gated_deltanet.py
+                                 HGatedDeltaNetForCausalLM(HGatedDeltaNetPreTrainedModel, GenerationMixin)
+                                 .generate() + .prepare_inputs_for_generation() + past_key_values.update(
+                                     recurrent_state=…, conv_state=(q,k,v), offset=…)
+                                 hattention/recurrent.py — HState / step_state() / step_output() /
+                                 hattention_recurrent(): the O(log L) recurrence in PURE PyTorch, no Triton
+Tensor/name mapping source:      safetensors header of gdn/model.safetensors — 423 tensors, 795.690 M params, F32
+License:                         MIT (gdn/LICENSE, "Copyright (c) 2023-2025 Songlin Yang, Yu Zhang" — the FLA
+                                 licence, shipped inside the model folder). NOTE: the GitHub reference repo
+                                 itself carries NO top-level LICENSE file (GitHub API reports license: null).
+Expected first model size:       795.690 M params · hidden 1536 · 21 layers · 6 heads · head_dim 192 ·
+                                 expand_v 2 (v head dim 384) · conv_size 4 · vocab 32000 ·
+                                 max_position_embeddings 16384 · f32 → ≈3.2 GB on disk
+Why this is Log-Linear GDN and not standard GDN:
+                                 config model_type = "h_gated_deltanet" (the baseline variant in the same repo
+                                 is model_type "gated_deltanet" — configs/flame/{h_,}gated_deltanet_mid.json are
+                                 otherwise byte-identical), _name_or_path = ".../h_deltanet_mid.json", and the
+                                 checkpoint carries the two tensors the baseline does not have:
+                                   model.layers.N.attn.L       [6, 15]      per-head level weights (λ)
+                                   model.layers.N.attn.l_proj  [90, 1536]   90 = 6 heads × 15 levels
+                                 15 levels = ceil(log2 16384) + 1, i.e. the log-linear level set itself.
+```
+
+**How long this was available**: the checkpoint has been public since **2026-02-13**, i.e. it already existed
+at the 2026-07-26 gate review and at the 2026-05-28 audit reset. The gate did not fire late because upstream
+was slow; it fired late because the monitoring row was never actually executed against HF. The
+[Monitoring Targets](#monitoring-targets) table names HF at *monthly* cadence — that cadence was not met.
+
+### Caveat — the reference is NOT runnable as shipped (two concrete blockers)
+
+Gate 2 is satisfied *as code*, but an executor who clones the repo and calls `.generate()` will not get output:
+
+1. **The only wired compute path is Triton/GPU.** `HGatedDeltaNetAttention.forward` dispatches
+   `if mode == 'chunk': chunk_h_gated_delta_rule(...)` and `else: raise NotImplementedError`. There is no
+   `fused_recurrent` mode wired into the model, so `hattention/recurrent.py` — the pure-PyTorch, device-agnostic
+   form — is **reachable only by editing the model**. It is nonetheless the right port reference (see below).
+2. **An unshipped absolute path.** `hattention/base.py` holds
+   `CACHED_LEVELS_MATRICES[(16384, 2, HType.WEAK, -1)] = "/export/share/experiments/20250202/llut/llut.length-16384.base-2.pth"`,
+   an author-cluster path that is not in the repo. `make_levels_matrix()` defaults to `cached_length=16384`,
+   so every chunkwise/parallel kernel call (`chunkwise_hgdn.py:630`, `chunkwise.py:1174`, `parallel.py:899`)
+   hits that key and `torch.load`s a file nobody outside the authors' cluster has. Removing the dict entry makes
+   the function fall through to its own `get_level_index()` computation — correct, but an O(L²) Python double
+   loop at L=16384 (≈2.7·10⁸ iterations), so it wants doing once and caching via the function's `file_name=` arg.
+
+**Consequence for our port**: port from `hattention/recurrent.py`, not from the chunkwise kernels. The recurrent
+form needs **no** level lookup table at all — `HState.cascade_weak()` derives the level from per-level counters
+(`counts[level] == base**level` → carry into `level+1`), which is a ggml-friendly integer state machine. The L×L
+LUT exists only to materialise the mask for the parallel/chunk forms. This changes step 4 of the plan below.
+
+### Correction — the "state size 4-10x reduction" bullet has no named baseline
+
+[Why This Matters](#why-this-matters) claims *"State size 4-10x reduction (~2GB → ~200-500MB at 262K context)"*
+directly under a paragraph framing this as the replacement for the **standard GDN** in 75% of the production
+stack. Measured on the released checkpoint, that reading is **backwards**: log-linear GDN's recurrent state is
+the standard GDN state replicated across the level set, so per layer
+
+| | recurrent state (this checkpoint's dims) | 21 layers, f32 |
+|---|---|---|
+| standard GDN | 6 heads × 192 (d_k) × 384 (d_v) | ≈37 MB |
+| log-linear GDN | 6 × 192 × 384 × **15 levels** | ≈557 MB |
+
+— a **15× increase** versus standard GDN, not a reduction. The reduction is real but is against **softmax
+attention's KV cache**, which grows linearly in L while both GDN forms are constant in L. State the baseline
+whenever this number is quoted. Two further facts the bullet elides: the released architecture's level count is
+a **fixed 15** (tensor `L [6, 15]`) with `max_position_embeddings` 16384 — a 262K-context claim needs 19 levels
+and therefore a different checkpoint — and the level set is constant in L, so "at 262K context" does not qualify
+the log-linear number at all.
+
+### Next actions now that the gates have fired
+
+- [ ] Wire `hattention_recurrent()` into `HGatedDeltaNetAttention.forward` behind a `mode='fused_recurrent'`
+      branch in a local clone, and confirm it reproduces the chunk path's logits on a short prompt. This is the
+      numerical oracle every later ggml step is checked against; without it the port has no reference output.
+      **CPU-only, no GPU needed** (pure PyTorch, ≈796 M params f32 ≈ 3.2 GB).
+- [ ] Write the GGUF converter tensor map from the 423-name safetensors header; the only non-GDN names are
+      `attn.L`, `attn.l_proj.weight` and the level count, so it is standard-GDN mapping plus two entries.
+- [ ] Re-scope plan step 4 below: `ggml_log_linear_state_update()` is the `cascade_weak()` counter machine plus
+      the existing delta-rule update; `ggml_log_linear_attention()` is `step_output()` = a λ-weighted contraction
+      over the level axis. Neither needs the L×L level LUT.
+- [ ] Operator decision, once the oracle above exists: this checkpoint is a **795 M research model at f32 with a
+      16K position limit** — it validates the port but is not itself deployable. Decide whether the port is
+      justified by the checkpoint alone or should wait for a production-scale log-linear GDN.
 
 ## Implementation Plan (triggered when gate criteria met)
 
@@ -109,7 +206,11 @@ Estimated effort: 2-3 weeks from gate activation.
 - **Chapters**: 10-advanced-speculative-decoding (Section 13: Delta Net speculation blocked)
 - **Handoffs**: routing-intelligence.md (historical Delta Net / reasoning-trace risk notes preserved in the completed ledger linked from the active handoff)
 - **Completed**: mtp-speculative-decoding.md, ssm-hybrid-acceleration.md (speculation exhausted on standard GDN)
-- **Ref impl**: github.com/HanGuo97/log-linear-attention (278 stars, Python/Triton, training-only)
+- **Ref impl**: github.com/HanGuo97/log-linear-attention — 285 stars as of 2026-08-12, **last push 2025-06-06**
+  (the repo is dormant, the checkpoint release happened on HF instead). No longer "training-only": it carries
+  an HF `ForCausalLM` + a pure-PyTorch recurrence, with the two shipped-state caveats recorded above.
+- **Checkpoint**: huggingface.co/hanguo/log-linear-attention — `gdn/` (log-linear GDN, 795.690 M) and
+  `mamba-2/` (log-linear Mamba-2, `HAttentionForCausalLM`). Public 2026-02-13, MIT, not gated.
 
 ## Research Intake Update — 2026-04-28
 
