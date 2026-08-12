@@ -278,6 +278,18 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   (self/file SHA-256 `3425cf57…` / `eb53de38…`). This is compatibility evidence only: no matched
   campaign, ranking, belief, proposal-bank, champion, promotion, or release authority exists. The next
   empirical step is the fresh 7/7 availability-conditioned panel.
+- [x] **AK-AUD-11 — Correct the parser false positive and audit the first two seven-arm launch
+  boundaries.** ✅ 2026-08-12 — the reported all-tree parser collision was expected argparse stderr
+  inside `assertRaises(SystemExit)`, not collection failure: 3,927-test discovery succeeded and an AST
+  sweep found no module-scope `parse_args`. INF-03 r5 exposed a real Claude CLI `-11` under the exact
+  campaign Landlock policy. Local, unpushed research `916cdc92` added the first bounded runtime-read
+  repair and passed a real standalone Claude probe plus 5,653-test pinned regression, but r6 reproduced
+  the same `-11`
+  after its baseline even with those reads present. The test totals were observed but have no retained
+  transcript, so they are regression notes rather than durable suite evidence. Therefore the probe
+  proves only its narrow path; the owning open differential and fresh-attempt gate remain in
+  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md). R5/r6 have no aggregate or
+  decision authority, and both controller cgroups were verified empty and removed.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it

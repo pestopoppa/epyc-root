@@ -1,7 +1,7 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 13,
+      "blocked": 12,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
       "open": 356
@@ -84,15 +84,15 @@
       "total": 9
     },
     "agentic-rocm-kernel-authoring.md": {
-      "blocked": 1,
-      "closed": 59,
+      "blocked": 0,
+      "closed": 62,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 63
+      "total": 65
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 1,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 226,
+      "closed": 227,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 248
+      "total": 249
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
@@ -2394,7 +2394,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Begin the fresh governed 7/7 availability-conditioned panel from the r15-proven isolated execution path",
+      "next_action": "Trace r6's exact campaign/standalone differential; patch the root cause, prove the Claude cell, then launch fresh 7/7",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {

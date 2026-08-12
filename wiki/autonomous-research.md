@@ -954,3 +954,31 @@ entry point uses.
 
 - [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-WM-2a durable producer state and empirical next action
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact v4 artifact identities and validation results
+
+## Compiled Update — 2026-08-12: a narrow sandbox probe does not prove the full controller cell
+
+**Confidence: verified.** The first fresh seven-arm AutoKernel attempt exposed a Claude CLI SIGSEGV
+inside the confined actor-critic planner. A trace-derived Landlock repair for a separately reproducible
+startup failure admitted ten fixed volatile runtime reads, retained stable identity hashing separately,
+kept the random device read-only, and made
+a bounded standalone Claude request complete successfully. The next campaign attempt still reproduced
+the SIGSEGV under the full actor-critic cell despite carrying those same ten reads.
+
+The reusable rule is that sandbox compatibility is path-specific. Matching the executable and visible
+read allowlist is insufficient when the production cell also changes the prompt/argv, workspace,
+controller process tree, and staged configuration lifecycle. A successful narrow probe is useful for
+shrinking the differential, but it cannot authorize a campaign or close the full-path acceptance gate.
+Both attempts therefore remain immutable engineering diagnostics with no aggregate, ranking, belief,
+proposal-bank, champion, promotion, or release authority. The next run must exercise the exact campaign
+cell after tracing the remaining differential; it must use a fresh attempt identity.
+
+A neighboring audit also corrected a false blocker: argparse stderr from deliberately supplying two
+mutually exclusive options inside `assertRaises(SystemExit)` was mistaken for an import-time collection
+failure. Full discovery collected 3,927 tests, and static inspection found no module-scope parser call.
+Expected failure output is not evidence that discovery aborted.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 differential and fresh-attempt gate
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AutoKernel completion audit and evidence-authority boundary
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact r5/r6 and probe paths, hashes, and validation caveats

@@ -1136,7 +1136,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-03",
-      "weight": 8
+      "weight": 10
     },
     {
       "from": "INF-06",
@@ -3491,7 +3491,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T14:48:13Z",
+  "generated_at": "2026-08-12T15:22:50Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4158,13 +4158,13 @@
     },
     {
       "age_days": 0,
-      "blocked": 1,
-      "closed": 59,
+      "blocked": 0,
+      "closed": 62,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Begin the fresh governed 7/7 availability-conditioned panel from the r15-proven isolated execution path",
+      "next_action": "Trace r6's exact campaign/standalone differential; patch the root cause, prove the Claude cell, then launch fresh 7/7",
       "open": 3,
       "state": "active",
       "track": "agentic rocm kernel authoring"
@@ -4198,7 +4198,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 226,
+      "closed": 227,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",

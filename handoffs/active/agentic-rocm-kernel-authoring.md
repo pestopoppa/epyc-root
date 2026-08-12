@@ -1,11 +1,11 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: begin the governed 7/7 availability-conditioned panel from fresh state,
-using the r15-proven controller/evaluator isolation and receipt path. Never reuse r4 or aggregate the
-one-task pilot into the panel.
+**Next action (2026-08-12)**: trace r6's exact campaign-versus-standalone differential, identify and
+patch the root cause, prove the exact Claude actor-critic cell, then launch a fresh 7/7 attempt. Never
+reuse r4-r6 or aggregate the one-task pilot into the panel.
 The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (governed K-Search pilot r15 terminal compatibility checkpoint)
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r5/r6 Claude sandbox differential checkpoint)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -453,13 +453,32 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     dashboard.** ✅ 2026-08-12 — the hub now reads the newest terminal pilot receipt, verifies its
     self-hash and explicit no-authority constraints, and renders PASS, broker/model/evaluation/window/
     teardown facts under a loud no-campaign-authority boundary.
-  - [ ] **Repair the pre-existing all-tree discovery parser collision.** Discovery under the pinned
-    ROCm runtime reaches a module whose import-time CLI parser rejects `--evaluate-existing` combined
-    with `--execute`, raising `SystemExit` before unittest can emit a complete summary. Keep the focused
-    and explicit controller suites authoritative until this collection defect is fixed and rerun.
-  - [ ] Run a fresh governed available-source campaign only after a one-task/one-arm pilot proves
-    non-null brokered intermediate feedback, exact claim/release receipts, peer authentication, and the
-    required OS isolation. Never resume or reuse r4.
+  - [x] **Retract the reported all-tree discovery parser collision after reproducing its exact test
+    context.** ✅ 2026-08-12 — `test_live_controls.py` intentionally invokes mutually exclusive
+    `--evaluate-existing` and `--execute` arguments inside `assertRaises(SystemExit)`; the argparse
+    stderr is the expected assertion surface, not an import-time collection abort. Discovery with both
+    strings in `sys.argv` collected **3,927** tests, and an AST sweep found zero module-scope
+    `parse_args` calls in AutoKernel. No parser repair is warranted.
+  - [x] **Trace and repair one reproducible Claude/Landlock startup failure outside the campaign.**
+    ✅ 2026-08-12 — local, unpushed research commit `916cdc92` adds ten fixed volatile read paths,
+    stages only Claude credentials/config with identity hashes, scrubs the
+    staged config, keeps `/dev/urandom` read-only, and excludes volatile reads from stable identities.
+    The bounded standalone Claude probe returned structured `{"ok": true}`, left an empty/removed
+    cgroup, and retained activation/result/teardown evidence under
+    `/mnt/raid0/llm/autokernel/probes/inf03-claude-sandbox-runtime-20260812-r1`. Focused validation passed
+    **59/59**, footprint/README validation passed **106/106**, and the pinned full AutoKernel suite ran
+    **5,653** tests with one expected failure and no unexpected failure. Those counts were observed in
+    the live session but lack a retained transcript; the probe receipts are the durable runtime evidence.
+    This proves the bounded probe, not full actor-critic campaign compatibility.
+  - [x] **Preserve r5 and r6 as immutable non-rankable engineering attempts after the exact campaign
+    cell falsified the standalone compatibility inference.** ✅ 2026-08-12 — both attempts completed
+    only the starting-state baseline, then the first Claude/Codex 2h planner exited `-11` with empty
+    stdout/stderr. R6 included all ten new runtime paths and used source `916cdc92`, yet reproduced r5;
+    its controller cgroup was verified empty and removed. Neither attempt has an aggregate, controller
+    ranking, belief update, proposal-bank entry, champion, or release authority.
+  - [ ] Trace r6's exact campaign-versus-standalone differential, identify and patch the root cause,
+    prove the exact Claude cell under the campaign sandbox, then launch a fresh governed 7/7 attempt.
+    Never resume or reuse r4-r6.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims
