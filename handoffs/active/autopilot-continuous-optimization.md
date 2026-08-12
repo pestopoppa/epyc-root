@@ -1944,7 +1944,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `RoleBinding(role='coder_escalation', fleet_id='architect_general', ...)` — no phantom,
       no collision. The two declarations are mutually consistent statements about ONE physical
       server, which is what the registry comment already claims and what the code now honours.
-- [ ] `onnxruntime` is used at runtime by `src/retrieval/cross_encoder.py`, declared nowhere in
+- [x] `onnxruntime` is used at runtime by `src/retrieval/cross_encoder.py`, declared nowhere in
       `[project]` dependencies, and is not installed — **cross-encoder reranking is silently off in
       production**.
   - [x] **DECLARED ✅ 2026-08-12** — orchestrator `fa3daeac` adds `onnxruntime>=1.20.0` and
@@ -1986,6 +1986,29 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
         `uv.lock` already resolves `onnxruntime 1.26.0` and `tokenizers 0.22.2` via the
         `colbert-export` extra, so a re-lock should not move any version, but the two new DIRECT
         requirements are not yet recorded in it.
+      ✅ 2026-08-12 — **already fixed by `mainA` (`fa3daeac`)**, declared at `pyproject.toml:43`.
+      Re-verified independently rather than trusted: the import is optional at the LANGUAGE level
+      (`try/except ImportError` in `cross_encoder.py:92`) but load-bearing on the UNCONDITIONAL
+      first-stage KB-RAG path, so the declaration was correct either way — an optional import used by
+      an unconditional path still needs a manifest entry, or the module never has the capability.
+      Guard test `tests/unit/test_retrieval_deps.py`, 6 tests; mutation (remove the declaration)
+      2 failed / 4 passed, restored 6 passed. *(`mainC` re-confirmed the declaration and the tests.)*
+- [ ] **SIBLING SWEEP: six more runtime imports are hard, unguarded and declared NOWHERE** — the same
+  defect class, found by AST-walking every import in `src/` against every `pyproject` table.
+  `aiohttp` (`src/services/worker_pool.py:41`), `sqlalchemy` (`src/db/models/vision.py:19`,
+  also `src/vision/search.py:10`), `langchain_core` (`src/graph/langgraph/nodes.py:19` — `langgraph`
+  is declared but `langchain-core` is a separate distribution), `starlette`
+  (`src/api/dashboard_cors.py:54` — transitively present via fastapi, so lower practical risk but no
+  direct declaration backs a direct import), `gradio` (`src/gradio_ui.py:23`), and `torch`/
+  `transformers` (`src/services/lightonocr_server.py:34-35`, function-level and unguarded, declared
+  ONLY in the `colbert-export` extra — the exact declared-only-in-an-extra pattern `onnxruntime` had
+  before its fix). *(Spot-verified by `mainC`: `aiohttp` and `sqlalchemy` both return ZERO pyproject
+  declarations against a hard module-level import.)* A further ~14 are guarded with `try/except` and
+  degrade explicitly — lower priority, listed in the subagent report. **UNOWNED**, reported not fixed.
+- [ ] **Unestablished and deliberately not tested:** whether `onnxruntime` is actually INSTALLED in
+  the live `.venv`. The prior fix's own note records `ModuleNotFoundError` at commit time and left the
+  install to the operator. Declaring a dependency and having it present are different facts.
+
 - [ ] The ~77-test retired-topology failure bucket.
 - [ ] `MEASUREMENT.md:148-158` still states the durability checker "fails on any citation resolving
       outside the repository" — now false after the retarget. Human-amendment-only; no owner assigned.
