@@ -3465,7 +3465,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T10:00:13Z",
+  "generated_at": "2026-08-12T10:22:19Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4068,7 +4068,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 54,
+      "closed": 55,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
@@ -4159,7 +4159,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 215,
+      "closed": 216,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
@@ -4627,7 +4627,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 70,
+      "closed": 71,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
@@ -5394,13 +5394,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 130,
+      "closed": 135,
       "domain": "routing-and-optimization",
       "handoff": "session-bus-thin-dispatcher.md",
       "id": "RTG-34",
       "last_advanced": "2026-08-12",
       "next_action": "C-OWN \u2014 continue the C-series control-plane work (mainD's lane); R1a's bench is inference-gated but does NOT gate the handoff",
-      "open": 31,
+      "open": 27,
       "state": "active",
       "track": "session bus thin dispatcher"
     },
