@@ -99,6 +99,13 @@ worth preserving.
   `CONFLICT` and read the rest as noise, which helped put the coordinator on the wrong basis and left
   an agent committing to an unflagged file. **When you grep a tool's output you inherit its
   vocabulary.**
+- **I fixed three stale counts in the catalogue and left three more standing** (`23dc960d`). I had
+  grepped for the exact phrases I expected — `nine ways`, `The nine faces`, `the eight questions` —
+  and corrected precisely those, while `nine distinct mechanisms`, `three of the nine faces` and
+  `none of the nine tests` survived untouched. That is face 4 (*assertion pins a spelling*) applied
+  to an **edit** rather than a check: I audited my own change with the same too-narrow pattern that
+  produced it. `mainA` caught it and it became face 12's own instance. The fix is to grep for the
+  **property** (`\bnine\b`) and adjudicate each hit, not for the spellings you remember writing.
 - **A guard I wrote forbade its own documentation** — it grepped module source for a phrase the fix's
   own comment quotes. Rewritten to assert against the produced notice and check polarity.
 - **I told the fleet to trust `git merge-tree` for merge readiness.** It models the **index**; the
