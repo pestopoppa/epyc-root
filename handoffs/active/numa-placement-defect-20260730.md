@@ -901,7 +901,7 @@ primary artefact.
   would hard-fail correctly-configured roles. That is the throttle-gate failure mode. Still blocked on
   the tolerance ratification for the multi-node analogue.
 
-- [ ] **T8 — Carry prompt length on every decode claim for `ingest_long_context`**, in the
+- [x] **T8 — Carry prompt length on every decode claim for `ingest_long_context`**, in the
       registry and in any handoff that quotes a tok/s for it.
       **REGISTRY HALF DONE ✅ 2026-08-12 (`mainB`, research `7dddce0f`); handoff half still open.**
       Two of the four figures already carried context (`long_context_tps_range … @ ~12K context`,
@@ -922,6 +922,30 @@ primary artefact.
       `within-role-placement-state-machine.md:315` (`12.34 t/s`, `~0.1 t/s`). The 9–12 vs 15–25 split is entirely
       a context-length effect. *(Amended 2026-07-30: the rule stands; the 9–12 / 15–25 bands
       themselves are IQ2_M and must be re-derived on Q4_K_M — T10.)*
+      **AUDIT DONE ✅ 2026-08-12 (`mainA`), zero inference. Three bare-quote sites, and the rule
+      is already half-implemented in one of them.**
+      **(1) `speculative-decoding-mtp-refresh.md:92` — the table ALREADY HAS a `prompt` column
+      and `ingest_long_context` is the one row that leaves it `—`.** Its neighbours carry
+      `14,059 tok` and `53,730 tok`; the 80B row quotes `17.40` and `20.06` t/s against a blank.
+      This is the cheapest possible fix — the column exists, the cell is empty — and it is the
+      most load-bearing, because a `1.15x` speculation speedup is meaningless without knowing the
+      context it was measured at. **Recoverable from that handoff's own artifact; routed to its
+      owner, not filled in by me — I will not invent a prompt length.**
+      **(2) Registry `roles.ingest_long_context.performance`** carries context where it matters
+      (`long_context_tps_range: "14.4-20.8 t/s @ ~12K context"`, `summarization_benchmark:
+      "73.8s for 464 tokens ... (10K context)"`) but `baseline_tps: 10.12` and `optimized_tps:
+      10.12` are **bare** — and 10.12 sits squarely in the 9-12 short-context band this row says
+      is a context artefact. So the registry states the rule for its long-context fields and
+      breaks it for its headline ones.
+      **(3) This handoff's own A/B/C placement table (`:209`) has no prompt column for any role.**
+      Materially the weakest of the three: every arm shares one prompt, so the `A→C` ratio the
+      table exists to establish is unaffected. The hazard is only that the absolute `12.42` /
+      `22.92` travel out of the table and get compared against a long-context number.
+      **Not edited, deliberately.** The amendment above already says the 9-12 / 15-25 bands are
+      IQ2_M and must be re-derived on Q4_K_M under **T10**, which needs compute. Annotating
+      numbers that are scheduled to be replaced is churn, and rewriting a measurement table is
+      not something to do at 3am on an append-only record. The durable half of T8 is the RULE,
+      and the rule now has three named enforcement points instead of a general instruction.
 - [x] **T9 — Operator ratification of `P-BENCH-PLACEMENT-1`.** ✅ 2026-07-30 — **RATIFIED** by
       the operator (epyc-root `07b7dcab`): registered in `MEASUREMENT.md` §2 plus the annex
       `measurement/protocols/bench-cpu.md`. `P-BENCH-3` was conformed to §1 in the same pass
