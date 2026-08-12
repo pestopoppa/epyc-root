@@ -7,10 +7,13 @@ Supervisor: [`scripts/coordination/backfill_supervisor.sh`](../../scripts/coordi
 
 ## Why this exists
 
-2026-08-11/12 overnight failure: 19 READY compute-gated tasks existed, nothing
-translated them into queued jobs, the hardware sat idle 3h47m, and the daemon
-wrote 590 consecutive all-idle records into
-`coordination/session-bus/advisory.jsonl` — a file nothing reads. This
+2026-08-11/12 overnight failure (history corrected 2026-08-12 per mainB's
+pick-validity analysis): the daemon wrote 590 consecutive all-idle records
+into `coordination/session-bus/advisory.jsonl` — a file nothing reads — each
+claiming 19 tasks READY. That claim was a stale picker view (C50): 811
+records resolve to nine distinct rows, four of six sampled picks closed for
+fourteen days at emission. A 3h47m window carries no compute receipts at all
+(unwitnessed, not measured-idle); receipted utilisation was ~8–9%. This
 directory is the bounded, crash-safe mechanism that closes that gap: a queue
 of small, `timeout`-bounded jobs that opportunistically claim CPU regions
 through the SAME lock (`region-lock run`) the rest of the fleet uses, plus a
