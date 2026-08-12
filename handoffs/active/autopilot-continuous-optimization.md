@@ -2229,6 +2229,27 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       chokepoint" `tier_specs.objectives_from` governs construction only. **A fifth scar in
       the same cluster**: no named-axis objective type, so every consumer re-derives the
       layout. Fixing it is the prerequisite for W3e (retiring the cost axis).
+  - **VERIFIED 2026-08-12, not taken on the row's word.** The fix is real, complete and reachable:
+    `src/autopilot_core/pareto_math.py:13-28` raises before the `zip`, it is the SOLE implementation
+    (`pareto_archive.ParetoEntry.dominates` is a thin wrapper over the same import), all six call
+    routes converge on it, and `tests/unit/test_objective_rate_flip.py::test_dominates_refuses_mixed_policy_comparison`
+    pins it — mutation-checked by stripping the raise and watching that test fail. Landed `afdd5d74`.
+- [ ] **NEW (2026-08-12): `hypervolume()` has the SAME silent truncation, unguarded, a few lines below
+  the fix — and the FIRST entry of any tier reaches it without ever passing `dominates()`.**
+  `pareto_math.py:57-59` does `all(pi > ri for pi, ri in zip(point, ref_tuple))` with no length check,
+  so a frontier point and a tier reference point of different dimensionality compare on the shorter
+  prefix and silently return a number instead of raising.
+  **Why the existing guard does not cover it, which is the point:** `_rebuild_frontier`
+  (`scripts/autopilot/pareto_archive.py:243-246`) calls `dominates()` only inside comprehensions over
+  `rebuilt`, which is `[]` for the first entry in a tier. `any(... for existing in [])` short-circuits
+  to `False` and `dominates()` is **never invoked**, so its dimensionality guard never runs; the entry
+  is appended unchecked and flows straight into `hypervolume()`. The guard is correct and load-bearing
+  and the first item through the door does not pass it — an empty collection defeating a check that
+  lives in a comparison. Exactly the "3D shadow vector" hazard `afdd5d74`'s own message warns about.
+  **UNOWNED** — routed to the coordinator. Fix is a length check in `hypervolume()` mirroring
+  `dominates()`, but whoever owns pareto semantics should decide raise-vs-skip. *(Found by a `mainC`
+  subagent while verifying the row above; mechanism and reachability re-derived by `mainC` before
+  filing — the empty-list bypass was read out of the source, not inferred.)*
 - [x] **The de-FABLE rename shipped broken operator-facing commands** ✅ follow-up audit done
       2026-08-11 — `mainD`. **The class is real and it was still live, in the worst possible place.**
       `handoffs/active/orchestration-robustness-audit-2026-07-11.md` carried **three
