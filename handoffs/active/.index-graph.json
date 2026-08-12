@@ -40,11 +40,6 @@
     {
       "from": "INF-06",
       "kind": "dep",
-      "to": "INF-22"
-    },
-    {
-      "from": "INF-06",
-      "kind": "dep",
       "to": "INF-48"
     },
     {
@@ -3491,7 +3486,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T18:00:28Z",
+  "generated_at": "2026-08-12T18:07:56Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4666,13 +4661,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 73,
+      "closed": 74,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-12",
-      "next_action": "Bind clean producer provenance; replay C2/C5, then capture EPYC workloads and add gfx90a k228/k175 adapters",
-      "open": 16,
+      "next_action": "After r15, run governed 122B decode attribution and capture real EPYC C3/C5 workload evidence",
+      "open": 17,
       "state": "active",
       "track": "rocm verify profile backend"
     },
