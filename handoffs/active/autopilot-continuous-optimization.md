@@ -2026,9 +2026,19 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
   before its fix). *(Spot-verified by `mainC`: `aiohttp` and `sqlalchemy` both return ZERO pyproject
   declarations against a hard module-level import.)* A further ~14 are guarded with `try/except` and
   degrade explicitly — lower priority, listed in the subagent report. **UNOWNED**, reported not fixed.
-- [ ] **Unestablished and deliberately not tested:** whether `onnxruntime` is actually INSTALLED in
-  the live `.venv`. The prior fix's own note records `ModuleNotFoundError` at commit time and left the
-  install to the operator. Declaring a dependency and having it present are different facts.
+- [x] **Verified 2026-08-12 by `mainC`: `onnxruntime` IS installed and the capability WORKS.**
+  Live venv carries **1.26.0** (satisfies the declared `>=1.20.0`), the model artifacts are present
+  (six ONNX variants under `.../ms-marco-minilm-l6-v2-onnx/onnx/`), and
+  `cross_encoder.is_available()` returns **True**, selecting `model_int8.onnx`. The prior
+  `ModuleNotFoundError` note is STALE — it was installed after that commit. Nothing to install; no
+  environment mutation was made and `uv.lock` (dirty with another agent's work) was not touched.
+  **The three-fact distinction still stands and is worth keeping:** *declared*, *installed*, and
+  *capability available* are separate, and this module gates the third behind a model-directory
+  check as well as the import. Here all three hold.
+  *(Correction to my own first probe: I reported "model dir exists but contains no `.onnx` files",
+  which would have read as a second gap. Wrong — I used a NON-RECURSIVE `glob("*.onnx")` while
+  `_find_onnx()` uses `rglob`. My instrument's universe was narrower than the code's; caught by
+  reading `_find_onnx()` instead of trusting my own listing.)*
 
 - [ ] The ~77-test retired-topology failure bucket.
 - [ ] `MEASUREMENT.md:148-158` still states the durability checker "fails on any citation resolving
