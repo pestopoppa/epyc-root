@@ -2282,6 +2282,14 @@ can act on a waiver-bearing verdict.
 - [x] Implement versioned campaign/proposal/candidate/evaluation/champion/release-package schemas
   (§7), including claim grammar, anchor binding, `inconclusive`, `change_class`, controller provenance,
   expected information gain, determinism class, and co-residency. ✅ 2026-08-03 (schemas.py, 118 tests)
+- [x] **Journal prospective live evaluation events from the executed campaign evidence.** ✅ 2026-08-12 —
+  research `d96e8704` emits schema-valid v5 T0/T1 records before terminal STOP, binds raw paired
+  blocks and the Vidya write-side capture, and retains the exact executed recipe receipt. Window
+  closure now re-reads CPU/device claims, native open/close inference preflight receipts, host and
+  storage state, evaluator/runtime authority, and the exact per-tool (`llama-cli`/`llama-bench`)
+  anchor before release. Missing holder identity or anchor/evaluator/claim/host drift yields a durable
+  INVALID/refusal rather than an inferred PASS; append failure remains terminal without skipping
+  release or STOP. The final campaign/journal/evaluator/control/execution slice passed 1,231 tests.
 - [x] Implement typed research-prior, campaign-seed, constraint/negative, and legacy-import events
   (§19). ✅ 2026-08-10 — superseded by the operator-approved lean loop: proposal-v3, immutable
   proposal receipts, the prior-art catalogue, and the append-only result journal are the live record
