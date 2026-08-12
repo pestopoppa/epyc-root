@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T06:39:38Z",
+  "generated_at": "2026-08-12T06:45:42Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4108,7 +4108,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 41,
+      "closed": 42,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",

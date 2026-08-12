@@ -4,7 +4,7 @@
 **Next action (2026-08-12)**: run the governed, availability-conditioned 6/6 AgentKernelArena panel
 at matched 2h/8h/32h checkpoints; the full 8/8 panel continues to refuse on the unavailable exact
 EvoEngineer and ARGUS source releases.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-11 (gfx90a GEAK/Arena + LDS gates)
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (current-source six-arm readiness re-audit)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -327,6 +327,15 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     their exact implementation/source/license hashes; EvoEngineer and ARGUS remain explicitly
     unavailable rather than receiving namesake substitutes. This is static campaign authority only;
     no controller, model, or GPU command ran.
+  - [x] **Re-audit the available-source panel against the current integrated research source.** ✅
+    2026-08-12 — the static audit at research `5c8714a1` reports `status=ready`, **6/6** executable
+    arms, all four representative tasks ready, a physical `gfx90a` MI210 identity, and the fixed
+    elapsed-wall-time 2h/8h/32h budget. It preserves the separate 8-arm refusal for unavailable
+    EvoEngineer and ARGUS sources and grants no ranking or promotion authority. Receipt
+    `/mnt/raid0/llm/autokernel/probes/inf03-available-source-reaudit-20260812-r1/receipt.json` carries
+    self-hash `7c670931628b17a1491d7f25642681f2ee17d996848c0b09032518ad58e08d5a` and file SHA-256
+    `e86fbe4a4fb3f45d28d0a9ca7a62be97e021bdf710b5e2f4d7b2287644f0a623`. No controller,
+    inference, build, or GPU command ran.
   - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints when
     inference is authorized; interpret it only as an availability-conditioned diagnostic.
   - [ ] Obtain exact licensed source releases for EvoEngineer and ARGUS, then port their real
