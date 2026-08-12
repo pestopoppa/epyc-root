@@ -110,6 +110,9 @@ DEFAULT_NUDGE_SETTLE_S = 0.25
 SPAWN_SETTLE_S = 2.0
 # Bounded polls, so a slow redraw is a wait rather than a false refusal.
 _VERIFY_TIMEOUT_S = 2.0
+# C55: pause between the wake character and the action key. The composer needs a beat
+# to register the first keystroke; sending both in the same instant reproduces the bug.
+_WAKE_SETTLE_S = 1.0
 _VERIFY_POLL_S = 0.1
 # An accepting post-Enter observation must repeat before it is believed: a single
 # capture can land on a half-drawn repaint frame in which the composer has been
@@ -2578,7 +2581,26 @@ def _composer_action(args: argparse.Namespace, verb: str) -> int:
         print(f"would {verb} {args.agent} at {target}: {pending!r}")
         return 0
 
-    key = "C-u" if verb == "clear" else "Enter"        # NEVER C-c — see the C54 block
+    # C55: a Claude composer holding queued text ignores a BARE keystroke. Measured
+    # 2026-08-12 against live panes: `Enter`, `C-m`, `C-u` and `BSpace` each left the
+    # text exactly where it was, re-read and confirmed. Sending any ORDINARY CHARACTER
+    # first, and only then the key, submits — verified by emptying mainC's and mainD's
+    # composers, both of which resumed work immediately afterwards.
+    #
+    # So the wake character is not cosmetic; without it `submit` and `clear` cannot
+    # succeed at all. They failed HONESTLY before this (the post-action re-read caught
+    # it every time and never claimed success), which is why nothing was lost — but an
+    # operator was left pressing keys by hand for an hour because the tool could only
+    # report its own failure. NEVER C-c — see the C54 block.
+    #
+    # The wake character is a SPACE, which is inert for `submit` (it rides into the
+    # submitted text harmlessly) and for `clear` (C-u kills the whole line regardless).
+    key = "C-u" if verb == "clear" else "Enter"
+    rc, out = _tmux("send-keys", "-t", target, " ")
+    if rc != 0:
+        print(f"send-keys wake-character failed: {out}", file=sys.stderr)
+        return EX_MISCONFIG
+    time.sleep(_WAKE_SETTLE_S)
     rc, out = _tmux("send-keys", "-t", target, key)
     if rc != 0:
         print(f"send-keys {key} failed: {out}", file=sys.stderr)
