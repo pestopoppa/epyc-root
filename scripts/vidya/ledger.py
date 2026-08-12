@@ -29,13 +29,58 @@ from typing import Iterator
 
 from canonical import canonical_bytes, content_hash
 
-__all__ = ["Ledger", "LedgerRecord", "GENESIS_PREV_HASH", "LedgerIntegrityError"]
+from datetime import datetime, timezone
+
+__all__ = [
+    "Ledger",
+    "LedgerRecord",
+    "GENESIS_PREV_HASH",
+    "LedgerIntegrityError",
+    "FrameStampError",
+    "MAX_FUTURE_SKEW_SECONDS",
+]
 
 GENESIS_PREV_HASH = "sha256:" + "0" * 64
+
+# SC17 (2026-08-12): append-time refusal of future-stamped frames. The fold stays a
+# pure function of (frames, policy, as_of) and `created_at` stays publication
+# metadata it never reads — but the LEDGER is already effectful, so the clock may
+# be read HERE. Without this guard a frame stamped in the future takes effect at
+# every earlier `as_of` (the 2026-08-10 incident: 895 future-stamped frames).
+# Skew allowance covers honest clock drift; day-scale mis-stamps are refused.
+MAX_FUTURE_SKEW_SECONDS = 300
 
 
 class LedgerIntegrityError(Exception):
     """The on-disk chain does not verify."""
+
+
+class FrameStampError(Exception):
+    """A frame's ``pubinfo.created_at`` is stamped in the future; append refused."""
+
+
+def _refuse_future_stamp(frame: dict) -> None:
+    """SC17 append-time guard. Refuse only a *parseable, future* stamp."""
+    created = None
+    pubinfo = frame.get("pubinfo")
+    if isinstance(pubinfo, dict):
+        created = pubinfo.get("created_at")
+    if not isinstance(created, str) or not created:
+        return
+    try:
+        stamp = datetime.fromisoformat(created.replace("Z", "+00:00"))
+    except ValueError:
+        return
+    if stamp.tzinfo is None:
+        stamp = stamp.replace(tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
+    if (stamp - now).total_seconds() > MAX_FUTURE_SKEW_SECONDS:
+        raise FrameStampError(
+            f"frame pubinfo.created_at is {created!r}, "
+            f"{(stamp - now).total_seconds():.0f}s in the future "
+            f"(allowed skew {MAX_FUTURE_SKEW_SECONDS}s); append refused - "
+            "a future-stamped frame would take effect at every earlier as_of (SC17)"
+        )
 
 
 @dataclass(frozen=True)
@@ -153,7 +198,15 @@ class Ledger:
     # -- writing ---------------------------------------------------------
 
     def append(self, frame: dict, *, frame_hash: str | None = None) -> LedgerRecord:
-        """Append one frame. Returns only after the bytes are fsynced."""
+        """Append one frame. Returns only after the bytes are fsynced.
+
+        Refuses a frame whose ``pubinfo.created_at`` is in the future beyond
+        ``MAX_FUTURE_SKEW_SECONDS`` (SC17). A missing or unparseable stamp is
+        tolerated here — stamp *presence* is frame-construction's contract
+        (``frames.py`` ``_REQUIRED_PUBINFO``), and internal maintenance frames
+        (torn-tail repair) legitimately carry none.
+        """
+        _refuse_future_stamp(frame)
         is_new = not self.path.exists()
         cached = self._valid_cached_head()
         if cached is not None:

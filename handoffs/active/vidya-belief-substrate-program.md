@@ -424,7 +424,7 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       the live instance. The conservative reading may still be right (an entry-level overturn is
       evidence about the entry), but it was inherited, never chosen. Decide it deliberately and
       write the reason into the docstring either way
-- [ ] SC17 **`fold` does not exclude frames dated after `as_of`.** A frame stamped in the future
+- [x] SC17 **`fold` does not exclude frames dated after `as_of`.** ✅ 2026-08-12 (`auditor`) — design chosen per the row's own recommendation + spec §fold-purity: `fold` stays pure (created_at remains publication metadata it never reads); the guard is an **append-time refusal** in `ledger.py` (`FrameStampError`, `MAX_FUTURE_SKEW_SECONDS=300`), tolerating absent/malformed stamps (frame-construction's contract; maintenance frames carry none) and past stamps (history untouched — the 895 incident frames are correction-queue territory, out of SC17 scope). 6 new tests both directions incl. yes-paths (`tests/vidya/test_ledger_future_stamp.py`); full vidya suite 371 green. A frame stamped in the future
       takes effect immediately at any earlier `as_of`, which is how 895 future-stamped frames from
       the 2026-08-10 date incident still fold in, and how a frame this session mis-stamped
       `2026-08-11` applied on 2026-08-10 before being re-stamped. Two defensible designs — ignore
