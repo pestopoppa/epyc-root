@@ -19,12 +19,24 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 > **Mutation-test the guard. Change the code so the property is genuinely violated, and confirm the
 > check FAILS. If you cannot make it fail, it is not a guard.**
 >
-> Then two follow-ups, because several faces survive that test: is the mutation **visible**
-> to the tool doing the looking, and is the check **counted** by the tool that reports pass/fail?
+> Then ask three follow-ups, because **five of the twelve faces survive mutation-testing** —
+> re-adjudicated 2026-08-12 against all twelve, rather than carried forward as a bumped number:
 >
-> Faces **11** and **12** survive mutation-testing *by construction* — there the check is genuinely
-> correct, and only the subsystem it models or the moment it was run is wrong. A guard you cannot
-> make fail is not a guard; a guard you *can* make fail is still not a guarantee.
+> - **Face 5** — the mutation is real but the *instrument cannot see it* (untracked probe vs
+>   `git grep`). *Is the mutation VISIBLE to the tool doing the looking?*
+> - **Face 7** — the check is correct, complete and passing but *not counted* by the reporter.
+>   *Does the tool that reports pass/fail actually COUNT this check?*
+> - **Face 9** — the mutation fires, but you asked the *wrong corpus* (root hashes against the
+>   orchestrator repo). *Does the query name its scope?*
+> - **Face 11** — the check is sound and models a *different subsystem* than the one that failed.
+>   *Does my metric model the thing that broke?*
+> - **Face 12** — the check was sound *when run*, and the world moved. *Is it still true, or only
+>   was-true?*
+>
+> Faces 1–4, 6, 8 and 10 are all caught by an honest mutation test. The five above are not, and they
+> divide cleanly: 5, 7 and 9 fail because the **instrument's reach** is wrong (visibility, counting,
+> scope); 11 and 12 because the check is **right about the wrong thing** (wrong subsystem, wrong
+> moment). Soundness is no defence against either pair.
 
 ---
 
