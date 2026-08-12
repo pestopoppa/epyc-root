@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T03:11:28Z",
+  "generated_at": "2026-08-12T03:49:44Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4106,13 +4106,13 @@
       "track": "agent collab rnd harness"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
-      "closed": 36,
+      "closed": 37,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
-      "last_advanced": "2026-08-11",
+      "last_advanced": "2026-08-12",
       "next_action": "Run the governed 6/6 diagnostic; keep the 8-arm panel refused pending licensed EvoEngineer and ARGUS sources",
       "open": 6,
       "state": "active",
@@ -4147,13 +4147,13 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 197,
+      "closed": 201,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-12",
       "next_action": "After a compliant reboot, run full-host CPU IQK; then materialize and evaluate the matched archive",
-      "open": 23,
+      "open": 22,
       "state": "active",
       "track": "autokernel research loop"
     },
@@ -4615,13 +4615,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 65,
+      "closed": 67,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-12",
       "next_action": "Bind clean producer provenance; replay C2/C5, then capture EPYC workloads and add gfx90a k228/k175 adapters",
-      "open": 18,
+      "open": 17,
       "state": "active",
       "track": "rocm verify profile backend"
     },

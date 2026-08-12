@@ -4,7 +4,7 @@
       "blocked": 4,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 404
+      "open": 402
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -85,14 +85,14 @@
     },
     "agentic-rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 36,
+      "closed": 37,
       "guarded": 0,
-      "last_advanced": "2026-08-11",
+      "last_advanced": "2026-08-12",
       "open": 6,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 42
+      "total": 43
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 0,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 1,
-      "closed": 197,
+      "closed": 201,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 23,
+      "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 221
+      "total": 224
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
@@ -1482,14 +1482,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 65,
+      "closed": 67,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 18,
+      "open": 17,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 83
+      "total": 84
     },
     "routing-intelligence.md": {
       "blocked": 0,

@@ -67,6 +67,12 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
 - [ ] **Harden the remaining producer-dependent C2 oracle surfaces.** C2-7/C2-8/C2-9 reducers and
   runners are durable, but their sensitivity/hostile/checker-isolation evidence waits on OP-11's
   experimental producer identity.
+  - [x] **Bind the three reducer outputs into verdict-bearing source-candidate T0 authority.** ✅
+    2026-08-12 — research `d8013a6c` requires measured, hash-bound sensitivity,
+    hostile-distribution, and checker-isolation evidence tied to the exact candidate source,
+    evaluator bundle, suite version, producer, and evidence object. Missing or dry-run evidence and
+    source/evaluator drift yield `COULD_NOT_CHECK`; parameter candidates cannot smuggle these source
+    prerequisites. This completes the consumer authority, not OP-11's producer identity or replay.
 - [x] **Build C6 reward integrity.** ✅ 2026-08-11 — immutable external scoring, exploit detectors,
   unseen/hostile shapes, stream/thread escape checks, planted red-team corpus, prompt disclosure,
   output-invariance, and ranked anti-short-circuit cases are implemented and tested.
@@ -115,8 +121,12 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
   `rocprof` v1 fallback produced whole-model Qwen3.6 GDN attribution at 2K/8K/32K. Model-facing
   similarity/catalogue output remains diagnostic-only. IQ2_XXS's seeded Omniperf replay is tracked
   separately by INF-37/OP-11 and does not reopen the C4 implementation.
-- [ ] **EPYC-op suite integration.** Seed the backend suites with the selected EPYC ops and honest
-  vendor baselines. The matched controller A/B is owned only by INF-03; do not duplicate it here.
+- [x] **EPYC-op suite integration.** ✅ 2026-08-12 — research `d8013a6c` binds the exact selected
+  `k228` attention and `k175` MoE cases to their hash-pinned C5 references and Torch-ROCm-compile
+  floor, and the EPYC-native Q4_K dequant case to the exact operator-ratified frozen-v9 branch,
+  commit, reported version, binary/linkage digests, and attestation. Eager or candidate-relative
+  baselines, incomplete case sets, and identity drift fail closed. The matched controller A/B and
+  real EPYC capture remain owned only by INF-03; this checkbox makes no empirical completion claim.
 - [ ] **HIP arm (after the Triton loop works).** GEAK-HIP patterns (678) + AgentKernelArena Torch2HIP suite (679) + our own HIP oracle, toward hand-HIP for the llama.cpp fork.
 
 ## Interface contract (the seam controllers depend on)

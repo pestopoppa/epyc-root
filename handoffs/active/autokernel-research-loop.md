@@ -31,6 +31,31 @@ but live preflight correctly refused before claim, build, or benchmark because h
 `13.47 days`, beyond the ratified one-week ceiling. After a compliant reboot, run the full-host CPU
 IQK proposal, materialize the real matched archive, then run the least-commitment evaluation
 observe-only.
+Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
+The live campaign consumes an immutable content-addressed source patch before claim acquisition,
+applies it only through the guarded worktree boundary, and records the exact clean source/build,
+ancestry, affected surface, composition evidence, and executed evaluation-event identities while
+the claim and tree are still held. A separate lean sequencer derives validated banked/frontier
+candidates, requests direct combined-candidate T0/T1/T2 evidence, maintains an exact-anchor champion,
+and handles idempotent replay plus anchor reanchoring without importing campaign execution, release,
+or production-write capabilities. The merge-commit package suite passed **4,530 tests** with one
+expected failure and **2,039 subtests**. These are implementation and regression results only: no
+real proposal was banked and no empirical champion was created.
+Research `99fe3014` also restores the separate operator-triggered readiness/T3/package plane without
+putting it on the campaign import path. Its release-local preflight is a pure three-way reducer over
+caller-supplied receipts; T3 and the packager have no source mutation, process execution, production
+write, or self-trigger capability. Real release mode continues to refuse the unratified
+`P-KERNEL-FREEZE-1` protocol, while dry-run fixtures preserve the v8/speech waiver, linkage,
+rollback, and transaction-calibration behavior. The final merged release-plus-Arena slice passed
+**1,267 tests** with **849 subtests**; no T3 campaign or release action ran.
+Research `d8013a6c` tightens the ROCm correctness boundary used by source-changing campaigns. The
+EPYC Q4_K dequant case now requires the exact operator-ratified frozen-v9 branch, commit, reported
+version, binary digest, linkage digest, and attestation rather than trusting a provider label.
+Separately, sensitivity, hostile-distribution, and checker-isolation reducer outputs enter T0 only
+through measured, hash-bound bindings to the exact candidate source and evaluator bundle; absence,
+dry-run capture, or identity drift is verdict-bearing `COULD_NOT_CHECK`. The exact-main C3,
+correctness, and execution slice passed **444 tests with 132 subtests**. This closes implementation
+authority only: no EPYC workload capture, candidate timing, whole-model exit, or inference ran.
 INF-37 has separately produced a third, one-file experimental candidate: a one-row-only IQ2_XXS
 VPOPCNT sign decoder measured at +5.733% for the target row with the former batched regression removed.
 Its commit and model-level confirmation are independently gated by OP-12; it does not expand OP-11.
@@ -2290,6 +2315,13 @@ can act on a waiver-bearing verdict.
   anchor before release. Missing holder identity or anchor/evaluator/claim/host drift yields a durable
   INVALID/refusal rather than an inferred PASS; append failure remains terminal without skipping
   release or STOP. The final campaign/journal/evaluator/control/execution slice passed 1,231 tests.
+- [x] **Bind source-changing proposals to an immutable source-to-candidate lifecycle.** ✅ 2026-08-12 —
+  research `069e79fd` loads the embedded content-addressed patch before preflight or claim, restricts
+  mutation to the guarded worktree API, verifies normalized paths plus content-derived hunk/symbol
+  identity, and emits one idempotent candidate record from the exact clean build snapshot, ancestry,
+  affected surface, composition evidence, release receipt, and cached evaluation-event ids. Parameter
+  proposals retain their distinct semantic bundle identity; source evidence is never reconstructed
+  after teardown.
 - [x] Implement typed research-prior, campaign-seed, constraint/negative, and legacy-import events
   (§19). ✅ 2026-08-10 — superseded by the operator-approved lean loop: proposal-v3, immutable
   proposal receipts, the prior-art catalogue, and the append-only result journal are the live record
@@ -2519,6 +2551,13 @@ evaluator or its own scope, and T1 may legally guide search.
   the oracle question. ✅ 2026-08-03 (controller/selection.py)
 - [x] Build store-guided next-experiment selection using information gain plus expected value. ✅ 2026-08-03 (incl. harvest/explore phases)
 - [x] Build champion composition and mandatory combined-candidate reevaluation. ✅ 2026-08-03 (controller/composition.py)
+- [x] **Restore the lean bank/frontier/champion sequencer on the runnable journal plane.** ✅
+  2026-08-12 — research `069e79fd` requires validated write-side banking, the complete sealed
+  backend/tool anchor, compatible file/symbol/dispatch predicates, and direct combined-candidate
+  T0/T1/T2 evidence before champion replacement. Concurrent replay is idempotent; rejected or failed
+  composition preserves the incumbent; anchor moves fail closed and reanchor only absorbs members
+  proven present by a matching sealed release receipt. Campaign, host-process, release, and production
+  mutation capabilities remain outside the sequencer import closure.
 - [x] Implement deterministic stop/plateau/budget/storage/integrity/evaluator-gap guards. ✅ 2026-08-03 (controller/guards.py; 13 stop states)
 - [x] Add planner regression fixtures proving it consults failures and does not repeat known negatives. ✅ 2026-08-03
 - [x] **Settle WHICH gate form this loop uses — the literature does not, and we should not inherit the
@@ -2612,6 +2651,12 @@ memory, and champion maintenance without human steering.
 - [x] Dry-run the T3 compiler/validator against preserved v8 and speech freeze artifacts; **expect the
   v8 dry-run to FAIL without its waiver** and treat that as calibration. ✅ 2026-08-03
 - [x] Add failed-gate replay/cooldown/idempotence behaviour. ✅ 2026-08-03
+- [x] **Restore the release/readiness evaluator as a separate operator-triggered plane after the lean
+  refactor.** ✅ 2026-08-12 — research `99fe3014` restores readiness, generic T3, and package
+  assembly behind pure receipt inputs and injected evaluator authority. Release-local preflight
+  enforces the ratified seven-day uptime ceiling and held-resource/storage checks without reading or
+  mutating the host. The plane cannot write production, spawn/signal a process, execute a drafted
+  command, or self-trigger; release mode refuses until `P-KERNEL-FREEZE-1` is human-ratified.
 
 **Exit:** a sealed fixture champion yields one reproducible PASS/FAIL/PASS_WITH_WAIVER bundle and
 cannot retrigger the expensive gate unchanged.
@@ -3066,13 +3111,15 @@ tree's ggml.
 - [x] Build the `whisper_stt` and `qwentts_tts` adapters on their own experimental trees. ✅ 2026-08-03
 - [x] Wire linkage verification through the research repo's `scripts/utils/verify_ggml_linkage.sh` for
   every candidate build and every T3 phase-2 check. ✅ 2026-08-03
-- [ ] Extend the release-plan compiler to the speech trees — note these two *are* independently
-  freezable, unlike CPU and GPU (§1.5). **UNBLOCKED 2026-08-03**: Annex S is ratified, so
-  `P-STT-1`/`P-TTS-1` are in force and `PHASES_BY_BACKEND` can now carry the speech phase
-  vocabulary honestly. It was withheld only because the compiler cannot grade a cell under an
-  unratified protocol; that reason is gone. Note the whole speech plane (`adapters/`) was deleted
-  on 2026-08-04 and lives at tag `autokernel-preserve-20260804` — restore from there rather than
-  rewriting, and only when a speech campaign is actually scheduled.
+- [x] **Extend the release-plan compiler to the independently freezable speech trees.** ✅
+  2026-08-12 — research `99fe3014` restores tested `whisper_stt.release_binding()` and
+  `qwentts_tts.release_binding()` adapters that return the generic compiler's `BackendBinding` with
+  exact source tree, stable path, phase vocabulary, Annex S prerequisites, tree-local ggml generation
+  and `LD_LIBRARY_PATH`, complexity ceiling, and canary requirement. The generic compiler accepts
+  single-backend speech targets without inheriting llama CPU/GPU union semantics; T3 consumes both
+  adapter readiness predicates, enforces the `production-speech-vN` branch family, and reconstructs
+  both independent trees from the preserved speech freeze. A focused exact-main adapter/plan/T3
+  audit passed **783 tests with 132 subtests**.
 - [x] `Annex S` ratified — `measurement/protocols/speech.md`, 86 KB, five annexes in
   `MEASUREMENT.md`. `P-STT-1/2/3`, `P-STT-REL-1`, `P-TTS-1/2/3`, `P-TTS-REL-1` are in force; the
   four verdict grammars carry no `attest <ref>`, reconciled with Annex K's own reasoning.
