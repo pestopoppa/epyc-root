@@ -170,9 +170,17 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
 - [x] **Established WHY the suite reads NULL** ✅ 2026-08-02 — **50 of 68 questions (74%) score a
       perfect 3 for both arms**; `general` is 100% saturated. It is a ceiling artifact, not model
       equivalence: published benchmarks separate the same pair on **8 of 8** axes.
-- [ ] **Retire or harden the saturated suites.** `general` (100% both-perfect), `thinking` (90%),
+- [x] **Retire or harden the saturated suites.** `general` (100% both-perfect), `thinking` (90%),
       `math` (89%) carry no discriminating information at this model tier and should not be used for
-      any keep/drop read.
+      any keep/drop read. ✅ 2026-08-12 (`auditor`) — RETIRED (not hardened), machine-readable and
+      fail-closed: research `benchmarks/prompts/v1/suite_retirements.json` (rates + 08-02 evidence,
+      tier ≥27B), consumed by `score_with_claude.py` (per-row stamp column, NON-DISCRIMINATING
+      banner, comparative total over live suites only, all-retired runs exit 3, missing/invalid
+      sidecar refuses to score at all) and `rebuild_summary.py` (cells stamped, totals exclude
+      retired suites, rebuild aborts without the sidecar). 12 new tests incl. 4 mutation checks
+      (sidecar deleted / entry deleted / either guard neutered — all fail loudly). Evidence:
+      epyc-root `artifacts/audit/saturated-suite-retirement-20260812.md`; runbook §8 updated.
+      Hardened-v3 design sketch (out of scope here) is in the audit report for the bench owner.
 - [x] **Strip per-question calibration examples from `rubric_system_prompt`.** ✅ 2026-08-12 (`auditor`) — stripped to generic level anchors (research `9501b353`, `score_with_claude.py`; dated comparability note in-module: absolute levels break at this boundary — pre-strip runs incl. the 08-02 head-to-head were scored WITH the priming; A-vs-B under one judge version unaffected. **Owner note: if absolute judge levels ever gate a decision, an eval-instrument era row should accompany this boundary** — flagged, not self-authored). It named specific
       `question_id`s with the score they got on other models (`math/t3_q2_combinatorics` as a
       score-1 exemplar, `coder/t1_q1_algorithm` as score-0), priming the judge on identity before it
