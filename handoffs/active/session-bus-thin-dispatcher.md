@@ -2462,9 +2462,27 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   picks over NINE distinct task rows, all nine from one file**
   (`handoffs/active/opendataloader-pipeline-integration.md`), the top six repeating 104–105 times
   each. **Fixing delivery does not fix selection** — a working courier now delivers wrong rows faster.
-  - [ ] **Establish whether the READY set is cached or re-derived per tick**, and re-anchor picks on
-    row identity rather than `file:line`. Anchor rot alone accounts for one of the six, and every
-    advisory row inherits whichever defect this is.
+  - [x] **Establish whether the READY set is cached or re-derived per tick** ✅ 2026-08-12 — `mainD`.
+    **CACHED, and nothing ever re-derived it.** Root cause is one line:
+    `session_bus_coordinator.py:1633` writes `"status": "READY"` as a literal in `intake_proposals`
+    and copies `spec_ref` beside it; `_eligible` then checked status, deps, gates, lane and load —
+    **all from the queue row** — and never opened `spec_ref`. The reference was carried into messages
+    at three call sites and dereferenced at none, so rot was *undetectable by construction*. Fixed at
+    `1fae78dc`: a positively CLOSED box refuses; rot and unreadable refs stay dispatchable and are
+    reported, because refusing real work on a bad pointer is the costlier error.
+    **The PROBE is the deliverable, and it caught a defect in its own fix.** Two consumer-level tests
+    assert the *dispatch decision* (`_eligible`), not the lookup helper — the first C50 tests
+    exercised `spec_ref_state` in isolation, which proves the helper and not the thing that decides
+    dispatch. The probe immediately dispatched a stale row while every helper test stayed green:
+    `spec_ref_state(..., repo_root=REPO_ROOT)` bound the root **at import**, so the consumer always
+    resolved against the real repo and the fix was inert anywhere else. Now late-bound.
+    Mutation-verified both ways — remove the dereference: 2 failed; revert the late binding: 2
+    failed; restored byte-identical. 310 pass.
+  - [ ] **Re-anchor picks on row identity rather than `file:line`** — NOT done, split out honestly.
+    The dereference now *detects* rot; it does not remove the dependency on line numbers. Six of
+    seven anchors checked pointed at a tree-diagram branch, a `###` heading or a prose bullet, and
+    the task_id's two halves disagree (`--013-` vs `L534`: box #13 is at line 59). Both were computed
+    at seed time from a file since rewritten and neither is re-derived.
 - [x] **Reporting-unit rule for any scheduler/backlog figure — write it into the shared
   constraints.** ✅ 2026-08-12 — landed as `## Reporting Units` in `agents/shared/OPERATING_CONSTRAINTS.md`, with the C50 origin and the N/M/K decomposition stated as binding form.** Derived from the C50 retraction: the "4,602 pending picks" headline counted
   **records, not work**. Standing form: *"N records resolving to M distinct rows, of which K were

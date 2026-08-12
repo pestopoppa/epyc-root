@@ -3694,3 +3694,69 @@ def test_anchor_rot_is_UNRESOLVED_not_closed_so_it_still_dispatches(tmp_path: Pa
     assert coordinator.spec_ref_state("h.md#L99", tmp_path)[0] == "unresolved"
     assert coordinator.spec_ref_state("missing.md#L1", tmp_path)[0] == "unresolved"
     assert coordinator.spec_ref_state("", tmp_path)[0] == "unresolved"
+
+
+# --- C50 PROBE: is this READY row still true? --------------------------------
+# The consumer of a READY row is `_eligible`, not `spec_ref_state`. My first C50
+# tests exercised the helper in isolation, which proves the helper and NOT the
+# thing that decides dispatch — verify the CONSUMER, not a consumer.
+
+def _c50_bed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """A real handoff file plus READY rows pointing into it. Returns (rows, args)."""
+    h = tmp_path / "handoffs" / "active"
+    h.mkdir(parents=True)
+    f = h / "reg.md"
+    f.write_text("# reg\n\nintro\n- [x] closed fourteen days ago\n- [ ] genuinely open\nprose\n",
+                 encoding="utf-8")
+    # GUARD THE FIXTURE: an empty or box-less bed would pass every assertion below.
+    body = f.read_text(encoding="utf-8").splitlines()
+    assert body[3].startswith("- [x]") and body[4].startswith("- [ ]"), "fixture lost its boxes"
+    monkeypatch.setattr(coordinator, "REPO_ROOT", tmp_path)
+    stale = {"task_id": "T-stale", "status": "READY", "lane": "none",
+             "spec_ref": "handoffs/active/reg.md#L4"}
+    live = {"task_id": "T-live", "status": "READY", "lane": "none",
+            "spec_ref": "handoffs/active/reg.md#L5"}
+    rot = {"task_id": "T-rot", "status": "READY", "lane": "none",
+           "spec_ref": "handoffs/active/reg.md#L6"}
+    latest = {r["task_id"]: r for r in (stale, live, rot)}
+    return (stale, live, rot), (latest, {"load_class": "idle"}, "")
+
+
+def test_C50_probe_the_consumer_refuses_a_READY_row_whose_box_is_closed(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The probe that would have caught the stuck picker.
+
+    Six dispatched picks, one dispatchable; four had been `- [x]` since 2026-07-29,
+    fourteen days before the daemon named them. The queue said READY and nothing
+    re-derived it. This asserts the DISPATCH DECISION, not the lookup helper.
+    """
+    (stale, live, rot), (latest, snap, tok) = _c50_bed(tmp_path, monkeypatch)
+
+    ok, why = coordinator._eligible(stale, latest, snap, tok)
+    assert ok is False, "a READY row over a CLOSED box must not dispatch"
+    # Assert it DEREFERENCED — the reason must name the resolved file:line, not just
+    # say no. A refusal for an unrelated reason would pass a bare `ok is False`.
+    assert "CLOSED" in why and "reg.md:4" in why, why
+
+    ok_live, why_live = coordinator._eligible(live, latest, snap, tok)
+    assert ok_live is True, f"an open box must still dispatch — got {why_live!r}"
+
+    ok_rot, why_rot = coordinator._eligible(rot, latest, snap, tok)
+    assert ok_rot is True, f"anchor rot must FAIL TOWARD dispatchable — got {why_rot!r}"
+
+
+def test_C50_probe_fails_if_the_dereference_is_removed(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Regression sentinel, mutation codified rather than run by hand.
+
+    Simulates the pre-1fae78dc world by making the resolver claim every box is open.
+    If `_eligible` still refuses the stale row afterwards, it is refusing for some
+    other reason and this probe is not testing what it claims to.
+    """
+    (stale, _live, _rot), (latest, snap, tok) = _c50_bed(tmp_path, monkeypatch)
+    assert coordinator._eligible(stale, latest, snap, tok)[0] is False
+
+    monkeypatch.setattr(coordinator, "spec_ref_state", lambda *a, **k: ("open", "stubbed"))
+    ok, _ = coordinator._eligible(stale, latest, snap, tok)
+    assert ok is True, ("with the dereference stubbed out the stale row dispatches again — "
+                        "if it does not, the refusal above came from somewhere else")
