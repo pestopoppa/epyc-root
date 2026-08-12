@@ -268,6 +268,15 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     65). Reading is the only route, and its rate is now measured. Stop looking for a shortcut.
   - [ ] **REMAINS OPEN:** read-certify the remaining ~918. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
+    - [x] **Tranche 6 — 8 smaller bench-feeding handoffs, complete: 48 of 48 rows certified ✅ 2026-08-12 (`auditor`, overnight)**
+      (vidya 12, UTM 10, tri-role 7, within-role-placement 6, triattention 4, tool-output-compression 4,
+      attention-matching 4, laguna-s21 1). **20 LIVE / 8 DEAD / 19 GATED / 1 REWRITE** after main-thread
+      adjudication AMENDED one certifier verdict (WP-8 zero-callers claim refuted: eval_tower.py:1694 calls
+      the helper). Evidence: `artifacts/audit/read-certification-tranche6-20260812.md`. HEADLINE: the
+      Attention-Matching Track-2 native integration is claimed-deployed-but-DROPPED (Gate-3-PASSED prose vs
+      not-ancestor commits + explicit v6 removal comment) with the re-port-or-decline decision owned by
+      NOBODY; SC12 write-side hook window was MISSED at the v9 freeze (receipt carries zero claim wiring).
+      Cumulative T4-T6: 376 rows, ~41% of backlog, blended 25% dead.
     - [x] **Tranche 5 — the next 4 bench-feeding handoffs, complete: 97 of 97 rows certified ✅ 2026-08-12 (`auditor`, overnight)**
       (`multimodal-pipeline` 22, `canonical-judge-suite-revamp` 24, `eval-tower-verification` 27,
       `architect-model-selection-bench` 24). **50 LIVE (52%) / 9 DEAD (9%) / 36 GATED / 2 REWRITE** — full
