@@ -588,3 +588,64 @@ already exists, already emits `retro_cert_candidate` / `rerun_required`, and alr
 the two certifiable artifacts. It was never pointed at the window, and its field-3 check is
 currently vacuous. Fix it (§7 item 8), run it across the set, and the next retro-certification is a
 command instead of a document.
+
+---
+
+## Addendum — 2026-08-12: §7 item 8 applied, and the window swept with the fixed verifier
+
+**Additive record. No finding above is amended or withdrawn.**
+
+`epyc-inference-research/scripts/benchmark/pgpu1_artifact_completeness_audit.py` was fixed as
+proposed in §7 item 8, and then run across the enumerated set.
+
+**What changed in the verifier**
+
+- `binary_model_identity` (field 3) is now a **conjunction** of four independently-matched
+  sub-fields — `ld_library_path_value`, `backend_device_list`, `binary_path`, `kernel_commit` —
+  reported individually as `field_results.binary_model_identity.subfields`. The any-one-of pattern
+  list that produced §3.2a-bis is gone, and `llama\.cpp-experimental` is no longer a *positive*
+  identity pattern.
+- Those sub-fields are matched only against **recorded run metadata** (JSON/YAML receipts and
+  recorded command transcripts), never against harness source. Two independent defences now apply:
+  source files are out of scope, **and** each sub-pattern demands a value rather than a mention.
+  `backend_device_list` likewise requires enumeration *output* — a hand-written
+  `"host_gpu": "… MI210 gfx90a"` string no longer counts.
+- **Kernel provenance is a disqualifier, not a downgrade.** A binary resolving from a
+  non-production kernel tree (`llama.cpp-<suffix>/build…`) yields
+  `recommendation: retro_cert_disqualified`, `retro_cert_eligible: false`, and a
+  `disqualifications[]` record naming the tree and citing
+  `measurement/protocols/gpu-cross-device.md:16-21,49-53`. The disqualifier deliberately does **not**
+  fire on a bare mention of the tree: §3.2's cert run banks
+  `git -C /mnt/raid0/llm/llama.cpp-experimental rev-parse HEAD` as a guard-hygiene side probe while
+  measuring a production binary, and treating that as provenance would falsely refuse the artifact
+  the v9 promotion attestation rests on. A collected regression test pins that distinction.
+
+**Sweep result — no artifact-level classification in §3 changes.**
+
+| §3 row | Artifact | §3 class | Verifier verdict (fixed) | field 3 before → after |
+|---|---|---|---|---|
+| 1 | `gpu_coresidency_20260731` | OBSERVATION-GRADE | `incomplete` / **`retro_cert_disqualified`** | `present` → `missing` (all four sub-fields absent) |
+| 2 | `vision_mmmu_cutover_20260731` | OBSERVATION-GRADE | `incomplete` / **`retro_cert_disqualified`** | `present` → `missing` (all four absent) |
+| 3 | `vision_quality_42q_20260731` | OBSERVATION-GRADE | `incomplete` / **`retro_cert_disqualified`** | `present` → `missing` (all four absent) |
+| 4 | `vision_kv_q8_ab_20260802` | OBSERVATION-GRADE | `incomplete` / `rerun_required` | `present` → `missing` (`ld_library_path_value`, `backend_device_list`) |
+| 9 | `judge_suite_headtohead_20260802` | OBSERVATION-GRADE | `incomplete` / `rerun_required` | `present` → `missing` (`ld_library_path_value`, `backend_device_list`, `binary_path`) |
+| 10 | `kernel-v9-candidate/…/production-v9-gpu-cert-run-locked` | **CERTIFIABLE** | `complete` / `retro_cert_candidate` | `present` → `present` |
+| 11 | `gpu-mi210/…/run-20260811T010339Z` | **CERTIFIABLE** | `complete` / `retro_cert_candidate` | `present` → `present` |
+
+The per-artifact verdicts are unchanged; what changed is that the machine now reaches them **for the
+right reason**. Field 3 flipped `present` → `missing` on five artifacts, and the flip reproduces
+§3's hand-audited `LD_LIB` / backend-list / binary-path / commit columns exactly — including row 4's
+`✓` commit (`_meta.props.build_info`) and row 9's `✓` commit (`live_shape.json`), both of which the
+verifier still finds. Rows 10 and 11 remain complete and eligible, so §3.2/§3.2a and the C4 verdict
+stand, and row 11's checked-in `completeness_audit.json` remains accurate under the new rules.
+
+§3.2a-bis's "no wrong conclusion resulted here" therefore survives the re-run: the exposure it named
+was hypothetical, and it is now closed.
+
+**Mutation evidence.** `scripts/benchmark/test_pgpu1_artifact_completeness_audit.py` (collected by
+`pytest scripts/benchmark`, 11 tests) fails when the fix is re-broken: restoring the old any-of
+pattern list fails 5 tests; removing the run-metadata scoping fails
+`test_field3_rejects_value_shaped_text_that_lives_in_source_not_metadata`; neutering the provenance
+disqualifier fails 2 tests.
+
+Item 8 of §7 is therefore closed. Items 1-7 remain as proposed, unapplied.
