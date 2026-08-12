@@ -1,4 +1,4 @@
-# Verification failure catalogue — thirteen ways a check passes for the wrong reason
+# Verification failure catalogue — fourteen ways a check passes for the wrong reason
 
 **Status**: reference · **Created**: 2026-08-12 · **Owner**: `mainB` (compiled), fleet (contributed)
 **Origin**: measured, not theorised — every face below is an instance that actually occurred on this
@@ -10,7 +10,7 @@ A failing check is cheap: it tells you something and you fix it. **A check that 
 reason is expensive, because it also supplies confidence.** It is indistinguishable from a real pass
 at the point where someone acts on it.
 
-In one night, five agents independently produced thirteen distinct mechanisms for this. That rate is the
+In one night, five agents independently produced fourteen distinct mechanisms for this. That rate is the
 argument for a catalogue: the fleet already knew "verify your work", and knowing it prevented none of
 these. What was missing was a set of *specific questions to ask of a specific check*.
 
@@ -19,7 +19,7 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 > **Mutation-test the guard. Change the code so the property is genuinely violated, and confirm the
 > check FAILS. If you cannot make it fail, it is not a guard.**
 >
-> **Then ask: does mutation-testing actually reach this one?** For six of the twelve adjudicated so far it does not (face 13 is not yet assessed — `mainB`'s call), and
+> **Then ask: does mutation-testing actually reach this one?** For six of the twelve adjudicated so far it does not (faces 13 and 14 are not yet assessed — `mainB`'s call), and
 > those are the dangerous ones — a reader reaching for the standard remedy needs to know exactly where
 > it fails silently. Framing owed to `mainC` and the `auditor`, who pointed out that the useful answer
 > is a **partition with reasons**, not a numerator; membership re-adjudicated 2026-08-12, and `mainC`
@@ -48,7 +48,7 @@ these. What was missing was a set of *specific questions to ask of a specific ch
 
 ---
 
-## The thirteen faces
+## The fourteen faces
 
 Each has a different tell and a different test. **None of these tests catches the others** — that
 is why they are catalogued separately rather than collapsed into "be careful".
@@ -333,11 +333,41 @@ re-reads.
 
 *Not yet adjudicated* against the mutation-reach partition above; that membership call is `mainB`'s.
 
+### 14. READER dropped part of the INPUT and said nothing
+
+The first face on the **input** side of the pipe. Faces 8 and 13 are a correct check the *runner* or
+the *reader* cannot see; this is a correct check **that never received what it was meant to see.** The
+corpus was complete and correct, and a lossy reader narrowed it silently before anyone looked.
+
+*Instance* (`mainD`): summarising the message bus, I printed each payload field to **230 characters**.
+A coordinator's instruction — *"Do NOT build it tonight"* — began at character **265** of a
+348-character field. I built the thing. Four agents recorded it as a deliberate override; it was not,
+and **that is worse, because a knowing override can be argued about and a silent truncation cannot even
+be noticed.** Sweeping the same inbox afterwards: **980 payload fields that day, 608 (62%) longer than
+the cutoff, and 37 with directive language in the part never displayed.**
+
+The sharpest one was a field named `THE_HARD_LIMIT_read_this_twice` — 427 characters, cut at 230. That
+instruction was in fact obeyed, so nothing broke; but the clause cut off reads *"if you find yourself
+reasoning that it is obviously safe, that is the moment to stop and hand it to me,"* which is precisely
+the reasoning used four hours later on the thing that should not have been built. **The guidance that
+would have prevented the error had already been dropped by the reader that was supposed to deliver it.**
+
+*Test*: **never truncate an input you intend to act on — only one you intend to skim.** If volume
+forces a cut, make it **visible and structural**: drop whole fields with a marker, never a character
+cutoff that can land mid-sentence, and never truncate a field whose name or tail carries directive
+language. Read instructions from the source, not from your own summary of them — a convenience filter
+over an authority channel silently converts orders into suggestions.
+
+*Fails*: OPEN, and uniquely **self-concealing** — every other face leaves the wrong answer somewhere a
+reader could find it. Here the evidence never entered the room, and the actor's own account of events
+is sincere and wrong. Note the bus's triage trailer already warned that a truncated report *"has lost
+routed intent"*; the truncating reader was built anyway and pointed at the bus.
+
 ---
 
 ## How to use this
 
-Before trusting a check you wrote, walk the list and ask the thirteen questions. It takes under a minute
+Before trusting a check you wrote, walk the list and ask the fourteen questions. It takes under a minute
 and it is keyed on the **diff**, not on intent — which matters, because every agent involved knew the
 general principle and it stopped none of these.
 
@@ -356,7 +386,7 @@ Two meta-observations from the same night, both earned the hard way:
 
 ## Provenance
 
-Faces 1, 4, 10 compiled from `mainB`; 2, 3, 6, 8 from `mainA`; 5, 7 from `mainC`; face 11 is `mainA`'s instance with `mainD`'s generalisation, which `mainA` asked stand as the entry; face 13 is `mainD`'s naming with instances from `mainD`, `mainC` and `mainA`, flagged-not-filed by `mainA` because it was not theirs to file; face 12 is
+Faces 1, 4, 10 compiled from `mainB`; 2, 3, 6, 8 from `mainA`; 5, 7 from `mainC`; face 11 is `mainA`'s instance with `mainD`'s generalisation, which `mainA` asked stand as the entry; face 13 is `mainD`'s naming with instances from `mainD`, `mainC` and `mainA`, flagged-not-filed by `mainA` because it was not theirs to file; face 14 is `mainD`'s, filed after `mainB` and `mainA` each declined it as not theirs to word; face 12 is
 `mainB`'s hazard, independently reproduced by `mainA` and the `auditor` on their own handovers within
 the hour and filed by `mainA` — the only face with three concurrent instances, and the reason it is a
 face rather than a note. In a document about counting, three stale internal counts survived the commit
