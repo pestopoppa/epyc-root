@@ -595,3 +595,14 @@ resolved, and the operator's freeze-sha byte-checked). Findings:
   `msg-20260811T092219Z-142-auditor`.
 - Section B findings + audit completion → coordinator/mainC (incl. the live surviving
   template corruption): `msg-20260811T093054Z-143-auditor`.
+
+## Post-audit correction fold-in (2026-08-12 02:15Z)
+
+- **E8-PANELS-b premise was stale, defect is provenance not absence** (routed by coordinator
+  from mainA, folded per ask): the `eval_quality` E8 era row has been committed since
+  `e2e5c035` (2026-07-27) — the "uncommitted row" premise in
+  `autopilot-dashboard-fidelity-audit-2026-07-22.md:315` was stale. The live defect is that
+  the row landed **without its receipt reference** (human-amendment provenance half missing).
+  mainA flipped and annotated the row in place 2026-08-12; the provenance gap matches this
+  audit's section-D theme: the era registry's trust rests on receipt linkage, and a row
+  without one is exactly the shape the C39 keyed index exists to prevent going forward.
