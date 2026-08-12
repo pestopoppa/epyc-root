@@ -289,6 +289,26 @@ function renderCurrentState(d){
         +(b.observed_sha256?' <code>'+esc(b.observed_sha256.slice(0,12))+'</code>':'')
         +(b.error?' <span class="fail">'+esc(b.error)+'</span>':'')+'</div>';
     });
+    // Stable links and tree-local linkage go in the SAME card, not a new one.
+    h+='<div class="detail">stable links '+esc((kset.stable_links_ok||0)+'/4')
+      +' · tree-local ggml linkage '+esc((kset.linkage_verified||0)+'/4')+'</div>';
+    (kset.stable_links||[]).forEach(function(l){
+      const ok=l.matches_expected&&l.binary_present;
+      h+='<div class="detail">link <code>'+esc(l.name||'—')+'</code> → '
+        +(l.target?'<code>'+esc(l.target)+'</code>':'<span class="fail">unresolved</span>')
+        +' · '+(ok?'<span class="ok">ok</span>':'<span class="fail">'+esc(l.error||'DRIFT')+'</span>')+'</div>';
+    });
+    (kset.linkage||[]).forEach(function(e){
+      const st=e.verified===true?'<span class="ok">own tree</span>'
+        :(e.verified===false?'<span class="fail">FOREIGN ggml</span>':'<span class="fail">unverifiable</span>');
+      h+='<div class="detail">linkage <code>'+esc(e.link||'—')+'</code> · '+esc((e.ggml_libs||[]).length)+' ggml libs · '+st
+        +((e.foreign||[]).length?' <span class="fail">'+esc(e.foreign.map(f=>f.lib+' → '+f.resolved).join('; '))+'</span>':'')+'</div>';
+    });
+    const amb=kset.ambient_library_path||{};
+    if(amb.clean===false){
+      h+='<div class="detail fail">⚠ LD_LIBRARY_PATH carries ggml: <code>'+esc((amb.ggml_bearing_entries||[]).join(', '))
+        +'</code> — consulted BEFORE each binary\u2019s RUNPATH</div>';
+    }
     (kset.alarms||[]).forEach(function(a){
       h+='<div class="detail fail">⚠ '+esc(a)+'</div>';
     });

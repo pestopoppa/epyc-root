@@ -175,3 +175,86 @@ def test_not_reported_sections_are_flagged_not_silently_empty() -> None:
     silent = {n for n, s in payload["sections"].items()
               if isinstance(s, dict) and s.get("status") == "not_reported"}
     assert silent <= unreported, f"not_reported sections missing from freshness: {silent - unreported}"
+
+
+# ---------------------------------------------------------------------------
+# Stable links and tree-local ggml linkage (KRD-AUDIT-20260812 follow-up).
+#
+# inference's acceptance finding was correct: c31fb482 proved three-tree/four-binary
+# identity but not the two facts that decide whether a launcher reaches the frozen
+# build AT ALL — the stable link it follows, and whether that binary's ggml comes
+# from its own tree. A byte-identical binary reached through a repointed link, or
+# loading another tree's ggml, is not intact in any sense a measurement can rely on.
+# ---------------------------------------------------------------------------
+
+def test_all_four_stable_links_are_projected_and_resolved() -> None:
+    """Verified on disk: the links are cpu/gpu/stt/tts, NOT inference-cpu/inference-gpu.
+
+    The follow-up brief used the `inference-*` spelling; that spelling exists nowhere
+    on this host. Projecting the brief's names rather than the disk's would have
+    rendered four permanently-absent links — a panel that is loud about nothing.
+    """
+    links = S._stable_link_projection()
+    assert {l["name"] for l in links} == {"cpu", "gpu", "stt", "tts"}
+    for link in links:
+        assert link["present"] and link["matches_expected"], link
+        assert link["binary_present"], f"{link['name']} resolves without its binary"
+
+
+def test_a_repointed_stable_link_is_loud(monkeypatch, tmp_path: Path) -> None:
+    """The failure a digest check cannot see: right binary, wrong path to it."""
+    bogus = dict(S.PRODUCTION_STABLE_LINKS)
+    bogus["stt"] = ("/mnt/raid0/llm/whisper.cpp/build/bin", "whisper-server")
+    monkeypatch.setattr(S, "PRODUCTION_STABLE_LINK_ROOT", tmp_path)  # links absent
+    links = S._stable_link_projection()
+    assert all(l["present"] is False for l in links)
+    assert all("absent or dangling" in (l["error"] or "") for l in links)
+    result = S.production_kernel_set()
+    assert result["intact"] is False
+    assert any("stable link" in a for a in result["alarms"])
+
+
+def test_every_binary_resolves_its_ggml_inside_its_own_tree() -> None:
+    """The live invariant. Includes the two llama binaries, whose ggml arrives one
+    hop away through libllama-server-impl.so — stopping at the direct NEEDED set
+    would report 'no ggml libraries' and call that a pass."""
+    for name, (directory, binary) in S.PRODUCTION_STABLE_LINKS.items():
+        root = next(a for a in ("/mnt/raid0/llm/llama.cpp", "/mnt/raid0/llm/whisper.cpp",
+                                "/mnt/raid0/llm/qwentts.cpp") if directory.startswith(a))
+        evidence = S._linkage_evidence(Path(directory) / binary, Path(root))
+        assert evidence["ggml_libs"], f"{name}: found no ggml family at all"
+        assert evidence["verified"] is True, f"{name}: {evidence.get('foreign')}"
+
+
+def test_foreign_tree_ggml_is_reported_as_foreign(tmp_path: Path) -> None:
+    """Mutation: verify against the WRONG tree root and the same libs become foreign."""
+    evidence = S._linkage_evidence(
+        Path("/mnt/raid0/llm/whisper.cpp/build/bin/whisper-server"), tmp_path)
+    assert evidence["ggml_libs"]
+    assert evidence["verified"] is False
+    assert evidence["foreign"], "libraries outside the expected tree must be listed"
+
+
+def test_a_ggml_bearing_LD_LIBRARY_PATH_is_loud(monkeypatch) -> None:
+    """INC-20260731: LD_LIBRARY_PATH is consulted BEFORE RUNPATH, so one ggml-bearing
+    entry defeats every tree-local guarantee the binaries carry."""
+    monkeypatch.setenv("LD_LIBRARY_PATH", "/mnt/raid0/llm/llama.cpp/build/bin")
+    ambient = S._ambient_foreign_ggml_dirs()
+    assert ambient["clean"] is False and ambient["ggml_bearing_entries"]
+    assert S.production_kernel_set()["intact"] is False
+
+
+def test_a_clean_environment_reports_clean(monkeypatch) -> None:
+    """The compliant path — this must not be a check that can only ever fail."""
+    monkeypatch.setenv("LD_LIBRARY_PATH", "/opt/rocm/lib")
+    assert S._ambient_foreign_ggml_dirs()["clean"] is True
+
+
+def test_linkage_is_read_WITHOUT_executing_the_binary() -> None:
+    """The brief forbids executing the production binary, so the method is recorded
+    on the wire: readelf, not ldd. The weaker coverage is stated, not hidden."""
+    evidence = S._linkage_evidence(
+        Path("/mnt/raid0/llm/qwentts.cpp/build/tts-server"),
+        Path("/mnt/raid0/llm/qwentts.cpp"))
+    assert "readelf" in evidence["method"] and "non-executing" in evidence["method"]
+    assert "dlopen" in evidence["method"]

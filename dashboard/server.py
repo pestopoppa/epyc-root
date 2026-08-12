@@ -189,6 +189,21 @@ PRODUCTION_LLAMA_BINARIES = {
 #: Guard against hashing something pathological on a request path. The real binaries
 #: are 20 KB–1.7 MB and hash in ~4 ms; anything far larger is not what we think it is.
 _MAX_HASHED_BINARY_BYTES = 512 * 1024 * 1024
+#: Stable production links the runbook points launchers at, so a launcher never names
+#: a build directory directly. Verified on disk 2026-08-12: these are `cpu`/`gpu`/
+#: `stt`/`tts` — NOT the `inference-cpu`/`inference-gpu` spelling the follow-up brief
+#: used, which exists nowhere on this host.
+PRODUCTION_STABLE_LINK_ROOT = Path(os.environ.get(
+    "PRODUCTION_STABLE_LINK_ROOT", "/mnt/raid0/llm/kernels/production"))
+#: link name -> (expected resolved directory, binary that must live inside it)
+PRODUCTION_STABLE_LINKS = {
+    "cpu": ("/mnt/raid0/llm/llama.cpp/build/bin", "llama-server"),
+    "gpu": ("/mnt/raid0/llm/llama.cpp/build-hip/bin", "llama-server"),
+    "stt": ("/mnt/raid0/llm/whisper.cpp/build/bin", "whisper-server"),
+    "tts": ("/mnt/raid0/llm/qwentts.cpp/build", "tts-server"),
+}
+#: The library families whose tree of origin decides whether a measurement is real.
+_GGML_FAMILY = ("libggml", "libwhisper", "libllama", "libmtmd")
 
 # Freshness thresholds are DECLARED IN THE REGISTRY (dashboard/panels.py) and
 # read back here, so the numbers on the wire and the numbers in the panel→producer
@@ -1511,6 +1526,147 @@ def _speech_kernel_summary(attestation_path: Path | None = None) -> dict:
             "evidence": str(attestation_path), "error": None, "kernels": kernels}
 
 
+def _elf_dynamic(path: Path) -> tuple:
+    """``(needed, runpath_entries, error)`` from the ELF dynamic section.
+
+    READ-ONLY AND NON-EXECUTING, deliberately. The research contract
+    (`verify_ggml_linkage.sh`) uses `ldd`, which invokes the dynamic loader; the
+    follow-up brief forbids executing the production binary, so this parses
+    `readelf -d` instead. Strictly weaker than `ldd` — it cannot see dlopened
+    backends — and that limit is reported rather than hidden.
+    """
+    try:
+        proc = subprocess.run(["readelf", "-d", str(path)],
+                              capture_output=True, text=True, timeout=10.0, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return [], [], f"readelf unavailable: {exc}"
+    if proc.returncode != 0:
+        return [], [], (proc.stderr.strip() or f"readelf exited {proc.returncode}")
+    needed, runpath = [], []
+    for line in proc.stdout.splitlines():
+        if "(NEEDED)" in line and "[" in line:
+            needed.append(line.split("[", 1)[1].rstrip("]").strip())
+        elif ("(RUNPATH)" in line or "(RPATH)" in line) and "[" in line:
+            raw = line.split("[", 1)[1].rstrip("]").strip()
+            runpath.extend([e for e in raw.split(":") if e])
+    return needed, runpath, None
+
+
+def _ambient_foreign_ggml_dirs() -> dict:
+    """Entries on the SERVER PROCESS's ``LD_LIBRARY_PATH`` that carry a libggml.
+
+    WHY THIS IS THE FIRST THING CHECKED. `LD_LIBRARY_PATH` is consulted BEFORE a
+    binary's own `DT_RUNPATH`, so a single ggml-bearing directory on it overrides
+    every tree-local guarantee the binaries carry. That is not hypothetical:
+    INC-20260731-ggml-linkage-silent-cpu-fallback is exactly this — a HIP-built
+    whisper-cli loaded the production CPU-only ggml, found no GPU, and ran full-CPU
+    while printing `use gpu = 1`. The run completes, the output is well-formed, and
+    only the throughput is quietly wrong.
+
+    SCOPE, STATED because it is easy to overclaim: this observes the environment of
+    the DASHBOARD PROCESS, not of any launcher. A clean reading here does not prove a
+    launcher is clean, and a dirty reading does not prove a specific measurement was
+    contaminated — it proves the host handed THIS process a contaminated path, which
+    is evidence about the environment sessions inherit. The durable config
+    (`/etc/environment`, devcontainer) is the authority on whether the incident fix is
+    still applied; a stale shell can carry removed entries until it is restarted.
+    """
+    raw = os.environ.get("LD_LIBRARY_PATH", "")
+    entries, carriers = [e for e in raw.split(":") if e], []
+    for entry in entries:
+        try:
+            if any(f.name.startswith("libggml") for f in Path(entry).iterdir()):
+                carriers.append(entry)
+        except OSError:
+            continue
+    return {"ld_library_path": entries, "ggml_bearing_entries": carriers,
+            "clean": not carriers,
+            "note": ("observed for the DASHBOARD PROCESS only — this is evidence about "
+                     "the environment sessions inherit, not proof about any launcher")}
+
+
+def _linkage_evidence(binary: Path, tree_root: Path) -> dict:
+    """Does this binary's ggml family resolve inside its OWN tree?"""
+    needed, runpath, error = _elf_dynamic(binary)
+    if error:
+        return {"binary": str(binary), "tree_root": str(tree_root), "error": error,
+                "verified": None, "runpath": [], "ggml_libs": []}
+    origin = binary.parent
+    resolved_runpath = [str(origin) if e == "$ORIGIN" else e.replace("$ORIGIN", str(origin))
+                        for e in runpath]
+    # One transitive hop: llama-server NEEDs only its impl .so, and the ggml family
+    # arrives through that. Stopping at the direct NEEDED set would report "no ggml
+    # libraries" for the two llama binaries — an absence that is an artifact of where
+    # we stopped looking, not a property of the binary.
+    frontier = list(needed)
+    for name in list(needed):
+        if name.startswith("libllama-server-impl"):
+            child = origin / name
+            if child.exists():
+                more, _, child_err = _elf_dynamic(child)
+                if not child_err:
+                    frontier.extend(more)
+    libs, foreign, unresolved = [], [], []
+    for name in sorted(set(frontier)):
+        if not name.startswith(_GGML_FAMILY):
+            continue
+        where = None
+        for candidate_dir in resolved_runpath or [str(origin)]:
+            if (Path(candidate_dir) / name).exists():
+                where = str(Path(candidate_dir) / name)
+                break
+        inside = bool(where) and Path(where).resolve().is_relative_to(tree_root.resolve())
+        if where is None:
+            unresolved.append(name)
+        elif not inside:
+            foreign.append({"lib": name, "resolved": where})
+        libs.append({"lib": name, "resolved": where, "inside_tree": inside if where else None})
+    verified = (not foreign and not unresolved and bool(libs))
+    return {
+        "binary": str(binary), "tree_root": str(tree_root),
+        "runpath": resolved_runpath, "ggml_libs": libs,
+        "foreign": foreign, "unresolved": unresolved,
+        "verified": verified if libs else None,
+        "error": (None if libs else
+                  "no ggml-family library found in the ELF dynamic section — linkage "
+                  "unverifiable from a static read (backends may be dlopened)"),
+        "method": "readelf -d (non-executing); weaker than ldd — cannot see dlopened backends",
+    }
+
+
+def _stable_link_projection() -> list:
+    """The four stable production links, and what they actually resolve to."""
+    out = []
+    for name, (expected_dir, binary_name) in PRODUCTION_STABLE_LINKS.items():
+        link = PRODUCTION_STABLE_LINK_ROOT / name
+        entry = {"name": name, "link": str(link), "expected_target": expected_dir,
+                 "binary_name": binary_name}
+        try:
+            is_link = link.is_symlink()
+            target = str(link.resolve()) if link.exists() else None
+        except OSError as exc:
+            entry.update({"present": False, "is_symlink": False, "target": None,
+                          "matches_expected": None, "binary_present": None,
+                          "error": f"unreadable: {exc}"})
+            out.append(entry)
+            continue
+        matches = (target == expected_dir) if target else None
+        binary_present = bool(target) and (Path(target) / binary_name).is_file()
+        error = None
+        if target is None:
+            error = ("stable link absent or dangling — launchers that follow the "
+                     "runbook would resolve nothing")
+        elif not matches:
+            error = f"stable link repointed: resolves to {target}, expected {expected_dir}"
+        elif not binary_present:
+            error = f"stable link resolves, but {binary_name} is not inside its target"
+        entry.update({"present": target is not None, "is_symlink": is_link,
+                      "target": target, "matches_expected": matches,
+                      "binary_present": binary_present, "error": error})
+        out.append(entry)
+    return out
+
+
 def production_kernel_set(attestation_path: Path | None = None,
                           production_repo: Path | None = None,
                           speech_attestation_path: Path | None = None) -> dict:
@@ -1573,6 +1729,45 @@ def production_kernel_set(attestation_path: Path | None = None,
         elif not binary.get("present"):
             alarms.append(f"{binary['label']}: attested binary absent from disk")
 
+    # --- stable links + tree-local linkage (KRD-AUDIT-20260812 follow-up) ---
+    stable_links = _stable_link_projection()
+    for link in stable_links:
+        if link.get("error"):
+            alarms.append(f"stable link `{link['name']}`: {link['error']}")
+
+    ambient = _ambient_foreign_ggml_dirs()
+    if not ambient["clean"]:
+        alarms.append(
+            "LD_LIBRARY_PATH carries ggml-bearing directories "
+            f"({', '.join(ambient['ggml_bearing_entries'])}) — it is consulted BEFORE "
+            "each binary's RUNPATH, so a speech kernel launched from this environment "
+            "can silently load llama's ggml and run wrong while reporting success "
+            "(INC-20260731). Observed for the dashboard process; check the launcher.")
+
+    linkage = []
+    for name, (expected_dir, binary_name) in PRODUCTION_STABLE_LINKS.items():
+        tree_root = Path(expected_dir)
+        # The tree that owns the libraries: for llama both build dirs live under the
+        # one clone, so the ROOT is the tree, not the build dir.
+        for anchor in ("/mnt/raid0/llm/llama.cpp", "/mnt/raid0/llm/whisper.cpp",
+                       "/mnt/raid0/llm/qwentts.cpp"):
+            if expected_dir.startswith(anchor):
+                tree_root = Path(anchor)
+                break
+        evidence = _linkage_evidence(Path(expected_dir) / binary_name, tree_root)
+        evidence["link"] = name
+        linkage.append(evidence)
+        if evidence.get("foreign"):
+            alarms.append(f"{name}: ggml resolves OUTSIDE its own tree — "
+                          + ", ".join(f"{f['lib']} -> {f['resolved']}" for f in evidence["foreign"]))
+        elif evidence.get("verified") is None:
+            alarms.append(f"{name}: tree-local linkage UNVERIFIABLE "
+                          f"({evidence.get('error') or 'no evidence'})")
+
+    links_ok = sum(1 for l in stable_links
+                   if l.get("matches_expected") and l.get("binary_present"))
+    linkage_ok = sum(1 for e in linkage if e.get("verified") is True)
+
     proven = sum(1 for b in binaries if b.get("matches") is True)
     unverified = sum(1 for b in binaries if b.get("matches") is None)
     trees_proven = sum(1 for m in members if m.get("matches_attestation") is True)
@@ -1584,9 +1779,23 @@ def production_kernel_set(attestation_path: Path | None = None,
         "trees_matching": trees_proven,
         "binaries_proven": proven,
         "binaries_unverified": unverified,
+        "stable_links": stable_links,
+        "stable_links_ok": links_ok,
+        "linkage": linkage,
+        "linkage_verified": linkage_ok,
+        "ambient_library_path": ambient,
+        # PESSIMISTIC, and now over five independent facts rather than two: the
+        # attestations, the trees, the binary digests, the stable links launchers
+        # actually follow, and proof each binary's ggml comes from its own tree. A set
+        # that is byte-identical but reachable only through a repointed link, or whose
+        # libraries resolve into another tree, is not intact in any sense a measurement
+        # can rely on.
         "intact": (llama.get("available") is True and speech.get("available") is True
                    and trees_proven == len(members) == 3
-                   and proven == len(binaries) == 4),
+                   and proven == len(binaries) == 4
+                   and links_ok == len(stable_links) == 4
+                   and linkage_ok == len(linkage) == 4
+                   and ambient["clean"]),
         "alarms": alarms,
         "members": members,
         "binaries": binaries,
