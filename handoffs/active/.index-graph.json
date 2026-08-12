@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T07:29:32Z",
+  "generated_at": "2026-08-12T07:37:32Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4108,13 +4108,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 46,
+      "closed": 47,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
       "next_action": "Repair dotted-path containment and SIGTERM claim release; then restart the 6/6 diagnostic under a new campaign ID",
-      "open": 4,
+      "open": 3,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },

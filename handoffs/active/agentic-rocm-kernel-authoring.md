@@ -342,12 +342,18 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     work, and rejects partial, tampered, in-flight, or claim-leaking state. Focused campaign tests
     passed **139/139**. Resume does not make partial results rankable; the terminal aggregate remains
     the only campaign result.
-  - [ ] **Repair Arena workspace containment and guaranteed device-claim release before restarting
-    INF-03.** The invalid r1 attempt exposed a dotted-path escape: the task's
+  - [x] **Repair Arena workspace containment and guaranteed device-claim release before restarting
+    INF-03.** ✅ 2026-08-12 — Research `b84c809f` uses collision-bound dot-free cell components,
+    rejects dot-bearing ancestor paths, compares exact post-worker cell/sibling manifests on success
+    and failure, and defers TERM/INT across claim acquisition so teardown journals the release. The
+    focused runner/claim suite passed 68/68 after promotion. The invalid r1 attempt had exposed a
+    dotted-path escape: the task's
     `__file__.replace('.', '_')` wrote `test_add_kernel_py.pt` into an adjacent sibling cell tree.
     Reject writes outside the exact workspace after every evaluator/controller step, normalize cell
     paths safely, and release/journal the device claim from a SIGTERM-safe `finally` path. Add
-    regression tests for dotted task ids, external writes, and exact-signal cleanup before r2.
+    regression tests for dotted task ids, external writes, and exact-signal cleanup before r2. The
+    r2 baseline then completed in the dot-free hash-bound cell without creating an escaped sibling;
+    its first controller checkpoint started only after that live containment regression passed.
   - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints when
     inference is authorized; interpret it only as an availability-conditioned diagnostic.
   - [ ] Obtain exact licensed source releases for EvoEngineer and ARGUS, then port their real
