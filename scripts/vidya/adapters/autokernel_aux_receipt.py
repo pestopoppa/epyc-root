@@ -36,11 +36,19 @@ SOURCE_SCHEMAS = frozenset({
     "epyc.autokernel.p2_5j_placement_receipt.v1",
     "epyc.autokernel.hip_authoring_roundtrip.v1",
     "epyc.autokernel.hip_decision_grade.v1",
+    "epyc.autokernel.arena_controller_evaluation.v1",
 })
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _COMMIT = re.compile(r"^[0-9a-f]{40}$")
 _ARENA_SCHEMA = "epyc.autokernel.geak_arena_roundtrip.v1"
 _ARENA_PRODUCER = "autokernel.controller.arena_roundtrip/v1"
+_ARENA_INTERMEDIATE_SCHEMA = "epyc.autokernel.arena_controller_evaluation.v1"
+_ARENA_INTERMEDIATE_PRODUCER = (
+    "autokernel.controller.arena_cell_runner/intermediate_evaluation_v1")
+_ARENA_INTERMEDIATE_PRODUCER_PATH = (
+    "scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py")
+_ARENA_INTERMEDIATE_WINDOW_SCHEMA = (
+    "epyc.autokernel.arena_gpu_measurement_window.v1")
 _HIP_SCHEMA = "epyc.autokernel.hip_authoring_roundtrip.v1"
 _HIP_PRODUCER = "autokernel.controller.hip_authoring_arm/v1"
 _HIP_PRODUCER_PATH = "scripts/kernel_rnd/autokernel/controller/hip_authoring_arm.py"
@@ -168,6 +176,146 @@ def _arena_receipt_identity(receipt: dict) -> str:
             or isinstance(source.get("checkpoint_hours"), bool)
             or not isinstance(source.get("checkpoint_hours"), (int, float))):
         raise ProjectionError("Arena receipt lacks task/controller/checkpoint identity")
+    return claimed
+
+
+def _arena_intermediate_receipt_identity(receipt: dict) -> str:
+    """Strictly re-derive one prospective controller-feedback observation."""
+    if receipt.get("authority") != "controller_feedback_only":
+        raise ProjectionError("intermediate Arena receipt exceeds feedback-only authority")
+    claimed = _sha(receipt.get("receipt_sha256"), "receipt.receipt_sha256")
+    logical = {key: value for key, value in receipt.items()
+               if key != "receipt_sha256"}
+    if _canonical_sha256(logical) != claimed:
+        raise ProjectionError("intermediate Arena receipt_sha256 does not bind the receipt")
+
+    campaign_id = _text(receipt, "campaign_id", "receipt")
+    claim_campaign_id = _text(receipt, "claim_campaign_id", "receipt")
+    task_id = _text(receipt, "task_id", "receipt")
+    arm_id = _text(receipt, "arm_id", "receipt")
+    checkpoint = receipt.get("checkpoint_hours")
+    ordinal = receipt.get("evaluation_ordinal")
+    if (isinstance(checkpoint, bool) or not isinstance(checkpoint, (int, float))
+            or not math.isfinite(checkpoint) or checkpoint <= 0
+            or isinstance(ordinal, bool) or not isinstance(ordinal, int)
+            or ordinal < 1):
+        raise ProjectionError("intermediate Arena checkpoint/ordinal identity is invalid")
+    attempt_id = receipt.get("attempt_id")
+    if attempt_id is not None and (not isinstance(attempt_id, str) or not attempt_id):
+        raise ProjectionError("intermediate Arena attempt_id is invalid")
+    source = receipt.get("source_sha256")
+    if (not isinstance(source, dict) or not source
+            or any(not isinstance(path, str) or not path
+                   or not isinstance(digest, str) or not _SHA256.fullmatch(digest)
+                   for path, digest in source.items())):
+        raise ProjectionError("intermediate Arena source identity is malformed")
+    baseline_sha = _sha(
+        receipt.get("baseline_receipt_sha256"), "baseline_receipt_sha256")
+
+    producer = receipt.get("producer")
+    if (not isinstance(producer, dict)
+            or producer.get("producer_id") != _ARENA_INTERMEDIATE_PRODUCER
+            or producer.get("path") != _ARENA_INTERMEDIATE_PRODUCER_PATH):
+        raise ProjectionError("intermediate Arena producer identity differs")
+    producer_sha = _sha(producer.get("sha256"), "producer.sha256")
+
+    evaluation = receipt.get("evaluation")
+    if not isinstance(evaluation, dict):
+        raise ProjectionError("intermediate Arena evaluation must be an object")
+    valid_cases = evaluation.get("valid_optimized_cases")
+    if (isinstance(valid_cases, bool) or not isinstance(valid_cases, int)
+            or valid_cases < 0):
+        raise ProjectionError("intermediate Arena valid case count is invalid")
+    passed_correctness = int(
+        bool(evaluation.get("pass_compilation"))
+        and bool(evaluation.get("pass_correctness")))
+
+    window = receipt.get("measurement_window")
+    if not isinstance(window, dict):
+        raise ProjectionError("intermediate Arena measurement window must be an object")
+    window_sha = _sha(window.get("receipt_sha256"), "measurement_window.receipt_sha256")
+    window_unsigned = {key: value for key, value in window.items()
+                       if key != "receipt_sha256"}
+    if _canonical_sha256(window_unsigned) != window_sha:
+        raise ProjectionError("intermediate Arena measurement-window digest is invalid")
+    if (window.get("schema") != _ARENA_INTERMEDIATE_WINDOW_SCHEMA
+            or window.get("status") != "complete"
+            or window.get("phase") != "controller_intermediate_evaluation"
+            or window.get("failure") is not None
+            or window.get("gpu_action_executed_only_while_claim_held") is not True
+            or window.get("campaign_id") != campaign_id
+            or window.get("claim_campaign_id") != claim_campaign_id
+            or window.get("task_id") != task_id
+            or window.get("arm_id") != arm_id
+            or window.get("checkpoint_hours") != checkpoint
+            or window.get("ordinal") != ordinal):
+        raise ProjectionError("intermediate Arena measurement-window identity differs")
+    opened = window.get("device_claim_open")
+    released = window.get("device_claim_released")
+    if (not isinstance(opened, dict) or not isinstance(released, dict)
+            or opened.get("claim_id") != released.get("claim_id")
+            or opened.get("campaign_id") != claim_campaign_id
+            or released.get("campaign_id") != claim_campaign_id
+            or opened.get("device_id") != "mi210_0"
+            or released.get("device_id") != "mi210_0"
+            or opened.get("released_at") is not None
+            or not isinstance(released.get("released_at"), str)
+            or not released["released_at"]):
+        raise ProjectionError("intermediate Arena device claim is not exact and released")
+    sampler = window.get("device_sampling")
+    if not isinstance(sampler, dict):
+        raise ProjectionError("intermediate Arena sampling receipt is missing")
+    sampler_sha = _sha(sampler.get("sha256"), "device_sampling.sha256")
+    if _canonical_sha256({key: value for key, value in sampler.items()
+                          if key != "sha256"}) != sampler_sha:
+        raise ProjectionError("intermediate Arena sampling digest is invalid")
+    samples = sampler.get("samples")
+    if (isinstance(sampler.get("sample_count"), bool)
+            or sampler.get("sample_count") != len(samples or ())
+            or not isinstance(samples, list) or not samples):
+        raise ProjectionError("intermediate Arena sampling evidence is incomplete")
+
+    shared = {
+        "measurement_role": "kernel_authoring_intermediate_evaluation",
+        "campaign_id": campaign_id,
+        **({"attempt_id": attempt_id} if attempt_id is not None else {}),
+        "claim_campaign_id": claim_campaign_id,
+        "task_id": task_id,
+        "controller_id": arm_id,
+        "checkpoint_hours": checkpoint,
+        "evaluation_ordinal": ordinal,
+        "source_sha256": dict(sorted(source.items())),
+        "baseline_receipt_sha256": baseline_sha,
+        "measurement_window_sha256": window_sha,
+        "producer_id": _ARENA_INTERMEDIATE_PRODUCER,
+        "producer_path": _ARENA_INTERMEDIATE_PRODUCER_PATH,
+        "producer_sha256": producer_sha,
+        "authority": "diagnostic_only_no_ranking_or_promotion_authority",
+    }
+    expected = []
+    for measurement_id, metric, value, role, claim in (
+        ("arena_intermediate_correctness_pass_rate",
+         "geak_arena_intermediate_correctness_pass_rate", passed_correctness,
+         "kernel_authoring_intermediate_correctness",
+         "Whether this brokered intermediate candidate passed compilation and correctness"),
+        ("arena_intermediate_timing_harness_validity_rate",
+         "geak_arena_intermediate_timing_harness_validity_rate",
+         int(valid_cases > 0), "kernel_authoring_intermediate_timing_validity",
+         "Whether this brokered intermediate evaluation admitted any optimized timing case"),
+    ):
+        row = {
+            "measurement_id": measurement_id, "metric": metric,
+            "value": float(value), "unit": "fraction",
+            "metric_direction": "higher_better", "category": "CANDIDATE",
+            "claim": claim, "reps": 1,
+            "reps_basis": "one brokered AgentKernelArena intermediate evaluation",
+            "extra": {**shared, "measurement_role": role, "passed": value,
+                      "total": 1},
+        }
+        row["measurement_sha256"] = _canonical_sha256(row)
+        expected.append(row)
+    if receipt.get("belief_measurements") != expected:
+        raise ProjectionError("intermediate Arena belief rows do not rederive from evidence")
     return claimed
 
 
@@ -1362,7 +1510,8 @@ def native_rows(receipt: dict, *, receipt_locator: str = "",
         raise ProjectionError("belief_measurements must be a list")
     if not measurements:
         return ()
-    if receipt.get("status") not in {"pass", "passed", "complete"}:
+    if (receipt.get("schema") != _ARENA_INTERMEDIATE_SCHEMA
+            and receipt.get("status") not in {"pass", "passed", "complete"}):
         raise ProjectionError("a failed auxiliary receipt cannot carry belief measurements")
     if receipt.get("schema") == _Q4K_SCHEMA:
         _validate_q4k_measurements(receipt, measurements)
@@ -1374,6 +1523,8 @@ def native_rows(receipt: dict, *, receipt_locator: str = "",
         _hip_receipt_identity(receipt)
     if receipt.get("schema") == _HIP_DECISION_SCHEMA:
         _hip_decision_receipt_identity(receipt)
+    if receipt.get("schema") == _ARENA_INTERMEDIATE_SCHEMA:
+        _arena_intermediate_receipt_identity(receipt)
     return tuple({
         "receipt": receipt,
         "measurement": measurement,
@@ -1420,6 +1571,8 @@ def project(native: Any) -> ClaimTuple:
         raise ProjectionError("measurement.extra must be a dict")
     observation_identity = (
         _arena_receipt_identity(receipt) if schema == _ARENA_SCHEMA
+        else _arena_intermediate_receipt_identity(receipt)
+        if schema == _ARENA_INTERMEDIATE_SCHEMA
         else _hip_receipt_identity(receipt) if schema == _HIP_SCHEMA
         else _hip_decision_receipt_identity(receipt)
         if schema == _HIP_DECISION_SCHEMA
@@ -1451,6 +1604,8 @@ def project(native: Any) -> ClaimTuple:
             "native_measurement_id": local_id,
             **({"arena_receipt_identity_sha256": observation_identity}
                if schema == _ARENA_SCHEMA else {}),
+            **({"arena_intermediate_receipt_identity_sha256": observation_identity}
+               if schema == _ARENA_INTERMEDIATE_SCHEMA else {}),
             **({"hip_receipt_identity_sha256": observation_identity}
                if schema == _HIP_SCHEMA else {}),
             **({"hip_decision_receipt_identity_sha256": observation_identity}

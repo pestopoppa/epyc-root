@@ -16,7 +16,7 @@
       "blocked": 9,
       "handoffs": 49,
       "oldest_advance": "2026-07-29",
-      "open": 291
+      "open": 290
     },
     "reviewer-control-plane-index.md": {
       "blocked": 11,
@@ -1856,10 +1856,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 57,
+      "closed": 58,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 14,
+      "open": 13,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",

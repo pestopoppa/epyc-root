@@ -3486,7 +3486,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T19:17:47Z",
+  "generated_at": "2026-08-12T19:42:06Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4089,13 +4089,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 57,
+      "closed": 58,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-12",
       "next_action": "Wire actor-critic evaluation feedback receipts prospectively before the next fresh INF-03 attempt",
-      "open": 14,
+      "open": 13,
       "state": "active",
       "track": "vidya belief substrate program"
     },

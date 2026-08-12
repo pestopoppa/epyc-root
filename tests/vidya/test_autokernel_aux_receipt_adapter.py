@@ -86,6 +86,107 @@ def arena_receipt(*, checkpoint_hours=2.0, ended_at="2026-08-12T08:23:37Z"):
     return value
 
 
+def arena_intermediate_receipt():
+    campaign = "inf03-mi210-controller-ab-v2-available-source-seven-arm-v2"
+    attempt = "inf03-available-source-seven-arm-r18-20260812"
+    task = "instruction2triton.rocmbench.test_add_kernel"
+    arm = "claude_codex_actor_critic"
+    source = {"test_add_kernel.py": "a" * 64}
+    opened = {"campaign_id": attempt, "claim_id": "akd-intermediate",
+              "device_id": "mi210_0", "released_at": None}
+    released = {**opened, "released_at": "2026-08-12T19:40:05Z"}
+    sampler = {"schema": "epyc.autokernel.device_sampling_receipt.v1",
+               "sample_count": 2,
+               "samples": [{"offset_s": 0.0}, {"offset_s": 0.25}]}
+    sampler["sha256"] = aux._canonical_sha256(sampler)
+    window = {
+        "schema": aux._ARENA_INTERMEDIATE_WINDOW_SCHEMA,
+        "status": "complete", "phase": "controller_intermediate_evaluation",
+        "failure": None, "gpu_action_executed_only_while_claim_held": True,
+        "campaign_id": campaign, "claim_campaign_id": attempt,
+        "task_id": task, "arm_id": arm, "checkpoint_hours": 2.0,
+        "ordinal": 1, "device_claim_open": opened,
+        "device_claim_released": released, "device_sampling": sampler,
+    }
+    window["receipt_sha256"] = aux._canonical_sha256(window)
+    producer = {"producer_id": aux._ARENA_INTERMEDIATE_PRODUCER,
+                "path": aux._ARENA_INTERMEDIATE_PRODUCER_PATH,
+                "sha256": "b" * 64}
+    evaluation = {"pass_compilation": True, "pass_correctness": True,
+                  "valid_optimized_cases": 4}
+    shared = {
+        "measurement_role": "kernel_authoring_intermediate_evaluation",
+        "campaign_id": campaign, "attempt_id": attempt,
+        "claim_campaign_id": attempt, "task_id": task, "controller_id": arm,
+        "checkpoint_hours": 2.0, "evaluation_ordinal": 1,
+        "source_sha256": source, "baseline_receipt_sha256": "c" * 64,
+        "measurement_window_sha256": window["receipt_sha256"],
+        "producer_id": producer["producer_id"], "producer_path": producer["path"],
+        "producer_sha256": producer["sha256"],
+        "authority": "diagnostic_only_no_ranking_or_promotion_authority",
+    }
+    measurements = []
+    for measurement_id, metric, role, claim in (
+        ("arena_intermediate_correctness_pass_rate",
+         "geak_arena_intermediate_correctness_pass_rate",
+         "kernel_authoring_intermediate_correctness",
+         "Whether this brokered intermediate candidate passed compilation and correctness"),
+        ("arena_intermediate_timing_harness_validity_rate",
+         "geak_arena_intermediate_timing_harness_validity_rate",
+         "kernel_authoring_intermediate_timing_validity",
+         "Whether this brokered intermediate evaluation admitted any optimized timing case"),
+    ):
+        row = {"measurement_id": measurement_id, "metric": metric, "value": 1.0,
+               "unit": "fraction", "metric_direction": "higher_better",
+               "category": "CANDIDATE", "claim": claim, "reps": 1,
+               "reps_basis": "one brokered AgentKernelArena intermediate evaluation",
+               "extra": {**shared, "measurement_role": role, "passed": 1,
+                         "total": 1}}
+        row["measurement_sha256"] = aux._canonical_sha256(row)
+        measurements.append(row)
+    value = {
+        "schema": aux._ARENA_INTERMEDIATE_SCHEMA, "campaign_id": campaign,
+        "attempt_id": attempt, "claim_campaign_id": attempt, "task_id": task,
+        "arm_id": arm, "checkpoint_hours": 2.0, "evaluation_ordinal": 1,
+        "workspace": "/campaign/cell/workspace", "evaluation_root": "/campaign/eval",
+        "source_sha256": source, "baseline_receipt_sha256": "c" * 64,
+        "evaluation": evaluation, "measurement_window": window, "producer": producer,
+        "belief_measurements": measurements, "previous_receipt_sha256": None,
+        "authority": "controller_feedback_only",
+    }
+    value["receipt_sha256"] = aux._canonical_sha256(value)
+    return value
+
+
+def test_arena_intermediate_projects_only_exact_prospective_rows():
+    source = arena_intermediate_receipt()
+    rows = aux.native_rows(source, receipt_locator="/r18/0001-result.json",
+                           receipt_sha256="d" * 64, attestation_present=True)
+    claims = [aux.project(row) for row in rows]
+    assert len(claims) == 2
+    assert all(claim.protocol_id == aux._ARENA_INTERMEDIATE_SCHEMA for claim in claims)
+    assert all(claim.extra["authority"] ==
+               "diagnostic_only_no_ranking_or_promotion_authority" for claim in claims)
+    assert len({claim.measurement_id for claim in claims}) == 2
+
+
+@pytest.mark.parametrize("mutation", ["row", "window", "claim", "authority"])
+def test_arena_intermediate_refuses_tampered_or_upgraded_evidence(mutation):
+    source = arena_intermediate_receipt()
+    if mutation == "row":
+        source["belief_measurements"][0]["value"] = 0.0
+    elif mutation == "window":
+        source["measurement_window"]["device_sampling"]["sample_count"] = 3
+    elif mutation == "claim":
+        source["measurement_window"]["device_claim_released"]["released_at"] = None
+    else:
+        source["authority"] = "rankable"
+    source["receipt_sha256"] = aux._canonical_sha256(
+        {key: value for key, value in source.items() if key != "receipt_sha256"})
+    with pytest.raises(ct.ProjectionError):
+        aux.native_rows(source)
+
+
 def hip_receipt():
     campaign = "ak-hip-arm-fixture-r1"
     task_id = "torch2hip/gpumode/16636_SiLU"
