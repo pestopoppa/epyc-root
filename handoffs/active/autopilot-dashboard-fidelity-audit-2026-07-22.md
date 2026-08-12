@@ -312,9 +312,34 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
     counter returns 0 and writing it would recreate the bug from the other direction.
     5 new tests; 719 passed across the autopilot/brief/system-card consumers (the 4 failures are the
     known pre-existing set: 3× P0-0, 1× the E8 v8 pin).
-  - [ ] **[E8-PANELS-b] Commit the ratified era-registry row**: an uncommitted `eval_quality`
+  - [x] **[E8-PANELS-b] Commit the ratified era-registry row**: an uncommitted `eval_quality`
     E8 row sits in `orchestration/instrument_eras.yaml` (output of the operator's quality-fence
     transaction; human-amendment provenance) — commit it with its receipt reference.
+    **✅ 2026-08-12 (`mainA`, pulled from the generated bench and claimed) — the row IS committed;
+    the premise was stale. But it landed WITHOUT its receipt reference, which is the half worth
+    recording.**
+    Verified against git, not the filesystem: the `eval_quality` E8 row is at
+    `instrument_eras.yaml:170-176` on `HEAD` and has been committed since **`e2e5c035`
+    (2026-07-27)** — so "an uncommitted E8 row sits in ..." has not been true for two weeks.
+    **The provenance gap is real.** `e2e5c035`'s subject is *"fix: scope E8 candidate collection
+    watcher"* and its body carries no receipt reference, so an operator-ratified trust-boundary
+    row rode into the repo inside a bugfix commit. Anyone tracing that row's authority through
+    `git log` lands on a watcher fix. The receipt does exist and matches:
+    `artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.json`, decision
+    `RATIFY-E8-AUTOPILOT-QUALITY-FENCE`, ratified 2026-07-26T12:15:03Z, carrying
+    `quality_era: {id: E8, scope: eval_quality, from: 2026-07-25T18:38:43Z}` — identical to the
+    committed row.
+    **I did NOT mint a receipt-index entry for it.** Ran
+    `scripts/operator/check_ratifier_receipt_contract.sh` first: it reports *"on-disk ratified
+    receipts lacking a keyed index: (none)"*, because the fence is satisfied by its own
+    basename receipt under the contract's explicit guard. Creating an index entry would have
+    manufactured an evidentiary artifact the contract does not ask for — and I would have done it
+    on assumption rather than on the contract.
+    **Separate live finding, NOT mine, filed on the bus:** that same checker **exits 1 today** —
+    `MISSING-WRITE: ratify_and_apply_e8_quality_baseline_v4_20260727.sh (token=
+    ATTEST-E8-CONTEXT-FEASIBILITY-AND-BASELINE-APPLY-20260727)`. A signable token script with no
+    keyed-receipt write, i.e. a gate that could be signed without leaving an index entry. Routed
+    to the E8 quality-baseline owner.
   - [ ] **[E8-PANELS-c] Hub pct presentation**: `pct_all_done` reads intake sweeps as decline
     (denominator inflation, see 2026-07-27 forensics) — surface absolute `all_tasks_done` +
     a newly-filed-tasks series on the :8100 hub (owner may also be
