@@ -241,6 +241,27 @@ def resolve_repo(cmd: str, segment: str, dash_c: str | None) -> str | None:
     return canon(default) if is_shared(default) else None
 
 
+def fetch_head_path(repo: str) -> Path | None:
+    """Where FETCH_HEAD actually lives for `repo`.
+
+    Discovered 2026-08-12 verifying the worktree-awareness fix above: for a
+    worktree, `<repo>/.git` is a FILE (a gitlink pointing at the common
+    store's per-worktree metadata dir), not a directory — so the naive
+    `Path(repo) / ".git" / "FETCH_HEAD"` is unresolvable (NotADirectoryError,
+    an OSError) for every worktree, and the staleness check below was
+    catching that as "no FETCH_HEAD" and blocking EVERY worktree commit
+    regardless of how fresh the fetch actually was. FETCH_HEAD is not among
+    git's per-worktree files (HEAD, index, logs/HEAD, ... are; FETCH_HEAD is
+    not) — it lives once, in the common dir, shared by every worktree. Reuse
+    the same git-common-dir resolution is_shared() already uses so there is
+    one answer for "where is this repo's real .git", not two.
+    """
+    common = _git_common_dir(repo)
+    if common is None:
+        return None
+    return Path(common) / "FETCH_HEAD"
+
+
 def fetch_precedes_commit(cmd: str, repo: str) -> bool:
     """True if the command fetches this repo before committing in it.
 
@@ -341,8 +362,10 @@ Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1""")
                 if fetch_precedes_commit(cmd, repo):
                     continue
 
-                fetch_head = Path(repo) / ".git" / "FETCH_HEAD"
+                fetch_head = fetch_head_path(repo)
                 try:
+                    if fetch_head is None:
+                        raise OSError("git-common-dir unresolvable")
                     age = int(time.time() - fetch_head.stat().st_mtime)
                 except OSError:
                     age = 10 ** 9
