@@ -1773,6 +1773,113 @@ comparison keyed to *this process's last write*, not to a static disk/memory dif
 
 ## Compiled Update — 2026-08-05: representation boundaries are authority boundaries
 
+## Compiled Update — 2026-08-12: a coordination role fails at RETRIEVAL, not at memory — so subtract duties and enforce at choke points
+
+**Confidence: verified** — from a 38-item failure catalogue with per-item artifacts, an
+adversarial audit of that catalogue, and an eight-phase implementation whose claims were
+mutation-tested. Sources: `handoffs/active/coordinator-role-failure-modes-and-refactor.md`,
+`handoffs/active/session-bus-thin-dispatcher.md`,
+`progress/2026-08/2026-08-12-refactor-session.md`, `progress/2026-08/2026-08-12-mainC.md`.
+
+### The finding that reprices every "write it down better" fix
+
+A coordination agent failed the same way repeatedly *after* each correction was written down.
+The tempting diagnosis is memory decay. The evidence refutes it: one failure was committed as
+the agent's own correction #2 at 10:07:18Z and recurred at 10:28Z and ~10:40Z — same session,
+same day, **zero decay**. In the same window the agent quoted neighbouring rules from the same
+file back to other agents.
+
+So the defect is **retrieval at the moment of emission**, not durability. This is falsifiable
+and was tested: a durable correction ledger was built that morning and went out of contract in
+48 minutes, referenced from nothing on any startup path. Rules that held were, without
+exception, the ones with a mechanism on a path the agent could not avoid — hooks, `flock`, a
+lane gate, an adapter guard. **A catalogue is recall; recall is what failed.**
+
+One prose category did hold: a *sentence template* — a rule that changes the SHAPE of what you
+are already writing rather than adding a step to remember. The one such rule in the corpus has
+zero recurrences, which is the argument for expressing unmechanisable rules as output shapes.
+
+### Three moves, in order of leverage
+
+1. **Subtract before building.** 47% of the failures were the role acting as a measurement
+   instrument — a duty its mission statement never contained; it accreted. Deleting the duty
+   (relay receipts carrying `source_msg_id`/`receipt_path`, never read a dial) killed seven
+   failures at zero build cost, including the only proven post-correction recurrence, and
+   collapsed six proposed instrument rules into one deletion. **A delete-lens finds cheaper
+   fixes than an adversarial lens, and adversarial panels reliably over-build without one.**
+2. **Enforce only at choke points the role provably passes through** — here, message-append
+   and task-boundary-drain. Anything requiring the agent to remember a new step is excluded by
+   construction.
+3. **Move the clock out of the LLM thread.** A prompt-driven role is blind between operator
+   turns, which is exactly when queues run dry. The tick belongs in a deterministic daemon and
+   in watchers, not in the reasoning loop.
+
+### Addressing is not free — a measured N² failure
+
+With no FYI concept in the schema, a single `action_required` bit applied to every routing
+target, and the relay rewrote the delivery address on each fan-out copy — so a CC arrived
+indistinguishable from an assignment. Measured: **83% of inbox items an agent had to triage
+were not theirs** (499 rows, 86 sole-target; 73–89% per agent; burst windows read 97%). Typing
+the address (`assignee` = exactly one, `cc` = reach-only, refused at authoring time) split 310
+standing items into 45 must-act and 265 FYI. **An inbox that cries wolf trains its reader to
+skim, and the thing that must never be skimmed is the one genuine assignment.**
+
+### Two ways to ship a dispatcher that never dispatches
+
+Both were found while making an automatic tick safe, and each would have produced the same
+symptom from a different direction:
+
+- **The gate was right and the data was absent.** Refusing rows without a screening receipt
+  and an occupancy estimate is correct — but nothing populated those fields where rows are
+  born, so the tick would refuse everything, forever.
+- **A status that lied.** `STALE_REQUEUED` was written by the stall ladder to mean "go round
+  again" (with `INFRA_BLOCKED` as the exhaustion terminal, so the retry bound already existed),
+  but nothing converted it back and eligibility demanded `READY`. **17 of 19 live rows sat
+  unassignable regardless of how well they were screened.** A name that says "requeued" while
+  nothing can dequeue it is the defect.
+
+Corollary now encoded at intake: **an unestimated row is a row a human dispatches — not a row
+to invent a number for.** Emitting no field beats emitting `0.0`, which reads downstream as an
+answered question rather than an open one.
+
+### Delivery: honest failure is not the same as working
+
+Every guard in the delivery path refused *correctly* and the fleet was still unreachable for
+~75 minutes — four agents holding queued instructions nobody could submit. The composite had
+no success path, and the missing piece was a **remedy, not another guard**. Three measurements
+settled it, all previously assumed:
+
+- A TUI composer holding text ignores a bare keystroke; a wake character, a settle interval,
+  *then* the key both submits and clears. The tempting untested candidate (`Escape`) does
+  nothing.
+- Truncation was never the TUI refusing long text: above a single-burst paste threshold the
+  content becomes an attachment, and one CLI **caps attachment content at 1024 chars** — a
+  2,998-char dispatch arrived as `[Pasted Content 1024 chars]`. Chunking below the threshold
+  with a pacing gap is lossless to 12,000 chars; **the gap is load-bearing** (zero-gap chunks
+  re-coalesce and blob).
+- A pane whose sub-agents redraw it every second can never satisfy a quiet-check, so it reads
+  unreachable while perfectly idle. The fix is a *different signal*, not a looser threshold.
+
+### Isolation without a sync half is a bigger merge, not a smaller one
+
+Per-agent worktrees dissolve same-file commit sweeps — but lanes that skip promotion rot:
+measured at 106 commits behind, and one at ~302. **The worktree isolates; only promotion
+syncs.** Skipping promotion trades today's small merge for a guaranteed large one against
+weeks of unrelated history.
+
+Two hazards worth generalising: `git commit -- <path>` **bypasses the index** and commits
+working-tree state, sweeping a peer's uncommitted hunks in that same file (this is the
+collision mechanism, not carelessness); and a repo reachable at two path depths makes
+`git worktree prune` read live worktrees as prunable and delete their admin data.
+
+### Sources
+
+- `handoffs/active/coordinator-role-failure-modes-and-refactor.md` — the catalogue, the
+  adversarial audit, and the per-item closure evidence
+- `handoffs/active/session-bus-thin-dispatcher.md` — addressing, dispatch typing, worktree rider
+- `progress/2026-08/2026-08-12-refactor-session.md` — the eight-phase implementation record
+- `progress/2026-08/2026-08-12-mainC.md` — an independent lane's account of the shared-clone cost
+
 ## Compiled Update — 2026-08-12: representation and provider boundaries are authority boundaries
 
 Three independent changes converge on one architectural rule: any artifact that can change what the

@@ -80,6 +80,42 @@ would have landed in a working lane's index. Each `.git` renamed to
 `git worktree prune` must never be the tool here — prune is what caused the
 original destruction.
 
+## Closing — ratification applied by the operator, and the two delegated calls
+
+**The operator ran `artifacts/operator/ratify_20260812.sh --apply`.** All three safe items
+landed and were verified independently rather than on the script's own say-so:
+
+| Item | Verified |
+|---|---|
+| AUD-15 gate | 2 entries present in `human_only_paths.yaml`; pin matches file; `validate` reports trust-boundary pin intact |
+| P-GPU-1 field 3 | clause present in `measurement/protocols/gpu-cross-device.md` |
+| `/etc/gitconfig` | `worktree.useRelativePaths` unset system-wide |
+
+That last one closes the worktree-destruction root cause **host-wide**, not just for this
+repo — every other clone on the box was still exposed until now.
+
+**Both delegated decisions: relabelled, not re-run.** Neither number is asserted wrong; both
+attestations claimed a warrant their evidence never carried.
+
+- `model_registry.yaml` `architect_general` — `contended_tps` and its −35.8% delta rest on
+  `gpu_coresidency_20260731`: experimental kernel, no `LD_LIBRARY_PATH`, no commit, n=3, and
+  its own title says *"no gate"*. It reaches `repl_memory` `bilinear_scorer`/`q_reward`
+  baselines, which is why this one mattered most — a mis-warranted number there propagates
+  silently into routing rewards. Now carries `attest_grade: OBSERVATION-GRADE`.
+- `worker_vision` cutover — the throughput/VRAM half is relabelled the same way. The
+  **accuracy** half is explicitly marked as needing no re-run, with the reasons inline:
+  accuracy is device-invariant, `harness.py:242` *prepends* the HIP build dir so the
+  stale-path precondition never held, and sampled VRAM scaled monotonically with model size.
+
+**Why relabel rather than re-run**: a re-run costs a GPU window to re-derive numbers that gate
+nothing today. The false *warrant* was the urgent part and it is gone. A governed
+re-measurement can replace them when the host is quiet — which folds into mainC's request.
+
+**Standing operator directive captured as a guardrail** (`agents/coordinator-agent.md`):
+ratifications ACCUMULATE while the operator is away and are surfaced as ONE runnable command
+with context on their return, never a trickle — with a carve-out that a genuinely urgent
+hazard still goes up immediately. `ratify_20260812.sh` is the working template.
+
 ## Open, with named blockers
 
 - Two trust-boundary amendments (AUD-15, P-GPU-1 field 3) — operator-only by

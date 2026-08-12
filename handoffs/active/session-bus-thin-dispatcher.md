@@ -2896,6 +2896,25 @@ from that seat.
       deep path is what destroyed all five lanes on 2026-08-12 in the first place. Whether to delete
       the 25 directories outright remains an operator call; the hazard does not wait on it.
 
+- [ ] **DSP-1 — 11 `opendataloader-pipeline-integration--*` queue rows cannot be dispatched by
+      anything, and cannot be machine-recovered.** Every anchor has rotted (`:405` is now a
+      tree-diagram branch) and the rows carry no `task_text` to re-derive intent from, so the
+      new typed-dispatch fields cannot be filled in for them by any tool. **A human must
+      re-anchor them BY TEXT.** This is the exact case C50b measured as "11 of 11 rows".
+      Until then they are permanently auto-dispatch-ineligible, which is the correct
+      fail-closed posture and not a defect. Found 2026-08-12 while populating dispatch
+      receipts at intake.
+- [ ] **DSP-2 — decide whether an unestimated row should ever become auto-dispatchable.**
+      Intake deliberately emits NO `expected_occupancy` for a `cpu`/`gpu` row with no stated
+      duration, rather than a floor or a guess — a fabricated number there is precisely the
+      F-14 harm, and `0.0` reads downstream as an answered question rather than an open one.
+      Consequence, stated so it is a choice rather than a surprise: **15 of 19 live rows are
+      hand-dispatch-only** and the tick will never pick them. Options: leave it (humans
+      dispatch what cannot be estimated), require an estimate at authoring time, or add a
+      lane-aware floor for classes where a wrong estimate cannot mis-schedule hardware.
+      Filed 2026-08-12 rather than decided, because it trades operator effort against
+      autonomy and that is the operator's trade.
+
 ## Reporting instructions
 
 Flip milestone boxes with `✅ YYYY-MM-DD` + evidence refs (M4 cites the hub saturation-history
