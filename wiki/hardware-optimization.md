@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-12 (adds the AK-D39 ROCm-provider boundary; sustained AK-BH-1 vendor-baseline replication, INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Last compiled**: 2026-08-12 (adds the INF-03 r4 integrity retraction and broker/isolation boundary; the AK-D39 ROCm-provider boundary; sustained AK-BH-1 vendor-baseline replication, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 102+ documents
 
 ## Compiled Update — 2026-08-12 (ROCm modules are providers, not champions)
@@ -2457,3 +2457,40 @@ experimental llama integration as required, and cannot affect dashboard freshnes
   decision-receipt read-path acceptance and fail-closed cases.
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — r1–r6 chronology, receipt identities,
   measured outcome, implementation commit, and validation counts.
+
+## Compiled Update — 2026-08-12 (INF-03 r4 feedback-integrity retraction)
+
+**Confidence: verified immutable receipts/logs and exact-PID teardown; invalid partial campaign, no
+controller ranking.**
+
+INF-03 r4 is stopped and retained only as diagnostic history. Its immutable root contains 5/64
+checkpoint receipts, 2/24 complete cells, and 10/10 released vendor/final measurement windows, but a
+cross-artifact audit found that KernelFoundry made 64 intermediate centralized evaluator calls from
+the GPU-blind controller environment outside those claim windows. The controller receipt records 64
+evaluations and 60 QD transitions; the evaluator log records 64/64 correctness failures. The search
+therefore optimized against invalid feedback even though the final checkpoint receipt was
+structurally complete. Partial r4 data cannot be resumed, aggregated, ranked, banked, or used to
+select a controller.
+
+The owning session stopped only its captured campaign PID chain, confirmed every PID dead, and found
+no device claim remaining. The next implementation boundary is parent-owned exact-PID AF_UNIX
+brokerage: authenticate the spawned controller with `SO_PEERCRED`, receive bounded candidate bytes,
+evaluate in a fresh workspace, and acquire/release a separate MI210 claim for every intermediate
+evaluation. That repairs claim ownership but is not sufficient for policy evidence. Same-UID
+controllers and candidates can still inspect `/proc` or attack shared state, so a decision-bearing
+pilot also requires controller/candidate OS isolation. Before that isolation is proven, live broker
+exercises are engineering smoke only.
+
+The Kernel-R&D hub keeps r4's historical counts visible through an exact-manifest, one-way retraction
+overlay, while labelling it `STOPPED · DIAGNOSTIC HISTORY ONLY`, invalid, non-resumable, and
+non-rankable. The overlay can only reduce evidence authority; it cannot admit a producer record or
+improve dashboard health.
+
+### Source References (2026-08-12 INF-03 retraction)
+
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning repair,
+  isolation, fresh-pilot tasks, exact r4 counts, and authority limits.
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — cross-loop retraction
+  and superseded completion-audit conclusion.
+- [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — receipt/log findings, teardown, dashboard
+  projection, and derived-actionable sweep.

@@ -169,6 +169,10 @@ AUTOKERNEL_PROBE_ROOT = Path(os.environ.get(
 AUTOKERNEL_CONTROL_ROOT = Path(os.environ.get(
     "AUTOKERNEL_CONTROL_ROOT",
     "/mnt/raid0/llm/autokernel/controls"))
+ARENA_ATTEMPT_DISPOSITIONS_JSON = Path(os.environ.get(
+    "ARENA_ATTEMPT_DISPOSITIONS_JSON",
+    str(Path(__file__).resolve().parent / "arena_attempt_dispositions.json")))
+ARENA_ATTEMPT_DISPOSITIONS_SCHEMA = "epyc.dashboard.arena_attempt_dispositions.v1"
 AUTOKERNEL_HIP_DECISION_CAMPAIGN = "hip-silu-decision-grade-20260812-r6"
 AUTOKERNEL_HIP_DECISION_SCHEMA = "epyc.autokernel.hip_decision_grade.v1"
 AUTOKERNEL_HIP_DECISION_PRODUCER = "autokernel.controller.hip_decision_grade/v1"
@@ -1443,18 +1447,82 @@ def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
     }, None
 
 
-def _arena_campaign_progress(root: Path) -> dict:
-    """Select the newest valid Arena attempt by verified semantic evidence time."""
+def _arena_attempt_dispositions(path: Path) -> tuple[dict[str, dict], str | None]:
+    """Load exact-attempt integrity retractions maintained by the governance hub.
+
+    The producer remains authoritative for receipts.  This overlay can only
+    reduce their authority after a cross-artifact integrity audit; it cannot
+    make an absent or invalid producer record valid.
+    """
+    _, value, error = _read_json_object(path, "Arena attempt dispositions")
+    if error or not isinstance(value, dict):
+        return {}, error or "Arena attempt dispositions are not an object"
+    if value.get("schema") != ARENA_ATTEMPT_DISPOSITIONS_SCHEMA:
+        return {}, "Arena attempt dispositions have unsupported schema"
+    rows = value.get("attempts")
+    if not isinstance(rows, list):
+        return {}, "Arena attempt dispositions lack an attempts list"
+    result: dict[str, dict] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            return {}, "Arena attempt disposition is not an object"
+        attempt_id = row.get("attempt_id")
+        if not isinstance(attempt_id, str) or not re.fullmatch(r"[0-9a-f]{64}", attempt_id):
+            return {}, "Arena attempt disposition has invalid attempt_id"
+        if attempt_id in result or row.get("disposition") != "invalid_diagnostic_history" or \
+                row.get("execution_state") != "stopped" or \
+                row.get("resume_permitted") is not False or \
+                row.get("ranking_authority") is not False or \
+                row.get("release_authority") is not False or \
+                not isinstance(row.get("run_directory"), str) or \
+                not isinstance(row.get("reason"), str) or not row["reason"].strip():
+            return {}, "Arena attempt disposition is malformed"
+        result[attempt_id] = row
+    return result, None
+
+
+def _arena_campaign_progress(root: Path,
+                             dispositions_path: Path | None = None) -> dict:
+    """Select newest Arena evidence and apply exact-attempt integrity retractions."""
     try:
         manifests = list((root / "campaigns").glob("*/campaign-manifest.json"))
     except OSError as exc:
         return {"available": False, "error": str(exc)}
+    dispositions, disposition_error = _arena_attempt_dispositions(
+        dispositions_path or ARENA_ATTEMPT_DISPOSITIONS_JSON)
     attempts, rejected = [], 0
     for path in manifests:
         attempt, _ = _arena_attempt(path)
         if attempt is None:
             rejected += 1
         elif attempt.get("completed_checkpoints", 0):
+            disposition = dispositions.get(attempt.get("attempt_id"))
+            if disposition is not None:
+                if disposition["run_directory"] != attempt.get("run_directory"):
+                    rejected += 1
+                    continue
+                attempt["campaign_evidence_valid"] = False
+                attempt["execution_state"] = "stopped"
+                attempt["active"] = False
+                attempt["rankable"] = False
+                attempt["disposition"] = disposition["disposition"]
+                attempt["retraction"] = {
+                    "recorded_at": disposition.get("recorded_at"),
+                    "reason": disposition["reason"],
+                    "evidence": disposition.get("evidence"),
+                    "resume_permitted": False,
+                    "ranking_authority": False,
+                    "release_authority": False,
+                }
+            else:
+                attempt["campaign_evidence_valid"] = \
+                    None if disposition_error else True
+                attempt["execution_state"] = (
+                    "unknown_disposition_overlay_unavailable"
+                    if disposition_error else "unknown_from_evidence")
+                attempt["active"] = None
+                if disposition_error:
+                    attempt["rankable"] = False
             attempts.append(attempt)
         else:
             rejected += 1
@@ -1470,8 +1538,12 @@ def _arena_campaign_progress(root: Path) -> dict:
         "completed_checkpoints": attempt["completed_checkpoints"],
         "completed_cells": attempt["completed_cells"],
         "latest_completed_evidence_at": attempt["latest_completed_evidence_at"],
+        "campaign_evidence_valid": attempt["campaign_evidence_valid"],
+        "execution_state": attempt["execution_state"],
+        "disposition": attempt.get("disposition"),
     } for attempt in attempts]
     selected["rejected_attempts"] = rejected
+    selected["disposition_overlay_error"] = disposition_error
     return selected
 
 

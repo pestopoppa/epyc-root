@@ -164,6 +164,56 @@ def test_arena_progress_selects_newest_semantic_evidence_and_verifies_v2_windows
     assert result["rejected_attempts"] == 1
 
 
+def test_arena_progress_exact_retraction_keeps_history_but_withholds_authority(
+        tmp_path: Path) -> None:
+    run = tmp_path / "campaigns/inf03-r4"
+    audit = _signed({
+        "schema": "epyc.autokernel.arena_available_source_campaign_audit.v1",
+        "authority": "availability_conditioned_diagnostic_only",
+    })
+    _write(run / "audit.json", audit)
+    manifest = _signed({
+        "schema": "epyc.autokernel.arena_campaign_run_manifest.v1",
+        "campaign_id": "inf03", "authority": "diagnostic_only",
+        "available_source": True, "audit_receipt_sha256": audit["receipt_sha256"],
+        "constraints": {"partial_results_rankable": False,
+                        "aggregate_atomic_after_complete_matrix_only": True},
+        "matrix": {"task_ids": ["task"],
+                   "arm_ids": ["starting_state_baseline", "controller"],
+                   "checkpoint_hours": [2]},
+    })
+    _write(run / "campaign-manifest.json", manifest)
+    _write(run / "execution/cells/001/checkpoint-receipt.json", _signed({
+        "schema": "epyc.autokernel.arena_checkpoint.v1",
+        "campaign_id": "inf03", "task_id": "task",
+        "arm_id": "starting_state_baseline", "checkpoint_hours": None,
+        "ended_at": "2026-08-12T01:00:00Z",
+        "device_claim_released": {"released_at": "now"},
+    }))
+    dispositions = _write(tmp_path / "dispositions.json", {
+        "schema": "epyc.dashboard.arena_attempt_dispositions.v1",
+        "attempts": [{
+            "attempt_id": manifest["receipt_sha256"],
+            "run_directory": "inf03-r4",
+            "disposition": "invalid_diagnostic_history",
+            "execution_state": "stopped", "resume_permitted": False,
+            "ranking_authority": False, "release_authority": False,
+            "reason": "intermediate evaluations escaped claim windows",
+        }],
+    })
+
+    result = server._arena_campaign_progress(tmp_path, dispositions)
+
+    assert result["available"] is True
+    assert result["campaign_evidence_valid"] is False
+    assert result["execution_state"] == "stopped"
+    assert result["active"] is False
+    assert result["rankable"] is False
+    assert result["retraction"]["resume_permitted"] is False
+    assert result["completed_checkpoints"] == 1
+    assert result["attempts"][0]["disposition"] == "invalid_diagnostic_history"
+
+
 def test_scaffold_panel_requires_hash_bound_evaluation(tmp_path: Path) -> None:
     panel_dir = tmp_path / "campaigns/ak-le-3/panel"
     evaluation = {

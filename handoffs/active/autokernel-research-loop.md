@@ -234,6 +234,16 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   item whose implementation defect was being hidden as an empirical blocker. Every residual already
   has an owning checkbox; the only documentation defect was three live proposal-v3 pointers left
   behind after the proposal-v4 migration, corrected in AK-WM-2a and Step 3 below.
+- [x] **AK-AUD-7 — Retract INF-03 r4 after tracing the controller-to-evaluator feedback path.** ✅
+  2026-08-12 — the prior completion audit's “zero implementation gaps” conclusion is superseded for
+  INF-03. KernelFoundry made 64 intermediate centralized evaluations from its GPU-blind controller
+  environment outside the two durable vendor/final claim windows, and all 64 intermediate correctness
+  checks failed. The exact-PID campaign processes were stopped and confirmed dead with no device claim
+  remaining. R4's 5/64 checkpoint inventory remains diagnostic history only; it cannot be resumed,
+  aggregated, ranked, banked, or used to select a controller. The owning repair and fresh-pilot tasks
+  live in [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md): parent-owned exact-PID
+  AF_UNIX brokerage is necessary, while a decision-bearing pilot additionally requires controller and
+  candidate OS isolation. A broker-only live run is engineering smoke, not policy evidence.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it

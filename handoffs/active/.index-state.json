@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 12,
+      "blocked": 13,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 357
+      "open": 358
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -84,15 +84,15 @@
       "total": 9
     },
     "agentic-rocm-kernel-authoring.md": {
-      "blocked": 0,
-      "closed": 52,
+      "blocked": 1,
+      "closed": 53,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 3,
+      "open": 4,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 55
+      "total": 58
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 1,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 222,
+      "closed": 223,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 244
+      "total": 245
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
@@ -2359,7 +2359,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Complete live r4 six-arm campaign; rank only its terminal 6/6 panel",
+      "next_action": "Repair brokered intermediate evaluation and OS isolation; then run a fresh pilot before any new panel",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {
