@@ -3466,11 +3466,22 @@ future sweep.)*
     execute-mode pickup appends a distinct typed spend record. Both durable commands are recorded in
     `progress/2026-08/2026-08-12.md`; governed execution still requires OP-16 and fresh post-reboot
     preflight.
+  - [x] **Repair the IQK capture-plan producer/validator bootstrap regression.** ✅ 2026-08-12 —
+    `b9bc28a6` made a pre-existing completed held-out journal mandatory at capture-plan load, while no
+    such real out-of-regime IQK journal exists; the first campaign could therefore never start. Research
+    now makes the state explicit: `bootstrap` plans bind proposal, hypothesis, exact factor frame,
+    diagnostics, calibration, and physical envelope but cannot enter AP-WM/archive authority. A later
+    `heldout_bound` plan still requires the strict completed-journal projector. Fresh r3 intervention
+    and A/A inputs under `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260812-r3/` and
+    `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812-r3/` both dry-run clean.
 - [ ] **After a compliant host reboot, rerun the prepared full-host CPU IQK campaign.** The ratified
       one-week uptime ceiling in `measurement/protocols/kernel-research.md` and `bench-cpu.md` is the
       sole remaining preflight blocker. Reuse the accepted v9 control bundle and exact recipe frame;
       preserve the journal and require claim/build/benchmark evidence rather than bypassing preflight.
-  - [ ] **OP-16 — Operator decision package: authorize the orderly reboot.**
+  - [x] **OP-16 — Operator decision package: authorize the orderly reboot.** ✅ 2026-08-12 — the
+    operator granted the AutoKernel session ownership of all compute resources and approved the
+    reboot→IQK→archive execution sequence. Preserve the r3 checkpoint, then reboot only after the
+    preflight checklist and current-source commit are durable.
     - **Context:** CPU IQK preflight measured host uptime at approximately `13.48 days`; the ratified
       seven-day ceiling requires a reboot before further search measurement. The refusal occurred
       before inference, claim, build, or benchmark, and every current artifact is wrapped and pushed.
@@ -3484,6 +3495,10 @@ future sweep.)*
     - **Recommendation:** Option A. All pre-reboot durability obligations are satisfied and no useful
       protocol-compliant CPU candidate measurement can proceed at the current uptime.
     - **Default:** Option B; preflight continues to refuse and no inference runs.
+- [ ] **Run a clean, governed CPU decode IQK holdout after the r3 prefill pair.** It must use the same
+      candidate frame but target `decode`, then be projected from its completed journal before r3 may
+      enter AK-WM-2a. This is the first valid source for `heldout_regime_transfer`; fixtures and the
+      prefill pair cannot substitute.
 - [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
       characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
       serving. The claim reason alone decides it.
