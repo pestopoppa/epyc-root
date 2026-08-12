@@ -10,7 +10,7 @@
       "blocked": 1,
       "handoffs": 5,
       "oldest_advance": "2026-07-29",
-      "open": 50
+      "open": 49
     },
     "research-evaluation-index.md": {
       "blocked": 9,
@@ -283,14 +283,14 @@
     },
     "colbert-reranker-web-research.md": {
       "blocked": 1,
-      "closed": 10,
+      "closed": 12,
       "guarded": 0,
       "last_advanced": "2026-07-30",
-      "open": 8,
+      "open": 7,
       "owner_index": "pipeline-integration-index.md",
       "row_id": "PIP-01",
       "state": "active",
-      "total": 19
+      "total": 20
     },
     "contention-model-device-and-load-axes-rider.md": {
       "blocked": 0,

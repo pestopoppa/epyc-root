@@ -3497,7 +3497,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T16:12:36Z",
+  "generated_at": "2026-08-12T16:24:45Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4828,13 +4828,13 @@
     {
       "age_days": 13,
       "blocked": 1,
-      "closed": 10,
+      "closed": 12,
       "domain": "pipeline-integration",
       "handoff": "colbert-reranker-web-research.md",
       "id": "PIP-01",
       "last_advanced": "2026-07-30",
       "next_action": "S5: Implement reranker \u2014 HOLD as of 2026-06-12 gate analysis. Add reranking to research.py, gated behind web_research_rerank flag, only if\u2026",
-      "open": 8,
+      "open": 7,
       "state": "active",
       "track": "colbert reranker web research"
     },
