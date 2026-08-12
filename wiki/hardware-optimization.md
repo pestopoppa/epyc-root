@@ -2501,3 +2501,64 @@ remain; the search must move below both the implementation choice and a one-para
 - [Progress 2026-08-11](../progress/2026-08/2026-08-11.md) — exact live counts, seed, receipt flags,
   C4 receipt hashes and bounded results, runner paths, fixed-gate dispatch finding, and verification
   results.
+
+## Compiled Update — 2026-08-12 (gfx90a training viability; IQ2_XXS decode attribution)
+
+**MI210 gfx90a is training-viable, and the 29-day block was a false negative.** LoRA/SFT on a real
+pretrained model executes on the MI210 through PyTorch-ROCm: loss `0.9174 → 0.4077` (55.6%) over 60
+steps at 7.3 steps/s, GPU at 100% and 2,984 MB VRAM sampled *during* the run by an external
+`rocm-smi` sampler. The stack (`torch 2.5.1+rocm6.2`, HIP `6.2.41133`, `trl 1.9.2`, `peft 0.20.0`,
+`transformers 5.15.0`) lives in `/mnt/raid0/llm/tools/geak-v1-rocm62-py312` and had been installed
+throughout; a prior "no PyTorch on the host" finding rested on `find / -maxdepth 6`, which cannot
+structurally reach a venv `site-packages` at depth 8+. **Absence claims about installed software must
+state the search depth and the interpreters probed.**
+
+**Numerical caveat that is load-bearing for any QLoRA work on this card.** Transient bf16 LoRA
+gradients reach ~`1e34` on layer-0 attention projections while loss converges normally, because AdamW
+is per-parameter scale-invariant. `torch.nn.utils.clip_grad_norm_` computes its norm in fp32 and
+returns `inf` on that, propagating a NaN scale into every parameter — so naive gradient clipping
+silently destroys the update. Use fp64 or per-tensor clipping. The same overflow makes an fp32
+gradient-norm assertion an unreliable health check: measure `torch.isfinite(p.grad).all()` per tensor
+instead of norming.
+
+**4-bit is not available and is probably not needed.** `bitsandbytes 0.50.0` installs, imports, and
+exposes `Linear4bit` — all three are false positives. It ships no gfx90a code object for ROCm 6.2 and
+a real NF4 load fails with `no kernel image is available for execution on the device`. Separately, a
+9B-class base at bf16 plus LoRA optimizer state is ~22–25 GB against 64 GB of VRAM, so the memory
+pressure QLoRA exists to relieve does not arise at this scale.
+
+**IQ2_XXS is int8-native, and its decode kernel is not the kernel synthetic captures profile.**
+`vec_dot_iq2_xxs_q8_1` (`vecdotq.cuh:990`) reaches `ggml_cuda_dp4a` via a 256-entry codebook gather
+and sign unpack — there is **no float per-element dequant**, the same conclusion `a8afd338` reached for
+Q8_0. On the real 122B UD-IQ2_M at 39.40 t/s decode, `mul_mat_vec_q<IQ2_XXS>` is **16.42%** of decode
+kernel time across 6,063 dispatches, median **85.60 µs** with only a 6% min-to-max spread — the
+signature of a kernel pinned at a hard resource ceiling rather than one with variable stalls.
+
+The occupancy reading depends entirely on which template instantiation is measured, and this is the
+generalisable trap: the synthetic op capture runs `mul_mat_vec_q<IQ2_XXS, 1, false, false>` at
+`Arch_VGPR=64` → 8 waves/SIMD (the gfx90a maximum), while **production MoE decode runs
+`<IQ2_XXS, 1, true, false>` (the mm_ids path) at `Arch_VGPR=80` → 6 waves/SIMD, 75% of maximum.**
+Scratch is 0 in both, so the codebook gather causes no register spill either way. **Treat a synthetic
+op capture as a different kernel from the production one until the template arguments are compared.**
+The open lever is whether those extra 16 registers are inherent to the gather or incidental to the
+mm_ids wrapper.
+
+**Instrument boundary.** `rocprof` v1 device timestamps work on IQ2 shapes where `rocprofv2` segfaults,
+and need no seeded producer — but v1's `SQ_WAVES`, `SQ_BUSY_CYCLES`, `SQ_INSTS_VMEM_RD`,
+`SQ_INSTS_VALU_INT32` and `SQ_INSTS_SALU` read **exactly 0** on this host, so only TCC counters and
+timestamps are trustworthy. The governed attribution runner also hardcodes `-n 0`, so it answers
+*prefill* regardless of intent: a decode question returns `status: passed` carrying 2 warmup GEMV
+dispatches against 45,021 in a real decode.
+
+### Source References (2026-08-12 gfx90a training / IQ2 decode)
+
+- [A9 gfx90a training viability](../artifacts/gpu-aux-baselines/a9_gfx90a_training_viability_20260812.md) —
+  both pre-registered decision rules, the stage-1 failure and its test-method diagnosis, the fp32
+  norm-overflow analysis, and the bitsandbytes kernel-image failure.
+- [A10 IQ2 decode attribution](../artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md) —
+  governed prefill receipt, non-governed decode capture, per-kernel shares, and the VGPR/occupancy
+  correction with both template instantiations side by side.
+- [MI210 Q8 dequant GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the IQ2
+  tool-boundary row, its closure caveats, and the derived VGPR-pressure lever.
+- [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — commit hashes, residency samples, receipt
+  paths, and the runner-defect chain.
