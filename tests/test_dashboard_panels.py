@@ -21,6 +21,7 @@ way ``tests/test_dashboard_activity.py`` already does.
 Run: ``pytest tests/test_dashboard_panels.py`` from ``/mnt/raid0/llm/epyc-root``.
 """
 import importlib
+import hashlib
 import json
 import os
 import re
@@ -887,6 +888,82 @@ class KernelActivityContextTest(unittest.TestCase):
                 json.dumps(available), encoding="utf-8")
             (probes / "smoke-receipt.json").write_text(
                 json.dumps(smoke), encoding="utf-8")
+            pilot_probe = root / "probes" / "pilot-r15"
+            pilot_probe.mkdir(parents=True)
+            pilot = {
+                "schema": server.AUTOKERNEL_DIAGNOSTIC_PILOT_SCHEMA,
+                "campaign_id": "pilot-v1", "attempt_id": "pilot-r15",
+                "task_id": "instruction2triton.rocmbench.test_add_kernel",
+                "arm_id": "k_search", "status": "pass",
+                "authority": "compatibility_only_no_ranking_or_promotion_authority",
+                "constraints": {
+                    "one_task": True, "one_controller_arm": True,
+                    "matched_campaign_result_implied": False,
+                    "cross_controller_ranking_authority": False,
+                    "belief_update_authority": False,
+                    "promotion_authority": False,
+                },
+                "checkpoint": {
+                    "evaluation": {
+                        "pass_compilation": True, "pass_correctness": True,
+                        "valid_baseline_cases": 4, "valid_optimized_cases": 4,
+                        "average_speedup": 1.0019039030109136,
+                    },
+                    "broker_evaluation_chain": {"evaluation_count": 1},
+                    "belief_receipt": {"source": {
+                        "model_ids": ["gpt-5.6-sol:high:upstream-controller"]}},
+                    "artifacts": {
+                        f"workspace/.autokernel-upstream-controller/000{n}-model-output.txt":
+                            str(n) * 64 for n in range(1, 7)
+                    },
+                    "measurement_windows": [{
+                        "phase": "vendor_baseline",
+                        "device_sampling": {"sample_count": 11},
+                        "device_claim_released": {"released_at": "t1"},
+                    }, {
+                        "phase": "centralized_final_evaluation",
+                        "device_sampling": {"sample_count": 21},
+                        "device_claim_released": {"released_at": "t2"},
+                        "evaluator_execution_receipt": {
+                            "activation_receipt": {
+                                "network_profile": "deny_all",
+                                "writable_device_paths": [
+                                    "/dev/kfd", "/dev/dri/renderD128", "/dev/null"]},
+                            "teardown_receipt": {
+                                "verified_empty": True, "removed": True}},
+                    }],
+                    "controller_sandbox_execution": {
+                        "activation_receipt": {"writable_device_paths": ["/dev/null"]},
+                        "teardown_receipt": {"teardown": {
+                            "verified_empty": True, "removed": True}},
+                    },
+                },
+            }
+            broker_window = {
+                "schema": "epyc.autokernel.arena_gpu_measurement_window.v1",
+                "phase": "controller_intermediate_evaluation",
+                "device_sampling": {"sample_count": 21},
+                "device_claim_released": {"released_at": "t-intermediate"},
+                "evaluator_execution_receipt": {
+                    "activation_receipt": {
+                        "network_profile": "deny_all",
+                        "writable_device_paths": [
+                            "/dev/kfd", "/dev/dri/renderD128", "/dev/null"]},
+                    "teardown_receipt": {
+                        "verified_empty": True, "removed": True}},
+            }
+            broker_window["receipt_sha256"] = \
+                server._canonical_receipt_hash(broker_window)
+            broker_rel = "controller-evaluation-windows/0001-measurement.json"
+            broker_path = pilot_probe / "cells" / "cell-1" / broker_rel
+            broker_path.parent.mkdir(parents=True)
+            broker_raw = json.dumps(broker_window).encode("utf-8")
+            broker_path.write_bytes(broker_raw)
+            pilot["checkpoint"]["artifacts"][broker_rel] = \
+                hashlib.sha256(broker_raw).hexdigest()
+            pilot["receipt_sha256"] = server._canonical_receipt_hash(pilot)
+            (pilot_probe / "diagnostic-pilot-receipt.json").write_text(
+                json.dumps(pilot), encoding="utf-8")
             (probes / "preflight.json").write_text(json.dumps({
                 "schema": "epyc.autokernel.live_control_preflight.v1",
                 "measured_at": "2026-08-12T00:17:01Z",
@@ -1015,6 +1092,21 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertEqual(state["empirical_smoke"]["status"], "failed")
         self.assertEqual(state["empirical_smoke"]["device_sample_count"], 12)
         self.assertFalse(state["empirical_smoke"]["rankable"])
+        self.assertEqual(state["diagnostic_pilot"]["status"], "pass")
+        self.assertTrue(state["diagnostic_pilot"]["authority_verified"])
+        self.assertEqual(state["diagnostic_pilot"]["model_call_count"], 6)
+        self.assertEqual(state["diagnostic_pilot"]["broker_evaluation_count"], 1)
+        self.assertEqual(state["diagnostic_pilot"]["released_measurement_windows"], 3)
+        self.assertEqual([row["sample_count"] for row in
+                          state["diagnostic_pilot"]["measurement_windows"]],
+                         [11, 21, 21])
+        self.assertEqual(len(state["diagnostic_pilot"]["evaluator_sandboxes"]), 2)
+        self.assertTrue(all(row["evaluator_network_profile"] == "deny_all"
+                            for row in state["diagnostic_pilot"]["evaluator_sandboxes"]))
+        self.assertEqual(state["diagnostic_pilot"]["controller_writable_devices"],
+                         ["/dev/null"])
+        self.assertFalse(state["diagnostic_pilot"]["rankable"])
+        self.assertFalse(state["diagnostic_pilot"]["promotion_authority"])
         self.assertEqual(state["instrument_preflight"]["status"], "PASS")
         self.assertEqual(state["instrument_preflight"]["passed_checks"], 2)
         self.assertEqual(state["decision_controls"]["marker"], "5/5")
@@ -1068,6 +1160,7 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertFalse(state["fixed_campaign"]["available"])
         self.assertFalse(state["available_source_diagnostic"]["available"])
         self.assertFalse(state["empirical_smoke"]["available"])
+        self.assertFalse(state["diagnostic_pilot"]["available"])
         self.assertFalse(state["instrument_preflight"]["available"])
         self.assertFalse(state["decision_controls"]["available"])
         self.assertFalse(state["gpu_prefetch_replay"]["available"])

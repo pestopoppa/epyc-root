@@ -3491,7 +3491,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T14:04:42Z",
+  "generated_at": "2026-08-12T14:48:13Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4159,13 +4159,13 @@
     {
       "age_days": 0,
       "blocked": 1,
-      "closed": 57,
+      "closed": 59,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Resolve r12's sandboxed Codex transport denial, then rerun the exact one-task/K-Search pilot to a terminal receipt",
-      "open": 5,
+      "next_action": "Begin the fresh governed 7/7 availability-conditioned panel from the r15-proven isolated execution path",
+      "open": 3,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4198,7 +4198,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 225,
+      "closed": 226,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",

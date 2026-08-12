@@ -508,7 +508,10 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       Claude/Codex checkpoints are the first post-hook live evidence: belief receipts
       `05cb70a0d6f670796f93bdc06c4a681578d044f7929839688a4b2c5b7a491370` and
       `4c01642993c1120eac4885714e3e2780845e618913c11676c6decef290fded61` each carry the two
-      producer-authored rows. Older receipts remain untouched.
+      producer-authored rows. The r15 terminal one-task/K-Search compatibility pilot reused this
+      writer and emitted the same two producer-authored correctness/timing-validity rows under
+      diagnostic/no-ranking authority; it needs no new source class or grading rule. Older receipts
+      remain untouched.
 - [x] SC21 **Classify GEAK/Arena preflight findings deliberately.** Source pin/license, physical
       gfx90a identity, registry shape and spoof refusal are verified findings, not ordinal
       measurements and not literature. Either declare one shared `verification` source-class ladder
