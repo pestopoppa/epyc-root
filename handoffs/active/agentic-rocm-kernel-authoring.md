@@ -366,11 +366,13 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
   - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints and
     interpret it only as an availability-conditioned diagnostic. The corrected r4 campaign is live
     at `/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-six-arm-20260812-r4`. At the
-    2026-08-12 stale-state audit, the starting baseline and all three Claude/Codex checkpoints were
-    terminal; the aggregate Claude/Codex receipt self-hash is
+    2026-08-12 wrap boundary, **4/64 checkpoints** and **2/24 cells** were terminal: the starting
+    baseline and all three Claude/Codex checkpoints. Their eight vendor/final measurement windows
+    all released, retaining **183** numeric samples across **44.728 claimed GPU-seconds**. The
+    grouped completed-cell Claude/Codex receipt self-hash is
     `fbaa5b5796d89d1d214b281d57d611f78242084ec9cb86408156983e73add285`, and KernelFoundry 2h was
-    in controller deliberation. Partial results remain non-rankable; rank only the terminal full 6/6
-    panel.
+    in controller deliberation. The partial attempt has no aggregate and remains non-rankable; rank
+    only the terminal full 6/6 panel.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims
