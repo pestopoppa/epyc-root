@@ -320,6 +320,20 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
     successor replay is branch `codex/e8-bcb190-score-fix-20260729`, commit `8bc6eaa9`; it must be
     integrated second and reviewed against the isolation commit. Do not run new generation before
     deterministic replay of saved outputs is exhausted.
+    **SECOND PASS 2026-08-12 (independent, overlaps the `auditor` note above — evidence:
+    [`artifacts/audit/deterministic-rescore-fail-closed-20260812.md`](../../artifacts/audit/deterministic-rescore-fail-closed-20260812.md)):**
+    integration and destroyed-evidence findings both CONFIRMED independently. Review was
+    re-done at diff level rather than inherited: the fix swaps a shared `/mnt/raid0/llm/tmp`
+    `NamedTemporaryFile` for a per-invocation `TemporaryDirectory` with `cwd` set to it in both
+    execution paths, and closes a temp-file leak; `test_debug_scorer_code_execution.py` is
+    **11 passed**, module-level and counted. The collision mechanism is now confirmed
+    mechanically: BCB190's oracle `tearDown` runs `os.remove('test.db')` on a RELATIVE path, so
+    concurrent rows deleted each other's database. `integrate/scorer-isolation-20260812`
+    @ `3f734141` must NOT be merged — one audit commit on a stale base; merging reverts ~6,600
+    lines of later `main`. **The REPLAY half was then executed against the corpus that does
+    exist** (18 corpora, 6,746 rows under `orchestration/reports/`): **5,324 re-scored, 0
+    divergences.** Tool `scripts/audit/deterministic_rescore_ledger.py`, 23 counted tests, 7
+    mutants all killed.
   - [ ] **Resolve the saved-output BigCodeBench score divergence fail-closed** — completion attempt
     `...deterministic_completion_20260729T124832Z` correctly refused admission because ordinal
     `418` / `bcb_BigCodeBench/190` stored `false` while deterministic code scoring returned `true`.
@@ -335,6 +349,23 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
     colliding `test.db`; the stored false has no execution witness. The correction ledger must bind
     source bytes, scorer source hashes, per-row before/after verdicts, and corrected sidecars before
     any new completion run.
+    **SECOND PASS 2026-08-12 (independent, overlaps the `auditor` note above — evidence:
+    [`artifacts/audit/deterministic-rescore-fail-closed-20260812.md`](../../artifacts/audit/deterministic-rescore-fail-closed-20260812.md)):**
+    ordinal `418` remains UNADJUDICATED and no verdict was invented for it — destroyed-evidence
+    finding independently confirmed by four searches. The bounded correction ledger was
+    nonetheless BUILT and RUN over the live corpus
+    ([`artifacts/audit/deterministic-rescore-ledger-20260812.json`](../../artifacts/audit/deterministic-rescore-ledger-20260812.json)),
+    binding source bytes, scorer source hashes and per-row before/after verdicts as this row
+    requires. **Corrections applied: 0** — 5,324 of 6,746 rows re-scored, zero stored-vs-rescored
+    divergences. Three findings the row did not anticipate: (1) **232 rows store an in-band
+    `[ERROR: …]` infrastructure failure as `correct: false`** — the same defect class biased the
+    other way, excluded and reported rather than corrected up; (2) the pool's `scoring_method`
+    disagrees with the method that actually ran on **52.7%** of rows, and joining on it
+    manufactures ~629 phantom favourable "corrections" — a standing hazard for any future
+    offline re-score; (3) **820 stored verdicts are permanently unauditable** (their corpus saved
+    `answer_hash` but never `answer`). debugbench: **20 rows excluded-and-flagged by ordinal**,
+    11 of them stored `true`; the oracle rebuild is scorer-side only — **0 pool rows use
+    `code_patch`**, so all 4,253 debugbench pool rows remain vacuous.
   - [ ] **Repair the historical producer-pin and abort-terminalization recurrence before final
     E8 promotion** — independent review found that older producer namespaces can still be selected
     without a runtime `run_seal.json`, and the offline one-namespace terminal bridge does not make
