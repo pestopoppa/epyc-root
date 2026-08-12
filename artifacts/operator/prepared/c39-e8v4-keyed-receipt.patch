@@ -1,0 +1,44 @@
+--- a/artifacts/operator/ratify_and_apply_e8_quality_baseline_v4_20260727.sh
++++ b/artifacts/operator/ratify_and_apply_e8_quality_baseline_v4_20260727.sh
+@@ -444,6 +444,28 @@
+     trap - RETURN
+ }
+ 
++# C39 keyed-receipt contract: the daemon's spent-gate check stats exactly
++# artifacts/operator/receipts/<GATE_ID>.json, so the signature must leave one at
++# signing time. Written only after apply_final returns, so a failed apply mints
++# nothing. A POINTER, never a copy — an operator signature must not acquire a
++# second source of truth.
++write_receipt_index() {
++    local index_dir="$ROOT/artifacts/operator/receipts"
++    mkdir -p -- "$index_dir"
++    PYTHONOPTIMIZE=0 "$PYTHON" - "$index_dir/$TOKEN.json" "$TOKEN" "$RECEIPT" <<'PY_IDX'
++import json, os, sys
++index_path, token, receipt = sys.argv[1:4]
++with open(index_path, "x", encoding="utf-8") as fh:
++    json.dump({"gate_id": token, "indexed_by": "attest", "receipt": receipt,
++               "schema_version": "session_bus.receipt_index.v1", "status": "ratified"},
++              fh, indent=2, sort_keys=True)
++    fh.write("\n")
++    fh.flush()
++    os.fsync(fh.fileno())
++PY_IDX
++    printf 'C39 keyed receipt index written: receipts/%s.json\n' "$TOKEN"
++}
++
+ apply_final() {
+     validate_only
+     mint_receipt
+@@ -480,7 +502,12 @@
+     --attest)
+         [[ $# -eq 2 && "$2" == "$TOKEN" ]] ||
+             fail "usage: --attest $TOKEN"
++        # C39 keyed-receipt contract. Same guard as the two adopting ratifiers:
++        # refuse a second signature rather than minting one the daemon cannot see.
++        [[ ! -e "$ROOT/artifacts/operator/receipts/$TOKEN.json" ]] ||
++            fail "receipt index already exists (token is SPENT): receipts/$TOKEN.json"
+         apply_final
++        write_receipt_index
+         ;;
+     *) fail 'usage: --collect|--validate-only|--attest TOKEN' ;;
+ esac
