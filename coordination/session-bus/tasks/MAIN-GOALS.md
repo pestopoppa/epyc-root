@@ -482,11 +482,16 @@ you found. "Cannot verify" is a legitimate report; a guess is not.
 Flagged rather than silently reconciled, per the same convention as
 [`STANDING-MAIN-RULES.md`](STANDING-MAIN-RULES.md). Only `coordinator-agent` can rule on these.
 
-1. **`auditor`: READ-ONLY roster comment vs. a code-owning mandate.** `config.yaml` describes the
-   `auditor` row as a "**READ-ONLY** auditor of the E8 harness contract set", but the C-OWN adoption
-   brief assigns it ownership of the C-series and `scripts/coordination/tmux_adapter.py`, and
-   explicitly makes C25 its fix to implement. This charter follows C-OWN. The roster comment reads as
-   stale rather than contradictory, but it is the roster, and it should be corrected there.
+1. ~~**`auditor`: READ-ONLY roster comment vs. a code-owning mandate.**~~ **RESOLVED — struck
+   2026-08-12. There is no conflict and there has not been one since 2026-07-29.** The roster was
+   corrected at the source: `coordination/session-bus/config.yaml:46-62` now records the READ-ONLY
+   charter as historical (`:47`, "Originally spawned 2026-07-28 as a READ-ONLY auditor…") and
+   explicitly supersedes it (`:53`, "**NO LONGER READ-ONLY, corrected 2026-07-29.** It adopted
+   C-OWN — the session-bus delivery plane, including `tmux_adapter.py` and the whole C-series —
+   which makes implementing fixes part of its job, not a deviation from it"), naming the same
+   charter audit that raised this row (`:56`). `lanes: [none]` still holds and is unrelated. This
+   row outlived its premise by two weeks and was still being cited as a live contradiction
+   (AUD-16/F-23, R-19); citing it as evidence of a charter conflict is now an error.
 
 2. **`mainA`'s "exclusive host window" vs. the arrangement several briefs still describe.** The
    `inference`, `mainA` and `mainB` briefs of 2026-07-29 all describe E8 and E5 running
