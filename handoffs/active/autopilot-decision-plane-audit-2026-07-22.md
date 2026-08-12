@@ -300,6 +300,22 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   - [ ] **Integrate scorer-isolation before deterministic-score replay, then re-run the bounded
     deterministic completion** — reviewed scorer isolation is orchestrator branch
     `codex/debug-scorer-isolation-20260729`, commit `79f3d2f35ddd00d21dc2fab235ff269db7c7dec7`.
+    **ADJUDICATED 2026-08-12 (`auditor`, B9): the INTEGRATION half is DONE-UPSTREAM and
+    verified** — both commits are ancestors of orchestrator `main`, merged 2026-07-29 in the
+    required order (first-parent chain: `cb9e4b4b` merges isolation, `ad415448` merges bcb190 ON
+    TOP of it), and the review verdict is builds-on-not-bypasses, proven by call-chain trace
+    (completer → `independently_score_response` → `score_answer_deterministic` →
+    `_load_orchestrator_debug_scorer` → the isolated `debug_scorer.score_answer`) plus bcb190's
+    own sha-pinning of the scorer source (`_scorer_source_hashes` + runtime witness). Audit
+    checkpoint: orchestrator branch `integrate/scorer-isolation-20260812` @ `3f734141`; 27/27 on
+    the directly-changed suites. **The REPLAY half is BLOCKED-AND-LIKELY-MOOT**: the source
+    evidence (`…capacityfix_20260729T112433Z`, sha-tree `b0a19752…`, and both failed completion
+    attempts) exists NOWHERE — not on disk (exhaustive search), not in git (zero history);
+    fabricating verdicts was correctly refused. And the E8 era this replay would feed advanced
+    to E9 under operator signature 2026-08-11 22:15Z, so a fresh E9-era reseed (new generation,
+    outside this row) supersedes the destroyed-evidence path either way. **Mootness ruling
+    routed to the operator with `e8-token-retire`** (same decision family, morning note item 3);
+    box stays open pending that ruling only.
     Its private per-invocation workspaces prevent BigCodeBench code-execution collisions. The
     successor replay is branch `codex/e8-bcb190-score-fix-20260729`, commit `8bc6eaa9`; it must be
     integrated second and reviewed against the isolation commit. Do not run new generation before
@@ -307,6 +323,14 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   - [ ] **Resolve the saved-output BigCodeBench score divergence fail-closed** — completion attempt
     `...deterministic_completion_20260729T124832Z` correctly refused admission because ordinal
     `418` / `bcb_BigCodeBench/190` stored `false` while deterministic code scoring returned `true`.
+    **ADJUDICATED 2026-08-12 (`auditor`, B10, pairs with B9 above): BLOCKED-AND-LIKELY-MOOT for
+    the same reason** — the saved outputs this ledger would bind (source bytes, before/after
+    verdicts) were destroyed with the v5 evidence chain; no copy exists on disk or in git (the
+    only `bcb_BigCodeBench/190` hits host-wide are unrelated /tmp probe copies with no
+    provenance). No ledger was fabricated — FAIL-CLOSED held. The scorer-side fix is already
+    upstream and verified (see B9 note). If the operator rules the E8 chain retired, this row
+    closes as superseded; a fresh E9-era run would carry isolation from birth and never store
+    the collision-class false. Routed with `e8-token-retire`.
     Classification: the old scorer used shared `/mnt/raid0/llm/tmp` execution state, allowing a
     colliding `test.db`; the stored false has no execution witness. The correction ledger must bind
     source bytes, scorer source hashes, per-row before/after verdicts, and corrected sidecars before
