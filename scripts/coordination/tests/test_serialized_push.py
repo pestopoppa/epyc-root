@@ -41,6 +41,7 @@ from scripts.coordination.serialized_push import (  # noqa: E402
     LockHeldError,
     NotHolderError,
     PreflightError,
+    SerializedPushError,
     acquire,
     build_manifest,
     describe_holder,
@@ -52,6 +53,7 @@ from scripts.coordination.serialized_push import (  # noqa: E402
     render_manifest,
     repo_key,
     subject_prefix,
+    validate_lock_name,
 )
 
 SCRIPT = REPO_ROOT / "scripts" / "coordination" / "serialized_push.py"
@@ -880,3 +882,96 @@ def test_cli_refuses_push_and_dry_run_together(tmp_path):
     res = _cli("--agent", "mainA", "--repo", str(work), "--push", "--dry-run")
     assert res.returncode != EXIT_OK
     assert "not allowed with" in res.stderr
+
+
+# ---------------------------------------------------------------------------
+# Named leases (--lock-name) — the wrap-up lease, phase 3 task C3
+# ---------------------------------------------------------------------------
+
+
+def test_named_leases_are_independent_of_the_push_lock(tmp_path):
+    """Holding the wrap-up lease must not block a push, and vice versa.
+
+    They serialize DIFFERENT things: the wrap-up lease covers the shared-surface
+    edits and the promotion merge (minutes), the push lock covers one push
+    (seconds). Collapsing them into one lock would make every wrap-up a fleet-wide
+    push freeze, which is exactly the 15-minute commit freeze this program exists
+    to remove.
+    """
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir = tmp_path / "locks"
+    key = repo_key(work)
+    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="wrapup")
+    # A different agent may still take the push lock.
+    acquire(lock_dir, key, "mainB", str(work), mode="hold", name="push")
+    assert lock_path(lock_dir, key, "wrapup").exists()
+    assert lock_path(lock_dir, key, "push").exists()
+    assert lock_path(lock_dir, key, "wrapup") != lock_path(lock_dir, key, "push")
+
+
+def test_named_lease_refuses_a_second_holder(tmp_path):
+    """The whole point: two lane worktrees cannot hold the wrap-up lease at once."""
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir = tmp_path / "locks"
+    key = repo_key(work)
+    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="wrapup")
+    with pytest.raises(LockHeldError) as exc:
+        acquire(lock_dir, key, "mainB", str(work), mode="hold", name="wrapup")
+    assert "wrapup lock" in str(exc.value)
+
+
+def test_two_worktrees_of_one_clone_contend_for_the_same_lease(tmp_path):
+    """Lane worktrees are DIFFERENT PATHS to ONE repository.
+
+    A lock keyed on the path would give each lane its own lease and serialize
+    nothing. The key is the git common dir's device+inode, so both worktrees
+    resolve the same lock file.
+    """
+    work, _ = _clone_with_remote(tmp_path)
+    lane = tmp_path / "lane-a"
+    _git(work, "worktree", "add", "-b", "lane/mainA", str(lane))
+    assert repo_key(lane) == repo_key(work)
+    lock_dir = tmp_path / "locks"
+    acquire(lock_dir, repo_key(work), "mainA", str(work), mode="hold", name="wrapup")
+    with pytest.raises(LockHeldError):
+        acquire(lock_dir, repo_key(lane), "mainB", str(lane), mode="hold", name="wrapup")
+
+
+def test_release_only_drops_the_named_lease(tmp_path):
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir = tmp_path / "locks"
+    key = repo_key(work)
+    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="wrapup")
+    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="push")
+    assert release(lock_dir, key, "mainA", name="wrapup") is True
+    assert not lock_path(lock_dir, key, "wrapup").exists()
+    assert lock_path(lock_dir, key, "push").exists()
+
+
+def test_cli_named_lease_roundtrip_and_status(tmp_path):
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir = tmp_path / "locks"
+    common = ["--repo", str(work), "--lock-dir", str(lock_dir), "--lock-name", "wrapup"]
+    got = _cli("--agent", "mainA", *common, "--acquire")
+    assert got.returncode == EXIT_OK and "acquired wrapup lock" in got.stdout
+    st = _cli("--agent", "mainB", *common, "--status")
+    assert "wrapup lock: HELD" in st.stdout
+    # The push lock over the same repo is untouched and reads FREE.
+    st2 = _cli("--agent", "mainB", "--repo", str(work), "--lock-dir", str(lock_dir), "--status")
+    assert "push lock: FREE" in st2.stdout
+    rel = _cli("--agent", "mainA", *common, "--release")
+    assert rel.returncode == EXIT_OK and "released wrapup lock" in rel.stdout
+
+
+def test_cli_refuses_to_push_under_a_non_push_lock_name(tmp_path):
+    """A lock nobody else checks is worse than no lock: it reports success."""
+    work, _ = _clone_with_remote(tmp_path)
+    res = _cli("--agent", "mainA", "--repo", str(work), "--lock-name", "wrapup", "--push")
+    assert res.returncode == EXIT_PREFLIGHT
+    assert "serialize against nobody" in res.stderr
+
+
+@pytest.mark.parametrize("bad", ["../evil", "/abs", "Wrapup", "", "a" * 40, "wrap up"])
+def test_lock_name_cannot_escape_the_lock_directory(bad):
+    with pytest.raises(SerializedPushError):
+        validate_lock_name(bad)

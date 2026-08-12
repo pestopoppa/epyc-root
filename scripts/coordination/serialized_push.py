@@ -196,8 +196,36 @@ def repo_key(repo: os.PathLike | str) -> str:
 # ---------------------------------------------------------------------------
 
 
-def lock_path(lock_dir: os.PathLike | str, key: str) -> Path:
-    return Path(lock_dir) / f"push-{key}.json"
+# Lock NAMES. One lock dir, several independent leases over the same repository.
+#
+# Added 2026-08-12 (phase 3, task C3) for the WRAP-UP LEASE: concurrent wrap-ups in
+# five lane worktrees collide on a small set of genuinely shared surfaces (the
+# master-index generated block, wiki/source_manifest.json, wiki/.last_compile, the
+# index_state.py regen) and on the promotion merge. That needs the same primitive as
+# the push lock — O_EXCL create, holder named in the file, no silent expiry, keyed on
+# the git common dir so every worktree of one clone contends — but it is NOT the push
+# lock: holding one must not block the other, and a wrap-up lease is held for minutes
+# of doc editing while a push lock is held for seconds.
+#
+# So: same module, same primitives, same reclaim/displacement rules, different name.
+# Deliberately NOT a second implementation — a second O_EXCL lock written elsewhere
+# would drift from this one's reclaim semantics, which are the hard part.
+_LOCK_NAME_RE = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
+
+
+def validate_lock_name(name: str) -> str:
+    """A lock name becomes a filename; refuse anything that could escape the dir."""
+    if not _LOCK_NAME_RE.match(name or ""):
+        raise SerializedPushError(
+            f"bad-lock-name: {name!r} is not a valid lock name (lowercase letters, "
+            f"digits and dashes, starting with a letter, <=32 chars)",
+            condition="bad-lock-name",
+        )
+    return name
+
+
+def lock_path(lock_dir: os.PathLike | str, key: str, name: str = "push") -> Path:
+    return Path(lock_dir) / f"{validate_lock_name(name)}-{key}.json"
 
 
 def read_lock(path: os.PathLike | str) -> dict | None:
@@ -302,7 +330,7 @@ def describe_holder(rec: dict) -> str:
 
 
 def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
-            mode: str = "push") -> dict:
+            mode: str = "push", name: str = "push") -> dict:
     """Take the push lock with O_EXCL, or raise LockHeldError naming the holder.
 
     Reuse rules, and why each one:
@@ -316,7 +344,7 @@ def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
     """
     pid = os.getpid() if pid is None else pid
     lock_dir = Path(lock_dir)
-    path = lock_path(lock_dir, key)
+    path = lock_path(lock_dir, key, name)
     rec = {
         "agent": agent,
         "pid": pid,
@@ -324,6 +352,7 @@ def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
         "ts": _utcnow_iso(),
         "repo_key": key,
         "repo_path": str(repo_path),
+        "lock_name": name,
         # "push" = taken for the duration of one push; a dead PID is real evidence of
         # residue. "hold" = taken by --acquire and held across invocations; a dead PID
         # is EXPECTED and evidence of nothing. See describe_holder().
@@ -347,9 +376,9 @@ def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
             # Own residue: reclaim, but say so.
             path.unlink()
             print(f"serialized_push: reclaiming your own lock ({why})", file=sys.stderr)
-            return acquire(lock_dir, key, agent, repo_path, pid=pid, mode=mode)
+            return acquire(lock_dir, key, agent, repo_path, pid=pid, mode=mode, name=name)
         raise LockHeldError(
-            f"lock-held: refusing to push — {held.get('agent')!r} holds the push lock "
+            f"lock-held: refusing — {held.get('agent')!r} holds the {name} lock "
             f"for this repo.\n{describe_holder(held)}",
             holder=held, condition="lock-held",
         )
@@ -368,14 +397,14 @@ def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
     return rec
 
 
-def release(lock_dir, key, agent: str) -> bool:
+def release(lock_dir, key, agent: str, name: str = "push") -> bool:
     """Drop a lock you hold. False if there was nothing to drop.
 
     Ownership is the AGENT id: a session that restarted must be able to clean up
     after itself. But a different, RUNNING process under the same id is refused —
     releasing a live pusher's lock mid-push is the race, wearing a helpful face.
     """
-    path = lock_path(lock_dir, key)
+    path = lock_path(lock_dir, key, name)
     rec = read_lock(path)
     if rec is None:
         return False
@@ -401,14 +430,15 @@ def release(lock_dir, key, agent: str) -> bool:
     return True
 
 
-def force_release(lock_dir, key, agent: str, named_holder: str) -> dict:
+def force_release(lock_dir, key, agent: str, named_holder: str,
+                  name: str = "push") -> dict:
     """Displace a holder — deliberately, and on the record.
 
     You must NAME the holder you are displacing. Naming the wrong one is refused,
     which makes it impossible to blind-break a lock whose owner you never looked at.
     Every displacement is journaled next to the lock.
     """
-    path = lock_path(lock_dir, key)
+    path = lock_path(lock_dir, key, name)
     rec = read_lock(path)
     if rec is None:
         raise NotHolderError(
@@ -739,15 +769,20 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--fetch", action="store_true",
                    help="update the upstream ref first (a network op: runs under the lock)")
     p.add_argument("--limit", type=int, default=40, help="commits to list (default: %(default)s)")
+    p.add_argument("--lock-name", default="push",
+                   help="which lease over this repo to operate on (default: %(default)s). "
+                        "Use 'wrapup' for the wrap-up lease that serializes the shared-surface "
+                        "steps and the promotion merge across lane worktrees. Independent "
+                        "leases: holding one never blocks the other.")
     return p
 
 
-def _print_lock_state(path: Path) -> dict | None:
+def _print_lock_state(path: Path, name: str = "push") -> dict | None:
     rec = read_lock(path)
     if rec is None:
-        print(f"push lock: FREE  ({path})")
+        print(f"{name} lock: FREE  ({path})")
     else:
-        print(f"push lock: HELD  ({path})")
+        print(f"{name} lock: HELD  ({path})")
         print(describe_holder(rec))
     return rec
 
@@ -756,29 +791,41 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     repo = Path(args.repo)
 
+    # A non-default lock name may NOT be used to push. Pushing under the 'wrapup'
+    # lease would take a lock no other pusher looks at, so two pushes could run
+    # concurrently while both believed they were serialized — a lock that reports
+    # success and protects nothing is worse than no lock.
+    if args.push and args.lock_name != "push":
+        print(f"serialized_push: REFUSING — --push always uses the 'push' lock; "
+              f"--lock-name {args.lock_name!r} would serialize against nobody.",
+              file=sys.stderr)
+        return EXIT_PREFLIGHT
+
     try:
+        validate_lock_name(args.lock_name)
         key = repo_key(repo)
     except (PreflightError, SerializedPushError) as exc:
         print(f"serialized_push: REFUSING — {exc}", file=sys.stderr)
         return EXIT_PREFLIGHT
-    path = lock_path(args.lock_dir, key)
+    path = lock_path(args.lock_dir, key, args.lock_name)
 
     # ---- pure lock operations ------------------------------------------------
     try:
         if args.status:
-            _print_lock_state(path)
+            _print_lock_state(path, args.lock_name)
             return EXIT_OK
 
         if args.release:
-            if release(args.lock_dir, key, args.agent):
-                print(f"released push lock for {repo} (key {key})")
+            if release(args.lock_dir, key, args.agent, name=args.lock_name):
+                print(f"released {args.lock_name} lock for {repo} (key {key})")
             else:
-                print(f"(no push lock held for {repo})")
+                print(f"(no {args.lock_name} lock held for {repo})")
             return EXIT_OK
 
         if args.force_release:
-            rec = force_release(args.lock_dir, key, args.agent, args.force_release)
-            print(f"FORCE-RELEASED push lock held by {rec.get('agent')!r} since "
+            rec = force_release(args.lock_dir, key, args.agent, args.force_release,
+                                name=args.lock_name)
+            print(f"FORCE-RELEASED {args.lock_name} lock held by {rec.get('agent')!r} since "
                   f"{rec.get('ts')}; displacement journaled by {args.agent!r}")
             return EXIT_OK
     except (NotHolderError, LockCorruptError) as exc:
@@ -811,14 +858,18 @@ def main(argv: list[str] | None = None) -> int:
     # ---- lock-holding operations (acquire / push) ---------------------------
     try:
         acquire(args.lock_dir, key, args.agent, str(repo),
-                mode="hold" if args.acquire else "push")
+                mode="hold" if args.acquire else "push", name=args.lock_name)
     except (LockHeldError, LockCorruptError) as exc:
         print(f"serialized_push: REFUSING — {exc}", file=sys.stderr)
         return EXIT_LOCKED
 
     if args.acquire:
-        print(f"acquired push lock for {repo} (key {key}) as {args.agent!r}")
-        print("Hold it while you review, then --push (or --release to give it up).")
+        print(f"acquired {args.lock_name} lock for {repo} (key {key}) as {args.agent!r}")
+        if args.lock_name == "push":
+            print("Hold it while you review, then --push (or --release to give it up).")
+        else:
+            print(f"Hold it ONLY for the steps it covers, then "
+                  f"--release --lock-name {args.lock_name}.")
         return EXIT_OK
 
     try:
@@ -851,7 +902,7 @@ def main(argv: list[str] | None = None) -> int:
         # Always give the lock back, success or failure: a wedged lock blocks the
         # whole fleet, and a failed push is exactly when the next session needs it.
         try:
-            release(args.lock_dir, key, args.agent)
+            release(args.lock_dir, key, args.agent, name=args.lock_name)
         except (NotHolderError, LockCorruptError) as exc:
             print(f"serialized_push: WARNING lock not released: {exc}", file=sys.stderr)
 

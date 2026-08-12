@@ -4,13 +4,115 @@ Update all documentation artifacts to reflect work completed in this session, co
 
 > **⚠ MANUAL TRIGGER ONLY.** Run this routine only when the operator explicitly invokes `/wrap-up`. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the full wrap-up routine: it performs index pruning (Step 3) and broad doc/wiki sweeps the operator wants to review on a controlled, manually-chosen cadence. Checkpoint commits ARE however bound by the **checklist-sync gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only.
 
+## Where this wrap-up runs — read before Step 1
+
+**In your own lane worktree, on your own lane branch.** Every roster main owns
+`/mnt/raid0/llm/worktrees/mains/<agent>` on `lane/<agent>`
+(`scripts/coordination/WORKTREE_MIGRATION.md`; `tmux_adapter.py spawn` puts you there
+from the roster's `worktree:` key). Confirm before you start:
+
+```bash
+python3 scripts/coordination/check_lane_worktree.py --strict   # 0 ok · 3 in the shared clone · 4 undeterminable
+```
+
+**Never `git worktree prune`, and never `git gc`** (it runs one). This repo is reachable at
+two path depths that name one directory, so `prune` reads live worktrees as prunable and
+deletes their admin data — it destroyed all five lanes at once on 2026-08-12. The lane-entry
+check above replaces it; that is the whole hygiene story.
+
+Three surfaces stay in the ONE shared clone and are not lane-isolated, so only they need
+serialization: the coordination runtime plane (session bus, `logs/`), the sub-repos under
+`repos/*` (symlinks OUT of every worktree — `epyc-orchestrator` and `epyc-inference-research`
+are still one shared clone), and the shared-surface steps named in the lease below.
+
+### ⚠ `git commit -- <path>` BYPASSES THE INDEX — this is the collision mechanism
+
+`git commit -- <paths>` commits the **working-tree** state of those paths, ignoring what you
+staged. In a shared file that means it sweeps up **a peer's uncommitted hunks in that same
+file** and publishes them under your name and message. Proven: commit `dada0bbc`. This is the
+exact mechanism behind "parallel wrap-ups interfere with each other".
+
+Lane worktrees dissolve it for ordinary work-plane files (a peer's edits are in *their*
+working tree, not yours). It is still live for anything in the shared clone and for the
+sub-repos. So, whenever you commit a file another session may be editing:
+
+```bash
+git diff -- <file>          # LOOK FIRST. Any hunk here that is not yours will ride along.
+```
+
+If the file holds someone else's hunks, do **not** widen the pathspec — stage only your own
+and commit the index:
+
+```bash
+git diff -- <file> > all.patch           # split out your hunks (or use `git add -p`)
+git apply --cached mine.patch            # stage exactly yours
+git commit -m "..."                      # NO pathspec: commits the index, not the worktree
+```
+
+`git add -A` is forbidden in every shared tree, always.
+
+### The wrap-up lease — for the four surfaces lane worktrees cannot isolate
+
+Most of this routine is now private to your lane. Four things are not, because they are
+*generated from, or shared across, the whole fleet*:
+
+| Shared surface | Step | Why it cannot be lane-private |
+|---|---|---|
+| the master index's generated block | 3 | regenerated from every index; last writer wins |
+| `python3 scripts/handoffs/index_state.py` regen | 3 | rewrites `.index-state.json` + `.index-graph.json`, which nobody authors |
+| `wiki/source_manifest.json` | 5 | one manifest of the whole repo's sources |
+| `wiki/.last_compile` | 5 | one watermark; two writers lose one session's compile |
+| the promotion merge to `main` | 7 | two merges racing the same branch tip |
+
+Take a lease around **those steps only** — not the whole wrap-up. Steps 1, 2, 4 and your own
+commits need no lease at all, and holding one through them would recreate the fleet-wide
+freeze this program exists to remove.
+
+```bash
+LEASE="python3 scripts/coordination/serialized_push.py --agent <your-id> --lock-name wrapup"
+$LEASE --acquire        # exit 2 = someone else is in their shared-surface steps; wait and retry
+#   ... step 3's index regen, step 5's wiki compile, step 7's promotion merge ...
+$LEASE --release        # ALWAYS, including on failure
+$LEASE --status         # who holds it, since when, and whether it looks like residue
+```
+
+It is the same O_EXCL primitive as the push lock, keyed on the git **common dir**'s
+device+inode — so all five lane worktrees are one repository and contend for one lease, and
+neither `realpath` nor a path string can fool it. It is a *different* lease from the push
+lock: holding one never blocks the other. A lease is **never** auto-expired; a stale one is
+displaced deliberately and on the record with `--force-release <named holder>`.
+
+If `--acquire` refuses, that is the system working. Do the unleased steps meanwhile and come
+back — do not skip step 3 or 5, and do not edit the shared surface without the lease.
+
 ## Steps
 
 ### 1. Progress Report
 
-- Create or append to today's progress file: `progress/YYYY-MM/YYYY-MM-DD.md`
+- Create or append to **your own** daily progress file:
+  **`progress/YYYY-MM/YYYY-MM-DD-<agent>.md`** — the date, a dash, your roster id.
 - Document: problem, root cause (if applicable), changes made (with file/repo table), results, and any deferred work
 - Follow the existing format — see recent entries for style reference
+
+**Why per-agent, and why you must not use the shared file.** The unsuffixed
+`progress/YYYY-MM/YYYY-MM-DD.md` was one file that every main appended to: on 2026-08-12 ten
+wrap-up commits hit one 368 KB file, and each pathspec commit of it swept whatever the other
+four had half-written (see the warning above). One file per agent per day removes the
+contention entirely — nobody merges, because nobody shares. Convention defined in
+`scripts/coordination/WORKTREE_MIGRATION.md`.
+
+**Readers merge by glob, not by opening one file.** This is the same sharding the audit log
+already uses (`logs/agent_audit-<id>.log`, written by `scripts/utils/agent_log.sh`, read back
+merged by `scripts/utils/agent_log_read.sh` — copy that pattern):
+
+```bash
+cat progress/2026-08/2026-08-12-*.md          # everyone's day, per-agent shards
+ls  progress/2026-08/2026-08-12*.md           # incl. the pre-convention shared file
+```
+
+The historical shared files are **not** retroactively split; a reader of any date before this
+convention still opens the single unsuffixed file, which is why the glob above keeps the
+unsuffixed name in range.
 
 ### 2. Handoff Updates
 
@@ -25,13 +127,24 @@ Update all documentation artifacts to reflect work completed in this session, co
 2. **Add tasks discovered mid-flight**: any new work item that emerged this session (follow-ups, blockers-turned-tasks, scope found while implementing) gets its own `- [ ]` line in the relevant handoff's task list — even if it was also described in prose. If it was *already completed* this session, add it as `- [x] … ✅ YYYY-MM-DD` so the record stays complete.
 3. **Prose describing task state must be accompanied by checkbox state.** "X is done/converged/deferred" in a status paragraph without the corresponding checkbox flip is a wrap-up defect.
 
-**Verify before committing** — count the checkbox flips actually staged:
+**Verify before committing** — count the checkbox flips **that are yours**:
 
 ```bash
-git diff HEAD -- handoffs/ | grep -cE '^\+\s*[-*] \[[xX]\]'
+# From inside YOUR lane worktree. Scoped to your own lane's divergence from main,
+# so it counts what this session did, not what the fleet did.
+git diff "$(git merge-base main HEAD)"..HEAD -- handoffs/ | grep -cE '^\+\s*[-*] \[[xX]\]'   # committed on this lane
+git diff HEAD -- handoffs/                   | grep -cE '^\+\s*[-*] \[[xX]\]'                 # still uncommitted here
 ```
 
-If this prints `0` but the session completed any handoff-tracked work, go back and sync the checklists. Report the flip count in the wrap-up output.
+Sum the two. If it prints `0` but the session completed any handoff-tracked work, go back and sync the checklists. Report the flip count in the wrap-up output.
+
+**Why scoped, and not `git diff HEAD -- handoffs/` alone.** In the shared clone that second
+command counted **every** main's in-flight checkbox flips as yours, so a session that flipped
+nothing still read as compliant on peers' work — a gate that passes for a reason unrelated to
+what it tests. In your own lane worktree the working tree is private, so the uncommitted half
+is already yours; the merge-base half is what makes the committed half yours too. If
+`check_lane_worktree.py --strict` said you are in the shared clone, this gate is **not
+trustworthy** — move to your lane before believing its number.
 
 **Derived-actionables gate (required — the flip-count gate cannot see this).** The flip-count gate catches un-flipped checkboxes; it has no counterpart for conclusions that never became checkboxes at all. A 2026-07-21 audit found **seven** high-ROI items — including the session's single time-sensitive item — that were fully derived in analysis text ("measurable locally today", "worth mirroring", "cheapest experiment in the program") and then filed **nowhere**: not in the owning handoff, not in any index. Before committing, sweep the session's own output (deep-dive results, sub-agent reports, analysis sections appended to handoffs) for every "we could/should/worth X" sentence and give each one exactly one of:
 
@@ -57,12 +170,18 @@ decision queue. Do not re-add a "master index priority queue".
   cannot detect "needs a human choice"; a decision left in a handoff body gets missed (measured: G9-disk,
   two weeks unnoticed, governing 227 GB).
 
-**Required gate — run it and report the result:**
+**Required gate — run it under the wrap-up lease, and report the result:**
 
 ```bash
-python3 scripts/handoffs/index_state.py          # refresh generated state
+$LEASE --acquire                                  # shared surface: generated index state
+python3 scripts/handoffs/index_state.py           # refresh generated state
 python3 scripts/handoffs/index_state.py --check   # coverage/schema/freshness; non-zero on failure
+$LEASE --release
 ```
+
+The regen and the master index's generated block are the shared surface here — they are
+rewritten wholesale from every index, so two concurrent runs mean one session's regen is
+simply lost. Your own domain-index **row edits** are ordinary lane work and need no lease.
 
 `--check` must exit 0 before committing. It fails on duplicate ownership, orphans, dead handoff links,
 malformed rows, over-long `Next action`, unresolved `Deps`, and a stale generated block.
@@ -127,6 +246,12 @@ The `wiki/` and `research/` links are load-bearing (the checker re-tests them) �
 
 Compile any loose knowledge into the project wiki so findings don't stay buried in handoffs and progress logs.
 
+**Hold the wrap-up lease for this whole step** (`$LEASE --acquire` … `--release`):
+`wiki/source_manifest.json` and `wiki/.last_compile` are one manifest and one watermark for
+the entire repo. Two sessions compiling concurrently means the second `--touch` moves the
+watermark past sources the first never wrote pages for — the loss is silent and only shows up
+as knowledge that never got compiled.
+
 1. Run the source manifest scanner:
    ```
    python3 .claude/skills/project-wiki/scripts/compile_sources.py
@@ -147,13 +272,31 @@ If agent logging was active, ensure `agent_task_end` was called for all open tas
 
 ### 7. Commit, Push, Promote, and Report
 
+- **Commit on your own lane branch, inside your own lane worktree.** `lane/<agent>` in
+  `/mnt/raid0/llm/worktrees/mains/<agent>` — never in the shared clone, never on `main`
+  directly. Your working tree is private there, which is what makes an ordinary
+  `git commit -- <paths>` safe again for work-plane files (re-read the pathspec warning at the
+  top for the cases where it still is not: the shared clone and the sub-repos).
 - Commit documentation updates in each affected repo separately (root, orchestrator, research, etc.)
 - Use descriptive commit messages summarizing what the session accomplished
 - **Push each affected repo after committing** — never leave a wrap-up with unpushed commits. This is the historical failure mode: work was committed but never reached GitHub (or only reached a non-default branch), so it never registered as a contribution. Push the current branch to its upstream: `git -C <repo> push`.
   - **Never force-push.** If a push is rejected (non-fast-forward), do NOT `--force`; report it and let the operator reconcile.
-- **Promote each pushed branch to `main`** so the work earns contribution credit — GitHub credits contributions only for commits on a repo's **default branch** (`main`); a non-default working-branch push backs work up but earns nothing on the graph until it reaches `main`. For each affected repo:
+- **Promote your lane to `main` at EVERY wrap-up. Not at session end, not when it feels
+  worth it — every one.** Two reasons, both measured on 2026-08-12:
+  - **Lanes that skip promotion rot.** The five lanes stood at **106 commits behind** `main`,
+    and the `inference` lane at **~302 commits**, with zero merges since 2026-07-29. A lane
+    branch does not stop accumulating conflict potential while nobody looks at it; it
+    *concentrates* it into one much larger eventual merge, against two more weeks of
+    unrelated `main` history. The worktree isolates; only promotion syncs. Skipping it trades
+    today's small merge for a guaranteed large one.
+  - GitHub credits contributions only for commits on the **default branch** (`main`); a
+    lane-branch push backs work up but earns nothing on the graph until it reaches `main`.
+- **Take the wrap-up lease for the merge** (`$LEASE --acquire` … `--release`) — two promotions
+  racing the same `main` tip is the one part of promotion that is not isolated. Release it as
+  soon as the merge is pushed, including on the blocked path.
+- For each affected repo:
   - If the current branch **is** `main`, the push above already credited it — skip promotion.
-  - Otherwise, if `git -C <repo> rev-list --count origin/main..HEAD` is greater than 0, promote via an **isolated, conflict-guarded** merge that never disturbs the live working tree/branch and never force-pushes:
+  - Otherwise, if `git -C <repo> rev-list --count origin/main..HEAD` is greater than 0, promote via an **isolated, conflict-guarded** merge that never disturbs the live working tree/branch and never force-pushes. **Use exactly this pattern — do not invent a second promotion mechanism**; it is the standing path for every non-`main` branch, lane branches included:
 
     ```bash
     git -C <repo> fetch origin --quiet
@@ -167,7 +310,7 @@ If agent logging was active, ensure `agent_task_end` was called for all open tas
       git -C "$WT" merge --abort                  # CONFLICT -> leave main untouched
       echo "PROMOTION BLOCKED: <repo>"
     fi
-    git -C <repo> worktree remove "$WT" --force
+    git -C <repo> worktree remove "$WT" --force   # `remove`, NEVER `prune`
     ```
 
   - **On conflict, STOP** — leave `main` untouched, never auto-resolve or force, and report the repo under the `## Promotion blocked` heading (see Output Format) so the operator reconciles. A divergent `main` usually means an independent PR/commit landed on it directly; see the 2026-07-17 orchestrator promotion for the superset-verification pattern before resolving anything by hand.

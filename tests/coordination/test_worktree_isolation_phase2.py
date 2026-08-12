@@ -796,9 +796,24 @@ def test_lane_git_metadata_still_lives_inside_the_shared_clone_residual_coupling
         text = dot_git.read_text().strip()
         assert text.startswith("gitdir:"), f"{agent}: unexpected pointer {text!r}"
         target = (path / text.split(":", 1)[1].strip()).resolve()
-        assert target == clone / ".git" / "worktrees" / agent, (
-            f"{agent}: pointer resolves to {target}, not the shared clone's "
-            "per-worktree admin dir -- the residual coupling this test "
+        expect = clone / ".git" / "worktrees" / agent
+        # Compared by device+inode, NOT by path string. This repository is
+        # reachable as `/workspace` (bind alias) and `/mnt/raid0/llm/epyc-root`
+        # (canonical); `resolve()` does not collapse the bind mount, so the two
+        # spellings of ONE directory compare unequal. On 2026-08-12 the three
+        # relative-gitdir worktrees were re-registered ABSOLUTE under the
+        # canonical spelling and this assertion failed on the spelling while the
+        # coupling it characterises was unchanged -- exactly the "one directory,
+        # several names" defect class the B-series fixes. Identity is dev+inode
+        # (same primitive as serialized_push.repo_key and scripts/lib/env.sh).
+        assert target.exists(), (
+            f"{agent}: pointer target {target} does not exist -- the lane's git "
+            "admin dir is missing; do NOT run `git worktree prune`, re-register it"
+        )
+        assert os.stat(target).st_dev == os.stat(expect).st_dev and \
+               os.stat(target).st_ino == os.stat(expect).st_ino, (
+            f"{agent}: pointer resolves to {target}, which is not the same "
+            f"directory as {expect} -- the residual coupling this test "
             "characterises has changed; update WORKTREE_MIGRATION.md"
         )
 
