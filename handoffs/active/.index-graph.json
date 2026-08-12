@@ -3465,7 +3465,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T10:39:14Z",
+  "generated_at": "2026-08-12T10:40:50Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4068,7 +4068,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 55,
+      "closed": 56,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
@@ -4627,13 +4627,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 72,
+      "closed": 73,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-12",
       "next_action": "Bind clean producer provenance; replay C2/C5, then capture EPYC workloads and add gfx90a k228/k175 adapters",
-      "open": 17,
+      "open": 16,
       "state": "active",
       "track": "rocm verify profile backend"
     },

@@ -215,6 +215,14 @@ deliberately — decide them, do not just implement them.
       rows, every receipt/window/sampler digest, the clean AgentKernelArena pin and physical gfx90a
       binding, while preserving observation-only/no-ranking/no-promotion authority. r4 is the first
       complete post-contract proof; r1–r3 are not retrofitted.
+- [x] **SC35 — Wire the decision-grade raw-HIP receipt prospectively and prove the read path.** ✅ 2026-08-12 —
+      `autokernel_aux_receipt.py` admits only the producer-authored sealed-correctness and exact-provider
+      speedup rows after independently re-deriving the receipt/window/sampler hashes, task/vendor/candidate
+      seal, 24/24 host-double result, C6 allowlist plus empty-cgroup teardowns, exact one-graph
+      Torch-ROCm-compile provider, all 20 raw paired blocks, every one of the 40 per-arm RVP-C3-5 duration
+      checks, e-process crossing, distinct released MI210 claims, and the task-local/no-release boundary.
+      The terminal r6 receipt projects two Witnessed/Attested rows; sub-floor timing or invented release
+      authority fails closed. r4 remains superseded instrument evidence and is never upgraded on read.
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input

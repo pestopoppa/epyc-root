@@ -150,9 +150,20 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
   timing-validity cases; root independently re-derives its two producer-authored belief rows. The
   Torch-eager ratio is observation-only and non-rankable; no production or experimental llama tree
   was touched.
-- [ ] **HIP arm decision-grade hardening.** Add sealed/unseen C2/C6 cases and bind an honest vendor
-  baseline under C3 before any HIP candidate may be ranked, promoted, or proposed for a future
-  experimental llama.cpp branch. Public shapes and Torch eager cannot satisfy this gate.
+- [x] **HIP arm decision-grade hardening.** ✅ 2026-08-12 — research `b8d8c409` adds the sealed
+  `hip_decision_grade.py` parent plus a C6-contained worker: candidate source is sealed before the
+  24-case hostile suite seed/shapes exist, expected values remain in an independent host-double
+  oracle, and two differently poisoned outputs must be fully overwritten and bitwise repeatable.
+  The honest C3 provider is the exact one-graph/no-break Torch-Inductor ROCm SiLU expression on the
+  same tensor/device. The terminal r6 receipt passed 24/24 cases, all 40 candidate/provider arm
+  windows individually cleared RVP-C3-5's 250,090,903 ns gfx90a floor (minimum 276,039,581 ns), and
+  measured a 1.076935x median paired speedup over 20 randomized blocks; all block signs were positive
+  and the anytime-valid e-process crossed threshold 20 at block 9. Receipt internal SHA-256
+  `0ba60558951d47b596abce52ebe41401ae50a1326375595c49dfaf737f902ccb`, file SHA-256
+  `c2b7f7ce983ef31ea92d6977450e993c2ae0f4fdf07db595de26caf5341174ab`. This is task-local rankable
+  evidence only: it has no release/promotion authority, and an experimental llama integration plus
+  whole-model gates remain mandatory before any production proposal. r4 is superseded sub-floor
+  instrument evidence; it must not be cited as decision-grade.
 
 ## Interface contract (the seam controllers depend on)
 ```
