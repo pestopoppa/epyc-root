@@ -138,3 +138,9 @@ handoffs/active/.index-graph.json
 # nobody types the second `f`. Ignoring is for STATUS HYGIENE here — it removes
 # 29 untracked lines from every `git status` — not for safety.
 worktrees/
+
+# Append-only audit trail written concurrently by every agent (C45). Tracked until
+# 2026-08-12: it conflicted on essentially every cross-branch merge, because both
+# sides always append at the tail so a textual merge cannot interleave them. Read via
+# scripts/utils/agent_log_analyze.sh; nothing reads it out of git history.
+logs/agent_audit.log
