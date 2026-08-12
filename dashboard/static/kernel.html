@@ -360,6 +360,14 @@ function renderCurrentState(d){
     h+='<div class="headline '+(loop.reduced?'ok':'sec-refused')+'">'+esc(loop.completed_cells+' / '+loop.total_cells)+' cells · '+esc(String(loop.panel_status||"unknown").toUpperCase())+'</div>';
     h+='<div class="detail">'+(loop.reduced?esc(loop.belief_measurement_count)+' producer-authored observations':'REDUCTION PENDING — raw hypotheses are not a result')+'</div>';
     h+='<div class="detail">'+esc(loop.note||"")+'</div>';
+    if((loop.cells||[]).length){
+      h+='<table><thead><tr><th>model</th><th>effort</th><th>target</th><th>survived</th><th>termination</th><th>wall</th></tr></thead><tbody>';
+      (loop.cells||[]).forEach(function(c){
+        const target=c.target_context_mode==="rendered_context_line"?"rendered":"absent";
+        h+='<tr><td><code>'+esc(c.model_id||"—")+'</code></td><td>'+esc(c.effort||"—")+'</td><td>'+esc(target)+'</td><td class="num">'+esc(c.prefilter_survival_count==null?"—":c.prefilter_survival_count)+'</td><td>'+esc(c.termination||"—")+'</td><td class="num">'+esc(c.elapsed_wall_seconds==null?"—":num(c.elapsed_wall_seconds,1)+'s')+'</td></tr>';
+      });
+      h+='</tbody></table>';
+    }
     if(!complete) h+='<div class="detail fail">matched panel incomplete; do not compare arms</div>';
   } else h+='<div class="muted">AK-LE panel unavailable: '+esc(loop.error||"not found")+'</div>';
   h+=evidenceLine(loop);

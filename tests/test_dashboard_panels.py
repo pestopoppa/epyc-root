@@ -883,6 +883,20 @@ class KernelActivityContextTest(unittest.TestCase):
                 "authority": "observe_only_no_campaign_ranking_champion_or_release_authority",
                 "observations": [{"cell_id": f"cell-{n}"} for n in range(8)],
             }), encoding="utf-8")
+            reduction_path = root / "campaigns" / "ak-le-r3" / "planner-reduction.json"
+            reduction_path.write_text(json.dumps({
+                "schema": "epyc.autokernel.loop_experiment_planner_reduction.v1",
+                "reduction_sha256": "a" * 64,
+                "belief_measurements": [{"measurement_id": f"m-{n}"}
+                                        for n in range(32)],
+                "planner_receipt": {"search_persistence_observations": [{
+                    "cell_id": f"cell-{n}", "model_id": "planner-a",
+                    "effort": "high", "target_context_mode": "absent",
+                    "prefilter_survival_count": 4,
+                    "already_optimized_termination_count": 0,
+                    "termination": "search_exhausted", "elapsed_wall_seconds": 12.5,
+                } for n in range(8)]},
+            }), encoding="utf-8")
             rehearsal_path = root / "rehearsals" / "fault-r1" / "receipt.json"
             rehearsal_path.parent.mkdir(parents=True)
             rehearsal_path.write_text(json.dumps({
@@ -927,8 +941,11 @@ class KernelActivityContextTest(unittest.TestCase):
         self.assertEqual(state["gpu_prefetch_replay"]["device_sample_count"], 2544)
         self.assertEqual(state["loop_engineering"]["panel_status"], "complete")
         self.assertEqual(state["loop_engineering"]["completed_cells"], 8)
-        self.assertFalse(state["loop_engineering"]["reduced"])
-        self.assertIn("not a result", state["loop_engineering"]["note"])
+        self.assertTrue(state["loop_engineering"]["reduced"])
+        self.assertEqual(state["loop_engineering"]["belief_measurement_count"], 32)
+        self.assertEqual(len(state["loop_engineering"]["cells"]), 8)
+        self.assertEqual(state["loop_engineering"]["cells"][0][
+            "prefilter_survival_count"], 4)
         self.assertEqual(state["fault_rehearsal"]["status"], "PASS")
         self.assertEqual(state["fault_rehearsal"]["passed_legs"], 3)
         self.assertFalse(state["fault_rehearsal"]["live_claim_root_touched"])

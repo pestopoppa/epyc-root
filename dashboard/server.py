@@ -1136,6 +1136,20 @@ def _loop_engineering_summary(root: Path) -> dict:
                     "epyc.autokernel.loop_experiment_planner_reduction.v1":
                 reduction_path, reduction = candidate, value
                 break
+        planner_receipt = (reduction.get("planner_receipt")
+                           if isinstance(reduction, dict) and isinstance(
+                               reduction.get("planner_receipt"), dict) else {})
+        search_rows = planner_receipt.get("search_persistence_observations")
+        search_rows = search_rows if isinstance(search_rows, list) else []
+        cells = []
+        for row in search_rows:
+            if not isinstance(row, dict):
+                continue
+            cells.append({key: row.get(key) for key in (
+                "cell_id", "model_id", "effort", "target_context_mode",
+                "prefilter_survival_count", "already_optimized_termination_count",
+                "termination", "elapsed_wall_seconds",
+            )})
         return {
             "available": True,
             "campaign_id": panel.get("experiment_id"),
@@ -1148,6 +1162,7 @@ def _loop_engineering_summary(root: Path) -> dict:
                                  if reduction else None),
             "belief_measurement_count": (len(reduction.get("belief_measurements", []))
                                          if reduction else 0),
+            "cells": cells,
             "authority": panel.get("authority"),
             "evidence": str(path),
             "reduction_evidence": str(reduction_path) if reduction_path else None,
