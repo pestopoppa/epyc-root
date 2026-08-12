@@ -2670,6 +2670,56 @@ and goes RED if this line is checked off or deleted without the migration landin
 (hook precedent) · `scripts/nightshift/claude_via_devc.sh` (one-shot/headless launcher) ·
 `scripts/utils/agent_log.sh` (audit API — coordinator-daemon + agents log through it).
 
+## fleet_watch.sh — productionisation residuals (filed 2026-08-12)
+
+`scripts/coordination/fleet_watch.sh` (the coordinator's continuous fleet-stall detector) was
+hand-written on the coordinator's own thread under time pressure and has been rebuilt as a tested
+detector: authoritative sources first (`tmux_adapter.py probe` → tmux `window_activity` → pane
+glyphs), three-valued everywhere, cursor-anchored composer reads, and a `DETECTOR-BLIND` guard so
+UI drift announces itself instead of manufacturing six idle mains. Evidence:
+`scripts/coordination/tests/test_fleet_watch.sh` (76 assertions, both directions on every rule) and
+`scripts/coordination/tests/test_fleet_watch_mutation.sh` (21 deliberate breakages, 21 caught, each
+mutation proven APPLIED before it counts). These are the things that rebuild FOUND and could not fix
+from that seat.
+
+- [ ] **OBS-11** (MED): **`scripts/coordination/fleet_watch.sh` adopts the observation contract.**
+  It decides whether six mains are alive, so it belongs to the class this contract governs — but
+  `observer_registry.json`'s discovery cannot find it (Rule A looks for `pgrep`/`pidof`/`ps -e`, and
+  this file identifies nothing by argv; Rule B looks for `observer_guard.sh`, which it does not
+  source). It is therefore enrolled by hand as `unadopted`, which is exactly the case the registry's
+  "reviewed, not forgotten" row exists for. Adoption means sourcing
+  [`observer_guard.sh`](../../scripts/coordination/observer_guard.sh), folding main-liveness
+  three-valued over ≥2 independent channels, and exposing the uniform `observe` entrypoint so the
+  shared behavioural battery runs against it. The three-valued fold is already the file's internal
+  discipline (`fw_classify_liveness` / `fw_classify_compute` return `unknown` and never collapse it
+  to idle); what is missing is the `observe` surface and the battery.
+- [ ] **FW-1** (MED): **the Codex EMPTY composer is excluded BY NAME, and that calibration can rot.**
+  An empty Codex composer *renders text* — a greyed placeholder (`› Write tests for @filename`).
+  Measured 2026-08-12, neither available discriminator separates it from real queued input: the
+  placeholder carries the same dim SGR (`ESC[2m`) that Claude uses for genuinely queued text, and
+  `cursor_x` is parked at column 2 on every live pane in BOTH the empty and the text-present case,
+  so the cursor slice `tmux_adapter.py` relies on cannot separate them either. So `fleet_watch.sh`
+  excludes the placeholder with a `PLACEHOLDER_RE` list. If a Codex release ships an unlisted
+  placeholder, it reads as pending input and parks a PERMANENT false `STUCK-INPUT` on `inference` —
+  the cry-wolf failure the persistence rule exists to prevent. Enumerating the set needs keystrokes
+  into a live pane, which this seat must not do. Fix: get an authoritative empty-composer signal for
+  Codex (the rollout/TUI state, not the rendered row), or enumerate the placeholder set from an
+  expendable pane and pin it with a fixture.
+- [ ] **FW-2** (MED): **five of the six mains have NO runtime liveness signal, so `IDLE-CANDIDATE`
+  is a heuristic for them.** `runtime_liveness()` implements the rollout check for Codex only;
+  measured across the live roster 2026-08-12, `inference` returns `active`, while `auditor`, `mainA`,
+  `mainB`, `mainC` and `mainD` all return `None` with *"backend 'claude': no runtime signal
+  implemented yet"*. For those five, `fleet_watch.sh` falls back to tmux's `window_activity` clock
+  plus a busy-marker veto — which is why every idle report is a CANDIDATE and says
+  *"may be compacting"*. This is the same gap as M5/C36's unwired signal #3
+  (`claude agents --json`); landing it upgrades this detector from heuristic to authoritative for
+  the whole fleet, and is the single highest-value change available to it.
+- [ ] **FW-3** (LOW): **nothing supervises the watcher.** If `fleet_watch.sh` dies, nothing restarts
+  it and — worse — nothing notices: the coordinator's Monitor on the log simply goes quiet, and a
+  quiet log is what a healthy fleet also looks like. The `flock` single-instance guard is in place,
+  so a supervisor can safely relaunch it unconditionally. `bus_supervisor.sh` is the pattern; it was
+  not extended from this seat because it has a live owner in a parallel session.
+
 ## Reporting instructions
 
 Flip milestone boxes with `✅ YYYY-MM-DD` + evidence refs (M4 cites the hub saturation-history

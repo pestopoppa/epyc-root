@@ -166,6 +166,14 @@
       "notes": "`sudo pkill -f claude` on a documented shared host — the exact idiom CLAUDE.md and INC-20260731-broad-process-pattern-kills forbid, committed in-repo. The PreToolUse pattern-kill hook cannot see it: the hook inspects the typed command (`bash scripts/session/emergency_cleanup.sh`), not the script body, so the rule is assumed-enforced here rather than enforced. Interactive prompt is the only thing between it and every other session's processes."
     },
     {
+      "id": "fleet_watch",
+      "script": "scripts/coordination/fleet_watch.sh",
+      "contract": "unadopted",
+      "owning_handoff": "handoffs/active/session-bus-thin-dispatcher.md",
+      "task_marker": "OBS-11",
+      "notes": "Enrolled BY HAND: neither discovery rule finds it (it identifies no process by argv, so Rule A misses it, and it does not source observer_guard.sh, so Rule B does too) — yet it decides whether six mains are alive, which is exactly this census's subject. Its internal discipline is already three-valued: fw_classify_liveness and fw_classify_compute return 'unknown' and never collapse it to idle, an unreadable pane is reported as PANE-UNREADABLE rather than treated as idle, and a fleet-wide loss of the TUI glyph vocabulary is reported as DETECTOR-BLIND with the idle verdicts SUPPRESSED. What is missing for v1 is the uniform `observe` entrypoint and the behavioural battery. Takes no corrective action of any kind: it detects and logs, never sends keys, never kills."
+    },
+    {
       "id": "inference_load_check",
       "script": "scripts/coordination/inference_load_check.py",
       "contract": "exempt",

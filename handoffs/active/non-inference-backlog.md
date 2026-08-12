@@ -254,13 +254,21 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   on `:8000`. Not hypothetical and not undiscovered: `bus_supervisor.sh` already names this file by
   name as the cautionary example of assuming a tool is installed. Probe with `command -v` first and
   fail loud when neither `ss` nor `netstat` nor `lsof` is available.
-- [ ] **OBS-9** (LOW): **`"esc to interrupt"` is a liveness oracle in three files with no shared
+- [ ] **OBS-9** (LOW): **`"esc to interrupt"` is a liveness oracle in FOUR files with no shared
   constant** — `scripts/coordination/idle_supervisor.sh`, `scripts/coordination/idle_watch.sh`,
-  `scripts/coordination/session_bus_coordinator.py`. It is **vendor TUI text**: a Claude Code or
-  Codex release that rewords it breaks all three at once, and `idle_supervisor` would then type
+  `scripts/coordination/session_bus_coordinator.py`, and (added 2026-08-12)
+  `scripts/coordination/fleet_watch.sh`. It is **vendor TUI text**: a Claude Code or
+  Codex release that rewords it breaks all of them at once, and `idle_supervisor` would then type
   nudges into six actively-generating panes indefinitely. (Its uncapturable-pane handling is already
   correct — *"a pane it cannot capture is UNKNOWN, never idle"* — so only the marker needs a canary.)
   The two rosters have also already drifted: `idle_watch.sh` watches 4 mains, `idle_supervisor.sh` 6.
+  **The canary this row asks for already exists in one of the four** and is the cheapest thing to
+  lift: `fleet_watch.sh` gathers every vendor string in one named block and adds a `DETECTOR-BLIND`
+  condition — if no readable pane matches ANY known marker for PERSIST_CYCLES, it reports that the
+  vocabulary has drifted and SUPPRESSES the idle verdicts built on it, because six mains losing
+  their markers in the same cycle is a TUI release and not a fleet-wide stall. It is exercised in
+  both directions by `scripts/coordination/tests/test_fleet_watch.sh` and mutation-tested (removing
+  the guard turns the suite red). Generalising it is what closes this row.
 - [ ] **OBS-10** (LOW): **Two E8 operator ratifiers gate on an argv pattern.**
   `artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh` and
   `ratify_e8_empty_frontier_bootstrap_20260726.sh` both use
