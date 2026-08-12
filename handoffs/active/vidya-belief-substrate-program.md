@@ -317,7 +317,32 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       BASELINE/OPTIMUM transition with `gate.evaluate`; append resolution/evidence links so AutoKernel
       sees the same negative, and use `impact_of_retracting` to reopen downstream promotions. Do not
       activate until the pre-promotion journal ordering supplies a durable current-trial attestation
-- [ ] SC15 **Drain the queue.** 129 corrections, 81 cited by project documents, top ones cited 5–7
+- [x] SC15 **Drain the queue.** 129 corrections, 81 cited by project documents, top ones cited 5–7
+  - **✅ 2026-08-12 — QUEUE FULLY DRAINED by `mainC`. 129 → 0 unadjudicated; blocked claims 571 → 0;
+    the `review` bucket is empty.** 233+ `correction_reviewed` frames across 13 batches, each with
+    its `claim_corrections` block written into `research/intake_index.yaml` so the next re-ingest
+    grades opposition PER CLAIM. Ledger chain and all three checkpoints verified after EVERY apply;
+    index entry count held at 1,097 throughout; `conflicted` unmoved at 3, so no batch introduced
+    one. Commits: root `12cc6529`, `6e70bc0a`, `9548160c`, `40e783da`, `e18f7858`, `7af3cf70`,
+    `4b653d3e`, `80b54438`, `d3e2674b`, `6142085c`, `fc70b9d7`, `c9897ca2` + this batch.
+    - **Adjudicated per claim, by reading each correction against each claim** — which is what this
+      row demanded and what a summariser cannot do. The single most useful distinction: **a heavily
+      corrected ENTRY is not the same as corrected CLAIMS.** Roughly two-thirds of these corrections
+      land on Stage-1 prose, a verdict justification, an applicability call, or an actionable about
+      *our own* repo — not on any key claim. Propagating the entry-level label would have
+      mass-downgraded claims that are fine.
+    - **Three systematic hazards now on record for anyone re-running this**: (1) correction texts
+      number claims against a DIFFERENT list than the ledger's `claim_index` — hit three times
+      (`intake-916`, `intake-920`, `intake-929`), so adjudicate on CONTENT, never on that numbering;
+      (2) several entries were written WITH their dive corrections already folded in, so their
+      claims STATE the corrected position and must read as confirmed rather than corrected
+      (`intake-1020` is the clean example); (3) a citation-hygiene family — `intake-1068/1069/1070/1071`
+      were each ingested only because a recommendation cited them with a NEIGHBOURING entry's id
+      attached. Four wrong ids in one batch is a pattern, not four accidents.
+    - **`SC12-ENTRY` is now the live consumer defect.** Draining moved ~140 citations out of
+      `review`, which unmasks the real grade underneath — mostly `ok`, but one bare `intake-110`
+      citation in `wiki/knowledge-management.md` surfaced as `conflicted`, inheriting a pre-existing
+      overturned claim 4. Surfaced, not caused; it needs narrowing to `#NN` or `#record`.
       times. Not startable by a summariser: each verdict needs the dive text read against the claim,
       which is the exact failure intake-896#record memorialises. Start with the cited head — `cli.py
       corrections` ranks it — and record `effect` per claim, never per entry

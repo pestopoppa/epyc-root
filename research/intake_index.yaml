@@ -49150,6 +49150,39 @@
   verdict_justification: 'adopt_component with a hard scope limit. Importable artifact = the Apache-2.0 normalizer (claude-code/codex adapters) as a candidate replacement for bespoke parsing in harvest_tasks.py, since it is maintained, versioned, schema-validated and differentially parity-checked where ours is not. TWO ADOPTION HAZARDS: the Python package ships _vendor/*.mjs so it likely shells out to a vendored Node bundle (verify against minimum-imports policy), and the repo is two weeks old with no independent adopters (version pin + local differential check mandatory). MUST NOT be adopted as a source of record: no tokens/latency/cost/outcome/phase-tag/executor-model-id, truncates tool results by default, and would silently destroy the fields TM-3/TM-8 and F1 W2 depend on.'
   notes: 'Ingested 2026-07-25 via /research-intake. Derived work PROPOSED (pending Stage-2 plan approval) as intake-derived-work-2026-07-25.md (ID-19). The clean NEGATIVE is as valuable as the positive: recording precisely why trajectory-v1 fails the reviewer-plane requirement pins the minimum measurement-grade field set TM-8 must verify, and pre-empts a future agent treating a token-efficient projection as replayable evidence.'
   dive_corrections: '2026-07-25 Stage-2a dive: Letta trajectory: adopt_component has NO ARTIFACT. letta-trajectory is NOT on PyPI (404); release.yml publishes npm only. The Python package is a subprocess shim to a VENDORED NODE 20 CLI (_MINIMUM_NODE_MAJOR=20, _vendor/trajectory-cli.mjs, subprocess.run([node,...])) and the Node dependency is UNDECLARED, so pip install succeeds then fails at first call — disqualifying under minimum-imports. Downgrade to: port the ~50-line hermes SQLite read in Python. My Hermes suspicion was WRONG — the adapter targets OUR Hermes (NousResearch/hermes-agent), verified against hermes_state.py DEFAULT_DB_PATH/reasoning_content/active. The no-measurement-fields negative is STRUCTURALLY ENFORCED (additionalProperties:false on all five $defs). The blog post DOES exist (HTTP 200) — it is simply unlinked from the 26-post index.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 2026-07-25 Stage-2a dive. These format claims stand; what collapses is the VERDICT — adopt_component
+      has NO ARTIFACT. letta-trajectory is NOT on PyPI (404) and release.yml publishes npm only; the Python
+      package is a subprocess shim to a VENDORED NODE 20 CLI (_MINIMUM_NODE_MAJOR=20, _vendor/trajectory-cli.mjs,
+      subprocess.run([node, ...])) whose Node dependency is UNDECLARED — so `pip install` SUCCEEDS and then
+      fails at first call. That is disqualifying under minimum-imports, and it is the kind of failure a
+      dependency list cannot show you. Lift the schema; do not adopt the package.
+  - claim_index: 1
+    effect: unaffected
+    note: 2026-07-25 Stage-2a dive. These format claims stand; what collapses is the VERDICT — adopt_component
+      has NO ARTIFACT. letta-trajectory is NOT on PyPI (404) and release.yml publishes npm only; the Python
+      package is a subprocess shim to a VENDORED NODE 20 CLI (_MINIMUM_NODE_MAJOR=20, _vendor/trajectory-cli.mjs,
+      subprocess.run([node, ...])) whose Node dependency is UNDECLARED — so `pip install` SUCCEEDS and then
+      fails at first call. That is disqualifying under minimum-imports, and it is the kind of failure a
+      dependency list cannot show you. Lift the schema; do not adopt the package.
+  - claim_index: 2
+    effect: unaffected
+    note: 2026-07-25 Stage-2a dive. These format claims stand; what collapses is the VERDICT — adopt_component
+      has NO ARTIFACT. letta-trajectory is NOT on PyPI (404) and release.yml publishes npm only; the Python
+      package is a subprocess shim to a VENDORED NODE 20 CLI (_MINIMUM_NODE_MAJOR=20, _vendor/trajectory-cli.mjs,
+      subprocess.run([node, ...])) whose Node dependency is UNDECLARED — so `pip install` SUCCEEDS and then
+      fails at first call. That is disqualifying under minimum-imports, and it is the kind of failure a
+      dependency list cannot show you. Lift the schema; do not adopt the package.
+  - claim_index: 3
+    effect: unaffected
+    note: 2026-07-25 Stage-2a dive. These format claims stand; what collapses is the VERDICT — adopt_component
+      has NO ARTIFACT. letta-trajectory is NOT on PyPI (404) and release.yml publishes npm only; the Python
+      package is a subprocess shim to a VENDORED NODE 20 CLI (_MINIMUM_NODE_MAJOR=20, _vendor/trajectory-cli.mjs,
+      subprocess.run([node, ...])) whose Node dependency is UNDECLARED — so `pip install` SUCCEEDS and then
+      fails at first call. That is disqualifying under minimum-imports, and it is the kind of failure a
+      dependency list cannot show you. Lift the schema; do not adopt the package.
 - id: intake-888
   arxiv_id: '2605.28742'
   url: https://arxiv.org/html/2605.28742v2
@@ -49534,6 +49567,39 @@
   integration_disposition: integrated
   disposition_evidence:
   - '2026-08-05 audit: ID-15 routed the Fable-Fusion pair to a mandatory GGUF header gate, followed by completed architect-model benchmark work.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. The core tensor claim is CONFIRMED EXACT: the 451,320,768 B delta holds
+      across all ten pairs with ZERO variance, and the repo is apache-2.0 with three mmproj projectors.
+      AMENDED: 22 GGUFs, not 20 — IQ4_XS and Q6_K each carry a third UNDOCUMENTED LOW-MTP variant. METHOD
+      CORRECTION worth more than the count, and it generalises: DO NOT INFER MTP PRESENCE FROM FILE-SIZE
+      DELTAS. That reasoning is unsound — ThinkingCap''s Q4_K_M is 722 MB SMALLER than our own MTP build
+      — so read the tensor names, never the byte counts.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. The core tensor claim is CONFIRMED EXACT: the 451,320,768 B delta holds
+      across all ten pairs with ZERO variance, and the repo is apache-2.0 with three mmproj projectors.
+      AMENDED: 22 GGUFs, not 20 — IQ4_XS and Q6_K each carry a third UNDOCUMENTED LOW-MTP variant. METHOD
+      CORRECTION worth more than the count, and it generalises: DO NOT INFER MTP PRESENCE FROM FILE-SIZE
+      DELTAS. That reasoning is unsound — ThinkingCap''s Q4_K_M is 722 MB SMALLER than our own MTP build
+      — so read the tensor names, never the byte counts.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. The core tensor claim is CONFIRMED EXACT: the 451,320,768 B delta holds
+      across all ten pairs with ZERO variance, and the repo is apache-2.0 with three mmproj projectors.
+      AMENDED: 22 GGUFs, not 20 — IQ4_XS and Q6_K each carry a third UNDOCUMENTED LOW-MTP variant. METHOD
+      CORRECTION worth more than the count, and it generalises: DO NOT INFER MTP PRESENCE FROM FILE-SIZE
+      DELTAS. That reasoning is unsound — ThinkingCap''s Q4_K_M is 722 MB SMALLER than our own MTP build
+      — so read the tensor names, never the byte counts.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. The core tensor claim is CONFIRMED EXACT: the 451,320,768 B delta holds
+      across all ten pairs with ZERO variance, and the repo is apache-2.0 with three mmproj projectors.
+      AMENDED: 22 GGUFs, not 20 — IQ4_XS and Q6_K each carry a third UNDOCUMENTED LOW-MTP variant. METHOD
+      CORRECTION worth more than the count, and it generalises: DO NOT INFER MTP PRESENCE FROM FILE-SIZE
+      DELTAS. That reasoning is unsound — ThinkingCap''s Q4_K_M is 722 MB SMALLER than our own MTP build
+      — so read the tensor names, never the byte counts.'
 - id: intake-892
   arxiv_id: null
   url: https://huggingface.co/bottlecapai/ThinkingCap-Qwen3.6-27B-GGUF
@@ -49720,6 +49786,43 @@
   integration_disposition: integrated
   disposition_evidence:
   - '2026-08-05 audit: ID-14 owns the approved container/disposable-host Fractal trial and its containment-pattern extraction.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive, and both corrections are to the DIVE''S OWN earlier claims rather than
+      to the source. The test count is 108 .py under tests/ (91 named test_*.py), NOT 68 — which makes the
+      test-to-module ratio argument STRONGER, ~1.6-1.9x, not weaker. And the claim that the page carries
+      no cost or wall-clock figures is FALSIFIABLE: it shows 11 dollar figures and durations (run 41m, $23.87/$300.00)
+      inside an illustrative TUI screenshot. The defensible statement is narrower — those figures are illustrative
+      screenshot content, not reported measurements. Self-correcting a falsifiable absence claim is the
+      right move.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive, and both corrections are to the DIVE''S OWN earlier claims rather than
+      to the source. The test count is 108 .py under tests/ (91 named test_*.py), NOT 68 — which makes the
+      test-to-module ratio argument STRONGER, ~1.6-1.9x, not weaker. And the claim that the page carries
+      no cost or wall-clock figures is FALSIFIABLE: it shows 11 dollar figures and durations (run 41m, $23.87/$300.00)
+      inside an illustrative TUI screenshot. The defensible statement is narrower — those figures are illustrative
+      screenshot content, not reported measurements. Self-correcting a falsifiable absence claim is the
+      right move.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive, and both corrections are to the DIVE''S OWN earlier claims rather than
+      to the source. The test count is 108 .py under tests/ (91 named test_*.py), NOT 68 — which makes the
+      test-to-module ratio argument STRONGER, ~1.6-1.9x, not weaker. And the claim that the page carries
+      no cost or wall-clock figures is FALSIFIABLE: it shows 11 dollar figures and durations (run 41m, $23.87/$300.00)
+      inside an illustrative TUI screenshot. The defensible statement is narrower — those figures are illustrative
+      screenshot content, not reported measurements. Self-correcting a falsifiable absence claim is the
+      right move.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive, and both corrections are to the DIVE''S OWN earlier claims rather than
+      to the source. The test count is 108 .py under tests/ (91 named test_*.py), NOT 68 — which makes the
+      test-to-module ratio argument STRONGER, ~1.6-1.9x, not weaker. And the claim that the page carries
+      no cost or wall-clock figures is FALSIFIABLE: it shows 11 dollar figures and durations (run 41m, $23.87/$300.00)
+      inside an illustrative TUI screenshot. The defensible statement is narrower — those figures are illustrative
+      screenshot content, not reported measurements. Self-correcting a falsifiable absence claim is the
+      right move.'
 - id: intake-894
   arxiv_id: null
   url: https://github.com/plasma-ai/fractal
@@ -50224,6 +50327,35 @@
   integration_disposition: declined
   disposition_evidence:
   - '2026-08-05 audit: the evaluation owner records FrontierCS as a closed negative that should not be re-chased.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. The 156-vs-172 discrepancy is RESOLVED and is NOT a contradiction:
+      the paper (v1) describes 156 problems (107 algorithmic + 49 research) while the project site reflects
+      the later FrontierCS 1.0 release of 240 tasks, of which 172 are the algorithmic track. Two different
+      artifacts at two different times, not an error. The benchmark-not-method negative is CONFIRMED — no
+      GEPA, AutoResearch or Meta-Harness appears, and neither 43.8 nor 61.8 appears anywhere.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. The 156-vs-172 discrepancy is RESOLVED and is NOT a contradiction:
+      the paper (v1) describes 156 problems (107 algorithmic + 49 research) while the project site reflects
+      the later FrontierCS 1.0 release of 240 tasks, of which 172 are the algorithmic track. Two different
+      artifacts at two different times, not an error. The benchmark-not-method negative is CONFIRMED — no
+      GEPA, AutoResearch or Meta-Harness appears, and neither 43.8 nor 61.8 appears anywhere.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. The 156-vs-172 discrepancy is RESOLVED and is NOT a contradiction:
+      the paper (v1) describes 156 problems (107 algorithmic + 49 research) while the project site reflects
+      the later FrontierCS 1.0 release of 240 tasks, of which 172 are the algorithmic track. Two different
+      artifacts at two different times, not an error. The benchmark-not-method negative is CONFIRMED — no
+      GEPA, AutoResearch or Meta-Harness appears, and neither 43.8 nor 61.8 appears anywhere.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-07-25 Stage-2a dive. The 156-vs-172 discrepancy is RESOLVED and is NOT a contradiction:
+      the paper (v1) describes 156 problems (107 algorithmic + 49 research) while the project site reflects
+      the later FrontierCS 1.0 release of 240 tasks, of which 172 are the algorithmic track. Two different
+      artifacts at two different times, not an error. The benchmark-not-method negative is CONFIRMED — no
+      GEPA, AutoResearch or Meta-Harness appears, and neither 43.8 nor 61.8 appears anywhere.'
 - id: intake-899
   arxiv_id: '2605.12978'
   url: https://arxiv.org/abs/2605.12978
@@ -57275,6 +57407,35 @@
     (5) THE 1.91x NOW HAS ZERO INDEPENDENT CORROBORATION IN THE COMPENDIUM. intake-954 (COFFE) states the same figure but CITES THIS PAPER EXPLICITLY ("Shypula et al. [75] find that two single time measurements ... can differ as much as 1.91x"), so it is ONE SOURCE, NOT TWO - and the restatement is LOSSY, reframing a 95th-percentile tail over 500 pairs as a bound on what two measurements "can differ as much as". Always cite PIE Sec 2 directly, WITH the tail framing. This entry's credibility_score 3 is unaffected (its +1 came from intake-939, genuinely disjoint), but the FIGURE ITSELF must be demoted from "a measured noise floor we can cite" to "an unreproducible single-source anecdote that motivates our own A/A calibration".
     (6) VERSION DRIFT, not error: this entry declares v4 and its numbers are correct for v4, but v5 revised %OPT 87.68 -> 87.63, test pairs 982 -> 978, and COLLAPSED v4's two human references (Best Human 4.06x, Same Human 3.64x) into a single 3.66x, reframing the abstract from "surpassing the best human performance (4.06x)" to "higher than average optimizations from individual programmers (3.66x)" - a WEAKENING of the headline. The entry currently mixes v4 numbers with v5 framing. The noise numbers are identical across both versions.
     (7) Appendix A.9's 2.44x is CodeNet's own judge-reported CPUTime - a DIFFERENT INSTRUMENT. Do not merge it with the Hyperfine identical-pair run.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-03 DIVE-C. Claims verified, two open items closed from the REPO rather than the paper,
+      and one framing correction that changes how the entry may be used — carry it with any citation. THE
+      1.91x IS A TAIL STATISTIC, not a typical result: v5 Sec 2 benchmarked 500 program PAIRS where the
+      slow and fast programs are IDENTICAL and observed a MEAN speedup of 1.12x with SD 0.36, the 1.91x
+      being the top 5%. Quoting 1.91x as the expected effect overstates it by roughly 70%.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-03 DIVE-C. Claims verified, two open items closed from the REPO rather than the paper,
+      and one framing correction that changes how the entry may be used — carry it with any citation. THE
+      1.91x IS A TAIL STATISTIC, not a typical result: v5 Sec 2 benchmarked 500 program PAIRS where the
+      slow and fast programs are IDENTICAL and observed a MEAN speedup of 1.12x with SD 0.36, the 1.91x
+      being the top 5%. Quoting 1.91x as the expected effect overstates it by roughly 70%.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-03 DIVE-C. Claims verified, two open items closed from the REPO rather than the paper,
+      and one framing correction that changes how the entry may be used — carry it with any citation. THE
+      1.91x IS A TAIL STATISTIC, not a typical result: v5 Sec 2 benchmarked 500 program PAIRS where the
+      slow and fast programs are IDENTICAL and observed a MEAN speedup of 1.12x with SD 0.36, the 1.91x
+      being the top 5%. Quoting 1.91x as the expected effect overstates it by roughly 70%.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-03 DIVE-C. Claims verified, two open items closed from the REPO rather than the paper,
+      and one framing correction that changes how the entry may be used — carry it with any citation. THE
+      1.91x IS A TAIL STATISTIC, not a typical result: v5 Sec 2 benchmarked 500 program PAIRS where the
+      slow and fast programs are IDENTICAL and observed a MEAN speedup of 1.12x with SD 0.36, the 1.91x
+      being the top 5%. Quoting 1.91x as the expected effect overstates it by roughly 70%.'
 
 - id: intake-951
   arxiv_id: '2507.12415'
@@ -60423,6 +60584,28 @@
     DIVE-SURFACED SOURCES: none beyond the papers and supplement already represented by intake-991, intake-992, and intake-994.
 
     2026-08-05 STAGE-3/4 DISPOSITION. C1 and C3 are retained as forensic and provenance requirements. C2 is declined because A1 is not activated; no repository component is imported into either autonomous loop.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-05 Stage-2 dive (full paper-era and current Git history, source, XLSX container, and
+      the AFMaI supplement). DIVE-VERIFIED for this repository entry''s NARROW artifact claims — and note
+      what the same audit did NEXT DOOR: it simultaneously OVERTURNS intake-991''s empirical USE of these
+      artifacts. The artifacts are what this entry says they are; the conclusions another entry drew from
+      them are not.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-05 Stage-2 dive (full paper-era and current Git history, source, XLSX container, and
+      the AFMaI supplement). DIVE-VERIFIED for this repository entry''s NARROW artifact claims — and note
+      what the same audit did NEXT DOOR: it simultaneously OVERTURNS intake-991''s empirical USE of these
+      artifacts. The artifacts are what this entry says they are; the conclusions another entry drew from
+      them are not.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-05 Stage-2 dive (full paper-era and current Git history, source, XLSX container, and
+      the AFMaI supplement). DIVE-VERIFIED for this repository entry''s NARROW artifact claims — and note
+      what the same audit did NEXT DOOR: it simultaneously OVERTURNS intake-991''s empirical USE of these
+      artifacts. The artifacts are what this entry says they are; the conclusions another entry drew from
+      them are not.'
 - id: intake-994
   arxiv_id: '2605.05209'
   url: https://arxiv.org/abs/2605.05209
@@ -60508,6 +60691,28 @@
     2026-08-05 STAGE-2B GATE CLOSED BY OPERATOR OVERRIDE. Every source in this surfaced list was ingested and dived: The Wrong Razor intake-996; Regret Is Weighted Forgetting intake-997; Fantastic Generalization Measures intake-999; Robust Measures intake-1000; Dinh et al. intake-1002. Across both gate lists, the five recommended unique dives are intake-996 through intake-1000, and the four separately requested supplemental artifacts are intake-1001 through intake-1004. No surfaced bearing source remains unresolved.
 
     2026-08-05 STAGE-3/4 DISPOSITION. D1's bounded matched bank, D2's matched baselines, and D3's sealing/hash binding landed through AP-WM-1 and AK-WM-1. D4 is declined: no arbitrary completion count, cross-task raw-score comparison, live promotion authority, or LP-scale deployment is adopted.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-05 Stage-2 dive (arXiv v2 full text, the submitted experiment archive, notebooks and
+      reducer outputs, plus an adversarial baseline/replication search). DIVE-VERIFIED for the SCOPED construction
+      and the reported v2 results — and explicitly NOT verified as a causal account, a best predictor, or
+      a loop-ready metric. Claim 2 carries that limit in the paper''s own voice: it narrows its universal
+      claim to a fixed task and embodiment.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-05 Stage-2 dive (arXiv v2 full text, the submitted experiment archive, notebooks and
+      reducer outputs, plus an adversarial baseline/replication search). DIVE-VERIFIED for the SCOPED construction
+      and the reported v2 results — and explicitly NOT verified as a causal account, a best predictor, or
+      a loop-ready metric. Claim 2 carries that limit in the paper''s own voice: it narrows its universal
+      claim to a fixed task and embodiment.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-05 Stage-2 dive (arXiv v2 full text, the submitted experiment archive, notebooks and
+      reducer outputs, plus an adversarial baseline/replication search). DIVE-VERIFIED for the SCOPED construction
+      and the reported v2 results — and explicitly NOT verified as a causal account, a best predictor, or
+      a loop-ready metric. Claim 2 carries that limit in the paper''s own voice: it narrows its universal
+      claim to a fixed task and embodiment.'
 - id: intake-995
   arxiv_id: '2404.07227'
   url: https://arxiv.org/abs/2404.07227
@@ -60915,6 +61120,39 @@
     DIVE-SURFACED SOURCES: intake-1000 is the material adversarial correction and was selected; later uniformly-tight-bound theory is adjacent but does not change the loop-diagnostic experiment gate, so no further intake is required here.
 
     2026-08-05 STAGE-3/4 DISPOSITION. H1, H2, and H3 landed through AP-WM-1 and AK-WM-1 as matched one-factor comparisons, per-regime directional reporting, conditional predictive value, and robust sign-error. H4 is declined: no image-specific sharpness measure or numerical threshold transfers.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full ICLR paper, appendices and tables, the NeurIPS
+      adversarial follow-up, and a source cross-reference). DIVE-VERIFIED for the experiment design and
+      the reported SCOPED results. Scale confirmed: the main grid is 2,187 models (3 choices across seven
+      hyperparameters), and five CIFAR repeats plus one SVHN run yield more than 10,000 trained networks.
+      Claim 3 keeps the entry honest — correlation remains evidence for prediction only under the TESTED
+      intervention family.'
+  - claim_index: 1
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full ICLR paper, appendices and tables, the NeurIPS
+      adversarial follow-up, and a source cross-reference). DIVE-VERIFIED for the experiment design and
+      the reported SCOPED results. Scale confirmed: the main grid is 2,187 models (3 choices across seven
+      hyperparameters), and five CIFAR repeats plus one SVHN run yield more than 10,000 trained networks.
+      Claim 3 keeps the entry honest — correlation remains evidence for prediction only under the TESTED
+      intervention family.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full ICLR paper, appendices and tables, the NeurIPS
+      adversarial follow-up, and a source cross-reference). DIVE-VERIFIED for the experiment design and
+      the reported SCOPED results. Scale confirmed: the main grid is 2,187 models (3 choices across seven
+      hyperparameters), and five CIFAR repeats plus one SVHN run yield more than 10,000 trained networks.
+      Claim 3 keeps the entry honest — correlation remains evidence for prediction only under the TESTED
+      intervention family.'
+  - claim_index: 3
+    effect: unaffected
+    note: '2026-08-05 combined Stage-1/Stage-2b dive (full ICLR paper, appendices and tables, the NeurIPS
+      adversarial follow-up, and a source cross-reference). DIVE-VERIFIED for the experiment design and
+      the reported SCOPED results. Scale confirmed: the main grid is 2,187 models (3 choices across seven
+      hyperparameters), and five CIFAR repeats plus one SVHN run yield more than 10,000 trained networks.
+      Claim 3 keeps the entry honest — correlation remains evidence for prediction only under the TESTED
+      intervention family.'
 - id: intake-1000
   arxiv_id: '2010.11924'
   url: https://arxiv.org/abs/2010.11924
@@ -64452,6 +64690,28 @@
     subjective-logic cumulative fusion, Dempster-Shafer) is non-idempotent and loses the Datalog
     provenance inheritance; gradual semantics additionally lack general cyclic-convergence
     guarantees and have no incremental-retraction results (NOT-FOUND in bounded search).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2405.02079v3 + repo head 9b13955, 2026-08-03). Mechanics confirmed
+      WITH PRECISION, and the precision matters: the QBAFs are restricted TREES of depth 1 or 2 with at
+      most 7 arguments, and pro/con of a node is the PARITY of attack edges on its path to the root. ''Contestability
+      properties'' pins to exactly two plus one satisfaction proposition, not an open-ended family.'
+  - claim_index: 1
+    effect: narrowed
+    note: '2026-08-09 Stage-2 dive (arXiv 2405.02079v3 + repo head 9b13955, 2026-08-03). Mechanics confirmed
+      WITH PRECISION, and the precision matters: the QBAFs are restricted TREES of depth 1 or 2 with at
+      most 7 arguments, and pro/con of a node is the PARITY of attack edges on its path to the root. ''Contestability
+      properties'' pins to exactly two plus one satisfaction proposition, not an open-ended family. ATTRIBUTION
+      correction on the code half: semantics evaluation is DELEGATED to a VENDORED Uncertainpy, so the library
+      doing the work is Potyka''s, not ArgLLMs''. Cite the repo for the construction, not for the semantics
+      engine.'
+  - claim_index: 2
+    effect: unaffected
+    note: '2026-08-09 Stage-2 dive (arXiv 2405.02079v3 + repo head 9b13955, 2026-08-03). Mechanics confirmed
+      WITH PRECISION, and the precision matters: the QBAFs are restricted TREES of depth 1 or 2 with at
+      most 7 arguments, and pro/con of a node is the PARITY of attack edges on its path to the root. ''Contestability
+      properties'' pins to exactly two plus one satisfaction proposition, not an open-ended family.'
 
 - id: intake-1038
   arxiv_id: '2202.10766'
@@ -65014,6 +65274,19 @@
     Dived 2026-08-09 during the Vidya-handoff audit (formal cluster). Surfaced companion: Im,
     Moseley, Ngo, Pruhs, ICDT 2024 LIPIcs 290:11 (linear-case convergence rate) - declined as a
     separate entry, tracked here.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv PDF), dive-verified. The operator''s question — does
+      it supersede the JACM bounds for the finite-chain case — is answered in the NEGATIVE with the exact
+      reason recorded, which is the useful outcome: a negative answer with a stated mechanism is reusable,
+      a bare ''no'' is not.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv PDF), dive-verified. The operator''s question — does
+      it supersede the JACM bounds for the finite-chain case — is answered in the NEGATIVE with the exact
+      reason recorded, which is the useful outcome: a negative answer with a stated mechanism is reusable,
+      a bare ''no'' is not.'
 
 - id: intake-1045
   arxiv_id: '2308.05506'
@@ -65522,6 +65795,17 @@
     Dived 2026-08-09 during the Vidya-handoff audit (argumentation cluster). Complements the
     leaf-disjoint corroboration statistic: dedup handles near-duplicates the provenance graph
     does not collapse structurally.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Stage-2b dive-and-index in one pass (arXiv v1), dive-verified. Claim 1 isolates the transferable
+      mechanism cleanly — DEDUPLICATE BEFORE AGGREGATING — which is the part that survives independently
+      of the paper's own meshing strategy.
+  - claim_index: 1
+    effect: unaffected
+    note: Stage-2b dive-and-index in one pass (arXiv v1), dive-verified. Claim 1 isolates the transferable
+      mechanism cleanly — DEDUPLICATE BEFORE AGGREGATING — which is the part that survives independently
+      of the paper's own meshing strategy.
 
 - id: intake-1052
   arxiv_id: '2508.20131'
@@ -65562,6 +65846,15 @@
     co-authored (semantics used correctly); watch for venue.
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (argumentation cluster).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Stage-2b dive-and-index in one pass (arXiv v1), dive-verified. Potyka co-authored and the semantics
+      are used correctly, which is the check that matters for this family; venue is flagged to watch.
+  - claim_index: 1
+    effect: unaffected
+    note: Stage-2b dive-and-index in one pass (arXiv v1), dive-verified. Potyka co-authored and the semantics
+      are used correctly, which is the check that matters for this family; venue is flagged to watch.
 
 - id: intake-1053
   arxiv_id: '2510.02339'
@@ -65602,6 +65895,19 @@
     dive-verified with the grid-decomposition caveat recorded.
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (argumentation cluster).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (EMNLP 2025 Findings, pp. 21700-21711), dive-verified with
+      the grid-decomposition caveat recorded. The result is the uncomfortable one worth keeping: DIRECT
+      PROMPTING is the best or statistically-tied UQ method in all 36 conditions — so elaborate uncertainty
+      machinery has to beat the trivial baseline before it earns its place.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (EMNLP 2025 Findings, pp. 21700-21711), dive-verified with
+      the grid-decomposition caveat recorded. The result is the uncomfortable one worth keeping: DIRECT
+      PROMPTING is the best or statistically-tied UQ method in all 36 conditions — so elaborate uncertainty
+      machinery has to beat the trivial baseline before it earns its place.'
 
 - id: intake-1054
   arxiv_id: '2503.04800'
@@ -65859,6 +66165,31 @@
   integration_disposition: knowledge_only
   disposition_evidence:
   - 'Anti-pattern citation for the belief-substrate design rationale; no task derives from it.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v2 full text), dive-verified; Stage 1 was accurate
+      on ALL counts once the full text resolved two abstract-level ambiguities — which is itself the argument
+      for reading full text over abstracts. Claim 1 is the finding to carry: retraction DESTROYS history
+      via in-place Django ORM mutation behind an is_active flag, so this is a contrast case for an append-only
+      substrate, not a source for one. Claim 2 records zero quantitative evaluation of any kind in a 7-page
+      paper.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v2 full text), dive-verified; Stage 1 was accurate
+      on ALL counts once the full text resolved two abstract-level ambiguities — which is itself the argument
+      for reading full text over abstracts. Claim 1 is the finding to carry: retraction DESTROYS history
+      via in-place Django ORM mutation behind an is_active flag, so this is a contrast case for an append-only
+      substrate, not a source for one. Claim 2 records zero quantitative evaluation of any kind in a 7-page
+      paper.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v2 full text), dive-verified; Stage 1 was accurate
+      on ALL counts once the full text resolved two abstract-level ambiguities — which is itself the argument
+      for reading full text over abstracts. Claim 1 is the finding to carry: retraction DESTROYS history
+      via in-place Django ORM mutation behind an is_active flag, so this is a contrast case for an append-only
+      substrate, not a source for one. Claim 2 records zero quantitative evaluation of any kind in a 7-page
+      paper.'
 
 - id: intake-1058
   arxiv_id: '2512.12818'
@@ -65901,6 +66232,29 @@
     affiliation is Vectorize.io + Washington Post + Virginia Tech, not Vectorize alone.
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (freshness cluster).
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1, 2025-12-14), dive-verified. Affiliation corrected:
+      Vectorize.io + Washington Post + Virginia Tech, not Vectorize alone. PARTIAL on the four-networks
+      framing: the networks are partitioned by epistemic stance as described, but the machinery is NOT uniform
+      across them — confidence scoring exists only in the Opinion network, so the four-way symmetry the
+      claim implies does not hold.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1, 2025-12-14), dive-verified. Affiliation corrected:
+      Vectorize.io + Washington Post + Virginia Tech, not Vectorize alone. This claim already carries the
+      corrected scoping — Opinion-only.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1, 2025-12-14), dive-verified. Affiliation corrected:
+      Vectorize.io + Washington Post + Virginia Tech, not Vectorize alone.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass (arXiv v1, 2025-12-14), dive-verified. Affiliation corrected:
+      Vectorize.io + Washington Post + Virginia Tech, not Vectorize alone. The stated gaps (no audit ledger,
+      no replay, no explicit retraction, in-place opinion updates) are exactly why this is a contrast case
+      for our own substrate rather than a source to adopt.'
 
 - id: intake-1059
   arxiv_id: null
@@ -65953,6 +66307,39 @@
     Dived 2026-08-09 during the Vidya-handoff audit (freshness cluster). belief-ledger-pramana
     flagged as the only sibling arguably worth a future bounded look (freshness-gated action
     authorization).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass, source read at head bf4d2d0c815e9d551c75d23817b502b22671e0b9,
+      dive-verified. It OVERTURNS the Stage-1 sibling-repos attribution — the three repos are by THREE UNRELATED
+      AUTHORS (rabbiveesh, sergiparpal, ZuseHub), not siblings — which is the kind of inferred-relationship
+      error that survives indefinitely if nobody opens the repos. credibility_score stays null because this
+      is a PoC repo with no empirical claims. Claim 3 states the gap that matters for us: retraction is
+      only implicit accumulation of negative evidence, with no explicit retraction event.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass, source read at head bf4d2d0c815e9d551c75d23817b502b22671e0b9,
+      dive-verified. It OVERTURNS the Stage-1 sibling-repos attribution — the three repos are by THREE UNRELATED
+      AUTHORS (rabbiveesh, sergiparpal, ZuseHub), not siblings — which is the kind of inferred-relationship
+      error that survives indefinitely if nobody opens the repos. credibility_score stays null because this
+      is a PoC repo with no empirical claims. Claim 3 states the gap that matters for us: retraction is
+      only implicit accumulation of negative evidence, with no explicit retraction event.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass, source read at head bf4d2d0c815e9d551c75d23817b502b22671e0b9,
+      dive-verified. It OVERTURNS the Stage-1 sibling-repos attribution — the three repos are by THREE UNRELATED
+      AUTHORS (rabbiveesh, sergiparpal, ZuseHub), not siblings — which is the kind of inferred-relationship
+      error that survives indefinitely if nobody opens the repos. credibility_score stays null because this
+      is a PoC repo with no empirical claims. Claim 3 states the gap that matters for us: retraction is
+      only implicit accumulation of negative evidence, with no explicit retraction event.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b dive-and-index in one pass, source read at head bf4d2d0c815e9d551c75d23817b502b22671e0b9,
+      dive-verified. It OVERTURNS the Stage-1 sibling-repos attribution — the three repos are by THREE UNRELATED
+      AUTHORS (rabbiveesh, sergiparpal, ZuseHub), not siblings — which is the kind of inferred-relationship
+      error that survives indefinitely if nobody opens the repos. credibility_score stays null because this
+      is a PoC repo with no empirical claims. Claim 3 states the gap that matters for us: retraction is
+      only implicit accumulation of negative evidence, with no explicit retraction event.'
 
 - id: intake-1060
   arxiv_id: '2602.21045'
@@ -66088,6 +66475,39 @@
     Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by intake-1034's
     survey). Threat model = indirect prompt injection; out of scope: direct jailbreaks,
     ambiguous user requests.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (arXiv v2 full text), dive-verified. Claim 3 carries
+      the load-bearing weakness in the authors'' OWN words: provenance is SELF-REPORTED by the agent LLM,
+      so the whole pre-execution cascade rests on the component it is supposed to constrain. Anyone citing
+      the 94.3%/95.1% headline must carry that. Operator disposition 2026-08-09: dive-surfaced Progent DECLINED-AS-MONITOR
+      — it is the direct prior art for an actuator policy grammar, worth a bounded look only when provenance-gated
+      actuation actually starts.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (arXiv v2 full text), dive-verified. Claim 3 carries
+      the load-bearing weakness in the authors'' OWN words: provenance is SELF-REPORTED by the agent LLM,
+      so the whole pre-execution cascade rests on the component it is supposed to constrain. Anyone citing
+      the 94.3%/95.1% headline must carry that. Operator disposition 2026-08-09: dive-surfaced Progent DECLINED-AS-MONITOR
+      — it is the direct prior art for an actuator policy grammar, worth a bounded look only when provenance-gated
+      actuation actually starts.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (arXiv v2 full text), dive-verified. Claim 3 carries
+      the load-bearing weakness in the authors'' OWN words: provenance is SELF-REPORTED by the agent LLM,
+      so the whole pre-execution cascade rests on the component it is supposed to constrain. Anyone citing
+      the 94.3%/95.1% headline must carry that. Operator disposition 2026-08-09: dive-surfaced Progent DECLINED-AS-MONITOR
+      — it is the direct prior art for an actuator policy grammar, worth a bounded look only when provenance-gated
+      actuation actually starts.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (arXiv v2 full text), dive-verified. Claim 3 carries
+      the load-bearing weakness in the authors'' OWN words: provenance is SELF-REPORTED by the agent LLM,
+      so the whole pre-execution cascade rests on the component it is supposed to constrain. Anyone citing
+      the 94.3%/95.1% headline must carry that. Operator disposition 2026-08-09: dive-surfaced Progent DECLINED-AS-MONITOR
+      — it is the direct prior art for an actuator policy grammar, worth a bounded look only when provenance-gated
+      actuation actually starts.'
 
 - id: intake-1062
   arxiv_id: null
@@ -66223,6 +66643,39 @@
     witnesses or signed timestamps; plain note signatures carry no time).
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by intake-1048).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass, with raw main AND tagged v1.0.0 both fetched and
+      the load-bearing sections DIFFED — which is what surfaced the finding in claim 2. That DRIFT is the
+      reason to pin a version: tagged v1.0.0 says ''SHOULD use Ed25519'' while the main-branch editor''s
+      copy differs, so a spec citation without a tag can silently mean two things. Operator disposition:
+      c2sp.org/tlog-cosignature DECLINED-WITH-TRIGGER — needed only if L1 adds witnesses or signed timestamps,
+      since plain note signatures carry no time.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass, with raw main AND tagged v1.0.0 both fetched and
+      the load-bearing sections DIFFED — which is what surfaced the finding in claim 2. That DRIFT is the
+      reason to pin a version: tagged v1.0.0 says ''SHOULD use Ed25519'' while the main-branch editor''s
+      copy differs, so a spec citation without a tag can silently mean two things. Operator disposition:
+      c2sp.org/tlog-cosignature DECLINED-WITH-TRIGGER — needed only if L1 adds witnesses or signed timestamps,
+      since plain note signatures carry no time.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass, with raw main AND tagged v1.0.0 both fetched and
+      the load-bearing sections DIFFED — which is what surfaced the finding in claim 2. That DRIFT is the
+      reason to pin a version: tagged v1.0.0 says ''SHOULD use Ed25519'' while the main-branch editor''s
+      copy differs, so a spec citation without a tag can silently mean two things. Operator disposition:
+      c2sp.org/tlog-cosignature DECLINED-WITH-TRIGGER — needed only if L1 adds witnesses or signed timestamps,
+      since plain note signatures carry no time.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass, with raw main AND tagged v1.0.0 both fetched and
+      the load-bearing sections DIFFED — which is what surfaced the finding in claim 2. That DRIFT is the
+      reason to pin a version: tagged v1.0.0 says ''SHOULD use Ed25519'' while the main-branch editor''s
+      copy differs, so a spec citation without a tag can silently mean two things. Operator disposition:
+      c2sp.org/tlog-cosignature DECLINED-WITH-TRIGGER — needed only if L1 adds witnesses or signed timestamps,
+      since plain note signatures carry no time.'
 
 - id: intake-1064
   arxiv_id: null
@@ -66270,6 +66723,25 @@
   notes: >-
     Dived 2026-08-09 during the Vidya-handoff audit (round 2; surfaced by intake-1047).
     source_type blog per schema enum (spec page).
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (slsa.dev v1.1 page), dive-verified with the field
+      set checked rather than paraphrased. Claim 2 is the structurally interesting one for us: a VSA is
+      ITSELF an in-toto attestation — the OUTPUT of verification has the same shape as its input, which
+      is exactly the recursion a replay certificate needs.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (slsa.dev v1.1 page), dive-verified with the field
+      set checked rather than paraphrased. Claim 2 is the structurally interesting one for us: a VSA is
+      ITSELF an in-toto attestation — the OUTPUT of verification has the same shape as its input, which
+      is exactly the recursion a replay certificate needs.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Stage-2b round-2 dive-and-index in one pass (slsa.dev v1.1 page), dive-verified with the field
+      set checked rather than paraphrased. Claim 2 is the structurally interesting one for us: a VSA is
+      ITSELF an in-toto attestation — the OUTPUT of verification has the same shape as its input, which
+      is exactly the recursion a replay certificate needs.'
 
 - id: intake-1065
   arxiv_id: null
