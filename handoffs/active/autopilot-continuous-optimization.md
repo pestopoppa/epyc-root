@@ -2307,7 +2307,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       save — stranding trial state is the worse failure, so the result is *recoverable and attributed*
       rather than *prevented*. 19 tests incl. a real-subprocess lock holder; M1 (remove the call) 2
       failed / 17 passed, restored 19. *(`mainC` verified the tests and the kernel-authority design.)*
-- [ ] **NEW, LIVE, OPERATOR-FACING: a dashboard `resume` that clears a `skip_action_loop` halt is
+- [x] **NEW, LIVE, OPERATOR-FACING: a dashboard `resume` that clears a `skip_action_loop` halt is
   SILENTLY REVERTED at the daemon's next save.** `src/api/routes/dashboard.py:3272-3279` writes
   `consecutive_skip_actions`, `last_invalid_action/reason/status`, `_dispatch_deficiency`,
   `_meta_halt_reason` and `consecutive_meta_actions` — **by design, while the daemon lives**. None of
@@ -2319,6 +2319,33 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
   are those counters CONTROL state (add to the merge set) or DAEMON state (the dashboard must stop
   clearing them)? Both files are mid-edit by the pause-lease agent, so this needs sequencing, not a
   race. **UNOWNED.**
+
+  ✅ 2026-08-12 — orchestrator `c60f7777`. **RULED: DAEMON state, not control state**, and the
+  reasoning is the useful part. `paused` is safe to merge because the daemon reads it as a COMMAND at
+  every iteration top; `consecutive_skip_actions` is the inverse — the daemon DERIVES it from its own
+  trial stream and holds the authoritative copy for the whole run. Putting it in the control set
+  **disarms the breaker**: `_merge_external_control_fields` copies disk→memory before every merged
+  save, so a freshly incremented streak is reverted to the last persisted value and
+  `MAX_CONSECUTIVE_SKIP` is never reached again. Pinned by a test that runs the REAL merge with the
+  counter added. The 'easy' fix would have required dismantling `a395d7eb` to make room for itself.
+  **Fix:** the daemon clears the skip latch at its own resume edge — the treatment the META latch got
+  on 2026-05-31 and the skip latch never did — and an out-of-band clear is gated on the same
+  kernel-attested lock question: daemon down → clears outright; daemon up → touches nothing and
+  returns `delegated_to_daemon`, with the UI painting that amber rather than green. **Neither path can
+  report a clear it did not make**, which was the whole defect.
+  The mutation output is the defect verbatim: `AutoPilot resumed` / `skip_action_loop latch cleared`
+  printed while the halt came back. Blast radius over 47 transitively-importing files, failure SETS
+  diffed on both trees, no new failures.
+  **Narrower live shape, recorded honestly:** the skip halt also `break`s, so the child exits 0 and the
+  supervisor does not restart it — with the daemon dead the old dashboard write was ACCIDENTALLY
+  durable. The defect bites on the restart-then-resume path. Both paths are now covered.
+- [ ] **A HAZARD THAT CORRECTS OUR OWN STANDING ADVICE: `git commit -- <path>` BYPASSES THE INDEX.**
+  It commits the WORKING-TREE state of that path, so it sweeps any other agent's uncommitted hunks in
+  the SAME FILE. Pathspec commits protect against CROSS-FILE contamination only. This fleet has been
+  telling itself "explicit pathspec commits" all session as though it were sufficient; it is not.
+  The safe idiom when the target file is dirty with someone else's work is to filter your own hunks
+  and `git apply --cached`, then commit from the index. *(Demonstrated live: the resume agent hit
+  exactly this and used it to avoid sweeping 63 lines of another agent's in-flight work.)*
 
 - [x] **`orchestrator_stack.py start` silently resolves the wrong manifest without `--numa-mode`.**
       The production lineup is full + halves (`--numa-mode both`). Plain `start` resolved a full-only
