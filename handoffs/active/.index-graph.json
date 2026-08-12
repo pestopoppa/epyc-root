@@ -2371,6 +2371,12 @@
     {
       "from": "RTG-02",
       "kind": "ref",
+      "to": "PIP-04",
+      "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
       "to": "RTG-01",
       "weight": 4
     },
@@ -2666,7 +2672,7 @@
       "from": "RTG-15",
       "kind": "ref",
       "to": "EVL-10",
-      "weight": 2
+      "weight": 4
     },
     {
       "from": "RTG-15",
@@ -3485,7 +3491,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T11:46:03Z",
+  "generated_at": "2026-08-12T12:05:45Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4112,13 +4118,13 @@
       "track": "fable5 window2 findings 05c mi210 lever cate"
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 0,
       "closed": 0,
       "domain": "research-evaluation",
       "handoff": "reboot-gated-inventory-and-staging.md",
       "id": "EVL-49",
-      "last_advanced": null,
+      "last_advanced": "2026-08-12",
       "next_action": "S-01 \u2014 re-pin the 25 uptime-capped inference-batch entries to the v9 era and the live topology hash",
       "open": 20,
       "state": "active",
@@ -5010,8 +5016,8 @@
     },
     {
       "age_days": 0,
-      "blocked": 0,
-      "closed": 143,
+      "blocked": 1,
+      "closed": 146,
       "domain": "routing-and-optimization",
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",
@@ -5062,8 +5068,8 @@
     },
     {
       "age_days": 7,
-      "blocked": 0,
-      "closed": 4,
+      "blocked": 1,
+      "closed": 5,
       "domain": "routing-and-optimization",
       "handoff": "capability-registry-and-promotion.md",
       "id": "RTG-06",
@@ -5179,14 +5185,14 @@
     },
     {
       "age_days": 1,
-      "blocked": 1,
-      "closed": 33,
+      "blocked": 2,
+      "closed": 35,
       "domain": "routing-and-optimization",
       "handoff": "learned-routing-controller.md",
       "id": "RTG-15",
       "last_advanced": "2026-08-11",
       "next_action": "EP-5 \u2014 re-run the probe only after the outcome-label defects are fixed",
-      "open": 19,
+      "open": 21,
       "state": "active",
       "track": "learned routing controller"
     },
@@ -5615,7 +5621,7 @@
       "id": "RTG-48",
       "last_advanced": "2026-08-12",
       "next_action": "Auditor: audit the Mech column \u2014 a MECH claim holds only if the mechanism would have REFUSED that specific failure; mutation-test it",
-      "open": 32,
+      "open": 48,
       "state": "active",
       "track": "coordinator role failure modes"
     },

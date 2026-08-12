@@ -1947,6 +1947,45 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
 - [ ] `onnxruntime` is used at runtime by `src/retrieval/cross_encoder.py`, declared nowhere in
       `[project]` dependencies, and is not installed — **cross-encoder reranking is silently off in
       production**.
+  - [x] **DECLARED ✅ 2026-08-12** — orchestrator `fa3daeac` adds `onnxruntime>=1.20.0` and
+        `tokenizers>=0.22.2` to `[project] dependencies` (the sole manifest; there is no
+        `requirements*.txt`), with a provenance comment in the same style as the `matplotlib` entry.
+        `tokenizers` is the same defect: imported directly by all three encoder modules, reaching
+        the venv only transitively via `dspy -> litellm`. Six counted guards in
+        `tests/unit/test_retrieval_deps.py`, incl. a positive control that fails a synthetic
+        manifest declaring onnxruntime only in an extra — the B13 state exactly. Verified
+        read-only: `.venv/bin/python -c "import onnxruntime"` -> `ModuleNotFoundError`;
+        `/mnt/raid0/llm/models/ms-marco-minilm-l6-v2-onnx` DOES hold 8 graphs + `tokenizer.json`,
+        so the model files were never the blocker.
+  - [x] **PREMISE CORRECTED ✅ 2026-08-12 — "silently off *purely* because of the missing dep" is
+        wrong, and the two real findings are bigger.** (1) Rerank is off by **measured policy, not
+        by accident**: `kb_rag.py:60` `_RERANK_DEFAULT = _env_flag("KB_RAG_RERANK")` is False and
+        `KB_RAG_RERANK` is set nowhere, deliberately — the K7 verdict in
+        [`internal-kb-rag.md`](internal-kb-rag.md) records rerank as *"not default-safe"*; the
+        sibling `web_research_rerank` is likewise pinned off in
+        `scripts/autopilot/operator_seed_strategies.yaml`. Installing the dep will NOT turn
+        reranking on. (2) What the missing dep actually breaks is the **unconditional first-stage
+        KB-RAG path** — `src/retrieval/colbert_encoder.py` imports `onnxruntime` and is called at
+        `kb_rag.py:259,266,408,564` with no flag in front of it. That is the load-bearing breakage.
+  - [x] **FAIL-OPEN FILED ✅ 2026-08-12 — belongs to the family catalogued 2026-08-11.** All three
+        loaders (`cross_encoder.py:92`, `colbert_encoder.py:66`, `colbert_reranker.py:86`) catch
+        `ImportError`, emit one `logger.warning`, return False, and the callers return their input
+        list unmodified — no exception, no sentinel, no `ce_score` key. **Nothing in the system
+        notices**: `src/api/` contains zero references to onnx/colbert/cross_encoder, and no
+        preflight, health probe or freshness envelope asserts encoder availability.
+        `federation.encoder_status()` does compute `onnxruntime_importable` but is wired to no
+        probe. Two-vs-three-state split: `src/tools/web/research.py:1092` emits a real
+        `"reranked": <bool>` marker; the KB-RAG path emits none, so a caller cannot distinguish a
+        reranked result from a degraded one. The workaround is itself the evidence —
+        `src/retrieval/federation.py:89-176` grew a three-tier site-packages search
+        (`ensure_encoder_importable`) purely to route around the undeclared dependency, and
+        `tests/unit/test_retrieval.py:538` documents the gap in a comment instead of failing.
+  - [ ] **OPERATOR: install the two declared deps into the live orchestrator `.venv`.** The
+        declaration half is done; the install half was deliberately not run — `uv lock` / `uv sync`
+        against a live shared environment is the environment owner's call, not a subagent's.
+        `uv.lock` already resolves `onnxruntime 1.26.0` and `tokenizers 0.22.2` via the
+        `colbert-export` extra, so a re-lock should not move any version, but the two new DIRECT
+        requirements are not yet recorded in it.
 - [ ] The ~77-test retired-topology failure bucket.
 - [ ] `MEASUREMENT.md:148-158` still states the durability checker "fails on any citation resolving
       outside the repository" — now false after the retarget. Human-amendment-only; no owner assigned.

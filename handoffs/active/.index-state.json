@@ -25,10 +25,10 @@
       "open": 30
     },
     "routing-and-optimization-index.md": {
-      "blocked": 14,
+      "blocked": 17,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 359
+      "open": 377
     },
     "user-facing-harness-index.md": {
       "blocked": 3,
@@ -139,15 +139,15 @@
       "total": 237
     },
     "autopilot-continuous-optimization.md": {
-      "blocked": 0,
-      "closed": 143,
+      "blocked": 1,
+      "closed": 146,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 62,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
       "state": "active",
-      "total": 205
+      "total": 209
     },
     "autopilot-control-plane-integration.md": {
       "blocked": 0,
@@ -271,15 +271,15 @@
       "total": 24
     },
     "capability-registry-and-promotion.md": {
-      "blocked": 0,
-      "closed": 4,
+      "blocked": 1,
+      "closed": 5,
       "guarded": 0,
       "last_advanced": "2026-08-05",
       "open": 2,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-06",
       "state": "active",
-      "total": 6
+      "total": 8
     },
     "colbert-reranker-web-research.md": {
       "blocked": 1,
@@ -319,11 +319,11 @@
       "closed": 0,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 32,
+      "open": 48,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-48",
       "state": "active",
-      "total": 32
+      "total": 48
     },
     "cpu-prefill-compute-large-models.md": {
       "blocked": 0,
@@ -942,15 +942,15 @@
       "total": 5
     },
     "learned-routing-controller.md": {
-      "blocked": 1,
-      "closed": 33,
+      "blocked": 2,
+      "closed": 35,
       "guarded": 1,
       "last_advanced": "2026-08-11",
-      "open": 19,
+      "open": 21,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-15",
       "state": "active",
-      "total": 54
+      "total": 59
     },
     "lightning-attention-port.md": {
       "blocked": 1,
@@ -1363,7 +1363,7 @@
       "blocked": 0,
       "closed": 0,
       "guarded": 0,
-      "last_advanced": null,
+      "last_advanced": "2026-08-12",
       "open": 20,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-49",
