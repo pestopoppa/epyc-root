@@ -234,6 +234,12 @@ def test_archive_succeeds_and_verifies_by_sha256(tmp_path: Path,
     dest = Path(out["archive_path"])
     assert dest.read_bytes() == shard.read_bytes()
     assert out["digest_written"] is True
+    # A successful archive must still carry REAL denominators, not merely a
+    # truthy `archived`. Without this, a summarize_advisory_shard() that
+    # returned a hardcoded {"pick_records": 811, "distinct_rows": 9} would
+    # pass this test too — it says nothing about the copy otherwise.
+    assert out["shard_summary"]["pick_records"] == 1
+    assert out["shard_summary"]["distinct_rows"] == 1
 
 
 def test_corrupted_copy_is_detected_by_sha256_not_by_existence(
@@ -267,6 +273,11 @@ def test_corrupted_copy_is_detected_by_sha256_not_by_existence(
     dest = Path(out["archive_path"])
     assert dest.exists(), "precondition: the corrupted copy did land on disk"
     assert dest.read_bytes() != shard.read_bytes()
+    # The denominators must still be REAL even though the copy failed — this
+    # is what the digest file will carry forward, so it must not silently be
+    # a hardcoded/stale placeholder just because the copy path errored.
+    assert out["shard_summary"]["pick_records"] == 1
+    assert out["shard_summary"]["distinct_rows"] == 1
 
 
 def test_digest_is_still_written_when_the_copy_fails(
@@ -322,6 +333,10 @@ def test_archive_root_creation_failure_still_reports_and_does_not_raise(
     assert out["archived"] is False
     assert "archive_error" in out
     assert "shard_summary" in out, "denominators must still be computed even when the root is dead"
+    # Not just present — REAL. A dead archive root must not be an excuse to
+    # skip computing the actual N/M for this shard.
+    assert out["shard_summary"]["pick_records"] == 1
+    assert out["shard_summary"]["distinct_rows"] == 1
 
 
 # =========================================================================== #
