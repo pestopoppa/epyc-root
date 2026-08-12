@@ -149,9 +149,16 @@ fleet models.** No inference runs without the standing region claim; no at-scale
 
 ### CJ-1 — GPQA-Diamond (start here: unsaturated at this tier, zero acquisition cost)
 
-- [ ] **CJ-1a. Acquire corpus** — already cached (`hendrydong/gpqa_diamond` 198 rows + `ankner/gpqa`
-      framing). Confirm the 198/198 normalized-text match still holds; no download expected.
-- [ ] **CJ-1b. Size on disk** — measured ~140K; confirm and record, no growth expected.
+- [x] **CJ-1a. Acquire corpus** — already cached (`hendrydong/gpqa_diamond` 198 rows + `ankner/gpqa`
+      framing). Confirmed 198/198 normalized-text match via `GPQADiamondAdapter._ensure_loaded()`
+      itself (production `HF_HOME=/mnt/raid0/llm/cache/huggingface`, `HF_HUB_OFFLINE=1` — zero
+      download; ankner snapshot `8c23b9cbb`). Env note for CJ-1c/1d: the adapter runs under **system
+      `python3`** — neither the research nor orchestrator venv carries `datasets`/`pyarrow`. ✅ 2026-08-12
+- [x] **CJ-1b. Size on disk** — recorded; **the prior "~140K" anchor was wrong** (it was the
+      hendrydong 108K + Idavidrein 28K subtotal, omitting `ankner/gpqa` which the adapter loads —
+      T5 certification flag, now measured). Actual: hub cache 2.1M (hendrydong 108K + ankner 2.0M +
+      Idavidrein 28K) + processed datasets cache 3.6M (ankner 3.5M + hendrydong 120K) ≈ **5.7M
+      total**. No growth expected. ✅ 2026-08-12
 - [ ] **CJ-1c. Execution requirement** — expected **none**. Confirm scoring runs through canonical
       `answer_scoring.extract_letter_answer`, NOT a bespoke extractor (this is the exact suite that
       produced the 2026-07-24 verbose-penalty scorer artifact: A4 15% false parse-failures vs A1 0%,
