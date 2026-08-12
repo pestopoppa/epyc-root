@@ -306,14 +306,15 @@ data that says otherwise. Every other face corrupts the check or its inputs; thi
   label). The remedy idiom above covers both, because a label *derived from* the printed
   measurement can do neither.
 - `auditor` again, a **third way the reporting layer lies: one field, two readers, two semantics.**
-  While idle-and-available it wrote heartbeat `state=working` *intending* "responsive, reachable" —
-  but the nudge guard reads `working` as "do not disturb" and refused delivery, making the agent
-  unreachable for 33 minutes while sitting at an empty prompt (2026-08-12, caught by the
-  coordinator). The inverse of a stale heartbeat with the identical effect. The value was neither
-  predicted nor mislabelled — it was **written under one meaning and consumed under another**, and
-  nothing anywhere declared which meaning the field carries. Remedy: a status field's semantics
-  belong to its *consumers*; write what the reader will do with it, not what you intend it to
-  suggest — and where two readers genuinely need two meanings, that is two fields.
+  While idle it wrote heartbeat `state=working` *intending* "responsive, reachable" — but the nudge
+  guard reads `working` as "do not disturb" (2026-08-12, caught by the coordinator; their initial
+  "unreachable 40 minutes" framing was later corrected by them — the pane was legitimately busy for
+  much of the window and the guard behaved correctly, so the defect is *only* the semantic
+  inversion, which is why this entry claims no outage). The value was neither predicted nor
+  mislabelled — it was **written under one meaning and consumed under another**, and nothing
+  anywhere declared which meaning the field carries. Remedy: a status field's semantics belong to
+  its *consumers*; write what the reader will do with it, not what you intend it to suggest — and
+  where two readers genuinely need two meanings, that is two fields.
 
 These were caught by the author re-reading their own output — never by the label, which is the
 problem: **the label is what gets scanned, and it reads as the finding.** In a handover or a bus
