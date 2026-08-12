@@ -78,17 +78,35 @@ die() { printf '[setup-main-worktrees] REFUSING: %s\n' "$*" >&2; exit 1; }
 
 # --------------------------------------------------------------- validation
 
+# Identity of the git common dir as device+inode, NOT as a path string.
+#
+# Fixed 2026-08-12 (phase 3, B-series). This compared `pwd -P` strings, and
+# `pwd -P` does not collapse a bind mount: `/workspace/.git` and
+# `/mnt/raid0/llm/epyc-root/.git` are ONE directory (same inode) with two names.
+# After the five lanes were re-registered with ABSOLUTE gitdir pointers under the
+# canonical spelling, a re-run invoked from `/workspace` refused every one of them
+# with "is a worktree of a DIFFERENT repo" — the script's own validator failing on
+# a spelling while the repository it names was correct. Same defect class as B1;
+# same fix, and the same primitive serialized_push.repo_key() uses.
+our_common_dir_id() {
+  local c
+  c="$(git -C "$1" rev-parse --git-common-dir 2>/dev/null)" || return 1
+  [[ "$c" = /* ]] || c="$1/${c}"
+  stat -c '%d:%i' "$c" 2>/dev/null || return 1
+}
+
+# Human-readable form, for messages only — never for comparison.
 our_common_dir() {
   local c
-  c="$(git -C "$REPO_ROOT" rev-parse --git-common-dir 2>/dev/null)" || return 1
-  [[ "$c" = /* ]] || c="${REPO_ROOT}/${c}"
+  c="$(git -C "${1:-$REPO_ROOT}" rev-parse --git-common-dir 2>/dev/null)" || return 1
+  [[ "$c" = /* ]] || c="${1:-$REPO_ROOT}/${c}"
   (cd "$c" 2>/dev/null && pwd -P) || printf '%s\n' "$c"
 }
 
 validate_mains_root() {
   [[ -d "$MAINS_ROOT" ]] || return 0
-  local expect_common entry name branch entry_common
-  expect_common="$(our_common_dir)" || die "cannot resolve this repo's own git-common-dir"
+  local expect_id entry name branch entry_id
+  expect_id="$(our_common_dir_id "$REPO_ROOT")" || die "cannot resolve this repo's own git-common-dir"
 
   local -a entries=()
   shopt -s nullglob
@@ -97,17 +115,46 @@ validate_mains_root() {
 
   for entry in "${entries[@]}"; do
     name="$(basename "$entry")"
-    [[ -e "$entry/.git" ]] || die "$entry exists but has no .git — not a worktree"
+
+    # SCOPE OF THE VETO (2026-08-12). This used to refuse on ANY entry under
+    # MAINS_ROOT, which made a single piece of residue veto the health check for
+    # every agent, forever. Today that happened: the registration repair left five
+    # `<agent>.orphan-<ts>` copies behind, and re-running for mainA died on
+    # `auditor.orphan-...`. A health check that cannot be run is not fail-closed,
+    # it is off.
+    #
+    # The safety property this guard actually protects is per-agent: do not create
+    # or reuse a worktree at a path holding something unexpected. So the veto now
+    # applies to the agents being set up. Anything ELSE that fails validation is
+    # reported loudly as residue and does not block — reported, never swept: these
+    # orphans hold a stale relative gitdir pointer AIMED AT THE LIVE LANE'S admin
+    # dir, so two working trees share one index and a `git add` inside one would
+    # land in the other. Removing them is an operator decision, not this script's.
+    local requested=0 a
+    for a in "${AGENTS[@]}"; do [[ "$name" == "$a" ]] && requested=1; done
+
+    if [[ ! -e "$entry/.git" ]]; then
+      if (( requested )); then die "$entry exists but has no .git — not a worktree"; fi
+      log "RESIDUE (not blocking, not touched): $entry has no .git"
+      continue
+    fi
+    if (( ! requested )); then
+      branch="$(git -C "$entry" symbolic-ref --short -q HEAD || true)"
+      entry_id="$(our_common_dir_id "$entry" 2>/dev/null || true)"
+      if [[ "$branch" != "lane/$name" || "$entry_id" != "$expect_id" ]]; then
+        log "RESIDUE (not blocking, not touched): $entry is on '${branch:-<detached>}' " \
+            "(expected 'lane/$name'). If its gitdir points at another lane's admin dir, " \
+            "a git write inside it corrupts that lane — surface it, do not prune it."
+      fi
+      continue
+    fi
     branch="$(git -C "$entry" symbolic-ref --short -q HEAD || true)"
     [[ "$branch" == "lane/$name" ]] || \
       die "$entry is on branch '${branch:-<detached>}', expected 'lane/$name'"
-    entry_common="$(git -C "$entry" rev-parse --git-common-dir 2>/dev/null)" || \
-      die "$entry: git-common-dir unresolvable"
-    [[ "$entry_common" = /* ]] || entry_common="${entry}/${entry_common}"
-    entry_common="$(cd "$entry_common" 2>/dev/null && pwd -P)" || \
-      die "$entry: git-common-dir does not resolve to a real path"
-    [[ "$entry_common" == "$expect_common" ]] || \
-      die "$entry is a worktree of a DIFFERENT repo (common-dir $entry_common != $expect_common)"
+    entry_id="$(our_common_dir_id "$entry")" || \
+      die "$entry: git-common-dir unresolvable, or does not resolve to a real path"
+    [[ "$entry_id" == "$expect_id" ]] || \
+      die "$entry is a worktree of a DIFFERENT repo (common-dir $(our_common_dir "$entry") [$entry_id] is not the same directory as $(our_common_dir "$REPO_ROOT") [$expect_id])"
   done
 }
 
@@ -188,6 +235,7 @@ verify_bus_root_canonical() {
 
 # ----------------------------------------------------------------------- main
 
+AGENTS=("$@")
 validate_mains_root
 mkdir -p "$MAINS_ROOT"
 
