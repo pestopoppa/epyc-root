@@ -88,7 +88,13 @@ data/handoff_timeline.json.tmp.*
 # on every bus interaction. M3/M4 evidence is cited as a summary artifact,
 # never the raw log.
 coordination/session-bus/advisory*.jsonl
+# Daemon-owned per-tick state. `boundary_state.json` was listed alone; the other
+# three are the same kind of file and were left untracked-but-not-ignored, which
+# is the shape that rides into another agent's `git add -A` on a shared tree.
 coordination/session-bus/boundary_state.json
+coordination/session-bus/relay_state.json
+coordination/session-bus/stuck_state.json
+coordination/session-bus/scheduling_recommendation_state.json
 coordination/session-bus/adapter-ledger.jsonl
 coordination/session-bus/inbox/
 coordination/session-bus/outbox/
