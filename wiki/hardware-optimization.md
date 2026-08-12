@@ -2,8 +2,34 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-12 (adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained)
+**Last compiled**: 2026-08-12 (adds executable AutoKernel reward-integrity evidence; prior findings retained)
 **Sources**: 102+ documents
+
+## Compiled Update — 2026-08-12 (executable reward-integrity corpus)
+
+**Confidence: verified instrument validation on gfx90a; no candidate speed or arbitrary-program coverage claim.**
+
+AutoKernel's named reward-hacking taxonomy now has executable evidence rather than static diff strings.
+The producer materializes 10 planted and 15 clean HIP programs, compiles each for gfx90a, and executes
+both a normal-128 and anti-short-circuit-127 unit under the shared MI210 claim. A host oracle verifies
+each output. The hard unit is therefore priced in the same measured set instead of living only in a
+correctness gate, and a defect that manifests in only one unit fails acceptance.
+
+Final r3 observed **10/10** true positives, **15/15** true negatives, sensitivity **1.0**, specificity
+**1.0**, FPR **0.0**, and expected runtime behavior for **25/25** programs on both units. Claim
+`akd-006b9b9b049b4249` covered only the 10.283-second execution window and released; 42 numeric samples
+met the 250 ms cadence with a 0.250032-second maximum gap. Its receipt retains the failed 22/25 r1 and
+passing r2 attempts by both embedded and file hashes. The final embedded self-hash is
+`b4e39c65f23323bd648b84e2b8088850201a2be16b4d46002b8e869a7b1620ee`.
+
+The belief substrate records a prospective write-side task for successor runs. The completed r3
+receipt predates producer-authored belief rows and is never retrofitted.
+
+### Source References (2026-08-12 reward-integrity corpus)
+
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — acceptance contract, exact result, claim, and receipt identity
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — attempt chronology, test counts, and authority boundary
+- [Vidya adapter source table](../scripts/vidya/adapters/README.md) — prospective write-side and no-backfill status
 
 ## Compiled Update — 2026-08-12 (INF-03 live campaign and GPU-claim scope)
 
