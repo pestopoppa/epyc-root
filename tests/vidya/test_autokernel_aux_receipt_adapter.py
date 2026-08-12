@@ -36,6 +36,56 @@ def receipt(*, measurements=True, status="passed"):
     return value
 
 
+def arena_receipt(*, checkpoint_hours=2.0, ended_at="2026-08-12T08:23:37Z"):
+    value = {
+        "schema": aux._ARENA_SCHEMA,
+        "producer_id": aux._ARENA_PRODUCER,
+        "status": "pass",
+        "authority": "diagnostic_only",
+        "campaign_id": "inf03-mi210-controller-ab-v1-available-source-six-arm-v1",
+        "started_at": "2026-08-12T08:20:00Z",
+        "ended_at": ended_at,
+        "task": {
+            "task_id": "instruction2triton.rocmbench.test_add_kernel",
+            "controller_id": "claude_codex_actor_critic",
+        },
+        "source": {
+            "checkpoint_hours": checkpoint_hours,
+            "entrypoint_sha256": "a" * 64,
+        },
+        "artifacts": [{"path": "workspace/kernel.py", "sha256": "b" * 64}],
+        "dependencies": {},
+        "belief_measurements": [
+            {
+                "measurement_id": "arena_correctness_pass_rate",
+                "metric": "geak_arena_correctness_pass_rate",
+                "value": 1.0,
+                "unit": "fraction",
+                "metric_direction": "higher_better",
+                "category": "CANDIDATE",
+                "reps": 1,
+                "reps_basis": "one centralized task evaluation",
+                "claim": "correctness pass rate",
+                "extra": {"controller_id": "claude_codex_actor_critic"},
+            },
+            {
+                "measurement_id": "arena_timing_harness_validity_rate",
+                "metric": "geak_arena_timing_harness_validity_rate",
+                "value": 1.0,
+                "unit": "fraction",
+                "metric_direction": "higher_better",
+                "category": "CANDIDATE",
+                "reps": 1,
+                "reps_basis": "one centralized timing phase",
+                "claim": "timing validity rate",
+                "extra": {"controller_id": "claude_codex_actor_critic"},
+            },
+        ],
+    }
+    value["receipt_sha256"] = aux._canonical_sha256(value)
+    return value
+
+
 def p2_receipt():
     shape = {"np_slots": 8, "slot_context_tokens": 8192,
              "total_context_tokens": 65536, "mtp": False}
@@ -798,6 +848,29 @@ def test_identity_distinguishes_native_measurement_ids():
     source["belief_measurements"].append(second)
     identities = {aux.project(row).measurement_id for row in aux.native_rows(source)}
     assert len(identities) == 2
+
+
+def test_arena_identity_distinguishes_attempts_with_one_logical_campaign_id():
+    r3 = arena_receipt(checkpoint_hours=2.0, ended_at="2026-08-12T07:49:41Z")
+    r4 = arena_receipt(checkpoint_hours=2.0, ended_at="2026-08-12T08:23:37Z")
+    r4["artifacts"][0]["sha256"] = "c" * 64
+    r4.pop("receipt_sha256")
+    r4["receipt_sha256"] = aux._canonical_sha256(r4)
+
+    r3_rows = tuple(aux.project(row) for row in aux.native_rows(r3))
+    r4_rows = tuple(aux.project(row) for row in aux.native_rows(r4))
+    assert {row.measurement_id for row in r3_rows}.isdisjoint(
+        row.measurement_id for row in r4_rows)
+    assert len({row.measurement_id for row in (*r3_rows, *r4_rows)}) == 4
+    assert all(row.extra["arena_receipt_identity_sha256"] in {
+        r3["receipt_sha256"], r4["receipt_sha256"]} for row in (*r3_rows, *r4_rows))
+
+
+def test_arena_identity_refuses_a_tampered_self_digest():
+    value = arena_receipt()
+    value["source"]["checkpoint_hours"] = 8.0
+    with pytest.raises(ct.ProjectionError, match="does not bind"):
+        aux.native_rows(value)
 
 
 def test_invalid_direction_is_rejected_by_shared_carrier():

@@ -37,6 +37,8 @@ SOURCE_SCHEMAS = frozenset({
 })
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _COMMIT = re.compile(r"^[0-9a-f]{40}$")
+_ARENA_SCHEMA = "epyc.autokernel.geak_arena_roundtrip.v1"
+_ARENA_PRODUCER = "autokernel.controller.arena_roundtrip/v1"
 _Q4K_SCHEMA = "epyc.autokernel.q4k_unpack_attribution.v1"
 _Q4K_PRODUCER = "scripts.benchmark.run_autokernel_q4k_unpack_attribution/v2"
 _Q4K_PRODUCER_PATH = "scripts/benchmark/run_autokernel_q4k_unpack_attribution.py"
@@ -125,6 +127,35 @@ def _sha(value: Any, label: str) -> str:
     if not isinstance(value, str) or not _SHA256.fullmatch(value):
         raise ProjectionError(f"{label} must be a lowercase SHA-256")
     return value
+
+
+def _arena_receipt_identity(receipt: dict) -> str:
+    """Return the immutable Arena observation identity, not its logical campaign.
+
+    A campaign id names the matched matrix and is intentionally reused when an
+    interrupted campaign is restarted under a new output root.  It therefore
+    cannot identify an observation: r3 and r4, as well as every task/controller/
+    checkpoint inside either attempt, share it.  The producer's self digest
+    binds the exact task, controller, checkpoint, artifacts and time interval.
+    """
+    if (receipt.get("producer_id") != _ARENA_PRODUCER
+            or receipt.get("authority") != "diagnostic_only"):
+        raise ProjectionError("Arena receipt lacks its producer or authority identity")
+    claimed = _sha(receipt.get("receipt_sha256"), "receipt.receipt_sha256")
+    logical = {key: value for key, value in receipt.items()
+               if key != "receipt_sha256"}
+    if _canonical_sha256(logical) != claimed:
+        raise ProjectionError("Arena receipt_sha256 does not bind the logical receipt")
+    task = receipt.get("task")
+    source = receipt.get("source")
+    if (not isinstance(task, dict)
+            or not isinstance(task.get("task_id"), str)
+            or not isinstance(task.get("controller_id"), str)
+            or not isinstance(source, dict)
+            or isinstance(source.get("checkpoint_hours"), bool)
+            or not isinstance(source.get("checkpoint_hours"), (int, float))):
+        raise ProjectionError("Arena receipt lacks task/controller/checkpoint identity")
+    return claimed
 
 
 def _q4k_source_digest(identity: dict) -> str:
@@ -1000,6 +1031,8 @@ def native_rows(receipt: dict, *, receipt_locator: str = "",
         _validate_q4k_measurements(receipt, measurements)
     if receipt.get("schema") == _P2_SCHEMA:
         _validate_p2_measurements(receipt, measurements)
+    if receipt.get("schema") == _ARENA_SCHEMA:
+        _arena_receipt_identity(receipt)
     return tuple({
         "receipt": receipt,
         "measurement": measurement,
@@ -1044,8 +1077,10 @@ def project(native: Any) -> ClaimTuple:
     extra = measurement.get("extra", {})
     if not isinstance(extra, dict):
         raise ProjectionError("measurement.extra must be a dict")
+    observation_identity = (
+        _arena_receipt_identity(receipt) if schema == _ARENA_SCHEMA else campaign_id)
     identity_payload = json.dumps(
-        [schema, campaign_id, local_id, native.get("measurement_index")],
+        [schema, observation_identity, local_id, native.get("measurement_index")],
         separators=(",", ":"), ensure_ascii=True)
     identity = hashlib.sha256(identity_payload.encode("utf-8")).hexdigest()[:24]
     return ClaimTuple(
@@ -1069,6 +1104,8 @@ def project(native: Any) -> ClaimTuple:
             "source_schema": schema,
             "campaign_id": campaign_id,
             "native_measurement_id": local_id,
+            **({"arena_receipt_identity_sha256": observation_identity}
+               if schema == _ARENA_SCHEMA else {}),
             **({"native_measurement_sha256": measurement["measurement_sha256"]}
                if measurement.get("measurement_sha256") else {}),
             **({"receipt_self_sha256": receipt["receipt_sha256"]}
