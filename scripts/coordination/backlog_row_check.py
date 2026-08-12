@@ -78,6 +78,37 @@ _GUARD = re.compile(r"UNCHECKED BY DESIGN|STANDING CONSTRAINTS?|DO NOT DISPATCH"
 # stay in the weak tier, because "Avoid duplicating the config" really can be a one-off
 # cleanup, and marking real work undispatchable is the costlier error.
 _PROHIBITION = re.compile(r"^\**\s*(never|do not|don't|do NOT)\b", re.I)
+
+# ---------------------------------------------------------------------------
+# Two DECLARATIONS a row makes about itself, found by `mainD` on 2026-08-11 while
+# working the generated bench. Both are the same family as the DO-NOT-DISPATCH
+# banner the generator already reads positively: a human wrote the constraint into
+# the row, and a purely form-based screen could not see it.
+#
+#   1. OWNER PREFIX. `handoff-index-and-backlog-graph.md:44` opens `**OPERATOR:` and
+#      describes a host-level cron change. It screened DISPATCHABLE — which is true
+#      in FORM and wrong in OWNERSHIP. Dispatchable means well-formed, not yours.
+#   2. DEPENDENCY IN PROSE. `dashboard-architecture-restructure.md` carries
+#      "Rationalize supervision with OP-9's resolution", and OP-9 is an OPEN operator
+#      decision. `blocking_children` cannot see it because the dependency is in the
+#      row's own text rather than in a child box.
+#
+# PREFIX, NOT SUBSTRING — mainD's caveat, learned twice from C41 in one hour: a row
+# that says "operator" in its body is not an operator row; a row whose text STARTS
+# with `OPERATOR:` is. `_OWNER_PREFIX` therefore anchors at the start and requires a
+# colon within 60 chars, so "Operator-review candidate (EV-6):" matches while a row
+# merely discussing operators does not. Measured on the live corpus: 21 of 1,258 open
+# boxes, every one genuinely operator-owned.
+_OWNER_PREFIX = re.compile(r"^\**\s*(operator|owner|human)\b[^:\n]{0,60}:", re.I)
+
+# Deliberately two narrow shapes only, both naming a REFERENCE rather than a mood:
+# "<REF>'s resolution/decision/ruling" and "gated on <REF>". Measured: 7 of 1,258,
+# and all seven read verbatim as gated ("Gated on AR-3 Package D completion",
+# "Gated on URE-1 calibration quality"). A bare word like "pending" is NOT included —
+# it would refuse real work, which this file's settled rule says is the costlier error.
+_DEP_IN_TEXT = re.compile(
+    r"\b[A-Z]{2,6}-\d+(?:'s|s')\s+(resolution|decision|ruling)\b"
+    r"|\bgated on\s+(the\s+)?[A-Z]{2,6}-\d+\b", re.I)
 # A section can disclaim execution by the reader without being a template. Measured
 # 2026-07-29: `stale-open-audit-2026-07-18.md` § "Recommendations (follow-up tasks —
 # no checkbox flips on the audited handoffs)" holds six rows, FOUR of which direct
@@ -382,6 +413,20 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple
                        f"({disclaimer.group(0).strip()!r} in § {head}). Rows here often direct work "
                        f"at ANOTHER owner — verify it is yours before claiming. Not a refusal: such "
                        f"sections mix owner-directed rows with ones that really are yours.")
+    if _OWNER_PREFIX.match(body):
+        return 2, [f"the ROW DECLARES ITS OWNER in its own first words, and it is not you: "
+                   f"{body[:70]!r}",
+                   "DISPATCHABLE means WELL-FORMED, not YOURS-TO-DO. A row prefixed OPERATOR:/"
+                   "owner:/human: is asking for a decision or an action outside an agent's "
+                   "authority — taking it produces work nobody asked for, or a decision nobody "
+                   "authorised"]
+    dep = _DEP_IN_TEXT.search(body)
+    if dep:
+        return 2, [f"the ROW DECLARES A DEPENDENCY in its own text, not in a child box: "
+                   f"{dep.group(0)!r}",
+                   "blocking_children() looks one indent DOWN and cannot see a dependency written "
+                   "into the row itself, so this screened dispatchable while its precondition was "
+                   "open. Resolve the named reference first, or confirm it has landed"]
     if _PROHIBITION.match(body):
         return 2, [f"the BOX TEXT is a PROHIBITION, which has no completion state — you cannot "
                    f"finish not-doing something: {body[:90]!r}",

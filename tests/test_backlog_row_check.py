@@ -631,3 +631,73 @@ def test_audit_standing_reuses_classify_predicates_not_new_ones(tmp_path) -> Non
     assert code == 2, "classify must refuse this while OPEN"
     assert [h[1] for h in brc.closed_standing_constraints(d)] == [2], \
         "the same text, once CLOSED, must be caught by the audit"
+
+
+# --------------------------------------------------------------------------------
+# 2026-08-12 — the two screener blind spots `mainD` found by working the bench.
+# Both are DECLARATIONS the row makes about itself, which a form-based screen could
+# not read. Each is pinned in BOTH directions, because mainD's C41 caveat is that a
+# loosened pattern refuses real work: "a row that says the word OPERATOR in its body
+# is not an operator row; a row whose text STARTS with OPERATOR: is."
+# --------------------------------------------------------------------------------
+
+
+def _one_row(tmp_path, text):
+    d = tmp_path / "handoffs" / "active"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "r.md").write_text(f"## Open\n- [ ] {text}\n", encoding="utf-8")
+    return d / "r.md"
+
+
+def test_an_owner_prefixed_row_is_refused(tmp_path) -> None:
+    """The measured instance: handoff-index-and-backlog-graph.md:44 screened DISPATCHABLE.
+
+    It opens `**OPERATOR:` and describes a host-level cron change. Dispatchable means
+    WELL-FORMED, not YOURS-TO-DO.
+    """
+    p = _one_row(tmp_path, "**OPERATOR: nothing restarts `hub_supervisor.sh` if it dies.** Found dead.")
+    code, reasons = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 2
+    assert "DECLARES ITS OWNER" in reasons[0]
+
+
+def test_merely_mentioning_an_operator_is_NOT_refused(tmp_path) -> None:
+    """mainD's caveat, pinned. Prefix, not substring.
+
+    This is the exact over-reach that C41 produced twice in one hour: a row whose BODY
+    discusses a thing is not a row that IS the thing.
+    """
+    p = _one_row(tmp_path, "Add a column recording which operator signed each ratification")
+    code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 0, "a row that merely mentions an operator must stay dispatchable"
+
+
+def test_a_dependency_written_into_the_row_text_is_refused(tmp_path) -> None:
+    """blocking_children() looks one indent DOWN and cannot see this.
+
+    Measured instance: "Rationalize supervision with OP-9's resolution", where OP-9 is
+    an OPEN operator decision — so the row screened dispatchable while its precondition
+    was undecided.
+    """
+    p = _one_row(tmp_path, "Rationalize supervision with OP-9's resolution: one lifecycle story")
+    code, reasons = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 2
+    assert "DECLARES A DEPENDENCY" in reasons[0]
+
+
+def test_gated_on_a_named_reference_is_refused(tmp_path) -> None:
+    """The other live shape, verbatim from the corpus: "Gated on AR-3 Package D completion"."""
+    p = _one_row(tmp_path, "A/B test LateOn vs GTE-ModernColBERT-v1. Gated on AR-3 Package D completion.")
+    code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 2
+
+
+def test_a_bare_pending_does_not_refuse(tmp_path) -> None:
+    """`pending` alone is deliberately NOT a dependency signal.
+
+    It is a mood, not a reference, and including it would refuse real work — which this
+    file's settled rule calls the costlier error. The pattern requires a NAMED reference.
+    """
+    p = _one_row(tmp_path, "Write the pending section of the migration guide")
+    code, _ = brc.classify(p, 2, " ", brc._boxes(p)[0][2], "Open")
+    assert code == 0
