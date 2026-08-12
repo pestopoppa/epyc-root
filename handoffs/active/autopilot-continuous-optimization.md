@@ -1893,10 +1893,31 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
         the code can never silently drift apart again. Mutation-checked against a tracked file.
       - **Box left unchecked deliberately** — nothing is fixed, and the decision is per-module:
         wire BSV-3, or retire the ledger and correct its docstring. Same for the other 23.
-- [ ] **`contention_nway_restricted_count` stops one layer short of the operator.** Reaches
+- [x] **`contention_nway_restricted_count` stops one layer short of the operator.** Reaches
       `metrics_snapshot()` (`contention_gate.py:453`) but appears 0 times in `dashboard.html`.
 
 ### Never attempted
+
+      ✅ 2026-08-12 — orchestrator `86144f93`. It stopped at the RENDER layer: the value already
+      reached `metrics_snapshot()` and the `/dashboard/api/contention` JSON, but
+      `updateContentionGate()` in `dashboard.html` read its four siblings and never this key
+      (`grep -c` was 0 before, 1 after — *`mainC` verified both sides*). Surfaced on the EXISTING
+      contention-gate compact strip, no new panel, and it carries the denominator per
+      `OPERATING_CONSTRAINTS.md § Reporting Units`: *"{n} of {admitted} admitted decision(s) this
+      window"*. Tests execute the REAL extracted JS under node against a stubbed `fetchJSON` and
+      assert on rendered `innerHTML` — 3 tests; mutation 2 failed / 1 passed, restored 3 passed.
+- [ ] **The metric's NAME and its new tooltip both overstate what it counts.** `contention_gate.py:325`
+  increments inside `if nway_decision != PairDecision.ALLOW:` — **not** inside the
+  `if _prec[nway_decision] > _prec[worst]:` test one line above. So it counts *"the N-way check fired
+  non-ALLOW"*, not *"N-way was the binding constraint"*: if pairwise already said BLOCK and N-way says
+  QUEUE, it still increments although N-way changed nothing. The dataclass comment at `:92` ("N-way set
+  more restrictive than pairwise") is therefore inaccurate, and the new tooltip inherits it —
+  *"restricted … beyond what the pairwise check alone allowed"* is now **operator-facing**.
+  The subagent spotted the looseness in its own report and wrote the loose form into the UI anyway,
+  which is the `§ Reporting Units` failure one level in: a LABEL asserting more than the number
+  measures. *(Verified by `mainC` by reading the enclosing block, not the comment.)*
+  Fix is either wording (*"N-way check returned non-ALLOW"*) or moving the increment under the
+  precedence test — a semantics decision for the contention-gate owner, not a wording tidy.
 
 - [x] `config/stack_templates/default.yaml` is 10 validation errors stale — `start --stack-profile
       default` returns 1 today.
