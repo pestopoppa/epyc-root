@@ -232,3 +232,62 @@ fixed allowlist rather than a schema match.
    absence a first-class alarm rather than only a banner state. Right now `current_state` can render
    fully healthy while the entire runs/pareto contract is missing, and **that combination is the
    incident-8 shape at the page level rather than the field level.**
+
+---
+
+# Implementation follow-up — post-hold reconciliation (2026-08-12 01:18Z)
+
+The auditor hold is no longer active: the merge worktree has no dashboard conflict, the selected
+dashboard commits are on `main`, and the four touched dashboard paths were clean with no live file
+claim. The additive repair was implemented on isolated branch
+`codex/kernel-rnd-dashboard-audit-20260812`; no inference or kernel-tree write occurred.
+
+## Live-state correction since the addendum
+
+The runtime producer is no longer absent. A terminal campaign export now exists at
+`/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json` and live `/api/kernel` reports:
+
+- campaign `ak-iqk-v9-20260811`, state `preflight_refused`;
+- the explicit blocker is the ratified one-week uptime ceiling (13.47 days), routed to an operator
+  reboot decision rather than hidden as idle;
+- freshness `fresh`, with 4/7 v2 sections reported and the three unreported owners named.
+
+This closes the addendum's producer-absence observation. It does **not** turn the terminal refusal
+into success or authorize a reboot.
+
+## Implemented
+
+| Finding | Disposition |
+|---|---|
+| D-1 missing production attestation rendered quietly | **FIXED** — a missing attestation now renders `ATTESTATION UNAVAILABLE` in the failure class and says production identity is unasserted. |
+| Hardened v9 instrument and controls absent | **FIXED** — schema-selected preflight plus attested control summary show 8/8 preflight checks, 5/5 controls, `MAY RANK`, instrument `a4cb04ca…`, direct production-v9 anchor match, B_min 10 and 3.5785% noise floor. |
+| ROCm replay absent / positivity could be misread | **FIXED** — one card keeps `20/20 positive`, median `+1.2442%`, the `2.00%` floor and `NOT_REPRODUCED` together; it also reports ROCm0 sampling (2,544 samples) and claim release. |
+| Activity card trailed isolated-worktree commits | **FIXED** — committed AutoKernel activity is selected across local refs and explicitly labelled as activity, not merge/deploy state. It now sees the `900cb5c6` matched-archive builder and its immediate predecessors. |
+
+The schema-less historical `summary.json` control artifact is not trusted by filename alone: the
+reader requires the control/calibration/provenance shape plus a sibling
+`epyc.autokernel.control_composition_attestation.v1` with the same campaign id. The GPU replay and
+preflight are selected by exact schema.
+
+## Validation
+
+- `python3 -m unittest discover -s tests -p 'test_dashboard*.py'` — **182 passed**.
+- `tests/test_dashboard_static_js.py` is included in that run and parses every static dashboard's
+  JavaScript.
+- A supervised temporary hub on `127.0.0.1:18100` returned the fresh campaign blocker plus the new
+  controls/preflight/replay projections; the exact captured PID was terminated and verified gone.
+
+## Remaining gaps (not silently promoted to dashboard facts)
+
+- **D-2 remains LOW**: the registry's `/health` target is transport-only. Pointing it naively at the
+  global `/api/health` fold would recurse through the dashboard-directory probe; a panel-specific
+  data-health endpoint or a non-recursive registry-probe contract is needed.
+- **Production-kernel-set coverage is partial (MEDIUM)**: the card correctly covers AutoKernel's
+  current llama.cpp anchor (`production-consolidated-v9`), but does not yet project the independently
+  frozen whisper.cpp and qwentts.cpp identities from the speech-kernel ratification. Those backends
+  are AK9 work, so absence is recorded rather than implying they are controlled by today's llama
+  campaign.
+- **ROCm profiling handoffs are plans, not runtime receipts**: `rocm-verify-profile-backend.md`,
+  `agentic-rocm-kernel-authoring.md`, and the kernel-specific profiling handoffs remain discoverable
+  through the handoff board. The Kernel-R&D page now shows the ROCm evidence it can warrant (device
+  sampler, paired replay, claim release); it must not synthesize progress from open prose rows.

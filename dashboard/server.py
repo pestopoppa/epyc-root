@@ -162,6 +162,9 @@ AUTOKERNEL_STATE_ROOT = Path(os.environ.get(
 AUTOKERNEL_PROBE_ROOT = Path(os.environ.get(
     "AUTOKERNEL_PROBE_ROOT",
     "/mnt/raid0/llm/autokernel/probes"))
+AUTOKERNEL_CONTROL_ROOT = Path(os.environ.get(
+    "AUTOKERNEL_CONTROL_ROOT",
+    "/mnt/raid0/llm/autokernel/controls"))
 PRODUCTION_KERNEL_ATTESTATION = Path(os.environ.get(
     "PRODUCTION_KERNEL_ATTESTATION",
     str(REPO / "artifacts/operator/ratify_v9_final_freeze_20260811.json")))
@@ -828,14 +831,17 @@ def _iso_mtime(path: Path) -> str | None:
 
 
 def _autokernel_git_activity(repo: Path, *, limit: int = 8) -> dict:
-    """Recent implementation commits, without importing the research package.
+    """Recent committed implementation work across refs, without imports.
 
     The dashboard process is intentionally stdlib-only.  ``git log`` also gives
     us the committed fact rather than the shared checkout's dirty state, which
-    may belong to any of several sessions on this host.
+    may belong to any of several sessions on this host.  ``--all`` is deliberate:
+    AutoKernel development uses isolated worktrees, so the canonical checkout's
+    current branch can trail already-committed work by hours.  This is activity
+    context only and therefore never claims the newest ref is merged or deployed.
     """
     command = [
-        "git", "-C", str(repo), "log", f"-{limit}",
+        "git", "-C", str(repo), "log", "--all", f"-{limit}",
         "--format=%H%x00%cI%x00%s", "--", "scripts/kernel_rnd/autokernel",
     ]
     try:
@@ -856,6 +862,7 @@ def _autokernel_git_activity(repo: Path, *, limit: int = 8) -> dict:
         commits.append({"sha": sha, "short_sha": sha[:10],
                         "committed_at": committed_at, "subject": subject})
     return {"status": "observed" if commits else "empty",
+            "scope": "committed AutoKernel work across local refs; not merge/deploy state",
             "head": commits[0] if commits else None,
             "recent_commits": commits}
 
@@ -1024,6 +1031,154 @@ def _smoke_receipt_summary(path: Path | None, data: dict | None,
     }
 
 
+def _control_preflight_summary(path: Path | None, data: dict | None,
+                               error: str | None) -> dict:
+    """Project the trusted-instrument preflight without parsing prose reasons."""
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    checks = data.get("checks") if isinstance(data.get("checks"), dict) else {}
+    outcomes = {
+        str(name): check.get("outcome")
+        for name, check in checks.items() if isinstance(check, dict)
+    }
+    failed = sorted(name for name, outcome in outcomes.items()
+                    if outcome != "PASS")
+    return {
+        "available": True,
+        "status": "PASS" if outcomes and not failed else "FAIL",
+        "passed_checks": sum(1 for outcome in outcomes.values()
+                             if outcome == "PASS"),
+        "total_checks": len(outcomes),
+        "failed_checks": failed,
+        "measured_at": data.get("measured_at"),
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+    }
+
+
+def _latest_control_summary(root: Path) -> tuple[Path | None, dict | None, str | None]:
+    """Select the newest completed control summary with a matching attestation.
+
+    ``summary.json`` predates receipt-wide schema stamping, so accepting it by
+    filename alone would let an arbitrary JSON object become operator posture.
+    The shape is therefore constrained here and its sibling composition receipt
+    must carry the versioned schema and the same campaign id.
+    """
+    try:
+        candidates = list(root.glob("*/summary.json"))
+    except OSError as exc:
+        return None, None, f"control discovery unavailable: {exc}"
+    candidates.sort(key=lambda path: _iso_mtime(path) or "", reverse=True)
+    errors = []
+    for path in candidates:
+        _, data, err = _read_json_object(path, "control summary")
+        if err or data is None:
+            errors.append(f"{path}: {err or 'not an object'}")
+            continue
+        campaign_id = data.get("campaign_id")
+        required = (
+            isinstance(campaign_id, str) and bool(campaign_id)
+            and isinstance(data.get("controls"), dict)
+            and isinstance(data.get("calibration"), dict)
+            and isinstance(data.get("measurement_instrument_commit"), str)
+            and isinstance(data.get("production_source_commit"), str)
+        )
+        if not required:
+            continue
+        attestation_path = path.with_name("composition_attestation.json")
+        _, attestation, attestation_err = _read_json_object(
+            attestation_path, "control composition attestation")
+        if (attestation_err or attestation is None
+                or attestation.get("schema") !=
+                "epyc.autokernel.control_composition_attestation.v1"
+                or attestation.get("campaign_id") != campaign_id):
+            errors.append(f"{path}: matching composition attestation unavailable")
+            continue
+        selected = dict(data)
+        selected["_composition_attestation"] = attestation
+        selected["_composition_attestation_path"] = str(attestation_path)
+        return path, selected, None
+    if errors:
+        return None, None, errors[0]
+    return None, None, f"no completed control summary found below {root}"
+
+
+def _control_summary(path: Path | None, data: dict | None,
+                     error: str | None, production_head: str | None) -> dict:
+    """Project the decision-grade control panel and instrument provenance."""
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    controls = data.get("controls") if isinstance(data.get("controls"), dict) else {}
+    panel_result = (controls.get("panel_result")
+                    if isinstance(controls.get("panel_result"), dict) else {})
+    panel = panel_result.get("panel") if isinstance(panel_result.get("panel"), dict) else {}
+    calibration = (data.get("calibration")
+                   if isinstance(data.get("calibration"), dict) else {})
+    outputs = (calibration.get("outputs")
+               if isinstance(calibration.get("outputs"), dict) else {})
+    attestation = (data.get("_composition_attestation")
+                   if isinstance(data.get("_composition_attestation"), dict) else {})
+    production_source = data.get("production_source_commit")
+    return {
+        "available": True,
+        "campaign_id": data.get("campaign_id"),
+        "state": data.get("state"),
+        "may_rank": data.get("may_rank"),
+        "marker": panel.get("marker"),
+        "panel": panel,
+        "measured_at": data.get("measured_at"),
+        "measurement_instrument_commit": data.get(
+            "measurement_instrument_commit"),
+        "production_source_commit": production_source,
+        "anchor_matches_production": bool(
+            production_head and production_source == production_head),
+        "binary_copy_exact": data.get("binary_copy_exact"),
+        "calibration_accepted": calibration.get("accepted"),
+        "b_min_blocks": outputs.get("b_min_blocks"),
+        "noise_floor": outputs.get("noise_floor_phi"),
+        "composition_mode": data.get("composition_mode"),
+        "composition_inference_executed": attestation.get("inference_executed"),
+        "composition_evidence": data.get("_composition_attestation_path"),
+        "promotion_authority": False,
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+    }
+
+
+def _gpu_replay_summary(path: Path | None, data: dict | None,
+                        error: str | None) -> dict:
+    """Project the paired ROCm replay without turning positivity into a pass."""
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    result = data.get("result") if isinstance(data.get("result"), dict) else {}
+    sampling = (data.get("device_sampling")
+                if isinstance(data.get("device_sampling"), dict) else {})
+    released = (data.get("device_claim_released")
+                if isinstance(data.get("device_claim_released"), dict) else {})
+    return {
+        "available": True,
+        "campaign_id": data.get("campaign_id"),
+        "verdict": result.get("verdict"),
+        "blocks": data.get("blocks"),
+        "all_blocks_positive": result.get("all_blocks_positive"),
+        "contribution_floor": result.get("contribution_floor"),
+        "median_relative_delta": result.get("median_relative_delta"),
+        "minimum_relative_delta": result.get("minimum_relative_delta"),
+        "device_id": sampling.get("device_id"),
+        "device_sample_count": sampling.get("sample_count"),
+        "device_sample_source": sampling.get("source"),
+        "device_claim_released_at": released.get("released_at"),
+        "source_branch": data.get("source_branch"),
+        "source_commit": data.get("source_commit"),
+        "promotion_authority": False,
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+    }
+
+
 def _production_kernel_summary(attestation_path: Path,
                                production_repo: Path) -> dict:
     """Read the operator freeze attestation and compare the canonical checkout."""
@@ -1077,13 +1232,15 @@ def _production_kernel_summary(attestation_path: Path,
 
 def autokernel_current_state(probe_root: Path | None = None,
                              attestation_path: Path | None = None,
-                             production_repo: Path | None = None) -> dict:
+                             production_repo: Path | None = None,
+                             control_root: Path | None = None) -> dict:
     """Evidence-backed current posture, separate from runtime liveness.
 
     These receipts describe audits and a diagnostic smoke.  They cannot certify
     a live controller, rank the partial panel, or promote/freeze a kernel.
     """
     probe_root = probe_root or AUTOKERNEL_PROBE_ROOT
+    control_root = control_root or AUTOKERNEL_CONTROL_ROOT
     attestation_path = attestation_path or PRODUCTION_KERNEL_ATTESTATION
     production_repo = production_repo or PRODUCTION_KERNEL_REPO
     fixed_path, fixed, fixed_err = _latest_autokernel_receipt(
@@ -1095,6 +1252,15 @@ def autokernel_current_state(probe_root: Path | None = None,
     smoke_path, smoke, smoke_err = _latest_autokernel_receipt(
         probe_root, "smoke-receipt.json",
         "epyc.autokernel.arena_diagnostic_smoke.v1")
+    preflight_path, preflight, preflight_err = _latest_autokernel_receipt(
+        probe_root, "preflight.json",
+        "epyc.autokernel.live_control_preflight.v1")
+    replay_path, replay, replay_err = _latest_autokernel_receipt(
+        probe_root, "receipt.json",
+        "epyc.autokernel.async_prefetch_replay.v1")
+    control_path, control, control_err = _latest_control_summary(control_root)
+    production = _production_kernel_summary(attestation_path, production_repo)
+    production_head = production.get("head") if production.get("available") else None
     return {
         "schema": "epyc.autokernel.dashboard_current_state.v1",
         "role": ("EVIDENCE SNAPSHOT ONLY — audits and diagnostic smokes do not "
@@ -1105,8 +1271,13 @@ def autokernel_current_state(probe_root: Path | None = None,
             available_path, available, available_err),
         "empirical_smoke": _smoke_receipt_summary(
             smoke_path, smoke, smoke_err),
-        "production_kernel": _production_kernel_summary(
-            attestation_path, production_repo),
+        "instrument_preflight": _control_preflight_summary(
+            preflight_path, preflight, preflight_err),
+        "decision_controls": _control_summary(
+            control_path, control, control_err, production_head),
+        "gpu_prefetch_replay": _gpu_replay_summary(
+            replay_path, replay, replay_err),
+        "production_kernel": production,
         "promotion_claim": False,
     }
 
@@ -1115,7 +1286,8 @@ def autokernel_activity(repo: Path | None = None,
                         state_root: Path | None = None,
                         probe_root: Path | None = None,
                         attestation_path: Path | None = None,
-                        production_repo: Path | None = None) -> dict:
+                        production_repo: Path | None = None,
+                        control_root: Path | None = None) -> dict:
     """Live implementation/research context that cannot affect runtime health."""
     repo = repo or AUTOKERNEL_RESEARCH_REPO
     state_root = state_root or AUTOKERNEL_STATE_ROOT
@@ -1128,7 +1300,7 @@ def autokernel_activity(repo: Path | None = None,
         "work_bundles": _autokernel_work_bundles(repo),
         "durable_state": _autokernel_journal_inventory(state_root),
         "current_state": autokernel_current_state(
-            probe_root, attestation_path, production_repo),
+            probe_root, attestation_path, production_repo, control_root),
     }
 
 
