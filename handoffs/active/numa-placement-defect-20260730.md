@@ -994,6 +994,23 @@ primary artefact.
       flip it per-role. Sequence it **after** the N25 cutover commit; it changes the launch
       command and therefore forces another recompile. Attestation: `ctxalloc.sh` /
       `ctxalloc_results.txt` / `maxctx.py` in the attestation directory.
+      **DECISION PACKAGE 2026-08-12 (`auditor`, claimed from the queue; analysis done, ruling
+      routed — the flip is the lineup owner's/operator's, per the residency bill this row itself
+      names).** The measurement kills the OLD premise (launch-time cost) but does not establish
+      max-provisioning as free: **lazy faulting relocates the cost from launch to load.** RSS
+      grows toward the full reservation exactly when requests genuinely use deep context, so
+      max-`-c` converts a launch-time guarantee (bounded KV by construction) into a runtime
+      exposure (worst case = Σ over resident roles of full-window KV, hit silently under
+      concurrent deep-context load). "~Zero" was measured at reservation and short-context — true,
+      and not the number the decision needs. **Options**: (A) max-provision fleet-wide + a
+      compaction/eviction policy above the server — full trained window everywhere, but the
+      policy machinery does not exist yet and the worst-case sum is uncomputed; (B) **staged,
+      recommended**: raise `-c` only where the lineup's Σ full-window-KV fits RAM with stated
+      margin — compute that sum mechanically at priors/stack compile time so the gate is a check,
+      not a judgement — and keep rationing elsewhere until (A)'s policy exists; (C) status quo —
+      worst option: a rationing decision standing on a premise now measured false. Sequencing
+      per the row: fold the `-c` change into the N25 recompile to pay the recompile once.
+      Ruling owner: lineup owner + operator. Row stays open pending the ruling.
 
 ### Opened 2026-07-30 by the topology change — OWNED ELSEWHERE, do not re-file here
 
