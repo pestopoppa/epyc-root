@@ -2751,6 +2751,7 @@ e-process crossing, and 40/40 duration admissions. The card explicitly says `NOT
 experimental llama integration as required, and cannot affect dashboard freshness or release state.
 
 
+
 ### Source References (2026-08-12 AutoKernel raw-HIP arm)
 
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — sealed-suite,

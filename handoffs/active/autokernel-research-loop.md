@@ -3109,6 +3109,7 @@ cannot retrigger the expensive gate unchanged.
   terminal-complete, and stale-or-terminal-unreported attempts rather than falling back to stale
   six-arm r4. It also reports frozen v9 and the current implementation/readiness gates. The commit is
   pushed on root `main`.
+
 - [x] **Project the terminal raw-HIP r6 decision receipt on Kernel-R&D without manufacturing a
   champion.** ✅ 2026-08-12 — the hub admits only the exact self-hashed
   `epyc.autokernel.hip_decision_grade.v1` receipt at campaign r6, verifies its producer, sealed MI210
