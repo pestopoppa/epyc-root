@@ -378,6 +378,23 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
       spot as an `OPERATOR:` prefix. Worth a generator signal.*
 - [ ] H1/H2 blind-spot panels (owned by RTG-03) get homes assigned post-split: breaker/fallback →
       `/machine`; REL-1 eval error-rate → autopilot page.
+- [ ] **D-1 (HIGH) — the production-kernel panel is absence-tolerant, QUIETLY.** Filed 2026-08-12 by
+      `mainC` from the Kernel-R&D operational-truth audit
+      ([`artifacts/audit/kernel-rnd-dashboard-operational-truth-20260812.md`](../../artifacts/audit/kernel-rnd-dashboard-operational-truth-20260812.md)).
+      Drift itself is loud (`does not match attestation`, class `fail`, compared live against the
+      canonical checkout). But a MISSING attestation returns `error: None` from
+      `_production_kernel_summary`, and `static/kernel.html` renders that branch as a single `muted`
+      line — no reason, no `alarm`/`absent` class, no `absence_means`. **This is the incident-8 scar
+      one function away, unfixed**: `_read_kernel_contract` SYNTHESISES an explicit sentence when the
+      file is merely absent (`if err is None: shell["error"] = …`); `_production_kernel_summary`
+      passes `err` straight through. Fix = mirror that pattern, and render the unavailable branch
+      loudly. **Blocked only by sequencing**: `dashboard/server.py` is on auditor hold in
+      `merge/origin-reconcile-20260811`; apply after that merge lands.
+- [ ] **D-2 (LOW) — the Kernel-R&D registry entry points at the TRANSPORT probe.** Same audit.
+      `registry.json` declares `"health_path": "/health"`, which `server.py` documents as answering
+      only "this process is serving" — so a dead AutoKernel producer leaves it green. The hub already
+      has the right instrument in `/api/health` (the three-valued fold over `panels.py`). The `/kernel`
+      PAGE is honest, so a human is not deceived; only an automated consumer of `registry.json` is.
 
 ## Non-goals
 
