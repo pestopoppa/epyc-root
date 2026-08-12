@@ -268,6 +268,13 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     65). Reading is the only route, and its rate is now measured. Stop looking for a shortcut.
   - [ ] **REMAINS OPEN:** read-certify the remaining ~918. That is the only route left and it is a bounded but
     large job; it should be split across mains by handoff, not attempted in one session.
+    - [x] **Tranche 7 — the tail, complete: 13 of 13 rows in 8 small files ✅ 2026-08-12 (`auditor`)**
+      **6 LIVE / 6 GATED / 1 REWRITE / 0 DEAD** — the tail is clean; wp12 ran the recurrence check on
+      itself correctly in-file. Elevated: HS-OD-1 is a LIVE unfixed API defect (response_format
+      silently dropped, zero src/api hits, spot-verified). Evidence:
+      `artifacts/audit/read-certification-tranche7-20260812.md`. **Cumulative T4-T7: 389 rows, ~42%
+      of backlog, 24% blended dead. Non-live-owner certification COMPLETE** — the remaining ~918-row
+      program continues only via live-owner files (policy-skipped) or the post-merge regenerated queue.
     - [x] **Tranche 6 — 8 smaller bench-feeding handoffs, complete: 48 of 48 rows certified ✅ 2026-08-12 (`auditor`, overnight)**
       (vidya 12, UTM 10, tri-role 7, within-role-placement 6, triattention 4, tool-output-compression 4,
       attention-matching 4, laguna-s21 1). **20 LIVE / 8 DEAD / 19 GATED / 1 REWRITE** after main-thread
