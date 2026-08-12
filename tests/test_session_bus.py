@@ -2107,7 +2107,30 @@ def test_vendored_validator_matches_jsonschema_on_the_whole_live_bus() -> None:
                     rows.append((f"{path.name}:{lineno}", definition, json.loads(line)))
                 except json.JSONDecodeError:
                     continue
-    assert len(rows) > 500, f"live corpus looks truncated ({len(rows)} rows) — is the bus intact?"
+    # WAS `assert len(rows) > 500` — a proxy for "this comparison is not vacuous",
+    # and it encoded the corpus size at authoring time. On 2026-08-12 the bus runtime
+    # was wiped and the corpus fell to ~100 rows, so the guard fired TRULY: it refused
+    # to validate a truncated corpus and call it agreement. But the corpus did not
+    # regrow — it kept shrinking — so a fixed floor would have stayed red forever,
+    # which trains readers to ignore it. Lowering the number would have been face 1
+    # committed in reverse.
+    #
+    # So assert the PROPERTY the number was proxying: THE READER SAW EVERYTHING THAT
+    # IS THERE. That is scale-free, survives a wipe, and is strictly stronger — it is
+    # face 14 (the reader dropped part of the input and said nothing) turned on this
+    # test's own reader. Counted independently, by a different method than the loop
+    # above, so a bug in that loop cannot satisfy its own check.
+    on_disk = 0
+    for area in ("outbox", "inbox", "queue.jsonl"):
+        target = LIVE_BUS_ROOT / area
+        for path in ([target] if area.endswith(".jsonl") else sorted(target.glob("*.jsonl"))):
+            if path.exists():
+                on_disk += sum(1 for ln in path.read_bytes().split(b"\n") if ln.strip())
+    unparsable = on_disk - len(rows)
+    assert rows, "live bus corpus is EMPTY — agreement over nothing is not agreement"
+    assert unparsable == 0, (
+        f"reader dropped {unparsable} of {on_disk} non-empty lines — every line on the "
+        f"bus must be validated or the agreement is over a corpus this test narrowed itself")
 
     validators = {d: (_reference_validator(d), _vendored(d)) for d in SCHEMA_DEFINITIONS}
     disagreements = []
