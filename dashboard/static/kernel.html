@@ -209,7 +209,11 @@ function renderSections(d){
     let detail=s.reason||"";
     if(st==="observed"){
       if(name==="campaign") detail=`${s.state||"—"} · seq ${s.seq==null?"—":s.seq}${s.stopped?" · STOPPED (declared)":""}`;
-      else if(name==="blocking_conditions") detail=(s.open||[]).map(c=>c.kind).join(", ")||"no open conditions reported";
+      // The producer's detail is the actionable gate (today: the ratified uptime
+      // refusal), while `kind` alone merely says that *some* preflight refused.
+      // Pass the producer-authored sentence through verbatim; never infer a gate
+      // or verdict from it here in the view plane.
+      else if(name==="blocking_conditions") detail=(s.open||[]).map(c=>[c.kind,c.detail].filter(Boolean).join(": ")).join(" · ")||"no open conditions reported";
       else if(name==="release_package") detail=String(s.state||"—");
       else if(name==="champion") detail=String(s.combined_candidate_id||"—");
       else if(name==="backend_standing") detail=Object.keys(s.backends||{}).map(b=>b+": "+((s.backends[b]||{}).standing||"—")).join(" · ")||"—";
@@ -245,7 +249,7 @@ function renderCurrentState(d){
   const prod=s.production_kernel||{}, fixed=s.fixed_campaign||{};
   const avail=s.available_source_diagnostic||{}, smoke=s.empirical_smoke||{};
   const controls=s.decision_controls||{}, preflight=s.instrument_preflight||{};
-  const replay=s.gpu_prefetch_replay||{};
+  const replay=s.gpu_prefetch_replay||{}, coverage=s.receipt_coverage||{};
   let h='<div class="state-grid">';
 
   h+='<div class="state-card production"><h3>Production kernel · operator attestation</h3>';
@@ -267,7 +271,7 @@ function renderCurrentState(d){
   // Kernel SET — three kernels, four binaries. Rendered as ONE card beside the llama
   // attestation card rather than a second llama panel: the singular card above answers
   // "which llama is frozen", this answers "is the whole frozen set still what we froze".
-  const kset=state.production_kernel_set||null;
+  const kset=s.production_kernel_set||null;
   if(kset){
     h+='<div class="state-card production"><h3>Production kernel SET · freeze scope</h3>';
     const intact=kset.intact===true;
@@ -276,10 +280,14 @@ function renderCurrentState(d){
       +esc(kset.binaries_proven+'/'+kset.expected_binaries)+' binaries proven'
       +(kset.binaries_unverified?' · <span class="fail">'+esc(kset.binaries_unverified)+' UNVERIFIED</span>':'')+'</div>';
     (kset.members||[]).forEach(function(m){
-      const st=m.matches_attestation===true?'<span class="ok">matches</span>'
-        :(m.matches_attestation===false?'<span class="fail">DRIFT</span>':'<span class="fail">unverified</span>');
+      const st=m.matches_attestation===true?'<span class="ok">tree matches attestation</span>'
+        :(m.matches_attestation===false?'<span class="fail">TREE DRIFT</span>':'<span class="fail">tree unverified</span>');
+      const gen=m.ggml_generation||{};
+      const ggml=(gen.observed
+        ?(' · ggml observed '+esc(gen.observed)+(gen.expected?' · attested '+esc(gen.expected):' · <span class="fail">not attested</span>'))
+        :(gen.expected?' · ggml attested '+esc(gen.expected)+' · <span class="fail">not observed</span>':' · <span class="fail">ggml not observed or attested</span>'));
       h+='<div class="detail">'+esc(m.title||'—')+' · '+esc(m.branch||'—')+' <code>'
-        +esc((m.head||'').slice(0,12))+'</code>'+(m.ggml?' · ggml '+esc(m.ggml):' · <span class="fail">ggml not attested</span>')+' · '+st
+        +esc((m.head||'').slice(0,12))+'</code>'+ggml+' · '+st
         +(m.error?' <span class="fail">'+esc(m.error)+'</span>':'')+'</div>';
     });
     (kset.binaries||[]).forEach(function(b){
@@ -291,7 +299,7 @@ function renderCurrentState(d){
     });
     // Stable links and tree-local linkage go in the SAME card, not a new one.
     h+='<div class="detail">stable links '+esc((kset.stable_links_ok||0)+'/4')
-      +' · tree-local ggml linkage '+esc((kset.linkage_verified||0)+'/4')
+      +' · readelf-resolved tree-local ggml linkage '+esc((kset.linkage_verified||0)+'/4')
       +' · ggml generations '+esc((kset.ggml_generations_proven||0)+'/'+(kset.expected_kernels||3))+'</div>';
     (kset.stable_links||[]).forEach(function(l){
       const ok=l.matches_expected&&l.binary_present;
@@ -310,6 +318,7 @@ function renderCurrentState(d){
       h+='<div class="detail fail">⚠ LD_LIBRARY_PATH carries ggml: <code>'+esc((amb.ggml_bearing_entries||[]).join(', '))
         +'</code> — consulted BEFORE each binary\u2019s RUNPATH</div>';
     }
+    if(amb.note) h+='<div class="detail muted">'+esc(amb.note)+'</div>';
     (kset.alarms||[]).forEach(function(a){
       h+='<div class="detail fail">⚠ '+esc(a)+'</div>';
     });
@@ -323,7 +332,8 @@ function renderCurrentState(d){
     h+='<div class="headline '+ctlClass+'">'+esc(controls.marker||"—")+' controls · '+(controls.may_rank?'MAY RANK':'RANKING BLOCKED')+'</div>';
     h+='<div class="detail">positive '+esc(p.positive||"—")+' · neutral '+esc(p.neutral||"—")+' · degraded negative '+esc(p.degraded_negative||"—")+' · A/A '+esc(p.aa||"—")+' · historical replay '+esc(p.historical_replay||"—")+'</div>';
     const pf=preflight.available?(esc(preflight.passed_checks)+" / "+esc(preflight.total_checks)+" "+esc(preflight.status||"unknown")):"unavailable";
-    h+='<div class="detail">trusted-instrument preflight '+pf+' · instrument <code>'+esc((controls.measurement_instrument_commit||"").slice(0,12))+'</code></div>';
+    h+='<div class="detail">instrument prerequisites '+pf+' · instrument <code>'+esc((controls.measurement_instrument_commit||"").slice(0,12))+'</code></div>';
+    h+='<div class="detail muted">This receipt checks instrument/model/power/storage/topology prerequisites; the campaign preflight and its host-uptime gate remain separate in the contract sections below.</div>';
     h+='<div class="detail">production anchor <code>'+esc((controls.production_source_commit||"").slice(0,12))+'</code> · '+(controls.anchor_matches_production?'<span class="ok">matches current freeze</span>':'<span class="fail">does not match current freeze</span>')+'</div>';
     h+='<div class="detail">calibration '+(controls.calibration_accepted?'accepted':'not accepted')+' · B_min '+esc(controls.b_min_blocks==null?'—':controls.b_min_blocks)+' · noise floor '+esc(controls.noise_floor==null?'—':num(controls.noise_floor*100,3)+'%')+'</div>';
     if(controls.composition_inference_executed===false) h+='<div class="detail">final composition reused completed raw vectors; recovery itself ran no inference</div>';
@@ -371,6 +381,7 @@ function renderCurrentState(d){
   } else h+='<div class="muted">empirical smoke receipt unavailable: '+esc(smoke.error||"not found")+'</div>';
   h+=evidenceLine(smoke)+'</div></div>';
   h+='<div class="state-note">No AutoKernel promotion claim. Production freeze identity and experimental audit evidence are independent. '+esc(s.role||"")+'</div>';
+  if(coverage.note) h+='<div class="state-note">'+esc(coverage.note)+' Projected schemas: <code>'+esc((coverage.projected_schemas||[]).join(", "))+'</code></div>';
   box.innerHTML=h;
 }
 

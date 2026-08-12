@@ -146,6 +146,16 @@ this is presentation context only. It is structurally excluded from `_freshness`
 and `/api/health`, so a commit, audit, or A/A artifact cannot make an absent or
 dead campaign look alive.
 
+The Kernel-R&D page executes its current-state renderer in the static-JavaScript
+suite, not just a syntax parser. This matters because the complete-kernel-set card
+once referenced a free identifier: the script parsed, the API remained complete,
+but rendering stopped before controls, empirical gates, activity, or the seven
+contract sections. Producer-authored blocking-condition details are rendered in
+full, so a generic `PREFLIGHT_REFUSED` label cannot hide the actionable gate. The
+production-set card also labels tree identity, observed versus attested ggml
+generation, non-executing `readelf` linkage, and dashboard-process ambient
+`LD_LIBRARY_PATH` as distinct claims rather than folding them into one green mark.
+
 ### The seam: what the hub owns of the producer's document
 
 The hub is stdlib-only and **never imports the producer's package** — a consumer
