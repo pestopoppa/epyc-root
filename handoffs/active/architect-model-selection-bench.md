@@ -666,6 +666,24 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
   `worker_general` is. Corroborating: `intake_index.yaml:34556` already rules LFM2.5 out as a spec-dec
   drafter (its 128K `lfm2` BPE vocab), so it cannot recover throughput the way the incumbent does.
 
+  **PARTIALLY ANSWERED 2026-08-12, zero compute** — read from the archived GGUF-embedded template
+  (`benchmarks/results/scout/wg-lfm-1-20260812/chat_template_LFM2.5-2.6B-Q4_K_M.jinja`, byte-identical
+  across both quants). **LFM2.5 exposes NO generation-time thinking switch.** The template's
+  `preserve_thinking` is *not* an `enable_thinking` equivalent: it governs whether PRIOR assistant turns
+  keep their `<think>` blocks in the rendered history (`{%- if not keep_thinking and "</think>" in
+  content -%}` strips them from past messages) and has no bearing on whether the model reasons on the
+  current turn. Every `/think` occurrence is a closing `</think>` tag, not a `/no_think` control token.
+  So the mechanism production uses to silence the incumbent — `chat_template_kwargs.enable_thinking` —
+  **has no counterpart here**.
+  **Bound on this evidence, stated**: absence from the template does not prove the behaviour is
+  unsuppressible in principle — a model can still obey a system-prompt instruction or an inline control
+  token without template support. What it does establish is that the *production* mechanism does not
+  transfer, so adopting LFM2.5 would need a different and unproven suppression path. Anyone closing
+  WG-LFM-2 should test a system-prompt suppression attempt before concluding either way.
+  **Current reading: this materially weakens the LFM2.5 case for `worker_general`**, because the raw
+  1.7–1.8× decode lead is measured against an incumbent that emits no reasoning tokens at all in
+  production, while LFM2.5 has no demonstrated way to stop emitting them.
+
 - [x] **`GGML_IQK_Q8_0=1` is load-bearing for any Q8_0 arm** ✅ 2026-08-12 — without it the Q8_0 run
   logged no `[iqk] ACTIVE` line at all: pp 539.24→870.47 (+61%), tg 15.75→24.97 (+58%). A Q8_0 bench
   omitting it is not top-optimized and must not be published as one. `canonical_recipe.py` already
