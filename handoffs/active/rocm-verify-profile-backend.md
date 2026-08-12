@@ -29,6 +29,15 @@
 - [x] **RVP-AUD-1 — Audit diagnostic receipt durability versus source/build provenance.** RVP-T0-1,
   AK-BH-1/2/3, and AK-LN-2/AK-X-5a retain their bounded findings; missing clean source/build identity
   is now explicit and blocks their use as AutoKernel campaign authority. ✅ 2026-08-12
+- [x] **RVP-AUD-2 — Reconcile implemented C3/C6 rows against current research main.** ✅ 2026-08-12 —
+  clean detached research `26ca88dc` revalidated `microbench.py`, `physical_bounds.py`,
+  `reward_hack_scan.py`, `devices.py`, `oracle_integrity.py`, and the generated import footprint at
+  **408 tests + 15 subtests PASS**. This confirms RVP-C6-2/3/4 and RVP-C3-4/5. RVP-C6-6/10 are
+  corrected back to open: their static detector corpus and ranked-unit machinery pass, but the
+  acceptance text requires executable HIP-kernel and live ranked hard-case evidence respectively.
+  RVP-C2-8/9 also remain open: their reducers and claim-aware runners are complete, but the full
+  acceptance contract still needs an OP-11-authorized committed seeded producer and fresh matched
+  evidence. No implementation-only test upgraded empirical authority.
 **Categories**: hardware_optimization, benchmark_methodology, tool_implementation, inference_serving
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked; ROCm 6.2 bind-mounted; llama.cpp HIP build verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`). This backend is now **ACTIVE** (priority MEDIUM). Runnable first tasks: (1) install/pin `pytorch-triton-rocm` matched to ROCm 6.2 + verify gfx90a matmul (intake-760); (2) stand up `rocprof-compute` gfx90a metric subset (C4); (3) the honest-vendor-baseline candidates that are gfx90a-*reachable* — **BitBLAS/TileLang low-bit GEMM** (intake-497/tilelang-puzzles), **NOT AITER** (gfx942-only, intake-759). GPU claim grade follows P-GPU-1; profiling a live server remains the inference owner's scheduling boundary. [was: "~July 2026; nothing executes until the card racks" — stale]
 **Priority**: MEDIUM (the substrate for [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md))
@@ -706,14 +715,17 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   remains isolated in `evaluator/integrity.py` and `evaluator/surface.py`; the evaluator event has no
   actor-settable `correct` field. The verdict alone derives status, provenance failures appear as
   `INTEGRITY:<gate>:<outcome>`, and any such flag structurally withholds the speed rank.
-- [x] **RVP-C6-6 — Red-team corpus with a stated sensitivity.** ✅ 2026-08-11 — the two versioned
-  source-pattern detectors pass the named 10 planted / 15 clean corpus and report 10/10 sensitivity,
-  15/15 specificity and 0/15 FPR without claiming arbitrary-program coverage. ~10 planted-bug and ~15 clean HIP
-  kernels; report sensitivity and specificity, not an assertion of coverage. Mine the published
+- [ ] **RVP-C6-6 — Red-team corpus with a stated sensitivity.** The required unit is ~10 planted-bug
+  and ~15 clean **executable HIP kernels**; report sensitivity and specificity, not an assertion of
+  coverage. The current static source-pattern corpus is a completed implementation subgate, not that
+  runtime corpus. Mine the published
   exploit **taxonomy** (harness frame-hacking, pointer-keyed memoization, structured-input
   short-circuit) — **do not vendor the 4.66 GB corpus**; it is NVIDIA-targeted Python with zero
   executable value on gfx90a. This is what lets the §"C6 monitor design" FPR-budget row above be
   stated as a number instead of a promise.
+  - [x] **RVP-C6-6a — Validate the named static source-pattern detector corpus.** ✅ 2026-08-11 — the
+    two versioned detectors pass 10/10 planted and 15/15 clean diff strings, reporting 100%
+    sensitivity/specificity and 0/15 FPR for that narrow taxonomy only.
 - [x] **RVP-C6-7 — Refine-prompt disclosure rule + PUBLIC/SEALED split.** Our loop is multi-turn, so
   the failure diagnostics fed back into a repair turn are a channel into the oracle:
   `test-backend-ops` prints `ERR = %.9f > %.9f` on failure, which hands the candidate the exact
@@ -831,11 +843,15 @@ the end are deliberate and recorded so they are not re-derived._
   the real T0 provider records detector ids/findings. Missing ids make empty findings
   `COULD_NOT_CHECK`; planted/clean source-pattern tests report 100% sensitivity/specificity for this
   narrow detector taxonomy without claiming the broader RVP-C6-6 exploit corpus.
-- [x] **RVP-C6-10 — Anti-short-circuit cases go in the RANKED set, not just the gate.** ✅ 2026-08-11 —
-  `MicrobenchPlan.anti_short_circuit_units` requires real per-unit command/recipe changes, a normal
-  control, distinct parameter frames, and emits those units into the same ranked block stream. If the hard
+- [ ] **RVP-C6-10 — Anti-short-circuit cases go in the RANKED set, not just the gate.** The durable
+  mechanism exists, but closure requires a live ranked hard-case receipt. If the hard
   cases only gate, a candidate can route easy inputs to a fast invalid path and never pay for the
   accurate path's cost on the hard ones. Ranking them prices it.
+  - [x] **RVP-C6-10a — Implement strict ranked hard-case campaign units.** ✅ 2026-08-11 —
+    `MicrobenchPlan.anti_short_circuit_units` requires real per-unit command/recipe changes, a normal
+    control, distinct parameter frames, physical envelopes, and emits those units into the same
+    ranked block stream. Focused campaign/microbench tests pass; no durable live ranked-set receipt
+    exists yet.
 - [x] **RVP-VIDYA-1 — Belief-kernel wiring, filed now per CLAUDE.md.** ✅ 2026-08-11 — the source row is
   present in `scripts/vidya/adapters/README.md` and the owned projection task is SC18 in
   `vidya-belief-substrate-program.md`; actual write-side work remains tracked there rather than hidden

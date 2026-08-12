@@ -15,9 +15,32 @@ Production is frozen at `production-consolidated-v9` (canonical tree `/mnt/raid0
 
 **Explicitly IN-PROGRESS, not settled as of this compile**: the v9/hardened five-control calibration, the first real CPU candidate campaign and matched proposal archive, lane-depth rank calibration and package coupling, GPU baseline-honesty/profiler work, and the frontier-model AK-LE-1/2/3 items are all still open. A belief-substrate gap was flagged the same day the freeze landed: kernel promotion qualification/certification writers still need a prospective ClaimTuple write hook (see [Knowledge Management](knowledge-management.md) §Belief Kernel) — no read-side provenance was retrofitted into the already-completed v9 promotion artifacts.
 
+The availability-conditioned AgentKernelArena campaign is now executing from the source-bound,
+restart-safe r4 identity after two fail-closed attempts. R1 is invalid because a dotted task path
+escaped the exact workspace and claim release was incomplete. R2 proved the containment repair on its
+baseline, then stopped when the strict parser rejected provider JSON with extra fields. The integrated
+provider schemas retain that strict parser rather than weakening it.
+
+At the 2026-08-12 stale-state audit, r4's starting-state baseline and full Claude/Codex 2h/8h/32h
+arm were terminal; its aggregate receipt self-hash is
+`fbaa5b5796d89d1d214b281d57d611f78242084ec9cb86408156983e73add285`. KernelFoundry 2h was in
+remote controller deliberation. These terminal cells are restart inputs, not a panel ranking; only a
+terminal full 6/6 panel may rank controllers.
+
+R4 closes the resource-governance defect exposed by r3. Its manifest binds
+`controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, and MI210
+claims only around vendor/final measurement windows. During KernelFoundry deliberation the audit found
+0% GPU use, 0% VRAM, no KFD PID, and no active claim, so other governed GPU work may use those
+intervals without compromising the campaign.
+
 **Downstream v8-pin debt surfaced by a same-day audit** (see [Agent Architecture](agent-architecture.md) and [Knowledge Management](knowledge-management.md) for the audit methodology): several surfaces still assumed v8 as current after the freeze. `gpu_shadow_lane` family hard preflight blockers pin `10107`/`67a433bf4` (dormant behind a default-off feature flag, so this blocks on first enable under v9, not today); `reasoning_effort_certifications.yaml` pins `active_kernel_era: production-consolidated-v8` (dormant only because its cert map is empty); several research-repo runners fail closed on v8 pins, and `validate_model_tensors.sh` **silently prefers** a v8 build when both exist rather than erroring (a mis-prefer, not a crash); open next-action text in `cpu-shape-specialized-gemv-decode.md`, `qwen-mtp-llamacpp-port.md`, `numa-topology-cutover-resume-20260730.md`, and `docs/reference/architect-bench-runbook.md` still instructs "start from v8" — following any of them literally now violates the project's own four-step kernel workflow (step 1: pull the *current* production tip). Verified clean: `scripts/session/verify_llama_cpp.sh` already enforces v9 correctly on branch/commit/version-line pins, and no phantom/invented instrument-era id was found in either repo's live code.
 
 ### The CPU-decode lever is barrier count, not more SIMD
+
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r1/r2 invalidation boundaries, r4 receipt state, and claim-window closure
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C3/C6 contracts revalidated on current research main, including reopened empirical corpus gates
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact campaign, receipt, process, and claim-window evidence
+- [Vidya adapter source table](../scripts/vidya/adapters/README.md) — producer-side round-trip measurement status and no-backfill boundary
 
 `cpu-shape-specialized-gemv-decode.md` carried 38 open boxes, of which 36 belonged to a shelved 8×8 SIMD micro-kernel plan — now retained as a closed appendix (profiling and negative results kept, not deleted) rather than backlog. The re-anchor rests on this file's own profiling, confirmed by an earlier independent finding (`fable5-window2-findings-05`, 2026-07-03): **frontdoor Q8_0 decode is barrier/op-count-bound at 13.8% of 460 GB/s — not bandwidth-bound** — and **45% of Q4_K decode cycles sit in the libomp barrier at 96 threads**. The live surface is now 2 boxes, both cutting barrier *count* rather than adding SIMD throughput per barrier: fuse the expert gate+up operators (frontdoor Q8_0, one fusion cluster already measured **+2.6%**) and fuse the attention QKV cluster (frontdoor Q8_0). Combined estimate +10–15% decode; neither has run — both need a dedicated inference window. This narrows rather than contradicts the standing 8×8 GEMM SIMD finding elsewhere on this page: SIMD throughput-per-op is real at 1 thread, but for frontdoor Q8_0 decode at production thread counts the binding constraint is op *count*.
 

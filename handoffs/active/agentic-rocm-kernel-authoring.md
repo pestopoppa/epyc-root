@@ -1,9 +1,9 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: run the governed, availability-conditioned 6/6 AgentKernelArena panel
-at matched 2h/8h/32h checkpoints; the full 8/8 panel continues to refuse on the unavailable exact
-EvoEngineer and ARGUS source releases.
+**Next action (2026-08-12)**: complete the live r4 governed, availability-conditioned 6/6
+AgentKernelArena panel at matched 2h/8h/32h checkpoints; rank only the terminal full panel. The full
+8/8 panel continues to refuse on the unavailable exact EvoEngineer and ARGUS source releases.
 **Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (current-source six-arm readiness re-audit)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
@@ -363,22 +363,20 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     **540/540**. The r3 audit is ready at **6/6** over four tasks with authority still limited to an
     availability-conditioned diagnostic; self-hash
     `b8d966ee7581f2a2fe4ee7e8c2eb7e314514bc4f888f22635dfa23d9ec4ce6dc`.
-  - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints when
-    inference is authorized; interpret it only as an availability-conditioned diagnostic. The r3
-    campaign is active at
-    `/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-six-arm-20260812-r3`: baseline and the
-    Claude/Codex 2h and 8h checkpoints are terminal, each with compilation/correctness pass and 4/4
-    baseline plus 4/4 optimized cases. Their diagnostic speedups are `0.9859560018476856` and
-    `0.8878376233551375`, with belief-receipt self-hashes `05cb70a0d6f670796f93bdc06c4a681578d044f7929839688a4b2c5b7a491370`
-    and `4c01642993c1120eac4885714e3e2780845e618913c11676c6decef290fded61`. The campaign is paused:
-    the owner stopped only captured runner PID `2700055`, released 32h claim
-    `akd-3bb920d345bf4caa`, and removed the exact surviving actor container after observing that the
-    runner held MI210 authority across non-GPU planner/actor time. The incomplete 32h cell is not
-    evidence; the two terminal checkpoints remain banked and partial cells remain non-rankable.
-  - [ ] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows before
-    resuming r3.** Planner, actor, and critic inference/editing must not reserve the device while the
-    GPU is idle. Preserve the terminal 2h/8h cells, abandon only the incomplete 32h workspace under
-    the restart-safe contract, and regression-test claim release/reacquisition around evaluation.
+  - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints and
+    interpret it only as an availability-conditioned diagnostic. The corrected r4 campaign is live
+    at `/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-six-arm-20260812-r4`. At the
+    2026-08-12 stale-state audit, the starting baseline and all three Claude/Codex checkpoints were
+    terminal; the aggregate Claude/Codex receipt self-hash is
+    `fbaa5b5796d89d1d214b281d57d611f78242084ec9cb86408156983e73add285`, and KernelFoundry 2h was
+    in controller deliberation. Partial results remain non-rankable; rank only the terminal full 6/6
+    panel.
+  - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
+    2026-08-12 — research `e6c7aab6` and the r4 manifest bind
+    `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims
+    only around vendor/final measurement windows, exact complete-checkpoint resume, and signal-safe
+    release. The audit observed no KFD PID or active device claim while KernelFoundry deliberated;
+    other governed GPU work may use those intervals.
   - [ ] Obtain exact licensed source releases for EvoEngineer and ARGUS, then port their real
     controller policies through the same governed adapter contract; namesake substitutes are not
     admissible.
