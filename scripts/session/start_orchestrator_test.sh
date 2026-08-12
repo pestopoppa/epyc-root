@@ -229,7 +229,16 @@ echo "    -H 'Content-Type: application/json' \\"
 echo "    -d '{\"model\":\"frontdoor\",\"messages\":[{\"role\":\"user\",\"content\":\"Hello\"}]}'"
 echo ""
 echo "To stop:"
-echo "  pkill -f 'llama-server|uvicorn'"
+# The stop ADVICE must not teach the command the stop CODE was fixed to remove.
+# Until 2026-08-12 this printed a name-pattern kill over llama-server|uvicorn, so an
+# operator following the script's own closing output ran, by hand, exactly the
+# wildcard INC-20260731 is about — laundered as official instructions. The executed
+# commands and the recommended one had different universes, and the recommended one
+# is arguably worse: a human runs it deliberately, on a shared host, at the moment a
+# stack is being torn down. This script CAPTURES both pids (LLAMA_PID, ORCH_PID), so
+# the compliant form was available the whole time.
+echo "  kill $LLAMA_PID $ORCH_PID     # the pids this run started"
+echo "  ps -p $LLAMA_PID -p $ORCH_PID  # confirm they are gone; escalate to -9 only if not"
 echo ""
 echo "Memory usage:"
 free -h | head -2
