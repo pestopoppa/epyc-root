@@ -760,6 +760,31 @@ now typed inputs rather than ambient assumptions.
 - [2026-08-05 progress](../progress/2026-08/2026-08-05.md)
 - Research intakes 991 and 998 (world-model / least-commitment synthesis)
 
+## Compiled Update — 2026-08-12: real-archive eligibility is now fixed before measurement
+
+AutoKernel's least-commitment path now distinguishes a plausible proposal from an archive-eligible
+experiment before any compute is spent. The IQK intervention and its matched A/A control each carry
+an exact proposal-v3 record, a prospective capture plan, one absolute SHA-pinned diagnostic-source
+receipt, a stated hypothesis plus falsifier, and a measurement-frame-specific physical envelope.
+Diagnostics and semantics-preserving recodings are mechanically reduced from the bound source bytes;
+the plan can no longer make a receipt-looking assertion by supplying only an id and digest-shaped
+string.
+
+Completed-proposal admission applies the same rule at the far end. An exploratory terminal result is
+not eligible, and a bound result must resolve its proposal statement and chosen claim authorization
+exactly in the append-only hypothesis ledger. This preserves the useful workflow in which a dry run
+composes the experiment first and live execution follows under the same campaign identity: intake
+opens the question once, composition and live spend receive separate authorization records, and the
+archive binds the live record by sequence and bytes. Architecture rehearsal proves the producer
+chain, but it remains explicitly non-empirical; only two clean DECIDED campaign journals may close the
+matched archive and unlock observe-only AK-WM-2/AP-WM-1 evaluation.
+
+### Source References
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — owning tasks, archive gate, and empirical remainder
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact commands, artifact hashes, and validation
+- [System-wide inference-kernel optimization program](../docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md) — autonomy and evidence-boundary design
+
 ## Compiled Update — 2026-08-09: a meta-evolutionary search layer is the same object AutoPilot already is — and the gaps are five named mechanisms, verified against source
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled from dive-verified intake entries. Every mechanism below is a **design pattern to test, not a validated win** — the source paper contains **no selector-only ablation anywhere**, and only two of its claims survive scrutiny. Adoption is gated on the existing curated-baseline guard stack.
