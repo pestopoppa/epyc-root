@@ -770,6 +770,51 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
   exercise, so this needs a `llama-server` arm to be a fair comparison rather than a repeat of the
   base-decode-only limitation. Blocked on the GPU lane (not `mainC`'s) and on OP-16 for decision-grade.
 
+  **DONE 2026-08-12 (scout-grade)** — operator granted the GPU lane; `mainC` verified it idle first
+  (0% util, 0% VRAM, **0 KFD clients**). Residency proven three ways as required: linkage verified in the
+  *launch* environment (ambient `LD_LIBRARY_PATH` confirmed contaminated, CPU `build/bin` at position 2),
+  VRAM sampled **while the bench PID was alive**, and KFD client count 1 during / 0 after.
+  `verify_llama_cpp.sh` clean before and after; v9 @ `0db32c06e`, HIP binary `10125`. Interleaved,
+  5 rounds, model order rotated, each model at its own max-opt `-fa`:
+
+  | model | pp512 | tg512 | peak VRAM |
+  |---|---:|---:|---:|
+  | LFM2.5-2.6B Q4_K_M | 6403.64 ±10.91 | 225.11 ±1.37 | 2126 MiB |
+  | LFM2.5-2.6B Q8_0 | 6980.07 ±20.16 | **228.34** ±1.97 | 3576 MiB |
+  | gemma-4-26B-A4B ORIG Q4_K_M | 2905.85 ±5.71 | 100.54 ±0.88 | 17213 MiB |
+
+  **GPU does NOT rescue the candidate — it widens the incumbent's lead**, which is the answer to the
+  question that prompted this row. Combining these rates with the MEASURED token counts (LFM 501 vs
+  production gemma 33 over the same five prompts): decode-only time-to-answer is **6.8× in the
+  incumbent's favour on GPU**, rising to **~9.8× if the 1.44× MTP gain measured on sibling gemma4-31B
+  carries**, versus 7.3× decode-only on CPU. The reason is structural: **the 15.2× token-count ratio is
+  invariant to hardware**, while gemma's one CPU handicap — ~0.26 s of prefill per call on a 26B MoE —
+  largely vanishes at 2905 t/s prefill. Faster hardware helps the model that emits fewer tokens.
+  *(Decode-only arithmetic; prefill is negligible on GPU for these prompt lengths but was not.)*
+  **Do not quote 2.24× as a production delta** — it is base-decode vs base-decode, and the incumbent's
+  MTP path is not exercised, so its number understates production.
+
+- [x] **Q4 vs Q8 INVERTS from CPU to GPU — prefer Q8_0 on GPU** ✅ 2026-08-12. On CPU, LFM Q4 beat Q8 by
+  1.60× (72.04 vs 44.95 tg512). On GPU they are within noise and **Q8 is marginally ahead** (228.34 vs
+  225.11). At 2.6B on MI210 decode is not weight-bandwidth-bound, and Q4_K carries the known CDNA2 MMQ
+  dequant cost. Practical read: on GPU take **Q8_0** — better quality, +0.9 GiB VRAM, no throughput
+  penalty. A quant choice justified on CPU evidence does not transfer to GPU.
+
+- [ ] **Does production GPU serving leave ~13% of decode on the table with `-fa on`?** The incumbent
+  measured **12.9% faster decode with `-fa 0`** (101.44 vs 90.86 tg128, far outside a ±0.9 stddev),
+  replicating the known gfx90a pattern — but `architect_bench_gpu_lib.sh` launches `-ngl all -fa on`.
+  **Do not act on this without a server-arm check**: it is a base-decode `llama-bench` reading, and FA
+  interacts with both MTP and long-context KV, either of which could reverse it. LFM is `-fa 1`-optimal
+  on every metric, so this is incumbent-specific.
+
+- [ ] **Any eval harness pointed at LFM2.5 MUST apply its chat template or it will UNDER-SCORE it.**
+  A first correctness pass using *raw completion* made LFM look wrong on a sequence item — it emitted
+  "16" and was truncated mid-`<think>`. With templates applied (`--jinja -st`) all three models scored
+  **9/9**. LFM2.5 is a reasoning model and needs room for the `<think>` block to close; a harness that
+  denies it that measures the harness. This is the same shape as the raw-completion trap that produced
+  today's thinking-ON-labelled-OFF hazard, and it biases in the opposite direction — worth checking
+  wherever LFM2.5 is scored.
+
 - [x] **`GGML_IQK_Q8_0=1` is load-bearing for any Q8_0 arm** ✅ 2026-08-12 — without it the Q8_0 run
   logged no `[iqk] ACTIVE` line at all: pp 539.24→870.47 (+61%), tg 15.75→24.97 (+58%). A Q8_0 bench
   omitting it is not top-optimized and must not be published as one. `canonical_recipe.py` already
