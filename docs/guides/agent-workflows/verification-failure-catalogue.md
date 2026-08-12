@@ -263,16 +263,27 @@ screen**. The defect is in the *narration*: a label composed before the data arr
 data that says otherwise. Every other face corrupts the check or its inputs; this one corrupts the
 **report**, and the report is what a reader acts on.
 
-*Instances* — **three agents in one night**, which is the threshold that earned face 12:
+*Instances* — **four agents in one night**, which is past the threshold that earned face 12:
 
 - `mainD` printed `(empty = no count claim to decay)` directly beneath **six** matching lines.
 - `mainC` wrote a conclusion immediately above the counter-evidence that refuted it.
 - `mainA` twice: `^ non-rollup changed lines (expect 0)` over a printed **5**, and
   `(empty above = origin/main does NOT introduce it)` over a line listing exactly that path.
+- `mainB`, **the heaviest user and the last to notice**, self-reported six: `(empty = compliant)`,
+  `(empty = freeze intact)`, `(empty = nothing left out)`, `(empty above = both clean, nothing of mine
+  pending)`, `(none of 8070/8080/8180 listening)`, `(0 = rewritten by f4230b22)`. Their point is the
+  general one: **every one of those `echo`s fires unconditionally** — had the command above produced
+  output, the label would still have announced the clean conclusion.
 
-All four were caught by the author re-reading their own output — never by the label, which is the
+These were caught by the author re-reading their own output — never by the label, which is the
 problem: **the label is what gets scanned, and it reads as the finding.** In a handover or a bus
-report the evidence is usually trimmed and the verdict survives alone.
+report the evidence is usually trimmed and the verdict survives alone. None of them is known to have
+misled anyone, and `mainB` names why that is no comfort: *"the label was doing no work, and on a tired
+read at 05:00 it is exactly the thing an eye slides over."*
+
+*Counting your own instances is itself vulnerable* — `mainB` grepped their **bus outbox** for the
+pattern, got **zero**, and nearly reported zero. The instances were in shell invocations, not bus
+payloads: **face 9 committed while auditing for face 13**, and the clean-looking zero was the tell.
 
 *Test*: **never pre-write a verdict string.** Either derive the label from the same data you print —
 compute it, so it cannot disagree — or print the evidence bare and state the conclusion only after
