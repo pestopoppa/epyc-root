@@ -2,8 +2,40 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-07-17
-**Sources**: 8+ documents (2026-07-17 adds PaddleOCR-VL Wave-3 producer + negative HTML-table prompt result + scorer-compatible post-processing checkpoint; 2026-07-06 focused pass: ODL hybrid sidecar probe preflight; 2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
+**Last compiled**: 2026-08-12 (the 200-PDF benchmark dataset is finally on disk, all three parenthesised premises of the row that asked for it were false, and the name it is filed under already belonged to a different project — see below; earlier 2026-07-17 pass retained)
+**Sources**: 10+ documents (2026-07-17 adds PaddleOCR-VL Wave-3 producer + negative HTML-table prompt result + scorer-compatible post-processing checkpoint; 2026-07-06 focused pass: ODL hybrid sidecar probe preflight; 2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
+
+## Compiled Update — 2026-08-12: the benchmark dataset landed, and every premise about it was wrong
+
+**Confidence: verified** — the two clones were inspected directly on disk for this compile (`git remote -v`, `git rev-parse`, `LICENSE`, `git lfs ls-files`, PDF magic bytes), not restated from the handoff.
+
+**The 200-PDF `opendataloader-bench` dataset is now present** at **`/mnt/raid0/llm/opendataloader-bench-upstream`** @ `7af1d8f`, 180 MB, `ground-truth/` included. That clears the standing blocker on the 200-PDF baseline comparison (our pipeline vs ODL local vs ODL hybrid vs docling vs marker); the run itself is still outstanding.
+
+**All three parenthesised premises of the row that asked for the clone were false**, and each is worth carrying because each would have changed how someone approached it:
+
+| Row said | Measured |
+|---|---|
+| MIT license | **Apache-2.0** (`LICENSE` line 1) |
+| 200 PDFs *via Git LFS* | **No LFS at all** — `git lfs ls-files` returns 0; upstream carries a `chore/remove-lfs-integrate-bench` branch, so a plain clone suffices |
+| entrypoint `uv run src/run.py` | **No `src/` in the repo** |
+
+**Presence of a `.pdf` is not presence of a PDF.** All 200 were verified as real payload rather than LFS pointer stubs — every file `%PDF-1.6`, smallest 251 KB, mean 184 KB. In a repo whose history *did* use LFS, a directory listing of 200 filenames is exactly what a pointer-stub checkout also looks like.
+
+### A dataset name collision that had been answering "yes" to the wrong question for 26 days
+
+**`/mnt/raid0/llm/opendataloader-bench` is a clone of a different project**: `git remote -v` gives `github.com/opendatalab/OmniDocBench` @ `147cd5a`, Apache-2.0, 211 PDFs, with its own CLA file. So anyone testing *"is opendataloader-bench cloned?"* by checking that path got an emphatic **yes, backed by 211 real PDFs** — the right key in the wrong universe. Every prose reference to that bare path in the pipeline handoff (including the `pdf_validation.py` and `demo_data/` descriptions) therefore describes **OmniDocBench**, not the ODL benchmark.
+
+**Standing rule for this pair: cite the two datasets by their full distinct paths, never by the bare name**, until the OmniDocBench clone is renamed or the prose is re-pointed.
+
+### A compound checkbox takes the checkbox of its easiest clause
+
+The row read *"Clone opendataloader-bench, **add our pipeline as custom engine**"* and had been `[x]` since 2026-07-17 — with every cited artifact covering the *engine* half only. The clone half was never done, and this file's own text ~226 lines further down said so (*"the actual … dataset is still absent"*). **A contradiction sat 223 lines apart inside one document for 26 days**, because a conjunction inherits the truth value of its easier conjunct. The discipline that follows: **split conjunctions into one row per independently verifiable claim.**
+
+### Source References (2026-08-12)
+
+- [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) §Benchmark Suite Integration — the clone, the three corrections, and the name-collision filing
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the premise-by-premise verification and the compound-row finding
+- [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md) face 9 (*right key, wrong universe*) — the class the path collision belongs to
 
 ## Summary
 

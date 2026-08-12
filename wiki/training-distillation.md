@@ -2,8 +2,8 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-07-28
-**Sources**: 36 documents
+**Last compiled**: 2026-08-12 (the byte-level weight-delta geometry probe below has now EXECUTED, not merely been proposed: both ground-truth gates pass, GGUF delta-geometry is confirmed trustworthy at Q8, and the lineage statistic named as a risk in the prior text was independently confirmed to need the correction it predicted — see the same section)
+**Sources**: 37 documents
 
 ## Summary
 
@@ -256,7 +256,26 @@ the dequant noise floor** — the quantity that decides whether such a probe is
 trustworthy at all. A second free control: two fine-tunes that are independent
 siblings off the same base should show a lineage statistic near 0 and flat; if it
 drifts to 1.0 anyway, the statistic is an artifact rather than a finding.
-[`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) §zero-inference weight-delta geometry
+
+**✅ 2026-08-12 — the probe executed, and both gates pass.** Streaming the local Q8 GGUFs
+(stock / ThinkingCap / Fable-Fusion / MTP control) and dequantizing per tensor, auditor-recomputed
+from the raw 401-row JSONL: **Gate (a), the noise-floor control, is decisive** — exactly 256
+tensors carry real ThinkingCap deltas (the byte-level LoRA set, hit with zero threshold-tuning),
+140/145 comparable non-LoRA tensors are bit-identical, and the residual on the rest tops out at
+2.7e-9 RMS/element — a **~3,150× signal-to-noise separation**, which is the number that makes GGUF
+weight-delta geometry a trustworthy instrument at Q8 rather than an assumption. **Gate (b), the
+lineage control, confirms the predicted artifact**: `cos(L)` stays ≤0.011 and flat across all 64
+layers (ThinkingCap and Fable-Fusion are independent edits off stock, as expected), but `p(L)`
+drifts to ~0.45 — not because of shared lineage, but because `p(L) = cos(L)·r(L)` and `r(L)` runs
+43–145× (Fable-Fusion's edit is far larger in magnitude than ThinkingCap's LoRA). **`p(L)` is
+therefore scale-confounded and must never be read standalone; `cos(L)` is the lineage
+discriminator.** A provenance finding fell out of the same run: ThinkingCap carries 15 extra
+`blk.64.*` tensors that are name-identical to the MTP checkpoint's, not to plain stock — its tensor
+topology descends from the MTP lineage, not from a plain-stock conversion. Two instrument defects
+(a silent-drop exclusion path, and a broadcasting bug that attempted a 112 TiB allocation on a
+non-single-block chunk) were found and fixed on this first real execution, with 3 new regression
+tests. Observation-grade only; authorizes no model/role/lineup action on its own.
+[`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) §zero-inference weight-delta geometry, [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) §Weight-delta geometry probe EXECUTED
 
 ### Reconstruct the baseline before crediting any fine-tune delta
 
@@ -274,5 +293,5 @@ relative to a baseline you can independently locate.
 - [`swarm-dataset-distillation.md`](../handoffs/blocked/swarm-dataset-distillation.md) — the inverted premise (Table 6 ~2pp objective vs Table 7 ~38pp prompting); same-task retention vs OOD transfer; the UNSIZED flag; the three importable data-construction levers
 - [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — the reverse-KL / on-policy-distillation negative recorded as a weight-space guardrail
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-5: the weight-space RL training half declined on missing control endpoints and a hard vLLM dependency
-- [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — byte-level LoRA merge structure and the zero-delta tensor set as free noise-floor instrumentation
+- [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — byte-level LoRA merge structure and the zero-delta tensor set as free noise-floor instrumentation; the EXECUTED weight-delta geometry probe (~3,150× signal/noise separation, `cos(L)` vs scale-confounded `p(L)`, ThinkingCap's MTP-lineage tensor topology)
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the vendor-baseline reconstruction that killed a published uplift claim

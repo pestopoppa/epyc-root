@@ -2,8 +2,8 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-08-12 (v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
-**Sources**: 64+ documents
+**Last compiled**: 2026-08-12 (second pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
+**Sources**: 65+ documents
 
 ## Compiled Update — 2026-08-12: the per-request surface is one field wide, and a 2.458× lane can still be ineligible
 
@@ -895,6 +895,21 @@ of the Q8 dequant noise floor for any GGUF weight-delta geometry probe — the
 quantity that decides whether such a probe is trustworthy at all.
 [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) §zero-inference weight-delta geometry
 
+**✅ 2026-08-12 — the probe executed, and ThinkingCap's tensor topology names its own lineage.**
+Auditor-verified against the raw 401-row tensor JSONL, the noise-floor control above resolved to a
+**~3,150× signal/noise separation** (256 real LoRA-delta tensors vs a ≤2.7e-9 RMS/element residual
+on the rest), confirming GGUF delta-geometry is trustworthy at Q8 for this class of probe. The
+lineage statistic drifted as flagged as a risk above: `p(L)` sits at ~0.45 rather than near 0, but
+this is a scale artifact (`p(L) = cos(L)·r(L)`, and `r(L)` runs 43–145× because Fable-Fusion's edit
+dwarfs ThinkingCap's LoRA) — `cos(L)` stays ≤0.011 and flat across all 64 layers, confirming
+ThinkingCap and Fable-Fusion are genuinely independent edits off stock. **`cos(L)` is the lineage
+discriminator; `p(L)` is not safe to read standalone.** A second finding is specifically MTP-relevant:
+ThinkingCap carries 15 extra `blk.64.*` tensors that are name-identical to the MTP checkpoint's
+rather than to plain stock, so **ThinkingCap's tensor topology descends from the MTP checkpoint
+lineage**, not from a plain-stock conversion. Observation-grade; does not itself authorize any
+model/role action.
+[`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) §zero-inference weight-delta geometry, [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) §Weight-delta geometry probe EXECUTED
+
 ### Do not bundle a spec-dec variant into a quality A/B
 
 If a coder-role quality A/B is ever authorized, the MTP variant of the candidate
@@ -914,7 +929,7 @@ a reopen trigger for the parked CPU handoff.
 ### Source References
 
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the `config.json`-is-unsound rule; KAT-Coder tokenizer hash and removed MTP head; GGUF header gate (tensor count, not file size); byte-level ThinkingCap MTP identity; CPU/GPU relevance asymmetry
-- [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — the zero-delta non-LoRA tensor set as a dequant noise-floor control for weight-delta geometry; MTP held constant across bench arms
+- [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — the zero-delta non-LoRA tensor set as a dequant noise-floor control for weight-delta geometry; MTP held constant across bench arms; the EXECUTED probe's ~3,150× signal/noise separation, `cos(L)` vs scale-confounded `p(L)`, and ThinkingCap's MTP-lineage tensor topology
 - [`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) — the exclusion of the MTP variant from any authorized quality A/B
 
 ## Compiled Update — 2026-07-31: production was NOT running the operator's composed recipe, and the naive fix would have been worse than the bug

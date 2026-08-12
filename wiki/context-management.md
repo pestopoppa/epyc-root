@@ -2,8 +2,26 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-07-16 (harness-local compaction can now conflict with Orch-side compression unless the harness cooperates)
+**Last compiled**: 2026-08-12 (the spill-pointer audit closed: the live `peek`/`grep` is the file-capable implementation, so spill pointers ARE followable today, with a named latent hazard behind a default-off flag — see below; earlier 2026-07-16 note: harness-local compaction can now conflict with Orch-side compression unless the harness cooperates)
 **Sources**: 28 documents (6 deep-dives, 4 active handoffs, 18 intake entries) + 2026-06-19 K-MEM Tulving run state + 2026-06-22 DCP first live A/B (hold) + 2026-07-02 SPIRAL/recursive self-aggregation intake + 2026-07-05 scaffold-transplant falsification cross-link + DCP-for-consult flag landing
+
+## Compiled Update — 2026-08-12: spill pointers are followable today, and the hazard is a flag away
+
+**Confidence: verified** — read from the committed REPL module chain and the feature registry.
+
+The verbatim-trajectory-log program was gated on an audit question: *which `peek`/`grep` implementation is actually live?* Two exist — a **file-capable** pair that accepts a `file_path`, and a **context-only** pair that does not. If the context-only pair were live, every `peek(…, file_path=…)` pointer emitted by the truncation-spill path would be **unfollowable**, and the spill machinery would be writing pointers into nothing.
+
+**Answered: the file-capable implementation is live.** The standard REPL environment composes the file-tools mixin over the file-exploration mixin and binds `peek` into the model namespace directly. **Spill pointers are followable today.** The context-only variant sits behind a **doubly dormant** path: its feature flag defaults false *and* the sandboxing library it requires is not installed on this host, so the import-guarded path falls back regardless.
+
+> **Latent hazard, worth one line in whatever builds on this**: installing that library and flipping the flag **silently swaps in a `peek` with no `file_path` parameter**, and every spill pointer already written becomes unfollowable. The build should either port `file_path` into the restricted variant or make the restricted environment **refuse loudly at construction** while spill pointers exist. A capability regression behind a feature flag is invisible until someone follows a pointer.
+
+**What the audit did not close, and why.** The verbatim-log build still needs one design input first: **the artifact's event schema is owned by the A/B that will consume it** — what must the grep-latency curve grep for, code/output/error only, or prompt plus per-event token counts? The hook point is already known (the untruncated output/error/code are in hand before the compression block; the spill path is *not* the seam, since it fires only on truncation). **Wrong schema means re-running the A/B**, so the requirements come before the code. The related telemetry primitive — total tokens per episode, not peak — landed earlier and stands.
+
+### Source References (2026-08-12)
+
+- [`handoffs/active/tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — the resolved audit half, the latent flag hazard, and the named schema prerequisite
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the module-chain verification
+- [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the surrounding audit lane and its dead-code taxonomy (see [Autonomous Research](autonomous-research.md))
 
 ## Summary
 

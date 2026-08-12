@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-12 (second pass — a reviewed audit of the coordinator role **falsifies the root cause the role wrote for itself**: policy compliance does not "decay with context", it fails at *retrieval on the emission path*, and the same defect recurred 21 minutes after being written up as a correction; the audit also finds the self-audit applying **opposite evidentiary rules** depending on whether the evidence incriminates or exculpates the role — see below; earlier same-day note: a `git clean -ffdx` wiped the session bus and the recovery selected the one dead claim while dropping every live one; the "the daemon knew what to run and told nobody" narrative is RETRACTED with its measured refutation; the committed-not-live chain closed after four nested restarts; residency-is-not-work; within-file contamination in a shared log named as distinct from the cross-file rule pathspecs already solve — see below; earlier 2026-08-11 note: a 243-hour coordinator-daemon outage reported itself healthy; a nudge-guard deadlock caused a ~10-hour fleet stall; the session-bus C-series hardening arc closed; the backlog dispatch queue was retired as an unreliable instrument — see below; earlier 2026-08-08 note retained)
+**Last compiled**: 2026-08-12 (third pass — the 2026-08-03 daemon-owned-state gap is now enforced, not just diagnosed: a two-layer guard (kernel-held-lock ownership check + victim-side changed-since-last-write witness) landed at the single `save_state` funnel, 19 tests, mutation-verified — see the addendum on the original finding below; earlier same-day note (second pass) — a reviewed audit of the coordinator role **falsifies the root cause the role wrote for itself**: policy compliance does not "decay with context", it fails at *retrieval on the emission path*, and the same defect recurred 21 minutes after being written up as a correction; the audit also finds the self-audit applying **opposite evidentiary rules** depending on whether the evidence incriminates or exculpates the role — see below; earlier same-day note: a `git clean -ffdx` wiped the session bus and the recovery selected the one dead claim while dropping every live one; the "the daemon knew what to run and told nobody" narrative is RETRACTED with its measured refutation; the committed-not-live chain closed after four nested restarts; residency-is-not-work; within-file contamination in a shared log named as distinct from the cross-file rule pathspecs already solve — see below; earlier 2026-08-11 note: a 243-hour coordinator-daemon outage reported itself healthy; a nudge-guard deadlock caused a ~10-hour fleet stall; the session-bus C-series hardening arc closed; the backlog dispatch queue was retired as an unreliable instrument — see below; earlier 2026-08-08 note retained)
 **Sources**: 77+ documents
 
 ## Compiled Update — 2026-08-12 (second pass): a role's self-diagnosis, audited — the conclusion survives and every argument for it does not
@@ -1743,6 +1743,33 @@ claim* usually is not.
 _Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`;
 `scripts/autopilot/autopilot.py:5998-6037` (`save_state`, `_EXTERNAL_CONTROL_FIELDS`);
 `scripts/autopilot/state_lock.py`._
+
+### ✅ 2026-08-12 — the gap above is now enforced at the write path, in two layers, not just diagnosed
+
+The daemon-ownership gap this section describes is closed by a two-layer guard, landed in
+orchestrator `a395d7eb` and wired into the single `save_state` funnel every whole-file write passes
+through.
+
+**Layer 1 asks the kernel, not the caller.** The daemon is by construction the holder of the flock on
+`.autopilot.lock`, and `/proc/locks` names that holder's PID — so *"am I the owner?"* is answered by
+the kernel rather than by anything a caller declares about itself, which defeats the shape that
+motivated `check_operator_apply_copy.sh` in the first place (copying a script copies away any
+gate the script itself carries).
+
+**Layer 2 lives in the victim, so there is nothing in the violator to patch out.** Its witness is the
+sharp part: *a daemon-owned field changed on disk since this process last wrote it* — not "disk
+differs from memory", which every normal daemon save trips and would false-positive on constantly.
+A mutation test that substituted the naive disk-vs-memory form killed both negative controls,
+proving the distinction load-bearing. On detection it quarantines the doomed values and logs ERROR
+rather than refusing the daemon's save outright — stranding trial state is judged the worse failure,
+so the result is *recoverable and attributed* rather than *silently prevented*. 19 tests cover it,
+including a real-subprocess lock holder; removing the check (mutation) drops 2 of 17 passing tests,
+confirming the tests actually exercise the guard.
+
+**Generalizes past this one daemon**: whenever a violator's write path cannot be patched (untrusted
+caller, copied script, external process), put the check in the victim instead — a state-change-since
+comparison keyed to *this process's last write*, not to a static disk/memory diff.
+[`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — the closed daemon-owned-state row.
 
 ## Compiled Update — 2026-08-05: representation boundaries are authority boundaries
 
