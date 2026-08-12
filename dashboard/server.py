@@ -169,6 +169,33 @@ AUTOKERNEL_PROBE_ROOT = Path(os.environ.get(
 AUTOKERNEL_CONTROL_ROOT = Path(os.environ.get(
     "AUTOKERNEL_CONTROL_ROOT",
     "/mnt/raid0/llm/autokernel/controls"))
+ARENA_ATTEMPT_DISPOSITIONS_JSON = Path(os.environ.get(
+    "ARENA_ATTEMPT_DISPOSITIONS_JSON",
+    str(Path(__file__).resolve().parent / "arena_attempt_dispositions.json")))
+ARENA_ATTEMPT_DISPOSITIONS_SCHEMA = "epyc.dashboard.arena_attempt_dispositions.v1"
+AUTOKERNEL_HIP_DECISION_CAMPAIGN = "hip-silu-decision-grade-20260812-r6"
+AUTOKERNEL_HIP_DECISION_SCHEMA = "epyc.autokernel.hip_decision_grade.v1"
+AUTOKERNEL_HIP_DECISION_PRODUCER = "autokernel.controller.hip_decision_grade/v1"
+AUTOKERNEL_HIP_DECISION_AUTHORITY = \
+    "task_local_rank_no_release_or_promotion_authority"
+AUTOKERNEL_DIAGNOSTIC_PILOT_SCHEMA = \
+    "epyc.autokernel.arena_diagnostic_pilot.v1"
+# Mainline feature identities are presentation anchors, not deployment claims.
+# They let the view distinguish "implemented and awaiting a real receipt" from
+# "the producer does not exist" without importing the research package or
+# trusting whichever shared checkout happens to be current.
+AUTOKERNEL_READINESS_COMMITS = (
+    ("structured_output_retry", "537163d5696ab646a0d8ef4b543d78da1199332c",
+     "retry-hardened seven-arm controller"),
+    ("sc33_reward_integrity_v2", "aa331993",
+     "prospective SC33 reward-integrity belief producer"),
+    ("c3_c5_capture_mapping", "9673132b",
+     "governed C3/C5 tensor-capture window and k228/k175 mapping"),
+    ("sc36_intermediate_beliefs", "b0d6f79f",
+     "prospective feedback-only intermediate evaluator beliefs"),
+    ("ak_del_2_catalogue", "35f10715",
+     "bounded gfx90a prior-art catalogue expansion"),
+)
 PRODUCTION_KERNEL_ATTESTATION = Path(os.environ.get(
     "PRODUCTION_KERNEL_ATTESTATION",
     str(REPO / "artifacts/operator/ratify_v9_final_freeze_20260811.json")))
@@ -1299,7 +1326,8 @@ def _verified_receipt(path: Path, schemas: set[str], label: str) -> tuple[dict |
 def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
     """Verify one Arena attempt using completed receipts, never file markers."""
     manifest, error = _verified_receipt(
-        manifest_path, {"epyc.autokernel.arena_campaign_run_manifest.v1"},
+        manifest_path, {"epyc.autokernel.arena_campaign_run_manifest.v1",
+                        "epyc.autokernel.arena_campaign_run_manifest.v2"},
         "Arena campaign manifest")
     if error or manifest is None:
         return None, error
@@ -1313,7 +1341,8 @@ def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
         return None, "Arena manifest lacks fail-closed partial/aggregate constraints"
     audit, audit_error = _verified_receipt(
         run_root / "audit.json",
-        {"epyc.autokernel.arena_available_source_campaign_audit.v1"},
+        {"epyc.autokernel.arena_available_source_campaign_audit.v1",
+         "epyc.autokernel.arena_available_source_campaign_audit.v2"},
         "Arena availability audit")
     if audit_error or audit is None or \
             audit.get("receipt_sha256") != manifest.get("audit_receipt_sha256"):
@@ -1417,6 +1446,45 @@ def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
         _, aggregate, aggregate_error = _read_json_object(aggregate_path, "Arena aggregate")
         aggregate_present = bool(not aggregate_error and isinstance(aggregate, dict) and
                                  aggregate.get("receipt_sha256") == _canonical_receipt_hash(aggregate))
+
+    # A worker request or recently-written file is not liveness.  A sandbox
+    # activation is useful only while the exact captured PID still has the same
+    # /proc start tick; PID existence alone is vulnerable to reuse.  Controller
+    # activations span a checkpoint and are GPU-blind, so this read does not
+    # touch inference or extend a device claim.
+    live_cells = []
+    for activation_path in sorted(run_root.glob(
+            "execution/cells/*/controller-sandbox-activation.json")):
+        _, activation, activation_error = _read_json_object(
+            activation_path, "Arena controller activation")
+        if activation_error or not isinstance(activation, dict) or \
+                activation.get("schema") != "epyc.autokernel.sandbox_receipt.v2":
+            continue
+        pid, expected_ticks = activation.get("pid"), activation.get("process_start_ticks")
+        if not isinstance(pid, int) or not isinstance(expected_ticks, int):
+            continue
+        try:
+            observed_ticks = int((Path("/proc") / str(pid) / "stat").read_text(
+                encoding="utf-8").split()[21])
+        except (OSError, ValueError, IndexError):
+            continue
+        if observed_ticks != expected_ticks:
+            continue
+        _, request, request_error = _read_json_object(
+            activation_path.parent / "worker-request.json", "Arena worker request")
+        if request_error or not isinstance(request, dict) or \
+                request.get("attempt_id") != manifest.get("attempt_id"):
+            continue
+        task = request.get("task") if isinstance(request.get("task"), dict) else {}
+        arm = request.get("arm") if isinstance(request.get("arm"), dict) else {}
+        live_cells.append({
+            "pid": pid, "process_start_ticks": expected_ticks,
+            "cell": activation_path.parent.name,
+            "task_id": task.get("task_id"), "arm_id": arm.get("arm_id"),
+            "checkpoint_hours": request.get("checkpoint_hours"),
+            "activated_at_unix_ns": activation.get("activated_at_unix_ns"),
+            "evidence": str(activation_path),
+        })
     return {
         "available": True, "campaign_id": manifest.get("campaign_id"),
         "attempt_id": manifest.get("receipt_sha256"), "run_directory": run_root.name,
@@ -1431,6 +1499,7 @@ def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
         "belief_measurement_count": belief_rows, "observations": observations,
         "terminal_aggregate_present": aggregate_present,
         "rankable": bool(aggregate_present and len(observations) == planned_checkpoints),
+        "live_cells": live_cells, "active": bool(live_cells),
         "latest_completed_evidence_at": latest_evidence_at or None,
         "evidence": str(manifest_path), "evidence_mtime": _iso_mtime(manifest_path),
         "note": ("verified completed receipts only; no file marker is liveness and no "
@@ -1438,25 +1507,118 @@ def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
     }, None
 
 
-def _arena_campaign_progress(root: Path) -> dict:
-    """Select the newest valid Arena attempt by verified semantic evidence time."""
+def _arena_attempt_dispositions(path: Path) -> tuple[dict[str, dict], str | None]:
+    """Load exact-attempt integrity retractions maintained by the governance hub.
+
+    The producer remains authoritative for receipts.  This overlay can only
+    reduce their authority after a cross-artifact integrity audit; it cannot
+    make an absent or invalid producer record valid.
+    """
+    _, value, error = _read_json_object(path, "Arena attempt dispositions")
+    if error or not isinstance(value, dict):
+        return {}, error or "Arena attempt dispositions are not an object"
+    if value.get("schema") != ARENA_ATTEMPT_DISPOSITIONS_SCHEMA:
+        return {}, "Arena attempt dispositions have unsupported schema"
+    rows = value.get("attempts")
+    if not isinstance(rows, list):
+        return {}, "Arena attempt dispositions lack an attempts list"
+    result: dict[str, dict] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            return {}, "Arena attempt disposition is not an object"
+        attempt_id = row.get("attempt_id")
+        if not isinstance(attempt_id, str) or not re.fullmatch(r"[0-9a-f]{64}", attempt_id):
+            return {}, "Arena attempt disposition has invalid attempt_id"
+        if attempt_id in result or row.get("disposition") != "invalid_diagnostic_history" or \
+                row.get("execution_state") != "stopped" or \
+                row.get("resume_permitted") is not False or \
+                row.get("ranking_authority") is not False or \
+                row.get("release_authority") is not False or \
+                not isinstance(row.get("run_directory"), str) or \
+                not isinstance(row.get("reason"), str) or not row["reason"].strip():
+            return {}, "Arena attempt disposition is malformed"
+        result[attempt_id] = row
+    return result, None
+
+
+def _arena_campaign_progress(root: Path,
+                             dispositions_path: Path | None = None) -> dict:
+    """Select newest Arena evidence and apply exact-attempt integrity retractions."""
     try:
         manifests = list((root / "campaigns").glob("*/campaign-manifest.json"))
     except OSError as exc:
         return {"available": False, "error": str(exc)}
+    dispositions, disposition_error = _arena_attempt_dispositions(
+        dispositions_path or ARENA_ATTEMPT_DISPOSITIONS_JSON)
     attempts, rejected = [], 0
     for path in manifests:
         attempt, _ = _arena_attempt(path)
         if attempt is None:
             rejected += 1
         elif attempt.get("completed_checkpoints", 0):
+            disposition = dispositions.get(attempt.get("attempt_id"))
+            if disposition is not None:
+                if disposition["run_directory"] != attempt.get("run_directory"):
+                    rejected += 1
+                    continue
+                attempt["campaign_evidence_valid"] = False
+                attempt["execution_state"] = "stopped"
+                attempt["active"] = False
+                attempt["rankable"] = False
+                attempt["disposition"] = disposition["disposition"]
+                attempt["retraction"] = {
+                    "recorded_at": disposition.get("recorded_at"),
+                    "reason": disposition["reason"],
+                    "evidence": disposition.get("evidence"),
+                    "resume_permitted": False,
+                    "ranking_authority": False,
+                    "release_authority": False,
+                }
+            else:
+                attempt["campaign_evidence_valid"] = \
+                    None if disposition_error else True
+                attempt["execution_state"] = (
+                    "unknown_disposition_overlay_unavailable" if disposition_error
+                    else ("terminal_complete" if attempt["terminal_aggregate_present"]
+                          else ("live" if attempt.get("active")
+                                else "stale_or_terminal_unreported")))
+                if not attempt.get("active") and not attempt["terminal_aggregate_present"]:
+                    attempt["active"] = None
+                if disposition_error:
+                    attempt["rankable"] = False
             attempts.append(attempt)
         else:
             rejected += 1
+
+    preflight_refusals = []
+    try:
+        audits = list((root / "campaigns").glob("*/audit.json"))
+    except OSError:
+        audits = []
+    for audit_path in audits:
+        if (audit_path.parent / "campaign-manifest.json").exists():
+            continue
+        audit, audit_error = _verified_receipt(
+            audit_path, {"epyc.autokernel.arena_available_source_campaign_audit.v2"},
+            "Arena preflight audit")
+        constraints = audit.get("constraints") if isinstance(audit, dict) else {}
+        if audit_error or not isinstance(audit, dict) or audit.get("status") != "refused" or \
+                not isinstance(constraints, dict) or \
+                constraints.get("controller_or_gpu_command_executed") is not False:
+            continue
+        preflight_refusals.append({
+            "run_directory": audit_path.parent.name,
+            "execution_state": "preflight_refused",
+            "active": False, "rankable": False,
+            "refusal_reasons": audit.get("refusal_reasons") or [],
+            "attempt_id": audit.get("receipt_sha256"),
+            "evidence": str(audit_path),
+        })
     if not attempts:
         return {"available": False, "rejected_attempts": rejected,
                 "error": f"no verified Arena checkpoint evidence below {root / 'campaigns'}"}
-    attempts.sort(key=lambda value: (value.get("latest_completed_evidence_at") or "",
+    attempts.sort(key=lambda value: (value.get("active") is True,
+                                     value.get("latest_completed_evidence_at") or "",
                                      value.get("attempt_id") or ""), reverse=True)
     selected = dict(attempts[0])
     selected["attempts"] = [{
@@ -1465,9 +1627,66 @@ def _arena_campaign_progress(root: Path) -> dict:
         "completed_checkpoints": attempt["completed_checkpoints"],
         "completed_cells": attempt["completed_cells"],
         "latest_completed_evidence_at": attempt["latest_completed_evidence_at"],
+        "campaign_evidence_valid": attempt["campaign_evidence_valid"],
+        "active": attempt.get("active"),
+        "execution_state": attempt["execution_state"],
+        "disposition": attempt.get("disposition"),
     } for attempt in attempts]
+    selected["preflight_refusals"] = sorted(
+        preflight_refusals, key=lambda row: row["run_directory"], reverse=True)
     selected["rejected_attempts"] = rejected
+    selected["disposition_overlay_error"] = disposition_error
     return selected
+
+
+def _autokernel_implementation_readiness(repo: Path) -> dict:
+    """Project reviewed AutoKernel features from the authoritative main ref."""
+    refs = ("refs/remotes/origin/main", "refs/heads/main")
+    selected = None
+    try:
+        for ref in refs:
+            probe = subprocess.run(
+                ["git", "-C", str(repo), "show-ref", "--verify", "--quiet", ref],
+                capture_output=True, text=True, timeout=5.0, check=False)
+            if probe.returncode == 0:
+                selected = ref
+                break
+        if selected is None:
+            raise RuntimeError("neither origin/main nor local main exists")
+        tip = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", selected], capture_output=True,
+            text=True, timeout=5.0, check=False)
+        if tip.returncode != 0:
+            raise RuntimeError(tip.stderr.strip() or "cannot resolve research main")
+        capabilities = []
+        for capability_id, commit, label in AUTOKERNEL_READINESS_COMMITS:
+            ancestor = subprocess.run(
+                ["git", "-C", str(repo), "merge-base", "--is-ancestor", commit, selected],
+                capture_output=True, text=True, timeout=5.0, check=False)
+            capabilities.append({
+                "id": capability_id, "label": label, "evidence_commit": commit,
+                "integrated": ancestor.returncode == 0,
+            })
+    except (OSError, subprocess.TimeoutExpired, RuntimeError) as exc:
+        return {"available": False, "error": str(exc), "capabilities": []}
+
+    by_id = {row["id"]: row for row in capabilities}
+    pending = [
+        {
+            "id": "C3-C5", "title": "Real EPYC tensor captures and mappings",
+            "implementation_ready": by_id["c3_c5_capture_mapping"]["integrated"],
+            "next_evidence": ("Provide exact real-model hook manifests, then admit one k228 "
+                              "trace and the ordered multi-trace k175 component graph."),
+        },
+    ]
+    return {
+        "available": True, "repo": str(repo), "ref": selected,
+        "tip": tip.stdout.strip(), "capabilities": capabilities,
+        "all_capabilities_integrated": all(row["integrated"] for row in capabilities),
+        "pending_empirical": pending,
+        "note": ("mainline code readiness is not empirical completion; pending rows remain "
+                 "open until their named producer evidence or review gate exists"),
+    }
 
 
 def _scaffold_panel_summary(root: Path) -> dict:
@@ -1606,6 +1825,128 @@ def _rocm_diagnostics_summary(root: Path) -> dict:
         "profiles": profiles,
         "note": ("diagnostic/profile receipts do not rank an AutoKernel candidate or grant "
                  "campaign or promotion authority"),
+    }
+
+
+def _hip_decision_grade_summary(root: Path) -> dict:
+    """Project the exact terminal raw-HIP r6 receipt without widening authority.
+
+    This is a curated operator display, not a second evaluator.  It admits only
+    the producer's self-hashed terminal receipt at the named campaign path and
+    checks every field the card repeats.  A partial/tampered receipt disappears
+    behind an explicit error instead of leaving a plausible-looking speed card.
+    """
+    path = root / "campaigns" / AUTOKERNEL_HIP_DECISION_CAMPAIGN / "receipt.json"
+    receipt, error = _verified_receipt(
+        path, {AUTOKERNEL_HIP_DECISION_SCHEMA}, "raw-HIP decision-grade receipt")
+    if error or receipt is None:
+        return {"available": False, "evidence": str(path), "error": error}
+    producer = receipt.get("producer")
+    task = receipt.get("task")
+    correctness = receipt.get("correctness")
+    timing = receipt.get("timing")
+    e_process = timing.get("e_process") if isinstance(timing, dict) else None
+    admission = (timing.get("ranked_duration_admission")
+                 if isinstance(timing, dict) else None)
+    decision = receipt.get("decision")
+    constraints = receipt.get("constraints")
+    cases = correctness.get("cases") if isinstance(correctness, dict) else None
+    checks = admission.get("checks") if isinstance(admission, dict) else None
+    invalid = []
+    if receipt.get("campaign_id") != AUTOKERNEL_HIP_DECISION_CAMPAIGN:
+        invalid.append("receipt campaign identity does not match the curated r6 path")
+    if receipt.get("status") != "complete":
+        invalid.append("receipt is not terminal complete")
+    if receipt.get("authority") != AUTOKERNEL_HIP_DECISION_AUTHORITY:
+        invalid.append("authority is not the task-local no-release boundary")
+    if not isinstance(producer, dict) or \
+            producer.get("producer_id") != AUTOKERNEL_HIP_DECISION_PRODUCER:
+        invalid.append("producer identity is not the decision-grade HIP producer")
+    elif not isinstance(producer.get("sha256"), str) or \
+            len(producer["sha256"]) != 64 or \
+            any(char not in "0123456789abcdef" for char in producer["sha256"]):
+        invalid.append("producer source digest is not a lowercase SHA-256")
+    if not isinstance(task, dict) or \
+            task.get("task_id") != "torch2hip/gpumode/16636_SiLU" or \
+            task.get("target") != {"gpu_model": "MI210", "gfx_arch": "gfx90a"}:
+        invalid.append("task is not the sealed MI210/gfx90a SiLU surface")
+    if not isinstance(cases, list) or len(cases) != 24 or \
+            not isinstance(correctness, dict) or \
+            correctness.get("all_passed") is not True or \
+            correctness.get("passed") != 24 or correctness.get("total") != 24 or \
+            any(not isinstance(case, dict) or case.get("passed") is not True
+                for case in cases):
+        invalid.append("correctness is not a complete 24/24 sealed pass")
+    elif any(isinstance(case.get("max_abs_error"), bool) or
+             not isinstance(case.get("max_abs_error"), (int, float))
+             for case in cases):
+        invalid.append("correctness cases lack numeric max-absolute-error evidence")
+    median_speedup = timing.get("median_speedup") if isinstance(timing, dict) else None
+    if isinstance(median_speedup, bool) or not isinstance(median_speedup, (int, float)):
+        invalid.append("median speedup is absent or non-numeric")
+    if not isinstance(e_process, dict) or e_process.get("first_crossing_block") != 9:
+        invalid.append("e-process does not carry the r6 block-9 crossing")
+    if not isinstance(timing, dict) or \
+            (timing.get("provider") or {}).get("provider_id") != "torch_rocm_compile":
+        invalid.append("timing does not name the exact Torch-ROCm-compile provider")
+    if not isinstance(checks, list) or len(checks) != 40 or \
+            not isinstance(admission, dict) or admission.get("all_arms_passed") is not True or \
+            any(not isinstance(check, dict) or check.get("outcome") != "PASS"
+                for check in checks):
+        invalid.append("per-arm duration admission is not 40/40 PASS")
+    elif admission.get("minimum_ns") != 250_090_903 or \
+            not isinstance(admission.get("minimum_observed_ns"), (int, float)) or \
+            admission["minimum_observed_ns"] < admission["minimum_ns"]:
+        invalid.append("duration admission does not clear the exact gfx90a floor")
+    if not isinstance(decision, dict) or \
+            decision.get("rankable_against_exact_task_local_provider") is not True or \
+            decision.get("release_or_promotion_authority") is not False or \
+            decision.get("experimental_llama_integration_required_before_any_release") is not True:
+        invalid.append("decision does not retain task-local/no-release scope")
+    if not isinstance(constraints, dict) or \
+            constraints.get("promotion_authority") is not False or \
+            constraints.get("production_tree_touched") is not False:
+        invalid.append("receipt constraints do not exclude promotion/production mutation")
+    file_sha256, file_error = _sha256_file(path)
+    if file_error or not file_sha256:
+        invalid.append(file_error or "receipt file digest unavailable")
+    if invalid:
+        return {"available": False, "evidence": str(path),
+                "error": "; ".join(invalid)}
+    max_abs_error = max(
+        float(case["max_abs_error"]) for case in cases
+        if isinstance(case.get("max_abs_error"), (int, float)))
+    return {
+        "available": True,
+        "schema": receipt.get("schema"),
+        "campaign_id": receipt.get("campaign_id"),
+        "status": receipt.get("status"),
+        "ended_at": receipt.get("ended_at"),
+        "producer_id": producer.get("producer_id"),
+        "producer_sha256": producer.get("sha256"),
+        "task_id": task.get("task_id"),
+        "target": task.get("target"),
+        "correctness_passed": correctness.get("passed"),
+        "correctness_total": correctness.get("total"),
+        "max_abs_error": max_abs_error,
+        "median_speedup": median_speedup,
+        "exact_provider": (timing.get("provider") or {}).get("provider_id"),
+        "e_process_first_crossing_block": e_process.get("first_crossing_block"),
+        "duration_admissions_passed": 40,
+        "duration_admissions_total": 40,
+        "minimum_duration_ns": admission.get("minimum_ns"),
+        "minimum_observed_duration_ns": admission.get("minimum_observed_ns"),
+        "receipt_self_sha256": receipt.get("receipt_sha256"),
+        "receipt_file_sha256": file_sha256,
+        "authority": receipt.get("authority"),
+        "rankable_against_exact_task_local_provider": True,
+        "experimental_llama_integration_required": True,
+        "release_or_promotion_authority": False,
+        "champion_claim": False,
+        "evidence": str(path),
+        "evidence_mtime": _iso_mtime(path),
+        "note": ("decision-grade evidence for this exact task/provider only; not a "
+                 "champion and not release or promotion evidence"),
     }
 
 
@@ -1817,12 +2158,197 @@ def _gpu_replay_summary(path: Path | None, data: dict | None,
     }
 
 
+def _diagnostic_pilot_summary(path: Path | None, data: dict | None,
+                              error: str | None) -> dict:
+    """Project a governed Arena pilot without manufacturing campaign authority."""
+    if data is None:
+        return {"available": False, "evidence": str(path) if path else None,
+                "error": error}
+    expected_hash = data.get("receipt_sha256")
+    observed_hash = _canonical_receipt_hash(data)
+    if not isinstance(expected_hash, str) or expected_hash != observed_hash:
+        return {
+            "available": False,
+            "evidence": str(path) if path else None,
+            "error": "diagnostic pilot receipt self-hash mismatch",
+        }
+    constraints = (data.get("constraints")
+                   if isinstance(data.get("constraints"), dict) else {})
+    checkpoint = (data.get("checkpoint")
+                  if isinstance(data.get("checkpoint"), dict) else {})
+    evaluation = (checkpoint.get("evaluation")
+                  if isinstance(checkpoint.get("evaluation"), dict) else {})
+    broker = (checkpoint.get("broker_evaluation_chain")
+              if isinstance(checkpoint.get("broker_evaluation_chain"), dict) else {})
+    sandbox = (checkpoint.get("controller_sandbox_execution")
+               if isinstance(checkpoint.get("controller_sandbox_execution"), dict) else {})
+    activation = (sandbox.get("activation_receipt")
+                  if isinstance(sandbox.get("activation_receipt"), dict) else {})
+    teardown_record = (sandbox.get("teardown_receipt")
+                       if isinstance(sandbox.get("teardown_receipt"), dict) else {})
+    teardown = (teardown_record.get("teardown")
+                if isinstance(teardown_record.get("teardown"), dict) else {})
+    windows = (checkpoint.get("measurement_windows")
+               if isinstance(checkpoint.get("measurement_windows"), list) else [])
+    window_samples = []
+    released_windows = 0
+    for window in windows:
+        if not isinstance(window, dict):
+            continue
+        sampling = (window.get("device_sampling")
+                    if isinstance(window.get("device_sampling"), dict) else {})
+        released = (window.get("device_claim_released")
+                    if isinstance(window.get("device_claim_released"), dict) else {})
+        evaluator = (window.get("evaluator_execution_receipt")
+                     if isinstance(window.get("evaluator_execution_receipt"), dict) else {})
+        evaluator_activation = (evaluator.get("activation_receipt")
+                                if isinstance(evaluator.get("activation_receipt"), dict) else {})
+        evaluator_teardown = (evaluator.get("teardown_receipt")
+                              if isinstance(evaluator.get("teardown_receipt"), dict) else {})
+        window_samples.append({
+            "phase": window.get("phase"),
+            "sample_count": sampling.get("sample_count"),
+            "evaluator_network_profile": evaluator_activation.get("network_profile"),
+            "evaluator_devices": evaluator_activation.get("writable_device_paths", []),
+            "evaluator_cgroup_verified_empty": evaluator_teardown.get("verified_empty"),
+            "evaluator_cgroup_removed": evaluator_teardown.get("removed"),
+        })
+        if released.get("released_at"):
+            released_windows += 1
+    artifacts = (checkpoint.get("artifacts")
+                 if isinstance(checkpoint.get("artifacts"), dict) else {})
+    # Intermediate windows are hash-bound cell artifacts rather than duplicated
+    # into the terminal receipt. Admit only exact, regular, self-hash-valid files
+    # whose bytes match the terminal artifact map.
+    if path is not None:
+        cells_root = path.parent / "cells"
+        for rel, expected_artifact_hash in artifacts.items():
+            rel_path = Path(rel)
+            if (not rel.startswith("controller-evaluation-windows/")
+                    or not rel.endswith("-measurement.json")
+                    or rel_path.is_absolute() or ".." in rel_path.parts
+                    or not isinstance(expected_artifact_hash, str)):
+                continue
+            try:
+                cell_roots = [row for row in cells_root.iterdir()
+                              if row.is_dir() and not row.is_symlink()]
+            except OSError:
+                cell_roots = []
+            for cell_root in cell_roots:
+                candidate = cell_root / rel_path
+                try:
+                    raw = candidate.read_bytes()
+                except OSError:
+                    continue
+                if candidate.is_symlink() or hashlib.sha256(raw).hexdigest() != \
+                        expected_artifact_hash:
+                    continue
+                try:
+                    value = json.loads(raw)
+                except (UnicodeError, json.JSONDecodeError):
+                    continue
+                if (not isinstance(value, dict)
+                        or value.get("schema") !=
+                        "epyc.autokernel.arena_gpu_measurement_window.v1"
+                        or value.get("receipt_sha256") !=
+                        _canonical_receipt_hash(value)):
+                    continue
+                sampling = (value.get("device_sampling")
+                            if isinstance(value.get("device_sampling"), dict) else {})
+                released = (value.get("device_claim_released")
+                            if isinstance(value.get("device_claim_released"), dict) else {})
+                evaluator = (value.get("evaluator_execution_receipt")
+                             if isinstance(value.get("evaluator_execution_receipt"), dict) else {})
+                evaluator_activation = (evaluator.get("activation_receipt")
+                                        if isinstance(evaluator.get("activation_receipt"), dict) else {})
+                evaluator_teardown = (evaluator.get("teardown_receipt")
+                                      if isinstance(evaluator.get("teardown_receipt"), dict) else {})
+                window_samples.append({
+                    "phase": value.get("phase"),
+                    "sample_count": sampling.get("sample_count"),
+                    "evaluator_network_profile": evaluator_activation.get("network_profile"),
+                    "evaluator_devices": evaluator_activation.get("writable_device_paths", []),
+                    "evaluator_cgroup_verified_empty": evaluator_teardown.get("verified_empty"),
+                    "evaluator_cgroup_removed": evaluator_teardown.get("removed"),
+                })
+                if released.get("released_at"):
+                    released_windows += 1
+                break
+    phase_order = {"vendor_baseline": 0,
+                   "controller_intermediate_evaluation": 1,
+                   "centralized_final_evaluation": 2}
+    window_samples.sort(key=lambda row: phase_order.get(row.get("phase"), 99))
+    evaluator_sandboxes = [
+        {key: row.get(key) for key in (
+            "phase", "evaluator_network_profile", "evaluator_devices",
+            "evaluator_cgroup_verified_empty", "evaluator_cgroup_removed")}
+        for row in window_samples if row.get("evaluator_network_profile")
+    ]
+    model_call_count = sum(
+        1 for name in artifacts
+        if name.startswith("workspace/.autokernel-upstream-controller/")
+        and name.endswith("-model-output.txt")
+    )
+    belief_receipt = (checkpoint.get("belief_receipt")
+                      if isinstance(checkpoint.get("belief_receipt"), dict) else {})
+    belief_source = (belief_receipt.get("source")
+                     if isinstance(belief_receipt.get("source"), dict) else {})
+    model_ids = (belief_source.get("model_ids")
+                 if isinstance(belief_source.get("model_ids"), list) else [])
+    authority_verified = (
+        data.get("authority") ==
+        "compatibility_only_no_ranking_or_promotion_authority"
+        and constraints.get("one_task") is True
+        and constraints.get("one_controller_arm") is True
+        and constraints.get("matched_campaign_result_implied") is False
+        and constraints.get("cross_controller_ranking_authority") is False
+        and constraints.get("belief_update_authority") is False
+        and constraints.get("promotion_authority") is False
+    )
+    return {
+        "available": True,
+        "status": data.get("status"),
+        "campaign_id": data.get("campaign_id"),
+        "attempt_id": data.get("attempt_id"),
+        "task_id": data.get("task_id"),
+        "arm_id": data.get("arm_id"),
+        "model_id": model_ids[0] if model_ids else None,
+        "model_call_count": model_call_count,
+        "broker_evaluation_count": broker.get("evaluation_count"),
+        "pass_compilation": evaluation.get("pass_compilation"),
+        "pass_correctness": evaluation.get("pass_correctness"),
+        "valid_baseline_cases": evaluation.get("valid_baseline_cases"),
+        "valid_optimized_cases": evaluation.get("valid_optimized_cases"),
+        "average_speedup": evaluation.get("average_speedup"),
+        "measurement_windows": window_samples,
+        "released_measurement_windows": released_windows,
+        "evaluator_sandboxes": evaluator_sandboxes,
+        "controller_writable_devices": activation.get("writable_device_paths", []),
+        "controller_cgroup_verified_empty": teardown.get("verified_empty"),
+        "controller_cgroup_removed": teardown.get("removed"),
+        "authority": data.get("authority"),
+        "authority_verified": authority_verified,
+        "matched_campaign_result_implied": False,
+        "rankable": False,
+        "belief_update_authority": False,
+        "promotion_authority": False,
+        "receipt_sha256": expected_hash,
+        "evidence": str(path) if path else None,
+        "evidence_mtime": _iso_mtime(path) if path else None,
+        "note": ("terminal one-task/one-arm compatibility pilot only; it does not "
+                 "rank controllers, update belief, imply a matched campaign, or "
+                 "authorize promotion/release"),
+    }
+
+
 #: The receipt schemas this panel knows how to project. Kept as a named constant so
 #: the page can DECLARE its own coverage rather than implying completeness by silence.
 _PROJECTED_RECEIPT_SCHEMAS = {
     "epyc.autokernel.arena_controller_campaign_audit.v1",
     "epyc.autokernel.arena_available_source_campaign_audit.v1",
+    "epyc.autokernel.arena_available_source_campaign_audit.v2",
     "epyc.autokernel.arena_diagnostic_smoke.v1",
+    AUTOKERNEL_DIAGNOSTIC_PILOT_SCHEMA,
     "epyc.autokernel.live_control_preflight.v1",
     "epyc.autokernel.async_prefetch_replay.v1",
     "epyc.autokernel.arena_campaign_run_manifest.v1",
@@ -1836,6 +2362,7 @@ _PROJECTED_RECEIPT_SCHEMAS = {
     "epyc.autokernel.c4_profile_report.v1",
     "epyc.autokernel.g15_profile.v1",
     "epyc.autokernel.omniperf_fallback.v1",
+    AUTOKERNEL_HIP_DECISION_SCHEMA,
 }
 
 
@@ -2416,12 +2943,22 @@ def autokernel_current_state(probe_root: Path | None = None,
     fixed_path, fixed, fixed_err = _latest_autokernel_receipt(
         probe_root, "full-eight-arm-refusal.json",
         "epyc.autokernel.arena_controller_campaign_audit.v1")
+    # V2 is the exact-source seven-arm panel. Keep the v1 lookup as a historical
+    # fallback so a missing new receipt cannot make the last governed audit
+    # disappear, while always preferring v2 when one has been persisted.
     available_path, available, available_err = _latest_autokernel_receipt(
-        probe_root, "available-source-six-arm.json",
-        "epyc.autokernel.arena_available_source_campaign_audit.v1")
+        probe_root, "receipt.json",
+        "epyc.autokernel.arena_available_source_campaign_audit.v2")
+    if available is None:
+        available_path, available, available_err = _latest_autokernel_receipt(
+            probe_root, "available-source-six-arm.json",
+            "epyc.autokernel.arena_available_source_campaign_audit.v1")
     smoke_path, smoke, smoke_err = _latest_autokernel_receipt(
         probe_root, "smoke-receipt.json",
         "epyc.autokernel.arena_diagnostic_smoke.v1")
+    pilot_path, pilot, pilot_err = _latest_autokernel_receipt(
+        probe_root, "diagnostic-pilot-receipt.json",
+        AUTOKERNEL_DIAGNOSTIC_PILOT_SCHEMA)
     preflight_path, preflight, preflight_err = _latest_autokernel_receipt(
         probe_root, "preflight.json",
         "epyc.autokernel.live_control_preflight.v1")
@@ -2435,6 +2972,7 @@ def autokernel_current_state(probe_root: Path | None = None,
     scaffold = _scaffold_panel_summary(state_root)
     arena = _arena_campaign_progress(state_root)
     rocm = _rocm_diagnostics_summary(state_root)
+    hip_decision = _hip_decision_grade_summary(state_root)
     adapter_root = REPO / "scripts/vidya/adapters"
     source_table_path = adapter_root / "README.md"
     try:
@@ -2467,6 +3005,11 @@ def autokernel_current_state(probe_root: Path | None = None,
                        "autokernel_scaffold_panel.py",
                        "live" if scaffold.get("belief_measurement_count", 0)
                        else "prospective successor-only; terminal r1 remains zero-row"),
+        _belief_source("raw-HIP r6 task-local decision receipt",
+                       2 if hip_decision.get("available") else 0,
+                       "autokernel_aux_receipt.py",
+                       "live task-local rows; no release/promotion authority"
+                       if hip_decision.get("available") else "receipt unavailable"),
     ]
     return {
         "schema": "epyc.autokernel.dashboard_current_state.v1",
@@ -2478,6 +3021,8 @@ def autokernel_current_state(probe_root: Path | None = None,
             available_path, available, available_err),
         "empirical_smoke": _smoke_receipt_summary(
             smoke_path, smoke, smoke_err),
+        "diagnostic_pilot": _diagnostic_pilot_summary(
+            pilot_path, pilot, pilot_err),
         "instrument_preflight": _control_preflight_summary(
             preflight_path, preflight, preflight_err),
         "decision_controls": _control_summary(
@@ -2488,7 +3033,10 @@ def autokernel_current_state(probe_root: Path | None = None,
         "scaffold_engineering": scaffold,
         "fault_rehearsal": _fault_rehearsal_summary(state_root),
         "arena_campaign_progress": arena,
+        "implementation_readiness": _autokernel_implementation_readiness(
+            AUTOKERNEL_RESEARCH_REPO),
         "rocm_diagnostics": rocm,
+        "hip_decision_grade": hip_decision,
         "belief_source_wiring": {
             "source_table": str(source_table_path),
             "source_table_present": source_table_path.is_file(),

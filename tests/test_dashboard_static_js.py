@@ -175,12 +175,75 @@ class StaticJsTest(unittest.TestCase):
             gpu_prefetch_replay: {available: false},
             loop_engineering: {available: false},
             scaffold_engineering: {available: false},
-            arena_campaign_progress: {available: false},
+            arena_campaign_progress: {
+              available: true, campaign_evidence_valid: false,
+              completed_checkpoints: 5, planned_checkpoints: 64,
+              completed_cells: 2, planned_cells: 24,
+              tasks: 4, arms: 6, checkpoint_hours: [2, 8, 32],
+              rankable: false, released_measurement_windows: 10,
+              measurement_windows: 10, measurement_samples: 215,
+              measurement_claimed_seconds: 52.588, belief_measurement_count: 10,
+              attempt_id: "941fece21400362f", output_root: "/campaigns/inf03-r4",
+              observations: [], attempts: [], rejected_attempts: 0,
+              retraction: {reason: "64 intermediate evaluations escaped claim windows",
+                           evidence: "/campaigns/inf03-r4/controller-receipt.json"}
+            },
             rocm_diagnostics: {available: false},
+            hip_decision_grade: {
+              available: true, correctness_passed: 24, correctness_total: 24,
+              median_speedup: 1.0769349742219618,
+              task_id: "torch2hip/gpumode/16636_SiLU",
+              target: {gpu_model: "MI210", gfx_arch: "gfx90a"},
+              max_abs_error: 1.2280521204388606e-6,
+              e_process_first_crossing_block: 9,
+              duration_admissions_passed: 40, duration_admissions_total: 40,
+              minimum_observed_duration_ns: 276039581.2988281,
+              authority: "task_local_rank_no_release_or_promotion_authority",
+              release_or_promotion_authority: false,
+              receipt_self_sha256: "self-hash", receipt_file_sha256: "file-hash",
+              evidence: "/campaigns/hip-r6/receipt.json"
+            },
             belief_source_wiring: {sources: []},
             fault_rehearsal: {available: false},
             fixed_campaign: {available: false},
             available_source_diagnostic: {available: false},
+            diagnostic_pilot: {
+              available: true, status: "pass", arm_id: "k_search",
+              model_call_count: 6,
+              task_id: "instruction2triton.rocmbench.test_add_kernel",
+              broker_evaluation_count: 1,
+              pass_compilation: true, pass_correctness: true,
+              valid_optimized_cases: 4, valid_baseline_cases: 4,
+              average_speedup: 1.0019039030109136,
+              released_measurement_windows: 3,
+              measurement_windows: [
+                {phase: "vendor_baseline", sample_count: 11},
+                {phase: "controller_intermediate_evaluation", sample_count: 21},
+                {phase: "centralized_final_evaluation", sample_count: 21}
+              ],
+              controller_writable_devices: ["/dev/null"],
+              controller_cgroup_verified_empty: true,
+              controller_cgroup_removed: true,
+              evaluator_sandboxes: [{
+                phase: "controller_intermediate_evaluation",
+                evaluator_network_profile: "deny_all",
+                evaluator_devices: ["/dev/kfd", "/dev/dri/renderD128", "/dev/null"],
+                evaluator_cgroup_verified_empty: true,
+                evaluator_cgroup_removed: true
+              }, {
+                phase: "centralized_final_evaluation",
+                evaluator_network_profile: "deny_all",
+                evaluator_devices: ["/dev/kfd", "/dev/dri/renderD128", "/dev/null"],
+                evaluator_cgroup_verified_empty: true,
+                evaluator_cgroup_removed: true
+              }],
+              authority_verified: true,
+              matched_campaign_result_implied: false,
+              rankable: false, belief_update_authority: false,
+              promotion_authority: false,
+              note: "terminal one-task compatibility pilot only",
+              evidence: "/probes/pilot-r15/diagnostic-pilot-receipt.json"
+            },
             empirical_smoke: {available: false},
             receipt_coverage: {note: "CURATED VIEW", projected_schemas: ["one.v1"]}
           }}
@@ -200,7 +263,16 @@ if (!__stateHtml.includes("Production kernel SET")) {{
 for (const expected of ["ggml observed 0.16.0", "not attested",
                         "dashboard process only", "CURATED VIEW",
                         "AK-LE-3 scaffold", "INF-03", "ROCm diagnostics",
-                        "Belief source wiring"]) {{
+                        "Governed Arena pilot", "6 model calls",
+                        "deny_all", "/dev/kfd,/dev/dri/renderD128,/dev/null",
+                        "NO CAMPAIGN AUTHORITY", "promotion/release false",
+                        "STOPPED · DIAGNOSTIC HISTORY ONLY",
+                        "campaign evidence invalid", "resume forbidden",
+                        "64 intermediate evaluations escaped claim windows",
+                        "Belief source wiring", "24 / 24 sealed cases",
+                        "NOT A CHAMPION", "Experimental llama integration is required",
+                        "task_local_rank_no_release_or_promotion_authority",
+                        "self-hash", "file-hash"]) {{
   if (!__stateHtml.includes(expected)) throw new Error("missing distinction: " + expected);
 }}
 renderActivity({{_activity: {{implementation: {{recent_commits: []}},

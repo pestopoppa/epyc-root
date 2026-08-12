@@ -1,10 +1,10 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: complete the live r4 governed, availability-conditioned 6/6
-AgentKernelArena panel at matched 2h/8h/32h checkpoints; rank only the terminal full panel. The full
-8/8 panel continues to refuse on the unavailable exact EvoEngineer and ARGUS source releases.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (current-source six-arm readiness re-audit)
+**Next action (2026-08-12)**: preserve immutable r18 while it runs, then validate its terminal receipt
+chain before any comparison. Never resume r4-r17 or aggregate a partial attempt into the panel.
+The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r18 live from immutable source after r17 evaluator repair)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -133,13 +133,6 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
   absent — that half of the 2026-08-12 check stands — but it was never required: **this line names an
   instrument the run did not use.** Nothing was blocked. Corrected 2026-08-12 (mainB).
 
-> **MERGE NOTE 2026-08-12 (coordinator).** Both sides below are preserved; I did
-> not adjudicate. The block above is the local-fleet text, the block below is the
-> origin/AutoKernel text. OWNERS: reconcile and delete this note.
-
-  64 banks decides whether HK's `>>7 <<3` swizzle constants transfer at all. **Completed through the
-  compatible rocprofv2 counter path on 2026-08-11**: the r4 receipt measured 32 banks and eight phase
-  cliques of eight lanes. The upstream script's rocprofv3 spelling was not a hard dependency.
 - **`rocm-flash-attn` as an enabling path**, re-assessed: an adaptation layer with no kernel code of its
   own, but genuine tested code with honest defect annotations. Judged on whether it improves performance,
   not on whether it contains kernels.
@@ -393,25 +386,214 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     **540/540**. The r3 audit is ready at **6/6** over four tasks with authority still limited to an
     availability-conditioned diagnostic; self-hash
     `b8d966ee7581f2a2fe4ee7e8c2eb7e314514bc4f888f22635dfa23d9ec4ce6dc`.
-  - [ ] Run the governed available-source 6/6 campaign at the fixed 2h/8h/32h checkpoints and
-    interpret it only as an availability-conditioned diagnostic. The corrected r4 campaign is live
-    at `/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-six-arm-20260812-r4`. At the
-    2026-08-12 wrap boundary, **4/64 checkpoints** and **2/24 cells** were terminal: the starting
-    baseline and all three Claude/Codex checkpoints. Their eight vendor/final measurement windows
-    all released, retaining **183** numeric samples across **44.728 claimed GPU-seconds**. The
-    grouped completed-cell Claude/Codex receipt self-hash is
-    `fbaa5b5796d89d1d214b281d57d611f78242084ec9cb86408156983e73add285`, and KernelFoundry 2h was
-    in controller deliberation. The partial attempt has no aggregate and remains non-rankable; rank
-    only the terminal full 6/6 panel.
+  - [x] **Stop INF-03 r4 and preserve it only as invalid diagnostic history after auditing its
+    intermediate feedback path.** ✅ 2026-08-12 — the captured campaign processes were terminated
+    by exact PID and confirmed dead; no MI210 claim remained. The immutable partial root is
+    `/mnt/raid0/llm/autokernel/campaigns/inf03-available-source-six-arm-20260812-r4`, bound to manifest
+    self-hash `941fece21400362f41772682ec2cf8e3162b08488183a767dce276209ec61eaf`. It retains **5/64
+    checkpoints**, **2/24 cells**, **10/10 released** vendor/final windows, 215 samples, and 52.588
+    claimed GPU-seconds, but it is not resumable, rankable, aggregatable, or valid controller-comparison
+    evidence. KernelFoundry's receipt records 64 intermediate centralized evaluations; the evaluator
+    log records 64/64 correctness failures. Those calls ran from the deliberately GPU-blind controller
+    environment outside the only two durable claim windows, so the controller received invalid search
+    feedback even though its final checkpoint receipt was structurally complete.
+  - [x] **Broker every intermediate controller evaluation through the parent worker's exact-PID
+    boundary.** ✅ 2026-08-12 — integrated research `70a0d254` + `de7214ee` make the parent own an
+    authenticated AF_UNIX broker and every intermediate/final evaluation. The broker verifies the exact
+    registered peer PID/start ticks, accepts bounded candidate bytes, and the parent evaluates each
+    request in a fresh GPU-capable deny-network subprocess under its own serialized MI210 claim. Neither
+    controller nor candidate receives a claim credential. Request/result/baseline, sampler, claim,
+    subprocess, activation, and teardown receipts are rehashed during durable restore.
+  - [x] **Enforce controller/candidate OS isolation before a decision-bearing INF-03 pilot.** ✅
+    2026-08-12 — research `9480a1b3`, `9a17e638`, and `de7214ee` wire every non-baseline Arena cell
+    through an exact-read/exec controller sandbox with one inherited peer-bound broker socket, no ROCm
+    device access, no campaign-sibling access, cgroup-owned descendants, and durable activation/teardown
+    evidence. Candidate evaluation runs separately in a fresh deny-network evaluator sandbox; the parent
+    alone owns the claim, sampler, and subprocess. The integrated focused warning-strict suite passed
+    **95/95**, the pinned EvoEngineer suite **11/11**, and the pinned controller suite **572/572**.
+  - [x] **Exercise the governed one-task/K-Search pilot through its first real Codex request and retain
+    every fail-closed attempt.** ✅ 2026-08-12 — research branch
+    `integrate/inf03-isolation-merge-20260812` at `569a8c42` added the explicit
+    `epyc.autokernel.arena_diagnostic_pilot.v1` authority, a pilot-only one-round K-Search override,
+    exact task-source discovery, narrow controller import/runtime/ELF/Git/null-device grants, and a
+    workspace-local ephemeral Codex home that is scrubbed during teardown. The immutable probe ladder is:
+
+    | Attempt | First fail-closed boundary | Disposition |
+    |---|---|---|
+    | r1 | task contract omitted `source_file_path` | fixed by deterministic instruction-task source discovery |
+    | r2-r3 | sandbox could not import the controller module at the declared package root | fixed by the exact `scripts/` import root and below-root module identity |
+    | r4-r5 | Python extension closure was incomplete (`libffi.so.8`) | fixed by exact extension/ELF dependency admission |
+    | r6-r7 | the selected Python environment could not import `yaml` / the pinned Arena evaluator | fixed by binding the governed K-Search Python and exact venv package root |
+    | r8 | exact source verification could not start `git` | fixed by admitting the exact executable and ELF closure |
+    | r9 | Git could not open `/dev/null` | fixed by admitting only the null device; KFD/render remained denied |
+    | r10 | ambient system/global Git configuration paths were denied | fixed by `GIT_CONFIG_NOSYSTEM=1` and `GIT_CONFIG_GLOBAL=/dev/null` |
+    | r11 | Codex could not initialize under the read-only host `CODEX_HOME` | fixed with an ephemeral, workspace-local auth/config projection that is scrubbed on exit |
+    | r12 | the real Codex client started, attempted the response request, retried five times for about 60 seconds, then failed with `Operation not permitted` while sending to the responses endpoint | fixed by binding the exact sandboxed Codex launcher |
+    | r13 | the terminal controller path passed, but a stale controller null-device validator rejected its governed `/dev/null` grant | immutable invalid validator attempt; fixed in research `fe33954e` |
+    | r14 | the controller path passed again, but a stale evaluator validator rejected the deny-network evaluator's exact device set | immutable invalid validator attempt; fixed in research `aa2020ab` |
+    | r15 | one task / one K-Search round completed through six `gpt-5.6-sol:high` calls, one brokered intermediate evaluation, and the final evaluator | terminal compatibility-only receipt; no campaign/ranking/belief/promotion/release authority |
+
+    R1-r14 remain immutable, non-rankable engineering history. R15 is a terminal compatibility pilot,
+    not a campaign result: its final ratio `1.0019039030` and brokered intermediate ratio
+    `1.0033912745` are diagnostic telemetry only. The terminal receipt is
+    `/mnt/raid0/llm/autokernel/probes/inf03-mi210-isolated-k-search-pilot-20260812-r15/diagnostic-pilot-receipt.json`
+    (self-hash `3425cf579a9d6fb06f5ed76b480ae652eaed3b3685eec9116299d253528a8771`,
+    file SHA-256 `eb53de389450ba6ef800528a0da6f54c8508eabc39b4357f0cd9beff64aacefa`).
+  - [x] **Resolve the r12 sandboxed Codex transport denial with least additional authority, then rerun
+    the identical one-task/K-Search diagnostic pilot.** ✅ 2026-08-12 — research main `15c61ed5`
+    binds the exact sandboxed Codex launcher (`45b82bbc`) and carries the r13/r14 validator repairs
+    (`fe33954e`, `aa2020ab`). R15 completed six model calls, non-null brokered feedback, exact
+    controller/evaluator activation, three matched claim/release and sampler windows (11/21/21
+    samples), scrubbed ephemeral CLI state, empty/removed cgroups, and a terminal receipt. Controller
+    access remained `/dev/null` only; both evaluators used deny-network sandboxes with exact GPU
+    devices. Full merged validation passed 578 tests plus 202 subtests; footprint/readme checks passed
+    106 plus 6 tests.
+  - [x] **Project the diagnostic-pilot v1 contract and pre-receipt failure posture into the Kernel-R&D
+    dashboard.** ✅ 2026-08-12 — the hub now reads the newest terminal pilot receipt, verifies its
+    self-hash and explicit no-authority constraints, and renders PASS, broker/model/evaluation/window/
+    teardown facts under a loud no-campaign-authority boundary.
+  - [x] **Retract the reported all-tree discovery parser collision after reproducing its exact test
+    context.** ✅ 2026-08-12 — `test_live_controls.py` intentionally invokes mutually exclusive
+    `--evaluate-existing` and `--execute` arguments inside `assertRaises(SystemExit)`; the argparse
+    stderr is the expected assertion surface, not an import-time collection abort. Discovery with both
+    strings in `sys.argv` collected **3,927** tests, and an AST sweep found zero module-scope
+    `parse_args` calls in AutoKernel. No parser repair is warranted.
+  - [x] **Trace and repair one reproducible Claude/Landlock startup failure outside the campaign.**
+    ✅ 2026-08-12 — local, unpushed research commit `916cdc92` adds ten fixed volatile read paths,
+    stages only Claude credentials/config with identity hashes, scrubs the
+    staged config, keeps `/dev/urandom` read-only, and excludes volatile reads from stable identities.
+    The bounded standalone Claude probe returned structured `{"ok": true}`, left an empty/removed
+    cgroup, and retained activation/result/teardown evidence under
+    `/mnt/raid0/llm/autokernel/probes/inf03-claude-sandbox-runtime-20260812-r1`. Focused validation passed
+    **59/59**, footprint/README validation passed **106/106**, and the pinned full AutoKernel suite ran
+    **5,653** tests with one expected failure and no unexpected failure. Those counts were observed in
+    the live session but lack a retained transcript; the probe receipts are the durable runtime evidence.
+    This proves the bounded probe, not full actor-critic campaign compatibility.
+  - [x] **Preserve r5 and r6 as immutable non-rankable engineering attempts after the exact campaign
+    cell falsified the standalone compatibility inference.** ✅ 2026-08-12 — both attempts completed
+    only the starting-state baseline, then the first Claude/Codex 2h planner exited `-11` with empty
+    stdout/stderr. R6 included all ten new runtime paths and used source `916cdc92`, yet reproduced r5;
+    its controller cgroup was verified empty and removed. Neither attempt has an aggregate, controller
+    ranking, belief update, proposal-bank entry, champion, or release authority.
+  - [x] **Trace r6's exact campaign-versus-standalone differential and repair the process-bound model
+    sandbox boundary.** ✅ 2026-08-12 — `/proc/self/*` Landlock rules were bound to the controller PID,
+    so its forked Claude child still received `EACCES`. Research `43ba6263` leaves the controller in a
+    deny-network broker-only sandbox, launches each read-only model client in its own outbound sandbox
+    so `/proc/self/*` binds to the actual CLI PID, preserves the digest-pinned single-writable-bind
+    Docker boundary for the Codex actor, and journals model/evaluation receipts through the parent.
+    Targeted validation passed **77/77**; the pinned full AutoKernel suite passed **5,655** tests with
+    one expected failure.
+  - [x] **Refresh the actor pin and preserve r7's pre-execution refusal.** ✅ 2026-08-12 — research
+    `a3fcea3c` pins the repaired actor entrypoint. R7 correctly refused the stale prior pin before any
+    controller or GPU command; its audit file SHA-256 is
+    `45c4ae3dbb563dfebd20715238407b304cdbdd98f96dfc841cae310d2dd017b0` and its receipt self-hash is
+    `0f0b9000b4a2647e68db493c751769f4f845db4bce6d089a0aa15d3e10b7cfab`.
+  - [x] **Preserve r8 as an immutable partial, non-rankable implementation diagnostic.** ✅ 2026-08-12
+    — the 7/7 audit passed and the starting-state baseline completed, but the first actor cell exited
+    before Claude inference because the broker-backed controller unnecessarily constructed
+    `ArenaWorkspaceEvaluator`, importing unavailable `yaml` and the pinned vendor evaluator inside the
+    broker-only Python environment. The controller cgroup teardown is hash-bound, verified empty, and
+    removed. R8 has no aggregate, ranking, belief, proposal-bank, champion, promotion, or release
+    authority.
+  - [x] **Remove the broker-backed controller's unnecessary Arena evaluator import, prove the exact
+    Claude cell under the campaign sandbox, then launch a fresh governed 7/7 attempt.** ✅ 2026-08-12
+    — research `6270ebc1` keeps vendor evaluation in the parent and `cd1303b9` refreshes the actor
+    pin. R9 then exposed a separate broker transport defect: `socket.sendall()` selected denied
+    `sendto`, so it stopped before Claude with a verified-empty, removed controller cgroup. Research
+    `eb00c411` writes framed requests directly on the inherited descriptor. R10 consequently banked
+    the starting-state evaluation and completed the first real Claude planner request, then correctly
+    stopped before actor execution when its mutation guard counted the controller's staged session and
+    config as task source. The ephemeral state was scrubbed. Research `2525f2f7` separates semantic
+    task files from model state and `7b20b5d6` refreshes the manifest pin. R11 completed the first full
+    real planner → digest-pinned Docker Codex actor → centralized GPU evaluation → Claude critic
+    loop, but was stopped as an immutable non-rankable partial after repeated mechanisms exposed the
+    missing feedback seam.
+  - [x] **Close r11 without interpreting it and prove measured critic feedback alters the next live
+    proposal.** ✅ 2026-08-12 — r12 iteration one compiled and passed 4/4 correctness at
+    `average_speedup=0.9967805648538064`; its critic selected `revise`. Iteration two's planner cited
+    that exact measurement, forbade the rejected unmasked-fastpath mechanism, corrected the infeasible
+    autotune suggestion from the fixed launcher contract, and proposed a distinct shared-offset/
+    vectorized-streaming mechanism. It also compiled and passed 4/4 correctness at
+    `average_speedup=1.0059084616458236`; the critic selected `accept` while acknowledging that the
+    ratio remained inside noise. This proves feedback propagation, not a kernel speedup.
+  - [x] **Move host actor-runtime attestation out of the confined controller and pin the repair.** ✅
+    2026-08-12 — after all six model calls and three brokered evaluations, r12 finalization failed by
+    reopening `/usr/bin/docker` inside Landlock. Research `4b516e9f` makes the parent model-receipt
+    chain authoritative for host runtime identity and validates the actual flat model-receipt layout;
+    `f316bf31` pins the source. The full AutoKernel suite passed 5,660 tests with one expected failure.
+  - [x] **Close INF-03 seven-arm r13 as an immutable partial and identify its confined-runtime failure.**
+    ✅ 2026-08-12 — the baseline completed and planner model receipt ordinal `0001` persisted, then
+    Claude failed exactly `EACCES: permission denied, mkdir '/mnt/raid0/llm/tmp/claude-1000'` before a
+    completed planner response. All captured PIDs are dead and every controller/model cgroup was verified
+    empty and removed. R13 has no controller cell receipt or aggregate and is permanently non-rankable.
+  - [x] **Repair the confined Claude runtime temp path.** ✅ 2026-08-12 — research `268115ad` refuses
+    inherited host scratch for direct model clients, creates a fresh call-scoped directory under the
+    governed workspace, binds the relative path plus `ambient_host_temp_inherited=false` into the model
+    sandbox receipt, and verifies deletion after every call. The campaign manifest still pins its parent.
+  - [x] **Pin `268115ad` and launch a fresh seven-arm attempt.** ✅ 2026-08-12 — research
+    `446a1c31` isolates each brokered model call and `152ed0d9` pins that runtime into the campaign.
+    Seven-arm r14 audited `ready` at 7/7 on observed clean source `152ed0d9`. A timestamped live
+    checkpoint found seven successful, non-timeout model receipts (five Claude and two Codex) and three
+    complete parent-owned evaluator windows. Every Claude receipt recorded
+    `ambient_host_temp_inherited=false` plus a call-scoped relative temp path, and its captured cgroup was
+    verified empty and removed. This proves the r13 capability repair across repeated real calls; it does
+    not make the live campaign terminal or rankable.
+  - [x] **Close seven-arm r14 as an invalid source-identity attempt.** ✅ 2026-08-12 — after nine
+    successful model calls and four correct evaluator windows, the outer checkpoint guard raised
+    `task or controller source identity changed during checkpoint execution`. Its audit had bound clean
+    source `152ed0d9`, but implementation work advanced that same worktree to `03f9ae69` while the cell
+    ran. The actor cell therefore emitted no admitted cell receipt or panel aggregate. All eight device
+    claims have released receipts; 14 captured PIDs are absent; and all 12 recorded controller/model/
+    evaluator cgroups are verified empty and removed. R14 is permanently invalid and non-rankable.
+  - [x] **Close seven-arm r15 as a transient structured-output failure with complete teardown.** ✅
+    2026-08-12 — r15 completed the baseline plus four compilation/correctness-4/4 controller-feedback
+    windows, then Claude call ordinal `0010` returned non-timeout exit `1` with exact subtype
+    `error_max_structured_output_retries` and terminal reason `structured_output_retry_exhausted` after
+    five provider-internal attempts. No actor-cell receipt or aggregate was admitted, so r15 is
+    permanently non-rankable. All **7/7** device claims released, all **13** captured PIDs were absent,
+    every recorded cgroup was empty and removed, and the immutable source worktree remained clean at
+    `03f9ae69`.
+  - [x] **Add one bounded, receipt-visible retry for exact structured-output exhaustion and refresh the
+    campaign pin.** ✅ 2026-08-12 — research `537163d5` retries exactly once only for the recognized
+    non-timeout Claude wrapper failure, journals the first and retry attempts separately, and leaves
+    arbitrary non-zero exits and timeouts fail-closed. Research `eb1de388` refreshes the actor-critic
+    campaign identity to those bytes. The admitted Python 3.12 environment passed the full AutoKernel
+    suite: **5,682 tests with one expected failure**. Both commits are pushed and on research `main`.
+  - [x] **Preserve seven-arm r16 as a pre-claim source-identity refusal.** ✅ 2026-08-12 — its static
+    audit observed the new actor entrypoint but the campaign still expected the pre-repair digest, so it
+    refused before controller inference, GPU execution, or device-claim acquisition. The corrected pin
+    is `eb1de388`; r16 carries no empirical or comparison authority.
+  - [ ] **Drive retry-hardened seven-arm comparison to a terminal aggregate and validate the complete
+    receipt chain.** R17 is terminal-noncomplete and non-rankable. Its valid actor/critic 32h checkpoint
+    compiled and passed correctness **4/4** at diagnostic speedup `1.004404445111776` (receipt SHA-256
+    `93292683c21033475697d4743bb54e95f8964a1a8abb265a8789451454f1885e`), but the following EvoEngineer
+    2h cell failed before controller start: `ArenaWorkspaceEvaluator.__init__` was called without the
+    required keyword-only `source_paths`. Exact campaign PIDs `1842347`, `1920709`, `1921055`, and
+    `1966010` are dead; final claim `akd-6b60fb2f7d1449e2` released. Preserve the valid diagnostic
+    checkpoints, but never aggregate, rank, bank, promote, or resume r17.
+    - [x] **Patch the EvoEngineer evaluator-constructor call and launch a fresh immutable successor.**
+      ✅ 2026-08-12 — research `381bc55e` wires governed `source_paths` through EvoEngineer, GEAK,
+      K-Search, KernelFoundry, and Xe-Forge; `11bccd41` refreshes affected entrypoint pins. Research
+      `b0d6f79f` adds prospective intermediate evaluator belief rows and strict feedback-only reading.
+      Fresh r18 is sealed at `17b9208d`, its baseline is complete, and its first actor cell is active;
+      that live state grants no aggregate, rank, bank, champion, promotion, or release authority.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims
     only around vendor/final measurement windows, exact complete-checkpoint resume, and signal-safe
     release. The audit observed no KFD PID or active device claim while KernelFoundry deliberated;
     other governed GPU work may use those intervals.
-  - [ ] Obtain exact licensed source releases for EvoEngineer and ARGUS, then port their real
-    controller policies through the same governed adapter contract; namesake substitutes are not
-    admissible.
+  - [x] **Obtain and execute the exact licensed EvoEngineer source through the governed adapter.** ✅
+    2026-08-12 — research `f42b3540`, `7e915831`, and `a81c2692` pin MIT source commit
+    `1649715a975b9022c84b5279c88aaef0b73b28dc`, preserve the historical EvoEngineer-Full loop and its
+    four ordered fallback semantics, and exercise the exact upstream `EvoEngineer.run()` for 10
+    generations / 40 samples with fixture model/evaluator bridges only. The fresh physical static audit
+    at `/mnt/raid0/llm/autokernel/probes/inf03-isolation-available-source-reaudit-20260812-r3/receipt.json`
+    is ready at **7/7** over four tasks with zero controller/GPU commands (self-hash `5fa93695…`, file
+    SHA-256 `082d977f…`).
+  - [ ] Obtain the exact licensed ARGUS source release, then port its real controller policy through the
+    same governed adapter contract; a namesake substitute is not admissible. Until then the separate
+    full 8/8 panel must refuse, while the 7/7 available-source panel remains diagnostic-only.
 - [x] Build C4 gfx90a profiler-metric analyzer (GEAK-v2 raw-rocprof path first) ✅ 2026-08-11 —
   `profile_report.py` implements the deterministic paired mapping/formal report; the live single-process
   Q4_K/Q8_0 captures prove it on gfx90a. `profile_context.py` binds the report hash into a priced
@@ -436,6 +618,18 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
   to AITER MLA prefill but has no pinned gfx90a HSA image or proved LSE/ABI contract, while composite
   `k175` requires missing component-graph/multi-trace support. Both now return typed structural
   mismatches rather than a similar-looking single kernel.
+- [x] **Harden the governed C3/C5 real-capture seam and bind its observation window.** ✅ 2026-08-12
+  — research `7b3cc6f4`, `a865bd7c`, and `300647bd` bind live-produced gfx90a inventory, KFD
+  producer ancestry, exact sampler-window overlap, immutable acquire/release claim slices, frozen
+  source paths, and selected-entry-only Apex admission. Focused validation passed 27 tests and the
+  evaluator regression passed 1,579 tests. This closes the capture mechanism, not the model-specific
+  tensor evidence.
+- [ ] **Provide the exact k228 model-tensor capture hook manifest and run the governed capture.** The
+  hook must execute the real model surface and emit the source/model/process/window identities the
+  C3/C5 provider validates; a HyRA reference tensor or synthetic fixture cannot substitute.
+- [ ] **Provide the exact k175 ordered multi-trace capture hook manifest and run the governed capture.**
+  The hook must preserve the router → top8/count/rank → dispatch → routed/shared experts →
+  weighted-undispatch graph; a single similar-looking kernel cannot satisfy the composite case.
 - [x] **GEAK-family freshness sweep completed ✅ 2026-08-03** (research-intake Stage-2b): GEAK v4 retains a current gfx90a KB (`perf_knowledge/hardware/cdna2_mi200/`, `updated: 2026-06-08`) and 40 gfx90a capability entries; all published evaluation remains gfx942. Scoping caveat amended above; "677/678/679 are a coverage regression" **retired** — for GEAK proper it is unpublished coverage. `v1.0.0 @ 4ffba15a` pinned.
 - [x] Re-target the program objective from the Q8 rung to the fp16 rung, with a banded per-lever ceiling (K1–K12) ✅ 2026-08-03
 - [x] Register **ARGUS** (arXiv 2604.18616) as a controller candidate alongside EvoEngineer /

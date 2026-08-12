@@ -2663,6 +2663,85 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   zero children while the main's queue is non-empty. Same shape as C35/C36 — the RUNTIME decides,
   not the agent's self-report — so it inherits their fail-closed and UNAVAILABLE-fallback rules.
 
+## Delivery-plane repair — C51–C54 landed, four residuals (filed 2026-08-12 at wrap-up)
+
+`b6ea8679` fixed the root cause of the fleet's idle compute on 2026-08-12: three mains sat with
+instructions queued and unsubmitted in their composers, which is indistinguishable from a main that
+received the message and declined it. Four defects, each reproduced against real tmux panes before
+being fixed; 567 tests pass, mutation-tested at source level (reverting the glyph table, the buffer
+check, the C12 ordering, the rollback, the pre-typing guard, the cursor-prefix read, the faint rule,
+or any C52 contradiction source each turns the suite red).
+
+- [x] **C51 — the submit step is verified against the BUFFER, not the keystrokes.** ✅ 2026-08-12 —
+  `b6ea8679`. `nudge` had no rollback and `record()` ran only on the success path, so a strand that
+  failed after the first character was typed appeared in no ledger, no bus row and no log; `doorbell`
+  had no post-Enter verification at all; C12's anti-staleness anchor was sampled AFTER the Enter and
+  was therefore vacuous. The composer must now return to its pre-typing baseline (a delta, so it needs
+  no prompt pattern and cannot rot), and any failure rolls the text back with Ctrl-U and writes a
+  `*-undelivered` row. New read-only `pending` detector; unevaluable exits non-zero, so "I could not
+  look" never reads as "nothing is pending".
+- [x] **C52 — a `state: working` heartbeat must be CORROBORATED before it refuses.** ✅ 2026-08-12 —
+  `b6ea8679`. `mainB` settled at an empty composer with its heartbeat still reading `working` on a task
+  whose pid was already dead: six nudges refused, MI210 at 0% for thirteen minutes, and single-writer
+  meant nobody else could clear the flag. Three verdicts now — corroborated / contradicted /
+  undetermined — and undetermined refuses and SAYS so instead of reporting a stale claim as believed.
+- [x] **C53 — the cursor is NOT at the end of pending input.** ✅ 2026-08-12 — `b6ea8679`. Measured on
+  live panes the cursor parks at column 2 with the text to its RIGHT, and each such string appeared
+  exactly once in 3,000 rows of scrollback — never submitted. Every cursor-prefix read called those
+  composers EMPTY, including the C51 detector. Emptiness is now judged on the whole row. Faint (SGR 2)
+  means placeholder on Codex and pending input on Claude — opposite senses — so the read is
+  backend-aware and fails closed when the backend cannot be identified.
+- [x] **C54 — `clear` and `submit`, the detector's missing remedy half.** ✅ 2026-08-12 — `b6ea8679`.
+  Two verbs, because discarding pending text and accepting it as an instruction are opposite decisions
+  only the caller can make. `--expect` refuses if the pane changed under you (TOCTOU), `--force` is the
+  blunt alternative, neither given is a refusal. Ctrl-U only, never Ctrl-C, asserted over every branch;
+  every discard logged verbatim so a wrongly-discarded instruction is recoverable.
+
+Residuals the repair did NOT close. All four were observed in the same window; none is fixed.
+
+- [ ] **DP-1** (HIGH): **the composer needs a `<char>`-then-`Enter` sequence and the adapter does not
+  send one.** Observed 2026-08-12 driving live panes: `Enter` alone against a composer holding pending
+  text does not submit it — a character must land first to take the composer out of the state it is
+  parked in, and only then does `Enter` commit. `cmd_submit` sends `Enter` directly, so `submit`
+  inherits exactly the failure C51 was built to detect: it verifies honestly and reports failure, but
+  has no working remedy behind it. Fix belongs in `scripts/coordination/tmux_adapter.py` (owned by a
+  parallel session — deliberately NOT edited from this seat). Pin the sequence with a case in
+  `scripts/coordination/tests/composer_tui_fixture.py`, which already has selectable Enter behaviour,
+  so the calibration announces itself when it rots rather than failing silently.
+- [ ] **DP-2** (HIGH): **`clear` and `submit` do not work on Claude panes.** The C54 verbs were
+  calibrated against a disposable Codex session; against the five Claude mains neither verb takes
+  effect. Same backend asymmetry C53 names — faint SGR 2 carries opposite senses on the two TUIs — and
+  it means the remedy half of the detector is live for exactly one of the six roster members. Until
+  this lands, a Claude pane holding pending input still needs a human at the keyboard, which is the
+  condition C51–C54 were opened to remove. Calibrate on an expendable Claude pane and pin it with a
+  fixture case; this seat must not send keys to a live main.
+- [ ] **DP-3** (MED): **`bus_supervisor.sh`'s stale-source check is mitigated by a config constant, not
+  fixed.** `STALE_SRC_SKEW_S=5` (`scripts/coordination/bus_supervisor.sh:362`) exists because
+  `ps -p <pid> -o etimes=` reports WHOLE seconds, so a computed `started` can land up to a second
+  before the real start and a source written in the same second as a legitimate restart reads as newer
+  than the process it produced — a false positive that recurs every cycle, i.e. a restart loop. The
+  tolerance suppresses that, but buys it with a matching false NEGATIVE: a source edited within 5 s of
+  a restart reads as current forever, so the daemon runs stale code and the watchdog never says so.
+  The real fix removes the tolerance rather than tuning it — take the start time at sub-second
+  resolution (`/proc/<pid>/stat` field 22 against `/proc/uptime`, monotonic and already trusted
+  elsewhere on this plane) and compare exactly. File owned by a parallel session; not edited here.
+- [ ] **DP-4** (HIGH): **shared child clones are reachable from inside every lane worktree, so worktree
+  isolation does not prevent cross-agent index contamination.** `repos/<name>` is a symlink OUT of any
+  lane worktree to the single shared clone at `/mnt/raid0/llm/<name>`, so a main sitting in its own
+  isolated worktree still shares one index and one `CHERRY_PICK_HEAD` with every other agent for the
+  orchestrator and research repos. Measured twice on 2026-08-12: (a) `mainA` ran `git add` in the
+  research clone without first checking its state and put 42 files into another agent's in-flight
+  cherry-pick index (staged 8 → 50); had anyone run `git cherry-pick --continue` in that window,
+  mainA's entire A7 staging would have ridden into their commit under their subject line — it was
+  caught ONLY because `git commit -- <paths>` refuses with `fatal: cannot do a partial commit during a
+  cherry-pick`, and had the commit been allowed nobody would have known; (b) this wrap-up merged and
+  pushed that same clone while the cherry-pick was live — verified non-destructive afterwards, but
+  nothing structurally forced that check first. Phase-2 isolation as written covers `/workspace` only
+  and does not address this. Deliverable: either give each lane its own child-repo worktrees instead of
+  a shared symlink, or make every write path assert a clean sequencer state (`CHERRY_PICK_HEAD`,
+  `MERGE_HEAD`, `REBASE_HEAD` absent and no unmerged paths) before `git add`/`commit`/`checkout` in a
+  shared clone. Fold into **Worktree isolation phase 2** above at cutover, or give it its own handoff.
+
 ## Observation contract — adoption backlog
 
 Filed 2026-08-12 by the class-sweep that followed the `pgrep -f "session_bus_coordinator\.py run"`

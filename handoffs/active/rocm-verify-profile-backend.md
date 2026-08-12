@@ -1,17 +1,13 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
-**Status**: ACTIVE HARDENING — Q4_K MMQ corrected locally; oracle producer evidence remains approval-gated
-**Created**: 2026-06-03 · **Updated**: 2026-08-12 (diagnostic receipt/provenance audit)
+**Status**: ACTIVE HARDENING — governed 122B decode attributed; exact k228/k175 captures remain
+**Created**: 2026-06-03 · **Updated**: 2026-08-12 (122B decode attribution and router replay)
 
-> **NEXT ACTION (2026-08-11): `RVP-C2-7/C2-8/C2-9` — after OP-11 approves the exact experimental
-> producer commit, rerun sensitivity, hostile-distribution, and checker-isolation evidence on its
-> durable suite identity.** The research reducers/runners are durable; the live oracle-integrity smoke
-> is intentionally non-evidence because its producer is uncommitted. The experimental implementation
-> and Q4_K MMQ repair must not be committed or pushed without explicit user approval per that tree's
-> `AGENTS.md`. The two static
-> probes (`RVP-T0-2`, `RVP-T0-5`) remain complete and independently re-verified. **`RVP-T0-1` is now
-> complete:** the live card never approached its 300 W cap, so the clock-pinning branch and AK-OP-2
-> are closed. Everything else in §2026-08-10 is CPU-only or static and runs today.
+> **NEXT ACTION (2026-08-12): implement the exact k228 and k175 model-tensor hook manifests, then run
+> their governed real EPYC C3/C5 captures and matched whole-model exits.** OP-11 was
+> resolved as Option B (decline for now), so C2-7/C2-8/C2-9 remain deliberately open unless the
+> operator explicitly reopens the experimental producer. The research reducers/runners remain
+> durable; the old oracle-integrity smoke remains non-evidence.
 >
 > **Evidence-authority boundary (2026-08-12):** RVP-T0-1 and its v9 replication are durable
 > hardware-saturation diagnostics, and AK-BH-1/2/3 plus AK-LN-2/AK-X-5a are durable bounded
@@ -35,9 +31,9 @@
   **408 tests + 15 subtests PASS**. This confirms RVP-C6-2/3/4 and RVP-C3-4/5. That audit correctly
   reopened RVP-C6-6/10 because their static detector corpus and ranked-unit machinery did not satisfy
   the empirical acceptance text; the later executable gfx90a r3 receipt below closes both rows.
-  RVP-C2-8/9 also remain open: their reducers and claim-aware runners are complete, but the full
-  acceptance contract still needs an OP-11-authorized committed seeded producer and fresh matched
-  evidence. No implementation-only test upgraded empirical authority.
+  RVP-C2-8/9 also remain open: their reducers and claim-aware runners are complete, but OP-11 declined
+  the committed seeded producer needed for fresh matched evidence. No implementation-only test
+  upgraded empirical authority.
 **Categories**: hardware_optimization, benchmark_methodology, tool_implementation, inference_serving
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked; ROCm 6.2 bind-mounted; llama.cpp HIP build verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`). This backend is now **ACTIVE** (priority MEDIUM). Runnable first tasks: (1) install/pin `pytorch-triton-rocm` matched to ROCm 6.2 + verify gfx90a matmul (intake-760); (2) stand up `rocprof-compute` gfx90a metric subset (C4); (3) the honest-vendor-baseline candidates that are gfx90a-*reachable* — **BitBLAS/TileLang low-bit GEMM** (intake-497/tilelang-puzzles), **NOT AITER** (gfx942-only, intake-759). GPU claim grade follows P-GPU-1; profiling a live server remains the inference owner's scheduling boundary. [was: "~July 2026; nothing executes until the card racks" — stale]
 **Priority**: MEDIUM (the substrate for [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md))
@@ -96,6 +92,12 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
     `390bd1befe1a3d1eeb1433e579f3fc42d3c1d97ae8e7ccb1b90f059b9a5600ad`; research
     `4320d83a` (research main `5dfd14ad`). The parent remains open for EPYC workload capture, matched
     MI210 timing, candidate integration receipt, and whole-model re-bench.
+  - [x] **Separate diagnostic ROCm-provider evidence from bankable llama.cpp integration.** ✅
+    2026-08-12 — research `77689f76` gives baseline providers exact versioned manifests and makes
+    Apex/standalone-provider bindings diagnostic-only at the whole-model exit. Only a clean,
+    production-descended experimental `llama_gpu` commit with bound patch, binary, linkage,
+    toolchain, and isolated-prefix identity can satisfy `IntegratedLlamaGpuBinding`. This closes an
+    authority-laundering path; it does not perform the still-open EPYC capture or matched re-bench.
   - [x] **Provision the exact Apex/ROCm runtime without contaminating the host stack.** ✅ 2026-08-11
     — Apex is detached at `e06b5d1cd58996a82c5e2897164f760c3b3f87ac`; its time-matched Magpie
     dependency is detached at `2a9263833f71755df2a93b466cdd3a9f803fc625`; and the isolated Python
@@ -136,7 +138,28 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
   commit, reported version, binary/linkage digests, and attestation. Eager or candidate-relative
   baselines, incomplete case sets, and identity drift fail closed. The matched controller A/B and
   real EPYC capture remain owned only by INF-03; this checkbox makes no empirical completion claim.
-- [ ] **HIP arm (after the Triton loop works).** GEAK-HIP patterns (678) + AgentKernelArena Torch2HIP suite (679) + our own HIP oracle, toward hand-HIP for the llama.cpp fork.
+- [x] **HIP arm minimum loop closure (after the Triton loop works).** ✅ 2026-08-12 — research
+  `2c214d48` `controller/hip_authoring_arm.py` admits only a true Torch2HIP task from clean Apache-2.0
+  AgentKernelArena `2dbbf1d3`, hashes the task/candidate/toolchain, compiles GPU-blind for gfx90a,
+  and uses separate released MI210 claim/sampler windows for the vendor baseline and centralized
+  final evaluation. The r4 SiLU receipt compiled and passed 11/11 public correctness and 11/11
+  timing-validity cases; root independently re-derives its two producer-authored belief rows. The
+  Torch-eager ratio is observation-only and non-rankable; no production or experimental llama tree
+  was touched.
+- [x] **HIP arm decision-grade hardening.** ✅ 2026-08-12 — research `b8d8c409` adds the sealed
+  `hip_decision_grade.py` parent plus a C6-contained worker: candidate source is sealed before the
+  24-case hostile suite seed/shapes exist, expected values remain in an independent host-double
+  oracle, and two differently poisoned outputs must be fully overwritten and bitwise repeatable.
+  The honest C3 provider is the exact one-graph/no-break Torch-Inductor ROCm SiLU expression on the
+  same tensor/device. The terminal r6 receipt passed 24/24 cases, all 40 candidate/provider arm
+  windows individually cleared RVP-C3-5's 250,090,903 ns gfx90a floor (minimum 276,039,581 ns), and
+  measured a 1.076935x median paired speedup over 20 randomized blocks; all block signs were positive
+  and the anytime-valid e-process crossed threshold 20 at block 9. Receipt internal SHA-256
+  `0ba60558951d47b596abce52ebe41401ae50a1326375595c49dfaf737f902ccb`, file SHA-256
+  `c2b7f7ce983ef31ea92d6977450e993c2ae0f4fdf07db595de26caf5341174ab`. This is task-local rankable
+  evidence only: it has no release/promotion authority, and an experimental llama integration plus
+  whole-model gates remain mandatory before any production proposal. r4 is superseded sub-floor
+  instrument evidence; it must not be cited as decision-grade.
 
 ## Interface contract (the seam controllers depend on)
 ```
@@ -607,23 +630,15 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   inputs, at least three seeds, all four identity/×3/×0.01/negate transforms, and measurable input
   and reference-output movement on both the seed and transform axes. The 14 focused reducer tests
   pass. This parent row remains open because the `AK_SENS_V1` producer is still an uncommitted change
-  in `llama.cpp-experimental`; commit/push requires explicit operator approval, followed by a fresh
-  matched run whose suite identity includes that durable producer commit.
+  in `llama.cpp-experimental`; OP-11 declined that commit for now. Reopen only with explicit operator
+  approval, followed by a fresh matched run whose suite identity includes the durable producer commit.
 
   - [x] **RVP-C2-7a — Build the two-axis research reducer and claim-aware runner.** ✅ 2026-08-11 —
     research commit `000a2686`, promoted to `main` via `f3c6b24a`; the focused reducer passes 14/14.
 
-  **OP-11 decision package.** Context: repository policy requires explicit operator approval for each
-  commit/push in `llama.cpp-experimental`, and the current sensitivity/oracle producers plus Q4_K
-  repair cannot identify themselves durably. Option A: approve one exact reviewed commit/push, then
-  rerun the matched sensitivity and oracle-integrity screens (small, reversible source-history change;
-  makes their suite identity honest and preserves the repaired MMQ source).
-  Option B: decline the commit and retain the implementation only as a local diagnostic
-  (zero publication risk; all producer-dependent rows remain open and the smoke remains non-evidence).
-  **Recommendation: A**, after reviewing the exact experimental diff, because the research consumer
-  and the full research suite plus live repairs are green, while a durable producer identity is the
-  only remaining instrumentation dependency. **Default:** no experimental commit or push; no
-  producer-dependent closure.
+  **OP-11 RESOLVED 2026-08-12 — operator selected Option B (decline for now).** No experimental
+  commit or push occurred. The implementation remains a local diagnostic, the smoke remains
+  non-evidence, and producer-dependent closure remains unavailable unless the operator reopens it.
 
   **Exact OP-11 audit — 2026-08-12, decision still open.** The preserved experimental checkout has
   HEAD `0db32c06e`, an index exactly matching pushed `0492c2319a79e9bcc4edaa1bfb6af5a096276ab7`,
@@ -639,65 +654,29 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   remains 5,184/5,184, and sensitivity/specificity remain 1.0. **Recommendation remains Option A for
   this exact two-file core; no commit or push is authorized until the operator approves OP-11.**
 
-- [ ] **RVP-C2-11 — the rocprof-v1 attribution runner is prefill-only and does not say so.**
-  `run_autokernel_rocprofv1_attribution.py:69` hardcodes `-n 0` in `bench_command()`, so every
-  capture it produces is prefill regardless of the caller's intent, and the receipt has no field
-  recording that. A decode question asked of this runner returns `status: passed` with essentially
-  no `mul_mat_vec_q` dispatches in it — measured 2026-08-12: 2 warmup dispatches on a 122B run,
-  against 45,021 when the same model is driven at `-n 128`. The failure is silent and reads as
-  success, which is what makes it worth fixing rather than documenting.
-  **Not a defect in past consumers.** K28's NO-GO is a *long-prefill* GDN question measured at
-  p2048/p8192/p32768; its instrument matched its phenomenon and it needs no re-labelling. Checked
-  before filing this row.
-  **Fix is written and verified, not applied** — the runner lives on `codex/ak-d39-provider-contract`
-  in `/mnt/raid0/llm/epyc-inference-research-ak-d39` (clean tree, another lane's branch), and it has
-  no promoted identity on research `main`, so applying it is that lane's call.
-  Patch: [`artifacts/gpu-aux-baselines/patches/run_autokernel_rocprofv1_attribution__gen_tokens.patch`](../../artifacts/gpu-aux-baselines/patches/run_autokernel_rocprofv1_attribution__gen_tokens.patch),
-  SHA-256 `1b83f89b903108b91a2b189760304240daca3d07a0c67f52d4c56aea5e27c7c3`. It adds `--gen-tokens`
-  (default `0`, so existing behaviour and every prior receipt's semantics are unchanged), threads it
-  through `profile_command()`, and adds `gen_tokens` + `phase: prefill|prefill+decode` to the receipt
-  `workload` block so a capture states which regime it measured. Verified by mutation, not by
-  inspection: default still emits `-n 0`, `--gen-tokens 128` emits `-n 128`, and the value reaches
-  the profiler command line.
-  Second half of the row: the decode capture that motivated it
-  (`iq2xxs-decode-nongoverned-20260812T1306Z`) is **non-governed** — no receipt, no durable identity.
-  Once the patch lands, re-run it through the governed runner so the decode attribution carries one.
+- [x] **RVP-C2-11 — superseded by RVP-C4-4.** The --gen-tokens patch this row parked was landed independently as research `c38bf49a` (main `1527ea49`) with the phase field and the governed decode capture (RVP-C4-4a); the parked patch artifact remains for provenance. ✅ 2026-08-12
 
-  **OP-11 RESOLVED 2026-08-12 — operator selected Option B (decline for now).** No experimental
-  commit or push. The implementation is retained as a local diagnostic; the smoke at
-  `omniperf-iq2xxs-v1-smoke-20260811T1238Z` remains non-evidence. Removed from the master-index
-  operator decision queue.
-
-  Rationale, and it changed on measurement rather than on policy: OP-11's capability is a *seeded
-  synthetic-shape* producer (`--suite-seed` / `--repeat-suite`). The IQ2 question it was blocking
-  does not need one. Two findings, both verified 2026-08-12 against artifacts already on disk:
-  - **⚠︎ CORRECTED 2026-08-12, same day, by the real-model decode capture below.** The occupancy
-    claim in the next bullet was derived from the SYNTHETIC smoke, which runs
-    `mul_mat_vec_q<(ggml_type)16, 1, false, false>` at `Arch_VGPR=64`. **Production 122B MoE decode
-    never runs that instantiation** — it runs `mul_mat_vec_q<(ggml_type)16, 1, true, false>` (the
-    mm_ids/MoE path) at **`Arch_VGPR=80`**, i.e. 512/80 → **6 waves/SIMD, 75% of the 8-wave
-    maximum**, not 100%. Scratch is still 0, so there is no register spill from the codebook gather,
-    but IQ2_XXS decode **is** modestly occupancy-limited. The synthetic-shape reading below stands
-    only for the synthetic shape. Treat a synthetic op capture as a different kernel from the one
-    production runs until the template arguments are compared.
-  - **The occupancy half is already answered.** All 65 IQ2_XXS `mul_mat_vec_q` dispatches in the
-    existing smoke's `pmc_perf.csv` carry `Arch_VGPR=64`, `Accum_VGPR=0`, `SGPR=32`,
-    `LDS_Per_Workgroup=512`, `Workgroup_Size=128`, `Scratch_Per_Workitem=0`, invariant across six
-    grid sizes. On gfx90a's 512 unified VGPRs that is 8 waves/SIMD — the hardware maximum. **IQ2_XXS
-    MMVQ is not occupancy-limited**, and zero scratch means the codebook gather causes no register
-    spill. This corroborates the `a8afd338` L3 correction on a genuinely different quant: the
-    remaining question is gather latency-hiding, not dequant compute and not occupancy.
-  - **The real-model path needs no seed flags.** `run_autokernel_rocprofv1_attribution.py` takes
-    none, already passed on the same `qwen35moe` architecture (K28, 21,896 dispatches), and runs
-    against the real `Qwen3.5-122B-A10B-UD-IQ2_M.gguf`.
-
-  Counter-caveat, measured: rocprof-v1's `SQ_WAVES`, `SQ_BUSY_CYCLES`, `SQ_INSTS_VMEM_RD`,
-  `SQ_INSTS_VALU_INT32` and `SQ_INSTS_SALU` all read **exactly 0** on every IQ2 row on this box —
-  the `env.sh` caveat is real. TCC counters are healthy. So a governed *counter-level* op
-  differential still has no path, since `rocprofv2` segfaults on IQ2_XXS. That gap is what OP-11
-  would have addressed, and it is deliberately left open: reopen OP-11 only if a counter-level
-  differential becomes decision-gating, not to unblock the latency question.
-- [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
+- [x] **RVP-C4-4 — Make the rocprof-v1 attribution workload phase explicit.** ✅ 2026-08-12 —
+  research `c38bf49a` (promoted to `main` as `1527ea49`) adds `--gen-tokens`, preserves the historical
+  prefill-only default, threads the requested generation count to `llama-bench -n`, rejects negative
+  values, and records both `gen_tokens` and `phase: prefill|prefill+decode` in every receipt. K28's
+  historical prefill result needs no relabelling. The focused producer suite passes 12/12 and the
+  AutoKernel README suite passes 17/17.
+  - [x] **RVP-C4-4a — Capture governed real-model decode attribution.** ✅ 2026-08-12 — the
+    source-bound p0/tg128 decode run on the real Qwen3.5-122B-A10B UD-IQ2_M model passed at
+    **37.057131 tok/s**. Summed device time was MMV **59.9524%**, quantize **8.0084%**, RMSNorm
+    **4.3655%**, FlashAttention **3.1458%**, copy **2.3187%**, and GDN **1.8620%**. The GDN target is
+    therefore low priority on this exact decode surface; type-specialized MMVQ is primary. Receipt
+    `/mnt/raid0/llm/autokernel/probes/rvp-c4-4a-122b-decode-20260812T192651Z/receipt.json`, file
+    SHA-256 `c7f3f5a243310021e022715b403fe0668b47145440bda00ee43ac6d84e14bed3`; CSV SHA-256
+    `e7fd3481d8c978463831391ef19c9c640907a774e34fd393c95edcc5c53e01fa`. Exact MI210 and CPU-q3
+    claims released; 58 device samples covered the measurement window.
+  - [x] **Route the RVP-C4-4a rocprof-v1 trace through the source-bound prior-art gate.** ✅ 2026-08-12
+    — research `5c8e57dc`/main `6103bde8` adds rocprof-v1 schema ingestion and frozen-v9 ggml-type
+    decoding. Replay classified 11 admitted families / **69.3283%** of captured time as existing-path
+    work, two / **2.3187%** as forward-port candidates, and eight / **25.3907%** as unmatched. The
+    deterministic recommendation is `expand_catalogue_before_novel_generator`; this is routing,
+    not a performance verdict.- [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
   the value distribution. This is the anti-shape-detection device, and it targets something we
   actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can
   learn to satisfy without being correct. The durable research reducer/runner is in `1a4d7dca`

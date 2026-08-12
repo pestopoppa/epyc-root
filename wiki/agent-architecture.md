@@ -1773,10 +1773,15 @@ comparison keyed to *this process's last write*, not to a static disk/memory dif
 
 ## Compiled Update — 2026-08-05: representation boundaries are authority boundaries
 
+## Compiled Update — 2026-08-12: representation and provider boundaries are authority boundaries
+
 Three independent changes converge on one architectural rule: any artifact that can change what the
-system believes or selects needs a typed, immutable boundary. AutoKernel’s proposal-v3 contract binds a
-candidate representation to a frame hash and fails closed when alternatives cannot be recoded into a
-common comparison frame. AgentWorld’s `HypothesisBoundaryContract` separately binds label ownership,
+system believes or selects needs a typed, immutable boundary. AutoKernel’s proposal-v4 contract retains
+the representation frame and adds a provider identity boundary: source/opaque mode, immutable source or
+artifact identity, isolation, toolchain, linkage, backend, and evidence authority. Historical v2/v3
+records remain readable but cannot acquire provider authority retroactively; opaque providers are
+diagnostic-only, and bankable evidence must join to a clean integrated llama.cpp candidate. AgentWorld’s
+`HypothesisBoundaryContract` separately binds label ownership,
 verifier ownership, eligibility, and falsifier evidence, preventing an environment generator from grading
 its own hypothesis into authority.
 

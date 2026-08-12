@@ -2,9 +2,59 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
+**Last compiled**: 2026-08-12 (AutoKernel's governed K-Search pilot reached a terminal compatibility pass at r15; isolation and no-authority findings are compiled below; earlier findings retained)
+**Sources**: 104+ documents
+
+## Compiled Update — 2026-08-12: a failed pilot can validate autonomy plumbing without becoming kernel evidence
+
+**Confidence: verified for the captured failure ladder and teardown state; no kernel-performance claim.**
+
+AutoKernel's first governed one-task/K-Search pilot advanced through twelve immutable attempts. R1-r11
+successively exposed missing task-source provenance, controller import identity, Python extension and
+package closure, exact Git/null/config dependencies, and writable transient CLI state. Each defect was
+repaired narrowly rather than by broadening the controller to the host environment. R12 then started
+the real Codex client and attempted the response request, but five retries ended in `Operation not
+permitted` before a completed response. This is evidence that the autonomous controller path reached
+its model boundary; it is not evidence that the model authored a candidate or that a kernel improved.
+
+The claim boundary is the durable finding. A dependency-repair ladder may prove that isolation is
+fail-closed and that teardown works, but it cannot be ranked, aggregated, banked, or promoted as an
+optimization result. No completed model response, candidate, speedup, matched archive, or campaign
+aggregate exists for r1-r12. The next step is therefore an exact-cell retry after a least-authority
+transport-policy repair, followed by verification of the terminal pilot receipt, broker feedback,
+activation, claim/release, sampler, ephemeral-state scrub, and empty/removed cgroup. Only that receipt
+can unlock the 7/7 availability-conditioned panel.
+
+### Source References (2026-08-12 governed pilot)
+
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — exact r1-r12 failure chain, authority boundary, and retry gates
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-9 system-level disposition and prohibition on upgrading failed attempts into evidence
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — research branch identity, captured transport failure, and teardown checkpoint
+
+## Compiled Update — 2026-08-12: a terminal pilot proves execution compatibility, not comparative merit
+
+**Confidence: verified for the r15 receipt, isolation, and teardown; diagnostic-only for timing.**
+
+R15 closed the governed one-task/K-Search compatibility gate after two more fail-closed validator
+attempts. Exactly six `gpt-5.6-sol:high` calls produced one brokered intermediate evaluation and a final
+centralized evaluation. Both compiled, passed all four correctness/timing cases, and returned ratios
+near 1.0. Those ratios are telemetry about this one task, not controller or kernel ranking evidence.
+
+The more durable result is the authority-preserving execution shape. The parent owned three short GPU
+windows with 11/21/21 in-window samples and matched releases. The controller saw only `/dev/null`, both
+evaluators were deny-network with exact GPU device grants, all cgroups were empty and removed, and the
+ephemeral Codex home was scrubbed. The terminal receipt explicitly denies matched-campaign, ranking,
+belief-update, promotion, and release authority. This is the correct boundary for an autonomous-loop
+compatibility pilot: success unlocks the fresh 7/7 panel, but it cannot be silently promoted into a
+comparative conclusion.
+
+### Source References (2026-08-12 terminal pilot)
+
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r13-r15 dispositions, terminal receipt, isolation, and next panel gate
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-10 system-level authority disposition
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact hashes, validation counts, and research-main identity
 **Last compiled**: 2026-08-12 (second pass — three loop-engineering experiments on the loop's own operating assumptions returned **two nulls and one non-portable positive**: more reasoning effort bought time, not hypotheses; a "proximate target" framing was null for one model and adverse for the other; split scaffolding helped one model 1.393× and neither helped nor hurt the other. The governed controller campaign refuses 2 of 8 arms on licensing and is **4/64 checkpoints terminal**, so it has no aggregate. The first real CPU candidate campaign is ready and refused by its own uptime preflight at 13.47 days — see below; earlier same-day note: an AutoPilot dead-machinery audit re-derived: three modules whose surfaces all look green, instrumented with tripwires rather than fixed because each is a decision; the objective plane admits zero-quality Pareto points and one trial row in six is already there; a "sticky refuted" population dissolved as a joint-verdict-vs-single-axis defect; and the stale-premise class that makes a screened backlog row still unsafe to act on — see below; earlier 2026-08-11 note: AutoKernel's own measurement-integrity hardening lands with no inference run yet; AutoPilot's v10 multi-tier baseline is sealed and applied while the loop stays stopped; a sequential-allocation mechanism ships deliberately neutral on the question it exists to let the operator answer — see below; earlier 2026-08-10 note: adds the transfer-ratio synthesis — every cheap lane is a proxy whose transfer function is free to record now and impossible to backfill — plus lanes-screen/full-instance-verifies, the three false concurrency constraints, and the rescued-vs-persistent refinement split)
 **Sources**: 101+ documents
-
 ## Compiled Update — 2026-08-12 (second pass): the loop-engineering experiments returned nulls, and the campaign they were meant to steer is 4/64 done
 
 **Confidence: verified** for the experiment mechanics and campaign state (each cell is receipted and self-hashed); **explicitly bounded** for every conclusion — these are one-observation-per-cell panels that the sources themselves refuse to generalise, and this page keeps that refusal.
@@ -857,6 +907,31 @@ now typed inputs rather than ambient assumptions.
 - [2026-08-05 progress](../progress/2026-08/2026-08-05.md)
 - Research intakes 991 and 998 (world-model / least-commitment synthesis)
 
+## Compiled Update — 2026-08-12: real-archive eligibility is now fixed before measurement
+
+AutoKernel's least-commitment path now distinguishes a plausible proposal from an archive-eligible
+experiment before any compute is spent. The IQK intervention and its matched A/A control each carry
+an exact proposal-v3 record, a prospective capture plan, one absolute SHA-pinned diagnostic-source
+receipt, a stated hypothesis plus falsifier, and a measurement-frame-specific physical envelope.
+Diagnostics and semantics-preserving recodings are mechanically reduced from the bound source bytes;
+the plan can no longer make a receipt-looking assertion by supplying only an id and digest-shaped
+string.
+
+Completed-proposal admission applies the same rule at the far end. An exploratory terminal result is
+not eligible, and a bound result must resolve its proposal statement and chosen claim authorization
+exactly in the append-only hypothesis ledger. This preserves the useful workflow in which a dry run
+composes the experiment first and live execution follows under the same campaign identity: intake
+opens the question once, composition and live spend receive separate authorization records, and the
+archive binds the live record by sequence and bytes. Architecture rehearsal proves the producer
+chain, but it remains explicitly non-empirical; only two clean DECIDED campaign journals may close the
+matched archive and unlock observe-only AK-WM-2/AP-WM-1 evaluation.
+
+### Source References
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — owning tasks, archive gate, and empirical remainder
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact commands, artifact hashes, and validation
+- [System-wide inference-kernel optimization program](../docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md) — autonomy and evidence-boundary design
+
 ## Compiled Update — 2026-08-09: a meta-evolutionary search layer is the same object AutoPilot already is — and the gaps are five named mechanisms, verified against source
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled from dive-verified intake entries. Every mechanism below is a **design pattern to test, not a validated win** — the source paper contains **no selector-only ablation anywhere**, and only two of its claims survive scrutiny. Adoption is gated on the existing curated-baseline guard stack.
@@ -960,3 +1035,223 @@ threshold peeking.
 - [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — the oracle and reward-integrity side of the same design
 - [`wiki/benchmark-methodology.md`](benchmark-methodology.md) — the instrument-integrity findings this rests on
 - [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the research-intake session record
+
+## Compiled Update — 2026-08-12: durable campaign rehearsals must traverse the current validator
+
+**Confidence: verified.** AutoKernel's prepared IQK pair became stale when proposal-v4 made the
+source-transparent provider reference mandatory. The repair migrated both durable inputs to v4,
+preserved the historical v3 bytes under `inputs/superseded/`, rebound the diagnostic sources,
+capture plans, physical frames, and hypotheses, and added an exact two-branch rehearsal through
+`campaign.main`. Both intervention and A/A commands now compose 12 steps with
+`state=dry_run_composed` and `executed=false`; no inference ran. The reusable lesson is that a parser
+smoke test is insufficient for durable campaigns: the regression must load the materialized proposal,
+its dependent receipts, and its matched control through the same current-schema validator the live
+entry point uses.
+
+### Source References
+
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-WM-2a durable producer state and empirical next action
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact v4 artifact identities and validation results
+
+## Compiled Update — 2026-08-12: a narrow sandbox probe does not prove the full controller cell
+
+**Confidence: verified.** The first fresh seven-arm AutoKernel attempt exposed a Claude CLI SIGSEGV
+inside the confined actor-critic planner. A trace-derived Landlock repair for a separately reproducible
+startup failure admitted ten fixed volatile runtime reads, retained stable identity hashing separately,
+kept the random device read-only, and made
+a bounded standalone Claude request complete successfully. The next campaign attempt still reproduced
+the SIGSEGV under the full actor-critic cell despite carrying those same ten reads.
+
+The reusable rule is that sandbox compatibility is path-specific. Matching the executable and visible
+read allowlist is insufficient when the production cell also changes the prompt/argv, workspace,
+controller process tree, and staged configuration lifecycle. A successful narrow probe is useful for
+shrinking the differential, but it cannot authorize a campaign or close the full-path acceptance gate.
+Both attempts therefore remain immutable engineering diagnostics with no aggregate, ranking, belief,
+proposal-bank, champion, promotion, or release authority. The next run must exercise the exact campaign
+cell after tracing the remaining differential; it must use a fresh attempt identity.
+
+A neighboring audit also corrected a false blocker: argparse stderr from deliberately supplying two
+mutually exclusive options inside `assertRaises(SystemExit)` was mistaken for an import-time collection
+failure. Full discovery collected 3,927 tests, and static inspection found no module-scope parser call.
+Expected failure output is not evidence that discovery aborted.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 differential and fresh-attempt gate
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AutoKernel completion audit and evidence-authority boundary
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact r5/r6 and probe paths, hashes, and validation caveats
+
+## Compiled Update — 2026-08-12: bind self-referential sandbox paths to the process that consumes them
+
+**Confidence: verified.** The r5/r6 Claude failure was not another missing fixed path. Landlock bound
+the controller's literal `/proc/self/*` grants to the controller PID, so a forked model process could
+not use those paths as its own. The repair separates responsibilities: a deny-network controller talks
+only to the authenticated parent broker, while each read-only model client enters its own outbound
+sandbox and the writable actor retains its digest-pinned container. The parent remains the only process
+that owns evaluation and GPU claims.
+
+Two fail-closed attempts then narrowed the next defect. R7 rejected a stale actor pin before controller
+or GPU execution. R8 passed the refreshed 7/7 static audit and completed its starting-state baseline,
+but the first actor cell failed before Claude inference because the broker-backed controller still
+constructed the vendor Arena evaluator and imported `yaml`. This dependency is architecturally
+unnecessary: evaluation already belongs to the parent broker. Both attempts remain partial diagnostics
+without aggregate, ranking, belief, proposal-bank, champion, promotion, or release authority.
+
+The reusable rule is broader than AutoKernel: self-referential filesystem paths are process-bound
+capabilities. A sandbox policy prepared in a parent cannot safely stand in for the child's `/proc/self`,
+and moving work behind a broker should remove the corresponding dependency from the broker client—not
+carry a second implementation of it inside the confined process.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 checklist, r7/r8 authority boundary, and fresh-attempt gate
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — matched-archive dependency and separation from AK-WM-2 evidence
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact research commits, receipt hashes, failure transcript, and cleanup evidence
+
+## Compiled Update — 2026-08-12: broker authority and semantic task state need explicit interfaces
+
+**Confidence: verified for the implementation boundary and first completed loop; the live campaign
+remains incomplete and non-rankable.** R9 and r10 exposed two failures that would both have looked
+like generic controller instability without the fail-closed receipt chain. First, writing an
+authenticated frame through `socket.sendall()` is not equivalent to writing it on an already-admitted
+descriptor: the socket implementation selected `sendto`, which seccomp correctly denied. Second, a
+workspace mutation guard cannot use the entire controller workspace as the task identity once that
+workspace deliberately contains ephemeral model credentials and session configuration. The repairs
+write frames on the inherited descriptor and define the semantic task file set independently of staged
+model state.
+
+The fresh r11 attempt then completed the first real end-to-end loop through the intended boundaries:
+parent-owned starting evaluation, directly sandboxed Claude planning, a digest-pinned Docker Codex
+actor with one writable workspace bind, parent-owned candidate evaluation, and directly sandboxed
+Claude critique. The candidate compiled and passed all four correctness cases but regressed to
+`0.993531469254354×`; the critic chose `revise`, and the controller restored the measured starting
+source before beginning iteration 2. That is valuable liveness and negative-feedback evidence, but it
+is not a campaign result. Until r11 emits a terminal aggregate and its complete model/evaluation/claim/
+sampler/sandbox chain is revalidated, it cannot rank controllers, update belief, bank a proposal,
+select a champion, promote, or release.
+
+The reusable rule is that isolation boundaries need two explicit contracts, not one: an *authority
+contract* saying which inherited operation is permitted, and an *identity contract* saying which files
+constitute the object being protected. Generic socket helpers and whole-workspace hashing silently
+broaden those contracts in opposite directions.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning r9-r11 checklist, next terminal gate, and authority boundary
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — separation from the matched-archive and champion gates
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commits, artifact hashes, ratios, and cleanup evidence
+
+## Compiled Update — 2026-08-12: feedback is part of the loop only when the next planner consumes it
+
+**Confidence: verified for the live controller behavior and confinement failures; neither measured
+ratio is a performance claim.** R12 supplied the first direct proof that AutoKernel's critic output is
+causal input to later search rather than terminal narration. The first correct candidate measured
+`0.9967805648538064×` and received `revise`. The next planner cited that exact result, prohibited the
+rejected unmasked-fastpath mechanism, corrected an infeasible autotune suggestion against the pinned
+launcher contract, and proposed a distinct shared-offset/vectorized-streaming mechanism. The second
+correct candidate measured `1.0059084616458236×` and received `accept`. Both ratios were explicitly
+inside noise; the evidence is mechanism diversity under measured feedback, not speedup.
+
+The same attempt exposed a boundary rule: a confined child must not independently reconstruct evidence
+the parent already owns. R12 finished all six model calls and three brokered evaluations, then failed
+while the controller re-opened `/usr/bin/docker` to rebuild host runtime identity. The repair makes the
+parent's self-hashed model-receipt chain authoritative and validates the producer's actual flat receipt
+layout. The fresh r13 attempt then exposed another instance of the same capability class: Claude tried
+to create `/mnt/raid0/llm/tmp/claude-1000` outside its admitted runtime paths. The baseline and first
+planner receipt persisted, every captured PID died, and all controller/model cgroups were verified empty
+and removed. The repair now refuses inherited host scratch, stages a fresh call-scoped temp/runtime
+directory inside the governed workspace, records its relative path and non-inheritance in the model
+sandbox receipt, and verifies removal. It still needs a campaign-pin refresh and fresh live proof.
+Both failed attempts remain partial and non-rankable.
+
+The broader design lesson is that a controller loop needs three explicit interfaces: feedback carried
+forward as bounded structured state, host attestations produced once at the authority boundary that can
+read them, and runtime directories staged prospectively inside the child sandbox. Recomputing any of
+these implicitly turns a successful model/evaluator sequence into a late non-terminal failure.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — owning INF-03 attempt ledger, receipt authority, and fresh-attempt gate
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — feedback-memory completion evidence and separation from archive/champion authority
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact r12/r13 receipts, hashes, measurements, failure paths, and teardown evidence
+
+## Compiled Update — 2026-08-12: repair derived evidence semantics before spending the empirical run
+
+**Confidence: verified for the current implementation gaps.** AutoKernel's matched-archive machinery is
+implemented, but its prepared IQK inputs still fail six semantics/provenance requirements: proposal-v4
+identity does not mechanically govern every derived seed and frame; the held-out regime is a placeholder;
+the control reducer can consume the intervention falsifier; intervention/control diagnostics can clone
+semantics rather than derive them independently; AP-WM/report output does not yet fail closed on real-only
+archive provenance; and there is no exact command that regenerates both v4 input trees byte-for-byte.
+
+These are not reasons to postpone the program until after reboot. They are precisely the class of cheap,
+offline defects that must close before a reboot-gated campaign: otherwise a clean empirical run can still
+produce an archive that the downstream evaluator must refuse. The durable rule is **rehearse the evidence
+product, not just the executable**. Every identity-derived field, held-out distinction, falsifier, semantic
+diagnostic, provenance edge, and regeneration command must survive exact current-schema replay before
+spending the measurement window.
+
+### Source References
+
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-WM-2a task-level repair contract and real-archive boundary
+- [`handoffs/active/CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — live pre-reboot ordering and refusal posture
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — audit finding-to-task mapping and no-inference wrap boundary
+
+## Compiled Update — 2026-08-12: repeated sandbox success is a capability proof, not a terminal campaign
+
+**Confidence: verified for call-scoped runtime isolation and the first three live evaluator windows;
+the seven-arm campaign remained in progress at the checkpoint.** R13 showed that an otherwise confined
+Claude client still inherited an unusable host scratch convention. The repair now creates a fresh
+workspace-relative runtime/temp directory for every brokered model call, explicitly records that ambient
+host temp was not inherited, and verifies cgroup teardown after the call. Seven-arm r14 crossed that seam
+repeatedly: five Claude and two Codex calls returned successfully, while three parent-owned evaluator
+windows completed with compilation/correctness 4/4.
+
+That evidence establishes execution compatibility of the repaired capability boundary. It does not
+establish campaign completion or controller merit. A live artifact inventory can grow between reads and
+cannot substitute for a terminal aggregate; intermediate ratios remain feedback-only until the campaign
+emits and validates its complete authority-bearing receipt chain. The reusable rule is to distinguish
+three milestones explicitly: a narrow sandbox probe, repeated real calls inside the full cell, and a
+terminal campaign receipt. Passing one never silently upgrades the next.
+
+In parallel, the matched-archive audit closed five evidence-product defects before spending the
+reboot-gated CPU campaign: shared identity now derives the entire execution factor frame; held-out
+outcomes must be separately measured outside target regimes; intervention and control evaluate their own
+falsifiers and native diagnostic semantics; and AP-WM labels evidence real only through strict archive
+projection provenance. The exact proposal-v4 regeneration command remains the sole filed pre-reboot
+implementation gap.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r14 live checkpoint and terminal receipt-chain gate
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-14 and AK-WM repair disposition
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commit and artifact hashes, call counts, evaluator receipts, and non-authority boundary
+
+## Compiled Update — 2026-08-12: immutable source identity is part of the campaign
+
+**Confidence: verified from terminal receipts and the corrected campaign launch.** Repeated successful
+model calls and evaluator windows do not make a campaign rankable when the source identity changes
+underneath them. Seven-arm r14 proved the repaired call-scoped runtime over nine model calls and four
+correct evaluator windows, but its shared source worktree advanced from audited commit `152ed0d9` to
+`03f9ae69` during the actor cell. The outer guard refused the checkpoint, no actor cell receipt or
+aggregate was admitted, and the attempt is permanently invalid. Released claims, absent captured PIDs,
+and removed empty cgroups establish cleanup; they do not recover measurement authority.
+
+The operational rule is now explicit: a live agentic-kernel campaign needs a dedicated immutable source
+worktree, not merely an initial clean-tree check. R15 follows that rule on its own clean branch/worktree
+pinned at `03f9ae69`; the research implementation series is separately published on `main` at merge
+`4328c37c`. R15 remains live and its source root must not be edited, pruned, or compacted before its
+terminal receipt chain is validated.
+
+The matched-evidence producer now follows the same discipline. A deterministic non-executing generator
+derives the intervention and control trees from one authoritative manifest, proves `ggml_iqk` is their
+only changed factor, records every content hash, and refuses overwrite or drift. Its held-out input must
+come from a distinct clean hypothesis-bound completed journal. This closes the offline implementation
+gap without pretending fixtures are empirical evidence: the real pair and least-commitment evaluation
+still wait on the post-reboot completed campaigns.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r14 terminal refusal and immutable r15 receipt-chain gate
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-14/15 and completed deterministic pair-producer task
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact campaign, teardown, publication, and live-checkpoint hashes

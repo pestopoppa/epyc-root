@@ -202,12 +202,37 @@ deliberately — decide them, do not just implement them.
       A1/A3/A4 v9 panel carries native captures, exact claims, pinned source/manifest digests and
       an attestation, but no producer-authored `ClaimTuple` row. Add write-side rows plus a strict
       adapter before any successor run; the completed panel remains pre-hook and emits zero.
-- [ ] **SC33 — Wire the executable AutoKernel reward-integrity corpus prospectively.** The 2026-08-12
-      RVP-C6-6/C6-10 r3 receipt is real measurement evidence—detector sensitivity/specificity/FPR
-      and normal/hard gfx90a elapsed time under a released MI210 claim—but predates producer-authored
-      `belief_measurements` and must never be reconstructed on read. Before any successor run, emit
-      rows with exact source/binary/case/ranked-unit/claim identities and preserve the
-      `instrument validation only; no candidate speed claim` authority boundary.
+- [x] **SC33 — Wire the executable AutoKernel reward-integrity corpus prospectively.** ✅ 2026-08-12 —
+      successor r4 (`rvp-c6-executable-r4-20260812T191027Z`) emitted **53** producer-authored
+      `belief_measurements`: three detector aggregates plus 50 exact case×ranked-unit elapsed-time
+      rows. Its self-hashed v2 receipt (`c9e83b2245f28816eed72f0d0380cb18e59465c82996d572e6ddfaa8306228cd`)
+      caught **10/10** planted cases, rejected **15/15** clean cases, and observed runtime behavior in
+      **25/25** cases under released MI210 claim `akd-0ee8ec07c769492f`. The strict root adapter
+      independently projected **53/53** rows across sensitivity, specificity, false-positive rate,
+      and ranked-unit gfx90a elapsed time. All remain `BASELINE` instrument-validation evidence with
+      `candidate_speed_claim=false`; the pre-hook r3 receipt remains deliberately unprojected.
+- [x] **SC34 — Wire the governed raw-HIP authoring round trip prospectively.** ✅ 2026-08-12 — the
+      research producer emits separate public-correctness and timing-harness-validity fractions with
+      scored-case denominators, exact source/toolchain/task/candidate identities, and two released
+      MI210 claim/sampler windows. Root `autokernel_aux_receipt.py` independently re-derives both
+      rows, every receipt/window/sampler digest, the clean AgentKernelArena pin and physical gfx90a
+      binding, while preserving observation-only/no-ranking/no-promotion authority. r4 is the first
+      complete post-contract proof; r1–r3 are not retrofitted.
+- [x] **SC35 — Wire the decision-grade raw-HIP receipt prospectively and prove the read path.** ✅ 2026-08-12 —
+      `autokernel_aux_receipt.py` admits only the producer-authored sealed-correctness and exact-provider
+      speedup rows after independently re-deriving the receipt/window/sampler hashes, task/vendor/candidate
+      seal, 24/24 host-double result, C6 allowlist plus empty-cgroup teardowns, exact one-graph
+      Torch-ROCm-compile provider, all 20 raw paired blocks, every one of the 40 per-arm RVP-C3-5 duration
+      checks, e-process crossing, distinct released MI210 claims, and the task-local/no-release boundary.
+      The terminal r6 receipt projects two Witnessed/Attested rows; sub-floor timing or invented release
+      authority fails closed. r4 remains superseded instrument evidence and is never upgraded on read.
+- [x] **SC36 — Wire AutoKernel actor-critic intermediate evaluation feedback prospectively.** ✅ 2026-08-12 —
+      research `b0d6f79f` adds two self-hashed correctness/timing-validity rows to every future broker
+      result, binding producer, candidate source, ordinal, baseline, task/controller/checkpoint/attempt,
+      and the exact measurement window. The strict root reader independently re-derives those rows,
+      receipt/window/sampler hashes, and the released MI210 claim while preserving
+      `controller_feedback_only`, no-ranking, no-bank, no-champion, and no-promotion authority. R12–r17
+      are immutable pre-hook evidence and emit zero rows; r18 is the first eligible campaign.
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input
@@ -493,7 +518,10 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       Claude/Codex checkpoints are the first post-hook live evidence: belief receipts
       `05cb70a0d6f670796f93bdc06c4a681578d044f7929839688a4b2c5b7a491370` and
       `4c01642993c1120eac4885714e3e2780845e618913c11676c6decef290fded61` each carry the two
-      producer-authored rows. Older receipts remain untouched.
+      producer-authored rows. The r15 terminal one-task/K-Search compatibility pilot reused this
+      writer and emitted the same two producer-authored correctness/timing-validity rows under
+      diagnostic/no-ranking authority; it needs no new source class or grading rule. Older receipts
+      remain untouched.
 - [x] SC21 **Classify GEAK/Arena preflight findings deliberately.** Source pin/license, physical
       gfx90a identity, registry shape and spoof refusal are verified findings, not ordinal
       measurements and not literature. Either declare one shared `verification` source-class ladder

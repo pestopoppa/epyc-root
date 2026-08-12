@@ -248,11 +248,14 @@ function renderCurrentState(d){
   const box=$("#current-state"), s=((d._activity||{}).current_state||{});
   const prod=s.production_kernel||{}, fixed=s.fixed_campaign||{};
   const avail=s.available_source_diagnostic||{}, smoke=s.empirical_smoke||{};
+  const pilot=s.diagnostic_pilot||{};
   const controls=s.decision_controls||{}, preflight=s.instrument_preflight||{};
   const replay=s.gpu_prefetch_replay||{}, coverage=s.receipt_coverage||{};
   const loop=s.loop_engineering||{}, fault=s.fault_rehearsal||{};
   const scaffold=s.scaffold_engineering||{}, arena=s.arena_campaign_progress||{};
-  const rocm=s.rocm_diagnostics||{}, beliefs=s.belief_source_wiring||{};
+  const rocm=s.rocm_diagnostics||{}, hip=s.hip_decision_grade||{};
+  const beliefs=s.belief_source_wiring||{};
+  const readiness=s.implementation_readiness||{};
   let h='<div class="state-grid">';
 
   h+='<div class="state-card production"><h3>Production kernel · operator attestation</h3>';
@@ -334,6 +337,20 @@ function renderCurrentState(d){
     h+='</div>';
   }
 
+  h+='<div class="state-card"><h3>AutoKernel implementation readiness · research main</h3>';
+  if(readiness.available){
+    h+='<div class="headline '+(readiness.all_capabilities_integrated?'ok':'fail')+'">'+(readiness.all_capabilities_integrated?'IMPLEMENTATION READY':'IMPLEMENTATION GAPS')+' · <code>'+esc(String(readiness.tip||"—").slice(0,12))+'</code></div>';
+    (readiness.capabilities||[]).forEach(function(row){
+      h+='<div class="detail">'+(row.integrated?'<span class="ok">✓ integrated</span>':'<span class="fail">✗ absent</span>')+' · '+esc(row.label||row.id)+' · <code>'+esc(String(row.evidence_commit||"—").slice(0,12))+'</code></div>';
+    });
+    h+='<div class="detail"><b>Pending evidence / acceptance</b></div>';
+    (readiness.pending_empirical||[]).forEach(function(row){
+      h+='<div class="detail"><code>'+esc(row.id||"—")+'</code> · '+(row.implementation_ready?'<span class="sec-refused">producer ready</span>':'<span class="fail">implementation missing</span>')+' · '+esc(row.title||"—")+' — '+esc(row.next_evidence||"")+'</div>';
+    });
+    h+='<div class="detail muted">'+esc(readiness.note||"")+'</div>';
+  } else h+='<div class="headline fail">RESEARCH MAIN UNAVAILABLE</div><div class="detail fail">'+esc(readiness.error||"cannot resolve implementation state")+'</div>';
+  h+='</div>';
+
   h+='<div class="state-card"><h3>CPU evaluator controls · decision gate</h3>';
   if(controls.available){
     const p=controls.panel||{};
@@ -402,11 +419,25 @@ function renderCurrentState(d){
   h+='<div class="state-card"><h3>INF-03 · available-source Arena progress</h3>';
   if(arena.available){
     const terminal=arena.terminal_aggregate_present===true;
-    h+='<div class="headline '+(terminal?'ok':'sec-refused')+'">'+esc(arena.completed_checkpoints+' / '+arena.planned_checkpoints)+' checkpoints · '+esc(arena.completed_cells+' / '+arena.planned_cells)+' cells · '+(terminal?'TERMINAL AGGREGATE':'NO AGGREGATE')+'</div>';
+    const retracted=arena.campaign_evidence_valid===false;
+    const live=arena.execution_state==='live'&&arena.active===true;
+    const stateLabel=retracted?'TERMINAL INVALID · STOPPED · DIAGNOSTIC HISTORY ONLY':(terminal?'TERMINAL AGGREGATE':(live?'LIVE · IN PROGRESS':'STALE OR TERMINAL STATE UNREPORTED'));
+    h+='<div class="headline '+(retracted?'fail':(terminal?'ok':(live?'sec-refused':'fail')))+'">'+esc(arena.run_directory||"unknown attempt")+' · '+stateLabel+'</div>';
+    h+='<div class="detail">'+esc(arena.completed_checkpoints+' / '+arena.planned_checkpoints)+' verified checkpoints · '+esc(arena.completed_cells+' / '+arena.planned_cells)+' completed cells</div>';
+    if(live&&(arena.live_cells||[]).length){
+      h+='<div class="detail sec-refused">live identity: '+esc((arena.live_cells||[]).map(function(c){return (c.task_id||'—')+' · '+(c.arm_id||'—')+' · '+(c.checkpoint_hours==null?'baseline':c.checkpoint_hours+'h')+' · pid '+c.pid+'@'+c.process_start_ticks;}).join(' | '))+'</div>';
+    }
+    if(retracted){
+      h+='<div class="detail fail">'+esc(arena.completed_checkpoints+' / '+arena.planned_checkpoints)+' checkpoints · '+esc(arena.completed_cells+' / '+arena.planned_cells)+' cells · campaign evidence invalid · resume forbidden · not rankable</div>';
+      h+='<div class="detail fail">'+esc((arena.retraction||{}).reason||"attempt retracted by governance integrity audit")+'</div>';
+      h+=evidenceLine((arena.retraction||{}));
+    }
     h+='<div class="detail">'+esc(arena.tasks)+' tasks × '+esc(arena.arms)+' available arms · checkpoints <code>'+esc((arena.checkpoint_hours||[]).join('h, ')+'h')+'</code> · partial rankable: <span class="'+(arena.rankable?'fail':'ok')+'">'+esc(String(arena.rankable===true))+'</span></div>';
     h+='<div class="detail">released measurement windows '+esc(arena.released_measurement_windows+' / '+arena.measurement_windows)+' · '+esc(arena.measurement_samples)+' sampler observations · '+esc(num(arena.measurement_claimed_seconds,6))+' claimed GPU-seconds · belief rows '+esc(arena.belief_measurement_count)+'</div>';
     h+='<div class="detail">attempt <code>'+esc(String(arena.attempt_id||"—").slice(0,16))+'…</code> · output root <code>'+esc(arena.output_root||"—")+'</code></div>';
     if((arena.observations||[]).length){
+      const last=(arena.observations||[]).slice().sort(function(a,b){return String(b.ended_at||'').localeCompare(String(a.ended_at||''));})[0];
+      h+='<div class="detail"><b>Last completed empirical checkpoint</b> · '+esc(last.ended_at||"—")+' · <code>'+esc(last.task_id||"—")+'</code> / <code>'+esc(last.arm_id||"—")+'</code> / '+esc(last.checkpoint_hours==null?'baseline':last.checkpoint_hours+'h')+' · correct '+esc(String(last.pass_correctness))+' · '+esc(last.average_speedup==null?'speedup unavailable':num(last.average_speedup,6)+'×')+'</div>';
       h+='<table><thead><tr><th>task</th><th>arm</th><th>checkpoint</th><th>correct</th><th>cases</th><th>speedup</th><th>window release</th><th>receipt</th></tr></thead><tbody>';
       (arena.observations||[]).forEach(function(o){
         h+='<tr><td><code>'+esc(o.task_id||"—")+'</code></td><td><code>'+esc(o.arm_id||"—")+'</code></td><td>'+esc(o.checkpoint_hours==null?'baseline':o.checkpoint_hours+'h')+'</td><td>'+esc(String(o.pass_correctness))+'</td><td>'+esc((o.valid_optimized_cases==null?"—":o.valid_optimized_cases)+' / '+(o.valid_baseline_cases==null?"—":o.valid_baseline_cases))+'</td><td class="num">'+esc(o.average_speedup==null?"—":num(o.average_speedup,6)+'×')+'</td><td>'+esc(o.measurement_windows?o.measurement_windows+' / '+o.measurement_windows:'legacy claim released')+'</td><td><code>'+esc(String(o.receipt_sha256||"—").slice(0,12))+'…</code></td></tr>';
@@ -414,9 +445,13 @@ function renderCurrentState(d){
       h+='</tbody></table>';
     }
     if((arena.attempts||[]).length){
-      h+='<div class="detail"><b>verified attempts</b> (same logical campaign, distinct immutable receipts/output roots)</div><table><thead><tr><th>attempt</th><th>output root</th><th>checkpoints</th><th>cells</th><th>latest completed evidence</th></tr></thead><tbody>';
-      (arena.attempts||[]).forEach(function(a){ h+='<tr><td><code>'+esc(String(a.attempt_id||"—").slice(0,12))+'…</code></td><td><code>'+esc(a.output_root||"—")+'</code></td><td>'+esc(a.completed_checkpoints)+'</td><td>'+esc(a.completed_cells)+'</td><td>'+esc(a.latest_completed_evidence_at||"—")+'</td></tr>'; });
+      h+='<div class="detail"><b>attempt inventory</b> (same logical campaign, distinct immutable receipts/output roots; integrity disposition shown separately)</div><table><thead><tr><th>attempt</th><th>output root</th><th>checkpoints</th><th>cells</th><th>latest evidence / disposition</th></tr></thead><tbody>';
+      (arena.attempts||[]).forEach(function(a){ const state=a.campaign_evidence_valid===false?'TERMINAL INVALID':(a.execution_state==='live'?'LIVE':(a.execution_state==='terminal_complete'?'TERMINAL COMPLETE':'STALE / TERMINAL UNREPORTED')); h+='<tr><td><code>'+esc(String(a.attempt_id||"—").slice(0,12))+'…</code></td><td><code>'+esc(a.output_root||"—")+'</code></td><td>'+esc(a.completed_checkpoints)+'</td><td>'+esc(a.completed_cells)+'</td><td>'+esc(a.latest_completed_evidence_at||"—")+' · '+esc(state)+'</td></tr>'; });
       h+='</tbody></table>';
+    }
+    if((arena.preflight_refusals||[]).length){
+      h+='<div class="detail"><b>Terminal preflight refusals</b> (no controller/GPU command executed)</div>';
+      (arena.preflight_refusals||[]).forEach(function(a){ h+='<div class="detail fail"><code>'+esc(a.run_directory||"—")+'</code> · PREFLIGHT REFUSED · '+esc((a.refusal_reasons||[]).join('; ')||'reason unavailable')+'</div>'; });
     }
     h+='<div class="detail">'+esc(arena.note||"")+' · attempts without verified checkpoint evidence '+esc(arena.rejected_attempts||0)+'</div>';
   } else h+='<div class="muted">Arena campaign evidence unavailable: '+esc(arena.error||"not found")+'</div>';
@@ -445,6 +480,18 @@ function renderCurrentState(d){
     if(rvp.evidence) h+='<div class="evidence">RVP: <code>'+esc(rvp.evidence)+'</code></div>';
     if(bh.evidence) h+='<div class="evidence">AK-BH: <code>'+esc(bh.evidence)+'</code></div>';
   } else h+='<div class="muted">ROCm diagnostic/profile receipts unavailable</div>';
+  h+='</div>';
+
+  h+='<div class="state-card"><h3>Raw HIP · decision-grade task-local evidence</h3>';
+  if(hip.available){
+    h+='<div class="headline ok">'+esc(hip.correctness_passed+' / '+hip.correctness_total)+' sealed cases · '+esc(num(hip.median_speedup,9))+'× exact-provider speedup</div>';
+    h+='<div class="detail"><code>'+esc(hip.task_id||"—")+'</code> · '+esc((hip.target||{}).gpu_model||"—")+' / '+esc((hip.target||{}).gfx_arch||"—")+' · max abs error '+esc(hip.max_abs_error==null?"—":String(hip.max_abs_error))+'</div>';
+    h+='<div class="detail">anytime-valid e-process first crossed at block '+esc(hip.e_process_first_crossing_block)+' · duration admissions '+esc(hip.duration_admissions_passed+' / '+hip.duration_admissions_total)+' · minimum observed '+esc(hip.minimum_observed_duration_ns==null?"—":num(hip.minimum_observed_duration_ns/1e6,3)+' ms')+'</div>';
+    h+='<div class="detail">scope: <code>'+esc(hip.authority||"—")+'</code></div>';
+    h+='<div class="detail fail"><b>NOT A CHAMPION.</b> Experimental llama integration is required before any release; release/promotion authority: '+esc(String(hip.release_or_promotion_authority===true))+'</div>';
+    h+='<div class="evidence">self hash: <code>'+esc(hip.receipt_self_sha256||"—")+'</code><br>file hash: <code>'+esc(hip.receipt_file_sha256||"—")+'</code><br>evidence: <code>'+esc(hip.evidence||"—")+'</code></div>';
+    h+='<div class="detail">'+esc(hip.note||"")+'</div>';
+  } else h+='<div class="muted">raw-HIP r6 evidence unavailable: '+esc(hip.error||"not found")+'</div>';
   h+='</div>';
 
   h+='<div class="state-card"><h3>Belief source wiring · producer rows → Vidya readers</h3>';
@@ -478,6 +525,21 @@ function renderCurrentState(d){
     h+='<div class="detail">controller/GPU command '+(avail.controller_or_gpu_command_executed?'executed':'not executed')+'</div>';
   } else h+='<div class="muted">available-source audit unavailable: '+esc(avail.error||"not found")+'</div>';
   h+=evidenceLine(avail)+'</div>';
+
+  h+='<div class="state-card"><h3>Governed Arena pilot · compatibility only</h3>';
+  if(pilot.available){
+    const verified=pilot.authority_verified===true;
+    const terminal=pilot.status==="pass"&&verified;
+    h+='<div class="headline '+(terminal?'ok':'fail')+'">'+esc(String(pilot.status||"unknown").toUpperCase())+' · '+esc(pilot.arm_id||"—")+' · '+esc(pilot.model_call_count==null?"—":pilot.model_call_count)+' model calls</div>';
+    h+='<div class="detail"><code>'+esc(pilot.task_id||"—")+'</code> · brokered intermediate evaluations '+esc(pilot.broker_evaluation_count==null?"—":pilot.broker_evaluation_count)+'</div>';
+    h+='<div class="detail">final compile/correctness '+esc(String(pilot.pass_compilation))+' / '+esc(String(pilot.pass_correctness))+' · cases '+esc((pilot.valid_optimized_cases==null?"—":pilot.valid_optimized_cases)+' / '+(pilot.valid_baseline_cases==null?"—":pilot.valid_baseline_cases))+' · diagnostic ratio '+esc(pilot.average_speedup==null?"—":num(pilot.average_speedup,10)+'×')+'</div>';
+    h+='<div class="detail">released parent measurement windows '+esc(pilot.released_measurement_windows+' / '+(pilot.measurement_windows||[]).length)+' · samples '+esc((pilot.measurement_windows||[]).map(function(w){return (w.phase||"window")+":"+(w.sample_count==null?"—":w.sample_count);}).join(' · ')||"—")+'</div>';
+    h+='<div class="detail">controller devices <code>'+esc((pilot.controller_writable_devices||[]).join(', ')||"none")+'</code> · cgroup empty/removed '+esc(String(pilot.controller_cgroup_verified_empty))+' / '+esc(String(pilot.controller_cgroup_removed))+'</div>';
+    h+='<div class="detail">evaluator sandboxes '+esc((pilot.evaluator_sandboxes||[]).map(function(e){return (e.phase||"evaluation")+':'+(e.evaluator_network_profile||"—")+':'+(e.evaluator_devices||[]).join(',')+':cgroup='+String(e.evaluator_cgroup_verified_empty)+'/'+String(e.evaluator_cgroup_removed);}).join(' · ')||"unavailable")+'</div>';
+    h+='<div class="detail fail"><b>NO CAMPAIGN AUTHORITY.</b> matched result '+esc(String(pilot.matched_campaign_result_implied))+' · rankable '+esc(String(pilot.rankable))+' · belief update '+esc(String(pilot.belief_update_authority))+' · promotion/release '+esc(String(pilot.promotion_authority))+'</div>';
+    h+='<div class="detail">'+esc(pilot.note||"")+'</div>';
+  } else h+='<div class="muted">governed diagnostic pilot unavailable: '+esc(pilot.error||"not found")+'</div>';
+  h+=evidenceLine(pilot)+'</div>';
 
   h+='<div class="state-card"><h3>Empirical smoke · '+esc(smoke.controller_id||"controller")+'</h3>';
   if(smoke.available){

@@ -7,15 +7,57 @@
 
 ---
 
-> **🟡 2026-08-12 — AUTOKERNEL V9 CONTROLS PASS; CPU IQK WAITS ONLY FOR THE RATIFIED REBOOT
-> GATE.** `ak-controls-v9-a4cb04ca-20260812-r2` is an accepted `5/5`, `may_rank=true` control
+> **🟡 2026-08-12 — INF-03 R17 IS TERMINAL-NONCOMPLETE; SEVEN-ARM R18 IS LIVE FROM
+> IMMUTABLE RESEARCH `17b9208d`.** R17 preserved a valid actor/critic 32h diagnostic checkpoint
+> (`1.004404445111776`, compile/correctness 4/4; receipt SHA-256
+> `93292683c21033475697d4743bb54e95f8964a1a8abb265a8789451454f1885e`) but its next EvoEngineer
+> cell failed before controller start because the evaluator constructor omitted governed
+> `source_paths`. All exact r17 PIDs are dead and its final device claim released; r17 is immutable,
+> partial, and permanently non-rankable. Research `381bc55e`/`11bccd41` closed the constructor and
+> pin defects, `7b3cc6f4`/`a865bd7c`/`300647bd` hardened the governed C3/C5 capture seam, and
+> `b0d6f79f` prospectively emits strict feedback-only belief rows. R18 runs from dedicated clean
+> source `17b9208d8cc27e1af99408655b91401110b6acc6`; its baseline is complete and its first actor cell
+> is active. **Do not edit its worktree, infer a result from partial receipts, aggregate, rank, bank,
+> promote, release, or resume r4–r17.** Research `main` is later at `6103bde8` only because the
+> non-executing rocprof-v1 router was merged after r18's source was sealed. Owner:
+> [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) INF-03.
+
+> **🟡 2026-08-12 — INF-03 R14 FAILED CLOSED ON SOURCE-IDENTITY DRIFT; SEVEN-ARM R15 IS
+> LIVE FROM A DEDICATED IMMUTABLE WORKTREE.** R14's audit bound clean source `152ed0d9`, but that shared
+> implementation worktree advanced to `03f9ae69` while its actor cell ran. After nine successful model
+> calls and four correct evaluator windows, the outer checkpoint guard raised
+> `task or controller source identity changed during checkpoint execution`; no actor cell receipt or
+> aggregate was admitted. All eight claims were released, 14 captured PIDs are absent, and all 12
+> recorded cgroups are verified empty and removed. R14 is permanently invalid/non-rankable. R15 now runs
+> from clean branch/worktree `run/inf03-available-source-seven-arm-r15-20260812` at exact commit
+> `03f9ae69`; its 7/7 audit binds that immutable root, the baseline is complete, and the first real Claude
+> planner call returned zero with clean teardown at the checkpoint. **R15 remains live: do not edit its
+> worktree, infer terminal state, aggregate, rank, bank, promote, or release before a terminal receipt and
+> complete chain validation. Never resume r4-r14.** Owner:
+> [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) INF-03.
+
+> **🟡 2026-08-12 — AUTOKERNEL V9 CONTROLS PASS; ALL SIX AK-WM IMPLEMENTATION DEFECTS
+> ARE PATCHED.** `ak-controls-v9-a4cb04ca-20260812-r2` is an accepted `5/5`, `may_rank=true` control
 > bundle under frozen v9 and hardened instrument `a4cb04ca8`; the historical IQK arm promoted.
 > The prepared full-host CPU IQK campaign then refused before claim/build/benchmark because uptime
 > was `13.47 days`, beyond the one-week measurement ceiling. Preserve the journal and current bundle;
 > the deployed Kernel-R&D surface now reports frozen v9, `8/8` preflight, `5/5` controls, GPU
 > `NOT_REPRODUCED`, and the reboot-gated refusal from durable evidence. Its global data-health verdict
 > remains absent until the real campaign can report champion, headroom, and release-package state.
-> **OP-16 recommends an orderly reboot after all mains wrap.** Post-reboot, create the `agent` tmux
+> Research `0c24bc0d`, `b9bc28a6`, and `9ec0c30c` now bind the matched identity-derived execution
+> frame, require a genuinely separate measured held-out regime, reduce each role's own falsifier and
+> native diagnostic inputs, and make real AP-WM reporting depend on strict projection provenance.
+> Research `03f9ae69` adds a real completed-journal held-out projector plus the single deterministic,
+> non-executing IQK pair generator. It atomically creates both proposal-v4/capture/source/envelope trees,
+> proves `ggml_iqk` is their sole changed factor, records every output hash, refuses overwrite/drift, and
+> rebuilds byte-identically in tests. The broad suite passed 5,678 tests with one expected failure.
+> That clean 18-commit AutoKernel series is published on research `main` at merge
+> `4328c37c940d125d7b11b4264b65f415c300eda0`; live r15 intentionally remains pinned to its audited
+> pre-merge source commit `03f9ae69`.
+> Materializing the final real pair now correctly waits on the post-reboot completed IQK/held-out journals;
+> synthetic fixtures cannot substitute.
+> **OP-16 recommends an orderly reboot after all
+> mains wrap.** Post-reboot, create the `agent` tmux
 > session required by session-bus C20 before respawning the established roster; then rerun CPU IQK,
 > construct the real matched archive, and execute the
 > least-commitment analysis observe-only. Owner: [autokernel-research-loop.md](autokernel-research-loop.md)
