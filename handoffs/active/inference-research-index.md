@@ -12,7 +12,7 @@
 |----|-------|---------|-------------|------|
 | INF-01 | 01 speculative decoding | [01-speculative-decoding.md](01-speculative-decoding.md) | _no open dispatchable task — verify complete or file the next step_ | — |
 | INF-02 | agent collab rnd harness | [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md) | (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (--backend local, custo… | — |
-| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Run the restart-safe 6/6 diagnostic; keep the 8-arm panel refused pending licensed EvoEngineer and ARGUS sources | INF-48, EVL-47 |
+| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Repair dotted-path containment and SIGTERM claim release; then restart the 6/6 diagnostic under a new campaign ID | INF-48, EVL-47 |
 | INF-04 | angelslim techniques evaluation | [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) | BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist | — |
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | After a compliant reboot, run full-host CPU IQK; then materialize and evaluate the matched archive | INF-22, INF-48, EVL-47 |

@@ -4,7 +4,7 @@
       "blocked": 3,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 399
+      "open": 400
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -88,11 +88,11 @@
       "closed": 46,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 3,
+      "open": 4,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 49
+      "total": 50
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 0,
@@ -2359,7 +2359,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Run the restart-safe 6/6 diagnostic; keep the 8-arm panel refused pending licensed EvoEngineer and ARGUS sources",
+      "next_action": "Repair dotted-path containment and SIGTERM claim release; then restart the 6/6 diagnostic under a new campaign ID",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {

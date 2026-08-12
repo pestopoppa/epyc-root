@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T07:22:33Z",
+  "generated_at": "2026-08-12T07:25:12Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4113,8 +4113,8 @@
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Run the restart-safe 6/6 diagnostic; keep the 8-arm panel refused pending licensed EvoEngineer and ARGUS sources",
-      "open": 3,
+      "next_action": "Repair dotted-path containment and SIGTERM claim release; then restart the 6/6 diagnostic under a new campaign ID",
+      "open": 4,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
