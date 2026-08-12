@@ -76,6 +76,22 @@ $LEASE --release        # ALWAYS, including on failure
 $LEASE --status         # who holds it, since when, and whether it looks like residue
 ```
 
+**Order inside the lease matters — SYNC FIRST.** A generated file (the index block,
+`source_manifest.json`) is rewritten *wholesale from current state*. If you regenerate it on a
+lane that has not seen the wrap-up that just finished, your regen is computed from stale
+inputs and your promotion overwrites theirs with an older answer — the lease serialized the
+writes and still lost one. So, once you hold it:
+
+```bash
+$LEASE --acquire
+git fetch origin --quiet && git merge origin/main      # 1. build on whoever went before you
+#   2. run the shared-surface steps (step 3 regen, step 5 compile) and commit them on your lane
+#   3. promote (the step 7 detach-merge below)
+$LEASE --release
+```
+
+Sync, regenerate, promote, release — in that order, every time.
+
 It is the same O_EXCL primitive as the push lock, keyed on the git **common dir**'s
 device+inode — so all five lane worktrees are one repository and contend for one lease, and
 neither `realpath` nor a path string can fool it. It is a *different* lease from the push
