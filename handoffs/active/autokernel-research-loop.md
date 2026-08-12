@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** V9 CONTROLS 5/5 PASS / CPU IQK READY AFTER REQUIRED REBOOT / MATCHED ARCHIVE NEXT — updated 2026-08-12
+**Status:** V9 CONTROLS 5/5 PASS / AK-WM IMPLEMENTATION REPAIR COMPLETE / POST-REBOOT REAL ARCHIVE NEXT — updated 2026-08-12
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -195,6 +195,26 @@ The run-specific CPU/GPU authorizations do not extend to producer commits, promo
 actions. Offline AK-WM-1 plumbing is
 complete, while AK-WM-2 remains empirical and requires a real matched completed-proposal archive.
 
+The concurrent GPU-side INF-03 path has not changed that evidence posture. R12 supplied the first live
+proof that measured critic feedback changes the next planner proposal: iteration one compiled and
+passed correctness at `average_speedup=0.9967805648538064`, the critic selected `revise`, and
+iteration two explicitly rejected the first unmasked-fastpath mechanism before proposing a distinct
+shared-offset/vectorized-streaming mechanism. That candidate also compiled and passed correctness at
+`average_speedup=1.0059084616458236`; the critic selected `accept` while correctly stating that the
+0.6% ratio remained inside noise. R12 then failed during final receipt construction because the
+confined controller re-hashed `/usr/bin/docker` even though host runtime attestation belongs to the
+parent broker. Research `4b516e9f` moves that authority to the parent model-receipt chain and repairs
+validation of the flat model-receipt layout; `f316bf31` pins the repair. The full AutoKernel suite
+passed 5,660 tests with one expected failure. R12 is immutable partial/non-rankable evidence of loop
+behavior, not performance. Seven-arm r13 then completed its baseline and persisted planner model receipt
+ordinal `0001`, but the confined Claude runtime failed `mkdir '/mnt/raid0/llm/tmp/claude-1000'` with
+`EACCES`. All captured PIDs are dead and every controller/model cgroup was verified empty and removed.
+R13 is therefore a terminal immutable partial with no controller cell receipt or aggregate, and remains
+non-rankable. Research `268115ad` replaces inherited host scratch with a fresh call-scoped runtime
+directory inside the governed workspace, records its relative path and non-inheritance in the model
+sandbox receipt, and verifies removal. The campaign manifest still needs to pin that commit before a
+fresh attempt. Neither r12 nor r13 can satisfy AK-WM-2a or any proposal/champion gate.
+
 **Read-only evidence-authority audit (2026-08-12):** the RVP-T0-1 saturation pair and the
 AK-BH-1/2/3 plus AK-LN-2/AK-X-5a receipts are durable diagnostic evidence. They retain commands,
 binary or source hashes, and their bounded results, but they do not all bind a committed, clean
@@ -278,6 +298,60 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   (self/file SHA-256 `3425cf57…` / `eb53de38…`). This is compatibility evidence only: no matched
   campaign, ranking, belief, proposal-bank, champion, promotion, or release authority exists. The next
   empirical step is the fresh 7/7 availability-conditioned panel.
+- [x] **AK-AUD-11 — Correct the parser false positive and audit the first two seven-arm launch
+  boundaries.** ✅ 2026-08-12 — the reported all-tree parser collision was expected argparse stderr
+  inside `assertRaises(SystemExit)`, not collection failure: 3,927-test discovery succeeded and an AST
+  sweep found no module-scope `parse_args`. INF-03 r5 exposed a real Claude CLI `-11` under the exact
+  campaign Landlock policy. Local, unpushed research `916cdc92` added the first bounded runtime-read
+  repair and passed a real standalone Claude probe plus 5,653-test pinned regression, but r6 reproduced
+  the same `-11`
+  after its baseline even with those reads present. The test totals were observed but have no retained
+  transcript, so they are regression notes rather than durable suite evidence. Therefore the probe
+  proves only its narrow path; the owning open differential and fresh-attempt gate remain in
+  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md). R5/r6 have no aggregate or
+  decision authority, and both controller cgroups were verified empty and removed.
+- [x] **AK-AUD-12 — Close the r8-r10 actor-cell implementation defects and prove one full real
+  actor-critic loop without upgrading a live partial into evidence.** ✅ 2026-08-12 — research
+  `6270ebc1`, `cd1303b9`, `eb00c411`, `2525f2f7`, and `7b20b5d6` move vendor evaluation fully into
+  the parent, repair inherited broker writes, separate semantic task state from staged model state,
+  and refresh both pins. R11's first candidate passed compilation/correctness but measured
+  `0.993531469254354×`; the critic chose `revise` and the controller restored the measured starting
+  source before iteration 2. This is an implementation/liveness checkpoint only. R11 is still live,
+  has no terminal aggregate, and carries no comparison, belief, bank, champion, promotion, or release
+  authority. Terminal receipt-chain validation remains owned by
+  [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md).
+- [x] **AK-AUD-13 — Prove measured critic feedback changes the next live proposal and close the
+  confined host-runtime re-hash defect.** ✅ 2026-08-12 — r12 iteration one measured
+  `0.9967805648538064×` and received `revise`; iteration two named and rejected that mechanism,
+  proposed a distinct shared-offset/vectorized-streaming path, measured `1.0059084616458236×`, and
+  received `accept`. Both candidates compiled and passed 4/4 correctness, and both ratios remain
+  inside noise. R12 then failed while constructing the final receipt because the confined controller
+  reopened `/usr/bin/docker`. Research `4b516e9f` makes the parent broker receipt chain authoritative
+  for host runtime identity and validates the actual flat model-receipt layout; `f316bf31` refreshes
+  the campaign pin. The full AutoKernel suite passed 5,660 tests with one expected failure. Seven-arm r13
+  subsequently failed after baseline and planner receipt ordinal `0001` because confined Claude could not
+  create `/mnt/raid0/llm/tmp/claude-1000`; its captured PIDs are dead and its controller/model cgroups
+  were verified empty and removed. Research `268115ad` now creates an exact call-scoped runtime/temp
+  directory under the governed workspace, binds its non-inheritance and relative path in the sandbox
+  receipt, and removes it after the model call. R13 remains a terminal immutable partial/non-rankable
+  attempt; the repair must be pinned and proven by a fresh campaign.
+- [x] **AK-AUD-14 — Prove the call-scoped model runtime across repeated live calls without declaring
+  the panel terminal.** ✅ 2026-08-12 — research `446a1c31` makes model runtime state call-scoped and
+  `152ed0d9` pins it into the seven-arm configuration. R14 ultimately returned nine model calls and four
+  compilation/correctness-4/4 evaluator windows, proving repeated runtime compatibility, but the outer
+  guard then refused the cell with `task or controller source identity changed during checkpoint
+  execution`: its audited source was `152ed0d9` and the shared source worktree advanced to `03f9ae69`
+  mid-run. No actor cell receipt or aggregate was admitted. All eight claims were released, all 14
+  captured PIDs are absent, and all 12 recorded cgroups are verified empty and removed. R14 is therefore
+  immutable, invalid, and non-rankable; its intermediate ratios carry no panel, bank, champion,
+  promotion, or release authority.
+- [x] **AK-AUD-15 — Close the pre-reboot evidence-product implementation audit and relaunch from an
+  immutable source root.** ✅ 2026-08-12 — research `03f9ae69` adds the clean completed-journal held-out
+  projector and a deterministic, non-executing IQK pair generator; the broad suite passed **5,678 tests
+  with one expected failure**. That 18-commit AutoKernel series is published on research `main` at merge
+  `4328c37c940d125d7b11b4264b65f415c300eda0`. Seven-arm r15 runs from a dedicated clean worktree/branch
+  pinned at `03f9ae69`; its 7/7 audit, baseline, and first successful real Claude planner call were present
+  at this checkpoint. The live worktree and campaign must remain untouched until terminal validation.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
@@ -2814,6 +2888,37 @@ evaluator or its own scope, and T1 may legally guide search.
     statement. A dry-run followed by execute under the same campaign identity remains idempotent: one
     OPENED record is retained and separate composition/live authorizations are journaled so the archive
     can bind the live spend exactly. The post-rebase suite passed **5,599 tests** with one expected failure.
+  - [x] **Repair identity-derived seed and frame binding before the reboot campaign.** ✅ 2026-08-12 —
+    research `0c24bc0d` introduces a shared `akm-` experiment identity and derives benchmark, T0,
+    scheduling, hold-out-selection, model, topology, calibration, envelope, provider, and intervention
+    factors from the actual campaign frame. Live admission and materialization refuse any plan whose
+    copied factors differ. Research `9ec0c30c` exposes the same mechanical derivation for prospective
+    input generation without weakening live admission.
+  - [x] **Replace the placeholder held-out regime with a genuinely withheld prospective regime.** ✅
+    2026-08-12 — research `b9bc28a6` requires a separately SHA-bound measured held-out outcome whose
+    regime is outside the proposal target regimes. Missing, construction-regime, identity-drifted, or
+    non-measured inputs fail capture admission.
+  - [x] **Make the control reducer evaluate the control proposal's own falsifier.** ✅ 2026-08-12 —
+    research `b9bc28a6` makes the role explicit and reduces control failure from its own keep decision
+    or effect beyond the accepted noise floor; intervention and control use distinct immutable rules and
+    journal the bound predicates and result.
+  - [x] **Eliminate cloned diagnostic semantics across the intervention/control pair.** ✅ 2026-08-12 —
+    research `b9bc28a6` derives each diagnostic/recoding block from its own SHA-bound native source
+    receipt, publishes its semantic digest, and makes the matched projector refuse equal intervention/
+    control semantic digests even when the numerical one-factor frame otherwise matches.
+  - [x] **Close the real-only AP-WM/report provenance gap.** ✅ 2026-08-12 — research `b9bc28a6`
+    requires a strict projector result at the AP-WM CLI, labels unprojected library fixtures
+    `fixture_or_unlabelled`, and emits `real` only after the archive and projector provenance validate.
+    Reports now carry matched-validation, pair noise floors, and an explicit underpowered state. The
+    full AutoKernel suite after this repair chain passed **5,671 tests with one expected failure**.
+  - [x] **Publish one exact proposal-v4 regeneration command.** ✅ 2026-08-12 — research `03f9ae69`
+    adds `prepare_iqk_matched_pair.py`, a repository-relative deterministic producer that accepts one
+    authoritative manifest and atomically writes the intervention/control proposal-v4, capture,
+    diagnostic-source, held-out-outcome, and physical-envelope trees. It derives one shared frame,
+    proves `ggml_iqk` is the sole changed factor, records every input/output hash, refuses overwrite and
+    drift, rolls back the pair on failure, and rebuilds byte-identically in tests. Its held-out projector
+    accepts only a distinct clean hypothesis-bound completed journal. Real pair materialization remains
+    in parent AK-WM-2a and correctly waits for post-reboot completed journals; fixtures cannot substitute.
 - [ ] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol,
   matched-intervention validation, per-regime/surface results, noise floor, robust sign error, and
   recoding stability. Until real evidence shows invariant independent signal, do not add weakness,

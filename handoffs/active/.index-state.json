@@ -1,7 +1,7 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 13,
+      "blocked": 12,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
       "open": 356
@@ -16,7 +16,7 @@
       "blocked": 9,
       "handoffs": 49,
       "oldest_advance": "2026-07-29",
-      "open": 291
+      "open": 292
     },
     "reviewer-control-plane-index.md": {
       "blocked": 11,
@@ -84,15 +84,15 @@
       "total": 9
     },
     "agentic-rocm-kernel-authoring.md": {
-      "blocked": 1,
-      "closed": 59,
+      "blocked": 0,
+      "closed": 72,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-03",
       "state": "active",
-      "total": 63
+      "total": 75
     },
     "angelslim-techniques-evaluation.md": {
       "blocked": 1,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 226,
+      "closed": 237,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 248
+      "total": 259
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
@@ -1859,11 +1859,11 @@
       "closed": 56,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 14,
+      "open": 15,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 70
+      "total": 71
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
@@ -2342,7 +2342,7 @@
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
       "line": 59,
-      "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
+      "next_action": "Wire actor-critic evaluation feedback receipts prospectively before the next fresh INF-03 attempt",
       "track": "vidya belief substrate program"
     },
     "EVL-48": {
@@ -2394,7 +2394,7 @@
       "id": "INF-03",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Begin the fresh governed 7/7 availability-conditioned panel from the r15-proven isolated execution path",
+      "next_action": "Supervise immutable-worktree r15 to a terminal aggregate, then validate its receipt chain before comparison",
       "track": "agentic rocm kernel authoring"
     },
     "INF-04": {
@@ -2425,7 +2425,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "After reboot, run the bound IQK intervention and A/A control; then project and evaluate the real matched archive",
+      "next_action": "After reboot, run the matched IQK evidence campaigns, generate the real v2 pair, and materialize its archive",
       "track": "autokernel research loop"
     },
     "INF-07": {

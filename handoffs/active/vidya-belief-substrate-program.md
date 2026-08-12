@@ -223,6 +223,13 @@ deliberately — decide them, do not just implement them.
       checks, e-process crossing, distinct released MI210 claims, and the task-local/no-release boundary.
       The terminal r6 receipt projects two Witnessed/Attested rows; sub-floor timing or invented release
       authority fails closed. r4 remains superseded instrument evidence and is never upgraded on read.
+- [ ] **SC36 — Wire AutoKernel actor-critic intermediate evaluation feedback prospectively.** R12's
+      parent broker emitted hash-bound compile, 4/4 correctness, timing, speedup, evaluator, source,
+      measurement-window, and released-claim evidence for each candidate, but the feedback receipts carry
+      no producer-authored `belief_measurements`. Before any successor to r15, write bounded rows
+      with exact proposal/candidate/source/evaluator/claim/window identities and add a strict reader that
+      preserves `controller_feedback_only`, no-ranking, no-bank, no-champion, and no-promotion authority.
+      R12 remains immutable pre-hook evidence and must emit zero rows.
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input

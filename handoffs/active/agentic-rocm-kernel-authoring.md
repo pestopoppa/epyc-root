@@ -1,11 +1,11 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: begin the governed 7/7 availability-conditioned panel from fresh state,
-using the r15-proven controller/evaluator isolation and receipt path. Never reuse r4 or aggregate the
+**Next action (2026-08-12)**: supervise seven-arm r15 to a terminal aggregate from its dedicated immutable
+worktree, then validate its complete receipt chain before comparison. Never reuse r4-r14 or aggregate the
 one-task pilot into the panel.
 The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (governed K-Search pilot r15 terminal compatibility checkpoint)
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r14 source-identity refusal; seven-arm r15 live from immutable `03f9ae69`)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -453,13 +453,104 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     dashboard.** ✅ 2026-08-12 — the hub now reads the newest terminal pilot receipt, verifies its
     self-hash and explicit no-authority constraints, and renders PASS, broker/model/evaluation/window/
     teardown facts under a loud no-campaign-authority boundary.
-  - [ ] **Repair the pre-existing all-tree discovery parser collision.** Discovery under the pinned
-    ROCm runtime reaches a module whose import-time CLI parser rejects `--evaluate-existing` combined
-    with `--execute`, raising `SystemExit` before unittest can emit a complete summary. Keep the focused
-    and explicit controller suites authoritative until this collection defect is fixed and rerun.
-  - [ ] Run a fresh governed available-source campaign only after a one-task/one-arm pilot proves
-    non-null brokered intermediate feedback, exact claim/release receipts, peer authentication, and the
-    required OS isolation. Never resume or reuse r4.
+  - [x] **Retract the reported all-tree discovery parser collision after reproducing its exact test
+    context.** ✅ 2026-08-12 — `test_live_controls.py` intentionally invokes mutually exclusive
+    `--evaluate-existing` and `--execute` arguments inside `assertRaises(SystemExit)`; the argparse
+    stderr is the expected assertion surface, not an import-time collection abort. Discovery with both
+    strings in `sys.argv` collected **3,927** tests, and an AST sweep found zero module-scope
+    `parse_args` calls in AutoKernel. No parser repair is warranted.
+  - [x] **Trace and repair one reproducible Claude/Landlock startup failure outside the campaign.**
+    ✅ 2026-08-12 — local, unpushed research commit `916cdc92` adds ten fixed volatile read paths,
+    stages only Claude credentials/config with identity hashes, scrubs the
+    staged config, keeps `/dev/urandom` read-only, and excludes volatile reads from stable identities.
+    The bounded standalone Claude probe returned structured `{"ok": true}`, left an empty/removed
+    cgroup, and retained activation/result/teardown evidence under
+    `/mnt/raid0/llm/autokernel/probes/inf03-claude-sandbox-runtime-20260812-r1`. Focused validation passed
+    **59/59**, footprint/README validation passed **106/106**, and the pinned full AutoKernel suite ran
+    **5,653** tests with one expected failure and no unexpected failure. Those counts were observed in
+    the live session but lack a retained transcript; the probe receipts are the durable runtime evidence.
+    This proves the bounded probe, not full actor-critic campaign compatibility.
+  - [x] **Preserve r5 and r6 as immutable non-rankable engineering attempts after the exact campaign
+    cell falsified the standalone compatibility inference.** ✅ 2026-08-12 — both attempts completed
+    only the starting-state baseline, then the first Claude/Codex 2h planner exited `-11` with empty
+    stdout/stderr. R6 included all ten new runtime paths and used source `916cdc92`, yet reproduced r5;
+    its controller cgroup was verified empty and removed. Neither attempt has an aggregate, controller
+    ranking, belief update, proposal-bank entry, champion, or release authority.
+  - [x] **Trace r6's exact campaign-versus-standalone differential and repair the process-bound model
+    sandbox boundary.** ✅ 2026-08-12 — `/proc/self/*` Landlock rules were bound to the controller PID,
+    so its forked Claude child still received `EACCES`. Research `43ba6263` leaves the controller in a
+    deny-network broker-only sandbox, launches each read-only model client in its own outbound sandbox
+    so `/proc/self/*` binds to the actual CLI PID, preserves the digest-pinned single-writable-bind
+    Docker boundary for the Codex actor, and journals model/evaluation receipts through the parent.
+    Targeted validation passed **77/77**; the pinned full AutoKernel suite passed **5,655** tests with
+    one expected failure.
+  - [x] **Refresh the actor pin and preserve r7's pre-execution refusal.** ✅ 2026-08-12 — research
+    `a3fcea3c` pins the repaired actor entrypoint. R7 correctly refused the stale prior pin before any
+    controller or GPU command; its audit file SHA-256 is
+    `45c4ae3dbb563dfebd20715238407b304cdbdd98f96dfc841cae310d2dd017b0` and its receipt self-hash is
+    `0f0b9000b4a2647e68db493c751769f4f845db4bce6d089a0aa15d3e10b7cfab`.
+  - [x] **Preserve r8 as an immutable partial, non-rankable implementation diagnostic.** ✅ 2026-08-12
+    — the 7/7 audit passed and the starting-state baseline completed, but the first actor cell exited
+    before Claude inference because the broker-backed controller unnecessarily constructed
+    `ArenaWorkspaceEvaluator`, importing unavailable `yaml` and the pinned vendor evaluator inside the
+    broker-only Python environment. The controller cgroup teardown is hash-bound, verified empty, and
+    removed. R8 has no aggregate, ranking, belief, proposal-bank, champion, promotion, or release
+    authority.
+  - [x] **Remove the broker-backed controller's unnecessary Arena evaluator import, prove the exact
+    Claude cell under the campaign sandbox, then launch a fresh governed 7/7 attempt.** ✅ 2026-08-12
+    — research `6270ebc1` keeps vendor evaluation in the parent and `cd1303b9` refreshes the actor
+    pin. R9 then exposed a separate broker transport defect: `socket.sendall()` selected denied
+    `sendto`, so it stopped before Claude with a verified-empty, removed controller cgroup. Research
+    `eb00c411` writes framed requests directly on the inherited descriptor. R10 consequently banked
+    the starting-state evaluation and completed the first real Claude planner request, then correctly
+    stopped before actor execution when its mutation guard counted the controller's staged session and
+    config as task source. The ephemeral state was scrubbed. Research `2525f2f7` separates semantic
+    task files from model state and `7b20b5d6` refreshes the manifest pin. R11 completed the first full
+    real planner → digest-pinned Docker Codex actor → centralized GPU evaluation → Claude critic
+    loop, but was stopped as an immutable non-rankable partial after repeated mechanisms exposed the
+    missing feedback seam.
+  - [x] **Close r11 without interpreting it and prove measured critic feedback alters the next live
+    proposal.** ✅ 2026-08-12 — r12 iteration one compiled and passed 4/4 correctness at
+    `average_speedup=0.9967805648538064`; its critic selected `revise`. Iteration two's planner cited
+    that exact measurement, forbade the rejected unmasked-fastpath mechanism, corrected the infeasible
+    autotune suggestion from the fixed launcher contract, and proposed a distinct shared-offset/
+    vectorized-streaming mechanism. It also compiled and passed 4/4 correctness at
+    `average_speedup=1.0059084616458236`; the critic selected `accept` while acknowledging that the
+    ratio remained inside noise. This proves feedback propagation, not a kernel speedup.
+  - [x] **Move host actor-runtime attestation out of the confined controller and pin the repair.** ✅
+    2026-08-12 — after all six model calls and three brokered evaluations, r12 finalization failed by
+    reopening `/usr/bin/docker` inside Landlock. Research `4b516e9f` makes the parent model-receipt
+    chain authoritative for host runtime identity and validates the actual flat model-receipt layout;
+    `f316bf31` pins the source. The full AutoKernel suite passed 5,660 tests with one expected failure.
+  - [x] **Close INF-03 seven-arm r13 as an immutable partial and identify its confined-runtime failure.**
+    ✅ 2026-08-12 — the baseline completed and planner model receipt ordinal `0001` persisted, then
+    Claude failed exactly `EACCES: permission denied, mkdir '/mnt/raid0/llm/tmp/claude-1000'` before a
+    completed planner response. All captured PIDs are dead and every controller/model cgroup was verified
+    empty and removed. R13 has no controller cell receipt or aggregate and is permanently non-rankable.
+  - [x] **Repair the confined Claude runtime temp path.** ✅ 2026-08-12 — research `268115ad` refuses
+    inherited host scratch for direct model clients, creates a fresh call-scoped directory under the
+    governed workspace, binds the relative path plus `ambient_host_temp_inherited=false` into the model
+    sandbox receipt, and verifies deletion after every call. The campaign manifest still pins its parent.
+  - [x] **Pin `268115ad` and launch a fresh seven-arm attempt.** ✅ 2026-08-12 — research
+    `446a1c31` isolates each brokered model call and `152ed0d9` pins that runtime into the campaign.
+    Seven-arm r14 audited `ready` at 7/7 on observed clean source `152ed0d9`. A timestamped live
+    checkpoint found seven successful, non-timeout model receipts (five Claude and two Codex) and three
+    complete parent-owned evaluator windows. Every Claude receipt recorded
+    `ambient_host_temp_inherited=false` plus a call-scoped relative temp path, and its captured cgroup was
+    verified empty and removed. This proves the r13 capability repair across repeated real calls; it does
+    not make the live campaign terminal or rankable.
+  - [x] **Close seven-arm r14 as an invalid source-identity attempt.** ✅ 2026-08-12 — after nine
+    successful model calls and four correct evaluator windows, the outer checkpoint guard raised
+    `task or controller source identity changed during checkpoint execution`. Its audit had bound clean
+    source `152ed0d9`, but implementation work advanced that same worktree to `03f9ae69` while the cell
+    ran. The actor cell therefore emitted no admitted cell receipt or panel aggregate. All eight device
+    claims have released receipts; 14 captured PIDs are absent; and all 12 recorded controller/model/
+    evaluator cgroups are verified empty and removed. R14 is permanently invalid and non-rankable.
+  - [ ] **Drive seven-arm r15 to a terminal aggregate and validate the complete receipt chain.** R15 runs
+    from dedicated clean worktree/branch `run/inf03-available-source-seven-arm-r15-20260812` at
+    `03f9ae69`; do not edit, prune, or compact it mid-campaign. After terminal receipt, recheck every
+    model, evaluation, claim, sampler, sandbox, teardown, runtime-temp scrub, source identity, and
+    state-scrub edge before comparison. Never resume r4-r14.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims

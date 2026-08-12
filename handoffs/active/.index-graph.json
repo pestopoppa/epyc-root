@@ -1136,7 +1136,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-03",
-      "weight": 8
+      "weight": 12
     },
     {
       "from": "INF-06",
@@ -3491,7 +3491,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T14:48:13Z",
+  "generated_at": "2026-08-12T18:00:28Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4099,8 +4099,8 @@
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-12",
-      "next_action": "SC15 \u2014 drain the 129-correction queue, cited head first: `cli.py corrections --as-of <ts>`",
-      "open": 14,
+      "next_action": "Wire actor-critic evaluation feedback receipts prospectively before the next fresh INF-03 attempt",
+      "open": 15,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -4158,13 +4158,13 @@
     },
     {
       "age_days": 0,
-      "blocked": 1,
-      "closed": 59,
+      "blocked": 0,
+      "closed": 72,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Begin the fresh governed 7/7 availability-conditioned panel from the r15-proven isolated execution path",
+      "next_action": "Supervise immutable-worktree r15 to a terminal aggregate, then validate its receipt chain before comparison",
       "open": 3,
       "state": "active",
       "track": "agentic rocm kernel authoring"
@@ -4198,12 +4198,12 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 226,
+      "closed": 237,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-12",
-      "next_action": "After reboot, run the bound IQK intervention and A/A control; then project and evaluate the real matched archive",
+      "next_action": "After reboot, run the matched IQK evidence campaigns, generate the real v2 pair, and materialize its archive",
       "open": 22,
       "state": "active",
       "track": "autokernel research loop"
