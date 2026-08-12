@@ -3491,7 +3491,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T12:47:46Z",
+  "generated_at": "2026-08-12T12:52:33Z",
   "nodes": [
     {
       "age_days": 13,
@@ -5439,7 +5439,7 @@
       "id": "RTG-34",
       "last_advanced": "2026-08-12",
       "next_action": "C-OWN \u2014 continue the C-series control-plane work (mainD's lane); R1a's bench is inference-gated but does NOT gate the handoff",
-      "open": 36,
+      "open": 37,
       "state": "active",
       "track": "session bus thin dispatcher"
     },

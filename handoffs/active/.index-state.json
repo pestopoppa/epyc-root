@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 380
+      "open": 381
     },
     "user-facing-harness-index.md": {
       "blocked": 3,
@@ -1617,11 +1617,11 @@
       "closed": 140,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 36,
+      "open": 37,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-34",
       "state": "active",
-      "total": 176
+      "total": 177
     },
     "shape-keyed-contention-gating.md": {
       "blocked": 0,
