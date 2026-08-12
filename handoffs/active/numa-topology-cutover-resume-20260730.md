@@ -823,6 +823,9 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
   accelerator in question is **ours**, and upstream `qwentts.cpp` supersedes it outright with a correct codec.
   Historical note: `tts_server.py` is full PyTorch and needs no C++ binary (Talker + CodePredictor + Decoder,
   ~0.9× real-time at 48 CPU threads — an **estimate**, never measured, where `qwentts.cpp` measures 0.86× RT).
+  *(ADJUDICATED 2026-08-12 by `mainC` — deliberately left CLOSED. Reads as a prohibition to the
+  standing-constraint sweep, but the box itself declares the constraint MOOT: upstream `qwentts.cpp`
+  supersedes the accelerator outright, so there is no live action left to forbid. Do not re-open.)*
 - [ ] **The existing voice stack is invisible to the active handoffs.** `scripts/voice/` already contains
   `tts_server.py`, `create_tts_sidecar.py`, `validate_tts_e2e.py`, `whisper_server.py`, `transcribe_batch.py`,
   `test_latency.py`, `start_whisper_server.sh` — named **only** in archived docs. Meanwhile
@@ -1535,6 +1538,11 @@ ADDENDUM 2 and converts the loose conclusions in those appends into task lines.
       the 27B's and becomes correct only *after* W1 repoints the role. The prior must move in the
       **same commit** as the model repoint — splitting them is how every stale prior corrected this
       session was minted.
+- [ ] **STANDING — a role's throughput prior must move in the SAME commit as the model repoint.**
+  Splitting them is how every stale prior corrected during this session was minted.
+  *(SPLIT 2026-08-12 by `mainC`. W1's specific repoint completed on 2026-08-01 and that record
+  stays checked above. The general rule outlives it and applies to ANY future repoint, which a
+  closed box retires — the same loss-mode as the `seeding_rewards` box split on 2026-08-11.)*
 - [ ] **Fold `kernel_freeze_scope.py` into the promotion checklist** for the next kernel freeze, so
       the regression scope is derived at freeze time rather than restated. Runbook:
       [`docs/reference/kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md).

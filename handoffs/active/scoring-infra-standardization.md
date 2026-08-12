@@ -32,8 +32,18 @@ already has bare-letter handling).
       only; sympy/Fraction lazy); `v7_quality_gate_runner` imports + re-exports them (−331 lines duplication,
       public API unchanged, external importers intact). `test_answer_scoring.py` locks the bare-letter and
       truncated-boxed regressions. Research `bc33cb76`.
-- [ ] **1b. Migrate research consumers** to import the canonical lib; delete each duplicate extractor; test
+- [x] **1b. Migrate research consumers** to import the canonical lib; delete each duplicate extractor; test
       each. (score_benchmarks, lib/scorer, score_aa_omniscience, xmas_*, short_mk_voting, adapters.)
+      ✅ 2026-08-12 (`auditor`, adjudicated closed **by exhaustion**): every migratable consumer IS
+      migrated — 1b.1/1b.2 below, with tests — and mainC's 08-11 per-consumer pass proved each
+      remaining candidate NOT a duplicate (mechanisms on record in the sub-bullets). Both claimed
+      cross-reference comments verified landed at HEAD in git, not just on disk: research
+      `answer_scoring.py` (four deltas) and orchestrator `scripts/benchmark/debug_scorer.py`
+      (`f8eb36f7`). The one remaining unification candidate (`_extract_multiple_choice_letter`) is
+      a gated SCORING CHANGE already tracked at **1c-fix (c)** — closing this row drops nothing.
+      Reader hazard found while verifying: the research repo has an UNRELATED
+      `scripts/benchmark/debug_scorer.py` (numeric/pattern scorer, no letter extraction) — the
+      divergent extractor lives at the ORCHESTRATOR path of that same name.
   - **ADDITIVE PASS 2026-08-11 (`mainC`, operator-authorised: no deletions). Result: NO remaining
     consumer is a safe migration target, and each verdict is PROVEN per consumer, not assumed.**
     The two that genuinely were duplicates are already done as 1b.1/1b.2. Corrections to this row's

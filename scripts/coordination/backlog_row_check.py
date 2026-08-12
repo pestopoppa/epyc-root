@@ -400,6 +400,83 @@ def child_boxes(path: Path, lineno: int) -> list[tuple[int, str, str]]:
     return out
 
 
+# FOURTH signal of the same family (`mainD`, 2026-08-12), and the one a handoff
+# author explicitly asked for: a dependency declared in the file's own **Dependency
+# Graph** block, which neither the row text nor `blocking_children` can see.
+#
+# Live reproduction, and the reason this exists: `reviewer-escalation-and-human-gate-
+# policy.md:22` (HG-3) reads as an ordinary ready task. The file's graph one section
+# down reads `H4 curves + H5 winners → HG-1 → HG-2/HG-3 → HG-8`, and HG-1's box is
+# OPEN — so HG-3 is blocked, and `BACKLOG-DISPATCH-QUEUE.md` TOP-40 #6 served it as
+# `none` lane with NO blocker. The handoff's own child box named the defect and the
+# general rule: *queue classification should consult the owning handoff's dependency
+# graph, not just the checkbox.* This is that rule, executable.
+#
+# NARROW BY CONSTRUCTION, per the standing caveat — every one of these must hold:
+#   * the file has a `## Dependency Graph` heading (not any arrow anywhere);
+#   * the box's text STARTS with its own task id (prefix, never substring), so a row
+#     merely mentioning HG-1 is not treated as being HG-1;
+#   * the prerequisite has its OWN box in the same file and that box is OPEN.
+# A prerequisite with no box is NOT a refusal: this file's settled rule is that
+# refusing real work is the costlier error, so an unresolvable id fails toward
+# dispatchable rather than inventing a block.
+_ARROW = re.compile(r"→|->")
+_TASK_ID = re.compile(r"\b([A-Z]{1,6}-\d+)\b")
+_TASK_ID_PREFIX = re.compile(r"^\**\s*([A-Z]{1,6}-\d+)\b")
+_DEP_GRAPH_HEAD = re.compile(r"^#{1,6}\s+.*dependency graph", re.I)
+
+
+def _dep_graph_lines(lines: list[str]) -> list[str]:
+    """Lines under a `## Dependency Graph` heading, up to the next heading."""
+    out, grab = [], False
+    for line in lines:
+        if line.startswith("#"):
+            grab = bool(_DEP_GRAPH_HEAD.match(line))
+            continue
+        if grab:
+            out.append(line)
+    return out
+
+
+def dependency_prereqs(lines: list[str]) -> dict[str, set[str]]:
+    """{task_id: {ids that must land first}} parsed from the Dependency Graph block.
+
+    A stage may name several ids (`HG-2/HG-3`, `H4 curves + H5 winners`); every id in
+    a stage inherits every id in every stage to its left on that line.
+    """
+    prereqs: dict[str, set[str]] = {}
+    for line in _dep_graph_lines(lines):
+        if not _ARROW.search(line):
+            continue
+        upstream: set[str] = set()
+        for stage in _ARROW.split(line):
+            ids = set(_TASK_ID.findall(stage))
+            for tid in ids:
+                prereqs.setdefault(tid, set()).update(upstream)
+            upstream |= ids
+    return prereqs
+
+
+def blocking_dependency_graph(path: Path, lineno: int, body: str):
+    """(own_id, open_prereq_id, prereq_lineno) if the graph blocks this box."""
+    own = _TASK_ID_PREFIX.match(body)
+    if not own:
+        return None
+    own_id = own.group(1)
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    prereqs = dependency_prereqs(lines).get(own_id)
+    if not prereqs:
+        return None
+    for i, line in enumerate(lines, 1):
+        box = _BOX.match(line)
+        if not box or "]" not in line:
+            continue
+        cand = _TASK_ID_PREFIX.match(line.split("]", 1)[1].strip())
+        if cand and cand.group(1) in prereqs and box.group(1) != "x":
+            return own_id, cand.group(1), i
+    return None
+
+
 def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple[int, list[str]]:
     """(exit_code, reasons). Advisory: it explains, it does not decide for you."""
     reasons = []
@@ -424,6 +501,15 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple
                    f"{state_note}",
                    "parent-only screening is exactly how the dispatch queue served blocked rows "
                    "as immediately dispatchable; this tool descends one level"]
+    depgraph = blocking_dependency_graph(path, lineno, body)
+    if depgraph:
+        own_id, prereq, pline = depgraph
+        return 2, [f"BLOCKED BY THIS FILE'S DEPENDENCY GRAPH — it reads {own_id} downstream of "
+                   f"{prereq}, and {prereq}'s own box at {path.name}:{pline} is still OPEN",
+                   "the block is in neither the row's text nor a child box, so both the row screen "
+                   "and blocking_children() read it as ready — this is the shape that let the "
+                   "dispatch queue serve a blocked row as `none` lane with no blocker",
+                   "confirm the prerequisite landed, or take the prerequisite instead"]
     lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     start = max((i for i, l in enumerate(lines[:lineno]) if l.startswith("#")), default=0)
     disclaimer = _OWNER_DISCLAIM.search("\n".join(lines[start:start + 3]))
@@ -542,6 +628,46 @@ def closed_boxes_under_a_guard(root: Path = HANDOFFS) -> list[tuple[Path, int, s
     return hits
 
 
+#: A POSITIVE adjudication marker written into the handoff by whoever read the box.
+#: Two legitimate outcomes of reading a closed standing-constraint-shaped box: the rule
+#: is genuinely spent (ADJUDICATED ... left CLOSED), or the live half was re-opened on
+#: its own line (SPLIT). Either way the box has been judged and should stop being
+#: re-reported. Records who and when, so this is auditable suppression, not silent.
+_ADJUDICATED = re.compile(
+    r"\*\(\s*(?:ADJUDICATED|SPLIT)\s+\d{4}-\d{2}-\d{2}\s+by\b", re.I)
+
+
+def _box_with_continuations(path: Path, lineno: int) -> str:
+    """The whole box including wrapped/indented continuation lines.
+
+    The marker is written UNDER the box it judges, so a first-line-only view cannot
+    see it — the same truncation that made the generator's completion-record
+    discriminator silently inert until it was mutation-checked.
+    """
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:                                            # pragma: no cover
+        return ""
+    out, i = [lines[lineno - 1]], lineno
+    while i < len(lines):
+        nxt = lines[i]
+        if not nxt.strip() or nxt.lstrip().startswith("#"):
+            break
+        if _BOX.match(nxt):
+            # A SPLIT marker is written under the box it CREATES — the re-opened rule —
+            # not under the completion record it demotes. Found by running this: the
+            # ADJUDICATED form (written under its own box) demoted correctly and all
+            # three SPLIT forms did not, which is the same first-line/continuation
+            # truncation one level out. So look one box ahead, and ONLY for a SPLIT.
+            nxt_full = _box_with_continuations(path, i + 1)
+            if re.search(r"\*\(\s*SPLIT\s+\d{4}-\d{2}-\d{2}\s+by\b", nxt_full, re.I):
+                out.append(nxt_full)
+            break
+        out.append(nxt)
+        i += 1
+    return " ".join(out)
+
+
 def closed_standing_constraints(root: Path = HANDOFFS) -> list[tuple[Path, int, str, str]]:
     """CLOSED boxes that are standing-constraint shaped — BANNER OR NO BANNER.
 
@@ -564,11 +690,34 @@ def closed_standing_constraints(root: Path = HANDOFFS) -> list[tuple[Path, int, 
     audit. REVIEW PROMPT, not a verdict: measured 9 candidates, 4 genuine after
     reading each. Mass-restoring on this signal would repeat the 6 false positives
     that trusting a pattern over a reading already produced once.
+
+    CONVERGENCE, ADDED 2026-08-12 (`mainC`). A review prompt that re-reports the same
+    already-judged boxes every run is one people stop reading, and worse, invites a
+    second agent to re-split a box a first agent deliberately left closed. So a box
+    carrying an ADJUDICATION MARKER is dropped from the report.
+
+    The marker is a POSITIVE declaration written into the handoff — the same principle
+    the generator's do-not-dispatch signal uses, and for the same reason: absence
+    cannot be asserted, a written verdict can. It records WHO judged it and WHEN, so
+    it is auditable rather than a silent suppression, and the two shapes are exactly
+    the two legitimate outcomes of reading one of these boxes:
+
+      * `*(ADJUDICATED <date> by \\`agent\\` — deliberately left CLOSED …)*` — read, and
+        the rule is genuinely spent (declared moot, or already enforced in code).
+      * `*(SPLIT <date> by \\`agent\\` …)*` — the live rule was re-opened on its own line,
+        so the checked box beside it is now purely a completion record.
+
+    This does NOT narrow detection: an unmarked flipped rule is reported exactly as
+    before, and removing a marker makes its box reappear. Five boxes were adjudicated
+    on 2026-08-12 (3 split, 2 left closed), which is why the corpus count goes to 0
+    rather than staying at 5 forever.
     """
     hits: list[tuple[Path, int, str, str]] = []
     for path in sorted(root.glob("*.md")):
         for lineno, state, body, _head in _boxes(path):
             if state != "x":
+                continue
+            if _ADJUDICATED.search(_box_with_continuations(path, lineno)):
                 continue
             if _PROHIBITION.match(body):
                 hits.append((path, lineno, "PROHIBITION", body))

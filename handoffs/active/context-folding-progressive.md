@@ -131,6 +131,14 @@ Supersedes the ordering in the 2026-07-21 intake section above. A deep dive on i
   `TOOL_OUTPUT_AGE_THRESHOLD`? That is the A0/A1(k) sweep above. An LLM-summary arm requires a
   separately implemented component and is not an existing-code comparison.
 - [x] Do NOT prioritize running the ContextRot harness. ✅ 2026-07-29 — current Stage-2 evidence confirms the only self-hostable arm (BrowseComp-Plus) has a ~1pp-or-negative summarization effect; its paid `SERPER_API_KEY` and missing license also fail the open-source-only constraint. If reopened, reproduce only the behavioral rot/NA signature, never the underpowered accuracy delta.
+- [ ] **STANDING — if the ContextRot harness is ever reopened, reproduce ONLY the behavioural
+  rot/NA signature, NEVER the underpowered accuracy delta.** The paid `SERPER_API_KEY` and
+  missing license also fail the open-source-only constraint, so any reopening must clear that
+  first.
+  *(SPLIT 2026-08-12 by `mainC`. The box carried two things: a DECISION not to prioritise,
+  which genuinely completed on 2026-07-29, and a rule constraining HOW a future reopening may
+  proceed. Closing the box retired the rule — so whoever reopens the harness would find no
+  live constraint and could rerun the exact underpowered accuracy delta this forbids.)*
 - [x] **Self-hostable/BGE correction recorded ✅ 2026-07-29**: the shipped embeddings are Qwen3-Embedding-8B-specific (4096-dim, 821MB, bf16); using BGE would require re-embedding all 100,195 docs and would break comparability. Source-backed intake/deep-dive correction: epyc-root `2102c0f05`.
 
 ### Ownership clarification — 2026-07-21 (this is orchestrator work, not inference-research)

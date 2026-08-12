@@ -106,3 +106,32 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+# ---------------------------------------------------------------------------
+# PYTEST VISIBILITY (2026-08-12, `mainC`).
+#
+# This file is named `test_*.py`, sits in a `tests/` directory, and collected
+# ZERO tests: every assertion lived in `main()` behind `if __name__ ==
+# "__main__"`. Run directly it passes all 20 checks and the guard is genuinely
+# intact — but `pytest scripts/hooks/tests/test_trust_boundary_edit.py` reported
+# "no tests ran", so the suite everyone actually runs was green while this
+# contributed nothing. Its predecessor `test_check_trust_boundary_edit.sh` is
+# meanwhile deleted (uncommitted) as part of the migration, so committing that
+# deletion would leave the trust boundary's ONLY test invisible to the runner.
+#
+# A distinct face of the vacuous-verification class: not an empty input, not a
+# too-wide key — the check is correct, complete, and passing, and is simply
+# OUTSIDE THE UNIVERSE OF THE TOOL that reports whether checks pass, while
+# wearing that tool's naming convention and directory. Nothing here weakens the
+# guard; the wrapper only makes existing coverage countable.
+# ---------------------------------------------------------------------------
+
+def test_trust_boundary_guard_passes_every_case() -> None:
+    """Makes `main()`'s 20 checks visible to pytest. Direct invocation still works."""
+    assert main() == 0, (
+        "The trust-boundary guard failed at least one case — see the PASS/FAIL lines "
+        "above. Run `python scripts/hooks/tests/test_trust_boundary_edit.py` for the "
+        "same output standalone. Do NOT 'fix' this by relaxing a case: the wildcard "
+        "entries (Annexes B/Q/G) are the ones a quoted RHS silently un-gated, and the "
+        "compliant-path cases exist so the guard cannot pass by forbidding everything.")

@@ -291,6 +291,61 @@ def render_quarantine(rows: list[dict]) -> str:
     return "\n".join(out)
 
 
+#: A dated completion marker. `✅ 2026-07-29`, or a bare trailing date after evidence.
+_DONE_MARK = re.compile(r"✅\s*\d{4}-\d{2}-\d{2}|\b(19|20)\d{2}-\d{2}-\d{2}\b")
+
+
+def _full_box_text(path: Path, lineno: int) -> str:
+    """The whole box, continuation lines included.
+
+    Load-bearing, and found by mutation-checking rather than by reading: the helper
+    hands back the box's FIRST LINE only, and markdown wraps a box across lines. The
+    `✅ 2026-07-29` that proves `:345` is a completion record sits on the *second*
+    line, so a first-line classifier saw no completion marker and demoted nothing —
+    the checker's output was unchanged and looked like the classifier was inert.
+
+    Same shape as the untracked-probe miss earlier tonight: the discriminator was
+    right and it was reading a view of the input that could not contain the answer.
+    """
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:                                            # pragma: no cover
+        return ""
+    out = [lines[lineno - 1]]
+    for nxt in lines[lineno:]:
+        if not nxt.strip() or brc._BOX.match(nxt) or nxt.lstrip().startswith("#"):
+            break
+        out.append(nxt)                       # an indented continuation of this box
+    return " ".join(out)
+
+
+def _is_completion_record(text: str) -> bool:
+    """Is this checked box a RECORD of a finished run, rather than a retired RULE?
+
+    WHY THIS EXISTS. The invariant keyed on "closed box under a DO-NOT-FLIP banner",
+    but the banner at `model-stack-single-source-update-pipeline.md:320` says what it
+    actually governs: *"Every OPEN box in this section is a rule with no completion
+    state."* Dated completion records legitimately share the section. So the key was
+    wider than the property and the audit reported 3 violations, all three false —
+    including the completion half of a box `mainC` had itself split on 2026-08-11
+    precisely so a finished audit and a live rule could stop sharing one line.
+
+    A checker that cries wolf is one somebody eventually deletes, which is the same
+    reasoning that de-brittled the `binding_router` tripwire the same night.
+
+    DELIBERATELY ASYMMETRIC. Demotion needs POSITIVE evidence — a completion marker
+    AND no standing condition — so anything unrecognised stays a violation. The
+    banner this serves warns in its own text that *"a guard that trusts an
+    enumeration is passed by not being enumerated"*; a discriminator that defaulted
+    to "probably fine" would re-introduce exactly that false-permit, one layer down.
+    """
+    if not _DONE_MARK.search(text):
+        return False                       # no completion evidence → treat as a rule
+    if brc._RULE_COND.search(text) or brc._PROHIBITION.match(text.strip()):
+        return False                       # a dated rule is still a rule
+    return True
+
+
 def audit_procedures(trees: list[str]) -> tuple[int, list[str]]:
     """THE INVARIANT: no `- [x]` may sit under a DO-NOT-FLIP declaration.
 
@@ -306,16 +361,29 @@ def audit_procedures(trees: list[str]) -> tuple[int, list[str]]:
         root = TREES[tree]
         if not root.is_dir():
             continue
-        hits = brc.closed_boxes_under_a_guard(root)
-        lines_out.append(f"\n=== handoffs/{tree}/ — {len(hits)} checked box(es) under a guard ===")
+        rules, records = [], []
+        for hit in brc.closed_boxes_under_a_guard(root):
+            full = _full_box_text(hit[0], hit[1])
+            (records if _is_completion_record(full) else rules).append(hit)
+
+        lines_out.append(f"\n=== handoffs/{tree}/ — {len(rules)} checked box(es) that read as RULES ===")
         if tree != "active":
             lines_out.append("    (history: REPORT ONLY. A flipped box here may be a correct "
                              "record of a run. Restore only if something LIVE still points at "
                              "the procedure — and say what points at it.)")
-        for path, lineno, text in hits:
+        for path, lineno, text in rules:
             lines_out.append(f"  {path.name}:{lineno}")
             lines_out.append(f"      {text[:170]}")
-        total += len(hits)
+
+        # Reported, never silently dropped: demotion is a JUDGEMENT, and a reader must be
+        # able to overrule it. Subtracting these invisibly is how a guard starts lying.
+        if records:
+            lines_out.append(f"  -- {len(records)} further checked box(es) under the same "
+                             "banner read as DATED COMPLETION RECORDS, not rules (not counted; "
+                             "verify if you disagree) --")
+            for path, lineno, text in records:
+                lines_out.append(f"     {path.name}:{lineno}  {text[:110]}")
+        total += len(rules)
     return total, lines_out
 
 
