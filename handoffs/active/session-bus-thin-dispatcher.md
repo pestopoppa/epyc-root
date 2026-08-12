@@ -2908,6 +2908,17 @@ from that seat.
       via another route the same day — moot, not executed), **5 INFRA_BLOCKED** with the reason
       recorded (nothing at HEAD matches the recovered original above 0.35 similarity, so those
       were removed or superseded rather than reworded — a human may re-derive or drop them).
+      **CORRECTED same day, and the correction matters more than the original finding:** all
+      five of those "removed" tasks were still there. The matcher compared LINE to LINE, but a
+      markdown bullet reflows across several physical lines and gets reworded, so surviving
+      tasks read as deleted — a similarity threshold on the wrong unit. Re-checked by
+      distinctive proper noun: **two were COMPLETED** (`:656` Ekimetrics RC/FMRE
+      boundary-corruption, `:658` PageIndex hardening review, both ✅ 2026-07-29) and **three
+      are dormant conditionals** whose trigger never fired and whose research context is intact
+      (`:483-533`), one with a live successor already open at `:540`. All five re-filed
+      CANCELLED with the evidence. **Nothing was lost and nothing needs a human.** The lesson
+      is the same one as the row above, one level in: *"the text is genuinely gone"* was also
+      asserted from a check whose unit did not match the thing it measured.
       Bus validates clean. Lesson worth keeping: "no tool can recover this" was asserted, not
       measured, and the recovery took one git command.
 - [x] **DSP-2 — decide whether an unestimated row should ever become auto-dispatchable.**
