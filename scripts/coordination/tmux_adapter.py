@@ -2636,6 +2636,22 @@ def _composer_action(args: argparse.Namespace, verb: str) -> int:
     # own failure. NEVER C-c — see the C54 block. The measurement, the choice of a
     # SPACE, and the honest caveat about a failed press leaving `text + " "` behind all
     # live at `_press_key_with_wake`, which H-2 also put on the rollback path.
+    #
+    # H-1 IS HALF CLOSED, AND THE OPEN HALF IS DISCARD. `submit` is live-verified.
+    # `clear` sends `space` + `C-u`, which is the best available candidate and is NOT
+    # a measured one — bare `C-u` and a 100-iteration `BSpace` loop were both measured
+    # as no-ops, and `Escape` (the other candidate) is UNTESTED and hazardous to fire
+    # blind: one Escape interrupts a running turn and two open the rewind picker. So
+    # nothing is implemented here on a guess; `clear` keeps failing HONESTLY when the
+    # key does not take (`_await_composer_empty` below refuses to report success it
+    # cannot see), and the way to close this is to MEASURE first:
+    #
+    #     scripts/coordination/verify_composer_keys.sh
+    #
+    # — a disposable `claude` TUI in a scratch tmux session (it refuses to run against
+    # the live session or any roster endpoint), sacrificial text, the three candidates
+    # in order, re-read after each through this module's own `_read_composer_row`.
+    # Implement whichever it reports CLEARED; if none, discard stays unimplemented.
     key = "C-u" if verb == "clear" else "Enter"
     rc, detail = _press_key_with_wake(target, key)
     if rc != 0:
