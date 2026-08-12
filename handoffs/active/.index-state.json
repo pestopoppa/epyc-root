@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 48,
       "oldest_advance": "2026-07-29",
-      "open": 391
+      "open": 392
     },
     "user-facing-harness-index.md": {
       "blocked": 3,
@@ -140,14 +140,14 @@
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 2,
-      "closed": 158,
+      "closed": 159,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 65,
+      "open": 66,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-02",
       "state": "active",
-      "total": 225
+      "total": 227
     },
     "autopilot-control-plane-integration.md": {
       "blocked": 0,
@@ -668,14 +668,14 @@
     },
     "frontier-f3-data-flywheel.md": {
       "blocked": 0,
-      "closed": 5,
+      "closed": 6,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 3,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-25",
       "state": "active",
-      "total": 8
+      "total": 9
     },
     "frontier-f4-continuity-backup.md": {
       "blocked": 0,

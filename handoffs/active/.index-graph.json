@@ -3497,7 +3497,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T13:40:18Z",
+  "generated_at": "2026-08-12T13:55:33Z",
   "nodes": [
     {
       "age_days": 13,
@@ -3814,7 +3814,7 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 5,
+      "closed": 6,
       "domain": "research-evaluation",
       "handoff": "frontier-f3-data-flywheel.md",
       "id": "EVL-25",
@@ -5023,13 +5023,13 @@
     {
       "age_days": 0,
       "blocked": 2,
-      "closed": 158,
+      "closed": 159,
       "domain": "routing-and-optimization",
       "handoff": "autopilot-continuous-optimization.md",
       "id": "RTG-02",
       "last_advanced": "2026-08-12",
       "next_action": "Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped",
-      "open": 65,
+      "open": 66,
       "state": "active",
       "track": "autopilot continuous optimization"
     },
