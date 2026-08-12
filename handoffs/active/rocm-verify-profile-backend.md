@@ -136,7 +136,17 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
   commit, reported version, binary/linkage digests, and attestation. Eager or candidate-relative
   baselines, incomplete case sets, and identity drift fail closed. The matched controller A/B and
   real EPYC capture remain owned only by INF-03; this checkbox makes no empirical completion claim.
-- [ ] **HIP arm (after the Triton loop works).** GEAK-HIP patterns (678) + AgentKernelArena Torch2HIP suite (679) + our own HIP oracle, toward hand-HIP for the llama.cpp fork.
+- [x] **HIP arm minimum loop closure (after the Triton loop works).** ✅ 2026-08-12 — research
+  `2c214d48` `controller/hip_authoring_arm.py` admits only a true Torch2HIP task from clean Apache-2.0
+  AgentKernelArena `2dbbf1d3`, hashes the task/candidate/toolchain, compiles GPU-blind for gfx90a,
+  and uses separate released MI210 claim/sampler windows for the vendor baseline and centralized
+  final evaluation. The r4 SiLU receipt compiled and passed 11/11 public correctness and 11/11
+  timing-validity cases; root independently re-derives its two producer-authored belief rows. The
+  Torch-eager ratio is observation-only and non-rankable; no production or experimental llama tree
+  was touched.
+- [ ] **HIP arm decision-grade hardening.** Add sealed/unseen C2/C6 cases and bind an honest vendor
+  baseline under C3 before any HIP candidate may be ranked, promoted, or proposed for a future
+  experimental llama.cpp branch. Public shapes and Torch eager cannot satisfy this gate.
 
 ## Interface contract (the seam controllers depend on)
 ```

@@ -1,7 +1,7 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 11,
+      "blocked": 12,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
       "open": 360
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 47,
       "oldest_advance": "2026-07-29",
-      "open": 311
+      "open": 307
     },
     "user-facing-harness-index.md": {
       "blocked": 3,
@@ -129,14 +129,14 @@
     },
     "autokernel-research-loop.md": {
       "blocked": 0,
-      "closed": 215,
+      "closed": 216,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 22,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-06",
       "state": "active",
-      "total": 237
+      "total": 238
     },
     "autopilot-continuous-optimization.md": {
       "blocked": 0,
@@ -975,15 +975,15 @@
       "total": 14
     },
     "log-linear-gated-deltanet-readiness.md": {
-      "blocked": 0,
-      "closed": 0,
+      "blocked": 1,
+      "closed": 3,
       "guarded": 0,
-      "last_advanced": "2026-07-29",
+      "last_advanced": "2026-08-12",
       "open": 3,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-33",
       "state": "active",
-      "total": 3
+      "total": 7
     },
     "loops-and-dashboards-audit-2026-07-05.md": {
       "blocked": 0,
@@ -1482,14 +1482,14 @@
     },
     "rocm-verify-profile-backend.md": {
       "blocked": 0,
-      "closed": 70,
+      "closed": 71,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 17,
       "owner_index": "inference-research-index.md",
       "row_id": "INF-48",
       "state": "active",
-      "total": 87
+      "total": 88
     },
     "routing-intelligence.md": {
       "blocked": 0,
@@ -1592,14 +1592,14 @@
     },
     "session-bus-thin-dispatcher.md": {
       "blocked": 0,
-      "closed": 130,
+      "closed": 135,
       "guarded": 0,
       "last_advanced": "2026-08-12",
-      "open": 31,
+      "open": 27,
       "owner_index": "routing-and-optimization-index.md",
       "row_id": "RTG-34",
       "state": "active",
-      "total": 161
+      "total": 162
     },
     "shape-keyed-contention-gating.md": {
       "blocked": 0,
@@ -1834,14 +1834,14 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 0,
-      "closed": 54,
+      "closed": 55,
       "guarded": 0,
       "last_advanced": "2026-08-12",
       "open": 14,
       "owner_index": "research-evaluation-index.md",
       "row_id": "EVL-47",
       "state": "active",
-      "total": 68
+      "total": 69
     },
     "within-role-placement-state-machine.md": {
       "blocked": 1,
