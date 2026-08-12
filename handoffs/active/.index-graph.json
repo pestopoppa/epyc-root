@@ -3453,7 +3453,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T08:29:51Z",
+  "generated_at": "2026-08-12T08:48:25Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4108,13 +4108,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 48,
+      "closed": 49,
       "domain": "inference-research",
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Narrow MI210 claims to evaluator windows, then resume r3 from the two verified terminal checkpoints",
-      "open": 4,
+      "next_action": "Complete live r4 six-arm campaign; rank only its terminal 6/6 panel",
+      "open": 3,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4615,13 +4615,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 67,
+      "closed": 68,
       "domain": "inference-research",
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-12",
       "next_action": "Bind clean producer provenance; replay C2/C5, then capture EPYC workloads and add gfx90a k228/k175 adapters",
-      "open": 17,
+      "open": 19,
       "state": "active",
       "track": "rocm verify profile backend"
     },

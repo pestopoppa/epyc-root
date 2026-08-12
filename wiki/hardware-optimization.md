@@ -9,27 +9,29 @@
 
 **Confidence: verified receipts and process/claim teardown; partial campaign, no controller ranking.**
 
-The availability-conditioned AgentKernelArena campaign is now executing from a source-bound,
-restart-safe r3 identity after two fail-closed attempts. R1 is invalid because a dotted task path
+The availability-conditioned AgentKernelArena campaign is now executing from the source-bound,
+restart-safe r4 identity after two fail-closed attempts. R1 is invalid because a dotted task path
 escaped the exact workspace and claim release was incomplete. R2 proved the containment repair on its
 baseline, then stopped when the strict parser rejected provider JSON with extra fields. The integrated
 provider schemas retain that strict parser rather than weakening it.
 
-R3's starting-state baseline and Claude/Codex 2h and 8h checkpoints are terminal. Both controller
-checkpoints passed centralized compilation and correctness with four valid baseline and four valid
-optimized timing cases; their diagnostic speedups were `0.9859560018476856` and
-`0.8878376233551375`. These terminal cells are restart inputs, not a panel ranking.
+At the 2026-08-12 stale-state audit, r4's starting-state baseline and full Claude/Codex 2h/8h/32h
+arm were terminal; its aggregate receipt self-hash is
+`fbaa5b5796d89d1d214b281d57d611f78242084ec9cb86408156983e73add285`. KernelFoundry 2h was in
+remote controller deliberation. These terminal cells are restart inputs, not a panel ranking; only a
+terminal full 6/6 panel may rank controllers.
 
-The attempted 32h checkpoint exposed a separate resource-governance defect: the cell held its MI210
-claim while planner/actor work did not use the GPU. The owner stopped only the captured runner,
-released its exact claim, and removed its exact surviving actor container. R3 is paused with the 2h
-and 8h cells banked. Before resume, device claims must surround the centralized evaluator's actual GPU
-windows rather than the whole controller wall-time budget.
+R4 closes the resource-governance defect exposed by r3. Its manifest binds
+`controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, and MI210
+claims only around vendor/final measurement windows. During KernelFoundry deliberation the audit found
+0% GPU use, 0% VRAM, no KFD PID, and no active claim, so other governed GPU work may use those
+intervals without compromising the campaign.
 
 ### Source References (2026-08-12 INF-03 checkpoint)
 
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r1/r2 invalidation boundaries, r3 receipts, and claim-scope task
-- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact campaign, receipt, process, claim, and measured-speedup evidence
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — r1/r2 invalidation boundaries, r4 receipt state, and claim-window closure
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — C3/C6 contracts revalidated on current research main, including reopened empirical corpus gates
+- [2026-08-12 progress](../progress/2026-08/2026-08-12.md) — exact campaign, receipt, process, and claim-window evidence
 - [Vidya adapter source table](../scripts/vidya/adapters/README.md) — producer-side round-trip measurement status and no-backfill boundary
 
 ## Compiled Update — 2026-08-12 (current-v9 controls and CPU IQK boundary)
