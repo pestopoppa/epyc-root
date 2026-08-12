@@ -1098,3 +1098,33 @@ spending the measurement window.
 - [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-WM-2a task-level repair contract and real-archive boundary
 - [`handoffs/active/CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — live pre-reboot ordering and refusal posture
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — audit finding-to-task mapping and no-inference wrap boundary
+
+## Compiled Update — 2026-08-12: repeated sandbox success is a capability proof, not a terminal campaign
+
+**Confidence: verified for call-scoped runtime isolation and the first three live evaluator windows;
+the seven-arm campaign remained in progress at the checkpoint.** R13 showed that an otherwise confined
+Claude client still inherited an unusable host scratch convention. The repair now creates a fresh
+workspace-relative runtime/temp directory for every brokered model call, explicitly records that ambient
+host temp was not inherited, and verifies cgroup teardown after the call. Seven-arm r14 crossed that seam
+repeatedly: five Claude and two Codex calls returned successfully, while three parent-owned evaluator
+windows completed with compilation/correctness 4/4.
+
+That evidence establishes execution compatibility of the repaired capability boundary. It does not
+establish campaign completion or controller merit. A live artifact inventory can grow between reads and
+cannot substitute for a terminal aggregate; intermediate ratios remain feedback-only until the campaign
+emits and validates its complete authority-bearing receipt chain. The reusable rule is to distinguish
+three milestones explicitly: a narrow sandbox probe, repeated real calls inside the full cell, and a
+terminal campaign receipt. Passing one never silently upgrades the next.
+
+In parallel, the matched-archive audit closed five evidence-product defects before spending the
+reboot-gated CPU campaign: shared identity now derives the entire execution factor frame; held-out
+outcomes must be separately measured outside target regimes; intervention and control evaluate their own
+falsifiers and native diagnostic semantics; and AP-WM labels evidence real only through strict archive
+projection provenance. The exact proposal-v4 regeneration command remains the sole filed pre-reboot
+implementation gap.
+
+### Source References
+
+- [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r14 live checkpoint and terminal receipt-chain gate
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-14 and AK-WM repair disposition
+- [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact commit and artifact hashes, call counts, evaluator receipts, and non-authority boundary

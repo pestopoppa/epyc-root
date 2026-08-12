@@ -1,11 +1,11 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
-**Next action (2026-08-12)**: pin the confined Claude runtime-temp repair, then launch a fresh governed
-7/7 attempt and validate its complete receipt chain before comparison. Never reuse r4-r13 or aggregate the
-one-task pilot into the panel.
+**Next action (2026-08-12)**: supervise seven-arm r14 to a terminal aggregate, then validate its complete
+receipt chain before comparison. Never infer terminal state from a live artifact inventory, reuse r4-r13,
+or aggregate the one-task pilot into the panel.
 The full 8/8 panel continues to refuse only on the unavailable exact ARGUS source release.
-**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (r12 feedback proof; seven-arm r13 Claude runtime-path refusal)
+**Created**: 2026-06-03 (via /research-intake deep-dive of the LLM-kernel-generation cluster) · **Updated**: 2026-08-12 (seven-arm r14 live call-scoped-runtime proof; campaign still in progress)
 **Categories**: hardware_optimization, agent_architecture, autonomous_research, tool_implementation, training_distillation
 **Hardware gate — SATISFIED 2026-07-02**: AMD MI210 Instinct (CDNA2 / gfx90a, 64 GB) is racked and the llama.cpp HIP build is verified on gfx90a (`progress/2026-07/2026-07-02-mi210.md`; memory `project_mi210_gpu_inference`). This program is now **ACTIVE**, priority **MEDIUM** — it is an *optimization*, **not a production blocker**: llama.cpp-HIP already serves ~910 tok/s @32-way as-is (2026-07-02 obs). First step = reproduce **GEAK-eval** (intake-674, arXiv 2507.23194) on gfx90a — compile+correctness+timing round-trip — as the sanity gate. **Scoping caveat (adversarially verified 2026-07-03; AMENDED 2026-08-03, see §"GEAK scoping — amended")**: GEAK **v4** retains first-class gfx90a knowledge, though all published *evaluation* is gfx942; **AgentKernelArena (679) / robust-kbench (668) are gfx942/CDNA3-listed** and must be treated as ports, not drop-in reproductions. All GPU runs remain operator-approved measurements per MEASUREMENT.md (write P-GPU-1 first). [was: "expected ~July 2026; nothing executes until the card racks" — stale after 2026-07-02 install] [was: "close the measured quantized-MMQ-dequant roofline gap: ~33% Q4_K / ~47% Q8 at batch-1" — **re-targeted 2026-08-03**, that is half the prize; see §"Program re-target"]
 **Priority**: MEDIUM (activates on MI210; prep proceeds now)
@@ -531,9 +531,18 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     inherited host scratch for direct model clients, creates a fresh call-scoped directory under the
     governed workspace, binds the relative path plus `ambient_host_temp_inherited=false` into the model
     sandbox receipt, and verifies deletion after every call. The campaign manifest still pins its parent.
-  - [ ] **Pin `268115ad` and launch a fresh seven-arm attempt.** Require a terminal aggregate and validate
+  - [x] **Pin `268115ad` and launch a fresh seven-arm attempt.** ✅ 2026-08-12 — research
+    `446a1c31` isolates each brokered model call and `152ed0d9` pins that runtime into the campaign.
+    Seven-arm r14 audited `ready` at 7/7 on observed clean source `152ed0d9`. A timestamped live
+    checkpoint found seven successful, non-timeout model receipts (five Claude and two Codex) and three
+    complete parent-owned evaluator windows. Every Claude receipt recorded
+    `ambient_host_temp_inherited=false` plus a call-scoped relative temp path, and its captured cgroup was
+    verified empty and removed. This proves the r13 capability repair across repeated real calls; it does
+    not make the live campaign terminal or rankable.
+  - [ ] **Drive seven-arm r14 to a terminal aggregate and validate the complete receipt chain.** Recheck
     every model, evaluation, claim, sampler, sandbox, teardown, runtime-temp scrub, and state-scrub edge
-    before interpretation. Never resume r4-r13.
+    after the terminal receipt exists, then compare only authority-bearing complete cells. Never resume
+    r4-r13 or infer terminal state from the current live inventory.
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims

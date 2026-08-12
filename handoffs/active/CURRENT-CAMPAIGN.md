@@ -7,33 +7,33 @@
 
 ---
 
-> **🟡 2026-08-12 — INF-03 R12 PROVED LIVE FEEDBACK PROPAGATION; R13 EXPOSED THE NEXT
-> CONFINED-RUNTIME GAP.** R12 iteration one measured `0.9967805648538064×` and received `revise`;
-> iteration two explicitly rejected that mechanism, proposed a distinct shared-offset/vectorized path,
-> measured `1.0059084616458236×`, and received `accept`. Both compiled and passed correctness, and
-> both ratios remain inside noise. R12 then failed final receipt construction by reopening
-> `/usr/bin/docker` inside the confined controller; research `4b516e9f` and pin `f316bf31` move host
-> attestation to the parent broker. Seven-arm r13 completed baseline and persisted planner receipt
-> ordinal `0001`, then failed `EACCES` creating `/mnt/raid0/llm/tmp/claude-1000`; all captured PIDs are
-> dead and all controller/model cgroups were verified empty and removed. Research `268115ad` now stages,
-> receipts, and scrubs a call-scoped runtime-temp directory under the governed workspace; its campaign
-> pin remains to be refreshed. **R12 and r13 are immutable partial/non-rankable attempts. Pin the repair
-> and launch fresh; do not aggregate,
-> rank, bank, promote, or release either partial.** Owner:
+> **🟡 2026-08-12 — INF-03 SEVEN-ARM R14 IS LIVE; THE CALL-SCOPED CLAUDE RUNTIME REPAIR
+> HAS CROSSED REPEATED REAL CALLS.** Research `446a1c31` isolates each brokered model invocation and
+> `152ed0d9` pins it into the panel. R14 audited ready at 7/7 on clean observed source `152ed0d9`.
+> A timestamped live checkpoint found seven successful, non-timeout model receipts—five Claude and two
+> Codex—and three complete parent-owned evaluator windows, all compilation/correctness 4/4. Every Claude
+> receipt records `ambient_host_temp_inherited=false`, a call-scoped temp path, and verified-empty/removed
+> cgroup teardown. The three diagnostic ratios (`1.0059882861×`, `0.9942113624×`, `1.0053314038×`) are
+> inside the engineering panel and carry no standalone performance or ranking claim. **R14 remains in
+> progress: do not infer terminal state, aggregate the panel, rank, bank, promote, or release until a
+> terminal aggregate exists and the complete receipt chain is validated. R12/r13 remain immutable
+> partials.** Owner:
 > [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) INF-03.
 
-> **🟡 2026-08-12 — AUTOKERNEL V9 CONTROLS PASS; SIX AK-WM INPUT/PROVENANCE DEFECTS MUST
-> CLOSE BEFORE THE RATIFIED REBOOT.** `ak-controls-v9-a4cb04ca-20260812-r2` is an accepted `5/5`, `may_rank=true` control
+> **🟡 2026-08-12 — AUTOKERNEL V9 CONTROLS PASS; FIVE OF SIX AK-WM INPUT/PROVENANCE
+> DEFECTS ARE PATCHED.** `ak-controls-v9-a4cb04ca-20260812-r2` is an accepted `5/5`, `may_rank=true` control
 > bundle under frozen v9 and hardened instrument `a4cb04ca8`; the historical IQK arm promoted.
 > The prepared full-host CPU IQK campaign then refused before claim/build/benchmark because uptime
 > was `13.47 days`, beyond the one-week measurement ceiling. Preserve the journal and current bundle;
 > the deployed Kernel-R&D surface now reports frozen v9, `8/8` preflight, `5/5` controls, GPU
 > `NOT_REPRODUCED`, and the reboot-gated refusal from durable evidence. Its global data-health verdict
 > remains absent until the real campaign can report champion, headroom, and release-package state.
-> An audit found six non-operator implementation defects: proposal identity-derived seed/frame drift,
-> a placeholder held-out regime, the wrong control falsifier reducer, cloned diagnostic semantics,
-> missing real-only AP-WM/report provenance, and no exact proposal-v4 regeneration command. Close all
-> six and regenerate the v4 input trees before reboot. **OP-16 recommends an orderly reboot after all
+> Research `0c24bc0d`, `b9bc28a6`, and `9ec0c30c` now bind the matched identity-derived execution
+> frame, require a genuinely separate measured held-out regime, reduce each role's own falsifier and
+> native diagnostic inputs, and make real AP-WM reporting depend on strict projection provenance.
+> The broad suite passed 5,671 tests with one expected failure. The remaining implementation task is
+> the exact tested proposal-v4 regeneration command; run it to rebuild both input trees before reboot.
+> **OP-16 recommends an orderly reboot after all
 > mains wrap.** Post-reboot, create the `agent` tmux
 > session required by session-bus C20 before respawning the established roster; then rerun CPU IQK,
 > construct the real matched archive, and execute the

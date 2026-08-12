@@ -335,6 +335,16 @@ The durable diagnostics remain useful inputs and regressions; none substitutes f
   directory under the governed workspace, binds its non-inheritance and relative path in the sandbox
   receipt, and removes it after the model call. R13 remains a terminal immutable partial/non-rankable
   attempt; the repair must be pinned and proven by a fresh campaign.
+- [x] **AK-AUD-14 — Prove the call-scoped model runtime across repeated live calls without declaring
+  the panel terminal.** ✅ 2026-08-12 — research `446a1c31` makes model runtime state call-scoped and
+  `152ed0d9` pins it into the seven-arm configuration. R14 audited ready at 7/7 on observed clean source
+  `152ed0d9`. At the checkpoint, seven model receipts had returned zero without timeout: five Claude
+  calls each recorded `ambient_host_temp_inherited=false`, a unique call-relative temp directory, and
+  verified-empty/removed cgroup teardown; two Codex actor calls also returned zero. Three chained
+  parent-owned evaluator windows were complete, compilation/correctness 4/4, at diagnostic ratios
+  `1.0059882860636864×`, `0.9942113624251266×`, and `1.0053314038021701×`. This is repeated live
+  compatibility evidence only. R14 was still in progress at this snapshot and has no terminal aggregate,
+  panel ranking, bank, champion, promotion, or release authority.
 
 **`AK-TR-1` is complete before Step 3.** New records use evaluation-event v4, so every future
 candidate can bind its cheap-lane-to-ground-truth relationship at write time rather than inventing it
@@ -2871,21 +2881,29 @@ evaluator or its own scope, and T1 may legally guide search.
     statement. A dry-run followed by execute under the same campaign identity remains idempotent: one
     OPENED record is retained and separate composition/live authorizations are journaled so the archive
     can bind the live spend exactly. The post-rebase suite passed **5,599 tests** with one expected failure.
-  - [ ] **Repair identity-derived seed and frame binding before the reboot campaign.** Regenerate every
-    capture seed, target/non-target frame, and dependent digest from the final proposal-v4 identity;
-    refuse a plan, journal record, or archive projection whose copied values disagree with that derivation.
-  - [ ] **Replace the placeholder held-out regime with a genuinely withheld prospective regime.** The
-    held-out outcome must come from a predeclared regime excluded from proposal construction and tuning;
-    relabelling or replaying the construction regime must fail archive admission.
-  - [ ] **Make the control reducer evaluate the control proposal's own falsifier.** Bind the falsifier,
-    reducer inputs, result, and authorization to the control hypothesis identity; refuse intervention-
-    reducer reuse or any cross-proposal falsifier drift.
-  - [ ] **Eliminate cloned diagnostic semantics across the intervention/control pair.** Produce each
-    campaign's diagnostic block from its own native journal outcomes and verify its semantic frame;
-    byte-cloned labels, values, or meanings must not satisfy the matched one-factor contract.
-  - [ ] **Close the real-only AP-WM/report provenance gap.** Make observe-only AP-WM and its report reject
-    fixture/synthetic/dry-run inputs and bind the exact real archive, source campaigns, projection plan,
-    evaluator version, and output digest so a report cannot outlive or impersonate its evidence.
+  - [x] **Repair identity-derived seed and frame binding before the reboot campaign.** ✅ 2026-08-12 —
+    research `0c24bc0d` introduces a shared `akm-` experiment identity and derives benchmark, T0,
+    scheduling, hold-out-selection, model, topology, calibration, envelope, provider, and intervention
+    factors from the actual campaign frame. Live admission and materialization refuse any plan whose
+    copied factors differ. Research `9ec0c30c` exposes the same mechanical derivation for prospective
+    input generation without weakening live admission.
+  - [x] **Replace the placeholder held-out regime with a genuinely withheld prospective regime.** ✅
+    2026-08-12 — research `b9bc28a6` requires a separately SHA-bound measured held-out outcome whose
+    regime is outside the proposal target regimes. Missing, construction-regime, identity-drifted, or
+    non-measured inputs fail capture admission.
+  - [x] **Make the control reducer evaluate the control proposal's own falsifier.** ✅ 2026-08-12 —
+    research `b9bc28a6` makes the role explicit and reduces control failure from its own keep decision
+    or effect beyond the accepted noise floor; intervention and control use distinct immutable rules and
+    journal the bound predicates and result.
+  - [x] **Eliminate cloned diagnostic semantics across the intervention/control pair.** ✅ 2026-08-12 —
+    research `b9bc28a6` derives each diagnostic/recoding block from its own SHA-bound native source
+    receipt, publishes its semantic digest, and makes the matched projector refuse equal intervention/
+    control semantic digests even when the numerical one-factor frame otherwise matches.
+  - [x] **Close the real-only AP-WM/report provenance gap.** ✅ 2026-08-12 — research `b9bc28a6`
+    requires a strict projector result at the AP-WM CLI, labels unprojected library fixtures
+    `fixture_or_unlabelled`, and emits `real` only after the archive and projector provenance validate.
+    Reports now carry matched-validation, pair noise floors, and an explicit underpowered state. The
+    full AutoKernel suite after this repair chain passed **5,671 tests with one expected failure**.
   - [ ] **Publish one exact proposal-v4 regeneration command.** Add and test the repository-relative,
     copy-pasteable command that rebuilds both IQK proposal/capture/source/hypothesis input trees from
     authoritative committed inputs byte-for-byte; document expected output hashes and refuse drift.
