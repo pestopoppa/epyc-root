@@ -97,11 +97,70 @@ TIDE early-exit (deprecated dead-end), CPU15 EP (closed), slot-promotion (shelve
 MTP bench tooling, tree/DySpec speculation, fail-closed-spec, tree-spec capacity fix. Upstream ships native MTP / spec / EAGLE3.
 
 ### NEEDS-OPERATOR-REVIEW (6)
-- [ ] SWA slot-reuse fixes (`d1c72d7fc` / `603702769`) — verify vs upstream SWA before drop.
+- [x] SWA slot-reuse fixes (`d1c72d7fc` / `603702769`) — verified vs upstream SWA. **Verdict: DROP.** ✅ 2026-08-12
+      — see [§ SWA slot-reuse verification — 2026-08-12](#swa-slot-reuse-verification--2026-08-12). The pair does
+      not merely duplicate upstream; it **replaces** upstream's per-sequence check with a per-sequence-**blind**
+      one, so it is a regression to carry forward, not a feature to port.
 - [ ] `--moe-n-expert` Hard-Mask CLI tool (`86901388a`).
 - [ ] Differential-Transformer-V2 arch (`36ceed44d` / `23973ea66`) — eval-gated, not in deployed registry.
 - [ ] Streaming KV context-shift controls (`632ce0f92`).
 - [ ] Paged-attn upstream-overlap.
+
+---
+
+## SWA slot-reuse verification — 2026-08-12
+
+Read-only `git -C /mnt/raid0/llm/llama.cpp` archaeology. No branch was switched, nothing was built, and the
+frozen production tree was only ever read via `git show <rev>:<path>`.
+
+**Containment.** Neither commit is an ancestor of any production version from v6 on:
+
+| commit | subject | in v6 | v7 | v8 | v9 (`0db32c06e`) |
+|---|---|---|---|---|---|
+| `d1c72d7fc148a708` | kv-cache : optimize SWA slot reuse with forward-looking masking | no | no | no | **no** |
+| `603702769cef373f` | kv-cache: fix SWA cell reuse to ensure mathematical correctness | no | no | no | **no** |
+
+`git branch --contains` puts both only on the v4/v5 lineage and its feature branches. They have been out of
+production for four consecutive kernel versions, so "before drop" is retrospective: they are already dropped;
+what was open was whether anything was *lost*.
+
+**Nothing was lost — the opposite.** These commits did not *add* SWA slot reuse; upstream already had it and
+`d1c72d7fc` **deleted** it. Its own diff removes these two lines:
+
+```c
+const llama_seq_id seq_id_cell = cells.seq_get(idx);
+if (llama_hparams::is_masked_swa(n_swa, swa_type, pos_cell, cells.seq_pos_max(seq_id_cell) + 1)) {
+```
+
+and substitutes `pos_batch_max + 1` (later `pos_batch_min + 1` in `603702769`) taken from the *incoming*
+`ubatch`. v9 carries the original upstream form verbatim — `llama-kv-cache.cpp:1053-1059` of
+`0db32c06e3e550065b78311a6031ef3dd2c4f27c`:
+
+```c
+const llama_seq_id seq_id_cell = cells.seq_get(idx);
+// SWA mask
+if (llama_hparams::is_masked_swa(n_swa, swa_type, pos_cell, cells.seq_pos_max(seq_id_cell) + 1)) {
+    can_use = true;
+}
+```
+
+**Why the fork version is worse, not just different.** The enclosing guard is `cells.seq_count(idx) == 1` — the
+cell has exactly **one** owner sequence, but nothing requires that owner to be the sequence being inserted.
+Upstream answers *"is this cell outside the window of its own sequence's newest token?"*. The fork, having
+deleted the `seq_get(idx)` lookup, answers *"is this cell outside the window of the token I am inserting right
+now?"* — a cell belonging to an idle or slower slot is judged against a busy slot's positions and can be
+declared reusable while still inside its owner's window. That is a **multi-slot serving** hazard, and multi-slot
+is our production posture.
+
+The commit's own message records its validation as *"Gemma-3-12B (n_swa=1024) + Gemma-3-1B draft, 1504 tokens
+generated"* — single-sequence speculative decode, which cannot exercise the cross-sequence path at all. So the
+evidence attached to the change is real but orthogonal to the property the change broke. This is not a claim
+that a production incident occurred; it is the reason the pair must not be resurrected onto a future
+`llama.cpp-experimental` branch.
+
+**Action**: none. Row closed as DROP. If SWA reuse is ever revisited, the question to ask is whether upstream's
+backward-looking test is too conservative for speculative decode (the fork's original motivation) — and any such
+change must keep the `seq_get(idx)` lookup.
 
 ---
 
