@@ -82,6 +82,9 @@ def test_the_kernel_set_actually_reaches_rendered_output(tmp_path: Path) -> None
         "the production kernel SET verdict does not appear in rendered output")
     for token in ("stable link", "linkage"):
         assert token in html, f"{token!r} missing from rendered output"
+    for token in ("AutoKernel implementation readiness", "SC33-v2", "C3-C5",
+                  "AK-DEL-2", "Last completed empirical checkpoint"):
+        assert token in html, f"{token!r} missing from rendered output"
 
 
 def test_the_harness_CATCHES_a_runtime_fault(tmp_path: Path) -> None:

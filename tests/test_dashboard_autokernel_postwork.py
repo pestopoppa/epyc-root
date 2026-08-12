@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -162,6 +163,99 @@ def test_arena_progress_selects_newest_semantic_evidence_and_verifies_v2_windows
     assert [a["run_directory"] for a in result["attempts"]] == ["r4", "r3"]
     assert result["attempts"][0]["attempt_id"] != result["attempts"][1]["attempt_id"]
     assert result["rejected_attempts"] == 1
+
+
+def test_arena_progress_reads_v2_manifest_and_proves_live_pid_identity(
+        tmp_path: Path) -> None:
+    run = tmp_path / "campaigns/inf03-seven-arm-r17"
+    audit = _signed({
+        "schema": "epyc.autokernel.arena_available_source_campaign_audit.v2",
+        "authority": "availability_conditioned_diagnostic_only", "status": "ready",
+    })
+    _write(run / "audit.json", audit)
+    manifest = _signed({
+        "schema": "epyc.autokernel.arena_campaign_run_manifest.v2",
+        "attempt_id": "inf03-seven-arm-r17", "campaign_id": "inf03-v2",
+        "authority": "diagnostic_only", "available_source": True,
+        "audit_receipt_sha256": audit["receipt_sha256"],
+        "constraints": {"partial_results_rankable": False,
+                        "aggregate_atomic_after_complete_matrix_only": True},
+        "matrix": {"task_ids": ["task"],
+                   "arm_ids": ["starting_state_baseline", "controller"],
+                   "checkpoint_hours": [2]},
+    })
+    _write(run / "campaign-manifest.json", manifest)
+    _write(run / "execution/cells/001/checkpoint-receipt.json", _signed({
+        "schema": "epyc.autokernel.arena_checkpoint.v1", "campaign_id": "inf03-v2",
+        "task_id": "task", "arm_id": "starting_state_baseline",
+        "checkpoint_hours": None, "ended_at": "2026-08-12T01:00:00Z",
+        "device_claim_released": {"released_at": "now"},
+    }))
+    stat_ticks = int(Path(f"/proc/{os.getpid()}/stat").read_text().split()[21])
+    cell = run / "execution/cells/002-controller-2h"
+    _write(cell / "controller-sandbox-activation.json", {
+        "schema": "epyc.autokernel.sandbox_receipt.v2", "pid": os.getpid(),
+        "process_start_ticks": stat_ticks, "activated_at_unix_ns": 123,
+    })
+    _write(cell / "worker-request.json", {
+        "attempt_id": "inf03-seven-arm-r17", "checkpoint_hours": 2,
+        "task": {"task_id": "task"}, "arm": {"arm_id": "controller"},
+    })
+
+    result = server._arena_campaign_progress(tmp_path)
+
+    assert result["run_directory"] == "inf03-seven-arm-r17"
+    assert result["execution_state"] == "live"
+    assert result["active"] is True
+    assert result["live_cells"][0]["pid"] == os.getpid()
+    assert result["live_cells"][0]["process_start_ticks"] == stat_ticks
+
+
+def test_arena_progress_labels_dead_pid_as_unreported_and_lists_preflight_refusal(
+        tmp_path: Path) -> None:
+    run = tmp_path / "campaigns/inf03-r15"
+    audit = _signed({
+        "schema": "epyc.autokernel.arena_available_source_campaign_audit.v2",
+        "authority": "diagnostic_only", "status": "ready",
+    })
+    _write(run / "audit.json", audit)
+    manifest = _signed({
+        "schema": "epyc.autokernel.arena_campaign_run_manifest.v2",
+        "attempt_id": "inf03-r15", "campaign_id": "inf03",
+        "authority": "diagnostic_only", "available_source": True,
+        "audit_receipt_sha256": audit["receipt_sha256"],
+        "constraints": {"partial_results_rankable": False,
+                        "aggregate_atomic_after_complete_matrix_only": True},
+        "matrix": {"task_ids": ["task"],
+                   "arm_ids": ["starting_state_baseline", "controller"],
+                   "checkpoint_hours": [2]},
+    })
+    _write(run / "campaign-manifest.json", manifest)
+    _write(run / "execution/cells/001/checkpoint-receipt.json", _signed({
+        "schema": "epyc.autokernel.arena_checkpoint.v1", "campaign_id": "inf03",
+        "task_id": "task", "arm_id": "starting_state_baseline",
+        "checkpoint_hours": None, "ended_at": "2026-08-12T01:00:00Z",
+        "device_claim_released": {"released_at": "now"},
+    }))
+    dead = run / "execution/cells/002-controller-2h"
+    _write(dead / "controller-sandbox-activation.json", {
+        "schema": "epyc.autokernel.sandbox_receipt.v2", "pid": 999999999,
+        "process_start_ticks": 1,
+    })
+    _write(dead / "worker-request.json", {"attempt_id": "inf03-r15"})
+    refused = tmp_path / "campaigns/inf03-r16"
+    _write(refused / "audit.json", _signed({
+        "schema": "epyc.autokernel.arena_available_source_campaign_audit.v2",
+        "status": "refused", "refusal_reasons": ["source identity mismatch"],
+        "constraints": {"controller_or_gpu_command_executed": False},
+    }))
+
+    result = server._arena_campaign_progress(tmp_path)
+
+    assert result["execution_state"] == "stale_or_terminal_unreported"
+    assert result["active"] is None
+    assert result["preflight_refusals"][0]["run_directory"] == "inf03-r16"
+    assert result["preflight_refusals"][0]["execution_state"] == "preflight_refused"
 
 
 def test_arena_progress_exact_retraction_keeps_history_but_withholds_authority(

@@ -170,15 +170,20 @@ this is presentation context only. It is structurally excluded from `_freshness`
 and `/api/health`, so a commit, audit, or A/A artifact cannot make an absent or
 dead campaign look alive.
 
-`current_state.arena_campaign_progress` discovers Arena attempts under the
-AutoKernel campaign root and selects the newest attempt by the semantic
-`ended_at` of a hash-verified completed checkpoint, never by directory mtime or
-worker-request markers. It verifies the manifest/audit identity, checkpoint and
-cell self-hashes, and v2 measurement-window claim/release and sampler evidence.
-The view exposes attempt receipt identities, output roots, completed
-checkpoint/cell counts, and individual observations, but an incomplete matrix
-has no aggregate and remains explicitly non-rankable. These fields are evidence
-inventory, not controller liveness and not part of Kernel-R&D health.
+`current_state.arena_campaign_progress` discovers v1/v2 Arena attempts under the
+AutoKernel campaign root and selects a PID-identity-proven live attempt before
+the newest semantic `ended_at` of a hash-verified completed checkpoint, never by
+directory mtime or worker-request markers. Live means a controller sandbox's
+captured PID still has the captured `/proc` start tick; a dead/reused PID reads
+`stale_or_terminal_unreported`, not stopped. It verifies the manifest/audit
+identity, checkpoint and cell self-hashes, and v2 measurement-window
+claim/release and sampler evidence. The view exposes attempt receipt identities,
+output roots, completed checkpoint/cell counts, the current live cell, the last
+completed empirical checkpoint, and individual observations. An incomplete
+matrix has no aggregate and remains explicitly non-rankable. Preflight-only
+refusals are listed separately because they launched neither a controller nor a
+GPU command. These fields are evidence inventory and not part of Kernel-R&D
+health.
 
 Cross-artifact integrity retractions live in the hub-owned, versioned
 `dashboard/arena_attempt_dispositions.json`. Rows bind both the producer's exact
@@ -189,6 +194,17 @@ producer healthy. The r4 INF-03 attempt is retracted here because its
 KernelFoundry controller made 64 intermediate evaluator calls outside the two
 durable GPU claim windows; the page keeps the partial checkpoint inventory
 visible while labelling the campaign evidence invalid.
+
+The seven-arm inventory also carries exact-manifest terminal dispositions. R14
+and R15 are one-way retractions: source-identity drift and structured-output
+exhaustion respectively made them invalid diagnostic history. R16 is a terminal
+preflight refusal with no controller/GPU execution. R17 is shown as live only
+while an exact sandbox PID/start-tick identity remains resident; otherwise its
+state becomes stale/unreported rather than being guessed terminal. The separate
+implementation-readiness card projects four reviewed research-main anchors
+(retry hardening, SC33 v2 writes, C3/C5 capture/mapping, and AK-DEL-2 catalogue
+expansion) while keeping their outstanding empirical or acceptance work visible.
+Mainline code readiness never closes those evidence gates.
 
 The available-source readiness card prefers the v2 `receipt.json` contract, which
 admits exact-source EvoEngineer and reports the current **7/7** diagnostic panel;
