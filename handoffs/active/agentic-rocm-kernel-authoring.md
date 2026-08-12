@@ -127,9 +127,11 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
   phase_solver.py, kernel.cpp}`, a 45-line kernel over rocprofv3 PMC counters, ~40 min GPU on gfx90a.
   **Do not assume the CDNA3 answer (64 banks / 2 phases of 32 lanes) transfers** — whether gfx90a is 32 or
   64 banks decides whether HK's `>>7 <<3` swizzle constants transfer at all. Blocked on profiler tooling
-  (below). **Still blocked as of 2026-08-12 (mainB), despite the "RESOLVED" note below**: the side-load
-  provides ROCProfiler 2.0 and **no `rocprofv3`**, which is the instrument this line names. Verify the
-  counters are reachable via `rocprofv2` before booking the ~40 min GPU window.
+  (below). ~~Still blocked as of 2026-08-12 (mainB)~~ — **RESOLVED, and this line is the mis-stamp.**
+  The solver **ran on 2026-08-11** via a rocprofv2-compatible counter path (receipt SHA-256
+  `ae1d833c…`, 372 bank / 6,048 phase dispatches, 32 banks + 8 phase cliques). `rocprofv3` really is
+  absent — that half of the 2026-08-12 check stands — but it was never required: **this line names an
+  instrument the run did not use.** Nothing was blocked. Corrected 2026-08-12 (mainB).
 
 > **MERGE NOTE 2026-08-12 (coordinator).** Both sides below are preserved; I did
 > not adjudicate. The block above is the local-fleet text, the block below is the
@@ -479,13 +481,15 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
 > different path than the solver row describes, the row is mis-stamped. **OWNERS: verify
 > and correct — I did not adjudicate this.** The profiler row below is the NEWER
 > 2026-08-12 re-verified-live text, deliberately preferred over the 2026-08-11 inherited note.
-- [ ] **`rocprofv3` is absent and the LDS bank/phase solver names it specifically.** The side-load is
-  a ROCm 6.2 extraction and tops out at ROCProfiler 2.0; the solver is described at line ~125 as
-  "a 45-line kernel over **rocprofv3** PMC counters". So line ~138's "the LDS bank/phase solver and
-  the C4 analyzer are unblocked on tooling" is **true of C4 and not of the solver** — C4's cheapest
-  path is explicitly LLM-reads-raw-`rocprof`, which works today. **Next action** before anyone spends
-  the ~40 min GPU on the solver row: establish whether its counters are reachable through
-  `rocprofv2`, or whether it needs a ROCm 6.3+ `rocprofv3`. Unevaluated, not impossible.
+- [x] **`rocprofv3` absence vs the LDS solver — settled, the row was mis-stamped** ✅ 2026-08-12 (mainB).
+  Both halves were true and they were never in conflict. `rocprofv3` IS absent (the side-load is a ROCm
+  6.2 extraction topping out at ROCProfiler 2.0) — but the solver did **not** need it: it ran
+  2026-08-11 over a **rocprofv2-compatible counter path**, receipt SHA-256 `ae1d833c…`, 372 bank and
+  6,048 phase dispatches, deriving 32 banks and eight phase cliques. So the ~40 min GPU window is
+  already spent and its result is banked; what was wrong is the *description* at line ~126, which
+  names `rocprofv3` as the instrument. **The run is real; the row named the wrong tool.**
+  Recorded because the failure mode generalises: a row that names its instrument can go stale against
+  a run that used a different one, and then a correct check of the instrument returns a false BLOCKED.
 - [x] **GEAK-family freshness sweep completed ✅ 2026-07-29**: refreshed the deep-dive appendix from AMD's current AgentKernelArena/GEAKv3 reports. AKA now publishes 214 tasks and a 44-task MI300X comparison; this is vendor/CDNA3 evidence only and does not close the MI210/gfx90a reproduction gap. [Freshness appendix](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md#9-freshness-appendix-sweep-at-each-handoff-audit--when-the-mi210-racks).
 
 
