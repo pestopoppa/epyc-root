@@ -585,8 +585,141 @@ Nothing is checked off without a commit hash or a receipt path.
       **this file cites them anyway, which is F-22's own error class.** It does so knowingly, with the
       quoted text alongside every citation: **when the pointer and the text disagree, the text wins.**
 
+## Audit findings
+
+**Source**: [`docs/reviews/coordinator-role-audit-20260812.md`](../../docs/reviews/coordinator-role-audit-20260812.md)
+(2026-08-12). **Written by a stand-in, not by the `auditor`** — the `auditor` main was at 100% context
+and unreachable when the operator asked for this review. It answers `A-1`…`A-9` adversarially but is
+not the ruling those tasks requested; when the `auditor` is available it should re-rule, at minimum on
+`A-4` (it authored `03e17111`) and on the §9/§10 asymmetry below. Nothing above this heading was
+edited and no checkbox was flipped.
+
+**Verdict on RC-1**: directionally right, every leg of the argument invalid. The mechanised-vs-prose
+comparison cannot be made with this data (mechanisms log when they hold, prose leaves no trace; no
+denominators — 13 registered hooks against 252 directive-bearing lines of policy). Four of the six
+*"rules that held"* fail on audit. And "compliance decays with context" is refuted at **zero decay**:
+F-02 was committed as the coordinator's own correction #2 at 10:07:18Z (`7b4e0ac1`) and recurred at
+10:28Z and ~10:40Z, same session, same day. The failure is **retrieval at the moment of emission**,
+not memory decay — which reprices the whole refactor away from durability and onto the emission path.
+
+**Corrections overturned**: §9 (F-16's authorship claim is restored by `83f204cf`'s own body —
+*"Hand-written by the coordinator on its own thread under time pressure… never tested"*), §10 (F-17's
+"decisive" ground fails: 5 same-branch merges DO carry the trailer, and only 5/48 merges repo-wide
+carry any — trailer absence is the norm), §3's supporting greps (258 hits for *"is genuinely"*, not
+zero; the core claim survives). §2, §5 and §11 verified. **The two overturns both revise charges
+downward, and §9/§10 apply opposite evidentiary rules to the same signal, each time in the direction
+that favours the role.**
+
+- [ ] **AUD-1 — DELETE hardware/utilisation reporting from the role.** *The single
+      highest-leverage change; zero build cost.* Kills F-01, F-02, F-06, F-11, F-12, F-25, F-26 —
+      seven failures including the only proven post-correction recurrence. The coordinator relays
+      **receipts** produced by the owner (`inference`) or by `fleet_watch`, with `source_msg_id` or
+      `receipt_path`; it does not read dials. **Not licence to stop reporting idle compute** — idle
+      compute stays a reportable condition; only the *reading* moves. Deletes R-12, R-14, R-15.
+- [ ] **AUD-2 — Type the `task-assign` payload.** `session_bus.py` validates the envelope only
+      (`schema_version, id, ts, from, to, kind`) and leaves `payload` unconstrained: **219 distinct
+      keys across 53 messages, 110,084 bytes, median 2,106 B.** That is why no content rule in this
+      file is mechanisable today — there is no field to check. Required: `task_text` (primary),
+      `row_ref` (hint), `screened_by` receipt, `expected_occupancy`, `constraints[].source`, and a
+      size cap forcing a `brief_path` under `tasks/` (the role's own Outputs contract; no new brief
+      file has been written since 08:37Z). Closes F-14, F-20, F-22, F-04-recurrence at one choke
+      point. Deletes R-3, R-10, R-18 and half of R-19.
+- [ ] **AUD-3 — Hang the boundary checks on `drain`.** It is documented as *"the one-liner agents run
+      at every task boundary"* and Guardrail 1 makes it mandatory — the role's **only** proven
+      checkpoint. Add: untracked/modified counts under `scripts/` (F-16), unanswered
+      `action_required` rows the coordinator owes with age (F-29, F-32), and the current
+      `fleet_watch` persistence-gated occupancy line verbatim with its source (AUD-1's supply side).
+      ~100 LOC, **no new discipline**.
+- [ ] **AUD-4 — Corrections become typed bus rows; generate the wrap-up from them.** `kind: finding`
+      with `corrects: <msg-id>` and `provenance: operator-verbatim | paraphrase | inferred`, written
+      in the same turn the correction is received. **Answers A-7 with evidence, not opinion**: the
+      durable ledger was tried — `RESOLUTION-LEDGER-20260812.md` (`1764471d`, 08:34:09Z), whose §7
+      says *"update at every task boundary… Not at wrap-up"* — and its last write is 09:22:56Z. It
+      was out of contract in 48 minutes and is referenced from **nothing on any startup path**.
+      **Another file is not the fix.** Supersedes R-20; closes F-32.
+- [ ] **AUD-5 — Route agent-infrastructure authorship out of the role** (F-16, F-18, F-24, and
+      `83f204cf`'s admission). Two reasons: it is execution work on a thread forbidden from execution
+      work, and it is a **conflict of interest** — the coordinator was writing the instrument that
+      decides whether the fleet is idle, the exact question it had been wrong about all night.
+- [ ] **AUD-6 — URGENT, not the coordinator's to fix but its to route: `bus_supervisor.sh` is killing
+      healthy daemons in a loop right now.** `e57a10a6` replaced F-24's `pgrep` predicate with a
+      source-mtime check whose `STALE_SRC_STATE` anti-loop guard ("restart once per source version")
+      is **vacuous in a five-writer tree**. `logs/bus_supervisor.out` shows **11 `stopping wedged
+      daemon` cycles in 35 minutes** from 11:02:43Z; `logs/coordinator_daemon.log` epoch 54 → 64.
+      **F-24's class did not close — it moved one predicate over.**
+- [ ] **AUD-7 — URGENT, route: OBS-3 (HIGH) `scripts/nightshift/inference_guard.sh` fails OPEN.**
+      Missing `pgrep`, argv drift, renamed binary or `xargs` error all sum to 0 GB and print *"No
+      heavy inference detected"* — letting `run_wrapper.sh` launch the agent workload on top of a
+      live 200 GB inference run.
+- [ ] **AUD-8 — Land `tmux_adapter.py`.** Now **+853/−71** (grown from the +484/−48 recorded above)
+      and the only artifact of RC-5's five still dirty — while the landed `fleet_watch.sh` and the
+      landed `SESSION_LIFECYCLE.md` rule both name its runtime check *"the authoritative
+      instrument"*. HEAD still carries `_BARE_PROMPT_GLYPHS = ("›", "❱")` at :385, the glyph table
+      that made the doorbell **0% operative** against all six Claude panes. **Owned by another agent
+      — route.** *(R-1, R-2b and half of R-2 are already landed: `83f204cf`, `ed38041d`,
+      `e57a10a6`. Their boxes are the owners' to flip, not this section's.)*
+- [ ] **AUD-9 — Give `fleet_watch.sh` a restart path and a discovery rule that finds it.** It is
+      running as an **orphan** (reparented to the container shim; no nohup wrapper, no cron, no unit,
+      no restart path), and `observer_registry.json` records `"contract": "unadopted"` — *"neither
+      discovery rule finds it… yet it decides whether six mains are alive, which is exactly this
+      census's subject."* Same class as F-24, one level up.
+- [ ] **AUD-10 — Correct the record on `03e17111` → `3d8800e6`, and decide whether to re-land its
+      `clean` branch.** RC-1(b) and A-4 cite it as *"the standing proof that a well-built guard can
+      still be the wrong trade"*; `progress/…-12.md:2105` says it was reverted **as defective** —
+      *"mainD's review found two HIGHs my 12 tests missed"* — not as a bad trade. The delete-lens
+      argument built on it has no support. Separately: its classifier had an explicit `git clean -f`
+      branch that, with 149 untracked entries present, returns `block:clean-untracked:/workspace` —
+      **it would have refused the command that destroyed this corpus 27–47 minutes later**, and that
+      branch was not among the two HIGHs. **Operator decision** (narrow single-branch guard, owned by
+      `mainD`). Honest limit: it models agent-typed Bash only, and who ran the 08:20Z clean is
+      unrecoverable. The genuine "mechanisms cost something" datum is `e08fe836`, not this.
+- [ ] **AUD-11 — Re-grade the `Mech` column against the audit (`A-1`).** Two of six *"rules that
+      held"* are as claimed. Row 4 (composer guard) is **refuted and is itself an RC-2 error** — the
+      glyph mismatch made it refuse 100% of rings, so *"refused a nudge that should not have been
+      sent"* is a probe with no discriminating power. Row 6 (`34a17894`) is **vacuous**: deleting the
+      rate-limit `if` at `tmux_adapter.py:2043` leaves both tests green. Rows 1–2 block spellings,
+      not behaviours (`git stage -A` is live; `killall`, `kill $(pgrep …)` pass; a tracked
+      `sudo pkill -f claude` sits at `scripts/session/emergency_cleanup.sh:26`).
+- [ ] **AUD-12 — Fix the recurrence column, or stop publishing it.** It is declared load-bearing and
+      is the least reliable thing in the file. F-14's *"6 `bus`"* anchors on `2f787163` — the
+      **fan-out** policy, not a dispatch-depth correction (that one is at 10:47/10:55/11:03Z, i.e.
+      *after* most cited instances) — counts symptom-observations and at least two remedy messages as
+      instances, and tags `adapter-ledger.jsonl` nudge rows as `bus`. F-02's *"≥4 `bus`"* rests on
+      F-25 and F-26, which the table itself marks *"no surviving artifact"*. The phenomena are not in
+      doubt; the counts are. Depends on AUD-4.
+- [ ] **AUD-13 — Reconcile §9 and §10 before either stands.** They apply opposite evidentiary rules
+      to the same trailer — presence proves nothing, absence proves the operator — each time in the
+      direction that favours the role. Pick one rule and re-derive both. Related: `A-9` is answered
+      **no** — no sound thread-attribution method exists here. `agent_log.sh` has **no agent field**,
+      its only non-legacy shard is `agent_audit-unattributed.log`, and it logged **zero rows**
+      between 10:28Z and 11:28Z while five infra artifacts were produced. The fix is a field that
+      does not exist yet, not a better inference rule.
+- [ ] **AUD-14 — Amend §2 (F-13) with `mainB`'s on-record dispute.** `mainB`, 10:46:16Z: *"`run the
+      full BGE sweep` was not mine, as `push it` was not mine earlier… Worth checking whether that
+      detector is attributing composer state correctly — **it has now misattributed to me twice**."*
+      Both the original "three mains" claim and the "two mains" correction rest on the same detector
+      the owner says misattributed twice. The composer defect is independently reproduced; the count
+      and the attribution are not established.
+- [ ] **AUD-15 — Operator decision: gate the auto-loaded instruction surfaces (F-19).** Add
+      `CLAUDE.md`, `agents/AGENT_INSTRUCTIONS.md`, `agents/shared/*.md` to the list
+      `check_trust_boundary_edit.sh` already reads. Recommended **yes** — a wrong premise there
+      becomes five sessions' truth (F-21's amplifier). Cost: every policy edit needs a signature;
+      `22c4aff5` would have been gated. Default if unanswered: the gap stays open. *The gate list is
+      human-amendment-only; the audit did not touch it.*
+- [ ] **AUD-16 — Record what will NOT be mechanised, and say so plainly rather than inventing a
+      control.** **F-30** (decision delivered as prose) — the operator is not on the bus (0 of 839
+      rows), no hook sees a tmux pane, and no predicate knows an unlabelled paragraph was a decision
+      request; **it will recur**, and the only lever is fewer/shorter operator-facing messages.
+      **F-28** (asserted where measuring was cheap) — no predicate knows a claim was cheap to check.
+      **F-09** — a stderr-suppression lint false-positives everywhere; delete the activity instead.
+      **F-23** — do not build until the roster contradiction is resolved (`config.yaml` *"READ-ONLY
+      auditor"* vs C-OWN code ownership at `MAIN-GOALS.md:485-489`); the contradiction is the defect.
+
 ## Related
 
+- `docs/reviews/coordinator-role-audit-20260812.md` — the adversarial audit of this file (stand-in
+  for the `auditor`); verdict on RC-1, corrections overturned, per-failure mechanism costs, the
+  delete list, and why writing it down failed.
 - `agents/coordinator-agent.md` — the role file whose own guardrails these failures violate.
 - `agents/shared/OPERATING_CONSTRAINTS.md` — *Operator Decision Requests* (F-30), *Parallel Subagent
   Fan-Out* (F-15), *Reporting Units* (F-04).
