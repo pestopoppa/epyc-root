@@ -1131,7 +1131,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-03",
-      "weight": 12
+      "weight": 14
     },
     {
       "from": "INF-06",
@@ -3486,7 +3486,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-08-12T18:33:09Z",
+  "generated_at": "2026-08-12T19:17:47Z",
   "nodes": [
     {
       "age_days": 13,
@@ -4089,13 +4089,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 56,
+      "closed": 57,
       "domain": "research-evaluation",
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-08-12",
       "next_action": "Wire actor-critic evaluation feedback receipts prospectively before the next fresh INF-03 attempt",
-      "open": 15,
+      "open": 14,
       "state": "active",
       "track": "vidya belief substrate program"
     },
@@ -4159,8 +4159,8 @@
       "handoff": "agentic-rocm-kernel-authoring.md",
       "id": "INF-03",
       "last_advanced": "2026-08-12",
-      "next_action": "Supervise immutable-worktree r17 to a terminal aggregate, then validate its receipt chain before comparison",
-      "open": 3,
+      "next_action": "Patch EvoEngineer source-path construction, then launch and validate a fresh immutable seven-arm attempt",
+      "open": 4,
       "state": "active",
       "track": "agentic rocm kernel authoring"
     },
@@ -4193,13 +4193,13 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "closed": 237,
+      "closed": 239,
       "domain": "inference-research",
       "handoff": "autokernel-research-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-08-12",
-      "next_action": "Review and integrate catalogue expansion 677a2eec; then run the post-reboot matched IQK evidence pair",
-      "open": 23,
+      "next_action": "Run the post-reboot matched IQK intervention/control pair, then materialize and evaluate the real archive",
+      "open": 22,
       "state": "active",
       "track": "autokernel research loop"
     },
@@ -4666,7 +4666,7 @@
       "handoff": "rocm-verify-profile-backend.md",
       "id": "INF-48",
       "last_advanced": "2026-08-12",
-      "next_action": "After r15, run governed 122B decode attribution and capture real EPYC C3/C5 workload evidence",
+      "next_action": "Run governed 122B decode attribution, then capture real EPYC C3/C5 workload evidence",
       "open": 17,
       "state": "active",
       "track": "rocm verify profile backend"

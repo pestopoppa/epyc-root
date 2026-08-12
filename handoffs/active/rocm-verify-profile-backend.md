@@ -3,7 +3,7 @@
 **Status**: ACTIVE HARDENING — phase-explicit rocprof landed; real decode and C3/C5 capture remain
 **Created**: 2026-06-03 · **Updated**: 2026-08-12 (phase-explicit attribution repair)
 
-> **NEXT ACTION (2026-08-12): after INF-03 r15 releases the MI210, run the governed real-model
+> **NEXT ACTION (2026-08-12): after terminal-noncomplete INF-03 r17 cleanup, run the governed real-model
 > decode attribution in RVP-C4-4a, then capture the real EPYC C3/C5 workload evidence.** OP-11 was
 > resolved as Option B (decline for now), so C2-7/C2-8/C2-9 remain deliberately open unless the
 > operator explicitly reopens the experimental producer. The research reducers/runners remain
