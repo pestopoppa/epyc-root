@@ -2046,10 +2046,43 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
 
 ### Operational hazards found this session
 
-- [ ] **`autopilot pause` has no interlock against an in-flight config-apply.** `structural_experiment`
+- [x] **`autopilot pause` has no interlock against an in-flight config-apply.** `structural_experiment`
       trials restart the API to apply flag changes; pausing between the stop and the start leaves the
       stack with **no API**, and AutoPilot then retries `Connection refused` forever rather than
       failing loudly. Caused a live outage 2026-08-03. Nothing in the preflight or the gate detects it.
+      ✅ 2026-08-12 — orchestrator `40d2f4c5`. **The row named the wrong mechanism and the real one is
+      worse.** `structural_experiment` does not restart the API. The window is between an out-of-band
+      pauser's SET and its RESTORE — `config_applicator._pause_autopilot_dispatch` bracketing a whole
+      `restart_role`, and `host_health.flush_cache_with_pause` bracketing an 11s sleep + drop_caches +
+      serial NUMA rewarm. An operator pause landing inside that window was honoured on disk and then
+      **silently undone by the applicator's `finally:`**, because an operator pause and the
+      applicator's own pause are THE SAME BYTE (`"paused": true`).
+      **THE TEST SUITE PINNED THE BUG.** `test_config_applicator_restore_takes_lock` fed
+      `{"paused": True}` with `paused_pre: False` and asserted `restored is True` and `paused is
+      False` on disk — the collision scenario asserted as CORRECT. *(Verified by `mainC` against the
+      pre-fix blob.)* Anyone repairing this would have broken a green test and probably reverted. A
+      comment at `host_health.py:711` also promised protection the guard could not implement —
+      `paused is True and paused_pre is False` cannot distinguish the two pausers.
+      **Fix: a pause LEASE** (`pause_owner`/`pause_token` in `state_lock.py`). An automated pauser may
+      clear only a pause whose token is still on disk; the operator SUPERSEDES it. Supersession rather
+      than refusal or deferral, because refusing leaves the stricter state unreachable and deferring
+      means the pause does not hold during exactly the window it is needed. The apply is never aborted
+      mid-operation — it only loses the right to resume, which is quiesce-and-drain-at-a-boundary.
+      Collision is legible in six places, not silent. 22 new tests, 48 across the pause files; three
+      mutations, none survived. Blast radius: full 12,185-test suite vs a pristine checkout, failure
+      SETS diffed, regression set EMPTY — and re-baselined mid-run when HEAD moved under them.
+- [ ] **STILL OPEN, and correctly not fixed: the unbounded health-check retry.** `autopilot.py`'s
+  health branch is `time.sleep(HEALTH_BACKOFF_S); continue` with no attempt cap and no halt latch —
+  `Connection refused` forever. The interlock breaks the specific 2026-08-03 chain (the operator's
+  pause now holds, so the loop never resumes into the retry) but the unbounded spin survives on every
+  other path. Left because the cap is an OPERATOR TRADEOFF, not a bug fix: (a) latch `paused=True`
+  after N with a `pause_reason`, matching the ~8 existing halt-latch sites — but a transient blip
+  during a long reload then needs an operator resume overnight; or (b) keep retrying and escalate to a
+  loud journalled deficiency after N. **UNOWNED — needs the ruling, not the code.**
+- [ ] **Flaky under load, flagged to its owner:** `test_daemon_owned_state_ownership.py` (landed today)
+  fails intermittently under full-suite `-n 16` while passing 19/19 in isolation and under `-n 8` on
+  both trees. Ruled out as test method by the finder before reporting, not assumed.
+
 - [x] **An eval scores an unreachable API as WRONG, not as infra-failed.** A T1 calibration ran
       70/100 questions at `0% correct` purely because the API was down; only `--dry-run` prevented a
       0.000 baseline reaching production state. Reliability should have collapsed the run long before
