@@ -221,3 +221,71 @@ def test_audit_procedures_labels_history_as_report_only(tmp_path: Path, monkeypa
     monkeypatch.setitem(bqg.TREES, "completed", d)
     _, report = bqg.audit_procedures(["completed"])
     assert any("REPORT ONLY" in line for line in report)
+
+
+# ---------------------------------------------------------------------------
+# The completion-record discriminator (2026-08-12, `mainC`).
+#
+# `--audit-procedures` keyed on "closed box under a DO-NOT-FLIP banner" and reported
+# 3 violations on a clean tree, all three false. The banner it serves says what it
+# actually governs: "Every OPEN box in this section is a rule with no completion
+# state" — dated completion records legitimately share the section. Key wider than
+# the property. These pin the fix in BOTH directions, because a discriminator that
+# only ever demotes is indistinguishable from deleting the check.
+# ---------------------------------------------------------------------------
+
+def _guarded(tmp_path, *boxes):
+    d = tmp_path / "active"
+    d.mkdir(exist_ok=True)
+    (d / "h.md").write_text(
+        "## Outstanding Work\n\n"
+        "> **⚠ THESE ARE STANDING CONSTRAINTS, NOT TASKS — DO NOT DISPATCH OR FLIP THEM.**\n\n"
+        + "\n".join(boxes) + "\n", encoding="utf-8")
+    return d / "h.md"
+
+
+def test_dated_completion_record_under_a_guard_is_not_a_violation(tmp_path):
+    """The false-positive class that motivated this: a finished audit, dated."""
+    p = _guarded(tmp_path, "- [x] Re-audit `seeding_rewards` for duplicated live facts\n"
+                           "  ✅ 2026-07-29 — each imports generated stack-prior helpers.")
+    assert bqg._is_completion_record(bqg._full_box_text(p, 5)) is True
+
+
+def test_a_flipped_standing_rule_is_still_a_violation(tmp_path):
+    """The signal must survive the demotion. A dated RULE is still a rule."""
+    p = _guarded(tmp_path, "- [x] Keep production routing default-off until an explicit\n"
+                           "  operator decision. Reviewed 2026-07-29.")
+    assert bqg._is_completion_record(bqg._full_box_text(p, 5)) is False
+
+
+def test_a_prohibition_is_never_demoted_however_dated(tmp_path):
+    """You cannot finish not-doing something, so a date proves nothing about it."""
+    p = _guarded(tmp_path, "- [x] Do not churn `kv_compress` unless a duplicated fact\n"
+                           "  reappears. Last confirmed 2026-07-29.")
+    assert bqg._is_completion_record(bqg._full_box_text(p, 5)) is False
+
+
+def test_an_unrecognised_box_defaults_to_violation(tmp_path):
+    """DELIBERATELY ASYMMETRIC. Demotion needs positive evidence; silence is a rule.
+
+    The banner this serves warns that "a guard that trusts an enumeration is passed
+    by not being enumerated". A discriminator defaulting to "probably fine" would
+    reintroduce that false-permit one layer down.
+    """
+    p = _guarded(tmp_path, "- [x] Something nobody wrote a completion marker on")
+    assert bqg._is_completion_record(bqg._full_box_text(p, 5)) is False
+
+
+def test_the_marker_is_found_on_a_WRAPPED_continuation_line(tmp_path):
+    """Regression: the helper yields a box's FIRST LINE only.
+
+    Found by mutation-checking, not by reading — the classifier was correct and was
+    reading a view of the input that could not contain the answer, so it demoted
+    nothing and looked inert. Same shape as an untracked mutation probe.
+    """
+    p = _guarded(tmp_path, "- [x] Fix promotion-gate test regressions\n"
+                           "  (orchestrator `91cb03bf`). ✅ 2026-07-07")
+    assert "2026-07-07" not in bqg._full_box_text(p, 5).split("\n")[0][:60]
+    assert bqg._is_completion_record(bqg._full_box_text(p, 5)) is True
+    # ...and the first line ALONE would have missed it — that is the bug, pinned.
+    assert bqg._is_completion_record("- [x] Fix promotion-gate test regressions") is False
