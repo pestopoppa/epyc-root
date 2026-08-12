@@ -1109,7 +1109,30 @@ class TransportPlaneTest(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------- #
-# 7. Routing tables stay the enumeration source
+# 7. A supervised restart must import the checkout the supervisor names
+# --------------------------------------------------------------------------- #
+class SupervisorCheckoutIdentityTest(unittest.TestCase):
+    def test_start_hub_changes_to_epyc_root_before_python_imports(self):
+        """PYTHONPATH does not outrank ``sys.path[0]`` for ``python -m``.
+
+        Without the explicit ``cd``, a supervisor launched from a stale shared
+        checkout logs ``cwd=$EPYC_ROOT`` while importing ``dashboard.server``
+        from its actual launch directory.  That made a healthy restart keep
+        serving the pre-deployment selector.
+        """
+        source = (Path(__file__).parents[1]
+                  / "scripts/dashboard/hub_supervisor.sh").read_text()
+        start = source.index("start_hub()")
+        record = source.index("record_hub_pid()", start)
+        launch = source[start:record]
+        self.assertRegex(
+            launch,
+            r'cd "\$\{EPYC_ROOT\}"[\s\S]*setsid "\$\{HUB_PYTHON\}" -m dashboard\.server',
+        )
+
+
+# --------------------------------------------------------------------------- #
+# 8. Routing tables stay the enumeration source
 # --------------------------------------------------------------------------- #
 class RouteTableTest(unittest.TestCase):
     def test_every_api_route_is_bound_to_its_registered_payload(self):
