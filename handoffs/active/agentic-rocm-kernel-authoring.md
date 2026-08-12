@@ -443,7 +443,7 @@ section costs **zero GPU and zero local inference**.
   has observe-only authority and cannot mutate a campaign, rank, select a champion, or release.
   Focused runner tests passed **16/16**, the controller slice passed **487/487**, and the integrated
   canonical AutoKernel suite exited zero.
-- [ ] **AK-LE-1 — Reasoning-effort × search-persistence experiment.** Hold champion, retrieval context
+- [x] **AK-LE-1 — Reasoning-effort × search-persistence experiment.** Hold champion, retrieval context
   and PROPOSE prompt fixed; sweep only the planner's effort knob. Measure **search** outcomes, not
   answer quality: count of novel non-duplicate hypotheses, count of explicit "this is already
   optimized" terminations, and how many proposals survive the pre-filter.
@@ -454,14 +454,26 @@ section costs **zero GPU and zero local inference**.
   - **Pre-register the direction before running.** Our own observed planner failure is the *opposite*
     one — halting after a single critic "revise" — so the sign must be predicted in advance rather
     than read off the result. Its per-model invariant applies here too: effort is a property of a
-    (model, quant) pair and is never inherited.
-- [ ] **AK-LE-2 — `proximate_target` arm, run as one extra arm on AK-LE-1.** Tests the effort × target
+    (model, quant) pair and is never inherited. ✅ 2026-08-12 — the corrected r3 panel completed all
+    **8/8** predeclared Claude Opus 5 / GPT-5.6 Sol × high/xhigh × control/target cells, then the
+    source-pinned structural reducer emitted one planner receipt and **32** prospective belief rows.
+    Higher effort did not increase novel/surviving counts in either control arm (Claude `6→6`, Codex
+    `3→3`) and all four xhigh cells took longer. This is a bounded null result for the predeclared
+    control contrast, not a model-wide effort claim: there is one observation per cell and no
+    scaffold or campaign-ranking authority. Evidence:
+    `/mnt/raid0/llm/autokernel/campaigns/ak-le-planner-20260812-r3/planner-reduction.json`, file
+    SHA-256 `c24122893acdd7cf10f042a447d7daa41aeb7d77161dcda8b5b5bf5344b57791`.
+- [x] **AK-LE-2 — `proximate_target` arm, run as one extra arm on AK-LE-1.** Tests the effort × target
   interaction jointly rather than as a second study. **Specify it as a rendered planner-context line
   only — never a manifest field a gate can read** — regenerated each round and scoped **per cell**.
   AK-D3 demoted a percentage figure from trigger to readiness signal for sound statistical reasons
   (threshold peeking, winner's-curse inflation); a target that any gate can read re-introduces exactly
   that, one layer up. The rendered-context form gives the planner the steer without giving the
-  evaluator the number.
+  evaluator the number. ✅ 2026-08-12 — r3 rendered the decode target only as planner context and
+  reduced the complete matched panel. Claude produced `6` surviving hypotheses in every arm; Codex
+  target arms produced fewer than their matched controls (`3→1` at high, `3→2` at xhigh). No cell
+  emitted an already-optimized termination. The honest result is null for Claude and mixed/adverse
+  for Codex on this single panel; it does not establish a transferable proximate-target benefit.
 - [ ] **AK-LE-3 — Split *implement* from *exploit* as two prompt roles on the SAME model first,
   budget-matched in wall-hours, before any multi-model A/B.** The note's four-role split
   (explore / critique / implement / exploit) is a runnable design, but the delta from our current

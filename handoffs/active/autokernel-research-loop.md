@@ -2728,7 +2728,7 @@ cannot retrigger the expensive gate unchanged.
     cannot build, infer, execute processes, or write production, and labels architecture fixtures
     `empirical_claim=false`. The independently repeated focused suite passed **1,692 tests**. This is
     regression evidence only and does not close the parent empirical campaign task.
-- [ ] Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
+- [x] Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
   fault-injection tests are prerequisites, not substitutes for a campaign rehearsal with durable
   empirical receipts.
   - [x] **Complete the offline fault-injection acceptance matrix.** ✅ 2026-08-12 — research
@@ -2737,6 +2737,14 @@ cannot retrigger the expensive gate unchanged.
     bounds suites cover torn-write/restart recovery, exact-owned-PID crash/reclaim, live-holder
     non-preemption and revocation, plus receipt/hash/source tamper refusal. The broader 4,078-test
     suite passed once with one expected failure. This closes offline acceptance only.
+  - [x] **Publish and verify the governed real host-process rehearsal receipt.** ✅ 2026-08-12 —
+    research `d0b243a5`/`5c8714a1` launched only exact captured private-session children, planted a
+    journal crash and replayed it after restart, proved fake-device revocation was advisory rather
+    than preemptive, terminated the exact captured holder, and refused changed hash-bound bytes.
+    Campaign `ak-fault-rehearsal-20260812-r2` passed **3/3** legs, touched no live claim root, and
+    emitted three dependency-evidence rows sharing one support key with no performance, campaign,
+    ranking, release, or production authority. Receipt self-hash `8a345fbdbfff4bb04b4ac3388b8e82ff347941bc8fb93cbe8266ee2b2ed79a58`;
+    file SHA-256 `70e9f87bc5405be6e66c9c0f6ce49f0427f1c83ba0f14491c93401e5283d688e`.
 - [x] Give the operator surface a freshness and health contract, not just data. Today's `/kernel` page is
   **absence-tolerant over a missing directory** — it renders clean when its producer is dead, which is
   the exact shape of AutoPilot dying at trial 1302 and staying dead ~23 h with every dashboard green.
@@ -2765,6 +2773,22 @@ cannot retrigger the expensive gate unchanged.
   production-set wire shape and requires full blocking-condition detail plus distinct tree identity,
   observed/attested ggml, non-executing ELF linkage, and dashboard-process ambient-path claims.
   `tests.test_dashboard_static_js` passed **28/28**.
+- [x] **Surface current loop-engineering and host-process recovery evidence on Kernel-R&D.** ✅
+  2026-08-12 — root `26a9b9f1` adds distinct AK-LE and fault-rehearsal cards. The loop card reports
+  the newest complete panel only as raw evidence until a governed reduction exists, then shows its
+  producer-authored observation count without granting ranking authority; the fault card reports
+  exact leg coverage and the no-live-claim-root boundary without grading dependency evidence as
+  performance. Root `2d0d9af4`'s runtime harness plus focused static/panel tests passed. The resident
+  root-main hub at `e861baf4` (supervisor PID `2455173`, hub PID `2468686`) rendered r3 `8/8` / 32
+  rows, all eight cell detail rows (model, effort, target, survivors, termination, wall time), and r2
+  `PASS` / `3/3` at runtime with no JavaScript exception and no inherited `LD_LIBRARY_PATH`.
+- [x] **Make frozen-kernel working-tree drift a first-class production-set alarm.** ✅ 2026-08-12 —
+  root `a19becb5` projects tracked and untracked status for all three frozen trees, requires cleanliness
+  for `intact=true`, and renders exact dirty paths. The reloaded hub (supervisor PID `2455173`, hub PID
+  `2478391`) reports whisper.cpp and qwentts.cpp clean, while llama.cpp is dirty only because three
+  preserved user-owned paths are untracked: `.gitnexusignore`, `tools/math-tools/external/eigen/`, and
+  `tools/math-tools/external/odeint/`. No production-tree mutation or cleanup occurred. Focused tests
+  passed **124 cases plus 12 static-JavaScript subtests**.
 - [x] Add a non-recursive, panel-specific Kernel-R&D data-health probe so registry consumers can
   distinguish hub transport health from AutoKernel producer health without recursing through the
   global `/api/health` fold. ✅ 2026-08-12 — root `6188197f` moves the registry probe from
@@ -2780,6 +2804,10 @@ cannot retrigger the expensive gate unchanged.
   ambient loader-path risk, and ggml generations. The exact final focused suite passed **28 tests**.
   Live contract v2 proves `3/3` trees, `4/4` binaries, `4/4` links, and `4/4` ELF linkage without
   executing a production binary; it remains fail-closed on the two residuals below.
+  - [ ] **Resolve or explicitly retain the frozen llama working-tree cleanliness alarm.** The three
+    untracked paths are user-owned and preserved; classify them for ignore/tracking/removal outside
+    this session before the complete-set fold may return clean. Do not mutate the frozen tree merely
+    to make the dashboard green.
   - [ ] **OP-17 — Decide whether to attest llama.cpp's ggml generation for the frozen-v9 set.**
     - **Context:** the live tree reports ggml `0.16.0`, but the v9 operator attestation does not state
       an expected ggml generation. The dashboard therefore proves only `2/3` and reports `SET NOT
