@@ -38,6 +38,18 @@ Every hash below was read back from `git log`, not from memory. Repo in brackets
 unioned and staged (2020 lines, 0 markers). Verified at content level three times, against three
 different planes — working tree, index, and commit `66f40eeb`. Zero lines lost from either side.
 
+**Merge outcome — CALLED, not failed** (coordinator, 04:04Z). It re-broke **three times from ordinary
+activity**: twice from our own commits, once from `inference` pushing 9 AutoKernel commits to origin.
+The conclusion is empirical: *this merge cannot be landed incrementally while either side is active*,
+so it goes **inside the reboot quiesce** rather than racing it. My contribution is complete and needs
+no rework — the resolutions are content-verified and the branch is concluded at `c0387984`. The three
+fresh conflicts at 04:04Z (`autokernel-research-loop.md`, `master-handoff-index.md`,
+`logs/agent_audit.log`) are deliberately **not** being resolved; they would re-break.
+Sequencing runbook: `artifacts/operator/quiesce-merge-push-reboot-20260812.md` (not duplicated here).
+**One operational note for whoever runs it**: main has advanced past the branch, so `--ff-only` will
+refuse. Measured at 03:5xZ, `merge-tree` showed **zero real textual conflicts** — an ordinary `merge`
+succeeds. A refused fast-forward is not a failure and should not be reported as one.
+
 **Parked, not landed**: **A14** (`GateDecision` echo) on branch `a14-gatedecision-echo` @ `a7d7bdb6`
 — merge-gate verdict AUTONOMOUS, 6 files, +299/-0, 9 tests. **Cherry-pick, not `--ff-only`** (main
 advanced past the branch point), and run the gate with a **three-dot** range.
@@ -86,6 +98,9 @@ one was caught by someone else.** That is the finding.
 | My batch-8 section filed under `mainA`'s heading | `mainA`'s finding, applied to myself | `cat >>` at EOF re-parents to whoever wrote a `##` last. |
 | Attributed a heading-count disclosure to `mainD` | `mainD` asked me to check | Checked; it was the coordinator's. Their instinct was right even though the finding was negative. |
 
+| Grepped `merge-tree` for `^CONFLICT` — pattern didn't match this git's format; nearly reported "no conflicts" on an empty read | myself, on the 670KB output size | Face 4, committed while auditing for face 4. |
+| Then counted 3 `<<<<<<<` in that output as real conflicts | myself, by attributing markers to a path | They were inside file **content** — my own catalogue *documents* conflict markers. Attributed count: **zero**. |
+
 **The pattern worth keeping:** every one of these was silent-by-construction. None failed loudly; all
 were caught by someone reading the *artifact* rather than the *report*, or by a number too clean to
 be true. That is why the catalogue is keyed on the diff rather than on intent.
@@ -133,6 +148,19 @@ Flagged for the single package. Nothing here is actionable by an agent.
    them into one line.
 4. **P0-0 is a recurrence**, not a fresh bug: 8070/8072/8085 is the exact triplet ruled on 2026-07-23.
    Worth knowing it came back.
+
+---
+
+## 5b. One finding filed but deliberately NOT worded tonight
+
+**A conflict-marker count over `merge-tree` output is unsound wherever any file documents conflict
+markers.** I nearly reported three real conflicts that were my own catalogue's prose about
+`<<<<<<<`. The instrument read the *documentation of the thing* as the thing. Attribute markers to an
+owning path before counting them.
+
+This is a genuine tenth candidate for the verification catalogue. I flagged it rather than filing it:
+it arrived at 03:5xZ and the catalogue's value is that each face is worded once, precisely, with its
+own test. A hurried tenth entry would cost more than a missing one. **Next session should word it.**
 
 ---
 
