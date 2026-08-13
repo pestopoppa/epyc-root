@@ -31,12 +31,23 @@ if [[ ! -f "$COMPILE_SOURCES" ]]; then
   exit 0
 fi
 
+# KB-RAG needs its own incremental cursor.  wiki/source_manifest.json and
+# wiki/.last_compile belong to the serialized full wrap-up transaction; using
+# either as a post-commit cursor lets an ordinary worker commit mutate or advance
+# wrap-up state.  The git common dir gives all lane worktrees one untracked,
+# non-wrap cursor while the PostToolUse dispatcher enforces the single rebuilder.
+GIT_COMMON_DIR="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+if [[ -z "$GIT_COMMON_DIR" ]]; then
+  exit 0
+fi
+KB_RAG_CURSOR="${GIT_COMMON_DIR}/kb-rag/source_manifest.json"
+
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/kb-rag-manifest.XXXXXX")
 trap 'rm -rf "$TMP_DIR"' EXIT
 DELTA_MANIFEST="${TMP_DIR}/source_manifest_delta.json"
 MANIFEST_ERR="${TMP_DIR}/source_manifest.err"
 
-if ! "$PYTHON" "$COMPILE_SOURCES" --changed-since-manifest >"$DELTA_MANIFEST" 2>"$MANIFEST_ERR"; then
+if ! "$PYTHON" "$COMPILE_SOURCES" --changed-since-manifest "$KB_RAG_CURSOR" >"$DELTA_MANIFEST" 2>"$MANIFEST_ERR"; then
   if grep -q "manifest not found" "$MANIFEST_ERR"; then
     "$PYTHON" "$COMPILE_SOURCES" --full >"$DELTA_MANIFEST" 2>"$MANIFEST_ERR" || {
       tail -10 "$MANIFEST_ERR" >&2
@@ -63,7 +74,7 @@ fi
 
 # Run the incremental updater. Errors are logged but do not block the commit
 # (this is a post-commit hook; the commit has already landed). Keep the saved
-# source manifest unchanged on failure so the next hook run can retry.
+# KB-RAG cursor unchanged on failure so the next hook run can retry.
 "$PYTHON" "$ORCHESTRATOR/scripts/kb_rag/cli.py" update \
   --manifest "$DELTA_MANIFEST" \
   --manifest-root "$REPO_ROOT" 2>&1 | tail -10 || {
@@ -71,7 +82,7 @@ fi
   exit 0
 }
 
-"$PYTHON" "$COMPILE_SOURCES" --full --write-manifest >/dev/null 2>&1 || {
-  echo "project-wiki source manifest refresh failed (non-fatal)" >&2
+"$PYTHON" "$COMPILE_SOURCES" --full --write-manifest "$KB_RAG_CURSOR" >/dev/null 2>&1 || {
+  echo "KB-RAG source cursor refresh failed (non-fatal)" >&2
   exit 0
 }
