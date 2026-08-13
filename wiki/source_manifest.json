@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-13T22:22:40Z",
+  "last_compile": "2026-08-13T22:26:23Z",
   "mode": "full",
-  "scan_time": "2026-08-13T22:23:16Z",
+  "scan_time": "2026-08-13T22:26:23Z",
   "schema_version": 1,
-  "source_set_hash": "9f05047015c75e3d2fde6917be6a6562347cf9a492964005f0739c34297401df",
+  "source_set_hash": "f2264005badd93690ae789eee1e4ab61460f3af26c98d77eb4dc539f9b212eb3",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -175,10 +175,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4be01f79f94d0b91709225769ed18be4ac62d769f8ddfd56aac23223f59c7e18",
-      "modified": "2026-08-13T15:27:03Z",
+      "content_hash": "53561671cfa5cfe76c4efde0d6f841b612f2414dce0153e421f8234be253bccf",
+      "modified": "2026-08-13T22:25:31Z",
       "path": "handoffs/active/bulk-inference-campaign.md",
-      "size": 125661,
+      "size": 126968,
       "title": "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
       "type": "handoff-active"
     },
@@ -6087,10 +6087,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "5f77ab648fc94057915d697fc594005fa5769ecea76352356d6ce6f5c0b38d31",
-      "modified": "2026-08-13T22:15:59Z",
+      "content_hash": "7d7c2e3ae42e4e21935155c1ec6e7a97d1d80aee10face1758ca9934e250de14",
+      "modified": "2026-08-13T22:25:31Z",
       "path": "progress/2026-08/2026-08-13-mainB.md",
-      "size": 9267,
+      "size": 10659,
       "title": "2026-08-13 \u2014 mainB",
       "type": "progress"
     },
