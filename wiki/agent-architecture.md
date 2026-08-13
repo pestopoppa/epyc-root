@@ -2,8 +2,28 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (a 23-entry research-intake round on multi-agent fan-out (PARL/Kimi K2.5 Agent Swarm and 21 follow-ons) found our own fan-out doctrine has no negative condition and most of the source literature does not survive a primary-source dive — 9 of 18 dived entries overturned; the round's own self-correcting dive process is filed as the more durable lesson — see below; earlier 2026-08-12 note (third pass — the 2026-08-03 daemon-owned-state gap is now enforced, not just diagnosed: a two-layer guard (kernel-held-lock ownership check + victim-side changed-since-last-write witness) landed at the single `save_state` funnel, 19 tests, mutation-verified — see the addendum on the original finding below; earlier same-day note (second pass) — a reviewed audit of the coordinator role **falsifies the root cause the role wrote for itself**: policy compliance does not "decay with context", it fails at *retrieval on the emission path*, and the same defect recurred 21 minutes after being written up as a correction; the audit also finds the self-audit applying **opposite evidentiary rules** depending on whether the evidence incriminates or exculpates the role — see below; earlier same-day note: a `git clean -ffdx` wiped the session bus and the recovery selected the one dead claim while dropping every live one; the "the daemon knew what to run and told nobody" narrative is RETRACTED with its measured refutation; the committed-not-live chain closed after four nested restarts; residency-is-not-work; within-file contamination in a shared log named as distinct from the cross-file rule pathspecs already solve — see below; earlier 2026-08-11 note: a 243-hour coordinator-daemon outage reported itself healthy; a nudge-guard deadlock caused a ~10-hour fleet stall; the session-bus C-series hardening arc closed; the backlog dispatch queue was retired as an unreliable instrument — see below; earlier 2026-08-08 note retained)
+**Last compiled**: 2026-08-13 (post-reboot cold-start findings F-39…F-43: the opencode era added three adapter gaps and the coordinator "crash" was a SIGSTOP — free-tier rate-limit wedge plus an unsubmitted-composer wedge; earlier same-day fan-out note retained)
 **Sources**: 85+ documents
+
+## Compiled Update — 2026-08-13 (post-reboot cold start): the opencode era's adapter gaps, and a "crash" that was a SIGSTOP
+
+**Confidence: verified** — F-39/F-40/F-43 each cite process state, log timestamps, or live TUI calibration; the SIGSTOP was investigated from `ps` state `T` + wchan `do_signal_stop` + `opencode.log` timestamps, not asserted.
+
+**The fleet moved to opencode (DeepSeek V4 Flash) and the adapter had to catch up.** Three findings from the 2026-08-13 post-reboot cold start, all in `coordination/session-bus/BUS_PROTOCOL.md`-adjacent tooling:
+
+- **F-39 — `tmux_adapter` had no opencode backend.** `_BACKENDS = ("codex", "claude")`, the composer glyph set missed opencode's `┃` (U+2503), and `_strip_faint_runs` only stripped SGR-2 faint while opencode renders its placeholder gray `38;5;8`. Measured against a live disposable opencode TUI, an empty composer read as NON-EMPTY — every doorbell/nudge guard would have refused permanently. Corrected in place with two regression tests (suite 45/45). Honest remaining gap: opencode has **no runtime signal yet** (`runtime UNAVAILABLE`), which fails closed — safe, but a next-step item.
+- **F-40 — opencode's TUI silently rejects `--variant`.** `--variant` exists only on the `run` subcommand; the default TUI command does not define it, so four spawn attempts died instantly before the cause was found. (The lesson generalizes: an instant-death spawn with no output means check subcommand-specific flags, not the model.)
+- **F-43 — the coordinator "crash" was a SIGSTOP, not a crash.** Process state `T` with all 121 threads stopped, wchan `do_signal_stop`; trigger was a **free-tier rate-limit wedge** (`AI_APICallError: Rate limit exceeded` on `deepseek-v4-flash-free` ×4+ sessions in a 2-minute window — the free tier cannot sustain 5 concurrent mains + coordinator), followed by an **unsubmitted-composer wedge** (doorbell text left in the prompt box because the post-Enter buffer check read `''` vs the expected `›`; operator had to press Enter manually twice). Corrected by switching mains to hosted `deepseek/deepseek-v4-flash` via `main-max.md`.
+
+**The operator-observed behaviour encoded (F-43):** when a nudge/doorbell reports a **post-Enter failure**, the text is still in the composer and delivery is NOT done — follow up with `tmux_adapter.py pending`, then `submit --expect '<text>'` if it is the adapter's own doorbell string. Treating "verification failed" as "harmless" is what leaves rings sitting unsubmitted in live panes.
+
+**Standing lesson for the fleet:** a wedged-but-alive pane reads as idle (opencode runtime `UNAVAILABLE` falls back to the heartbeat guard chain), so a stopped process plus a stale heartbeat is indistinguishable from a finished session until the hardware/process check is done. The three-states rule (working / compacting / idle) now has a fourth failure mode to remember: **stopped**.
+
+### Source References (2026-08-13)
+
+- [`handoffs/active/coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) §2026-08-13 post-reboot cold-start findings — F-39, F-40, F-43
+- [`progress/2026-08/2026-08-13-coordinator-agent.md`](../progress/2026-08/2026-08-13-coordinator-agent.md) — crash investigation + fleet re-instantiation on hosted DeepSeek V4 Flash
+- `scripts/coordination/tests/test_tmux_adapter_submission.py` — the F-39 regression pins
 
 ## Compiled Update — 2026-08-12 (second pass): a role's self-diagnosis, audited — the conclusion survives and every argument for it does not
 

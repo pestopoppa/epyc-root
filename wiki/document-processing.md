@@ -2,8 +2,27 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-08-12 (the 200-PDF benchmark dataset is finally on disk, all three parenthesised premises of the row that asked for it were false, and the name it is filed under already belonged to a different project — see below; earlier 2026-07-17 pass retained)
-**Sources**: 10+ documents (2026-07-17 adds PaddleOCR-VL Wave-3 producer + negative HTML-table prompt result + scorer-compatible post-processing checkpoint; 2026-07-06 focused pass: ODL hybrid sidecar probe preflight; 2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
+**Last compiled**: 2026-08-13 (the intrinsic chunk-quality scoring harness landed in `odl_bench` — Ekimetrics SC/BI/ICC/DCC alongside the existing NID/TEDS/MHS rows; earlier 2026-08-12 pass retained)
+**Sources**: 10+ documents (2026-08-13 adds the ODL-011 intrinsic harness; 2026-08-12 adds the 200-PDF benchmark dataset + name-collision corrections; 2026-07-17 adds PaddleOCR-VL Wave-3 producer + negative HTML-table prompt result + scorer-compatible post-processing checkpoint; 2026-07-06 focused pass: ODL hybrid sidecar probe preflight; 2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
+
+## Compiled Update — 2026-08-13: intrinsic chunk-quality scoring is now instrumented in the ODL bench
+
+**Confidence: verified** — the scoring path was implemented and tested in this repo (`epyc-inference-research` commit `f24b8aa9`; 26 new stdlib-unittest cases; full 52-test odl_bench suite green; ruff clean).
+
+**The Phase-3 instrumented harness arrived**: `scripts/benchmark/odl_bench/intrinsic.py` lifts the four non-coref Ekimetrics intrinsic metrics from the MIT scaffold (intake-579/580) — Size Compliance (SC), Block Integrity (BI), Intrachunk Cohesion (ICC), Contextual Coherence (DCC) — and wires them into the benchmark as a new `intrinsic_chunk_quality` metric family alongside the existing NID/TEDS/MHS rows. `odl_bench adapter intrinsic --prediction-dir <dir> --engine <name>` scores any existing prediction directory with no inference and no model download; the real Phase-2 chunker slots in later by passing its chunk list to `score_chunks` directly.
+
+**Contract constraints, carried from the Phase-2 evaluation contract (handoff :539-540):**
+- **FMRE/RC excluded.** The coref-dependent "Filtered Missing Reference Error" is not lifted — it requires `maverick-coref` (CC BY-NC-SA 4.0) and its upstream RC=99.0 figure is unverified (reference-boundary corruption fixed only 2026-07-06). No coref code or license exposure enters the repo.
+- **Never a gate.** Intrinsic scores are informational next to NID/TEDS/MHS and do not gate on their own; intake-581 (HOPE) empirically falsifies the cohesion premise that ICC/BI rest on, so the Ekimetrics-vs-HOPE side-by-side remains the decision instrument for Phase 2.
+- **Embedder degrade.** ICC/DCC need a sentence-transformers model; when none is provided the rows carry `value=None` with the reason in `detail`, exactly like a missing extraction backend reports `available=False`.
+
+**One design note worth carrying**: the default token counter is a deterministic whitespace approximation of upstream's tiktoken counter (tiktoken is not installed on any EPYC venv); `count_tokens_func` is injectable for tiktoken-exact numbers. Relative comparisons between engines are unaffected by the approximation.
+
+### Source References (2026-08-13)
+
+- [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) §Research Intake Update — 2026-05-20 (intake-579/580/581) and the flipped `:540` row — the Phase-3 contract and this implementation
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — implementation + verification summary
+- `epyc-inference-research/scripts/benchmark/odl_bench/intrinsic.py` — the lifted metrics and the embedder-gating convention
 
 ## Compiled Update — 2026-08-12: the benchmark dataset landed, and every premise about it was wrong
 
