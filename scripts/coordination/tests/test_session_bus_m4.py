@@ -49,13 +49,33 @@ class Bus:
         # Start from an empty queue/outbox/inbox so cases are isolated.
         (self.root / "queue.jsonl").write_text("")
         for d in ("inbox", "outbox", "heartbeats", "cursors"):
-            for f in (self.root / d).glob("*"):
+            directory = self.root / d
+            directory.mkdir(parents=True, exist_ok=True)
+            for f in directory.glob("*"):
                 f.unlink()
         cfg = self.root / "config.yaml"
-        cfg.write_text(cfg.read_text().replace("authority: manual", f"authority: {authority}"))
+        import yaml
+        config = yaml.safe_load(cfg.read_text()) or {}
+        config["roster"] = [
+            {"id": "codex", "role": "main", "lanes": ["cpu", "gpu", "none"]},
+            {"id": "claude-main", "role": "main", "lanes": ["cpu", "none"]},
+            {"id": "coordinator-agent", "role": "coordinator-agent", "lanes": ["none"]},
+        ]
+        config.setdefault("coordinator_daemon", {})["authority"] = authority
+        config.setdefault("role_rollout", {})["audit_completion"] = "off"
+        config["role_rollout"]["resource_leases"] = "off"
+        cfg.write_text(yaml.safe_dump(config, sort_keys=False))
+        for agent in ("codex", "claude-main", "coordinator-agent"):
+            (self.root / "inbox" / f"{agent}.jsonl").touch()
+            (self.root / "outbox" / f"{agent}.jsonl").touch()
+        (self.root / "tokens").mkdir(parents=True, exist_ok=True)
+        (self.root / "tokens" / "token-queue.md").write_text("# operator tokens\n")
         self.tokens = self.root / "tokens" / "token-queue.md"
 
     def add_queue(self, **row) -> None:
+        row.setdefault("task_text", f"test task {row.get('task_id')}")
+        row.setdefault("screened_by", "m4-test-fixture")
+        row.setdefault("expected_occupancy", {"est_h": 0.25, "basis": "test fixture"})
         full = {"schema_version": QV, "ts": now_iso(), "epoch": 0, **row}
         with (self.root / "queue.jsonl").open("a") as fh:
             fh.write(json.dumps(full) + "\n")
@@ -197,9 +217,15 @@ def test_stall_ladder() -> None:
         b.add_queue(task_id="s-1", status="RUNNING", lane="none", gating="none", owner="codex",
                     lease_expires_ts=now_iso(-60), attempt=0, max_attempts=3)
         out = b.tick()
-        check(b.status_of("s-1") == "STALE_REQUEUED", f"expired lease -> STALE_REQUEUED (got {b.status_of('s-1')})")
+        history = [json.loads(line) for line in (b.root / "queue.jsonl").read_text().splitlines()
+                   if line.strip() and json.loads(line).get("task_id") == "s-1"]
+        check(any(row.get("status") == "STALE_REQUEUED" for row in history),
+              "expired lease passes through STALE_REQUEUED")
+        check(b.status_of("s-1") == "ASSIGNED",
+              f"dispatchable requeue is immediately reassigned (got {b.status_of('s-1')})")
         check(b.row("s-1").get("attempt") == 1, "attempt incremented")
-        check(b.row("s-1").get("owner") is None, "owner cleared for any capable main")
+        check(b.row("s-1").get("owner") in {"codex", "claude-main"},
+              "requeue may land on any capable main")
         check("hard-stall" in out, "defect row emitted for the hard stall")
 
         # give-up: attempts exhausted
@@ -407,8 +433,8 @@ def test_auto_yield() -> None:
         b3.cleanup()
 
 
-def test_advisory_writes_only_two_files() -> None:
-    print("\n== advisory mode still writes only two files (M3 invariant) ==")
+def test_advisory_writes_only_transport_and_daemon_state() -> None:
+    print("\n== advisory mode writes transport/state but never assigns (current M3 invariant) ==")
     b = Bus("advisory")
     try:
         b.add_queue(task_id="adv-1", status="READY", lane="none", gating="none", priority="P1")
@@ -416,7 +442,12 @@ def test_advisory_writes_only_two_files() -> None:
         b.tick()
         after = {p: p.stat().st_mtime_ns for p in b.root.rglob("*") if p.is_file()}
         changed = {p.name for p in set(after) if before.get(p) != after[p]}
-        allowed = {"advisory.jsonl", "coordinator-daemon.json"}
+        # Relay, boundary delivery and dedupe now run at every authority; these
+        # are transport/bookkeeping, not scheduling decisions. The invariant is
+        # no queue mutation or task-assign, not the superseded two-file proxy.
+        allowed = {"advisory.jsonl", "coordinator-daemon.json", "relay_state.json",
+                   "coordinator-agent.jsonl", "stuck_state.json", "boundary_state.json",
+                   "scheduling_recommendation_state.json", "operator_delivery_state.json"}
         check(changed <= allowed, f"only {allowed} touched; changed={changed or '{}'}")
         check(b.status_of("adv-1") == "READY", "advisory mode did NOT assign")
     finally:
@@ -431,7 +462,7 @@ def main() -> int:
     test_lane_gating_and_pausability()
     test_lease_revocation()
     test_auto_yield()
-    test_advisory_writes_only_two_files()
+    test_advisory_writes_only_transport_and_daemon_state()
     failed = [w for ok, w in RESULTS if not ok]
     print(f"\n{len(RESULTS) - len(failed)}/{len(RESULTS)} passed")
     if failed:

@@ -72,6 +72,14 @@ coordinator subagent **on its behalf** — preferred when the main is already di
 work. Related standing direction (2026-07-28): actively source and track non-inference work
 that can proceed regardless of a pending reboot or blocked inference lane.
 
+### Auditor audit-pass checkpoint
+
+Every completed Auditor audit pass is a checkpoint even when the Auditor remains available for the
+next packet. Persist the verdict, evidence, and handoff follow-ups via the standard wrap-up routine
+before accepting a disjoint audit. This does not authorize the Auditor to contact the source main:
+follow-ups return to the ordinary handoff/coordinator backlog path. The precise narrow exception to
+the manual-trigger rule is maintained in `agents/commands/wrap-up.md`.
+
 ## Pre-reboot wrap-up is mandatory, not checkpoint-gated
 
 Operator, 2026-07-29: ALL progress MUST be persisted and logged BEFORE a host reboot. Every

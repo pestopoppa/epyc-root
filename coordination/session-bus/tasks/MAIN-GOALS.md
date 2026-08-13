@@ -12,7 +12,7 @@ The goals below are durable; the task briefs under this directory are instances 
 
 ## How to read your section
 
-Each section carries five things, and nothing else is authoritative about your mandate:
+Each ordinary-main section carries five things, and nothing else is authoritative about its mandate:
 
 | Field | What it means |
 |---|---|
@@ -27,6 +27,13 @@ the authority. Where this file names a lane it is restating the roster, not amen
 
 **If a goal here and a brief disagree, the goal wins and you say so.** A brief is a snapshot; the
 goal is the mandate. Reporting the disagreement is escalation class (e) and is high-value work.
+
+**Special-role exception:** `inference` and `auditor` no longer receive standing campaign goals from
+this file. Their only authoritative mandates are
+[`agents/inference-main.md`](../../../agents/inference-main.md) and
+[`agents/auditor-main.md`](../../../agents/auditor-main.md). Any older E8 or C-series prose retained
+below is historical provenance only: it creates no assignment, backlog ownership, model constraint,
+or permission to widen either role.
 
 ---
 
@@ -79,9 +86,23 @@ other mains keep working throughout — that is the point of the none-lane backl
 
 ## `inference`
 
+> **Durable role contract:** [`agents/inference-main.md`](../../../agents/inference-main.md).
+> This historical campaign goal does not replace that contract. Inference owns advisory compute
+> scheduling and may execute inference-gated work or grant typed resource leases; coordinator
+> routes persistent-idle evidence to it. Launch-model recommendations are not identity and an
+> operator model/effort change is silent.
+
 **Lanes:** `cpu`, `gpu`, `none` · **Window:** `agent:inference` · *(was `codex` until 2026-07-29)*
 
-### GOAL
+**No standing campaign is assigned here.** Inference owns the compute schedule, keeps an inference
+ready horizon, executes inference-gated work or grants bounded typed leases, and reports/releases
+resource state under its canonical role contract. Operator- or coordinator-directed campaigns are
+inputs to that role, not permanent ownership created by this charter.
+
+The remainder of this section records the retired 2026-07 E8 campaign for provenance only. **Do not
+derive current work from it.**
+
+### Retired campaign goal — historical only
 
 **Own the inference plane, and deliver the E8 quality baseline signature and everything it gates.**
 
@@ -152,10 +173,26 @@ campaign.
 
 ## `auditor`
 
+> **Durable role contract:** [`agents/auditor-main.md`](../../../agents/auditor-main.md).
+> This historical C-series goal does not replace that contract. Auditor receives coordinator-routed
+> completed `mainA`–`mainD` work, audits it, checkpoints every pass, and returns residual work via
+> handoffs/coordinator rather than communicating directly with the source main. Launch-model
+> recommendations are not identity and an operator model/effort change is silent.
+
 **Lane:** `none` (never an inference lane) · **Window:** `agent:auditor` ·
 *(was `fable-auditor` until 2026-07-29)*
 
-### GOAL
+**No generic backlog or delivery-plane campaign is assigned here.** Auditor accepts only
+coordinator-routed audit packets for completed `mainA`–`mainD` work, checkpoints every verdict, and
+returns residual work through handoffs and normal coordinator dispatch. It never routes corrections
+directly to the source main. Any implementation work is delegated to `gpt-5.6-terra` subagents and
+remains proposed until Auditor reviews it.
+
+The remainder of this section records the retired 2026-07 C-series campaign for provenance only.
+**Do not derive current work from it.** C-series implementation is ordinary backlog unless separately
+dispatched by the coordinator.
+
+### Retired campaign goal — historical only
 
 **Own the session-bus delivery plane so that no main is ever unable to receive work — and audit other
 mains' completed work.**

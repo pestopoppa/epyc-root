@@ -4328,6 +4328,489 @@ def test_R16_a_gated_row_does_not_starve_the_row_behind_it(
     assert _refusals(emitted, "T-blocker")
 
 
+# =========================================================== Auditor shadow ===
+
+def _audit_config(bus_root: Path, mode: str = "shadow") -> dict:
+    config = _assign_config(bus_root)
+    config["roster"] += [
+        {"id": "mainA", "role": "main", "lanes": ["none"]},
+        {"id": "auditor", "role": "auditor-main", "lanes": ["none"],
+         "schedulable": False, "accepts_work_types": ["audit"]},
+        {"id": "service", "role": "service", "lanes": ["none"]},
+    ]
+    config["audit"] = {"mode": mode}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    _provision(bus_root, "mainA", "auditor", "service")
+    return config
+
+
+def _audit_complete(task: str, *, sender: str = "mainA", seq: int = 1, outcome: str = "pass") -> dict:
+    return _message(sender, "coordinator-agent", "task-complete", task_id=task, seq=seq,
+                    payload={"outcome": outcome, "artifacts": [f"artifacts/{task}.json"],
+                             "acceptance_refs": [f"handoffs/{task}.md#acceptance"]})
+
+
+def test_audit_shadow_preserves_source_done_and_synthesizes_one_targeted_audit(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Shadow mode adds a linked review unit without changing source semantics."""
+    _quiet_tick_seams(monkeypatch)
+    config = _audit_config(bus_root, "shadow")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    _append(bus_root / "queue.jsonl", source)
+    done = _audit_complete("source-work")
+    _append(bus_root / "outbox" / "mainA.jsonl", done)
+
+    first = coordinator.apply_assignment(bus_root, config, epoch=7)
+    folded = bus.fold_queue(bus_root)
+    audit_id = coordinator._audit_task_id("source-work", done["id"])
+    assert folded["source-work"]["status"] == "DONE_PASS"
+    assert folded[audit_id]["audit_of"] == "source-work"
+    assert folded[audit_id]["completion_msg_id"] == done["id"]
+    assert folded[audit_id]["executor_id"] == "auditor"
+    assert folded[audit_id]["artifact_refs"] == ["artifacts/source-work.json"]
+    assert _assigned(first).get(audit_id) == "auditor"
+    request = [m for m in _read_jsonl(bus_root / "inbox" / "auditor.jsonl")
+               if m.get("kind") == "audit-request"]
+    assert len(request) == 1
+    bus.validate_row(bus_root, request[0], "msg")
+    assert request[0]["payload"]["completion_msg_id"] == done["id"]
+    assert coordinator.apply_assignment(bus_root, config, epoch=8) == []
+    assert len([r for r in _read_jsonl(bus_root / "queue.jsonl") if r["task_id"] == audit_id]) == 2
+
+
+def test_auditor_and_service_never_receive_generic_backlog(bus_root: Path,
+                                                           monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _audit_config(bus_root, "off")
+    _append(bus_root / "queue.jsonl", _typed_row("ordinary"))
+    advice = coordinator.compute_advice(bus_root, config, epoch=1, gate_dispatch=True)
+    agents = {r.get("agent") for r in advice if r.get("kind") == "would-assign"}
+    assert "auditor" not in agents and "service" not in agents
+
+
+def test_required_audit_verdict_transitions_without_routing_source_main(bus_root: Path) -> None:
+    config = _audit_config(bus_root, "required")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    latest = {"source-work": source}
+    rows = coordinator.transcribe(latest, {"source-work": [done]}, 1, config)
+    pending = next(r for r in rows if r["task_id"] == "source-work")
+    audit = next(r for r in rows if r.get("work_type") == "audit")
+    assert pending["status"] == "DONE_PENDING_AUDIT"
+    assert audit["audit_policy"] == "required"
+    assert "source-work" in audit["audit_question"]
+    verdict = _message("auditor", "coordinator-agent", "audit-verdict", task_id=audit["task_id"],
+                       payload={"verdict": "needs-rework", "audit_of": "source-work",
+                                "completion_msg_id": done["id"]})
+    # The audit's captured required policy wins even if the global default is
+    # lowered before the auditor returns its verdict.
+    config["audit"] = {"mode": "shadow"}
+    after = coordinator.transcribe({"source-work": pending, audit["task_id"]: audit},
+                                   {audit["task_id"]: [verdict]}, 2, config)
+    assert {r["task_id"]: r["status"] for r in after} == {
+        audit["task_id"]: "DONE_PASS", "source-work": "STALE_REQUEUED"}
+    forged = {**verdict, "payload": {**verdict["payload"], "completion_msg_id": "wrong"}}
+    assert coordinator.transcribe({"source-work": pending, audit["task_id"]: audit},
+                                  {audit["task_id"]: [forged]}, 2, config) == []
+    forged_author = {**verdict, "from": "mainA"}
+    assert coordinator.transcribe({"source-work": pending, audit["task_id"]: audit},
+                                  {audit["task_id"]: [forged_author]}, 2, config) == []
+    with pytest.raises(bus.BusError, match="source main"):
+        bus.check_audit_message({**verdict, "cc": ["mainA"]})
+    with pytest.raises(bus.BusError, match="only by the auditor"):
+        bus.check_audit_message(forged_author)
+
+
+def test_audit_ack_and_status_progress_but_task_complete_cannot_close_it(bus_root: Path) -> None:
+    config = _audit_config(bus_root, "shadow")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    audit = next(r for r in coordinator.transcribe({"source-work": source},
+                                                    {"source-work": [done]}, 1, config)
+                 if r.get("work_type") == "audit")
+    audit = {**audit, "status": "ASSIGNED"}
+    ack = _message("auditor", "coordinator-agent", "ack", task_id=audit["task_id"])
+    claimed = coordinator.transcribe({audit["task_id"]: audit}, {audit["task_id"]: [ack]}, 2, config)
+    assert claimed[0]["status"] == "CLAIMED"
+    running = {**audit, **claimed[0]}
+    status = _message("auditor", "coordinator-agent", "status", task_id=audit["task_id"])
+    progressed = coordinator.transcribe({audit["task_id"]: running}, {audit["task_id"]: [status]}, 3, config)
+    assert progressed[0]["status"] == "RUNNING"
+    completion = _message("auditor", "coordinator-agent", "task-complete", task_id=audit["task_id"],
+                          payload={"outcome": "pass"})
+    assert coordinator.transcribe({audit["task_id"]: {**running, **progressed[0]}},
+                                  {audit["task_id"]: [completion]}, 4, config) == []
+
+
+def test_valid_audit_verdict_wins_over_historical_ack_in_same_batch(bus_root: Path) -> None:
+    config = _audit_config(bus_root, "shadow")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    audit = next(r for r in coordinator.transcribe({"source-work": source},
+                                                    {"source-work": [done]}, 1, config)
+                 if r.get("work_type") == "audit")
+    audit["status"] = "ASSIGNED"
+    ack = _message("auditor", "coordinator-agent", "ack", task_id=audit["task_id"], seq=1)
+    verdict = _message("auditor", "coordinator-agent", "audit-verdict", task_id=audit["task_id"], seq=2,
+                       payload={"verdict": "accept", "audit_of": "source-work",
+                                "completion_msg_id": done["id"]})
+    rows = coordinator.transcribe({audit["task_id"]: audit}, {audit["task_id"]: [ack, verdict]}, 2, config)
+    assert [row["status"] for row in rows] == ["DONE_PASS"]
+
+
+def test_validate_rejects_direct_jsonl_forged_audit_verdict(bus_root: Path,
+                                                            capsys: pytest.CaptureFixture[str]) -> None:
+    _audit_config(bus_root, "shadow")
+    forged = _message("mainA", "coordinator-agent", "audit-verdict", task_id="audit-x",
+                      assignee="coordinator-agent", action_required=True,
+                      payload={"verdict": "accept", "audit_of": "source-work",
+                               "completion_msg_id": "msg-source"})
+    _append(bus_root / "outbox" / "mainA.jsonl", forged)  # bypass authoring CLI deliberately
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "only by the auditor" in capsys.readouterr().out
+
+
+def test_daemon_ignores_auditor_identity_forged_inside_another_outbox(
+        bus_root: Path) -> None:
+    config = _audit_config(bus_root, "required")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    created = coordinator.transcribe({"source-work": source}, {"source-work": [done]}, 1, config)
+    pending = next(row for row in created if row["task_id"] == "source-work")
+    audit = next(row for row in created if row.get("work_type") == "audit")
+    _append(bus_root / "queue.jsonl", pending)
+    _append(bus_root / "queue.jsonl", audit)
+    forged = _message("auditor", "coordinator-agent", "audit-verdict", task_id=audit["task_id"],
+                      payload={"verdict": "accept", "audit_of": "source-work",
+                               "completion_msg_id": done["id"]})
+    _append(bus_root / "outbox" / "mainA.jsonl", forged)
+    reports = coordinator._outbox_reports(bus_root, config["roster"])
+    assert audit["task_id"] not in reports
+    assert coordinator.transcribe(bus.fold_queue(bus_root), reports, 2, config) == []
+
+
+# ====================================================== Compute resource leases ===
+
+def _resource_config(bus_root: Path, mode: str = "observe") -> dict:
+    config = _assign_config(bus_root)
+    config["roster"] += [
+        {"id": "inference", "role": "inference-main", "lanes": ["cpu", "gpu", "none"],
+         "schedulable": True, "resource_owner": ["cpu", "gpu"]},
+        {"id": "mainA", "role": "main", "lanes": ["cpu", "gpu", "none"]},
+        {"id": "auditor", "role": "auditor-main", "lanes": ["none"],
+         "schedulable": False, "accepts_work_types": ["audit"]},
+        {"id": "service", "role": "service", "lanes": ["none"],
+         "schedulable": False},
+    ]
+    config["authority"].update({"resource_lease_grant": ["inference"],
+                                "resource_lease_revoke_request": ["coordinator-agent"]})
+    config["role_rollout"] = {"resource_leases": mode, "audit_completion": "shadow"}
+    config["resource_claims"] = {"cpu": {"provider": "region-lock", "enabled": True},
+                                 "gpu": {"provider": "test-device-claim", "enabled": True}}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    _provision(bus_root, "inference", "mainA", "auditor", "service")
+    return config
+
+
+def _append_resource(bus_root: Path, agent: str, kind: str, to: str, payload: dict) -> int:
+    return bus.main(["--bus-root", str(bus_root), "append", "--agent", agent,
+                     "--target", "outbox", "--json", json.dumps({
+                         "to": to, "kind": kind, "assignee": to,
+                         "action_required": True, "payload": payload})])
+
+
+def test_resource_lease_lifecycle_is_authoritative_and_rebuildable(bus_root: Path) -> None:
+    _resource_config(bus_root)
+    common = {"lease_id": "rl-1", "holder": "mainA"}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        **common, "task_ids": ["gpu-work"], "resources": {"gpu_devices": ["mi210_0"]},
+        "contention_class": "resumable", "safe_drain_point": "persisted-unit"}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "REQUESTED"
+
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        **common, "task_ids": ["gpu-work"], "resources": {"gpu_devices": ["mi210_0"]},
+        "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "RESERVED"
+
+    # A reservation is not ACTIVE until a physical claim-open receipt exists.
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        **common, "physical_claim_receipts": []}) == 1
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        **common, "physical_claim_receipts": ["artifacts/test-device-claim/mi210_0-open.json"]}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "ACTIVE"
+
+    assert _append_resource(bus_root, "mainA", "resource-lease-release", "inference", {
+        **common, "physical_claim_close_receipts": ["artifacts/test-device-claim/mi210_0-close.json"],
+        "reason": "batch complete"}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "RELEASED"
+    assert bus.rebuild_state(bus_root)["resource_leases"]["rl-1"]["state"] == "RELEASED"
+
+
+def test_delegated_gpu_grant_requires_enabled_claim_provider_and_cpu_activation_region_lock(
+        bus_root: Path) -> None:
+    config = _resource_config(bus_root)
+    config["resource_claims"]["gpu"] = {"provider": None, "enabled": False}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    common = {"lease_id": "gpu-gated", "holder": "mainA", "task_ids": ["gpu-work"],
+              "resources": {"gpu_devices": ["mi210_0"]}}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        **common, "contention_class": "resumable", "safe_drain_point": "unit"}) == 0
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        **common, "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}) == 1
+
+    # CPU receipts are named, not opaque evidence strings. The activation omits
+    # resources deliberately: validation must derive them from the reservation.
+    config["resource_claims"]["gpu"] = {"provider": "test-device-claim", "enabled": True}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    cpu = {"lease_id": "cpu-lock", "holder": "mainA", "task_ids": ["cpu-work"],
+           "resources": {"cpu_regions": ["0-3"]}}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        **cpu, "contention_class": "resumable", "safe_drain_point": "unit"}) == 0
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        **cpu, "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}) == 0
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        "lease_id": cpu["lease_id"], "holder": cpu["holder"],
+        "physical_claim_receipts": ["artifacts/claims/cpu-open.json"]}) == 1
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        "lease_id": cpu["lease_id"], "holder": cpu["holder"],
+        "physical_claim_receipts": ["artifacts/region-lock/cpu-open.json"]}) == 0
+
+
+def test_only_inference_can_grant_a_compute_resource_lease(bus_root: Path) -> None:
+    _resource_config(bus_root)
+    payload = {"lease_id": "rl-unauthorized", "holder": "mainA", "task_ids": ["gpu-work"],
+               "resources": {"gpu_devices": ["mi210_0"]},
+               "expires_ts": "2030-01-01T00:00:00+00:00",
+               "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}
+    assert _append_resource(bus_root, "coordinator-agent", "resource-lease-grant",
+                            "mainA", payload) == 1
+
+
+def test_validate_rejects_direct_jsonl_orphan_resource_grant(
+        bus_root: Path, capsys: pytest.CaptureFixture[str],
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _resource_config(bus_root, "enforce")
+    orphan = _message("inference", "mainA", "resource-lease-grant", task_id="gpu-work",
+                      assignee="mainA", action_required=True, payload={
+                          "lease_id": "orphan", "holder": "mainA", "task_ids": ["gpu-work"],
+                          "resources": {"gpu_devices": ["mi210_0"]},
+                          "expires_ts": "2030-01-01T00:00:00+00:00",
+                          "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    _append(bus_root / "outbox" / "inference.jsonl", orphan)  # bypass authoring CLI deliberately
+    _heartbeat(bus_root, "mainA", "idle")
+    _append(bus_root / "queue.jsonl", _typed_row(
+        "gpu-work", lane="gpu", gating="gpu", executor_id="mainA"))
+    advice = coordinator.compute_advice(bus_root, config, epoch=1, gate_dispatch=True)
+    main_a = next(row for row in advice if row.get("agent") == "mainA")
+    assert any("lease ledger is invalid" in str(item.get("reason"))
+               for item in main_a["rejected"])
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "resource lease 'orphan': resource-lease-grant after None" in capsys.readouterr().out
+
+
+def test_resource_fold_ignores_inference_identity_forged_inside_holder_outbox(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    _resource_config(bus_root)
+    forged = _message("inference", "mainA", "resource-lease-grant", task_id="gpu-work",
+                      assignee="mainA", action_required=True, payload={
+                          "lease_id": "forged", "holder": "mainA", "task_ids": ["gpu-work"],
+                          "resources": {"gpu_devices": ["mi210_0"]},
+                          "expires_ts": "2030-01-01T00:00:00+00:00",
+                          "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    _append(bus_root / "outbox" / "mainA.jsonl", forged)
+    assert "forged" not in bus.fold_resource_leases(bus_root)
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "single-writer violation" in capsys.readouterr().out
+
+
+def test_resource_grant_is_exact_and_exclusive_in_append_and_replay(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    _resource_config(bus_root)
+    request = lambda lease, task: {"lease_id": lease, "holder": "mainA", "task_ids": [task],
+                                   "resources": {"gpu_devices": ["mi210_0"]},
+                                   "contention_class": "resumable", "safe_drain_point": "unit"}
+    grant = lambda lease, task: {"lease_id": lease, "holder": "mainA", "task_ids": [task],
+                                 "resources": {"gpu_devices": ["mi210_0"]},
+                                 "expires_ts": "2030-01-01T00:00:00+00:00",
+                                 "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", request("rl-a", "a")) == 0
+    # A grant may not silently alter the requested batch/resources.
+    altered = grant("rl-a", "different")
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", altered) == 1
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", grant("rl-a", "a")) == 0
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", request("rl-b", "b")) == 0
+    # Direct file injection bypasses append but must fail deterministic replay.
+    direct = _message("inference", "mainA", "resource-lease-grant", task_id="b",
+                      assignee="mainA", action_required=True, payload=grant("rl-b", "b"))
+    direct["ts"] = "2031-01-01T00:00:00+00:00"
+    direct["id"] = "msg-20310101T000000Z-1-inference"
+    _append(bus_root / "outbox" / "inference.jsonl", direct)
+    assert any("overlaps live lease 'rl-a'" in problem
+               for problem in bus.resource_lease_history_problems(bus_root))
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "grant overlaps live lease 'rl-a'" in capsys.readouterr().out
+
+
+def test_reassignment_replaces_stale_resource_lease_id(bus_root: Path,
+                                                        monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _resource_config(bus_root, "enforce")
+    _heartbeat(bus_root, "mainA", "idle")
+    _append(bus_root / "queue.jsonl", _typed_row("gpu-work", lane="gpu", gating="gpu",
+                                                   executor_id="mainA", resource_lease_id="stale"))
+    for lease in ("rl-fresh",):
+        _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+            "lease_id": lease, "holder": "mainA", "task_ids": ["gpu-work"],
+            "resources": {"gpu_devices": ["mi210_0"]}, "contention_class": "resumable",
+            "safe_drain_point": "unit"})
+        _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+            "lease_id": lease, "holder": "mainA", "task_ids": ["gpu-work"],
+            "resources": {"gpu_devices": ["mi210_0"]}, "expires_ts": "2030-01-01T00:00:00+00:00",
+            "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=4)
+    assert _assigned(emitted)["gpu-work"] == "mainA"
+    assigned = bus.fold_queue(bus_root)["gpu-work"]
+    assert assigned["resource_lease_id"] == "rl-fresh"
+    payload = _task_assigns(bus_root, "mainA")[0]["payload"]
+    assert payload["resource_lease_id"] == "rl-fresh"
+
+
+def test_enforced_compute_dispatch_requires_inference_or_a_matching_resource_lease(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _resource_config(bus_root, "enforce")
+    _heartbeat(bus_root, "inference", "working", task_id="scheduler-duty")
+    _heartbeat(bus_root, "mainA", "idle")
+    _append(bus_root / "queue.jsonl", _typed_row(
+        "gpu-work", lane="gpu", gating="gpu", executor_id="mainA"))
+
+    before = coordinator.compute_advice(bus_root, config, epoch=1, gate_dispatch=True)
+    main_a = next(r for r in before if r.get("agent") == "mainA")
+    assert main_a["kind"] == "would-idle"
+    assert any("resource lease" in str(r.get("reason")) for r in main_a["rejected"])
+
+    # Inference may reserve exact compute for another capable main. Assignment
+    # still does not prove execution; activation requires the physical claim.
+    _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        "lease_id": "rl-dispatch", "holder": "mainA", "task_ids": ["gpu-work"],
+        "resources": {"gpu_devices": ["mi210_0"]}, "contention_class": "resumable",
+        "safe_drain_point": "persisted-unit"})
+    _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        "lease_id": "rl-dispatch", "holder": "mainA", "task_ids": ["gpu-work"],
+        "resources": {"gpu_devices": ["mi210_0"]},
+        "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    after = coordinator.compute_advice(bus_root, config, epoch=2, gate_dispatch=True)
+    main_a = next(r for r in after if r.get("agent") == "mainA")
+    assert main_a["kind"] == "would-assign" and main_a["task_id"] == "gpu-work"
+    assert main_a["resource_lease_id"] == "rl-dispatch"
+
+
+def test_persistent_compute_idle_routes_once_per_cpu_or_gpu_episode(bus_root: Path,
+                                                                    tmp_path: Path) -> None:
+    config = _resource_config(bus_root)
+    config["role_rollout"]["persistent_idle_routing"] = "route"
+    log = tmp_path / "fleet_watch.log"
+    state = tmp_path / "idle-state.json"
+    log.write_text(
+        "2026-08-13T16:00:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n"
+        "  CPU-IDLE 3 cycles ~ 270s: 4 of 4 CPU regions free\n", encoding="utf-8")
+
+    first = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=1, log_path=log, state_path=state)
+    assert {row["resource"] for row in first} == {"cpu", "gpu"}
+    messages = [row for row in _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+                if row.get("kind") == "compute-idle"]
+    assert len(messages) == 2
+    assert all(row.get("assignee") == "inference" and row.get("action_required") for row in messages)
+    assert all((row.get("payload") or {}).get("receipt_path") == str(log) for row in messages)
+    assert all((row.get("payload") or {}).get("receipt_line_number") in {2, 3}
+               for row in messages)
+    for row in messages:
+        bus.validate_row(bus_root, row, "msg")
+    assert coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=2, log_path=log, state_path=state) == []
+
+    # The watcher writes a fresh timestamp/count on every cycle. The episode is
+    # nevertheless the same until a report without that resource intervenes;
+    # durable inbox evidence suppresses duplicates after state-file loss.
+    log.write_text(
+        "2026-08-13T16:00:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n"
+        "  CPU-IDLE 3 cycles ~ 270s: 4 of 4 CPU regions free\n"
+        "2026-08-13T16:01:30Z STALL REPORT\n"
+        "  GPU-IDLE 4 cycles ~ 360s: GPU 0% / VRAM 0%\n"
+        "  CPU-IDLE 4 cycles ~ 360s: 4 of 4 CPU regions free\n", encoding="utf-8")
+    state.unlink()
+    assert coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=3, log_path=log, state_path=state) == []
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+                if row.get("kind") == "compute-idle"]) == 2
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+                if row.get("kind") == "compute-idle"]) == 2
+
+    # A non-idle report closes both episodes. A later persisted GPU episode is new.
+    log.write_text("2026-08-13T16:05:00Z ok — compute in use\n", encoding="utf-8")
+    assert coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=4, log_path=log, state_path=state) == []
+    log.write_text(
+        "2026-08-13T16:10:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n", encoding="utf-8")
+    again = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=5, log_path=log, state_path=state)
+    assert [row["resource"] for row in again] == ["gpu"]
+
+
+def test_persistent_compute_idle_observe_does_not_assign_inference_but_route_can_follow(
+        bus_root: Path, tmp_path: Path) -> None:
+    config = _resource_config(bus_root, "observe")
+    config["role_rollout"]["persistent_idle_routing"] = "observe"
+    log = tmp_path / "fleet_watch.log"
+    state = tmp_path / "idle-state.json"
+    log.write_text(
+        "2026-08-13T16:00:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n", encoding="utf-8")
+
+    observed = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=1, log_path=log, state_path=state)
+    assert [row["resource"] for row in observed] == ["gpu"]
+    coordinator_messages = _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+    assert len([row for row in coordinator_messages if row.get("kind") == "compute-idle"]) == 1
+    assert not _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+
+    config["role_rollout"]["persistent_idle_routing"] = "route"
+    routed = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=2, log_path=log, state_path=state)
+    assert [row["resource"] for row in routed] == ["gpu"]
+    inference_messages = _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+    assert len([row for row in inference_messages if row.get("kind") == "compute-idle"]) == 1
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+                if row.get("kind") == "compute-idle"]) == 1
+
+
+def test_persistent_compute_idle_never_routes_warming_or_unknown_reports(
+        bus_root: Path, tmp_path: Path) -> None:
+    config = _resource_config(bus_root)
+    config["role_rollout"]["persistent_idle_routing"] = "route"
+    log = tmp_path / "fleet_watch.log"
+    state = tmp_path / "idle-state.json"
+    for body in (
+        "warming — cycle 1/3, persistence not yet accumulated; NOTHING is asserted yet",
+        "UNDETERMINED — 0/4 mains unreadable, compute=unknown; no health is claimed",
+        "STALL REPORT\n  DETECTOR-BLIND 3 cycles: observation is untrustworthy",
+    ):
+        log.write_text(f"2026-08-13T16:00:00Z {body}\n", encoding="utf-8")
+        assert coordinator.route_persistent_compute_idle(
+            bus_root, config, epoch=1, log_path=log, state_path=state) == []
+    assert not [row for row in _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+                if row.get("kind") == "compute-idle"]
+
+
 def test_R16_drain_reports_ready_depth_per_lane_and_hours_in_flight(
         bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """The boundary reading: queued depth per lane + hours actually held.

@@ -51,7 +51,9 @@ Usage:
     tmux_adapter.py nudge    --agent codex --message "..."  # send-keys, guarded (DEPRECATED payload)
     tmux_adapter.py doorbell --agent codex                  # fixed ring, two guards, bus carries payload
     tmux_adapter.py pending                                 # which panes hold unsubmitted input
-    tmux_adapter.py spawn    --agent new-main               # 4 bus files, then a pane
+    tmux_adapter.py inspect-pane --agent auditor             # read-only adoption evidence
+    tmux_adapter.py instantiate --agent auditor --mode adopt --target agent:auditor
+    tmux_adapter.py instantiate --agent auditor --mode fresh # 4 bus files, then a pane
 """
 
 from __future__ import annotations
@@ -2663,6 +2665,194 @@ def cmd_pending(args: argparse.Namespace) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Role instantiation: an operator explicitly chooses an existing pane or a
+# fresh launch.  This adapter deliberately does not inspect models, providers,
+# or effort.  They are operator-controlled session settings, not role identity.
+
+def _bus_json(rel: str) -> tuple[dict | None, str | None]:
+    """Read one identity-scoped bus record without treating absence as clean."""
+    path = BUS_ROOT / rel
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return None, f"missing {rel}"
+    except (OSError, json.JSONDecodeError) as exc:
+        return None, f"unreadable {rel}: {exc}"
+    if not isinstance(value, dict):
+        return None, f"{rel} is not a JSON object"
+    return value, None
+
+
+def _last_checkpoint(agent: str) -> dict:
+    """Best available durable checkpoint evidence; never invent a wrap-up claim."""
+    path = BUS_ROOT / "outbox" / f"{agent}.jsonl"
+    try:
+        rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()
+                if line.strip()]
+    except (OSError, json.JSONDecodeError) as exc:
+        return {"status": "unavailable", "detail": str(exc)}
+    candidates = [row for row in rows if row.get("kind") in
+                  {"task-complete", "audit-verdict", "status"}]
+    if not candidates:
+        return {"status": "no durable completion/status record"}
+    row = max(candidates, key=lambda value: str(value.get("ts") or ""))
+    return {"status": "best-available bus record", **{
+        key: row.get(key) for key in ("id", "ts", "kind", "task_id", "payload")}}
+
+
+def pane_adoption_report(config: dict, agent: str, *, context_reset_confirmed: bool = False) -> dict:
+    """Read-only evidence for assigning an already-live pane to ``agent``.
+
+    Adoption never retargets, renames, stops, or types into a pane.  The caller
+    must name the exact target that the roster endpoint resolves to; this makes
+    a potentially surprising reassignment an explicit operator act rather than
+    an inferred convenience.  Every unavailable signal is a blocker.
+    """
+    entry = roster_entry(config, agent)
+    report: dict[str, object] = {"generated_at": _now(), "agent": agent,
+                                 "target": None, "blockers": [],
+                                 "context_reset_confirmed": context_reset_confirmed}
+    blockers: list[str] = report["blockers"]  # type: ignore[assignment]
+    if not entry:
+        blockers.append("no roster row")
+        report["adoptable"] = False
+        return report
+    # Fresh-launch capacity advice comes from policy data. This is never compared
+    # with the running pane and never becomes role identity.
+    report["recommended_launch_profiles"] = entry.get("recommended_launch_profiles") or []
+    target, reason = resolve_target(config, agent)
+    report["target"], report["target_reason"] = target, reason
+    if not target:
+        blockers.append(f"endpoint unresolved: {reason}")
+        report["adoptable"] = False
+        return report
+
+    live, live_reason = live_mains(config)
+    report["live_mains_reason"] = live_reason
+    if live is None:
+        blockers.append("cannot establish live roster identities")
+    elif agent not in live:
+        blockers.append("resolved pane is not counted as this live roster identity")
+
+    # Do not read pane_current_command: it can disclose a CLI's model/provider
+    # selection, and those choices are deliberately never role-validation input.
+    rc, pane = _tmux("display-message", "-p", "-t", target,
+                     "#{pane_dead}\t#{pane_current_path}")
+    if rc != 0 or "\t" not in pane:
+        blockers.append(f"cannot read pane endpoint evidence: {pane}")
+    else:
+        dead, cwd = pane.split("\t", 1)
+        report.update({"pane_dead": dead.strip() == "1", "pane_cwd": cwd.strip()})
+        if dead.strip() != "0":
+            blockers.append("pane is dead or its state is unreadable")
+        expected_cwd, cwd_reason = resolve_spawn_cwd(config, agent)
+        report["expected_worktree"], report["worktree_reason"] = expected_cwd, cwd_reason
+        if expected_cwd is None or cwd.strip() != expected_cwd:
+            blockers.append(f"pane cwd {cwd.strip()!r} does not equal declared worktree "
+                            f"{expected_cwd!r}")
+
+    runtime_state, runtime_reason = runtime_liveness(config, agent)
+    report["runtime_state"], report["runtime_reason"] = runtime_state, runtime_reason
+    if runtime_state != "idle":
+        blockers.append(f"runtime is not positively idle: {runtime_reason}")
+
+    pending = pending_input_report(config, [agent])
+    pane_rows = pending.get("panes") or []
+    row = pane_rows[0] if pane_rows else None
+    report["composer"] = row
+    if not isinstance(row, dict) or row.get("status") != "empty":
+        blockers.append("composer is not positively empty (pending input/context hygiene)")
+
+    hb, hb_error = _bus_json(f"heartbeats/{agent}.json")
+    cursor, cursor_error = _bus_json(f"cursors/{agent}.json")
+    report["heartbeat"], report["cursor"] = hb, cursor
+    if hb_error:
+        blockers.append(hb_error)
+    elif hb.get("agent") != agent or hb.get("state") != "idle" or hb.get("task_id") is not None:
+        blockers.append("heartbeat is not an idle, task-free record for this identity")
+    report["current_task_id"] = (hb or {}).get("task_id")
+    report["last_checkpoint"] = _last_checkpoint(agent)
+    if cursor_error:
+        blockers.append(cursor_error)
+    elif cursor.get("agent") != agent or not isinstance(cursor.get("offset"), int):
+        blockers.append("cursor is not a valid record for this identity")
+    else:
+        inbox_path = BUS_ROOT / "inbox" / f"{agent}.jsonl"
+        try:
+            raw = inbox_path.read_bytes()
+            offset = int(cursor["offset"])
+            if offset < 0 or offset > len(raw):
+                blockers.append(f"cursor offset {offset} is outside inbox size {len(raw)}")
+            else:
+                report["inbox_unread_count"] = sum(
+                    1 for line in raw[offset:].splitlines() if line.strip())
+        except OSError as exc:
+            blockers.append(f"cannot read inbox for cursor validation: {exc}")
+        try:
+            from scripts.coordination.session_bus import routed_view
+            routed = routed_view(BUS_ROOT, agent)
+            report["triage_counts"] = {key: len(value) for key, value in routed.items()}
+        except Exception as exc:  # noqa: BLE001 — absent triage proof blocks adoption
+            blockers.append(f"cannot reconstruct routed obligations: {exc}")
+    if not context_reset_confirmed:
+        # Empty composer is not proof that the prior conversation/role context is
+        # gone. There is no safe general-purpose TUI primitive to erase it, so an
+        # operator must reseed/reset it and explicitly attest that fact.
+        blockers.append("stale role context is not observable; adoption requires explicit "
+                        "--context-reset-confirmed after reset/reseed")
+    report["adoptable"] = not blockers
+    return report
+
+
+def cmd_inspect_pane(args: argparse.Namespace) -> int:
+    report = pane_adoption_report(load_config(), args.agent,
+                                  context_reset_confirmed=args.context_reset_confirmed)
+    print(json.dumps(report, indent=2, sort_keys=True))
+    return 0 if report["adoptable"] else EX_BLOCKED
+
+
+def cmd_instantiate(args: argparse.Namespace) -> int:
+    """Perform exactly the operator-selected fresh/adopt transition."""
+    if args.mode == "fresh":
+        entry = roster_entry(load_config(), args.agent) or {}
+        if entry.get("recommended_launch_profiles") and args.command is None:
+            print("REFUSING: this role has fresh-launch profile recommendations. Present them "
+                  "with token availability, then pass the operator-selected launch command "
+                  "explicitly with --command. The command is not validated after selection.",
+                  file=sys.stderr)
+            return EX_USAGE
+        # cmd_spawn proves the destination is not live before it writes bus files
+        # or creates a window.  No live pane is replaced or overwritten.
+        return cmd_spawn(args)
+    if args.mode != "adopt":
+        print("REFUSING: --mode must be exactly fresh or adopt", file=sys.stderr)
+        return EX_USAGE
+    report = pane_adoption_report(load_config(), args.agent,
+                                  context_reset_confirmed=args.context_reset_confirmed)
+    target = report.get("target")
+    if not args.target:
+        print("REFUSING: adopt requires --target copied from inspect-pane; adoption never guesses "
+              "which existing pane the operator means.", file=sys.stderr)
+        return EX_USAGE
+    if args.target != target:
+        print(f"REFUSING: requested adoption target {args.target!r} does not exactly equal the "
+              f"roster-resolved target {target!r}", file=sys.stderr)
+        return EX_BLOCKED
+    if not report["adoptable"]:
+        print("REFUSING: existing pane is not safe to adopt:", file=sys.stderr)
+        for blocker in report["blockers"]:
+            print(f"  · {blocker}", file=sys.stderr)
+        return EX_BLOCKED
+    if args.dry_run:
+        print(f"would adopt {args.agent} at {target}; no pane mutation is required")
+        return 0
+    record("pane-adopted", args.agent, f"operator-selected adoption of {target}",
+           target=target, adoption_evidence=report)
+    print(f"adopted {args.agent} at {target}; receipt recorded in {LEDGER}")
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # C54, 2026-08-12. THE DETECTOR'S MISSING OTHER HALF.
 #
 # WHAT C51's `pending` LEFT UNSOLVED. Within an hour of existing it diagnosed a
@@ -3218,6 +3408,29 @@ def build_parser() -> argparse.ArgumentParser:
                          "falling back to /workspace for rows that declare no lane.")
     sp.add_argument("--dry-run", action="store_true")
     sp.set_defaults(func=cmd_spawn)
+
+    ip = sub.add_parser("inspect-pane", help="read-only adoption evidence for one existing pane; "
+                        "does not inspect model/provider/effort")
+    ip.add_argument("--agent", required=True)
+    ip.add_argument("--context-reset-confirmed", action="store_true",
+                    help="operator attests the pane's prior role context was reset/reseeded; "
+                    "required before adoption, never inferred from model settings")
+    ip.set_defaults(func=cmd_inspect_pane)
+
+    ins = sub.add_parser("instantiate", help="operator-selected role instantiation: explicitly "
+                         "adopt a verified existing pane or launch a fresh one")
+    ins.add_argument("--agent", required=True)
+    ins.add_argument("--mode", required=True, choices=("fresh", "adopt"),
+                     help="fresh creates a new pane; adopt records a verified existing pane")
+    ins.add_argument("--target", default=None,
+                     help="required for adopt: exact target printed by inspect-pane")
+    ins.add_argument("--context-reset-confirmed", action="store_true",
+                     help="adopt only: explicit operator attestation that stale role context "
+                     "was reset/reseeded")
+    ins.add_argument("--command", default=None,
+                     help="fresh only: explicit launch command; adapter never validates its model")
+    ins.add_argument("--dry-run", action="store_true")
+    ins.set_defaults(func=cmd_instantiate)
     return p
 
 

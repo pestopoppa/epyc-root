@@ -53,7 +53,9 @@ def make_bus(tmp_path: Path) -> Path:
     shutil.copytree(BUS_SRC, root)
     (root / "queue.jsonl").write_text("")
     for area in ("inbox", "outbox", "heartbeats", "cursors"):
-        for f in (root / area).glob("*"):
+        directory = root / area
+        directory.mkdir(parents=True, exist_ok=True)
+        for f in directory.glob("*"):
             f.unlink()
     import yaml as _yaml
     roster = (_yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8")) or {}).get("roster") or []
