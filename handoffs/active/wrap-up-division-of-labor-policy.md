@@ -28,7 +28,8 @@ of compute-gated tasks. It is updated **at every wrap-up**. A worker main that w
 captures its blocker into the index for the next compute window; a main that idles (or skips
 wrap-up) leaves the blocker invisible until rediscovered. The index is what makes a future graded
 compute window (small-model-only / load-then-keep-hot / full-idle — **graded, not binary**) a
-one-plan un-block moment rather than a scramble.
+one-plan un-block moment rather than a scramble — and that plan lands as a **focused, prioritized
+dispatch on the bus** for the workers to take on, not as a planning document.
 
 ## Plan to make it durable
 
@@ -55,5 +56,11 @@ one-plan un-block moment rather than a scramble.
 
 ## Next action
 
-Encode item 1 (`wrap-up.md`) and item 2 (`auditor-main.md`) first — they carry the division of
-labor; the trust-boundary item (4) is queued behind operator merge approval.
+1. **`agents/commands/wrap-up.md`** — replace the "narrow standing exception" (auditor-only) with the
+   full three-tier ownership model: worker mains = commit + progress + checkbox and stop; auditor =
+   full routine on reviewed work (handoffs + indices + wiki); coordinator = its own surfaces.
+2. **`agents/auditor-main.md`** (on `lane/auditor`) — expand workflow step 4 from "checkpoint your own
+   verdict" to "perform the wrap-up on behalf of the reviewed worker main — handoffs + indices
+   (incl. batch-inference index) + wiki, dispatched to subagents".
+
+Then items 3–7 follow; item 4 (`SESSION_LIFECYCLE.md`) is queued behind operator merge sign-off.
