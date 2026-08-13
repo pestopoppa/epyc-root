@@ -44,6 +44,11 @@ K_MARKER='## P-AK-SEARCH-1-A2 — discovery-first screening and confirmation sep
 # Literal Markdown code span; the backticks are data, not shell expansion.
 # shellcheck disable=SC2016
 B_MARKER='**AutoKernel narrowing cross-reference (2026-08-13, `P-AK-SEARCH-1-A2`).**'
+PREIMAGE_COMMIT="26b69cbcdbd0ce80823ad5b8fe701cae1d294955"
+K_BEFORE_SHA256="2305e17f598f024b26a34b86373c5b3f81b52d39172baedc528a25b79716c6bd"
+B_BEFORE_SHA256="090be6ea5cce268dfa9b7691dc116111e153d78de1cea7903bf3928f9dc8cc93"
+K_AFTER_SHA256="0d49f66dabe696f04075b6bb1673b03427a8733c222db8e9661c1e86175e7e61"
+B_AFTER_SHA256="2cc09d782ace0f246cf3c23c6c534006cda78001c071d1e70d2ff55d2442b1c7"
 
 fail() {
     printf 'REFUSING: %s\n' "$1" >&2
@@ -56,27 +61,33 @@ done
 
 has_k=0
 has_b=0
+RECOVERY=0
 grep -qF "$K_MARKER" "$ANNEX_K" && has_k=1
 grep -qF "$B_MARKER" "$ANNEX_B" && has_b=1
 if (( has_k != has_b )); then
     fail "partial prior apply: Annex K marker=$has_k, Annex B marker=$has_b"
 fi
 if (( has_k == 1 )); then
-    if [[ -f "$RECEIPT" ]] && python3 - "$RECEIPT" <<'PY'
+    [[ -f "$RECEIPT" ]] || fail \
+        "amendment markers exist without a consolidated receipt; do not treat this state as ratified"
+    receipt_verdict="$(python3 - "$RECEIPT" <<'PY'
 import json
 import sys
 with open(sys.argv[1], encoding="utf-8") as handle:
     receipt = json.load(handle)
-raise SystemExit(0 if receipt.get("verdict") == "RATIFIED" else 1)
+print(receipt.get("verdict", ""))
 PY
-    then
+    )"
+    if [[ "$receipt_verdict" == "RATIFIED" ]]; then
         printf 'Already ratified: both amendments and a RATIFIED receipt are present.\n'
         exit 0
     fi
-    fail "amendment markers exist without a RATIFIED consolidated receipt; do not treat this state as ratified"
+    [[ "$receipt_verdict" == "REFUSED" ]] || fail \
+        "amendment markers carry receipt verdict '$receipt_verdict', not RATIFIED or recoverable REFUSED"
+    RECOVERY=1
 fi
 
-if (( APPLY )); then
+if (( APPLY && ! RECOVERY )); then
     dirty="$(git -C "$ROOT" status --porcelain -- "$ANNEX_K_REL" "$ANNEX_B_REL")"
     [[ -z "$dirty" ]] || fail "protected target already has local changes: $dirty"
 fi
@@ -88,7 +99,60 @@ cleanup() {
 }
 trap cleanup EXIT
 
-python3 - "$ANNEX_K" "$ANNEX_B" "$tmp_dir/kernel-research.md" "$tmp_dir/bench-cpu.md" <<'PY'
+if (( RECOVERY )); then
+    python3 - "$ROOT" "$RECEIPT" \
+        "$K_BEFORE_SHA256" "$B_BEFORE_SHA256" "$K_AFTER_SHA256" "$B_AFTER_SHA256" <<'PY'
+from hashlib import sha256
+import json
+from pathlib import Path
+import sys
+
+root = Path(sys.argv[1])
+receipt_path = Path(sys.argv[2])
+k_before, b_before, k_after, b_after = sys.argv[3:]
+expected = {
+    "measurement/protocols/kernel-research.md": (k_before, k_after),
+    "measurement/protocols/bench-cpu.md": (b_before, b_after),
+}
+
+def digest(path: Path) -> str:
+    return sha256(path.read_bytes()).hexdigest()
+
+for rel, (_, after) in expected.items():
+    actual = digest(root / rel)
+    if actual != after:
+        raise SystemExit(
+            f"REFUSING: recoverable amendment {rel} drifted: expected {after}, got {actual}")
+
+try:
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+except (OSError, ValueError) as exc:
+    raise SystemExit(f"REFUSING: prior REFUSED receipt is unreadable: {exc}")
+if (receipt.get("verdict") != "REFUSED"
+        or receipt.get("ratification_id") != "autokernel-discovery-first-20260813"
+        or receipt.get("protocol_id") != "P-AK-SEARCH-1"):
+    raise SystemExit("REFUSING: prior receipt identity is not the expected REFUSED ratification")
+diffs = receipt.get("state_diff")
+if not isinstance(diffs, list) or len(diffs) != 2:
+    raise SystemExit("REFUSING: prior receipt does not carry exactly the two protected state diffs")
+seen = {}
+for item in diffs:
+    if not isinstance(item, dict) or item.get("path") not in expected:
+        raise SystemExit("REFUSING: prior receipt carries an unexpected protected state diff")
+    rel = item["path"]
+    pair = (item.get("sha256_before"), item.get("sha256_after"))
+    if pair != expected[rel]:
+        raise SystemExit(f"REFUSING: prior receipt hashes for {rel} do not match this amendment")
+    seen[rel] = pair
+if set(seen) != set(expected):
+    raise SystemExit("REFUSING: prior receipt is missing a protected state diff")
+validation = receipt.get("sections", {}).get("validation", {})
+if validation.get("verdict") != "FAIL":
+    raise SystemExit("REFUSING: recovery is only valid for the exact failed-validation state")
+print("Verified exact REFUSED amendment state and protected before/after hashes.")
+PY
+else
+    python3 - "$ANNEX_K" "$ANNEX_B" "$tmp_dir/kernel-research.md" "$tmp_dir/bench-cpu.md" <<'PY'
 from pathlib import Path
 import sys
 
@@ -222,8 +286,17 @@ if k_text.count(a2_heading) != 1 or b_text.count(
 k_out.write_text(k_text, encoding="utf-8")
 b_out.write_text(b_text, encoding="utf-8")
 PY
+fi
 
 if (( ! APPLY )); then
+    if (( RECOVERY )); then
+        printf '%s\n' 'DRY RUN — no files written.'
+        printf '%s\n' 'Exact prior amendment hashes and REFUSED receipt verified.'
+        printf '%s\n' 'The apply will preserve the refused attempt, reconstruct its exact preimages,'
+        printf '%s\n' 'rerun current focused validation, and emit a new consolidated receipt.'
+        printf '\nRecover with:\n  bash %q --apply\n' "$ROOT/$SCRIPT_REL"
+        exit 0
+    fi
     printf '%s\n' 'DRY RUN — no files written. Proposed protected-path diff follows:'
     diff -u --label "a/$ANNEX_K_REL" --label "b/$ANNEX_K_REL" \
         "$ANNEX_K" "$tmp_dir/kernel-research.md" || [[ $? -eq 1 ]]
@@ -235,11 +308,50 @@ fi
 
 # Capture the exact two protected preimages before either amendment is written.
 source "$ROOT/scripts/operator/lib/ratify_receipt.sh"
-receipt_capture "$ANNEX_K_REL" "$ANNEX_B_REL"
+if (( RECOVERY )); then
+    preimage_root="$tmp_dir/preimage"
+    mkdir -p -- "$preimage_root/measurement/protocols"
+    python3 - "$ROOT" "$PREIMAGE_COMMIT" "$preimage_root" \
+        "$ANNEX_K_REL" "$ANNEX_B_REL" "$K_BEFORE_SHA256" "$B_BEFORE_SHA256" <<'PY'
+from hashlib import sha256
+from pathlib import Path
+import subprocess
+import sys
 
-(
-    cd "$ROOT"
-    python3 - "$tmp_dir/kernel-research.md" "$tmp_dir/bench-cpu.md" <<'PY'
+root, commit, output = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3])
+items = ((sys.argv[4], sys.argv[6]), (sys.argv[5], sys.argv[7]))
+for rel, expected in items:
+    data = subprocess.run(
+        ["git", "-C", str(root), "show", f"{commit}:{rel}"],
+        check=True, capture_output=True).stdout
+    actual = sha256(data).hexdigest()
+    if actual != expected:
+        raise SystemExit(
+            f"REFUSING: reconstructed preimage {rel} expected {expected}, got {actual}")
+    target = output / rel
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(data)
+PY
+    RECEIPT_PRE_STATE="$(mktemp -t ratify-pre-XXXXXX.json)"
+    python3 "$RECEIPT_TOOL" capture --repo-root "$preimage_root" \
+        --state "$ANNEX_K_REL" --state "$ANNEX_B_REL" --out "$RECEIPT_PRE_STATE"
+    refused_sha="$(sha256sum "$RECEIPT" | awk '{print $1}')"
+    refused_archive="$ROOT/artifacts/operator/receipts/autokernel-discovery-first-20260813.refused-${refused_sha:0:12}.receipt.json"
+    python3 - "$RECEIPT" "$refused_archive" <<'PY'
+from pathlib import Path
+import sys
+source, target = map(Path, sys.argv[1:])
+data = source.read_bytes()
+if target.exists() and target.read_bytes() != data:
+    raise SystemExit(f"REFUSING: prior-attempt archive already exists with different bytes: {target}")
+target.write_bytes(data)
+PY
+else
+    receipt_capture "$ANNEX_K_REL" "$ANNEX_B_REL"
+
+    (
+        cd "$ROOT"
+        python3 - "$tmp_dir/kernel-research.md" "$tmp_dir/bench-cpu.md" <<'PY'
 from pathlib import Path
 import sys
 
@@ -249,10 +361,15 @@ with open("measurement/protocols/kernel-research.md", "wb") as handle:
 with open("measurement/protocols/bench-cpu.md", "wb") as handle:
     handle.write(b_stage.read_bytes())
 PY
-)
+    )
+fi
 
 [[ "$(grep -cF "$K_MARKER" "$ANNEX_K")" == 1 ]] || fail "Annex K post-state marker count is not one"
 [[ "$(grep -cF "$B_MARKER" "$ANNEX_B")" == 1 ]] || fail "Annex B post-state marker count is not one"
+[[ "$(sha256sum "$ANNEX_K" | awk '{print $1}')" == "$K_AFTER_SHA256" ]] || \
+    fail "Annex K post-state bytes differ from the reviewed amendment"
+[[ "$(sha256sum "$ANNEX_B" | awk '{print $1}')" == "$B_AFTER_SHA256" ]] || \
+    fail "Annex B post-state bytes differ from the reviewed amendment"
 
 # The evidence is the already-landed prospective implementation and its focused
 # current regression tests.  The receipt hashes and durability-checks each file.
