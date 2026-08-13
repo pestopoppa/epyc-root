@@ -1453,14 +1453,45 @@ def check_task_assign(row: dict) -> list[str]:
     return warnings
 
 
-def check_audit_message(row: dict) -> None:
-    """Authoring invariants for the audit loop.
+def check_checkpoint_lifecycle_message(row: dict) -> None:
+    """Authoring invariants for checkpoint, audit, and wrap lifecycle messages.
 
     Verdicts are durable coordinator input, not a conversation with the main
     that produced the work.  Keeping the source main out of routing is what lets
     it clear context and receive unrelated backlog normally.
     """
-    if row.get("kind") != "audit-verdict":
+    kind = row.get("kind")
+    if kind == "task-checkpoint":
+        payload = row.get("payload") or {}
+        if row.get("from") != payload.get("agent"):
+            raise BusError("task-checkpoint payload.agent must match its author")
+        if row.get("task_id") != payload.get("task_id"):
+            raise BusError("task-checkpoint top-level task_id must match payload.task_id")
+        if (row.get("to") != "coordinator-agent" or
+                row.get("assignee") not in {None, "coordinator-agent"}):
+            raise BusError("task-checkpoint must be addressed only to coordinator-agent")
+        routed = set(row.get("needs_routing_to") or []) | set(row.get("cc") or [])
+        if routed - {"coordinator-agent"}:
+            raise BusError("task-checkpoint may not route or cc another worker")
+        return
+    if kind == "audit-request":
+        if row.get("from") not in {"coordinator-agent", COORDINATOR_DAEMON}:
+            raise BusError("audit-request may be authored only by coordinator authority")
+        return
+    if kind == "checkpoint-integration-ready":
+        if (row.get("from") != COORDINATOR_DAEMON or
+                row.get("to") != "coordinator-agent"):
+            raise BusError("checkpoint-integration-ready is daemon -> coordinator-agent only")
+        return
+    if kind == "wrapup-request":
+        if row.get("from") != "coordinator-agent" or row.get("to") != "auditor":
+            raise BusError("wrapup-request is coordinator-agent -> auditor only")
+        return
+    if kind == "wrapup-complete":
+        if row.get("from") != "auditor" or row.get("to") != "coordinator-agent":
+            raise BusError("wrapup-complete is auditor -> coordinator-agent only")
+        return
+    if kind != "audit-verdict":
         return
     if row.get("from") != "auditor":
         raise BusError("audit-verdict may be authored only by the auditor roster identity")
@@ -1469,6 +1500,10 @@ def check_audit_message(row: dict) -> None:
     routed = set(row.get("needs_routing_to") or []) | set(row.get("cc") or [])
     if routed - {"coordinator-agent"}:
         raise BusError("audit-verdict may not route or cc a source main; coordinator owns requeue")
+
+
+# Back-compatible public name used by the existing audit tests and callers.
+check_audit_message = check_checkpoint_lifecycle_message
 
 
 # ------------------------------------------------------------------ commands
@@ -1524,7 +1559,7 @@ def cmd_append(args: argparse.Namespace) -> int:
     validate_row(bus_root, row, definition)
     if definition == "msg":
         _check_routing_intent(bus_root, row)
-        check_audit_message(row)
+        check_checkpoint_lifecycle_message(row)
         check_resource_lease_message(bus_root, row)
         task_assign_warnings = check_task_assign(row)
         try:

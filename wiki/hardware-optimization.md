@@ -2,8 +2,27 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-13 (manual discovery proved CPU/GPU throughput; strict execution stopped after the post-fix r6 checkpoint; controller-first correction active; earlier findings retained)
+**Last compiled**: 2026-08-13 (A7 produced one clean Gemma 4 group before operator stop; manual discovery and controller-first findings retained)
 **Sources**: 107+ documents
+
+## Compiled Update — 2026-08-13: A7 started correctly, banked one model group, then obeyed stop-all
+
+**Confidence: verified for run manifests, terminal cells, resource release, and operator disposition.**
+The corrected A7 placement grid required all four CPU regions because its full and interleaved-half
+cells span both NUMA nodes; an initial q0/q1-only signal could not execute that design. After Coordinator
+issued q0–q3, the Gemma 4 26B-A4B Q4_K_M+MTP group completed all 8 cells decision-grade with zero errors
+(clean aggregate decode 48.92, 72.94, 85.89, and 99.04 tok/s at np1/2/4/8). The subsequent dense-Qwen
+group was removed by operator ruling and its partial work discarded. The operator then issued
+stop-all-inference: the launcher stopped, no llama-server remained, every region was free, and the
+remaining Qwen 35B-A3B and Qwen3-Next groups stayed unrun. The prefix is valid per-model evidence, not a
+completed 40-cell grid or a license to resume.
+
+### Source References (2026-08-13 A7 partial grid)
+
+- [`inference-batch-loop.md`](../handoffs/active/inference-batch-loop.md) — campaign state and
+  single-writer execution contract.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — grant,
+  invocation, per-group result, stop receipt, and cleanup proof.
 
 ## Compiled Update — 2026-08-13: discovery produced a ranked funnel; manual strict execution stopped at the controller boundary
 

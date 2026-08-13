@@ -476,3 +476,35 @@ which has neither marker — i.e. a ratification that was printed at a human but
 script declares `BUS-GATE` today, so the check emits nothing; adopting the convention is an
 operator decision, and without it the join has no ground truth (an earlier attempt mis-flagged 11
 of 25 scripts, because superseded and repaired scripts never receive receipts).
+
+## Typed checkpoint, audit, integration, and wrap lifecycle (RTG-51)
+
+The JSON schema is the executable wire contract for these kinds; their payloads are closed objects
+(`additionalProperties: false`). A worker main sends one `task-checkpoint` to
+`coordinator-agent` at a task boundary. Its `boundary_id` is the worker's idempotence key and the
+message names the exact queue task text/spec reference, lane branch and remote-tracking ref, pushed
+commit, committed per-agent progress shard, handoff/artifact paths, actual changed paths, checkbox
+transition, validation receipts, and next-context classification. `blocked` and `partial` add typed
+blocker evidence; `partial` is restricted to `pre-reboot`.
+
+At `assign` authority the daemon admits the receipt fail-closed. It checks the roster author and
+queue owner, exact task identity, `lane/<agent>` and `origin/lane/<agent>` identity, SHA reachability,
+exact commit path equality, worker-owned surfaces, and the committed progress/handoff evidence.
+Invalid receipts are quarantined as defects and never create audit or integration state. A valid
+receipt moves the source to `DONE_PENDING_AUDIT` and creates exactly one deterministic audit row.
+When a linked legacy `task-complete` exists, its message id is the shared correlation key, so the
+old completion path cannot create a second audit.
+
+The daemon sends the Auditor a typed `audit-request`; only `auditor` may return the linked
+`audit-verdict`, and the verdict must repeat the source task, correlation, and audited SHA. Only
+`accept` and `accept-with-followups` produce `integration_state: ready` and a typed
+`checkpoint-integration-ready` notice. `needs-rework` returns the source to ordinary
+`STALE_REQUEUED` Coordinator routing. `blocked-evidence` leaves the source pending and sends the
+worker an `evidence-only` audit request: it asks for missing proof, never implementation rework.
+All notices are deduped by correlation/checkpoint identity, so replay and daemon restart are safe.
+
+`wrapup-request` is Coordinator-to-Auditor and names a cutoff, synchronization mode, included
+checkpoint ids, and integrated main SHA. `wrapup-complete` is Auditor-to-Coordinator and records the
+included/excluded boundaries, source/promoted SHAs, generated artifacts, validations, wiki result,
+and serialized lease operation. Those message kinds establish authority and durable linkage here;
+the wrap implementation remains separately staged.

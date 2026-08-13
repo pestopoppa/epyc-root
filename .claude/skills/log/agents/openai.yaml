@@ -1,0 +1,4 @@
+interface:
+  display_name: "Log Worker Checkpoint"
+  short_description: "Persist a safe worker task-boundary checkpoint"
+  default_prompt: "Use $log to persist this worker task boundary safely."

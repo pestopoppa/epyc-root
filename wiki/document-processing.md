@@ -2,8 +2,41 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-08-13 (ODL-013 later produced a reproducible full-corpus observation, but independent audit rejected its adoption/routing claim; Unlimited-OCR still fails the lm_head quant gate)
+**Last compiled**: 2026-08-13 (ODL-013 and the Ekimetrics run are observations; Unlimited-OCR needs a corrected record and canonical-profile rerun before any parser decision)
 **Sources**: 16+ documents
+
+## Compiled Update — 2026-08-13: later parser evidence advances observation, not selection authority
+
+**Confidence: verified for stored-output replay and the audited record; no routing or adoption decision.**
+The Ekimetrics SC/BI/ICC/DCC arm is now implemented and exercised over the ODL-013 prediction sets,
+superseding the earlier “unimplemented” snapshot below. The first real embedding run produced usable
+ICC/DCC observations, but the contradictory HOPE family and common downstream RAG endpoint remain open;
+neither intrinsic family can gate a chunker alone. ODL-013's 600 stored outputs still replay exactly,
+and LiteParse still leads aggregate point estimates, but scratch-only storage, absent parser protocol
+and precommitted rule, summary-only timing, and an unpinned ODL version keep the result observational.
+
+Unlimited-OCR also completed a mechanically real 18-page observation, but the independent audit found
+that its record overclaims the cause. A bare-passthrough GGUF chat template does not prove
+prompt-independent coordinate output, the stored mutex receipt covers only about 1.003 seconds rather
+than the full server interval, and the timing narrative needs correction. Preserve the observation,
+correct those claims, then run a fresh matched A/B with the canonical `document parsing.` profile,
+context/prediction limits, DRY settings, grounding-strip, and a new Inference receipt spanning launch
+through termination. The operator's stop-all-inference order remains a hard runtime boundary.
+
+The attempted LightOnOCR comparison was correctly refused before compute: `odl_bench` has only a
+manifest stub, the dispatch prohibited the HTTP server that is the only implemented producer, and the
+known-negative prior lacked a new parser-quality hypothesis. That is a precondition failure, not model
+evidence.
+
+### Source References (2026-08-13 later parser evidence)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+  — corrected gates and exact rerun contracts.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) and
+  [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — producer and
+  precondition records.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — exact
+  evidence audit and verdicts.
 
 ## Compiled Update — 2026-08-13: ODL-013 is reproducible evidence, not an adoption decision
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -9,18 +10,29 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "hooks" / "posttool_kb_rag_update.sh"
+ENV_SCRIPT = ROOT / "scripts" / "lib" / "env.sh"
 
 
 def _run_hook(project_dir: Path, log_path: Path, command: str) -> subprocess.CompletedProcess[str]:
+    # The dispatcher self-locates and deliberately ignores CLAUDE_PROJECT_DIR so
+    # lane worktrees share one canonical rebuilder.  Copy its real script pair
+    # into the fixture instead of accidentally dispatching the live repo hook.
+    script = project_dir / "scripts" / "hooks" / SCRIPT.name
+    env_script = project_dir / "scripts" / "lib" / ENV_SCRIPT.name
+    script.parent.mkdir(parents=True, exist_ok=True)
+    env_script.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(SCRIPT, script)
+    shutil.copy2(ENV_SCRIPT, env_script)
     env = os.environ.copy()
     env["CLAUDE_PROJECT_DIR"] = str(project_dir)
     env["KB_RAG_HOOK_LOG"] = str(log_path)
     return subprocess.run(
-        ["bash", str(SCRIPT)],
+        ["bash", str(script)],
         input=json.dumps({"tool_input": {"command": command}}),
         text=True,
         capture_output=True,
         env=env,
+        cwd=project_dir,
         check=False,
     )
 
@@ -55,7 +67,7 @@ def test_posttool_dispatches_head_moving_git_command_and_logs(tmp_path: Path) ->
     assert result.stderr == ""
     assert _wait_for(marker).strip() == "background-ran"
     log_text = _wait_for(log_path)
-    assert "posttool dispatch: git commit -m test" in log_text
+    assert "posttool dispatch (rebuilder=canonical-tree): git commit -m test" in log_text
     assert "hook-output" in log_text
 
 

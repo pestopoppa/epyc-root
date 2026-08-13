@@ -2,8 +2,36 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (the first live role-admission canary failed because the daemon ran an unguarded stale source; compute-dialogue and dedicated-role findings retained below)
+**Last compiled**: 2026-08-13 (RTG-51 checkpoint/audit foundations published with rollout off; the first live role-admission canary still shows why source identity and reload proof are mandatory)
 **Sources**: 91+ documents
+
+## Compiled Update — 2026-08-13: task durability is now a pushed receipt, not a worker-wide documentation sweep
+
+**Confidence: verified for published code and focused tests; fleet authority cutover remains off.**
+RTG-51 now separates the task boundary from the fleet documentation transaction. A worker-owned
+checkpoint resolves the exact task, updates only owned checkbox/artifact/progress paths, validates,
+commits an explicit path set, pushes `lane/<agent>`, and only then publishes an idempotent typed
+receipt. Coordinator admission fails closed on roster, task identity, path scope, remote reachability,
+committed per-agent progress, and receipt correlation; an accepted checkpoint produces one immutable
+Auditor packet, and only an accepted verdict produces `checkpoint-integration-ready`.
+
+The independent roles remain intentionally asymmetric. Coordinator routes, validates, orders
+integration, and controls context transitions. Auditor owns verdicts and may not direct the source
+worker. Inference owns compute compatibility, leases, physical claims, and safe drain; the published
+compute planner is a replayable projection/ranking core, not a live grant path. Shared handoff/index/wiki
+mutation remains a single leased heavy-wrap transaction. The operation-token lease, non-mutating worker
+hooks, receipt-bound progress checker, checkpoint engine, and typed audit lifecycle are published, but
+the compute bus relay, receipt-cut heavy-wrap executor, protected role-policy package, daemon reload,
+instruction acknowledgments, and canaries are not. Rollout therefore remains `off`.
+
+### Source References (2026-08-13 RTG-51 implementation)
+
+- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/wrap-up-division-of-labor-policy.md) —
+  authority table, state machine, implementation phases, acceptance matrix, and live gaps.
+- [`session-bus-task-flow.html`](../docs/coordination/session-bus-task-flow.html) — visual lifecycle,
+  failure loops, authority boundaries, implementation evidence, and deployment status.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — commits,
+  focused tests, audit findings, and publication boundary.
 
 ## Compiled Update — 2026-08-13: a correct role guard is inert when the daemon loads the wrong tree
 

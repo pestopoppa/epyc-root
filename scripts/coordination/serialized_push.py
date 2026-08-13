@@ -53,9 +53,13 @@ branch as it stands, or it refuses.
 USAGE
     serialized_push.py --agent mainA --repo /workspace                  # dry run (default)
     serialized_push.py --agent mainA --repo /workspace --status         # who holds the lock
-    serialized_push.py --agent mainA --repo /workspace --acquire        # hold across a review
-    serialized_push.py --agent mainA --repo /workspace --push           # publish, under lock
-    serialized_push.py --agent mainA --repo /workspace --release
+    serialized_push.py --agent mainA --repo /workspace --push           # one-shot publish
+    serialized_push.py --agent mainA --repo /workspace --acquire \
+      --token-file /private/tmp/mainA-review.token                      # long hold
+    serialized_push.py --agent mainA --repo /workspace --push \
+      --token-file /private/tmp/mainA-review.token                      # publish held review
+    serialized_push.py --agent mainA --repo /workspace --release \
+      --token-file /private/tmp/mainA-review.token
     serialized_push.py --agent mainB --repo /workspace --force-release mainA
 
 EXIT CODES
@@ -66,10 +70,14 @@ EXIT CODES
 from __future__ import annotations
 
 import argparse
+import hashlib
+import hmac
 import json
 import os
 import re
+import secrets
 import socket
+import stat
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -119,6 +127,10 @@ class LockCorruptError(SerializedPushError):
 
 class NotHolderError(SerializedPushError):
     """Refusing to release a lock the caller does not own."""
+
+
+class LeaseTokenError(SerializedPushError):
+    """A long-lived hold was addressed without its opaque operation token."""
 
 
 class PushFailedError(SerializedPushError):
@@ -315,6 +327,10 @@ def describe_holder(rec: dict) -> str:
         f"  mode   : {mode}" + ("  (held across invocations via --acquire)"
                                 if mode == "hold" else "  (taken for a single push)"),
     ]
+    if mode == "hold":
+        lines.append("  token  : " + ("bound (required for acquire/release)"
+                                     if rec.get("token_sha256")
+                                     else "LEGACY UNBOUND (force-release only)"))
     if state == "gone" and mode == "hold":
         lines.append(f"  note   : holder PID {rec.get('pid')} is not running, which is EXPECTED "
                      f"for a lock held via --acquire —")
@@ -329,11 +345,110 @@ def describe_holder(rec: dict) -> str:
     return "\n".join(lines)
 
 
+def _token_digest(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def _read_token_file(token_file: os.PathLike | str) -> str:
+    """Read one private operation token without following a symlink.
+
+    The token is the authority for a long-lived hold, so accepting a world-readable
+    file or a symlink would reduce it to another roster-id convention. The sessions
+    on this host share a Unix account, but mode 0600 still prevents accidental
+    exposure through group-readable artifacts and makes the intended boundary
+    mechanically inspectable.
+    """
+    path = Path(token_file)
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(path, flags)
+    except FileNotFoundError as exc:
+        raise LeaseTokenError(
+            f"token-file-missing: long-lived hold token {path} does not exist",
+            condition="token-file-missing",
+        ) from exc
+    except OSError as exc:
+        raise LeaseTokenError(
+            f"token-file-unreadable: cannot open long-lived hold token {path} ({exc})",
+            condition="token-file-unreadable",
+        ) from exc
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode):
+            raise LeaseTokenError(
+                f"token-file-not-regular: {path} is not a regular file",
+                condition="token-file-not-regular",
+            )
+        if stat.S_IMODE(info.st_mode) != 0o600:
+            raise LeaseTokenError(
+                f"token-file-mode: {path} must be mode 0600, got "
+                f"{stat.S_IMODE(info.st_mode):04o}",
+                condition="token-file-mode",
+            )
+        if hasattr(os, "geteuid") and info.st_uid != os.geteuid():
+            raise LeaseTokenError(
+                f"token-file-owner: {path} is owned by uid {info.st_uid}, not {os.geteuid()}",
+                condition="token-file-owner",
+            )
+        with os.fdopen(fd, "r", encoding="utf-8") as fh:
+            fd = -1
+            token = fh.read(1024)
+    finally:
+        if fd >= 0:
+            os.close(fd)
+    token = token.strip()
+    if not re.fullmatch(r"[A-Za-z0-9_-]{43,128}", token):
+        raise LeaseTokenError(
+            f"token-file-invalid: {path} does not contain one opaque operation token",
+            condition="token-file-invalid",
+        )
+    return token
+
+
+def _create_or_read_token_file(token_file: os.PathLike | str) -> str:
+    """Create a private token once, or reuse it for an idempotent retry."""
+    path = Path(token_file)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    token = secrets.token_urlsafe(32)
+    try:
+        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    except FileExistsError:
+        return _read_token_file(path)
+    except OSError as exc:
+        raise LeaseTokenError(
+            f"token-file-create-failed: cannot create {path} ({exc})",
+            condition="token-file-create-failed",
+        ) from exc
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(token + "\n")
+            fh.flush()
+            os.fsync(fh.fileno())
+    except BaseException:
+        try:
+            path.unlink()
+        except OSError:
+            pass
+        raise
+    return token
+
+
+def _hold_token(token_file: os.PathLike | str | None, *, create: bool) -> str:
+    if token_file is None:
+        raise LeaseTokenError(
+            "token-file-required: --acquire/held-lock operations require --token-file PATH",
+            condition="token-file-required",
+        )
+    return (_create_or_read_token_file(token_file) if create
+            else _read_token_file(token_file))
+
+
 def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
-            mode: str = "push", name: str = "push") -> dict:
+            mode: str = "push", name: str = "push",
+            token_file: os.PathLike | str | None = None) -> dict:
     """Take the push lock with O_EXCL, or raise LockHeldError naming the holder.
 
-    Reuse rules, and why each one:
+    Push-mode reuse rules, retained for one-shot compatibility:
       * same agent, same PID  -> already yours; idempotent (a retry is not a race).
       * same agent, other PID that is RUNNING -> REFUSED. Two live processes sharing
         one roster id are exactly the concurrency this exists to stop.
@@ -341,7 +456,17 @@ def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
         must not lock you out of the work you hold (session-bus precedent: re-claiming
         your OWN row is not a collision).
       * different agent -> ALWAYS refused, running or not. Never stolen.
+
+    Hold mode is stricter: its acquiring process exits by design, so PID liveness
+    cannot identify the later releaser. An opaque per-operation token is created in
+    a caller-named mode-0600 file, only its SHA-256 is recorded in the public lock,
+    and every idempotent acquire or ordinary release must prove that token. Roster id,
+    dead PID, and even PID reuse confer no hold ownership.
     """
+    if mode not in {"push", "hold"}:
+        raise SerializedPushError(f"bad-lock-mode: {mode!r}", condition="bad-lock-mode")
+    token = _hold_token(token_file, create=True) if mode == "hold" else None
+    token_sha256 = _token_digest(token) if token is not None else None
     pid = os.getpid() if pid is None else pid
     lock_dir = Path(lock_dir)
     path = lock_path(lock_dir, key, name)
@@ -358,11 +483,32 @@ def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
         # is EXPECTED and evidence of nothing. See describe_holder().
         "mode": mode,
     }
+    if token_sha256 is not None:
+        rec["token_sha256"] = token_sha256
     lock_dir.mkdir(parents=True, exist_ok=True)
     try:
         fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
     except FileExistsError:
         held = read_lock(path) or {}
+        if held.get("mode") == "hold":
+            if token_file is None:
+                raise LockHeldError(
+                    f"lock-held-token-required: {agent!r} cannot prove ownership of the "
+                    f"{name} lock's long-lived hold without its token file.\n"
+                    f"{describe_holder(held)}",
+                    holder=held, condition="lock-held-token-required",
+                )
+            presented = _token_digest(_read_token_file(token_file))
+            expected = held.get("token_sha256")
+            if (held.get("agent") == agent and isinstance(expected, str)
+                    and hmac.compare_digest(presented, expected)):
+                return held
+            raise LockHeldError(
+                f"lock-held-token-mismatch: refusing the {name} lock — roster id, PID, and "
+                f"dead-process state do not confer ownership of a long-lived hold.\n"
+                f"{describe_holder(held)}",
+                holder=held, condition="lock-held-token-mismatch",
+            )
         if held.get("agent") == agent:
             if held.get("pid") == pid:
                 return held
@@ -376,7 +522,8 @@ def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
             # Own residue: reclaim, but say so.
             path.unlink()
             print(f"serialized_push: reclaiming your own lock ({why})", file=sys.stderr)
-            return acquire(lock_dir, key, agent, repo_path, pid=pid, mode=mode, name=name)
+            return acquire(lock_dir, key, agent, repo_path, pid=pid, mode=mode, name=name,
+                           token_file=token_file)
         raise LockHeldError(
             f"lock-held: refusing — {held.get('agent')!r} holds the {name} lock "
             f"for this repo.\n{describe_holder(held)}",
@@ -397,12 +544,13 @@ def acquire(lock_dir, key, agent: str, repo_path: str, pid: int | None = None,
     return rec
 
 
-def release(lock_dir, key, agent: str, name: str = "push") -> bool:
+def release(lock_dir, key, agent: str, name: str = "push",
+            token_file: os.PathLike | str | None = None) -> bool:
     """Drop a lock you hold. False if there was nothing to drop.
 
-    Ownership is the AGENT id: a session that restarted must be able to clean up
-    after itself. But a different, RUNNING process under the same id is refused —
-    releasing a live pusher's lock mid-push is the race, wearing a helpful face.
+    A hold-mode lock requires its opaque token regardless of roster id or PID. A
+    push-mode lock retains the legacy same-process / dead-own-residue behavior for
+    one-shot compatibility.
     """
     path = lock_path(lock_dir, key, name)
     rec = read_lock(path)
@@ -415,6 +563,28 @@ def release(lock_dir, key, agent: str, name: str = "push") -> bool:
             f"  If you must displace it, say so explicitly: --force-release {rec.get('agent')}",
             condition="not-holder",
         )
+    if rec.get("mode") == "hold":
+        if token_file is None:
+            raise NotHolderError(
+                f"not-holder-token-required: {agent!r} must provide the operation token "
+                f"to release this long-lived hold.\n{describe_holder(rec)}",
+                condition="not-holder-token-required",
+            )
+        expected = rec.get("token_sha256")
+        presented = _token_digest(_read_token_file(token_file))
+        if not isinstance(expected, str) or not hmac.compare_digest(presented, expected):
+            raise NotHolderError(
+                f"not-holder-token-mismatch: {agent!r} presented the wrong operation token.\n"
+                f"{describe_holder(rec)}",
+                condition="not-holder-token-mismatch",
+            )
+        path.unlink()
+        # The caller owns token lifecycle. A wrap-up invocation may acquire and
+        # release several protected sections with ONE operation-private token;
+        # deleting it here would silently rotate authority mid-operation. The
+        # documented trap removes it after the final release, and retains it when
+        # release fails so recovery remains possible.
+        return True
     if rec.get("pid") != os.getpid():
         state, why = pid_liveness(rec)
         if state in ("running", "unknown"):
@@ -774,6 +944,9 @@ def build_parser() -> argparse.ArgumentParser:
                         "Use 'wrapup' for the wrap-up lease that serializes the shared-surface "
                         "steps and the promotion merge across lane worktrees. Independent "
                         "leases: holding one never blocks the other.")
+    p.add_argument("--token-file",
+                   help="private mode-0600 operation token for a long-lived --acquire hold; "
+                        "required again for idempotent acquire, push-under-hold, and release")
     return p
 
 
@@ -816,7 +989,8 @@ def main(argv: list[str] | None = None) -> int:
             return EXIT_OK
 
         if args.release:
-            if release(args.lock_dir, key, args.agent, name=args.lock_name):
+            if release(args.lock_dir, key, args.agent, name=args.lock_name,
+                       token_file=args.token_file):
                 print(f"released {args.lock_name} lock for {repo} (key {key})")
             else:
                 print(f"(no {args.lock_name} lock held for {repo})")
@@ -828,7 +1002,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"FORCE-RELEASED {args.lock_name} lock held by {rec.get('agent')!r} since "
                   f"{rec.get('ts')}; displacement journaled by {args.agent!r}")
             return EXIT_OK
-    except (NotHolderError, LockCorruptError) as exc:
+    except (NotHolderError, LockCorruptError, LeaseTokenError) as exc:
         print(f"serialized_push: REFUSING — {exc}", file=sys.stderr)
         return EXIT_LOCKED
 
@@ -858,13 +1032,15 @@ def main(argv: list[str] | None = None) -> int:
     # ---- lock-holding operations (acquire / push) ---------------------------
     try:
         acquire(args.lock_dir, key, args.agent, str(repo),
-                mode="hold" if args.acquire else "push", name=args.lock_name)
-    except (LockHeldError, LockCorruptError) as exc:
+                mode="hold" if args.acquire else "push", name=args.lock_name,
+                token_file=args.token_file)
+    except (LockHeldError, LockCorruptError, LeaseTokenError) as exc:
         print(f"serialized_push: REFUSING — {exc}", file=sys.stderr)
         return EXIT_LOCKED
 
     if args.acquire:
         print(f"acquired {args.lock_name} lock for {repo} (key {key}) as {args.agent!r}")
+        print(f"operation token: {args.token_file} (mode 0600; keep it for release)")
         if args.lock_name == "push":
             print("Hold it while you review, then --push (or --release to give it up).")
         else:
@@ -902,8 +1078,9 @@ def main(argv: list[str] | None = None) -> int:
         # Always give the lock back, success or failure: a wedged lock blocks the
         # whole fleet, and a failed push is exactly when the next session needs it.
         try:
-            release(args.lock_dir, key, args.agent, name=args.lock_name)
-        except (NotHolderError, LockCorruptError) as exc:
+            release(args.lock_dir, key, args.agent, name=args.lock_name,
+                    token_file=args.token_file)
+        except (NotHolderError, LockCorruptError, LeaseTokenError) as exc:
             print(f"serialized_push: WARNING lock not released: {exc}", file=sys.stderr)
 
 
